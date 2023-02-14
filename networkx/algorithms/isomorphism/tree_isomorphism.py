@@ -74,7 +74,7 @@ def root_trees(t1, root1, t2, root2):
 def assign_levels(G, root):
     level = {}
     level[root] = 0
-    for (v1, v2) in nx.bfs_edges(G, root):
+    for v1, v2 in nx.bfs_edges(G, root):
         level[v2] = level[v1] + 1
 
     return level
@@ -83,7 +83,7 @@ def assign_levels(G, root):
 # now group the nodes at each level
 def group_by_levels(levels):
     L = {}
-    for (n, lev) in levels.items():
+    for n, lev in levels.items():
         if lev not in L:
             L[lev] = []
         L[lev].append(n)

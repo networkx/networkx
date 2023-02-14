@@ -65,7 +65,7 @@ def test_gnp_generators_edge_probability(generator, p, directed):
     edge_counts = [[0] * n for _ in range(n)]
     for i in range(runs):
         G = generator(n, p, directed=directed)
-        for (v, w) in G.edges:
+        for v, w in G.edges:
             edge_counts[v][w] += 1
             if not directed:
                 edge_counts[w][v] += 1
@@ -207,7 +207,6 @@ class TestGeneratorsRandom:
         initial_graph = nx.complete_graph(10)
 
         for seed in seeds:
-
             # This should be BA with m = m1
             BA1 = nx.barabasi_albert_graph(100, m1, seed)
             DBA1 = nx.dual_barabasi_albert_graph(100, m1, m2, 1, seed)

@@ -59,7 +59,7 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
         # all possible ties of connections that u and b share
         possib = combinations(ST, 2)
         total = 0
-        for (s, t) in possib:
+        for s, t in possib:
             # neighbors of s that are in G_u, not including u and v
             nbrs_s = u_nbrs.intersection(G_u[s]) - set_uv
             # s and t are not directly connected

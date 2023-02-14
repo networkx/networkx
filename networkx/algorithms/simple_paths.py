@@ -433,7 +433,7 @@ def _all_simple_edge_paths_multigraph(G, source, targets, cutoff):
                 visited.append(child)
                 stack.append(iter(G.edges(child[1], keys=True)))
         else:  # len(visited) == cutoff:
-            for (u, v, k) in [child] + list(children):
+            for u, v, k in [child] + list(children):
                 if v in targets:
                     yield visited[1:] + [(u, v, k)]
             stack.pop()

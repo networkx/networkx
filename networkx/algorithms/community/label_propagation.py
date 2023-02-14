@@ -69,7 +69,6 @@ def asyn_lpa_communities(G, weight=None, seed=None):
         seed.shuffle(nodes)
 
         for node in nodes:
-
             if not G[node]:
                 continue
 

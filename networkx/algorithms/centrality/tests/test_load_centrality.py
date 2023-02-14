@@ -6,7 +6,6 @@ import networkx as nx
 class TestLoadCentrality:
     @classmethod
     def setup_class(cls):
-
         G = nx.Graph()
         G.add_edge(0, 1, weight=3)
         G.add_edge(0, 2, weight=2)

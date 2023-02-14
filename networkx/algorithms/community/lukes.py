@@ -26,7 +26,6 @@ def _split_n_from(n, min_size_of_first_part):
 
 
 def lukes_partitioning(G, max_size, node_weight=None, edge_weight=None):
-
     """Optimal partitioning of a weighted tree using the Lukes algorithm.
 
     This algorithm partitions a connected, acyclic graph featuring integer
@@ -147,7 +146,6 @@ def lukes_partitioning(G, max_size, node_weight=None, edge_weight=None):
         return ccx[0]
 
     def _concatenate_or_merge(partition_1, partition_2, x, i, ref_weigth):
-
         ccx = _pivot(partition_1, x)
         cci = _pivot(partition_2, i)
         merged_xi = ccx.union(cci)
