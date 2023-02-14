@@ -66,7 +66,6 @@ class TestSpectralBipartivity:
         assert sb(G) == pytest.approx(0.597, abs=1e-3)
 
     def test_single_nodes(self):
-
         # single nodes
         G = nx.complete_bipartite_graph(2, 3)
         G.add_edge(2, 4)

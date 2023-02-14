@@ -26,7 +26,6 @@ def test_attrs_deprecation(recwarn):
 
 
 class TestNodeLink:
-
     # TODO: To be removed when signature change complete
     def test_custom_attrs_dep(self):
         G = nx.path_graph(4)

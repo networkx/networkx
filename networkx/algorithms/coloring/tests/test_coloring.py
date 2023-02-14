@@ -438,7 +438,6 @@ class TestColoring:
             full_color_assignment=None,
             nodes_to_add_between_calls=1,
         ):
-
             color_assignments = []
             aux_colored_nodes = colored_nodes.copy()
 
@@ -474,7 +473,6 @@ class TestColoring:
             return color_assignments, aux_colored_nodes
 
         for G, _, _ in SPECIAL_TEST_CASES["saturation_largest_first"]:
-
             G = G()
 
             # Check that function still works when nodes are colored between iterations
@@ -530,7 +528,7 @@ def dict_to_sets(colors):
     k = max(colors.values()) + 1
     sets = [set() for _ in range(k)]
 
-    for (node, color) in colors.items():
+    for node, color in colors.items():
         sets[color].add(node)
 
     return sets
@@ -856,7 +854,7 @@ def make_params_from_graph(G, F):
     """Returns {N, L, H, C} from the given graph."""
     num_nodes = len(G)
     L = {u: [] for u in range(num_nodes)}
-    for (u, v) in G.edges:
+    for u, v in G.edges:
         L[u].append(v)
         L[v].append(u)
 

@@ -122,7 +122,7 @@ def k_factor(G, k, matching_weight="weight"):
             adj_view = self.g[self.original]
             neighbors = list(adj_view.keys())
             edge_attrs = list(adj_view.values())
-            for (outer, neighbor, edge_attrs) in zip(
+            for outer, neighbor, edge_attrs in zip(
                 self.outer_vertices, neighbors, edge_attrs
             ):
                 self.g.add_edge(outer, neighbor, **edge_attrs)
@@ -155,7 +155,7 @@ def k_factor(G, k, matching_weight="weight"):
 
         def replace_node(self):
             adj_view = self.g[self.original]
-            for (outer, inner, (neighbor, edge_attrs)) in zip(
+            for outer, inner, (neighbor, edge_attrs) in zip(
                 self.outer_vertices, self.inner_vertices, list(adj_view.items())
             ):
                 self.g.add_edge(outer, inner)

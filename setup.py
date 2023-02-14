@@ -169,7 +169,6 @@ with open("README.rst") as fh:
     long_description = fh.read()
 
 if __name__ == "__main__":
-
     setup(
         name=name,
         version=version,

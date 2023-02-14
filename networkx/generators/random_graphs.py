@@ -343,7 +343,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     # for each edge u-v, with probability p, randomly select existing
     # node w and add new edge u-w
     e = list(G.edges())
-    for (u, v) in e:
+    for u, v in e:
         if seed.random() < p:
             w = seed.choice(nlist)
             # no self-loops and reject if edge u-w exists
@@ -1116,7 +1116,7 @@ def random_shell_graph(constructor, seed=None):
     intra_edges = []
     nnodes = 0
     # create gnm graphs for each shell
-    for (n, m, d) in constructor:
+    for n, m, d in constructor:
         inter_edges = int(m * d)
         intra_edges.append(m - inter_edges)
         g = nx.convert_node_labels_to_integers(

@@ -269,6 +269,7 @@ def recursive_simple_cycles(G):
     --------
     simple_cycles, cycle_basis
     """
+
     # Jon Olav Vik, 2010-08-09
     def _unblock(thisnode):
         """Recursively unblock and remove nodes from B[thisnode]."""

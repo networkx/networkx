@@ -115,6 +115,7 @@ def hopcroft_karp_matching(G, top_nodes=None):
        2.4 (1973), pp. 225--231. <https://doi.org/10.1137/0202019>.
 
     """
+
     # First we define some auxiliary search functions.
     #
     # If you are a human reading these auxiliary search functions, the "global"

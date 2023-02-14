@@ -63,7 +63,7 @@ for c in commits:
     print("- " + c)
 
 print(f"\nIt contained the following {len(merges)} merges:\n")
-for (merge, message) in merges:
+for merge, message in merges:
     if merge.startswith("Merge pull request #"):
         PR = f" ({merge.split()[3]})"
     else:

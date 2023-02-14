@@ -46,7 +46,6 @@ def _semantic_feasibility(self, G1_node, G2_node):
 
     # Make sure the edges match
     if self.edge_match is not None:
-
         # Cached lookups
         G1nbrs = self.G1_adj[G1_node]
         G2nbrs = self.G2_adj[G2_node]
