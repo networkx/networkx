@@ -387,7 +387,7 @@ def is_minimal_d_separator(G, u, v, z, check_d_sep=True):
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")
 
-    if not nx.d_separated(G, {u}, {v}, z):
+    if check_d_sep and not nx.d_separated(G, {u}, {v}, z):
         return False
 
     union_uv = {u, v}

@@ -223,3 +223,6 @@ def test_minimal_d_separator_checks_dsep():
     assert not nx.d_separated(g, {"C"}, {"F"}, {"D"})
     assert not nx.is_minimal_d_separator(g, "C", "F", {"D"})
     assert not nx.is_minimal_d_separator(g, "C", "F", {})
+
+    # by explicitly turning off the check, we will get the incorrect answer
+    assert nx.is_minimal_d_separator(g, "C", "F", {}, check_d_sep=False)
