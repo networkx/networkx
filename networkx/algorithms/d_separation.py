@@ -332,7 +332,7 @@ def is_minimal_d_separator(G, u, v, z, check_d_sep=True):
 
     Examples
     --------
-    >>> G = nx.path_graph(G, [0, 1, 2, 3])
+    >>> G = nx.path_graph([0, 1, 2, 3], create_using=nx.DiGraph)
     >>> G.add_node(4)
     >>> # since {1} is the minimal d-separator, this will return False
     >>> nx.is_minimal_d_separator(G, 0, 2, {1,3,4})
@@ -342,10 +342,10 @@ def is_minimal_d_separator(G, u, v, z, check_d_sep=True):
     >>> nx.is_minimal_d_separator(G, 0, 2, {1}, False)
     True
     >>> # if we do not know that z is a d-separator, then we can first check it ourselves
-    >>> is_d_sep = nx.d_separated(G, 0, 4, {1})
+    >>> is_d_sep = nx.d_separated(G, {0}, {4}, {1})
     >>> is_minimal = nx.is_minimal_d_separator(G, 0, 2, {1}, False)
     >>> print(is_d_sep and is_minimal)
-    False
+    True
 
     Raises
     ------
