@@ -201,6 +201,9 @@ def test_minimal_d_separator():
     assert nx.is_minimal_d_separator(G, "A", "C", Zmin)
     assert Zmin == {"B"}
 
+    Znotmin = Zmin.union({"D"})
+    assert not nx.is_minimal_d_separator(G, "A", "C", Znotmin)
+
 
 def test_minimal_d_separator_checks_dsep():
     g = nx.DiGraph()
