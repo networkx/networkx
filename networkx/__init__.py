@@ -1,10 +1,8 @@
 """
 NetworkX
 ========
-
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
-
 See https://networkx.org for complete documentation.
 """
 
@@ -21,7 +19,6 @@ from networkx import utils
 from networkx import classes
 from networkx.classes import filters
 from networkx.classes import *
-from networkx.classes import _dispatch
 
 from networkx import convert
 from networkx.convert import *
@@ -47,5 +44,3 @@ from networkx.linalg import *
 
 from networkx import drawing
 from networkx.drawing import *
-
-
