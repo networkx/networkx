@@ -103,7 +103,7 @@ def find_maximum_priority_matching_bipartite(G: nx.Graph):
 
     matched_edges = nx.maximal_matching(G)
     logger.info("Find maximal matching for G %s", str(matched_edges))
-    for (u, v) in G.edges:
+    for u, v in G.edges:
         if (u, v) in matched_edges:
             nx.set_edge_attributes(G, {(u, v): {"isMatched": True}})
             nx.set_node_attributes(G, {u: {"isMatched": True}})

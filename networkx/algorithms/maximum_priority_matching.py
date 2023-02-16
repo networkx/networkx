@@ -156,7 +156,9 @@ def find_maximum_priority_matching(G: nx.Graph):
         elif prioirities[node] is None:
             raise Exception("Nodes priority should be integer")
         elif prioirities[node] > len(G.nodes) or prioirities[node] < 1:
-            raise Exception("All nodes' priority attr should be between [1,len(G.nodes)]")
+            raise Exception(
+                "All nodes' priority attr should be between [1,len(G.nodes)]"
+            )
         else:
             nx.set_node_attributes(
                 G,
@@ -176,7 +178,7 @@ def find_maximum_priority_matching(G: nx.Graph):
     matched_edges = nx.maximal_matching(G)
     logger.info("Find maximal matching for G %s", str(matched_edges))
     # update the nodes and edges attr after the first matching
-    for (u, v) in G.edges:
+    for u, v in G.edges:
         if (u, v) in matched_edges:
             nx.set_edge_attributes(G, {(u, v): {"isMatched": True}})
             nx.set_node_attributes(G, {u: {"isMatched": True}})
@@ -933,24 +935,21 @@ def merge_paths(lst1: list, lst2: list, u, v):
     """
 
     if u == None or v == None or u not in lst1 or v not in lst2:
-        raise Exception ("somthing wrong in the arguments")
+        raise Exception("somthing wrong in the arguments")
 
     list = []
     pos_u = lst1.index(u)
     pos_v = lst2.index(v)
-    if pos_u == 0 and pos_v == 0:  
+    if pos_u == 0 and pos_v == 0:
         for i in reversed(lst1):
             list.append(i)
         for j in lst2:
             list.append(j)
-    
     elif pos_u == len(lst1) - 1 and pos_v == len(lst2) - 1:
         for i in lst1:
             list.append(i)
         for j in reversed(lst2):
             list.append(j)
-    
-    
     else:
         if pos_u == 0:
             for j in lst2:
@@ -1235,7 +1234,6 @@ def paths_to_base(list, u, base):
     path2 = []
     pos = list.index(u)
     temp = u
-
     while temp != base:
         path1.append(temp)
         if pos == (len(list) - 1):
@@ -1247,14 +1245,12 @@ def paths_to_base(list, u, base):
     temp = u
     pos = list.index(u)
     while temp != base:
-
         path2.append(temp)
         if pos == 0:
             pos = len(list) - 1
         else:
             pos = pos - 1
         temp = list[pos]
-
     path2.append(base)
     return (path1, path2)
 
@@ -1322,7 +1318,7 @@ def find_path_to_root(G: nx.Graph, blossoms_list, u, v):
         else:
             blossom_id = blossoms_info[temp]
             blossom = blossoms_list[blossom_id]
-            if (prev,temp) in matching_info:
+            if (prev, temp) in matching_info:
                 if matching_info[(prev, temp)] is True:
                     blossom_path = find_path_in_blossom(G, blossom, True, temp)
                 else:
@@ -1340,12 +1336,7 @@ def find_path_to_root(G: nx.Graph, blossoms_list, u, v):
             if blossom_path[1] is not None:
                 prev = temp
                 temp = blossom_path[1]
-            
-
-
-
     path.insert(0, root_list[temp])
-
     return path
 
 
@@ -1448,6 +1439,3 @@ def reverse_path(G: nx.Graph, path):
 
 if __name__ == "__main__":
     print(doctest.testmod())
-   
-
-    
