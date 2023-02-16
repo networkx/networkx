@@ -25,21 +25,20 @@ import pytest
 
 import networkx as nx
 
-from networkx.algorithms.maximum_priority_matching import *
-
-# from ..maximum_priority_matching import (
-#     find_augmenting_paths,
-#     find_blossom,
-#     find_maximum_priority_matching,
-#     find_path,
-#     find_path_in_blossom,
-#     find_path_to_root,
-#     find_priority_score,
-#     paths_to_base,
-#     prepare_for_algo,
-#     reverse_path,
-#     shrink_graph,
-# )
+from networkx.algorithms.maximum_priority_matching import (
+    find_augmenting_paths,
+    find_blossom,
+    find_maximum_priority_matching,
+    find_path,
+    find_path_in_blossom,
+    find_path_to_root,
+    find_priority_score,
+    paths_to_base,
+    prepare_for_algo,
+    reverse_path,
+    shrink_graph,
+    merge_paths,
+)
 
 
 class Test_maximum_priority_matching:
@@ -96,6 +95,38 @@ class Test_maximum_priority_matching:
         assert find_priority_score(G, matching) == "211111010"
 
     def test_find_maximum_prioirity_matching(self):
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (0, 2), (0, 3), (1, 2), (3, 4)])
+        nx.set_node_attributes(G, {0: {"priority": 1}, 1: {"priority": 2}, 2: {"priority": 3}, 3: {"priority": 4},
+                                   4: {"priority": 5}})
+        assert find_maximum_priority_matching(G) == [(0, 3), (1, 2)]
+
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (1, 2), (0, 2)])
+        nx.set_node_attributes(G, {0: {"priority": 1}, 1: {"priority": 2}, 2: {"priority": 3}})
+        assert find_maximum_priority_matching(G) == [(0, 1)]
+
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (1, 2), (0, 2), (2, 3)])
+        nx.set_node_attributes(G, {0: {"priority": 1}, 1: {"priority": 2}, 2: {"priority": 3}, 3: {"priority": 4}})
+        assert find_maximum_priority_matching(G) == [(0, 1), (2, 3)]
+
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)])
+        nx.set_node_attributes(G, {0: {"priority": 1}, 1: {"priority": 2}, 2: {"priority": 3}, 3: {"priority": 4}})
+        assert find_maximum_priority_matching(G) == [(0, 1), (2, 3)]
+
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)])
+        nx.set_node_attributes(G, {0: {"priority": 1}, 1: {"priority": 1}, 2: {"priority": 2}, 3: {"priority": 1}})
+        assert find_maximum_priority_matching(G) == [(0, 1), (2, 3)]
+
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        nx.set_node_attributes(G, {0: {"priority": 1}, 1: {"priority": 2}, 2: {"priority": 3}, 3: {"priority": 1}})
+        assert find_maximum_priority_matching(G) == [(0, 1)]
+
+
         G = nx.Graph()
         nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
         edges = [
@@ -191,7 +222,7 @@ class Test_maximum_priority_matching:
         for element in matching:
             if "test" in element:
                 check = True
-        assert check == True
+        assert check is True
 
     def test_find_augmenting_paths(self):
         G = nx.Graph()
@@ -816,6 +847,35 @@ class Test_maximum_priority_matching:
         nx.set_edge_attributes(G, edges_attrs)
         assert prepare_for_algo(G, 1) == ([], [])
 
+    def test_merge_paths(self):
+        lst1 = ['1', '2', '3', '6', '7']
+        lst2 = ['11', '12', '10', '9', '8']
+        assert merge_paths(lst1, lst2, '1', '11') == ['7', '6', '3', '2', '1', '11', '12', '10', '9', '8']
+        lst1 = ['a', 'b', 'c']
+        lst2 = ['d', 'e', 'f']
+        assert merge_paths(lst1, lst2, 'a', 'd') == ['c', 'b', 'a', 'd', 'e', 'f']
+        lst1 = ['z']
+        lst2 = ['y', 'x']
+        assert merge_paths(lst1, lst2, 'z', 'y') == ['z', 'y', 'x']
+        lst1 = ['a', 'b', 'c']
+        lst2 = ['a', 'b', 'c']
+        assert merge_paths(lst1, lst2, 'c', 'a') == ['a', 'b', 'c', 'a', 'b', 'c']
+        lst1 = ['1', '3', '5', '7', '9']
+        lst2 = ['2', '4', '6', '8', '10']
+        assert merge_paths(lst1, lst2, '1', '2') == ['9', '7', '5', '3', '1', '2', '4', '6', '8', '10']
+        lst1 = ['a', 'b', 'c']
+        lst2 = ['d']
+        assert merge_paths(lst1, lst2, 'a', 'd') == ['c', 'b', 'a', 'd']
+        lst1 = ['a']
+        lst2 = ['b']
+        assert merge_paths(lst1, lst2, 'a', 'b') == ['a', 'b']
+        lst1 = ['a', 'b', 'c']
+        lst2 = ['a', 'b', 'c']
+        assert merge_paths(lst1, lst2, 'a', 'a') == ['c', 'b', 'a', 'a', 'b', 'c']
+        lst1 = ['a', 'c', 'e', 'g']
+        lst2 = ['a', 'c', 'e', 'g']
+        assert merge_paths(lst1, lst2, 'a', 'a') == ['g', 'e', 'c', 'a', 'a', 'c', 'e', 'g']
+
     def test_find_path(self):
         G = nx.Graph()
         nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
@@ -1001,159 +1061,6 @@ class Test_maximum_priority_matching:
             "11",
             True,
         ) == ["1", "2", "3", "6", "7", "11"]
-
-    def test_find_path_first_cond(self):
-        G = nx.Graph()
-        nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
-        edges = [
-            ("1", "2"),
-            ("2", "3"),
-            ("3", "4"),
-            ("4", "5"),
-            ("5", "6"),
-            ("6", "7"),
-            ("7", "8"),
-            ("7", "9"),
-            ("7", "3"),
-        ]
-        nodes_attrs = {
-            "1": {
-                "parent": None,
-                "priority": 1,
-                "isMatched": False,
-                "isPositive": False,
-                "isReachable": False,
-                "root": "1",
-                "isBolssom": False,
-                "isExternal": True,
-                "blossomsID": -1,
-            },
-            "2": {
-                "parent": "1",
-                "priority": 8,
-                "isMatched": True,
-                "isPositive": False,
-                "isReachable": False,
-                "root": "1",
-                "isBolssom": False,
-                "isExternal": True,
-                "blossomsID": -1,
-            },
-            "3": {
-                "parent": "2",
-                "priority": 6,
-                "isMatched": True,
-                "isPositive": False,
-                "isReachable": False,
-                "root": "1",
-                "isBolssom": False,
-                "isExternal": True,
-                "blossomsID": -1,
-            },
-            "4": {
-                "parent": None,
-                "priority": 5,
-                "isMatched": True,
-                "isPositive": False,
-                "isReachable": False,
-                "root": None,
-                "isBolssom": False,
-                "isExternal": True,
-                "blossomsID": -1,
-            },
-            "5": {
-                "parent": None,
-                "priority": 2,
-                "isMatched": True,
-                "isPositive": False,
-                "isReachable": False,
-                "root": None,
-                "isBolssom": False,
-                "isExternal": True,
-                "blossomsID": -1,
-            },
-            "6": {
-                "parent": None,
-                "priority": 4,
-                "isMatched": True,
-                "isPositive": False,
-                "isReachable": False,
-                "root": None,
-                "isBolssom": False,
-                "isExternal": True,
-                "blossomsID": -1,
-            },
-            "7": {
-                "parent": None,
-                "priority": 3,
-                "isMatched": True,
-                "isPositive": False,
-                "isReachable": False,
-                "root": None,
-                "isBolssom": False,
-                "isExternal": True,
-                "blossomsID": -1,
-            },
-            "8": {
-                "parent": None,
-                "priority": 1,
-                "isMatched": False,
-                "isPositive": False,
-                "isReachable": False,
-                "root": None,
-                "isBolssom": False,
-                "isExternal": True,
-                "blossomsID": -1,
-            },
-            "9": {
-                "parent": None,
-                "priority": 7,
-                "isMatched": False,
-                "isPositive": False,
-                "isReachable": False,
-                "root": None,
-                "isBolssom": False,
-                "isExternal": True,
-                "blossomsID": -1,
-            },
-        }
-        edges_attrs = {
-            ("1", "2"): {"isMatched": False},
-            ("2", "3"): {"isMatched": True},
-            ("3", "4"): {"isMatched": False},
-            ("4", "5"): {"isMatched": True},
-            ("5", "6"): {"isMatched": False},
-            ("6", "7"): {"isMatched": True},
-            ("7", "3"): {"isMatched": False},
-            ("7", "8"): {"isMatched": False},
-            ("7", "9"): {"isMatched": False},
-        }
-        G.add_nodes_from(nodes)
-        G.add_edges_from(edges)
-        nx.set_node_attributes(G, nodes_attrs)
-        nx.set_edge_attributes(G, edges_attrs)
-        assert find_path_first_cond(G, "3") == ["1", "2", "3"]
-        # create a graph with a simple tree structure
-        G = nx.Graph()
-        nodes = ["1", "2", "3", "4", "5"]
-        edges = [("1", "2"), ("1", "3"), ("2", "4"), ("3", "5")]
-        nodes_attrs = {
-            "1": {"parent": None, "root": "1"},
-            "2": {"parent": "1", "root": "1"},
-            "3": {"parent": "1", "root": "1"},
-            "4": {"parent": "2", "root": "1"},
-            "5": {"parent": "3", "root": "1"},
-        }
-        G.add_nodes_from(nodes)
-        G.add_edges_from(edges)
-        nx.set_node_attributes(G, nodes_attrs)
-
-        # test the function with various node ids
-        assert find_path_first_cond(G, "1") == ["1"]
-        assert find_path_first_cond(G, "2") == ["1", "2"]
-        assert find_path_first_cond(G, "3") == ["1", "3"]
-        assert find_path_first_cond(G, "4") == ["1", "2", "4"]
-        assert find_path_first_cond(G, "5") == ["1", "3", "5"]
 
     def test_find_blossom(self):
         G = nx.Graph()
@@ -2133,7 +2040,7 @@ class Test_maximum_priority_matching:
             },
             "7",
             "11",
-        ) == ["7", "5", "4", "3", "6"]
+        ) == ['6', '3', '4', '5', '7']
         assert find_path_to_root(
             G,
             {
@@ -2146,7 +2053,7 @@ class Test_maximum_priority_matching:
             },
             "11",
             "7",
-        ) == ["11", "10", "12"]
+        ) == ["12", "10", "11"]
 
     def test_reverse_path(self):
         G = nx.Graph()
@@ -2251,19 +2158,15 @@ class Test_maximum_priority_matching:
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
         nx.set_edge_attributes(G, edges_attrs)
-        matching_edges = nx.get_edge_attributes(G, "isMatched")
-        matching_info = nx.get_edge_attributes(G, "isMatched")
         reverse_path(G, ["8", "9", "10", "12", "11", "7", "6", "3", "2", "1"])
-        matching_edges[("8", "9")] == True
-        matching_edges[("9", "10")] == False
-        matching_edges[("10", "12")] == True
-        matching_edges[("11", "12")] == False
-        matching_edges[("7", "11")] == True
-        matching_edges[("6", "7")] == False
-        matching_edges[("3", "6")] == True
-        matching_edges[("2", "3")] == False
-        matching_edges[("1", "2")] == True
+        matching_edges = nx.get_edge_attributes(G, "isMatched")
+        assert matching_edges[("8", "9")] == True
+        assert matching_edges[("9", "10")] == False
+        assert matching_edges[("10", "12")] == True
+        assert matching_edges[("11", "12")] == False
+        assert matching_edges[("7", "11")] == True
+        assert matching_edges[("6", "7")] == False
+        assert matching_edges[("3", "6")] == True
+        assert matching_edges[("2", "3")] == False
+        assert matching_edges[("1", "2")] == True
 
-
-if __name__ == "__main__":
-    unittest.main()
