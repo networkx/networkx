@@ -24,20 +24,22 @@ import unittest
 import pytest
 
 import networkx as nx
-from networkx.algorithms.maximum_priority_matching import (
-    find_augmenting_paths,
-    find_blossom,
-    find_maximum_priority_matching,
-    find_path,
-    find_path_first_cond,
-    find_path_in_blossom,
-    find_path_to_root,
-    find_priority_score,
-    paths_to_base,
-    prepare_for_algo,
-    reverse_path,
-    shrink_graph,
-)
+
+from networkx.algorithms.maximum_priority_matching import *
+
+# from ..maximum_priority_matching import (
+#     find_augmenting_paths,
+#     find_blossom,
+#     find_maximum_priority_matching,
+#     find_path,
+#     find_path_in_blossom,
+#     find_path_to_root,
+#     find_priority_score,
+#     paths_to_base,
+#     prepare_for_algo,
+#     reverse_path,
+#     shrink_graph,
+# )
 
 
 class Test_maximum_priority_matching:

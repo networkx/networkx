@@ -149,23 +149,33 @@ def find_maximum_priority_matching(G: nx.Graph):
     >>> print(check)
     True
     """
+    prioirities = nx.get_node_attributes(G, "priority")
     for node in G.nodes:
-        nx.set_node_attributes(
-            G,
-            {
-                node: {
-                    "parent": None,
-                    "isMatched": False,
-                    "isPositive": False,
-                    "isReachable": False,
-                    "root": None,
-                    "isExternal": True,
-                    "blossomsID": -1,
-                }
-            },
-        )
+        if node not in prioirities:
+            raise Exception("All nodes need to be given a 'priority' attr")
+        elif prioirities[node] is None:
+            raise Exception("Nodes priority should be integer")
+        elif prioirities[node] > len(G.nodes) or prioirities[node] < 1:
+            raise Exception("All nodes' priority attr should be between [1,len(G.nodes)]")
+        else:
+            nx.set_node_attributes(
+                G,
+                {
+                    node: {
+                        "parent": None,
+                        "isMatched": False,
+                        "isPositive": False,
+                        "isReachable": False,
+                        "root": None,
+                        "isExternal": True,
+                        "blossomsID": -1,
+                    }
+                },
+            )
+    # find a first matching and we will improve it according to the priority
     matched_edges = nx.maximal_matching(G)
     logger.info("Find maximal matching for G %s", str(matched_edges))
+    # update the nodes and edges attr after the first matching
     for (u, v) in G.edges:
         if (u, v) in matched_edges:
             nx.set_edge_attributes(G, {(u, v): {"isMatched": True}})
@@ -265,9 +275,7 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
     >>> find_augmenting_paths(G,8)
     False
     """
-    # Graph = G.copy()
     # dictionary of all our blossoms
-    # blossoms:Dict[str,Union[list[str],bool,str]]={}
     blossoms: Dict = {}
     # preparation for the algorithm
     # if we want to use cython library
@@ -457,7 +465,7 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
                             },
                         )
                         # find the augmenting path
-                        path = find_path_first_cond(G, w)
+                        path = find_path_to_root(G, blossoms, w, v)
                         logger.info(str(path))
                         # update the augemnting path in the Graph
                         reverse_path(G, path)
@@ -510,7 +518,7 @@ def find_augmenting_paths(G: nx.Graph, Priority: int):
                             },
                         )
                         # find the augmenting path
-                        path = find_path_first_cond(G, w)
+                        path = find_path_to_root(G, blossoms, w, v)
                         logger.info(str(path))
                         # update the augemnting path in G[0]
                         reverse_path(G, path)
@@ -796,7 +804,6 @@ def prepare_for_algo(G: nx.Graph, Priority: int):
     roots = []
     eligible_edges = []
     for node in G.nodes:
-        # check_node = str(node)
         # check if the node in the current priority class and if it doesn't 'touch' the matching yet
         if nodes_priorities[node] == Priority and nodes_matching[node] is False:
             roots.append(node)
@@ -872,75 +879,11 @@ def find_path(G: nx.Graph, blossoms, u, v, flag):
     else:
         first_path = find_path_to_root(G, blossoms, u, v)
         second_path = find_path_to_root(G, blossoms, v, u)
-        path = merge_paths(first_path, second_path)
+        path = merge_paths(first_path, second_path, u, v)
         return path
 
 
-def find_path_first_cond(G: nx.Graph, id):
-    """
-    "Data structures and network algorithms" by Tarjan, Robert E.
-
-    Programmers: Roi Meshulam and Liroy Melamed
-
-    Our find_path_first_cond is private Function that gets graph and node id and finding the path in the graph
-    from the node to his tree's root
-    :param G: nx.Graph , id: String
-    :return: List
-
-    Tests:
-
-    >>> G = nx.Graph()
-    >>> nodes=['1','2','3','4','5','6','7','8','9']
-    >>> edges = [('1', '2'), ('2', '3'), ('3', '4'), ('4', '5'), ('5', '6'), ('6', '7'), ('7', '8'), ('7', '9'),('7','3')]
-    >>> nodes_attrs = {'1': {"parent": None, "priority":1 ,"isMatched": False, "isPositive":False, "isReachable": False,"root":'1',"isBolssom":False,"isExternal":True,"blossomsID":-1},'2': {"parent": '1', "priority":8 ,"isMatched": True , "isPositive":False, "isReachable": False,"root":'1',"isBolssom":False, "isExternal":True,"blossomsID":-1},'3': {"parent": '2', "priority":6 ,"isMatched": True , "isPositive":False, "isReachable": False,"root":'1',"isBolssom":False, "isExternal":True,"blossomsID":-1},'4': {"parent": None, "priority":5 ,"isMatched": True , "isPositive":False, "isReachable": False,"root":None,"isBolssom":False, "isExternal":True,"blossomsID":-1},'5': {"parent": None, "priority":2 ,"isMatched": True , "isPositive":False, "isReachable": False,"root":None,"isBolssom":False, "isExternal":True,"blossomsID":-1},'6': {"parent": None, "priority":4 ,"isMatched": True , "isPositive":False, "isReachable": False,"root":None,"isBolssom":False, "isExternal":True,"blossomsID":-1},'7': {"parent": None, "priority":3 ,"isMatched": True , "isPositive":False, "isReachable": False,"root":None,"isBolssom":False, "isExternal":True,"blossomsID":-1},'8': {"parent": None, "priority":1 ,"isMatched": False, "isPositive":False, "isReachable": False,"root":None,"isBolssom":False, "isExternal":True,"blossomsID":-1},'9': {"parent": None, "priority":7 ,"isMatched": False, "isPositive":False, "isReachable": False,"root":None,"isBolssom":False, "isExternal":True,"blossomsID":-1}}
-    >>> edges_attrs ={('1', '2'): {"isMatched": False},('2', '3'): {"isMatched": True},('3', '4'): {"isMatched": False},('4', '5'): {"isMatched": True}, ('5', '6'): {"isMatched": False},('6', '7'): {"isMatched": True},('7', '3'): {"isMatched": False},('7', '8'): {"isMatched": False},('7', '9'): {"isMatched": False}}
-    >>> G.add_nodes_from(nodes)
-    >>> G.add_edges_from(edges)
-    >>> nx.set_node_attributes(G, nodes_attrs)
-    >>> nx.set_edge_attributes(G,edges_attrs)
-    >>> find_path_first_cond(G,'3')
-    ['1', '2', '3']
-
-    # create a graph with a simple tree structure
-    >>> G = nx.Graph()
-    >>> nodes = ['1', '2', '3', '4', '5']
-    >>> edges = [('1', '2'), ('1', '3'), ('2', '4'), ('3', '5')]
-    >>> nodes_attrs = {'1': {'parent': None, 'root': '1'},'2': {'parent': '1', 'root': '1'},'3': {'parent': '1', 'root': '1'},'4': {'parent': '2', 'root': '1'},'5': {'parent': '3', 'root': '1'}}
-    >>> G.add_nodes_from(nodes)
-    >>> G.add_edges_from(edges)
-    >>> nx.set_node_attributes(G, nodes_attrs)
-
-    # test the function with various node ids
-    >>> find_path_first_cond(G, '1')
-    ['1']
-    >>> find_path_first_cond(G, '2')
-    ['1', '2']
-    >>> find_path_first_cond(G, '3')
-    ['1', '3']
-    >>> find_path_first_cond(G, '4')
-    ['1', '2', '4']
-    >>> find_path_first_cond(G, '5')
-    ['1', '3', '5']
-
-    """
-
-    # info
-    parents_list = nx.get_node_attributes(G, "parent")
-    root_list = nx.get_node_attributes(G, "root")
-    # vars
-    path: List[str] = []
-    temp = id
-    # while temp is not the root of the tree
-    while root_list[temp] != temp:
-        path.insert(0, temp)
-        temp = parents_list[temp]
-
-    path.insert(0, root_list[temp])
-
-    return path
-
-
-def merge_paths(lst1: list, lst2: list):
+def merge_paths(lst1: list, lst2: list, u, v):
     """
     Programmers: Roi Meshulam and Liroy Melamed
 
@@ -950,64 +893,75 @@ def merge_paths(lst1: list, lst2: list):
     :return: List
 
     Tests:
-
     >>> lst1 = ['1','2','3','6','7']
     >>> lst2 = ['11','12','10','9','8']
-    >>> merge_paths(lst1,lst2)
+    >>> merge_paths(lst1,lst2, '1','11')
     ['7', '6', '3', '2', '1', '11', '12', '10', '9', '8']
-
-    >>> lst1 = []
-    >>> lst2 = []
-    >>> merge_paths(lst1,lst2)
-    []
-
     >>> lst1 = ['a', 'b', 'c']
     >>> lst2 = ['d', 'e', 'f']
-    >>> merge_paths(lst1,lst2)
+    >>> merge_paths(lst1,lst2, 'a', 'd')
     ['c', 'b', 'a', 'd', 'e', 'f']
-
     >>> lst1 = ['z']
     >>> lst2 = ['y', 'x']
-    >>> merge_paths(lst1,lst2)
+    >>> merge_paths(lst1,lst2, 'z', 'y')
     ['z', 'y', 'x']
-
     >>> lst1 = ['a', 'b', 'c']
     >>> lst2 = ['a', 'b', 'c']
-    >>> merge_paths(lst1,lst2)
-    ['c', 'b', 'a', 'a', 'b', 'c']
-
+    >>> merge_paths(lst1,lst2, 'c', 'a')
+    ['a', 'b', 'c', 'a', 'b', 'c']
     >>> lst1 = ['1', '3', '5', '7', '9']
     >>> lst2 = ['2', '4', '6', '8', '10']
-    >>> merge_paths(lst1,lst2)
+    >>> merge_paths(lst1,lst2, '1', '2')
     ['9', '7', '5', '3', '1', '2', '4', '6', '8', '10']
-
     >>> lst1 = ['a', 'b', 'c']
     >>> lst2 = ['d']
-    >>> merge_paths(lst1,lst2)
+    >>> merge_paths(lst1,lst2, 'a' ,'d')
     ['c', 'b', 'a', 'd']
-
     >>> lst1 = ['a']
     >>> lst2 = ['b']
-    >>> merge_paths(lst1,lst2)
+    >>> merge_paths(lst1, lst2, 'a', 'b')
     ['a', 'b']
-
     >>> lst1 = ['a', 'b', 'c']
     >>> lst2 = ['a', 'b', 'c']
-    >>> merge_paths(lst1,lst2)
+    >>> merge_paths(lst1,lst2, 'a', 'a')
     ['c', 'b', 'a', 'a', 'b', 'c']
-
     >>> lst1 = ['a', 'c', 'e', 'g']
     >>> lst2 = ['a', 'c', 'e', 'g']
-    >>> merge_paths(lst1,lst2)
+    >>> merge_paths(lst1,lst2, 'a', 'a')
     ['g', 'e', 'c', 'a', 'a', 'c', 'e', 'g']
+
     """
 
-    list = []
+    if u == None or v == None or u not in lst1 or v not in lst2:
+        raise Exception ("somthing wrong in the arguments")
 
-    for i in reversed(lst1):
-        list.append(i)
-    for j in lst2:
-        list.append(j)
+    list = []
+    pos_u = lst1.index(u)
+    pos_v = lst2.index(v)
+    if pos_u == 0 and pos_v == 0:  
+        for i in reversed(lst1):
+            list.append(i)
+        for j in lst2:
+            list.append(j)
+    
+    elif pos_u == len(lst1) - 1 and pos_v == len(lst2) - 1:
+        for i in lst1:
+            list.append(i)
+        for j in reversed(lst2):
+            list.append(j)
+    
+    
+    else:
+        if pos_u == 0:
+            for j in lst2:
+                list.append(j)
+            for i in lst1:
+                list.append(i)
+        else:
+            for i in lst1:
+                list.append(i)
+            for j in lst2:
+                list.append(j)
     return list
 
 
@@ -1283,14 +1237,12 @@ def paths_to_base(list, u, base):
     temp = u
 
     while temp != base:
-        # path1.insert(0,temp)
         path1.append(temp)
         if pos == (len(list) - 1):
             pos = 0
         else:
             pos = pos + 1
         temp = list[pos]
-    # path1.insert(0,base)
     path1.append(base)
     temp = u
     pos = list.index(u)
@@ -1307,7 +1259,7 @@ def paths_to_base(list, u, base):
     return (path1, path2)
 
 
-def find_path_to_root(G: nx.Graph, blossoms, u, v):
+def find_path_to_root(G: nx.Graph, blossoms_list, u, v):
     """
     Programmers: Roi Meshulam and Liroy Melamed
 
@@ -1345,75 +1297,55 @@ def find_path_to_root(G: nx.Graph, blossoms, u, v):
     >>> nx.set_node_attributes(G, nodes_attrs)
     >>> nx.set_edge_attributes(G, edges_attrs)
     >>> find_path_to_root(G,{'B0':{'nodes': ['5','4','3','6','7'], 'root': '1' , 'isPositive': True, 'Base': '6' }},'7','11')
-    ['7', '5', '4', '3', '6']
+    ['6', '3', '4', '5', '7']
 
     >>> find_path_to_root(G,{'B1':{'nodes': ['12','11','10'], 'root': '8' , 'isPositive': True, 'Base': '12' }},'11','7')
-    ['11', '10', '12']
+    ['12', '10', '11']
 
     """
-
-    path: List[str] = []
     # info
+    parents_list = nx.get_node_attributes(G, "parent")
+    root_list = nx.get_node_attributes(G, "root")
     external_info = nx.get_node_attributes(G, "isExternal")
     blossoms_info = nx.get_node_attributes(G, "blossomsID")
-    root_list = nx.get_node_attributes(G, "root")
-    parents_list = nx.get_node_attributes(G, "parent")
     matching_info = nx.get_edge_attributes(G, "isMatched")
-
+    # vars
+    path: List = []
     temp = u
-    if temp is None:
-        print("None")
-    while temp != root_list[u]:
-        # temp is external
+    prev = v
+    # while temp is not the root of the tree
+    while root_list[temp] != temp:
         if external_info[temp] is True:
             path.insert(0, temp)
+            prev = temp
             temp = parents_list[temp]
-        # temp is internal
         else:
-            # find the blossom
             blossom_id = blossoms_info[temp]
-            blossom = blossoms[blossom_id]
-            if (u, v) in matching_info:
-                # if (u,v) is a matching edge
-                if matching_info[(u, v)] is True:
-                    result = find_path_in_blossom(G, blossom, True, u)
-                    sub_path = result[0]
-                    parent = result[1]
-                    if parent == None:
-                        return sub_path
-
+            blossom = blossoms_list[blossom_id]
+            if (prev,temp) in matching_info:
+                if matching_info[(prev, temp)] is True:
+                    blossom_path = find_path_in_blossom(G, blossom, True, temp)
                 else:
-                    result = find_path_in_blossom(G, blossom, False, u)
-                    sub_path = result[0]
-                    parent = result[1]
-                    if parent == None:
-                        return sub_path
-
-                temp = parent
-                for node in reversed(sub_path):
-                    path.append(node)
-
-            if (v, u) in matching_info:
-                # if (v,u) is a matching edge
-                if matching_info[(v, u)] is True:
-                    result = find_path_in_blossom(G, blossom, True, u)
-                    sub_path = result[0]
-                    parent = result[1]
-                    if parent == None:
-                        return sub_path
-
+                    blossom_path = find_path_in_blossom(G, blossom, False, temp)
+            else:
+                if matching_info[(temp, prev)] is True:
+                    blossom_path = find_path_in_blossom(G, blossom, True, temp)
                 else:
-                    result = find_path_in_blossom(G, blossom, False, u)
-                    sub_path = result[0]
-                    parent = result[1]
-                    if parent == None:
-                        return sub_path
+                    blossom_path = find_path_in_blossom(G, blossom, False, temp)
+            for vertex in blossom_path[0]:
+                path.insert(0, vertex)
+                temp = vertex
+            if root_list[temp] == temp:
+                return path
+            if blossom_path[1] is not None:
+                prev = temp
+                temp = blossom_path[1]
+            
 
-                temp = parent
-                for node in reversed(sub_path):
-                    path.append(node)
 
-    path.insert(0, temp)
+
+    path.insert(0, root_list[temp])
+
     return path
 
 
@@ -1516,3 +1448,6 @@ def reverse_path(G: nx.Graph, path):
 
 if __name__ == "__main__":
     print(doctest.testmod())
+   
+
+    
