@@ -33,11 +33,11 @@ from networkx.algorithms.maximum_priority_matching import (
     find_path_in_blossom,
     find_path_to_root,
     find_priority_score,
+    merge_paths,
     paths_to_base,
     prepare_for_algo,
     reverse_path,
     shrink_graph,
-    merge_paths,
 )
 
 
@@ -94,38 +94,76 @@ class Test_maximum_priority_matching:
         matching = [("1", "2"), ("3", "4"), ("5", "6"), ("7", "8")]
         assert find_priority_score(G, matching) == "211111010"
 
-    def test_find_maximum_prioirity_matching(self):
+    def test_find_maximum_priority_matching(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (0, 3), (1, 2), (3, 4)])
-        nx.set_node_attributes(G, {0: {"priority": 1}, 1: {"priority": 2}, 2: {"priority": 3}, 3: {"priority": 4},
-                                   4: {"priority": 5}})
+        nx.set_node_attributes(
+            G,
+            {
+                0: {"priority": 1},
+                1: {"priority": 2},
+                2: {"priority": 3},
+                3: {"priority": 4},
+                4: {"priority": 5}
+            },
+        )
         assert find_maximum_priority_matching(G) == [(0, 3), (1, 2)]
 
         G = nx.Graph()
         G.add_edges_from([(0, 1), (1, 2), (0, 2)])
-        nx.set_node_attributes(G, {0: {"priority": 1}, 1: {"priority": 2}, 2: {"priority": 3}})
+        nx.set_node_attributes(
+            G,
+            {
+                0: {"priority": 1},
+                1: {"priority": 2},
+                2: {"priority": 3},
+            },
+        )
         assert find_maximum_priority_matching(G) == [(0, 1)]
 
         G = nx.Graph()
         G.add_edges_from([(0, 1), (1, 2), (0, 2), (2, 3)])
-        nx.set_node_attributes(G, {0: {"priority": 1}, 1: {"priority": 2}, 2: {"priority": 3}, 3: {"priority": 4}})
+        nx.set_node_attributes(
+            G,
+            {
+                0: {"priority": 1},
+                1: {"priority": 2},
+                2: {"priority": 3},
+                3: {"priority": 4}
+            },
+        )
         assert find_maximum_priority_matching(G) == [(0, 1), (2, 3)]
 
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)])
-        nx.set_node_attributes(G, {0: {"priority": 1}, 1: {"priority": 2}, 2: {"priority": 3}, 3: {"priority": 4}})
+        nx.set_node_attributes(
+            G,
+            {
+                0: {"priority": 1},
+                1: {"priority": 2},
+                2: {"priority": 3},
+                3: {"priority": 4}
+            },
+        )
         assert find_maximum_priority_matching(G) == [(0, 1), (2, 3)]
 
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)])
-        nx.set_node_attributes(G, {0: {"priority": 1}, 1: {"priority": 1}, 2: {"priority": 2}, 3: {"priority": 1}})
+        nx.set_node_attributes(
+            G,
+            {
+                0: {"priority": 1},
+                1: {"priority": 1},
+                2: {"priority": 2},
+                3: {"priority": 1},
+             },
+        )
         assert find_maximum_priority_matching(G) == [(0, 1), (2, 3)]
 
         G = nx.Graph()
         G.add_edges_from([(0, 1), (1, 2)])
         nx.set_node_attributes(G, {0: {"priority": 1}, 1: {"priority": 2}, 2: {"priority": 3}, 3: {"priority": 1}})
         assert find_maximum_priority_matching(G) == [(0, 1)]
-
 
         G = nx.Graph()
         nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
@@ -195,7 +233,7 @@ class Test_maximum_priority_matching:
         G.add_nodes_from(nodes)
         G.add_edges_from(edges)
         nx.set_node_attributes(G, nodes_attrs)
-        find_maximum_priority_matching(G) == [
+        assert find_maximum_priority_matching(G) == [
             ("1", "2"),
             ("3", "6"),
             ("4", "5"),
@@ -848,33 +886,72 @@ class Test_maximum_priority_matching:
         assert prepare_for_algo(G, 1) == ([], [])
 
     def test_merge_paths(self):
-        lst1 = ['1', '2', '3', '6', '7']
-        lst2 = ['11', '12', '10', '9', '8']
-        assert merge_paths(lst1, lst2, '1', '11') == ['7', '6', '3', '2', '1', '11', '12', '10', '9', '8']
-        lst1 = ['a', 'b', 'c']
-        lst2 = ['d', 'e', 'f']
-        assert merge_paths(lst1, lst2, 'a', 'd') == ['c', 'b', 'a', 'd', 'e', 'f']
-        lst1 = ['z']
-        lst2 = ['y', 'x']
-        assert merge_paths(lst1, lst2, 'z', 'y') == ['z', 'y', 'x']
-        lst1 = ['a', 'b', 'c']
-        lst2 = ['a', 'b', 'c']
-        assert merge_paths(lst1, lst2, 'c', 'a') == ['a', 'b', 'c', 'a', 'b', 'c']
-        lst1 = ['1', '3', '5', '7', '9']
-        lst2 = ['2', '4', '6', '8', '10']
-        assert merge_paths(lst1, lst2, '1', '2') == ['9', '7', '5', '3', '1', '2', '4', '6', '8', '10']
-        lst1 = ['a', 'b', 'c']
-        lst2 = ['d']
-        assert merge_paths(lst1, lst2, 'a', 'd') == ['c', 'b', 'a', 'd']
-        lst1 = ['a']
-        lst2 = ['b']
-        assert merge_paths(lst1, lst2, 'a', 'b') == ['a', 'b']
-        lst1 = ['a', 'b', 'c']
-        lst2 = ['a', 'b', 'c']
-        assert merge_paths(lst1, lst2, 'a', 'a') == ['c', 'b', 'a', 'a', 'b', 'c']
-        lst1 = ['a', 'c', 'e', 'g']
-        lst2 = ['a', 'c', 'e', 'g']
-        assert merge_paths(lst1, lst2, 'a', 'a') == ['g', 'e', 'c', 'a', 'a', 'c', 'e', 'g']
+        lst1 = ["1", "2", "3", "6", "7"]
+        lst2 = ["11", "12", "10", "9", "8"]
+        assert merge_paths(lst1, lst2, "1", "11") == [
+            "7",
+            "6",
+            "3",
+            "2",
+            "1",
+            "11",
+            "12",
+            "10",
+            "9",
+            "8",
+        ]
+        lst1 = ["a", "b", "c"]
+        lst2 = ["d", "e", "f"]
+
+        assert merge_paths(lst1, lst2, "a", "d") == ["c", "b", "a", "d", "e", "f"]
+        lst1 = ["z"]
+        lst2 = ["y", "x"]
+
+        assert merge_paths(lst1, lst2, "z", "y") == ["z", "y", "x"]
+        lst1 = ["a", "b", "c"]
+        lst2 = ["a", "b", "c"]
+
+        assert merge_paths(lst1, lst2, "c", "a") == ["a", "b", "c", "a", "b", "c"]
+        lst1 = ["1", "3", "5", "7", "9"]
+        lst2 = ["2", "4", "6", "8", "10"]
+
+        assert merge_paths(lst1, lst2, "1", "2") == [
+            "9",
+            "7",
+            "5",
+            "3",
+            "1",
+            "2",
+            "4",
+            "6",
+            "8",
+            "10",
+        ]
+        lst1 = ["a", "b", "c"]
+        lst2 = ["d"]
+
+        assert merge_paths(lst1, lst2, "a", "d") == ["c", "b", "a", "d"]
+        lst1 = ["a"]
+        lst2 = ["b"]
+
+        assert merge_paths(lst1, lst2, "a", "b") == ["a", "b"]
+        lst1 = ["a", "b", "c"]
+        lst2 = ["a", "b", "c"]
+
+        assert merge_paths(lst1, lst2, "a", "a") == ["c", "b", "a", "a", "b", "c"]
+        lst1 = ["a", "c", "e", "g"]
+        lst2 = ["a", "c", "e", "g"]
+
+        assert merge_paths(lst1, lst2, "a", "a") == [
+            "g",
+            "e",
+            "c",
+            "a",
+            "a",
+            "c",
+            "e",
+            "g",
+        ]
 
     def test_find_path(self):
         G = nx.Graph()
@@ -2040,7 +2117,7 @@ class Test_maximum_priority_matching:
             },
             "7",
             "11",
-        ) == ['6', '3', '4', '5', '7']
+        ) == ["6", "3", "4", "5", "7"]
         assert find_path_to_root(
             G,
             {
