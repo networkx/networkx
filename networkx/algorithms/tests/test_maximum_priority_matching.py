@@ -42,7 +42,7 @@ from networkx.algorithms.maximum_priority_matching import (
 
 
 class Test_maximum_priority_matching:
-    def test_find_prioirity_score(self):
+    def test_find_priority_score(self):
         G = nx.Graph()
         nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
         edges = []
@@ -104,7 +104,7 @@ class Test_maximum_priority_matching:
                 1: {"priority": 2},
                 2: {"priority": 3},
                 3: {"priority": 4},
-                4: {"priority": 5}
+                4: {"priority": 5},
             },
         )
         assert find_maximum_priority_matching(G) == [(0, 3), (1, 2)]
@@ -129,7 +129,7 @@ class Test_maximum_priority_matching:
                 0: {"priority": 1},
                 1: {"priority": 2},
                 2: {"priority": 3},
-                3: {"priority": 4}
+                3: {"priority": 4},
             },
         )
         assert find_maximum_priority_matching(G) == [(0, 1), (2, 3)]
@@ -156,13 +156,21 @@ class Test_maximum_priority_matching:
                 1: {"priority": 1},
                 2: {"priority": 2},
                 3: {"priority": 1},
-             },
+            },
         )
         assert find_maximum_priority_matching(G) == [(0, 1), (2, 3)]
 
         G = nx.Graph()
         G.add_edges_from([(0, 1), (1, 2)])
-        nx.set_node_attributes(G, {0: {"priority": 1}, 1: {"priority": 2}, 2: {"priority": 3}, 3: {"priority": 1}})
+        nx.set_node_attributes(
+            G,
+            {
+                0: {"priority": 1},
+                1: {"priority": 2},
+                2: {"priority": 3},
+                3: {"priority": 1},
+            },
+        )
         assert find_maximum_priority_matching(G) == [(0, 1)]
 
         G = nx.Graph()
@@ -428,7 +436,6 @@ class Test_maximum_priority_matching:
         assert find_augmenting_paths(G, 8) == False
 
     def test_shrink_graph(self):
-
         G = nx.Graph()
         nodes = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
         edges = [
@@ -2246,4 +2253,3 @@ class Test_maximum_priority_matching:
         assert matching_edges[("3", "6")] == True
         assert matching_edges[("2", "3")] == False
         assert matching_edges[("1", "2")] == True
-
