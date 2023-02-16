@@ -24,7 +24,6 @@ import unittest
 import pytest
 
 import networkx as nx
-
 from networkx.algorithms.maximum_priority_matching import (
     find_augmenting_paths,
     find_blossom,
@@ -142,7 +141,7 @@ class Test_maximum_priority_matching:
                 0: {"priority": 1},
                 1: {"priority": 2},
                 2: {"priority": 3},
-                3: {"priority": 4}
+                3: {"priority": 4},
             },
         )
         assert find_maximum_priority_matching(G) == [(0, 1), (2, 3)]

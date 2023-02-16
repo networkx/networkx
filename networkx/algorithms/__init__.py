@@ -33,6 +33,7 @@ from networkx.algorithms.matching import *
 from networkx.algorithms.minors import *
 from networkx.algorithms.mis import *
 from networkx.algorithms.moral import *
+from networkx.algorithms.maximum_priority_matching import *
 from networkx.algorithms.non_randomness import *
 from networkx.algorithms.operators import *
 from networkx.algorithms.planarity import *
