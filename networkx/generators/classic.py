@@ -507,7 +507,7 @@ def empty_graph(n=0, create_using=None, default=Graph):
     """
     if create_using is None:
         G = default()
-    elif type(create_using) is type:
+    elif isinstance(create_using, type):
         G = create_using()
     elif not hasattr(create_using, "adj"):
         raise TypeError("create_using is not a valid NetworkX graph type or instance")
@@ -802,7 +802,7 @@ def complete_multipartite_graph(*subset_sizes):
     # add nodes with subset attribute
     # while checking that ints are not mixed with iterables
     try:
-        for (i, subset) in enumerate(subsets):
+        for i, subset in enumerate(subsets):
             G.add_nodes_from(subset, subset=i)
     except TypeError as err:
         raise NetworkXError("Arguments must be all ints or all iterables") from err

@@ -721,10 +721,10 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
 
     if invert_weight and weight is not None:
         if G.is_multigraph():
-            for (u, v, k, d) in G.edges(keys=True, data=True):
+            for u, v, k, d in G.edges(keys=True, data=True):
                 d[weight] = 1 / d[weight]
         else:
-            for (u, v, d) in G.edges(data=True):
+            for u, v, d in G.edges(data=True):
                 d[weight] = 1 / d[weight]
     # Replace with collapsing topology or approximated zero?
 

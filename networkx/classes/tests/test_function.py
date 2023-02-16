@@ -330,13 +330,13 @@ class TestFunction:
         graph = nx.path_graph(4)
         expected = [(0, 2), (0, 3), (1, 3)]
         nedges = list(nx.non_edges(graph))
-        for (u, v) in expected:
+        for u, v in expected:
             assert (u, v) in nedges or (v, u) in nedges
 
         graph = nx.star_graph(4)
         expected = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
         nedges = list(nx.non_edges(graph))
-        for (u, v) in expected:
+        for u, v in expected:
             assert (u, v) in nedges or (v, u) in nedges
 
         # Directed graphs

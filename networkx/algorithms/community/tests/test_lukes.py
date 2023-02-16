@@ -11,7 +11,6 @@ NWL = "n_weight"
 
 # first test from the Lukes original paper
 def paper_1_case(float_edge_wt=False, explicit_node_wt=True, directed=False):
-
     # problem-specific constants
     limit = 3
 
@@ -50,7 +49,6 @@ def paper_1_case(float_edge_wt=False, explicit_node_wt=True, directed=False):
 
 # second test from the Lukes original paper
 def paper_2_case(explicit_edge_wt=True, directed=False):
-
     # problem specific constants
     byte_block_size = 32
 
@@ -132,7 +130,6 @@ def test_mandatory_tree():
 
 
 def test_mandatory_integrality():
-
     byte_block_size = 32
 
     ex_1_broken = nx.DiGraph()

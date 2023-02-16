@@ -101,6 +101,7 @@ class TestSoftRandomGeometricGraph:
         generator.
 
         """
+
         # Use the L1 metric.
         def dist(x, y):
             return sum(abs(a - b) for a, b in zip(x, y))
@@ -287,6 +288,7 @@ class TestThresholdedRandomGeometricGraph:
         generator.
 
         """
+
         # Use the L1 metric.
         def dist(x, y):
             return sum(abs(a - b) for a, b in zip(x, y))

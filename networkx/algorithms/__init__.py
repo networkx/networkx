@@ -30,11 +30,9 @@ from networkx.algorithms.link_prediction import *
 from networkx.algorithms.lowest_common_ancestors import *
 from networkx.algorithms.isolate import *
 from networkx.algorithms.matching import *
-from networkx.algorithms.maximum_priority_matching import *
 from networkx.algorithms.minors import *
 from networkx.algorithms.mis import *
 from networkx.algorithms.moral import *
-from networkx.algorithms.maximum_priority_matching import *
 from networkx.algorithms.non_randomness import *
 from networkx.algorithms.operators import *
 from networkx.algorithms.planarity import *
@@ -129,4 +127,3 @@ from networkx.algorithms.tree.decomposition import *
 from networkx.algorithms.tree.mst import *
 from networkx.algorithms.tree.operations import *
 from networkx.algorithms.tree.recognition import *
-from networkx.algorithms.maximum_priority_matching import *

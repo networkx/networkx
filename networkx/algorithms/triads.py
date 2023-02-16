@@ -490,7 +490,7 @@ def triad_type(G):
         elif e1[1] == e2[0] or e2[1] == e1[0]:
             return "021C"
     elif num_edges == 3:
-        for (e1, e2, e3) in permutations(G.edges(), 3):
+        for e1, e2, e3 in permutations(G.edges(), 3):
             if set(e1) == set(e2):
                 if e3[0] in e1:
                     return "111U"
@@ -502,7 +502,7 @@ def triad_type(G):
                 # e3 == (e1[0], e2[1]) and e2 == (e1[1], e3[1]):
                 return "030T"
     elif num_edges == 4:
-        for (e1, e2, e3, e4) in permutations(G.edges(), 4):
+        for e1, e2, e3, e4 in permutations(G.edges(), 4):
             if set(e1) == set(e2):
                 # identify pair of symmetric edges (which necessarily exists)
                 if set(e3) == set(e4):
