@@ -8,4 +8,4 @@ def test_namespace_alias():
 
 def test_namespace_nesting():
     with pytest.raises(ImportError):
-        import networkx
+        from networkx import networkx
