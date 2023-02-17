@@ -295,7 +295,7 @@ def minimal_d_separator(G, u, v):
 
 
 @not_implemented_for("undirected")
-def is_minimal_d_separator(G, u, v, z, check_d_sep=True):
+def is_minimal_d_separator(G, u, v, z):
     """Determine if a d-separating set is minimal.
 
     A d-separating set, `z`, in a DAG is a set of nodes that blocks
@@ -303,9 +303,9 @@ def is_minimal_d_separator(G, u, v, z, check_d_sep=True):
     verifies that a set is "minimal", meaning there is no smaller
     d-separating set between the two nodes.
 
-    Note: This function does not always check whether `z` is a d_separator.
-    One can use the function `d_separated` together with this function (as shown
-    in the examples below) to check that `z` is both minimal and a d_separator.
+    Note: This function checks whether `z` is a d-separator AND is minimal.
+    One can use the function `d_separated` to only check if `z` is a d-separator.
+    See examples below.
 
     Parameters
     ----------
@@ -316,14 +316,9 @@ def is_minimal_d_separator(G, u, v, z, check_d_sep=True):
     v : node
         A node in the graph.
     z : Set of nodes
-        The set of nodes to check if it is a minimal d-separating set. If
-        `check_d_sep = True`, then a call to :func:`d_separated` is called
-        to verify that `z` is in fact a d-separator. If `check_d_sep = False`,
-        then no check will be done, and it will be assumed that the user
-        has already verified that `z` is a d-separator.
-    check_d_sep : bool
-        Whether or not to first check if `z` is a d-separating set. By default,
-        it is `True`. Set to `False` to turn off the d-separating set check.
+        The set of nodes to check if it is a minimal d-separating set. A call
+        to :func:`d_separated` is called to verify that `z` is in fact a
+        d-separator is always made.
 
     Returns
     -------
@@ -337,14 +332,10 @@ def is_minimal_d_separator(G, u, v, z, check_d_sep=True):
     >>> # since {1} is the minimal d-separator, this will return False
     >>> nx.is_minimal_d_separator(G, 0, 2, {1,3,4})
     False
-    >>>
-    >>> # if we already know that z is a d-separator, we can turn off the check
-    >>> nx.is_minimal_d_separator(G, 0, 2, {1}, False)
+    >>> nx.is_minimal_d_separator(G, 0, 2, {1})
     True
-    >>> # if we do not know that z is a d-separator, then we can first check it ourselves
-    >>> is_d_sep = nx.d_separated(G, {0}, {4}, {1})
-    >>> is_minimal = nx.is_minimal_d_separator(G, 0, 2, {1}, False)
-    >>> print(is_d_sep and is_minimal)
+    >>> # alternatively, if we simply want to check that {1,3,4} is a d-separator
+    >>> nx.d_separated(G, {0}, {4}, {1,3,4})
     True
 
     Raises
@@ -387,7 +378,7 @@ def is_minimal_d_separator(G, u, v, z, check_d_sep=True):
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")
 
-    if check_d_sep and not nx.d_separated(G, {u}, {v}, z):
+    if not nx.d_separated(G, {u}, {v}, z):
         return False
 
     union_uv = {u, v}

@@ -206,6 +206,7 @@ def test_minimal_d_separator():
 
 
 def test_minimal_d_separator_checks_dsep():
+    """Test that is_minimal_d_separator checks for d-separation as well."""
     g = nx.DiGraph()
     g.add_edges_from(
         [
@@ -221,8 +222,7 @@ def test_minimal_d_separator_checks_dsep():
     )
 
     assert not nx.d_separated(g, {"C"}, {"F"}, {"D"})
+
+    # since {'D'} and {} are not d-separators, we return false
     assert not nx.is_minimal_d_separator(g, "C", "F", {"D"})
     assert not nx.is_minimal_d_separator(g, "C", "F", {})
-
-    # by explicitly turning off the check, we will get the incorrect answer
-    assert nx.is_minimal_d_separator(g, "C", "F", {}, check_d_sep=False)
