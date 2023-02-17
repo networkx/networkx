@@ -10,6 +10,11 @@ Highlights
 
 API Changes
 -----------
+- [`#6430 <https://github.com/networkx/networkx/issues/6430>`_]
+  ``nx.minimal_d_separators`` now returns `None` instead of `set()` in the case 
+  where no valid d-separators exist.
+
+  
 
 - Remove ``topo_order`` kwarg from ``is_semiconnected`` without deprecation (`#6651 <https://github.com/networkx/networkx/pull/6651>`_).
 - deprecate Edmonds class (`#6785 <https://github.com/networkx/networkx/pull/6785>`_).
