@@ -363,30 +363,6 @@ If you're not sure how to do this or are having trouble, submit your pull reques
 anyway.
 We will help you create the tests and sort out any kind of problem during code review.
 
-Adding examples
-~~~~~~~~~~~~~~~
-
-The gallery examples are managed by
-`sphinx-gallery <https://sphinx-gallery.readthedocs.io/>`_.
-The source files for the example gallery are ``.py`` scripts in ``examples/`` that
-generate one or more figures. They are executed automatically by sphinx-gallery when the
-documentation is built. The output is gathered and assembled into the gallery.
-
-You can **add a new** plot by placing a new ``.py`` file in one of the directories inside the
-``examples`` directory of the repository. See the other examples to get an idea for the
-format.
-
-.. note:: Gallery examples should start with ``plot_``, e.g. ``plot_new_example.py``
-
-General guidelines for making a good gallery plot:
-
-* Examples should highlight a single feature/command.
-* Try to make the example as simple as possible.
-* Data needed by examples should be included in the same directory and the example script.
-* Add comments to explain things are aren't obvious from reading the code.
-* Describe the feature that you're showcasing and link to other relevant parts of the
-  documentation.
-
 Image comparison
 ~~~~~~~~~~~~~~~~
 
@@ -435,6 +411,30 @@ in your preferred web browser.
 
 .. note: ``sphinx`` supports many other output formats. Type ``make`` without
    any arguments to see all the built-in options.
+
+Adding examples
+~~~~~~~~~~~~~~~
+
+The gallery examples are managed by
+`sphinx-gallery <https://sphinx-gallery.readthedocs.io/>`_.
+The source files for the example gallery are ``.py`` scripts in ``examples/`` that
+generate one or more figures. They are executed automatically by sphinx-gallery when the
+documentation is built. The output is gathered and assembled into the gallery.
+
+You can **add a new** plot by placing a new ``.py`` file in one of the directories inside the
+``examples`` directory of the repository. See the other examples to get an idea for the
+format.
+
+.. note:: Gallery examples should start with ``plot_``, e.g. ``plot_new_example.py``
+
+General guidelines for making a good gallery plot:
+
+* Examples should highlight a single feature/command.
+* Try to make the example as simple as possible.
+* Data needed by examples should be included in the same directory and the example script.
+* Add comments to explain things are aren't obvious from reading the code.
+* Describe the feature that you're showcasing and link to other relevant parts of the
+  documentation.
 
 Adding References
 ~~~~~~~~~~~~~~~~~
