@@ -26,6 +26,11 @@ Improvements
 
 API Changes
 -----------
+- [`#6430 <https://github.com/networkx/networkx/issues/6430>`_]
+  ``nx.minimal_d_separators`` now returns `None` instead of `set()` in the case 
+  where no valid d-separators exist.
+
+  
 
 
 Deprecations
