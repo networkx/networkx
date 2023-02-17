@@ -222,7 +222,10 @@ def minimal_d_separator(G, u, v):
     between the two nodes, 'u' and 'v'. This function
     constructs a d-separating set that is "minimal", meaning it is the smallest
     d-separating set for 'u' and 'v'. This is not necessarily
-    unique. For more details, see Notes.
+    unique. In the case where there are no d-separating sets between 'u' and
+    'v', the function will return None.
+
+    For more details, see Notes.
 
     Parameters
     ----------
@@ -232,6 +235,12 @@ def minimal_d_separator(G, u, v):
         A node in the graph, G.
     v : node
         A node in the graph, G.
+
+    Returns
+    -------
+    Z : bool | None
+        The minimal d-separating set, if at least one d-separating set exists,
+        otherwise None.
 
     Raises
     ------
@@ -248,11 +257,12 @@ def minimal_d_separator(G, u, v):
 
     Notes
     -----
-    This function only finds ``a`` minimal d-separator. It does not guarantee
-    uniqueness, since in a DAG there may be more than one minimal d-separator
-    between two nodes. Moreover, this only checks for minimal separators
-    between two nodes, not two sets. Finding minimal d-separators between
-    two sets of nodes is not supported.
+    This function only finds ``a`` minimal d-separator, if at least one
+    d-separator exists. It does not guarantee uniqueness, since in a DAG
+    there may be more than one minimal d-separator between two nodes.
+    Moreover, this only checks for minimal separators between two nodes,
+    not two sets. Finding minimal d-separators between two sets of nodes
+    is not supported.
 
     Uses the algorithm presented in [1]_. The complexity of the algorithm
     is :math:`O(|E_{An}^m|)`, where :math:`|E_{An}^m|` stands for the
@@ -293,6 +303,11 @@ def minimal_d_separator(G, u, v):
     # perform BFS on the graph from 'x' to mark
     Z_dprime = _bfs_with_marks(moral_G, u, Z_prime)
     Z = _bfs_with_marks(moral_G, v, Z_dprime)
+
+    # check if the set Z actually separates 'u' and 'v'
+    if not d_separated(G, {u}, {v}, Z):
+        Z = None
+
     return Z
 
 
