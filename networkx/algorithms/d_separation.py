@@ -316,9 +316,9 @@ def is_minimal_d_separator(G, u, v, z):
     v : node
         A node in the graph.
     z : Set of nodes
-        The set of nodes to check if it is a minimal d-separating set. A call
-        to :func:`d_separated` is called to verify that `z` is in fact a
-        d-separator is always made.
+        The set of nodes to check if it is a minimal d-separating set.
+        The function :func:`d_separated` is called inside this function
+        to verify that `z` is in fact a d-separator.
 
     Returns
     -------
@@ -329,13 +329,13 @@ def is_minimal_d_separator(G, u, v, z):
     --------
     >>> G = nx.path_graph([0, 1, 2, 3], create_using=nx.DiGraph)
     >>> G.add_node(4)
-    >>> # since {1} is the minimal d-separator, this will return False
-    >>> nx.is_minimal_d_separator(G, 0, 2, {1,3,4})
-    False
     >>> nx.is_minimal_d_separator(G, 0, 2, {1})
     True
-    >>> # alternatively, if we simply want to check that {1,3,4} is a d-separator
-    >>> nx.d_separated(G, {0}, {4}, {1,3,4})
+    >>> # since {1} is the minimal d-separator, {1, 3, 4} is not minimal
+    >>> nx.is_minimal_d_separator(G, 0, 2, {1, 3, 4})
+    False
+    >>> # alternatively, if we only want to check that {1, 3, 4} is a d-separator
+    >>> nx.d_separated(G, {0}, {4}, {1, 3, 4})
     True
 
     Raises
