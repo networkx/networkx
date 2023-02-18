@@ -149,7 +149,6 @@ def generate_network_text(
     elif len(graph.nodes) == 0:
         yield glyphs.empty
     else:
-
         # If the nodes to traverse are unspecified, find the minimal set of
         # nodes that will reach the entire graph
         if sources is None:
@@ -182,7 +181,6 @@ def generate_network_text(
                     # any of that parents children, then we should emit an
                     # ellipsis at the end after this.
                     if num_skipped_children[parent] and parent is not None:
-
                         # Append the ellipsis to be emitted last
                         next_islast = True
                         try_frame = (node, Ellipsis, indents, next_islast)
@@ -336,8 +334,8 @@ def write_network_text(
     end : string
         The line ending characater
 
-    Example
-    -------
+    Examples
+    --------
     >>> graph = nx.balanced_tree(r=2, h=2, create_using=nx.DiGraph)
     >>> nx.write_network_text(graph)
     ╙── 0
@@ -501,8 +499,8 @@ def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fal
     str | None :
         utf8 representation of the tree / forest
 
-    Example
-    -------
+    Examples
+    --------
     >>> graph = nx.balanced_tree(r=2, h=3, create_using=nx.DiGraph)
     >>> print(nx.forest_str(graph))
     ╙── 0

@@ -505,7 +505,7 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
     v_data = H.nodes[v]
     H.remove_node(v)
 
-    for (prev_w, prev_x, d) in edges_to_remap:
+    for prev_w, prev_x, d in edges_to_remap:
         w = prev_w if prev_w != v else u
         x = prev_x if prev_x != v else u
 

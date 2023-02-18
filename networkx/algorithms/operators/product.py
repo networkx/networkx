@@ -512,7 +512,6 @@ def corona_product(G, H):
     GH.add_edges_from(G.edges)
 
     for G_node in G:
-
         # copy nodes of H in GH, call it H_i
         GH.add_nodes_from((G_node, v) for v in H)
 

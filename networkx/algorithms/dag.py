@@ -1083,7 +1083,7 @@ def dag_longest_path_length(G, weight="weight", default_weight=1):
             i = max(G[u][v], key=lambda x: G[u][v][x].get(weight, default_weight))
             path_length += G[u][v][i].get(weight, default_weight)
     else:
-        for (u, v) in pairwise(path):
+        for u, v in pairwise(path):
             path_length += G[u][v].get(weight, default_weight)
 
     return path_length

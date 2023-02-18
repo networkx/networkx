@@ -196,7 +196,7 @@ def strategy_connected_sequential(G, colors, traversal="bfs"):
         # Yield the source node, then all the nodes in the specified
         # traversal order.
         yield source
-        for (_, end) in traverse(G.subgraph(component), source):
+        for _, end in traverse(G.subgraph(component), source):
             yield end
 
 
@@ -470,7 +470,7 @@ def _greedy_coloring_with_interchange(G, nodes):
 
     graph = {node: _Node(node, n) for node in G}
 
-    for (node1, node2) in G.edges():
+    for node1, node2 in G.edges():
         adj_entry1 = _AdjEntry(node2)
         adj_entry2 = _AdjEntry(node1)
         adj_entry1.mate = adj_entry2
