@@ -378,9 +378,6 @@ def is_minimal_d_separator(G, u, v, z):
     if not nx.d_separated(G, {u}, {v}, z):
         return False
 
-    union_uv = {u, v}
-    union_uv.update(z)
-
     x_anc = nx.ancestors(G, u)
     y_anc = nx.ancestors(G, v)
     xy_anc = x_anc.union(y_anc)
