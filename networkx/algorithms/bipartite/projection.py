@@ -1,4 +1,6 @@
 """One-mode (unipartite) projections of bipartite graphs."""
+import numpy as np
+
 import networkx as nx
 from networkx.exception import NetworkXAlgorithmError
 from networkx.utils import not_implemented_for
@@ -186,75 +188,72 @@ def weighted_projected_graph(B, nodes, ratio=False):
         of Social Network Analysis. Sage Publications.
     """
 
-    
+    if type(nodes) != list:
+        top_nodes = []
+        for node in B.nodes():
+            if type(node) != type(nodes):
+                top_nodes.append(node)
+            elif node not in nodes:
+                top_nodes.append(node)
+    else:
+        top_nodes = [node for node in B.nodes() if node not in nodes]
 
-
-    
-    
+    if len(top_nodes) + len(nodes) != B.number_of_nodes():
+        raise NetworkXAlgorithmError(
+            f"the size of the nodes to project onto ({len(nodes)}) is >= the graph size ({len(B)}).\n"
+            "They are either not a valid bipartite partition or contain duplicates"
+        )
 
     if not B.is_directed():
-        if type(nodes) != list:
-            top_nodes = []
-            for node in B.nodes():
-                if type(node) != type(nodes):
-                    top_nodes.append(node)
-                elif node not in nodes:
-                    top_nodes.append(node)
-        else:
-            top_nodes = [node for node in B.nodes() if node not in nodes]
 
-        if len(top_nodes) + len(nodes) != B.number_of_nodes():
-            raise NetworkXAlgorithmError(
-                f"the size of the nodes to project onto ({len(nodes)}) is >= the graph size ({len(B)}).\n"
-                "They are either not a valid bipartite partition or contain duplicates"
-            )
-
-
-        adj = nx.bipartite.biadjacency_matrix(B, row_order=nodes, column_order=top_nodes)
+        # Get the biadjacency matrix.
+        adj = nx.bipartite.biadjacency_matrix(
+            B, row_order=nodes, column_order=top_nodes
+        )
         G = nx.Graph()
         G.add_nodes_from(nodes)
 
-      
-
+        # Get the co-citation matrix.
         projected_adj = adj @ adj.T
         projected_adj.setdiag(0)
-        
 
-
-
-        for row, col in zip(*projected_adj.nonzero()):
+        # Add the edges from the result.
+        denom = 1 / len(top_nodes)
+        for row, col in np.transpose(np.nonzero(projected_adj)):
             val = projected_adj[row, col]
             if ratio:
-                G.add_edge(nodes[row], nodes[col], weight=val / len(top_nodes) )
+                G.add_edge(nodes[row], nodes[col], weight=val * denom)
             else:
                 G.add_edge(nodes[row], nodes[col], weight=val)
 
-
     else:
-        pred = B.pred
+        # Get the adjacency matrix for multiplication.
+        all_nodes = list(B.nodes())
+        adj = nx.adjacency_matrix(B, nodelist=all_nodes)
+
+        # Create new graph.
         G = nx.DiGraph()
+        G.add_nodes_from(nodes)
 
-        G.graph.update(B.graph)
-        G.add_nodes_from((n, B.nodes[n]) for n in nodes)
-        n_top = len(B) - len(nodes)
+        # Remove connections within the node set provided.
+        node_indices = set(map(lambda node: all_nodes.index(node), nodes))
+        for node_index in node_indices:
+            for other_node_index in node_indices:
+                if node_index != other_node_index:
+                    adj[node_index, other_node_index] = 0
 
-        if n_top < 1:
-            raise NetworkXAlgorithmError(
-                f"the size of the nodes to project onto ({len(nodes)}) is >= the graph size ({len(B)}).\n"
-                "They are either not a valid bipartite partition or contain duplicates"
-            )
+        projected_adj = adj @ adj
 
-        for u in nodes:
-            unbrs = set(B[u])
-            nbrs2 = {n for nbr in unbrs for n in B[nbr]} - {u}
-            for v in nbrs2:
-                vnbrs = set(pred[v])
-                common = unbrs & vnbrs
-                if not ratio:
-                    weight = len(common)
+        # Add the edges from the matrix.
+        denom = 1 / len(top_nodes)
+        for row, col in np.transpose(np.nonzero(projected_adj)):
+            val = projected_adj[row, col]
+            if row in node_indices and col in node_indices:
+                if ratio:
+                    G.add_edge(all_nodes[row], all_nodes[col], weight=val * denom)
                 else:
-                    weight = len(common) / n_top
-                G.add_edge(u, v, weight=weight)
+                    G.add_edge(all_nodes[row], all_nodes[col], weight=val)
+
     return G
 
 

@@ -66,6 +66,10 @@ class TestBipartiteProject:
         assert edges_equal(list(P.edges()), [(0, 2)])
         P[0][2]["weight"] = 1
 
+        P = bipartite.weighted_projected_graph(G, [1, 2, 3])
+        assert nodes_equal(list(P), [1, 2, 3])
+        assert edges_equal(list(P.edges()), [])
+
     def test_path_weighted_projected_directed_graph(self):
         G = nx.DiGraph()
         nx.add_path(G, range(4))
