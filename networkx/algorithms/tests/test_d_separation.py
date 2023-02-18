@@ -154,9 +154,9 @@ def test_cyclic_graphs_raise_error():
     with pytest.raises(nx.NetworkXError):
         nx.d_separated(g, {0}, {1}, {2})
     with pytest.raises(nx.NetworkXError):
-        nx.minimal_d_separator(g, {0}, {1})
+        nx.minimal_d_separator(g, 0, 1)
     with pytest.raises(nx.NetworkXError):
-        nx.is_minimal_d_separator(g, {0}, {1}, {2})
+        nx.is_minimal_d_separator(g, 0, 1, {2})
 
 
 def test_invalid_nodes_raise_error(asia_graph):
