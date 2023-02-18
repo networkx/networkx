@@ -375,17 +375,11 @@ def is_minimal_d_separator(G, u, v, z):
 
     https://en.wikipedia.org/wiki/Bayesian_network#d-separation
     """
-    if not nx.is_directed_acyclic_graph(G):
-        raise nx.NetworkXError("graph should be directed acyclic")
-
     if not nx.d_separated(G, {u}, {v}, z):
         return False
 
     union_uv = {u, v}
     union_uv.update(z)
-
-    if any(n not in G.nodes for n in union_uv):
-        raise nx.NodeNotFound("one or more specified nodes not found in the graph")
 
     x_anc = nx.ancestors(G, u)
     y_anc = nx.ancestors(G, v)
