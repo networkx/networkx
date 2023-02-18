@@ -58,6 +58,8 @@ Visualization API with Matplotlib
 
 - Interested Mentors: `@dschult <https://github.com/dschult/>`__,
 
+- Expected time commitment: This project will be a full time 10 week project (~350 hrs).
+
 Incorporate a Python library for ISMAGs isomorphism calculations
 ----------------------------------------------------------------
 
@@ -75,6 +77,8 @@ Incorporate a Python library for ISMAGs isomorphism calculations
   with code to do that incorporation.
 
 - Interested Mentors: `@dschult <https://github.com/dschult/>`__,
+
+- Expected time commitment: This project will be a full time 10 week project (~350 hrs).
 
 Completed Projects
 ==================
