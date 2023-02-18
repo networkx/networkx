@@ -1,6 +1,4 @@
 """One-mode (unipartite) projections of bipartite graphs."""
-import numpy as np
-
 import networkx as nx
 from networkx.exception import NetworkXAlgorithmError
 from networkx.utils import not_implemented_for
@@ -205,7 +203,6 @@ def weighted_projected_graph(B, nodes, ratio=False):
         )
 
     if not B.is_directed():
-
         # Get the biadjacency matrix.
         adj = nx.bipartite.biadjacency_matrix(
             B, row_order=nodes, column_order=top_nodes
@@ -219,7 +216,7 @@ def weighted_projected_graph(B, nodes, ratio=False):
 
         # Add the edges from the result.
         denom = 1 / len(top_nodes)
-        for row, col in np.transpose(np.nonzero(projected_adj)):
+        for row, col in zip(*projected_adj.nonzero()):
             val = projected_adj[row, col]
             if ratio:
                 G.add_edge(nodes[row], nodes[col], weight=val * denom)
@@ -246,7 +243,7 @@ def weighted_projected_graph(B, nodes, ratio=False):
 
         # Add the edges from the matrix.
         denom = 1 / len(top_nodes)
-        for row, col in np.transpose(np.nonzero(projected_adj)):
+        for row, col in zip(*projected_adj.nonzero()):
             val = projected_adj[row, col]
             if row in node_indices and col in node_indices:
                 if ratio:
