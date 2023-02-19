@@ -165,13 +165,13 @@ def lukes_partitioning(G, max_size, node_weight=None, edge_weight=None):
     # INITIALIZATION -----------------------
     leaves = set(_leaves(t_G))
     for lv in leaves:
-        t_G.nodes[lv][PKEY] = dict()
+        t_G.nodes[lv][PKEY] = {}
         slot = safe_G.nodes[lv][node_weight]
         t_G.nodes[lv][PKEY][slot] = [{lv}]
         t_G.nodes[lv][PKEY][0] = [{lv}]
 
     for inner in [x for x in t_G.nodes if x not in leaves]:
-        t_G.nodes[inner][PKEY] = dict()
+        t_G.nodes[inner][PKEY] = {}
         slot = safe_G.nodes[inner][node_weight]
         t_G.nodes[inner][PKEY][slot] = [{inner}]
 
@@ -181,7 +181,7 @@ def lukes_partitioning(G, max_size, node_weight=None, edge_weight=None):
         weight_of_x = safe_G.nodes[x_node][node_weight]
         best_value = 0
         best_partition = None
-        bp_buffer = dict()
+        bp_buffer = {}
         x_descendants = nx.descendants(t_G, x_node)
         for i_node in x_descendants:
             for j in range(weight_of_x, max_size + 1):

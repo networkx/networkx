@@ -12,10 +12,7 @@ __all__ = ["equitable_color"]
 def is_coloring(G, coloring):
     """Determine if the coloring is a valid coloring for the graph G."""
     # Verify that the coloring is valid.
-    for s, d in G.edges:
-        if coloring[s] == coloring[d]:
-            return False
-    return True
+    return all(coloring[s] != coloring[d] for s, d in G.edges)
 
 
 def is_equitable(G, coloring, num_colors=None):
@@ -49,7 +46,7 @@ def is_equitable(G, coloring, num_colors=None):
 
 
 def make_C_from_F(F):
-    C = defaultdict(lambda: [])
+    C = defaultdict(list)
     for node, color in F.items():
         C[color].append(node)
 
@@ -68,9 +65,7 @@ def make_N_from_L_C(L, C):
 
 def make_H_from_C_N(C, N):
     return {
-        (c1, c2): sum(1 for node in C[c1] if N[(node, c2)] == 0)
-        for c1 in C.keys()
-        for c2 in C.keys()
+        (c1, c2): sum(1 for node in C[c1] if N[(node, c2)] == 0) for c1 in C for c2 in C
     }
 
 
@@ -81,7 +76,7 @@ def change_color(u, X, Y, N, H, F, C, L):
     # Change the class of 'u' from X to Y
     F[u] = Y
 
-    for k in C.keys():
+    for k in C:
         # 'u' witnesses an edge from k -> Y instead of from k -> X now.
         if N[u, k] == 0:
             H[(X, k)] -= 1
@@ -166,7 +161,7 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
         # using a look-up table instead of testing for membership in a set by a
         # logarithmic factor.
         next_layer = []
-        for k in C.keys():
+        for k in C:
             if (
                 H[(k, pop)] > 0
                 and k not in A_cal
@@ -204,7 +199,7 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
             for v in C[W_1]:
                 X = None
 
-                for U in C.keys():
+                for U in C:
                     if N[(v, U)] == 0 and U in A_cal and U != W_1:
                         X = U
 
@@ -212,7 +207,7 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
                 if X is None:
                     continue
 
-                for U in C.keys():
+                for U in C:
                     # Note: Departing from the paper here.
                     if N[(v, U)] >= 1 and U not in A_cal:
                         X_prime = U
@@ -293,7 +288,7 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
                     # they only exclude colors from A_cal
                     next_layer = [
                         k
-                        for k in C.keys()
+                        for k in C
                         if H[(pop, k)] > 0 and k not in B_cal_prime and k not in marked
                     ]
 
@@ -317,7 +312,7 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
 
                     I_set.add(z)
                     I_covered.add(z)
-                    I_covered.update([nbr for nbr in L[z]])
+                    I_covered.update(list(L[z]))
 
                     for w in L[z]:
                         if F[w] in A_cal_0 and N[(z, F[w])] == 1:
@@ -354,19 +349,13 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
 
                                 # change color of w to some color in B_cal
                                 W_plus = next(
-                                    k
-                                    for k in C.keys()
-                                    if N[(w, k)] == 0 and k not in A_cal
+                                    k for k in C if N[(w, k)] == 0 and k not in A_cal
                                 )
                                 change_color(w, W, W_plus, N=N, H=H, F=F, C=C, L=L)
 
                                 # recurse with G[B \cup W*]
                                 excluded_colors.update(
-                                    [
-                                        k
-                                        for k in C.keys()
-                                        if k != W and k not in B_cal_prime
-                                    ]
+                                    [k for k in C if k != W and k not in B_cal_prime]
                                 )
                                 procedure_P(
                                     V_minus=W,
@@ -503,7 +492,7 @@ def equitable_color(G, num_colors):
 
         if N[(u, F[u])] != 0:
             # Find the first color where 'u' does not have any neighbors.
-            Y = next(k for k in C.keys() if N[(u, k)] == 0)
+            Y = next(k for k in C if N[(u, k)] == 0)
             X = F[u]
             change_color(u, X, Y, N=N, H=H, F=F, C=C, L=L_)
 

@@ -16,18 +16,18 @@ import matplotlib.pyplot as plt
 
 
 nodes = {
-    "A": dict(color="Red"),
-    "B": dict(color="Red"),
-    "C": dict(color="Red"),
-    "D": dict(color="Red"),
-    "E": dict(color="Blue"),
-    "F": dict(color="Blue"),
-    "G": dict(color="Blue"),
-    "H": dict(color="Blue"),
-    "I": dict(color="Yellow"),
-    "J": dict(color="Yellow"),
-    "K": dict(color="Yellow"),
-    "L": dict(color="Yellow"),
+    "A": {"color": "Red"},
+    "B": {"color": "Red"},
+    "C": {"color": "Red"},
+    "D": {"color": "Red"},
+    "E": {"color": "Blue"},
+    "F": {"color": "Blue"},
+    "G": {"color": "Blue"},
+    "H": {"color": "Blue"},
+    "I": {"color": "Yellow"},
+    "J": {"color": "Yellow"},
+    "K": {"color": "Yellow"},
+    "L": {"color": "Yellow"},
 }
 edges = [
     ("A", "B", "Strong"),
@@ -50,7 +50,7 @@ original_graph.add_edges_from((u, v, {"type": label}) for u, v, label in edges)
 
 plt.suptitle("SNAP Summarization")
 
-base_options = dict(with_labels=True, edgecolors="black", node_size=500)
+base_options = {"with_labels": True, "edgecolors": "black", "node_size": 500}
 
 ax1 = plt.subplot(1, 2, 1)
 plt.title(

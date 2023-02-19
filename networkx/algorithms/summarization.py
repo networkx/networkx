@@ -259,7 +259,7 @@ def _snap_build_graph(
     summary graph: Networkx graph
     """
     output = G.__class__()
-    node_label_lookup = dict()
+    node_label_lookup = {}
     for index, group_id in enumerate(groups):
         group_set = groups[group_id]
         supernode = f"{prefix}{index}"

@@ -358,10 +358,7 @@ def _odd_triangle(G, T):
         for v in G[t]:
             if v not in T:
                 T_neighbors[v] += 1
-    for v in T_neighbors:
-        if T_neighbors[v] in [1, 3]:
-            return True
-    return False
+    return any(T_neighbors[v] in [1, 3] for v in T_neighbors)
 
 
 def _find_partition(G, starting_cell):

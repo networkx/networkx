@@ -16,7 +16,13 @@ def test_attrs_deprecation(recwarn):
     assert len(recwarn) == 0
 
     # Future warning raised with `attrs` kwarg
-    attrs = dict(source="source", target="target", name="id", key="key", link="links")
+    attrs = {
+        "source": "source",
+        "target": "target",
+        "name": "id",
+        "key": "key",
+        "link": "links",
+    }
     data = node_link_data(G, attrs=attrs)
     assert len(recwarn) == 1
 
@@ -34,13 +40,13 @@ class TestNodeLink:
         G.graph[1] = "one"
         G.graph["foo"] = "bar"
 
-        attrs = dict(
-            source="c_source",
-            target="c_target",
-            name="c_id",
-            key="c_key",
-            link="c_links",
-        )
+        attrs = {
+            "source": "c_source",
+            "target": "c_target",
+            "name": "c_id",
+            "key": "c_key",
+            "link": "c_links",
+        }
 
         H = node_link_graph(
             node_link_data(G, attrs=attrs), multigraph=False, attrs=attrs
@@ -52,11 +58,11 @@ class TestNodeLink:
 
         # provide only a partial dictionary of keywords.
         # This is similar to an example in the doc string
-        attrs = dict(
-            link="c_links",
-            source="c_source",
-            target="c_target",
-        )
+        attrs = {
+            "link": "c_links",
+            "source": "c_source",
+            "target": "c_target",
+        }
         H = node_link_graph(
             node_link_data(G, attrs=attrs), multigraph=False, attrs=attrs
         )
@@ -69,7 +75,7 @@ class TestNodeLink:
     def test_exception_dep(self):
         with pytest.raises(nx.NetworkXError):
             G = nx.MultiDiGraph()
-            attrs = dict(name="node", source="node", target="node", key="node")
+            attrs = {"name": "node", "source": "node", "target": "node", "key": "node"}
             node_link_data(G, attrs)
 
     def test_graph(self):
@@ -132,7 +138,7 @@ class TestNodeLink:
     def test_exception(self):
         with pytest.raises(nx.NetworkXError):
             G = nx.MultiDiGraph()
-            attrs = dict(name="node", source="node", target="node", key="node")
+            attrs = {"name": "node", "source": "node", "target": "node", "key": "node"}
             node_link_data(G, **attrs)
 
     def test_string_ids(self):
@@ -154,13 +160,13 @@ class TestNodeLink:
         G.graph[1] = "one"
         G.graph["foo"] = "bar"
 
-        attrs = dict(
-            source="c_source",
-            target="c_target",
-            name="c_id",
-            key="c_key",
-            link="c_links",
-        )
+        attrs = {
+            "source": "c_source",
+            "target": "c_target",
+            "name": "c_id",
+            "key": "c_key",
+            "link": "c_links",
+        }
 
         H = node_link_graph(node_link_data(G, **attrs), multigraph=False, **attrs)
         assert nx.is_isomorphic(G, H)

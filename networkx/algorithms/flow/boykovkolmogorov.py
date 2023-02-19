@@ -317,7 +317,7 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
         v = n
         while v is not None:
             path.append(v)
-            if v == s or v == t:
+            if v in (s, t):
                 base_dist = 0
                 break
             elif timestamp[v] == time:

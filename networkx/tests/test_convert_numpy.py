@@ -74,7 +74,7 @@ class TestConvertNumpyArray:
 
     def test_weight_keyword(self):
         WP4 = nx.Graph()
-        WP4.add_edges_from((n, n + 1, dict(weight=0.5, other=0.3)) for n in range(3))
+        WP4.add_edges_from((n, n + 1, {"weight": 0.5, "other": 0.3}) for n in range(3))
         P4 = path_graph(4)
         A = nx.to_numpy_array(P4)
         np.testing.assert_equal(A, nx.to_numpy_array(WP4, weight=None))

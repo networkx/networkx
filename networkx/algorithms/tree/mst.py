@@ -1022,7 +1022,7 @@ class SpanningTreeIterator:
         ).size(weight=self.weight)
 
         self.partition_queue.put(
-            self.Partition(mst_weight if self.minimum else -mst_weight, dict())
+            self.Partition(mst_weight if self.minimum else -mst_weight, {})
         )
 
         return self

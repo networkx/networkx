@@ -16,11 +16,11 @@ class TestGeneratorThreshold:
     def test_threshold_sequence_graph_test(self):
         G = nx.star_graph(10)
         assert nxt.is_threshold_graph(G)
-        assert nxt.is_threshold_sequence(list(d for n, d in G.degree()))
+        assert nxt.is_threshold_sequence([d for n, d in G.degree()])
 
         G = nx.complete_graph(10)
         assert nxt.is_threshold_graph(G)
-        assert nxt.is_threshold_sequence(list(d for n, d in G.degree()))
+        assert nxt.is_threshold_sequence([d for n, d in G.degree()])
 
         deg = [3, 2, 2, 1, 1, 1]
         assert not nxt.is_threshold_sequence(deg)

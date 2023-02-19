@@ -5,7 +5,13 @@ import networkx as nx
 __all__ = ["node_link_data", "node_link_graph"]
 
 
-_attrs = dict(source="source", target="target", name="id", key="key", link="links")
+_attrs = {
+    "source": "source",
+    "target": "target",
+    "name": "id",
+    "key": "key",
+    "link": "links",
+}
 
 
 def _to_tuple(x):

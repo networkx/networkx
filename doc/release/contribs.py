@@ -83,7 +83,7 @@ authors = [a.strip() for a in authors if a.strip()]
 
 
 def key(author):
-    author = [v for v in author.split()]
+    author = list(author.split())
     if len(author) > 0:
         return author[-1]
 

@@ -89,11 +89,11 @@ class TestMCS:
             frozenset([2, 3, 4]),
             frozenset([3, 4, 5, 6]),
         }
-        assert {c for c in nx.chordal_graph_cliques(self.chordal_G)} == cliques
+        assert set(nx.chordal_graph_cliques(self.chordal_G)) == cliques
         with pytest.raises(nx.NetworkXError, match="Input graph is not chordal"):
-            {c for c in nx.chordal_graph_cliques(self.non_chordal_G)}
+            set(nx.chordal_graph_cliques(self.non_chordal_G))
         with pytest.raises(nx.NetworkXError, match="Input graph is not chordal"):
-            {c for c in nx.chordal_graph_cliques(self.self_loop_G)}
+            set(nx.chordal_graph_cliques(self.self_loop_G))
 
     def test_chordal_find_cliques_path(self):
         G = nx.path_graph(10)
@@ -104,7 +104,7 @@ class TestMCS:
     def test_chordal_find_cliquesCC(self):
         cliques = {frozenset([1, 2, 3]), frozenset([2, 3, 4]), frozenset([3, 4, 5, 6])}
         cgc = nx.chordal_graph_cliques
-        assert {c for c in cgc(self.connected_chordal_G)} == cliques
+        assert set(cgc(self.connected_chordal_G)) == cliques
 
     def test_complete_to_chordal_graph(self):
         fgrg = nx.fast_gnp_random_graph

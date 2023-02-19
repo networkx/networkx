@@ -56,7 +56,7 @@ def test_all_triplets():
         for k in range(j + 1, 7)
     ]
     expected = [set(x.split(",")) for x in expected]
-    actual = list(set(x) for x in nx.all_triplets(G))
+    actual = [set(x) for x in nx.all_triplets(G)]
     assert all([any([s1 == s2 for s1 in expected]) for s2 in actual])
 
 

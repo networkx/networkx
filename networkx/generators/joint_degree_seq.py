@@ -347,13 +347,7 @@ def is_valid_directed_joint_degree(in_degrees, out_degrees, nkk):
                 if val + forbidden.get((k, l), 0) > V[(k, 1)] * V[(l, 0)]:
                     return False
 
-    for s in S:
-        if not S[s] / s[0] == V[s]:  # condition 2
-            return False
-
-    # if all conditions abive have been satisfied then the input nkk is
-    # realizable as a simple graph.
-    return True
+    return all(S[s] / s[0] == V[s] for s in S)
 
 
 def _directed_neighbor_switch(

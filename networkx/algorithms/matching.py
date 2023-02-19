@@ -391,8 +391,6 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
     class NoNode:
         """Dummy value which is different from any node."""
 
-        pass
-
     class Blossom:
         """Representation of a non-trivial blossom or sub-blossom."""
 
