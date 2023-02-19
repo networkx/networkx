@@ -1,4 +1,6 @@
 select = [
+    "I",       # isort
+    "UP",      # pyupgrade
     "C4",      # flake8-comprehensions
     "E713",    # use 'key not in list'
     "PIE",     # flake8-pie
@@ -11,3 +13,12 @@ select = [
     "SIM118",  # use 'key in dict'
     "SIM2",    # simplify boolean comparisons
 ]
+
+target-version = "py38"
+
+[per-file-ignores]
+"__init__.py" = ["I"]
+"setup.py" = ["I"]
+"examples/*.py" = ["I"]
+"doc/*.py" = ["I"]
+"tools/*.py" = ["I"]
