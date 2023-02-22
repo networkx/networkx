@@ -222,7 +222,7 @@ def test_minimal_d_separator():
     # no minimal m-separating set can exist
     # however, the algorithm will initially propose C as a
     # minimal (but invalid) separating set
-    assert not nx.d_separated(G, {"A"}, {"B"}, set())
+    assert not nx.d_separated(G, {"A"}, {"B"}, {"C"})
     assert nx.minimal_d_separator(G, "A", "B") is None
 
 
