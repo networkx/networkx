@@ -305,7 +305,7 @@ def minimal_d_separator(G, u, v):
     Z = _bfs_with_marks(moral_G, v, Z_dprime)
 
     # check if the set Z actually separates 'u' and 'v'
-    if not d_separated(G, {u}, {v}, Z):
+    if not d_separated(G.subgraph(D_anc_xy), {u}, {v}, Z):
         return None
 
     return Z
