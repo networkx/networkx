@@ -306,7 +306,7 @@ def minimal_d_separator(G, u, v):
 
     # check if the set Z actually separates 'u' and 'v'
     if not d_separated(G, {u}, {v}, Z):
-        Z = None
+        return None
 
     return Z
 

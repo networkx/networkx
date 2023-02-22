@@ -213,6 +213,18 @@ def test_minimal_d_separator():
     assert not nx.d_separated(G, {"A"}, {"B"}, set())
     assert nx.minimal_d_separator(G, "A", "B") is None
 
+    # Case 4:
+    # create a graph A -> B with A <- C -> B
+    edge_list = [("A", "B"), ("C", "A"), ("C", "B")]
+    G = nx.DiGraph(edge_list)
+
+    # there is no m-separating set between A and B at all, so
+    # no minimal m-separating set can exist
+    # however, the algorithm will initially propose C as a
+    # minimal (but invalid) separating set
+    assert not nx.d_separated(G, {"A"}, {"B"}, set())
+    assert nx.minimal_d_separator(G, "A", "B") is None
+
 
 def test_minimal_d_separator_checks_dsep():
     """Test that is_minimal_d_separator checks for d-separation as well."""
