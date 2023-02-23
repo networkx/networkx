@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>cliques_containing_node &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>cliques_containing_node &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -47,14 +47,20 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'reference/algorithms/generated/networkx.algorithms.clique.cliques_containing_node';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.clique.cliques_containing_node.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="max_weight_clique" href="networkx.algorithms.clique.max_weight_clique.html" />
     <link rel="prev" title="number_of_cliques" href="networkx.algorithms.clique.number_of_cliques.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -96,6 +102,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -247,7 +259,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -410,7 +422,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -564,6 +576,14 @@
 <dt class="sig sig-object py" id="networkx.algorithms.clique.cliques_containing_node">
 <span class="sig-name descname"><span class="pre">cliques_containing_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cliques</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/networkx/algorithms/clique.html#cliques_containing_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#networkx.algorithms.clique.cliques_containing_node" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns a list of cliques containing the given node.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 3.0: </span>cliques_containing_node is deprecated and will be removed in 3.2.
+Use the result of <a class="reference internal" href="networkx.algorithms.clique.find_cliques.html#networkx.algorithms.clique.find_cliques" title="networkx.algorithms.clique.find_cliques"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_cliques</span></code></a> directly to compute the cliques that
+contain each node:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">find_cliques</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">G</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
 <p>Returns a single list or list of lists depending on input nodes.
 Optional list of cliques can be input if already computed.</p>
 </dd></dl>
@@ -583,6 +603,15 @@ Optional list of cliques can be input if already computed.</p>
               
 <div class="toc-item">
   
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+
+<div class="toc-item">
+  
 <div class="tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
 </div>
@@ -600,15 +629,6 @@ Optional list of cliques can be input if already computed.</p>
 </ul>
 
 </nav>
-</div>
-
-<div class="toc-item">
-  
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
 </div>
 
 <div class="toc-item">

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>NXEP 4 — Adopting numpy.random.Generator as default random interface &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>NXEP 4 — Adopting numpy.random.Generator as default random interface &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -47,14 +47,20 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'developer/nxeps/nxep-0004';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/developer/nxeps/nxep-0004.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="NXEP X — Template and Instructions" href="nxep-template.html" />
     <link rel="prev" title="NXEP 3 — Graph Builders" href="nxep-0003.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -96,6 +102,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -247,7 +259,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -410,7 +422,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -520,12 +532,12 @@ that includes support for <a class="reference external" href="https://numpy.org/
 preferred package for random number generation.
 NumPy introduced a new interface in the <a class="reference external" href="https://numpy.org/doc/stable/reference/random/index.html#module-numpy.random" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random</span></code></a> package in NumPy version
 1.17.
-According to <span class="xref std std-doc">NEP19</span>, the new interface based on
+According to <a class="reference external" href="https://numpy.org/neps/nep-0019-rng-policy.html" title="(in NumPy Enhancement Proposals)"><span class="xref std std-doc">NEP19</span></a>, the new interface based on
 <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a>
 is recommended over the legacy <a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a> as the former has
 <a class="reference external" href="https://www.pcg-random.org/index.html">better statistical properties</a>,
-<span class="xref std std-doc">more features</span>,
-and <span class="xref std std-doc">improved performance</span>.
+<a class="reference external" href="https://numpy.org/doc/stable/reference/random/new-or-different.html" title="(in NumPy v1.24)"><span class="xref std std-doc">more features</span></a>,
+and <a class="reference external" href="https://numpy.org/doc/stable/reference/random/performance.html" title="(in NumPy v1.24)"><span class="xref std std-doc">improved performance</span></a>.
 This NXEP proposes a strategy for adopting <a class="reference external" href="https://numpy.org/doc/stable/reference/random/generator.html#numpy.random.Generator" title="(in NumPy v1.24)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.random.Generator</span></code></a> as the
 <strong>default</strong> interface for random number generation within NetworkX.</p>
 </section>
@@ -802,6 +814,15 @@ regarding the NXEP:</p>
               
 <div class="toc-item">
   
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+
+<div class="toc-item">
+  
 <div class="tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
 </div>
@@ -855,15 +876,6 @@ regarding the NXEP:</p>
 </ul>
 
 </nav>
-</div>
-
-<div class="toc-item">
-  
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
 </div>
 
 <div class="toc-item">

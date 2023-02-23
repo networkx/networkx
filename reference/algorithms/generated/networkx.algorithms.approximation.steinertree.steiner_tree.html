@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>steiner_tree &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>steiner_tree &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -48,14 +48,20 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'reference/algorithms/generated/networkx.algorithms.approximation.steinertree.steiner_tree';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.approximation.steinertree.steiner_tree.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="christofides" href="networkx.algorithms.approximation.traveling_salesman.christofides.html" />
     <link rel="prev" title="metric_closure" href="networkx.algorithms.approximation.steinertree.metric_closure.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -97,6 +103,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -248,7 +260,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -411,7 +423,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -570,23 +582,21 @@ is a tree within <code class="xref py py-obj docutils literal notranslate"><span
 edge weights) among all such trees.</p>
 <p>The approximation algorithm is specified with the <code class="xref py py-obj docutils literal notranslate"><span class="pre">method</span></code> keyword
 argument. All three available algorithms produce a tree whose weight is
-within a (2 - (2 / l)) factor of the weight of the optimal Steiner tree,
-where <em>l</em> is the minimum number of leaf nodes across all possible Steiner
+within a <code class="docutils literal notranslate"><span class="pre">(2</span> <span class="pre">-</span> <span class="pre">(2</span> <span class="pre">/</span> <span class="pre">l))</span></code> factor of the weight of the optimal Steiner tree,
+where <code class="docutils literal notranslate"><span class="pre">l</span></code> is the minimum number of leaf nodes across all possible Steiner
 trees.</p>
 <ul class="simple">
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">kou</span></code> <a class="reference internal" href="#rfafe17775e63-2" id="id1">[2]</a> (runtime <span class="math notranslate nohighlight">\(O(|S| |V|^2)\)</span>) computes the minimum spanning tree of</p></li>
-</ul>
-<p>the subgraph of the metric closure of <em>G</em> induced by the terminal nodes,
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;kou&quot;</span></code> <a class="reference internal" href="#rfafe17775e63-2" id="id1">[2]</a> (runtime <span class="math notranslate nohighlight">\(O(|S| |V|^2)\)</span>) computes the minimum spanning tree of
+the subgraph of the metric closure of <em>G</em> induced by the terminal nodes,
 where the metric closure of <em>G</em> is the complete graph in which each edge is
-weighted by the shortest path distance between the nodes in <em>G</em>.</p>
-<ul class="simple">
-<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mehlhorn</span></code> <a class="reference internal" href="#rfafe17775e63-3" id="id2">[3]</a> (runtime <span class="math notranslate nohighlight">\(O(|E|+|V|\log|V|)\)</span>) modifies Kou et al.’s</p></li>
-</ul>
-<p>algorithm, beginning by finding the closest terminal node for each
+weighted by the shortest path distance between the nodes in <em>G</em>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;mehlhorn&quot;</span></code> <a class="reference internal" href="#rfafe17775e63-3" id="id2">[3]</a> (runtime <span class="math notranslate nohighlight">\(O(|E|+|V|\log|V|)\)</span>) modifies Kou et al.’s
+algorithm, beginning by finding the closest terminal node for each
 non-terminal. This data is used to create a complete graph containing only
 the terminal nodes, in which edge is weighted with the shortest path
 distance between them. The algorithm then proceeds in the same way as Kou
-et al..</p>
+et al..</p></li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -653,6 +663,15 @@ Information Processing Letters 27 (3): 125–28.
               
 <div class="toc-item">
   
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+
+<div class="toc-item">
+  
 <div class="tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
 </div>
@@ -670,15 +689,6 @@ Information Processing Letters 27 (3): 125–28.
 </ul>
 
 </nav>
-</div>
-
-<div class="toc-item">
-  
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
 </div>
 
 <div class="toc-item">

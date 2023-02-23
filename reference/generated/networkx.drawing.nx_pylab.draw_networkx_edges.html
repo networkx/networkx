@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>draw_networkx_edges &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>draw_networkx_edges &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -47,14 +47,20 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'reference/generated/networkx.drawing.nx_pylab.draw_networkx_edges';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_pylab.draw_networkx_edges.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="draw_networkx_labels" href="networkx.drawing.nx_pylab.draw_networkx_labels.html" />
     <link rel="prev" title="draw_networkx_nodes" href="networkx.drawing.nx_pylab.draw_networkx_nodes.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -96,6 +102,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -247,7 +259,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -410,7 +422,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -562,7 +574,7 @@ If less styles than edges are given the styles will cycle.
 If more styles than edges are given the styles will be used sequentially
 and not be exhausted.
 Also, <code class="xref py py-obj docutils literal notranslate"><span class="pre">(offset,</span> <span class="pre">onoffseq)</span></code> tuples can be used as style instead of a strings.
-(See <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.FancyArrowPatch.html#matplotlib.patches.FancyArrowPatch" title="(in Matplotlib v3.6.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.patches.FancyArrowPatch</span></code></a>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">linestyle</span></code>)</p>
+(See <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.FancyArrowPatch.html#matplotlib.patches.FancyArrowPatch" title="(in Matplotlib v3.7.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.patches.FancyArrowPatch</span></code></a>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">linestyle</span></code>)</p>
 </dd>
 <dt><strong>alpha</strong><span class="classifier">float or array of floats (default=None)</span></dt><dd><p>The edge transparency.  This can be a single alpha value,
 in which case it will be applied to all specified edges. Otherwise,
@@ -576,24 +588,24 @@ in order (cycling through alpha multiple times if necessary).</p>
 <dt><strong>ax</strong><span class="classifier">Matplotlib Axes object, optional</span></dt><dd><p>Draw the graph in the specified Matplotlib axes.</p>
 </dd>
 <dt><strong>arrows</strong><span class="classifier">bool or None, optional (default=None)</span></dt><dd><p>If <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>, directed graphs draw arrowheads with
-<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.FancyArrowPatch.html#matplotlib.patches.FancyArrowPatch" title="(in Matplotlib v3.6.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FancyArrowPatch</span></code></a>, while undirected graphs draw edges
-via <a class="reference external" href="https://matplotlib.org/stable/api/collections_api.html#matplotlib.collections.LineCollection" title="(in Matplotlib v3.6.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LineCollection</span></code></a> for speed.
+<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.FancyArrowPatch.html#matplotlib.patches.FancyArrowPatch" title="(in Matplotlib v3.7.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FancyArrowPatch</span></code></a>, while undirected graphs draw edges
+via <a class="reference external" href="https://matplotlib.org/stable/api/collections_api.html#matplotlib.collections.LineCollection" title="(in Matplotlib v3.7.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LineCollection</span></code></a> for speed.
 If <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a>, draw arrowheads with FancyArrowPatches (bendable and stylish).
 If <a class="reference external" href="https://docs.python.org/3/library/constants.html#False" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code></a>, draw edges using LineCollection (linear and fast).</p>
 <p>Note: Arrowheads will be the same color as edges.</p>
 </dd>
 <dt><strong>arrowstyle</strong><span class="classifier">str (default=’-|&gt;’ for directed graphs)</span></dt><dd><p>For directed graphs and <code class="xref py py-obj docutils literal notranslate"><span class="pre">arrows==True</span></code> defaults to ‘-|&gt;’,
 For undirected graphs default to ‘-‘.</p>
-<p>See <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.ArrowStyle.html#matplotlib.patches.ArrowStyle" title="(in Matplotlib v3.6.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.patches.ArrowStyle</span></code></a> for more options.</p>
+<p>See <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.ArrowStyle.html#matplotlib.patches.ArrowStyle" title="(in Matplotlib v3.7.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.patches.ArrowStyle</span></code></a> for more options.</p>
 </dd>
 <dt><strong>arrowsize</strong><span class="classifier">int (default=10)</span></dt><dd><p>For directed graphs, choose the size of the arrow head’s length and
-width. See <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.FancyArrowPatch.html#matplotlib.patches.FancyArrowPatch" title="(in Matplotlib v3.6.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.patches.FancyArrowPatch</span></code></a> for attribute
+width. See <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.FancyArrowPatch.html#matplotlib.patches.FancyArrowPatch" title="(in Matplotlib v3.7.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.patches.FancyArrowPatch</span></code></a> for attribute
 <code class="xref py py-obj docutils literal notranslate"><span class="pre">mutation_scale</span></code> for more info.</p>
 </dd>
 <dt><strong>connectionstyle</strong><span class="classifier">string (default=”arc3”)</span></dt><dd><p>Pass the connectionstyle parameter to create curved arc of rounding
 radius rad. For example, connectionstyle=’arc3,rad=0.2’.
-See <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.ConnectionStyle.html#matplotlib.patches.ConnectionStyle" title="(in Matplotlib v3.6.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.patches.ConnectionStyle</span></code></a> and
-<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.FancyArrowPatch.html#matplotlib.patches.FancyArrowPatch" title="(in Matplotlib v3.6.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.patches.FancyArrowPatch</span></code></a> for more info.</p>
+See <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.ConnectionStyle.html#matplotlib.patches.ConnectionStyle" title="(in Matplotlib v3.7.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.patches.ConnectionStyle</span></code></a> and
+<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.FancyArrowPatch.html#matplotlib.patches.FancyArrowPatch" title="(in Matplotlib v3.7.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.patches.FancyArrowPatch</span></code></a> for more info.</p>
 </dd>
 <dt><strong>node_size</strong><span class="classifier">scalar or array (default=300)</span></dt><dd><p>Size of nodes. Though the nodes are not drawn with this function, the
 node size is used in determining edge positioning.</p>
@@ -601,11 +613,11 @@ node size is used in determining edge positioning.</p>
 <dt><strong>nodelist</strong><span class="classifier">list, optional (default=G.nodes())</span></dt><dd><p>This provides the node order for the <code class="xref py py-obj docutils literal notranslate"><span class="pre">node_size</span></code> array (if it is an array).</p>
 </dd>
 <dt><strong>node_shape</strong><span class="classifier">string (default=’o’)</span></dt><dd><p>The marker used for nodes, used in determining edge positioning.
-Specification is as a <a class="reference external" href="https://matplotlib.org/stable/api/markers_api.html#module-matplotlib.markers" title="(in Matplotlib v3.6.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.markers</span></code></a> marker, e.g. one of ‘so^&gt;v&lt;dph8’.</p>
+Specification is as a <a class="reference external" href="https://matplotlib.org/stable/api/markers_api.html#module-matplotlib.markers" title="(in Matplotlib v3.7.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.markers</span></code></a> marker, e.g. one of ‘so^&gt;v&lt;dph8’.</p>
 </dd>
 <dt><strong>label</strong><span class="classifier">None or string</span></dt><dd><p>Label for legend</p>
 </dd>
-<dt><strong>min_source_margin</strong><span class="classifier">int (default=0)</span></dt><dd><p>The minimum margin (gap) at the begining of the edge at the source.</p>
+<dt><strong>min_source_margin</strong><span class="classifier">int (default=0)</span></dt><dd><p>The minimum margin (gap) at the beginning of the edge at the source.</p>
 </dd>
 <dt><strong>min_target_margin</strong><span class="classifier">int (default=0)</span></dt><dd><p>The minimum margin (gap) at the end of the edge at the target.</p>
 </dd>
@@ -613,7 +625,7 @@ Specification is as a <a class="reference external" href="https://matplotlib.org
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt>matplotlib.colections.LineCollection or a list of matplotlib.patches.FancyArrowPatch</dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">arrows=True</span></code>, a list of FancyArrowPatches is returned.
+<dt>matplotlib.collections.LineCollection or a list of matplotlib.patches.FancyArrowPatch</dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">arrows=True</span></code>, a list of FancyArrowPatches is returned.
 If <code class="docutils literal notranslate"><span class="pre">arrows=False</span></code>, a LineCollection is returned.
 If <code class="docutils literal notranslate"><span class="pre">arrows=None</span></code> (the default), then a LineCollection is returned if
 <code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code> is undirected, otherwise returns a list of FancyArrowPatches.</p>
@@ -637,7 +649,7 @@ turned off with keyword arrows=False or by passing an arrowstyle without
 an arrow on the end.</p>
 <p>Be sure to include <code class="xref py py-obj docutils literal notranslate"><span class="pre">node_size</span></code> as a keyword argument; arrows are
 drawn considering the size of nodes.</p>
-<p>Self-loops are always drawn with <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.FancyArrowPatch.html#matplotlib.patches.FancyArrowPatch" title="(in Matplotlib v3.6.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FancyArrowPatch</span></code></a>
+<p>Self-loops are always drawn with <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.FancyArrowPatch.html#matplotlib.patches.FancyArrowPatch" title="(in Matplotlib v3.7.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FancyArrowPatch</span></code></a>
 regardless of the value of <code class="xref py py-obj docutils literal notranslate"><span class="pre">arrows</span></code> or whether <code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code> is directed.
 When <code class="docutils literal notranslate"><span class="pre">arrows=False</span></code> or <code class="docutils literal notranslate"><span class="pre">arrows=None</span></code> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code> is undirected, the
 FancyArrowPatches corresponding to the self-loops are not explicitly
@@ -685,6 +697,15 @@ returned, but can always be accessed via the <code class="docutils literal notra
               
 <div class="toc-item">
   
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+
+<div class="toc-item">
+  
 <div class="tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
 </div>
@@ -702,15 +723,6 @@ returned, but can always be accessed via the <code class="docutils literal notra
 </ul>
 
 </nav>
-</div>
-
-<div class="toc-item">
-  
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
 </div>
 
 <div class="toc-item">

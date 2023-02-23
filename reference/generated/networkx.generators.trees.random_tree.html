@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>random_tree &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>random_tree &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -47,14 +47,20 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'reference/generated/networkx.generators.trees.random_tree';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/reference/generated/networkx.generators.trees.random_tree.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="prefix_tree" href="networkx.generators.trees.prefix_tree.html" />
     <link rel="prev" title="spectral_graph_forge" href="networkx.generators.spectral_graph_forge.spectral_graph_forge.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -96,6 +102,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -247,7 +259,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -410,7 +422,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -664,30 +676,30 @@ bijection between Prüfer sequences of length <em>n</em> - 2 and trees on
 all trees on <em>n</em> nodes.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">random_tree</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">forest_str</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">write_network_text</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="go">╙── 0</span>
 <span class="go">    ├── 3</span>
 <span class="go">    └── 4</span>
 <span class="go">        ├── 6</span>
-<span class="go">        │   ├── 1</span>
-<span class="go">        │   ├── 2</span>
-<span class="go">        │   └── 7</span>
-<span class="go">        │       └── 8</span>
-<span class="go">        │           └── 5</span>
+<span class="go">        │   ├── 1</span>
+<span class="go">        │   ├── 2</span>
+<span class="go">        │   └── 7</span>
+<span class="go">        │       └── 8</span>
+<span class="go">        │           └── 5</span>
 <span class="go">        └── 9</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">tree</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">random_tree</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">forest_str</span><span class="p">(</span><span class="n">tree</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nx</span><span class="o">.</span><span class="n">write_network_text</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
 <span class="go">╙── 0</span>
 <span class="go">    ├─╼ 3</span>
 <span class="go">    └─╼ 4</span>
 <span class="go">        ├─╼ 6</span>
-<span class="go">        │   ├─╼ 1</span>
-<span class="go">        │   ├─╼ 2</span>
-<span class="go">        │   └─╼ 7</span>
-<span class="go">        │       └─╼ 8</span>
-<span class="go">        │           └─╼ 5</span>
+<span class="go">        │   ├─╼ 1</span>
+<span class="go">        │   ├─╼ 2</span>
+<span class="go">        │   └─╼ 7</span>
+<span class="go">        │       └─╼ 8</span>
+<span class="go">        │           └─╼ 5</span>
 <span class="go">        └─╼ 9</span>
 </pre></div>
 </div>
@@ -708,6 +720,15 @@ all trees on <em>n</em> nodes.</p>
               
 <div class="toc-item">
   
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+
+<div class="toc-item">
+  
 <div class="tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
 </div>
@@ -725,15 +746,6 @@ all trees on <em>n</em> nodes.</p>
 </ul>
 
 </nav>
-</div>
-
-<div class="toc-item">
-  
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
 </div>
 
 <div class="toc-item">

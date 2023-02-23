@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>networkx.algorithms.isomorphism.vf2pp &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>networkx.algorithms.isomorphism.vf2pp &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -46,12 +46,18 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/isomorphism/vf2pp';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/isomorphism/vf2pp.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -93,6 +99,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -244,7 +256,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -407,7 +419,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -466,7 +478,7 @@
 <span class="sd">VF2++ Algorithm</span>
 <span class="sd">***************</span>
 
-<span class="sd">An implementation of the VF2++ algorithm for Graph Isomorphism testing.</span>
+<span class="sd">An implementation of the VF2++ algorithm [1]_ for Graph Isomorphism testing.</span>
 
 <span class="sd">The simplest interface to use this module is to call:</span>
 
@@ -517,15 +529,16 @@
 <span class="sd">&gt;&gt;&gt; nx.vf2pp_isomorphism(G1, G2, node_label=&quot;label&quot;)</span>
 <span class="sd">{1: 1, 2: 2, 0: 0, 3: 3}</span>
 
+<span class="sd">References</span>
+<span class="sd">----------</span>
+<span class="sd">.. [1] Jüttner, Alpár &amp; Madarasi, Péter. (2018). &quot;VF2++—An improved subgraph</span>
+<span class="sd">   isomorphism algorithm&quot;. Discrete Applied Mathematics. 242.</span>
+<span class="sd">   https://doi.org/10.1016/j.dam.2018.02.018</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">collections</span>
 
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
-
-<span class="kn">from</span> <span class="nn">.vf2pp_helpers.candidates</span> <span class="kn">import</span> <span class="n">_find_candidates</span><span class="p">,</span> <span class="n">_find_candidates_Di</span>
-<span class="kn">from</span> <span class="nn">.vf2pp_helpers.feasibility</span> <span class="kn">import</span> <span class="n">_feasibility</span>
-<span class="kn">from</span> <span class="nn">.vf2pp_helpers.node_ordering</span> <span class="kn">import</span> <span class="n">_matching_order</span>
-<span class="kn">from</span> <span class="nn">.vf2pp_helpers.state</span> <span class="kn">import</span> <span class="n">_restore_Tinout</span><span class="p">,</span> <span class="n">_restore_Tinout_Di</span><span class="p">,</span> <span class="n">_update_Tinout</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;vf2pp_isomorphism&quot;</span><span class="p">,</span> <span class="s2">&quot;vf2pp_is_isomorphic&quot;</span><span class="p">,</span> <span class="s2">&quot;vf2pp_all_isomorphisms&quot;</span><span class="p">]</span>
 
@@ -806,8 +819,8 @@
         <span class="n">T2_tilde</span><span class="p">,</span> <span class="n">T2_tilde_in</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">G2</span><span class="o">.</span><span class="n">nodes</span><span class="p">()),</span> <span class="nb">set</span><span class="p">()</span>
 
     <span class="n">state_params</span> <span class="o">=</span> <span class="n">_StateParameters</span><span class="p">(</span>
-        <span class="nb">dict</span><span class="p">(),</span>
-        <span class="nb">dict</span><span class="p">(),</span>
+        <span class="p">{},</span>
+        <span class="p">{},</span>
         <span class="n">T1</span><span class="p">,</span>
         <span class="n">T1_in</span><span class="p">,</span>
         <span class="n">T1_tilde</span><span class="p">,</span>
@@ -819,6 +832,712 @@
     <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">graph_params</span><span class="p">,</span> <span class="n">state_params</span>
+
+
+<span class="k">def</span> <span class="nf">_matching_order</span><span class="p">(</span><span class="n">graph_params</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The node ordering as introduced in VF2++.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Taking into account the structure of the Graph and the node labeling, the nodes are placed in an order such that,</span>
+<span class="sd">    most of the unfruitful/infeasible branches of the search space can be pruned on high levels, significantly</span>
+<span class="sd">    decreasing the number of visited states. The premise is that, the algorithm will be able to recognize</span>
+<span class="sd">    inconsistencies early, proceeding to go deep into the search tree only if it&#39;s needed.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph_params: namedtuple</span>
+<span class="sd">        Contains:</span>
+
+<span class="sd">            G1,G2: NetworkX Graph or MultiGraph instances.</span>
+<span class="sd">                The two graphs to check for isomorphism or monomorphism.</span>
+
+<span class="sd">            G1_labels,G2_labels: dict</span>
+<span class="sd">                The label of every node in G1 and G2 respectively.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    node_order: list</span>
+<span class="sd">        The ordering of the nodes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G1</span><span class="p">,</span> <span class="n">G2</span><span class="p">,</span> <span class="n">G1_labels</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">nodes_of_G2Labels</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">graph_params</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">G1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">G2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="n">G1</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="n">G1</span> <span class="o">=</span> <span class="n">G1</span><span class="o">.</span><span class="n">to_undirected</span><span class="p">(</span><span class="n">as_view</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">V1_unordered</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">G1</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+    <span class="n">label_rarity</span> <span class="o">=</span> <span class="p">{</span><span class="n">label</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="n">nodes_of_G2Labels</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">used_degrees</span> <span class="o">=</span> <span class="p">{</span><span class="n">node</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G1</span><span class="p">}</span>
+    <span class="n">node_order</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">while</span> <span class="n">V1_unordered</span><span class="p">:</span>
+        <span class="n">max_rarity</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">label_rarity</span><span class="p">[</span><span class="n">G1_labels</span><span class="p">[</span><span class="n">x</span><span class="p">]]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">V1_unordered</span><span class="p">)</span>
+        <span class="n">rarest_nodes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">V1_unordered</span> <span class="k">if</span> <span class="n">label_rarity</span><span class="p">[</span><span class="n">G1_labels</span><span class="p">[</span><span class="n">n</span><span class="p">]]</span> <span class="o">==</span> <span class="n">max_rarity</span>
+        <span class="p">]</span>
+        <span class="n">max_node</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">rarest_nodes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">G1</span><span class="o">.</span><span class="n">degree</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">dlevel_nodes</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">bfs_layers</span><span class="p">(</span><span class="n">G1</span><span class="p">,</span> <span class="n">max_node</span><span class="p">):</span>
+            <span class="n">nodes_to_add</span> <span class="o">=</span> <span class="n">dlevel_nodes</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">while</span> <span class="n">nodes_to_add</span><span class="p">:</span>
+                <span class="n">max_used_degree</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">used_degrees</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes_to_add</span><span class="p">)</span>
+                <span class="n">max_used_degree_nodes</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes_to_add</span> <span class="k">if</span> <span class="n">used_degrees</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">==</span> <span class="n">max_used_degree</span>
+                <span class="p">]</span>
+                <span class="n">max_degree</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">G1</span><span class="o">.</span><span class="n">degree</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">max_used_degree_nodes</span><span class="p">)</span>
+                <span class="n">max_degree_nodes</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">max_used_degree_nodes</span> <span class="k">if</span> <span class="n">G1</span><span class="o">.</span><span class="n">degree</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">==</span> <span class="n">max_degree</span>
+                <span class="p">]</span>
+                <span class="n">next_node</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+                    <span class="n">max_degree_nodes</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">label_rarity</span><span class="p">[</span><span class="n">G1_labels</span><span class="p">[</span><span class="n">x</span><span class="p">]]</span>
+                <span class="p">)</span>
+
+                <span class="n">node_order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">next_node</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G1</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">next_node</span><span class="p">):</span>
+                    <span class="n">used_degrees</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="n">nodes_to_add</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">next_node</span><span class="p">)</span>
+                <span class="n">label_rarity</span><span class="p">[</span><span class="n">G1_labels</span><span class="p">[</span><span class="n">next_node</span><span class="p">]]</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="n">V1_unordered</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">next_node</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">node_order</span>
+
+
+<span class="k">def</span> <span class="nf">_find_candidates</span><span class="p">(</span>
+    <span class="n">u</span><span class="p">,</span> <span class="n">graph_params</span><span class="p">,</span> <span class="n">state_params</span><span class="p">,</span> <span class="n">G1_degree</span>
+<span class="p">):</span>  <span class="c1"># todo: make the 4th argument the degree of u</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Given node u of G1, finds the candidates of u from G2.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    u: Graph node</span>
+<span class="sd">        The node from G1 for which to find the candidates from G2.</span>
+
+<span class="sd">    graph_params: namedtuple</span>
+<span class="sd">        Contains all the Graph-related parameters:</span>
+
+<span class="sd">        G1,G2: NetworkX Graph or MultiGraph instances.</span>
+<span class="sd">            The two graphs to check for isomorphism or monomorphism</span>
+
+<span class="sd">        G1_labels,G2_labels: dict</span>
+<span class="sd">            The label of every node in G1 and G2 respectively</span>
+
+<span class="sd">    state_params: namedtuple</span>
+<span class="sd">        Contains all the State-related parameters:</span>
+
+<span class="sd">        mapping: dict</span>
+<span class="sd">            The mapping as extended so far. Maps nodes of G1 to nodes of G2</span>
+
+<span class="sd">        reverse_mapping: dict</span>
+<span class="sd">            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It&#39;s basically &quot;mapping&quot; reversed</span>
+
+<span class="sd">        T1, T2: set</span>
+<span class="sd">            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are</span>
+<span class="sd">            neighbors of nodes that are.</span>
+
+<span class="sd">        T1_tilde, T2_tilde: set</span>
+<span class="sd">            Ti_tilde contains all the nodes from Gi, that are neither in the mapping nor in Ti</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    candidates: set</span>
+<span class="sd">        The nodes from G2 which are candidates for u.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G1</span><span class="p">,</span> <span class="n">G2</span><span class="p">,</span> <span class="n">G1_labels</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">nodes_of_G2Labels</span><span class="p">,</span> <span class="n">G2_nodes_of_degree</span> <span class="o">=</span> <span class="n">graph_params</span>
+    <span class="n">mapping</span><span class="p">,</span> <span class="n">reverse_mapping</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">T2_tilde</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">state_params</span>
+
+    <span class="n">covered_neighbors</span> <span class="o">=</span> <span class="p">[</span><span class="n">nbr</span> <span class="k">for</span> <span class="n">nbr</span> <span class="ow">in</span> <span class="n">G1</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="k">if</span> <span class="n">nbr</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">covered_neighbors</span><span class="p">:</span>
+        <span class="n">candidates</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">nodes_of_G2Labels</span><span class="p">[</span><span class="n">G1_labels</span><span class="p">[</span><span class="n">u</span><span class="p">]])</span>
+        <span class="n">candidates</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">(</span><span class="n">G2_nodes_of_degree</span><span class="p">[</span><span class="n">G1_degree</span><span class="p">[</span><span class="n">u</span><span class="p">]])</span>
+        <span class="n">candidates</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">(</span><span class="n">T2_tilde</span><span class="p">)</span>
+        <span class="n">candidates</span><span class="o">.</span><span class="n">difference_update</span><span class="p">(</span><span class="n">reverse_mapping</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">G1</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+            <span class="n">candidates</span><span class="o">.</span><span class="n">difference_update</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="n">node</span>
+                    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">candidates</span>
+                    <span class="k">if</span> <span class="n">G1</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span> <span class="o">!=</span> <span class="n">G2</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">candidates</span>
+
+    <span class="n">nbr1</span> <span class="o">=</span> <span class="n">covered_neighbors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">common_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">G2</span><span class="p">[</span><span class="n">mapping</span><span class="p">[</span><span class="n">nbr1</span><span class="p">]])</span>
+
+    <span class="k">for</span> <span class="n">nbr1</span> <span class="ow">in</span> <span class="n">covered_neighbors</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="n">common_nodes</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">(</span><span class="n">G2</span><span class="p">[</span><span class="n">mapping</span><span class="p">[</span><span class="n">nbr1</span><span class="p">]])</span>
+
+    <span class="n">common_nodes</span><span class="o">.</span><span class="n">difference_update</span><span class="p">(</span><span class="n">reverse_mapping</span><span class="p">)</span>
+    <span class="n">common_nodes</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">(</span><span class="n">G2_nodes_of_degree</span><span class="p">[</span><span class="n">G1_degree</span><span class="p">[</span><span class="n">u</span><span class="p">]])</span>
+    <span class="n">common_nodes</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">(</span><span class="n">nodes_of_G2Labels</span><span class="p">[</span><span class="n">G1_labels</span><span class="p">[</span><span class="n">u</span><span class="p">]])</span>
+    <span class="k">if</span> <span class="n">G1</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+        <span class="n">common_nodes</span><span class="o">.</span><span class="n">difference_update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="n">node</span>
+                <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">common_nodes</span>
+                <span class="k">if</span> <span class="n">G1</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span> <span class="o">!=</span> <span class="n">G2</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">common_nodes</span>
+
+
+<span class="k">def</span> <span class="nf">_find_candidates_Di</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">graph_params</span><span class="p">,</span> <span class="n">state_params</span><span class="p">,</span> <span class="n">G1_degree</span><span class="p">):</span>
+    <span class="n">G1</span><span class="p">,</span> <span class="n">G2</span><span class="p">,</span> <span class="n">G1_labels</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">nodes_of_G2Labels</span><span class="p">,</span> <span class="n">G2_nodes_of_degree</span> <span class="o">=</span> <span class="n">graph_params</span>
+    <span class="n">mapping</span><span class="p">,</span> <span class="n">reverse_mapping</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">T2_tilde</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">state_params</span>
+
+    <span class="n">covered_successors</span> <span class="o">=</span> <span class="p">[</span><span class="n">succ</span> <span class="k">for</span> <span class="n">succ</span> <span class="ow">in</span> <span class="n">G1</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="k">if</span> <span class="n">succ</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">]</span>
+    <span class="n">covered_predecessors</span> <span class="o">=</span> <span class="p">[</span><span class="n">pred</span> <span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">G1</span><span class="o">.</span><span class="n">pred</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="k">if</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">covered_successors</span> <span class="ow">or</span> <span class="n">covered_predecessors</span><span class="p">):</span>
+        <span class="n">candidates</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">nodes_of_G2Labels</span><span class="p">[</span><span class="n">G1_labels</span><span class="p">[</span><span class="n">u</span><span class="p">]])</span>
+        <span class="n">candidates</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">(</span><span class="n">G2_nodes_of_degree</span><span class="p">[</span><span class="n">G1_degree</span><span class="p">[</span><span class="n">u</span><span class="p">]])</span>
+        <span class="n">candidates</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">(</span><span class="n">T2_tilde</span><span class="p">)</span>
+        <span class="n">candidates</span><span class="o">.</span><span class="n">difference_update</span><span class="p">(</span><span class="n">reverse_mapping</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">G1</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+            <span class="n">candidates</span><span class="o">.</span><span class="n">difference_update</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="n">node</span>
+                    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">candidates</span>
+                    <span class="k">if</span> <span class="n">G1</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span> <span class="o">!=</span> <span class="n">G2</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">candidates</span>
+
+    <span class="k">if</span> <span class="n">covered_successors</span><span class="p">:</span>
+        <span class="n">succ1</span> <span class="o">=</span> <span class="n">covered_successors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">common_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">G2</span><span class="o">.</span><span class="n">pred</span><span class="p">[</span><span class="n">mapping</span><span class="p">[</span><span class="n">succ1</span><span class="p">]])</span>
+
+        <span class="k">for</span> <span class="n">succ1</span> <span class="ow">in</span> <span class="n">covered_successors</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">common_nodes</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">(</span><span class="n">G2</span><span class="o">.</span><span class="n">pred</span><span class="p">[</span><span class="n">mapping</span><span class="p">[</span><span class="n">succ1</span><span class="p">]])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pred1</span> <span class="o">=</span> <span class="n">covered_predecessors</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="n">common_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">G2</span><span class="p">[</span><span class="n">mapping</span><span class="p">[</span><span class="n">pred1</span><span class="p">]])</span>
+
+    <span class="k">for</span> <span class="n">pred1</span> <span class="ow">in</span> <span class="n">covered_predecessors</span><span class="p">:</span>
+        <span class="n">common_nodes</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">(</span><span class="n">G2</span><span class="p">[</span><span class="n">mapping</span><span class="p">[</span><span class="n">pred1</span><span class="p">]])</span>
+
+    <span class="n">common_nodes</span><span class="o">.</span><span class="n">difference_update</span><span class="p">(</span><span class="n">reverse_mapping</span><span class="p">)</span>
+    <span class="n">common_nodes</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">(</span><span class="n">G2_nodes_of_degree</span><span class="p">[</span><span class="n">G1_degree</span><span class="p">[</span><span class="n">u</span><span class="p">]])</span>
+    <span class="n">common_nodes</span><span class="o">.</span><span class="n">intersection_update</span><span class="p">(</span><span class="n">nodes_of_G2Labels</span><span class="p">[</span><span class="n">G1_labels</span><span class="p">[</span><span class="n">u</span><span class="p">]])</span>
+    <span class="k">if</span> <span class="n">G1</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+        <span class="n">common_nodes</span><span class="o">.</span><span class="n">difference_update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="n">node</span>
+                <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">common_nodes</span>
+                <span class="k">if</span> <span class="n">G1</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span> <span class="o">!=</span> <span class="n">G2</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">common_nodes</span>
+
+
+<span class="k">def</span> <span class="nf">_feasibility</span><span class="p">(</span><span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">,</span> <span class="n">graph_params</span><span class="p">,</span> <span class="n">state_params</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Given a candidate pair of nodes u and v from G1 and G2 respectively, checks if it&#39;s feasible to extend the</span>
+<span class="sd">    mapping, i.e. if u and v can be matched.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function performs all the necessary checking by applying both consistency and cutting rules.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    node1, node2: Graph node</span>
+<span class="sd">        The candidate pair of nodes being checked for matching</span>
+
+<span class="sd">    graph_params: namedtuple</span>
+<span class="sd">        Contains all the Graph-related parameters:</span>
+
+<span class="sd">        G1,G2: NetworkX Graph or MultiGraph instances.</span>
+<span class="sd">            The two graphs to check for isomorphism or monomorphism</span>
+
+<span class="sd">        G1_labels,G2_labels: dict</span>
+<span class="sd">            The label of every node in G1 and G2 respectively</span>
+
+<span class="sd">    state_params: namedtuple</span>
+<span class="sd">        Contains all the State-related parameters:</span>
+
+<span class="sd">        mapping: dict</span>
+<span class="sd">            The mapping as extended so far. Maps nodes of G1 to nodes of G2</span>
+
+<span class="sd">        reverse_mapping: dict</span>
+<span class="sd">            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It&#39;s basically &quot;mapping&quot; reversed</span>
+
+<span class="sd">        T1, T2: set</span>
+<span class="sd">            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are</span>
+<span class="sd">            neighbors of nodes that are.</span>
+
+<span class="sd">        T1_out, T2_out: set</span>
+<span class="sd">            Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    True if all checks are successful, False otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G1</span> <span class="o">=</span> <span class="n">graph_params</span><span class="o">.</span><span class="n">G1</span>
+
+    <span class="k">if</span> <span class="n">_cut_PT</span><span class="p">(</span><span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">,</span> <span class="n">graph_params</span><span class="p">,</span> <span class="n">state_params</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="n">G1</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_consistent_PT</span><span class="p">(</span><span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">,</span> <span class="n">graph_params</span><span class="p">,</span> <span class="n">state_params</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="kc">True</span>
+
+
+<span class="k">def</span> <span class="nf">_cut_PT</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">graph_params</span><span class="p">,</span> <span class="n">state_params</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implements the cutting rules for the ISO problem.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    u, v: Graph node</span>
+<span class="sd">        The two candidate nodes being examined.</span>
+
+<span class="sd">    graph_params: namedtuple</span>
+<span class="sd">        Contains all the Graph-related parameters:</span>
+
+<span class="sd">        G1,G2: NetworkX Graph or MultiGraph instances.</span>
+<span class="sd">            The two graphs to check for isomorphism or monomorphism</span>
+
+<span class="sd">        G1_labels,G2_labels: dict</span>
+<span class="sd">            The label of every node in G1 and G2 respectively</span>
+
+<span class="sd">    state_params: namedtuple</span>
+<span class="sd">        Contains all the State-related parameters:</span>
+
+<span class="sd">        mapping: dict</span>
+<span class="sd">            The mapping as extended so far. Maps nodes of G1 to nodes of G2</span>
+
+<span class="sd">        reverse_mapping: dict</span>
+<span class="sd">            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It&#39;s basically &quot;mapping&quot; reversed</span>
+
+<span class="sd">        T1, T2: set</span>
+<span class="sd">            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are</span>
+<span class="sd">            neighbors of nodes that are.</span>
+
+<span class="sd">        T1_tilde, T2_tilde: set</span>
+<span class="sd">            Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    True if we should prune this branch, i.e. the node pair failed the cutting checks. False otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G1</span><span class="p">,</span> <span class="n">G2</span><span class="p">,</span> <span class="n">G1_labels</span><span class="p">,</span> <span class="n">G2_labels</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">graph_params</span>
+    <span class="p">(</span>
+        <span class="n">_</span><span class="p">,</span>
+        <span class="n">_</span><span class="p">,</span>
+        <span class="n">T1</span><span class="p">,</span>
+        <span class="n">T1_in</span><span class="p">,</span>
+        <span class="n">T1_tilde</span><span class="p">,</span>
+        <span class="n">_</span><span class="p">,</span>
+        <span class="n">T2</span><span class="p">,</span>
+        <span class="n">T2_in</span><span class="p">,</span>
+        <span class="n">T2_tilde</span><span class="p">,</span>
+        <span class="n">_</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">=</span> <span class="n">state_params</span>
+
+    <span class="n">u_labels_predecessors</span><span class="p">,</span> <span class="n">v_labels_predecessors</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">G1</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="n">u_labels_predecessors</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span>
+            <span class="p">{</span><span class="n">n1</span><span class="p">:</span> <span class="n">G1_labels</span><span class="p">[</span><span class="n">n1</span><span class="p">]</span> <span class="k">for</span> <span class="n">n1</span> <span class="ow">in</span> <span class="n">G1</span><span class="o">.</span><span class="n">pred</span><span class="p">[</span><span class="n">u</span><span class="p">]}</span>
+        <span class="p">)</span>
+        <span class="n">v_labels_predecessors</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">groups</span><span class="p">(</span>
+            <span class="p">{</span><span class="n">n2</span><span class="p">:</span> <span class="n">G2_labels</span><span class="p">[</span><span class="n">n2</span><span class="p">]</span> <span class="k">for</span> <span class="n">n2</span> <span class="ow">in</span> <span class="n">G2</span><span class="o">.</span><span class="n">pred</span><span class="p">[</span><span class="n">v</span><span class="p">]}</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">u_labels_predecessors</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="n">v_labels_predecessors</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="n">u_labels_successors</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">groups</span><span class="p">({</span><span class="n">n1</span><span class="p">:</span> <span class="n">G1_labels</span><span class="p">[</span><span class="n">n1</span><span class="p">]</span> <span class="k">for</span> <span class="n">n1</span> <span class="ow">in</span> <span class="n">G1</span><span class="p">[</span><span class="n">u</span><span class="p">]})</span>
+    <span class="n">v_labels_successors</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">groups</span><span class="p">({</span><span class="n">n2</span><span class="p">:</span> <span class="n">G2_labels</span><span class="p">[</span><span class="n">n2</span><span class="p">]</span> <span class="k">for</span> <span class="n">n2</span> <span class="ow">in</span> <span class="n">G2</span><span class="p">[</span><span class="n">v</span><span class="p">]})</span>
+
+    <span class="c1"># if the neighbors of u, do not have the same labels as those of v, NOT feasible.</span>
+    <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">u_labels_successors</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="n">v_labels_successors</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">G1_nbh</span> <span class="ow">in</span> <span class="n">u_labels_successors</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">G2_nbh</span> <span class="o">=</span> <span class="n">v_labels_successors</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">G1</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+            <span class="c1"># Check for every neighbor in the neighborhood, if u-nbr1 has same edges as v-nbr2</span>
+            <span class="n">u_nbrs_edges</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">G1</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">G1_nbh</span><span class="p">)</span>
+            <span class="n">v_nbrs_edges</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">G2</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">G2_nbh</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+                <span class="n">u_nbr_edges</span> <span class="o">!=</span> <span class="n">v_nbr_edges</span>
+                <span class="k">for</span> <span class="n">u_nbr_edges</span><span class="p">,</span> <span class="n">v_nbr_edges</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">u_nbrs_edges</span><span class="p">,</span> <span class="n">v_nbrs_edges</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">T1</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">G1_nbh</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">T2</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">G2_nbh</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">T1_tilde</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">G1_nbh</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">T2_tilde</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">G2_nbh</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">G1</span><span class="o">.</span><span class="n">is_directed</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">T1_in</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">G1_nbh</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="n">T2_in</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">G2_nbh</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">G1</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">G1_pred</span> <span class="ow">in</span> <span class="n">u_labels_predecessors</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">G2_pred</span> <span class="o">=</span> <span class="n">v_labels_predecessors</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">G1</span><span class="o">.</span><span class="n">is_multigraph</span><span class="p">():</span>
+            <span class="c1"># Check for every neighbor in the neighborhood, if u-nbr1 has same edges as v-nbr2</span>
+            <span class="n">u_pred_edges</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">G1</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">G1_pred</span><span class="p">)</span>
+            <span class="n">v_pred_edges</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">G2</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">G2_pred</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+                <span class="n">u_nbr_edges</span> <span class="o">!=</span> <span class="n">v_nbr_edges</span>
+                <span class="k">for</span> <span class="n">u_nbr_edges</span><span class="p">,</span> <span class="n">v_nbr_edges</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">u_pred_edges</span><span class="p">,</span> <span class="n">v_pred_edges</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">T1</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">G1_pred</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">T2</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">G2_pred</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">T1_tilde</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">G1_pred</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">T2_tilde</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">G2_pred</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">T1_in</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">G1_pred</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">T2_in</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">G2_pred</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="k">def</span> <span class="nf">_consistent_PT</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">graph_params</span><span class="p">,</span> <span class="n">state_params</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Checks the consistency of extending the mapping using the current node pair.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    u, v: Graph node</span>
+<span class="sd">        The two candidate nodes being examined.</span>
+
+<span class="sd">    graph_params: namedtuple</span>
+<span class="sd">        Contains all the Graph-related parameters:</span>
+
+<span class="sd">        G1,G2: NetworkX Graph or MultiGraph instances.</span>
+<span class="sd">            The two graphs to check for isomorphism or monomorphism</span>
+
+<span class="sd">        G1_labels,G2_labels: dict</span>
+<span class="sd">            The label of every node in G1 and G2 respectively</span>
+
+<span class="sd">    state_params: namedtuple</span>
+<span class="sd">        Contains all the State-related parameters:</span>
+
+<span class="sd">        mapping: dict</span>
+<span class="sd">            The mapping as extended so far. Maps nodes of G1 to nodes of G2</span>
+
+<span class="sd">        reverse_mapping: dict</span>
+<span class="sd">            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It&#39;s basically &quot;mapping&quot; reversed</span>
+
+<span class="sd">        T1, T2: set</span>
+<span class="sd">            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are</span>
+<span class="sd">            neighbors of nodes that are.</span>
+
+<span class="sd">        T1_out, T2_out: set</span>
+<span class="sd">            Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    True if the pair passes all the consistency checks successfully. False otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G1</span><span class="p">,</span> <span class="n">G2</span> <span class="o">=</span> <span class="n">graph_params</span><span class="o">.</span><span class="n">G1</span><span class="p">,</span> <span class="n">graph_params</span><span class="o">.</span><span class="n">G2</span>
+    <span class="n">mapping</span><span class="p">,</span> <span class="n">reverse_mapping</span> <span class="o">=</span> <span class="n">state_params</span><span class="o">.</span><span class="n">mapping</span><span class="p">,</span> <span class="n">state_params</span><span class="o">.</span><span class="n">reverse_mapping</span>
+
+    <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">G1</span><span class="p">[</span><span class="n">u</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">G1</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">neighbor</span><span class="p">)</span> <span class="o">!=</span> <span class="n">G2</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(</span>
+                <span class="n">v</span><span class="p">,</span> <span class="n">mapping</span><span class="p">[</span><span class="n">neighbor</span><span class="p">]</span>
+            <span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">G2</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">reverse_mapping</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">G1</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">reverse_mapping</span><span class="p">[</span><span class="n">neighbor</span><span class="p">])</span> <span class="o">!=</span> <span class="n">G2</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(</span>
+                <span class="n">v</span><span class="p">,</span> <span class="n">neighbor</span>
+            <span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">G1</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">for</span> <span class="n">predecessor</span> <span class="ow">in</span> <span class="n">G1</span><span class="o">.</span><span class="n">pred</span><span class="p">[</span><span class="n">u</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">predecessor</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">G1</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(</span><span class="n">predecessor</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span> <span class="o">!=</span> <span class="n">G2</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(</span>
+                <span class="n">mapping</span><span class="p">[</span><span class="n">predecessor</span><span class="p">],</span> <span class="n">v</span>
+            <span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">for</span> <span class="n">predecessor</span> <span class="ow">in</span> <span class="n">G2</span><span class="o">.</span><span class="n">pred</span><span class="p">[</span><span class="n">v</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">predecessor</span> <span class="ow">in</span> <span class="n">reverse_mapping</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">G1</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(</span>
+                <span class="n">reverse_mapping</span><span class="p">[</span><span class="n">predecessor</span><span class="p">],</span> <span class="n">u</span>
+            <span class="p">)</span> <span class="o">!=</span> <span class="n">G2</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(</span><span class="n">predecessor</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="kc">True</span>
+
+
+<span class="k">def</span> <span class="nf">_update_Tinout</span><span class="p">(</span><span class="n">new_node1</span><span class="p">,</span> <span class="n">new_node2</span><span class="p">,</span> <span class="n">graph_params</span><span class="p">,</span> <span class="n">state_params</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Updates the Ti/Ti_out (i=1,2) when a new node pair u-v is added to the mapping.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function should be called right after the feasibility checks are passed, and node1 is mapped to node2. The</span>
+<span class="sd">    purpose of this function is to avoid brute force computing of Ti/Ti_out by iterating over all nodes of the graph</span>
+<span class="sd">    and checking which nodes satisfy the necessary conditions. Instead, in every step of the algorithm we focus</span>
+<span class="sd">    exclusively on the two nodes that are being added to the mapping, incrementally updating Ti/Ti_out.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    new_node1, new_node2: Graph node</span>
+<span class="sd">        The two new nodes, added to the mapping.</span>
+
+<span class="sd">    graph_params: namedtuple</span>
+<span class="sd">        Contains all the Graph-related parameters:</span>
+
+<span class="sd">        G1,G2: NetworkX Graph or MultiGraph instances.</span>
+<span class="sd">            The two graphs to check for isomorphism or monomorphism</span>
+
+<span class="sd">        G1_labels,G2_labels: dict</span>
+<span class="sd">            The label of every node in G1 and G2 respectively</span>
+
+<span class="sd">    state_params: namedtuple</span>
+<span class="sd">        Contains all the State-related parameters:</span>
+
+<span class="sd">        mapping: dict</span>
+<span class="sd">            The mapping as extended so far. Maps nodes of G1 to nodes of G2</span>
+
+<span class="sd">        reverse_mapping: dict</span>
+<span class="sd">            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It&#39;s basically &quot;mapping&quot; reversed</span>
+
+<span class="sd">        T1, T2: set</span>
+<span class="sd">            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are</span>
+<span class="sd">            neighbors of nodes that are.</span>
+
+<span class="sd">        T1_tilde, T2_tilde: set</span>
+<span class="sd">            Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">G1</span><span class="p">,</span> <span class="n">G2</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">graph_params</span>
+    <span class="p">(</span>
+        <span class="n">mapping</span><span class="p">,</span>
+        <span class="n">reverse_mapping</span><span class="p">,</span>
+        <span class="n">T1</span><span class="p">,</span>
+        <span class="n">T1_in</span><span class="p">,</span>
+        <span class="n">T1_tilde</span><span class="p">,</span>
+        <span class="n">T1_tilde_in</span><span class="p">,</span>
+        <span class="n">T2</span><span class="p">,</span>
+        <span class="n">T2_in</span><span class="p">,</span>
+        <span class="n">T2_tilde</span><span class="p">,</span>
+        <span class="n">T2_tilde_in</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">=</span> <span class="n">state_params</span>
+
+    <span class="n">uncovered_successors_G1</span> <span class="o">=</span> <span class="p">{</span><span class="n">succ</span> <span class="k">for</span> <span class="n">succ</span> <span class="ow">in</span> <span class="n">G1</span><span class="p">[</span><span class="n">new_node1</span><span class="p">]</span> <span class="k">if</span> <span class="n">succ</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">}</span>
+    <span class="n">uncovered_successors_G2</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">succ</span> <span class="k">for</span> <span class="n">succ</span> <span class="ow">in</span> <span class="n">G2</span><span class="p">[</span><span class="n">new_node2</span><span class="p">]</span> <span class="k">if</span> <span class="n">succ</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">reverse_mapping</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Add the uncovered neighbors of node1 and node2 in T1 and T2 respectively</span>
+    <span class="n">T1</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">uncovered_successors_G1</span><span class="p">)</span>
+    <span class="n">T2</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">uncovered_successors_G2</span><span class="p">)</span>
+    <span class="n">T1</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">new_node1</span><span class="p">)</span>
+    <span class="n">T2</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">new_node2</span><span class="p">)</span>
+
+    <span class="n">T1_tilde</span><span class="o">.</span><span class="n">difference_update</span><span class="p">(</span><span class="n">uncovered_successors_G1</span><span class="p">)</span>
+    <span class="n">T2_tilde</span><span class="o">.</span><span class="n">difference_update</span><span class="p">(</span><span class="n">uncovered_successors_G2</span><span class="p">)</span>
+    <span class="n">T1_tilde</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">new_node1</span><span class="p">)</span>
+    <span class="n">T2_tilde</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">new_node2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">G1</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="k">return</span>
+
+    <span class="n">uncovered_predecessors_G1</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">pred</span> <span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">G1</span><span class="o">.</span><span class="n">pred</span><span class="p">[</span><span class="n">new_node1</span><span class="p">]</span> <span class="k">if</span> <span class="n">pred</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mapping</span>
+    <span class="p">}</span>
+    <span class="n">uncovered_predecessors_G2</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">pred</span> <span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">G2</span><span class="o">.</span><span class="n">pred</span><span class="p">[</span><span class="n">new_node2</span><span class="p">]</span> <span class="k">if</span> <span class="n">pred</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">reverse_mapping</span>
+    <span class="p">}</span>
+
+    <span class="n">T1_in</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">uncovered_predecessors_G1</span><span class="p">)</span>
+    <span class="n">T2_in</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">uncovered_predecessors_G2</span><span class="p">)</span>
+    <span class="n">T1_in</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">new_node1</span><span class="p">)</span>
+    <span class="n">T2_in</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">new_node2</span><span class="p">)</span>
+
+    <span class="n">T1_tilde</span><span class="o">.</span><span class="n">difference_update</span><span class="p">(</span><span class="n">uncovered_predecessors_G1</span><span class="p">)</span>
+    <span class="n">T2_tilde</span><span class="o">.</span><span class="n">difference_update</span><span class="p">(</span><span class="n">uncovered_predecessors_G2</span><span class="p">)</span>
+    <span class="n">T1_tilde</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">new_node1</span><span class="p">)</span>
+    <span class="n">T2_tilde</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">new_node2</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_restore_Tinout</span><span class="p">(</span><span class="n">popped_node1</span><span class="p">,</span> <span class="n">popped_node2</span><span class="p">,</span> <span class="n">graph_params</span><span class="p">,</span> <span class="n">state_params</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Restores the previous version of Ti/Ti_out when a node pair is deleted from the mapping.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    popped_node1, popped_node2: Graph node</span>
+<span class="sd">        The two nodes deleted from the mapping.</span>
+
+<span class="sd">    graph_params: namedtuple</span>
+<span class="sd">        Contains all the Graph-related parameters:</span>
+
+<span class="sd">        G1,G2: NetworkX Graph or MultiGraph instances.</span>
+<span class="sd">            The two graphs to check for isomorphism or monomorphism</span>
+
+<span class="sd">        G1_labels,G2_labels: dict</span>
+<span class="sd">            The label of every node in G1 and G2 respectively</span>
+
+<span class="sd">    state_params: namedtuple</span>
+<span class="sd">        Contains all the State-related parameters:</span>
+
+<span class="sd">        mapping: dict</span>
+<span class="sd">            The mapping as extended so far. Maps nodes of G1 to nodes of G2</span>
+
+<span class="sd">        reverse_mapping: dict</span>
+<span class="sd">            The reverse mapping as extended so far. Maps nodes from G2 to nodes of G1. It&#39;s basically &quot;mapping&quot; reversed</span>
+
+<span class="sd">        T1, T2: set</span>
+<span class="sd">            Ti contains uncovered neighbors of covered nodes from Gi, i.e. nodes that are not in the mapping, but are</span>
+<span class="sd">            neighbors of nodes that are.</span>
+
+<span class="sd">        T1_tilde, T2_tilde: set</span>
+<span class="sd">            Ti_out contains all the nodes from Gi, that are neither in the mapping nor in Ti</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># If the node we want to remove from the mapping, has at least one covered neighbor, add it to T1.</span>
+    <span class="n">G1</span><span class="p">,</span> <span class="n">G2</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">graph_params</span>
+    <span class="p">(</span>
+        <span class="n">mapping</span><span class="p">,</span>
+        <span class="n">reverse_mapping</span><span class="p">,</span>
+        <span class="n">T1</span><span class="p">,</span>
+        <span class="n">T1_in</span><span class="p">,</span>
+        <span class="n">T1_tilde</span><span class="p">,</span>
+        <span class="n">T1_tilde_in</span><span class="p">,</span>
+        <span class="n">T2</span><span class="p">,</span>
+        <span class="n">T2_in</span><span class="p">,</span>
+        <span class="n">T2_tilde</span><span class="p">,</span>
+        <span class="n">T2_tilde_in</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">=</span> <span class="n">state_params</span>
+
+    <span class="n">is_added</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">G1</span><span class="p">[</span><span class="n">popped_node1</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">:</span>
+            <span class="c1"># if a neighbor of the excluded node1 is in the mapping, keep node1 in T1</span>
+            <span class="n">is_added</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">T1</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">popped_node1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># check if its neighbor has another connection with a covered node. If not, only then exclude it from T1</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">nbr</span> <span class="ow">in</span> <span class="n">mapping</span> <span class="k">for</span> <span class="n">nbr</span> <span class="ow">in</span> <span class="n">G1</span><span class="p">[</span><span class="n">neighbor</span><span class="p">]):</span>
+                <span class="k">continue</span>
+            <span class="n">T1</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">neighbor</span><span class="p">)</span>
+            <span class="n">T1_tilde</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">neighbor</span><span class="p">)</span>
+
+    <span class="c1"># Case where the node is not present in neither the mapping nor T1. By definition, it should belong to T1_tilde</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_added</span><span class="p">:</span>
+        <span class="n">T1_tilde</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">popped_node1</span><span class="p">)</span>
+
+    <span class="n">is_added</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">G2</span><span class="p">[</span><span class="n">popped_node2</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">reverse_mapping</span><span class="p">:</span>
+            <span class="n">is_added</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">T2</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">popped_node2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">nbr</span> <span class="ow">in</span> <span class="n">reverse_mapping</span> <span class="k">for</span> <span class="n">nbr</span> <span class="ow">in</span> <span class="n">G2</span><span class="p">[</span><span class="n">neighbor</span><span class="p">]):</span>
+                <span class="k">continue</span>
+            <span class="n">T2</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">neighbor</span><span class="p">)</span>
+            <span class="n">T2_tilde</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">neighbor</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_added</span><span class="p">:</span>
+        <span class="n">T2_tilde</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">popped_node2</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_restore_Tinout_Di</span><span class="p">(</span><span class="n">popped_node1</span><span class="p">,</span> <span class="n">popped_node2</span><span class="p">,</span> <span class="n">graph_params</span><span class="p">,</span> <span class="n">state_params</span><span class="p">):</span>
+    <span class="c1"># If the node we want to remove from the mapping, has at least one covered neighbor, add it to T1.</span>
+    <span class="n">G1</span><span class="p">,</span> <span class="n">G2</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">graph_params</span>
+    <span class="p">(</span>
+        <span class="n">mapping</span><span class="p">,</span>
+        <span class="n">reverse_mapping</span><span class="p">,</span>
+        <span class="n">T1</span><span class="p">,</span>
+        <span class="n">T1_in</span><span class="p">,</span>
+        <span class="n">T1_tilde</span><span class="p">,</span>
+        <span class="n">T1_tilde_in</span><span class="p">,</span>
+        <span class="n">T2</span><span class="p">,</span>
+        <span class="n">T2_in</span><span class="p">,</span>
+        <span class="n">T2_tilde</span><span class="p">,</span>
+        <span class="n">T2_tilde_in</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">=</span> <span class="n">state_params</span>
+
+    <span class="n">is_added</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">successor</span> <span class="ow">in</span> <span class="n">G1</span><span class="p">[</span><span class="n">popped_node1</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">successor</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">:</span>
+            <span class="c1"># if a neighbor of the excluded node1 is in the mapping, keep node1 in T1</span>
+            <span class="n">is_added</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">T1_in</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">popped_node1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># check if its neighbor has another connection with a covered node. If not, only then exclude it from T1</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">pred</span> <span class="ow">in</span> <span class="n">mapping</span> <span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">G1</span><span class="o">.</span><span class="n">pred</span><span class="p">[</span><span class="n">successor</span><span class="p">]):</span>
+                <span class="n">T1</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">successor</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">succ</span> <span class="ow">in</span> <span class="n">mapping</span> <span class="k">for</span> <span class="n">succ</span> <span class="ow">in</span> <span class="n">G1</span><span class="p">[</span><span class="n">successor</span><span class="p">]):</span>
+                <span class="n">T1_in</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">successor</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">successor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">T1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">successor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">T1_in</span><span class="p">:</span>
+                    <span class="n">T1_tilde</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">successor</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">predecessor</span> <span class="ow">in</span> <span class="n">G1</span><span class="o">.</span><span class="n">pred</span><span class="p">[</span><span class="n">popped_node1</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">predecessor</span> <span class="ow">in</span> <span class="n">mapping</span><span class="p">:</span>
+            <span class="c1"># if a neighbor of the excluded node1 is in the mapping, keep node1 in T1</span>
+            <span class="n">is_added</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">T1</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">popped_node1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># check if its neighbor has another connection with a covered node. If not, only then exclude it from T1</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">pred</span> <span class="ow">in</span> <span class="n">mapping</span> <span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">G1</span><span class="o">.</span><span class="n">pred</span><span class="p">[</span><span class="n">predecessor</span><span class="p">]):</span>
+                <span class="n">T1</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">predecessor</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">succ</span> <span class="ow">in</span> <span class="n">mapping</span> <span class="k">for</span> <span class="n">succ</span> <span class="ow">in</span> <span class="n">G1</span><span class="p">[</span><span class="n">predecessor</span><span class="p">]):</span>
+                <span class="n">T1_in</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">predecessor</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">predecessor</span> <span class="ow">in</span> <span class="n">T1</span> <span class="ow">or</span> <span class="n">predecessor</span> <span class="ow">in</span> <span class="n">T1_in</span><span class="p">):</span>
+                <span class="n">T1_tilde</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">predecessor</span><span class="p">)</span>
+
+    <span class="c1"># Case where the node is not present in neither the mapping nor T1. By definition it should belong to T1_tilde</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_added</span><span class="p">:</span>
+        <span class="n">T1_tilde</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">popped_node1</span><span class="p">)</span>
+
+    <span class="n">is_added</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">successor</span> <span class="ow">in</span> <span class="n">G2</span><span class="p">[</span><span class="n">popped_node2</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">successor</span> <span class="ow">in</span> <span class="n">reverse_mapping</span><span class="p">:</span>
+            <span class="n">is_added</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">T2_in</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">popped_node2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">pred</span> <span class="ow">in</span> <span class="n">reverse_mapping</span> <span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">G2</span><span class="o">.</span><span class="n">pred</span><span class="p">[</span><span class="n">successor</span><span class="p">]):</span>
+                <span class="n">T2</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">successor</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">succ</span> <span class="ow">in</span> <span class="n">reverse_mapping</span> <span class="k">for</span> <span class="n">succ</span> <span class="ow">in</span> <span class="n">G2</span><span class="p">[</span><span class="n">successor</span><span class="p">]):</span>
+                <span class="n">T2_in</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">successor</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">successor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">T2</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">successor</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">T2_in</span><span class="p">:</span>
+                    <span class="n">T2_tilde</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">successor</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">predecessor</span> <span class="ow">in</span> <span class="n">G2</span><span class="o">.</span><span class="n">pred</span><span class="p">[</span><span class="n">popped_node2</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">predecessor</span> <span class="ow">in</span> <span class="n">reverse_mapping</span><span class="p">:</span>
+            <span class="c1"># if a neighbor of the excluded node1 is in the mapping, keep node1 in T1</span>
+            <span class="n">is_added</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">T2</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">popped_node2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># check if its neighbor has another connection with a covered node. If not, only then exclude it from T1</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">pred</span> <span class="ow">in</span> <span class="n">reverse_mapping</span> <span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">G2</span><span class="o">.</span><span class="n">pred</span><span class="p">[</span><span class="n">predecessor</span><span class="p">]):</span>
+                <span class="n">T2</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">predecessor</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">succ</span> <span class="ow">in</span> <span class="n">reverse_mapping</span> <span class="k">for</span> <span class="n">succ</span> <span class="ow">in</span> <span class="n">G2</span><span class="p">[</span><span class="n">predecessor</span><span class="p">]):</span>
+                <span class="n">T2_in</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">predecessor</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">predecessor</span> <span class="ow">in</span> <span class="n">T2</span> <span class="ow">or</span> <span class="n">predecessor</span> <span class="ow">in</span> <span class="n">T2_in</span><span class="p">):</span>
+                <span class="n">T2_tilde</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">predecessor</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_added</span><span class="p">:</span>
+        <span class="n">T2_tilde</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">popped_node2</span><span class="p">)</span>
 </pre></div>
 
             </article>
@@ -833,11 +1552,11 @@
               
 <div class="toc-item">
   
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
 </div>
 
 <div class="toc-item">

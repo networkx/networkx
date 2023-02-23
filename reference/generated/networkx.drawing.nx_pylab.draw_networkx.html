@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>draw_networkx &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>draw_networkx &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -47,14 +47,20 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'reference/generated/networkx.drawing.nx_pylab.draw_networkx';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_pylab.draw_networkx.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="draw_networkx_nodes" href="networkx.drawing.nx_pylab.draw_networkx_nodes.html" />
     <link rel="prev" title="draw" href="networkx.drawing.nx_pylab.draw.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -96,6 +102,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -247,7 +259,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -410,7 +422,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -550,8 +562,8 @@ See <a class="reference internal" href="../drawing.html#module-networkx.drawing.
 compute node positions.</p>
 </dd>
 <dt><strong>arrows</strong><span class="classifier">bool or None, optional (default=None)</span></dt><dd><p>If <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>, directed graphs draw arrowheads with
-<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.FancyArrowPatch.html#matplotlib.patches.FancyArrowPatch" title="(in Matplotlib v3.6.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FancyArrowPatch</span></code></a>, while undirected graphs draw edges
-via <a class="reference external" href="https://matplotlib.org/stable/api/collections_api.html#matplotlib.collections.LineCollection" title="(in Matplotlib v3.6.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LineCollection</span></code></a> for speed.
+<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.FancyArrowPatch.html#matplotlib.patches.FancyArrowPatch" title="(in Matplotlib v3.7.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FancyArrowPatch</span></code></a>, while undirected graphs draw edges
+via <a class="reference external" href="https://matplotlib.org/stable/api/collections_api.html#matplotlib.collections.LineCollection" title="(in Matplotlib v3.7.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LineCollection</span></code></a> for speed.
 If <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a>, draw arrowheads with FancyArrowPatches (bendable and stylish).
 If <a class="reference external" href="https://docs.python.org/3/library/constants.html#False" title="(in Python v3.11)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code></a>, draw edges using LineCollection (linear and fast).
 For directed graphs, if True draw arrowheads.
@@ -559,11 +571,11 @@ Note: Arrows will be the same color as edges.</p>
 </dd>
 <dt><strong>arrowstyle</strong><span class="classifier">str (default=’-|&gt;’ for directed graphs)</span></dt><dd><p>For directed graphs, choose the style of the arrowsheads.
 For undirected graphs default to ‘-’</p>
-<p>See <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.ArrowStyle.html#matplotlib.patches.ArrowStyle" title="(in Matplotlib v3.6.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.patches.ArrowStyle</span></code></a> for more options.</p>
+<p>See <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.ArrowStyle.html#matplotlib.patches.ArrowStyle" title="(in Matplotlib v3.7.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.patches.ArrowStyle</span></code></a> for more options.</p>
 </dd>
 <dt><strong>arrowsize</strong><span class="classifier">int or list (default=10)</span></dt><dd><p>For directed graphs, choose the size of the arrow head’s length and
 width. A list of values can be passed in to assign a different size for arrow head’s length and width.
-See <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.FancyArrowPatch.html#matplotlib.patches.FancyArrowPatch" title="(in Matplotlib v3.6.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.patches.FancyArrowPatch</span></code></a> for attribute <code class="xref py py-obj docutils literal notranslate"><span class="pre">mutation_scale</span></code>
+See <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.FancyArrowPatch.html#matplotlib.patches.FancyArrowPatch" title="(in Matplotlib v3.7.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.patches.FancyArrowPatch</span></code></a> for attribute <code class="xref py py-obj docutils literal notranslate"><span class="pre">mutation_scale</span></code>
 for more info.</p>
 </dd>
 <dt><strong>with_labels</strong><span class="classifier">bool (default=True)</span></dt><dd><p>Set to True to draw labels on the nodes.</p>
@@ -607,7 +619,7 @@ mapped to colors using the edge_cmap and edge_vmin,edge_vmax parameters.</p>
 </dd>
 <dt><strong>style</strong><span class="classifier">string (default=solid line)</span></dt><dd><p>Edge line style e.g.: ‘-’, ‘–’, ‘-.’, ‘:’
 or words like ‘solid’ or ‘dashed’.
-(See <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.FancyArrowPatch.html#matplotlib.patches.FancyArrowPatch" title="(in Matplotlib v3.6.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.patches.FancyArrowPatch</span></code></a>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">linestyle</span></code>)</p>
+(See <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.FancyArrowPatch.html#matplotlib.patches.FancyArrowPatch" title="(in Matplotlib v3.7.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.patches.FancyArrowPatch</span></code></a>: <code class="xref py py-obj docutils literal notranslate"><span class="pre">linestyle</span></code>)</p>
 </dd>
 <dt><strong>labels</strong><span class="classifier">dictionary (default=None)</span></dt><dd><p>Node labels in a dictionary of text labels keyed by node</p>
 </dd>
@@ -669,6 +681,15 @@ turned off with keyword arrows=False.</p>
               
 <div class="toc-item">
   
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+
+<div class="toc-item">
+  
 <div class="tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
 </div>
@@ -686,15 +707,6 @@ turned off with keyword arrows=False.</p>
 </ul>
 
 </nav>
-</div>
-
-<div class="toc-item">
-  
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
 </div>
 
 <div class="toc-item">

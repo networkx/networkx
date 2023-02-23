@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
   <ShortName>NetworkX</ShortName>
-  <Description>Search NetworkX 3.0rc2.dev0 documentation</Description>
+  <Description>Search NetworkX 3.1rc1.dev0 documentation</Description>
   <InputEncoding>utf-8</InputEncoding>
   <Url type="text/html" method="get"
        template="https://networkx.org/search.html?q={searchTerms}"/>
-  <LongName>NetworkX 3.0rc2.dev0 documentation</LongName>
+  <LongName>NetworkX 3.1rc1.dev0 documentation</LongName>
   
 </OpenSearchDescription>

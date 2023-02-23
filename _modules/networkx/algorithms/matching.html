@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>networkx.algorithms.matching &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>networkx.algorithms.matching &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -46,12 +46,18 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/matching';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/matching.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -93,6 +99,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -244,7 +256,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -407,7 +419,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -854,8 +866,6 @@
     <span class="k">class</span> <span class="nc">NoNode</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Dummy value which is different from any node.&quot;&quot;&quot;</span>
 
-        <span class="k">pass</span>
-
     <span class="k">class</span> <span class="nc">Blossom</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Representation of a non-trivial blossom or sub-blossom.&quot;&quot;&quot;</span>
 
@@ -1269,7 +1279,7 @@
     <span class="c1"># Swap matched/unmatched edges over an alternating path between two</span>
     <span class="c1"># single vertices. The augmenting path runs through S-vertices v and w.</span>
     <span class="k">def</span> <span class="nf">augmentMatching</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
-        <span class="k">for</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="ow">in</span> <span class="p">((</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">),</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="p">((</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">),</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">v</span><span class="p">)):</span>
             <span class="c1"># Match vertex s to vertex j. Then trace back from s</span>
             <span class="c1"># until we find a single vertex, swapping matched and unmatched</span>
             <span class="c1"># edges as we go.</span>
@@ -1326,7 +1336,7 @@
                 <span class="n">jblossoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">blossomparent</span><span class="p">[</span><span class="n">jblossoms</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
             <span class="n">iblossoms</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
             <span class="n">jblossoms</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
-            <span class="k">for</span> <span class="p">(</span><span class="n">bi</span><span class="p">,</span> <span class="n">bj</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">iblossoms</span><span class="p">,</span> <span class="n">jblossoms</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">bi</span><span class="p">,</span> <span class="n">bj</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">iblossoms</span><span class="p">,</span> <span class="n">jblossoms</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">bi</span> <span class="o">!=</span> <span class="n">bj</span><span class="p">:</span>
                     <span class="k">break</span>
                 <span class="n">s</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">blossomdual</span><span class="p">[</span><span class="n">bi</span><span class="p">]</span>
@@ -1341,13 +1351,12 @@
         <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">blossomdual</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">blossomdual</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span>
-                <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="ow">in</span> <span class="n">b</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">b</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]:</span>
                     <span class="k">assert</span> <span class="n">mate</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">j</span> <span class="ow">and</span> <span class="n">mate</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span>
         <span class="c1"># Ok.</span>
 
     <span class="c1"># Main loop: continue until no further improvement is possible.</span>
     <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
-
         <span class="c1"># Each iteration of this loop is a &quot;stage&quot;.</span>
         <span class="c1"># A stage finds an augmenting path and uses that to improve</span>
         <span class="c1"># the matching.</span>
@@ -1376,7 +1385,6 @@
         <span class="c1"># Loop until we succeed in augmenting the matching.</span>
         <span class="n">augmented</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
-
             <span class="c1"># Each iteration of this loop is a &quot;substage&quot;.</span>
             <span class="c1"># A substage tries to find an augmenting path;</span>
             <span class="c1"># if found, the path is used to improve the matching and</span>
@@ -1387,7 +1395,6 @@
             <span class="c1"># Continue labeling until all vertices which are reachable</span>
             <span class="c1"># through an alternating path have got a label.</span>
             <span class="k">while</span> <span class="n">queue</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">augmented</span><span class="p">:</span>
-
                 <span class="c1"># Take an S vertex from the queue.</span>
                 <span class="n">v</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
                 <span class="k">assert</span> <span class="n">label</span><span class="p">[</span><span class="n">inblossom</span><span class="p">[</span><span class="n">v</span><span class="p">]]</span> <span class="o">==</span> <span class="mi">1</span>
@@ -1583,11 +1590,11 @@
               
 <div class="toc-item">
   
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
 </div>
 
 <div class="toc-item">

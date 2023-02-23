@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>write_latex &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>write_latex &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -47,14 +47,20 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'reference/generated/networkx.drawing.nx_latex.write_latex';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_latex.write_latex.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Randomness" href="../randomness.html" />
     <link rel="prev" title="to_latex" href="networkx.drawing.nx_latex.to_latex.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -96,6 +102,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -247,7 +259,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -410,7 +422,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -538,7 +550,7 @@
 <dd><p>Write the latex code to draw the graph(s) onto <code class="xref py py-obj docutils literal notranslate"><span class="pre">path</span></code>.</p>
 <p>This convenience function creates the latex drawing code as a string
 and writes that to a file ready to be compiled when <code class="xref py py-obj docutils literal notranslate"><span class="pre">as_document</span></code> is True
-or ready to be <a href="#id1"><span class="problematic" id="id2">``</span></a>import``ed or <a href="#id3"><span class="problematic" id="id4">`</span></a>include``ed into your main LaTeX document.</p>
+or ready to be <code class="docutils literal notranslate"><span class="pre">import</span></code> ed or <code class="docutils literal notranslate"><span class="pre">include</span></code> ed into your main LaTeX document.</p>
 <p>The <code class="xref py py-obj docutils literal notranslate"><span class="pre">path</span></code> argument can be a string filename or a file handle to write to.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -550,71 +562,71 @@ envionment within a single figure environment.</p>
 <dt><strong>path</strong><span class="classifier">filename</span></dt><dd><p>Filename or file handle to write to</p>
 </dd>
 <dt><strong>options</strong><span class="classifier">dict</span></dt><dd><p>By default, TikZ is used with options: (others are ignored):</p>
-<dl>
-<dt>pos<span class="classifier">string or dict or list</span></dt><dd><p>The name of the node attribute on <code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code> that holds the position of each node.
-Positions can be sequences of length 2 with numbers for (x,y) coordinates.
-They can also be strings to denote positions in TikZ style, such as (x, y)
-or (angle:radius).
-If a dict, it should be keyed by node to a position.
-If an empty dict, a circular layout is computed by TikZ.
-If you are drawing many graphs in subfigures, use a list of position dicts.</p>
-</dd>
-<dt>tikz_options<span class="classifier">string</span></dt><dd><p>The tikzpicture options description defining the options for the picture.
-Often large scale options like <code class="xref py py-obj docutils literal notranslate"><span class="pre">[scale=2]</span></code>.</p>
-</dd>
-<dt>default_node_options<span class="classifier">string</span></dt><dd><p>The draw options for a path of nodes. Individual node options override these.</p>
-</dd>
-<dt>node_options<span class="classifier">string or dict</span></dt><dd><p>The name of the node attribute on <code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code> that holds the options for each node.
-Or a dict keyed by node to a string holding the options for that node.</p>
-</dd>
-<dt>node_label<span class="classifier">string or dict</span></dt><dd><p>The name of the node attribute on <code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code> that holds the node label (text)
-displayed for each node. If the attribute is “” or not present, the node
-itself is drawn as a string. LaTeX processing such as <code class="docutils literal notranslate"><span class="pre">&quot;$A_1$&quot;</span></code> is allowed.
-Or a dict keyed by node to a string holding the label for that node.</p>
-</dd>
-<dt>default_edge_options<span class="classifier">string</span></dt><dd><p>The options for the scope drawing all edges. The default is “[-]” for
-undirected graphs and “[-&gt;]” for directed graphs.</p>
-</dd>
-<dt>edge_options<span class="classifier">string or dict</span></dt><dd><p>The name of the edge attribute on <code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code> that holds the options for each edge.
-If the edge is a self-loop and <code class="docutils literal notranslate"><span class="pre">&quot;loop&quot;</span> <span class="pre">not</span> <span class="pre">in</span> <span class="pre">edge_options</span></code> the option
-“loop,” is added to the options for the self-loop edge. Hence you can
-use “[loop above]” explicitly, but the default is “[loop]”.
-Or a dict keyed by edge to a string holding the options for that edge.</p>
-</dd>
-<dt>edge_label<span class="classifier">string or dict</span></dt><dd><p>The name of the edge attribute on <code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code> that holds the edge label (text)
-displayed for each edge. If the attribute is “” or not present, no edge
-label is drawn.
-Or a dict keyed by edge to a string holding the label for that edge.</p>
-</dd>
-<dt>edge_label_options<span class="classifier">string or dict</span></dt><dd><p>The name of the edge attribute on <code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code> that holds the label options for
-each edge. For example, “[sloped,above,blue]”. The default is no options.
-Or a dict keyed by edge to a string holding the label options for that edge.</p>
-</dd>
-<dt>caption<span class="classifier">string</span></dt><dd><p>The caption string for the figure environment</p>
-</dd>
-<dt>latex_label<span class="classifier">string</span></dt><dd><p>The latex label used for the figure for easy referral from the main text</p>
-</dd>
-<dt>sub_captions<span class="classifier">list of strings</span></dt><dd><p>The sub_caption string for each subfigure in the figure</p>
-</dd>
-<dt>sub_latex_labels<span class="classifier">list of strings</span></dt><dd><p>The latex label for each subfigure in the figure</p>
-</dd>
-<dt>n_rows<span class="classifier">int</span></dt><dd><p>The number of rows of subfigures to arrange for multiple graphs</p>
-</dd>
-<dt>as_document<span class="classifier">bool</span></dt><dd><p>Whether to wrap the latex code in a document envionment for compiling</p>
-</dd>
-<dt>document_wrapper<span class="classifier">formatted text string with variable <code class="docutils literal notranslate"><span class="pre">content</span></code>.</span></dt><dd><p>This text is called to evaluate the content embedded in a document
-environment with a preamble setting up the TikZ syntax.</p>
-</dd>
-<dt>figure_wrapper<span class="classifier">formatted text string</span></dt><dd><p>This text is evaluated with variables <code class="docutils literal notranslate"><span class="pre">content</span></code>, <code class="docutils literal notranslate"><span class="pre">caption</span></code> and <code class="docutils literal notranslate"><span class="pre">label</span></code>.
-It wraps the content and if a caption is provided, adds the latex code for
-that caption, and if a label is provided, adds the latex code for a label.</p>
-</dd>
-<dt>subfigure_wrapper<span class="classifier">formatted text string</span></dt><dd><p>This text evaluate variables <code class="docutils literal notranslate"><span class="pre">size</span></code>, <code class="docutils literal notranslate"><span class="pre">content</span></code>, <code class="docutils literal notranslate"><span class="pre">caption</span></code> and <code class="docutils literal notranslate"><span class="pre">label</span></code>.
-It wraps the content and if a caption is provided, adds the latex code for
-that caption, and if a label is provided, adds the latex code for a label.
-The size is the vertical size of each row of subfigures as a fraction.</p>
-</dd>
-</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>pos : string or dict or list
+    The name of the node attribute on `G` that holds the position of each node.
+    Positions can be sequences of length 2 with numbers for (x,y) coordinates.
+    They can also be strings to denote positions in TikZ style, such as (x, y)
+    or (angle:radius).
+    If a dict, it should be keyed by node to a position.
+    If an empty dict, a circular layout is computed by TikZ.
+    If you are drawing many graphs in subfigures, use a list of position dicts.
+tikz_options : string
+    The tikzpicture options description defining the options for the picture.
+    Often large scale options like `[scale=2]`.
+default_node_options : string
+    The draw options for a path of nodes. Individual node options override these.
+node_options : string or dict
+    The name of the node attribute on `G` that holds the options for each node.
+    Or a dict keyed by node to a string holding the options for that node.
+node_label : string or dict
+    The name of the node attribute on `G` that holds the node label (text)
+    displayed for each node. If the attribute is &quot;&quot; or not present, the node
+    itself is drawn as a string. LaTeX processing such as ``&quot;$A_1$&quot;`` is allowed.
+    Or a dict keyed by node to a string holding the label for that node.
+default_edge_options : string
+    The options for the scope drawing all edges. The default is &quot;[-]&quot; for
+    undirected graphs and &quot;[-&gt;]&quot; for directed graphs.
+edge_options : string or dict
+    The name of the edge attribute on `G` that holds the options for each edge.
+    If the edge is a self-loop and ``&quot;loop&quot; not in edge_options`` the option
+    &quot;loop,&quot; is added to the options for the self-loop edge. Hence you can
+    use &quot;[loop above]&quot; explicitly, but the default is &quot;[loop]&quot;.
+    Or a dict keyed by edge to a string holding the options for that edge.
+edge_label : string or dict
+    The name of the edge attribute on `G` that holds the edge label (text)
+    displayed for each edge. If the attribute is &quot;&quot; or not present, no edge
+    label is drawn.
+    Or a dict keyed by edge to a string holding the label for that edge.
+edge_label_options : string or dict
+    The name of the edge attribute on `G` that holds the label options for
+    each edge. For example, &quot;[sloped,above,blue]&quot;. The default is no options.
+    Or a dict keyed by edge to a string holding the label options for that edge.
+caption : string
+    The caption string for the figure environment
+latex_label : string
+    The latex label used for the figure for easy referral from the main text
+sub_captions : list of strings
+    The sub_caption string for each subfigure in the figure
+sub_latex_labels : list of strings
+    The latex label for each subfigure in the figure
+n_rows : int
+    The number of rows of subfigures to arrange for multiple graphs
+as_document : bool
+    Whether to wrap the latex code in a document envionment for compiling
+document_wrapper : formatted text string with variable ``content``.
+    This text is called to evaluate the content embedded in a document
+    environment with a preamble setting up the TikZ syntax.
+figure_wrapper : formatted text string
+    This text is evaluated with variables ``content``, ``caption`` and ``label``.
+    It wraps the content and if a caption is provided, adds the latex code for
+    that caption, and if a label is provided, adds the latex code for a label.
+subfigure_wrapper : formatted text string
+    This text evaluate variables ``size``, ``content``, ``caption`` and ``label``.
+    It wraps the content and if a caption is provided, adds the latex code for
+    that caption, and if a label is provided, adds the latex code for a label.
+    The size is the vertical size of each row of subfigures as a fraction.
+</pre></div>
+</div>
 </dd>
 </dl>
 </dd>
@@ -642,6 +654,15 @@ The size is the vertical size of each row of subfigures as a fraction.</p>
               
 <div class="toc-item">
   
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+
+<div class="toc-item">
+  
 <div class="tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
 </div>
@@ -659,15 +680,6 @@ The size is the vertical size of each row of subfigures as a fraction.</p>
 </ul>
 
 </nav>
-</div>
-
-<div class="toc-item">
-  
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
 </div>
 
 <div class="toc-item">

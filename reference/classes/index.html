@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Graph types &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>Graph types &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -47,14 +47,20 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'reference/classes/index';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/reference/classes/index.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Graph—Undirected graphs with self loops" href="graph.html" />
     <link rel="prev" title="Introduction" href="../introduction.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -96,6 +102,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -247,7 +259,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -410,7 +422,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -605,7 +617,7 @@ In other algorithms it is convenient to temporarily morph
 a graph to reverse directed edges, or treat a directed graph
 as undirected, etc. This module provides those graph views.</p>
 <p>The resulting views are essentially read-only graphs that
-report data from the orignal graph object. We provide an
+report data from the original graph object. We provide an
 attribute G._graph which points to the underlying graph object.</p>
 <p>Note: Since graphviews look like graphs, one can end up with
 view-of-view-of-view chains. Be careful with chains because
@@ -737,46 +749,46 @@ for computation. Things will change and break in the future!</p>
 <p>To be a valid plugin, a package must register an entry_point
 of <code class="xref py py-obj docutils literal notranslate"><span class="pre">networkx.plugins</span></code> with a key pointing to the handler.</p>
 <p>For example:</p>
-<p><code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">entry_points={'networkx.plugins':</span> <span class="pre">'sparse</span> <span class="pre">=</span> <span class="pre">networkx_plugin_sparse'}</span>
-<span class="pre">`</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">entry_points</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;networkx.plugins&#39;</span><span class="p">:</span> <span class="s1">&#39;sparse = networkx_plugin_sparse&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
 <p>The plugin must create a Graph-like object which contains an attribute
-<code class="xref py py-obj docutils literal notranslate"><span class="pre">__networkx_plugin__</span></code> with a value of the entry point name.</p>
+<code class="docutils literal notranslate"><span class="pre">__networkx_plugin__</span></code> with a value of the entry point name.</p>
 <p>Continuing the example above:</p>
-<p><a href="#id1"><span class="problematic" id="id2">``</span></a>`
-class WrappedSparse:</p>
-<blockquote>
-<div><p>__networkx_plugin__ = “sparse”
-…</p>
-</div></blockquote>
-<p><a href="#id3"><span class="problematic" id="id4">``</span></a><a href="#id5"><span class="problematic" id="id6">`</span></a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">WrappedSparse</span><span class="p">:</span>
+    <span class="n">__networkx_plugin__</span> <span class="o">=</span> <span class="s2">&quot;sparse&quot;</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
 <p>When a dispatchable NetworkX algorithm encounters a Graph-like object
-with a <code class="xref py py-obj docutils literal notranslate"><span class="pre">__networkx_plugin__</span></code> attribute, it will look for the associated
+with a <code class="docutils literal notranslate"><span class="pre">__networkx_plugin__</span></code> attribute, it will look for the associated
 dispatch object in the entry_points, load it, and dispatch the work to it.</p>
 </section>
 <section id="testing">
 <h3>Testing<a class="headerlink" href="#testing" title="Permalink to this heading">#</a></h3>
 <p>To assist in validating the backend algorithm implementations, if an
-environment variable <code class="xref py py-obj docutils literal notranslate"><span class="pre">NETWORKX_GRAPH_CONVERT</span></code> is set to a registered
+environment variable <code class="docutils literal notranslate"><span class="pre">NETWORKX_GRAPH_CONVERT</span></code> is set to a registered
 plugin keys, the dispatch machinery will automatically convert regular
 networkx Graphs and DiGraphs to the backend equivalent by calling
-<code class="xref py py-obj docutils literal notranslate"><span class="pre">&lt;backend</span> <span class="pre">dispatcher&gt;.convert_from_nx(G,</span> <span class="pre">weight=weight,</span> <span class="pre">name=name)</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">&lt;backend</span> <span class="pre">dispatcher&gt;.convert_from_nx(G,</span> <span class="pre">weight=weight,</span> <span class="pre">name=name)</span></code>.</p>
 <p>The converted object is then passed to the backend implementation of
 the algorithm. The result is then passed to
-<code class="xref py py-obj docutils literal notranslate"><span class="pre">&lt;backend</span> <span class="pre">dispatcher&gt;.convert_to_nx(result,</span> <span class="pre">name=name)</span></code> to convert back
+<code class="docutils literal notranslate"><span class="pre">&lt;backend</span> <span class="pre">dispatcher&gt;.convert_to_nx(result,</span> <span class="pre">name=name)</span></code> to convert back
 to a form expected by the NetworkX tests.</p>
-<p>By defining <code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_from_nx</span></code> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_to_nx</span></code> methods and setting
+<p>By defining <code class="docutils literal notranslate"><span class="pre">convert_from_nx</span></code> and <code class="docutils literal notranslate"><span class="pre">convert_to_nx</span></code> methods and setting
 the environment variable, NetworkX will automatically route tests on
 dispatchable algorithms to the backend, allowing the full networkx test
 suite to be run against the backend implementation.</p>
-<p>Example pytest invocation:
-NETWORKX_GRAPH_CONVERT=sparse pytest –pyargs networkx</p>
+<p>Example pytest invocation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">NETWORKX_GRAPH_CONVERT</span><span class="o">=</span><span class="n">sparse</span> <span class="n">pytest</span> <span class="o">--</span><span class="n">pyargs</span> <span class="n">networkx</span>
+</pre></div>
+</div>
 <p>Dispatchable algorithms which are not implemented by the backend
-will cause a <code class="xref py py-obj docutils literal notranslate"><span class="pre">pytest.xfail()</span></code>, giving some indication that not all
+will cause a <code class="docutils literal notranslate"><span class="pre">pytest.xfail()</span></code>, giving some indication that not all
 tests are working, while avoiding causing an explicit failure.</p>
-<p>A special <code class="xref py py-obj docutils literal notranslate"><span class="pre">on_start_tests(items)</span></code> function may be defined by the backend.
+<p>A special <code class="docutils literal notranslate"><span class="pre">on_start_tests(items)</span></code> function may be defined by the backend.
 It will be called with the list of NetworkX tests discovered. Each item
-is a pytest.Node object. If the backend does not support the test, that
+is a <code class="xref py py-obj docutils literal notranslate"><span class="pre">pytest.Node</span></code> object. If the backend does not support the test, that
 test can be marked as xfail.</p>
 </section>
 <table class="autosummary longtable table autosummary">
@@ -800,6 +812,15 @@ test can be marked as xfail.</p>
           
             <div class="bd-sidebar-secondary bd-toc">
               
+<div class="toc-item">
+  
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+
 <div class="toc-item">
   
 <div class="tocsection onthispage">
@@ -852,15 +873,6 @@ test can be marked as xfail.</p>
 </ul>
 
 </nav>
-</div>
-
-<div class="toc-item">
-  
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
 </div>
 
 <div class="toc-item">

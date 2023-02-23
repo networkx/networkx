@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>networkx.algorithms.tree.mst &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>networkx.algorithms.tree.mst &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -46,12 +46,18 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/tree/mst';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/tree/mst.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -93,6 +99,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -244,7 +256,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -407,7 +419,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -1310,10 +1322,10 @@
 <span class="sd">        Find the sum of weights of the spanning trees of `G` using the</span>
 <span class="sd">        approioate `method`.</span>
 
-<span class="sd">        This is easy if the choosen method is &#39;multiplicative&#39;, since we can</span>
+<span class="sd">        This is easy if the chosen method is &#39;multiplicative&#39;, since we can</span>
 <span class="sd">        use Kirchhoff&#39;s Tree Matrix Theorem directly. However, with the</span>
 <span class="sd">        &#39;additive&#39; method, this process is slightly more complex and less</span>
-<span class="sd">        computatiionally efficent as we have to find the number of spanning</span>
+<span class="sd">        computatiionally efficient as we have to find the number of spanning</span>
 <span class="sd">        trees which contain each possible edge in the graph.</span>
 
 <span class="sd">        Parameters</span>
@@ -1345,7 +1357,7 @@
             <span class="c1">#    the number of spanning trees which have to include that edge. This</span>
             <span class="c1">#    can be accomplished by contracting the edge and finding the</span>
             <span class="c1">#    multiplicative total spanning tree weight if the weight of each edge</span>
-            <span class="c1">#    is assumed to be 1, which is conviently built into networkx already,</span>
+            <span class="c1">#    is assumed to be 1, which is conveniently built into networkx already,</span>
             <span class="c1">#    by calling total_spanning_tree_weight with weight=None</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
@@ -1485,7 +1497,7 @@
         <span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">weight</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">partition_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">Partition</span><span class="p">(</span><span class="n">mst_weight</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span> <span class="k">else</span> <span class="o">-</span><span class="n">mst_weight</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Partition</span><span class="p">(</span><span class="n">mst_weight</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span> <span class="k">else</span> <span class="o">-</span><span class="n">mst_weight</span><span class="p">,</span> <span class="p">{})</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span>
@@ -1587,11 +1599,11 @@
               
 <div class="toc-item">
   
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
 </div>
 
 <div class="toc-item">

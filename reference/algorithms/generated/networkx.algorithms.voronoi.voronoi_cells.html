@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>voronoi_cells &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>voronoi_cells &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -44,17 +44,24 @@
     <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/copybutton.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'reference/algorithms/generated/networkx.algorithms.voronoi.voronoi_cells';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.voronoi.voronoi_cells.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Wiener index" href="../wiener.html" />
     <link rel="prev" title="Voronoi cells" href="../voronoi.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -96,6 +103,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -247,7 +260,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -410,7 +423,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -565,9 +578,9 @@
 <span class="sig-name descname"><span class="pre">voronoi_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'weight'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/networkx/algorithms/voronoi.html#voronoi_cells"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#networkx.algorithms.voronoi.voronoi_cells" title="Permalink to this definition">#</a></dt>
 <dd><p>Returns the Voronoi cells centered at <code class="xref py py-obj docutils literal notranslate"><span class="pre">center_nodes</span></code> with respect
 to the shortest-path distance metric.</p>
-<p>If <em>C</em> is a set of nodes in the graph and <em>c</em> is an element of <em>C</em>,
-the <em>Voronoi cell</em> centered at a node <em>c</em> is the set of all nodes
-<em>v</em> that are closer to <em>c</em> than to any other center node in <em>C</em> with
+<p>If <span class="math notranslate nohighlight">\(C\)</span> is a set of nodes in the graph and <span class="math notranslate nohighlight">\(c\)</span> is an element of <span class="math notranslate nohighlight">\(C\)</span>,
+the <em>Voronoi cell</em> centered at a node <span class="math notranslate nohighlight">\(c\)</span> is the set of all nodes
+<span class="math notranslate nohighlight">\(v\)</span> that are closer to <span class="math notranslate nohighlight">\(c\)</span> than to any other center node in <span class="math notranslate nohighlight">\(C\)</span> with
 respect to the shortest-path distance metric. <a class="reference internal" href="#r998ea44ae3e7-1" id="id1">[1]</a></p>
 <p>For directed graphs, this will compute the “outward” Voronoi cells,
 as defined in <a class="reference internal" href="#r998ea44ae3e7-1" id="id2">[1]</a>, in which distance is measured from the center
@@ -610,10 +623,9 @@ the values of the dictionary form a partition of the nodes of
 <div class="citation" id="r998ea44ae3e7-1" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
-<p>Erwig, Martin. (2000),
-“The graph Voronoi diagram with applications.”
+<p>Erwig, Martin. (2000),”The graph Voronoi diagram with applications.”
 <em>Networks</em>, 36: 156–163.
-&lt;dx.doi.org/10.1002/1097-0037(200010)36:3&lt;156::AID-NET2&gt;3.0.CO;2-L&gt;</p>
+<a class="reference external" href="https://doi.org/10.1002/1097-0037(200010)36">https://doi.org/10.1002/1097-0037(200010)36</a>:3&lt;156::AID-NET2&gt;3.0.CO;2-L</p>
 </div>
 </div>
 <p class="rubric">Examples</p>
@@ -644,6 +656,15 @@ take the collection of all values in the returned dictionary:</p>
               
 <div class="toc-item">
   
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+
+<div class="toc-item">
+  
 <div class="tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
 </div>
@@ -661,15 +682,6 @@ take the collection of all values in the returned dictionary:</p>
 </ul>
 
 </nav>
-</div>
-
-<div class="toc-item">
-  
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
 </div>
 
 <div class="toc-item">

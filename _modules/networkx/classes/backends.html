@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>networkx.classes.backends &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>networkx.classes.backends &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -46,12 +46,18 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/classes/backends';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/classes/backends.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -93,6 +99,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -244,7 +256,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -407,7 +419,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -470,56 +482,53 @@
 <span class="sd">To be a valid plugin, a package must register an entry_point</span>
 <span class="sd">of `networkx.plugins` with a key pointing to the handler.</span>
 
-<span class="sd">For example:</span>
+<span class="sd">For example::</span>
 
-<span class="sd">```</span>
-<span class="sd">entry_points={&#39;networkx.plugins&#39;: &#39;sparse = networkx_plugin_sparse&#39;}</span>
-<span class="sd">```</span>
+<span class="sd">    entry_points={&#39;networkx.plugins&#39;: &#39;sparse = networkx_plugin_sparse&#39;}</span>
 
 <span class="sd">The plugin must create a Graph-like object which contains an attribute</span>
-<span class="sd">`__networkx_plugin__` with a value of the entry point name.</span>
+<span class="sd">``__networkx_plugin__`` with a value of the entry point name.</span>
 
-<span class="sd">Continuing the example above:</span>
+<span class="sd">Continuing the example above::</span>
 
-<span class="sd">```</span>
-<span class="sd">class WrappedSparse:</span>
-<span class="sd">    __networkx_plugin__ = &quot;sparse&quot;</span>
-<span class="sd">    ...</span>
-<span class="sd">```</span>
+<span class="sd">    class WrappedSparse:</span>
+<span class="sd">        __networkx_plugin__ = &quot;sparse&quot;</span>
+<span class="sd">        ...</span>
 
 <span class="sd">When a dispatchable NetworkX algorithm encounters a Graph-like object</span>
-<span class="sd">with a `__networkx_plugin__` attribute, it will look for the associated</span>
+<span class="sd">with a ``__networkx_plugin__`` attribute, it will look for the associated</span>
 <span class="sd">dispatch object in the entry_points, load it, and dispatch the work to it.</span>
 
 
 <span class="sd">Testing</span>
 <span class="sd">-------</span>
 <span class="sd">To assist in validating the backend algorithm implementations, if an</span>
-<span class="sd">environment variable `NETWORKX_GRAPH_CONVERT` is set to a registered</span>
+<span class="sd">environment variable ``NETWORKX_GRAPH_CONVERT`` is set to a registered</span>
 <span class="sd">plugin keys, the dispatch machinery will automatically convert regular</span>
 <span class="sd">networkx Graphs and DiGraphs to the backend equivalent by calling</span>
-<span class="sd">`&lt;backend dispatcher&gt;.convert_from_nx(G, weight=weight, name=name)`.</span>
+<span class="sd">``&lt;backend dispatcher&gt;.convert_from_nx(G, weight=weight, name=name)``.</span>
 
 <span class="sd">The converted object is then passed to the backend implementation of</span>
 <span class="sd">the algorithm. The result is then passed to</span>
-<span class="sd">`&lt;backend dispatcher&gt;.convert_to_nx(result, name=name)` to convert back</span>
+<span class="sd">``&lt;backend dispatcher&gt;.convert_to_nx(result, name=name)`` to convert back</span>
 <span class="sd">to a form expected by the NetworkX tests.</span>
 
-<span class="sd">By defining `convert_from_nx` and `convert_to_nx` methods and setting</span>
+<span class="sd">By defining ``convert_from_nx`` and ``convert_to_nx`` methods and setting</span>
 <span class="sd">the environment variable, NetworkX will automatically route tests on</span>
 <span class="sd">dispatchable algorithms to the backend, allowing the full networkx test</span>
 <span class="sd">suite to be run against the backend implementation.</span>
 
-<span class="sd">Example pytest invocation:</span>
-<span class="sd">NETWORKX_GRAPH_CONVERT=sparse pytest --pyargs networkx</span>
+<span class="sd">Example pytest invocation::</span>
+
+<span class="sd">    NETWORKX_GRAPH_CONVERT=sparse pytest --pyargs networkx</span>
 
 <span class="sd">Dispatchable algorithms which are not implemented by the backend</span>
-<span class="sd">will cause a `pytest.xfail()`, giving some indication that not all</span>
+<span class="sd">will cause a ``pytest.xfail()``, giving some indication that not all</span>
 <span class="sd">tests are working, while avoiding causing an explicit failure.</span>
 
-<span class="sd">A special `on_start_tests(items)` function may be defined by the backend.</span>
+<span class="sd">A special ``on_start_tests(items)`` function may be defined by the backend.</span>
 <span class="sd">It will be called with the list of NetworkX tests discovered. Each item</span>
-<span class="sd">is a pytest.Node object. If the backend does not support the test, that</span>
+<span class="sd">is a `pytest.Node` object. If the backend does not support the test, that</span>
 <span class="sd">test can be marked as xfail.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">functools</span>
@@ -700,11 +709,11 @@
               
 <div class="toc-item">
   
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
 </div>
 
 <div class="toc-item">

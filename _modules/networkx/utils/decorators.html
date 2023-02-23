@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>networkx.utils.decorators &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>networkx.utils.decorators &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -46,12 +46,18 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/utils/decorators';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/utils/decorators.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -93,6 +99,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -244,7 +256,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -407,7 +419,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -538,8 +550,8 @@
         <span class="p">)</span>
 
     <span class="c1"># 3-way logic: True if &quot;directed&quot; input, False if &quot;undirected&quot; input, else None</span>
-    <span class="n">dval</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;directed&quot;</span> <span class="ow">in</span> <span class="n">graph_types</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="s2">&quot;undirected&quot;</span> <span class="ow">in</span> <span class="n">graph_types</span><span class="p">)</span> <span class="ow">and</span> <span class="kc">None</span>
-    <span class="n">mval</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;multigraph&quot;</span> <span class="ow">in</span> <span class="n">graph_types</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="s2">&quot;graph&quot;</span> <span class="ow">in</span> <span class="n">graph_types</span><span class="p">)</span> <span class="ow">and</span> <span class="kc">None</span>
+    <span class="n">dval</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;directed&quot;</span> <span class="ow">in</span> <span class="n">graph_types</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;undirected&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">graph_types</span> <span class="ow">and</span> <span class="kc">None</span>
+    <span class="n">mval</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;multigraph&quot;</span> <span class="ow">in</span> <span class="n">graph_types</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;graph&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">graph_types</span> <span class="ow">and</span> <span class="kc">None</span>
     <span class="n">errmsg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;not implemented for </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">graph_types</span><span class="p">)</span><span class="si">}</span><span class="s2"> type&quot;</span>
 
     <span class="k">def</span> <span class="nf">_not_implemented_for</span><span class="p">(</span><span class="n">g</span><span class="p">):</span>
@@ -560,7 +572,7 @@
     <span class="s2">&quot;.gzip&quot;</span><span class="p">:</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">,</span>
     <span class="s2">&quot;.bz2&quot;</span><span class="p">:</span> <span class="n">bz2</span><span class="o">.</span><span class="n">BZ2File</span><span class="p">,</span>
 <span class="p">}</span>
-<span class="n">_dispatch_dict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">open</span><span class="p">,</span> <span class="o">**</span><span class="n">fopeners</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+<span class="n">_dispatch_dict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="nb">open</span><span class="p">,</span> <span class="o">**</span><span class="n">fopeners</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="open_file"><a class="viewcode-back" href="../../../reference/generated/networkx.utils.decorators.open_file.html#networkx.utils.decorators.open_file">[docs]</a><span class="k">def</span> <span class="nf">open_file</span><span class="p">(</span><span class="n">path_arg</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">):</span>
@@ -1684,11 +1696,11 @@
               
 <div class="toc-item">
   
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
 </div>
 
 <div class="toc-item">

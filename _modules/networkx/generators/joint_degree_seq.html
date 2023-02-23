@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>networkx.generators.joint_degree_seq &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>networkx.generators.joint_degree_seq &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -46,12 +46,18 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/generators/joint_degree_seq';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/generators/joint_degree_seq.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -93,6 +99,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -244,7 +256,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -407,7 +419,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -690,13 +702,11 @@
     <span class="c1"># for each pair</span>
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">joint_degrees</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">joint_degrees</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
-
             <span class="c1"># n_edges_add is the number of edges to add for the</span>
             <span class="c1"># degree pair (k,l)</span>
             <span class="n">n_edges_add</span> <span class="o">=</span> <span class="n">joint_degrees</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">l</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="p">(</span><span class="n">n_edges_add</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">k</span> <span class="o">&gt;=</span> <span class="n">l</span><span class="p">):</span>
-
                 <span class="c1"># number of nodes with degree k and l</span>
                 <span class="n">k_size</span> <span class="o">=</span> <span class="n">degree_count</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
                 <span class="n">l_size</span> <span class="o">=</span> <span class="n">degree_count</span><span class="p">[</span><span class="n">l</span><span class="p">]</span>
@@ -716,14 +726,12 @@
                     <span class="n">n_edges_add</span> <span class="o">=</span> <span class="n">joint_degrees</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">l</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span>
 
                 <span class="k">while</span> <span class="n">n_edges_add</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-
                     <span class="c1"># randomly pick nodes v and w that have degrees k and l</span>
                     <span class="n">v</span> <span class="o">=</span> <span class="n">k_nodes</span><span class="p">[</span><span class="n">seed</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="n">k_size</span><span class="p">)]</span>
                     <span class="n">w</span> <span class="o">=</span> <span class="n">l_nodes</span><span class="p">[</span><span class="n">seed</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="n">l_size</span><span class="p">)]</span>
 
                     <span class="c1"># if nodes v and w are disconnected then attempt to connect</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">v</span> <span class="o">!=</span> <span class="n">w</span><span class="p">):</span>
-
                         <span class="c1"># if node v has no free stubs then do neighbor switch</span>
                         <span class="k">if</span> <span class="n">h_node_residual</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                             <span class="n">_neighbor_switch</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">k_unsat</span><span class="p">,</span> <span class="n">h_node_residual</span><span class="p">)</span>
@@ -814,13 +822,7 @@
                 <span class="k">if</span> <span class="n">val</span> <span class="o">+</span> <span class="n">forbidden</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">l</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">V</span><span class="p">[(</span><span class="n">k</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">*</span> <span class="n">V</span><span class="p">[(</span><span class="n">l</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]:</span>
                     <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">S</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">S</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">V</span><span class="p">[</span><span class="n">s</span><span class="p">]:</span>  <span class="c1"># condition 2</span>
-            <span class="k">return</span> <span class="kc">False</span>
-
-    <span class="c1"># if all conditions abive have been satisfied then the input nkk is</span>
-    <span class="c1"># realizable as a simple graph.</span>
-    <span class="k">return</span> <span class="kc">True</span></div>
+    <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">S</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">/</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">V</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">S</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">_directed_neighbor_switch</span><span class="p">(</span>
@@ -1145,11 +1147,11 @@
               
 <div class="toc-item">
   
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
 </div>
 
 <div class="toc-item">

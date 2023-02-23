@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Deprecations &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>Deprecations &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -47,14 +47,20 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'developer/deprecations';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/developer/deprecations.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Roadmap" href="roadmap.html" />
     <link rel="prev" title="Release Process" href="release.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -96,6 +102,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -247,7 +259,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -410,7 +422,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -551,6 +563,13 @@ for the <code class="docutils literal notranslate"><span class="pre">scale_free_
 <span class="pre">and</span> <span class="pre">docstring</span> <span class="pre">in</span> <span class="pre">``node_link_data</span></code> and <code class="docutils literal notranslate"><span class="pre">node_link_graph</span></code>. Also the associated tests.</p></li>
 </ul>
 </section>
+<section id="version-3-3">
+<h3>Version 3.3<a class="headerlink" href="#version-3-3" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Remove the <code class="docutils literal notranslate"><span class="pre">forest_str</span></code> function from <code class="docutils literal notranslate"><span class="pre">readwrite/text.py</span></code>. Replace
+existing usages with <code class="docutils literal notranslate"><span class="pre">write_network_text</span></code>.</p></li>
+</ul>
+</section>
 </section>
 </section>
 
@@ -565,6 +584,15 @@ for the <code class="docutils literal notranslate"><span class="pre">scale_free_
           
             <div class="bd-sidebar-secondary bd-toc">
               
+<div class="toc-item">
+  
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+
 <div class="toc-item">
   
 <div class="tocsection onthispage">
@@ -592,20 +620,16 @@ for the <code class="docutils literal notranslate"><span class="pre">scale_free_
      Version 3.2
     </a>
    </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#version-3-3">
+     Version 3.3
+    </a>
+   </li>
   </ul>
  </li>
 </ul>
 
 </nav>
-</div>
-
-<div class="toc-item">
-  
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
 </div>
 
 <div class="toc-item">

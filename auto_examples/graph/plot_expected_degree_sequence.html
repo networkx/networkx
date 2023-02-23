@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Expected Degree Sequence &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>Expected Degree Sequence &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -47,14 +47,20 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/graph/plot_expected_degree_sequence';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/auto_examples/graph/plot_expected_degree_sequence.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Football" href="plot_football.html" />
     <link rel="prev" title="Erdos Renyi" href="plot_erdos_renyi.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -96,6 +102,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -247,7 +259,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -410,7 +422,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -536,50 +548,45 @@ degree (#nodes) ****
 26 ( 0)
 27 ( 0)
 28 ( 0)
-29 ( 1) *
+29 ( 0)
 30 ( 0)
 31 ( 0)
-32 ( 0)
+32 ( 1) *
 33 ( 0)
-34 ( 1) *
-35 ( 3) ***
-36 ( 3) ***
+34 ( 2) **
+35 ( 1) *
+36 ( 6) ******
 37 ( 7) *******
 38 ( 6) ******
-39 ( 2) **
+39 ( 9) *********
 40 ( 8) ********
-41 (14) **************
-42 (19) *******************
-43 (22) **********************
-44 (25) *************************
-45 (21) *********************
-46 (33) *********************************
-47 (12) ************
-48 (28) ****************************
-49 (34) **********************************
-50 (31) *******************************
-51 (30) ******************************
-52 (21) *********************
-53 (22) **********************
-54 (20) ********************
+41 (12) ************
+42 (11) ***********
+43 (17) *****************
+44 (23) ***********************
+45 (26) **************************
+46 (30) ******************************
+47 (26) **************************
+48 (24) ************************
+49 (35) ***********************************
+50 (36) ************************************
+51 (24) ************************
+52 (35) ***********************************
+53 (18) ******************
+54 (29) *****************************
 55 (18) ******************
-56 (24) ************************
-57 (19) *******************
-58 (14) **************
-59 (16) ****************
-60 (14) **************
-61 (15) ***************
-62 ( 3) ***
-63 ( 5) *****
+56 (19) *******************
+57 (20) ********************
+58 (12) ************
+59 (10) **********
+60 ( 6) ******
+61 ( 4) ****
+62 ( 8) ********
+63 ( 7) *******
 64 ( 2) **
-65 ( 1) *
-66 ( 1) *
+65 ( 3) ***
+66 ( 4) ****
 67 ( 1) *
-68 ( 2) **
-69 ( 1) *
-70 ( 0)
-71 ( 0)
-72 ( 1) *
 </pre></div>
 </div>
 <div class="line-block">
@@ -599,7 +606,7 @@ degree (#nodes) ****
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">i</span></a><span class="si">:</span><span class="s2">2</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">d</span></a><span class="si">:</span><span class="s2">2</span><span class="si">}</span><span class="s2">) </span><span class="si">{</span><span class="s1">&#39;*&#39;</span><span class="o">*</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">d</span></a><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.031 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.041 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-graph-plot-expected-degree-sequence-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/7378087382f40e96e66bce4a35ba0e52/plot_expected_degree_sequence.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_expected_degree_sequence.py</span></code></a></p>
@@ -624,11 +631,11 @@ degree (#nodes) ****
               
 <div class="toc-item">
   
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
 </div>
 
 <div class="toc-item">

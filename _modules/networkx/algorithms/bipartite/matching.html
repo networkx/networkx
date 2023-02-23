@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>networkx.algorithms.bipartite.matching &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>networkx.algorithms.bipartite.matching &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -46,12 +46,18 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/bipartite/matching';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/bipartite/matching.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -93,6 +99,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -244,7 +256,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -407,7 +419,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -578,6 +590,7 @@
 <span class="sd">       2.4 (1973), pp. 225--231. &lt;https://doi.org/10.1137/0202019&gt;.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># First we define some auxiliary search functions.</span>
     <span class="c1">#</span>
     <span class="c1"># If you are a human reading these auxiliary search functions, the &quot;global&quot;</span>
@@ -732,12 +745,17 @@
 
         <span class="c1"># did we finish layering without finding any alternating paths?</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">unmatched</span><span class="p">:</span>
-            <span class="n">unlayered</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
-                <span class="c1"># TODO Why is extra inner loop necessary?</span>
-                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">u</span><span class="p">]:</span>
-                    <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">preds</span><span class="p">:</span>
-                        <span class="n">unlayered</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="c1"># TODO - The lines between --- were unused and were thus commented</span>
+            <span class="c1"># out. This whole commented chunk should be reviewed to determine</span>
+            <span class="c1"># whether it should be built upon or completely removed.</span>
+            <span class="c1"># ---</span>
+            <span class="c1"># unlayered = {}</span>
+            <span class="c1"># for u in G:</span>
+            <span class="c1">#     # TODO Why is extra inner loop necessary?</span>
+            <span class="c1">#     for v in G[u]:</span>
+            <span class="c1">#         if v not in preds:</span>
+            <span class="c1">#             unlayered[v] = None</span>
+            <span class="c1"># ---</span>
             <span class="c1"># TODO Originally, this function returned a three-tuple:</span>
             <span class="c1">#</span>
             <span class="c1">#     return (matching, list(pred), list(unlayered))</span>
@@ -1054,11 +1072,11 @@
               
 <div class="toc-item">
   
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
 </div>
 
 <div class="toc-item">

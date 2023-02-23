@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>networkx.algorithms.isomorphism.ismags &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>networkx.algorithms.isomorphism.ismags &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -46,12 +46,18 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/isomorphism/ismags';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/isomorphism/ismags.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -93,6 +99,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -244,7 +256,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -407,7 +419,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -599,7 +611,7 @@
         <span class="k">pass</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;The function does not works on multidimension arrays.&quot;</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;The function does not works on multidimensional arrays.&quot;</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
 
     <span class="n">iterator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
@@ -659,7 +671,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">colors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">color</span><span class="p">,</span> <span class="n">keys</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">partitions</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
             <span class="n">colors</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">color</span>
@@ -689,7 +701,7 @@
 
 <div class="viewcode-block" id="ISMAGS"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.isomorphism.ISMAGS.html#networkx.algorithms.isomorphism.ISMAGS">[docs]</a><span class="k">class</span> <span class="nc">ISMAGS</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Implements the ISMAGS subgraph matching algorith. [1]_ ISMAGS stands for</span>
+<span class="sd">    Implements the ISMAGS subgraph matching algorithm. [1]_ ISMAGS stands for</span>
 <span class="sd">    &quot;Index-based Subgraph Matching Algorithm with General Symmetries&quot;. As the</span>
 <span class="sd">    name implies, it is symmetry aware and will only generate non-symmetric</span>
 <span class="sd">    isomorphisms.</span>
@@ -1050,7 +1062,7 @@
 <span class="sd">        graph : networkx.Graph</span>
 <span class="sd">            The graph whose symmetry should be analyzed.</span>
 <span class="sd">        node_partitions : list of sets</span>
-<span class="sd">            A list of sets containining node keys. Node keys in the same set</span>
+<span class="sd">            A list of sets containing node keys. Node keys in the same set</span>
 <span class="sd">            are considered equivalent. Every node key in `graph` should be in</span>
 <span class="sd">            exactly one of the sets. If all nodes are equivalent, this should</span>
 <span class="sd">            be ``[set(graph.nodes)]``.</span>
@@ -1183,7 +1195,7 @@
             <span class="n">counts</span><span class="p">[</span><span class="n">node1</span><span class="p">][</span><span class="n">ecolor</span><span class="p">,</span> <span class="n">node_colors</span><span class="p">[</span><span class="n">node2</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="n">counts</span><span class="p">[</span><span class="n">node2</span><span class="p">][</span><span class="n">ecolor</span><span class="p">,</span> <span class="n">node_colors</span><span class="p">[</span><span class="n">node1</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
 
-        <span class="n">node_edge_colors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">node_edge_colors</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
             <span class="n">node_edge_colors</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_colors</span><span class="p">[</span><span class="n">node</span><span class="p">],</span> <span class="nb">set</span><span class="p">(</span><span class="n">counts</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
 
@@ -1373,7 +1385,7 @@
         <span class="c1"># &quot;part of&quot; the subgraph in to_be_mapped, and we make it a little</span>
         <span class="c1"># smaller every iteration.</span>
 
-        <span class="c1"># pylint disable becuase it&#39;s guarded against by default value</span>
+        <span class="c1"># pylint disable because it&#39;s guarded against by default value</span>
         <span class="n">current_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
             <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">to_be_mapped</span><span class="p">),</span> <span class="p">[])</span>
         <span class="p">)</span>  <span class="c1"># pylint: disable=stop-iteration-return</span>
@@ -1645,11 +1657,11 @@
               
 <div class="toc-item">
   
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
 </div>
 
 <div class="toc-item">

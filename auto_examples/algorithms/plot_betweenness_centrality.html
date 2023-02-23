@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Betweeness Centrality &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>Betweenness Centrality &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -47,14 +47,20 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'auto_examples/algorithms/plot_betweenness_centrality';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/auto_examples/algorithms/plot_betweenness_centrality.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Blockmodel" href="plot_blockmodel.html" />
     <link rel="prev" title="Beam Search" href="plot_beam_search.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -96,6 +102,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -247,7 +259,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -410,7 +422,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -449,13 +461,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../graph/index.html">Graph</a></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Algorithms</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="plot_beam_search.html">Beam Search</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Betweeness Centrality</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Betweenness Centrality</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_blockmodel.html">Blockmodel</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_circuits.html">Circuits</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_davis_club.html">Davis Club</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_dedensification.html">Dedensification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_iterated_dynamical_systems.html">Iterated Dynamical Systems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_krackhardt_centrality.html">Krackhardt Centrality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_maximum_independent_set.html">Maximum Independent Set</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_parallel_betweenness.html">Parallel Betweenness</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_rcm.html">Reverse Cuthill–McKee</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plot_snap.html">SNAP Graph Summary</a></li>
@@ -503,8 +516,8 @@
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-algorithms-plot-betweenness-centrality-py"><span class="std std-ref">here</span></a>
 to download the full example code</p>
 </div>
-<section class="sphx-glr-example-title" id="betweeness-centrality">
-<span id="sphx-glr-auto-examples-algorithms-plot-betweenness-centrality-py"></span><h1>Betweeness Centrality<a class="headerlink" href="#betweeness-centrality" title="Permalink to this heading">#</a></h1>
+<section class="sphx-glr-example-title" id="betweenness-centrality">
+<span id="sphx-glr-auto-examples-algorithms-plot-betweenness-centrality-py"></span><h1>Betweenness Centrality<a class="headerlink" href="#betweenness-centrality" title="Permalink to this heading">#</a></h1>
 <p>Betweenness centrality measures of positive gene functional associations
 using WormNet v.3-GS.</p>
 <p>Data from: <a class="reference external" href="https://www.inetbio.org/wormnet/downloadnetwork.php">https://www.inetbio.org/wormnet/downloadnetwork.php</a></p>
@@ -538,7 +551,7 @@ using WormNet v.3-GS.</p>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">community_index</span></a> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">com</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lpc</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">com</span><span class="p">}</span>
 
 <span class="c1">#### draw graph ####</span>
-<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">15</span><span class="p">))</span>
+<a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure" title="matplotlib.figure.Figure" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fig</span></a><span class="p">,</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="matplotlib.axes.Axes" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span></a> <span class="o">=</span> <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">15</span><span class="p">))</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pos</span></a> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">spring_layout</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">4572321</span><span class="p">)</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">node_color</span></a> <span class="o">=</span> <span class="p">[</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">community_index</span></a><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">H</span><span class="p">]</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">node_size</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">v</span> <span class="o">*</span> <span class="mi">20000</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">centrality</span></a><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
@@ -569,20 +582,20 @@ using WormNet v.3-GS.</p>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.text.html#matplotlib.axes.Axes.text" title="matplotlib.axes.Axes.text" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">text</span></a><span class="p">(</span>
     <span class="mf">0.80</span><span class="p">,</span>
     <span class="mf">0.06</span><span class="p">,</span>
-    <span class="s2">&quot;node size = betweeness centrality&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;node size = betweenness centrality&quot;</span><span class="p">,</span>
     <span class="n">horizontalalignment</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
     <span class="n">transform</span><span class="o">=</span><a href="https://matplotlib.org/stable/api/transformations.html#matplotlib.transforms.BboxTransformTo" title="matplotlib.transforms.BboxTransformTo" class="sphx-glr-backref-module-matplotlib-transforms sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span></a><span class="p">,</span>
     <span class="n">fontdict</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">font</span></a><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="c1"># Resize figure for label readibility</span>
+<span class="c1"># Resize figure for label readability</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.margins.html#matplotlib.axes.Axes.margins" title="matplotlib.axes.Axes.margins" class="sphx-glr-backref-module-matplotlib-axes sphx-glr-backref-type-py-method"><span class="n">ax</span><span class="o">.</span><span class="n">margins</span></a><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure.tight_layout" title="matplotlib.figure.Figure.tight_layout" class="sphx-glr-backref-module-matplotlib-figure sphx-glr-backref-type-py-method"><span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span></a><span class="p">()</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.axis.html#matplotlib.pyplot.axis" title="matplotlib.pyplot.axis" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">axis</span></a><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
 <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.show.html#matplotlib.pyplot.show" title="matplotlib.pyplot.show" class="sphx-glr-backref-module-matplotlib-pyplot sphx-glr-backref-type-py-function"><span class="n">plt</span><span class="o">.</span><span class="n">show</span></a><span class="p">()</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  3.667 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.657 seconds)</p>
 <div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-algorithms-plot-betweenness-centrality-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/b3018a1aab7bffbd1426574de5a8c65a/plot_betweenness_centrality.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_betweenness_centrality.py</span></code></a></p>
@@ -607,11 +620,11 @@ using WormNet v.3-GS.</p>
               
 <div class="toc-item">
   
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
 </div>
 
 <div class="toc-item">

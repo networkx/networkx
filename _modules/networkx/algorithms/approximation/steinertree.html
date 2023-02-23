@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>networkx.algorithms.approximation.steinertree &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>networkx.algorithms.approximation.steinertree &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -46,12 +46,18 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/approximation/steinertree';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/approximation/steinertree.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -93,6 +99,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -244,7 +256,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -407,7 +419,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -597,21 +609,21 @@
 
 <span class="sd">    The approximation algorithm is specified with the `method` keyword</span>
 <span class="sd">    argument. All three available algorithms produce a tree whose weight is</span>
-<span class="sd">    within a (2 - (2 / l)) factor of the weight of the optimal Steiner tree,</span>
-<span class="sd">    where *l* is the minimum number of leaf nodes across all possible Steiner</span>
+<span class="sd">    within a ``(2 - (2 / l))`` factor of the weight of the optimal Steiner tree,</span>
+<span class="sd">    where ``l`` is the minimum number of leaf nodes across all possible Steiner</span>
 <span class="sd">    trees.</span>
 
-<span class="sd">    * `kou` [2]_ (runtime $O(|S| |V|^2)$) computes the minimum spanning tree of</span>
-<span class="sd">    the subgraph of the metric closure of *G* induced by the terminal nodes,</span>
-<span class="sd">    where the metric closure of *G* is the complete graph in which each edge is</span>
-<span class="sd">    weighted by the shortest path distance between the nodes in *G*.</span>
+<span class="sd">    * ``&quot;kou&quot;`` [2]_ (runtime $O(|S| |V|^2)$) computes the minimum spanning tree of</span>
+<span class="sd">      the subgraph of the metric closure of *G* induced by the terminal nodes,</span>
+<span class="sd">      where the metric closure of *G* is the complete graph in which each edge is</span>
+<span class="sd">      weighted by the shortest path distance between the nodes in *G*.</span>
 
-<span class="sd">    * `mehlhorn` [3]_ (runtime $O(|E|+|V|\log|V|)$) modifies Kou et al.&#39;s</span>
-<span class="sd">    algorithm, beginning by finding the closest terminal node for each</span>
-<span class="sd">    non-terminal. This data is used to create a complete graph containing only</span>
-<span class="sd">    the terminal nodes, in which edge is weighted with the shortest path</span>
-<span class="sd">    distance between them. The algorithm then proceeds in the same way as Kou</span>
-<span class="sd">    et al..</span>
+<span class="sd">    * ``&quot;mehlhorn&quot;`` [3]_ (runtime $O(|E|+|V|\log|V|)$) modifies Kou et al.&#39;s</span>
+<span class="sd">      algorithm, beginning by finding the closest terminal node for each</span>
+<span class="sd">      non-terminal. This data is used to create a complete graph containing only</span>
+<span class="sd">      the terminal nodes, in which edge is weighted with the shortest path</span>
+<span class="sd">      distance between them. The algorithm then proceeds in the same way as Kou</span>
+<span class="sd">      et al..</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -693,11 +705,11 @@
               
 <div class="toc-item">
   
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
 </div>
 
 <div class="toc-item">

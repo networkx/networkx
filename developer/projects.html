@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Mentored Projects &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>Mentored Projects &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -47,14 +47,20 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'developer/projects';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/developer/projects.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="New Contributor FAQ" href="new_contributor_faq.html" />
     <link rel="prev" title="Contributor Guide" href="contribute.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -96,6 +102,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -247,7 +259,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -410,7 +422,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -510,15 +522,48 @@ and encourage them to delve further into the topic.</p></li>
 <li><p>Expected Outcome: A collection of Interactive Jupyter notebooks which
 explain and explore network algorithms to readers and users of NetworkX.
 For example, see this notebook on
-<span class="xref std std-doc">Random Geometric Graphs</span></p></li>
+<a class="reference external" href="https://networkx.org/nx-guides/content/generators/geometric.html" title="(in nx-guides)"><span class="xref std std-doc">Geometric Generator Models</span></a></p></li>
 <li><p>Complexity: Depending on the algorithms you are interested to work on.</p></li>
-<li><p>Interested Mentors: <a class="reference external" href="https://github.com/dschult/">&#64;dschult</a>,
-<a class="reference external" href="https://github.com/MridulS/">&#64;MridulS</a>,
+<li><p>Interested Mentors: <a class="reference external" href="https://github.com/MridulS/">&#64;MridulS</a>,
 <a class="reference external" href="https://github.com/rossbar/">&#64;rossbar</a></p></li>
 <li><p>Expected time commitment: This project can be either a medium project (~175 hours)
 or a large project (~350 hours). The contributor is expected to contribute 2-3
 pedagogical interactive notebooks for the medium duration project and 4-5 notebooks
 for the long duration project.</p></li>
+</ul>
+</section>
+<section id="visualization-api-with-matplotlib">
+<h2>Visualization API with Matplotlib<a class="headerlink" href="#visualization-api-with-matplotlib" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Abstract: NetworkX has some basic drawing tools that use Matplotlib to render the
+images. The API hasn’t changed while Matplotlib has changed. Also we have added or
+are trying to add new features especially with regard to plotting edges. We’d like
+someone to read a lot about what we offer and also what Matplotlib offers, and
+come up with a nice way for users to draw graphs flexibly and yet with good defaults.
+There is little chace just a broad topic could be completed in one summer, but a
+roadmap and substantial headway on that road is possible.</p></li>
+<li><p>Recommended Skills: Python, matplotlib experience.</p></li>
+<li><p>Expected Outcome: A roadmap for a refined API for the matplotlib tools within NetworkX
+as well as code in the form of PR(s) which implement (part of) that API with tests.</p></li>
+<li><p>Interested Mentors: <a class="reference external" href="https://github.com/dschult/">&#64;dschult</a>,</p></li>
+<li><p>Expected time commitment: This project will be a full time 10 week project (~350 hrs).</p></li>
+</ul>
+</section>
+<section id="incorporate-a-python-library-for-ismags-isomorphism-calculations">
+<h2>Incorporate a Python library for ISMAGs isomorphism calculations<a class="headerlink" href="#incorporate-a-python-library-for-ismags-isomorphism-calculations" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Abstract: A team from Sandia Labs has converted the original java implementation of
+the ISMAGS isomorphism routines to Python. They have invited us to incorporate that
+code into NetworkX if we are interested. We’d like someone to learn the ISMAGS code
+we currently provide, and the code from this new library and figure out what the
+best combination is to include in NetworkX moving forward. That could be two separate
+subpackages of tools, or more likely a combination of the two sets of code, or a
+third incantation that combines good features from each.</p></li>
+<li><p>Recommended Skills: Python, graph algorithms.</p></li>
+<li><p>Expected Outcome: A plan for how to best incorporate ISMAGS into NetworkX along
+with code to do that incorporation.</p></li>
+<li><p>Interested Mentors: <a class="reference external" href="https://github.com/dschult/">&#64;dschult</a>,</p></li>
+<li><p>Expected time commitment: This project will be a full time 10 week project (~350 hrs).</p></li>
 </ul>
 </section>
 </section>
@@ -529,7 +574,7 @@ for the long duration project.</p></li>
 <dt><a class="reference external" href="https://github.com/networkx/networkx/pull/5788">VF2++ algorithm for graph isomorphism</a></dt><dd><ul>
 <li><p>Program: Google Summer of Code 2022</p></li>
 <li><p>Contributor: <a class="reference external" href="https://github.com/kpetridis24/">&#64;kpetridis24</a></p></li>
-<li><p>Link to Proposal: <a href="#id1"><span class="problematic" id="id2">`GSoC 2022: VF2++ Algorithm &lt;https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2022-VF2plusplus-isomorphism.pdf`_</span></a></p></li>
+<li><p>Link to Proposal: <a class="reference external" href="https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2022-VF2plusplus-isomorphism.pdf">GSoC 2022: VF2++ Algorithm</a></p></li>
 </ul>
 </dd>
 </dl>
@@ -602,6 +647,15 @@ for the long duration project.</p></li>
               
 <div class="toc-item">
   
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+
+<div class="toc-item">
+  
 <div class="tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
 </div>
@@ -617,6 +671,16 @@ for the long duration project.</p></li>
      Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
     </a>
    </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#visualization-api-with-matplotlib">
+     Visualization API with Matplotlib
+    </a>
+   </li>
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#incorporate-a-python-library-for-ismags-isomorphism-calculations">
+     Incorporate a Python library for ISMAGs isomorphism calculations
+    </a>
+   </li>
   </ul>
  </li>
  <li class="toc-h1 nav-item toc-entry">
@@ -627,15 +691,6 @@ for the long duration project.</p></li>
 </ul>
 
 </nav>
-</div>
-
-<div class="toc-item">
-  
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
 </div>
 
 <div class="toc-item">

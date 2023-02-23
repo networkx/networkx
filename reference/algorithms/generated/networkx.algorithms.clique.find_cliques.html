@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>find_cliques &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>find_cliques &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -47,14 +47,20 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'reference/algorithms/generated/networkx.algorithms.clique.find_cliques';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.clique.find_cliques.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="find_cliques_recursive" href="networkx.algorithms.clique.find_cliques_recursive.html" />
     <link rel="prev" title="enumerate_all_cliques" href="networkx.algorithms.clique.enumerate_all_cliques.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -96,6 +102,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -247,7 +259,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -410,7 +422,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -649,6 +661,67 @@ Volume 407, Issues 1–3, 6 November 2008, Pages 564–568,
 &lt;<a class="reference external" href="https://doi.org/10.1016/j.tcs.2008.05.010">https://doi.org/10.1016/j.tcs.2008.05.010</a>&gt;</p>
 </div>
 </div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>  <span class="c1"># For nice dict formatting</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">karate_club_graph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">find_cliques</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>  <span class="c1"># The number of maximal cliques in G</span>
+<span class="go">36</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">max</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">find_cliques</span><span class="p">(</span><span class="n">G</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)</span>  <span class="c1"># The largest maximal clique in G</span>
+<span class="go">[0, 1, 2, 3, 13]</span>
+</pre></div>
+</div>
+<p>The size of the largest maximal clique is known as the <em>clique number</em> of
+the graph, which can be found directly with:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">find_cliques</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+<span class="go">5</span>
+</pre></div>
+</div>
+<p>One can also compute the number of maximal cliques in <code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code> that contain a given
+node. The following produces a dictionary keyed by node whose
+values are the number of maximal cliques in <code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code> that contain the node:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">({</span><span class="n">n</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">find_cliques</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">G</span><span class="p">})</span>
+<span class="go">{0: 13,</span>
+<span class="go"> 1: 6,</span>
+<span class="go"> 2: 7,</span>
+<span class="go"> 3: 3,</span>
+<span class="go"> 4: 2,</span>
+<span class="go"> 5: 3,</span>
+<span class="go"> 6: 3,</span>
+<span class="go"> 7: 1,</span>
+<span class="go"> 8: 3,</span>
+<span class="go"> 9: 2,</span>
+<span class="go"> 10: 2,</span>
+<span class="go"> 11: 1,</span>
+<span class="go"> 12: 1,</span>
+<span class="go"> 13: 2,</span>
+<span class="go"> 14: 1,</span>
+<span class="go"> 15: 1,</span>
+<span class="go"> 16: 1,</span>
+<span class="go"> 17: 1,</span>
+<span class="go"> 18: 1,</span>
+<span class="go"> 19: 2,</span>
+<span class="go"> 20: 1,</span>
+<span class="go"> 21: 1,</span>
+<span class="go"> 22: 1,</span>
+<span class="go"> 23: 3,</span>
+<span class="go"> 24: 2,</span>
+<span class="go"> 25: 2,</span>
+<span class="go"> 26: 1,</span>
+<span class="go"> 27: 3,</span>
+<span class="go"> 28: 2,</span>
+<span class="go"> 29: 2,</span>
+<span class="go"> 30: 2,</span>
+<span class="go"> 31: 4,</span>
+<span class="go"> 32: 9,</span>
+<span class="go"> 33: 14}</span>
+</pre></div>
+</div>
+<p>Or, similarly, the maximal cliques in <code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code> that contain a given node.
+For example, the 4 maximal cliques that contain node 31:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">find_cliques</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="k">if</span> <span class="mi">31</span> <span class="ow">in</span> <span class="n">c</span><span class="p">]</span>
+<span class="go">[[0, 31], [33, 32, 31], [33, 28, 31], [24, 25, 31]]</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
@@ -664,6 +737,15 @@ Volume 407, Issues 1–3, 6 November 2008, Pages 564–568,
           
             <div class="bd-sidebar-secondary bd-toc">
               
+<div class="toc-item">
+  
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+
 <div class="toc-item">
   
 <div class="tocsection onthispage">
@@ -683,15 +765,6 @@ Volume 407, Issues 1–3, 6 November 2008, Pages 564–568,
 </ul>
 
 </nav>
-</div>
-
-<div class="toc-item">
-  
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
 </div>
 
 <div class="toc-item">

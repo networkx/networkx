@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>networkx.linalg.algebraicconnectivity &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>networkx.linalg.algebraicconnectivity &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -46,12 +46,18 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/linalg/algebraicconnectivity';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/linalg/algebraicconnectivity.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -93,6 +99,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -244,7 +256,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -407,7 +419,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -473,7 +485,12 @@
     <span class="n">reverse_cuthill_mckee_ordering</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;algebraic_connectivity&quot;</span><span class="p">,</span> <span class="s2">&quot;fiedler_vector&quot;</span><span class="p">,</span> <span class="s2">&quot;spectral_ordering&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;algebraic_connectivity&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fiedler_vector&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;spectral_ordering&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;spectral_bisection&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">_PCGSolver</span><span class="p">:</span>
@@ -1048,6 +1065,73 @@
             <span class="n">order</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">order</span></div>
+
+
+<span class="k">def</span> <span class="nf">spectral_bisection</span><span class="p">(</span>
+    <span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;tracemin_pcg&quot;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Bisect the graph using the Fiedler vector.</span>
+
+<span class="sd">    This method uses the Fiedler vector to bisect a graph.</span>
+<span class="sd">    The partition is defined by the nodes which are associated with</span>
+<span class="sd">    either positive or negative values in the vector.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    G : NetworkX Graph</span>
+
+<span class="sd">    weight : str, optional (default: weight)</span>
+<span class="sd">        The data key used to determine the weight of each edge. If None, then</span>
+<span class="sd">        each edge has unit weight.</span>
+
+<span class="sd">    normalized : bool, optional (default: False)</span>
+<span class="sd">        Whether the normalized Laplacian matrix is used.</span>
+
+<span class="sd">    tol : float, optional (default: 1e-8)</span>
+<span class="sd">        Tolerance of relative residual in eigenvalue computation.</span>
+
+<span class="sd">    method : string, optional (default: &#39;tracemin_pcg&#39;)</span>
+<span class="sd">        Method of eigenvalue computation. It must be one of the tracemin</span>
+<span class="sd">        options shown below (TraceMIN), &#39;lanczos&#39; (Lanczos iteration)</span>
+<span class="sd">        or &#39;lobpcg&#39; (LOBPCG).</span>
+
+<span class="sd">        The TraceMIN algorithm uses a linear system solver. The following</span>
+<span class="sd">        values allow specifying the solver to be used.</span>
+
+<span class="sd">        =============== ========================================</span>
+<span class="sd">        Value           Solver</span>
+<span class="sd">        =============== ========================================</span>
+<span class="sd">        &#39;tracemin_pcg&#39;  Preconditioned conjugate gradient method</span>
+<span class="sd">        &#39;tracemin_lu&#39;   LU factorization</span>
+<span class="sd">        =============== ========================================</span>
+
+<span class="sd">    seed : integer, random_state, or None (default)</span>
+<span class="sd">        Indicator of random number generation state.</span>
+<span class="sd">        See :ref:`Randomness&lt;randomness&gt;`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    --------</span>
+<span class="sd">    bisection : tuple of sets</span>
+<span class="sd">        Sets with the bisection of nodes</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.barbell_graph(3, 0)</span>
+<span class="sd">    &gt;&gt;&gt; nx.spectral_bisection(G)</span>
+<span class="sd">    ({0, 1, 2}, {3, 4, 5})</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] M. E. J Newman &#39;Networks: An Introduction&#39;, pages 364-370</span>
+<span class="sd">       Oxford University Press 2011.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+    <span class="n">v</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">fiedler_vector</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">normalized</span><span class="p">,</span> <span class="n">tol</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">seed</span><span class="p">)</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
+    <span class="n">pos_vals</span> <span class="o">=</span> <span class="n">v</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+
+    <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="o">~</span><span class="n">pos_vals</span><span class="p">]),</span> <span class="nb">set</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">pos_vals</span><span class="p">])</span>
 </pre></div>
 
             </article>
@@ -1062,11 +1146,11 @@
               
 <div class="toc-item">
   
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
 </div>
 
 <div class="toc-item">

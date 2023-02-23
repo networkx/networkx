@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>networkx.algorithms.shortest_paths.weighted &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>networkx.algorithms.shortest_paths.weighted &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -46,12 +46,18 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/shortest_paths/weighted';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/shortest_paths/weighted.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -93,6 +99,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -244,7 +256,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -407,7 +419,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -1577,7 +1589,8 @@
         <span class="k">yield</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="n">cutoff</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="bellman_ford_predecessor_and_distance"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.bellman_ford_predecessor_and_distance.html#networkx.algorithms.shortest_paths.weighted.bellman_ford_predecessor_and_distance">[docs]</a><span class="k">def</span> <span class="nf">bellman_ford_predecessor_and_distance</span><span class="p">(</span>
+<div class="viewcode-block" id="bellman_ford_predecessor_and_distance"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.bellman_ford_predecessor_and_distance.html#networkx.algorithms.shortest_paths.weighted.bellman_ford_predecessor_and_distance">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
+<span class="k">def</span> <span class="nf">bellman_ford_predecessor_and_distance</span><span class="p">(</span>
     <span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="n">heuristic</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute shortest path lengths and predecessors on shortest paths</span>
@@ -1917,7 +1930,8 @@
     <span class="k">return</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="bellman_ford_path"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.bellman_ford_path.html#networkx.algorithms.shortest_paths.weighted.bellman_ford_path">[docs]</a><span class="k">def</span> <span class="nf">bellman_ford_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="bellman_ford_path"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.bellman_ford_path.html#networkx.algorithms.shortest_paths.weighted.bellman_ford_path">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
+<span class="k">def</span> <span class="nf">bellman_ford_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the shortest path from source to target in a weighted graph G.</span>
 
 <span class="sd">    Parameters</span>
@@ -1975,7 +1989,8 @@
     <span class="k">return</span> <span class="n">path</span></div>
 
 
-<div class="viewcode-block" id="bellman_ford_path_length"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.bellman_ford_path_length.html#networkx.algorithms.shortest_paths.weighted.bellman_ford_path_length">[docs]</a><span class="k">def</span> <span class="nf">bellman_ford_path_length</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="bellman_ford_path_length"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.bellman_ford_path_length.html#networkx.algorithms.shortest_paths.weighted.bellman_ford_path_length">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
+<span class="k">def</span> <span class="nf">bellman_ford_path_length</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the shortest path length from source to target</span>
 <span class="sd">    in a weighted graph.</span>
 
@@ -2045,7 +2060,8 @@
         <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXNoPath</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;node </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2"> not reachable from </span><span class="si">{</span><span class="n">source</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span></div>
 
 
-<div class="viewcode-block" id="single_source_bellman_ford_path"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.single_source_bellman_ford_path.html#networkx.algorithms.shortest_paths.weighted.single_source_bellman_ford_path">[docs]</a><span class="k">def</span> <span class="nf">single_source_bellman_ford_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="single_source_bellman_ford_path"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.single_source_bellman_ford_path.html#networkx.algorithms.shortest_paths.weighted.single_source_bellman_ford_path">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
+<span class="k">def</span> <span class="nf">single_source_bellman_ford_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute shortest path between source and all other reachable</span>
 <span class="sd">    nodes for a weighted graph.</span>
 
@@ -2100,7 +2116,8 @@
     <span class="k">return</span> <span class="n">path</span></div>
 
 
-<div class="viewcode-block" id="single_source_bellman_ford_path_length"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.single_source_bellman_ford_path_length.html#networkx.algorithms.shortest_paths.weighted.single_source_bellman_ford_path_length">[docs]</a><span class="k">def</span> <span class="nf">single_source_bellman_ford_path_length</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="single_source_bellman_ford_path_length"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.single_source_bellman_ford_path_length.html#networkx.algorithms.shortest_paths.weighted.single_source_bellman_ford_path_length">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
+<span class="k">def</span> <span class="nf">single_source_bellman_ford_path_length</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the shortest path length between source and all other</span>
 <span class="sd">    reachable nodes for a weighted graph.</span>
 
@@ -2162,7 +2179,8 @@
     <span class="k">return</span> <span class="n">_bellman_ford</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="p">[</span><span class="n">source</span><span class="p">],</span> <span class="n">weight</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="single_source_bellman_ford"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.single_source_bellman_ford.html#networkx.algorithms.shortest_paths.weighted.single_source_bellman_ford">[docs]</a><span class="k">def</span> <span class="nf">single_source_bellman_ford</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="single_source_bellman_ford"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.single_source_bellman_ford.html#networkx.algorithms.shortest_paths.weighted.single_source_bellman_ford">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
+<span class="k">def</span> <span class="nf">single_source_bellman_ford</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute shortest paths and lengths in a weighted graph G.</span>
 
 <span class="sd">    Uses Bellman-Ford algorithm for shortest paths.</span>
@@ -2255,7 +2273,8 @@
         <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXNoPath</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span></div>
 
 
-<div class="viewcode-block" id="all_pairs_bellman_ford_path_length"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.all_pairs_bellman_ford_path_length.html#networkx.algorithms.shortest_paths.weighted.all_pairs_bellman_ford_path_length">[docs]</a><span class="k">def</span> <span class="nf">all_pairs_bellman_ford_path_length</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="all_pairs_bellman_ford_path_length"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.all_pairs_bellman_ford_path_length.html#networkx.algorithms.shortest_paths.weighted.all_pairs_bellman_ford_path_length">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
+<span class="k">def</span> <span class="nf">all_pairs_bellman_ford_path_length</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute shortest path lengths between all nodes in a weighted graph.</span>
 
 <span class="sd">    Parameters</span>
@@ -2309,7 +2328,8 @@
         <span class="k">yield</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">length</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)))</span></div>
 
 
-<div class="viewcode-block" id="all_pairs_bellman_ford_path"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.all_pairs_bellman_ford_path.html#networkx.algorithms.shortest_paths.weighted.all_pairs_bellman_ford_path">[docs]</a><span class="k">def</span> <span class="nf">all_pairs_bellman_ford_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="all_pairs_bellman_ford_path"><a class="viewcode-back" href="../../../../reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.all_pairs_bellman_ford_path.html#networkx.algorithms.shortest_paths.weighted.all_pairs_bellman_ford_path">[docs]</a><span class="nd">@nx</span><span class="o">.</span><span class="n">_dispatch</span>
+<span class="k">def</span> <span class="nf">all_pairs_bellman_ford_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute shortest paths between all nodes in a weighted graph.</span>
 
 <span class="sd">    Parameters</span>
@@ -2940,11 +2960,11 @@
               
 <div class="toc-item">
   
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
 </div>
 
 <div class="toc-item">

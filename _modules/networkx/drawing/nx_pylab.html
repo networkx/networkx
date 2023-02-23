@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>networkx.drawing.nx_pylab &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>networkx.drawing.nx_pylab &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -46,12 +46,18 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/drawing/nx_pylab';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/drawing/nx_pylab.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -93,6 +99,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -244,7 +256,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -407,7 +419,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -1041,14 +1053,14 @@
 <span class="sd">        Label for legend</span>
 
 <span class="sd">    min_source_margin : int (default=0)</span>
-<span class="sd">        The minimum margin (gap) at the begining of the edge at the source.</span>
+<span class="sd">        The minimum margin (gap) at the beginning of the edge at the source.</span>
 
 <span class="sd">    min_target_margin : int (default=0)</span>
 <span class="sd">        The minimum margin (gap) at the end of the edge at the target.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">     matplotlib.colections.LineCollection or a list of matplotlib.patches.FancyArrowPatch</span>
+<span class="sd">     matplotlib.collections.LineCollection or a list of matplotlib.patches.FancyArrowPatch</span>
 <span class="sd">        If ``arrows=True``, a list of FancyArrowPatches is returned.</span>
 <span class="sd">        If ``arrows=False``, a LineCollection is returned.</span>
 <span class="sd">        If ``arrows=None`` (the default), then a LineCollection is returned if</span>
@@ -1247,7 +1259,7 @@
                 <span class="c1"># is 0, e.g. for a single node. In this case, fall back to scaling</span>
                 <span class="c1"># by the maximum node size</span>
                 <span class="n">selfloop_ht</span> <span class="o">=</span> <span class="mf">0.005</span> <span class="o">*</span> <span class="n">max_nodesize</span> <span class="k">if</span> <span class="n">h</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">h</span>
-                <span class="c1"># this is called with _screen space_ values so covert back</span>
+                <span class="c1"># this is called with _screen space_ values so convert back</span>
                 <span class="c1"># to data space</span>
                 <span class="n">data_loc</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="o">.</span><span class="n">inverted</span><span class="p">()</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">posA</span><span class="p">)</span>
                 <span class="n">v_shift</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">selfloop_ht</span>
@@ -1575,7 +1587,7 @@
 <span class="sd">    ax : Matplotlib Axes object, optional</span>
 <span class="sd">        Draw the graph in the specified Matplotlib axes.</span>
 
-<span class="sd">    rotate : bool (deafult=True)</span>
+<span class="sd">    rotate : bool (default=True)</span>
 <span class="sd">        Rotate edge labels to lie parallel to edges</span>
 
 <span class="sd">    clip_on : bool (default=True)</span>
@@ -1647,7 +1659,7 @@
             <span class="n">trans_angle</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="c1"># use default box of white with white border</span>
         <span class="k">if</span> <span class="n">bbox</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">bbox</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">boxstyle</span><span class="o">=</span><span class="s2">&quot;round&quot;</span><span class="p">,</span> <span class="n">ec</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="n">fc</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+            <span class="n">bbox</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;boxstyle&quot;</span><span class="p">:</span> <span class="s2">&quot;round&quot;</span><span class="p">,</span> <span class="s2">&quot;ec&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="s2">&quot;fc&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)}</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">label</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>  <span class="c1"># this makes &quot;1&quot; and 1 labeled the same</span>
 
@@ -2027,11 +2039,11 @@
               
 <div class="toc-item">
   
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
 </div>
 
 <div class="toc-item">

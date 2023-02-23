@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>networkx.algorithms.clique &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>networkx.algorithms.clique &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -46,12 +46,18 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/clique';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/clique.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -93,6 +99,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -244,7 +256,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -407,7 +419,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -600,6 +612,67 @@
 <span class="sd">    ValueError</span>
 <span class="sd">        If `nodes` is not a clique.</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from pprint import pprint  # For nice dict formatting</span>
+<span class="sd">    &gt;&gt;&gt; G = nx.karate_club_graph()</span>
+<span class="sd">    &gt;&gt;&gt; sum(1 for c in nx.find_cliques(G))  # The number of maximal cliques in G</span>
+<span class="sd">    36</span>
+<span class="sd">    &gt;&gt;&gt; max(nx.find_cliques(G), key=len)  # The largest maximal clique in G</span>
+<span class="sd">    [0, 1, 2, 3, 13]</span>
+
+<span class="sd">    The size of the largest maximal clique is known as the *clique number* of</span>
+<span class="sd">    the graph, which can be found directly with:</span>
+
+<span class="sd">    &gt;&gt;&gt; max(len(c) for c in nx.find_cliques(G))</span>
+<span class="sd">    5</span>
+
+<span class="sd">    One can also compute the number of maximal cliques in `G` that contain a given</span>
+<span class="sd">    node. The following produces a dictionary keyed by node whose</span>
+<span class="sd">    values are the number of maximal cliques in `G` that contain the node:</span>
+
+<span class="sd">    &gt;&gt;&gt; pprint({n: sum(1 for c in nx.find_cliques(G) if n in c) for n in G})</span>
+<span class="sd">    {0: 13,</span>
+<span class="sd">     1: 6,</span>
+<span class="sd">     2: 7,</span>
+<span class="sd">     3: 3,</span>
+<span class="sd">     4: 2,</span>
+<span class="sd">     5: 3,</span>
+<span class="sd">     6: 3,</span>
+<span class="sd">     7: 1,</span>
+<span class="sd">     8: 3,</span>
+<span class="sd">     9: 2,</span>
+<span class="sd">     10: 2,</span>
+<span class="sd">     11: 1,</span>
+<span class="sd">     12: 1,</span>
+<span class="sd">     13: 2,</span>
+<span class="sd">     14: 1,</span>
+<span class="sd">     15: 1,</span>
+<span class="sd">     16: 1,</span>
+<span class="sd">     17: 1,</span>
+<span class="sd">     18: 1,</span>
+<span class="sd">     19: 2,</span>
+<span class="sd">     20: 1,</span>
+<span class="sd">     21: 1,</span>
+<span class="sd">     22: 1,</span>
+<span class="sd">     23: 3,</span>
+<span class="sd">     24: 2,</span>
+<span class="sd">     25: 2,</span>
+<span class="sd">     26: 1,</span>
+<span class="sd">     27: 3,</span>
+<span class="sd">     28: 2,</span>
+<span class="sd">     29: 2,</span>
+<span class="sd">     30: 2,</span>
+<span class="sd">     31: 4,</span>
+<span class="sd">     32: 9,</span>
+<span class="sd">     33: 14}</span>
+
+<span class="sd">    Or, similarly, the maximal cliques in `G` that contain a given node.</span>
+<span class="sd">    For example, the 4 maximal cliques that contain node 31:</span>
+
+<span class="sd">    &gt;&gt;&gt; [c for c in nx.find_cliques(G) if 31 in c]</span>
+<span class="sd">    [[0, 31], [33, 32, 31], [33, 28, 31], [24, 25, 31]]</span>
+
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    find_cliques_recursive</span>
@@ -737,7 +810,7 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    find_cliques</span>
-<span class="sd">        An iterative version of the same algorithm.</span>
+<span class="sd">        An iterative version of the same algorithm. See docstring for examples.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -914,6 +987,14 @@
 <span class="sd">    The *clique number* of a graph is the size of the largest clique in</span>
 <span class="sd">    the graph.</span>
 
+<span class="sd">    .. deprecated:: 3.0</span>
+
+<span class="sd">       graph_clique_number is deprecated in NetworkX 3.0 and will be removed</span>
+<span class="sd">       in v3.2. The graph clique number can be computed directly with::</span>
+
+<span class="sd">           max(len(c) for c in nx.find_cliques(G))</span>
+
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    G : NetworkX graph</span>
@@ -936,6 +1017,16 @@
 <span class="sd">    maximal cliques.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">warnings</span>
+
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">graph_clique_number is deprecated and will be removed.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;Use: ``max(len(c) for c in nx.find_cliques(G))`` instead.&quot;</span>
+        <span class="p">),</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="mi">0</span>
     <span class="k">if</span> <span class="n">cliques</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -945,6 +1036,13 @@
 
 <div class="viewcode-block" id="graph_number_of_cliques"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.clique.graph_number_of_cliques.html#networkx.algorithms.clique.graph_number_of_cliques">[docs]</a><span class="k">def</span> <span class="nf">graph_number_of_cliques</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">cliques</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the number of maximal cliques in the graph.</span>
+
+<span class="sd">    .. deprecated:: 3.0</span>
+
+<span class="sd">       graph_number_of_cliques is deprecated and will be removed in v3.2.</span>
+<span class="sd">       The number of maximal cliques can be computed directly with::</span>
+
+<span class="sd">           sum(1 for _ in nx.find_cliques(G))</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -968,6 +1066,16 @@
 <span class="sd">    maximal cliques.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">warnings</span>
+
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">graph_number_of_cliques is deprecated and will be removed.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;Use: ``sum(1 for _ in nx.find_cliques(G))`` instead.&quot;</span>
+        <span class="p">),</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="n">cliques</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">cliques</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">find_cliques</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">cliques</span><span class="p">)</span></div>
@@ -1039,9 +1147,29 @@
 <div class="viewcode-block" id="number_of_cliques"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.clique.number_of_cliques.html#networkx.algorithms.clique.number_of_cliques">[docs]</a><span class="k">def</span> <span class="nf">number_of_cliques</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cliques</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the number of maximal cliques for each node.</span>
 
+<span class="sd">    .. deprecated:: 3.0</span>
+
+<span class="sd">       number_of_cliques is deprecated and will be removed in v3.2.</span>
+<span class="sd">       Use the result of `find_cliques` directly to compute the number of</span>
+<span class="sd">       cliques containing each node::</span>
+
+<span class="sd">           {n: sum(1 for c in nx.find_cliques(G) if n in c) for n in G}</span>
+
 <span class="sd">    Returns a single or list depending on input nodes.</span>
 <span class="sd">    Optional list of cliques can be input if already computed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">warnings</span>
+
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">number_of_cliques is deprecated and will be removed.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;Use the result of find_cliques directly to compute the number</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;of cliques containing each node:</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;    {n: sum(1 for c in nx.find_cliques(G) if n in c) for n in G}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="p">),</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="n">cliques</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">cliques</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">find_cliques</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
 
@@ -1062,9 +1190,29 @@
 <div class="viewcode-block" id="cliques_containing_node"><a class="viewcode-back" href="../../../reference/algorithms/generated/networkx.algorithms.clique.cliques_containing_node.html#networkx.algorithms.clique.cliques_containing_node">[docs]</a><span class="k">def</span> <span class="nf">cliques_containing_node</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cliques</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns a list of cliques containing the given node.</span>
 
+<span class="sd">    .. deprecated:: 3.0</span>
+
+<span class="sd">       cliques_containing_node is deprecated and will be removed in 3.2.</span>
+<span class="sd">       Use the result of `find_cliques` directly to compute the cliques that</span>
+<span class="sd">       contain each node::</span>
+
+<span class="sd">           {n: [c for c in nx.find_cliques(G) if n in c] for n in G}</span>
+
 <span class="sd">    Returns a single list or list of lists depending on input nodes.</span>
 <span class="sd">    Optional list of cliques can be input if already computed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">warnings</span>
+
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">cliques_containing_node is deprecated and will be removed.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;Use the result of find_cliques directly to compute maximal cliques</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;containing each node:</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;    {n: [c for c in nx.find_cliques(G) if n in c] for n in G}</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="p">),</span>
+        <span class="ne">DeprecationWarning</span><span class="p">,</span>
+        <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="k">if</span> <span class="n">cliques</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">cliques</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">find_cliques</span><span class="p">(</span><span class="n">G</span><span class="p">))</span>
 
@@ -1251,11 +1399,11 @@
               
 <div class="toc-item">
   
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
 </div>
 
 <div class="toc-item">

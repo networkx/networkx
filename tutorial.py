@@ -442,3 +442,10 @@ nx.draw(G, pos=pos)
 write_dot(G, 'file.dot')
 
 # See Drawing for additional details.
+#
+# # NX-Guides
+#
+# If you are interested in learning more about NetworkX, graph theory and network analysis
+# then you should check out [nx-guides](https://networkx.org/nx-guides/index.html). There you can find tutorials,
+# real-world applications and in-depth examinations of graphs and network algorithms.
+# All the material is official and was developed and curated by the NetworkX community.

@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>networkx.algorithms.connectivity.disjoint_paths &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>networkx.algorithms.connectivity.disjoint_paths &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -46,12 +46,18 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/connectivity/disjoint_paths';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/connectivity/disjoint_paths.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -93,6 +99,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -244,7 +256,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -407,7 +419,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -464,7 +476,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;Flow based node and edge disjoint paths.&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
 
-<span class="c1"># Define the default maximum flow function to use for the undelying</span>
+<span class="c1"># Define the default maximum flow function to use for the underlying</span>
 <span class="c1"># maximum flow computations</span>
 <span class="kn">from</span> <span class="nn">networkx.algorithms.flow</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">edmonds_karp</span><span class="p">,</span>
@@ -636,9 +648,12 @@
 
     <span class="c1"># Compute maximum flow between source and target. Flow functions in</span>
     <span class="c1"># NetworkX return a residual network.</span>
-    <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-        <span class="n">capacity</span><span class="o">=</span><span class="s2">&quot;capacity&quot;</span><span class="p">,</span> <span class="n">residual</span><span class="o">=</span><span class="n">residual</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="n">cutoff</span><span class="p">,</span> <span class="n">value_only</span><span class="o">=</span><span class="kc">True</span>
-    <span class="p">)</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;capacity&quot;</span><span class="p">:</span> <span class="s2">&quot;capacity&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;residual&quot;</span><span class="p">:</span> <span class="n">residual</span><span class="p">,</span>
+        <span class="s2">&quot;cutoff&quot;</span><span class="p">:</span> <span class="n">cutoff</span><span class="p">,</span>
+        <span class="s2">&quot;value_only&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">}</span>
     <span class="k">if</span> <span class="n">flow_func</span> <span class="ow">is</span> <span class="n">preflow_push</span><span class="p">:</span>
         <span class="k">del</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;cutoff&quot;</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">flow_func</span> <span class="ow">is</span> <span class="n">shortest_augmenting_path</span><span class="p">:</span>
@@ -832,7 +847,12 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">cutoff</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">cutoff</span><span class="p">,</span> <span class="n">possible</span><span class="p">)</span>
 
-    <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">flow_func</span><span class="o">=</span><span class="n">flow_func</span><span class="p">,</span> <span class="n">residual</span><span class="o">=</span><span class="n">residual</span><span class="p">,</span> <span class="n">auxiliary</span><span class="o">=</span><span class="n">H</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="n">cutoff</span><span class="p">)</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;flow_func&quot;</span><span class="p">:</span> <span class="n">flow_func</span><span class="p">,</span>
+        <span class="s2">&quot;residual&quot;</span><span class="p">:</span> <span class="n">residual</span><span class="p">,</span>
+        <span class="s2">&quot;auxiliary&quot;</span><span class="p">:</span> <span class="n">H</span><span class="p">,</span>
+        <span class="s2">&quot;cutoff&quot;</span><span class="p">:</span> <span class="n">cutoff</span><span class="p">,</span>
+    <span class="p">}</span>
 
     <span class="c1"># The edge disjoint paths in the auxiliary digraph correspond to the node</span>
     <span class="c1"># disjoint paths in the original graph.</span>
@@ -865,11 +885,11 @@
               
 <div class="toc-item">
   
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
 </div>
 
 <div class="toc-item">

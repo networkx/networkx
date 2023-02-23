@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>networkx.generators.line &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>networkx.generators.line &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -46,12 +46,18 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/generators/line';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/generators/line.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -93,6 +99,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -244,7 +256,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -407,7 +419,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -706,10 +718,10 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    This is an implementation of the Roussopoulos algorithm.</span>
+<span class="sd">    This is an implementation of the Roussopoulos algorithm[1]_.</span>
 
 <span class="sd">    If G consists of multiple components, then the algorithm doesn&#39;t work.</span>
-<span class="sd">    You should invert every component seperately:</span>
+<span class="sd">    You should invert every component separately:</span>
 
 <span class="sd">    &gt;&gt;&gt; K5 = nx.complete_graph(5)</span>
 <span class="sd">    &gt;&gt;&gt; P4 = nx.Graph([(&quot;a&quot;, &quot;b&quot;), (&quot;b&quot;, &quot;c&quot;), (&quot;c&quot;, &quot;d&quot;)])</span>
@@ -722,8 +734,9 @@
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    * Roussopolous, N, &quot;A max {m, n} algorithm for determining the graph H from</span>
-<span class="sd">      its line graph G&quot;, Information Processing Letters 2, (1973), 108--112.</span>
+<span class="sd">    .. [1] Roussopoulos, N.D. , &quot;A max {m, n} algorithm for determining the graph H from</span>
+<span class="sd">       its line graph G&quot;, Information Processing Letters 2, (1973), 108--112, ISSN 0020-0190,</span>
+<span class="sd">       `DOI link &lt;https://doi.org/10.1016/0020-0190(73)90029-X&gt;`_</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -737,7 +750,7 @@
     <span class="k">elif</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">G</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
             <span class="s2">&quot;inverse_line_graph() doesn&#39;t work on an edgeless graph. &quot;</span>
-            <span class="s2">&quot;Please use this function on each component seperately.&quot;</span>
+            <span class="s2">&quot;Please use this function on each component separately.&quot;</span>
         <span class="p">)</span>
         <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
@@ -820,10 +833,7 @@
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="p">[</span><span class="n">t</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">T</span><span class="p">:</span>
                 <span class="n">T_neighbors</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">T_neighbors</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">T_neighbors</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]:</span>
-            <span class="k">return</span> <span class="kc">True</span>
-    <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">T_neighbors</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">T_neighbors</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_find_partition</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">starting_cell</span><span class="p">):</span>
@@ -974,11 +984,11 @@
               
 <div class="toc-item">
   
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
 </div>
 
 <div class="toc-item">

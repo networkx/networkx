@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>networkx.algorithms.similarity &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>networkx.algorithms.similarity &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -46,12 +46,18 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/similarity';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/similarity.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -93,6 +99,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -244,7 +256,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -407,7 +419,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -809,7 +821,7 @@
 <span class="sd">       https://hal.archives-ouvertes.fr/hal-01168816</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">paths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">bestcost</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">vertex_path</span><span class="p">,</span> <span class="n">edge_path</span><span class="p">,</span> <span class="n">cost</span> <span class="ow">in</span> <span class="n">optimize_edit_paths</span><span class="p">(</span>
         <span class="n">G1</span><span class="p">,</span>
@@ -827,7 +839,7 @@
     <span class="p">):</span>
         <span class="c1"># assert bestcost is None or cost &lt;= bestcost</span>
         <span class="k">if</span> <span class="n">bestcost</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">cost</span> <span class="o">&lt;</span> <span class="n">bestcost</span><span class="p">:</span>
-            <span class="n">paths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">vertex_path</span><span class="p">,</span> <span class="n">edge_path</span><span class="p">))</span>
         <span class="n">bestcost</span> <span class="o">=</span> <span class="n">cost</span>
     <span class="k">return</span> <span class="n">paths</span><span class="p">,</span> <span class="n">bestcost</span></div>
@@ -1157,9 +1169,9 @@
         <span class="c1"># NOTE: fast reduce of Cv relies on it</span>
         <span class="c1"># assert len(lsa_row_ind) == len(lsa_col_ind)</span>
         <span class="n">indexes</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lsa_row_ind</span><span class="p">)),</span> <span class="n">lsa_row_ind</span><span class="p">,</span> <span class="n">lsa_col_ind</span><span class="p">)</span>
-        <span class="n">subst_ind</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">indexes</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">)</span>
+        <span class="n">subst_ind</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">indexes</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">]</span>
         <span class="n">indexes</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lsa_row_ind</span><span class="p">)),</span> <span class="n">lsa_row_ind</span><span class="p">,</span> <span class="n">lsa_col_ind</span><span class="p">)</span>
-        <span class="n">dummy_ind</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">indexes</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">m</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="p">)</span>
+        <span class="n">dummy_ind</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">indexes</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">m</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="p">]</span>
         <span class="c1"># assert len(subst_ind) == len(dummy_ind)</span>
         <span class="n">lsa_row_ind</span><span class="p">[</span><span class="n">dummy_ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">lsa_col_ind</span><span class="p">[</span><span class="n">subst_ind</span><span class="p">]</span> <span class="o">+</span> <span class="n">m</span>
         <span class="n">lsa_col_ind</span><span class="p">[</span><span class="n">dummy_ind</span><span class="p">]</span> <span class="o">=</span> <span class="n">lsa_row_ind</span><span class="p">[</span><span class="n">subst_ind</span><span class="p">]</span> <span class="o">+</span> <span class="n">n</span>
@@ -1264,14 +1276,14 @@
                     <span class="n">C</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">inf</span>
 
             <span class="n">localCe</span> <span class="o">=</span> <span class="n">make_CostMatrix</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
-            <span class="n">ij</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+            <span class="n">ij</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="p">(</span>
                     <span class="n">g_ind</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">m</span> <span class="k">else</span> <span class="n">M</span> <span class="o">+</span> <span class="n">h_ind</span><span class="p">[</span><span class="n">l</span><span class="p">],</span>
                     <span class="n">h_ind</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="k">if</span> <span class="n">l</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="k">else</span> <span class="n">N</span> <span class="o">+</span> <span class="n">g_ind</span><span class="p">[</span><span class="n">k</span><span class="p">],</span>
                 <span class="p">)</span>
                 <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">localCe</span><span class="o">.</span><span class="n">lsa_row_ind</span><span class="p">,</span> <span class="n">localCe</span><span class="o">.</span><span class="n">lsa_col_ind</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">m</span> <span class="ow">or</span> <span class="n">l</span> <span class="o">&lt;</span> <span class="n">n</span>
-            <span class="p">)</span>
+            <span class="p">]</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="n">ij</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1344,7 +1356,7 @@
             <span class="k">yield</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="n">Cv_ij</span><span class="p">,</span> <span class="n">xy</span><span class="p">,</span> <span class="n">Ce_xy</span><span class="p">,</span> <span class="n">Cv</span><span class="o">.</span><span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">localCe</span><span class="o">.</span><span class="n">ls</span>
 
         <span class="c1"># 2) other candidates, sorted by lower-bound cost estimate</span>
-        <span class="n">other</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">other</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">fixed_i</span><span class="p">,</span> <span class="n">fixed_j</span> <span class="o">=</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span>
         <span class="k">if</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">:</span>
             <span class="n">candidates</span> <span class="o">=</span> <span class="p">(</span>
@@ -1479,16 +1491,16 @@
                             <span class="n">pending_h</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="k">if</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="n">len_h</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                         <span class="p">)</span>
                     <span class="p">)</span>
-                <span class="n">sortedx</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">xy</span><span class="p">))</span>
-                <span class="n">sortedy</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">y</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">xy</span><span class="p">))</span>
-                <span class="n">G</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                <span class="n">sortedx</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">xy</span><span class="p">)</span>
+                <span class="n">sortedy</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">y</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">xy</span><span class="p">)</span>
+                <span class="n">G</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="p">(</span><span class="n">pending_g</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_g</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
                     <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">sortedx</span><span class="p">)</span>
-                <span class="p">)</span>
-                <span class="n">H</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                <span class="p">]</span>
+                <span class="n">H</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="p">(</span><span class="n">pending_h</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">if</span> <span class="n">y</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">pending_h</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
                     <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">sortedy</span><span class="p">)</span>
-                <span class="p">)</span>
+                <span class="p">]</span>
 
                 <span class="k">yield from</span> <span class="n">get_edit_paths</span><span class="p">(</span>
                     <span class="n">matched_uv</span><span class="p">,</span>
@@ -2059,7 +2071,7 @@
     <span class="n">top_k_sorted</span> <span class="o">=</span> <span class="n">top_k_unsorted</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">S</span><span class="p">[</span><span class="n">top_k_unsorted</span><span class="p">])][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="c1"># Add back the similarity scores</span>
-    <span class="n">top_k_sorted_names</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">node_map</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">top_k_sorted</span><span class="p">)</span>
+    <span class="n">top_k_sorted_names</span> <span class="o">=</span> <span class="p">(</span><span class="n">node_map</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">top_k_sorted</span><span class="p">)</span>
     <span class="n">top_k_with_val</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">top_k_sorted_names</span><span class="p">,</span> <span class="n">S</span><span class="p">[</span><span class="n">top_k_sorted</span><span class="p">]))</span>
 
     <span class="c1"># Remove the self-similarity</span>
@@ -2177,11 +2189,11 @@
               
 <div class="toc-item">
   
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
 </div>
 
 <div class="toc-item">

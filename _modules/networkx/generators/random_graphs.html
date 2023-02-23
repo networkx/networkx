@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>networkx.generators.random_graphs &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>networkx.generators.random_graphs &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -46,12 +46,18 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/generators/random_graphs';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/generators/random_graphs.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -93,6 +99,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -244,7 +256,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -407,7 +419,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -806,7 +818,7 @@
     <span class="c1"># for each edge u-v, with probability p, randomly select existing</span>
     <span class="c1"># node w and add new edge u-w</span>
     <span class="n">e</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">seed</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">:</span>
             <span class="n">w</span> <span class="o">=</span> <span class="n">seed</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">nlist</span><span class="p">)</span>
             <span class="c1"># no self-loops and reject if edge u-w exists</span>
@@ -950,6 +962,8 @@
 <span class="k">def</span> <span class="nf">random_regular_graph</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a random $d$-regular graph on $n$ nodes.</span>
 
+<span class="sd">    A regular graph is a graph where each node has the same number of neighbors.</span>
+
 <span class="sd">    The resulting graph has no self-loops or parallel edges.</span>
 
 <span class="sd">    Parameters</span>
@@ -981,7 +995,7 @@
 <span class="sd">    .. [1] A. Steger and N. Wormald,</span>
 <span class="sd">       Generating random regular graphs quickly,</span>
 <span class="sd">       Probability and Computing 8 (1999), 377-396, 1999.</span>
-<span class="sd">       http://citeseer.ist.psu.edu/steger99generating.html</span>
+<span class="sd">       https://doi.org/10.1017/S0963548399003867</span>
 
 <span class="sd">    .. [2] Jeong Han Kim and Van H. Vu,</span>
 <span class="sd">       Generating random regular graphs,</span>
@@ -1478,7 +1492,7 @@
                 <span class="n">neighborhood</span> <span class="o">=</span> <span class="p">[</span>
                     <span class="n">nbr</span>
                     <span class="k">for</span> <span class="n">nbr</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">nbr</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">nbr</span> <span class="o">==</span> <span class="n">source</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">nbr</span><span class="p">)</span> <span class="ow">and</span> <span class="n">nbr</span> <span class="o">!=</span> <span class="n">source</span>
                 <span class="p">]</span>
                 <span class="k">if</span> <span class="n">neighborhood</span><span class="p">:</span>  <span class="c1"># if there is a neighbor without a link</span>
                     <span class="n">nbr</span> <span class="o">=</span> <span class="n">seed</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">neighborhood</span><span class="p">)</span>
@@ -1577,7 +1591,7 @@
     <span class="n">intra_edges</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">nnodes</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="c1"># create gnm graphs for each shell</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="ow">in</span> <span class="n">constructor</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">constructor</span><span class="p">:</span>
         <span class="n">inter_edges</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span> <span class="o">*</span> <span class="n">d</span><span class="p">)</span>
         <span class="n">intra_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span> <span class="o">-</span> <span class="n">inter_edges</span><span class="p">)</span>
         <span class="n">g</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">convert_node_labels_to_integers</span><span class="p">(</span>
@@ -1791,11 +1805,11 @@
               
 <div class="toc-item">
   
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
 </div>
 
 <div class="toc-item">

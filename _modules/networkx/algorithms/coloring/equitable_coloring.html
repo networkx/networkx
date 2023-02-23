@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>networkx.algorithms.coloring.equitable_coloring &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>networkx.algorithms.coloring.equitable_coloring &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -46,12 +46,18 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/coloring/equitable_coloring';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/coloring/equitable_coloring.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -93,6 +99,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -244,7 +256,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -407,7 +419,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -475,10 +487,7 @@
 <span class="k">def</span> <span class="nf">is_coloring</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">coloring</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Determine if the coloring is a valid coloring for the graph G.&quot;&quot;&quot;</span>
     <span class="c1"># Verify that the coloring is valid.</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">coloring</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">==</span> <span class="n">coloring</span><span class="p">[</span><span class="n">d</span><span class="p">]:</span>
-            <span class="k">return</span> <span class="kc">False</span>
-    <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">coloring</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">!=</span> <span class="n">coloring</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">is_equitable</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">coloring</span><span class="p">,</span> <span class="n">num_colors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -512,7 +521,7 @@
 
 
 <span class="k">def</span> <span class="nf">make_C_from_F</span><span class="p">(</span><span class="n">F</span><span class="p">):</span>
-    <span class="n">C</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="n">F</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">C</span><span class="p">[</span><span class="n">color</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 
@@ -531,9 +540,7 @@
 
 <span class="k">def</span> <span class="nf">make_H_from_C_N</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">):</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">C</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span> <span class="k">if</span> <span class="n">N</span><span class="p">[(</span><span class="n">node</span><span class="p">,</span> <span class="n">c2</span><span class="p">)]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">c1</span> <span class="ow">in</span> <span class="n">C</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">c2</span> <span class="ow">in</span> <span class="n">C</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">):</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">C</span><span class="p">[</span><span class="n">c1</span><span class="p">]</span> <span class="k">if</span> <span class="n">N</span><span class="p">[(</span><span class="n">node</span><span class="p">,</span> <span class="n">c2</span><span class="p">)]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">c1</span> <span class="ow">in</span> <span class="n">C</span> <span class="k">for</span> <span class="n">c2</span> <span class="ow">in</span> <span class="n">C</span>
     <span class="p">}</span>
 
 
@@ -544,7 +551,7 @@
     <span class="c1"># Change the class of &#39;u&#39; from X to Y</span>
     <span class="n">F</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="n">Y</span>
 
-    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">C</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">C</span><span class="p">:</span>
         <span class="c1"># &#39;u&#39; witnesses an edge from k -&gt; Y instead of from k -&gt; X now.</span>
         <span class="k">if</span> <span class="n">N</span><span class="p">[</span><span class="n">u</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">H</span><span class="p">[(</span><span class="n">X</span><span class="p">,</span> <span class="n">k</span><span class="p">)]</span> <span class="o">-=</span> <span class="mi">1</span>
@@ -629,7 +636,7 @@
         <span class="c1"># using a look-up table instead of testing for membership in a set by a</span>
         <span class="c1"># logarithmic factor.</span>
         <span class="n">next_layer</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">C</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">C</span><span class="p">:</span>
             <span class="k">if</span> <span class="p">(</span>
                 <span class="n">H</span><span class="p">[(</span><span class="n">k</span><span class="p">,</span> <span class="n">pop</span><span class="p">)]</span> <span class="o">&gt;</span> <span class="mi">0</span>
                 <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">A_cal</span>
@@ -664,11 +671,10 @@
         <span class="n">made_equitable</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="k">for</span> <span class="n">W_1</span> <span class="ow">in</span> <span class="n">R_cal</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
-
             <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">C</span><span class="p">[</span><span class="n">W_1</span><span class="p">]:</span>
                 <span class="n">X</span> <span class="o">=</span> <span class="kc">None</span>
 
-                <span class="k">for</span> <span class="n">U</span> <span class="ow">in</span> <span class="n">C</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">U</span> <span class="ow">in</span> <span class="n">C</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">N</span><span class="p">[(</span><span class="n">v</span><span class="p">,</span> <span class="n">U</span><span class="p">)]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">U</span> <span class="ow">in</span> <span class="n">A_cal</span> <span class="ow">and</span> <span class="n">U</span> <span class="o">!=</span> <span class="n">W_1</span><span class="p">:</span>
                         <span class="n">X</span> <span class="o">=</span> <span class="n">U</span>
 
@@ -676,7 +682,7 @@
                 <span class="k">if</span> <span class="n">X</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">continue</span>
 
-                <span class="k">for</span> <span class="n">U</span> <span class="ow">in</span> <span class="n">C</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">U</span> <span class="ow">in</span> <span class="n">C</span><span class="p">:</span>
                     <span class="c1"># Note: Departing from the paper here.</span>
                     <span class="k">if</span> <span class="n">N</span><span class="p">[(</span><span class="n">v</span><span class="p">,</span> <span class="n">U</span><span class="p">)]</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">U</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">A_cal</span><span class="p">:</span>
                         <span class="n">X_prime</span> <span class="o">=</span> <span class="n">U</span>
@@ -757,7 +763,7 @@
                     <span class="c1"># they only exclude colors from A_cal</span>
                     <span class="n">next_layer</span> <span class="o">=</span> <span class="p">[</span>
                         <span class="n">k</span>
-                        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">C</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">C</span>
                         <span class="k">if</span> <span class="n">H</span><span class="p">[(</span><span class="n">pop</span><span class="p">,</span> <span class="n">k</span><span class="p">)]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">B_cal_prime</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">marked</span>
                     <span class="p">]</span>
 
@@ -781,7 +787,7 @@
 
                     <span class="n">I_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
                     <span class="n">I_covered</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
-                    <span class="n">I_covered</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">nbr</span> <span class="k">for</span> <span class="n">nbr</span> <span class="ow">in</span> <span class="n">L</span><span class="p">[</span><span class="n">z</span><span class="p">]])</span>
+                    <span class="n">I_covered</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="n">z</span><span class="p">]))</span>
 
                     <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">L</span><span class="p">[</span><span class="n">z</span><span class="p">]:</span>
                         <span class="k">if</span> <span class="n">F</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="ow">in</span> <span class="n">A_cal_0</span> <span class="ow">and</span> <span class="n">N</span><span class="p">[(</span><span class="n">z</span><span class="p">,</span> <span class="n">F</span><span class="p">[</span><span class="n">w</span><span class="p">])]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -818,19 +824,13 @@
 
                                 <span class="c1"># change color of w to some color in B_cal</span>
                                 <span class="n">W_plus</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
-                                    <span class="n">k</span>
-                                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">C</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-                                    <span class="k">if</span> <span class="n">N</span><span class="p">[(</span><span class="n">w</span><span class="p">,</span> <span class="n">k</span><span class="p">)]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">A_cal</span>
+                                    <span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">C</span> <span class="k">if</span> <span class="n">N</span><span class="p">[(</span><span class="n">w</span><span class="p">,</span> <span class="n">k</span><span class="p">)]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">A_cal</span>
                                 <span class="p">)</span>
                                 <span class="n">change_color</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">W_plus</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">H</span><span class="o">=</span><span class="n">H</span><span class="p">,</span> <span class="n">F</span><span class="o">=</span><span class="n">F</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="n">C</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="n">L</span><span class="p">)</span>
 
                                 <span class="c1"># recurse with G[B \cup W*]</span>
                                 <span class="n">excluded_colors</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-                                    <span class="p">[</span>
-                                        <span class="n">k</span>
-                                        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">C</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-                                        <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="n">W</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">B_cal_prime</span>
-                                    <span class="p">]</span>
+                                    <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">C</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="n">W</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">B_cal_prime</span><span class="p">]</span>
                                 <span class="p">)</span>
                                 <span class="n">procedure_P</span><span class="p">(</span>
                                     <span class="n">V_minus</span><span class="o">=</span><span class="n">W</span><span class="p">,</span>
@@ -945,7 +945,6 @@
 
     <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">u</span><span class="p">)):</span>
-
             <span class="c1"># Do not double count edges if (v, u) has already been seen.</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span> <span class="ow">in</span> <span class="n">edges_seen</span><span class="p">:</span>
                 <span class="k">continue</span>
@@ -968,7 +967,7 @@
 
         <span class="k">if</span> <span class="n">N</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">F</span><span class="p">[</span><span class="n">u</span><span class="p">])]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="c1"># Find the first color where &#39;u&#39; does not have any neighbors.</span>
-            <span class="n">Y</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">C</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">N</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">k</span><span class="p">)]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">Y</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">C</span> <span class="k">if</span> <span class="n">N</span><span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">k</span><span class="p">)]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
             <span class="n">X</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">u</span><span class="p">]</span>
             <span class="n">change_color</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">H</span><span class="o">=</span><span class="n">H</span><span class="p">,</span> <span class="n">F</span><span class="o">=</span><span class="n">F</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="n">C</span><span class="p">,</span> <span class="n">L</span><span class="o">=</span><span class="n">L_</span><span class="p">)</span>
 
@@ -990,11 +989,11 @@
               
 <div class="toc-item">
   
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
+<form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
 </div>
 
 <div class="toc-item">

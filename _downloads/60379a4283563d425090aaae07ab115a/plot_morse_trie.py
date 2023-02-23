@@ -77,6 +77,7 @@ nx.draw(G, pos=pos, with_labels=True)
 elabels = {(u, v): l for u, v, l in G.edges(data="char")}
 nx.draw_networkx_edge_labels(G, pos, edge_labels=elabels)
 
+
 # A letter can be encoded by following the path from the given letter (node) to
 # the root node
 def morse_encode(letter):

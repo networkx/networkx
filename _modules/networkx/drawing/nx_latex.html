@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>networkx.drawing.nx_latex &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>networkx.drawing.nx_latex &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -46,12 +46,18 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/drawing/nx_latex';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/drawing/nx_latex.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -93,6 +99,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -244,7 +256,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -407,7 +419,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -680,8 +692,8 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">get_node_attributes</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">pos</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">pos</span><span class="p">:</span>
-        <span class="c1"># circular layout with radius 1</span>
-        <span class="n">pos</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="w"> </span><span class="mf">3.1415</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">),</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">:10)&quot;</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">G</span><span class="p">)}</span>
+        <span class="c1"># circular layout with radius 2</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="mf">360.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">G</span><span class="p">),</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">:2)&quot;</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">G</span><span class="p">)}</span>
     <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pos</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;node </span><span class="si">{</span><span class="n">node</span><span class="si">}</span><span class="s2"> has no specified pos </span><span class="si">{</span><span class="n">pos</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -948,7 +960,7 @@
 
 <span class="sd">    This convenience function creates the latex drawing code as a string</span>
 <span class="sd">    and writes that to a file ready to be compiled when `as_document` is True</span>
-<span class="sd">    or ready to be ``\\import``ed or `\\include``ed into your main LaTeX document.</span>
+<span class="sd">    or ready to be ``import`` ed or ``include`` ed into your main LaTeX document.</span>
 
 <span class="sd">    The `path` argument can be a string filename or a file handle to write to.</span>
 
@@ -961,71 +973,71 @@
 <span class="sd">    path : filename</span>
 <span class="sd">        Filename or file handle to write to</span>
 <span class="sd">    options : dict</span>
-<span class="sd">        By default, TikZ is used with options: (others are ignored):</span>
+<span class="sd">        By default, TikZ is used with options: (others are ignored)::</span>
 
-<span class="sd">        pos : string or dict or list</span>
-<span class="sd">            The name of the node attribute on `G` that holds the position of each node.</span>
-<span class="sd">            Positions can be sequences of length 2 with numbers for (x,y) coordinates.</span>
-<span class="sd">            They can also be strings to denote positions in TikZ style, such as (x, y)</span>
-<span class="sd">            or (angle:radius).</span>
-<span class="sd">            If a dict, it should be keyed by node to a position.</span>
-<span class="sd">            If an empty dict, a circular layout is computed by TikZ.</span>
-<span class="sd">            If you are drawing many graphs in subfigures, use a list of position dicts.</span>
-<span class="sd">        tikz_options : string</span>
-<span class="sd">            The tikzpicture options description defining the options for the picture.</span>
-<span class="sd">            Often large scale options like `[scale=2]`.</span>
-<span class="sd">        default_node_options : string</span>
-<span class="sd">            The draw options for a path of nodes. Individual node options override these.</span>
-<span class="sd">        node_options : string or dict</span>
-<span class="sd">            The name of the node attribute on `G` that holds the options for each node.</span>
-<span class="sd">            Or a dict keyed by node to a string holding the options for that node.</span>
-<span class="sd">        node_label : string or dict</span>
-<span class="sd">            The name of the node attribute on `G` that holds the node label (text)</span>
-<span class="sd">            displayed for each node. If the attribute is &quot;&quot; or not present, the node</span>
-<span class="sd">            itself is drawn as a string. LaTeX processing such as ``&quot;$A_1$&quot;`` is allowed.</span>
-<span class="sd">            Or a dict keyed by node to a string holding the label for that node.</span>
-<span class="sd">        default_edge_options : string</span>
-<span class="sd">            The options for the scope drawing all edges. The default is &quot;[-]&quot; for</span>
-<span class="sd">            undirected graphs and &quot;[-&gt;]&quot; for directed graphs.</span>
-<span class="sd">        edge_options : string or dict</span>
-<span class="sd">            The name of the edge attribute on `G` that holds the options for each edge.</span>
-<span class="sd">            If the edge is a self-loop and ``&quot;loop&quot; not in edge_options`` the option</span>
-<span class="sd">            &quot;loop,&quot; is added to the options for the self-loop edge. Hence you can</span>
-<span class="sd">            use &quot;[loop above]&quot; explicitly, but the default is &quot;[loop]&quot;.</span>
-<span class="sd">            Or a dict keyed by edge to a string holding the options for that edge.</span>
-<span class="sd">        edge_label : string or dict</span>
-<span class="sd">            The name of the edge attribute on `G` that holds the edge label (text)</span>
-<span class="sd">            displayed for each edge. If the attribute is &quot;&quot; or not present, no edge</span>
-<span class="sd">            label is drawn.</span>
-<span class="sd">            Or a dict keyed by edge to a string holding the label for that edge.</span>
-<span class="sd">        edge_label_options : string or dict</span>
-<span class="sd">            The name of the edge attribute on `G` that holds the label options for</span>
-<span class="sd">            each edge. For example, &quot;[sloped,above,blue]&quot;. The default is no options.</span>
-<span class="sd">            Or a dict keyed by edge to a string holding the label options for that edge.</span>
-<span class="sd">        caption : string</span>
-<span class="sd">            The caption string for the figure environment</span>
-<span class="sd">        latex_label : string</span>
-<span class="sd">            The latex label used for the figure for easy referral from the main text</span>
-<span class="sd">        sub_captions : list of strings</span>
-<span class="sd">            The sub_caption string for each subfigure in the figure</span>
-<span class="sd">        sub_latex_labels : list of strings</span>
-<span class="sd">            The latex label for each subfigure in the figure</span>
-<span class="sd">        n_rows : int</span>
-<span class="sd">            The number of rows of subfigures to arrange for multiple graphs</span>
-<span class="sd">        as_document : bool</span>
-<span class="sd">            Whether to wrap the latex code in a document envionment for compiling</span>
-<span class="sd">        document_wrapper : formatted text string with variable ``content``.</span>
-<span class="sd">            This text is called to evaluate the content embedded in a document</span>
-<span class="sd">            environment with a preamble setting up the TikZ syntax.</span>
-<span class="sd">        figure_wrapper : formatted text string</span>
-<span class="sd">            This text is evaluated with variables ``content``, ``caption`` and ``label``.</span>
-<span class="sd">            It wraps the content and if a caption is provided, adds the latex code for</span>
-<span class="sd">            that caption, and if a label is provided, adds the latex code for a label.</span>
-<span class="sd">        subfigure_wrapper : formatted text string</span>
-<span class="sd">            This text evaluate variables ``size``, ``content``, ``caption`` and ``label``.</span>
-<span class="sd">            It wraps the content and if a caption is provided, adds the latex code for</span>
-<span class="sd">            that caption, and if a label is provided, adds the latex code for a label.</span>
-<span class="sd">            The size is the vertical size of each row of subfigures as a fraction.</span>
+<span class="sd">            pos : string or dict or list</span>
+<span class="sd">                The name of the node attribute on `G` that holds the position of each node.</span>
+<span class="sd">                Positions can be sequences of length 2 with numbers for (x,y) coordinates.</span>
+<span class="sd">                They can also be strings to denote positions in TikZ style, such as (x, y)</span>
+<span class="sd">                or (angle:radius).</span>
+<span class="sd">                If a dict, it should be keyed by node to a position.</span>
+<span class="sd">                If an empty dict, a circular layout is computed by TikZ.</span>
+<span class="sd">                If you are drawing many graphs in subfigures, use a list of position dicts.</span>
+<span class="sd">            tikz_options : string</span>
+<span class="sd">                The tikzpicture options description defining the options for the picture.</span>
+<span class="sd">                Often large scale options like `[scale=2]`.</span>
+<span class="sd">            default_node_options : string</span>
+<span class="sd">                The draw options for a path of nodes. Individual node options override these.</span>
+<span class="sd">            node_options : string or dict</span>
+<span class="sd">                The name of the node attribute on `G` that holds the options for each node.</span>
+<span class="sd">                Or a dict keyed by node to a string holding the options for that node.</span>
+<span class="sd">            node_label : string or dict</span>
+<span class="sd">                The name of the node attribute on `G` that holds the node label (text)</span>
+<span class="sd">                displayed for each node. If the attribute is &quot;&quot; or not present, the node</span>
+<span class="sd">                itself is drawn as a string. LaTeX processing such as ``&quot;$A_1$&quot;`` is allowed.</span>
+<span class="sd">                Or a dict keyed by node to a string holding the label for that node.</span>
+<span class="sd">            default_edge_options : string</span>
+<span class="sd">                The options for the scope drawing all edges. The default is &quot;[-]&quot; for</span>
+<span class="sd">                undirected graphs and &quot;[-&gt;]&quot; for directed graphs.</span>
+<span class="sd">            edge_options : string or dict</span>
+<span class="sd">                The name of the edge attribute on `G` that holds the options for each edge.</span>
+<span class="sd">                If the edge is a self-loop and ``&quot;loop&quot; not in edge_options`` the option</span>
+<span class="sd">                &quot;loop,&quot; is added to the options for the self-loop edge. Hence you can</span>
+<span class="sd">                use &quot;[loop above]&quot; explicitly, but the default is &quot;[loop]&quot;.</span>
+<span class="sd">                Or a dict keyed by edge to a string holding the options for that edge.</span>
+<span class="sd">            edge_label : string or dict</span>
+<span class="sd">                The name of the edge attribute on `G` that holds the edge label (text)</span>
+<span class="sd">                displayed for each edge. If the attribute is &quot;&quot; or not present, no edge</span>
+<span class="sd">                label is drawn.</span>
+<span class="sd">                Or a dict keyed by edge to a string holding the label for that edge.</span>
+<span class="sd">            edge_label_options : string or dict</span>
+<span class="sd">                The name of the edge attribute on `G` that holds the label options for</span>
+<span class="sd">                each edge. For example, &quot;[sloped,above,blue]&quot;. The default is no options.</span>
+<span class="sd">                Or a dict keyed by edge to a string holding the label options for that edge.</span>
+<span class="sd">            caption : string</span>
+<span class="sd">                The caption string for the figure environment</span>
+<span class="sd">            latex_label : string</span>
+<span class="sd">                The latex label used for the figure for easy referral from the main text</span>
+<span class="sd">            sub_captions : list of strings</span>
+<span class="sd">                The sub_caption string for each subfigure in the figure</span>
+<span class="sd">            sub_latex_labels : list of strings</span>
+<span class="sd">                The latex label for each subfigure in the figure</span>
+<span class="sd">            n_rows : int</span>
+<span class="sd">                The number of rows of subfigures to arrange for multiple graphs</span>
+<span class="sd">            as_document : bool</span>
+<span class="sd">                Whether to wrap the latex code in a document envionment for compiling</span>
+<span class="sd">            document_wrapper : formatted text string with variable ``content``.</span>
+<span class="sd">                This text is called to evaluate the content embedded in a document</span>
+<span class="sd">                environment with a preamble setting up the TikZ syntax.</span>
+<span class="sd">            figure_wrapper : formatted text string</span>
+<span class="sd">                This text is evaluated with variables ``content``, ``caption`` and ``label``.</span>
+<span class="sd">                It wraps the content and if a caption is provided, adds the latex code for</span>
+<span class="sd">                that caption, and if a label is provided, adds the latex code for a label.</span>
+<span class="sd">            subfigure_wrapper : formatted text string</span>
+<span class="sd">                This text evaluate variables ``size``, ``content``, ``caption`` and ``label``.</span>
+<span class="sd">                It wraps the content and if a caption is provided, adds the latex code for</span>
+<span class="sd">                that caption, and if a label is provided, adds the latex code for a label.</span>
+<span class="sd">                The size is the vertical size of each row of subfigures as a fraction.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    ========</span>
@@ -1046,11 +1058,11 @@
               
 <div class="toc-item">
   
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
 </div>
 
 <div class="toc-item">

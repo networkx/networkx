@@ -1,0 +1,1116 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>networkx.readwrite.text &#8212; NetworkX 3.1rc1.dev0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/readwrite/text';</script>
+    <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/readwrite/text.html" />
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
+          href="../../../_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en"> 
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a> 
+<div class="container-fluid version-alert devbar">
+  <div class="row no-gutters">
+    <div class="col-12 text-center">
+      This page is documentation for a DEVELOPMENT / PRE-RELEASE version.
+      <a
+        class="btn version-stable font-weight-bold ml-3 my-3 align-baseline"
+        href="https://networkx.org/documentation/stable/"
+        >Switch to stable version</a
+      >
+    </div>
+  </div>
+</div>
+
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-light" alt="Logo image">
+    <img src="../../../_static/networkx_banner.svg" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.1rc1.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../install.html">
+                        Install
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../tutorial.html">
+                        Tutorial
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../reference/index.html">
+                        Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+                        Gallery
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../developer/index.html">
+                        Developer
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../release/index.html">
+                        Releases
+                      </a>
+                    </li>
+                
+
+                <li class="nav-item">
+                  <a class="nav-link nav-external" href="https://networkx.org/nx-guides/">
+                    Guides
+                  </a>
+                </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://networkx.org" title="Home Page" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fas fa-home"></i></span>
+            <label class="sr-only">Home Page</label></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/networkx/networkx" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul class="navbar-nav">
+  <li class="mr-2 dropdown">
+    <button
+      type="button"
+      class="btn btn-version btn-sm navbar-btn dropdown-toggle"
+      id="dLabelMore"
+      data-toggle="dropdown"
+    >
+      v3.1rc1.dev0
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dLabelMore">
+      <li>
+        <a href="https://networkx.org/documentation/latest/index.html"
+          >devel (latest)</a
+        >
+      </li>
+      <li>
+        <a href="https://networkx.org/documentation/stable/index.html"
+          >current (stable)</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+  <div class="sidebar-start-items sidebar-primary__section">
+    <div class="sidebar-start-items__item">
+    </div>
+  </div>
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for networkx.readwrite.text</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Text-based visual representations of graphs</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">open_file</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;forest_str&quot;</span><span class="p">,</span> <span class="s2">&quot;generate_network_text&quot;</span><span class="p">,</span> <span class="s2">&quot;write_network_text&quot;</span><span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">_AsciiBaseGlyphs</span><span class="p">:</span>
+    <span class="n">empty</span> <span class="o">=</span> <span class="s2">&quot;+&quot;</span>
+    <span class="n">newtree_last</span> <span class="o">=</span> <span class="s2">&quot;+-- &quot;</span>
+    <span class="n">newtree_mid</span> <span class="o">=</span> <span class="s2">&quot;+-- &quot;</span>
+    <span class="n">endof_forest</span> <span class="o">=</span> <span class="s2">&quot;    &quot;</span>
+    <span class="n">within_forest</span> <span class="o">=</span> <span class="s2">&quot;:   &quot;</span>
+    <span class="n">within_tree</span> <span class="o">=</span> <span class="s2">&quot;|   &quot;</span>
+
+
+<span class="k">class</span> <span class="nc">AsciiDirectedGlyphs</span><span class="p">(</span><span class="n">_AsciiBaseGlyphs</span><span class="p">):</span>
+    <span class="n">last</span> <span class="o">=</span> <span class="s2">&quot;L-&gt; &quot;</span>
+    <span class="n">mid</span> <span class="o">=</span> <span class="s2">&quot;|-&gt; &quot;</span>
+    <span class="n">backedge</span> <span class="o">=</span> <span class="s2">&quot;&lt;-&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">AsciiUndirectedGlyphs</span><span class="p">(</span><span class="n">_AsciiBaseGlyphs</span><span class="p">):</span>
+    <span class="n">last</span> <span class="o">=</span> <span class="s2">&quot;L-- &quot;</span>
+    <span class="n">mid</span> <span class="o">=</span> <span class="s2">&quot;|-- &quot;</span>
+    <span class="n">backedge</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">_UtfBaseGlyphs</span><span class="p">:</span>
+    <span class="c1"># Notes on available box and arrow characters</span>
+    <span class="c1"># https://en.wikipedia.org/wiki/Box-drawing_character</span>
+    <span class="c1"># https://stackoverflow.com/questions/2701192/triangle-arrow</span>
+    <span class="n">empty</span> <span class="o">=</span> <span class="s2">&quot;╙&quot;</span>
+    <span class="n">newtree_last</span> <span class="o">=</span> <span class="s2">&quot;╙── &quot;</span>
+    <span class="n">newtree_mid</span> <span class="o">=</span> <span class="s2">&quot;╟── &quot;</span>
+    <span class="n">endof_forest</span> <span class="o">=</span> <span class="s2">&quot;    &quot;</span>
+    <span class="n">within_forest</span> <span class="o">=</span> <span class="s2">&quot;╎   &quot;</span>
+    <span class="n">within_tree</span> <span class="o">=</span> <span class="s2">&quot;│   &quot;</span>
+
+
+<span class="k">class</span> <span class="nc">UtfDirectedGlyphs</span><span class="p">(</span><span class="n">_UtfBaseGlyphs</span><span class="p">):</span>
+    <span class="n">last</span> <span class="o">=</span> <span class="s2">&quot;└─╼ &quot;</span>
+    <span class="n">mid</span> <span class="o">=</span> <span class="s2">&quot;├─╼ &quot;</span>
+    <span class="n">backedge</span> <span class="o">=</span> <span class="s2">&quot;╾&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">UtfUndirectedGlyphs</span><span class="p">(</span><span class="n">_UtfBaseGlyphs</span><span class="p">):</span>
+    <span class="n">last</span> <span class="o">=</span> <span class="s2">&quot;└── &quot;</span>
+    <span class="n">mid</span> <span class="o">=</span> <span class="s2">&quot;├── &quot;</span>
+    <span class="n">backedge</span> <span class="o">=</span> <span class="s2">&quot;─&quot;</span>
+
+
+<div class="viewcode-block" id="generate_network_text"><a class="viewcode-back" href="../../../reference/readwrite/generated/networkx.readwrite.text.generate_network_text.html#networkx.readwrite.text.generate_network_text">[docs]</a><span class="k">def</span> <span class="nf">generate_network_text</span><span class="p">(</span>
+    <span class="n">graph</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ascii_only</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate lines in the &quot;network text&quot; format</span>
+
+<span class="sd">    This works via a depth-first traversal of the graph and writing a line for</span>
+<span class="sd">    each unique node encountered. Non-tree edges are written to the right of</span>
+<span class="sd">    each node, and connection to a non-tree edge is indicated with an ellipsis.</span>
+<span class="sd">    This representation works best when the input graph is a forest, but any</span>
+<span class="sd">    graph can be represented.</span>
+
+<span class="sd">    This notation is original to networkx, although it is simple enough that it</span>
+<span class="sd">    may be known in existing literature. See #5602 for details. The procedure</span>
+<span class="sd">    is summarized as follows:</span>
+
+<span class="sd">    1. Given a set of source nodes (which can be specified, or automatically</span>
+<span class="sd">    discovered via finding the (strongly) connected components and choosing one</span>
+<span class="sd">    node with minimum degree from each), we traverse the graph in depth first</span>
+<span class="sd">    order.</span>
+
+<span class="sd">    2. Each reachable node will be printed exactly once on it&#39;s own line.</span>
+
+<span class="sd">    3. Edges are indicated in one of three ways:</span>
+
+<span class="sd">        a. a parent &quot;L-style&quot; connection on the upper left. This corresponds to</span>
+<span class="sd">        a traversal in the directed DFS tree.</span>
+
+<span class="sd">        b. a backref &quot;&lt;-style&quot; connection shown directly on the right. For</span>
+<span class="sd">        directed graphs, these are drawn for any incoming edges to a node that</span>
+<span class="sd">        is not a parent edge. For undirected graphs, these are drawn for only</span>
+<span class="sd">        the non-parent edges that have already been represented (The edges that</span>
+<span class="sd">        have not been represented will be handled in the recursive case).</span>
+
+<span class="sd">        c. a child &quot;L-style&quot; connection on the lower right. Drawing of the</span>
+<span class="sd">        children are handled recursively.</span>
+
+<span class="sd">    4. The children of each node (wrt the directed DFS tree) are drawn</span>
+<span class="sd">    underneath and to the right of it. In the case that a child node has already</span>
+<span class="sd">    been drawn the connection is replaced with an ellipsis (&quot;...&quot;) to indicate</span>
+<span class="sd">    that there is one or more connections represented elsewhere.</span>
+
+<span class="sd">    5. If a maximum depth is specified, an edge to nodes past this maximum</span>
+<span class="sd">    depth will be represented by an ellipsis.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph : nx.DiGraph | nx.Graph</span>
+<span class="sd">        Graph to represent</span>
+
+<span class="sd">    with_labels : bool | str</span>
+<span class="sd">        If True will use the &quot;label&quot; attribute of a node to display if it</span>
+<span class="sd">        exists otherwise it will use the node value itself. If given as a</span>
+<span class="sd">        string, then that attribte name will be used instead of &quot;label&quot;.</span>
+<span class="sd">        Defaults to True.</span>
+
+<span class="sd">    sources : List</span>
+<span class="sd">        Specifies which nodes to start traversal from. Note: nodes that are not</span>
+<span class="sd">        reachable from one of these sources may not be shown. If unspecified,</span>
+<span class="sd">        the minimal set of nodes needed to reach all others will be used.</span>
+
+<span class="sd">    max_depth : int | None</span>
+<span class="sd">        The maximum depth to traverse before stopping. Defaults to None.</span>
+
+<span class="sd">    ascii_only : Boolean</span>
+<span class="sd">        If True only ASCII characters are used to construct the visualization</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    str : a line of generated text</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">is_directed</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">is_directed</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">is_directed</span><span class="p">:</span>
+        <span class="n">glyphs</span> <span class="o">=</span> <span class="n">AsciiDirectedGlyphs</span> <span class="k">if</span> <span class="n">ascii_only</span> <span class="k">else</span> <span class="n">UtfDirectedGlyphs</span>
+        <span class="n">succ</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">succ</span>
+        <span class="n">pred</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">pred</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">glyphs</span> <span class="o">=</span> <span class="n">AsciiUndirectedGlyphs</span> <span class="k">if</span> <span class="n">ascii_only</span> <span class="k">else</span> <span class="n">UtfUndirectedGlyphs</span>
+        <span class="n">succ</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">adj</span>
+        <span class="n">pred</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">adj</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">with_labels</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">label_attr</span> <span class="o">=</span> <span class="n">with_labels</span>
+    <span class="k">elif</span> <span class="n">with_labels</span><span class="p">:</span>
+        <span class="n">label_attr</span> <span class="o">=</span> <span class="s2">&quot;label&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">label_attr</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="n">max_depth</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">glyphs</span><span class="o">.</span><span class="n">empty</span> <span class="o">+</span> <span class="s2">&quot; ...&quot;</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">glyphs</span><span class="o">.</span><span class="n">empty</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># If the nodes to traverse are unspecified, find the minimal set of</span>
+        <span class="c1"># nodes that will reach the entire graph</span>
+        <span class="k">if</span> <span class="n">sources</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sources</span> <span class="o">=</span> <span class="n">_find_sources</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+
+        <span class="c1"># Populate the stack with each:</span>
+        <span class="c1"># 1. parent node in the DFS tree (or None for root nodes),</span>
+        <span class="c1"># 2. the current node in the DFS tree</span>
+        <span class="c1"># 2. a list of indentations indicating depth</span>
+        <span class="c1"># 3. a flag indicating if the node is the final one to be written.</span>
+        <span class="c1"># Reverse the stack so sources are popped in the correct order.</span>
+        <span class="n">last_idx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">stack</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="p">[],</span> <span class="p">(</span><span class="n">idx</span> <span class="o">==</span> <span class="n">last_idx</span><span class="p">))</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
+        <span class="p">][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">num_skipped_children</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">seen_nodes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">while</span> <span class="n">stack</span><span class="p">:</span>
+            <span class="n">parent</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">indents</span><span class="p">,</span> <span class="n">this_islast</span> <span class="o">=</span> <span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">Ellipsis</span><span class="p">:</span>
+                <span class="n">skip</span> <span class="o">=</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">seen_nodes</span>
+                <span class="k">if</span> <span class="n">skip</span><span class="p">:</span>
+                    <span class="c1"># Mark that we skipped a parent&#39;s child</span>
+                    <span class="n">num_skipped_children</span><span class="p">[</span><span class="n">parent</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="k">if</span> <span class="n">this_islast</span><span class="p">:</span>
+                    <span class="c1"># If we reached the last child of a parent, and we skipped</span>
+                    <span class="c1"># any of that parents children, then we should emit an</span>
+                    <span class="c1"># ellipsis at the end after this.</span>
+                    <span class="k">if</span> <span class="n">num_skipped_children</span><span class="p">[</span><span class="n">parent</span><span class="p">]</span> <span class="ow">and</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="c1"># Append the ellipsis to be emitted last</span>
+                        <span class="n">next_islast</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="n">try_frame</span> <span class="o">=</span> <span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="bp">Ellipsis</span><span class="p">,</span> <span class="n">indents</span><span class="p">,</span> <span class="n">next_islast</span><span class="p">)</span>
+                        <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">try_frame</span><span class="p">)</span>
+
+                        <span class="c1"># Redo this frame, but not as a last object</span>
+                        <span class="n">next_islast</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="n">try_frame</span> <span class="o">=</span> <span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">indents</span><span class="p">,</span> <span class="n">next_islast</span><span class="p">)</span>
+                        <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">try_frame</span><span class="p">)</span>
+                        <span class="k">continue</span>
+
+                <span class="k">if</span> <span class="n">skip</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">seen_nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">indents</span><span class="p">:</span>
+                <span class="c1"># Top level items (i.e. trees in the forest) get different</span>
+                <span class="c1"># glyphs to indicate they are not actually connected</span>
+                <span class="k">if</span> <span class="n">this_islast</span><span class="p">:</span>
+                    <span class="n">this_prefix</span> <span class="o">=</span> <span class="n">indents</span> <span class="o">+</span> <span class="p">[</span><span class="n">glyphs</span><span class="o">.</span><span class="n">newtree_last</span><span class="p">]</span>
+                    <span class="n">next_prefix</span> <span class="o">=</span> <span class="n">indents</span> <span class="o">+</span> <span class="p">[</span><span class="n">glyphs</span><span class="o">.</span><span class="n">endof_forest</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">this_prefix</span> <span class="o">=</span> <span class="n">indents</span> <span class="o">+</span> <span class="p">[</span><span class="n">glyphs</span><span class="o">.</span><span class="n">newtree_mid</span><span class="p">]</span>
+                    <span class="n">next_prefix</span> <span class="o">=</span> <span class="n">indents</span> <span class="o">+</span> <span class="p">[</span><span class="n">glyphs</span><span class="o">.</span><span class="n">within_forest</span><span class="p">]</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># For individual tree edges distinguish between directed and</span>
+                <span class="c1"># undirected cases</span>
+                <span class="k">if</span> <span class="n">this_islast</span><span class="p">:</span>
+                    <span class="n">this_prefix</span> <span class="o">=</span> <span class="n">indents</span> <span class="o">+</span> <span class="p">[</span><span class="n">glyphs</span><span class="o">.</span><span class="n">last</span><span class="p">]</span>
+                    <span class="n">next_prefix</span> <span class="o">=</span> <span class="n">indents</span> <span class="o">+</span> <span class="p">[</span><span class="n">glyphs</span><span class="o">.</span><span class="n">endof_forest</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">this_prefix</span> <span class="o">=</span> <span class="n">indents</span> <span class="o">+</span> <span class="p">[</span><span class="n">glyphs</span><span class="o">.</span><span class="n">mid</span><span class="p">]</span>
+                    <span class="n">next_prefix</span> <span class="o">=</span> <span class="n">indents</span> <span class="o">+</span> <span class="p">[</span><span class="n">glyphs</span><span class="o">.</span><span class="n">within_tree</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="bp">Ellipsis</span><span class="p">:</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot; ...&quot;</span>
+                <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="n">children</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">label_attr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">label_attr</span><span class="p">,</span> <span class="n">node</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+                <span class="c1"># Determine:</span>
+                <span class="c1"># (1) children to traverse into after showing this node.</span>
+                <span class="c1"># (2) parents to immediately show to the right of this node.</span>
+                <span class="k">if</span> <span class="n">is_directed</span><span class="p">:</span>
+                    <span class="c1"># In the directed case we must show every successor node</span>
+                    <span class="c1"># note: it may be skipped later, but we don&#39;t have that</span>
+                    <span class="c1"># information here.</span>
+                    <span class="n">children</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">succ</span><span class="p">[</span><span class="n">node</span><span class="p">])</span>
+                    <span class="c1"># In the directed case we must show every predecessor</span>
+                    <span class="c1"># except for parent we directly traversed from.</span>
+                    <span class="n">handled_parents</span> <span class="o">=</span> <span class="p">{</span><span class="n">parent</span><span class="p">}</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Showing only the unseen children results in a more</span>
+                    <span class="c1"># concise representation for the undirected case.</span>
+                    <span class="n">children</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="n">child</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">succ</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="k">if</span> <span class="n">child</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen_nodes</span>
+                    <span class="p">]</span>
+
+                    <span class="c1"># In the undirected case, parents are also children, so we</span>
+                    <span class="c1"># only need to immediately show the ones we can no longer</span>
+                    <span class="c1"># traverse</span>
+                    <span class="n">handled_parents</span> <span class="o">=</span> <span class="p">{</span><span class="o">*</span><span class="n">children</span><span class="p">,</span> <span class="n">parent</span><span class="p">}</span>
+
+                <span class="k">if</span> <span class="n">max_depth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">indents</span><span class="p">)</span> <span class="o">==</span> <span class="n">max_depth</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># Use ellipsis to indicate we have reached maximum depth</span>
+                    <span class="k">if</span> <span class="n">children</span><span class="p">:</span>
+                        <span class="n">children</span> <span class="o">=</span> <span class="p">[</span><span class="bp">Ellipsis</span><span class="p">]</span>
+                    <span class="n">handled_parents</span> <span class="o">=</span> <span class="p">{</span><span class="n">parent</span><span class="p">}</span>
+
+                <span class="c1"># The other parents are other predecessors of this node that</span>
+                <span class="c1"># are not handled elsewhere.</span>
+                <span class="n">other_parents</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pred</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="k">if</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">handled_parents</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">other_parents</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">label_attr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">other_parents_labels</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                            <span class="p">[</span>
+                                <span class="nb">str</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">label_attr</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
+                                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">other_parents</span>
+                            <span class="p">]</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">other_parents_labels</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                            <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">other_parents</span><span class="p">]</span>
+                        <span class="p">)</span>
+                    <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">glyphs</span><span class="o">.</span><span class="n">backedge</span><span class="p">,</span> <span class="n">other_parents_labels</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+            <span class="c1"># Emit the line for this node, this will be called for each node</span>
+            <span class="c1"># exactly once.</span>
+            <span class="k">yield</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">this_prefix</span> <span class="o">+</span> <span class="p">[</span><span class="n">label</span><span class="p">,</span> <span class="n">suffix</span><span class="p">])</span>
+
+            <span class="c1"># Push children on the stack in reverse order so they are popped in</span>
+            <span class="c1"># the original order.</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">child</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">children</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="n">next_islast</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">==</span> <span class="mi">0</span>
+                <span class="n">try_frame</span> <span class="o">=</span> <span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">child</span><span class="p">,</span> <span class="n">next_prefix</span><span class="p">,</span> <span class="n">next_islast</span><span class="p">)</span>
+                <span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">try_frame</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="write_network_text"><a class="viewcode-back" href="../../../reference/readwrite/generated/networkx.readwrite.text.write_network_text.html#networkx.readwrite.text.write_network_text">[docs]</a><span class="nd">@open_file</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">write_network_text</span><span class="p">(</span>
+    <span class="n">graph</span><span class="p">,</span>
+    <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">sources</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">max_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">ascii_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a nice text representation of a graph</span>
+
+<span class="sd">    This works via a depth-first traversal of the graph and writing a line for</span>
+<span class="sd">    each unique node encountered. Non-tree edges are written to the right of</span>
+<span class="sd">    each node, and connection to a non-tree edge is indicated with an ellipsis.</span>
+<span class="sd">    This representation works best when the input graph is a forest, but any</span>
+<span class="sd">    graph can be represented.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph : nx.DiGraph | nx.Graph</span>
+<span class="sd">        Graph to represent</span>
+
+<span class="sd">    path : string or file or callable or None</span>
+<span class="sd">       Filename or file handle for data output.</span>
+<span class="sd">       if a function, then it will be called for each generated line.</span>
+<span class="sd">       if None, this will default to &quot;sys.stdout.write&quot;</span>
+
+<span class="sd">    with_labels : bool | str</span>
+<span class="sd">        If True will use the &quot;label&quot; attribute of a node to display if it</span>
+<span class="sd">        exists otherwise it will use the node value itself. If given as a</span>
+<span class="sd">        string, then that attribte name will be used instead of &quot;label&quot;.</span>
+<span class="sd">        Defaults to True.</span>
+
+<span class="sd">    sources : List</span>
+<span class="sd">        Specifies which nodes to start traversal from. Note: nodes that are not</span>
+<span class="sd">        reachable from one of these sources may not be shown. If unspecified,</span>
+<span class="sd">        the minimal set of nodes needed to reach all others will be used.</span>
+
+<span class="sd">    max_depth : int | None</span>
+<span class="sd">        The maximum depth to traverse before stopping. Defaults to None.</span>
+
+<span class="sd">    ascii_only : Boolean</span>
+<span class="sd">        If True only ASCII characters are used to construct the visualization</span>
+
+<span class="sd">    end : string</span>
+<span class="sd">        The line ending characater</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; graph = nx.balanced_tree(r=2, h=2, create_using=nx.DiGraph)</span>
+<span class="sd">    &gt;&gt;&gt; nx.write_network_text(graph)</span>
+<span class="sd">    ╙── 0</span>
+<span class="sd">        ├─╼ 1</span>
+<span class="sd">        │   ├─╼ 3</span>
+<span class="sd">        │   └─╼ 4</span>
+<span class="sd">        └─╼ 2</span>
+<span class="sd">            ├─╼ 5</span>
+<span class="sd">            └─╼ 6</span>
+
+<span class="sd">    &gt;&gt;&gt; # A near tree with one non-tree edge</span>
+<span class="sd">    &gt;&gt;&gt; graph.add_edge(5, 1)</span>
+<span class="sd">    &gt;&gt;&gt; nx.write_network_text(graph)</span>
+<span class="sd">    ╙── 0</span>
+<span class="sd">        ├─╼ 1 ╾ 5</span>
+<span class="sd">        │   ├─╼ 3</span>
+<span class="sd">        │   └─╼ 4</span>
+<span class="sd">        └─╼ 2</span>
+<span class="sd">            ├─╼ 5</span>
+<span class="sd">            │   └─╼  ...</span>
+<span class="sd">            └─╼ 6</span>
+
+<span class="sd">    &gt;&gt;&gt; graph = nx.cycle_graph(5)</span>
+<span class="sd">    &gt;&gt;&gt; nx.write_network_text(graph)</span>
+<span class="sd">    ╙── 0</span>
+<span class="sd">        ├── 1</span>
+<span class="sd">        │   └── 2</span>
+<span class="sd">        │       └── 3</span>
+<span class="sd">        │           └── 4 ─ 0</span>
+<span class="sd">        └──  ...</span>
+
+<span class="sd">    &gt;&gt;&gt; graph = nx.generators.barbell_graph(4, 2)</span>
+<span class="sd">    &gt;&gt;&gt; nx.write_network_text(graph)</span>
+<span class="sd">    ╙── 4</span>
+<span class="sd">        ├── 5</span>
+<span class="sd">        │   └── 6</span>
+<span class="sd">        │       ├── 7</span>
+<span class="sd">        │       │   ├── 8 ─ 6</span>
+<span class="sd">        │       │   │   └── 9 ─ 6, 7</span>
+<span class="sd">        │       │   └──  ...</span>
+<span class="sd">        │       └──  ...</span>
+<span class="sd">        └── 3</span>
+<span class="sd">            ├── 0</span>
+<span class="sd">            │   ├── 1 ─ 3</span>
+<span class="sd">            │   │   └── 2 ─ 0, 3</span>
+<span class="sd">            │   └──  ...</span>
+<span class="sd">            └──  ...</span>
+
+<span class="sd">    &gt;&gt;&gt; graph = nx.complete_graph(5, create_using=nx.Graph)</span>
+<span class="sd">    &gt;&gt;&gt; nx.write_network_text(graph)</span>
+<span class="sd">    ╙── 0</span>
+<span class="sd">        ├── 1</span>
+<span class="sd">        │   ├── 2 ─ 0</span>
+<span class="sd">        │   │   ├── 3 ─ 0, 1</span>
+<span class="sd">        │   │   │   └── 4 ─ 0, 1, 2</span>
+<span class="sd">        │   │   └──  ...</span>
+<span class="sd">        │   └──  ...</span>
+<span class="sd">        └──  ...</span>
+
+<span class="sd">    &gt;&gt;&gt; graph = nx.complete_graph(3, create_using=nx.DiGraph)</span>
+<span class="sd">    &gt;&gt;&gt; nx.write_network_text(graph)</span>
+<span class="sd">    ╙── 0 ╾ 1, 2</span>
+<span class="sd">        ├─╼ 1 ╾ 2</span>
+<span class="sd">        │   ├─╼ 2 ╾ 0</span>
+<span class="sd">        │   │   └─╼  ...</span>
+<span class="sd">        │   └─╼  ...</span>
+<span class="sd">        └─╼  ...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># The path is unspecified, write to stdout</span>
+        <span class="n">_write</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;write&quot;</span><span class="p">):</span>
+        <span class="c1"># The path is already an open file</span>
+        <span class="n">_write</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">write</span>
+    <span class="k">elif</span> <span class="n">callable</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="c1"># The path is a custom callable</span>
+        <span class="n">_write</span> <span class="o">=</span> <span class="n">path</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">generate_network_text</span><span class="p">(</span>
+        <span class="n">graph</span><span class="p">,</span>
+        <span class="n">with_labels</span><span class="o">=</span><span class="n">with_labels</span><span class="p">,</span>
+        <span class="n">sources</span><span class="o">=</span><span class="n">sources</span><span class="p">,</span>
+        <span class="n">max_depth</span><span class="o">=</span><span class="n">max_depth</span><span class="p">,</span>
+        <span class="n">ascii_only</span><span class="o">=</span><span class="n">ascii_only</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">_write</span><span class="p">(</span><span class="n">line</span> <span class="o">+</span> <span class="n">end</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_find_sources</span><span class="p">(</span><span class="n">graph</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determine a minimal set of nodes such that the entire graph is reachable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># For each connected part of the graph, choose at least</span>
+    <span class="c1"># one node as a starting point, preferably without a parent</span>
+    <span class="k">if</span> <span class="n">graph</span><span class="o">.</span><span class="n">is_directed</span><span class="p">():</span>
+        <span class="c1"># Choose one node from each SCC with minimum in_degree</span>
+        <span class="n">sccs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">strongly_connected_components</span><span class="p">(</span><span class="n">graph</span><span class="p">))</span>
+        <span class="c1"># condensing the SCCs forms a dag, the nodes in this graph with</span>
+        <span class="c1"># 0 in-degree correspond to the SCCs from which the minimum set</span>
+        <span class="c1"># of nodes from which all other nodes can be reached.</span>
+        <span class="n">scc_graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">condensation</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">sccs</span><span class="p">)</span>
+        <span class="n">supernode_to_nodes</span> <span class="o">=</span> <span class="p">{</span><span class="n">sn</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">scc_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">()}</span>
+        <span class="c1"># Note: the order of mapping differs between pypy and cpython</span>
+        <span class="c1"># so we have to loop over graph nodes for consistency</span>
+        <span class="n">mapping</span> <span class="o">=</span> <span class="n">scc_graph</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;mapping&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="n">sn</span> <span class="o">=</span> <span class="n">mapping</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+            <span class="n">supernode_to_nodes</span><span class="p">[</span><span class="n">sn</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">scc_graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">scc_graph</span><span class="o">.</span><span class="n">in_degree</span><span class="p">[</span><span class="n">sn</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">scc</span> <span class="o">=</span> <span class="n">supernode_to_nodes</span><span class="p">[</span><span class="n">sn</span><span class="p">]</span>
+                <span class="n">node</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">scc</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">graph</span><span class="o">.</span><span class="n">in_degree</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+                <span class="n">sources</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># For undirected graph, the entire graph will be reachable as</span>
+        <span class="c1"># long as we consider one node from every connected component</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="nb">min</span><span class="p">(</span><span class="n">cc</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">graph</span><span class="o">.</span><span class="n">degree</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">cc</span> <span class="ow">in</span> <span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">sources</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="n">graph</span><span class="o">.</span><span class="n">degree</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">sources</span>
+
+
+<span class="k">def</span> <span class="nf">forest_str</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">write</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ascii_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Creates a nice utf8 representation of a forest</span>
+
+<span class="sd">    This function has been superseded by</span>
+<span class="sd">    :func:`nx.readwrite.text.generate_network_text`, which should be used</span>
+<span class="sd">    instead.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    graph : nx.DiGraph | nx.Graph</span>
+<span class="sd">        Graph to represent (must be a tree, forest, or the empty graph)</span>
+
+<span class="sd">    with_labels : bool</span>
+<span class="sd">        If True will use the &quot;label&quot; attribute of a node to display if it</span>
+<span class="sd">        exists otherwise it will use the node value itself. Defaults to True.</span>
+
+<span class="sd">    sources : List</span>
+<span class="sd">        Mainly relevant for undirected forests, specifies which nodes to list</span>
+<span class="sd">        first. If unspecified the root nodes of each tree will be used for</span>
+<span class="sd">        directed forests; for undirected forests this defaults to the nodes</span>
+<span class="sd">        with the smallest degree.</span>
+
+<span class="sd">    write : callable</span>
+<span class="sd">        Function to use to write to, if None new lines are appended to</span>
+<span class="sd">        a list and returned. If set to the `print` function, lines will</span>
+<span class="sd">        be written to stdout as they are generated. If specified,</span>
+<span class="sd">        this function will return None. Defaults to None.</span>
+
+<span class="sd">    ascii_only : Boolean</span>
+<span class="sd">        If True only ASCII characters are used to construct the visualization</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str | None :</span>
+<span class="sd">        utf8 representation of the tree / forest</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; graph = nx.balanced_tree(r=2, h=3, create_using=nx.DiGraph)</span>
+<span class="sd">    &gt;&gt;&gt; print(nx.forest_str(graph))</span>
+<span class="sd">    ╙── 0</span>
+<span class="sd">        ├─╼ 1</span>
+<span class="sd">        │   ├─╼ 3</span>
+<span class="sd">        │   │   ├─╼ 7</span>
+<span class="sd">        │   │   └─╼ 8</span>
+<span class="sd">        │   └─╼ 4</span>
+<span class="sd">        │       ├─╼ 9</span>
+<span class="sd">        │       └─╼ 10</span>
+<span class="sd">        └─╼ 2</span>
+<span class="sd">            ├─╼ 5</span>
+<span class="sd">            │   ├─╼ 11</span>
+<span class="sd">            │   └─╼ 12</span>
+<span class="sd">            └─╼ 6</span>
+<span class="sd">                ├─╼ 13</span>
+<span class="sd">                └─╼ 14</span>
+
+
+<span class="sd">    &gt;&gt;&gt; graph = nx.balanced_tree(r=1, h=2, create_using=nx.Graph)</span>
+<span class="sd">    &gt;&gt;&gt; print(nx.forest_str(graph))</span>
+<span class="sd">    ╙── 0</span>
+<span class="sd">        └── 1</span>
+<span class="sd">            └── 2</span>
+
+<span class="sd">    &gt;&gt;&gt; print(nx.forest_str(graph, ascii_only=True))</span>
+<span class="sd">    +-- 0</span>
+<span class="sd">        L-- 1</span>
+<span class="sd">            L-- 2</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">forest_str is deprecated as of version 3.1 and will be removed &quot;</span>
+        <span class="s2">&quot;in version 3.3. Use generate_network_text or write_network_text &quot;</span>
+        <span class="s2">&quot;instead.</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_forest</span><span class="p">(</span><span class="n">graph</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">nx</span><span class="o">.</span><span class="n">NetworkXNotImplemented</span><span class="p">(</span><span class="s2">&quot;input must be a forest or the empty graph&quot;</span><span class="p">)</span>
+
+    <span class="n">printbuf</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">write</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_write</span> <span class="o">=</span> <span class="n">printbuf</span><span class="o">.</span><span class="n">append</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_write</span> <span class="o">=</span> <span class="n">write</span>
+
+    <span class="n">write_network_text</span><span class="p">(</span>
+        <span class="n">graph</span><span class="p">,</span>
+        <span class="n">_write</span><span class="p">,</span>
+        <span class="n">with_labels</span><span class="o">=</span><span class="n">with_labels</span><span class="p">,</span>
+        <span class="n">sources</span><span class="o">=</span><span class="n">sources</span><span class="p">,</span>
+        <span class="n">ascii_only</span><span class="o">=</span><span class="n">ascii_only</span><span class="p">,</span>
+        <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">write</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Only return a string if the custom write function was not specified</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">printbuf</span><span class="p">)</span>
+</pre></div>
+
+            </article>
+            
+            
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+ 
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2004-2023, NetworkX Developers.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

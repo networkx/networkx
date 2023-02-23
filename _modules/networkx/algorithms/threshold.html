@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>networkx.algorithms.threshold &#8212; NetworkX 3.0rc2.dev0 documentation</title>
+    <title>networkx.algorithms.threshold &#8212; NetworkX 3.1rc1.dev0 documentation</title>
   
   
   
@@ -46,12 +46,18 @@
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/networkx/algorithms/threshold';</script>
     <link rel="canonical" href="https://networkx.org/documentation/stable/_modules/networkx/algorithms/threshold.html" />
     <link rel="search" type="application/opensearchdescription+xml"
-          title="Search within NetworkX 3.0rc2.dev0 documentation"
+          title="Search within NetworkX 3.1rc1.dev0 documentation"
           href="../../../_static/opensearch.xml"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
+<script
+  defer
+  data-domain="networkx.org"
+  src="https://views.scientific-python.org/js/script.js"
+></script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="docsearch:language" content="en">
+  <meta name="docsearch:language" content="en"> 
   </head>
   
   
@@ -93,6 +99,12 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form>
     </div>
+  </div><div class="bd-header-announcement container-fluid" id="header-announcement">
+    
+
+
+<div class="bd-header-announcement__content"><p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p></div>
+
   </div>
 
   
@@ -244,7 +256,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -407,7 +419,7 @@
       id="dLabelMore"
       data-toggle="dropdown"
     >
-      v3.0rc2.dev0
+      v3.1rc1.dev0
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dLabelMore">
@@ -500,18 +512,18 @@
 <span class="sd">    ----------</span>
 <span class="sd">    .. [1] Threshold graphs: https://en.wikipedia.org/wiki/Threshold_graph</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">is_threshold_sequence</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">d</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">()))</span></div>
+    <span class="k">return</span> <span class="n">is_threshold_sequence</span><span class="p">([</span><span class="n">d</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">degree</span><span class="p">()])</span></div>
 
 
 <span class="k">def</span> <span class="nf">is_threshold_sequence</span><span class="p">(</span><span class="n">degree_sequence</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns True if the sequence is a threshold degree seqeunce.</span>
+<span class="sd">    Returns True if the sequence is a threshold degree sequence.</span>
 
 <span class="sd">    Uses the property that a threshold graph must be constructed by</span>
 <span class="sd">    adding either dominating or isolated nodes. Thus, it can be</span>
 <span class="sd">    deconstructed iteratively by removing a node of degree zero or a</span>
 <span class="sd">    node that connects to the remaining nodes.  If this deconstruction</span>
-<span class="sd">    failes then the sequence is not a threshold sequence.</span>
+<span class="sd">    fails then the sequence is not a threshold sequence.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ds</span> <span class="o">=</span> <span class="n">degree_sequence</span><span class="p">[:]</span>  <span class="c1"># get a copy so we don&#39;t destroy original</span>
     <span class="n">ds</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
@@ -558,7 +570,7 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;compact sequences cannot be labeled&quot;</span><span class="p">)</span>
 
     <span class="c1"># make an indexed copy</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">degree_sequence</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>  <span class="c1"># labeled degree seqeunce</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">degree_sequence</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>  <span class="c1"># labeled degree sequence</span>
         <span class="n">ds</span> <span class="o">=</span> <span class="p">[[</span><span class="n">degree</span><span class="p">,</span> <span class="n">label</span><span class="p">]</span> <span class="k">for</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">degree</span><span class="p">)</span> <span class="ow">in</span> <span class="n">degree_sequence</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">ds</span> <span class="o">=</span> <span class="p">[[</span><span class="n">d</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">degree_sequence</span><span class="p">)]</span>
@@ -820,7 +832,7 @@
 <span class="sd">    Otherwise returns the cycle as [a,b,c,d] where (a,b)</span>
 <span class="sd">    and (c,d) are edges and (a,c) and (b,d) are not.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">():</span>
         <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">G</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="ow">and</span> <span class="n">u</span> <span class="o">!=</span> <span class="n">w</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">w</span><span class="p">):</span>
@@ -1131,7 +1143,7 @@
     <span class="n">cs</span> <span class="o">=</span> <span class="n">creation_sequence</span>
     <span class="n">seq</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># betweenness</span>
     <span class="n">lastchar</span> <span class="o">=</span> <span class="s2">&quot;d&quot;</span>  <span class="c1"># first node is always a &#39;d&#39;</span>
-    <span class="n">dr</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">))</span>  <span class="c1"># number of d&#39;s to the right of curren pos</span>
+    <span class="n">dr</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">))</span>  <span class="c1"># number of d&#39;s to the right of current pos</span>
     <span class="n">irun</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># number of i&#39;s in the last run</span>
     <span class="n">drun</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># number of d&#39;s in the last run</span>
     <span class="n">dlast</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># betweenness of last d</span>
@@ -1449,11 +1461,11 @@
               
 <div class="toc-item">
   
-<div id="searchbox"></div>
-</div>
-
-<div class="toc-item">
-  
+<form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
 </div>
 
 <div class="toc-item">
