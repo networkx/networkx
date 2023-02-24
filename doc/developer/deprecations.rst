@@ -68,6 +68,7 @@ Version 3.2
 * Remove pydot functionality ``drawing/nx_pydot.py``, if pydot is still not being maintained. See #5723
 * In ``readwrite/json_graph/node_link.py`` remove the ``attrs` keyword code 
   and docstring in ``node_link_data`` and ``node_link_graph``. Also the associated tests.
+* In ``algorithms/traversal/breadth_first_search.py`` remove ``sort_neighbors`` kwarg from ``bfs_edges`` and docstring. 
 
 Version 3.3
 ~~~~~~~~~~~
