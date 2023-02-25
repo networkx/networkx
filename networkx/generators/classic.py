@@ -404,7 +404,7 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     """Returns the hierarchically constructed Dorogovtsev-Goltsev-Mendes graph.
 
     The Dorogovtsev-Goltsev-Mendes[1_] procedure produces a scale-free graph
-    deterministic with the following properties for a given `n`:
+    deterministically with the following properties for a given `n`:
     - Total number of nodes = ``3 * (3**n + 1) / 2``
     - Total number of edges = ``3 ** (n + 1)``
 
