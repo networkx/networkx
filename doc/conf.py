@@ -50,6 +50,7 @@ sphinx_gallery_conf = {
     "gallery_dirs": "auto_examples",
     "backreferences_dir": "modules/generated",
     "image_scrapers": ("matplotlib",),
+    "plot_gallery": "True",
 }
 # Add pygraphviz png scraper, if available
 try:
