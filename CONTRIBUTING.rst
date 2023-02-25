@@ -405,6 +405,12 @@ navigate to the ``doc/`` directory and::
 
     make html
 
+This will generate both the reference documentation as well as the example
+gallery. If you want to build the documentation *without* building the
+gallery examples use::
+
+    make html-noplot
+
 The build products are stored in ``doc/build/`` and can be viewed directly.
 For example, to view the built html, open ``build/html/index.html``
 in your preferred web browser.
