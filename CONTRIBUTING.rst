@@ -400,6 +400,10 @@ And test::
 Documentation
 -------------
 
+Building the documentation locally requires that the additional dependencies
+specified in ``requirements/doc.txt`` be installed in your development
+environment.
+
 The documentation is built with ``sphinx``. To build the documentation locally,
 navigate to the ``doc/`` directory and::
 
@@ -426,6 +430,9 @@ The gallery examples are managed by
 The source files for the example gallery are ``.py`` scripts in ``examples/`` that
 generate one or more figures. They are executed automatically by sphinx-gallery when the
 documentation is built. The output is gathered and assembled into the gallery.
+
+Building the example gallery locally requires that the additional dependencies
+in ``requirements/example.txt`` be installed in your development environment.
 
 You can **add a new** plot by placing a new ``.py`` file in one of the directories inside the
 ``examples`` directory of the repository. See the other examples to get an idea for the
