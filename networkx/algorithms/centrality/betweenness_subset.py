@@ -1,5 +1,7 @@
 """Betweenness centrality measures for subsets of nodes."""
-from networkx.algorithms.centrality.betweenness import _add_edge_keys
+from networkx.algorithms.centrality.betweenness import (
+    _add_edge_keys,
+)
 from networkx.algorithms.centrality.betweenness import (
     _single_source_dijkstra_path_basic as dijkstra,
 )

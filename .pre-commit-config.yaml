@@ -6,22 +6,10 @@ repos:
     rev: 23.1.0
     hooks:
       - id: black
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.3.1
-    hooks:
-      - id: pyupgrade
-        args: [--py38-plus]
   - repo: https://github.com/asottile/blacken-docs
     rev: 1.13.0
     hooks:
       - id: blacken-docs
-  - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
-    hooks:
-      - id: isort
-        name: isort (python)
-        args: ["--profile", "black", "--filter-files", "--skip", "__init__.py"]
-        files: ^networkx/
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v2.7.1
     hooks:
