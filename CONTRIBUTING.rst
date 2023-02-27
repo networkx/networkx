@@ -355,7 +355,7 @@ detailing the test coverage::
   ...
 
 Adding tests
-------------
+~~~~~~~~~~~~
 
 If you're **new to testing**, see existing test files for examples of things to do.
 **Don't let the tests keep you from submitting your contribution!**
@@ -363,61 +363,8 @@ If you're not sure how to do this or are having trouble, submit your pull reques
 anyway.
 We will help you create the tests and sort out any kind of problem during code review.
 
-Adding examples
----------------
-
-The gallery examples are managed by
-`sphinx-gallery <https://sphinx-gallery.readthedocs.io/>`_.
-The source files for the example gallery are ``.py`` scripts in ``examples/`` that
-generate one or more figures. They are executed automatically by sphinx-gallery when the
-documentation is built. The output is gathered and assembled into the gallery.
-
-You can **add a new** plot by placing a new ``.py`` file in one of the directories inside the
-``examples`` directory of the repository. See the other examples to get an idea for the
-format.
-
-.. note:: Gallery examples should start with ``plot_``, e.g. ``plot_new_example.py``
-
-General guidelines for making a good gallery plot:
-
-* Examples should highlight a single feature/command.
-* Try to make the example as simple as possible.
-* Data needed by examples should be included in the same directory and the example script.
-* Add comments to explain things are aren't obvious from reading the code.
-* Describe the feature that you're showcasing and link to other relevant parts of the
-  documentation.
-
-Adding References
------------------
-
-If you are contributing a new algorithm (or an improvement to a current algorithm),
-a reference paper or resource should also be provided in the function docstring.
-For references to published papers, we try to follow the
-`Chicago Citation Style <https://en.wikipedia.org/wiki/The_Chicago_Manual_of_Style>`__.
-The quickest way of generating citation in this style is
-by searching for the paper on `Google Scholar <https://scholar.google.com/>`_ and clicking on
-the ``cite`` button. It will pop up the citation of the paper in multiple formats, and copy the
-``Chicago`` style.
-
-We prefer adding DOI links for URLs. If the DOI link resolves to a paywalled version of
-the article, we prefer adding a link to the arXiv version (if available) or any other
-publicly accessible copy of the paper.
-
-An example of a reference::
-
-    .. [1] Cheong, Se-Hang, and Yain-Whar Si. "Force-directed algorithms for schematic drawings and
-    placement: A survey." Information Visualization 19, no. 1 (2020): 65-91.
-    https://doi.org/10.1177%2F1473871618821740
-
-
-If the resource is uploaded as a PDF/DOCX/PPT on the web (lecture notes, presentations) it is better
-to use the `wayback machine <https://web.archive.org/>`_ to create a snapshot of the resource
-and link the internet archive link. The URL of the resource can change, and it creates unreachable
-links from the documentation.
-
-
 Image comparison
-----------------
+~~~~~~~~~~~~~~~~
 
 To run image comparisons::
 
@@ -449,6 +396,86 @@ Then create a baseline image to compare against later::
 And test::
 
     $ pytest -k test_barbell --mpl
+
+Documentation
+-------------
+
+Building the documentation locally requires that the additional dependencies
+specified in ``requirements/doc.txt`` be installed in your development
+environment.
+
+The documentation is built with ``sphinx``. To build the documentation locally,
+navigate to the ``doc/`` directory and::
+
+    make html
+
+This will generate both the reference documentation as well as the example
+gallery. If you want to build the documentation *without* building the
+gallery examples use::
+
+    make html-noplot
+
+The build products are stored in ``doc/build/`` and can be viewed directly.
+For example, to view the built html, open ``build/html/index.html``
+in your preferred web browser.
+
+.. note: ``sphinx`` supports many other output formats. Type ``make`` without
+   any arguments to see all the built-in options.
+
+Adding examples
+~~~~~~~~~~~~~~~
+
+The gallery examples are managed by
+`sphinx-gallery <https://sphinx-gallery.readthedocs.io/>`_.
+The source files for the example gallery are ``.py`` scripts in ``examples/`` that
+generate one or more figures. They are executed automatically by sphinx-gallery when the
+documentation is built. The output is gathered and assembled into the gallery.
+
+Building the example gallery locally requires that the additional dependencies
+in ``requirements/example.txt`` be installed in your development environment.
+
+You can **add a new** plot by placing a new ``.py`` file in one of the directories inside the
+``examples`` directory of the repository. See the other examples to get an idea for the
+format.
+
+.. note:: Gallery examples should start with ``plot_``, e.g. ``plot_new_example.py``
+
+General guidelines for making a good gallery plot:
+
+* Examples should highlight a single feature/command.
+* Try to make the example as simple as possible.
+* Data needed by examples should be included in the same directory and the example script.
+* Add comments to explain things are aren't obvious from reading the code.
+* Describe the feature that you're showcasing and link to other relevant parts of the
+  documentation.
+
+Adding References
+~~~~~~~~~~~~~~~~~
+
+If you are contributing a new algorithm (or an improvement to a current algorithm),
+a reference paper or resource should also be provided in the function docstring.
+For references to published papers, we try to follow the
+`Chicago Citation Style <https://en.wikipedia.org/wiki/The_Chicago_Manual_of_Style>`__.
+The quickest way of generating citation in this style is
+by searching for the paper on `Google Scholar <https://scholar.google.com/>`_ and clicking on
+the ``cite`` button. It will pop up the citation of the paper in multiple formats, and copy the
+``Chicago`` style.
+
+We prefer adding DOI links for URLs. If the DOI link resolves to a paywalled version of
+the article, we prefer adding a link to the arXiv version (if available) or any other
+publicly accessible copy of the paper.
+
+An example of a reference::
+
+    .. [1] Cheong, Se-Hang, and Yain-Whar Si. "Force-directed algorithms for schematic drawings and
+    placement: A survey." Information Visualization 19, no. 1 (2020): 65-91.
+    https://doi.org/10.1177%2F1473871618821740
+
+
+If the resource is uploaded as a PDF/DOCX/PPT on the web (lecture notes, presentations) it is better
+to use the `wayback machine <https://web.archive.org/>`_ to create a snapshot of the resource
+and link the internet archive link. The URL of the resource can change, and it creates unreachable
+links from the documentation.
 
 Bugs
 ----
