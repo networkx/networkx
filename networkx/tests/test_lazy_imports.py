@@ -28,6 +28,13 @@ def test_lazy_import_basics():
         pass
 
 
+def test_lazy_import_from_spec():
+    pip = lazy._lazy_import("pip")
+    assert type(pip) == importlib.util._LazyModule
+    pip.__str__()
+    assert type(pip) == types.ModuleType
+
+
 def test_lazy_import_impact_on_sys_modules():
     math = lazy._lazy_import("math")
     anything_not_real = lazy._lazy_import("anything_not_real")
@@ -92,6 +99,47 @@ def test_lazy_attach():
         "__all__": None,
     }
     assert locls.keys() == expected.keys()
+
+    # Check if the submods are looked for
+    for submod in submods:
+        with pytest.raises(ModuleNotFoundError, match=f"No module named '{name}'"):
+            locls["__getattr__"](submod)
+
+    # Check if the attributes are looked for
+    for attrs in myall.values():
+        for attr in attrs:
+            with pytest.raises(ModuleNotFoundError, match=f"No module named '{name}'"):
+                locls["__getattr__"](attr)
+
     for k, v in expected.items():
         if v is not None:
             assert locls[k] == v
+
+
+def test_lazy_attach_no_submods():
+    name = "empty_module"
+    fake_module = "fake_mod"
+
+    locls = {
+        "attach": lazy.attach,
+        "name": name,
+    }
+    s = "__getattr__, __lazy_dir__, __all__ = attach(name)"
+
+    exec(s, {}, locls)
+    expected = {
+        "attach": lazy.attach,
+        "name": name,
+        "__getattr__": None,
+        "__lazy_dir__": list,
+        "__all__": [],
+    }
+    assert locls.keys() == expected.keys()
+    assert locls["attach"] == expected["attach"]
+    assert locls["name"] == expected["name"]
+    assert locls["__lazy_dir__"]() == expected["__lazy_dir__"]()
+    assert locls["__all__"] == expected["__all__"]
+
+    # getattr has nothing to return, test error generation
+    with pytest.raises(AttributeError, match=f"No {name} attribute {fake_module}"):
+        locls["__getattr__"](fake_module)
