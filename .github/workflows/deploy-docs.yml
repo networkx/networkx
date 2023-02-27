@@ -63,10 +63,10 @@ jobs:
         if: github.ref == 'refs/heads/main'
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
-          GIT_CONFIG_NAME: nx-doc-deploy-bot
-          GIT_CONFIG_EMAIL: nx-doc-deploy-bot@nomail
-          FOLDER: doc/build/html
-          REPOSITORY_NAME: networkx/documentation
-          BRANCH: gh-pages
-          TARGET_FOLDER: latest
-          SSH: true
+          git-config-name: nx-doc-deploy-bot
+          git-config-email: nx-doc-deploy-bot@nomail
+          folder: doc/build/html
+          repository-name: networkx/documentation
+          branch: gh-pages
+          target-folder: latest
+          ssh-key: true
