@@ -31,7 +31,8 @@ API Changes
 Deprecations
 ------------
 - [`#6388 <https://github.com/networkx/networkx/issues/6388>`_]
-  Deprecate ``dag_longest_path_length`` from ``networkx/algorithms/dag.py``
+  Deprecate ``dag_longest_path_length`` from ``networkx/algorithms/dag.py``.
+  Use ``sum(G[u][v].get(weight, default) for u, v in pairwise(nx.dag_longest_path(G)))``
 
 
 Merged PRs
