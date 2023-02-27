@@ -852,65 +852,16 @@ detailing the test coverage:</p>
 <span class="o">...</span>
 </pre></div>
 </div>
-</section>
 <section id="adding-tests">
-<h2>Adding tests<a class="headerlink" href="#adding-tests" title="Permalink to this heading">#</a></h2>
+<h3>Adding tests<a class="headerlink" href="#adding-tests" title="Permalink to this heading">#</a></h3>
 <p>If you’re <strong>new to testing</strong>, see existing test files for examples of things to do.
 <strong>Don’t let the tests keep you from submitting your contribution!</strong>
 If you’re not sure how to do this or are having trouble, submit your pull request
 anyway.
 We will help you create the tests and sort out any kind of problem during code review.</p>
 </section>
-<section id="adding-examples">
-<h2>Adding examples<a class="headerlink" href="#adding-examples" title="Permalink to this heading">#</a></h2>
-<p>The gallery examples are managed by
-<a class="reference external" href="https://sphinx-gallery.readthedocs.io/">sphinx-gallery</a>.
-The source files for the example gallery are <code class="docutils literal notranslate"><span class="pre">.py</span></code> scripts in <code class="docutils literal notranslate"><span class="pre">examples/</span></code> that
-generate one or more figures. They are executed automatically by sphinx-gallery when the
-documentation is built. The output is gathered and assembled into the gallery.</p>
-<p>You can <strong>add a new</strong> plot by placing a new <code class="docutils literal notranslate"><span class="pre">.py</span></code> file in one of the directories inside the
-<code class="docutils literal notranslate"><span class="pre">examples</span></code> directory of the repository. See the other examples to get an idea for the
-format.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Gallery examples should start with <code class="docutils literal notranslate"><span class="pre">plot_</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">plot_new_example.py</span></code></p>
-</div>
-<p>General guidelines for making a good gallery plot:</p>
-<ul class="simple">
-<li><p>Examples should highlight a single feature/command.</p></li>
-<li><p>Try to make the example as simple as possible.</p></li>
-<li><p>Data needed by examples should be included in the same directory and the example script.</p></li>
-<li><p>Add comments to explain things are aren’t obvious from reading the code.</p></li>
-<li><p>Describe the feature that you’re showcasing and link to other relevant parts of the
-documentation.</p></li>
-</ul>
-</section>
-<section id="adding-references">
-<h2>Adding References<a class="headerlink" href="#adding-references" title="Permalink to this heading">#</a></h2>
-<p>If you are contributing a new algorithm (or an improvement to a current algorithm),
-a reference paper or resource should also be provided in the function docstring.
-For references to published papers, we try to follow the
-<a class="reference external" href="https://en.wikipedia.org/wiki/The_Chicago_Manual_of_Style">Chicago Citation Style</a>.
-The quickest way of generating citation in this style is
-by searching for the paper on <a class="reference external" href="https://scholar.google.com/">Google Scholar</a> and clicking on
-the <code class="docutils literal notranslate"><span class="pre">cite</span></code> button. It will pop up the citation of the paper in multiple formats, and copy the
-<code class="docutils literal notranslate"><span class="pre">Chicago</span></code> style.</p>
-<p>We prefer adding DOI links for URLs. If the DOI link resolves to a paywalled version of
-the article, we prefer adding a link to the arXiv version (if available) or any other
-publicly accessible copy of the paper.</p>
-<p>An example of a reference:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="n">Cheong</span><span class="p">,</span> <span class="n">Se</span><span class="o">-</span><span class="n">Hang</span><span class="p">,</span> <span class="ow">and</span> <span class="n">Yain</span><span class="o">-</span><span class="n">Whar</span> <span class="n">Si</span><span class="o">.</span> <span class="s2">&quot;Force-directed algorithms for schematic drawings and</span>
-<span class="n">placement</span><span class="p">:</span> <span class="n">A</span> <span class="n">survey</span><span class="o">.</span><span class="s2">&quot; Information Visualization 19, no. 1 (2020): 65-91.</span>
-<span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">doi</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mf">10.1177</span><span class="o">%</span><span class="mi">2</span><span class="n">F1473871618821740</span>
-</pre></div>
-</div>
-<p>If the resource is uploaded as a PDF/DOCX/PPT on the web (lecture notes, presentations) it is better
-to use the <a class="reference external" href="https://web.archive.org/">wayback machine</a> to create a snapshot of the resource
-and link the internet archive link. The URL of the resource can change, and it creates unreachable
-links from the documentation.</p>
-</section>
 <section id="image-comparison">
-<h2>Image comparison<a class="headerlink" href="#image-comparison" title="Permalink to this heading">#</a></h2>
+<h3>Image comparison<a class="headerlink" href="#image-comparison" title="Permalink to this heading">#</a></h3>
 <p>To run image comparisons:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ PYTHONPATH=. pytest --mpl --pyargs networkx.drawing
 </pre></div>
@@ -938,6 +889,77 @@ and decorate it as follows:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pytest -k test_barbell --mpl
 </pre></div>
 </div>
+</section>
+</section>
+<section id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this heading">#</a></h2>
+<p>Building the documentation locally requires that the additional dependencies
+specified in <code class="docutils literal notranslate"><span class="pre">requirements/doc.txt</span></code> be installed in your development
+environment.</p>
+<p>The documentation is built with <code class="docutils literal notranslate"><span class="pre">sphinx</span></code>. To build the documentation locally,
+navigate to the <code class="docutils literal notranslate"><span class="pre">doc/</span></code> directory and:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">html</span>
+</pre></div>
+</div>
+<p>This will generate both the reference documentation as well as the example
+gallery. If you want to build the documentation <em>without</em> building the
+gallery examples use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">html</span><span class="o">-</span><span class="n">noplot</span>
+</pre></div>
+</div>
+<p>The build products are stored in <code class="docutils literal notranslate"><span class="pre">doc/build/</span></code> and can be viewed directly.
+For example, to view the built html, open <code class="docutils literal notranslate"><span class="pre">build/html/index.html</span></code>
+in your preferred web browser.</p>
+<section id="adding-examples">
+<h3>Adding examples<a class="headerlink" href="#adding-examples" title="Permalink to this heading">#</a></h3>
+<p>The gallery examples are managed by
+<a class="reference external" href="https://sphinx-gallery.readthedocs.io/">sphinx-gallery</a>.
+The source files for the example gallery are <code class="docutils literal notranslate"><span class="pre">.py</span></code> scripts in <code class="docutils literal notranslate"><span class="pre">examples/</span></code> that
+generate one or more figures. They are executed automatically by sphinx-gallery when the
+documentation is built. The output is gathered and assembled into the gallery.</p>
+<p>Building the example gallery locally requires that the additional dependencies
+in <code class="docutils literal notranslate"><span class="pre">requirements/example.txt</span></code> be installed in your development environment.</p>
+<p>You can <strong>add a new</strong> plot by placing a new <code class="docutils literal notranslate"><span class="pre">.py</span></code> file in one of the directories inside the
+<code class="docutils literal notranslate"><span class="pre">examples</span></code> directory of the repository. See the other examples to get an idea for the
+format.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Gallery examples should start with <code class="docutils literal notranslate"><span class="pre">plot_</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">plot_new_example.py</span></code></p>
+</div>
+<p>General guidelines for making a good gallery plot:</p>
+<ul class="simple">
+<li><p>Examples should highlight a single feature/command.</p></li>
+<li><p>Try to make the example as simple as possible.</p></li>
+<li><p>Data needed by examples should be included in the same directory and the example script.</p></li>
+<li><p>Add comments to explain things are aren’t obvious from reading the code.</p></li>
+<li><p>Describe the feature that you’re showcasing and link to other relevant parts of the
+documentation.</p></li>
+</ul>
+</section>
+<section id="adding-references">
+<h3>Adding References<a class="headerlink" href="#adding-references" title="Permalink to this heading">#</a></h3>
+<p>If you are contributing a new algorithm (or an improvement to a current algorithm),
+a reference paper or resource should also be provided in the function docstring.
+For references to published papers, we try to follow the
+<a class="reference external" href="https://en.wikipedia.org/wiki/The_Chicago_Manual_of_Style">Chicago Citation Style</a>.
+The quickest way of generating citation in this style is
+by searching for the paper on <a class="reference external" href="https://scholar.google.com/">Google Scholar</a> and clicking on
+the <code class="docutils literal notranslate"><span class="pre">cite</span></code> button. It will pop up the citation of the paper in multiple formats, and copy the
+<code class="docutils literal notranslate"><span class="pre">Chicago</span></code> style.</p>
+<p>We prefer adding DOI links for URLs. If the DOI link resolves to a paywalled version of
+the article, we prefer adding a link to the arXiv version (if available) or any other
+publicly accessible copy of the paper.</p>
+<p>An example of a reference:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="n">Cheong</span><span class="p">,</span> <span class="n">Se</span><span class="o">-</span><span class="n">Hang</span><span class="p">,</span> <span class="ow">and</span> <span class="n">Yain</span><span class="o">-</span><span class="n">Whar</span> <span class="n">Si</span><span class="o">.</span> <span class="s2">&quot;Force-directed algorithms for schematic drawings and</span>
+<span class="n">placement</span><span class="p">:</span> <span class="n">A</span> <span class="n">survey</span><span class="o">.</span><span class="s2">&quot; Information Visualization 19, no. 1 (2020): 65-91.</span>
+<span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">doi</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mf">10.1177</span><span class="o">%</span><span class="mi">2</span><span class="n">F1473871618821740</span>
+</pre></div>
+</div>
+<p>If the resource is uploaded as a PDF/DOCX/PPT on the web (lecture notes, presentations) it is better
+to use the <a class="reference external" href="https://web.archive.org/">wayback machine</a> to create a snapshot of the resource
+and link the internet archive link. The URL of the resource can change, and it creates unreachable
+links from the documentation.</p>
+</section>
 </section>
 <section id="bugs">
 <h2>Bugs<a class="headerlink" href="#bugs" title="Permalink to this heading">#</a></h2>
@@ -1009,26 +1031,35 @@ and decorate it as follows:</p>
   <a class="reference internal nav-link" href="#testing">
    Testing
   </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#adding-tests">
+     Adding tests
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#image-comparison">
+     Image comparison
+    </a>
+   </li>
+  </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#adding-tests">
-   Adding tests
+  <a class="reference internal nav-link" href="#documentation">
+   Documentation
   </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#adding-examples">
-   Adding examples
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#adding-references">
-   Adding References
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#image-comparison">
-   Image comparison
-  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#adding-examples">
+     Adding examples
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#adding-references">
+     Adding References
+    </a>
+   </li>
+  </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#bugs">
