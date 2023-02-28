@@ -246,12 +246,6 @@ default_role = "obj"
 
 numpydoc_show_class_members = False
 
-plot_pre_code = """
-import networkx as nx
-import numpy as np
-np.random.seed(7)
-"""
-
 plot_formats = [("png", 100), "pdf"]
 
 
