@@ -149,13 +149,13 @@ def weighted_projected_graph(B, nodes, ratio=False):
     >>> from networkx.algorithms import bipartite
     >>> B = nx.path_graph(4)
     >>> G = bipartite.weighted_projected_graph(B, [1, 3])
-    >>> list(G)
+    >>> sorted(list(G))
     [1, 3]
     >>> list(G.edges(data=True))
-    [(1, 3, {'weight': 1})]
+    [(3, 1, {'weight': 1})]
     >>> G = bipartite.weighted_projected_graph(B, [1, 3], ratio=True)
     >>> list(G.edges(data=True))
-    [(1, 3, {'weight': 0.5})]
+    [(3, 1, {'weight': 0.5})]
 
     Notes
     -----
