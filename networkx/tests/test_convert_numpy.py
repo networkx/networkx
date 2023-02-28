@@ -72,6 +72,14 @@ class TestConvertNumpyArray:
         nodelist += [nodelist[0]]
         pytest.raises(nx.NetworkXError, nx.to_numpy_array, P3, nodelist=nodelist)
 
+        # Make nodelist invalid by including non-existent nodes
+        nodelist = [-1, 0, 1]
+        with pytest.raises(
+            nx.NetworkXError,
+            match=f"Nodes {nodelist - P3.nodes} in nodelist is not in G",
+        ):
+            nx.to_numpy_array(P3, nodelist=nodelist)
+
     def test_weight_keyword(self):
         WP4 = nx.Graph()
         WP4.add_edges_from((n, n + 1, {"weight": 0.5, "other": 0.3}) for n in range(3))
@@ -104,6 +112,12 @@ class TestConvertNumpyArray:
 
         A = np.array([[1]]).astype(object)
         pytest.raises(TypeError, nx.from_numpy_array, A)
+
+        A = np.array([[[1, 1, 1], [1, 1, 1]], [[1, 1, 1], [1, 1, 1]]])
+        with pytest.raises(
+            nx.NetworkXError, match=f"Input array must be 2D, not {A.ndim}"
+        ):
+            g = nx.from_numpy_array(A)
 
     def test_from_numpy_array_dtype(self):
         dt = [("weight", float), ("cost", int)]
