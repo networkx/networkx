@@ -334,7 +334,7 @@ def from_prufer_sequence(sequence):
     Raises
     ------
     NetworkXError
-        If the Prufer sequence is not valid.
+        If the Prüfer sequence is not valid.
 
     Notes
     -----
