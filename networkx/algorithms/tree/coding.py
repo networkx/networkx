@@ -331,6 +331,11 @@ def from_prufer_sequence(sequence):
     NetworkX graph
         The tree corresponding to the given Prüfer sequence.
 
+    Raises
+    ------
+    NetworkXError
+        If the Prufer sequence is not valid.
+
     Notes
     -----
     There is a bijection from labeled trees to Prüfer sequences. This
