@@ -25,7 +25,6 @@ extensions = [
     "nb2plots",
     "texext",
     "numpydoc",
-    "IPython.sphinxext.ipython_directive",
     "matplotlib.sphinxext.plot_directive",
 ]
 
