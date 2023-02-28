@@ -247,9 +247,6 @@ default_role = "obj"
 
 numpydoc_show_class_members = False
 
-# Make numpydoc to generate plots for example sections
-numpydoc_use_plots = True
-
 plot_pre_code = """
 import networkx as nx
 import numpy as np
