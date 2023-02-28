@@ -209,24 +209,24 @@ def weighted_projected_graph(B, nodes, ratio=False):
         )
         G = nx.Graph()
         G.add_nodes_from(nodes)
+        node_labels = {i: nodes[i] for i in range(len(nodes))}
 
         # Get the co-citation matrix.
         projected_adj = adj @ adj.T
         projected_adj.setdiag(0)
 
-        # Add the edges from the result.
-        denom = 1 / len(top_nodes)
-        for row, col in zip(*projected_adj.nonzero()):
-            val = projected_adj[row, col]
-            if ratio:
-                G.add_edge(nodes[row], nodes[col], weight=val * denom)
-            else:
-                G.add_edge(nodes[row], nodes[col], weight=val)
-
     else:
         # Get the adjacency matrix for multiplication.
         all_nodes = list(B.nodes())
         adj = nx.adjacency_matrix(B, nodelist=all_nodes)
+        node_labels = {
+            i: all_nodes[i]
+            for i in range(len(all_nodes))
+            if type(all_nodes[i]) == type(nodes) and all_nodes[i] in nodes
+        }
+        other_indices = [
+            all_nodes[i] for i in range(len(all_nodes)) if all_nodes[i] in top_nodes
+        ]
 
         # Create new graph.
         G = nx.DiGraph()
@@ -240,17 +240,14 @@ def weighted_projected_graph(B, nodes, ratio=False):
                     adj[node_index, other_node_index] = 0
 
         projected_adj = adj @ adj
+        projected_adj[other_indices] = 0
 
-        # Add the edges from the matrix.
-        denom = 1 / len(top_nodes)
-        for row, col in zip(*projected_adj.nonzero()):
-            val = projected_adj[row, col]
-            if row in node_indices and col in node_indices:
-                if ratio:
-                    G.add_edge(all_nodes[row], all_nodes[col], weight=val * denom)
-                else:
-                    G.add_edge(all_nodes[row], all_nodes[col], weight=val)
-
+    projected_adj = projected_adj.toarray()
+    if ratio:
+        projected_adj = projected_adj / len(top_nodes)
+    G = nx.from_numpy_array(projected_adj)
+    nx.relabel_nodes(G, node_labels, copy=False)
+    G.remove_nodes_from(top_nodes)
     return G
 
 
