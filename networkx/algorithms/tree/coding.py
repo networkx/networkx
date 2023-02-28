@@ -384,6 +384,12 @@ def from_prufer_sequence(sequence):
     not_orphaned = set()
     index = u = next(k for k in range(n) if degree[k] == 1)
     for v in sequence:
+        # check the validity of the prufer sequence
+        if v < 0 or v > n - 1:
+            msg = """ Invalid Prufer sequence: you may check that every element (sequence[i]) in the sequence
+                     does not exceed length of the sequence plus 1 ( 0 <= sequence[i] <= length(sequence)+1 )."""
+            raise nx.NetworkXException(msg)
+
         T.add_edge(u, v)
         not_orphaned.add(u)
         degree[v] -= 1
