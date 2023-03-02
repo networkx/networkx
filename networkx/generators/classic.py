@@ -403,9 +403,38 @@ def cycle_graph(n, create_using=None):
 def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     """Returns the hierarchically constructed Dorogovtsev-Goltsev-Mendes graph.
 
-    n is the generation.
-    See: arXiv:/cond-mat/0112143 by Dorogovtsev, Goltsev and Mendes.
+    The Dorogovtsev-Goltsev-Mendes[1_] procedure produces a scale-free graph
+    deterministically with the following properties for a given `n`:
+    - Total number of nodes = ``3 * (3**n + 1) / 2``
+    - Total number of edges = ``3 ** (n + 1)``
 
+    Parameters
+    ----------
+    n : integer
+       The generation number.
+
+    create_using : NetworkX Graph, optional
+       Graph type to be returned. Directed graphs and multi graphs are not
+       supported.
+
+    Returns
+    -------
+    G : NetworkX Graph
+
+    Examples
+    --------
+    >>> G = nx.dorogovtsev_goltsev_mendes_graph(3)
+    >>> G.number_of_nodes()
+    15
+    >>> G.number_of_edges()
+    27
+    >>> nx.is_planar(G)
+    True
+
+    References
+    ----------
+    .. [1]: Dorogotsev S.N., Goltsev A.V., and Mendes J.F.F "Pseudofractal
+       Scale-free Web". arXiv:cond-mat/0112143
     """
     G = empty_graph(0, create_using)
     if G.is_directed():
