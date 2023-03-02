@@ -388,10 +388,9 @@ def naive_greedy_modularity_communities(G, resolution=1, weight=None):
 
     Examples
     --------
-    >>> from networkx.algorithms.community import \
-    ... naive_greedy_modularity_communities
+    >>> naive_greedy_community = nx.community.naive_greedy_modularity_communities
     >>> G = nx.karate_club_graph()
-    >>> c = naive_greedy_modularity_communities(G)
+    >>> c = naive_greedy_community(G)
     >>> sorted(c[0])
     [8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
 
