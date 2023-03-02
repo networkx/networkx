@@ -287,9 +287,9 @@ def greedy_modularity_communities(
 
     Examples
     --------
-    >>> from networkx.algorithms.community import greedy_modularity_communities
+    >>> greedy_community = nx.community.greedy_modularity_communities
     >>> G = nx.karate_club_graph()
-    >>> c = greedy_modularity_communities(G)
+    >>> c = greedy_community(G)
     >>> sorted(c[0])
     [8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
 
