@@ -332,6 +332,114 @@ def recursive_simple_cycles(G):
     return result
 
 
+@not_implemented_for("directed")
+def undirected_simple_cycles(G, target_length=None, chordless=False):
+    """
+    Generate all simple cycles in a graph G up to equivalence.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+       A directed graph
+
+    target_length : int (optional, default=None)
+       A target length -- if this is not None, we only emit cycles of that
+       length.
+
+    chordless : bool (optional, default=False)
+       if chordless is True, then only generate chordless cycles -- that is,
+       cycles (v_1, v_2, ..., v_n) such that if v_i is adjacent to v_j then
+       i = j + 1 (mod n) or i = j - 1 (mod n).
+
+    Yields
+    ------
+    tuple of nodes
+       Each cycle is represented by a tuple of nodes along the cycle.
+
+
+    The procedure works as follows:
+        1. We construct a sequence of graphs G(n), G(n-1), ...,  G(1), G(0)
+           where G(n) = G and G(i-1) = G(i) - v_i where the nodes of G
+           are taken in an arbitrary order V(G) = {v_1, ..., v_n}.
+
+        2. For each G(i), we compute all cycles of G(i) that contain v_i.
+           By picking an ordering V(G) = {v_1, ..., v_n}, we generate cycles
+           in the order of the highest-index node contained in that cycle.
+           This orderly generation ensures that cycles are produced exactly
+           once up to rotational equivalence.
+
+        3. To compute all cycles of G(i) that contain v_i, we take the set
+           of unordered pairs {a, b} adjacent to v_i in G(i).  We take this
+           pair in an arbitrary order, begin looking for cycles containing
+           the path (a, v_i, b).  By picking this order, we get each cycle
+           exactly once up to equivalence by reversal: we will not generate
+           cycles containing the path (b, v_i, a).
+
+        4. To compute all cycles of G(i) that contain the path (a, v_i, b)
+           we proceed recursively.  Given a path P = (a, v_i, ..., x):
+
+           1. Check if the edge (a, x) is in G(i).  If it is, yield the
+              cycle (x, v_i, ..., x)
+
+           2. For each node y in G(i) not in P where y is adjacent to x,
+              recurse on the path (a, v_i, ..., x, y)
+
+    Thats the idea, anyway.  In the implementation, we construct the
+    sequence G(0), G(1), ..., G(n) in reverse.  Also, we use a stack rather
+    than recursion.  We make some pains to keep the memory usage small, with
+    one indulgence for the sake of performance: the graph is duplicated as a
+    dictionary of sets.  Throughout the stack traversal, we maintain the
+    ordered path and its unordered set in linear space, and the stack itself
+    consists of up to n iterators each requiring constant space.
+    """
+    visited = set()
+    subgraph = {}
+    allow_chords = not chordless
+    for root_node, neighbors in G.adj.items():
+        visited_neighbors = visited.intersection(neighbors)
+        for a, b in combinations(visited_neighbors, 2):
+            pre_cycle = [a, root_node, b]
+            cycle_set = set(pre_cycle)
+            nbr_a = subgraph[a]
+            length = 3
+            if (target_length is None or target_length == length) and b in nbr_a:
+                yield tuple(pre_cycle)
+            if target_length is None or target_length > 3:
+                stack = [iter(subgraph[b] - cycle_set)]
+            else:
+                continue
+            while stack:
+                for x in stack[-1]:
+                    length += 1
+                    pre_cycle.append(x)
+                    cycle_set.add(x)
+                    all_x = subgraph[x]
+                    nbr_x = all_x - cycle_set
+                    if (
+                        target_length is None or target_length == length
+                    ) and x in nbr_a:
+                        yield tuple(pre_cycle)
+                    if (
+                        (target_length is None or target_length > length)
+                        and (chords or len(nbr_x) == len(all_x))
+                        and nbr_x
+                    ):
+                        stack.append(iter(nbr_x))
+                        break
+                    else:
+                        cycle_set.remove(pre_cycle.pop())
+                        length -= 1
+                else:
+                    stack.pop()
+                    cycle_set.remove(pre_cycle.pop())
+                    length -= 1
+
+        subgraph[root_node] = visited_neighbors
+        for nbr in visited_neighbors:
+            subgraph[nbr].add(root_node)
+        visited.add(root_node)
+
+
 def find_cycle(G, source=None, orientation=None):
     """Returns a cycle found via depth-first traversal.
 
