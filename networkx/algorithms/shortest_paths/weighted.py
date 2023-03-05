@@ -2077,6 +2077,7 @@ def goldberg_radzik(G, source, weight="weight"):
     return pred, d
 
 
+@nx._dispatch
 def negative_edge_cycle(G, weight="weight", heuristic=True):
     """Returns True if there exists a negative edge cycle anywhere in G.
 
