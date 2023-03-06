@@ -72,6 +72,14 @@ class BaseGraphTester:
         G = self.Graph()
 
         def count_objects_of_type(_type):
+            # Iterating over all objects tracked by gc can include weak references
+            # whose weakly-referenced objects may no longer exist. Calling `isinstance`
+            # on such a weak reference will raise ReferenceError. There are two common
+            # workarounds for this: one is to compare type names instead of `isinstance`
+            # such as `type(obj).__name__ == typename`, and the other is to explicitly
+            # ignore ProxyTypes as we do below.
+            # NOTE: even if this safeguard is deemed unnecessary to pass NetworkX tests,
+            # we should still keep it for maximum safety for other NetworkX backends.
             return sum(
                 1
                 for obj in gc.get_objects()
