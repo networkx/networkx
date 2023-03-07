@@ -128,7 +128,10 @@ def _dispatch(func=None, *, name=None):
 
     @functools.wraps(func)
     def wrapper(*args, **kwds):
-        graph = args[0]
+        if args:
+            graph = args[0]
+        else:
+            graph = kwds["G"]  # raise KeyError if not present
         if hasattr(graph, "__networkx_plugin__") and plugins:
             plugin_name = graph.__networkx_plugin__
             if plugin_name in plugins:
