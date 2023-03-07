@@ -303,8 +303,8 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
     swapcount = 0
     deg = G.degree()
     # Label key for nodes
-    dk = list(n for n, d in G.degree())
-    cdf = nx.utils.cumulative_distribution(list(d for n, d in G.degree()))
+    dk = [n for n, d in G.degree()]
+    cdf = nx.utils.cumulative_distribution([d for n, d in G.degree()])
     discrete_sequence = nx.utils.discrete_sequence
     window = 1
     while n < nswap:

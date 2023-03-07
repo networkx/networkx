@@ -154,12 +154,12 @@ class MappedQueue:
     def __init__(self, data=None):
         """Priority queue class with updatable priorities."""
         if data is None:
-            self.heap = list()
+            self.heap = []
         elif isinstance(data, dict):
             self.heap = [_HeapElement(v, k) for k, v in data.items()]
         else:
             self.heap = list(data)
-        self.position = dict()
+        self.position = {}
         self._heapify()
 
     def _heapify(self):

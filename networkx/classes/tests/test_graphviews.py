@@ -349,4 +349,4 @@ class TestChainsOfViews:
             H = SG.copy()
             assert SG.my_method() == "me"
             assert H.my_method() == "me"
-            assert not 3 in H or 3 in SG
+            assert 3 not in H or 3 in SG

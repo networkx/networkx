@@ -173,9 +173,12 @@ def edge_disjoint_paths(
 
     # Compute maximum flow between source and target. Flow functions in
     # NetworkX return a residual network.
-    kwargs = dict(
-        capacity="capacity", residual=residual, cutoff=cutoff, value_only=True
-    )
+    kwargs = {
+        "capacity": "capacity",
+        "residual": residual,
+        "cutoff": cutoff,
+        "value_only": True,
+    }
     if flow_func is preflow_push:
         del kwargs["cutoff"]
     if flow_func is shortest_augmenting_path:
@@ -369,7 +372,12 @@ def node_disjoint_paths(
     else:
         cutoff = min(cutoff, possible)
 
-    kwargs = dict(flow_func=flow_func, residual=residual, auxiliary=H, cutoff=cutoff)
+    kwargs = {
+        "flow_func": flow_func,
+        "residual": residual,
+        "auxiliary": H,
+        "cutoff": cutoff,
+    }
 
     # The edge disjoint paths in the auxiliary digraph correspond to the node
     # disjoint paths in the original graph.

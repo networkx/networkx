@@ -365,9 +365,9 @@ def parse_gml_lines(lines, label, destringizer):
                         pass
                 # Special handling for empty lists and tuples
                 if value == "()":
-                    value = tuple()
+                    value = ()
                 if value == "[]":
-                    value = list()
+                    value = []
                 curr_token = next(tokens)
             elif category == Pattern.DICT_START:
                 curr_token, value = parse_dict(curr_token)

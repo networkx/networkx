@@ -414,7 +414,7 @@ def bfs_layers(G, sources):
     # same distance from sources at each iteration
     while current_layer:
         yield current_layer
-        next_layer = list()
+        next_layer = []
         for node in current_layer:
             for child in G[node]:
                 if child not in visited:

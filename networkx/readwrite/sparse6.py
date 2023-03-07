@@ -62,7 +62,7 @@ def _generate_sparse6_bytes(G, nodes, header):
     edges = sorted((max(u, v), min(u, v)) for u, v in G.edges())
     bits = []
     curv = 0
-    for (v, u) in edges:
+    for v, u in edges:
         if v == curv:  # current vertex edge
             bits.append(0)
             bits.extend(enc(u))

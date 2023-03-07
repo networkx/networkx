@@ -231,7 +231,7 @@ class Vector:
             return self.x * other.y < self.y * other.x
 
     def __ne__(self, other):
-        return not self == other
+        return self != other
 
     def __le__(self, other):
         return not other < self

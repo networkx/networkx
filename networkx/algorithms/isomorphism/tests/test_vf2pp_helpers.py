@@ -1354,7 +1354,7 @@ class TestGraphISOFeasibility:
         G2 = nx.relabel_nodes(G1, mapped)
 
         l1 = {n: "none" for n in G1.nodes()}
-        l2 = dict()
+        l2 = {}
 
         l1.update(
             {
@@ -1571,7 +1571,7 @@ class TestGraphISOFeasibility:
         G2 = nx.relabel_nodes(G1, mapped)
 
         l1 = {n: "none" for n in G1.nodes()}
-        l2 = dict()
+        l2 = {}
 
         l1.update(
             {
@@ -1988,7 +1988,7 @@ class TestMultiGraphISOFeasibility:
         G2 = nx.relabel_nodes(G1, mapped)
 
         l1 = {n: "none" for n in G1.nodes()}
-        l2 = dict()
+        l2 = {}
 
         l1.update(
             {
@@ -2238,7 +2238,7 @@ class TestMultiGraphISOFeasibility:
         }
         G2 = nx.relabel_nodes(G1, mapped)
         l1 = {n: "none" for n in G1.nodes()}
-        l2 = dict()
+        l2 = {}
 
         l1.update(
             {
@@ -2656,7 +2656,7 @@ class TestDiGraphISOFeasibility:
         G2 = nx.relabel_nodes(G1, mapped)
 
         l1 = {n: "none" for n in G1.nodes()}
-        l2 = dict()
+        l2 = {}
 
         l1.update(
             {

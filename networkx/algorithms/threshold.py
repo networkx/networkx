@@ -37,7 +37,7 @@ def is_threshold_graph(G):
     ----------
     .. [1] Threshold graphs: https://en.wikipedia.org/wiki/Threshold_graph
     """
-    return is_threshold_sequence(list(d for n, d in G.degree()))
+    return is_threshold_sequence([d for n, d in G.degree()])
 
 
 def is_threshold_sequence(degree_sequence):
@@ -357,7 +357,7 @@ def find_alternating_4_cycle(G):
     Otherwise returns the cycle as [a,b,c,d] where (a,b)
     and (c,d) are edges and (a,c) and (b,d) are not.
     """
-    for (u, v) in G.edges():
+    for u, v in G.edges():
         for w in G.nodes():
             if not G.has_edge(u, w) and u != w:
                 for x in G.neighbors(w):

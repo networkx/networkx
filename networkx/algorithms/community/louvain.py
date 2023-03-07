@@ -218,8 +218,8 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
     if is_directed:
         in_degrees = dict(G.in_degree(weight="weight"))
         out_degrees = dict(G.out_degree(weight="weight"))
-        Stot_in = [deg for deg in in_degrees.values()]
-        Stot_out = [deg for deg in out_degrees.values()]
+        Stot_in = list(in_degrees.values())
+        Stot_out = list(out_degrees.values())
         # Calculate weights for both in and out neighbours
         nbrs = {}
         for u in G:
@@ -230,7 +230,7 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
                 nbrs[u][n] += wt
     else:
         degrees = dict(G.degree(weight="weight"))
-        Stot = [deg for deg in degrees.values()]
+        Stot = list(degrees.values())
         nbrs = {u: {v: data["weight"] for v, data in G[u].items() if v != u} for u in G}
     rand_nodes = list(G.nodes)
     seed.shuffle(rand_nodes)
@@ -332,7 +332,7 @@ def _gen_graph(G, partition):
         com1 = node2com[node1]
         com2 = node2com[node2]
         temp = H.get_edge_data(com1, com2, {"weight": 0})["weight"]
-        H.add_edge(com1, com2, **{"weight": wt + temp})
+        H.add_edge(com1, com2, weight=wt + temp)
     return H
 
 

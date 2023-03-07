@@ -530,7 +530,7 @@ def held_karp_ascent(G, weight="weight"):
            pp.1138-1162
     """
     import numpy as np
-    import scipy.optimize as optimize
+    from scipy import optimize
 
     def k_pi():
         """
@@ -785,7 +785,7 @@ def held_karp_ascent(G, weight="weight"):
     # reference [1]
     z_star = {}
     scale_factor = (G.order() - 1) / G.order()
-    for u, v in x_star.keys():
+    for u, v in x_star:
         frequency = x_star[(u, v)] + x_star[(v, u)]
         if frequency > 0:
             z_star[(u, v)] = scale_factor * frequency

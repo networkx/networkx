@@ -207,7 +207,7 @@ def _group_preprocessing(G, set_v, weight):
         else:  # use Dijkstra's algorithm
             S, P, sigma[s], D[s] = _single_source_dijkstra_path_basic(G, s, weight)
         betweenness, delta[s] = _accumulate_endpoints(betweenness, S, P, sigma[s], s)
-        for i in delta[s].keys():  # add the paths from s to i and rescale sigma
+        for i in delta[s]:  # add the paths from s to i and rescale sigma
             if s != i:
                 delta[s][i] += 1
             if weight is not None:
@@ -682,7 +682,7 @@ def group_degree_centrality(G, S):
        Journal of Mathematical Sociology. 23(3): 181-201. 1999.
        http://www.analytictech.com/borgatti/group_centrality.htm
     """
-    centrality = len(set().union(*list(set(G.neighbors(i)) for i in S)) - set(S))
+    centrality = len(set().union(*[set(G.neighbors(i)) for i in S]) - set(S))
     centrality /= len(G.nodes()) - len(S)
     return centrality
 

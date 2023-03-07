@@ -178,10 +178,7 @@ def _consolidate(sets, k):
 
 def _generate_partition(G, cuts, k):
     def has_nbrs_in_partition(G, node, partition):
-        for n in G[node]:
-            if n in partition:
-                return True
-        return False
+        return any(n in partition for n in G[node])
 
     components = []
     nodes = {n for n, d in G.degree() if d > k} - {n for cut in cuts for n in cut}
@@ -198,7 +195,7 @@ def _generate_partition(G, cuts, k):
 
 
 def _reconstruct_k_components(k_comps):
-    result = dict()
+    result = {}
     max_k = max(k_comps)
     for k in reversed(range(1, max_k + 1)):
         if k == max_k:

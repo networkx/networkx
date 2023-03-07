@@ -11,7 +11,7 @@ from copy import deepcopy
 from functools import cached_property
 
 import networkx as nx
-import networkx.convert as convert
+from networkx import convert
 from networkx.classes.coreviews import AdjacencyView
 from networkx.classes.reportviews import DegreeView, EdgeView, NodeView
 from networkx.exception import NetworkXError

@@ -1184,7 +1184,7 @@ def draw_networkx_edge_labels(
             trans_angle = 0.0
         # use default box of white with white border
         if bbox is None:
-            bbox = dict(boxstyle="round", ec=(1.0, 1.0, 1.0), fc=(1.0, 1.0, 1.0))
+            bbox = {"boxstyle": "round", "ec": (1.0, 1.0, 1.0), "fc": (1.0, 1.0, 1.0)}
         if not isinstance(label, str):
             label = str(label)  # this makes "1" and 1 labeled the same
 

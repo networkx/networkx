@@ -643,8 +643,8 @@ class GraphMLWriter(GraphML):
         # data that needs to be added to them.
         # We postpone processing in order to do type inference/generalization.
         # See self.attr_type
-        for (xml_obj, data) in self.attributes.items():
-            for (k, v, scope, default) in data:
+        for xml_obj, data in self.attributes.items():
+            for k, v, scope, default in data:
                 xml_obj.append(
                     self.add_data(
                         str(k), self.attr_type(k, scope, v), str(v), scope, default
