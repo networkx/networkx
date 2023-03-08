@@ -134,7 +134,7 @@ def _dispatch(func=None, *, name=None):
             try:
                 graph = kwds["G"]
             except KeyError:
-                raise TypeError(f"{name}() missing positional argument: 'G'")
+                raise TypeError(f"{name}() missing positional argument: 'G'") from None
         if hasattr(graph, "__networkx_plugin__") and plugins:
             plugin_name = graph.__networkx_plugin__
             if plugin_name in plugins:
