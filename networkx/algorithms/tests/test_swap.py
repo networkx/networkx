@@ -4,72 +4,20 @@ import networkx as nx
 
 
 def test_directed_edge_swap():
-    # Testing a path graph
-    # Creating a path graph
-    G = nx.DiGraph()
-    G.add_nodes_from([1, 200])
-    for i in range(200):
-        if i != 0:
-            G.add_edges_from([(i, i + 1)])
+    cycle = nx.cycle_graph(5, create_using=nx.DiGraph)
+    tree = nx.random_tree(10, create_using=nx.DiGraph)
+    path = nx.path_graph(5, create_using=nx.DiGraph)
+    binomial = nx.binomial_tree(3, create_using=nx.DiGraph)
+    graph = nx.directed_havel_hakimi_graph(
+        [1, 2, 1, 2, 2, 2], [3, 1, 0, 1, 2, 3], create_using=None
+    )
+    balanced_tree = nx.balanced_tree(2, 3, create_using=nx.DiGraph)
 
-    G_orig = G.copy()  # Copy of path graph
-    nx.directed_edge_swap(G)
-    in_degrees_orig = sorted((n, d) for n, d in G_orig.in_degree())
-    out_degrees_orig = sorted((n, d) for n, d in G_orig.out_degree())
-
-    assert in_degrees_orig == sorted(
-        (n, d) for n, d in G.in_degree()
-    )  # in degree sequences of input and resultant should be same
-    assert out_degrees_orig == sorted(
-        (n, d) for n, d in G.out_degree()
-    )  # out degree sequences of input and resultant should be same
-    assert sorted((n, d) for n, d in G_orig.edges) != sorted(
-        (n, d) for n, d in G.edges
-    )  # same graph must not be returned
-
-    # Testing a complete graph with one directed edge for each pair
-    graph = nx.DiGraph()
-    no_of_nodes = 200
-    graph.add_nodes_from([1, no_of_nodes])
-
-    # Creating a complete directed graph
-    for i in range(1, no_of_nodes + 1):
-        for j in range(1, no_of_nodes + 1):
-            if i % 2 == 1:
-                if j % 2 == 0:
-                    if j > i:
-                        graph.add_edge(i, j)
-                    elif j < i:
-                        continue
-                elif j % 2 == 1:
-                    if j > i:
-                        graph.add_edge(j, i)
-                    elif j < i:
-                        continue
-            elif i % 2 == 0:
-                if j % 2 == 0:
-                    if j > i:
-                        graph.add_edge(j, i)
-                    elif i > j:
-                        continue
-                elif j % 2 == 1:
-                    if j > i:
-                        graph.add_edge(i, j)
-                    elif j < i:
-                        continue
-    H = graph.copy()  # Copy of complete directed graph
-    nx.directed_edge_swap(graph)
-    in_degrees_orig = sorted((n, d) for n, d in H.in_degree())
-    out_degrees_orig = sorted((n, d) for n, d in H.out_degree())
-    assert in_degrees_orig == sorted(
-        (n, d) for n, d in graph.in_degree()
-    )  # in degree sequences of input and resultant should be same
-    assert out_degrees_orig == sorted(
-        (n, d) for n, d in graph.out_degree()
-    )  # out degree sequences of input and resultant should be same
-    assert sorted((n, d) for n, d in graph.edges) != sorted(
-        (n, d) for n, d in H.edges
-    )  # same graph must not be returned
+    for G in (path, binomial, graph, cycle, tree, balanced_tree):
+        swapped = nx.directed_edge_swap(G.copy())
+        assert sorted(G.in_degree()) == sorted(swapped.in_degree())
+        assert sorted(G.in_degree()) == sorted(swapped.in_degree())
+        assert not nx.utils.edges_equal(G.edges, swapped.edges)
 
 
 def test_edge_cases_directed_edge_swap():
