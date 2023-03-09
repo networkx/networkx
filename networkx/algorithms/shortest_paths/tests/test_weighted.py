@@ -345,7 +345,7 @@ class TestWeightedPath(WeightedTestBase):
     def test_negative_edge_cycle_empty(self):
         G = nx.DiGraph()
         assert not nx.negative_edge_cycle(G)
-    
+
     def test_negative_edge_cycle_custom_weight_key(self):
         d = nx.DiGraph()
         d.add_edge("a", "b", w=-2)
