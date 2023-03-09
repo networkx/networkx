@@ -2126,8 +2126,9 @@ def negative_edge_cycle(G, weight="weight", heuristic=True):
     every node, and starting bellman_ford_predecessor_and_distance on that
     node.  It then removes that extra node.
     """
+    
     # check if graph is empty
-    if (G.size() == 0):
+    if G.size() == 0:
         return False
     
     # find unused node to use temporarily
