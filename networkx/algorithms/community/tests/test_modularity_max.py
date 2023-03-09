@@ -1,9 +1,10 @@
 import pytest
 
 import networkx as nx
-from networkx.algorithms.community import (
-    greedy_modularity_communities,
-    naive_greedy_modularity_communities,
+
+greedy_modularity_communities = nx.community.greedy_modularity_communities
+naive_greedy_modularity_communities = (
+    nx.community.naive_greedy_modularity_communities,
 )
 
 
