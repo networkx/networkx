@@ -121,7 +121,14 @@ class TestNodeDataView:
         assert (3, {"foo": "bar"}) in nv
         assert (3, "bar") in nwv
         assert (7, None) in nwv
+        assert None in nv == False
+        assert ("a") in nv == False
+        assert () in nv == False
+        assert (1,) in nv == False
+        assert (1, 2, 3) in nv == False
+        assert (1, 2, {"weight": 2}) == False
         # default
+
         nwv_def = G.nodes(data="foo", default="biz")
         assert (7, "biz") in nwv_def
         assert (3, "bar") in nwv_def
@@ -195,6 +202,9 @@ def test_nodedataview_unhashable():
     Gn = G.nodes.data("foo")
     set(Gn)
     Gn | Gn
+    # raise... hashable
+    for i in list(Gn):
+        pytest.raises(TypeError, set, i)
 
 
 class TestNodeViewSetOps:
