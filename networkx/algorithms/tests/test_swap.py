@@ -17,7 +17,7 @@ def test_directed_edge_swap():
         swapped = nx.directed_edge_swap(G.copy())
         assert sorted(G.in_degree()) == sorted(swapped.in_degree())
         assert sorted(G.in_degree()) == sorted(swapped.in_degree())
-        assert G.edges - swapped.edges != set()
+        assert sorted(G.edges) != sorted(swapped.edges)
 
 
 def test_edge_cases_directed_edge_swap():
