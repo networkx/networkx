@@ -121,12 +121,11 @@ class TestNodeDataView:
         assert (3, {"foo": "bar"}) in nv
         assert (3, "bar") in nwv
         assert (7, None) in nwv
-        assert None in nv == False
-        assert ("a") in nv == False
-        assert () in nv == False
-        assert (1,) in nv == False
-        assert (1, 2, 3) in nv == False
-        assert (1, 2, {"weight": 2}) == False
+        assert None not in nv
+        assert ("a") not in nv
+        assert () not in nv
+        assert (1,) not in nv
+        assert (1, 2, 3) not in nv
         # default
 
         nwv_def = G.nodes(data="foo", default="biz")
