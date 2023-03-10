@@ -202,7 +202,7 @@ def test_nodedataview_unhashable():
     set(Gn)
     Gn | Gn
     # raise... hashable
-    for i in list(Gn):
+    for i in list(G.nodes.data(False)):
         pytest.raises(TypeError, set, i)
 
 
