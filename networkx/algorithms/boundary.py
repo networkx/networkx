@@ -59,6 +59,20 @@ def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False, default=None
         are specified and `G` is a multigraph, then edges are returned
         with keys and/or data, as in :meth:`MultiGraph.edges`.
 
+    Examples
+    -------
+    >>> G = nx.gnp_random_graph(10, 0.3, seed = 100)
+
+    When nbunch2=None:
+
+    >>> list(nx.edge_boundary(G, (2, 4, 5)))
+    [(2, 3), (2, 8), (4, 9), (5, 8)]
+
+    When nbunch2 is given:
+
+    >>> list(nx.edge_boundary(G, (2, 4, 5), (8, 6, 1, 3)))
+    [(2, 3), (2, 8), (5, 8)]
+
     Notes
     -----
     Any element of `nbunch` that is not in the graph `G` will be
@@ -120,6 +134,20 @@ def node_boundary(G, nbunch1, nbunch2=None):
     -------
     set
         The node boundary of `nbunch1` with respect to `nbunch2`.
+
+    Examples
+    -------
+    >>> G = nx.gnp_random_graph(10, 0.3, seed = 100)
+
+    When nbunch2=None:
+
+    >>> list(nx.node_boundary(G, (2, 4, 5)))
+    [8, 9, 3]
+
+    When nbunch2 is given:
+
+    >>> list(nx.node_boundary(G, (2, 4, 5), (8, 6, 1, 3)))
+    [8, 3]
 
     Notes
     -----
