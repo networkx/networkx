@@ -95,21 +95,29 @@ def cycle_basis(G, root=None):
     return cycles
 
 
-@not_implemented_for("undirected")
-def simple_cycles(G):
-    """Find simple cycles (elementary circuits) of a directed graph.
+def simple_cycles(G, k=None):
+    """Find simple cycles (elementary circuits) of a graph.
 
     A `simple cycle`, or `elementary circuit`, is a closed path where
-    no node appears twice. Two elementary circuits are distinct if they
-    are not cyclic permutations of each other.
+    no node appears twice.  In a directed graph, two simple cycles are distinct
+    if they are not cyclic permutations of each other.  In an undirected graph,
+    two simple cycles are distinct if they are not cyclic permutations of each
+    other nor of the other's reversal.
 
-    This is a nonrecursive, iterator/generator version of Johnson's
-    algorithm [1]_.  There may be better algorithms for some cases [2]_ [3]_.
+    Optionally, the cycles are bounded in length by the parameter k.  In the
+    unbounded case, we use a nonrecursive, iterator/generator version of
+    Johnson's algorithm [1]_.  In the bounded case, we use a version of the
+    algorithm of Gupta and Suzumura [2]_. There may be better algorithms for
+    some cases [3]_ [4]_ [5]_.
 
     Parameters
     ----------
     G : NetworkX DiGraph
        A directed graph
+
+    k : int or None
+       If k is an int, generate all simple cycles of G with length at most k.
+       Otherwise, generate all simple cycles of G.
 
     Yields
     ------
@@ -122,11 +130,9 @@ def simple_cycles(G):
     >>> G = nx.DiGraph(edges)
     >>> sorted(nx.simple_cycles(G))
     [[0], [0, 1, 2], [0, 2], [1, 2], [2]]
-
     To filter the cycles so that they don't include certain nodes or edges,
     copy your graph and eliminate those nodes or edges before calling.
     For example, to exclude self-loops from the above example:
-
     >>> H = G.copy()
     >>> H.remove_edges_from(nx.selfloop_edges(G))
     >>> sorted(nx.simple_cycles(H))
@@ -135,7 +141,6 @@ def simple_cycles(G):
     Notes
     -----
     The implementation follows pp. 79-80 in [1]_.
-
     The time complexity is $O((n+e)(c+1))$ for $n$ nodes, $e$ edges and $c$
     elementary circuits.
 
@@ -144,82 +149,315 @@ def simple_cycles(G):
     .. [1] Finding all the elementary circuits of a directed graph.
        D. B. Johnson, SIAM Journal on Computing 4, no. 1, 77-84, 1975.
        https://doi.org/10.1137/0204007
-    .. [2] Enumerating the cycles of a digraph: a new preprocessing strategy.
+    .. [2] Finding All Bounded-Length Simple Cycles in a Directed Graph
+       A. Gupta and T. Suzumura https://arxiv.org/abs/2105.10094
+    .. [3] Enumerating the cycles of a digraph: a new preprocessing strategy.
        G. Loizou and P. Thanish, Information Sciences, v. 27, 163-182, 1982.
-    .. [3] A search strategy for the elementary cycles of a directed graph.
+    .. [4] A search strategy for the elementary cycles of a directed graph.
        J.L. Szwarcfiter and P.E. Lauer, BIT NUMERICAL MATHEMATICS,
        v. 16, no. 2, 192-204, 1976.
+    .. [5] Optimal Listing of Cycles and st-Paths in Undirected Graphs
+        R. Ferreira and R. Grossi and A. Marino and N. Pisanti and R. Rizzi and
+        G. Sacomoto https://arxiv.org/abs/1205.2766
 
     See Also
     --------
     cycle_basis
     """
+    if k is not None:
+        if k == 0:
+            return
+        elif k < 0:
+            raise ValueError("length bound must be non-negative")
 
-    def _unblock(thisnode, blocked, B):
-        stack = {thisnode}
-        while stack:
-            node = stack.pop()
-            if node in blocked:
-                blocked.remove(node)
-                stack.update(B[node])
-                B[node].clear()
+    directed = G.is_directed()
+    yield from ([v] for v in G if v in G[v])
 
-    # Johnson's algorithm requires some ordering of the nodes.
-    # We assign the arbitrary ordering given by the strongly connected comps
-    # There is no need to track the ordering as each node removed as processed.
-    # Also we save the actual graph so we can mutate it. We only take the
-    # edges because we do not want to copy edge and node attributes here.
-    subG = type(G)(G.edges())
-    sccs = [scc for scc in nx.strongly_connected_components(subG) if len(scc) > 1]
+    if directed:
+        G = nx.DiGraph((u, v) for u in G for v in G[u] if v != u)
+    else:
+        G = nx.Graph((u, v) for u in G for v in G[u] if v != u)
 
-    # Johnson's algorithm exclude self cycle edges like (v, v)
-    # To be backward compatible, we record those cycles in advance
-    # and then remove from subG
-    for v in subG:
-        if subG.has_edge(v, v):
-            yield [v]
-            subG.remove_edge(v, v)
+    if directed:
+        yield from _directed_cycle_search(G, k)
+    else:
+        yield from _undirected_cycle_search(G, k)
 
-    while sccs:
-        scc = sccs.pop()
-        sccG = subG.subgraph(scc)
-        # order of scc determines ordering of nodes
-        startnode = scc.pop()
-        # Processing node runs "circuit" routine from recursive version
-        path = [startnode]
-        blocked = set()  # vertex: blocked from search?
-        closed = set()  # nodes involved in a cycle
-        blocked.add(startnode)
-        B = defaultdict(set)  # graph portions that yield no elementary circuit
-        stack = [(startnode, list(sccG[startnode]))]  # sccG gives comp nbrs
-        while stack:
-            thisnode, nbrs = stack[-1]
-            if nbrs:
-                nextnode = nbrs.pop()
-                if nextnode == startnode:
-                    yield path[:]
-                    closed.update(path)
-                #                        print "Found a cycle", path, closed
-                elif nextnode not in blocked:
-                    path.append(nextnode)
-                    stack.append((nextnode, list(sccG[nextnode])))
-                    closed.discard(nextnode)
-                    blocked.add(nextnode)
-                    continue
-            # done with nextnode... look for more neighbors
-            if not nbrs:  # no more nbrs
-                if thisnode in closed:
-                    _unblock(thisnode, blocked, B)
-                else:
-                    for nbr in sccG[thisnode]:
-                        if thisnode not in B[nbr]:
-                            B[nbr].add(thisnode)
-                stack.pop()
-                #                assert path[-1] == thisnode
-                path.pop()
-        # done processing this node
-        H = subG.subgraph(scc)  # make smaller to avoid work in SCC routine
-        sccs.extend(scc for scc in nx.strongly_connected_components(H) if len(scc) > 1)
+
+def _directed_cycle_search(G, k):
+    """A dispatch function for `simple_cycles` for directed graphs.
+
+    We generate all cycles of G through binary partition.
+
+        1. Pick a node v in G which belongs to at least one cycle
+            a. Generate all cycles of G which contain the node v.
+            b. Recursively generate all cycles of G \\ v.
+
+    This is accomplished through the following:
+
+        1. Compute the strongly connected components SCC of G.
+        2. Select and remove a biconnected component C from BCC.  Select a
+           non-tree edge (u, v) of a depth-first search of G[C].
+        3. For each simple cycle P containing v in G[C], yield P.
+        4. Add the biconnected components of G[C \\ v] to BCC.
+
+    If the parameter k is not None, then step 3 will be limited to simple cycles
+    of length at most k.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+       An undirected graph
+
+    k : int or None
+       If k is an int, generate all simple cycles of G with length at most k.
+       Otherwise, generate all simple cycles of G.
+
+    Yields
+    ------
+    list of nodes
+       Each cycle is represented by a list of nodes along the cycle.
+    """
+    components = list(nx.strongly_connected_components(G))
+    for c in components:
+        Gc = G.subgraph(c)
+        v = next(iter(c))
+        if k is None:
+            yield from _johnson_cycle_search(Gc, [v])
+        else:
+            yield from _bounded_cycle_search(Gc, [v], k)
+        # delete v after searching G, to make sure we can find v
+        G.remove_node(v)
+        components.extend(nx.strongly_connected_components(Gc))
+
+
+def _undirected_cycle_search(G, k):
+    """A dispatch function for `simple_cycles` for undirected graphs.
+
+    We generate all cycles of G through binary partition.
+
+        1. Pick an edge (u, v) in G which belongs to at least one cycle
+            a. Generate all cycles of G which contain the edge (u, v)
+            b. Recursively generate all cycles of G \\ (u, v)
+
+    This is accomplished through the following:
+
+        1. Compute the biconnected components BCC of G.
+        2. Select and remove a biconnected component C from BCC.  Select a
+           non-tree edge (u, v) of a depth-first search of G[C].
+        3. For each (v -> u) path P remaining in G[C] \\ (u, v), yield P.
+        4. Add the biconnected components of G[C] \\ (u, v) to BCC.
+
+    If the parameter k is not None, then step 3 will be limited to simple paths
+    of length at most k.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+       An undirected graph
+
+    k : int or None
+       If k is an int, generate all simple cycles of G with length at most k.
+       Otherwise, generate all simple cycles of G.
+
+    Yields
+    ------
+    list of nodes
+       Each cycle is represented by a list of nodes along the cycle.
+    """
+
+    components = list(nx.biconnected_components(G))
+    while components:
+        c = components.pop()
+        Gc = G.subgraph(c)
+        uv = _biconnected_first_nontree_edge(Gc)
+        G.remove_edge(*uv)
+        # delete (u, v) before searching G, to avoid fake 3-cycles [u, v, u]
+        if k is None:
+            yield from _johnson_cycle_search(Gc, uv)
+        else:
+            yield from _bounded_cycle_search(Gc, uv, k)
+        components.extend(nx.biconnected_components(Gc))
+
+
+def _biconnected_first_nontree_edge(G):
+    """A depth first search which returns the first non-tree edge
+
+    This is a specialized, optimistic variant of dfs_labeled_edges equivalent to
+    in the case that G is biconnected.
+
+        for u, v, label in dfs_labeled_edges(G):
+            if label == 'nontree':
+                return [u, v]
+
+    This must only be called on biconnected components.  If the graph is
+    connected but not biconnected, then this function will return None.  If the
+    graph is not connected, it may return an edge or None.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+       A connected, undirected graph
+
+    Returns
+    -------
+    list of nodes
+       A non-tree edges of a depth-first search of G
+
+    See Also
+    --------
+    dfs_labeled_edges
+    """
+
+    visited = set()
+    stack = [next(iter(G))]
+    while stack:
+        u = stack.pop()
+        if u not in visited:
+            visited.add(u)
+            Gu = G[u]
+            nontree = visited.intersection(Gu)
+            for v in nontree:
+                return [u, v]
+            stack.extend(Gu)
+
+
+class _NeighborCache(dict):
+    """Very lightweight graph wrapper which caches neighborhoods as sets.
+
+    This dict subclass uses the __missing__ functionality to query graphs for
+    their neighborhoods, and store the result as a set.  This is used to avoid
+    the performance penalty incurred by subgraph views.
+    """
+
+    def __init__(self, G):
+        self.G = G
+
+    def __missing__(self, v):
+        Gv = self[v] = set(self.G[v])
+        return Gv
+
+
+def _johnson_cycle_search(G, path):
+    """The main loop of the cycle-enumeration algorithm of Johnson.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+       An undirected graph
+
+    path : list
+       A cycle prefix.  All cycles generated will begin with this prefix.
+
+    Yields
+    ------
+    list of nodes
+       Each cycle is represented by a list of nodes along the cycle.
+
+    References
+    ----------
+        .. [1] Finding all the elementary circuits of a directed graph.
+       D. B. Johnson, SIAM Journal on Computing 4, no. 1, 77-84, 1975.
+       https://doi.org/10.1137/0204007
+
+    """
+
+    G = _NeighborCache(G)
+    blocked = set(path)
+    B = defaultdict(set)  # graph portions that yield no elementary circuit
+    start = path[0]
+    stack = [iter(G[path[-1]])]
+    closed = [False]
+    while stack:
+        nbrs = stack[-1]
+        for w in nbrs:
+            if w == start:
+                yield path[:]
+                closed[-1] = True
+            elif w not in blocked:
+                path.append(w)
+                closed.append(False)
+                stack.append(iter(G[w]))
+                blocked.add(w)
+                break
+        else:  # no more nbrs
+            stack.pop()
+            v = path.pop()
+            if closed.pop():
+                if closed:
+                    closed[-1] = True
+                unblock_stack = {v}
+                while unblock_stack:
+                    u = unblock_stack.pop()
+                    if u in blocked:
+                        blocked.remove(u)
+                        unblock_stack.update(B[u])
+                        B[u].clear()
+            else:
+                for w in G[v]:
+                    B[w].add(v)
+
+
+def _bounded_cycle_search(G, path, k):
+    """The main loop of the cycle-enumeration algorithm of Gupta and Suzumura.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+       An undirected graph
+
+    path : list
+       A cycle prefix.  All cycles generated will begin with this prefix.
+
+    k: int
+        A length bound.  All cycles generated will have length at most k.
+
+    Yields
+    ------
+    list of nodes
+       Each cycle is represented by a list of nodes along the cycle.
+
+    References
+    ----------
+        .. [1] Finding all the elementary circuits of a directed graph.
+       D. B. Johnson, SIAM Journal on Computing 4, no. 1, 77-84, 1975.
+       https://doi.org/10.1137/0204007
+
+    """
+    G = _NeighborCache(G)
+    lock = {v: 0 for v in path}
+    B = defaultdict(set)
+    start = path[0]
+    stack = [iter(G[path[-1]])]
+    blen = [k]
+    while stack:
+        nbrs = stack[-1]
+        for w in nbrs:
+            if w == start:
+                yield path[:]
+                blen[-1] = 1
+            elif len(path) < lock.get(w, k):
+                path.append(w)
+                blen.append(k)
+                lock[w] = len(path)
+                stack.append(iter(G[w]))
+                break
+        else:
+            stack.pop()
+            v = path.pop()
+            bl = blen.pop()
+            if blen:
+                blen[-1] = min(blen[-1], bl)
+            if bl < k:
+                relax_stack = [(bl, v)]
+                while relax_stack:
+                    bl, u = relax_stack.pop()
+                    if lock.get(u, k) < k - bl + 1:
+                        Lock[u] = k - bl + 1
+                        relax_stack.extend((bl + 1, w) for w in B[u].difference(path))
+            else:
+                for w in G[v]:
+                    B[w].add(v)
 
 
 @not_implemented_for("undirected")
@@ -330,114 +568,6 @@ def recursive_simple_cycles(G):
                 B[node][:] = []
             dummy = circuit(startnode, startnode, component)
     return result
-
-
-@not_implemented_for("directed")
-def undirected_simple_cycles(G, target_length=None, chordless=False):
-    """
-    Generate all simple cycles in a graph G up to equivalence.
-
-    Parameters
-    ----------
-    G : NetworkX Graph
-       A directed graph
-
-    target_length : int (optional, default=None)
-       A target length -- if this is not None, we only emit cycles of that
-       length.
-
-    chordless : bool (optional, default=False)
-       if chordless is True, then only generate chordless cycles -- that is,
-       cycles (v_1, v_2, ..., v_n) such that if v_i is adjacent to v_j then
-       i = j + 1 (mod n) or i = j - 1 (mod n).
-
-    Yields
-    ------
-    tuple of nodes
-       Each cycle is represented by a tuple of nodes along the cycle.
-
-
-    The procedure works as follows:
-        1. We construct a sequence of graphs G(n), G(n-1), ...,  G(1), G(0)
-           where G(n) = G and G(i-1) = G(i) - v_i where the nodes of G
-           are taken in an arbitrary order V(G) = {v_1, ..., v_n}.
-
-        2. For each G(i), we compute all cycles of G(i) that contain v_i.
-           By picking an ordering V(G) = {v_1, ..., v_n}, we generate cycles
-           in the order of the highest-index node contained in that cycle.
-           This orderly generation ensures that cycles are produced exactly
-           once up to rotational equivalence.
-
-        3. To compute all cycles of G(i) that contain v_i, we take the set
-           of unordered pairs {a, b} adjacent to v_i in G(i).  We take this
-           pair in an arbitrary order, begin looking for cycles containing
-           the path (a, v_i, b).  By picking this order, we get each cycle
-           exactly once up to equivalence by reversal: we will not generate
-           cycles containing the path (b, v_i, a).
-
-        4. To compute all cycles of G(i) that contain the path (a, v_i, b)
-           we proceed recursively.  Given a path P = (a, v_i, ..., x):
-
-           1. Check if the edge (a, x) is in G(i).  If it is, yield the
-              cycle (x, v_i, ..., x)
-
-           2. For each node y in G(i) not in P where y is adjacent to x,
-              recurse on the path (a, v_i, ..., x, y)
-
-    Thats the idea, anyway.  In the implementation, we construct the
-    sequence G(0), G(1), ..., G(n) in reverse.  Also, we use a stack rather
-    than recursion.  We make some pains to keep the memory usage small, with
-    one indulgence for the sake of performance: the graph is duplicated as a
-    dictionary of sets.  Throughout the stack traversal, we maintain the
-    ordered path and its unordered set in linear space, and the stack itself
-    consists of up to n iterators each requiring constant space.
-    """
-    visited = set()
-    subgraph = {}
-    allow_chords = not chordless
-    for root_node, neighbors in G.adj.items():
-        visited_neighbors = visited.intersection(neighbors)
-        for a, b in combinations(visited_neighbors, 2):
-            pre_cycle = [a, root_node, b]
-            cycle_set = set(pre_cycle)
-            nbr_a = subgraph[a]
-            length = 3
-            if (target_length is None or target_length == length) and b in nbr_a:
-                yield tuple(pre_cycle)
-            if target_length is None or target_length > 3:
-                stack = [iter(subgraph[b] - cycle_set)]
-            else:
-                continue
-            while stack:
-                for x in stack[-1]:
-                    length += 1
-                    pre_cycle.append(x)
-                    cycle_set.add(x)
-                    all_x = subgraph[x]
-                    nbr_x = all_x - cycle_set
-                    if (
-                        target_length is None or target_length == length
-                    ) and x in nbr_a:
-                        yield tuple(pre_cycle)
-                    if (
-                        (target_length is None or target_length > length)
-                        and (chords or len(nbr_x) == len(all_x))
-                        and nbr_x
-                    ):
-                        stack.append(iter(nbr_x))
-                        break
-                    else:
-                        cycle_set.remove(pre_cycle.pop())
-                        length -= 1
-                else:
-                    stack.pop()
-                    cycle_set.remove(pre_cycle.pop())
-                    length -= 1
-
-        subgraph[root_node] = visited_neighbors
-        for nbr in visited_neighbors:
-            subgraph[nbr].add(root_node)
-        visited.add(root_node)
 
 
 def find_cycle(G, source=None, orientation=None):
