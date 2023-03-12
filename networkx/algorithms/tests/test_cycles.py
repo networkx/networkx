@@ -6,6 +6,10 @@ from networkx.algorithms import find_cycle, minimum_cycle_basis
 from networkx.algorithms.traversal.edgedfs import FORWARD, REVERSE
 
 
+def undirected_cycle_set(cycles):
+    return {frozenset(map(frozenset, zip(c, c[1:] + c[:1]))) for c in cycles}
+
+
 class TestCycles:
     @classmethod
     def setup_class(cls):
@@ -69,15 +73,66 @@ class TestCycles:
             assert any(self.is_cyclic_permutation(c, rc) for rc in ca)
 
     def test_simple_cycles_graph(self):
-        with pytest.raises(nx.NetworkXNotImplemented):
-            G = nx.Graph()
-            c = sorted(nx.simple_cycles(G))
+        testG = nx.cycle_graph(8)
+        cyc1 = tuple(range(8))
+        answer = undirected_cycle_set(nx.simple_cycles(testG))
+        assert answer == undirected_cycle_set([cyc1])
+        testG.add_edge(4, -1)
+        nx.add_path(testG, [3, -2, -3, -4])
+        answer = undirected_cycle_set(nx.simple_cycles(testG))
+        assert answer == undirected_cycle_set([cyc1])
+
+        testG.update(nx.cycle_graph(range(8, 16)))
+        cyc2 = tuple(range(8, 16))
+        answer = undirected_cycle_set(nx.simple_cycles(testG))
+        assert answer == undirected_cycle_set({cyc1, cyc2})
+
+        testG.update(nx.cycle_graph(range(4, 12)))
+        cyc3 = tuple(range(4, 12))
+        expected = {
+            (0, 1, 2, 3, 4, 5, 6, 7),  # cyc1
+            (8, 9, 10, 11, 12, 13, 14, 15),  # cyc2
+            (4, 5, 6, 7, 8, 9, 10, 11),  # cyc3
+            (4, 5, 6, 7, 8, 15, 14, 13, 12, 11),  # cyc2 + cyc3
+            (0, 1, 2, 3, 4, 11, 10, 9, 8, 7),  # cyc1 + cyc3
+            (0, 1, 2, 3, 4, 11, 12, 13, 14, 15, 8, 7),  # cyc1 + cyc2 + cyc3
+        }
+        answer = undirected_cycle_set(nx.simple_cycles(testG))
+        assert answer == undirected_cycle_set(expected)
+        assert len(answer) == (2**3 - 1) - 1  # 1 disjoint comb: cyc1 + cyc2
+
+        # Basis size = 5 (2 loops overlapping gives 5 small loops
+        #        E
+        #       / \         Note: A-F = 10-15
+        #    1-2-3-4-5
+        #    / |   |  \   cyc1=012DAB -- left
+        #   0  D   F  6   cyc2=234E   -- top
+        #   \  |   |  /   cyc3=45678F -- right
+        #    B-A-9-8-7    cyc4=89AC   -- bottom
+        #       \ /       cyc5=234F89AD -- middle
+        #        C
+        #
+        # combinations of 5 basis elements: 2^5 - 1  (one includes no cycles)
+        #
+        # disjoint combs: (11 total) not simple cycles
+        #   Any pair not including cyc5 => choose(4, 2) = 6
+        #   Any triple not including cyc5 => choose(4, 3) = 4
+        #   Any quad not including cyc5 => choose(4, 4) = 1
+        #
+        # we expect 31 - 11 = 20 simple cycles
+        #
+        testG = nx.cycle_graph(12)
+        testG.update(nx.cycle_graph([12, 10, 13, 2, 14, 4, 15, 8]).edges)
+        answer = list(nx.simple_cycles(testG))
+        assert len(answer) == (2**5 - 1) - 11  # 11 disjoint combinations
 
     def test_unsortable(self):
-        #  TODO What does this test do?  das 6/2013
+        # this test ensures that graphs whose nodes without an intrinsic
+        # ordering do not cause issues
         G = nx.DiGraph()
         nx.add_cycle(G, ["a", 1])
         c = list(nx.simple_cycles(G))
+        assert len(c) == 1
 
     def test_simple_cycles_small(self):
         G = nx.DiGraph()
