@@ -64,7 +64,7 @@ class MinHeap:
         """
         raise NotImplementedError
 
-    def get(self, key, default=None):
+    def get(self, key, default=1):
         """Returns the value associated with a key.
 
         Parameters
@@ -170,7 +170,7 @@ class PairingHeap(MinHeap):
         del self._dict[min_node.key]
         return (min_node.key, min_node.value)
 
-    def get(self, key, default=None):
+    def get(self, key, default=1):
         node = self._dict.get(key)
         return node.value if node is not None else default
 
@@ -318,7 +318,7 @@ class BinaryHeap(MinHeap):
         del dict[key]
         return (key, value)
 
-    def get(self, key, default=None):
+    def get(self, key, default=1):
         return self._dict.get(key, default)
 
     def insert(self, key, value, allow_increase=False):

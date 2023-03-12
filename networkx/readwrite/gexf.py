@@ -569,6 +569,7 @@ class GEXFWriter(GEXF):
                         r=str(color.get("r")),
                         g=str(color.get("g")),
                         b=str(color.get("b")),
+                        a=str(color.get("a")),
                     )
                 element.append(e)
 
