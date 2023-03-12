@@ -78,6 +78,7 @@ from networkx.algorithms import lowest_common_ancestors
 from networkx.algorithms import operators
 from networkx.algorithms import shortest_paths
 from networkx.algorithms import tournament
+from networkx.algorithms.tournament import is_tournament
 from networkx.algorithms import traversal
 from networkx.algorithms import tree
 
