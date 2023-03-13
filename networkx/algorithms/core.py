@@ -69,6 +69,13 @@ def core_number(G):
         The k-core is not implemented for graphs with self loops
         or parallel edges.
 
+    Examples
+    --------
+    ... e = [(0, 1), (0, 2), (0, 3), (1, 2), (2, 3), (3, 4), (4, 5), (4, 6)]
+    ... G = nx.Graph(e)
+    ... nx.core_number(G)
+    {0: 2, 1: 2, 2: 2, 3: 2, 4: 1, 5: 1, 6: 1}
+
     Notes
     -----
     Not implemented for graphs with parallel edges or self loops.
@@ -167,6 +174,14 @@ def k_core(G, k=None, core_number=None):
     NetworkXError
       The k-core is not defined for graphs with self loops or parallel edges.
 
+    Examples
+    --------
+    ... e = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4), (4, 5), (4, 6), (5, 6)]
+    ... G = nx.Graph(e)
+    ... k_core = nx.k_core(G, k=3)
+    ... k_core.edges()
+    [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
+
     Notes
     -----
     The main core is the core with the largest degree.
@@ -222,6 +237,14 @@ def k_shell(G, k=None, core_number=None):
         The k-shell is not implemented for graphs with self loops
         or parallel edges.
 
+    Examples
+    --------
+    ... e = [(1, 2), (1, 3), (2, 3), (2, 4), (3, 4), (4, 5), (4, 6), (5, 6), (1,7), (7, 8)]
+    ... G = nx.Graph(e)
+    ... k_shell = nx.k_shell(G, k=2)
+    ... k_shell.edges()
+    [(1, 2), (1, 3), (2, 3), (2, 4), (3, 4), (4, 5), (4, 6), (5, 6)]
+
     Notes
     -----
     This is similar to k_corona but in that case only neighbors in the
@@ -257,51 +280,59 @@ def k_shell(G, k=None, core_number=None):
 def k_crust(G, k=None, core_number=None):
     """Returns the k-crust of G.
 
-    The k-crust is the graph G with the edges of the k-core removed
-    and isolated nodes found after the removal of edges are also removed.
+     The k-crust is the graph G with the edges of the k-core removed
+     and isolated nodes found after the removal of edges are also removed.
 
-    Parameters
-    ----------
-    G : NetworkX graph
-       A graph or directed graph.
-    k : int, optional
-      The order of the shell.  If not specified return the main crust.
-    core_number : dictionary, optional
-      Precomputed core numbers for the graph G.
+     Parameters
+     ----------
+     G : NetworkX graph
+        A graph or directed graph.
+     k : int, optional
+       The order of the shell.  If not specified return the main crust.
+     core_number : dictionary, optional
+       Precomputed core numbers for the graph G.
 
-    Returns
-    -------
-    G : NetworkX graph
-       The k-crust subgraph
+     Returns
+     -------
+     G : NetworkX graph
+        The k-crust subgraph
 
-    Raises
-    ------
-    NetworkXError
-        The k-crust is not implemented for graphs with self loops
-        or parallel edges.
+     Raises
+     ------
+     NetworkXError
+         The k-crust is not implemented for graphs with self loops
+         or parallel edges.
 
-    Notes
-    -----
-    This definition of k-crust is different than the definition in [1]_.
-    The k-crust in [1]_ is equivalent to the k+1 crust of this algorithm.
+     Examples
+     --------
+     ... e = [(1,2), (1,3), (1,4), (2,3), (2,4), (3,4), (3,5), (4,5), (5,6), (6,7), (6,8), (7,8), (7,9), (8,9)]
+     ... G = nx.Graph(e)
+     ... kcrust = nx.k_crust(G, 2)
+     ... kcrust.edges()
+    [(1, 2), (1, 8), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7), (7, 8)]
 
-    Not implemented for graphs with parallel edges or self loops.
+     Notes
+     -----
+     This definition of k-crust is different than the definition in [1]_.
+     The k-crust in [1]_ is equivalent to the k+1 crust of this algorithm.
 
-    For directed graphs the node degree is defined to be the
-    in-degree + out-degree.
+     Not implemented for graphs with parallel edges or self loops.
 
-    Graph, node, and edge attributes are copied to the subgraph.
+     For directed graphs the node degree is defined to be the
+     in-degree + out-degree.
 
-    See Also
-    --------
-    core_number
+     Graph, node, and edge attributes are copied to the subgraph.
 
-    References
-    ----------
-    .. [1] A model of Internet topology using k-shell decomposition
-       Shai Carmi, Shlomo Havlin, Scott Kirkpatrick, Yuval Shavitt,
-       and Eran Shir, PNAS  July 3, 2007   vol. 104  no. 27  11150-11154
-       http://www.pnas.org/content/104/27/11150.full
+     See Also
+     --------
+     core_number
+
+     References
+     ----------
+     .. [1] A model of Internet topology using k-shell decomposition
+        Shai Carmi, Shlomo Havlin, Scott Kirkpatrick, Yuval Shavitt,
+        and Eran Shir, PNAS  July 3, 2007   vol. 104  no. 27  11150-11154
+        http://www.pnas.org/content/104/27/11150.full
     """
     # Default for k is one less than in _core_subgraph, so just inline.
     #    Filter is c[v] <= k
@@ -338,6 +369,14 @@ def k_corona(G, k, core_number=None):
     NetworkXError
         The k-cornoa is not defined for graphs with self loops or
         parallel edges.
+
+    Examples
+    --------
+    ... e = [(1,2),(2,3),(3,4),(4,5),(5,6),(6,7),(7,1),(1,8),(2,8),(3,8),(4,8),(5,8),(6,8),(7,8)]
+    ... G = nx.Graph(e)
+    ... kcorona = nx.k_corona(G, 3)
+    ... kcorona.edges()
+    [(1, 2), (1, 7), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7)]
 
     Notes
     -----
@@ -462,6 +501,13 @@ def onion_layers(G):
     NetworkXError
         The onion decomposition is not implemented for graphs with self loops
         or parallel edges or for directed graphs.
+
+    Examples
+    --------
+    ... e = [(1,2), (1,3), (1,4), (2,3), (2,4), (3,4), (3,5), (4,5), (5,6), (6,7)]
+    ... G = nx.Graph(e)
+    ... nx.onion_layers(G)
+    {7: 1, 6: 2, 5: 3, 1: 4, 2: 4, 3: 4, 4: 4}
 
     Notes
     -----
