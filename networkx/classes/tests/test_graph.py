@@ -1,6 +1,7 @@
 import gc
 import pickle
 import platform
+import weakref
 
 import pytest
 
@@ -71,7 +72,19 @@ class BaseGraphTester:
         G = self.Graph()
 
         def count_objects_of_type(_type):
-            return sum(1 for obj in gc.get_objects() if isinstance(obj, _type))
+            # Iterating over all objects tracked by gc can include weak references
+            # whose weakly-referenced objects may no longer exist. Calling `isinstance`
+            # on such a weak reference will raise ReferenceError. There are at least
+            # three workarounds for this: one is to compare type names instead of using
+            # `isinstance` such as `type(obj).__name__ == typename`, another is to use
+            # `type(obj) == _type`, and the last is to ignore ProxyTypes as we do below.
+            # NOTE: even if this safeguard is deemed unnecessary to pass NetworkX tests,
+            # we should still keep it for maximum safety for other NetworkX backends.
+            return sum(
+                1
+                for obj in gc.get_objects()
+                if not isinstance(obj, weakref.ProxyTypes) and isinstance(obj, _type)
+            )
 
         gc.collect()
         before = count_objects_of_type(self.Graph)
