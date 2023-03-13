@@ -236,6 +236,7 @@ def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     return T
 
 
+@nx._dispatch
 def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
     """Returns an iterator of predecessors in breadth-first-search from source.
 
@@ -300,6 +301,7 @@ def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
         yield (t, s)
 
 
+@nx._dispatch
 def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
     """Returns an iterator of successors in breadth-first-search from source.
 
@@ -372,6 +374,7 @@ def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
     yield (parent, children)
 
 
+@nx._dispatch
 def bfs_layers(G, sources):
     """Returns an iterator of all the layers in breadth-first search traversal.
 
@@ -423,6 +426,7 @@ def bfs_layers(G, sources):
         current_layer = next_layer
 
 
+@nx._dispatch
 def descendants_at_distance(G, source, distance):
     """Returns all nodes at a fixed `distance` from `source` in `G`.
 
