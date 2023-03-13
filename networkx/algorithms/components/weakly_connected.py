@@ -104,6 +104,7 @@ def number_weakly_connected_components(G):
     return sum(1 for wcc in weakly_connected_components(G))
 
 
+@nx._dispatch
 @not_implemented_for("undirected")
 def is_weakly_connected(G):
     """Test directed graph for weak connectivity.

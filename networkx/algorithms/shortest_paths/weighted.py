@@ -2077,6 +2077,7 @@ def goldberg_radzik(G, source, weight="weight"):
     return pred, d
 
 
+@nx._dispatch
 def negative_edge_cycle(G, weight="weight", heuristic=True):
     """Returns True if there exists a negative edge cycle anywhere in G.
 
@@ -2126,6 +2127,8 @@ def negative_edge_cycle(G, weight="weight", heuristic=True):
     every node, and starting bellman_ford_predecessor_and_distance on that
     node.  It then removes that extra node.
     """
+    if G.size() == 0:
+        return False
     # find unused node to use temporarily
     newnode = -1
     while newnode in G:
