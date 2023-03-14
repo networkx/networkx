@@ -7,6 +7,7 @@ from networkx.utils import not_implemented_for
 __all__ = ["katz_centrality", "katz_centrality_numpy"]
 
 
+@nx._dispatch
 @not_implemented_for("multigraph")
 def katz_centrality(
     G,
@@ -168,7 +169,7 @@ def katz_centrality(
     for _ in range(max_iter):
         xlast = x
         x = dict.fromkeys(xlast, 0)
-        # do the multiplication y^T = Alpha * x^T A - Beta
+        # do the multiplication y^T = Alpha * x^T A + Beta
         for n in x:
             for nbr in G[n]:
                 x[nbr] += xlast[n] * G[n][nbr].get(weight, 1)

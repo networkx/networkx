@@ -39,9 +39,10 @@ def all_node_cuts(G, k=None, flow_func=None):
         computed. Default value: None.
 
     flow_func : function
-        Function to perform the underlying flow computations. Default value
-        edmonds_karp. This function performs better in sparse graphs with
-        right tailed degree distributions. shortest_augmenting_path will
+        Function to perform the underlying flow computations. Default value is
+        :func:`~networkx.algorithms.flow.edmonds_karp`. This function performs
+        better in sparse graphs with right tailed degree distributions.
+        :func:`~networkx.algorithms.flow.shortest_augmenting_path` will
         perform better in denser graphs.
 
 
@@ -107,7 +108,7 @@ def all_node_cuts(G, k=None, flow_func=None):
     # Shallow copy is enough.
     original_H_pred = copy.copy(H._pred)
     R = build_residual_network(H, "capacity")
-    kwargs = dict(capacity="capacity", residual=R)
+    kwargs = {"capacity": "capacity", "residual": R}
     # Define default flow function
     if flow_func is None:
         flow_func = default_flow_func

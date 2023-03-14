@@ -269,6 +269,7 @@ def recursive_simple_cycles(G):
     --------
     simple_cycles, cycle_basis
     """
+
     # Jon Olav Vik, 2010-08-09
     def _unblock(thisnode):
         """Recursively unblock and remove nodes from B[thisnode]."""
@@ -529,7 +530,7 @@ def minimum_cycle_basis(G, weight=None):
     --------
     simple_cycles, cycle_basis
     """
-    # We first split the graph in commected subgraphs
+    # We first split the graph in connected subgraphs
     return sum(
         (_min_cycle_basis(G.subgraph(c), weight) for c in nx.connected_components(G)),
         [],

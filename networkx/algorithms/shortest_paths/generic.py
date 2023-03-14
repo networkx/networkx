@@ -16,6 +16,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 def has_path(G, source, target):
     """Returns *True* if *G* has a path from *source* to *target*.
 
@@ -36,6 +37,7 @@ def has_path(G, source, target):
     return True
 
 
+@nx._dispatch
 def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     """Compute shortest paths in the graph.
 
@@ -170,6 +172,7 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     return paths
 
 
+@nx._dispatch
 def shortest_path_length(G, source=None, target=None, weight=None, method="dijkstra"):
     """Compute shortest path lengths in the graph.
 
@@ -320,11 +323,15 @@ def average_shortest_path_length(G, weight=None, method=None):
 
     .. math::
 
-       a =\sum_{s,t \in V} \frac{d(s, t)}{n(n-1)}
+       a =\sum_{\substack{s,t \in V \\ s\neq t}} \frac{d(s, t)}{n(n-1)}
 
     where `V` is the set of nodes in `G`,
     `d(s, t)` is the shortest path from `s` to `t`,
     and `n` is the number of nodes in `G`.
+
+    .. versionchanged:: 3.0
+       An exception is raised for directed graphs that are not strongly
+       connected.
 
     Parameters
     ----------
@@ -354,7 +361,7 @@ def average_shortest_path_length(G, weight=None, method=None):
         If `G` is the null graph (that is, the graph on zero nodes).
 
     NetworkXError
-        If `G` is not connected (or not weakly connected, in the case
+        If `G` is not connected (or not strongly connected, in the case
         of a directed graph).
 
     ValueError
@@ -397,9 +404,10 @@ def average_shortest_path_length(G, weight=None, method=None):
     # For the special case of the trivial graph, return zero immediately.
     if n == 1:
         return 0
-    # Shortest path length is undefined if the graph is disconnected.
-    if G.is_directed() and not nx.is_weakly_connected(G):
-        raise nx.NetworkXError("Graph is not weakly connected.")
+    # Shortest path length is undefined if the graph is not strongly connected.
+    if G.is_directed() and not nx.is_strongly_connected(G):
+        raise nx.NetworkXError("Graph is not strongly connected.")
+    # Shortest path length is undefined if the graph is not connected.
     if not G.is_directed() and not nx.is_connected(G):
         raise nx.NetworkXError("Graph is not connected.")
 

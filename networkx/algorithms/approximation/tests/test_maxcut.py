@@ -36,7 +36,7 @@ def test_random_partitioning_all_to_one():
 def test_one_exchange_basic():
     G = nx.complete_graph(5)
     random.seed(5)
-    for (u, v, w) in G.edges(data=True):
+    for u, v, w in G.edges(data=True):
         w["weight"] = random.randrange(-100, 100, 1) / 10
 
     initial_cut = set(random.sample(sorted(G.nodes()), k=5))
@@ -68,7 +68,7 @@ def test_one_exchange_optimal():
 def test_negative_weights():
     G = nx.complete_graph(5)
     random.seed(5)
-    for (u, v, w) in G.edges(data=True):
+    for u, v, w in G.edges(data=True):
         w["weight"] = -1 * random.random()
 
     initial_cut = set(random.sample(sorted(G.nodes()), k=5))

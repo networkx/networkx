@@ -70,8 +70,8 @@ class HistoricalTests:
         G = self.G()
         G.add_node("A")
         assert "A" in G
-        assert not [] in G  # never raise a Key or TypeError in this test
-        assert not {1: 1} in G
+        assert [] not in G  # never raise a Key or TypeError in this test
+        assert {1: 1} not in G
 
     def test_add_remove(self):
         # Test add_node and remove_node acting for various nbunch

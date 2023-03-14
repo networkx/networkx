@@ -14,7 +14,7 @@ The graph is bipartite (clubs, women).
 """
 import matplotlib.pyplot as plt
 import networkx as nx
-import networkx.algorithms.bipartite as bipartite
+from networkx.algorithms import bipartite
 
 G = nx.davis_southern_women_graph()
 women = G.graph["top"]

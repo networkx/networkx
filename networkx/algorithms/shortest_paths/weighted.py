@@ -105,7 +105,7 @@ def dijkstra_path(G, source, target, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -186,7 +186,7 @@ def dijkstra_path_length(G, source, target, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -266,7 +266,7 @@ def single_source_dijkstra_path(G, source, cutoff=None, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -330,7 +330,7 @@ def single_source_dijkstra_path_length(G, source, cutoff=None, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -408,7 +408,7 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight="weight")
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -506,7 +506,7 @@ def multi_source_dijkstra_path(G, sources, cutoff=None, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -579,7 +579,7 @@ def multi_source_dijkstra_path_length(G, sources, cutoff=None, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -664,7 +664,7 @@ def multi_source_dijkstra(G, sources, target=None, cutoff=None, weight="weight")
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -778,7 +778,8 @@ def _dijkstra_multisource(
         nodes.
 
     weight: function
-        Function with (u, v, data) input that returns that edges weight
+        Function with (u, v, data) input that returns that edge's weight
+        or None to indicate a hidden edge
 
     pred: dict of lists, optional(default=None)
         dict to store a list of predecessors keyed by that node
@@ -892,7 +893,7 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -957,7 +958,7 @@ def all_pairs_dijkstra(G, cutoff=None, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Yields
     ------
@@ -1025,7 +1026,7 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -1083,7 +1084,7 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------
@@ -1113,6 +1114,7 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight="weight"):
         yield (n, path(G, n, cutoff=cutoff, weight=weight))
 
 
+@nx._dispatch
 def bellman_ford_predecessor_and_distance(
     G, source, target=None, weight="weight", heuristic=False
 ):
@@ -1453,6 +1455,7 @@ def _inner_bellman_ford(
     return None
 
 
+@nx._dispatch
 def bellman_ford_path(G, source, target, weight="weight"):
     """Returns the shortest path from source to target in a weighted graph G.
 
@@ -1511,6 +1514,7 @@ def bellman_ford_path(G, source, target, weight="weight"):
     return path
 
 
+@nx._dispatch
 def bellman_ford_path_length(G, source, target, weight="weight"):
     """Returns the shortest path length from source to target
     in a weighted graph.
@@ -1581,6 +1585,7 @@ def bellman_ford_path_length(G, source, target, weight="weight"):
         raise nx.NetworkXNoPath(f"node {target} not reachable from {source}") from err
 
 
+@nx._dispatch
 def single_source_bellman_ford_path(G, source, weight="weight"):
     """Compute shortest path between source and all other reachable
     nodes for a weighted graph.
@@ -1636,6 +1641,7 @@ def single_source_bellman_ford_path(G, source, weight="weight"):
     return path
 
 
+@nx._dispatch
 def single_source_bellman_ford_path_length(G, source, weight="weight"):
     """Compute the shortest path length between source and all other
     reachable nodes for a weighted graph.
@@ -1698,6 +1704,7 @@ def single_source_bellman_ford_path_length(G, source, weight="weight"):
     return _bellman_ford(G, [source], weight)
 
 
+@nx._dispatch
 def single_source_bellman_ford(G, source, target=None, weight="weight"):
     """Compute shortest paths and lengths in a weighted graph G.
 
@@ -1791,6 +1798,7 @@ def single_source_bellman_ford(G, source, target=None, weight="weight"):
         raise nx.NetworkXNoPath(msg) from err
 
 
+@nx._dispatch
 def all_pairs_bellman_ford_path_length(G, weight="weight"):
     """Compute shortest path lengths between all nodes in a weighted graph.
 
@@ -1845,6 +1853,7 @@ def all_pairs_bellman_ford_path_length(G, weight="weight"):
         yield (n, dict(length(G, n, weight=weight)))
 
 
+@nx._dispatch
 def all_pairs_bellman_ford_path(G, weight="weight"):
     """Compute shortest paths between all nodes in a weighted graph.
 
@@ -2068,6 +2077,7 @@ def goldberg_radzik(G, source, weight="weight"):
     return pred, d
 
 
+@nx._dispatch
 def negative_edge_cycle(G, weight="weight", heuristic=True):
     """Returns True if there exists a negative edge cycle anywhere in G.
 
@@ -2117,6 +2127,8 @@ def negative_edge_cycle(G, weight="weight", heuristic=True):
     every node, and starting bellman_ford_predecessor_and_distance on that
     node.  It then removes that extra node.
     """
+    if G.size() == 0:
+        return False
     # find unused node to use temporarily
     newnode = -1
     while newnode in G:
@@ -2251,7 +2263,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
         returned by the function. The function must accept exactly three
         positional arguments: the two endpoints of an edge and the
         dictionary of edge attributes for that edge. The function must
-        return a number.
+        return a number or None to indicate a hidden edge.
 
     Returns
     -------

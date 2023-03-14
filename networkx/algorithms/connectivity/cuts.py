@@ -140,7 +140,7 @@ def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     else:
         H = auxiliary
 
-    kwargs = dict(capacity="capacity", flow_func=flow_func, residual=residual)
+    kwargs = {"capacity": "capacity", "flow_func": flow_func, "residual": residual}
 
     cut_value, partition = nx.minimum_cut(H, s, t, **kwargs)
     reachable, non_reachable = partition
@@ -281,7 +281,7 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
         raise nx.NetworkXError("Invalid auxiliary digraph.")
     if G.has_edge(s, t) or G.has_edge(t, s):
         return {}
-    kwargs = dict(flow_func=flow_func, residual=residual, auxiliary=H)
+    kwargs = {"flow_func": flow_func, "residual": residual, "auxiliary": H}
 
     # The edge cut in the auxiliary digraph corresponds to the node cut in the
     # original graph.
@@ -414,7 +414,7 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
     # Reuse the auxiliary digraph and the residual network.
     H = build_auxiliary_node_connectivity(G)
     R = build_residual_network(H, "capacity")
-    kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
+    kwargs = {"flow_func": flow_func, "auxiliary": H, "residual": R}
 
     # Choose a node with minimum degree.
     v = min(G, key=G.degree)
@@ -537,7 +537,7 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
     # reuse auxiliary digraph and residual network
     H = build_auxiliary_edge_connectivity(G)
     R = build_residual_network(H, "capacity")
-    kwargs = dict(flow_func=flow_func, residual=R, auxiliary=H)
+    kwargs = {"flow_func": flow_func, "residual": R, "auxiliary": H}
 
     # Local minimum edge cut if s and t are not None
     if s is not None and t is not None:

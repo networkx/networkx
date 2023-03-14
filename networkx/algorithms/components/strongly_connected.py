@@ -12,6 +12,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 @not_implemented_for("undirected")
 def strongly_connected_components(G):
     """Generate nodes in strongly connected components of graph.

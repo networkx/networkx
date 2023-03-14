@@ -165,7 +165,7 @@ class MinimumSpanningTreeTestBase:
         assert edges_equal(actual, self.maximum_spanning_edgelist)
 
     def test_disconnected(self):
-        G = nx.Graph([(0, 1, dict(weight=1)), (2, 3, dict(weight=2))])
+        G = nx.Graph([(0, 1, {"weight": 1}), (2, 3, {"weight": 2})])
         T = nx.minimum_spanning_tree(G, algorithm=self.algo)
         assert nodes_equal(list(T), list(range(4)))
         assert edges_equal(list(T.edges()), [(0, 1), (2, 3)])
@@ -283,7 +283,7 @@ class TestSpanningTreeIterator:
     Order of Increasing Cost
     """
 
-    def setup(self):
+    def setup_method(self):
         # Original Graph
         edges = [(0, 1, 5), (1, 2, 4), (1, 4, 6), (2, 3, 5), (2, 4, 7), (3, 4, 3)]
         self.G = nx.Graph()

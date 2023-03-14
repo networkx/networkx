@@ -178,7 +178,7 @@ def christofides(G, weight="weight", tree=None):
     L.remove_nodes_from([v for v, degree in tree.degree if not (degree % 2)])
     MG = nx.MultiGraph()
     MG.add_edges_from(tree.edges)
-    edges = nx.min_weight_matching(L, maxcardinality=True, weight=weight)
+    edges = nx.min_weight_matching(L, weight=weight)
     MG.add_edges_from(edges)
     return _shortcutting(nx.eulerian_circuit(MG))
 
@@ -530,7 +530,7 @@ def held_karp_ascent(G, weight="weight"):
            pp.1138-1162
     """
     import numpy as np
-    import scipy.optimize as optimize
+    from scipy import optimize
 
     def k_pi():
         """
@@ -785,7 +785,7 @@ def held_karp_ascent(G, weight="weight"):
     # reference [1]
     z_star = {}
     scale_factor = (G.order() - 1) / G.order()
-    for u, v in x_star.keys():
+    for u, v in x_star:
         frequency = x_star[(u, v)] + x_star[(v, u)]
         if frequency > 0:
             z_star[(u, v)] = scale_factor * frequency

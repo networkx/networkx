@@ -6,6 +6,7 @@ import networkx as nx
 __all__ = ["pagerank", "google_matrix"]
 
 
+@nx._dispatch
 def pagerank(
     G,
     alpha=0.85,
@@ -35,7 +36,7 @@ def pagerank(
       The "personalization vector" consisting of a dictionary with a
       key some subset of graph nodes and personalization value each of those.
       At least one personalization value must be non-zero.
-      If not specfiied, a nodes personalization value will be zero.
+      If not specified, a nodes personalization value will be zero.
       By default, a uniform distribution is used.
 
     max_iter : integer, optional
@@ -43,6 +44,7 @@ def pagerank(
 
     tol : float, optional
       Error tolerance used to check convergence in power method solver.
+      The iteration will stop after a tolerance of ``len(G) * tol`` is reached.
 
     nstart : dictionary, optional
       Starting value of PageRank iteration for each node.
@@ -170,6 +172,7 @@ def _pagerank_python(
     raise nx.PowerIterationFailedConvergence(max_iter)
 
 
+@nx._dispatch
 def google_matrix(
     G, alpha=0.85, personalization=None, nodelist=None, weight="weight", dangling=None
 ):
@@ -188,7 +191,7 @@ def google_matrix(
       The "personalization vector" consisting of a dictionary with a
       key some subset of graph nodes and personalization value each of those.
       At least one personalization value must be non-zero.
-      If not specfiied, a nodes personalization value will be zero.
+      If not specifed, a nodes personalization value will be zero.
       By default, a uniform distribution is used.
 
     nodelist : list, optional
@@ -287,7 +290,7 @@ def _pagerank_numpy(
       The "personalization vector" consisting of a dictionary with a
       key some subset of graph nodes and personalization value each of those.
       At least one personalization value must be non-zero.
-      If not specfiied, a nodes personalization value will be zero.
+      If not specified, a nodes personalization value will be zero.
       By default, a uniform distribution is used.
 
     weight : key, optional
@@ -381,7 +384,7 @@ def _pagerank_scipy(
       The "personalization vector" consisting of a dictionary with a
       key some subset of graph nodes and personalization value each of those.
       At least one personalization value must be non-zero.
-      If not specfiied, a nodes personalization value will be zero.
+      If not specified, a nodes personalization value will be zero.
       By default, a uniform distribution is used.
 
     max_iter : integer, optional
@@ -389,6 +392,7 @@ def _pagerank_scipy(
 
     tol : float, optional
       Error tolerance used to check convergence in power method solver.
+      The iteration will stop after a tolerance of ``len(G) * tol`` is reached.
 
     nstart : dictionary, optional
       Starting value of PageRank iteration for each node.

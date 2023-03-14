@@ -1143,7 +1143,7 @@ def arf_layout(
     a : float
         Strength of springs between connected nodes. Should be larger than 1. The greater a, the clearer the separation ofunconnected sub clusters.
     etol : float
-        Graduent sum of spring forces must be larger than `etol` before succesful termination.
+        Graduent sum of spring forces must be larger than `etol` before successful termination.
     dt : float
         Time step for force differential equation simulations.
     max_iter : int
