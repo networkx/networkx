@@ -41,7 +41,6 @@ from networkx.readwrite import *
 # Need to test with SciPy, when available
 from networkx import algorithms
 from networkx.algorithms import *
-from networkx.algorithms.tournament import is_tournament
 
 from networkx import linalg
 from networkx.linalg import *
