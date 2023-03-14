@@ -110,6 +110,16 @@ def simple_cycles(G, k=None):
     algorithm of Gupta and Suzumura [2]_. There may be better algorithms for
     some cases [3]_ [4]_ [5]_.
 
+    The algorithms of Johnson, and Gupta and Suzumura, are enhanced by some
+    well-known preprocessing techniques.  When G is directed, we restrict our
+    attention to strongly connected components of G, generate all simple cycles
+    containing a certain node, remove that node, and further decompose the
+    remainder into strongly connected components.  When G is undirected, we
+    restrict our attention to biconnected components, generate all simple cycles
+    containing a particular edge, remove that edge, and further decompose the
+    remainder into biconnected components.
+
+
     Parameters
     ----------
     G : NetworkX DiGraph
@@ -130,9 +140,11 @@ def simple_cycles(G, k=None):
     >>> G = nx.DiGraph(edges)
     >>> sorted(nx.simple_cycles(G))
     [[0], [0, 1, 2], [0, 2], [1, 2], [2]]
+
     To filter the cycles so that they don't include certain nodes or edges,
     copy your graph and eliminate those nodes or edges before calling.
     For example, to exclude self-loops from the above example:
+
     >>> H = G.copy()
     >>> H.remove_edges_from(nx.selfloop_edges(G))
     >>> sorted(nx.simple_cycles(H))
@@ -140,9 +152,9 @@ def simple_cycles(G, k=None):
 
     Notes
     -----
-    The implementation follows pp. 79-80 in [1]_.
-    The time complexity is $O((n+e)(c+1))$ for $n$ nodes, $e$ edges and $c$
-    elementary circuits.
+    When k is None, the time complexity is $O((n+e)(c+1))$ for $n$ nodes, $e$
+    edges and $c$ simple circuits.  Otherwise, when $k > 1$, the time complexity
+    is $O((c+n)(k-1)d^k)$ where $d$ is the average degree of the nodes of G.
 
     References
     ----------
@@ -218,8 +230,11 @@ def _directed_cycle_search(G, k):
     list of nodes
        Each cycle is represented by a list of nodes along the cycle.
     """
-    components = list(nx.strongly_connected_components(G))
-    for c in components:
+
+    scc = nx.strongly_connected_components
+    components = [c for c in scc(G) if len(c) >= 2]
+    while components:
+        c = components.pop()
         Gc = G.subgraph(c)
         v = next(iter(c))
         if k is None:
@@ -228,7 +243,7 @@ def _directed_cycle_search(G, k):
             yield from _bounded_cycle_search(Gc, [v], k)
         # delete v after searching G, to make sure we can find v
         G.remove_node(v)
-        components.extend(nx.strongly_connected_components(Gc))
+        components.extend(c for c in scc(Gc) if len(c) >= 2)
 
 
 def _undirected_cycle_search(G, k):
@@ -266,63 +281,22 @@ def _undirected_cycle_search(G, k):
        Each cycle is represented by a list of nodes along the cycle.
     """
 
-    components = list(nx.biconnected_components(G))
+    bcc = nx.biconnected_components
+    components = [c for c in bcc(G) if len(c) >= 3]
     while components:
         c = components.pop()
         Gc = G.subgraph(c)
-        uv = _biconnected_first_nontree_edge(Gc)
+        uv = list(next(iter(Gc.edges)))
         G.remove_edge(*uv)
         # delete (u, v) before searching G, to avoid fake 3-cycles [u, v, u]
         if k is None:
             yield from _johnson_cycle_search(Gc, uv)
         else:
             yield from _bounded_cycle_search(Gc, uv, k)
-        components.extend(nx.biconnected_components(Gc))
+        components.extend(c for c in bcc(Gc) if len(c) >= 3)
 
 
-def _biconnected_first_nontree_edge(G):
-    """A depth first search which returns the first non-tree edge
-
-    This is a specialized, optimistic variant of dfs_labeled_edges equivalent to
-    in the case that G is biconnected.
-
-        for u, v, label in dfs_labeled_edges(G):
-            if label == 'nontree':
-                return [u, v]
-
-    This must only be called on biconnected components.  If the graph is
-    connected but not biconnected, then this function will return None.  If the
-    graph is not connected, it may return an edge or None.
-
-    Parameters
-    ----------
-    G : NetworkX Graph
-       A connected, undirected graph
-
-    Returns
-    -------
-    list of nodes
-       A non-tree edges of a depth-first search of G
-
-    See Also
-    --------
-    dfs_labeled_edges
-    """
-
-    visited = set()
-    stack = [next(iter(G))]
-    while stack:
-        u = stack.pop()
-        if u not in visited:
-            visited.add(u)
-            Gu = G[u]
-            nontree = visited.intersection(Gu)
-            for v in nontree:
-                return [u, v]
-            stack.extend(Gu)
-
-
-class _NeighborCache(dict):
+class _NeighborhoodCache(dict):
     """Very lightweight graph wrapper which caches neighborhoods as sets.
 
     This dict subclass uses the __missing__ functionality to query graphs for
@@ -362,7 +336,7 @@ def _johnson_cycle_search(G, path):
 
     """
 
-    G = _NeighborCache(G)
+    G = _NeighborhoodCache(G)
     blocked = set(path)
     B = defaultdict(set)  # graph portions that yield no elementary circuit
     start = path[0]
@@ -424,7 +398,7 @@ def _bounded_cycle_search(G, path, k):
        https://doi.org/10.1137/0204007
 
     """
-    G = _NeighborCache(G)
+    G = _NeighborhoodCache(G)
     lock = {v: 0 for v in path}
     B = defaultdict(set)
     start = path[0]
@@ -453,7 +427,7 @@ def _bounded_cycle_search(G, path, k):
                 while relax_stack:
                     bl, u = relax_stack.pop()
                     if lock.get(u, k) < k - bl + 1:
-                        Lock[u] = k - bl + 1
+                        lock[u] = k - bl + 1
                         relax_stack.extend((bl + 1, w) for w in B[u].difference(path))
             else:
                 for w in G[v]:
