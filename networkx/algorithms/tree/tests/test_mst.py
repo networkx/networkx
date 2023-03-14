@@ -307,9 +307,8 @@ class TestPrim(MultigraphMSTTestBase):
         )
 
         # NaN weight edges raise Error when ignore_nan=False
-        edges = nx.minimum_spanning_edges(H, algorithm=self.algo, ignore_nan=False)
         with pytest.raises(ValueError):
-            list(edges)
+            list(nx.minimum_spanning_edges(H, algorithm=self.algo, ignore_nan=False))
 
     def test_multigraph_keys_tree(self):
         G = nx.MultiGraph()
