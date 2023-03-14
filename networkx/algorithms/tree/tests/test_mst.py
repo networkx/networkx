@@ -1,6 +1,5 @@
 """Unit tests for the :mod:`networkx.algorithms.tree.mst` module."""
 
-import numpy as np
 import pytest
 
 import networkx as nx
@@ -296,7 +295,7 @@ class TestPrim(MultigraphMSTTestBase):
         """Tests that the edges with NaN weights are ignored or
         raise an Error based on ignore_nan is true or false"""
         H = nx.MultiGraph()
-        H.add_edge(1, 2, key=1, weight=np.NaN)
+        H.add_edge(1, 2, key=1, weight=float("nan"))
         H.add_edge(1, 2, key=2, weight=3)
         H.add_edge(3, 2, key=1, weight=2)
         H.add_edge(3, 1, key=1, weight=4)
