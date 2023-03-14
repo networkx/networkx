@@ -155,7 +155,7 @@ class TestUnionAtlas:
         assert view.__slots__ == pview.__slots__
 
     def test_len(self):
-        assert len(self.av) == len(self.s) + len(self.p)
+        assert len(self.av) == len(self.s.keys() | self.p.keys()) == 5
 
     def test_iter(self):
         assert set(self.av) == set(self.s) | set(self.p)
@@ -257,7 +257,7 @@ class TestUnionMultiInner(TestUnionAdjacency):
         self.adjview = nx.classes.coreviews.UnionMultiInner(self.s, self.p)
 
     def test_len(self):
-        assert len(self.adjview) == len(self.s) + len(self.p)
+        assert len(self.adjview) == len(self.s.keys() | self.p.keys()) == 4
 
     def test_getitem(self):
         assert self.adjview[1] is not self.s[1]
