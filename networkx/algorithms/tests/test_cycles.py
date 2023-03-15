@@ -151,13 +151,6 @@ class TestCycles:
         G = nx.DiGraph()
         assert list(nx.simple_cycles(G)) == []
 
-    def test_complete_directed_graph(self):
-        # see table 2 in Johnson's paper
-        ncircuits = [1, 5, 20, 84, 409, 2365, 16064]
-        for n, c in zip(range(2, 9), ncircuits):
-            G = nx.DiGraph(nx.complete_graph(n))
-            assert len(list(nx.simple_cycles(G))) == c
-
     def worst_case_graph(self, k):
         # see figure 1 in Johnson's paper
         # this graph has exactly 3k simple cycles
@@ -222,6 +215,89 @@ class TestCycles:
             assert any(self.is_cyclic_permutation(c, rc) for rc in rcc)
         for rc in rcc:
             assert any(self.is_cyclic_permutation(rc, c) for c in cc)
+
+    def test_simple_cycles_notable_clique_sequences(self):
+        K = nx.complete_graph
+
+        def D(n):
+            return K(n).to_directed()
+
+        # directed cliques have as many digons as undirected graphs have edges
+        answer = [
+            (n * n - n) // 2 == sum(1 for c in nx.simple_cycles(D(n), 2))
+            for n in range(15)
+        ]
+
+        # A000292: Number of labeled graphs on n+3 nodes that are triangles.
+        expected = [0, 1, 4, 10, 20, 35, 56, 84, 120, 165, 220, 286, 364]
+        answer = [sum(1 for c in nx.simple_cycles(K(n), 3)) for n in range(2, 15)]
+        assert expected == answer
+
+        # directed complete graphs have twice as many triangles thanks to reversal
+        answer = [
+            sum(len(c) == 3 for c in nx.simple_cycles(D(n), 3)) for n in range(2, 15)
+        ]
+        assert answer == [2 * e for e in expected]
+
+        # A050534: the number of 4-cycles in the complete graph K_{n+1}
+        expected = [0, 0, 0, 3, 15, 45, 105, 210, 378, 630, 990, 1485, 2145, 3003]
+        answer = [
+            sum(len(c) == 4 for c in nx.simple_cycles(K(n), 4)) for n in range(1, 15)
+        ]
+        assert expected == answer
+
+        # directed complete graphs have twice as many 4-cycles thanks to reversal
+        answer = [
+            sum(len(c) == 4 for c in nx.simple_cycles(D(n), 4)) for n in range(1, 15)
+        ]
+        assert answer == [2 * e for e in expected]
+
+        # A006231: the number of elementary circuits in a complete directed graph with n nodes
+        expected = [0, 1, 5, 20, 84, 409, 2365, 16064]
+        answer = [sum(1 for c in nx.simple_cycles(D(n))) for n in range(1, 9)]
+        assert expected == answer
+
+        # A002807: Number of cycles in the complete graph on n nodes K_{n}.
+        expected = [0, 0, 0, 1, 7, 37, 197, 1172, 8018]
+        answer = [sum(1 for c in nx.simple_cycles(K(n))) for n in range(9)]
+        assert expected == answer
+
+    def test_simple_cycles_bounded(self):
+        # iteratively construct a cluster of nested cycles running in the same direction
+        # there should be one cycle of every length
+        d = nx.DiGraph()
+        expected = []
+        for n in range(10):
+            nx.add_cycle(d, range(n))
+            expected.append(n)
+            answer = [sum(1 for c in nx.simple_cycles(d, k)) for k in range(n + 1)]
+            assert answer == expected
+
+        # iteratively construct a path of undirected cycles, connected at articulation
+        # points.  there should be one cycle of every length except 2: no digons
+        g = nx.Graph()
+        top = 0
+        expected = []
+        for n in range(10):
+            expected.append(n if n < 2 else n - 1)
+            if n == 2:
+                # no digons in undirected graphs
+                continue
+            nx.add_cycle(g, range(top, top + n))
+            top += n
+            answer = [sum(1 for c in nx.simple_cycles(g, k)) for k in range(n + 1)]
+            assert answer == expected
+
+    def test_simple_cycles_bound_error(self):
+        with pytest.raises(ValueError):
+            G = nx.DiGraph()
+            for c in nx.simple_cycles(G, -1):
+                assert False
+
+        with pytest.raises(ValueError):
+            G = nx.Graph()
+            for c in nx.simple_cycles(G, -1):
+                assert False
 
 
 # These tests might fail with hash randomization since they depend on
