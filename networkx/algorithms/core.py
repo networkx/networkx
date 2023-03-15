@@ -354,7 +354,7 @@ def k_crust(G, k=None, core_number=None):
     >>> G = nx.Graph(e)
     >>> kcrust = nx.k_crust(G, 2)
     >>> print(kcrust.edges())
-    [(1, 2), (1, 8), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7), (7, 8)]
+    [(5, 6), (6, 7), (6, 8), (7, 8), (7, 9), (8, 9)]
 
     Notes
     -----
