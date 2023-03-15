@@ -198,7 +198,7 @@ def k_core(G, k=None, core_number=None):
     ... ]
     >>> G = nx.Graph(e)
     >>> k_core = nx.k_core(G, k=3)
-    >>> k_core.edges()
+    >>> print(k_core.edges())
     [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
 
     Notes
@@ -272,7 +272,7 @@ def k_shell(G, k=None, core_number=None):
     ... ]
     >>> G = nx.Graph(e)
     >>> k_shell = nx.k_shell(G, k=2)
-    >>> k_shell.edges()
+    >>> print(k_shell.edges())
     [(1, 2), (1, 3), (2, 3), (2, 4), (3, 4), (4, 5), (4, 6), (5, 6)]
 
     Notes
@@ -353,7 +353,7 @@ def k_crust(G, k=None, core_number=None):
     ...    ]
     >>> G = nx.Graph(e)
     >>> kcrust = nx.k_crust(G, 2)
-    >>> kcrust.edges()
+    >>> print(kcrust.edges())
     [(1, 2), (1, 8), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7), (7, 8)]
 
     Notes
@@ -435,7 +435,7 @@ def k_corona(G, k, core_number=None):
     ... ]
     >>> G = nx.Graph(e)
     >>> kcorona = nx.k_corona(G, 3)
-    >>> kcorona.edges()
+    >>> print(kcorona.edges())
     [(1, 2), (1, 7), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7)]
 
     Notes
