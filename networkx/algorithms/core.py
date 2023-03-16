@@ -491,16 +491,18 @@ def k_truss(G, k):
     ------
     NetworkXError
 
-      The k-truss is not defined for graphs with self loops or parallel edges
-      or directed graphs.
+      The k-truss is not defined for graphs with parallel edges, directed and multi graphs.
 
     Notes
     -----
     A k-clique is a (k-2)-truss and a k-truss is a (k+1)-core.
 
-    Not implemented for digraphs or graphs with parallel edges or self loops.
+    Not implemented for digraphs or graphs with parallel edges.
 
     Graph, node, and edge attributes are copied to the subgraph.
+
+    k_truss function uses copy() method to remove any self loops already present. Hence it
+    doesn't raise an error for graphs containing self loops.
 
     K-trusses were originally defined in [2] which states that the k-truss
     is the maximal induced subgraph where each edge belongs to at least
