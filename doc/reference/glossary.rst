@@ -51,8 +51,16 @@ Glossary
       Since "bc" is not a node in G, it is treated as an iterator.
 
       .. nbplot::
-
+         
          >>> G.edges(["bc"])
+         OutEdgeDataView([])
+
+      If "bc" is wrapped in a list, the list is the iterable and
+      "bc" is treated as a single node.
+
+      .. nbplot::
+
+         >>> G.edges("de")
          OutEdgeDataView([])
 
       When nbunch is an iterator that is not itself a node and none of 
