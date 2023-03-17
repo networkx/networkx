@@ -2,8 +2,7 @@ import pytest
 
 import networkx as nx
 from networkx import Graph, NetworkXError
-
-asyn_fluidc = nx.community.asyn_fluid.asyn_fluidc
+from networkx.algorithms.community import asyn_fluidc
 
 
 def test_exceptions():

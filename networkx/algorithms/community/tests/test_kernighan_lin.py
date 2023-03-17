@@ -6,8 +6,7 @@ from itertools import permutations
 import pytest
 
 import networkx as nx
-
-kernighan_lin_bisection = nx.community.kernighan_lin_bisection
+from networkx.algorithms.community import kernighan_lin_bisection
 
 
 def assert_partition_equal(x, y):

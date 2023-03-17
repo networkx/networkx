@@ -6,10 +6,8 @@ import pytest
 
 import networkx as nx
 from networkx import barbell_graph
-
-modularity = nx.community.modularity
-partition_quality = nx.community.partition_quality
-inter_community_edges = nx.community.quality.inter_community_edges
+from networkx.algorithms.community import modularity, partition_quality
+from networkx.algorithms.community.quality import inter_community_edges
 
 
 class TestPerformance:
