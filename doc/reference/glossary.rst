@@ -56,7 +56,9 @@ Glossary
          OutEdgeDataView([])
 
       If "bc" is wrapped in a list, the list is the iterable and
-      "bc" is treated as a single node.
+      "bc" is treated as a single node, that is, if the
+      nbunch is an iterable of iterables, the inner iterables will
+      always be treated as nodes.
 
       .. nbplot::
 
