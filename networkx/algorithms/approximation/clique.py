@@ -144,7 +144,7 @@ def clique_removal(G):
     __________
     >>> import networkx.algorithms.approximation.clique as clique
     >>> G = nx.gnp_random_graph(20, 0.4, seed = 42)
-    >>> clique_removal(G)
+    >>> clique.clique_removal(G)
     ({0, 1, 7, 16, 19},
     [{0, 2, 8, 10, 11},
     {1, 5, 9},
