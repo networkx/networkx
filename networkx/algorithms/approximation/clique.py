@@ -140,6 +140,21 @@ def clique_removal(G):
     NetworkXNotImplemented
         If the graph is directed or is a multigraph.
 
+    Examples
+    __________
+    >>> import networkx.algorithms.approximation.clique as clique
+    >>> G = nx.gnp_random_graph(20, 0.4, seed = 42)
+    >>> clique_removal(G)
+    ({0, 1, 7, 16, 19},
+    [{0, 2, 8, 10, 11},
+    {1, 5, 9},
+    {3, 6, 19},
+    {4, 14, 16},
+    {7, 12},
+    {17, 18},
+    {13},
+    {15}])
+
     References
     ----------
     .. [1] Boppana, R., & Halldórsson, M. M. (1992).
