@@ -49,6 +49,13 @@ def maximum_independent_set(G):
     -----
     Finds the $O(|V|/(log|V|)^2)$ apx of independent set in the worst case.
 
+    Examples
+    _________
+    >>> import networkx.algorithms.approximation.clique as clique
+    >>> G = nx.gnp_random_graph(20, 0.4, seed = 42)
+    >>> clique.maximum_independent_set(G)
+    {0, 1, 7, 16, 19}
+
     References
     ----------
     .. [1] `Wikipedia: Independent set
