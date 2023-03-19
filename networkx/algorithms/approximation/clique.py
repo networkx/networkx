@@ -145,15 +145,7 @@ def clique_removal(G):
     >>> import networkx.algorithms.approximation.clique as clique
     >>> G = nx.gnp_random_graph(20, 0.4, seed = 42)
     >>> clique.clique_removal(G)
-    ({0, 1, 7, 16, 19},
-    [{0, 2, 8, 10, 11},
-    {1, 5, 9},
-    {3, 6, 19},
-    {4, 14, 16},
-    {7, 12},
-    {17, 18},
-    {13},
-    {15}])
+    ({0, 1, 7, 16, 19}, [{0, 2, 8, 10, 11}, {9, 5, 1}, {3, 19, 6}, {16, 4, 14}, {12, 7}, {17, 18}, {13}, {15}])
 
     References
     ----------
