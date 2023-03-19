@@ -403,7 +403,7 @@ def cycle_graph(n, create_using=None):
 def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     """Returns the hierarchically constructed Dorogovtsev-Goltsev-Mendes graph.
 
-    The Dorogovtsev-Goltsev-Mendes[1_] procedure produces a scale-free graph
+    The Dorogovtsev-Goltsev-Mendes [1]_ procedure produces a scale-free graph
     deterministically with the following properties for a given `n`:
     - Total number of nodes = ``3 * (3**n + 1) / 2``
     - Total number of edges = ``3 ** (n + 1)``
@@ -433,7 +433,7 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
 
     References
     ----------
-    .. [1]: Dorogotsev S.N., Goltsev A.V., and Mendes J.F.F "Pseudofractal
+    .. [1] Dorogotsev S.N., Goltsev A.V., and Mendes J.F.F "Pseudofractal
        Scale-free Web". arXiv:cond-mat/0112143
     """
     G = empty_graph(0, create_using)
