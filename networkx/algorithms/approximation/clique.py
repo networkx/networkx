@@ -106,6 +106,13 @@ def max_clique(G):
 
     https://en.wikipedia.org/wiki/Maximum_clique
 
+    Examples
+    _________
+    >>> import networkx.algorithms.approximation.clique as clique
+    >>> G = nx.gnp_random_graph(20, 0.4, seed = 42)
+    >>> clique.max_clique(G)
+    {0, 2, 8, 10, 11}
+
     References
     ----------
     .. [1] Boppana, R., & Halldórsson, M. M. (1992).
@@ -209,6 +216,13 @@ def large_clique_size(G):
     practice, but there is no rigorous mathematical guarantee on the
     ratio between the returned number and the actual largest clique size
     in the graph.
+
+    Examples
+    _________
+    >>> import networkx.algorithms.approximation.clique as clique
+    >>> G = nx.gnp_random_graph(20, 0.4, seed = 42)
+    >>> clique.large_clique_size(G)
+    5
 
     References
     ----------
