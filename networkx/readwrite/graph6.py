@@ -121,7 +121,7 @@ def from_graph6_bytes(bytes_in):
 
     G = nx.Graph()
     G.add_nodes_from(range(n))
-    for (i, j), b in zip([(i, j) for j in range(1, n) for i in range(j)], bits()):
+    for (i, j), b in zip(((i, j) for j in range(1, n) for i in range(j)), bits()):
         if b:
             G.add_edge(i, j)
 
