@@ -5,6 +5,7 @@ Cycle finding algorithms
 """
 
 from collections import defaultdict
+from itertools import combinations
 
 import networkx as nx
 from networkx.utils import not_implemented_for, pairwise
@@ -95,7 +96,7 @@ def cycle_basis(G, root=None):
     return cycles
 
 
-def simple_cycles(G, k=None):
+def simple_cycles(G, k=None, chordless=False):
     """Find simple cycles (elementary circuits) of a graph.
 
     A `simple cycle`, or `elementary circuit`, is a closed path where
@@ -109,6 +110,8 @@ def simple_cycles(G, k=None):
     Johnson's algorithm [1]_.  In the bounded case, we use a version of the
     algorithm of Gupta and Suzumura [2]_. There may be better algorithms for
     some cases [3]_ [4]_ [5]_.
+
+    Optionally, only chordless cycles are generated.  Chordless cycles
 
     The algorithms of Johnson, and Gupta and Suzumura, are enhanced by some
     well-known preprocessing techniques.  When G is directed, we restrict our
@@ -125,9 +128,13 @@ def simple_cycles(G, k=None):
     G : NetworkX DiGraph
        A directed graph
 
-    k : int or None
+    k : int or None, optional (default=None)
        If k is an int, generate all simple cycles of G with length at most k.
        Otherwise, generate all simple cycles of G.
+
+    chordless : bool, optional (default=False)
+       If chordless is True, limit search to chordless simple cycles of G.
+       Otherwise, generate simple cycles with or without chords.
 
     Yields
     ------
@@ -185,18 +192,53 @@ def simple_cycles(G, k=None):
     directed = G.is_directed()
     yield from ([v] for v in G if v in G[v])
 
+    if chordless:
+        G.remove_edges_from([v for v in G if v in G[v]])
+
+    if k is not None and k == 1:
+        return
+
+    digons = []
+    if G.is_multigraph() and not directed:
+        visited = {}
+        for u, Gu in G.adj.items():
+            for v in visited.intersection(Gu):
+                if len(Gu[v]) > 1:
+                    digons.append([u, v])
+            visited.add(u)
+        yield from digons
+
+    # Now that we've handled undirected digons, we can safely remove multiedges
+    # from our graph.  They make chordless cycles fussy in the undirected case,
+    # so we keep the list of digons around.  All of the child functions will be
+    # deleting nodes and edges from, here on out, so let's just make simple
+    # copies.
+
     if directed:
         G = nx.DiGraph((u, v) for u in G for v in G[u] if v != u)
     else:
         G = nx.Graph((u, v) for u in G for v in G[u] if v != u)
 
+    # this case is not strictly necessary but improves performance
+    if k is not None and k == 2:
+        if directed:
+            for u, Gu in G.adj.items():
+                digons = [[v, u] for v in Gu if G.has_edge(v, u)]
+                G.remove_edges_from(digons)
+                yield from digons
+        # if G is not directed, the only digons come from multiple edges,
+        # which we already handled.
+        return
+
     if directed:
-        yield from _directed_cycle_search(G, k)
+        yield from _directed_cycle_search(G, k, chordless)
+    elif chordless:
+        yield from _undirected_chordless_cycle_search(G, k, digons)
     else:
         yield from _undirected_cycle_search(G, k)
 
 
-def _directed_cycle_search(G, k):
+def _directed_cycle_search(G, k, chordless):
     """A dispatch function for `simple_cycles` for directed graphs.
 
     We generate all cycles of G through binary partition.
@@ -218,12 +260,16 @@ def _directed_cycle_search(G, k):
 
     Parameters
     ----------
-    G : NetworkX Graph
-       An undirected graph
+    G : NetworkX DiGraph
+       A directed graph
 
     k : int or None
        If k is an int, generate all simple cycles of G with length at most k.
        Otherwise, generate all simple cycles of G.
+
+    chordless : bool
+       If chordless is True, limit search to chordless simple cycles of G.
+       Otherwise, generate simple cycles with or without chords.
 
     Yields
     ------
@@ -237,7 +283,9 @@ def _directed_cycle_search(G, k):
         c = components.pop()
         Gc = G.subgraph(c)
         v = next(iter(c))
-        if k is None:
+        if chordless:
+            yield from _chordless_cycle_search(Gc, [v], k)
+        elif k is None:
             yield from _johnson_cycle_search(Gc, [v])
         else:
             yield from _bounded_cycle_search(Gc, [v], k)
@@ -275,6 +323,10 @@ def _undirected_cycle_search(G, k):
        If k is an int, generate all simple cycles of G with length at most k.
        Otherwise, generate all simple cycles of G.
 
+    chordless : bool
+       If chordless is True, limit search to chordless simple cycles of G.
+       Otherwise, generate simple cycles with or without chords.
+
     Yields
     ------
     list of nodes
@@ -294,6 +346,26 @@ def _undirected_cycle_search(G, k):
         else:
             yield from _bounded_cycle_search(Gc, uv, k)
         components.extend(c for c in bcc(Gc) if len(c) >= 3)
+
+
+def _undirected_chordless_cycle_search(G, k, digons):
+    D = {v: set() for v in G}
+    for u, v in digons:
+        D[u].add(v)
+        D[v].add(u)
+    bcc = nx.biconnected_components
+    components = [c for c in bcc(G) if len(c) >= 3]
+    while components:
+        c = components.pop()
+        Gc = G.subgraph(c)
+        v = next(iter(c))
+        neighbors = c.intersection(G[v])
+        for u, w in combinations(neighbors, 2):
+            if G.has_edge(u, w):
+                yield [u, v, w]
+            else:
+                yield from _chordless_cycle_search(Gc, [u, v, w], k, D)
+        components.extend(c for c in bcc(G.subgraph(c - {v})) if len(c) >= 3)
 
 
 class _NeighborhoodCache(dict):
@@ -317,8 +389,8 @@ def _johnson_cycle_search(G, path):
 
     Parameters
     ----------
-    G : NetworkX Graph
-       An undirected graph
+    G : NetworkX Graph or DiGraph
+       A graph
 
     path : list
        A cycle prefix.  All cycles generated will begin with this prefix.
@@ -377,8 +449,8 @@ def _bounded_cycle_search(G, path, k):
 
     Parameters
     ----------
-    G : NetworkX Graph
-       An undirected graph
+    G : NetworkX Graph or DiGraph
+       A graph
 
     path : list
        A cycle prefix.  All cycles generated will begin with this prefix.
@@ -393,9 +465,8 @@ def _bounded_cycle_search(G, path, k):
 
     References
     ----------
-        .. [1] Finding all the elementary circuits of a directed graph.
-       D. B. Johnson, SIAM Journal on Computing 4, no. 1, 77-84, 1975.
-       https://doi.org/10.1137/0204007
+    .. [1] Finding All Bounded-Length Simple Cycles in a Directed Graph
+       A. Gupta and T. Suzumura https://arxiv.org/abs/2105.10094
 
     """
     G = _NeighborhoodCache(G)
@@ -432,6 +503,111 @@ def _bounded_cycle_search(G, path, k):
             else:
                 for w in G[v]:
                     B[w].add(v)
+
+
+class _DiNeighborhoodCache(dict):
+    def __init__(self, G):
+        self.succ = _NeighborhoodCache(G._succ)
+        self.pred = _NeighborhoodCache(G._pred)
+
+    def __missing__(self, v):
+        Gv = self[v] = self.succ[v] | self.pred[v]
+        return Gv
+
+
+class _EdgeMaskCache(dict):
+    def __init__(self, G, D, v):
+        self.pred = _NeighborhoodCache(G)
+        self.D = D
+        self.V0 = {v}
+
+    def __missing__(self, v):
+        Gv = self[v] = self.pred[v] - self.D[v] - self.V0
+        return Gv
+
+
+def _chordless_cycle_search(G, path, k, D=None):
+    """The main loop for chordless cycle enumeration.
+
+    This algorithm is strongly inspired by that of Dias et al [1]_.  It has been
+    modified in the following ways:
+
+        1. Recursion is avoided, per Python's limitations
+
+        2. The labeling function is not necessary, because the starting paths
+            are chosen (and deleted from the host graph) to prevent multiple
+            occurrences of the same path
+
+        3. The search is optionally bounded at a specified length
+
+        4. Support for directed graphs is provided by extending cycles along
+            forward edges, and blocking nodes along forward and reverse edges
+
+        5. Support for multigraphs is provided by omitting digons from
+
+    Parameters
+    ----------
+    F : _NeighborhoodCache
+       A graph of forward edges to follow in constructing cycles
+
+    B : _NeighborhoodCache or _DiNeighborhoodCache
+       A graph of blocking edges to prevent the production of chordless cycles
+
+    path : list
+       A cycle prefix.  All cycles generated will begin with this prefix.
+
+    k : int
+       A length bound.  All cycles generated will have length at most k.
+
+    D : dict
+       The graph induced by digons
+
+    Yields
+    ------
+    list of nodes
+       Each cycle is represented by a list of nodes along the cycle.
+
+    References
+    ----------
+    .. [1] Efficient enumeration of chordless cycles
+       E. Dias and D. Castonguay and H. Longo and W.A.R. Jradi
+       https://arxiv.org/abs/1309.1051
+
+    """
+
+    blocked = defaultdict(int)
+    if G.is_directed():
+        B = _DiNeighborhoodCache(G)
+        F = B.succ
+        target = B.pred[path[0]]
+        blockstart = path
+        for w in F[path[0]]:
+            blocked[w] += 1
+    else:
+        F = _EdgeMaskCache(G, D, path[1])
+        B = F.pred
+        target = F[path[0]]
+        for v in path[1:]:
+            for w in B[v]:
+                blocked[w] += 1
+
+    stack = [iter(F[path[-1]])]
+    while stack:
+        nbrs = stack[-1]
+        for w in nbrs:
+            if blocked[w] == 1:
+                if w in target:
+                    yield path[:] + [w]
+                elif k is None or len(path) < k:
+                    for v in B[w]:
+                        blocked[v] += 1
+                    path.append(w)
+                    stack.append(iter(F[w]))
+                    break
+        else:
+            stack.pop()
+            for v in B[path.pop()]:
+                blocked[v] -= 1
 
 
 @not_implemented_for("undirected")

@@ -7,7 +7,23 @@ from networkx.algorithms.traversal.edgedfs import FORWARD, REVERSE
 
 
 def undirected_cycle_set(cycles):
-    return {frozenset(map(frozenset, zip(c, c[1:] + c[:1]))) for c in cycles}
+    cycles = list(cycles)
+    num_cycles = len(cycles)
+    cycles = {frozenset(map(frozenset, zip(c, c[1:] + c[:1]))) for c in cycles}
+    assert num_cycles == len(cycles), "cycle set contains repeats"
+    return cycles
+
+
+def directed_cycle_set(cycles):
+    cycles = list(cycles)
+    num_cycles = len(cycles)
+    cycles = {frozenset(zip(c, c[1:] + c[:1])) for c in cycles}
+    assert num_cycles == len(cycles), "cycle set contains repeats"
+    return cycles
+
+
+def iter_len(cycle_iter):
+    return sum(1 for _ in cycle_iter)
 
 
 class TestCycles:
@@ -224,13 +240,12 @@ class TestCycles:
 
         # directed cliques have as many digons as undirected graphs have edges
         answer = [
-            (n * n - n) // 2 == sum(1 for c in nx.simple_cycles(D(n), 2))
-            for n in range(15)
+            (n * n - n) // 2 == iter_len(nx.simple_cycles(D(n), 2)) for n in range(15)
         ]
 
         # A000292: Number of labeled graphs on n+3 nodes that are triangles.
         expected = [0, 1, 4, 10, 20, 35, 56, 84, 120, 165, 220, 286, 364]
-        answer = [sum(1 for c in nx.simple_cycles(K(n), 3)) for n in range(2, 15)]
+        answer = [iter_len(nx.simple_cycles(K(n), 3)) for n in range(2, 15)]
         assert expected == answer
 
         # directed complete graphs have twice as many triangles thanks to reversal
@@ -254,12 +269,12 @@ class TestCycles:
 
         # A006231: the number of elementary circuits in a complete directed graph with n nodes
         expected = [0, 1, 5, 20, 84, 409, 2365, 16064]
-        answer = [sum(1 for c in nx.simple_cycles(D(n))) for n in range(1, 9)]
+        answer = [iter_len(nx.simple_cycles(D(n))) for n in range(1, 9)]
         assert expected == answer
 
         # A002807: Number of cycles in the complete graph on n nodes K_{n}.
         expected = [0, 0, 0, 1, 7, 37, 197, 1172, 8018]
-        answer = [sum(1 for c in nx.simple_cycles(K(n))) for n in range(9)]
+        answer = [iter_len(nx.simple_cycles(K(n))) for n in range(9)]
         assert expected == answer
 
     def test_simple_cycles_bounded(self):
@@ -270,7 +285,7 @@ class TestCycles:
         for n in range(10):
             nx.add_cycle(d, range(n))
             expected.append(n)
-            answer = [sum(1 for c in nx.simple_cycles(d, k)) for k in range(n + 1)]
+            answer = [iter_len(nx.simple_cycles(d, k)) for k in range(n + 1)]
             assert answer == expected
 
         # iteratively construct a path of undirected cycles, connected at articulation
@@ -285,7 +300,7 @@ class TestCycles:
                 continue
             nx.add_cycle(g, range(top, top + n))
             top += n
-            answer = [sum(1 for c in nx.simple_cycles(g, k)) for k in range(n + 1)]
+            answer = [iter_len(nx.simple_cycles(g, k)) for k in range(n + 1)]
             assert answer == expected
 
     def test_simple_cycles_bound_error(self):
@@ -298,6 +313,134 @@ class TestCycles:
             G = nx.Graph()
             for c in nx.simple_cycles(G, -1):
                 assert False
+
+    def test_chordless_cycles_digraph(self):
+        G = nx.DiGraph()
+        nx.add_cycle(G, range(5))
+        nx.add_cycle(G, range(4, 12))
+        expected = [[*range(5)], [*range(4, 12)]]
+        answer = directed_cycle_set(nx.simple_cycles(G, chordless=True))
+        assert answer == directed_cycle_set(expected)
+        answer = directed_cycle_set(nx.simple_cycles(G, k=5, chordless=True))
+        assert answer == directed_cycle_set(c for c in expected if len(c) <= 5)
+
+        G.add_edge(7, 3)
+        expected.append([*range(3, 8)])
+        answer = directed_cycle_set(nx.simple_cycles(G, chordless=True))
+        assert answer == directed_cycle_set(expected)
+        answer = directed_cycle_set(nx.simple_cycles(G, k=5, chordless=True))
+        assert answer == directed_cycle_set(c for c in expected if len(c) <= 5)
+
+        G.add_edge(3, 7)
+        expected[-1] = [7, 3]
+        answer = directed_cycle_set(nx.simple_cycles(G, chordless=True))
+        assert answer == directed_cycle_set(expected)
+        answer = directed_cycle_set(nx.simple_cycles(G, k=5, chordless=True))
+        assert answer == directed_cycle_set(c for c in expected if len(c) <= 5)
+
+        expected.pop()
+        G.remove_edge(7, 3)
+        answer = directed_cycle_set(nx.simple_cycles(G, chordless=True))
+        assert answer == directed_cycle_set(expected)
+        answer = directed_cycle_set(nx.simple_cycles(G, k=5, chordless=True))
+        assert answer == directed_cycle_set(c for c in expected if len(c) <= 5)
+
+    def test_chordless_cycles_graph(self):
+        G = nx.Graph()
+        nx.add_cycle(G, range(5))
+        nx.add_cycle(G, range(4, 12))
+        answer = undirected_cycle_set(nx.simple_cycles(G, chordless=True))
+        expected = [[*range(5)], [*range(4, 12)]]
+        assert answer == undirected_cycle_set(expected)
+        answer = undirected_cycle_set(nx.simple_cycles(G, k=5, chordless=True))
+        assert answer == undirected_cycle_set(c for c in expected if len(c) <= 5)
+
+        G.add_edge(7, 3)
+        expected.append([*range(3, 8)])
+        expected.append([4, 3, 7, 8, 9, 10, 11])
+        answer = undirected_cycle_set(nx.simple_cycles(G, chordless=True))
+        assert answer == undirected_cycle_set(expected)
+        answer = undirected_cycle_set(nx.simple_cycles(G, k=5, chordless=True))
+        assert answer == undirected_cycle_set(c for c in expected if len(c) <= 5)
+
+    def test_chordless_cycles_giant_hamiltonian(self):
+        # ... o - e - o - e - o ... # o = odd, e = even
+        # ... ---/ \-----/ \--- ... # <-- "long" edges
+        #
+        # each long edge belongs to exactly one triangle, and one giant cycle
+        # of length n/2.  The remaining edges each belong to a triangle
+
+        n = 1000
+        assert n % 2 == 0
+        G = nx.Graph()
+        for v in range(n):
+            if not v % 2:
+                G.add_edge(v, (v + 2) % n)
+            G.add_edge(v, (v + 1) % n)
+
+        answer = undirected_cycle_set(nx.simple_cycles(G, chordless=True))
+        expected = [[*range(0, n, 2)]] + [
+            [x % n for x in range(i, i + 3)] for i in range(0, n, 2)
+        ]
+        assert answer == undirected_cycle_set(expected)
+
+        answer = undirected_cycle_set(nx.simple_cycles(G, chordless=True, k=3))
+        assert answer == undirected_cycle_set(c for c in expected if len(c) <= 3)
+
+        # ... o -> e -> o -> e -> o ... # o = odd, e = even
+        # ... <---/ \---<---/ \---< ... # <-- "long" edges
+        #
+        # this time, we orient the short and long edges in opposition
+        # the cycle structure of this graph is the same, but we need to reverse
+        # the long one in our representation.  Also, we need to drop the size
+        # because our partitioning algorithm uses strongly connected components
+        # instead of separating graphs by their strong articulation points
+
+        n = 100
+        assert n % 2 == 0
+        G = nx.DiGraph()
+        for v in range(n):
+            G.add_edge(v, (v + 1) % n)
+            if not v % 2:
+                G.add_edge((v + 2) % n, v)
+
+        expected = [[*range(n - 2, -2, -2)]] + [
+            [x % n for x in range(i, i + 3)] for i in range(0, n, 2)
+        ]
+        answer = directed_cycle_set(nx.simple_cycles(G, chordless=True))
+
+        assert answer == directed_cycle_set(expected)
+
+        answer = directed_cycle_set(nx.simple_cycles(G, chordless=True, k=3))
+        assert answer == directed_cycle_set(c for c in expected if len(c) <= 3)
+
+    def test_chordless_cycles_clique(self):
+        K = nx.complete_graph
+
+        def D(n):
+            return K(n).to_directed()
+
+        expected = [0, 1, 4, 10, 20, 35, 56, 84, 120, 165, 220, 286, 364]
+        answer = [
+            iter_len(nx.simple_cycles(K(n), chordless=True)) for n in range(2, 15)
+        ]
+        assert expected == answer
+
+        # directed cliques have as many digons as undirected graphs have edges
+        answer = [
+            (n * n - n) // 2 == iter_len(nx.simple_cycles(D(n), chordless=True))
+            for n in range(15)
+        ]
+
+    def test_simple_cycles_acyclic_tournament(self):
+        n = 10
+        G = nx.DiGraph((x, y) for x in range(n) for y in range(x))
+        assert len(list(nx.simple_cycles(G))) == 0
+        assert len(list(nx.simple_cycles(G, chordless=True))) == 0
+
+        for k in range(n + 1):
+            assert len(list(nx.simple_cycles(G, k=k))) == 0
+            assert len(list(nx.simple_cycles(G, k=k, chordless=True))) == 0
 
 
 # These tests might fail with hash randomization since they depend on
