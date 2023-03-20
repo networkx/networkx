@@ -26,8 +26,40 @@ Glossary
 
    nbunch
       An nbunch is a single node, container of nodes or `None` (representing
-      all nodes). It can be a list, set, graph, etc.. To filter an nbunch
-      so that only nodes actually in `G` appear, use `G.nbunch_iter(nbunch)`.
+      all nodes). It can be a list, set, graph, etc. To filter an nbunch
+      so that only nodes actually in ``G`` appear, use ``G.nbunch_iter(nbunch)``.
+
+      If the nbunch is a container or iterable that is not itself a node
+      in the graph, then it will be treated as an iterable of nodes, for
+      instance, when nbunch is a string or a tuple::
+
+         >>> import networkx as nx
+         >>> G = nx.DiGraph()
+         >>> G.add_edges_from([("b", "c"), ("a", "ab"), ("ab", "c")])
+         >>> G.edges("ab")
+         OutEdgeDataView([('ab', 'c')])
+      
+      Since "ab" is a node in G, it is treated as a single node::
+
+         >>> G.edges("bc")
+         OutEdgeDataView([('b', 'c')])
+
+      Since "bc" is not a node in G, it is treated as an iterator::
+
+         >>> G.edges(["bc"])
+         OutEdgeDataView([])
+
+      If "bc" is wrapped in a list, the list is the iterable and
+      "bc" is treated as a single node. That is, if the
+      nbunch is an iterable of iterables, the inner iterables will
+      always be treated as nodes::
+
+         >>> G.edges("de")
+         OutEdgeDataView([])
+
+      When nbunch is an iterator that is not itself a node and none of 
+      its elements are nodes, then the edge view suite of methods return
+      an empty edge view.
 
    node
       A node can be any hashable Python object except None.
