@@ -867,7 +867,7 @@ class PlanarEmbedding(nx.DiGraph):
         set_data
 
         """
-        embedding = dict()
+        embedding = {}
         for v in self:
             embedding[v] = list(self.neighbors_cw_order(v))
         return embedding

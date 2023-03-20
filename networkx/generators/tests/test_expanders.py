@@ -60,7 +60,7 @@ def test_paley_graph(p):
     # If p = 1 mod 4, -1 is a square mod 4 and therefore the
     # edge in the Paley graph are symmetric.
     if p % 4 == 1:
-        for (u, v) in G.edges:
+        for u, v in G.edges:
             assert (v, u) in G.edges
 
 

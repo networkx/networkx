@@ -522,13 +522,13 @@ class TestReadGraphML(BaseGraphML):
                 # edges with no data, no keys:
                 (1, 2),
                 # edges with only data:
-                (1, 2, dict(key="data_key1")),
-                (1, 2, dict(id="data_id2")),
-                (1, 2, dict(key="data_key3", id="data_id3")),
+                (1, 2, {"key": "data_key1"}),
+                (1, 2, {"id": "data_id2"}),
+                (1, 2, {"key": "data_key3", "id": "data_id3"}),
                 # edges with both data and keys:
-                (1, 2, 103, dict(key="data_key4")),
-                (1, 2, 104, dict(id="data_id5")),
-                (1, 2, 105, dict(key="data_key6", id="data_id7")),
+                (1, 2, 103, {"key": "data_key4"}),
+                (1, 2, 104, {"id": "data_id5"}),
+                (1, 2, 105, {"key": "data_key6", "id": "data_id7"}),
             ]
         )
         fh = io.BytesIO()
@@ -1485,7 +1485,7 @@ class TestWriteGraphML(BaseGraphML):
         # test for handling json escaped strings in python 2 Issue #1880
         import json
 
-        a = dict(a='{"a": "123"}')  # an object with many chars to escape
+        a = {"a": '{"a": "123"}'}  # an object with many chars to escape
         sa = json.dumps(a)
         G = nx.Graph()
         G.graph["test"] = sa

@@ -334,12 +334,22 @@ def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan
                         continue
                     for k2, d2 in keydict.items():
                         new_weight = d2.get(weight, 1) * sign
+                        if isnan(new_weight):
+                            if ignore_nan:
+                                continue
+                            msg = f"NaN found as an edge weight. Edge {(v, w, k2, d2)}"
+                            raise ValueError(msg)
                         push(frontier, (new_weight, next(c), v, w, k2, d2))
             else:
                 for w, d2 in G.adj[v].items():
                     if w in visited:
                         continue
                     new_weight = d2.get(weight, 1) * sign
+                    if isnan(new_weight):
+                        if ignore_nan:
+                            continue
+                        msg = f"NaN found as an edge weight. Edge {(v, w, d2)}"
+                        raise ValueError(msg)
                     push(frontier, (new_weight, next(c), v, w, d2))
 
 
@@ -1022,7 +1032,7 @@ class SpanningTreeIterator:
         ).size(weight=self.weight)
 
         self.partition_queue.put(
-            self.Partition(mst_weight if self.minimum else -mst_weight, dict())
+            self.Partition(mst_weight if self.minimum else -mst_weight, {})
         )
 
         return self

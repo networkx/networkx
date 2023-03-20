@@ -342,6 +342,10 @@ class TestWeightedPath(WeightedTestBase):
         G.add_edge(9, 10)
         pytest.raises(ValueError, nx.bidirectional_dijkstra, G, 8, 10)
 
+    def test_negative_edge_cycle_empty(self):
+        G = nx.DiGraph()
+        assert not nx.negative_edge_cycle(G)
+
     def test_negative_edge_cycle_custom_weight_key(self):
         d = nx.DiGraph()
         d.add_edge("a", "b", w=-2)

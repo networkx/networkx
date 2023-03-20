@@ -96,7 +96,7 @@ def test_greedy_modularity_communities_directed():
 )
 def test_modularity_communities_weighted(func):
     G = nx.balanced_tree(2, 3)
-    for (a, b) in G.edges:
+    for a, b in G.edges:
         if ((a == 1) or (a == 2)) and (b != 0):
             G[a][b]["weight"] = 10.0
         else:

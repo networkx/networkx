@@ -70,8 +70,8 @@ def margulis_gabber_galil_graph(n, create_using=None):
         msg = "`create_using` must be an undirected multigraph."
         raise nx.NetworkXError(msg)
 
-    for (x, y) in itertools.product(range(n), repeat=2):
-        for (u, v) in (
+    for x, y in itertools.product(range(n), repeat=2):
+        for u, v in (
             ((x + 2 * y) % n, y),
             ((x + (2 * y + 1)) % n, y),
             (x, (y + 2 * x) % n),

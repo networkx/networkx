@@ -177,27 +177,32 @@ def read_gexf(path, node_type=None, relabel=False, version="1.2draft"):
 
 
 class GEXF:
-    versions = {}
-    d = {
-        "NS_GEXF": "http://www.gexf.net/1.1draft",
-        "NS_VIZ": "http://www.gexf.net/1.1draft/viz",
-        "NS_XSI": "http://www.w3.org/2001/XMLSchema-instance",
-        "SCHEMALOCATION": " ".join(
-            ["http://www.gexf.net/1.1draft", "http://www.gexf.net/1.1draft/gexf.xsd"]
-        ),
-        "VERSION": "1.1",
+    versions = {
+        "1.1draft": {
+            "NS_GEXF": "http://www.gexf.net/1.1draft",
+            "NS_VIZ": "http://www.gexf.net/1.1draft/viz",
+            "NS_XSI": "http://www.w3.org/2001/XMLSchema-instance",
+            "SCHEMALOCATION": " ".join(
+                [
+                    "http://www.gexf.net/1.1draft",
+                    "http://www.gexf.net/1.1draft/gexf.xsd",
+                ]
+            ),
+            "VERSION": "1.1",
+        },
+        "1.2draft": {
+            "NS_GEXF": "http://www.gexf.net/1.2draft",
+            "NS_VIZ": "http://www.gexf.net/1.2draft/viz",
+            "NS_XSI": "http://www.w3.org/2001/XMLSchema-instance",
+            "SCHEMALOCATION": " ".join(
+                [
+                    "http://www.gexf.net/1.2draft",
+                    "http://www.gexf.net/1.2draft/gexf.xsd",
+                ]
+            ),
+            "VERSION": "1.2",
+        },
     }
-    versions["1.1draft"] = d
-    d = {
-        "NS_GEXF": "http://www.gexf.net/1.2draft",
-        "NS_VIZ": "http://www.gexf.net/1.2draft/viz",
-        "NS_XSI": "http://www.w3.org/2001/XMLSchema-instance",
-        "SCHEMALOCATION": " ".join(
-            ["http://www.gexf.net/1.2draft", "http://www.gexf.net/1.2draft/gexf.xsd"]
-        ),
-        "VERSION": "1.2",
-    }
-    versions["1.2draft"] = d
 
     def construct_types(self):
         types = [

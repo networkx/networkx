@@ -721,10 +721,10 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
 
     if invert_weight and weight is not None:
         if G.is_multigraph():
-            for (u, v, k, d) in G.edges(keys=True, data=True):
+            for u, v, k, d in G.edges(keys=True, data=True):
                 d[weight] = 1 / d[weight]
         else:
-            for (u, v, d) in G.edges(data=True):
+            for u, v, d in G.edges(data=True):
                 d[weight] = 1 / d[weight]
     # Replace with collapsing topology or approximated zero?
 
@@ -742,7 +742,7 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     # Factorize Laplacian submatrixes and extract diagonals
     # Order the diagonals to minimize the likelihood over overflows
     # during computing the determinant
-    lu_a = sp.sparse.linalg.splu(L_a, options=dict(SymmetricMode=True))
+    lu_a = sp.sparse.linalg.splu(L_a, options={"SymmetricMode": True})
     LdiagA = lu_a.U.diagonal()
     LdiagA_s = np.product(np.sign(LdiagA)) * np.product(lu_a.L.diagonal())
     LdiagA_s *= (-1) ** _count_lu_permutations(lu_a.perm_r)
@@ -750,7 +750,7 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     LdiagA = np.absolute(LdiagA)
     LdiagA = np.sort(LdiagA)
 
-    lu_ab = sp.sparse.linalg.splu(L_ab, options=dict(SymmetricMode=True))
+    lu_ab = sp.sparse.linalg.splu(L_ab, options={"SymmetricMode": True})
     LdiagAB = lu_ab.U.diagonal()
     LdiagAB_s = np.product(np.sign(LdiagAB)) * np.product(lu_ab.L.diagonal())
     LdiagAB_s *= (-1) ** _count_lu_permutations(lu_ab.perm_r)

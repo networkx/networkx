@@ -202,11 +202,10 @@ def modularity(G, communities, weight="weight", resolution=1):
 
     Examples
     --------
-    >>> import networkx.algorithms.community as nx_comm
     >>> G = nx.barbell_graph(3, 0)
-    >>> nx_comm.modularity(G, [{0, 1, 2}, {3, 4, 5}])
+    >>> nx.community.modularity(G, [{0, 1, 2}, {3, 4, 5}])
     0.35714285714285715
-    >>> nx_comm.modularity(G, nx_comm.label_propagation_communities(G))
+    >>> nx.community.modularity(G, nx.community.label_propagation_communities(G))
     0.35714285714285715
 
     References

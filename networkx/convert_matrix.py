@@ -1147,7 +1147,7 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
             ((u, v, {"weight": 1}) for d in range(A[u, v])) for (u, v) in edges
         )
     else:  # basic data type
-        triples = ((u, v, dict(weight=python_type(A[u, v]))) for u, v in edges)
+        triples = ((u, v, {"weight": python_type(A[u, v])}) for u, v in edges)
     # If we are creating an undirected multigraph, only add the edges from the
     # upper triangle of the matrix. Otherwise, add all the edges. This relies
     # on the fact that the vertices created in the

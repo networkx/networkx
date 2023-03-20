@@ -108,7 +108,7 @@ def all_node_cuts(G, k=None, flow_func=None):
     # Shallow copy is enough.
     original_H_pred = copy.copy(H._pred)
     R = build_residual_network(H, "capacity")
-    kwargs = dict(capacity="capacity", residual=R)
+    kwargs = {"capacity": "capacity", "residual": R}
     # Define default flow function
     if flow_func is None:
         flow_func = default_flow_func

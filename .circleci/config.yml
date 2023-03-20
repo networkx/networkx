@@ -20,11 +20,6 @@ jobs:
             sudo apt-get install graphviz libgraphviz-dev
 
       - run:
-          name: Install TeX
-          command: |
-            sudo apt-get install texlive texlive-latex-extra latexmk texlive-xetex fonts-freefont-otf xindy
-
-      - run:
           name: Install pysal dependencies
           command: |
             sudo apt-get install libspatialindex-dev
@@ -63,8 +58,6 @@ jobs:
             export OMP_NUM_THREADS=1
             source venv/bin/activate
             make -C doc/ html
-            make -C doc/ latexpdf LATEXOPTS="-file-line-error -halt-on-error"
-            cp -a doc/build/latex/networkx_reference.pdf doc/build/html/_downloads/.
 
       - store_artifacts:
           path: doc/build/html
