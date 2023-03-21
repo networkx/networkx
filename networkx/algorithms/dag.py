@@ -1231,10 +1231,6 @@ def compute_v_structures(G):
     >>> list(nx.compute_v_structures(G))
     [(0, 5, 4), (0, 5, 1), (1, 5, 4)]
 
-    >>> G = nx.gnp_random_graph(5, 0.3, seed = 100, directed = True)
-    >>> list(nx.compute_v_structures(G))
-    [(2, 0, 4), (0, 1, 4)]
-
     Notes
     -----
     https://en.wikipedia.org/wiki/Collider_(statistics)
