@@ -152,7 +152,9 @@ package_data = {
 }
 
 # Loopback dispatcher required for testing nx._dispatch decorator
-entry_points = {"networkx.plugins": "nx-loopback = networkx.classes.tests.dispatch_interface:dispatcher"}
+entry_points = {
+    "networkx.plugins": "nx-loopback = networkx.classes.tests.dispatch_interface:dispatcher"
+}
 
 
 def parse_requirements_file(filename):

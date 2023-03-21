@@ -51,10 +51,10 @@ def convert(graph):
 class LoopbackDispatcher:
     non_toplevel = {
         "inter_community_edges": nx.community.quality.inter_community_edges,
-        "is_tournament": nx.tournament.is_tournament,
-        "mutual_weight": nx.structuralholes.mutual_weight,
-        "score_sequence": nx.tournament.score_sequence,
-        "tournament_matrix": nx.tournament.tournament_matrix,
+        "is_tournament": nx.algorithms.tournament.is_tournament,
+        "mutual_weight": nx.algorithms.structuralholes.mutual_weight,
+        "score_sequence": nx.algorithms.tournament.score_sequence,
+        "tournament_matrix": nx.algorithms.tournament.tournament_matrix,
     }
 
     def __getattr__(self, item):
