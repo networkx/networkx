@@ -445,7 +445,7 @@ def all_pairs_shortest_path(G, cutoff=None):
 
     Returns
     -------
-    paths : dictionary
+    paths : iterator
         Dictionary, keyed by source and target, of shortest paths.
 
     Examples
