@@ -61,17 +61,17 @@ def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False, default=None
 
     Examples
     -------
-    >>> G = nx.gnp_random_graph(10, 0.3, seed = 100)
+    >>> G = nx.wheel_graph(6)
 
     When nbunch2=None:
 
-    >>> list(nx.edge_boundary(G, (2, 4, 5)))
-    [(2, 3), (2, 8), (4, 9), (5, 8)]
+    >>> list(nx.edge_boundary(G, (1, 3)))
+    [(1, 0), (1, 2), (1, 5), (3, 0), (3, 2), (3, 4)]
 
     When nbunch2 is given:
 
-    >>> list(nx.edge_boundary(G, (2, 4, 5), (8, 6, 1, 3)))
-    [(2, 3), (2, 8), (5, 8)]
+    >>> list(nx.edge_boundary(G, (1, 3), (2, 0)))
+    [(1, 0), (1, 2), (3, 0), (3, 2)]
 
     Notes
     -----
@@ -137,17 +137,17 @@ def node_boundary(G, nbunch1, nbunch2=None):
 
     Examples
     -------
-    >>> G = nx.gnp_random_graph(10, 0.3, seed = 100)
+    >>> G = nx.wheel_graph(6)
 
     When nbunch2=None:
 
-    >>> list(nx.node_boundary(G, (2, 4, 5)))
-    [8, 9, 3]
+    >>> list(nx.node_boundary(G, (3, 4)))
+    [0, 2, 5]
 
     When nbunch2 is given:
 
-    >>> list(nx.node_boundary(G, (2, 4, 5), (8, 6, 1, 3)))
-    [8, 3]
+    >>> list(nx.node_boundary(G, (3, 4), (0, 1, 5)))
+    [0, 5]
 
     Notes
     -----
