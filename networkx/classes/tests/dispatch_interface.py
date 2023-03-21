@@ -11,7 +11,7 @@
 # Searching for `dispatch_interface` should locate the specific tests.
 
 import networkx as nx
-from networkx import Graph, DiGraph, MultiGraph, MultiDiGraph, PlanarEmbedding
+from networkx import DiGraph, Graph, MultiDiGraph, MultiGraph, PlanarEmbedding
 
 
 class LoopbackGraph(Graph):
@@ -50,11 +50,11 @@ def convert(graph):
 
 class LoopbackDispatcher:
     non_toplevel = {
-        'inter_community_edges': nx.community.quality.inter_community_edges,
-        'is_tournament': nx.tournament.is_tournament,
-        'mutual_weight': nx.structuralholes.mutual_weight,
-        'score_sequence': nx.tournament.score_sequence,
-        'tournament_matrix': nx.tournament.tournament_matrix,
+        "inter_community_edges": nx.community.quality.inter_community_edges,
+        "is_tournament": nx.tournament.is_tournament,
+        "mutual_weight": nx.structuralholes.mutual_weight,
+        "score_sequence": nx.tournament.score_sequence,
+        "tournament_matrix": nx.tournament.tournament_matrix,
     }
 
     def __getattr__(self, item):
@@ -77,7 +77,7 @@ class LoopbackDispatcher:
     def on_start_tests(items):
         # Verify that items can be xfailed
         for item in items:
-            assert hasattr(item, 'add_marker')
+            assert hasattr(item, "add_marker")
 
 
 dispatcher = LoopbackDispatcher()

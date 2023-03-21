@@ -173,7 +173,9 @@ def test_override_dispatch(func=None, *, name=None):
         backend = plugins[plugin_name].load()
         if not hasattr(backend, name):
             if plugin_name == "nx-loopback":
-                raise NetworkXNotImplemented(f"'{name}' not found in {backend.__class__.__name__}")
+                raise NetworkXNotImplemented(
+                    f"'{name}' not found in {backend.__class__.__name__}"
+                )
             pytest.xfail(f"'{name}' not implemented by {plugin_name}")
         bound = sig.bind(*args, **kwds)
         bound.apply_defaults()
