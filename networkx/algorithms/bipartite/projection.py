@@ -186,15 +186,10 @@ def weighted_projected_graph(B, nodes, ratio=False):
         of Social Network Analysis. Sage Publications.
     """
 
+    # Get a list of nodes and top_nodes for the adjacency matrix function.
     if type(nodes) != list:
-        top_nodes = []
-        for node in B.nodes():
-            if type(node) != type(nodes):
-                top_nodes.append(node)
-            elif node not in nodes:
-                top_nodes.append(node)
-    else:
-        top_nodes = [node for node in B.nodes() if node not in nodes]
+       nodes = list(nodes)
+       top_nodes = [node for node in B.nodes() if node not in nodes]
 
     if len(top_nodes) + len(nodes) != B.number_of_nodes():
         raise NetworkXAlgorithmError(
@@ -207,17 +202,17 @@ def weighted_projected_graph(B, nodes, ratio=False):
         adj = nx.bipartite.biadjacency_matrix(
             B, row_order=nodes, column_order=top_nodes
         )
+        # Create a graph to return for the projections.
         G = nx.Graph()
         G.add_nodes_from(nodes)
-        node_labels = {i: nodes[i] for i in range(len(nodes))}
-
+        node_labels = dict(enumerate(nodes))
         # Get the co-citation matrix.
         projected_adj = adj @ adj.T
         projected_adj.setdiag(0)
 
     else:
         # Get the adjacency matrix for multiplication.
-        all_nodes = list(B.nodes())
+        all_nodes = list(B)
         adj = nx.adjacency_matrix(B, nodelist=all_nodes)
         node_labels = {
             i: all_nodes[i]
