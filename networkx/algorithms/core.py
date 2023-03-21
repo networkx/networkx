@@ -392,8 +392,8 @@ def k_truss(G, k):
     ------
     NetworkXError
 
-      The k-truss is not defined for graphs with self loops or parallel edges
-      or directed graphs.
+      The k-truss is not defined for graphs with self loops, directed graphs
+      and multigraphs.
 
     Notes
     -----
@@ -416,6 +416,13 @@ def k_truss(G, k):
     .. [2] Trusses: Cohesive Subgraphs for Social Network Analysis. Jonathan
        Cohen, 2005.
     """
+    if nx.number_of_selfloops(G) > 0:
+        msg = (
+            "Input graph has self loops which is not permitted; "
+            "Consider using G.remove_edges_from(nx.selfloop_edges(G))."
+        )
+        raise NetworkXError(msg)
+
     H = G.copy()
 
     n_dropped = 1

@@ -3,7 +3,6 @@ from itertools import product
 import pytest
 
 import networkx as nx
-from networkx.algorithms.community import lukes_partitioning
 
 EWL = "e_weight"
 NWL = "n_weight"
@@ -41,7 +40,9 @@ def paper_1_case(float_edge_wt=False, explicit_node_wt=True, directed=False):
     # partitioning
     clusters_1 = {
         frozenset(x)
-        for x in lukes_partitioning(example_1, limit, node_weight=wtu, edge_weight=EWL)
+        for x in nx.community.lukes_partitioning(
+            example_1, limit, node_weight=wtu, edge_weight=EWL
+        )
     }
 
     return clusters_1
@@ -92,7 +93,7 @@ def paper_2_case(explicit_edge_wt=True, directed=False):
     # partitioning
     clusters_2 = {
         frozenset(x)
-        for x in lukes_partitioning(
+        for x in nx.community.lukes_partitioning(
             example_2, byte_block_size, node_weight=NWL, edge_weight=wtu
         )
     }
@@ -126,7 +127,7 @@ def test_mandatory_tree():
     not_a_tree = nx.complete_graph(4)
 
     with pytest.raises(nx.NotATree):
-        lukes_partitioning(not_a_tree, 5)
+        nx.community.lukes_partitioning(not_a_tree, 5)
 
 
 def test_mandatory_integrality():
@@ -146,6 +147,6 @@ def test_mandatory_integrality():
     ex_1_broken.nodes[5][NWL] = 2
 
     with pytest.raises(TypeError):
-        lukes_partitioning(
+        nx.community.lukes_partitioning(
             ex_1_broken, byte_block_size, node_weight=NWL, edge_weight=EWL
         )

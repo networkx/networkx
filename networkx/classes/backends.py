@@ -128,7 +128,13 @@ def _dispatch(func=None, *, name=None):
 
     @functools.wraps(func)
     def wrapper(*args, **kwds):
-        graph = args[0]
+        if args:
+            graph = args[0]
+        else:
+            try:
+                graph = kwds["G"]
+            except KeyError:
+                raise TypeError(f"{name}() missing positional argument: 'G'") from None
         if hasattr(graph, "__networkx_plugin__") and plugins:
             plugin_name = graph.__networkx_plugin__
             if plugin_name in plugins:
@@ -168,7 +174,13 @@ def test_override_dispatch(func=None, *, name=None):
             pytest.xfail(f"'{name}' not implemented by {plugin_name}")
         bound = sig.bind(*args, **kwds)
         bound.apply_defaults()
-        graph, *args = args
+        if args:
+            graph, *args = args
+        else:
+            try:
+                graph = kwds.pop("G")
+            except KeyError:
+                raise TypeError(f"{name}() missing positional argument: 'G'") from None
         # Convert graph into backend graph-like object
         #   Include the weight label, if provided to the algorithm
         weight = None
