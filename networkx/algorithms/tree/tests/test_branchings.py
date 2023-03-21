@@ -206,7 +206,7 @@ def test_greedy_branch_kind():
         B = branchings.greedy_branching(G, kind="lol")
 
 
-def test_edges():
+def test_greedy_branching_for_unsortable_nodes():
     G = nx.DiGraph()
     G.add_weighted_edges_from([((2, 3), 5, 1), (3, "a", 1), (2, 4, 5)])
     edges = [(u, v, data.get("weight", 1)) for (u, v, data) in G.edges(data=True)]
