@@ -50,7 +50,8 @@ def visualize_communities(graph, communities, i):
     modularity = round(nx.community.modularity(graph, communities), 6)
     title = f"Community Visualization of {len(communities)} communities with modularity of {modularity}"
     pos = nx.spring_layout(graph, k=0.3, iterations=50, seed=2)
-    plt.figure(i, figsize=(10, 10))
+    plt.subplot(3, 1, i)
+    plt.title(title)
     nx.draw(
         graph,
         pos=pos,
@@ -60,8 +61,9 @@ def visualize_communities(graph, communities, i):
         font_size=20,
         font_color="black",
     )
-    plt.title(title)
 
+
+fig, ax = plt.subplots(3, figsize=(15, 20))
 
 # Plot graph with colouring based on communities
 visualize_communities(G, communities[0], 1)
@@ -70,9 +72,8 @@ visualize_communities(G, communities[3], 2)
 # Plot change in modularity as the important edges are removed
 modularity_df.plot.bar(
     x="k",
-    figsize=(20, 10),
+    ax=ax[2],
     color="#F2D140",
     title="Modularity Trend for Girvan-Newman Community Detection",
 )
-
 plt.show()
