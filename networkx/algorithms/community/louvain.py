@@ -83,9 +83,8 @@ def louvain_communities(
     Examples
     --------
     >>> import networkx as nx
-    >>> import networkx.algorithms.community as nx_comm
     >>> G = nx.petersen_graph()
-    >>> nx_comm.louvain_communities(G, seed=123)
+    >>> nx.community.louvain_communities(G, seed=123)
     [{0, 4, 5, 7, 9}, {1, 2, 3, 6, 8}]
 
     Notes

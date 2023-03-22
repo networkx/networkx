@@ -490,8 +490,8 @@ def k_truss(G, k):
     Raises
     ------
     NetworkXError
-      The k-truss is not defined for graphs with self loops or parallel edges
-      or directed graphs.
+      The k-truss is not defined for graphs with self loops, directed graphs
+      and multigraphs.
 
     Notes
     -----
