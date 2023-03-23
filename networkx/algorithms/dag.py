@@ -1224,6 +1224,13 @@ def compute_v_structures(G):
         The v structures within the graph. Each v structure is a 3-tuple with the
         parent, collider, and other parent.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph()
+    >>> G.add_edges_from([(1, 2), (0, 5), (3, 1), (2, 4), (3, 1), (4, 5), (1, 5)])
+    >>> list(nx.compute_v_structures(G))
+    [(0, 5, 4), (0, 5, 1), (1, 5, 4)]
+
     Notes
     -----
     https://en.wikipedia.org/wiki/Collider_(statistics)
