@@ -2138,6 +2138,7 @@ def negative_edge_cycle(G, weight="weight", heuristic=True):
     """
     if G.size() == 0:
         return False
+
     # find unused node to use temporarily
     newnode = -1
     while newnode in G:
