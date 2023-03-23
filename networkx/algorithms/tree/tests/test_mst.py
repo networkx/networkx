@@ -9,6 +9,10 @@ from networkx.utils import edges_equal, nodes_equal
 def test_unknown_algorithm():
     with pytest.raises(ValueError):
         nx.minimum_spanning_tree(nx.Graph(), algorithm="random")
+    with pytest.raises(
+        ValueError, match="random is not a valid choice for an algorithm."
+    ):
+        nx.maximum_spanning_edges(nx.Graph(), algorithm="random")
 
 
 class MinimumSpanningTreeTestBase:
@@ -283,6 +287,14 @@ class TestKruskal(MultigraphMSTTestBase):
         )
         assert edges_equal([(1, 2), (2, 3)], list(mst_edges))
 
+        # both keys and data are included
+        mst_edges = nx.minimum_spanning_edges(
+            G, algorithm=self.algo, keys=True, data=True
+        )
+        assert edges_equal(
+            [(1, 2, 1, {"weight": 2}), (2, 3, 1, {"weight": 2})], list(mst_edges)
+        )
+
 
 class TestPrim(MultigraphMSTTestBase):
     """Unit tests for computing a minimum (or maximum) spanning tree
@@ -290,6 +302,18 @@ class TestPrim(MultigraphMSTTestBase):
     """
 
     algorithm = "prim"
+
+    def test_prim_mst_edges_simple_graph(self):
+        H = nx.Graph()
+        H.add_edge(1, 2, key=2, weight=3)
+        H.add_edge(3, 2, key=1, weight=2)
+        H.add_edge(3, 1, key=1, weight=4)
+
+        mst_edges = nx.minimum_spanning_edges(H, algorithm=self.algo, ignore_nan=True)
+        assert edges_equal(
+            [(1, 2, {"key": 2, "weight": 3}), (2, 3, {"key": 1, "weight": 2})],
+            list(mst_edges),
+        )
 
     def test_ignore_nan(self):
         """Tests that the edges with NaN weights are ignored or
