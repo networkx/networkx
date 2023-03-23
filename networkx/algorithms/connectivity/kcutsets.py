@@ -189,7 +189,7 @@ def all_node_cuts(G, k=None, flow_func=None):
                         cutset.update((u, w) for w in original_H_pred[u] if w not in S)
                     # The edges in H that form the cutset are internal edges
                     # (ie edges that represent a node of the original graph G)
-                    if any([H_nodes[u]["id"] != H_nodes[w]["id"] for u, w in cutset]):
+                    if any(H_nodes[u]["id"] != H_nodes[w]["id"] for u, w in cutset):
                         continue
                     node_cut = {H_nodes[u]["id"] for u, _ in cutset}
 

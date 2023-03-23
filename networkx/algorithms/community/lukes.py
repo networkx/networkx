@@ -125,7 +125,7 @@ def lukes_partitioning(G, max_size, node_weight=None, edge_weight=None):
     def _a_parent_of_leaves_only(gr):
         tleaves = set(_leaves(gr))
         for n in set(gr.nodes) - tleaves:
-            if all([x in tleaves for x in nx.descendants(gr, n)]):
+            if all(x in tleaves for x in nx.descendants(gr, n)):
                 return n
 
     @lru_cache(CLUSTER_EVAL_CACHE_SIZE)

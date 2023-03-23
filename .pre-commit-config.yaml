@@ -6,7 +6,7 @@ repos:
     rev: 23.1.0
     hooks:
       - id: black
-  - repo: https://github.com/asottile/blacken-docs
+  - repo: https://github.com/adamchainz/blacken-docs
     rev: 1.13.0
     hooks:
       - id: blacken-docs
@@ -16,9 +16,8 @@ repos:
       - id: prettier
         files: \.(html|md|yml|yaml)
         args: [--prose-wrap=preserve]
-
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.0.247
+    rev: v0.0.258
     hooks:
       - id: ruff
         args:
