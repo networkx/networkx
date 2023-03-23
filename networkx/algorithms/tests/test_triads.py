@@ -57,7 +57,7 @@ def test_all_triplets():
     ]
     expected = [set(x.split(",")) for x in expected]
     actual = [set(x) for x in nx.all_triplets(G)]
-    assert all([any([s1 == s2 for s1 in expected]) for s2 in actual])
+    assert all(any(s1 == s2 for s1 in expected) for s2 in actual)
 
 
 def test_all_triads():
@@ -72,7 +72,7 @@ def test_all_triads():
     ]
     expected = [G.subgraph(x.split(",")) for x in expected]
     actual = list(nx.all_triads(G))
-    assert all(any([nx.is_isomorphic(G1, G2) for G1 in expected]) for G2 in actual)
+    assert all(any(nx.is_isomorphic(G1, G2) for G1 in expected) for G2 in actual)
 
 
 def test_triad_type():

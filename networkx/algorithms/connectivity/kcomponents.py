@@ -167,7 +167,7 @@ def _consolidate(sets, k):
 
     """
     G = nx.Graph()
-    nodes = {i: s for i, s in enumerate(sets)}
+    nodes = dict(enumerate(sets))
     G.add_nodes_from(nodes)
     G.add_edges_from(
         (u, v) for u, v in combinations(nodes, 2) if len(nodes[u] & nodes[v]) >= k

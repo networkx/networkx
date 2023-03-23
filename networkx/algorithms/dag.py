@@ -507,7 +507,7 @@ def all_topological_sorts(G):
 
     # do-while construct
     while True:
-        assert all([count[v] == 0 for v in D])
+        assert all(count[v] == 0 for v in D)
 
         if len(current_sort) == len(G):
             yield list(current_sort)

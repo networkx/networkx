@@ -85,7 +85,7 @@ nx.draw_networkx(
     pos=nonexp_pos,
     node_color=nonexp_node_colors,
     node_size=nonexp_node_sizes,
-    **base_options
+    **base_options,
 )
 
 plt.tight_layout()

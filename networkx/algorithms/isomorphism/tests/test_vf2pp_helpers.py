@@ -68,7 +68,7 @@ class TestNodeOrdering:
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups({node: degree for node, degree in G2.degree()}),
+            nx.utils.groups(dict(G2.degree())),
         )
         m = _matching_order(gparams)
         assert m == [1]
@@ -128,7 +128,7 @@ class TestNodeOrdering:
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups({node: degree for node, degree in G2.degree()}),
+            nx.utils.groups(dict(G2.degree())),
         )
 
         expected = [9, 11, 10, 13, 12, 1, 2, 4, 0, 3, 6, 5, 7, 8]
@@ -165,7 +165,7 @@ class TestNodeOrdering:
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups({node: degree for node, degree in G2.degree()}),
+            nx.utils.groups(dict(G2.degree())),
         )
 
         expected = [0, 4, 1, 3, 2, 5]
@@ -216,7 +216,7 @@ class TestGraphCandidateSelection:
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups({node: degree for node, degree in G2.degree()}),
+            nx.utils.groups(dict(G2.degree())),
         )
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
@@ -291,7 +291,7 @@ class TestGraphCandidateSelection:
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups({node: degree for node, degree in G2.degree()}),
+            nx.utils.groups(dict(G2.degree())),
         )
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
@@ -325,7 +325,7 @@ class TestGraphCandidateSelection:
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups({node: degree for node, degree in G2.degree()}),
+            nx.utils.groups(dict(G2.degree())),
         )
 
         # No candidate
@@ -359,7 +359,7 @@ class TestGraphCandidateSelection:
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups({node: degree for node, degree in G2.degree()}),
+            nx.utils.groups(dict(G2.degree())),
         )
 
         candidates = _find_candidates(u, gparams, sparams, G1_degree)
@@ -381,7 +381,7 @@ class TestGraphCandidateSelection:
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups({node: degree for node, degree in G2.degree()}),
+            nx.utils.groups(dict(G2.degree())),
         )
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
@@ -435,7 +435,7 @@ class TestGraphCandidateSelection:
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups({node: degree for node, degree in G2.degree()}),
+            nx.utils.groups(dict(G2.degree())),
         )
 
         m = {9: self.mapped[9], 1: self.mapped[1]}
@@ -470,7 +470,7 @@ class TestGraphCandidateSelection:
             l2,
             nx.utils.groups(l1),
             nx.utils.groups(l2),
-            nx.utils.groups({node: degree for node, degree in G2.degree()}),
+            nx.utils.groups(dict(G2.degree())),
         )
 
         candidates = _find_candidates(u, gparams, sparams, G1_degree)

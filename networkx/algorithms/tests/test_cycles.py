@@ -349,7 +349,7 @@ class TestMinimumCycles:
     def test_complete_graph(self):
         cg = nx.complete_graph(5)
         mcb = minimum_cycle_basis(cg)
-        assert all([len(cycle) == 3 for cycle in mcb])
+        assert all(len(cycle) == 3 for cycle in mcb)
 
     def test_tree_graph(self):
         tg = nx.balanced_tree(3, 3)

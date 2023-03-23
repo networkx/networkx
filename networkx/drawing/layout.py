@@ -704,7 +704,7 @@ def kamada_kawai_layout(
         elif dim == 2:
             pos = circular_layout(G, dim=dim)
         else:
-            pos = {n: pt for n, pt in zip(G, np.linspace(0, 1, len(G)))}
+            pos = dict(zip(G, np.linspace(0, 1, len(G))))
     pos_arr = np.array([pos[n] for n in G])
 
     pos = _kamada_kawai_solve(dist_mtx, pos_arr, dim)
@@ -1220,7 +1220,7 @@ def arf_layout(
         if n_iter > max_iter:
             break
         n_iter += 1
-    return {node: pi for node, pi in zip(G.nodes(), p)}
+    return dict(zip(G.nodes(), p))
 
 
 def rescale_layout(pos, scale=1):

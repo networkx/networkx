@@ -721,7 +721,7 @@ def test_bidirectional_dijksta_restricted():
         "s",
         "v",
         11,
-        *_bidirectional_dijkstra(XG, "s", "v", ignore_edges=[("s", "x")])
+        *_bidirectional_dijkstra(XG, "s", "v", ignore_edges=[("s", "x")]),
     )
     pytest.raises(
         nx.NetworkXNoPath,

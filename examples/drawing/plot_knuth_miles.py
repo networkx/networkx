@@ -114,7 +114,7 @@ try:
         s=[G.population[v] for v in H],
         c=node_color,
         transform=ccrs.PlateCarree(),
-        zorder=100  # Ensure nodes lie on top of edges/state lines
+        zorder=100,  # Ensure nodes lie on top of edges/state lines
     )
     # Plot edges between the cities
     for edge in H.edges():

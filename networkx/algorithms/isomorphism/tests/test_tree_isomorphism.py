@@ -180,7 +180,7 @@ def positive_single_tree(t1):
     someisomorphism = [(u, v) for (u, v) in zip(nodes1, nodes2)]
 
     # map from old to new
-    map1to2 = {u: v for (u, v) in someisomorphism}
+    map1to2 = dict(someisomorphism)
 
     # get the edges with the transformed names
     edges2 = [random_swap((map1to2[u], map1to2[v])) for (u, v) in t1.edges()]
