@@ -22,6 +22,12 @@ def degree_centrality(G, nodes):
     centrality : dictionary
        Dictionary keyed by node with bipartite degree centrality as the value.
 
+    Examples
+    --------
+    >>> G = nx.wheel_graph(5)
+    >>> bipartite.degree_centrality(G, [0, 1, 2])
+    {0: 2.0, 1: 1.5, 2: 1.5, 3: 1.0, 4: 1.0}
+
     See Also
     --------
     betweenness_centrality
@@ -120,6 +126,12 @@ def betweenness_centrality(G, nodes):
         Dictionary keyed by node with bipartite betweenness centrality
         as the value.
 
+    Examples
+    --------
+    >>> G = nx.cycle_graph(4)
+    >>> bipartite.betweenness_centrality(G, [1, 2])
+    {0: 0.25, 1: 0.25, 2: 0.25, 3: 0.25}
+
     See Also
     --------
     degree_centrality
@@ -189,6 +201,12 @@ def closeness_centrality(G, nodes, normalized=True):
     closeness : dictionary
         Dictionary keyed by node with bipartite closeness centrality
         as the value.
+
+    Examples
+    --------
+    >>> G = nx.wheel_graph(5)
+    >>> bipartite.closeness_centrality(G, [0, 1, 2])
+    {0: 1.5, 1: 1.2, 2: 1.2, 3: 1.0, 4: 1.0}
 
     See Also
     --------
