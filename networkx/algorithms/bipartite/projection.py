@@ -187,10 +187,10 @@ def weighted_projected_graph(B, nodes, ratio=False):
     """
 
     # Get a list of nodes and top_nodes for the adjacency matrix function.
-    if type(nodes) != list:
-       nodes = list(nodes)
-       top_nodes = [node for node in B.nodes() if node not in nodes]
+    nodes = list(nodes)
+    top_nodes = [node for node in B.nodes() if node not in nodes]
 
+    # Check that there are no duplicate nodes in 'nodes' or that 'nodes' isn't larger than the graph node set.
     if len(top_nodes) + len(nodes) != B.number_of_nodes():
         raise NetworkXAlgorithmError(
             f"the size of the nodes to project onto ({len(nodes)}) is >= the graph size ({len(B)}).\n"
@@ -206,42 +206,43 @@ def weighted_projected_graph(B, nodes, ratio=False):
         G = nx.Graph()
         G.add_nodes_from(nodes)
         node_labels = dict(enumerate(nodes))
-        # Get the co-citation matrix.
+        # Get the projection matrix.
         projected_adj = adj @ adj.T
+        # Remove the self-edges created by the matrix multiplication.
         projected_adj.setdiag(0)
 
     else:
         # Get the adjacency matrix for multiplication.
         all_nodes = list(B)
         adj = nx.adjacency_matrix(B, nodelist=all_nodes)
-        node_labels = {
-            i: all_nodes[i]
-            for i in range(len(all_nodes))
-            if type(all_nodes[i]) == type(nodes) and all_nodes[i] in nodes
-        }
-        other_indices = [
-            all_nodes[i] for i in range(len(all_nodes)) if all_nodes[i] in top_nodes
-        ]
+        node_labels = dict(enumerate(all_nodes))
 
         # Create new graph.
         G = nx.DiGraph()
         G.add_nodes_from(nodes)
 
         # Remove connections within the node set provided.
-        node_indices = set(map(lambda node: all_nodes.index(node), nodes))
+        node_indices = [
+            node_index
+            for node_index in node_labels.keys()
+            if node_labels[node_index] in nodes
+        ]
         for node_index in node_indices:
             for other_node_index in node_indices:
                 if node_index != other_node_index:
                     adj[node_index, other_node_index] = 0
 
         projected_adj = adj @ adj
-        projected_adj[other_indices] = 0
 
     projected_adj = projected_adj.toarray()
     if ratio:
+        # Change the weights to be the be the ratio of the number of paths between nodes in the set 'nodes' to the size of the other nodes in the graph.
         projected_adj = projected_adj / len(top_nodes)
+    # Convert back to a NetworkX graph.
     G = nx.from_numpy_array(projected_adj)
+    # Restore the original node labels.
     nx.relabel_nodes(G, node_labels, copy=False)
+    # Remove nodes not in the 'nodes' argument from the projection graph.
     G.remove_nodes_from(top_nodes)
     return G
 
