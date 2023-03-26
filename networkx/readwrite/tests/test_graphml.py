@@ -1218,14 +1218,12 @@ class TestWriteGraphML(BaseGraphML):
         """
         G = nx.MultiGraph()
         G.add_edges_from([("a", "b", 2), ("a", "b", 3)])
-        fd, fname = tempfile.mkstemp()
-        self.writer(G, fname)
-        H = nx.read_graphml(fname)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            self.writer(G, f.name)
+            H = nx.read_graphml(f.name)
         assert H.is_multigraph()
         assert edges_equal(G.edges(keys=True), H.edges(keys=True))
         assert G._adj == H._adj
-        os.close(fd)
-        os.unlink(fname)
 
     def test_default_attribute(self):
         G = nx.Graph(name="Fred")
@@ -1292,36 +1290,30 @@ class TestWriteGraphML(BaseGraphML):
         np = pytest.importorskip("numpy")
         wt = np.float_(3.4)
         G = nx.Graph([(1, 2, {"weight": wt})])
-        fd, fname = tempfile.mkstemp()
-        self.writer(G, fname)
-        H = nx.read_graphml(fname, node_type=int)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            self.writer(G, f.name)
+            H = nx.read_graphml(f.name, node_type=int)
         assert G._adj == H._adj
-        os.close(fd)
-        os.unlink(fname)
 
     def test_multigraph_to_graph(self):
         # test converting multigraph to graph if no parallel edges found
         G = nx.MultiGraph()
         G.add_edges_from([("a", "b", 2), ("b", "c", 3)])  # no multiedges
-        fd, fname = tempfile.mkstemp()
-        self.writer(G, fname)
-        H = nx.read_graphml(fname)
-        assert not H.is_multigraph()
-        H = nx.read_graphml(fname, force_multigraph=True)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            self.writer(G, f.name)
+            H = nx.read_graphml(f.name)
+            assert not H.is_multigraph()
+            H = nx.read_graphml(f.name, force_multigraph=True)
         assert H.is_multigraph()
-        os.close(fd)
-        os.unlink(fname)
 
         # add a multiedge
         G.add_edge("a", "b", "e-id")
-        fd, fname = tempfile.mkstemp()
-        self.writer(G, fname)
-        H = nx.read_graphml(fname)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            self.writer(G, f.name)
+            H = nx.read_graphml(f.name)
+            assert H.is_multigraph()
+            H = nx.read_graphml(f.name, force_multigraph=True)
         assert H.is_multigraph()
-        H = nx.read_graphml(fname, force_multigraph=True)
-        assert H.is_multigraph()
-        os.close(fd)
-        os.unlink(fname)
 
     def test_write_generate_edge_id_from_attribute(self):
         from xml.etree.ElementTree import parse
@@ -1330,20 +1322,20 @@ class TestWriteGraphML(BaseGraphML):
         G.add_edges_from([("a", "b"), ("b", "c"), ("a", "c")])
         edge_attributes = {e: str(e) for e in G.edges}
         nx.set_edge_attributes(G, edge_attributes, "eid")
-        fd, fname = tempfile.mkstemp()
-        # set edge_id_from_attribute e.g. "eid" for write_graphml()
-        self.writer(G, fname, edge_id_from_attribute="eid")
-        # set edge_id_from_attribute e.g. "eid" for generate_graphml()
-        generator = nx.generate_graphml(G, edge_id_from_attribute="eid")
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            # set edge_id_from_attribute e.g. "eid" for write_graphml()
+            self.writer(G, f.name, edge_id_from_attribute="eid")
+            # set edge_id_from_attribute e.g. "eid" for generate_graphml()
+            generator = nx.generate_graphml(G, edge_id_from_attribute="eid")
 
-        H = nx.read_graphml(fname)
-        assert nodes_equal(G.nodes(), H.nodes())
-        assert edges_equal(G.edges(), H.edges())
-        # NetworkX adds explicit edge "id" from file as attribute
-        nx.set_edge_attributes(G, edge_attributes, "id")
-        assert edges_equal(G.edges(data=True), H.edges(data=True))
+            H = nx.read_graphml(f.name)
+            assert nodes_equal(G.nodes(), H.nodes())
+            assert edges_equal(G.edges(), H.edges())
+            # NetworkX adds explicit edge "id" from file as attribute
+            nx.set_edge_attributes(G, edge_attributes, "id")
+            assert edges_equal(G.edges(data=True), H.edges(data=True))
 
-        tree = parse(fname)
+            tree = parse(f.name)
         children = list(tree.getroot())
         assert len(children) == 2
         edge_ids = [
@@ -1364,9 +1356,6 @@ class TestWriteGraphML(BaseGraphML):
         nx.set_edge_attributes(G, edge_attributes, "id")
         assert edges_equal(G.edges(data=True), J.edges(data=True))
 
-        os.close(fd)
-        os.unlink(fname)
-
     def test_multigraph_write_generate_edge_id_from_attribute(self):
         from xml.etree.ElementTree import parse
 
@@ -1374,28 +1363,28 @@ class TestWriteGraphML(BaseGraphML):
         G.add_edges_from([("a", "b"), ("b", "c"), ("a", "c"), ("a", "b")])
         edge_attributes = {e: str(e) for e in G.edges}
         nx.set_edge_attributes(G, edge_attributes, "eid")
-        fd, fname = tempfile.mkstemp()
-        # set edge_id_from_attribute e.g. "eid" for write_graphml()
-        self.writer(G, fname, edge_id_from_attribute="eid")
-        # set edge_id_from_attribute e.g. "eid" for generate_graphml()
-        generator = nx.generate_graphml(G, edge_id_from_attribute="eid")
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            # set edge_id_from_attribute e.g. "eid" for write_graphml()
+            self.writer(G, f.name, edge_id_from_attribute="eid")
+            # set edge_id_from_attribute e.g. "eid" for generate_graphml()
+            generator = nx.generate_graphml(G, edge_id_from_attribute="eid")
 
-        H = nx.read_graphml(fname)
-        assert H.is_multigraph()
-        H = nx.read_graphml(fname, force_multigraph=True)
-        assert H.is_multigraph()
+            H = nx.read_graphml(f.name)
+            assert H.is_multigraph()
+            H = nx.read_graphml(f.name, force_multigraph=True)
+            assert H.is_multigraph()
 
-        assert nodes_equal(G.nodes(), H.nodes())
-        assert edges_equal(G.edges(), H.edges())
-        assert sorted(data.get("eid") for u, v, data in H.edges(data=True)) == sorted(
-            edge_attributes.values()
-        )
-        # NetworkX uses edge_ids as keys in multigraphs if no key
-        assert sorted(key for u, v, key in H.edges(keys=True)) == sorted(
-            edge_attributes.values()
-        )
+            assert nodes_equal(G.nodes(), H.nodes())
+            assert edges_equal(G.edges(), H.edges())
+            assert sorted(
+                data.get("eid") for u, v, data in H.edges(data=True)
+            ) == sorted(edge_attributes.values())
+            # NetworkX uses edge_ids as keys in multigraphs if no key
+            assert sorted(key for u, v, key in H.edges(keys=True)) == sorted(
+                edge_attributes.values()
+            )
 
-        tree = parse(fname)
+            tree = parse(f.name)
         children = list(tree.getroot())
         assert len(children) == 2
         edge_ids = [
@@ -1422,51 +1411,42 @@ class TestWriteGraphML(BaseGraphML):
             edge_attributes.values()
         )
 
-        os.close(fd)
-        os.unlink(fname)
-
     def test_numpy_float64(self):
         np = pytest.importorskip("numpy")
         wt = np.float64(3.4)
         G = nx.Graph([(1, 2, {"weight": wt})])
-        fd, fname = tempfile.mkstemp()
-        self.writer(G, fname)
-        H = nx.read_graphml(fname, node_type=int)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            self.writer(G, f.name)
+            H = nx.read_graphml(f.name, node_type=int)
         assert G.edges == H.edges
         wtG = G[1][2]["weight"]
         wtH = H[1][2]["weight"]
         assert wtG == pytest.approx(wtH, abs=1e-6)
         assert type(wtG) == np.float64
         assert type(wtH) == float
-        os.close(fd)
-        os.unlink(fname)
 
     def test_numpy_float32(self):
         np = pytest.importorskip("numpy")
         wt = np.float32(3.4)
         G = nx.Graph([(1, 2, {"weight": wt})])
-        fd, fname = tempfile.mkstemp()
-        self.writer(G, fname)
-        H = nx.read_graphml(fname, node_type=int)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            self.writer(G, f.name)
+            H = nx.read_graphml(f.name, node_type=int)
         assert G.edges == H.edges
         wtG = G[1][2]["weight"]
         wtH = H[1][2]["weight"]
         assert wtG == pytest.approx(wtH, abs=1e-6)
         assert type(wtG) == np.float32
         assert type(wtH) == float
-        os.close(fd)
-        os.unlink(fname)
 
     def test_numpy_float64_inference(self):
         np = pytest.importorskip("numpy")
         G = self.attribute_numeric_type_graph
         G.edges[("n1", "n1")]["weight"] = np.float64(1.1)
-        fd, fname = tempfile.mkstemp()
-        self.writer(G, fname, infer_numeric_types=True)
-        H = nx.read_graphml(fname)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            self.writer(G, f.name, infer_numeric_types=True)
+            H = nx.read_graphml(f.name)
         assert G._adj == H._adj
-        os.close(fd)
-        os.unlink(fname)
 
     def test_unicode_attributes(self):
         G = nx.Graph()
@@ -1474,12 +1454,10 @@ class TestWriteGraphML(BaseGraphML):
         name2 = chr(5543) + chr(1543) + chr(324)
         node_type = str
         G.add_edge(name1, "Radiohead", foo=name2)
-        fd, fname = tempfile.mkstemp()
-        self.writer(G, fname)
-        H = nx.read_graphml(fname, node_type=node_type)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            self.writer(G, f.name)
+            H = nx.read_graphml(f.name, node_type=node_type)
         assert G._adj == H._adj
-        os.close(fd)
-        os.unlink(fname)
 
     def test_unicode_escape(self):
         # test for handling json escaped strings in python 2 Issue #1880

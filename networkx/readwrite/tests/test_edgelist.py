@@ -220,95 +220,79 @@ class TestEdgelist:
         name1 = chr(2344) + chr(123) + chr(6543)
         name2 = chr(5543) + chr(1543) + chr(324)
         G.add_edge(name1, "Radiohead", **{name2: 3})
-        fd, fname = tempfile.mkstemp()
-        nx.write_edgelist(G, fname)
-        H = nx.read_edgelist(fname)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            nx.write_edgelist(G, f.name)
+            H = nx.read_edgelist(f.name)
         assert graphs_equal(G, H)
-        os.close(fd)
-        os.unlink(fname)
 
     def test_latin1_issue(self):
         G = nx.Graph()
         name1 = chr(2344) + chr(123) + chr(6543)
         name2 = chr(5543) + chr(1543) + chr(324)
         G.add_edge(name1, "Radiohead", **{name2: 3})
-        fd, fname = tempfile.mkstemp()
-        pytest.raises(
-            UnicodeEncodeError, nx.write_edgelist, G, fname, encoding="latin-1"
-        )
-        os.close(fd)
-        os.unlink(fname)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            pytest.raises(
+                UnicodeEncodeError, nx.write_edgelist, G, f.name, encoding="latin-1"
+            )
 
     def test_latin1(self):
         G = nx.Graph()
         name1 = "Bj" + chr(246) + "rk"
         name2 = chr(220) + "ber"
         G.add_edge(name1, "Radiohead", **{name2: 3})
-        fd, fname = tempfile.mkstemp()
-        nx.write_edgelist(G, fname, encoding="latin-1")
-        H = nx.read_edgelist(fname, encoding="latin-1")
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            nx.write_edgelist(G, f.name, encoding="latin-1")
+            H = nx.read_edgelist(f.name, encoding="latin-1")
         assert graphs_equal(G, H)
-        os.close(fd)
-        os.unlink(fname)
 
     def test_edgelist_graph(self):
         G = self.G
-        (fd, fname) = tempfile.mkstemp()
-        nx.write_edgelist(G, fname)
-        H = nx.read_edgelist(fname)
-        H2 = nx.read_edgelist(fname)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            nx.write_edgelist(G, f.name)
+            H = nx.read_edgelist(f.name)
+            H2 = nx.read_edgelist(f.name)
         assert H is not H2  # they should be different graphs
         G.remove_node("g")  # isolated nodes are not written in edgelist
         assert nodes_equal(list(H), list(G))
         assert edges_equal(list(H.edges()), list(G.edges()))
-        os.close(fd)
-        os.unlink(fname)
 
     def test_edgelist_digraph(self):
         G = self.DG
-        (fd, fname) = tempfile.mkstemp()
-        nx.write_edgelist(G, fname)
-        H = nx.read_edgelist(fname, create_using=nx.DiGraph())
-        H2 = nx.read_edgelist(fname, create_using=nx.DiGraph())
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            nx.write_edgelist(G, f.name)
+            H = nx.read_edgelist(f.name, create_using=nx.DiGraph())
+            H2 = nx.read_edgelist(f.name, create_using=nx.DiGraph())
         assert H is not H2  # they should be different graphs
         G.remove_node("g")  # isolated nodes are not written in edgelist
         assert nodes_equal(list(H), list(G))
         assert edges_equal(list(H.edges()), list(G.edges()))
-        os.close(fd)
-        os.unlink(fname)
 
     def test_edgelist_integers(self):
         G = nx.convert_node_labels_to_integers(self.G)
-        (fd, fname) = tempfile.mkstemp()
-        nx.write_edgelist(G, fname)
-        H = nx.read_edgelist(fname, nodetype=int)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            nx.write_edgelist(G, f.name)
+            H = nx.read_edgelist(f.name, nodetype=int)
         # isolated nodes are not written in edgelist
         G.remove_nodes_from(list(nx.isolates(G)))
         assert nodes_equal(list(H), list(G))
         assert edges_equal(list(H.edges()), list(G.edges()))
-        os.close(fd)
-        os.unlink(fname)
 
     def test_edgelist_multigraph(self):
         G = self.XG
-        (fd, fname) = tempfile.mkstemp()
-        nx.write_edgelist(G, fname)
-        H = nx.read_edgelist(fname, nodetype=int, create_using=nx.MultiGraph())
-        H2 = nx.read_edgelist(fname, nodetype=int, create_using=nx.MultiGraph())
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            nx.write_edgelist(G, f.name)
+            H = nx.read_edgelist(f.name, nodetype=int, create_using=nx.MultiGraph())
+            H2 = nx.read_edgelist(f.name, nodetype=int, create_using=nx.MultiGraph())
         assert H is not H2  # they should be different graphs
         assert nodes_equal(list(H), list(G))
         assert edges_equal(list(H.edges()), list(G.edges()))
-        os.close(fd)
-        os.unlink(fname)
 
     def test_edgelist_multidigraph(self):
         G = self.XDG
-        (fd, fname) = tempfile.mkstemp()
-        nx.write_edgelist(G, fname)
-        H = nx.read_edgelist(fname, nodetype=int, create_using=nx.MultiDiGraph())
-        H2 = nx.read_edgelist(fname, nodetype=int, create_using=nx.MultiDiGraph())
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            nx.write_edgelist(G, f.name)
+            H = nx.read_edgelist(f.name, nodetype=int, create_using=nx.MultiDiGraph())
+            H2 = nx.read_edgelist(f.name, nodetype=int, create_using=nx.MultiDiGraph())
         assert H is not H2  # they should be different graphs
         assert nodes_equal(list(H), list(G))
         assert edges_equal(list(H.edges()), list(G.edges()))
-        os.close(fd)
-        os.unlink(fname)

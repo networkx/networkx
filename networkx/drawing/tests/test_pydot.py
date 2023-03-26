@@ -40,47 +40,47 @@ class TestPydot:
         # Validate the original and resulting graphs to be the same.
         assert graphs_equal(G, G2)
 
-        fd, fname = tempfile.mkstemp()
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            # Serialize this "pydot.Dot" instance to a temporary file in dot format
+            P.write_raw(f.name)
 
-        # Serialize this "pydot.Dot" instance to a temporary file in dot format
-        P.write_raw(fname)
+            # Deserialize a list of new "pydot.Dot" instances back from this file.
+            Pin_list = pydot.graph_from_dot_file(path=f.name, encoding="utf-8")
 
-        # Deserialize a list of new "pydot.Dot" instances back from this file.
-        Pin_list = pydot.graph_from_dot_file(path=fname, encoding="utf-8")
+            # Validate this file to contain only one graph.
+            assert len(Pin_list) == 1
 
-        # Validate this file to contain only one graph.
-        assert len(Pin_list) == 1
+            # The single "pydot.Dot" instance deserialized from this file.
+            Pin = Pin_list[0]
 
-        # The single "pydot.Dot" instance deserialized from this file.
-        Pin = Pin_list[0]
+            # Sorted list of all nodes in the original "pydot.Dot" instance.
+            n1 = sorted(p.get_name() for p in P.get_node_list())
 
-        # Sorted list of all nodes in the original "pydot.Dot" instance.
-        n1 = sorted(p.get_name() for p in P.get_node_list())
+            # Sorted list of all nodes in the deserialized "pydot.Dot" instance.
+            n2 = sorted(p.get_name() for p in Pin.get_node_list())
 
-        # Sorted list of all nodes in the deserialized "pydot.Dot" instance.
-        n2 = sorted(p.get_name() for p in Pin.get_node_list())
+            # Validate these instances to contain the same nodes.
+            assert n1 == n2
 
-        # Validate these instances to contain the same nodes.
-        assert n1 == n2
+            # Sorted list of all edges in the original "pydot.Dot" instance.
+            e1 = sorted(
+                (e.get_source(), e.get_destination()) for e in P.get_edge_list()
+            )
 
-        # Sorted list of all edges in the original "pydot.Dot" instance.
-        e1 = sorted((e.get_source(), e.get_destination()) for e in P.get_edge_list())
+            # Sorted list of all edges in the original "pydot.Dot" instance.
+            e2 = sorted(
+                (e.get_source(), e.get_destination()) for e in Pin.get_edge_list()
+            )
 
-        # Sorted list of all edges in the original "pydot.Dot" instance.
-        e2 = sorted((e.get_source(), e.get_destination()) for e in Pin.get_edge_list())
+            # Validate these instances to contain the same edges.
+            assert e1 == e2
 
-        # Validate these instances to contain the same edges.
-        assert e1 == e2
-
-        # Deserialize a new graph of the same type back from this file.
-        Hin = nx.nx_pydot.read_dot(fname)
+            # Deserialize a new graph of the same type back from this file.
+            Hin = nx.nx_pydot.read_dot(f.name)
         Hin = G.__class__(Hin)
 
         # Validate the original and resulting graphs to be the same.
         assert graphs_equal(G, Hin)
-
-        os.close(fd)
-        os.unlink(fname)
 
     def test_undirected(self):
         self.pydot_checks(nx.Graph(), prog="neato")

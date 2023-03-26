@@ -41,36 +41,34 @@ class TestAdjlist:
         name1 = chr(2344) + chr(123) + chr(6543)
         name2 = chr(5543) + chr(1543) + chr(324)
         G.add_edge(name1, "Radiohead", **{name2: 3})
-        fd, fname = tempfile.mkstemp()
-        nx.write_multiline_adjlist(G, fname)
-        H = nx.read_multiline_adjlist(fname)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            nx.write_multiline_adjlist(G, f.name)
+            H = nx.read_multiline_adjlist(f.name)
         assert graphs_equal(G, H)
-        os.close(fd)
-        os.unlink(fname)
 
     def test_latin1_err(self):
         G = nx.Graph()
         name1 = chr(2344) + chr(123) + chr(6543)
         name2 = chr(5543) + chr(1543) + chr(324)
         G.add_edge(name1, "Radiohead", **{name2: 3})
-        fd, fname = tempfile.mkstemp()
-        pytest.raises(
-            UnicodeEncodeError, nx.write_multiline_adjlist, G, fname, encoding="latin-1"
-        )
-        os.close(fd)
-        os.unlink(fname)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            pytest.raises(
+                UnicodeEncodeError,
+                nx.write_multiline_adjlist,
+                G,
+                f.name,
+                encoding="latin-1",
+            )
 
     def test_latin1(self):
         G = nx.Graph()
         name1 = "Bj" + chr(246) + "rk"
         name2 = chr(220) + "ber"
         G.add_edge(name1, "Radiohead", **{name2: 3})
-        fd, fname = tempfile.mkstemp()
-        nx.write_multiline_adjlist(G, fname, encoding="latin-1")
-        H = nx.read_multiline_adjlist(fname, encoding="latin-1")
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            nx.write_multiline_adjlist(G, f.name, encoding="latin-1")
+            H = nx.read_multiline_adjlist(f.name, encoding="latin-1")
         assert graphs_equal(G, H)
-        os.close(fd)
-        os.unlink(fname)
 
     def test_parse_adjlist(self):
         lines = ["1 2 5", "2 3 4", "3 5", "4", "5"]
@@ -83,63 +81,53 @@ class TestAdjlist:
 
     def test_adjlist_graph(self):
         G = self.G
-        (fd, fname) = tempfile.mkstemp()
-        nx.write_adjlist(G, fname)
-        H = nx.read_adjlist(fname)
-        H2 = nx.read_adjlist(fname)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            nx.write_adjlist(G, f.name)
+            H = nx.read_adjlist(f.name)
+            H2 = nx.read_adjlist(f.name)
         assert H is not H2  # they should be different graphs
         assert nodes_equal(list(H), list(G))
         assert edges_equal(list(H.edges()), list(G.edges()))
-        os.close(fd)
-        os.unlink(fname)
 
     def test_adjlist_digraph(self):
         G = self.DG
-        (fd, fname) = tempfile.mkstemp()
-        nx.write_adjlist(G, fname)
-        H = nx.read_adjlist(fname, create_using=nx.DiGraph())
-        H2 = nx.read_adjlist(fname, create_using=nx.DiGraph())
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            nx.write_adjlist(G, f.name)
+            H = nx.read_adjlist(f.name, create_using=nx.DiGraph())
+            H2 = nx.read_adjlist(f.name, create_using=nx.DiGraph())
         assert H is not H2  # they should be different graphs
         assert nodes_equal(list(H), list(G))
         assert edges_equal(list(H.edges()), list(G.edges()))
-        os.close(fd)
-        os.unlink(fname)
 
     def test_adjlist_integers(self):
-        (fd, fname) = tempfile.mkstemp()
         G = nx.convert_node_labels_to_integers(self.G)
-        nx.write_adjlist(G, fname)
-        H = nx.read_adjlist(fname, nodetype=int)
-        H2 = nx.read_adjlist(fname, nodetype=int)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            nx.write_adjlist(G, f.name)
+            H = nx.read_adjlist(f.name, nodetype=int)
+            H2 = nx.read_adjlist(f.name, nodetype=int)
         assert H is not H2  # they should be different graphs
         assert nodes_equal(list(H), list(G))
         assert edges_equal(list(H.edges()), list(G.edges()))
-        os.close(fd)
-        os.unlink(fname)
 
     def test_adjlist_multigraph(self):
         G = self.XG
-        (fd, fname) = tempfile.mkstemp()
-        nx.write_adjlist(G, fname)
-        H = nx.read_adjlist(fname, nodetype=int, create_using=nx.MultiGraph())
-        H2 = nx.read_adjlist(fname, nodetype=int, create_using=nx.MultiGraph())
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            nx.write_adjlist(G, f.name)
+            H = nx.read_adjlist(f.name, nodetype=int, create_using=nx.MultiGraph())
+            H2 = nx.read_adjlist(f.name, nodetype=int, create_using=nx.MultiGraph())
         assert H is not H2  # they should be different graphs
         assert nodes_equal(list(H), list(G))
         assert edges_equal(list(H.edges()), list(G.edges()))
-        os.close(fd)
-        os.unlink(fname)
 
     def test_adjlist_multidigraph(self):
         G = self.XDG
-        (fd, fname) = tempfile.mkstemp()
-        nx.write_adjlist(G, fname)
-        H = nx.read_adjlist(fname, nodetype=int, create_using=nx.MultiDiGraph())
-        H2 = nx.read_adjlist(fname, nodetype=int, create_using=nx.MultiDiGraph())
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            nx.write_adjlist(G, f.name)
+            H = nx.read_adjlist(f.name, nodetype=int, create_using=nx.MultiDiGraph())
+            H2 = nx.read_adjlist(f.name, nodetype=int, create_using=nx.MultiDiGraph())
         assert H is not H2  # they should be different graphs
         assert nodes_equal(list(H), list(G))
         assert edges_equal(list(H.edges()), list(G.edges()))
-        os.close(fd)
-        os.unlink(fname)
 
     def test_adjlist_delimiter(self):
         fh = io.BytesIO()
@@ -194,69 +182,61 @@ class TestMultilineAdjlist:
 
     def test_multiline_adjlist_graph(self):
         G = self.G
-        (fd, fname) = tempfile.mkstemp()
-        nx.write_multiline_adjlist(G, fname)
-        H = nx.read_multiline_adjlist(fname)
-        H2 = nx.read_multiline_adjlist(fname)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            nx.write_multiline_adjlist(G, f.name)
+            H = nx.read_multiline_adjlist(f.name)
+            H2 = nx.read_multiline_adjlist(f.name)
         assert H is not H2  # they should be different graphs
         assert nodes_equal(list(H), list(G))
         assert edges_equal(list(H.edges()), list(G.edges()))
-        os.close(fd)
-        os.unlink(fname)
 
     def test_multiline_adjlist_digraph(self):
         G = self.DG
-        (fd, fname) = tempfile.mkstemp()
-        nx.write_multiline_adjlist(G, fname)
-        H = nx.read_multiline_adjlist(fname, create_using=nx.DiGraph())
-        H2 = nx.read_multiline_adjlist(fname, create_using=nx.DiGraph())
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            nx.write_multiline_adjlist(G, f.name)
+            H = nx.read_multiline_adjlist(f.name, create_using=nx.DiGraph())
+            H2 = nx.read_multiline_adjlist(f.name, create_using=nx.DiGraph())
         assert H is not H2  # they should be different graphs
         assert nodes_equal(list(H), list(G))
         assert edges_equal(list(H.edges()), list(G.edges()))
-        os.close(fd)
-        os.unlink(fname)
 
     def test_multiline_adjlist_integers(self):
-        (fd, fname) = tempfile.mkstemp()
         G = nx.convert_node_labels_to_integers(self.G)
-        nx.write_multiline_adjlist(G, fname)
-        H = nx.read_multiline_adjlist(fname, nodetype=int)
-        H2 = nx.read_multiline_adjlist(fname, nodetype=int)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            nx.write_multiline_adjlist(G, f.name)
+            H = nx.read_multiline_adjlist(f.name, nodetype=int)
+            H2 = nx.read_multiline_adjlist(f.name, nodetype=int)
         assert H is not H2  # they should be different graphs
         assert nodes_equal(list(H), list(G))
         assert edges_equal(list(H.edges()), list(G.edges()))
-        os.close(fd)
-        os.unlink(fname)
 
     def test_multiline_adjlist_multigraph(self):
         G = self.XG
-        (fd, fname) = tempfile.mkstemp()
-        nx.write_multiline_adjlist(G, fname)
-        H = nx.read_multiline_adjlist(fname, nodetype=int, create_using=nx.MultiGraph())
-        H2 = nx.read_multiline_adjlist(
-            fname, nodetype=int, create_using=nx.MultiGraph()
-        )
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            nx.write_multiline_adjlist(G, f.name)
+            H = nx.read_multiline_adjlist(
+                f.name, nodetype=int, create_using=nx.MultiGraph()
+            )
+            H2 = nx.read_multiline_adjlist(
+                f.name, nodetype=int, create_using=nx.MultiGraph()
+            )
         assert H is not H2  # they should be different graphs
         assert nodes_equal(list(H), list(G))
         assert edges_equal(list(H.edges()), list(G.edges()))
-        os.close(fd)
-        os.unlink(fname)
 
     def test_multiline_adjlist_multidigraph(self):
         G = self.XDG
-        (fd, fname) = tempfile.mkstemp()
-        nx.write_multiline_adjlist(G, fname)
-        H = nx.read_multiline_adjlist(
-            fname, nodetype=int, create_using=nx.MultiDiGraph()
-        )
-        H2 = nx.read_multiline_adjlist(
-            fname, nodetype=int, create_using=nx.MultiDiGraph()
-        )
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            nx.write_multiline_adjlist(G, f.name)
+            H = nx.read_multiline_adjlist(
+                f.name, nodetype=int, create_using=nx.MultiDiGraph()
+            )
+            H2 = nx.read_multiline_adjlist(
+                f.name, nodetype=int, create_using=nx.MultiDiGraph()
+            )
         assert H is not H2  # they should be different graphs
         assert nodes_equal(list(H), list(G))
         assert edges_equal(list(H.edges()), list(G.edges()))
-        os.close(fd)
-        os.unlink(fname)
 
     def test_multiline_adjlist_delimiter(self):
         fh = io.BytesIO()

@@ -166,16 +166,13 @@ graph   [
         ]
 
     def test_read_gml(self):
-        (fd, fname) = tempfile.mkstemp()
-        fh = open(fname, "w")
-        fh.write(self.simple_data)
-        fh.close()
-        Gin = nx.read_gml(fname, label="label")
+        with tempfile.NamedTemporaryFile(delete=False, mode="w") as f:
+            f.write(self.simple_data)
+            f.close()
+            Gin = nx.read_gml(f.name, label="label")
         G = nx.parse_gml(self.simple_data, label="label")
         assert sorted(G.nodes(data=True)) == sorted(Gin.nodes(data=True))
         assert sorted(G.edges(data=True)) == sorted(Gin.edges(data=True))
-        os.close(fd)
-        os.unlink(fname)
 
     def test_labels_are_strings(self):
         # GML requires labels to be strings (i.e., in quotes)
@@ -600,19 +597,15 @@ graph
         }
         G.add_node("Node", **numbers)
 
-        fd, fname = tempfile.mkstemp()
-        try:
-            nx.write_gml(G, fname)
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            nx.write_gml(G, f.name)
             # Check that the export wrote the nonfitting numbers as strings
-            G2 = nx.read_gml(fname)
+            G2 = nx.read_gml(f.name)
             for attr, value in G2.nodes["Node"].items():
                 if attr == "toosmall" or attr == "toobig":
                     assert type(value) == str
                 else:
                     assert type(value) == int
-        finally:
-            os.close(fd)
-            os.unlink(fname)
 
 
 @contextmanager
