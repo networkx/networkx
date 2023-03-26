@@ -1095,7 +1095,7 @@ class TestGraphISOFeasibility:
         G1.add_edge(u, 7)
         assert _consistent_PT(u, v, gparams, sparams)
 
-    @pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+    @pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph])
     def test_cut_inconsistent_labels(self, graph_type):
         G1 = graph_type(
             [

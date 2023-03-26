@@ -70,13 +70,13 @@ _expected_edges_multiattr = [
 
 @pytest.mark.parametrize(
     ("data", "extra_kwargs"),
-    (
+    [
         (edges_no_data, {}),
         (edges_with_values, {}),
         (edges_with_weight, {}),
         (edges_with_multiple_attrs, {}),
         (edges_with_multiple_attrs_csv, {"delimiter": ","}),
-    ),
+    ],
 )
 def test_read_edgelist_no_data(data, extra_kwargs):
     bytesIO = io.BytesIO(data.encode("utf-8"))
@@ -92,11 +92,11 @@ def test_read_weighted_edgelist():
 
 @pytest.mark.parametrize(
     ("data", "extra_kwargs", "expected"),
-    (
+    [
         (edges_with_weight, {}, _expected_edges_weights),
         (edges_with_multiple_attrs, {}, _expected_edges_multiattr),
         (edges_with_multiple_attrs_csv, {"delimiter": ","}, _expected_edges_multiattr),
-    ),
+    ],
 )
 def test_read_edgelist_with_data(data, extra_kwargs, expected):
     bytesIO = io.BytesIO(data.encode("utf-8"))
@@ -104,7 +104,7 @@ def test_read_edgelist_with_data(data, extra_kwargs, expected):
     assert edges_equal(G.edges(data=True), expected)
 
 
-@pytest.fixture
+@pytest.fixture()
 def example_graph():
     G = nx.Graph()
     G.add_weighted_edges_from([(1, 2, 3.0), (2, 3, 27.0), (3, 4, 3.0)])
@@ -142,22 +142,22 @@ def test_parse_edgelist():
     G = nx.parse_edgelist(lines, nodetype=int)
     assert list(G.edges()) == [(2, 3), (3, 4)]
     # unknown nodetype
+    lines = ["1 2", "2 3", "3 4"]
     with pytest.raises(TypeError, match="Failed to convert nodes"):
-        lines = ["1 2", "2 3", "3 4"]
         nx.parse_edgelist(lines, nodetype="nope")
     # lines have invalid edge format
+    lines = ["1 2 3", "2 3", "3 4"]
     with pytest.raises(TypeError, match="Failed to convert edge data"):
-        lines = ["1 2 3", "2 3", "3 4"]
         nx.parse_edgelist(lines, nodetype=int)
     # edge data and data_keys not the same length
+    lines = ["1 2 3", "2 3 27", "3 4 3.0"]
     with pytest.raises(IndexError, match="not the same length"):
-        lines = ["1 2 3", "2 3 27", "3 4 3.0"]
         nx.parse_edgelist(
             lines, nodetype=int, data=(("weight", float), ("capacity", int))
         )
     # edge data can't be converted to edge type
+    lines = ["1 2 't1'", "2 3 't3'", "3 4 't3'"]
     with pytest.raises(TypeError, match="Failed to convert"):
-        lines = ["1 2 't1'", "2 3 't3'", "3 4 't3'"]
         nx.parse_edgelist(lines, nodetype=int, data=(("weight", float),))
 
 

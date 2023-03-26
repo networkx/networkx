@@ -132,6 +132,6 @@ def test_spanner_unweighted_disconnected_graph():
 
 def test_spanner_invalid_stretch():
     """Check whether an invalid stretch is caught."""
+    G = nx.empty_graph()
     with pytest.raises(ValueError):
-        G = nx.empty_graph()
         nx.spanner(G, 0)

@@ -57,7 +57,8 @@ class TestTreeLCA:
     def test_tree_all_pairs_lca_return_subset(self):
         test_pairs = [(0, 1), (0, 1), (1, 0)]
         ans = dict(tree_all_pairs_lca(self.DG, 0, test_pairs))
-        assert (0, 1) in ans and (1, 0) in ans
+        assert (0, 1) in ans
+        assert (1, 0) in ans
         assert len(ans) == 2
 
     def test_tree_all_pairs_lca(self):
@@ -108,7 +109,8 @@ class TestTreeLCA:
     def test_tree_all_pairs_lca_generator(self):
         pairs = iter([(0, 1), (0, 1), (1, 0)])
         some_pairs = dict(tree_all_pairs_lca(self.DG, 0, pairs))
-        assert (0, 1) in some_pairs and (1, 0) in some_pairs
+        assert (0, 1) in some_pairs
+        assert (1, 0) in some_pairs
         assert len(some_pairs) == 2
 
     def test_tree_all_pairs_lca_nonexisting_pairs_exception(self):

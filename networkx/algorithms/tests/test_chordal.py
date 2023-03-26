@@ -51,7 +51,7 @@ class TestMCS:
         self_loop_G.add_edges_from([(1, 1)])
         cls.self_loop_G = self_loop_G
 
-    @pytest.mark.parametrize("G", (nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()))
+    @pytest.mark.parametrize("G", [nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()])
     def test_is_chordal_not_implemented(self, G):
         with pytest.raises(nx.NetworkXNotImplemented):
             nx.is_chordal(G)

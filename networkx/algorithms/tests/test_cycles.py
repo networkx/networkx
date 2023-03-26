@@ -41,13 +41,13 @@ class TestCycles:
         assert sort_cy == [[0, 1, 2, 3], [0, 1, 6, 7, 8], [0, 3, 4, 5], ["A", "B", "C"]]
 
     def test_cycle_basis2(self):
+        G = nx.DiGraph()
         with pytest.raises(nx.NetworkXNotImplemented):
-            G = nx.DiGraph()
             cy = networkx.cycle_basis(G, 0)
 
     def test_cycle_basis3(self):
+        G = nx.MultiGraph()
         with pytest.raises(nx.NetworkXNotImplemented):
-            G = nx.MultiGraph()
             cy = networkx.cycle_basis(G, 0)
 
     def test_cycle_basis_self_loop(self):
@@ -69,8 +69,8 @@ class TestCycles:
             assert any(self.is_cyclic_permutation(c, rc) for rc in ca)
 
     def test_simple_cycles_graph(self):
+        G = nx.Graph()
         with pytest.raises(nx.NetworkXNotImplemented):
-            G = nx.Graph()
             c = sorted(nx.simple_cycles(G))
 
     def test_unsortable(self):

@@ -188,9 +188,9 @@ class TestQuotient:
             assert M.nodes[n]["density"] == 0.5
 
     def test_overlapping_blocks(self):
+        G = nx.path_graph(6)
+        partition = [{0, 1, 2}, {2, 3}, {4, 5}]
         with pytest.raises(nx.NetworkXException):
-            G = nx.path_graph(6)
-            partition = [{0, 1, 2}, {2, 3}, {4, 5}]
             nx.quotient_graph(G, partition)
 
     def test_weighted_path(self):
@@ -417,6 +417,6 @@ class TestContraction:
         exception.
 
         """
+        G = nx.cycle_graph(4)
         with pytest.raises(ValueError):
-            G = nx.cycle_graph(4)
             nx.contracted_edge(G, (0, 2))

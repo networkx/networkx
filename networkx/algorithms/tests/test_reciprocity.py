@@ -12,8 +12,8 @@ class TestReciprocity:
 
     # test empty graph's overall reciprocity which will throw an error
     def test_overall_reciprocity_empty_graph(self):
+        DG = nx.DiGraph()
         with pytest.raises(nx.NetworkXError):
-            DG = nx.DiGraph()
             nx.overall_reciprocity(DG)
 
     # test for reciprocity for a list of nodes
@@ -31,7 +31,7 @@ class TestReciprocity:
 
     # test for reciprocity for an isolated node
     def test_reciprocity_graph_isolated_nodes(self):
+        DG = nx.DiGraph([(1, 2)])
+        DG.add_node(4)
         with pytest.raises(nx.NetworkXError):
-            DG = nx.DiGraph([(1, 2)])
-            DG.add_node(4)
             nx.reciprocity(DG, 4)

@@ -243,22 +243,22 @@ class TestWeightedPath(WeightedTestBase):
         vlp(G, s, t, length, astar, weight)
 
     def test_bidirectional_dijkstra_no_path(self):
+        G = nx.Graph()
+        nx.add_path(G, [1, 2, 3])
+        nx.add_path(G, [4, 5, 6])
         with pytest.raises(nx.NetworkXNoPath):
-            G = nx.Graph()
-            nx.add_path(G, [1, 2, 3])
-            nx.add_path(G, [4, 5, 6])
             path = nx.bidirectional_dijkstra(G, 1, 6)
 
     @pytest.mark.parametrize(
         "fn",
-        (
+        [
             nx.dijkstra_path,
             nx.dijkstra_path_length,
             nx.single_source_dijkstra_path,
             nx.single_source_dijkstra_path_length,
             nx.single_source_dijkstra,
             nx.dijkstra_predecessor_and_distance,
-        ),
+        ],
     )
     def test_absent_source(self, fn):
         G = nx.path_graph(2)
@@ -465,11 +465,11 @@ class TestMultiSourceDijkstra:
 
     @pytest.mark.parametrize(
         "fn",
-        (
+        [
             nx.multi_source_dijkstra_path,
             nx.multi_source_dijkstra_path_length,
             nx.multi_source_dijkstra,
-        ),
+        ],
     )
     def test_absent_source(self, fn):
         G = nx.path_graph(2)
@@ -523,8 +523,8 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
             pytest.raises(nx.NodeNotFound, fn, G, 3, 3)
 
     def test_absent_source_goldberg_radzik(self):
+        G = nx.path_graph(2)
         with pytest.raises(nx.NodeNotFound):
-            G = nx.path_graph(2)
             nx.goldberg_radzik(G, 3, 0)
 
     def test_negative_cycle_heuristic(self):
@@ -865,9 +865,9 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
 
 class TestJohnsonAlgorithm(WeightedTestBase):
     def test_single_node_graph(self):
+        G = nx.DiGraph()
+        G.add_node(0)
         with pytest.raises(nx.NetworkXError):
-            G = nx.DiGraph()
-            G.add_node(0)
             nx.johnson(G)
 
     def test_negative_cycle(self):
@@ -915,8 +915,8 @@ class TestJohnsonAlgorithm(WeightedTestBase):
         }
 
     def test_unweighted_graph(self):
+        G = nx.path_graph(5)
         with pytest.raises(nx.NetworkXError):
-            G = nx.path_graph(5)
             nx.johnson(G)
 
     def test_graphs(self):

@@ -59,7 +59,7 @@ class TestPageRank:
             )
         )
 
-    @pytest.mark.parametrize("alg", (nx.pagerank, _pagerank_python))
+    @pytest.mark.parametrize("alg", [nx.pagerank, _pagerank_python])
     def test_pagerank(self, alg):
         G = self.G
         p = alg(G, alpha=0.9, tol=1.0e-08)
@@ -71,7 +71,7 @@ class TestPageRank:
         for n in G:
             assert p[n] == pytest.approx(G.pagerank[n], abs=1e-4)
 
-    @pytest.mark.parametrize("alg", (nx.pagerank, _pagerank_python))
+    @pytest.mark.parametrize("alg", [nx.pagerank, _pagerank_python])
     def test_pagerank_max_iter(self, alg):
         with pytest.raises(nx.PowerIterationFailedConvergence):
             alg(self.G, max_iter=0)
@@ -90,7 +90,7 @@ class TestPageRank:
         for a, b in zip(p, self.G.pagerank.values()):
             assert a == pytest.approx(b, abs=1e-7)
 
-    @pytest.mark.parametrize("alg", (nx.pagerank, _pagerank_python, _pagerank_numpy))
+    @pytest.mark.parametrize("alg", [nx.pagerank, _pagerank_python, _pagerank_numpy])
     def test_personalization(self, alg):
         G = nx.complete_graph(4)
         personalize = {0: 1, 1: 1, 2: 4, 3: 4}
@@ -104,13 +104,13 @@ class TestPageRank:
         for n in G:
             assert p[n] == pytest.approx(answer[n], abs=1e-4)
 
-    @pytest.mark.parametrize("alg", (nx.pagerank, _pagerank_python, nx.google_matrix))
+    @pytest.mark.parametrize("alg", [nx.pagerank, _pagerank_python, nx.google_matrix])
     def test_zero_personalization_vector(self, alg):
         G = nx.complete_graph(4)
         personalize = {0: 0, 1: 0, 2: 0, 3: 0}
         pytest.raises(ZeroDivisionError, alg, G, personalization=personalize)
 
-    @pytest.mark.parametrize("alg", (nx.pagerank, _pagerank_python))
+    @pytest.mark.parametrize("alg", [nx.pagerank, _pagerank_python])
     def test_one_nonzero_personalization_value(self, alg):
         G = nx.complete_graph(4)
         personalize = {0: 0, 1: 0, 2: 0, 3: 1}
@@ -124,7 +124,7 @@ class TestPageRank:
         for n in G:
             assert p[n] == pytest.approx(answer[n], abs=1e-4)
 
-    @pytest.mark.parametrize("alg", (nx.pagerank, _pagerank_python))
+    @pytest.mark.parametrize("alg", [nx.pagerank, _pagerank_python])
     def test_incomplete_personalization(self, alg):
         G = nx.complete_graph(4)
         personalize = {3: 1}
@@ -157,7 +157,7 @@ class TestPageRank:
                 else:
                     assert M2[i, j] == pytest.approx(M1[i, j], abs=1e-4)
 
-    @pytest.mark.parametrize("alg", (nx.pagerank, _pagerank_python, _pagerank_numpy))
+    @pytest.mark.parametrize("alg", [nx.pagerank, _pagerank_python, _pagerank_numpy])
     def test_dangling_pagerank(self, alg):
         pr = alg(self.G, dangling=self.dangling_edges)
         for n in self.G:
@@ -170,7 +170,7 @@ class TestPageRank:
         assert _pagerank_numpy(G) == {}
         assert nx.google_matrix(G).shape == (0, 0)
 
-    @pytest.mark.parametrize("alg", (nx.pagerank, _pagerank_python))
+    @pytest.mark.parametrize("alg", [nx.pagerank, _pagerank_python])
     def test_multigraph(self, alg):
         G = nx.MultiGraph()
         G.add_edges_from([(1, 2), (1, 2), (1, 2), (2, 3), (2, 3), ("3", 3), ("3", 3)])

@@ -6,7 +6,7 @@ np = pytest.importorskip("numpy")
 
 
 @pytest.mark.parametrize(
-    "k, weight, expected",
+    ("k", "weight", "expected"),
     [
         (None, None, 7.21),  # infers 3 communities
         (2, None, 11.7),

@@ -45,7 +45,7 @@ def pytest_collection_modifyitems(config, items):
 
 # TODO: The warnings below need to be dealt with, but for now we silence them.
 @pytest.fixture(autouse=True)
-def set_warnings():
+def _set_warnings():
     warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
@@ -71,7 +71,7 @@ def set_warnings():
 
 
 @pytest.fixture(autouse=True)
-def add_nx(doctest_namespace):
+def _add_nx(doctest_namespace):
     doctest_namespace["nx"] = networkx
 
 

@@ -219,7 +219,7 @@ def run_all_random_functions(seed):
 # seed = 14
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 # print("NetworkX Version:", nx.__version__)
 def test_rng_interface():
     global progress

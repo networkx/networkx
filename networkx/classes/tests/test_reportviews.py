@@ -348,9 +348,11 @@ class TestEdgeDataView:
         evr = self.eview(self.G)
         ev = evr()
         if self.G.is_directed():
-            assert (1, 2) in ev and (2, 1) not in ev
+            assert (1, 2) in ev
+            assert (2, 1) not in ev
         else:
-            assert (1, 2) in ev and (2, 1) in ev
+            assert (1, 2) in ev
+            assert (2, 1) in ev
         assert (1, 4) not in ev
         assert (1, 90) not in ev
         assert (90, 1) not in ev
@@ -626,11 +628,15 @@ class TestEdgeView:
         ev = self.eview(self.G)
         edv = ev()
         if self.G.is_directed():
-            assert (1, 2) in ev and (2, 1) not in ev
-            assert (1, 2) in edv and (2, 1) not in edv
+            assert (1, 2) in ev
+            assert (2, 1) not in ev
+            assert (1, 2) in edv
+            assert (2, 1) not in edv
         else:
-            assert (1, 2) in ev and (2, 1) in ev
-            assert (1, 2) in edv and (2, 1) in edv
+            assert (1, 2) in ev
+            assert (2, 1) in ev
+            assert (1, 2) in edv
+            assert (2, 1) in edv
         assert (1, 4) not in ev
         assert (1, 4) not in edv
         # edge not in graph
@@ -1370,7 +1376,7 @@ class TestInMultiDegreeView(TestDegreeView):
 
 @pytest.mark.parametrize(
     ("reportview", "err_msg_terms"),
-    (
+    [
         (rv.NodeView, "list(G.nodes"),
         (rv.NodeDataView, "list(G.nodes.data"),
         (rv.EdgeView, "list(G.edges"),
@@ -1381,7 +1387,7 @@ class TestInMultiDegreeView(TestDegreeView):
         (rv.MultiEdgeView, "list(G.edges"),
         (rv.InMultiEdgeView, "list(G.in_edges"),
         (rv.OutMultiEdgeView, "list(G.edges"),
-    ),
+    ],
 )
 def test_slicing_reportviews(reportview, err_msg_terms):
     G = nx.complete_graph(3)

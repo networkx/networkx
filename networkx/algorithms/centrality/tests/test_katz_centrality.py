@@ -100,14 +100,14 @@ class TestKatzCentrality:
         assert e == {}
 
     def test_bad_beta(self):
+        G = nx.Graph([(0, 1)])
+        beta = {0: 77}
         with pytest.raises(nx.NetworkXException):
-            G = nx.Graph([(0, 1)])
-            beta = {0: 77}
             nx.katz_centrality(G, 0.1, beta=beta)
 
     def test_bad_beta_numbe(self):
+        G = nx.Graph([(0, 1)])
         with pytest.raises(nx.NetworkXException):
-            G = nx.Graph([(0, 1)])
             nx.katz_centrality(G, 0.1, beta="foo")
 
 
@@ -207,14 +207,14 @@ class TestKatzCentralityNumpy:
         assert e == {}
 
     def test_bad_beta(self):
+        G = nx.Graph([(0, 1)])
+        beta = {0: 77}
         with pytest.raises(nx.NetworkXException):
-            G = nx.Graph([(0, 1)])
-            beta = {0: 77}
             nx.katz_centrality_numpy(G, 0.1, beta=beta)
 
     def test_bad_beta_numbe(self):
+        G = nx.Graph([(0, 1)])
         with pytest.raises(nx.NetworkXException):
-            G = nx.Graph([(0, 1)])
             nx.katz_centrality_numpy(G, 0.1, beta="foo")
 
     def test_K5_unweighted(self):

@@ -507,7 +507,8 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
     # coming through an edge from vertex v.
     def assignLabel(w, t, v):
         b = inblossom[w]
-        assert label.get(w) is None and label.get(b) is None
+        assert label.get(w) is None
+        assert label.get(b) is None
         label[w] = label[b] = t
         if v is not None:
             labeledge[w] = labeledge[b] = (v, w)
@@ -867,7 +868,8 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
                 s += 2 * blossomdual[bi]
             assert s >= 0
             if mate.get(i) == j or mate.get(j) == i:
-                assert mate[i] == j and mate[j] == i
+                assert mate[i] == j
+                assert mate[j] == i
                 assert s == 0
         # 2. all single vertices have zero dual value;
         for v in gnodes:
@@ -877,7 +879,8 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
             if blossomdual[b] > 0:
                 assert len(b.edges) % 2 == 1
                 for i, j in b.edges[1::2]:
-                    assert mate[i] == j and mate[j] == i
+                    assert mate[i] == j
+                    assert mate[j] == i
         # Ok.
 
     # Main loop: continue until no further improvement is possible.

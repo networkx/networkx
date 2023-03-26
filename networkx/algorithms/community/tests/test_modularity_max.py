@@ -8,7 +8,7 @@ from networkx.algorithms.community import (
 
 
 @pytest.mark.parametrize(
-    "func", (greedy_modularity_communities, naive_greedy_modularity_communities)
+    "func", [greedy_modularity_communities, naive_greedy_modularity_communities]
 )
 def test_modularity_communities(func):
     G = nx.karate_club_graph()
@@ -22,7 +22,7 @@ def test_modularity_communities(func):
 
 
 @pytest.mark.parametrize(
-    "func", (greedy_modularity_communities, naive_greedy_modularity_communities)
+    "func", [greedy_modularity_communities, naive_greedy_modularity_communities]
 )
 def test_modularity_communities_categorical_labels(func):
     # Using other than 0-starting contiguous integers as node-labels.
@@ -92,7 +92,7 @@ def test_greedy_modularity_communities_directed():
 
 
 @pytest.mark.parametrize(
-    "func", (greedy_modularity_communities, naive_greedy_modularity_communities)
+    "func", [greedy_modularity_communities, naive_greedy_modularity_communities]
 )
 def test_modularity_communities_weighted(func):
     G = nx.balanced_tree(2, 3)

@@ -114,7 +114,8 @@ class TestProminentGroup:
         k = 1
         b, g = nx.prominent_group(G, k, normalized=False, endpoints=False)
         b_answer, g_answer = 4.0, [2]
-        assert b == b_answer and g == g_answer
+        assert b == b_answer
+        assert g == g_answer
 
     def test_prominent_group_with_c(self):
         """
@@ -124,7 +125,8 @@ class TestProminentGroup:
         k = 1
         b, g = nx.prominent_group(G, k, normalized=False, C=[2])
         b_answer, g_answer = 3.0, [1]
-        assert b == b_answer and g == g_answer
+        assert b == b_answer
+        assert g == g_answer
 
     def test_prominent_group_normalized_endpoints(self):
         """
@@ -134,7 +136,8 @@ class TestProminentGroup:
         k = 2
         b, g = nx.prominent_group(G, k, normalized=True, endpoints=True)
         b_answer, g_answer = 1.7, [2, 5]
-        assert b == b_answer and g == g_answer
+        assert b == b_answer
+        assert g == g_answer
 
     def test_prominent_group_disconnected_graph(self):
         """
@@ -145,7 +148,8 @@ class TestProminentGroup:
         k = 1
         b, g = nx.prominent_group(G, k, weight=None, normalized=False)
         b_answer, g_answer = 4.0, [3]
-        assert b == b_answer and g == g_answer
+        assert b == b_answer
+        assert g == g_answer
 
     def test_prominent_group_node_not_in_graph(self):
         """
@@ -169,7 +173,8 @@ class TestProminentGroup:
         k = 2
         b, g = nx.prominent_group(G, k, weight="weight", normalized=False)
         b_answer, g_answer = 5.0, [1, 2]
-        assert b == b_answer and g == g_answer
+        assert b == b_answer
+        assert g == g_answer
 
     def test_prominent_group_greedy_algorithm(self):
         """
@@ -179,7 +184,8 @@ class TestProminentGroup:
         k = 2
         b, g = nx.prominent_group(G, k, normalized=True, endpoints=True, greedy=True)
         b_answer, g_answer = 1.7, [6, 3]
-        assert b == b_answer and g == g_answer
+        assert b == b_answer
+        assert g == g_answer
 
 
 class TestGroupClosenessCentrality:

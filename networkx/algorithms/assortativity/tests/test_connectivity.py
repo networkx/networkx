@@ -118,13 +118,13 @@ class TestNeighborConnectivity:
             assert c == cw
 
     def test_invalid_source(self):
+        G = nx.DiGraph()
         with pytest.raises(nx.NetworkXError):
-            G = nx.DiGraph()
             nx.average_degree_connectivity(G, source="bogus")
 
     def test_invalid_target(self):
+        G = nx.DiGraph()
         with pytest.raises(nx.NetworkXError):
-            G = nx.DiGraph()
             nx.average_degree_connectivity(G, target="bogus")
 
     def test_invalid_undirected_graph(self):

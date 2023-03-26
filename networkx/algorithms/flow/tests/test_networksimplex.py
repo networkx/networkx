@@ -7,7 +7,7 @@ import pytest
 import networkx as nx
 
 
-@pytest.fixture
+@pytest.fixture()
 def simple_flow_graph():
     G = nx.DiGraph()
     G.add_node("a", demand=0)
@@ -21,7 +21,7 @@ def simple_flow_graph():
     return G
 
 
-@pytest.fixture
+@pytest.fixture()
 def simple_no_flow_graph():
     G = nx.DiGraph()
     G.add_node("s", demand=-5)

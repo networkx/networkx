@@ -1045,7 +1045,8 @@ class ISMAGS:
         """
         t_partition = top_partitions[pair_idx]
         b_partition = bottom_partitions[pair_idx]
-        assert t_node in t_partition and b_node in b_partition
+        assert t_node in t_partition
+        assert b_node in b_partition
         # Couple node to node2. This means they get their own partition
         new_top_partitions = [top.copy() for top in top_partitions]
         new_bottom_partitions = [bot.copy() for bot in bottom_partitions]

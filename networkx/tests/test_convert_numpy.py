@@ -196,7 +196,7 @@ class TestConvertNumpyArray:
         assert A.dtype == int
 
 
-@pytest.fixture
+@pytest.fixture()
 def multigraph_test_graph():
     G = nx.MultiGraph()
     G.add_edge(1, 2, weight=7)
@@ -204,7 +204,7 @@ def multigraph_test_graph():
     return G
 
 
-@pytest.mark.parametrize(("operator", "expected"), ((sum, 77), (min, 7), (max, 70)))
+@pytest.mark.parametrize(("operator", "expected"), [(sum, 77), (min, 7), (max, 70)])
 def test_numpy_multigraph(multigraph_test_graph, operator, expected):
     A = nx.to_numpy_array(multigraph_test_graph, multigraph_weight=operator)
     assert A[1, 0] == expected
@@ -219,7 +219,7 @@ def test_to_numpy_array_multigraph_nodelist(multigraph_test_graph):
 
 
 @pytest.mark.parametrize(
-    "G, expected",
+    ("G", "expected"),
     [
         (nx.Graph(), np.array([[0, 1 + 2j], [1 + 2j, 0]], dtype=complex)),
         (nx.DiGraph(), np.array([[0, 1 + 2j], [0, 0]], dtype=complex)),
@@ -246,8 +246,8 @@ def test_to_numpy_array_arbitrary_weights():
 
 
 @pytest.mark.parametrize(
-    "func, expected",
-    ((min, -1), (max, 10), (sum, 11), (np.mean, 11 / 3), (np.median, 2)),
+    ("func", "expected"),
+    [(min, -1), (max, 10), (sum, 11), (np.mean, 11 / 3), (np.median, 2)],
 )
 def test_to_numpy_array_multiweight_reduction(func, expected):
     """Test various functions for reducing multiedge weights."""
@@ -264,7 +264,7 @@ def test_to_numpy_array_multiweight_reduction(func, expected):
 
 
 @pytest.mark.parametrize(
-    ("G, expected"),
+    (("G", "expected")),
     [
         (nx.Graph(), [[(0, 0), (10, 5)], [(10, 5), (0, 0)]]),
         (nx.DiGraph(), [[(0, 0), (10, 5)], [(0, 0), (0, 0)]]),
@@ -304,7 +304,7 @@ def test_to_numpy_array_structured_dtype_single_attr(field_name, expected_attr_v
     npt.assert_array_equal(A[field_name], expected)
 
 
-@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+@pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph])
 @pytest.mark.parametrize(
     "edge",
     [
@@ -323,7 +323,7 @@ def test_to_numpy_array_structured_dtype_multiple_fields(graph_type, edge):
         npt.assert_array_equal(A[attr], expected)
 
 
-@pytest.mark.parametrize("G", (nx.Graph(), nx.DiGraph()))
+@pytest.mark.parametrize("G", [nx.Graph(), nx.DiGraph()])
 def test_to_numpy_array_structured_dtype_scalar_nonedge(G):
     G.add_edge(0, 1, weight=10)
     dtype = np.dtype([("weight", float), ("cost", float)])
@@ -333,7 +333,7 @@ def test_to_numpy_array_structured_dtype_scalar_nonedge(G):
         npt.assert_array_equal(A[attr], expected)
 
 
-@pytest.mark.parametrize("G", (nx.Graph(), nx.DiGraph()))
+@pytest.mark.parametrize("G", [nx.Graph(), nx.DiGraph()])
 def test_to_numpy_array_structured_dtype_nonedge_ary(G):
     """Similar to the scalar case, except has a different non-edge value for
     each named field."""
@@ -359,7 +359,7 @@ def test_to_numpy_array_structured_dtype_with_weight_raises():
         nx.to_numpy_array(G, dtype=dtype, weight="cost")
 
 
-@pytest.mark.parametrize("graph_type", (nx.MultiGraph, nx.MultiDiGraph))
+@pytest.mark.parametrize("graph_type", [nx.MultiGraph, nx.MultiDiGraph])
 def test_to_numpy_array_structured_multigraph_raises(graph_type):
     G = nx.path_graph(3, create_using=graph_type)
     dtype = np.dtype([("weight", int), ("cost", int)])

@@ -184,11 +184,11 @@ class TestEdgeFlowBetweennessCentrality:
 
 @pytest.mark.parametrize(
     "centrality_func",
-    (
+    [
         nx.current_flow_betweenness_centrality,
         nx.edge_current_flow_betweenness_centrality,
         nx.approximate_current_flow_betweenness_centrality,
-    ),
+    ],
 )
 def test_unconnected_graphs_betweenness_centrality(centrality_func):
     G = nx.Graph([(1, 2), (3, 4)])

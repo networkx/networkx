@@ -55,7 +55,8 @@ def test_omega():
     omegal = omega(Gl, niter=1, nrand=1, seed=rng)
     omegar = omega(Gr, niter=1, nrand=1, seed=rng)
     omegas = omega(Gs, niter=1, nrand=1, seed=rng)
-    assert omegal < omegas and omegas < omegar
+    assert omegal < omegas
+    assert omegas < omegar
 
     # Test that omega lies within the [-1, 1] bounds
     G_barbell = nx.barbell_graph(5, 1)
@@ -70,7 +71,7 @@ def test_omega():
         assert -1 <= o <= 1
 
 
-@pytest.mark.parametrize("f", (nx.random_reference, nx.lattice_reference))
+@pytest.mark.parametrize("f", [nx.random_reference, nx.lattice_reference])
 def test_graph_no_edges(f):
     G = nx.Graph()
     G.add_nodes_from([0, 1, 2, 3])

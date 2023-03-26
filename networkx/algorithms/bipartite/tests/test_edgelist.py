@@ -181,14 +181,14 @@ class TestEdgelist:
         os.unlink(fname)
 
     def test_empty_digraph(self):
+        bytesIO = io.BytesIO()
         with pytest.raises(nx.NetworkXNotImplemented):
-            bytesIO = io.BytesIO()
             bipartite.write_edgelist(nx.DiGraph(), bytesIO)
 
     def test_raise_attribute(self):
+        G = nx.path_graph(4)
+        bytesIO = io.BytesIO()
         with pytest.raises(AttributeError):
-            G = nx.path_graph(4)
-            bytesIO = io.BytesIO()
             bipartite.write_edgelist(G, bytesIO)
 
     def test_parse_edgelist(self):
@@ -202,28 +202,28 @@ class TestEdgelist:
 
         # Exception raised when node is not convertible
         # to specified data type
+        lines = ["a b", "b c", "c a"]
         with pytest.raises(TypeError, match=".*Failed to convert nodes"):
-            lines = ["a b", "b c", "c a"]
             G = bipartite.parse_edgelist(lines, nodetype=int)
 
         # Exception raised when format of data is not
         # convertible to dictionary object
+        lines = ["1 2 3", "2 3 4", "3 1 2"]
         with pytest.raises(TypeError, match=".*Failed to convert edge data"):
-            lines = ["1 2 3", "2 3 4", "3 1 2"]
             G = bipartite.parse_edgelist(lines, nodetype=int)
 
         # Exception raised when edge data and data
         # keys are not of same length
+        lines = ["1 2 3 4", "2 3 4"]
         with pytest.raises(IndexError):
-            lines = ["1 2 3 4", "2 3 4"]
             G = bipartite.parse_edgelist(
                 lines, nodetype=int, data=[("weight", int), ("key", int)]
             )
 
         # Exception raised when edge data is not
         # convertible to specified data type
+        lines = ["1 2 3 a", "2 3 4 b"]
         with pytest.raises(TypeError, match=".*Failed to convert key data"):
-            lines = ["1 2 3 a", "2 3 4 b"]
             G = bipartite.parse_edgelist(
                 lines, nodetype=int, data=[("weight", int), ("key", int)]
             )

@@ -244,16 +244,16 @@ def test_cutoff_zero():
 
 
 def test_source_missing():
+    G = nx.Graph()
+    nx.add_path(G, [1, 2, 3])
     with pytest.raises(nx.NodeNotFound):
-        G = nx.Graph()
-        nx.add_path(G, [1, 2, 3])
         list(nx.all_simple_paths(nx.MultiGraph(G), 0, 3))
 
 
 def test_target_missing():
+    G = nx.Graph()
+    nx.add_path(G, [1, 2, 3])
     with pytest.raises(nx.NodeNotFound):
-        G = nx.Graph()
-        nx.add_path(G, [1, 2, 3])
         list(nx.all_simple_paths(nx.MultiGraph(G), 1, 4))
 
 
@@ -434,16 +434,16 @@ def test_edge_cutoff_zero():
 
 
 def test_edge_source_missing():
+    G = nx.Graph()
+    nx.add_path(G, [1, 2, 3])
     with pytest.raises(nx.NodeNotFound):
-        G = nx.Graph()
-        nx.add_path(G, [1, 2, 3])
         list(nx.all_simple_edge_paths(nx.MultiGraph(G), 0, 3))
 
 
 def test_edge_target_missing():
+    G = nx.Graph()
+    nx.add_path(G, [1, 2, 3])
     with pytest.raises(nx.NodeNotFound):
-        G = nx.Graph()
-        nx.add_path(G, [1, 2, 3])
         list(nx.all_simple_edge_paths(nx.MultiGraph(G), 1, 4))
 
 
@@ -582,31 +582,31 @@ def test_weight_name():
 
 
 def test_ssp_source_missing():
+    G = nx.Graph()
+    nx.add_path(G, [1, 2, 3])
     with pytest.raises(nx.NodeNotFound):
-        G = nx.Graph()
-        nx.add_path(G, [1, 2, 3])
         list(nx.shortest_simple_paths(G, 0, 3))
 
 
 def test_ssp_target_missing():
+    G = nx.Graph()
+    nx.add_path(G, [1, 2, 3])
     with pytest.raises(nx.NodeNotFound):
-        G = nx.Graph()
-        nx.add_path(G, [1, 2, 3])
         list(nx.shortest_simple_paths(G, 1, 4))
 
 
 def test_ssp_multigraph():
+    G = nx.MultiGraph()
+    nx.add_path(G, [1, 2, 3])
     with pytest.raises(nx.NetworkXNotImplemented):
-        G = nx.MultiGraph()
-        nx.add_path(G, [1, 2, 3])
         list(nx.shortest_simple_paths(G, 1, 4))
 
 
 def test_ssp_source_missing2():
+    G = nx.Graph()
+    nx.add_path(G, [0, 1, 2])
+    nx.add_path(G, [3, 4, 5])
     with pytest.raises(nx.NetworkXNoPath):
-        G = nx.Graph()
-        nx.add_path(G, [0, 1, 2])
-        nx.add_path(G, [3, 4, 5])
         list(nx.shortest_simple_paths(G, 0, 3))
 
 
@@ -751,10 +751,10 @@ def test_bidirectional_dijksta_restricted():
 
 
 def test_bidirectional_dijkstra_no_path():
+    G = nx.Graph()
+    nx.add_path(G, [1, 2, 3])
+    nx.add_path(G, [4, 5, 6])
     with pytest.raises(nx.NetworkXNoPath):
-        G = nx.Graph()
-        nx.add_path(G, [1, 2, 3])
-        nx.add_path(G, [4, 5, 6])
         _bidirectional_dijkstra(G, 1, 6)
 
 

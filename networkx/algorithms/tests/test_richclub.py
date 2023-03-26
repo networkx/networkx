@@ -69,14 +69,14 @@ def test_richclub4():
 
 
 def test_richclub_exception():
+    G = nx.DiGraph()
     with pytest.raises(nx.NetworkXNotImplemented):
-        G = nx.DiGraph()
         nx.rich_club_coefficient(G)
 
 
 def test_rich_club_exception2():
+    G = nx.MultiGraph()
     with pytest.raises(nx.NetworkXNotImplemented):
-        G = nx.MultiGraph()
         nx.rich_club_coefficient(G)
 
 

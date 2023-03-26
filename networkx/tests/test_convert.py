@@ -282,12 +282,12 @@ class TestConvert:
 
 @pytest.mark.parametrize(
     "edgelist",
-    (
+    [
         # Graph with no edge data
         [(0, 1), (1, 2)],
         # Graph with edge data
         [(0, 1, {"weight": 1.0}), (1, 2, {"weight": 2.0})],
-    ),
+    ],
 )
 def test_to_dict_of_dicts_with_edgedata_param(edgelist):
     G = nx.Graph()

@@ -14,8 +14,8 @@ class TestPruferSequence:
     """
 
     def test_nontree(self):
+        G = nx.cycle_graph(3)
         with pytest.raises(nx.NotATree):
-            G = nx.cycle_graph(3)
             nx.to_prufer_sequence(G)
 
     def test_null_graph(self):
@@ -27,8 +27,8 @@ class TestPruferSequence:
             nx.to_prufer_sequence(nx.trivial_graph())
 
     def test_bad_integer_labels(self):
+        T = nx.Graph(nx.utils.pairwise("abc"))
         with pytest.raises(KeyError):
-            T = nx.Graph(nx.utils.pairwise("abc"))
             nx.to_prufer_sequence(T)
 
     def test_encoding(self):
@@ -74,13 +74,13 @@ class TestNestedTuple:
     """Unit tests for the nested tuple encoding and decoding functions."""
 
     def test_nontree(self):
+        G = nx.cycle_graph(3)
         with pytest.raises(nx.NotATree):
-            G = nx.cycle_graph(3)
             nx.to_nested_tuple(G, 0)
 
     def test_unknown_root(self):
+        G = nx.path_graph(2)
         with pytest.raises(nx.NodeNotFound):
-            G = nx.path_graph(2)
             nx.to_nested_tuple(G, "bogus")
 
     def test_encoding(self):

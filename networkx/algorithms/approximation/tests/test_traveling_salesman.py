@@ -375,13 +375,15 @@ def test_TSP_incomplete_graph_short_path():
 
     cycle = nx_app.traveling_salesman_problem(G)
     print(cycle)
-    assert len(cycle) == 17 and len(set(cycle)) == 12
+    assert len(cycle) == 17
+    assert len(set(cycle)) == 12
 
     # make sure that cutting one edge out of complete graph formulation
     # cuts out many edges out of the path of the TSP
     path = nx_app.traveling_salesman_problem(G, cycle=False)
     print(path)
-    assert len(path) == 13 and len(set(path)) == 12
+    assert len(path) == 13
+    assert len(set(path)) == 12
 
 
 def test_held_karp_ascent():
@@ -902,7 +904,7 @@ def test_asadpour_empty_graph():
     pytest.raises(nx.NetworkXError, nx_app.asadpour_atsp, G)
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_asadpour_integral_held_karp():
     """
     This test uses an integral held karp solution and the held karp function

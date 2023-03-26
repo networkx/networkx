@@ -26,6 +26,6 @@ def test_redundant_nodes():
 
 
 def test_not_enough_neighbors():
+    G = complete_bipartite_graph(1, 2)
     with pytest.raises(NetworkXError):
-        G = complete_bipartite_graph(1, 2)
         node_redundancy(G)

@@ -39,12 +39,12 @@ class TestUnweightedPath:
 
     @pytest.mark.parametrize(
         ("src", "tgt"),
-        (
+        [
             (8, 3),  # source not in graph
             (3, 8),  # target not in graph
             (8, 10),  # neither source nor target in graph
             (8, 8),  # src == tgt, neither in graph - tests order of input checks
-        ),
+        ],
     )
     def test_bidirectional_shortest_path_src_tgt_not_in_graph(self, src, tgt):
         with pytest.raises(

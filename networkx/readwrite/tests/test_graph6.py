@@ -80,7 +80,7 @@ class TestWriteGraph6:
         # The expected encoding here was verified by Sage.
         assert result.getvalue() == b"N??F~z{~Fw^_~?~?^_?\n"
 
-    @pytest.mark.parametrize("G", (nx.MultiGraph(), nx.DiGraph()))
+    @pytest.mark.parametrize("G", [nx.MultiGraph(), nx.DiGraph()])
     def test_no_directed_or_multi_graphs(self, G):
         with pytest.raises(nx.NetworkXNotImplemented):
             nx.write_graph6(G, BytesIO())
@@ -110,7 +110,7 @@ class TestWriteGraph6:
             f.seek(0)
             assert f.read() == b">>graph6<<?\n"
 
-    @pytest.mark.parametrize("edge", ((0, 1), (1, 2), (1, 42)))
+    @pytest.mark.parametrize("edge", [(0, 1), (1, 2), (1, 42)])
     def test_relabeling(self, edge):
         G = nx.Graph([edge])
         f = BytesIO()
@@ -143,7 +143,7 @@ class TestToGraph6Bytes:
         G = nx.complete_bipartite_graph(6, 9)
         assert g6.to_graph6_bytes(G, header=False) == b"N??F~z{~Fw^_~?~?^_?\n"
 
-    @pytest.mark.parametrize("G", (nx.MultiGraph(), nx.DiGraph()))
+    @pytest.mark.parametrize("G", [nx.MultiGraph(), nx.DiGraph()])
     def test_no_directed_or_multi_graphs(self, G):
         with pytest.raises(nx.NetworkXNotImplemented):
             g6.to_graph6_bytes(G)
@@ -163,7 +163,7 @@ class TestToGraph6Bytes:
             assert nodes_equal(G.nodes(), H.nodes())
             assert edges_equal(G.edges(), H.edges())
 
-    @pytest.mark.parametrize("edge", ((0, 1), (1, 2), (1, 42)))
+    @pytest.mark.parametrize("edge", [(0, 1), (1, 2), (1, 42)])
     def test_relabeling(self, edge):
         G = nx.Graph([edge])
         assert g6.to_graph6_bytes(G) == b">>graph6<<A_\n"

@@ -442,9 +442,9 @@ class TestCommonNeighbors:
         self.test(G, 1, 2, [0])
 
     def test_digraph(self):
+        G = nx.DiGraph()
+        G.add_edges_from([(0, 1), (1, 2)])
         with pytest.raises(nx.NetworkXNotImplemented):
-            G = nx.DiGraph()
-            G.add_edges_from([(0, 1), (1, 2)])
             self.func(G, 0, 2)
 
     def test_nonexistent_nodes(self):
@@ -466,7 +466,7 @@ class TestCommonNeighbors:
 
 
 @pytest.mark.parametrize(
-    "graph_type", (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
 )
 def test_set_node_attributes(graph_type):
     # Test single value
@@ -500,10 +500,10 @@ def test_set_node_attributes(graph_type):
 
 @pytest.mark.parametrize(
     ("values", "name"),
-    (
+    [
         ({0: "red", 1: "blue"}, "color"),  # values dictionary
         ({0: {"color": "red"}, 1: {"color": "blue"}}, None),  # dict-of-dict
-    ),
+    ],
 )
 def test_set_node_attributes_ignores_extra_nodes(values, name):
     """
@@ -517,7 +517,7 @@ def test_set_node_attributes_ignores_extra_nodes(values, name):
     assert 1 not in G.nodes
 
 
-@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+@pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph])
 def test_set_edge_attributes(graph_type):
     # Test single value
     G = nx.path_graph(3, create_using=graph_type)
@@ -549,10 +549,10 @@ def test_set_edge_attributes(graph_type):
 
 @pytest.mark.parametrize(
     ("values", "name"),
-    (
+    [
         ({(0, 1): 1.0, (0, 2): 2.0}, "weight"),  # values dict
         ({(0, 1): {"weight": 1.0}, (0, 2): {"weight": 2.0}}, None),  # values dod
-    ),
+    ],
 )
 def test_set_edge_attributes_ignores_extra_edges(values, name):
     """If `values` is a dict or dict-of-dicts containing edges that are not in
@@ -564,7 +564,7 @@ def test_set_edge_attributes_ignores_extra_edges(values, name):
     assert (0, 2) not in G.edges
 
 
-@pytest.mark.parametrize("graph_type", (nx.MultiGraph, nx.MultiDiGraph))
+@pytest.mark.parametrize("graph_type", [nx.MultiGraph, nx.MultiDiGraph])
 def test_set_edge_attributes_multi(graph_type):
     # Test single value
     G = nx.path_graph(3, create_using=graph_type)
@@ -596,10 +596,10 @@ def test_set_edge_attributes_multi(graph_type):
 
 @pytest.mark.parametrize(
     ("values", "name"),
-    (
+    [
         ({(0, 1, 0): 1.0, (0, 2, 0): 2.0}, "weight"),  # values dict
         ({(0, 1, 0): {"weight": 1.0}, (0, 2, 0): {"weight": 2.0}}, None),  # values dod
-    ),
+    ],
 )
 def test_set_edge_attributes_multi_ignores_extra_edges(values, name):
     """If `values` is a dict or dict-of-dicts containing edges that are not in
@@ -750,7 +750,7 @@ def test_pathweight():
 
 
 @pytest.mark.parametrize(
-    "G", (nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph())
+    "G", [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
 )
 def test_ispath(G):
     G.add_edges_from([(1, 2), (2, 3), (1, 2), (3, 4)])
@@ -762,7 +762,7 @@ def test_ispath(G):
     assert not nx.is_path(G, another_invalid_path)
 
 
-@pytest.mark.parametrize("G", (nx.Graph(), nx.DiGraph()))
+@pytest.mark.parametrize("G", [nx.Graph(), nx.DiGraph()])
 def test_restricted_view(G):
     G.add_edges_from([(0, 1), (0, 2), (0, 3), (1, 0), (1, 1), (1, 2)])
     G.add_node(4)
@@ -771,7 +771,7 @@ def test_restricted_view(G):
     assert set(H.edges()) == {(1, 1)}
 
 
-@pytest.mark.parametrize("G", (nx.MultiGraph(), nx.MultiDiGraph()))
+@pytest.mark.parametrize("G", [nx.MultiGraph(), nx.MultiDiGraph()])
 def test_restricted_view_multi(G):
     G.add_edges_from(
         [(0, 1, 0), (0, 2, 0), (0, 3, 0), (0, 1, 1), (1, 0, 0), (1, 1, 0), (1, 2, 0)]

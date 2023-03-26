@@ -82,18 +82,18 @@ class TestDistance:
         pytest.raises(nx.NetworkXError, nx.diameter, G)
 
     def test_eccentricity_infinite(self):
+        G = nx.Graph([(1, 2), (3, 4)])
         with pytest.raises(nx.NetworkXError):
-            G = nx.Graph([(1, 2), (3, 4)])
             e = nx.eccentricity(G)
 
     def test_eccentricity_undirected_not_connected(self):
+        G = nx.Graph([(1, 2), (3, 4)])
         with pytest.raises(nx.NetworkXError):
-            G = nx.Graph([(1, 2), (3, 4)])
             e = nx.eccentricity(G, sp=1)
 
     def test_eccentricity_directed_weakly_connected(self):
+        DG = nx.DiGraph([(1, 2), (1, 3)])
         with pytest.raises(nx.NetworkXError):
-            DG = nx.DiGraph([(1, 2), (1, 3)])
             nx.eccentricity(DG)
 
 
@@ -365,13 +365,13 @@ class TestResistanceDistance:
         assert np.isclose(rd, 1 / (1 / (2 + 4) + 1 / (1 + 3)))
 
     def test_resistance_distance_div0(self):
+        self.G[1][2]["weight"] = 0
         with pytest.raises(ZeroDivisionError):
-            self.G[1][2]["weight"] = 0
             nx.resistance_distance(self.G, 1, 3, "weight")
 
     def test_resistance_distance_not_connected(self):
+        self.G.add_node(5)
         with pytest.raises(nx.NetworkXError):
-            self.G.add_node(5)
             nx.resistance_distance(self.G, 1, 5)
 
     def test_resistance_distance_same_node(self):

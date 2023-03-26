@@ -71,7 +71,8 @@ def make_H_from_C_N(C, N):
 
 def change_color(u, X, Y, N, H, F, C, L):
     """Change the color of 'u' from X to Y and update N, H, F, C."""
-    assert F[u] == X and X != Y
+    assert F[u] == X
+    assert X != Y
 
     # Change the class of 'u' from X to Y
     F[u] = Y
@@ -374,11 +375,10 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
                     if made_equitable:
                         break
                 else:
-                    assert False, (
+                    raise AssertionError(
                         "Must find a w which is the solo neighbor "
                         "of two vertices in B_cal_prime."
                     )
-
             if made_equitable:
                 break
 

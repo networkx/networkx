@@ -214,8 +214,8 @@ def test_example_1_detail_3_and_4():
 
 
 def test_directed():
+    G = nx.gnp_random_graph(10, 0.4, directed=True)
     with pytest.raises(nx.NetworkXNotImplemented):
-        G = nx.gnp_random_graph(10, 0.4, directed=True)
         kc = k_components(G)
 
 

@@ -84,8 +84,8 @@ class TestRelabel:
         assert H.nodes[3]["label"] == "D"
 
     def test_convert_to_integers_raise(self):
+        G = nx.Graph()
         with pytest.raises(nx.NetworkXError):
-            G = nx.Graph()
             H = nx.convert_node_labels_to_integers(G, ordering="increasing age")
 
     def test_relabel_nodes_copy(self):
@@ -111,7 +111,7 @@ class TestRelabel:
         H = nx.relabel_nodes(G, str)
         assert nodes_equal(H.nodes, ["0", "1", "2", "3"])
 
-    @pytest.mark.parametrize("non_mc", ("0123", ["0", "1", "2", "3"]))
+    @pytest.mark.parametrize("non_mc", ["0123", ["0", "1", "2", "3"]])
     def test_relabel_nodes_non_mapping_or_callable(self, non_mc):
         """If `mapping` is neither a Callable or a Mapping, an exception
         should be raised."""

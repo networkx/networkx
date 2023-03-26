@@ -82,7 +82,7 @@ def test_not_implemented_decorator():
 
 
 def test_not_implemented_decorator_key():
-    with pytest.raises(KeyError):
+    with pytest.raises(KeyError):  # noqa: PT012
 
         @not_implemented_for("foo")
         def test1(G):
@@ -92,12 +92,11 @@ def test_not_implemented_decorator_key():
 
 
 def test_not_implemented_decorator_raise():
+    @not_implemented_for("graph")
+    def test1(G):
+        pass
+
     with pytest.raises(nx.NetworkXNotImplemented):
-
-        @not_implemented_for("graph")
-        def test1(G):
-            pass
-
         test1(nx.Graph())
 
 
@@ -287,43 +286,39 @@ class TestRandomState:
 
 
 def test_random_state_string_arg_index():
+    @np_random_state("a")
+    def make_random_state(rs):
+        pass
+
     with pytest.raises(nx.NetworkXError):
-
-        @np_random_state("a")
-        def make_random_state(rs):
-            pass
-
-        rstate = make_random_state(1)
+        make_random_state(1)
 
 
 def test_py_random_state_string_arg_index():
+    @py_random_state("a")
+    def make_random_state(rs):
+        pass
+
     with pytest.raises(nx.NetworkXError):
-
-        @py_random_state("a")
-        def make_random_state(rs):
-            pass
-
-        rstate = make_random_state(1)
+        make_random_state(1)
 
 
 def test_random_state_invalid_arg_index():
+    @np_random_state(2)
+    def make_random_state(rs):
+        pass
+
     with pytest.raises(nx.NetworkXError):
-
-        @np_random_state(2)
-        def make_random_state(rs):
-            pass
-
-        rstate = make_random_state(1)
+        make_random_state(1)
 
 
 def test_py_random_state_invalid_arg_index():
+    @py_random_state(2)
+    def make_random_state(rs):
+        pass
+
     with pytest.raises(nx.NetworkXError):
-
-        @py_random_state(2)
-        def make_random_state(rs):
-            pass
-
-        rstate = make_random_state(1)
+        make_random_state(1)
 
 
 class TestArgmap:

@@ -41,7 +41,7 @@ class TestHITS:
         for n in G:
             assert a[n] == pytest.approx(G.a[n], abs=1e-4)
 
-    @pytest.mark.parametrize("hits_alg", (nx.hits, _hits_python, _hits_scipy))
+    @pytest.mark.parametrize("hits_alg", [nx.hits, _hits_python, _hits_scipy])
     def test_hits(self, hits_alg):
         G = self.G
         h, a = hits_alg(G, tol=1.0e-08)

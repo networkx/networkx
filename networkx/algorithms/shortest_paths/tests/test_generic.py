@@ -250,14 +250,14 @@ class TestGenericPath:
         )
 
     def test_all_shortest_paths_raise(self):
+        G = nx.path_graph(4)
+        G.add_node(4)
         with pytest.raises(nx.NetworkXNoPath):
-            G = nx.path_graph(4)
-            G.add_node(4)
             list(nx.all_shortest_paths(G, 0, 4))
 
     def test_bad_method(self):
+        G = nx.path_graph(2)
         with pytest.raises(ValueError):
-            G = nx.path_graph(2)
             list(nx.all_shortest_paths(G, 0, 1, weight="weight", method="SPAM"))
 
     def test_all_shortest_paths_zero_weight_edge(self):
@@ -351,8 +351,8 @@ class TestAverageShortestPathLength:
             nx.average_shortest_path_length(nx.null_graph())
 
     def test_bad_method(self):
+        G = nx.path_graph(2)
         with pytest.raises(ValueError):
-            G = nx.path_graph(2)
             nx.average_shortest_path_length(G, weight="weight", method="SPAM")
 
 

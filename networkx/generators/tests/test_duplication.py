@@ -58,11 +58,11 @@ class TestPartialDuplicationGraph:
         assert len(G) == n
 
     def test_invalid_initial_size(self):
+        N = 5
+        n = 10
+        p = 0.5
+        q = 0.5
         with pytest.raises(NetworkXError):
-            N = 5
-            n = 10
-            p = 0.5
-            q = 0.5
             G = partial_duplication_graph(N, n, p, q)
 
     def test_invalid_probabilities(self):

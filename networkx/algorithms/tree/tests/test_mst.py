@@ -452,7 +452,7 @@ def test_random_spanning_tree_multiplicative_small():
     assert nx.utils.edges_equal(solution.edges, sampled_tree.edges)
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_random_spanning_tree_multiplicative_large():
     """
     Sample many trees from the distribution created in the last test
@@ -578,7 +578,7 @@ def test_random_spanning_tree_additive_small():
     assert nx.utils.edges_equal(solution.edges, sampled_tree.edges)
 
 
-@pytest.mark.slow
+@pytest.mark.slow()
 def test_random_spanning_tree_additive_large():
     """
     Sample many spanning trees from the additive method.

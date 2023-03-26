@@ -120,11 +120,7 @@ class TestTreewidthMinDegree:
                     graph[u].add(v)
 
         deg_heuristic = MinDegreeHeuristic(graph)
-        node = deg_heuristic.best_node(graph)
-        if node is None:
-            pass
-        else:
-            assert False
+        assert deg_heuristic.best_node(graph) is None
 
     def test_empty_graph(self):
         """Test empty graph"""
@@ -228,11 +224,7 @@ class TestTreewidthMinFillIn:
             for v in self.complete[u]:
                 if u != v:  # ignore self-loop
                     graph[u].add(v)
-        next_node = min_fill_in_heuristic(graph)
-        if next_node is None:
-            pass
-        else:
-            assert False
+        assert min_fill_in_heuristic(graph) is None
 
     def test_empty_graph(self):
         """Test empty graph"""

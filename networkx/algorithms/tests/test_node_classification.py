@@ -20,31 +20,31 @@ class TestHarmonicFunction:
         assert predicted[3] == "B"
 
     def test_no_labels(self):
+        G = nx.path_graph(4)
         with pytest.raises(nx.NetworkXError):
-            G = nx.path_graph(4)
             node_classification.harmonic_function(G)
 
     def test_no_nodes(self):
+        G = nx.Graph()
         with pytest.raises(nx.NetworkXError):
-            G = nx.Graph()
             node_classification.harmonic_function(G)
 
     def test_no_edges(self):
+        G = nx.Graph()
+        G.add_node(1)
+        G.add_node(2)
         with pytest.raises(nx.NetworkXError):
-            G = nx.Graph()
-            G.add_node(1)
-            G.add_node(2)
             node_classification.harmonic_function(G)
 
     def test_digraph(self):
+        G = nx.DiGraph()
+        G.add_edge(0, 1)
+        G.add_edge(1, 2)
+        G.add_edge(2, 3)
+        label_name = "label"
+        G.nodes[0][label_name] = "A"
+        G.nodes[3][label_name] = "B"
         with pytest.raises(nx.NetworkXNotImplemented):
-            G = nx.DiGraph()
-            G.add_edge(0, 1)
-            G.add_edge(1, 2)
-            G.add_edge(2, 3)
-            label_name = "label"
-            G.nodes[0][label_name] = "A"
-            G.nodes[3][label_name] = "B"
             node_classification.harmonic_function(G)
 
     def test_one_labeled_node(self):
@@ -91,31 +91,31 @@ class TestLocalAndGlobalConsistency:
         assert predicted[3] == "B"
 
     def test_no_labels(self):
+        G = nx.path_graph(4)
         with pytest.raises(nx.NetworkXError):
-            G = nx.path_graph(4)
             node_classification.local_and_global_consistency(G)
 
     def test_no_nodes(self):
+        G = nx.Graph()
         with pytest.raises(nx.NetworkXError):
-            G = nx.Graph()
             node_classification.local_and_global_consistency(G)
 
     def test_no_edges(self):
+        G = nx.Graph()
+        G.add_node(1)
+        G.add_node(2)
         with pytest.raises(nx.NetworkXError):
-            G = nx.Graph()
-            G.add_node(1)
-            G.add_node(2)
             node_classification.local_and_global_consistency(G)
 
     def test_digraph(self):
+        G = nx.DiGraph()
+        G.add_edge(0, 1)
+        G.add_edge(1, 2)
+        G.add_edge(2, 3)
+        label_name = "label"
+        G.nodes[0][label_name] = "A"
+        G.nodes[3][label_name] = "B"
         with pytest.raises(nx.NetworkXNotImplemented):
-            G = nx.DiGraph()
-            G.add_edge(0, 1)
-            G.add_edge(1, 2)
-            G.add_edge(2, 3)
-            label_name = "label"
-            G.nodes[0][label_name] = "A"
-            G.nodes[3][label_name] = "B"
             node_classification.harmonic_function(G)
 
     def test_one_labeled_node(self):

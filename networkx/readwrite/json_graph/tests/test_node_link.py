@@ -73,9 +73,9 @@ class TestNodeLink:
 
     # TODO: To be removed when signature change complete
     def test_exception_dep(self):
+        G = nx.MultiDiGraph()
+        attrs = {"name": "node", "source": "node", "target": "node", "key": "node"}
         with pytest.raises(nx.NetworkXError):
-            G = nx.MultiDiGraph()
-            attrs = {"name": "node", "source": "node", "target": "node", "key": "node"}
             node_link_data(G, attrs)
 
     def test_graph(self):
@@ -136,9 +136,9 @@ class TestNodeLink:
         assert H.nodes[1][q] == q
 
     def test_exception(self):
+        G = nx.MultiDiGraph()
+        attrs = {"name": "node", "source": "node", "target": "node", "key": "node"}
         with pytest.raises(nx.NetworkXError):
-            G = nx.MultiDiGraph()
-            attrs = {"name": "node", "source": "node", "target": "node", "key": "node"}
             node_link_data(G, **attrs)
 
     def test_string_ids(self):

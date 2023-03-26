@@ -182,7 +182,7 @@ class TestGeneratorsSmall:
 
 @pytest.mark.parametrize(
     "fn",
-    (
+    [
         nx.bull_graph,
         nx.chvatal_graph,
         nx.cubical_graph,
@@ -195,10 +195,10 @@ class TestGeneratorsSmall:
         nx.petersen_graph,
         nx.truncated_cube_graph,
         nx.tutte_graph,
-    ),
+    ],
 )
 @pytest.mark.parametrize(
-    "create_using", (nx.DiGraph, nx.MultiDiGraph, nx.DiGraph([(0, 1)]))
+    "create_using", [nx.DiGraph, nx.MultiDiGraph, nx.DiGraph([(0, 1)])]
 )
 def tests_raises_with_directed_create_using(fn, create_using):
     with pytest.raises(nx.NetworkXError, match="Directed Graph not supported"):

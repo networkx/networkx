@@ -54,7 +54,7 @@ class TestAGraph:
         assert G.name == "test"
 
     @pytest.mark.parametrize(
-        "graph_class", (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
+        "graph_class", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
     )
     def test_from_agraph_create_using(self, graph_class):
         G = nx.path_graph(3)
@@ -92,7 +92,7 @@ class TestAGraph:
         A = nx.nx_agraph.to_agraph(G)
         assert dict(A.nodes()[0].attr) == {"color": "red"}
 
-    @pytest.mark.parametrize("graph_class", (nx.Graph, nx.MultiGraph))
+    @pytest.mark.parametrize("graph_class", [nx.Graph, nx.MultiGraph])
     def test_to_agraph_with_edgedata(self, graph_class):
         G = graph_class()
         G.add_nodes_from([0, 1])

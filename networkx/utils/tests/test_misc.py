@@ -239,7 +239,7 @@ def test_PythonRandomInterface_Generator():
 
 
 @pytest.mark.parametrize(
-    ("iterable_type", "expected"), ((list, 1), (tuple, 1), (str, "["), (set, 1))
+    ("iterable_type", "expected"), [(list, 1), (tuple, 1), (str, "["), (set, 1)]
 )
 def test_arbitrary_element(iterable_type, expected):
     iterable = iterable_type([1, 2, 3])
@@ -247,7 +247,7 @@ def test_arbitrary_element(iterable_type, expected):
 
 
 @pytest.mark.parametrize(
-    "iterator", ((i for i in range(3)), iter([1, 2, 3]))  # generator
+    "iterator", [(i for i in range(3)), iter([1, 2, 3])]  # generator
 )
 def test_arbitrary_element_raises(iterator):
     """Value error is raised when input is an iterator."""

@@ -121,7 +121,7 @@ class TestMaxflowLargeGraph:
     #            validate_flows(G, s, t, 156545, flow_func(G, s, t, **kwargs),
     #                           flow_func)
 
-    @pytest.mark.slow
+    @pytest.mark.slow()
     def test_gw1(self):
         G = read_graph("gw1")
         s = 1

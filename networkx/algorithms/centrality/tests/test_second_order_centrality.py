@@ -12,21 +12,21 @@ import networkx as nx
 
 class TestSecondOrderCentrality:
     def test_empty(self):
+        G = nx.empty_graph()
         with pytest.raises(nx.NetworkXException):
-            G = nx.empty_graph()
             nx.second_order_centrality(G)
 
     def test_non_connected(self):
+        G = nx.Graph()
+        G.add_node(0)
+        G.add_node(1)
         with pytest.raises(nx.NetworkXException):
-            G = nx.Graph()
-            G.add_node(0)
-            G.add_node(1)
             nx.second_order_centrality(G)
 
     def test_non_negative_edge_weights(self):
+        G = nx.path_graph(2)
+        G.add_edge(0, 1, weight=-1)
         with pytest.raises(nx.NetworkXException):
-            G = nx.path_graph(2)
-            G.add_edge(0, 1, weight=-1)
             nx.second_order_centrality(G)
 
     def test_one_node_graph(self):

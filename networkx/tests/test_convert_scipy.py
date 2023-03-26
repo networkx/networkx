@@ -161,12 +161,10 @@ class TestConvertScipy:
         )
 
     def test_format_keyword_raise(self):
+        WP4 = nx.Graph()
+        WP4.add_edges_from((n, n + 1, {"weight": 0.5, "other": 0.3}) for n in range(3))
+        P4 = path_graph(4)
         with pytest.raises(nx.NetworkXError):
-            WP4 = nx.Graph()
-            WP4.add_edges_from(
-                (n, n + 1, {"weight": 0.5, "other": 0.3}) for n in range(3)
-            )
-            P4 = path_graph(4)
             nx.to_scipy_sparse_array(P4, format="any_other")
 
     def test_null_raise(self):
@@ -264,7 +262,7 @@ class TestConvertScipy:
         assert graphs_equal(G, expected)
 
 
-@pytest.mark.parametrize("sparse_format", ("csr", "csc", "dok"))
+@pytest.mark.parametrize("sparse_format", ["csr", "csc", "dok"])
 def test_from_scipy_sparse_array_formats(sparse_format):
     """Test all formats supported by _generate_weighted_edges."""
     # trinode complete graph with non-uniform edge weights

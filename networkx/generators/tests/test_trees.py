@@ -4,7 +4,7 @@ import networkx as nx
 from networkx.utils import arbitrary_element, graphs_equal
 
 
-@pytest.mark.parametrize("prefix_tree_fn", (nx.prefix_tree, nx.prefix_tree_recursive))
+@pytest.mark.parametrize("prefix_tree_fn", [nx.prefix_tree, nx.prefix_tree_recursive])
 def test_basic_prefix_tree(prefix_tree_fn):
     # This example is from the Wikipedia article "Trie"
     # <https://en.wikipedia.org/wiki/Trie>.
@@ -70,12 +70,12 @@ def test_basic_prefix_tree(prefix_tree_fn):
 
 @pytest.mark.parametrize(
     "strings",
-    (
+    [
         ["a", "to", "tea", "ted", "ten", "i", "in", "inn"],
         ["ab", "abs", "ad"],
         ["ab", "abs", "ad", ""],
         ["distant", "disparaging", "distant", "diamond", "ruby"],
-    ),
+    ],
 )
 def test_implementations_consistent(strings):
     """Ensure results are consistent between prefix_tree implementations."""

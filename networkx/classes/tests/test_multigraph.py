@@ -248,7 +248,7 @@ class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
         (dol, False, single_edge),
     ]
 
-    @pytest.mark.parametrize("dod, mgi, edges", cases)
+    @pytest.mark.parametrize(("dod", "mgi", "edges"), cases)
     def test_non_multigraph_input(self, dod, mgi, edges):
         G = self.Graph(dod, multigraph_input=mgi)
         assert list(G.edges(keys=True, data=True)) == edges
@@ -261,7 +261,7 @@ class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
         (dodod3, single_edge3),
     ]
 
-    @pytest.mark.parametrize("dod, edges", mgi_none_cases)
+    @pytest.mark.parametrize(("dod", "edges"), mgi_none_cases)
     def test_non_multigraph_input_mgi_none(self, dod, edges):
         # test constructor without to_networkx_graph for mgi=None
         G = self.Graph(dod)

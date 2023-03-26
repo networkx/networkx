@@ -710,7 +710,7 @@ class TestPropertyLists:
         assert graph.nodes(data=True)["n1"] == {"properties": ["element"]}
 
 
-@pytest.mark.parametrize("coll", ([], ()))
+@pytest.mark.parametrize("coll", [[], ()])
 def test_stringize_empty_list_tuple(coll):
     G = nx.path_graph(2)
     G.nodes[0]["test"] = coll  # test serializing an empty collection

@@ -184,7 +184,7 @@ class TestCommonNeighborCentrality:
         G = nx.star_graph(4)
         self.test(G, [(1, 2)], [(1, 2, 1.75)], alpha=0.5)
 
-    @pytest.mark.parametrize("graph_type", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+    @pytest.mark.parametrize("graph_type", [nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph])
     def test_notimplemented(self, graph_type):
         assert pytest.raises(
             nx.NetworkXNotImplemented, self.func, graph_type([(0, 1), (1, 2)]), [(0, 2)]

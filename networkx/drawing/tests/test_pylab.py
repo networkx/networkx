@@ -67,7 +67,7 @@ def test_arrows():
 
 @pytest.mark.parametrize(
     ("edge_color", "expected"),
-    (
+    [
         (None, "black"),  # Default
         ("r", "red"),  # Non-default color string
         (["r"], "red"),  # Single non-default color in a list
@@ -77,9 +77,9 @@ def test_arrows():
         ([(0, 1, 0, 1)], "lime"),  # single color as rgba tuple in list
         ("#0000ff", "blue"),  # single color hex code
         (["#0000ff"], "blue"),  # hex code in list
-    ),
+    ],
 )
-@pytest.mark.parametrize("edgelist", (None, [(0, 1)]))
+@pytest.mark.parametrize("edgelist", [None, [(0, 1)]])
 def test_single_edge_color_undirected(edge_color, expected, edgelist):
     """Tests ways of specifying all edges have a single color for edges
     drawn with a LineCollection"""
@@ -93,7 +93,7 @@ def test_single_edge_color_undirected(edge_color, expected, edgelist):
 
 @pytest.mark.parametrize(
     ("edge_color", "expected"),
-    (
+    [
         (None, "black"),  # Default
         ("r", "red"),  # Non-default color string
         (["r"], "red"),  # Single non-default color in a list
@@ -103,9 +103,9 @@ def test_single_edge_color_undirected(edge_color, expected, edgelist):
         ([(0, 1, 0, 1)], "lime"),  # single color as rgba tuple in list
         ("#0000ff", "blue"),  # single color hex code
         (["#0000ff"], "blue"),  # hex code in list
-    ),
+    ],
 )
-@pytest.mark.parametrize("edgelist", (None, [(0, 1)]))
+@pytest.mark.parametrize("edgelist", [None, [(0, 1)]])
 def test_single_edge_color_directed(edge_color, expected, edgelist):
     """Tests ways of specifying all edges have a single color for edges drawn
     with FancyArrowPatches"""
@@ -226,7 +226,7 @@ def test_edge_color_string_with_global_alpha_directed():
         assert ec[-1] == 0.2
 
 
-@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+@pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph])
 def test_edge_width_default_value(graph_type):
     """Test the default linewidth for edges drawn either via LineCollection or
     FancyArrowPatches."""
@@ -240,10 +240,10 @@ def test_edge_width_default_value(graph_type):
 
 @pytest.mark.parametrize(
     ("edgewidth", "expected"),
-    (
+    [
         (3, 3),  # single-value, non-default
         ([3], 3),  # Single value as a list
-    ),
+    ],
 )
 def test_edge_width_single_value_undirected(edgewidth, expected):
     G = nx.path_graph(4)
@@ -255,10 +255,10 @@ def test_edge_width_single_value_undirected(edgewidth, expected):
 
 @pytest.mark.parametrize(
     ("edgewidth", "expected"),
-    (
+    [
         (3, 3),  # single-value, non-default
         ([3], 3),  # Single value as a list
-    ),
+    ],
 )
 def test_edge_width_single_value_directed(edgewidth, expected):
     G = nx.path_graph(4, create_using=nx.DiGraph)
@@ -271,11 +271,11 @@ def test_edge_width_single_value_directed(edgewidth, expected):
 
 @pytest.mark.parametrize(
     "edgelist",
-    (
+    [
         [(0, 1), (1, 2), (2, 3)],  # one width specification per edge
         None,  #  fewer widths than edges - widths cycle
         [(0, 1), (1, 2)],  # More widths than edges - unused widths ignored
-    ),
+    ],
 )
 def test_edge_width_sequence(edgelist):
     G = barbell.to_directed()
@@ -316,11 +316,11 @@ def test_directed_edges_linestyle_default():
 
 @pytest.mark.parametrize(
     "style",
-    (
+    [
         "dashed",  # edge with string style
         "--",  # edge with simplified string style
         (1, (1, 1)),  # edge with (offset, onoffseq) style
-    ),
+    ],
 )
 def test_directed_edges_linestyle_single_value(style):
     """Tests support for specifying linestyles with a single value to be applied to
@@ -338,14 +338,14 @@ def test_directed_edges_linestyle_single_value(style):
 
 @pytest.mark.parametrize(
     "style_seq",
-    (
+    [
         ["dashed"],  # edge with string style in list
         ["--"],  # edge with simplified string style in list
         [(1, (1, 1))],  # edge with (offset, onoffseq) style in list
         ["--", "-", ":"],  # edges with styles for each edge
         ["--", "-"],  # edges with fewer styles than edges (styles cycle)
         ["--", "-", ":", "-."],  # edges with more styles than edges (extra unused)
-    ),
+    ],
 )
 def test_directed_edges_linestyle_sequence(style_seq):
     """Tests support for specifying linestyles with sequences in
@@ -419,7 +419,7 @@ def test_labels_and_colors():
     # plt.show()
 
 
-@pytest.mark.mpl_image_compare
+@pytest.mark.mpl_image_compare()
 def test_house_with_colors():
     G = nx.house_graph()
     # explicitly set positions
@@ -517,7 +517,7 @@ def test_draw_networkx_arrowsize_incorrect_size():
         nx.draw(G, arrowsize=arrowsize)
 
 
-@pytest.mark.parametrize("arrowsize", (30, [10, 20, 30]))
+@pytest.mark.parametrize("arrowsize", [30, [10, 20, 30]])
 def test_draw_edges_arrowsize(arrowsize):
     G = nx.DiGraph([(0, 1), (0, 2), (1, 2)])
     pos = {0: (0, 0), 1: (0, 1), 2: (1, 0)}
@@ -544,7 +544,7 @@ def test_draw_nodes_missing_node_from_position():
 
 # NOTE: parametrizing on marker to test both branches of internal
 # nx.draw_networkx_edges.to_marker_edge function
-@pytest.mark.parametrize("node_shape", ("o", "s"))
+@pytest.mark.parametrize("node_shape", ["o", "s"])
 def test_draw_edges_min_source_target_margins(node_shape):
     """Test that there is a wider gap between the node and the start of an
     incident edge when min_source_margin is specified.
@@ -601,7 +601,8 @@ def test_nonzero_selfloop_with_single_node():
     patch = nx.draw_networkx_edges(G, {0: (0, 0)})[0]
     # The resulting patch must have non-zero extent
     bbox = patch.get_extents()
-    assert bbox.width > 0 and bbox.height > 0
+    assert bbox.width > 0
+    assert bbox.height > 0
     # Cleanup
     plt.delaxes(ax)
 
@@ -620,7 +621,8 @@ def test_nonzero_selfloop_with_single_edge_in_edgelist():
     patch = nx.draw_networkx_edges(G, pos, edgelist=[(1, 1)])[0]
     # The resulting patch must have non-zero extent
     bbox = patch.get_extents()
-    assert bbox.width > 0 and bbox.height > 0
+    assert bbox.width > 0
+    assert bbox.height > 0
     # Cleanup
     plt.delaxes(ax)
 
@@ -670,7 +672,7 @@ def test_draw_edges_toggling_with_arrows_kwarg():
     assert isinstance(edges[0], mpl.patches.FancyArrowPatch)
 
 
-@pytest.mark.parametrize("drawing_func", (nx.draw, nx.draw_networkx))
+@pytest.mark.parametrize("drawing_func", [nx.draw, nx.draw_networkx])
 def test_draw_networkx_arrows_default_undirected(drawing_func):
     import matplotlib.collections
 
@@ -682,7 +684,7 @@ def test_draw_networkx_arrows_default_undirected(drawing_func):
     plt.delaxes(ax)
 
 
-@pytest.mark.parametrize("drawing_func", (nx.draw, nx.draw_networkx))
+@pytest.mark.parametrize("drawing_func", [nx.draw, nx.draw_networkx])
 def test_draw_networkx_arrows_default_directed(drawing_func):
     import matplotlib.collections
 
@@ -759,13 +761,13 @@ def test_draw_networkx_edges_undirected_selfloop_colors():
 
 @pytest.mark.parametrize(
     "fap_only_kwarg",  # Non-default values for kwargs that only apply to FAPs
-    (
+    [
         {"arrowstyle": "-"},
         {"arrowsize": 20},
         {"connectionstyle": "arc3,rad=0.2"},
         {"min_source_margin": 10},
         {"min_target_margin": 10},
-    ),
+    ],
 )
 def test_user_warnings_for_unused_edge_drawing_kwargs(fap_only_kwarg):
     """Users should get a warning when they specify a non-default value for

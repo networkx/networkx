@@ -234,85 +234,85 @@ def test_generator():
 
 
 def test_invalid_tau1():
+    n = 100
+    tau1 = 2
+    tau2 = 1
+    mu = 0.1
     with pytest.raises(nx.NetworkXError, match="tau2 must be greater than one"):
-        n = 100
-        tau1 = 2
-        tau2 = 1
-        mu = 0.1
         nx.LFR_benchmark_graph(n, tau1, tau2, mu, min_degree=2)
 
 
 def test_invalid_tau2():
+    n = 100
+    tau1 = 1
+    tau2 = 2
+    mu = 0.1
     with pytest.raises(nx.NetworkXError, match="tau1 must be greater than one"):
-        n = 100
-        tau1 = 1
-        tau2 = 2
-        mu = 0.1
         nx.LFR_benchmark_graph(n, tau1, tau2, mu, min_degree=2)
 
 
 def test_mu_too_large():
+    n = 100
+    tau1 = 2
+    tau2 = 2
+    mu = 1.1
     with pytest.raises(nx.NetworkXError, match="mu must be in the interval \\[0, 1\\]"):
-        n = 100
-        tau1 = 2
-        tau2 = 2
-        mu = 1.1
         nx.LFR_benchmark_graph(n, tau1, tau2, mu, min_degree=2)
 
 
 def test_mu_too_small():
+    n = 100
+    tau1 = 2
+    tau2 = 2
+    mu = -1
     with pytest.raises(nx.NetworkXError, match="mu must be in the interval \\[0, 1\\]"):
-        n = 100
-        tau1 = 2
-        tau2 = 2
-        mu = -1
         nx.LFR_benchmark_graph(n, tau1, tau2, mu, min_degree=2)
 
 
 def test_both_degrees_none():
+    n = 100
+    tau1 = 2
+    tau2 = 2
+    mu = 1
     with pytest.raises(
         nx.NetworkXError,
         match="Must assign exactly one of min_degree and average_degree",
     ):
-        n = 100
-        tau1 = 2
-        tau2 = 2
-        mu = 1
         nx.LFR_benchmark_graph(n, tau1, tau2, mu)
 
 
 def test_neither_degrees_none():
+    n = 100
+    tau1 = 2
+    tau2 = 2
+    mu = 1
     with pytest.raises(
         nx.NetworkXError,
         match="Must assign exactly one of min_degree and average_degree",
     ):
-        n = 100
-        tau1 = 2
-        tau2 = 2
-        mu = 1
         nx.LFR_benchmark_graph(n, tau1, tau2, mu, min_degree=2, average_degree=5)
 
 
 def test_max_iters_exeded():
+    n = 10
+    tau1 = 2
+    tau2 = 2
+    mu = 0.1
     with pytest.raises(
         nx.ExceededMaxIterations,
         match="Could not assign communities; try increasing min_community",
     ):
-        n = 10
-        tau1 = 2
-        tau2 = 2
-        mu = 0.1
         nx.LFR_benchmark_graph(n, tau1, tau2, mu, min_degree=2, max_iters=10, seed=1)
 
 
 def test_max_deg_out_of_range():
+    n = 10
+    tau1 = 2
+    tau2 = 2
+    mu = 0.1
     with pytest.raises(
         nx.NetworkXError, match="max_degree must be in the interval \\(0, n\\]"
     ):
-        n = 10
-        tau1 = 2
-        tau2 = 2
-        mu = 0.1
         nx.LFR_benchmark_graph(
             n, tau1, tau2, mu, max_degree=n + 1, max_iters=10, seed=1
         )
@@ -340,13 +340,13 @@ def test_max_community():
 
 
 def test_powerlaw_iterations_exceeded():
+    n = 100
+    tau1 = 2
+    tau2 = 2
+    mu = 1
     with pytest.raises(
         nx.ExceededMaxIterations, match="Could not create power law sequence"
     ):
-        n = 100
-        tau1 = 2
-        tau2 = 2
-        mu = 1
         nx.LFR_benchmark_graph(n, tau1, tau2, mu, min_degree=2, max_iters=0)
 
 

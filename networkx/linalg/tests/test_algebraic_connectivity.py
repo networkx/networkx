@@ -190,10 +190,10 @@ class TestAlgebraicConnectivity:
 
     @pytest.mark.parametrize(
         ("normalized", "sigma", "laplacian_fn"),
-        (
+        [
             (False, 0.2434017461399311, nx.laplacian_matrix),
             (True, 0.08113391537997749, nx.normalized_laplacian_matrix),
-        ),
+        ],
     )
     @pytest.mark.parametrize("method", methods)
     def test_buckminsterfullerene(self, normalized, sigma, laplacian_fn, method):
@@ -385,10 +385,10 @@ class TestSpectralOrdering:
 
     @pytest.mark.parametrize(
         ("normalized", "expected_order"),
-        (
+        [
             (False, [[1, 2, 0, 3, 4, 5, 6, 9, 7, 8], [8, 7, 9, 6, 5, 4, 3, 0, 2, 1]]),
             (True, [[1, 2, 3, 0, 4, 5, 9, 6, 7, 8], [8, 7, 6, 9, 5, 4, 0, 3, 2, 1]]),
-        ),
+        ],
     )
     @pytest.mark.parametrize("method", methods)
     def test_cycle(self, normalized, expected_order, method):

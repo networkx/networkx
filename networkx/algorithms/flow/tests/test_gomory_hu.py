@@ -73,7 +73,7 @@ class TestGomoryHuTree:
                 cut_value, edge = self.minimum_edge_weight(T, u, v)
                 assert nx.minimum_cut_value(G, u, v) == cut_value
 
-    @pytest.mark.slow
+    @pytest.mark.slow()
     def test_les_miserables_graph_cutset(self):
         G = nx.les_miserables_graph()
         nx.set_edge_attributes(G, 1, "capacity")
@@ -118,11 +118,11 @@ class TestGomoryHuTree:
                 assert nx.minimum_cut_value(G, u, v, capacity="weight") == cut_value
 
     def test_directed_raises(self):
+        G = nx.DiGraph()
         with pytest.raises(nx.NetworkXNotImplemented):
-            G = nx.DiGraph()
             T = nx.gomory_hu_tree(G)
 
     def test_empty_raises(self):
+        G = nx.empty_graph()
         with pytest.raises(nx.NetworkXError):
-            G = nx.empty_graph()
             T = nx.gomory_hu_tree(G)

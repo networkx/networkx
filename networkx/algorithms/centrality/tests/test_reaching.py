@@ -8,14 +8,14 @@ class TestGlobalReachingCentrality:
     """Unit tests for the global reaching centrality function."""
 
     def test_non_positive_weights(self):
+        G = nx.DiGraph()
         with pytest.raises(nx.NetworkXError):
-            G = nx.DiGraph()
             nx.global_reaching_centrality(G, weight="weight")
 
     def test_negatively_weighted(self):
+        G = nx.Graph()
+        G.add_weighted_edges_from([(0, 1, -2), (1, 2, +1)])
         with pytest.raises(nx.NetworkXError):
-            G = nx.Graph()
-            G.add_weighted_edges_from([(0, 1, -2), (1, 2, +1)])
             nx.global_reaching_centrality(G, weight="weight")
 
     def test_directed_star(self):
@@ -84,15 +84,15 @@ class TestLocalReachingCentrality:
     """Unit tests for the local reaching centrality function."""
 
     def test_non_positive_weights(self):
+        G = nx.DiGraph()
+        G.add_weighted_edges_from([(0, 1, 0)])
         with pytest.raises(nx.NetworkXError):
-            G = nx.DiGraph()
-            G.add_weighted_edges_from([(0, 1, 0)])
             nx.local_reaching_centrality(G, 0, weight="weight")
 
     def test_negatively_weighted(self):
+        G = nx.Graph()
+        G.add_weighted_edges_from([(0, 1, -2), (1, 2, +1)])
         with pytest.raises(nx.NetworkXError):
-            G = nx.Graph()
-            G.add_weighted_edges_from([(0, 1, -2), (1, 2, +1)])
             nx.local_reaching_centrality(G, 0, weight="weight")
 
     def test_undirected_unweighted_star(self):

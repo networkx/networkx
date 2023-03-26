@@ -6,12 +6,16 @@ select = [
     "PIE",     # flake8-pie
     "PGH003",  # forbid blanket 'type: ignore' comments
     "PLR0402", # useless import alias
+    "PT",      # flake8-pytest-style
     "SIM101",  # merge 'isinstance' calls
     "SIM109",  # use a tuple for multiple comparisons
     "SIM110",  # convert loop to 'any'
     "SIM111",  # convert loop to 'all'
     "SIM118",  # use 'key in dict'
     "SIM2",    # simplify boolean comparisons
+]
+ignore = [
+    "PT011" # use specific error in 'pytest.raises'
 ]
 
 target-version = "py38"
