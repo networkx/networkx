@@ -110,8 +110,6 @@ def simple_cycles(G, length_bound=None, chordless=False):
     the bounded case, we use a version of the algorithm of Gupta and
     Suzumura[2]_. There may be better algorithms for some cases [3]_ [4]_ [5]_.
 
-    Optionally, only chordless cycles are generated.  Chordless cycles
-
     The algorithms of Johnson, and Gupta and Suzumura, are enhanced by some
     well-known preprocessing techniques.  When G is directed, we restrict our
     attention to strongly connected components of G, generate all simple cycles
@@ -130,10 +128,6 @@ def simple_cycles(G, length_bound=None, chordless=False):
     length_bound : int or None, optional (default=None)
        If length_bound is an int, generate all simple cycles of G with length at
        most length_bound.  Otherwise, generate all simple cycles of G.
-
-    chordless : bool, optional (default=False)
-       If chordless is True, limit search to chordless simple cycles of G.
-       Otherwise, generate simple cycles with or without chords.
 
     Yields
     ------
@@ -182,9 +176,10 @@ def simple_cycles(G, length_bound=None, chordless=False):
     See Also
     --------
     cycle_basis
+    chordless_cycles
     """
     if chordless:
-        yield from chordless_cycles(G, length_bound)
+        yield from chordless_cycles(G, length_bound=length_bound)
         return
 
     if length_bound is not None:
@@ -194,7 +189,7 @@ def simple_cycles(G, length_bound=None, chordless=False):
             raise ValueError("length bound must be non-negative")
 
     directed = G.is_directed()
-    yield from ([v] for v in G if v in G[v])
+    yield from ([v] for v, Gv in G.adj.items() if v in Gv)
 
     if length_bound is not None and length_bound == 1:
         return
@@ -206,26 +201,21 @@ def simple_cycles(G, length_bound=None, chordless=False):
             yield from ([u, v] for v, m in multiplicity if m > 1)
             visited.add(u)
 
-    # Now that we've handled undirected digons, we can safely remove multiedges
-    # from our graph.  They make chordless cycles fussy in the undirected case,
-    # so we keep the list of digons around.  All of the child functions will be
-    # deleting nodes and edges from, here on out, so let's just make simple
-    # copies.
-
+    # explicitly filter out loops; implicitly filter out parallel edges
     if directed:
-        G = nx.DiGraph((u, v) for u in G for v in G[u] if v != u)
+        G = nx.DiGraph((u, v) for u, Gu in G.adj.items() for v in Gu if v != u)
     else:
-        G = nx.Graph((u, v) for u in G for v in G[u] if v != u)
+        G = nx.Graph((u, v) for u, Gu in G.adj.items() for v in Gu if v != u)
 
     # this case is not strictly necessary but improves performance
     if length_bound is not None and length_bound == 2:
         if directed:
+            visited = set()
             for u, Gu in G.adj.items():
-                digons = [[v, u] for v in Gu if G.has_edge(v, u)]
-                G.remove_edges_from(digons)
-                yield from digons
-        # if G is not directed, the only digons come from multiple edges,
-        # which we already handled.
+                yield from (
+                    [v, u] for v in visited.intersection(Gu) if G.has_edge(v, u)
+                )
+                visited.add(u)
         return
 
     if directed:
@@ -480,6 +470,82 @@ def _bounded_cycle_search(G, path, length_bound):
 
 
 def chordless_cycles(G, length_bound):
+    """Find simple chordless cycles of a graph.
+
+    A `simple cycle`, is a closed path where no node appears twice.  In a simple
+    cycle, a `chord` is an additional edge between two nodes in the cycle.  A
+    `chordless cycle` is a simple cycle without chords.  Said differently, a
+    chordless cycle is a cycle C in a graph G where the number of edges in the
+    induced graph G[C] is equal to the length of `C`.
+
+    Note that some care must be taken in the case that G is not a simple graph
+    nor a simple digraph.  Some authors limit the definition of chordless cycles
+    to have a prescribed minimum length; we do not.
+
+        1. We interpret self-loops to be chordless cycles, except in multigraphs
+           with multiple loops in parallel.  Likewise, in a chordless cycle of
+           length greater than 1, there can be no nodes with self-loops.
+
+        2. We interpret directed two-cycles to be chordless cycles, except in
+           multi-digraphs when any edge in a two-cycle has a parallel copy.
+
+        3. We interpret parallel pairs of undirected edges as two-cycles, except
+           when a third (or more) parallel edge exists between the two nodes.
+
+        4. Generalizing the above, edges with parallel clones may not occur in
+           chordless cycles.
+
+    In a directed graph, two chordless cycles are distinct if they are not
+    cyclic permutations of each other.  In an undirected graph, two chordless
+    cycles are distinct if they are not cyclic permutations of each other nor of
+    the other's reversal.
+
+    Optionally, the cycles are bounded in length.
+
+    We use an algorithm  strongly inspired by that of Dias et al [1]_.  It has
+    been modified in the following ways:
+
+        1. Recursion is avoided, per Python's limitations
+
+        2. The labeling function is not necessary, because the starting paths
+            are chosen (and deleted from the host graph) to prevent multiple
+            occurrences of the same path
+
+        3. The search is optionally bounded at a specified length
+
+        4. Support for directed graphs is provided by extending cycles along
+            forward edges, and blocking nodes along forward and reverse edges
+
+        5. Support for multigraphs is provided by omitting digons from the set
+            of forward edges
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+       A directed graph
+
+    length_bound : int or None, optional (default=None)
+       If length_bound is an int, generate all simple cycles of G with length at
+       most length_bound.  Otherwise, generate all simple cycles of G.
+
+    Yields
+    ------
+    list of nodes
+       Each cycle is represented by a list of nodes along the cycle.
+
+    Notes
+    -----
+    When length_bound is None, and the graph is simple, the time complexity is
+    $O((n+e)(c+1))$ for $n$ nodes, $e$ edges and $c$ chordless cycles.
+
+    References
+    ----------
+    .. [1] Efficient enumeration of chordless cycles
+       E. Dias and D. Castonguay and H. Longo and W.A.R. Jradi
+       https://arxiv.org/abs/1309.1051
+
+    """
+
     if length_bound is not None:
         if length_bound == 0:
             return
@@ -487,7 +553,12 @@ def chordless_cycles(G, length_bound):
             raise ValueError("length bound must be non-negative")
 
     directed = G.is_directed()
-    yield from ([v] for v in G if v in G[v])
+    multigraph = G.is_multigraph()
+
+    if multigraph:
+        yield from ([v] for v, Gv in G.adj.items() if len(Gv.get(v, ())) == 1)
+    else:
+        yield from ([v] for v, Gv in G.adj.items() if v in Gv)
 
     if length_bound is not None and length_bound == 1:
         return
@@ -519,7 +590,7 @@ def chordless_cycles(G, length_bound):
     # graphs, we need to be a little careful to only consider every edge once,
     # so we use a "visited" set to emulate node-order comparisons.
 
-    if G.is_multigraph():
+    if multigraph:
         if not directed:
             B = F.copy()
             visited = set()
