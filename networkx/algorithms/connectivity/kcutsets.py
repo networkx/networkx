@@ -92,10 +92,11 @@ def all_node_cuts(G, k=None, flow_func=None):
 
     # Address some corner cases first.
     # For complete Graphs
+
     if nx.density(G) == 1:
-        for cut_set in combinations(G, len(G) - 1):
-            yield set(cut_set)
+        yield from ()
         return
+
     # Initialize data structures.
     # Keep track of the cuts already computed so we do not repeat them.
     seen = []
