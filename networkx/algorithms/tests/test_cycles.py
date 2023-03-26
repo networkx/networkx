@@ -237,9 +237,12 @@ class TestCycleEnumeration:
         g,
         expected_cycles,
         length_bound=None,
-        chordless=None,
-        algorithm=nx.simple_cycles,
+        chordless=False,
+        algorithm=None,
     ):
+        if algorithm is None:
+            algorithm = nx.chordless_cycles if chordless else nx.simple_cycles
+
         # note: we shuffle the labels of g to rule out accidentally-correct
         # behavior which occurred during the development of chordless cycle
         # enumeration algorithms
@@ -255,10 +258,6 @@ class TestCycleEnumeration:
         params = {}
         if length_bound is not None:
             params["length_bound"] = length_bound
-        if chordless is not None:
-            params["chordless"] = chordless
-        else:
-            chordless = False
 
         cycle_cache = {}
         for c in algorithm(h, **params):
@@ -293,7 +292,7 @@ class TestCycleEnumeration:
         cycle_counts,
         length_bound=None,
         chordless=False,
-        algorithm=nx.simple_cycles,
+        algorithm=None,
     ):
         for g, num_cycles in zip(g_family, cycle_counts):
             self.check_cycle_algorithm(

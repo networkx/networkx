@@ -16,6 +16,7 @@ __all__ = [
     "recursive_simple_cycles",
     "find_cycle",
     "minimum_cycle_basis",
+    "chordless_cycles",
 ]
 
 
@@ -96,7 +97,7 @@ def cycle_basis(G, root=None):
     return cycles
 
 
-def simple_cycles(G, length_bound=None, chordless=False):
+def simple_cycles(G, length_bound=None):
     """Find simple cycles (elementary circuits) of a graph.
 
     A `simple cycle`, or `elementary circuit`, is a closed path where
@@ -119,6 +120,11 @@ def simple_cycles(G, length_bound=None, chordless=False):
     containing a particular edge, remove that edge, and further decompose the
     remainder into biconnected components.
 
+    Note that multigraphs are supported by this function -- and in undirected
+    multigraphs, a pair of parallel edges is considered a cycle of length 2.
+    Likewise, self-loops are considered to be cycles of length 1.  We define
+    cycles as sequences of nodes; so the presence of loops and parallel edges
+    does not change the number of simple cycles in a graph.
 
     Parameters
     ----------
@@ -178,9 +184,6 @@ def simple_cycles(G, length_bound=None, chordless=False):
     cycle_basis
     chordless_cycles
     """
-    if chordless:
-        yield from chordless_cycles(G, length_bound=length_bound)
-        return
 
     if length_bound is not None:
         if length_bound == 0:
@@ -469,7 +472,7 @@ def _bounded_cycle_search(G, path, length_bound):
                     B[w].add(v)
 
 
-def chordless_cycles(G, length_bound):
+def chordless_cycles(G, length_bound=None):
     """Find simple chordless cycles of a graph.
 
     A `simple cycle`, is a closed path where no node appears twice.  In a simple
@@ -544,6 +547,9 @@ def chordless_cycles(G, length_bound):
        E. Dias and D. Castonguay and H. Longo and W.A.R. Jradi
        https://arxiv.org/abs/1309.1051
 
+    See Also
+    --------
+    simple_cycles
     """
 
     if length_bound is not None:
