@@ -1,16 +1,29 @@
 """Unit tests for the :mod:`networkx.algorithms.minors.contraction` module."""
+from functools import partial
+from itertools import product
+
 import pytest
 
 import networkx as nx
 from networkx.utils import arbitrary_element, edges_equal, nodes_equal
 
 
-def test_quotient_graph_complete_multipartite():
-    """Tests that the quotient graph of the complete *n*-partite graph
-    under the "same neighbors" node relation is the complete graph on *n*
-    nodes.
+def edge_relation(G, b, c):
+    return any(v in G[u] for u, v in product(b, c))
 
-    """
+
+def node_data(G, b):
+    S = G.subgraph(b)
+    return {
+        "graph": S,
+        "nnodes": len(S),
+        "nedges": S.number_of_edges(),
+        "density": nx.density(S),
+    }
+
+
+class TestQuotient:
+    """Unit tests for computing quotient graphs."""
     G = nx.complete_multipartite_graph(2, 3, 4)
     # Two nodes are equivalent if they are not adjacent but have the same
     # neighbor set.
@@ -24,6 +37,13 @@ def test_quotient_graph_complete_multipartite():
     # small graphs.
     assert nx.is_isomorphic(expected, actual)
 
+    expected = nx.complete_graph(3)
+    actual = nx.quotient_graph(G, same_neighbors)
+    edge_rel = nx.quotient_graph(G, same_neighbors, partial(edge_relation, G))
+    # It won't take too long to run a graph isomorphism algorithm on such
+    # small graphs.
+    assert nx.is_isomorphic(expected, actual)
+    assert nx.is_isomorphic(expected, edge_rel)
 
 def test_quotient_graph_complete_bipartite():
     """Tests that the quotient graph of the complete bipartite graph under
@@ -39,9 +59,11 @@ def test_quotient_graph_complete_bipartite():
 
     expected = nx.complete_graph(2)
     actual = nx.quotient_graph(G, same_neighbors)
+    edge_rel = nx.quotient_graph(G, same_neighbors, partial(edge_relation, G))
     # It won't take too long to run a graph isomorphism algorithm on such
     # small graphs.
     assert nx.is_isomorphic(expected, actual)
+    assert nx.is_isomorphic(expected, edge_rel)
 
 
 def test_quotient_graph_edge_relation():
@@ -68,39 +90,11 @@ def test_condensation_as_quotient():
     """This tests that the condensation of a graph can be viewed as the
     quotient graph under the "in the same connected component" equivalence
     relation.
-
     """
-    # This example graph comes from the file `test_strongly_connected.py`.
-    G = nx.DiGraph()
-    G.add_edges_from(
-        [
-            (1, 2),
-            (2, 3),
-            (2, 11),
-            (2, 12),
-            (3, 4),
-            (4, 3),
-            (4, 5),
-            (5, 6),
-            (6, 5),
-            (6, 7),
-            (7, 8),
-            (7, 9),
-            (7, 10),
-            (8, 9),
-            (9, 7),
-            (10, 6),
-            (11, 2),
-            (11, 4),
-            (11, 6),
-            (12, 6),
-            (12, 11),
-        ]
-    )
-    scc = list(nx.strongly_connected_components(G))
-    C = nx.condensation(G, scc)
-    component_of = C.graph["mapping"]
-    # Two nodes are equivalent if they are in the same connected component.
+    Q = nx.quotient_graph(G, same_component)
+    Q_rel = nx.quotient_graph(G, same_component, partial(edge_relation, G))
+    assert nx.is_isomorphic(C, Q)
+    assert nx.is_isomorphic(C, Q_rel)
 
     def same_component(u, v):
         return component_of[u] == component_of[v]
@@ -198,8 +192,357 @@ def test_directed_multigraph_path():
 def test_overlapping_blocks():
     with pytest.raises(nx.NetworkXException):
         G = nx.path_graph(6)
-        partition = [{0, 1, 2}, {2, 3}, {4, 5}]
-        nx.quotient_graph(G, partition)
+        partition = [{0, 1}, {2, 3}, {4, 5}]
+        M = nx.quotient_graph(
+            G, partition, node_data=partial(node_data, G), relabel=True
+        )
+        assert nodes_equal(M, [0, 1, 2])
+        assert edges_equal(M.edges(), [(0, 1), (1, 2)])
+        for n in M:
+            assert M.nodes[n]["nedges"] == 1
+            assert M.nodes[n]["nnodes"] == 2
+            assert M.nodes[n]["density"] == 1
+
+        M_rel = nx.quotient_graph(
+            G,
+            partition,
+            partial(edge_relation, G),
+            node_data=partial(node_data, G),
+            relabel=True,
+        )
+        assert nodes_equal(M_rel, [0, 1, 2])
+        assert edges_equal(M_rel.edges(), [(0, 1), (1, 2)])
+        for n in M_rel:
+            assert M_rel.nodes[n]["nedges"] == 1
+            assert M_rel.nodes[n]["nnodes"] == 2
+            assert M_rel.nodes[n]["density"] == 1
+
+    def test_path__partition_provided_as_dict_of_lists(self):
+        G = nx.path_graph(6)
+        partition = {0: [0, 1], 2: [2, 3], 4: [4, 5]}
+        M = nx.quotient_graph(
+            G, partition, node_data=partial(node_data, G), relabel=True
+        )
+        assert nodes_equal(M, [0, 1, 2])
+        assert edges_equal(M.edges(), [(0, 1), (1, 2)])
+        for n in M:
+            assert M.nodes[n]["nedges"] == 1
+            assert M.nodes[n]["nnodes"] == 2
+            assert M.nodes[n]["density"] == 1
+
+    def test_path__partition_provided_as_dict_of_tuples(self):
+        G = nx.path_graph(6)
+        partition = {0: (0, 1), 2: (2, 3), 4: (4, 5)}
+        M = nx.quotient_graph(
+            G, partition, node_data=partial(node_data, G), relabel=True
+        )
+        assert nodes_equal(M, [0, 1, 2])
+        assert edges_equal(M.edges(), [(0, 1), (1, 2)])
+        for n in M:
+            assert M.nodes[n]["nedges"] == 1
+            assert M.nodes[n]["nnodes"] == 2
+            assert M.nodes[n]["density"] == 1
+
+    def test_path__partition_provided_as_dict_of_sets(self):
+        G = nx.path_graph(6)
+        partition = {0: {0, 1}, 2: {2, 3}, 4: {4, 5}}
+        M = nx.quotient_graph(
+            G, partition, node_data=partial(node_data, G), relabel=True
+        )
+        assert nodes_equal(M, [0, 1, 2])
+        assert edges_equal(M.edges(), [(0, 1), (1, 2)])
+        for n in M:
+            assert M.nodes[n]["nedges"] == 1
+            assert M.nodes[n]["nnodes"] == 2
+            assert M.nodes[n]["density"] == 1
+
+    def test_multigraph_path(self):
+        G = nx.MultiGraph(nx.path_graph(6))
+        partition = [{0, 1}, {2, 3}, {4, 5}]
+
+        M = nx.quotient_graph(
+            G, partition, node_data=partial(node_data, G), relabel=True
+        )
+        assert nodes_equal(M, [0, 1, 2])
+        assert edges_equal(M.edges(), [(0, 1), (1, 2)])
+        for n in M:
+            assert M.nodes[n]["nedges"] == 1
+            assert M.nodes[n]["nnodes"] == 2
+            assert M.nodes[n]["density"] == 1
+
+        M_rel = nx.quotient_graph(
+            G,
+            partition,
+            partial(edge_relation, G),
+            node_data=partial(node_data, G),
+            relabel=True,
+        )
+        assert nodes_equal(M_rel, [0, 1, 2])
+        assert edges_equal(M_rel.edges(), [(0, 1), (1, 2)])
+        for n in M_rel:
+            assert M_rel.nodes[n]["nedges"] == 1
+            assert M_rel.nodes[n]["nnodes"] == 2
+            assert M_rel.nodes[n]["density"] == 1
+
+    def test_directed_path(self):
+        G = nx.DiGraph()
+        nx.add_path(G, range(6))
+        partition = [{0, 1}, {2, 3}, {4, 5}]
+
+        M = nx.quotient_graph(
+            G, partition, node_data=partial(node_data, G), relabel=True
+        )
+        assert nodes_equal(M, [0, 1, 2])
+        assert edges_equal(M.edges(), [(0, 1), (1, 2)])
+        for n in M:
+            assert M.nodes[n]["nedges"] == 1
+            assert M.nodes[n]["nnodes"] == 2
+            assert M.nodes[n]["density"] == 0.5
+
+        M_rel = nx.quotient_graph(
+            G,
+            partition,
+            partial(edge_relation, G),
+            node_data=partial(node_data, G),
+            relabel=True,
+        )
+        assert nodes_equal(M_rel, [0, 1, 2])
+        assert edges_equal(M_rel.edges(), [(0, 1), (1, 2)])
+        for n in M_rel:
+            assert M_rel.nodes[n]["nedges"] == 1
+            assert M_rel.nodes[n]["nnodes"] == 2
+            assert M_rel.nodes[n]["density"] == 0.5
+
+    def test_directed_multigraph_path(self):
+        G = nx.MultiDiGraph()
+        nx.add_path(G, range(6))
+        partition = [{0, 1}, {2, 3}, {4, 5}]
+
+        M = nx.quotient_graph(
+            G, partition, node_data=partial(node_data, G), relabel=True
+        )
+        assert nodes_equal(M, [0, 1, 2])
+        assert edges_equal(M.edges(), [(0, 1), (1, 2)])
+        for n in M:
+            assert M.nodes[n]["nedges"] == 1
+            assert M.nodes[n]["nnodes"] == 2
+            assert M.nodes[n]["density"] == 0.5
+
+        M_rel = nx.quotient_graph(
+            G,
+            partition,
+            partial(edge_relation, G),
+            node_data=partial(node_data, G),
+            relabel=True,
+        )
+        assert nodes_equal(M_rel, [0, 1, 2])
+        assert edges_equal(M_rel.edges(), [(0, 1), (1, 2)])
+        for n in M_rel:
+            assert M_rel.nodes[n]["nedges"] == 1
+            assert M_rel.nodes[n]["nnodes"] == 2
+            assert M_rel.nodes[n]["density"] == 0.5
+
+    def test_overlapping_blocks(self):
+        with pytest.raises(nx.NetworkXException):
+            G = nx.path_graph(6)
+            partition = [{0, 1, 2}, {2, 3}, {4, 5}]
+            nx.quotient_graph(G, partition)
+
+    def test_weighted_path(self):
+        G = nx.path_graph(6)
+        for i in range(5):
+            G[i][i + 1]["weight"] = i + 1
+        partition = [{0, 1}, {2, 3}, {4, 5}]
+
+        M = nx.quotient_graph(
+            G, partition, node_data=partial(node_data, G), relabel=True
+        )
+        assert nodes_equal(M, [0, 1, 2])
+        assert edges_equal(M.edges(), [(0, 1), (1, 2)])
+        assert M[0][1]["weight"] == 2
+        assert M[1][2]["weight"] == 4
+        for n in M:
+            assert M.nodes[n]["nedges"] == 1
+            assert M.nodes[n]["nnodes"] == 2
+            assert M.nodes[n]["density"] == 1
+
+        M_rel = nx.quotient_graph(
+            G,
+            partition,
+            partial(edge_relation, G),
+            node_data=partial(node_data, G),
+            relabel=True,
+        )
+        assert nodes_equal(M_rel, [0, 1, 2])
+        assert edges_equal(M_rel.edges(), [(0, 1), (1, 2)])
+        assert M_rel[0][1]["weight"] == 2
+        assert M_rel[1][2]["weight"] == 4
+        for n in M_rel:
+            assert M_rel.nodes[n]["nedges"] == 1
+            assert M_rel.nodes[n]["nnodes"] == 2
+            assert M_rel.nodes[n]["density"] == 1
+
+    def test_barbell(self):
+        G = nx.barbell_graph(3, 0)
+        partition = [{0, 1, 2}, {3, 4, 5}]
+
+        M = nx.quotient_graph(
+            G, partition, node_data=partial(node_data, G), relabel=True
+        )
+        assert nodes_equal(M, [0, 1])
+        assert edges_equal(M.edges(), [(0, 1)])
+        for n in M:
+            assert M.nodes[n]["nedges"] == 3
+            assert M.nodes[n]["nnodes"] == 3
+            assert M.nodes[n]["density"] == 1
+
+        M_rel = nx.quotient_graph(
+            G,
+            partition,
+            partial(edge_relation, G),
+            node_data=partial(node_data, G),
+            relabel=True,
+        )
+        assert nodes_equal(M_rel, [0, 1])
+        assert edges_equal(M_rel.edges(), [(0, 1)])
+        for n in M_rel:
+            assert M_rel.nodes[n]["nedges"] == 3
+            assert M_rel.nodes[n]["nnodes"] == 3
+            assert M_rel.nodes[n]["density"] == 1
+
+    def test_barbell_plus(self):
+        G = nx.barbell_graph(3, 0)
+        # Add an extra edge joining the bells.
+        G.add_edge(0, 5)
+        partition = [{0, 1, 2}, {3, 4, 5}]
+
+        M = nx.quotient_graph(
+            G, partition, node_data=partial(node_data, G), relabel=True
+        )
+        assert nodes_equal(M, [0, 1])
+        assert edges_equal(M.edges(), [(0, 1)])
+        assert M[0][1]["weight"] == 2
+        for n in M:
+            assert M.nodes[n]["nedges"] == 3
+            assert M.nodes[n]["nnodes"] == 3
+            assert M.nodes[n]["density"] == 1
+
+        M_rel = nx.quotient_graph(
+            G,
+            partition,
+            partial(edge_relation, G),
+            node_data=partial(node_data, G),
+            relabel=True,
+        )
+        assert nodes_equal(M_rel, [0, 1])
+        assert edges_equal(M_rel.edges(), [(0, 1)])
+        assert M_rel[0][1]["weight"] == 2
+        for n in M_rel:
+            assert M_rel.nodes[n]["nedges"] == 3
+            assert M_rel.nodes[n]["nnodes"] == 3
+            assert M_rel.nodes[n]["density"] == 1
+
+    def test_blockmodel(self):
+        G = nx.path_graph(6)
+        partition = [[0, 1], [2, 3], [4, 5]]
+
+        M = nx.quotient_graph(
+            G, partition, node_data=partial(node_data, G), relabel=True
+        )
+        assert nodes_equal(M.nodes(), [0, 1, 2])
+        assert edges_equal(M.edges(), [(0, 1), (1, 2)])
+        for n in M.nodes():
+            assert M.nodes[n]["nedges"] == 1
+            assert M.nodes[n]["nnodes"] == 2
+            assert M.nodes[n]["density"] == 1.0
+
+        M_rel = nx.quotient_graph(
+            G,
+            partition,
+            partial(edge_relation, G),
+            node_data=partial(node_data, G),
+            relabel=True,
+        )
+        assert nodes_equal(M_rel.nodes(), [0, 1, 2])
+        assert edges_equal(M_rel.edges(), [(0, 1), (1, 2)])
+        for n in M_rel.nodes():
+            assert M_rel.nodes[n]["nedges"] == 1
+            assert M_rel.nodes[n]["nnodes"] == 2
+            assert M_rel.nodes[n]["density"] == 1.0
+
+    def test_multigraph_blockmodel(self):
+        G = nx.MultiGraph(nx.path_graph(6))
+        partition = [[0, 1], [2, 3], [4, 5]]
+
+        M = nx.quotient_graph(
+            G,
+            partition,
+            create_using=nx.MultiGraph(),
+            node_data=partial(node_data, G),
+            relabel=True,
+        )
+        assert nodes_equal(M.nodes(), [0, 1, 2])
+        assert edges_equal(M.edges(), [(0, 1), (1, 2)])
+        for n in M.nodes():
+            assert M.nodes[n]["nedges"] == 1
+            assert M.nodes[n]["nnodes"] == 2
+            assert M.nodes[n]["density"] == 1.0
+
+        M_rel = nx.quotient_graph(
+            G,
+            partition,
+            partial(edge_relation, G),
+            create_using=nx.MultiGraph(),
+            node_data=partial(node_data, G),
+            relabel=True,
+        )
+        assert nodes_equal(M_rel.nodes(), [0, 1, 2])
+        assert edges_equal(M_rel.edges(), [(0, 1), (1, 2)])
+        for n in M_rel.nodes():
+            assert M_rel.nodes[n]["nedges"] == 1
+            assert M_rel.nodes[n]["nnodes"] == 2
+            assert M_rel.nodes[n]["density"] == 1.0
+
+    def test_quotient_graph_incomplete_partition(self):
+        G = nx.path_graph(6)
+        partition = []
+        H = nx.quotient_graph(G, partition, relabel=True)
+        assert nodes_equal(H.nodes(), [])
+        assert edges_equal(H.edges(), [])
+
+        H_rel = nx.quotient_graph(G, partition, partial(edge_relation, G), relabel=True)
+        assert nodes_equal(H_rel.nodes(), [])
+        assert edges_equal(H_rel.edges(), [])
+
+        partition = [[0, 1], [2, 3], [5]]
+        H = nx.quotient_graph(G, partition, relabel=True)
+        assert nodes_equal(H.nodes(), [0, 1, 2])
+        assert edges_equal(H.edges(), [(0, 1)])
+        H_rel = nx.quotient_graph(G, partition, partial(edge_relation, G), relabel=True)
+        assert nodes_equal(H_rel.nodes(), [0, 1, 2])
+        assert edges_equal(H_rel.edges(), [(0, 1)])
+
+    def test_self_loops(self):
+        G = nx.DiGraph()
+        G.add_edge("a", "b")
+        Q_no_loops = nx.quotient_graph(G, [{"a", "b"}], self_loops=False)
+        assert len(Q_no_loops.edges) == 0
+
+        Q_loops = nx.quotient_graph(G, [{"a", "b"}], self_loops=True)
+        assert len(Q_loops.edges) == 1
+
+    def test_self_loops_with_relation(self):
+        G = nx.DiGraph()
+        G.add_edge("a", "b")
+        Q_no_loops = nx.quotient_graph(
+            G, [{"a", "b"}], partial(edge_relation, G), self_loops=False
+        )
+        assert len(Q_no_loops.edges) == 0
+
+        Q_loops = nx.quotient_graph(
+            G, [{"a", "b"}], partial(edge_relation, G), self_loops=True
+        )
+        assert len(Q_loops.edges) == 1
 
 
 def test_weighted_path():
