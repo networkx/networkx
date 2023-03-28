@@ -312,7 +312,7 @@ def single_source_shortest_path(G, source, cutoff=None):
 
     Returns
     -------
-    lengths : dictionary
+    paths : dictionary
         Dictionary, keyed by target, of shortest paths.
 
     Examples
@@ -395,7 +395,7 @@ def single_target_shortest_path(G, target, cutoff=None):
 
     Returns
     -------
-    lengths : dictionary
+    paths : dictionary
         Dictionary, keyed by target, of shortest paths.
 
     Examples
@@ -445,7 +445,7 @@ def all_pairs_shortest_path(G, cutoff=None):
 
     Returns
     -------
-    lengths : dictionary
+    paths : iterator
         Dictionary, keyed by source and target, of shortest paths.
 
     Examples
