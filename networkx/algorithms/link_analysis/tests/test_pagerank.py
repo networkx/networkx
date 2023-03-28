@@ -83,6 +83,8 @@ class TestPageRank:
         for n in G:
             assert p[n] == pytest.approx(G.pagerank[n], abs=1e-4)
 
+    # This additionally tests the @nx._dispatch mechanism, treating
+    # nx.google_matrix as if it were a re-implementation from another package
     @pytest.mark.parametrize("wrapper", [lambda x: x, dispatch_interface.convert])
     def test_google_matrix(self, wrapper):
         G = wrapper(self.G)

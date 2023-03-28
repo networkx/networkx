@@ -61,6 +61,8 @@ class TestConnected:
         C = []
         cls.gc.append((G, C))
 
+    # This additionally tests the @nx._dispatch mechanism, treating
+    # nx.connected_components as if it were a re-implementation from another package
     @pytest.mark.parametrize("wrapper", [lambda x: x, dispatch_interface.convert])
     def test_connected_components(self, wrapper):
         cc = nx.connected_components

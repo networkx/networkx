@@ -147,7 +147,10 @@ def _dispatch(func=None, *, name=None):
                     )
         return func(*args, **kwds)
 
+    # Keep a handle to the original function to use when testing
+    # the dispatch mechanism internally
     wrapper._orig_func = func
+
     _register_algo(name, wrapper)
     return wrapper
 
