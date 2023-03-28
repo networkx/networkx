@@ -533,6 +533,11 @@ def chordless_cycles(G, length_bound=None):
     list of nodes
        Each cycle is represented by a list of nodes along the cycle.
 
+    Examples
+    --------
+    >>> sorted(list(nx.chordless_cycles(nx.complete_graph(4))))
+    [[1, 0, 2], [1, 0, 3], [2, 0, 3], [2, 1, 3]]
+
     Notes
     -----
     When length_bound is None, and the graph is simple, the time complexity is
