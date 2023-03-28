@@ -216,6 +216,14 @@ def bidirectional_shortest_path(G, source, target):
     Notes
     -----
     This algorithm is used by shortest_path(G, source, target).
+    
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> G.add_edges_from([(0, 1),(0,8),(1,2),(1,5),(2,3),(2,4),(5,6),(5,7),(8,9),(8,12),(9,10),(9,11),(12,13),(12,14)])
+    >>> nx.bidirectional_shortest_path(G,3,13)
+    [3, 2, 1, 0, 8, 9, 10]
+    
     """
 
     if source not in G or target not in G:
