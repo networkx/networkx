@@ -53,8 +53,8 @@ tests are working, while avoiding causing an explicit failure.
 
 A special ``on_start_tests(items)`` function may be defined by the backend.
 It will be called with the list of NetworkX tests discovered. Each item
-is a `pytest.Node` object. If the backend does not support the test, that
-test can be marked as xfail.
+is a test object that can be marked as xfail if the backend does not support
+the test using `item.add_marker(pytest.mark.xfail(reason=...))`.
 """
 import functools
 import inspect
@@ -147,6 +147,10 @@ def _dispatch(func=None, *, name=None):
                     )
         return func(*args, **kwds)
 
+    # Keep a handle to the original function to use when testing
+    # the dispatch mechanism internally
+    wrapper._orig_func = func
+
     _register_algo(name, wrapper)
     return wrapper
 
@@ -171,6 +175,10 @@ def test_override_dispatch(func=None, *, name=None):
     def wrapper(*args, **kwds):
         backend = plugins[plugin_name].load()
         if not hasattr(backend, name):
+            if plugin_name == "nx-loopback":
+                raise NetworkXNotImplemented(
+                    f"'{name}' not found in {backend.__class__.__name__}"
+                )
             pytest.xfail(f"'{name}' not implemented by {plugin_name}")
         bound = sig.bind(*args, **kwds)
         bound.apply_defaults()
@@ -196,6 +204,7 @@ def test_override_dispatch(func=None, *, name=None):
         result = getattr(backend, name).__call__(graph, *args, **kwds)
         return backend.convert_to_nx(result, name=name)
 
+    wrapper._orig_func = func
     _register_algo(name, wrapper)
     return wrapper
 
