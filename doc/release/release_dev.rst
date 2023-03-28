@@ -33,6 +33,7 @@ Deprecations
 
 [`#6564 <https://github.com/networkx/networkx/pull/6564>`_]
 Deprecate ``single_target_shortest_path_length`` to change return value to a dict in v3.3.
+Deprecate ``shortest_path`` in case of all_pairs to change return value to a iterator in v3.3.
 
 Merged PRs
 ----------

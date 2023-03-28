@@ -75,3 +75,5 @@ Version 3.3
   existing usages with ``write_network_text``.
 * Change ``single_target_shortest_path_length`` in ``algorithms/shortest_path/unweighted.py``
   to return a dict. See #6527
+* Change ``shortest_path`` in ``algorithms/shortest_path/generic.py``
+  to return a iterator. See #6527
