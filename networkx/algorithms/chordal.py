@@ -80,6 +80,8 @@ def is_chordal(G):
        selectively reduce acyclic hypergraphs, SIAM J. Comput., 13 (1984),
        pp. 566–579.
     """
+    if len(G.nodes) <= 3:
+        return True
     return len(_find_chordality_breaker(G)) == 0
 
 
