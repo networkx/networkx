@@ -40,6 +40,11 @@ def test_tutte_polynomial_disjoint(G):
     assert sympy.simplify(t_g * t_g).equals(t_h)
 
 
+def test_tutte_polynomial_empty_graph():
+    G = nx.Graph()
+    assert nx.tutte_polynomial(G).equals(1)
+
+
 @pytest.mark.parametrize(("G", "expected"), _test_chromatic_graphs.items())
 def test_chromatic_polynomial(G, expected):
     assert nx.chromatic_polynomial(G).equals(expected)
