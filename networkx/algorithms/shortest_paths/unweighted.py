@@ -56,8 +56,8 @@ def single_source_shortest_path_length(G, source, cutoff=None):
         raise nx.NodeNotFound(f"Source {source} is not in G")
     if cutoff is None:
         cutoff = float("inf")
-    nextlevel = {source: 1}
-    return dict(_single_shortest_path_length(G.adj, nextlevel, cutoff))
+    nextlevel = [source]
+    return dict(_single_shortest_path_length(G._adj, nextlevel, cutoff))
 
 
 def _single_shortest_path_length(adj, firstlevel, cutoff):
@@ -68,30 +68,29 @@ def _single_shortest_path_length(adj, firstlevel, cutoff):
     ----------
         adj : dict
             Adjacency dict or view
-        firstlevel : dict
-            starting nodes, e.g. {source: 1} or {target: 1}
+        firstlevel : list
+            starting nodes, e.g. [source] or [target]
         cutoff : int or float
             level at which we stop the process
     """
-    seen = {}  # level (number of hops) when seen in BFS
-    level = 0  # the current level
-    nextlevel = set(firstlevel)  # set of nodes to check at next level
+    seen = set(firstlevel)
+    nextlevel = firstlevel
+    level = 0
     n = len(adj)
-    while nextlevel and cutoff >= level:
-        thislevel = nextlevel  # advance to next level
-        nextlevel = set()  # and start a new set (fringe)
-        found = []
-        for v in thislevel:
-            if v not in seen:
-                seen[v] = level  # set the level of vertex v
-                found.append(v)
-                yield (v, level)
-        if len(seen) == n:
-            return
-        for v in found:
-            nextlevel.update(adj[v])
+    for v in nextlevel:
+        yield (v, level)
+    while nextlevel and cutoff > level:
         level += 1
-    del seen
+        thislevel = nextlevel
+        nextlevel = []
+        for v in thislevel:
+            for w in adj[v]:
+                if w not in seen:
+                    seen.add(w)
+                    nextlevel.append(w)
+                    yield (w, level)
+            if len(seen) == n:
+                return
 
 
 @nx._dispatch
@@ -137,8 +136,8 @@ def single_target_shortest_path_length(G, target, cutoff=None):
     if cutoff is None:
         cutoff = float("inf")
     # handle either directed or undirected
-    adj = G.pred if G.is_directed() else G.adj
-    nextlevel = {target: 1}
+    adj = G._pred if G.is_directed() else G._adj
+    nextlevel = [target]
     return _single_shortest_path_length(adj, nextlevel, cutoff)
 
 
