@@ -1,6 +1,8 @@
 """
 Shortest path algorithms for unweighted graphs.
 """
+import warnings
+
 import networkx as nx
 
 __all__ = [
@@ -133,11 +135,16 @@ def single_target_shortest_path_length(G, target, cutoff=None):
     if target not in G:
         raise nx.NodeNotFound(f"Target {target} is not in G")
 
+    msg = "single_target_shortest_path_length will return a dict starting in v3.3"
+    warnings.warn(msg, DeprecationWarning)
+
     if cutoff is None:
         cutoff = float("inf")
     # handle either directed or undirected
     adj = G._pred if G.is_directed() else G._adj
     nextlevel = [target]
+    # for version 3.3 we will return a dict like this:
+    # return dict(_single_shortest_path_length(adj, nextlevel, cutoff))
     return _single_shortest_path_length(adj, nextlevel, cutoff)
 
 
