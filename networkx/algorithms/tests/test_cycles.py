@@ -634,6 +634,14 @@ class TestCycleEnumeration:
             for k, e in enumerate(expected):
                 self.check_cycle_algorithm(g, e, length_bound=k)
 
+    def test_simple_cycles_bound_corner_cases(self):
+        G = nx.cycle_graph(4)
+        DG = nx.cycle_graph(4, create_using=nx.DiGraph)
+        assert list(nx.simple_cycles(G, length_bound=0)) == []
+        assert list(nx.simple_cycles(DG, length_bound=0)) == []
+        assert list(nx.chordless_cycles(G, length_bound=0)) == []
+        assert list(nx.chordless_cycles(DG, length_bound=0)) == []
+
     def test_simple_cycles_bound_error(self):
         with pytest.raises(ValueError):
             G = nx.DiGraph()
@@ -643,6 +651,16 @@ class TestCycleEnumeration:
         with pytest.raises(ValueError):
             G = nx.Graph()
             for c in nx.simple_cycles(G, -1):
+                assert False
+
+        with pytest.raises(ValueError):
+            G = nx.Graph()
+            for c in nx.chordless_cycles(G, -1):
+                assert False
+
+        with pytest.raises(ValueError):
+            G = nx.DiGraph()
+            for c in nx.chordless_cycles(G, -1):
                 assert False
 
     def test_chordless_cycles_clique(self):

@@ -163,6 +163,11 @@ def simple_cycles(G, length_bound=None):
     the time complexity is $O((c+n)(k-1)d^k)$ where $d$ is the average degree of
     the nodes of G and $k$ = length_bound.
 
+    Raises
+    ------
+    ValueError
+        when length_bound < 0.
+
     References
     ----------
     .. [1] Finding all the elementary circuits of a directed graph.
@@ -256,10 +261,6 @@ def _directed_cycle_search(G, length_bound):
        If length_bound is an int, generate all simple cycles of G with length at most length_bound.
        Otherwise, generate all simple cycles of G.
 
-    chordless : bool
-       If chordless is True, limit search to chordless simple cycles of G.
-       Otherwise, generate simple cycles with or without chords.
-
     Yields
     ------
     list of nodes
@@ -309,10 +310,6 @@ def _undirected_cycle_search(G, length_bound):
     length_bound : int or None
        If length_bound is an int, generate all simple cycles of G with length at most length_bound.
        Otherwise, generate all simple cycles of G.
-
-    chordless : bool
-       If chordless is True, limit search to chordless simple cycles of G.
-       Otherwise, generate simple cycles with or without chords.
 
     Yields
     ------
@@ -475,7 +472,7 @@ def _bounded_cycle_search(G, path, length_bound):
 def chordless_cycles(G, length_bound=None):
     """Find simple chordless cycles of a graph.
 
-    A `simple cycle`, is a closed path where no node appears twice.  In a simple
+    A `simple cycle` is a closed path where no node appears twice.  In a simple
     cycle, a `chord` is an additional edge between two nodes in the cycle.  A
     `chordless cycle` is a simple cycle without chords.  Said differently, a
     chordless cycle is a cycle C in a graph G where the number of edges in the
@@ -505,7 +502,7 @@ def chordless_cycles(G, length_bound=None):
 
     Optionally, the cycles are bounded in length.
 
-    We use an algorithm  strongly inspired by that of Dias et al [1]_.  It has
+    We use an algorithm strongly inspired by that of Dias et al [1]_.  It has
     been modified in the following ways:
 
         1. Recursion is avoided, per Python's limitations
@@ -540,6 +537,11 @@ def chordless_cycles(G, length_bound=None):
     -----
     When length_bound is None, and the graph is simple, the time complexity is
     $O((n+e)(c+1))$ for $n$ nodes, $e$ edges and $c$ chordless cycles.
+
+    Raises
+    ------
+    ValueError
+        when length_bound < 0.
 
     References
     ----------
