@@ -108,6 +108,19 @@ class MinimumSpanningTreeTestBase:
         with pytest.raises(ValueError):
             list(edges)
 
+    def test_nan_weights_MultiGraph(self):
+        G = nx.MultiGraph()
+        G.add_edge(0, 12, weight=float("nan"))
+        edges = nx.minimum_spanning_edges(
+            G, algorithm="prim", data=False, ignore_nan=False
+        )
+        with pytest.raises(ValueError):
+            list(edges)
+        # test default for ignore_nan as False
+        edges = nx.minimum_spanning_edges(G, algorithm="prim", data=False)
+        with pytest.raises(ValueError):
+            list(edges)
+
     def test_nan_weights_order(self):
         # now try again with a nan edge at the beginning of G.nodes
         edges = [
