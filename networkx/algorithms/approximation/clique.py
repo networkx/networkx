@@ -40,6 +40,14 @@ def maximum_independent_set(G):
     iset : Set
         The apx-maximum independent set
 
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.approximation.clique import maximum_independent_set
+    >>> G = nx.path_graph(10)
+    >>> maximum_independent_set(G)
+    {0, 2, 4, 6, 9}
+
     Raises
     ------
     NetworkXNotImplemented
@@ -78,6 +86,14 @@ def max_clique(G):
     -------
     clique : set
         The apx-maximum clique of the graph
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.approximation.clique import max_clique
+    >>> G = nx.path_graph(10)
+    >>> max_clique(G)
+    {8, 9}
 
     Raises
     ------
@@ -135,6 +151,14 @@ def clique_removal(G):
     max_ind_cliques : (set, list) tuple
         2-tuple of Maximal Independent Set and list of maximal cliques (sets).
 
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.approximation.clique import clique_removal
+    >>> G = nx.path_graph(10)
+    >>> clique_removal(G)
+    ({0, 2, 4, 6, 9}, [{0, 1}, {2, 3}, {4, 5}, {6, 7}, {8, 9}])
+
     Raises
     ------
     NetworkXNotImplemented
@@ -179,6 +203,14 @@ def large_clique_size(G):
     -------
     k: integer
        The size of a large clique in the graph.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> from networkx.algorithms.approximation.clique import large_clique_size
+    >>> G = nx.path_graph(10)
+    >>> large_clique_size(G)
+    2
 
     Raises
     ------
