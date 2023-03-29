@@ -29,6 +29,15 @@ def min_maximal_matching(G):
       and every edge not in the set shares some common endpoint in the set.
       Cardinality will be 2*OPT in the worst case.
 
+    Examples
+    --------
+    >>> from networkx.algorithms.approximation.matching import min_maximal_matching
+    >>> G = nx.Graph()
+    >>> edges = [(0, 1),(0, 3),(1, 2),(1, 3),(1, 4)]
+    >>> add_edges_from(edges)
+    >>> min_maximal_matching(G)
+    {(0, 1)}
+
     Notes
     -----
     The algorithm computes an approximate solution fo the minimum maximal
