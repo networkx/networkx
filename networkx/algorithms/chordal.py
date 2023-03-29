@@ -73,6 +73,8 @@ def is_chordal(G):
     search. It returns False when it finds that the separator for any node
     is not a clique.  Based on the algorithms in [1]_.
 
+    Self loops are ignored.
+
     References
     ----------
     .. [1] R. E. Tarjan and M. Yannakakis, Simple linear-time algorithms
@@ -131,6 +133,8 @@ def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
 
     The algorithm is inspired by Algorithm 4 in [1]_.
     A formal definition of induced node can also be found on that reference.
+
+    Self Loops are ignored
 
     References
     ----------
@@ -328,9 +332,9 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
 
     If it does find one, it returns (u,v,w) where u,v,w are the three
     nodes that together with s are involved in the cycle.
+
+    It ignores any self loops.
     """
-    if nx.number_of_selfloops(G) > 0:
-        raise nx.NetworkXError("Input graph is not chordal.")
     unnumbered = set(G)
     if s is None:
         s = arbitrary_element(G)
