@@ -1,4 +1,5 @@
 """Provides functions for computing minors of a graph."""
+import operator
 from collections import defaultdict
 from functools import partial
 from itertools import chain, combinations, permutations, product
@@ -391,35 +392,6 @@ def quotient_graph(
         )
 
 
-def _mapped_edges(G, mapping, self_loops):
-    "project edge src and dst throught mapping."
-    for u, v, data in G.edges(data=True):
-        pu, pv = mapping[u], mapping[v]
-        if not self_loops and pu == pv:
-            continue
-        yield pu, pv, data
-
-
-def _default_node_data(_):
-    "no node attributes."
-    return {}
-
-
-def _default_edge_data(G, b, c):
-    "sum of weights in original edges."
-    weights = (
-        d
-        for u, v, d in G.edges(b | c, data="weight", default=1)
-        if (u in b and v in c) or (u in c and v in b)
-    )
-    return {"weight": sum(weights)}
-
-
-def _default_edge_reduce(a, b):
-    "sum of weights in original edges."
-    return {"weight": a.get("weight", 1) + b.get("weight", 1)}
-
-
 def _quotient_graph(
     G,
     partition,
@@ -456,10 +428,10 @@ def _quotient_graph(
     if H.is_multigraph():
         H.add_edges_from(edges)
     else:
-        agg_edges = defaultdict(lambda: {"weight": 0})
+        agg_edges = defaultdict(_reducible)
         for u, v, data in edges:
-            agg_edges[u, v] = edge_reduce(agg_edges[u, v], data)
-        H.add_edges_from((u, v, d) for (u, v), d in agg_edges.items())
+            agg_edges[u, v](edge_reduce, data)
+        H.add_edges_from((u, v, d.value) for (u, v), d in agg_edges.items())
 
     if not relabel:
         nx.relabel_nodes(H, partition2nodes, copy=False)
@@ -719,3 +691,44 @@ def contracted_edge(G, edge, self_loops=True, copy=True):
     if not G.has_edge(u, v):
         raise ValueError(f"Edge {edge} does not exist in graph G; cannot contract it")
     return contracted_nodes(G, u, v, self_loops=self_loops, copy=copy)
+
+
+class _reducible:
+    def __init__(self, value=None):
+        self.value = value
+
+    def __call__(self, reduce_fn, other):
+        if self.value is None:
+            self.value = other
+        else:
+            self.value = reduce_fn(self.value, other)
+
+
+def _mapped_edges(G, mapping, self_loops=True, data=None, **kw):
+    "project edge src and dst through mapping and iterate over edges with data."
+    data = (data is None) or data
+    for u, v, data in G.edges(data=data, **kw):
+        pu, pv = mapping[u], mapping[v]
+        if not self_loops and pu == pv:
+            continue
+        yield pu, pv, data
+
+
+def _default_node_data(_):
+    "no node attributes."
+    return {}
+
+
+def _default_edge_data(G, b, c):
+    "sum of weights in original edges."
+    weights = (
+        d
+        for u, v, d in G.edges(b | c, data="weight", default=1)
+        if (u in b and v in c) or (u in c and v in b)
+    )
+    return {"weight": sum(weights)}
+
+
+def _default_edge_reduce(a, b):
+    "sum of weights in original edges."
+    return {"weight": a.get("weight", 1) + b.get("weight", 1)}
