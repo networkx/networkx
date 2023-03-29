@@ -219,9 +219,9 @@ def bidirectional_shortest_path(G, source, target):
     Examples
     --------
     >>> G = nx.Graph()
-    >>> G.add_edges_from([(0, 1), (0, 8), (1, 2), (1, 5), (2, 3), (2, 4), (5, 6), (5, 7), (8, 9), (8, 12), (9, 10), (9, 11), (12, 13), (12, 14)])
-    >>> nx.bidirectional_shortest_path(G, 3, 13)
-    [3, 2, 1, 0, 8, 12, 13]
+    >>> nx.add_path(G, [0, 1, 2, 3, 0, 4, 5, 6, 7, 4])
+    >>> nx.bidirectional_shortest_path(G, 2, 6)
+    [2, 1, 0, 4, 5, 6]
 
     See Also
     --------
