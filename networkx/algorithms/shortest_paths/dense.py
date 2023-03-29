@@ -40,6 +40,30 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
         A numpy array of shortest path distances between nodes.
         If there is no path between two nodes the value is Inf.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph()
+    >>> G.add_weighted_edges_from(
+    ...     [
+    ...         ("s", "u", 10),
+    ...         ("s", "x", 5),
+    ...         ("u", "v", 1),
+    ...         ("u", "x", 2),
+    ...         ("v", "y", 1),
+    ...         ("x", "u", 3),
+    ...         ("x", "v", 5),
+    ...         ("x", "y", 2),
+    ...         ("y", "s", 7),
+    ...         ("y", "v", 6),
+    ...     ]
+    ... )
+    >>> nx.floyd_warshall_numpy(G, weight='weight')
+    array([[ 0.,  8.,  5.,  9.,  7.],
+     [ 9.,  0.,  2.,  1.,  2.],
+     [ 9.,  3.,  0.,  4.,  2.],
+     [ 8., 16., 13.,  0.,  1.],
+     [ 7., 15., 12.,  6.,  0.]])
+
     Notes
     -----
     Floyd's algorithm is appropriate for finding shortest paths in
@@ -217,6 +241,32 @@ def floyd_warshall(G, weight="weight"):
     distance : dict
        A dictionary,  keyed by source and target, of shortest paths distances
        between nodes.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph()
+    >>> G.add_weighted_edges_from(
+    ...     [
+    ...         ("s", "u", 10),
+    ...         ("s", "x", 5),
+    ...         ("u", "v", 1),
+    ...         ("u", "x", 2),
+    ...         ("v", "y", 1),
+    ...         ("x", "u", 3),
+    ...         ("x", "v", 5),
+    ...         ("x", "y", 2),
+    ...         ("y", "s", 7),
+    ...         ("y", "v", 6),
+    ...     ]
+    ... )
+    >>> fw = nx.floyd_warshall(G, weight='weight')
+    >>> results = {a:dict(b) for a,b in fw.items()}
+    >>> print(results)
+    {'s': {'s': 0, 'u': 8, 'x': 5, 'v': 9, 'y': 7},
+     'u': {'u': 0, 'v': 1, 'x': 2, 's': 9, 'y': 2},
+     'x': {'x': 0, 'u': 3, 'v': 4, 'y': 2, 's': 9},
+     'v': {'v': 0, 'y': 1, 's': 8, 'u': 16, 'x': 13},
+     'y': {'y': 0, 's': 7, 'v': 6, 'u': 15, 'x': 12}}
 
     Notes
     -----
