@@ -216,6 +216,13 @@ def bidirectional_shortest_path(G, source, target):
     NetworkXNoPath
        If no path exists between source and target.
 
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> nx.add_path(G, [0, 1, 2, 3, 0, 4, 5, 6, 7, 4])
+    >>> nx.bidirectional_shortest_path(G, 2, 6)
+    [2, 1, 0, 4, 5, 6]
+
     See Also
     --------
     shortest_path
