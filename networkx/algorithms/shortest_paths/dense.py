@@ -262,11 +262,7 @@ def floyd_warshall(G, weight="weight"):
     >>> fw = nx.floyd_warshall(G, weight='weight')
     >>> results = {a:dict(b) for a,b in fw.items()}
     >>> print(results)
-    {'s': {'s': 0, 'u': 8, 'x': 5, 'v': 9, 'y': 7},
-     'u': {'u': 0, 'v': 1, 'x': 2, 's': 9, 'y': 2},
-     'x': {'x': 0, 'u': 3, 'v': 4, 'y': 2, 's': 9},
-     'v': {'v': 0, 'y': 1, 's': 8, 'u': 16, 'x': 13},
-     'y': {'y': 0, 's': 7, 'v': 6, 'u': 15, 'x': 12}}
+    {'s': {'s': 0, 'u': 8, 'x': 5, 'v': 9, 'y': 7}, 'u': {'u': 0, 'v': 1, 'x': 2, 's': 9, 'y': 2}, 'x': {'x': 0, 'u': 3, 'v': 4, 'y': 2, 's': 9}, 'v': {'v': 0, 'y': 1, 's': 8, 'u': 16, 'x': 13}, 'y': {'y': 0, 's': 7, 'v': 6, 'u': 15, 'x': 12}}
 
     Notes
     -----
