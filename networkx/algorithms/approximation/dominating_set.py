@@ -41,6 +41,15 @@ def min_weighted_dominating_set(G, weight=None):
         each node in the graph and `w(V^*)` denotes the sum of the
         weights of each node in the minimum weight dominating set.
 
+    Examples
+    --------
+    >>> from networkx.algorithms.approximation.dominating_set import min_weighted_dominating_set
+    >>> G = nx.Graph()
+    >>> edges = [(0, 1),(0, 3),(1, 2),(1, 3),(1, 4)]
+    >>> G.add_edges_from(edges)
+    >>> min_weighted_dominating_set(G)
+    {1}
+
     Notes
     -----
     This algorithm computes an approximate minimum weighted dominating
@@ -111,6 +120,15 @@ def min_edge_dominating_set(G):
     -------
     min_edge_dominating_set : set
       Returns a set of dominating edges whose size is no more than 2 * OPT.
+
+    Examples
+    --------
+    >>> from networkx.algorithms.approximation.dominating_set import min_edge_dominating_set
+    >>> G = nx.Graph()
+    >>> edges = [(0, 1),(0, 3),(1, 2),(1, 3),(1, 4)]
+    >>> G.add_edges_from(edges)
+    >>> min_edge_dominating_set(G)
+    {(0,1)}
 
     Notes
     -----
