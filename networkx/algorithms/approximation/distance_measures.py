@@ -39,6 +39,18 @@ def diameter(G, seed=None):
     d : integer
        Lower Bound on the Diameter of G
 
+    Examples
+    --------
+    >>> from networkx.algorithms.approximation.distance_measures import diameter
+    >>> G = nx.path_graph(10) #undirected graph
+    >>> diameter(G)
+    9
+
+    >>> G = nx.DiGraph()
+    >>> G.add_edges_from([(2,3),(3,5),(5,2)]) #directed graph
+    >>> diameter(G)
+    2
+
     Raises
     ------
     NetworkXError
