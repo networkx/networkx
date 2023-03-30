@@ -315,6 +315,21 @@ class Edmonds:
         # sure that our node names do not conflict with the real node names.
         self.template = random_string(seed=seed) + "_{0}"
 
+
+    """
+    So we need the code in _init and find_optimum to successfully run edmonds algorithm. 
+    Responsibilities of the _init function:
+    - Check that the kind argument is in {min, max} or raise a NetworkXException. 
+    - Transform the graph if we need a minimum arborescence/branching. 
+      - The current method is to map weight -> -weight. This is NOT a good approach since 
+        the algorithm can and does choose to ignore negative weights when creating a branching 
+        since that is always optimal when maximzing the weights. I think we should set the edge 
+        weights to be (max_weight + 1) - edge_weight. 
+    - Transform the graph into a MultiDiGraph, adding the partition information and potoentially 
+      other edge attributes if we set preserve_attrs = True. 
+    - Setup the buckets and union find data structures required for the algorithm. 
+    """
+
     def _init(self, attr, default, kind, style, preserve_attrs, seed, partition):
         if kind not in KINDS:
             raise nx.NetworkXException("Unknown value for `kind`.")
@@ -383,6 +398,16 @@ class Edmonds:
         # G^i is still the minimum edge in circuit G^0 (despite their weights
         # being different).
         self.minedge_circuit = []
+
+    """
+    We should seperate each step into an inner function. Then the overall loop would become
+    while True:
+        step_I1()
+        if cycle detected:
+            step_I2()
+        elif every node of G is in D and E is a branching
+            break
+    """
 
     def find_optimum(
         self,
@@ -499,7 +524,9 @@ class Edmonds:
             # print(f"Adding node {v}")
             D.add(v)
             B.add_node(v)
+            # End (I1)
 
+            # Start cycle detection
             edge, weight = desired_edge(v)
             # print(f"Max edge is {edge!r}")
             if edge is None:
@@ -521,9 +548,12 @@ class Edmonds:
                     # Then B with the edge is still a branching and condition
                     # (a) from the paper does not hold.
                     Q_nodes, Q_edges = None, None
+                # End cycle detection
 
+                # THIS WILL PROBABLY BE REMOVED? MAYBE A NEW ARG FOR THIS FEATURE?
                 # Conditions for adding the edge.
                 # If weight < 0, then it cannot help in finding a maximum branching.
+                # This is the root of the problem with minimum branching.
                 if self.style == "branching" and weight <= 0:
                     acceptable = False
                 else:
@@ -612,6 +642,7 @@ class Edmonds:
 
                         nodes = iter(list(G.nodes()))
                         self.level += 1
+                    # END STEP (I2)?
 
         # (I3) Branch construction.
         # print(self.level)
