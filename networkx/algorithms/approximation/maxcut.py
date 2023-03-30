@@ -36,8 +36,8 @@ def randomized_partitioning(G, seed=None, p=0.5, weight=None):
     >>> G = nx.Graph()
     >>> edges = [(0, 1),(0, 3),(1, 2),(1, 3),(1, 4)]
     >>> G.add_edges_from(edges)
-    >>> randomized_partitioning(G)
-    (4, ({1, 3}, {0, 2, 4}))
+    >>> randomized_partitioning(G, seed=1)
+    (4, ({0, 2, 4}, {1, 3}))
 
     Returns
     -------
