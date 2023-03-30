@@ -30,15 +30,6 @@ def randomized_partitioning(G, seed=None, p=0.5, weight=None):
         Edge attribute key to use as weight. If not specified, edges
         have weight one.
 
-    Examples
-    --------
-    >>> from networkx.algorithms.approximation.maxcut import randomized_partitioning
-    >>> G = nx.Graph()
-    >>> edges = [(0, 1),(0, 3),(1, 2),(1, 3),(1, 4)]
-    >>> G.add_edges_from(edges)
-    >>> randomized_partitioning(G)
-    (4, ({1, 3}, {0, 2, 4}))
-
     Returns
     -------
     cut_size : scalar
