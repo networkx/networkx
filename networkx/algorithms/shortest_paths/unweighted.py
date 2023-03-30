@@ -117,7 +117,7 @@ def single_target_shortest_path_length(G, target, cutoff=None):
     Examples
     --------
     >>> G = nx.path_graph(5, create_using=nx.DiGraph())
-    >>> length = dict(nx.single_target_shortest_path_length(G, 4))
+    >>> length = nx.single_target_shortest_path_length(G, 4)
     >>> length[0]
     4
     >>> for node in range(5):

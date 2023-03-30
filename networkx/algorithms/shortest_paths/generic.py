@@ -109,7 +109,7 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     >>> p = nx.shortest_path(G, target=4)  # source not specified
     >>> p[1] # shortest path from source=1 to target=4
     [1, 2, 3, 4]
-    >>> p = nx.shortest_path(G)  # source, target not specified
+    >>> p = dict(nx.shortest_path(G))  # source, target not specified
     >>> p[2][4] # shortest path from source=2 to target=4
     [2, 3, 4]
 
