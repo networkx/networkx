@@ -57,6 +57,15 @@ def treewidth_min_degree(G):
     -------
     Treewidth decomposition : (int, Graph) tuple
           2-tuple with treewidth and the corresponding decomposed tree.
+
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> edges = [(0, 1),(0, 3),(1, 2),(1, 3),(1, 4)]
+    >>> G.add_edges_from(edges)
+    >>> treewidth_min_degree(G)
+    (2, <networkx.classes.graph.Graph object at 0x000001E7AB0B3400>
+
     """
     deg_heuristic = MinDegreeHeuristic(G)
     return treewidth_decomp(G, lambda graph: deg_heuristic.best_node(graph))
@@ -79,6 +88,14 @@ def treewidth_min_fill_in(G):
     -------
     Treewidth decomposition : (int, Graph) tuple
         2-tuple with treewidth and the corresponding decomposed tree.
+
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> edges = [(0, 1),(0, 3),(1, 2),(1, 3),(1, 4)]
+    >>> G.add_edges_from(edges)
+    >>> treewidth_min_degree(G)
+    (2, <networkx.classes.graph.Graph object at 0x000001E7AB0B2200>)
     """
     return treewidth_decomp(G, min_fill_in_heuristic)
 
