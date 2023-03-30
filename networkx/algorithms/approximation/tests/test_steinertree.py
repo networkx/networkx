@@ -189,3 +189,27 @@ class TestSteinerTree:
         for method in self.methods:
             S = steiner_tree(G, terminal_nodes, method=method)
             assert edges_equal(S.edges(data=True, keys=True), expected_edges)
+
+    def test_steiner_tree_method_None(self):
+        G = nx.Graph()
+        edges = [(0, 1), (0, 3), (1, 2), (1, 3), (1, 4)]
+        G.add_edges_from(edges)
+        with pytest.warns(
+            FutureWarning,
+            match="steiner_tree will change default method from 'kou' to 'mehlhorn'"
+            "in version 3.2.\nSet the `method` kwarg to remove this warning.",
+        ) as warning:
+            steiner_tree(G, terminal_nodes=[1, 2], weight="weight", method=None)
+        a = steiner_tree(G, terminal_nodes=[1, 2], weight="weight", method=None)
+        b = steiner_tree(G, terminal_nodes=[1, 2], weight="weight", method="kou")
+        assert list(a) == list(b)
+
+    def test_steiner_tree_method_kwargs(self):
+        G = nx.Graph()
+        edges = [(0, 1), (0, 3), (1, 2), (1, 3), (1, 4)]
+        G.add_edges_from(edges)
+        with pytest.raises(
+            (KeyError, ValueError),
+            match="method is not a valid choice for an algorithm.",
+        ):
+            steiner_tree(G, terminal_nodes=[1, 2], weight="weight", method="method")
