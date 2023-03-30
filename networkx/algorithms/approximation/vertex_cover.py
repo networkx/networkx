@@ -43,6 +43,15 @@ def min_weighted_vertex_cover(G, weight=None):
         Returns a set of nodes whose weight sum is no more than twice
         the weight sum of the minimum weight vertex cover.
 
+    Examples
+    --------
+    >>> from networkx.algorithms.approximation.vertex_cover import min_weighted_vertex_cover
+    >>> G = nx.Graph()
+    >>> edges = [(0, 1),(0, 3),(1, 2),(1, 3),(1, 4),(5,9),(9,0)]
+    >>> G.add_edges_from(edges)
+    >>> min_weighted_vertex_cover(G)
+    {0, 1, 5}
+
     Notes
     -----
     For a directed graph, a vertex cover has the same definition: a set
