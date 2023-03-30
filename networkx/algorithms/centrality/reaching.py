@@ -103,9 +103,9 @@ def global_reaching_centrality(G, weight=None, normalized=True):
         def as_distance(u, v, d):
             return total_weight / d.get(weight, 1)
 
-        shortest_paths = nx.shortest_path(G, weight=as_distance)
+        shortest_paths = dict(nx.shortest_path(G, weight=as_distance))
     else:
-        shortest_paths = nx.shortest_path(G)
+        shortest_paths = dict(nx.shortest_path(G))
 
     centrality = local_reaching_centrality
     # TODO This can be trivially parallelized.
