@@ -63,8 +63,11 @@ def treewidth_min_degree(G):
     >>> G = nx.Graph()
     >>> edges = [(0, 1),(0, 3),(1, 2),(1, 3),(1, 4)]
     >>> G.add_edges_from(edges)
-    >>> treewidth_min_degree(G)
-    (2, <networkx.classes.graph.Graph object at 0x000001E7AB0B3400>
+    >>> treewidth = treewidth_min_degree(G)
+    >>> treewidth[0]
+    2
+    >>> type(treewidth[1])
+    <class 'networkx.classes.graph.Graph'>
 
     """
     deg_heuristic = MinDegreeHeuristic(G)
