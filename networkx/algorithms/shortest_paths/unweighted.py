@@ -145,7 +145,7 @@ def single_target_shortest_path_length(G, target, cutoff=None):
     nextlevel = [target]
     # for version 3.3 we will return a dict like this:
     # return dict(_single_shortest_path_length(adj, nextlevel, cutoff))
-    return _single_shortest_path_length(adj, nextlevel, cutoff)
+    return dict(_single_shortest_path_length(adj, nextlevel, cutoff))
 
 
 @nx._dispatch
