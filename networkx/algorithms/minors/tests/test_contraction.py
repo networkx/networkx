@@ -28,22 +28,74 @@ class TestQuotient:
     # Two nodes are equivalent if they are not adjacent but have the same
     # neighbor set.
 
-    def same_neighbors(u, v):
-        return u not in G[v] and v not in G[u] and G[u] == G[v]
+    def test_edge_data_reduce(self):
+        G = nx.complete_multipartite_graph(3, 1, 2, 4)
+        for u, v in G.edges:
+            if v % 2:
+                G[u][v]["text"] = str(u)
+            G[u][v]["weight"] = u
+            G[u][v][str(u)] = True
 
-    expected = nx.complete_graph(3)
-    actual = nx.quotient_graph(G, same_neighbors)
-    # It won't take too long to run a graph isomorphism algorithm on such
-    # small graphs.
-    assert nx.is_isomorphic(expected, actual)
+        partition = [{0, 1, 2}, {3}, {4, 5}, {6, 7, 8, 9}]
 
-    expected = nx.complete_graph(3)
-    actual = nx.quotient_graph(G, same_neighbors)
-    edge_rel = nx.quotient_graph(G, same_neighbors, partial(edge_relation, G))
-    # It won't take too long to run a graph isomorphism algorithm on such
-    # small graphs.
-    assert nx.is_isomorphic(expected, actual)
-    assert nx.is_isomorphic(expected, edge_rel)
+        def edge_reduce(a, b):
+            text = a.get("text", "") + b.get("text", "")
+            weight = a.get("weight", 0) + b.get("weight", 0)
+            d = {**a, **b}
+            if text:
+                d["text"] = "".join(sorted(text))
+            if weight:
+                d["weight"] = weight
+            return d
+
+        with_default_init = nx.quotient_graph(
+            G,
+            partition,
+            edge_data_reduce=edge_reduce,
+            relabel=True,
+        )
+        with_zero_init = nx.quotient_graph(
+            G,
+            partition,
+            edge_data_reduce=edge_reduce,
+            edge_data_default=lambda: {"weight": 10},
+            relabel=True,
+        )
+
+        assert with_default_init[0][1] == {
+            "0": True,
+            "1": True,
+            "2": True,
+            "weight": 3,
+            "text": "012",
+        }
+
+        assert with_zero_init[0][1] == {
+            "0": True,
+            "1": True,
+            "2": True,
+            "weight": 13,
+            "text": "012",
+        }
+
+    def test_quotient_graph_complete_multipartite(self):
+        """Tests that the quotient graph of the complete *n*-partite graph
+        under the "same neighbors" node relation is the complete graph on *n*
+        nodes.
+        """
+        expected = nx.complete_graph(3)
+        actual = nx.quotient_graph(G, same_neighbors)
+        # It won't take too long to run a graph isomorphism algorithm on such
+        # small graphs.
+        assert nx.is_isomorphic(expected, actual)
+
+        expected = nx.complete_graph(3)
+        actual = nx.quotient_graph(G, same_neighbors)
+        edge_rel = nx.quotient_graph(G, same_neighbors, partial(edge_relation, G))
+        # It won't take too long to run a graph isomorphism algorithm on such
+        # small graphs.
+        assert nx.is_isomorphic(expected, actual)
+        assert nx.is_isomorphic(expected, edge_rel)
 
 def test_quotient_graph_complete_bipartite():
     """Tests that the quotient graph of the complete bipartite graph under

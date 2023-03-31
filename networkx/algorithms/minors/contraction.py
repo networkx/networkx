@@ -1,7 +1,5 @@
 """Provides functions for computing minors of a graph."""
-import operator
-from collections import defaultdict
-from functools import partial
+from collections import Counter, defaultdict
 from itertools import chain, combinations, permutations, product
 
 import networkx as nx
@@ -104,7 +102,7 @@ def quotient_graph(
     edge_reduce=None,
     weight="weight",
     edge_data_reduce=None,
-    edge_data_initial=None,
+    edge_data_default=None,
     relabel=False,
     self_loops=False,
     create_using=None,
@@ -179,10 +177,10 @@ def quotient_graph(
         By default, each edge is queried to find its 'weight' attribute,
         and these attributes are summed in a reduce.
 
-    edge_data_initial : dict
-        Initial value of each quotient graph edge attributes. Any edges
-        in the original graph will be reduced with this value. By default,
-        and empty dictionary (`{}`) is used.
+    edge_data_default : function
+        Factory function taking no parameters for initial value of each
+        quotient graph edge attributes. Any edges in the original graph will
+        be reduced with this value. By default, `dict` is used.
 
     edge_data : function
         This function takes two arguments, *B* and *C*, each one a set
@@ -382,7 +380,7 @@ def quotient_graph(
             partition,
             node_data,
             edge_data_reduce,
-            edge_data_initial,
+            edge_data_default,
             relabel,
             self_loops,
             create_using,
@@ -410,44 +408,47 @@ def _quotient_graph(
     partition,
     node_data=None,
     edge_data_reduce=None,
-    edge_data_initial=None,
+    edge_data_default=None,
     relabel=False,
     self_loops=False,
     create_using=None,
 ):
     """Construct the quotient graph assuming input has been checked"""
-
-    def _node2partition(partition2nodes):
-        for i, bunch in partition2nodes:
-            for u in bunch:
-                yield u, i
-
     if create_using is None:
         H = G.__class__()
     else:
         H = nx.empty_graph(0, create_using)
 
     if node_data is None:
-        node_data = _default_node_data
+        node_data = lambda _: {}
 
-    if edge_data_reduce is None:
-        edge_data_reduce = _default_edge_data_reduce
-        if edge_data_initial is None:
-            edge_data_initial = {"weight": 0}
-            # TODO otherwise throw error saying can't be defined?
-    elif edge_data_initial is None:
-        edge_data_initial = {}
+    reduce_weights = edge_data_reduce is None
+    if reduce_weights:
+        if edge_data_default is not None:
+            raise ValueError(
+                "`edge_data_initial` may not be set if `edge_data_reduce is None."
+            )
+    elif edge_data_default is None:
+        edge_data_default = dict
 
-    # Each block of the partition becomes a node in the quotient graph.
     partition2nodes = {i: frozenset(b) for i, b in enumerate(partition)}
     node2partition = dict(_node2partition(partition2nodes.items()))
     H.add_nodes_from((u, node_data(b)) for u, b in partition2nodes.items())
 
-    edges = _mapped_edges(G, node2partition, self_loops, data=True)
     if H.is_multigraph():
+        edges = _map_edges(G, node2partition, self_loops, data=True)
         H.add_edges_from(edges)
+
+    elif reduce_weights:
+        edges = _map_edges(G, node2partition, self_loops, data="weight", default=1)
+        agg_edges = Counter()
+        for u, v, weight in edges:
+            agg_edges[u, v] += weight
+        H.add_edges_from((u, v, {"weight": w}) for (u, v), w in agg_edges.items())
+
     else:
-        agg_edges = defaultdict(lambda: _reducible(edge_data_initial))
+        edges = _map_edges(G, node2partition, self_loops, data=True)
+        agg_edges = defaultdict(lambda: _reducible(edge_data_default))
         for u, v, data in edges:
             agg_edges[u, v](edge_data_reduce, data)
         H.add_edges_from((u, v, d.value) for (u, v), d in agg_edges.items())
@@ -474,14 +475,22 @@ def _grouped_relation_graph(
         H = nx.empty_graph(0, create_using)
 
     if node_data is None:
-        node_data = _default_node_data
+        node_data = lambda _: {}
 
     # Each block of the partition becomes a node in the quotient graph.
     partition = [frozenset(b) for b in partition]
     H.add_nodes_from((b, node_data(b)) for b in partition)
 
     if edge_data is None:
-        edge_data = partial(_default_edge_data, G)
+
+        def edge_data(b, c):
+            # sum of weights in original edges
+            weights = (
+                d
+                for u, v, d in G.edges(b | c, data="weight", default=1)
+                if (u in b and v in c) or (u in c and v in b)
+            )
+            return {"weight": sum(weights)}
 
     block_pairs = permutations(H, 2) if H.is_directed() else combinations(H, 2)
     if self_loops:
@@ -715,14 +724,21 @@ def contracted_edge(G, edge, self_loops=True, copy=True):
 class _reducible:
     "helper class to reduce edge dictionary in-place."
 
-    def __init__(self, value):
-        self.value = value
+    def __init__(self, default_factory):
+        self.value = default_factory()
 
     def __call__(self, reduce_fn, other):
         self.value = reduce_fn(self.value, other)
 
 
-def _mapped_edges(G, mapping, self_loops=True, data=None, **kw):
+def _node2partition(partition2nodes):
+    "iterate over node, partition pairs."
+    for i, bunch in partition2nodes:
+        for u in bunch:
+            yield u, i
+
+
+def _map_edges(G, mapping, self_loops=True, data=None, **kw):
     "project edge src and dst through mapping and iterate over edges with data."
     data = (data is None) or data
     for u, v, data in G.edges(data=data, **kw):
@@ -730,23 +746,3 @@ def _mapped_edges(G, mapping, self_loops=True, data=None, **kw):
         if not self_loops and pu == pv:
             continue
         yield pu, pv, data
-
-
-def _default_node_data(_):
-    "no node attributes."
-    return {}
-
-
-def _default_edge_data(G, b, c):
-    "sum of weights in original edges."
-    weights = (
-        d
-        for u, v, d in G.edges(b | c, data="weight", default=1)
-        if (u in b and v in c) or (u in c and v in b)
-    )
-    return {"weight": sum(weights)}
-
-
-def _default_edge_data_reduce(a, b):
-    "sum of weights in original edges."
-    return {"weight": a.get("weight", 1) + b.get("weight", 1)}
