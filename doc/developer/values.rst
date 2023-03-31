@@ -48,7 +48,7 @@ Our values
   preferably with examples, as well as gallery examples that showcase how that
   function is used in a scientific application.
 
-Acknowledgments
+Acknowledgments Vincent S. Hess
 ---------------
 
 This document is modified from the `scikit-image` mission and values document.
