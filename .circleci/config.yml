@@ -1,101 +1,26 @@
-# See: https://circleci.com/docs/2.0/language-python/
-
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/configuration-reference
 version: 2.1
+
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/configuration-reference/#jobs
 jobs:
-  documentation:
+  say-hello:
+    # Specify the execution environment. You can specify an image from Docker Hub or use one of our convenience images from CircleCI's Developer Hub.
+    # See: https://circleci.com/docs/configuration-reference/#executor-job
     docker:
-      - image: cimg/python:3.9
-
+      - image: cimg/base:stable
+    # Add steps to the job
+    # See: https://circleci.com/docs/configuration-reference/#steps
     steps:
       - checkout
-
       - run:
-          name: Update apt-get
-          command: |
-            sudo apt-get update
+          name: "Say hello"
+          command: "echo Hello, World!"
 
-      - run:
-          name: Install Graphviz
-          command: |
-            sudo apt-get install graphviz libgraphviz-dev
-
-      - run:
-          name: Install pysal dependencies
-          command: |
-            sudo apt-get install libspatialindex-dev
-
-      - restore_cache:
-          keys:
-            - pip-cache-v1
-
-      - run:
-          name: Install Python dependencies
-          command: |
-            python3 -m venv venv
-            source venv/bin/activate
-            pip install --upgrade pip wheel setuptools
-            pip install -r requirements/default.txt -r requirements/test.txt
-            pip install -r requirements/extra.txt
-            pip install -r requirements/example.txt
-            pip install -r requirements/doc.txt
-            pip list
-
-      - save_cache:
-          key: pip-cache-v1
-          paths:
-            - ~/.cache/pip
-
-      - run:
-          name: Install
-          command: |
-            source venv/bin/activate
-            pip install -e .
-
-      - run:
-          name: Build docs
-          command: |
-            # NOTE: bad interaction w/ blas multithreading on circleci
-            export OMP_NUM_THREADS=1
-            source venv/bin/activate
-            make -C doc/ html
-
-      - store_artifacts:
-          path: doc/build/html
-
-  image:
-    docker:
-      - image: cimg/python:3.9
-
-    steps:
-      - checkout
-
-      - run:
-          name: Install Python dependencies
-          command: |
-            python -m venv venv
-            source venv/bin/activate
-            pip install --upgrade pip wheel setuptools
-            pip install -r requirements/default.txt -r requirements/test.txt
-            pip install pytest-mpl  # NOTE: specified here to avoid confusing conda
-            pip list
-
-      - run:
-          name: Install
-          command: |
-            source venv/bin/activate
-            pip install -e .
-
-      - run:
-          name: Test NetworkX drawing
-          command: |
-            source venv/bin/activate
-            pytest --mpl --mpl-generate-summary=html --mpl-results-path=results --pyargs networkx.drawing
-
-      - store_artifacts:
-          path: results
-
+# Orchestrate jobs using workflows
+# See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
-  documentation_and_image_comparison:
+  say-hello-workflow:
     jobs:
-      - documentation
-      - image
+      - say-hello
