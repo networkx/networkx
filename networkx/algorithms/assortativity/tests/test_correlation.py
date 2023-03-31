@@ -48,7 +48,7 @@ class TestDegreeMixingCorrelation(BaseTestDegreeMixing):
         np.testing.assert_almost_equal(r, -1.0 / 7.0, decimal=4)
 
     def test_degree_assortativity_weighted(self):
-        r = nx.degree_assortativity_coefficient(self.W, weight="weight")
+        r = nx.degree_assortativity_coefficient(self.W, weight="weight", nodes=None)
         np.testing.assert_almost_equal(r, -0.1429, decimal=4)
 
     def test_degree_assortativity_double_star(self):
@@ -96,7 +96,7 @@ class TestAttributeMixingCorrelation(BaseTestAttributeMixing):
         np.testing.assert_almost_equal(r, 0.029, decimal=3)
 
     def test_attribute_assortativity_negative(self):
-        r = nx.numeric_assortativity_coefficient(self.N, "margin")
+        r = nx.numeric_assortativity_coefficient(self.N, "margin", nodes=None)
         np.testing.assert_almost_equal(r, -0.2903, decimal=4)
 
     def test_attribute_assortativity_float(self):
