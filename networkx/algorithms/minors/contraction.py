@@ -103,6 +103,8 @@ def quotient_graph(
     edge_data=None,
     edge_reduce=None,
     weight="weight",
+    edge_data_reduce=None,
+    edge_data_initial=None,
     relabel=False,
     self_loops=False,
     create_using=None,
@@ -166,17 +168,21 @@ def quotient_graph(
         not applied, since the edge data from each edge in the graph
         `G` appears in the edges of the quotient graph.
 
-    edge_reduce : function
+    edge_data_reduce : function
         This function takes two arguments, both dictionaries of
         edge attributes and returns a combined dictionary.
 
         This parameter may only be specified if `edge_data` is None.
-        Specifying `edge_reduce` is much more efficient than `edge_data`,
+        Specifying `edge_data_reduce` is much more efficient than `edge_data`,
         so it's advised to do so when possible.
 
         By default, each edge is queried to find its 'weight' attribute,
         and these attributes are summed in a reduce.
 
+    edge_data_initial : dict
+        Initial value of each quotient graph edge attributes. Any edges
+        in the original graph will be reduced with this value. By default,
+        and empty dictionary (`{}`) is used.
 
     edge_data : function
         This function takes two arguments, *B* and *C*, each one a set
@@ -372,9 +378,16 @@ def quotient_graph(
     # if edge_relation is None, we can call a more efficient algorithm
     if edge_relation is None:
         return _quotient_graph(
-            G, partition, node_data, edge_data, relabel, self_loops, create_using
+            G,
+            partition,
+            node_data,
+            edge_data_reduce,
+            edge_data_initial,
+            relabel,
+            self_loops,
+            create_using,
         )
-    elif edge_reduce is None:
+    elif edge_data_reduce is None:
         return _grouped_relation_graph(
             G,
             partition,
@@ -387,7 +400,7 @@ def quotient_graph(
         )
     else:
         raise ValueError(
-            "`edge_data` and `edge_reduce` cannot both be "
+            "`edge_data` and `edge_data_reduce` cannot both be "
             "specified as arguments to `quotient_graph`."
         )
 
@@ -396,7 +409,8 @@ def _quotient_graph(
     G,
     partition,
     node_data=None,
-    edge_reduce=None,
+    edge_data_reduce=None,
+    edge_data_initial=None,
     relabel=False,
     self_loops=False,
     create_using=None,
@@ -416,21 +430,26 @@ def _quotient_graph(
     if node_data is None:
         node_data = _default_node_data
 
-    if edge_reduce is None:
-        edge_reduce = _default_edge_reduce
+    if edge_data_reduce is None:
+        edge_data_reduce = _default_edge_data_reduce
+        if edge_data_initial is None:
+            edge_data_initial = {"weight": 0}
+            # TODO otherwise throw error saying can't be defined?
+    elif edge_data_initial is None:
+        edge_data_initial = {}
 
     # Each block of the partition becomes a node in the quotient graph.
     partition2nodes = {i: frozenset(b) for i, b in enumerate(partition)}
     node2partition = dict(_node2partition(partition2nodes.items()))
     H.add_nodes_from((u, node_data(b)) for u, b in partition2nodes.items())
 
-    edges = _mapped_edges(G, node2partition, self_loops)
+    edges = _mapped_edges(G, node2partition, self_loops, data=True)
     if H.is_multigraph():
         H.add_edges_from(edges)
     else:
-        agg_edges = defaultdict(_reducible)
+        agg_edges = defaultdict(lambda: _reducible(edge_data_initial))
         for u, v, data in edges:
-            agg_edges[u, v](edge_reduce, data)
+            agg_edges[u, v](edge_data_reduce, data)
         H.add_edges_from((u, v, d.value) for (u, v), d in agg_edges.items())
 
     if not relabel:
@@ -694,14 +713,13 @@ def contracted_edge(G, edge, self_loops=True, copy=True):
 
 
 class _reducible:
-    def __init__(self, value=None):
+    "helper class to reduce edge dictionary in-place."
+
+    def __init__(self, value):
         self.value = value
 
     def __call__(self, reduce_fn, other):
-        if self.value is None:
-            self.value = other
-        else:
-            self.value = reduce_fn(self.value, other)
+        self.value = reduce_fn(self.value, other)
 
 
 def _mapped_edges(G, mapping, self_loops=True, data=None, **kw):
@@ -729,6 +747,6 @@ def _default_edge_data(G, b, c):
     return {"weight": sum(weights)}
 
 
-def _default_edge_reduce(a, b):
+def _default_edge_data_reduce(a, b):
     "sum of weights in original edges."
     return {"weight": a.get("weight", 1) + b.get("weight", 1)}
