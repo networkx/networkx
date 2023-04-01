@@ -174,7 +174,7 @@ def weisfeiler_lehman_subgraph_hashes(
     of nodes at most i edges distance from u. Thus, each list will contain
     ``iterations + 1`` elements - a hash for a subgraph at each depth, and
     additionally a hash of the initial node label (or equivalently a
-    subgraph of depth 0)
+    subgraph of depth 0).
 
     The function iteratively aggregates and hashes neighborhoods of each node.
     This is achieved for each step by replacing for each node its label from
@@ -182,7 +182,7 @@ def weisfeiler_lehman_subgraph_hashes(
     The new node label is then appended to a list of node labels for each
     node.
 
-    To aggregate neighborhoods at each step for a node $n$, all labels of
+    To aggregate neighborhoods for a node $n$ at each step, all labels of
     nodes adjacent to $n$ are concatenated. If the `edge_attr` parameter is set,
     labels for each neighboring node are prefixed with the value of this attribute
     along the connecting edge from this neighbor to node $n$. The resulting string
@@ -190,7 +190,7 @@ def weisfeiler_lehman_subgraph_hashes(
 
     Thus, at the $i$-th iteration, nodes within $i$ hops influence any given
     hashed node label. We can therefore say that at depth $i$ for node $n$
-    we have a hash for a subgraph induced by the $2i$-hop neighborhood of $n$.
+    we have a hash for a subgraph induced by the $i$-hop neighborhood of $n$.
 
     The output can be used to to create general Weisfeiler-Lehman graph kernels,
     or generate features for graphs or nodes - for example to generate 'words' in
@@ -249,12 +249,10 @@ def weisfeiler_lehman_subgraph_hashes(
     ['a93b64973cfc8897', 'db1b43ae35a1878f', '1716d2a4012fa4bc']
 
     The first 2 WL subgraph hashes match. From this we can conclude that it's very
-    likely the neighborhood of 4 hops around these nodes are isomorphic: each
-    iteration aggregates 1-hop neighborhoods meaning hashes at depth $n$ are influenced
-    by every node within $2n$ hops.
+    likely the neighborhood of 2 hops around these nodes are isomorphic.
 
-    However the neighborhood of 6 hops is no longer isomorphic since their 3rd hash does
-    not match.
+    However the 3-hop neighborhoods of ``G1`` and ``G2`` are not isomorphic since the
+    3rd hashes in the lists above are not equal.
 
     These nodes may be candidates to be classified together since their local topology
     is similar.
