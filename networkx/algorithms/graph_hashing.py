@@ -168,7 +168,7 @@ def weisfeiler_lehman_subgraph_hashes(
     Lists of subgraph hashes are sorted in increasing order of depth from
     their root node, with the hash at index i corresponding to a subgraph
     of nodes at most i edges distance from u. Thus, each list will contain
-    `iterations + 1` elements - a hash for a subgraph at each depth, and
+    ``iterations + 1`` elements - a hash for a subgraph at each depth, and
     additionally a hash of the initial node label (or equivalently a
     subgraph of depth 0)
 
