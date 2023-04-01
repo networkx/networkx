@@ -344,37 +344,20 @@ def quotient_graph(
            Cambridge University Press, 2004.
 
     """
-    # If the user provided an equivalence relation as a function to compute
-    # the blocks of the partition on the nodes of G induced by the
-    # equivalence relation.
-    is_function_relation = callable(partition)
-    if is_function_relation:
-        # equivalence_classes always return partition of whole G.
-        partition = equivalence_classes(G, partition)
-        if not nx.community.is_partition(G, partition):
-            raise nx.NetworkXException(
-                "Input `partition` is not an equivalence relation for nodes of G"
-            )
-    # If the partition is a dict, it is assumed to be one where the keys are
-    # user-defined block labels, and values are block lists, tuples or sets.
-    elif isinstance(partition, dict):
+    if isinstance(partition, dict):
         partition = list(partition.values())
-
-    # If the user provided partition as a collection of sets. Then we
-    # need to check if partition covers all of G nodes. If the answer
-    # is 'No' then we need to prepare suitable subgraph view.
-    if not is_function_relation:
+    if callable(partition):
+        partition = equivalence_classes(G, partition)
+    else:
         partition_nodes = set().union(*partition)
         if len(partition_nodes) != len(G):
             G = G.subgraph(partition_nodes)
-        # Each node in the graph/subgraph must be in exactly one block.
         if not nx.community.is_partition(G, partition):
             raise NetworkXException(
                 "each node must be in exactly one part of `partition`"
             )
 
-    # if edge_relation is None, we can call a more efficient algorithm
-    if edge_relation is None:
+    if edge_relation is None and edge_data is None:
         return _quotient_graph(
             G,
             partition,
@@ -385,7 +368,7 @@ def quotient_graph(
             self_loops,
             create_using,
         )
-    elif edge_data_reduce is None:
+    elif edge_data_reduce is None and edge_data_default is None:
         return _grouped_relation_graph(
             G,
             partition,
@@ -398,8 +381,8 @@ def quotient_graph(
         )
     else:
         raise ValueError(
-            "`edge_data` and `edge_data_reduce` cannot both be "
-            "specified as arguments to `quotient_graph`."
+            "`edge_relation` and `edge_data` cannot be specified at the "
+            "same time as `edge_data_reduce` or `edge_data_default`."
         )
 
 
@@ -461,7 +444,7 @@ def _quotient_graph(
 def _grouped_relation_graph(
     G,
     partition,
-    edge_relation,
+    edge_relation=None,
     node_data=None,
     edge_data=None,
     relabel=False,
@@ -474,23 +457,27 @@ def _grouped_relation_graph(
     else:
         H = nx.empty_graph(0, create_using)
 
+    if edge_relation is None:
+
+        def edge_relation(b, c):
+            return any(v in G[u] for u, v in product(b, c))
+
     if node_data is None:
         node_data = lambda _: {}
-
-    # Each block of the partition becomes a node in the quotient graph.
-    partition = [frozenset(b) for b in partition]
-    H.add_nodes_from((b, node_data(b)) for b in partition)
 
     if edge_data is None:
 
         def edge_data(b, c):
-            # sum of weights in original edges
             weights = (
                 d
                 for u, v, d in G.edges(b | c, data="weight", default=1)
                 if (u in b and v in c) or (u in c and v in b)
             )
             return {"weight": sum(weights)}
+
+    # Each block of the partition becomes a node in the quotient graph.
+    partition = [frozenset(b) for b in partition]
+    H.add_nodes_from((b, node_data(b)) for b in partition)
 
     block_pairs = permutations(H, 2) if H.is_directed() else combinations(H, 2)
     if self_loops:

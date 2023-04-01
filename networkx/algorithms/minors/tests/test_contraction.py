@@ -1,4 +1,5 @@
 """Unit tests for the :mod:`networkx.algorithms.minors.contraction` module."""
+import operator
 from functools import partial
 from itertools import product
 
@@ -394,12 +395,6 @@ def test_overlapping_blocks():
             assert M_rel.nodes[n]["nnodes"] == 2
             assert M_rel.nodes[n]["density"] == 0.5
 
-    def test_overlapping_blocks(self):
-        with pytest.raises(nx.NetworkXException):
-            G = nx.path_graph(6)
-            partition = [{0, 1, 2}, {2, 3}, {4, 5}]
-            nx.quotient_graph(G, partition)
-
     def test_weighted_path(self):
         G = nx.path_graph(6)
         for i in range(5):
@@ -595,6 +590,34 @@ def test_overlapping_blocks():
             G, [{"a", "b"}], partial(edge_relation, G), self_loops=True
         )
         assert len(Q_loops.edges) == 1
+
+    def test_edge_data(self):
+        G = nx.path_graph(7)
+        for i in G:
+            G.nodes[i][str(i)] = True
+        partition = [{0, 1, 2}, {3, 4}, {5}, {6}]
+        Q = nx.quotient_graph(
+            G, partition, edge_data=lambda src, dst: {"nodes": src | dst}, relabel=True
+        )
+        assert Q[0][1]["nodes"] == frozenset({0, 1, 2, 3, 4})
+
+    def test_invalid_partition(self):
+        G = nx.path_graph(6)
+        partition = [{0, 1, 2}, {2, 3}, {4, 5}]
+        with pytest.raises(nx.NetworkXException):
+            nx.quotient_graph(G, partition)
+
+    def test_invalid_arguments(self):
+        with pytest.raises(ValueError):
+            nx.quotient_graph(nx.Graph(), [], edge_data_default=str)
+        with pytest.raises(ValueError):
+            nx.quotient_graph(nx.Graph(), [], edge_relation=str, edge_data_reduce=str)
+        with pytest.raises(ValueError):
+            nx.quotient_graph(nx.Graph(), [], edge_relation=str, edge_data_default=str)
+        with pytest.raises(ValueError):
+            nx.quotient_graph(nx.Graph(), [], edge_data=str, edge_data_reduce=str)
+        with pytest.raises(ValueError):
+            nx.quotient_graph(nx.Graph(), [], edge_data=str, edge_data_default=str)
 
 
 def test_weighted_path():
