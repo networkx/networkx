@@ -119,7 +119,15 @@ class TestColoring:
     def test_num_colors(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (0, 3)])
+        coloring = {0: 0, 1: 1, 2: 2, 3: 3}
+        assert is_equitable(G, coloring, num_colors=5)
+        assert is_equitable(G, coloring)
         pytest.raises(nx.NetworkXAlgorithmError, nx.coloring.equitable_color, G, 2)
+
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (0, 2), (0, 3), (0, 4)])
+        coloring1 = {0: 1, 1: 1, 2: 2, 3: 2, 4: 2}
+        assert not is_equitable(G, coloring1, num_colors=6)
 
     def test_equitable_color(self):
         G = nx.fast_gnp_random_graph(n=10, p=0.2, seed=42)
