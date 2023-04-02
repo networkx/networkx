@@ -1097,8 +1097,9 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight="weight"):
 
     Returns
     -------
-    distance : dictionary
-        Dictionary, keyed by source and target, of shortest paths.
+    paths : iterator
+        (source, dictionary) iterator with dictionary keyed by target and
+        shortest path as the key value.
 
     Examples
     --------
@@ -1677,8 +1678,8 @@ def single_source_bellman_ford_path_length(G, source, weight="weight"):
 
     Returns
     -------
-    length : iterator
-        (target, shortest path length) iterator
+    length : dictionary
+        Dictionary of shortest path length keyed by target
 
     Raises
     ------
@@ -1688,7 +1689,7 @@ def single_source_bellman_ford_path_length(G, source, weight="weight"):
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> length = dict(nx.single_source_bellman_ford_path_length(G, 0))
+    >>> length = nx.single_source_bellman_ford_path_length(G, 0)
     >>> length[4]
     4
     >>> for node in [0, 1, 2, 3, 4]:
@@ -1885,8 +1886,9 @@ def all_pairs_bellman_ford_path(G, weight="weight"):
 
     Returns
     -------
-    distance : dictionary
-        Dictionary, keyed by source and target, of shortest paths.
+    paths : iterator
+        (source, dictionary) iterator with dictionary keyed by target and
+        shortest path as the key value.
 
     Examples
     --------

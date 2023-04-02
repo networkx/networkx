@@ -1,7 +1,7 @@
 NetworkX
 ========
 
-[NetworkX Survey 2023!!](https://forms.gle/NUGcBxyjx5onbAgc8) 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!
+`NetworkX Survey 2023!! <https://forms.gle/NUGcBxyjx5onbAgc8>`_ 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!
 
 
 .. image:: https://github.com/networkx/networkx/workflows/test/badge.svg?branch=main

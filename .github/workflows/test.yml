@@ -55,6 +55,12 @@ jobs:
         run: |
           pytest --doctest-modules --durations=10 --pyargs networkx
 
+      - name: Test Dispatching
+        # Limit this to only a single combination from the matrix
+        if: ${{ (matrix.os == 'ubuntu') && (matrix.python-version == '3.11') }}
+        run: |
+          NETWORKX_GRAPH_CONVERT=nx-loopback pytest --doctest-modules --durations=10 --pyargs networkx
+
   extra:
     runs-on: ${{ matrix.os }}
     strategy:
