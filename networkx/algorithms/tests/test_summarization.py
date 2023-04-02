@@ -188,6 +188,18 @@ class TestUnDirectedDedensification:
                 compressed_graph.add_edge(source, target)
         return compressed_graph
 
+    def test_dedensify_threshold(self):
+        G = self.build_original_graph()
+        with pytest.raises(nx.NetworkXError, match="The degree threshold must be >= 2"):
+            nx.dedensify(G, threshold=1)
+
+    def test_dedensify_prefix_kwargs(self):
+        G = nx.Graph()
+        G.add_edges_from([(1, 2), (1, 3), (1, 4), (2, 3), (3, 4)])
+        H, mapping = nx.dedensify(G, threshold=2, prefix="node_")
+        assert H.nodes() == [1, 2, 3, 4]
+        assert mapping == set()
+
     def test_dedensify_edges(self):
         """
         Verifies that dedensify produced correct compressor nodes and the
