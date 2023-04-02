@@ -185,7 +185,7 @@ def make_partitions(items, test):
 def partition_to_color(partitions):
     """
     Creates a dictionary that maps each item in each partition to the index of
-    the partition it belongs to.
+    the partition to which it belongs.
 
     Parameters
     ----------
