@@ -491,6 +491,16 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
             sorted(e) for e in H.edges()
         )
 
+        # Test missing alpha value for version >draft1.1 - set default alpha value
+        # to 1.0 instead of `None` when writing for better general compatibility
+        fh = io.BytesIO()
+        # G.nodes[0]["viz"]["color"] does not have an alpha value explicitly defined
+        # so the default is used instead
+        nx.write_gexf(G, fh, version="1.2draft")
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert H.nodes[0]["viz"]["color"]["a"] == 1.0
+
         # Second graph for the other branch
         G = nx.Graph()
         G.add_node(0, label="1", color="green")
