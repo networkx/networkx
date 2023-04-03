@@ -2,7 +2,6 @@ import pytest
 
 import networkx as nx
 from networkx.algorithms import isomorphism as iso
-from networkx.exception import NetworkXError
 
 
 class TestIsomorph:
@@ -14,18 +13,12 @@ class TestIsomorph:
         cls.G4 = nx.Graph()
         cls.G5 = nx.Graph()
         cls.G6 = nx.Graph()
-        cls.DG1 = nx.DiGraph()
-        cls.DG2 = nx.DiGraph()
-        cls.DG3 = nx.DiGraph()
         cls.G1.add_edges_from([[1, 2], [1, 3], [1, 5], [2, 3]])
         cls.G2.add_edges_from([[10, 20], [20, 30], [10, 30], [10, 50]])
         cls.G3.add_edges_from([[1, 2], [1, 3], [1, 5], [2, 5]])
         cls.G4.add_edges_from([[1, 2], [1, 3], [1, 5], [2, 4]])
         cls.G5.add_edges_from([[1, 2], [1, 3]])
         cls.G6.add_edges_from([[10, 20], [20, 30], [10, 30], [10, 50], [20, 50]])
-        cls.DG1.add_edges_from([[1, 2], [1, 3], [1, 5], [2, 3]])
-        cls.DG2.add_edges_from([[10, 20], [20, 30], [10, 30], [10, 50]])
-        cls.DG3.add_edges_from([[1, 2], [1, 3], [1, 5], [2, 4]])
 
     def test_could_be_isomorphic(self):
         assert iso.could_be_isomorphic(self.G1, self.G2)
@@ -47,9 +40,9 @@ class TestIsomorph:
     def test_is_isomorphic(self):
         assert iso.is_isomorphic(self.G1, self.G2)
         assert not iso.is_isomorphic(self.G1, self.G4)
-        assert iso.is_isomorphic(self.DG1, self.DG2)
-        assert not iso.is_isomorphic(self.DG1, self.DG3)
+        assert iso.is_isomorphic(self.G1.to_directed(), self.G2.to_directed())
+        assert not iso.is_isomorphic(self.G1.to_directed(), self.G3.to_directed())
         with pytest.raises(
             nx.NetworkXError, match="Graphs G1 and G2 are not of the same type."
         ):
-            iso.is_isomorphic(self.DG1, self.G1)
+            iso.is_isomorphic(self.G1.to_directed(), self.G1)
