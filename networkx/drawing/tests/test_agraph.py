@@ -241,7 +241,10 @@ class TestAGraph:
         assert len(pos) == 5
         assert len(pos[0]) == 3
 
-    def test_warnings(self):
+    def test_no_warnings_raised(self):
+        # Test that no warnings are raised when Networkx graph
+        # is converted to Pygraphviz graph and 'pos'
+        # attribute is given
         G = nx.Graph()
         G.add_node(0, pos=(0, 0))
         G.add_node(1, pos=(1, 1))
