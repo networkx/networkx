@@ -1,7 +1,6 @@
 """
-****************
 ISMAGS Algorithm
-****************
+================
 
 Provides a Python implementation of the ISMAGS algorithm. [1]_
 
@@ -90,21 +89,21 @@ True
 
 Notes
 -----
- - The current implementation works for undirected graphs only. The algorithm
-   in general should work for directed graphs as well though.
- - Node keys for both provided graphs need to be fully orderable as well as
-   hashable.
- - Node and edge equality is assumed to be transitive: if A is equal to B, and
-   B is equal to C, then A is equal to C.
+- The current implementation works for undirected graphs only. The algorithm
+  in general should work for directed graphs as well though.
+- Node keys for both provided graphs need to be fully orderable as well as
+  hashable.
+- Node and edge equality is assumed to be transitive: if A is equal to B, and
+  B is equal to C, then A is equal to C.
 
 References
 ----------
-    .. [1] M. Houbraken, S. Demeyer, T. Michoel, P. Audenaert, D. Colle,
-       M. Pickavet, "The Index-Based Subgraph Matching Algorithm with General
-       Symmetries (ISMAGS): Exploiting Symmetry for Faster Subgraph
-       Enumeration", PLoS One 9(5): e97896, 2014.
-       https://doi.org/10.1371/journal.pone.0097896
-    .. [2] https://en.wikipedia.org/wiki/Maximum_common_induced_subgraph
+.. [1] M. Houbraken, S. Demeyer, T. Michoel, P. Audenaert, D. Colle,
+   M. Pickavet, "The Index-Based Subgraph Matching Algorithm with General
+   Symmetries (ISMAGS): Exploiting Symmetry for Faster Subgraph
+   Enumeration", PLoS One 9(5): e97896, 2014.
+   https://doi.org/10.1371/journal.pone.0097896
+.. [2] https://en.wikipedia.org/wiki/Maximum_common_induced_subgraph
 """
 
 __all__ = ["ISMAGS"]
