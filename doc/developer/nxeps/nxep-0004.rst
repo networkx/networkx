@@ -1,8 +1,8 @@
 .. _NXEP4:
 
-======================================================================
-NXEP 4 — Adopting `numpy.random.Generator` as default random interface
-======================================================================
+=================================
+NXEP 4 — Default random interface
+=================================
 
 :Author: Ross Barnowski (rossbar@berkeley.edu)
 :Status: Draft
@@ -299,7 +299,26 @@ To illustrate (ignoring implementation details)::
 Discussion
 ----------
 
-This section may just be a bullet list including links to any discussions
-regarding the NXEP:
+This NXEP has been discussed at several community meetings, see e.g.
+`these meeting notes <https://github.com/networkx/archive/blob/main/meetings/2023-03-14.md#nxep-topic-of-the-week>`_.
 
-- This includes links to mailing list threads or relevant GitHub issues.
+The main concern that has surfaced during these discussions is that the
+NumPy ``Generator`` interface does not make the same strict stream-compatibility
+guarantees as the older ``RandomState``.
+Therefore, if this NXEP were implemented as proposed, code that relies on seeded
+random numbers could in principle return different results with some future
+NumPy version due to changes in the default ``BitGenerator`` or ``Generator`` methods.
+
+Many NetworkX functions are quite sensitive to the random seed.
+For example, changing the seed for the default ``spring_layout`` function can
+yield a vastly different (but equally valid) layout for a network.
+Stream-compatibility is important for reproducibility in these contexts.
+
+Thus we have concluded through various discussions *not* to implement the
+changes proposed in this NXEP.
+``RandomState`` will remain the default random number generator for the ``random_state``
+decorator in an effort to support strict backward compatibility for all NetworkX
+user code that relies on ``random_state``.
+The ``Generator`` interface is *supported* in the ``random_state`` decorator,
+and users are encouraged to use ``Generator`` instances in new code where
+stream-compatibility is not a priority.
