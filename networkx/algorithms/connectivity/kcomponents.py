@@ -104,7 +104,7 @@ def k_components(G, flow_func=None):
     """
     # Dictionary with connectivity level (k) as keys and a list of
     # sets of nodes that form a k-component as values. Note that
-    # k-compoents can overlap (but only k - 1 nodes).
+    # k-components can overlap (but only k - 1 nodes).
     k_components = defaultdict(list)
     # Define default flow function
     if flow_func is None:

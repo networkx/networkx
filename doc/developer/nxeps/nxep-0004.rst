@@ -166,7 +166,7 @@ by `numpy.random.Generator.integers`.
 Thus any code that uses `create_random_state` or `create_py_random_state` and
 relies on the ``randint`` method of the returned rng would result in an
 `AttributeError`.
-This can be addressed with a compatiblity class similar to the
+This can be addressed with a compatibility class similar to the
 `networkx.utils.misc.PythonRandomInterface` class, which provides a compatibility
 layer between `random` and `numpy.random.RandomState`.
 
@@ -210,7 +210,7 @@ potential approaches to supporting the new NumPy random interface:
 - `scikit-learn/scikit-learn#14042 <sklearn14042>`_ is a higher-level discussion
   that includes additional information about the design considerations and constraints
   related to scikit-learn's ``random_state``.
-- There is also a releated `SLEP <slep011>`_.
+- There is also a related `SLEP <slep011>`_.
 
 .. _sklearn16988: https://github.com/scikit-learn/scikit-learn/issues/16988
 .. _sklearn14042: https://github.com/scikit-learn/scikit-learn/issues/14042
