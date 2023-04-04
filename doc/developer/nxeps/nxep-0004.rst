@@ -306,7 +306,7 @@ The main concern that has surfaced during these discussions is that the
 NumPy ``Generator`` interface does not make the same strict stream-compatibility
 guarantees as the older ``RandomState``.
 Therefore, if this NXEP were implemented as proposed, code that relies on seeded
-random numbers in could in principle return different results with some future
+random numbers could in principle return different results with some future
 NumPy version due to changes in the default ``BitGenerator`` or ``Generator`` methods.
 
 Many NetworkX functions are quite sensitive to the random seed.
