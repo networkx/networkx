@@ -8,7 +8,7 @@ structure, dynamics, and functions of complex networks.
 See https://networkx.org for complete documentation.
 """
 
-__version__ = "3.1"
+__version__ = "3.2rc0.dev0"
 
 
 # These are imported in order as listed
