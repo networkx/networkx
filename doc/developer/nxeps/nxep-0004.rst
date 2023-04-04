@@ -1,8 +1,8 @@
 .. _NXEP4:
 
-======================================================================
-NXEP 4 — Adopting `numpy.random.Generator` as default random interface
-======================================================================
+=================================
+NXEP 4 — Default random interface
+=================================
 
 :Author: Ross Barnowski (rossbar@berkeley.edu)
 :Status: Draft
