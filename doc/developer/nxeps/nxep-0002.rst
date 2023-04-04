@@ -78,7 +78,7 @@ The main impact and the decision that needs to be taken in this NXEP is with
 respect to the user facing API. By implementing this NXEP via subscripting NodeViews,
 we may end up adding some ambiguity for users. As for example `G.nodes[x]`
 will return an attribute dict but `G.nodes[0:5]` will return a list of first five nodes.
-This will be more ambigious with EdgeView as ``G.edges[0, 1]`` will return an
+This will be more ambiguous with EdgeView as ``G.edges[0, 1]`` will return an
 attribute dictionary of the edge between 0 and 1 and ``G.edges[0:1]`` will return the first edge.
 We need to find a way to counter this potential confusion.
 The alternative proposal of a new slicing method is one possible solution.
@@ -117,7 +117,7 @@ add order and edge order based on adjacency storage.
 On the computational front, if we create lists to allow slices, we use memory to store the lists.
 This is something user would have anyway done with something like ``list(G.nodes(data=True))[0:10]``.
 But we can do better with our slicing mechanisms.
-We should be able to avoid constucting the entire list simply to get the slices by internally
+We should be able to avoid constructing the entire list simply to get the slices by internally
 using code like: ``indx=[n for i, n in enumerate(G.nodes(data=True)) if i in range(x.start, x.stop, s.step)]``
 where x is the desired slice object.
 
@@ -138,11 +138,11 @@ The following code will be valid::
   >>> G.edges[1:10]
   >>> G.edges(data=True)[4:6]
 
-Prelimanary impelementation work is available at https://github.com/networkx/networkx/pull/4086
+Preliminary implementation work is available at https://github.com/networkx/networkx/pull/4086
 
 Alternatively, to get rid of the ambiguity in slicing API with respect to
 the dict views we can implement a new
-``slice`` method which leads to a less ambigious API.::
+``slice`` method which leads to a less ambiguous API.::
 
   >>> G.nodes(data=True).slice[:10]
   >>> G.nodes.slice[10:30]
@@ -206,7 +206,7 @@ The listed alternatives are not mutually exclusive.
         ...
      NetworkXError: NodeView does not support slicing. Try list(G.nodes)[0:10].
 
-- Instead of changing the behavior of ``__getitem__`` we can impelment a new
+- Instead of changing the behavior of ``__getitem__`` we can implement a new
   method, something like ``G.nodes.head(x)`` (insipired by pandas) which
   returns the first x nodes.
   This approach could be expanded to using a ``slice`` object directly but

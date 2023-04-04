@@ -145,14 +145,14 @@ def lukes_partitioning(G, max_size, node_weight=None, edge_weight=None):
         assert len(ccx) == 1
         return ccx[0]
 
-    def _concatenate_or_merge(partition_1, partition_2, x, i, ref_weigth):
+    def _concatenate_or_merge(partition_1, partition_2, x, i, ref_weight):
         ccx = _pivot(partition_1, x)
         cci = _pivot(partition_2, i)
         merged_xi = ccx.union(cci)
 
         # We first check if we can do the merge.
         # If so, we do the actual calculations, otherwise we concatenate
-        if _weight_of_cluster(frozenset(merged_xi)) <= ref_weigth:
+        if _weight_of_cluster(frozenset(merged_xi)) <= ref_weight:
             cp1 = list(filter(lambda x: x != ccx, partition_1))
             cp2 = list(filter(lambda x: x != cci, partition_2))
 

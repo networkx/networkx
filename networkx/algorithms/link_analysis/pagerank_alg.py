@@ -191,7 +191,7 @@ def google_matrix(
       The "personalization vector" consisting of a dictionary with a
       key some subset of graph nodes and personalization value each of those.
       At least one personalization value must be non-zero.
-      If not specifed, a nodes personalization value will be zero.
+      If not specified, a nodes personalization value will be zero.
       By default, a uniform distribution is used.
 
     nodelist : list, optional

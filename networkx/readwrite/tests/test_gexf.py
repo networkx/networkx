@@ -462,7 +462,7 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         G = nx.MultiGraph()
         G.add_node(0, label="1", color="green")
         G.add_node(1, label="2", color="green")
-        G.add_edge(0, 1, id="0", wight=3, type="undirected", start=0, end=1)
+        G.add_edge(0, 1, id="0", weight=3, type="undirected", start=0, end=1)
         G.add_edge(0, 1, id="1", label="foo", start=0, end=1)
         G.add_edge(0, 1)
         fh = io.BytesIO()
