@@ -488,6 +488,12 @@ An example of a math formula::
       
       .. math:: 
          Ax = \lambda x
+
+Some inline math::
+    
+   These are Cheeger's Inequalities for \d-Regular graphs: 
+   \frac{d- \lambda_2}{2} \leq h(G) \leq \sqrt{2d(d- \lambda_2)}
+
 Bugs
 ----
 
