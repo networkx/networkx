@@ -182,15 +182,15 @@ def weisfeiler_lehman_subgraph_hashes(
     The new node label is then appended to a list of node labels for each
     node.
 
-    To aggregate neighborhoods for a node $n$ at each step, all labels of
-    nodes adjacent to $n$ are concatenated. If the `edge_attr` parameter is set,
+    To aggregate neighborhoods for a node $u$ at each step, all labels of
+    nodes adjacent to $u$ are concatenated. If the `edge_attr` parameter is set,
     labels for each neighboring node are prefixed with the value of this attribute
-    along the connecting edge from this neighbor to node $n$. The resulting string
+    along the connecting edge from this neighbor to node $u$. The resulting string
     is then hashed to compress this information into a fixed digest size.
 
     Thus, at the $i$-th iteration, nodes within $i$ hops influence any given
-    hashed node label. We can therefore say that at depth $i$ for node $n$
-    we have a hash for a subgraph induced by the $i$-hop neighborhood of $n$.
+    hashed node label. We can therefore say that at depth $i$ for node $u$
+    we have a hash for a subgraph induced by the $i$-hop neighborhood of $u$.
 
     The output can be used to to create general Weisfeiler-Lehman graph kernels,
     or generate features for graphs or nodes - for example to generate 'words' in
