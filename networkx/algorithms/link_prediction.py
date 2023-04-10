@@ -3,6 +3,7 @@ Link prediction algorithms.
 """
 
 from math import log
+from scipy import sparse
 
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -584,6 +585,20 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
         within = {w for w in cnbors if _community(G, w, community) == Cu}
         inter = cnbors - within
         return len(within) / (len(inter) + delta)
+
+    return _apply_prediction(G, predict, ebunch)
+
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+def katz_index(G, ebunch=None, beta=.1):
+    def predict(u, v):
+        if not nx.has_path(G, u, v):
+            return 0
+        A = nx.adjacency_matrix(G)
+        AB = A.multiply(beta)
+        I = sparse.identity(AB.shape[0])
+        result = sparse.linalg.spsolve(I - AB, I) - I
+        return result[u, v]
 
     return _apply_prediction(G, predict, ebunch)
 
