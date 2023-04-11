@@ -657,5 +657,6 @@ class Test_Katz_Index:
         A *= self.beta
         I = np.identity(4)
         exp = np.linalg.inv(I - A) - I
+        exp = np.linalg.inv(I - A) - I
         G.add_edges_from([(0, 1), (0, 2), (2, 3)])
         self.test(G, None, [(0, 3, exp[0, 3]), (1, 2, exp[1, 2]), (1, 3, exp[1, 3])])
