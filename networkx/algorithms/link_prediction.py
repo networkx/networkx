@@ -592,16 +592,57 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def katz_index(G, ebunch=None, beta=.1):
-    def predict(u, v):
-        if not nx.has_path(G, u, v):
-            return 0
-        A = nx.adjacency_matrix(G)
-        AB = A.multiply(beta)
-        I = sparse.identity(AB.shape[0])
-        result = sparse.linalg.spsolve(I - AB, I) - I
-        return result[u, v]
+    r"""Compute the Katz index of all node pairs in ebunch.
 
-    return _apply_prediction(G, predict, ebunch)
+    Katz index of nodes `u` and `v` is defined as
+
+    .. math::
+
+        S^{Katz}_{u, v} \(I - \beta A\)^{-1} - I
+
+    where A is the adjacency matrix of G and I is the identity matrix.
+    $\beta$ Provides an exponential damping factor such that shorter paths are valued more.
+
+    Parameters
+    ----------
+    G : graph
+        A NetworkX undirected graph.
+
+    ebunch : iterable of node pairs, optional (default = None)
+        Katz Index will be computed for each pair of nodes
+        given in the iterable. The pairs must be given as 2-tuples
+        (u, v) where u and v are nodes in the graph. If ebunch is None
+        then all non-existent edges in the graph will be used.
+        Default value: None.
+
+    Returns
+    -------
+    piter : iterator
+        An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
+        pair of nodes and p is their Katz Index
+
+    Examples
+    --------
+    >>> G = nx.complete_graph(5)
+    >>> preds = nx.katz_index(G, [(0, 1), (2, 3)])
+    >>> for u, v, p in preds:
+    ...     print(f"({u}, {v}) -> {p:.8f}")
+    (0, 1) -> 0.15151515
+    (2, 3) -> 0.15151515
+
+    References
+    ----------
+    .. [1] Linyuan Lu, Tao Zhou
+           Link Prediction in Complex Networks: A Survey.
+           https://arxiv.org/pdf/1010.0725v1.pdf
+    """
+    if ebunch is None:
+        ebunch = nx.non_edges(G)
+    A = nx.adjacency_matrix(G)
+    AB = A.multiply(beta)
+    I = sparse.identity(AB.shape[0])
+    indices = sparse.linalg.spsolve(I - AB, I) - I
+    return ((u, v, indices[u, v]) for u, v in ebunch)
 
 
 def _community(G, u, community):
