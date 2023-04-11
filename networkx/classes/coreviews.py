@@ -134,7 +134,7 @@ class UnionAtlas(Mapping):
         self._pred = pred
 
     def __len__(self):
-        return len(self._succ) + len(self._pred)
+        return len(self._succ.keys() | self._pred.keys())
 
     def __iter__(self):
         return iter(set(self._succ.keys()) | set(self._pred.keys()))

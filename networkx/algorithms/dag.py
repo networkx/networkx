@@ -507,7 +507,7 @@ def all_topological_sorts(G):
 
     # do-while construct
     while True:
-        assert all([count[v] == 0 for v in D])
+        assert all(count[v] == 0 for v in D)
 
         if len(current_sort) == len(G):
             yield list(current_sort)
@@ -1083,7 +1083,7 @@ def dag_longest_path_length(G, weight="weight", default_weight=1):
             i = max(G[u][v], key=lambda x: G[u][v][x].get(weight, default_weight))
             path_length += G[u][v][i].get(weight, default_weight)
     else:
-        for (u, v) in pairwise(path):
+        for u, v in pairwise(path):
             path_length += G[u][v].get(weight, default_weight)
 
     return path_length
@@ -1223,6 +1223,13 @@ def compute_v_structures(G):
     vstructs : iterator of tuples
         The v structures within the graph. Each v structure is a 3-tuple with the
         parent, collider, and other parent.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph()
+    >>> G.add_edges_from([(1, 2), (0, 5), (3, 1), (2, 4), (3, 1), (4, 5), (1, 5)])
+    >>> list(nx.compute_v_structures(G))
+    [(0, 5, 4), (0, 5, 1), (1, 5, 4)]
 
     Notes
     -----

@@ -37,10 +37,7 @@ def allclose(x, y, rtol=1.0000000000000001e-05, atol=1e-08):
 
     """
     # assume finite weights, see numpy.allclose() for reference
-    for xi, yi in zip(x, y):
-        if not math.isclose(xi, yi, rel_tol=rtol, abs_tol=atol):
-            return False
-    return True
+    return all(math.isclose(xi, yi, rel_tol=rtol, abs_tol=atol) for xi, yi in zip(x, y))
 
 
 categorical_doc = """

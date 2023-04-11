@@ -12,7 +12,7 @@ pairwise = nx.utils.pairwise
 def test_christofides_hamiltonian():
     random.seed(42)
     G = nx.complete_graph(20)
-    for (u, v) in G.edges():
+    for u, v in G.edges():
         G[u][v]["weight"] = random.randint(0, 10)
 
     H = nx.Graph()

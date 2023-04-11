@@ -365,9 +365,9 @@ def parse_gml_lines(lines, label, destringizer):
                         pass
                 # Special handling for empty lists and tuples
                 if value == "()":
-                    value = tuple()
+                    value = ()
                 if value == "[]":
-                    value = list()
+                    value = []
                 curr_token = next(tokens)
             elif category == Pattern.DICT_START:
                 curr_token, value = parse_dict(curr_token)
@@ -386,7 +386,7 @@ def parse_gml_lines(lines, label, destringizer):
                     except Exception:
                         msg = (
                             "an int, float, string, '[' or string"
-                            + " convertable ASCII value for node id or label"
+                            + " convertible ASCII value for node id or label"
                         )
                         unexpected(curr_token, msg)
                 # Special handling for nan and infinity.  Since the gml language

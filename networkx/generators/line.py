@@ -243,10 +243,10 @@ def inverse_line_graph(G):
 
     Notes
     -----
-    This is an implementation of the Roussopoulos algorithm.
+    This is an implementation of the Roussopoulos algorithm[1]_.
 
     If G consists of multiple components, then the algorithm doesn't work.
-    You should invert every component seperately:
+    You should invert every component separately:
 
     >>> K5 = nx.complete_graph(5)
     >>> P4 = nx.Graph([("a", "b"), ("b", "c"), ("c", "d")])
@@ -259,8 +259,9 @@ def inverse_line_graph(G):
 
     References
     ----------
-    * Roussopolous, N, "A max {m, n} algorithm for determining the graph H from
-      its line graph G", Information Processing Letters 2, (1973), 108--112.
+    .. [1] Roussopoulos, N.D. , "A max {m, n} algorithm for determining the graph H from
+       its line graph G", Information Processing Letters 2, (1973), 108--112, ISSN 0020-0190,
+       `DOI link <https://doi.org/10.1016/0020-0190(73)90029-X>`_
 
     """
     if G.number_of_nodes() == 0:
@@ -274,7 +275,7 @@ def inverse_line_graph(G):
     elif G.number_of_nodes() > 1 and G.number_of_edges() == 0:
         msg = (
             "inverse_line_graph() doesn't work on an edgeless graph. "
-            "Please use this function on each component seperately."
+            "Please use this function on each component separately."
         )
         raise nx.NetworkXError(msg)
 
@@ -357,10 +358,7 @@ def _odd_triangle(G, T):
         for v in G[t]:
             if v not in T:
                 T_neighbors[v] += 1
-    for v in T_neighbors:
-        if T_neighbors[v] in [1, 3]:
-            return True
-    return False
+    return any(T_neighbors[v] in [1, 3] for v in T_neighbors)
 
 
 def _find_partition(G, starting_cell):

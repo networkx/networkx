@@ -74,7 +74,7 @@ def root_trees(t1, root1, t2, root2):
 def assign_levels(G, root):
     level = {}
     level[root] = 0
-    for (v1, v2) in nx.bfs_edges(G, root):
+    for v1, v2 in nx.bfs_edges(G, root):
         level[v2] = level[v1] + 1
 
     return level
@@ -83,7 +83,7 @@ def assign_levels(G, root):
 # now group the nodes at each level
 def group_by_levels(levels):
     L = {}
-    for (n, lev) in levels.items():
+    for n, lev in levels.items():
         if lev not in L:
             L[lev] = []
         L[lev].append(n)
@@ -103,7 +103,7 @@ def generate_isomorphism(v, w, M, ordered_children):
 def rooted_tree_isomorphism(t1, root1, t2, root2):
     """
     Given two rooted trees `t1` and `t2`,
-    with roots `root1` and `root2` respectivly
+    with roots `root1` and `root2` respectively
     this routine will determine if they are isomorphic.
 
     These trees may be either directed or undirected,
@@ -168,7 +168,7 @@ def rooted_tree_isomorphism(t1, root1, t2, root2):
     # nothing to do on last level so start on h-1
     # also nothing to do for our fake level 0, so skip that
     for i in range(h - 1, 0, -1):
-        # update the ordered_labels and ordered_childen
+        # update the ordered_labels and ordered_children
         # for any children
         for v in L[i]:
             # nothing to do if no children
@@ -186,7 +186,7 @@ def rooted_tree_isomorphism(t1, root1, t2, root2):
         forlabel = sorted((ordered_labels[v], v) for v in L[i])
 
         # now assign labels to these nodes, according to the sorted order
-        # starting from 0, where idential ordered_labels get the same label
+        # starting from 0, where identical ordered_labels get the same label
         current = 0
         for i, (ol, v) in enumerate(forlabel):
             # advance to next label if not 0, and different from previous

@@ -1,7 +1,7 @@
 import pytest
 
 import networkx as nx
-import networkx.generators.line as line
+from networkx.generators import line
 from networkx.utils import edges_equal
 
 

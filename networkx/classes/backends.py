@@ -7,57 +7,54 @@ Create a Dispatcher
 To be a valid plugin, a package must register an entry_point
 of `networkx.plugins` with a key pointing to the handler.
 
-For example:
+For example::
 
-```
-entry_points={'networkx.plugins': 'sparse = networkx_plugin_sparse'}
-```
+    entry_points={'networkx.plugins': 'sparse = networkx_plugin_sparse'}
 
 The plugin must create a Graph-like object which contains an attribute
-`__networkx_plugin__` with a value of the entry point name.
+``__networkx_plugin__`` with a value of the entry point name.
 
-Continuing the example above:
+Continuing the example above::
 
-```
-class WrappedSparse:
-    __networkx_plugin__ = "sparse"
-    ...
-```
+    class WrappedSparse:
+        __networkx_plugin__ = "sparse"
+        ...
 
 When a dispatchable NetworkX algorithm encounters a Graph-like object
-with a `__networkx_plugin__` attribute, it will look for the associated
+with a ``__networkx_plugin__`` attribute, it will look for the associated
 dispatch object in the entry_points, load it, and dispatch the work to it.
 
 
 Testing
 -------
 To assist in validating the backend algorithm implementations, if an
-environment variable `NETWORKX_GRAPH_CONVERT` is set to a registered
+environment variable ``NETWORKX_GRAPH_CONVERT`` is set to a registered
 plugin keys, the dispatch machinery will automatically convert regular
 networkx Graphs and DiGraphs to the backend equivalent by calling
-`<backend dispatcher>.convert_from_nx(G, weight=weight, name=name)`.
+``<backend dispatcher>.convert_from_nx(G, weight=weight, name=name)``.
 
 The converted object is then passed to the backend implementation of
 the algorithm. The result is then passed to
-`<backend dispatcher>.convert_to_nx(result, name=name)` to convert back
+``<backend dispatcher>.convert_to_nx(result, name=name)`` to convert back
 to a form expected by the NetworkX tests.
 
-By defining `convert_from_nx` and `convert_to_nx` methods and setting
+By defining ``convert_from_nx`` and ``convert_to_nx`` methods and setting
 the environment variable, NetworkX will automatically route tests on
 dispatchable algorithms to the backend, allowing the full networkx test
 suite to be run against the backend implementation.
 
-Example pytest invocation:
-NETWORKX_GRAPH_CONVERT=sparse pytest --pyargs networkx
+Example pytest invocation::
+
+    NETWORKX_GRAPH_CONVERT=sparse pytest --pyargs networkx
 
 Dispatchable algorithms which are not implemented by the backend
-will cause a `pytest.xfail()`, giving some indication that not all
+will cause a ``pytest.xfail()``, giving some indication that not all
 tests are working, while avoiding causing an explicit failure.
 
-A special `on_start_tests(items)` function may be defined by the backend.
+A special ``on_start_tests(items)`` function may be defined by the backend.
 It will be called with the list of NetworkX tests discovered. Each item
-is a pytest.Node object. If the backend does not support the test, that
-test can be marked as xfail.
+is a test object that can be marked as xfail if the backend does not support
+the test using `item.add_marker(pytest.mark.xfail(reason=...))`.
 """
 import functools
 import inspect
@@ -131,7 +128,13 @@ def _dispatch(func=None, *, name=None):
 
     @functools.wraps(func)
     def wrapper(*args, **kwds):
-        graph = args[0]
+        if args:
+            graph = args[0]
+        else:
+            try:
+                graph = kwds["G"]
+            except KeyError:
+                raise TypeError(f"{name}() missing positional argument: 'G'") from None
         if hasattr(graph, "__networkx_plugin__") and plugins:
             plugin_name = graph.__networkx_plugin__
             if plugin_name in plugins:
@@ -143,6 +146,10 @@ def _dispatch(func=None, *, name=None):
                         f"'{name}' not implemented by {plugin_name}"
                     )
         return func(*args, **kwds)
+
+    # Keep a handle to the original function to use when testing
+    # the dispatch mechanism internally
+    wrapper._orig_func = func
 
     _register_algo(name, wrapper)
     return wrapper
@@ -168,10 +175,20 @@ def test_override_dispatch(func=None, *, name=None):
     def wrapper(*args, **kwds):
         backend = plugins[plugin_name].load()
         if not hasattr(backend, name):
+            if plugin_name == "nx-loopback":
+                raise NetworkXNotImplemented(
+                    f"'{name}' not found in {backend.__class__.__name__}"
+                )
             pytest.xfail(f"'{name}' not implemented by {plugin_name}")
         bound = sig.bind(*args, **kwds)
         bound.apply_defaults()
-        graph, *args = args
+        if args:
+            graph, *args = args
+        else:
+            try:
+                graph = kwds.pop("G")
+            except KeyError:
+                raise TypeError(f"{name}() missing positional argument: 'G'") from None
         # Convert graph into backend graph-like object
         #   Include the weight label, if provided to the algorithm
         weight = None
@@ -187,6 +204,7 @@ def test_override_dispatch(func=None, *, name=None):
         result = getattr(backend, name).__call__(graph, *args, **kwds)
         return backend.convert_to_nx(result, name=name)
 
+    wrapper._orig_func = func
     _register_algo(name, wrapper)
     return wrapper
 

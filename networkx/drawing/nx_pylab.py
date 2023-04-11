@@ -289,7 +289,7 @@ def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
         "with_labels",
     }
 
-    if any([k not in valid_kwds for k in kwds]):
+    if any(k not in valid_kwds for k in kwds):
         invalid_args = ", ".join([k for k in kwds if k not in valid_kwds])
         raise ValueError(f"Received invalid argument(s): {invalid_args}")
 
@@ -578,14 +578,14 @@ def draw_networkx_edges(
         Label for legend
 
     min_source_margin : int (default=0)
-        The minimum margin (gap) at the begining of the edge at the source.
+        The minimum margin (gap) at the beginning of the edge at the source.
 
     min_target_margin : int (default=0)
         The minimum margin (gap) at the end of the edge at the target.
 
     Returns
     -------
-     matplotlib.colections.LineCollection or a list of matplotlib.patches.FancyArrowPatch
+     matplotlib.collections.LineCollection or a list of matplotlib.patches.FancyArrowPatch
         If ``arrows=True``, a list of FancyArrowPatches is returned.
         If ``arrows=False``, a LineCollection is returned.
         If ``arrows=None`` (the default), then a LineCollection is returned if
@@ -784,7 +784,7 @@ def draw_networkx_edges(
                 # is 0, e.g. for a single node. In this case, fall back to scaling
                 # by the maximum node size
                 selfloop_ht = 0.005 * max_nodesize if h == 0 else h
-                # this is called with _screen space_ values so covert back
+                # this is called with _screen space_ values so convert back
                 # to data space
                 data_loc = ax.transData.inverted().transform(posA)
                 v_shift = 0.1 * selfloop_ht
@@ -1112,7 +1112,7 @@ def draw_networkx_edge_labels(
     ax : Matplotlib Axes object, optional
         Draw the graph in the specified Matplotlib axes.
 
-    rotate : bool (deafult=True)
+    rotate : bool (default=True)
         Rotate edge labels to lie parallel to edges
 
     clip_on : bool (default=True)
@@ -1184,7 +1184,7 @@ def draw_networkx_edge_labels(
             trans_angle = 0.0
         # use default box of white with white border
         if bbox is None:
-            bbox = dict(boxstyle="round", ec=(1.0, 1.0, 1.0), fc=(1.0, 1.0, 1.0))
+            bbox = {"boxstyle": "round", "ec": (1.0, 1.0, 1.0), "fc": (1.0, 1.0, 1.0)}
         if not isinstance(label, str):
             label = str(label)  # this makes "1" and 1 labeled the same
 
