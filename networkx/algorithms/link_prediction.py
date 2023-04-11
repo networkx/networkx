@@ -6,6 +6,7 @@ from math import log
 from scipy import sparse
 
 import networkx as nx
+import scipy as sp
 from networkx.utils import not_implemented_for
 
 __all__ = [
@@ -588,9 +589,10 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
 
     return _apply_prediction(G, predict, ebunch)
 
+
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-def katz_index(G, ebunch=None, beta=.1):
+def katz_index(G, ebunch=None, beta=0.1):
     r"""Compute the Katz index of all node pairs in ebunch.
 
     Katz index of nodes `u` and `v` is defined as
@@ -639,8 +641,8 @@ def katz_index(G, ebunch=None, beta=.1):
         ebunch = nx.non_edges(G)
     A = nx.adjacency_matrix(G)
     AB = A.multiply(beta)
-    I = sparse.identity(AB.shape[0])
-    indices = sparse.linalg.spsolve(I - AB, I) - I
+    I = sp.sparse.identity(AB.shape[0])
+    indices = sp.sparse.linalg.spsolve(I - AB, I) - I
     return ((u, v, indices[u, v]) for u, v in ebunch)
 
 
