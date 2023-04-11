@@ -633,11 +633,11 @@ def katz_index(G, ebunch=None, beta=0.1):
     ----------
     .. [1] Linyuan Lu, Tao Zhou
            Link Prediction in Complex Networks: A Survey.
-           https://arxiv.org/pdf/1010.0725v1.pdf  
+           https://arxiv.org/pdf/1010.0725v1.pdf
     """
     import scipy as sp
     from scipy import sparse
-    
+
     if ebunch is None:
         ebunch = nx.non_edges(G)
     A = nx.adjacency_matrix(G)
