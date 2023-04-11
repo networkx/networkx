@@ -1,7 +1,8 @@
 import math
-import numpy as np
+
 from functools import partial
 
+import numpy as np
 import pytest
 
 import networkx as nx
