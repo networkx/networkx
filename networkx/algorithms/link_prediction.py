@@ -4,11 +4,13 @@ Link prediction algorithms.
 
 from math import log
 
-import networkx as nx
-import scipy as sp
 
-from networkx.utils import not_implemented_for
+import scipy as sp
 from scipy import sparse
+
+import networkx as nx
+from networkx.utils import not_implemented_for
+
 
 __all__ = [
     "resource_allocation_index",
