@@ -224,14 +224,16 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
         out_degrees = dict(G.out_degree(weight="weight"))
         Stot_in = list(in_degrees.values())
         Stot_out = list(out_degrees.values())
-        # Calculate weights for both in and out neighbours
+        # Calculate weights for both in and out neighbours without considering self-loops
         nbrs = {}
         for u in G:
             nbrs[u] = defaultdict(float)
             for _, n, wt in G.out_edges(u, data="weight"):
-                nbrs[u][n] += wt
+                if u != n:
+                    nbrs[u][n] += wt
             for n, _, wt in G.in_edges(u, data="weight"):
-                nbrs[u][n] += wt
+                if u != n:
+                    nbrs[u][n] += wt
     else:
         degrees = dict(G.degree(weight="weight"))
         Stot = list(degrees.values())
