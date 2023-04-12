@@ -6,6 +6,7 @@ Cycle finding algorithms
 
 from collections import defaultdict
 from itertools import combinations, product
+from math import inf
 
 import networkx as nx
 from networkx.utils import not_implemented_for, pairwise
@@ -17,6 +18,7 @@ __all__ = [
     "find_cycle",
     "minimum_cycle_basis",
     "chordless_cycles",
+    "girth",
 ]
 
 
@@ -1150,3 +1152,67 @@ def _path_to_cycle(path):
         # Toggle whether to keep the current edge.
         edges ^= {edge}
     return edges
+
+
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+def girth(G):
+    """Returns the girth of the graph.
+
+    The girth of a graph is the length of its shortest cycle, or infinity if
+    the graph is acyclic. The algorithm follows the description given on the
+    Wikipedia page [1], and runs in time O(mn) on a graph with m edges and n
+    nodes.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+
+    Returns
+    -------
+    An int, or infinity.
+
+    Examples
+    --------
+    All examples below (except P_5) can easily be checked using Wikipedia,
+    which has a page for each of these famous graphs.
+
+    >>> girth(nx.chvatal_graph())
+    4
+    >>> girth(nx.tutte_graph())
+    4
+    >>> girth(nx.petersen_graph())
+    5
+    >>> girth(nx.heawood_graph())
+    6
+    >>> girth(nx.pappus_graph())
+    6
+    >>> girth(nx.path_graph(5))
+    inf
+
+    References:
+        [1] https://en.wikipedia.org/wiki/Girth_(graph_theory)
+
+    """
+    len_shortest_cycle = inf
+    all_edges = set(map(frozenset, G.edges))
+    for n in G.nodes:
+        # run a BFS from source n, keeping track of distances; since we want
+        # the shortest cycle, no need to explore beyond the current minimum
+        # length
+        tree = nx.bfs_tree(G, n, depth_limit=len_shortest_cycle)
+        distances = nx.single_source_shortest_path_length(tree, n)
+
+        # examine edges that belong to cycles, i.e. edges that bfs missed: the
+        # union of such an edge {u, v} and the paths from n to u and v is a
+        # cycle, whose length might be smaller than our current minimum
+        # mapping to frozensets is necessary since edges can be read both ways
+        for u, v in all_edges.difference(map(frozenset, tree.edges)):
+            # {u, v} might not belong to the same component as n, in which case
+            # the endpoints won't be in distances and will raise KeyError
+            if u in distances and v in distances:
+                len_shortest_cycle = min(
+                    len_shortest_cycle, 1 + distances[u] + distances[v]
+                )
+
+    return len_shortest_cycle
