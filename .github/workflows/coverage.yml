@@ -40,5 +40,5 @@ jobs:
         run: |
           pytest --cov=networkx --runslow --doctest-modules --durations=20 --pyargs networkx
 
-      - name: Updload to codecov
+      - name: Upload to codecov
         uses: codecov/codecov-action@v3
