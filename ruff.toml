@@ -14,7 +14,7 @@ select = [
     "SIM2",    # simplify boolean comparisons
 ]
 
-target-version = "py38"
+target-version = "py39"
 
 [per-file-ignores]
 "__init__.py" = ["I"]
