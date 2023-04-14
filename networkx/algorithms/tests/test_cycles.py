@@ -869,13 +869,6 @@ class TestMinimumCycles:
 
 
 class TestGirth:
-    @classmethod
-    def setup_class(cls):
-        T = nx.Graph()
-        nx.add_cycle(T, [1, 2, 3, 4], weight=1)
-        T.add_edge(2, 4, weight=5)
-        cls.diamond_graph = T
-
     def test_chvatal_graph(self):
         graph = nx.chvatal_graph()
         assert girth(graph) == 4
@@ -897,5 +890,5 @@ class TestGirth:
         assert girth(graph) == 6
 
     def test_random_tree(self, n=100):
-        graph = nx.random_tree(n)
+        graph = nx.random_tree(n, seed=42)
         assert girth(graph) == inf
