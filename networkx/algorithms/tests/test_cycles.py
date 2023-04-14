@@ -1,4 +1,5 @@
 from itertools import chain, islice, tee
+from math import inf
 from random import shuffle
 
 import pytest
@@ -7,6 +8,8 @@ import networkx
 import networkx as nx
 from networkx.algorithms import find_cycle, minimum_cycle_basis
 from networkx.algorithms.traversal.edgedfs import FORWARD, REVERSE
+
+from networkx.algorithms.cycles import girth
 
 
 class TestCycles:
@@ -863,3 +866,36 @@ class TestMinimumCycles:
     def test_tree_graph(self):
         tg = nx.balanced_tree(3, 3)
         assert not minimum_cycle_basis(tg)
+
+
+class TestGirth:
+    @classmethod
+    def setup_class(cls):
+        T = nx.Graph()
+        nx.add_cycle(T, [1, 2, 3, 4], weight=1)
+        T.add_edge(2, 4, weight=5)
+        cls.diamond_graph = T
+
+    def test_chvatal_graph(self):
+        graph = nx.chvatal_graph()
+        assert girth(graph) == 4
+
+    def test_tutte_graph(self):
+        graph = nx.tutte_graph()
+        assert girth(graph) == 4
+
+    def test_petersen_graph(self):
+        graph = nx.petersen_graph()
+        assert girth(graph) == 5
+
+    def test_heawood_graph(self):
+        graph = nx.heawood_graph()
+        assert girth(graph) == 6
+
+    def test_pappus_graph(self):
+        graph = nx.pappus_graph()
+        assert girth(graph) == 6
+
+    def test_random_tree(self, n=100):
+        graph = nx.random_tree(n)
+        assert girth(graph) == inf
