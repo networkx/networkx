@@ -345,6 +345,10 @@ class TestKatzEigenvectorVKatz:
             assert e[n] == pytest.approx(k[n], abs=1e-7)
 
 class TestKatzCentralityScipy:
+    @classmethod
+    def setup_class(cls):
+        np = pytest.importorskip("numpy")
+        sp = pytest.importorskip("scipy")
     def test_K5(self):
         """Katz centrality: K5"""
         G = nx.complete_graph(5)
@@ -442,13 +446,13 @@ class TestKatzCentralityScipy:
     def test_bad_beta_number(self):
         with pytest.raises(nx.NetworkXException):
             G = nx.Graph([(0, 1)])
-            nx.katz_centrality_numpy(G, 0.1, beta="foo")
+            nx.katz_centrality_scipy(G, 0.1, beta="foo")
 
     def test_K5_unweighted(self):
         """Katz centrality: K5"""
         G = nx.complete_graph(5)
         alpha = 0.1
-        b = nx.katz_centrality(G, alpha, weight=None)
+        b = nx.katz_centrality_scipy(G, alpha, weight=None)
         v = math.sqrt(1 / 5.0)
         b_answer = dict.fromkeys(G, v)
         for n in sorted(G):
@@ -462,7 +466,7 @@ class TestKatzCentralityScipy:
         alpha = 0.1
         G = nx.path_graph(3)
         b_answer = {0: 0.5598852584152165, 1: 0.6107839182711449, 2: 0.5598852584152162}
-        b = nx.katz_centrality_numpy(G, alpha, weight=None)
+        b = nx.katz_centrality_scipy(G, alpha, weight=None)
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=1e-4)
 
