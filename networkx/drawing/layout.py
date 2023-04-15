@@ -323,9 +323,10 @@ def bipartite_layout(
     width = aspect_ratio * height
     offset = (width / 2, height / 2)
 
-    top = set(nodes)
-    bottom = set(G) - top
-    nodes = list(top) + list(bottom)
+    topset = set(nodes)
+    top = [n for n in G if n in topset]
+    bottom = [n for n in G if n not in topset]
+    nodes  = top + bottom
 
     left_xs = np.repeat(0, len(top))
     right_xs = np.repeat(width, len(bottom))
