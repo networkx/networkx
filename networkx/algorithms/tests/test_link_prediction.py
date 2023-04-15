@@ -3,8 +3,6 @@ from functools import partial
 
 import pytest
 
-np = pytest.importorskip("numpy")
-
 import networkx as nx
 
 
