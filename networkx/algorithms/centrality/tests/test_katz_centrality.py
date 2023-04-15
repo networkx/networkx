@@ -344,11 +344,13 @@ class TestKatzEigenvectorVKatz:
         for n in G:
             assert e[n] == pytest.approx(k[n], abs=1e-7)
 
+
 class TestKatzCentralityScipy:
     @classmethod
     def setup_class(cls):
         np = pytest.importorskip("numpy")
         sp = pytest.importorskip("scipy")
+
     def test_K5(self):
         """Katz centrality: K5"""
         G = nx.complete_graph(5)
@@ -469,4 +471,3 @@ class TestKatzCentralityScipy:
         b = nx.katz_centrality_scipy(G, alpha, weight=None)
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=1e-4)
-
