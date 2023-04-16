@@ -53,3 +53,10 @@ class TestIsSemiconnected:
             chain.from_iterable([(i, i - 1), (i, i + 1)] for i in range(0, 100, 2))
         )
         assert not nx.is_semiconnected(G)
+
+    def test_topo_order(self):
+        G = nx.path_graph(100, create_using=nx.DiGraph())
+        topo_order = list(nx.topological_sort(G))
+        assert not nx.is_semiconnected(G, topo_order=topo_order)
+        rev_topo_order = list(reversed(topo_order))
+        assert nx.is_semiconnected(G, topo_order=rev_topo_order)
