@@ -42,9 +42,8 @@ def maximum_independent_set(G):
 
     Examples
     --------
-    >>> from networkx.algorithms.approximation.clique import maximum_independent_set
     >>> G = nx.path_graph(10)
-    >>> maximum_independent_set(G)
+    >>> nx.approximation.maximum_independent_set(maximum_independent_set(G))
     {0, 2, 4, 6, 9}
 
     Raises
