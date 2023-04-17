@@ -94,7 +94,7 @@ def gnr_graph(n, p, create_using=None, seed=None):
 
     The GNR graph is built by adding nodes one at a time with a link to one
     previously added node.  The previous target node is chosen uniformly at
-    random.  With probabiliy `p` the link is instead "redirected" to the
+    random.  With probability `p` the link is instead "redirected" to the
     successor node of the target.
 
     The graph is always a (directed) tree.

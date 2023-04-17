@@ -1151,7 +1151,7 @@ def arf_layout(
 
     References
     .. [1] "Self-Organization Applied to Dynamic Network Layout", M. Geipel,
-            International Jounral of Modern Physics C, 2007, Vol 18, No 10, pp. 1537-1549.
+            International Journal of Modern Physics C, 2007, Vol 18, No 10, pp. 1537-1549.
             https://doi.org/10.1142/S0129183107011558 https://arxiv.org/abs/0704.1748
 
     Returns

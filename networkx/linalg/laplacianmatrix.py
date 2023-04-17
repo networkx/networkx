@@ -43,9 +43,9 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
 
     See Also
     --------
-    to_numpy_array
+    :func:`~networkx.convert_matrix.to_numpy_array`
     normalized_laplacian_matrix
-    laplacian_spectrum
+    :func:`~networkx.linalg.spectrum.laplacian_spectrum`
 
     Examples
     --------

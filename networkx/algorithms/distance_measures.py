@@ -729,7 +729,7 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     # Replace with collapsing topology or approximated zero?
 
     # Using determinants to compute the effective resistance is more memory
-    # efficient than directly calculating the psuedo-inverse
+    # efficient than directly calculating the pseudo-inverse
     L = nx.laplacian_matrix(G, node_list, weight=weight).asformat("csc")
     indices = list(range(L.shape[0]))
     # w/ nodeA removed

@@ -10,7 +10,7 @@ k-edge-augmentation exists.
 See Also
 --------
 :mod:`edge_kcomponents` : algorithms for finding k-edge-connected components
-:mod:`connectivity` : algorithms for determening edge connectivity.
+:mod:`connectivity` : algorithms for determining edge connectivity.
 """
 import itertools as it
 import math

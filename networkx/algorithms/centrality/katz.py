@@ -112,8 +112,8 @@ def katz_centrality(
     katz_centrality_numpy
     eigenvector_centrality
     eigenvector_centrality_numpy
-    pagerank
-    hits
+    :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`
+    :func:`~networkx.algorithms.link_analysis.hits_alg.hits`
 
     Notes
     -----
@@ -275,8 +275,8 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     katz_centrality
     eigenvector_centrality_numpy
     eigenvector_centrality
-    pagerank
-    hits
+    :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`
+    :func:`~networkx.algorithms.link_analysis.hits_alg.hits`
 
     Notes
     -----

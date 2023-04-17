@@ -414,7 +414,7 @@ def _dfbnb(G, k, DF_tree, max_GBC, root, D, max_group, nodes, greedy):
     if len(DF_tree.nodes[root]["GM"]) == k and DF_tree.nodes[root]["GBC"] > max_GBC:
         return DF_tree.nodes[root]["GBC"], DF_tree, DF_tree.nodes[root]["GM"]
     # stopping condition - if the size of group members equal to k or there are less than
-    # k - |GM| in the candidate list or the heuristic function plus the GBC is bellow the
+    # k - |GM| in the candidate list or the heuristic function plus the GBC is below the
     # maximal GBC found then prune
     if (
         len(DF_tree.nodes[root]["GM"]) == k
