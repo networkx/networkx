@@ -43,7 +43,7 @@ def maximum_independent_set(G):
     Examples
     --------
     >>> G = nx.path_graph(10)
-    >>> nx.approximation.maximum_independent_set(maximum_independent_set(G))
+    >>> nx.approximation.maximum_independent_set(G)
     {0, 2, 4, 6, 9}
 
     Raises
@@ -88,7 +88,7 @@ def max_clique(G):
     Examples
     --------
     >>> G = nx.path_graph(10)
-    >>> nx.approximation.max_clique(max_clique(G))
+    >>> nx.approximation.max_clique(G)
     {8, 9}
 
     Raises
@@ -150,7 +150,7 @@ def clique_removal(G):
     Examples
     --------
     >>> G = nx.path_graph(10)
-    >>> nx.approximation.clique_removal(clique_removal(G))
+    >>> nx.approximation.clique_removal(G)
     ({0, 2, 4, 6, 9}, [{0, 1}, {2, 3}, {4, 5}, {6, 7}, {8, 9}])
 
     Raises
@@ -201,7 +201,7 @@ def large_clique_size(G):
     Examples
     --------
     >>> G = nx.path_graph(10)
-    >>> nx.approximation.large_clique_size(large_clique_size(G))
+    >>> nx.approximation.large_clique_size(G)
     2
 
     Raises
