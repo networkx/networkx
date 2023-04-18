@@ -43,9 +43,7 @@ def min_weighted_dominating_set(G, weight=None):
 
     Examples
     --------
-    >>> G = nx.Graph()
-    >>> edges = [(0, 1),(0, 3),(1, 2),(1, 3),(1, 4)]
-    >>> G.add_edges_from(edges)
+    >>> G = nx.Graph([(0, 1), (0, 3), (1, 2), (1, 3), (1, 4)])
     >>> nx.approximation.min_weighted_dominating_set(G)
     {1}
 
