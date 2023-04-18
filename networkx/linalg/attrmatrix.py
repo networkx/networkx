@@ -326,7 +326,7 @@ def attr_sparse_matrix(
     edge_attr : str, optional
         Each element of the matrix represents a running total of the
         specified edge attribute for edges whose node attributes correspond
-        to the rows/cols of the matirx. The attribute must be present for
+        to the rows/cols of the matrix. The attribute must be present for
         all edges in the graph. If no attribute is specified, then we
         just count the number of edges whose node attributes correspond
         to the matrix element.

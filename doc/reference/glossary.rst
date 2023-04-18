@@ -15,7 +15,7 @@ Glossary
       with an edge attribute dictionary `(u, v, dict)`.
 
    ebunch
-      An iteratable container of edge tuples like a list, iterator,
+      An iterable container of edge tuples like a list, iterator,
       or file.
 
    edge attribute

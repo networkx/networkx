@@ -197,7 +197,7 @@ def test_more_edge_colors_than_num_edges_directed():
         assert mpl.colors.same_color(fap.get_edgecolor(), expected)
 
 
-def test_edge_color_string_with_gloabl_alpha_undirected():
+def test_edge_color_string_with_global_alpha_undirected():
     edge_collection = nx.draw_networkx_edges(
         barbell,
         pos=nx.random_layout(barbell),

@@ -89,8 +89,8 @@ def laplacian_centrality(
 
     See Also
     --------
-    directed_laplacian_matrix
-    laplacian_matrix
+    :func:`~networkx.linalg.laplacianmatrix.directed_laplacian_matrix`
+    :func:`~networkx.linalg.laplacianmatrix.laplacian_matrix`
     """
     import numpy as np
     import scipy as sp
