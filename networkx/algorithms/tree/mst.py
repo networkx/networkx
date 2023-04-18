@@ -613,7 +613,7 @@ def partition_spanning_tree(
     """
     Find a spanning tree while respecting a partition of edges.
 
-    Edges can be flagged as either `INLCUDED` which are required to be in the
+    Edges can be flagged as either `INCLUDED` which are required to be in the
     returned tree, `EXCLUDED`, which cannot be in the returned tree and `OPEN`.
 
     This is used in the SpanningTreeIterator to create new partitions following
@@ -742,7 +742,7 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
     is based on the product of edge weights, and if ``multiplicative=False``
     it is based on the sum of the edge weight. However, since it is
     easier to determine the total weight of all spanning trees for the
-    multiplicative verison, that is significantly faster and should be used if
+    multiplicative version, that is significantly faster and should be used if
     possible. Additionally, setting `weight` to `None` will cause a spanning tree
     to be selected with uniform probability.
 

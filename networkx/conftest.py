@@ -78,6 +78,9 @@ def set_warnings():
         category=DeprecationWarning,
         message="shortest_path for all_pairs",
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\nforest_str is deprecated"
+    )
 
 
 @pytest.fixture(autouse=True)

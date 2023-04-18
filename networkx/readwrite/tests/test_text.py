@@ -294,7 +294,7 @@ def test_forest_str_errors():
 
 def test_forest_str_overspecified_sources():
     """
-    When sources are directly specified, we wont be able to determine when we
+    When sources are directly specified, we won't be able to determine when we
     are in the last component, so there will always be a trailing, leftmost
     pipe.
     """
@@ -353,7 +353,7 @@ def test_forest_str_overspecified_sources():
 
 def test_write_network_text_iterative_add_directed_edges():
     """
-    Walk through the cases going from a diconnected to fully connected graph
+    Walk through the cases going from a disconnected to fully connected graph
     """
     graph = nx.DiGraph()
     graph.add_nodes_from([1, 2, 3, 4])
@@ -501,7 +501,7 @@ def test_write_network_text_iterative_add_directed_edges():
 
 def test_write_network_text_iterative_add_undirected_edges():
     """
-    Walk through the cases going from a diconnected to fully connected graph
+    Walk through the cases going from a disconnected to fully connected graph
     """
     graph = nx.Graph()
     graph.add_nodes_from([1, 2, 3, 4])
@@ -606,7 +606,7 @@ def test_write_network_text_iterative_add_undirected_edges():
 
 def test_write_network_text_iterative_add_random_directed_edges():
     """
-    Walk through the cases going from a diconnected to fully connected graph
+    Walk through the cases going from a disconnected to fully connected graph
     """
 
     rng = random.Random(724466096)

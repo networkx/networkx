@@ -4,7 +4,7 @@ version: 2.1
 jobs:
   documentation:
     docker:
-      - image: cimg/python:3.9
+      - image: cimg/python:3.10
 
     steps:
       - checkout
@@ -64,7 +64,7 @@ jobs:
 
   image:
     docker:
-      - image: cimg/python:3.9
+      - image: cimg/python:3.10
 
     steps:
       - checkout
