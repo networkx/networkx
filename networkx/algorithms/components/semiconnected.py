@@ -18,7 +18,10 @@ def is_semiconnected(G, topo_order=None):
         A directed graph.
 
     topo_order: list or tuple, optional
-        A topological order for G (if None, the function will compute one)
+        .. warning:: Do not use
+
+           `topo_order` gives incorrect results and will be removed in the
+           future. Non-default values will result in an exception.
 
     Returns
     -------
@@ -49,6 +52,12 @@ def is_semiconnected(G, topo_order=None):
     is_connected
     is_biconnected
     """
+    if topo_order is not None:
+        raise TypeError(
+            "`topo_order` gives incorrect results and is no longer supported."
+            "\nRemove `topo_order` from the function call."
+        )
+
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
             "Connectivity is undefined for the null graph."
@@ -57,8 +66,6 @@ def is_semiconnected(G, topo_order=None):
     if not nx.is_weakly_connected(G):
         return False
 
-    G = nx.condensation(G)
-    if topo_order is None:
-        topo_order = nx.topological_sort(G)
+    H = nx.condensation(G)
 
-    return all(G.has_edge(u, v) for u, v in pairwise(topo_order))
+    return all(H.has_edge(u, v) for u, v in pairwise(nx.topological_sort(H)))
