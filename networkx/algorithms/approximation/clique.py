@@ -151,7 +151,7 @@ def clique_removal(G):
     --------
     >>> G = nx.path_graph(10)
     >>> nx.approximation.clique_removal(G)
-    ({0, 2, 4, 6, 9}, [{0, 1}, {2, 3}, {4, 5}, {6, 7}, {8, 9}])
+    ({0, 2, 4, 6, 9}, [{0, 1}, {2, 3}, {4, 5}, {6, 7}, {8, 9}]) #a set and list
 
     Raises
     ------
