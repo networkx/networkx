@@ -43,11 +43,10 @@ def min_weighted_dominating_set(G, weight=None):
 
     Examples
     --------
-    >>> from networkx.algorithms.approximation.dominating_set import min_weighted_dominating_set
     >>> G = nx.Graph()
     >>> edges = [(0, 1),(0, 3),(1, 2),(1, 3),(1, 4)]
     >>> G.add_edges_from(edges)
-    >>> min_weighted_dominating_set(G)
+    >>> nx.approximation.min_weighted_dominating_set(G)
     {1}
 
     Notes
@@ -123,11 +122,10 @@ def min_edge_dominating_set(G):
 
     Examples
     --------
-    >>> from networkx.algorithms.approximation.dominating_set import min_edge_dominating_set
     >>> G = nx.Graph()
     >>> edges = [(0, 1),(0, 3),(1, 2),(1, 3),(1, 4)]
     >>> G.add_edges_from(edges)
-    >>> min_edge_dominating_set(G)
+    >>> nx.approximation.min_edge_dominating_set(G)
     {(0, 1)}
 
     Notes
