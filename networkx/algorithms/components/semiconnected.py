@@ -6,7 +6,7 @@ __all__ = ["is_semiconnected"]
 
 
 @not_implemented_for("undirected")
-def is_semiconnected(G, topo_order=None):
+def is_semiconnected(G):
     """Returns True if the graph is semiconnected, False otherwise.
 
     A graph is semiconnected if, and only if, for any pair of nodes, either one
@@ -16,9 +16,6 @@ def is_semiconnected(G, topo_order=None):
     ----------
     G : NetworkX graph
         A directed graph.
-
-    topo_order: list or tuple, optional
-        A topological order for G (if None, the function will compute one)
 
     Returns
     -------
@@ -57,8 +54,6 @@ def is_semiconnected(G, topo_order=None):
     if not nx.is_weakly_connected(G):
         return False
 
-    G = nx.condensation(G)
-    if topo_order is None:
-        topo_order = nx.topological_sort(G)
+    H = nx.condensation(G)
 
-    return all(G.has_edge(u, v) for u, v in pairwise(topo_order))
+    return all(H.has_edge(u, v) for u, v in pairwise(nx.topological_sort(H)))
