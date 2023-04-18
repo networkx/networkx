@@ -168,7 +168,7 @@ def rooted_tree_isomorphism(t1, root1, t2, root2):
     # nothing to do on last level so start on h-1
     # also nothing to do for our fake level 0, so skip that
     for i in range(h - 1, 0, -1):
-        # update the ordered_labels and ordered_childen
+        # update the ordered_labels and ordered_children
         # for any children
         for v in L[i]:
             # nothing to do if no children

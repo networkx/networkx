@@ -464,7 +464,7 @@ def test_shortest_simple_paths_directed():
     assert list(paths) == [[0, 1, 2, 3]]
 
 
-def test_shortest_simple_paths_directed_with_weight_fucntion():
+def test_shortest_simple_paths_directed_with_weight_function():
     def cost(u, v, x):
         return 1
 
@@ -477,7 +477,7 @@ def test_shortest_simple_paths_directed_with_weight_fucntion():
     ] == sorted(len(path) for path in nx.all_simple_paths(G, 1, 12))
 
 
-def test_shortest_simple_paths_with_weight_fucntion():
+def test_shortest_simple_paths_with_weight_function():
     def cost(u, v, x):
         return 1
 

@@ -137,6 +137,13 @@ def to_agraph(N):
         ) from err
     directed = N.is_directed()
     strict = nx.number_of_selfloops(N) == 0 and not N.is_multigraph()
+
+    for node in N:
+        if "pos" in N.nodes[node]:
+            N.nodes[node]["pos"] = "{},{}!".format(
+                N.nodes[node]["pos"][0], N.nodes[node]["pos"][1]
+            )
+
     A = pygraphviz.AGraph(name=N.name, strict=strict, directed=directed)
 
     # default graph attributes

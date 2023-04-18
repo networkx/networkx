@@ -577,7 +577,7 @@ def chordless_cycles(G, length_bound=None):
         return
 
     # Nodes with loops cannot belong to longer cycles.  Let's delete them here.
-    # also, we implicitly reduce the multiplicty of edges down to 1 in the case
+    # also, we implicitly reduce the multiplicity of edges down to 1 in the case
     # of multiedges.
     if directed:
         F = nx.DiGraph((u, v) for u, Gu in G.adj.items() if u not in Gu for v in Gu)
@@ -599,7 +599,7 @@ def chordless_cycles(G, length_bound=None):
     #    present, then we remove both from F.
     #
     # In directed graphs, we need to consider both directions that edges can
-    # take, so iterate over all edges (u, v) and posibly (v, u).  In undirected
+    # take, so iterate over all edges (u, v) and possibly (v, u).  In undirected
     # graphs, we need to be a little careful to only consider every edge once,
     # so we use a "visited" set to emulate node-order comparisons.
 

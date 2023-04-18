@@ -1037,7 +1037,7 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
             if deltatype == -1:
                 # No further improvement possible; max-cardinality optimum
                 # reached. Do a final delta update to make the optimum
-                # verifyable.
+                # verifiable.
                 assert maxcardinality
                 deltatype = 1
                 delta = max(0, min(dualvar.values()))
