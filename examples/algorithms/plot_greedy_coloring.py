@@ -22,9 +22,6 @@ node_colors = [graph_color_to_mpl_color[graph_coloring[n]] for n in G.nodes()]
 # Define the position of each node, Specify seed for reproducibility
 pos = nx.spring_layout(G, seed=14)
 
-# Assign colors to nodes based on the greedy coloring
-node_colors = [colors[color_map.get(node) % len(colors)] for node in G.nodes()]
-
 # Draw the graph with node colors based on the greedy coloring
 nx.draw(
     G,
