@@ -145,7 +145,26 @@ def balanced_tree(r, h, create_using=None):
 def barbell_graph(m1, m2, create_using=None):
     """Returns the Barbell Graph: two complete graphs connected by a path.
 
-    For $m1 > 1$ and $m2 >= 0$.
+    Parameters
+    ----------
+    m1 : int
+        Size of the left and right barbells, must be greater than 2.
+
+    m2 : int
+        Length of the path connecting the barbells.
+
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+       Only undirected Graphs are supported.
+
+    Returns
+    -------
+    G : NetworkX graph
+        A barbell graph.
+
+    Notes
+    -----
+
 
     Two identical complete graphs $K_{m1}$ form the left and right bells,
     and are connected by a path $P_{m2}$.
@@ -177,14 +196,17 @@ def barbell_graph(m1, m2, create_using=None):
     G.add_nodes_from(range(m1, m1 + m2 - 1))
     if m2 > 1:
         G.add_edges_from(pairwise(range(m1, m1 + m2)))
+
     # right barbell
     G.add_edges_from(
         (u, v) for u in range(m1 + m2, 2 * m1 + m2) for v in range(u + 1, 2 * m1 + m2)
     )
+
     # connect it up
     G.add_edge(m1 - 1, m1)
     if m2 > 0:
         G.add_edge(m1 + m2 - 1, m1 + m2)
+
     return G
 
 
@@ -233,6 +255,8 @@ def complete_graph(n, create_using=None):
     n : int or iterable container of nodes
         If n is an integer, nodes are from range(n).
         If n is a container of nodes, those nodes appear in the graph.
+        Warning: n is not checked for duplicates and if present the
+        resulting graph may not be as desired. Make sure you have no duplicates.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
@@ -360,6 +384,8 @@ def cycle_graph(n, create_using=None):
     n : int or iterable container of nodes
         If n is an integer, nodes are from `range(n)`.
         If n is a container of nodes, those nodes appear in the graph.
+        Warning: n is not checked for duplicates and if present the
+        resulting graph may not be as desired. Make sure you have no duplicates.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
@@ -377,9 +403,38 @@ def cycle_graph(n, create_using=None):
 def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     """Returns the hierarchically constructed Dorogovtsev-Goltsev-Mendes graph.
 
-    n is the generation.
-    See: arXiv:/cond-mat/0112143 by Dorogovtsev, Goltsev and Mendes.
+    The Dorogovtsev-Goltsev-Mendes [1]_ procedure produces a scale-free graph
+    deterministically with the following properties for a given `n`:
+    - Total number of nodes = ``3 * (3**n + 1) / 2``
+    - Total number of edges = ``3 ** (n + 1)``
 
+    Parameters
+    ----------
+    n : integer
+       The generation number.
+
+    create_using : NetworkX Graph, optional
+       Graph type to be returned. Directed graphs and multi graphs are not
+       supported.
+
+    Returns
+    -------
+    G : NetworkX Graph
+
+    Examples
+    --------
+    >>> G = nx.dorogovtsev_goltsev_mendes_graph(3)
+    >>> G.number_of_nodes()
+    15
+    >>> G.number_of_edges()
+    27
+    >>> nx.is_planar(G)
+    True
+
+    References
+    ----------
+    .. [1] Dorogotsev S.N., Goltsev A.V., and Mendes J.F.F "Pseudofractal
+       Scale-free Web". arXiv:cond-mat/0112143
     """
     G = empty_graph(0, create_using)
     if G.is_directed():
@@ -481,7 +536,7 @@ def empty_graph(n=0, create_using=None, default=Graph):
     """
     if create_using is None:
         G = default()
-    elif type(create_using) is type:
+    elif isinstance(create_using, type):
         G = create_using()
     elif not hasattr(create_using, "adj"):
         raise TypeError("create_using is not a valid NetworkX graph type or instance")
@@ -523,7 +578,9 @@ def lollipop_graph(m, n, create_using=None):
     ----------
     m, n : int or iterable container of nodes (default = 0)
         If an integer, nodes are from `range(m)` and `range(m,m+n)`.
-        If a container, the entries are the coordinate of the node.
+        If a container of nodes, those nodes appear in the graph.
+        Warning: m and n are not checked for duplicates and if present the
+        resulting graph may not be as desired. Make sure you have no duplicates.
 
         The nodes for m appear in the complete graph $K_m$ and the nodes
         for n appear in the path $P_n$
@@ -587,6 +644,8 @@ def path_graph(n, create_using=None):
     n : int or iterable
         If an integer, nodes are 0 to n - 1.
         If an iterable of nodes, in the order they appear in the path.
+        Warning: n is not checked for duplicates and if present the
+        resulting graph may not be as desired. Make sure you have no duplicates.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
@@ -608,6 +667,8 @@ def star_graph(n, create_using=None):
     n : int or iterable
         If an integer, node labels are 0 to n with center 0.
         If an iterable of nodes, the center is the first.
+        Warning: n is not checked for duplicates and if present the
+        resulting graph may not be as desired. Make sure you have no duplicates.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
@@ -679,6 +740,8 @@ def wheel_graph(n, create_using=None):
     n : int or iterable
         If an integer, node labels are 0 to n with center 0.
         If an iterable of nodes, the center is the first.
+        Warning: n is not checked for duplicates and if present the
+        resulting graph may not be as desired. Make sure you have no duplicates.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
@@ -768,7 +831,7 @@ def complete_multipartite_graph(*subset_sizes):
     # add nodes with subset attribute
     # while checking that ints are not mixed with iterables
     try:
-        for (i, subset) in enumerate(subsets):
+        for i, subset in enumerate(subsets):
             G.add_nodes_from(subset, subset=i)
     except TypeError as err:
         raise NetworkXError("Arguments must be all ints or all iterables") from err

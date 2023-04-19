@@ -47,7 +47,7 @@ def test_average_connectivity():
     G2.add_edges_from([(1, 3), (1, 4), (0, 3), (0, 4), (3, 4)])
     G3 = nx.Graph()
     for flow_func in flow_funcs:
-        kwargs = dict(flow_func=flow_func)
+        kwargs = {"flow_func": flow_func}
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
         assert nx.average_node_connectivity(G1, **kwargs) == 1, errmsg
         assert nx.average_node_connectivity(G2, **kwargs) == 2.2, errmsg
@@ -98,7 +98,7 @@ def test_brandes_erlebach():
         ]
     )
     for flow_func in flow_funcs:
-        kwargs = dict(flow_func=flow_func)
+        kwargs = {"flow_func": flow_func}
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
         assert 3 == local_edge_connectivity(G, 1, 11, **kwargs), errmsg
         assert 3 == nx.edge_connectivity(G, 1, 11, **kwargs), errmsg

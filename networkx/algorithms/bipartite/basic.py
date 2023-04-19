@@ -82,6 +82,7 @@ def color(G):
     return color
 
 
+@nx._dispatch
 def is_bipartite(G):
     """Returns True if graph G is bipartite, False if not.
 

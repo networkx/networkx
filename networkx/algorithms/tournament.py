@@ -61,6 +61,7 @@ def index_satisfying(iterable, condition):
         raise ValueError("iterable must be non-empty") from err
 
 
+@nx._dispatch
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
 def is_tournament(G):
@@ -179,6 +180,7 @@ def random_tournament(n, seed=None):
     return nx.DiGraph(edges)
 
 
+@nx._dispatch
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
 def score_sequence(G):
@@ -208,6 +210,7 @@ def score_sequence(G):
     return sorted(d for v, d in G.out_degree())
 
 
+@nx._dispatch
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
 def tournament_matrix(G):
@@ -237,7 +240,7 @@ def tournament_matrix(G):
 
     Returns
     -------
-    SciPy sparse matrix
+    SciPy sparse array
         The tournament matrix of the tournament graph `G`.
 
     Raises

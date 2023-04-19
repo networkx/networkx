@@ -88,6 +88,7 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
             queue.popleft()
 
 
+@nx._dispatch
 def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     """Iterate over edges in a breadth-first-search starting at source.
 
@@ -235,6 +236,7 @@ def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     return T
 
 
+@nx._dispatch
 def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
     """Returns an iterator of predecessors in breadth-first-search from source.
 
@@ -299,6 +301,7 @@ def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
         yield (t, s)
 
 
+@nx._dispatch
 def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
     """Returns an iterator of successors in breadth-first-search from source.
 
@@ -371,6 +374,7 @@ def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
     yield (parent, children)
 
 
+@nx._dispatch
 def bfs_layers(G, sources):
     """Returns an iterator of all the layers in breadth-first search traversal.
 
@@ -413,7 +417,7 @@ def bfs_layers(G, sources):
     # same distance from sources at each iteration
     while current_layer:
         yield current_layer
-        next_layer = list()
+        next_layer = []
         for node in current_layer:
             for child in G[node]:
                 if child not in visited:
@@ -422,6 +426,7 @@ def bfs_layers(G, sources):
         current_layer = next_layer
 
 
+@nx._dispatch
 def descendants_at_distance(G, source, distance):
     """Returns all nodes at a fixed `distance` from `source` in `G`.
 

@@ -1,11 +1,4 @@
 import networkx as nx
-from networkx.algorithms.community import (
-    is_partition,
-    louvain_communities,
-    louvain_partitions,
-    modularity,
-    partition_quality,
-)
 
 
 def test_modularity_increase():
@@ -13,10 +6,10 @@ def test_modularity_increase():
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
     )
     partition = [{u} for u in G.nodes()]
-    mod = modularity(G, partition)
-    partition = louvain_communities(G)
+    mod = nx.community.modularity(G, partition)
+    partition = nx.community.louvain_communities(G)
 
-    assert modularity(G, partition) > mod
+    assert nx.community.modularity(G, partition) > mod
 
 
 def test_valid_partition():
@@ -24,11 +17,11 @@ def test_valid_partition():
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
     )
     H = G.to_directed()
-    partition = louvain_communities(G)
-    partition2 = louvain_communities(H)
+    partition = nx.community.louvain_communities(G)
+    partition2 = nx.community.louvain_communities(H)
 
-    assert is_partition(G, partition)
-    assert is_partition(H, partition2)
+    assert nx.community.is_partition(G, partition)
+    assert nx.community.is_partition(H, partition2)
 
 
 def test_karate_club_partition():
@@ -39,14 +32,14 @@ def test_karate_club_partition():
         {23, 25, 27, 28, 24, 31},
         {32, 33, 8, 14, 15, 18, 20, 22, 26, 29, 30},
     ]
-    partition = louvain_communities(G, seed=2, weight=None)
+    partition = nx.community.louvain_communities(G, seed=2, weight=None)
 
     assert part == partition
 
 
 def test_partition_iterator():
     G = nx.path_graph(15)
-    parts_iter = louvain_partitions(G, seed=42)
+    parts_iter = nx.community.louvain_partitions(G, seed=42)
     first_part = next(parts_iter)
     first_copy = [s.copy() for s in first_part]
 
@@ -100,10 +93,10 @@ def test_directed_partition():
     H.add_edges_from(H_edges)
 
     G_expected_partition = [{0, 1, 2}, {3, 4}, {5}, {6}, {8, 7}, {9, 10}]
-    G_partition = louvain_communities(G, seed=123, weight=None)
+    G_partition = nx.community.louvain_communities(G, seed=123, weight=None)
 
     H_expected_partition = [{2, 3, 4, 5}, {8, 1, 6, 7}, {9, 10, 11}]
-    H_partition = louvain_communities(H, seed=123, weight=None)
+    H_partition = nx.community.louvain_communities(H, seed=123, weight=None)
 
     assert G_partition == G_expected_partition
     assert H_partition == H_expected_partition
@@ -121,9 +114,9 @@ def test_none_weight_param():
         {23, 25, 27, 28, 24, 31},
         {32, 33, 8, 14, 15, 18, 20, 22, 26, 29, 30},
     ]
-    partition1 = louvain_communities(G, weight=None, seed=2)
-    partition2 = louvain_communities(G, weight="foo", seed=2)
-    partition3 = louvain_communities(G, weight="weight", seed=2)
+    partition1 = nx.community.louvain_communities(G, weight=None, seed=2)
+    partition2 = nx.community.louvain_communities(G, weight="foo", seed=2)
+    partition3 = nx.community.louvain_communities(G, weight="weight", seed=2)
 
     assert part == partition1
     assert part != partition2
@@ -139,15 +132,15 @@ def test_quality():
     I = nx.MultiGraph(G)
     J = nx.MultiDiGraph(H)
 
-    partition = louvain_communities(G)
-    partition2 = louvain_communities(H)
-    partition3 = louvain_communities(I)
-    partition4 = louvain_communities(J)
+    partition = nx.community.louvain_communities(G)
+    partition2 = nx.community.louvain_communities(H)
+    partition3 = nx.community.louvain_communities(I)
+    partition4 = nx.community.louvain_communities(J)
 
-    quality = partition_quality(G, partition)[0]
-    quality2 = partition_quality(H, partition2)[0]
-    quality3 = partition_quality(I, partition3)[0]
-    quality4 = partition_quality(J, partition4)[0]
+    quality = nx.community.partition_quality(G, partition)[0]
+    quality2 = nx.community.partition_quality(H, partition2)[0]
+    quality3 = nx.community.partition_quality(I, partition3)[0]
+    quality4 = nx.community.partition_quality(J, partition4)[0]
 
     assert quality >= 0.65
     assert quality2 >= 0.65
@@ -163,9 +156,9 @@ def test_multigraph():
     G.add_edge(0, 9, foo=20)
     H.add_edge(0, 9, foo=20)
 
-    partition1 = louvain_communities(G, seed=1234)
-    partition2 = louvain_communities(H, seed=1234)
-    partition3 = louvain_communities(H, weight="foo", seed=1234)
+    partition1 = nx.community.louvain_communities(G, seed=1234)
+    partition2 = nx.community.louvain_communities(H, seed=1234)
+    partition3 = nx.community.louvain_communities(H, weight="foo", seed=1234)
 
     assert partition1 == partition2 != partition3
 
@@ -175,9 +168,9 @@ def test_resolution():
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
     )
 
-    partition1 = louvain_communities(G, resolution=0.5, seed=12)
-    partition2 = louvain_communities(G, seed=12)
-    partition3 = louvain_communities(G, resolution=2, seed=12)
+    partition1 = nx.community.louvain_communities(G, resolution=0.5, seed=12)
+    partition2 = nx.community.louvain_communities(G, seed=12)
+    partition3 = nx.community.louvain_communities(G, resolution=2, seed=12)
 
     assert len(partition1) <= len(partition2) <= len(partition3)
 
@@ -186,9 +179,9 @@ def test_threshold():
     G = nx.LFR_benchmark_graph(
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
     )
-    partition1 = louvain_communities(G, threshold=0.3, seed=2)
-    partition2 = louvain_communities(G, seed=2)
-    mod1 = modularity(G, partition1)
-    mod2 = modularity(G, partition2)
+    partition1 = nx.community.louvain_communities(G, threshold=0.3, seed=2)
+    partition2 = nx.community.louvain_communities(G, seed=2)
+    mod1 = nx.community.modularity(G, partition1)
+    mod2 = nx.community.modularity(G, partition2)
 
     assert mod1 < mod2

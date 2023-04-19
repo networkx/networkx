@@ -1,6 +1,7 @@
 import gc
 import pickle
 import platform
+import weakref
 
 import pytest
 
@@ -71,7 +72,19 @@ class BaseGraphTester:
         G = self.Graph()
 
         def count_objects_of_type(_type):
-            return sum(1 for obj in gc.get_objects() if isinstance(obj, _type))
+            # Iterating over all objects tracked by gc can include weak references
+            # whose weakly-referenced objects may no longer exist. Calling `isinstance`
+            # on such a weak reference will raise ReferenceError. There are at least
+            # three workarounds for this: one is to compare type names instead of using
+            # `isinstance` such as `type(obj).__name__ == typename`, another is to use
+            # `type(obj) == _type`, and the last is to ignore ProxyTypes as we do below.
+            # NOTE: even if this safeguard is deemed unnecessary to pass NetworkX tests,
+            # we should still keep it for maximum safety for other NetworkX backends.
+            return sum(
+                1
+                for obj in gc.get_objects()
+                if not isinstance(obj, weakref.ProxyTypes) and isinstance(obj, _type)
+            )
 
         gc.collect()
         before = count_objects_of_type(self.Graph)
@@ -683,6 +696,9 @@ class TestGraph(BaseAttrGraphTester):
         G = self.Graph()
         G.add_edge(*(0, 1))
         assert G.adj == {0: {1: {}}, 1: {0: {}}}
+        G = self.Graph()
+        with pytest.raises(ValueError):
+            G.add_edge(None, "anything")
 
     def test_add_edges_from(self):
         G = self.Graph()
@@ -706,6 +722,8 @@ class TestGraph(BaseAttrGraphTester):
             G.add_edges_from([(0, 1, 2, 3)])  # too many in tuple
         with pytest.raises(TypeError):
             G.add_edges_from([0])  # not a tuple
+        with pytest.raises(ValueError):
+            G.add_edges_from([(None, 3), (3, 2)])  # None cannot be a node
 
     def test_remove_edge(self):
         G = self.K3.copy()

@@ -334,12 +334,22 @@ def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan
                         continue
                     for k2, d2 in keydict.items():
                         new_weight = d2.get(weight, 1) * sign
+                        if isnan(new_weight):
+                            if ignore_nan:
+                                continue
+                            msg = f"NaN found as an edge weight. Edge {(v, w, k2, d2)}"
+                            raise ValueError(msg)
                         push(frontier, (new_weight, next(c), v, w, k2, d2))
             else:
                 for w, d2 in G.adj[v].items():
                     if w in visited:
                         continue
                     new_weight = d2.get(weight, 1) * sign
+                    if isnan(new_weight):
+                        if ignore_nan:
+                            continue
+                        msg = f"NaN found as an edge weight. Edge {(v, w, d2)}"
+                        raise ValueError(msg)
                     push(frontier, (new_weight, next(c), v, w, d2))
 
 
@@ -603,7 +613,7 @@ def partition_spanning_tree(
     """
     Find a spanning tree while respecting a partition of edges.
 
-    Edges can be flagged as either `INLCUDED` which are required to be in the
+    Edges can be flagged as either `INCLUDED` which are required to be in the
     returned tree, `EXCLUDED`, which cannot be in the returned tree and `OPEN`.
 
     This is used in the SpanningTreeIterator to create new partitions following
@@ -732,7 +742,7 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
     is based on the product of edge weights, and if ``multiplicative=False``
     it is based on the sum of the edge weight. However, since it is
     easier to determine the total weight of all spanning trees for the
-    multiplicative verison, that is significantly faster and should be used if
+    multiplicative version, that is significantly faster and should be used if
     possible. Additionally, setting `weight` to `None` will cause a spanning tree
     to be selected with uniform probability.
 
@@ -847,10 +857,10 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
         Find the sum of weights of the spanning trees of `G` using the
         approioate `method`.
 
-        This is easy if the choosen method is 'multiplicative', since we can
+        This is easy if the chosen method is 'multiplicative', since we can
         use Kirchhoff's Tree Matrix Theorem directly. However, with the
         'additive' method, this process is slightly more complex and less
-        computatiionally efficent as we have to find the number of spanning
+        computatiionally efficient as we have to find the number of spanning
         trees which contain each possible edge in the graph.
 
         Parameters
@@ -882,7 +892,7 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
             #    the number of spanning trees which have to include that edge. This
             #    can be accomplished by contracting the edge and finding the
             #    multiplicative total spanning tree weight if the weight of each edge
-            #    is assumed to be 1, which is conviently built into networkx already,
+            #    is assumed to be 1, which is conveniently built into networkx already,
             #    by calling total_spanning_tree_weight with weight=None
             else:
                 total = 0
@@ -1022,7 +1032,7 @@ class SpanningTreeIterator:
         ).size(weight=self.weight)
 
         self.partition_queue.put(
-            self.Partition(mst_weight if self.minimum else -mst_weight, dict())
+            self.Partition(mst_weight if self.minimum else -mst_weight, {})
         )
 
         return self

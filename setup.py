@@ -122,7 +122,7 @@ dd = os.path.join(docdirbase, "examples", "javascript/force")
 pp = os.path.join("examples", "javascript/force")
 data.append((dd, glob(os.path.join(pp, "*"))))
 
-# add the tests and helper subpackage(s)
+# add the tests subpackage(s)
 package_data = {
     "networkx": ["tests/*.py"],
     "networkx.algorithms": ["tests/*.py"],
@@ -135,11 +135,7 @@ package_data = {
     "networkx.algorithms.coloring": ["tests/*.py"],
     "networkx.algorithms.minors": ["tests/*.py"],
     "networkx.algorithms.flow": ["tests/*.py", "tests/*.bz2"],
-    "networkx.algorithms.isomorphism": [
-        "tests/*.py",
-        "tests/*.*99",
-        "vf2pp_helpers/*.py",
-    ],
+    "networkx.algorithms.isomorphism": ["tests/*.py", "tests/*.*99"],
     "networkx.algorithms.link_analysis": ["tests/*.py"],
     "networkx.algorithms.approximation": ["tests/*.py"],
     "networkx.algorithms.operators": ["tests/*.py"],
@@ -153,6 +149,11 @@ package_data = {
     "networkx.readwrite": ["tests/*.py"],
     "networkx.readwrite.json_graph": ["tests/*.py"],
     "networkx.utils": ["tests/*.py"],
+}
+
+# Loopback dispatcher required for testing nx._dispatch decorator
+entry_points = {
+    "networkx.plugins": "nx-loopback = networkx.classes.tests.dispatch_interface:dispatcher"
 }
 
 
@@ -173,7 +174,6 @@ with open("README.rst") as fh:
     long_description = fh.read()
 
 if __name__ == "__main__":
-
     setup(
         name=name,
         version=version,
@@ -193,6 +193,7 @@ if __name__ == "__main__":
         package_data=package_data,
         install_requires=install_requires,
         extras_require=extras_require,
+        entry_points=entry_points,
         python_requires=">=3.8",
         zip_safe=False,
     )

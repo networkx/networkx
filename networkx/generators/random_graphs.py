@@ -343,7 +343,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     # for each edge u-v, with probability p, randomly select existing
     # node w and add new edge u-w
     e = list(G.edges())
-    for (u, v) in e:
+    for u, v in e:
         if seed.random() < p:
             w = seed.choice(nlist)
             # no self-loops and reject if edge u-w exists
@@ -487,6 +487,8 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
 def random_regular_graph(d, n, seed=None):
     r"""Returns a random $d$-regular graph on $n$ nodes.
 
+    A regular graph is a graph where each node has the same number of neighbors.
+
     The resulting graph has no self-loops or parallel edges.
 
     Parameters
@@ -518,7 +520,7 @@ def random_regular_graph(d, n, seed=None):
     .. [1] A. Steger and N. Wormald,
        Generating random regular graphs quickly,
        Probability and Computing 8 (1999), 377-396, 1999.
-       http://citeseer.ist.psu.edu/steger99generating.html
+       https://doi.org/10.1017/S0963548399003867
 
     .. [2] Jeong Han Kim and Van H. Vu,
        Generating random regular graphs,
@@ -1015,7 +1017,7 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
                 neighborhood = [
                     nbr
                     for nbr in G.neighbors(target)
-                    if not G.has_edge(source, nbr) and not nbr == source
+                    if not G.has_edge(source, nbr) and nbr != source
                 ]
                 if neighborhood:  # if there is a neighbor without a link
                     nbr = seed.choice(neighborhood)
@@ -1065,7 +1067,7 @@ def random_lobster(n, p1, p2, seed=None):
         If `p1` or `p2` parameters are >= 1 because the while loops would never finish.
     """
     p1, p2 = abs(p1), abs(p2)
-    if any([p >= 1 for p in [p1, p2]]):
+    if any(p >= 1 for p in [p1, p2]):
         raise nx.NetworkXError("Probability values for `p1` and `p2` must both be < 1.")
 
     # a necessary ingredient in any self-respecting graph library
@@ -1114,7 +1116,7 @@ def random_shell_graph(constructor, seed=None):
     intra_edges = []
     nnodes = 0
     # create gnm graphs for each shell
-    for (n, m, d) in constructor:
+    for n, m, d in constructor:
         inter_edges = int(m * d)
         intra_edges.append(m - inter_edges)
         g = nx.convert_node_labels_to_integers(

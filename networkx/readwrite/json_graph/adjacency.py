@@ -4,7 +4,7 @@ import networkx as nx
 
 __all__ = ["adjacency_data", "adjacency_graph"]
 
-_attrs = dict(id="id", key="key")
+_attrs = {"id": "id", "key": "key"}
 
 
 def adjacency_data(G, attrs=_attrs):
