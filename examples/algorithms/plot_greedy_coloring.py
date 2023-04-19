@@ -1,21 +1,23 @@
 """
-=====================
+=========================
 Greedy Coloring Algorithm
-=====================
-We attempt to color a graph using as few colors as possible, where no neighbours of a node can have same color as the node itself.We use the function nx.greedy_color that implements the greedy coloring algorithm for a given graph.The function returns a dictionary that maps each node to its assigned color.
+=========================
+We attempt to color a graph using as few colors as possible, where no neighbours of a node can have same color as the node itself.
 """
 import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 
 # Create a dodecahedral graph
-G = nx.generators.small.dodecahedral_graph()
+G = nx.dodecahedral_graph()
 
 # Apply greedy coloring
-color_map = nx.greedy_color(G)
+graph_coloring = nx.greedy_color(G)
+unique_colors = set(graph_coloring.values())
 
-# Define warm color tones
-colors = list(mcolors.TABLEAU_COLORS.values())
+# Assign colors to nodes based on the greedy coloring
+graph_color_to_mpl_color = dict(zip(unique_colors, mpl.TABLEAU_COLORS))
+node_colors = [graph_color_to_mpl_color[graph_coloring[n]] for n in G.nodes()]
 
 # Define the position of each node, Specify seed for reproducibility
 pos = nx.spring_layout(G, seed=14)
