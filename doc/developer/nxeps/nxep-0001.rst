@@ -54,8 +54,8 @@ have shown they can be trusted to maintain NetworkX with care. Becoming a
 core developer allows contributors to merge approved pull requests, cast votes
 for and against merging a pull request, and be involved in deciding major
 changes to the API, and thereby more easily carry on with their project related
-activities. Core developers appear as team members on the `NetworkX Core Team page
-<https://github.com/orgs/networkx/teams/core-developers/members>`_ and can
+activities. Core developers appear as team members on the
+:ref:`NetworkX Core Developers gallery<core-developers-team>` and can
 be messaged ``@networkx/core-developers``. Core
 developers are expected to review code contributions while adhering to the
 :ref:`core_dev`.
@@ -83,10 +83,9 @@ long experience with both the project and the larger ecosystem. When the core
 developer community (including the SC members) fails to reach such a consensus
 in a reasonable timeframe, the SC is the entity that resolves the issue.
 
-Steering Council members appear as team members on the `NetworkX Steering
-Council Team page
-<https://github.com/orgs/networkx/teams/steering-council/members>`_ and
-can be messaged ``@networkx/steering-council``. Core
+The current list of steering council members appears on the
+`NetworkX Steering Council gallery<steering-council-team>` and can
+be messaged ``@networkx/steering-council``.
 
 Decision Making Process
 =======================

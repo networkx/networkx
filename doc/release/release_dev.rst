@@ -1,4 +1,4 @@
-3.1 (unreleased)
+3.2 (unreleased)
 ================
 
 Release date: TBD

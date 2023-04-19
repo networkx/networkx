@@ -104,7 +104,7 @@ def k_components(G, flow_func=None):
     """
     # Dictionary with connectivity level (k) as keys and a list of
     # sets of nodes that form a k-component as values. Note that
-    # k-compoents can overlap (but only k - 1 nodes).
+    # k-components can overlap (but only k - 1 nodes).
     k_components = defaultdict(list)
     # Define default flow function
     if flow_func is None:
@@ -167,7 +167,7 @@ def _consolidate(sets, k):
 
     """
     G = nx.Graph()
-    nodes = {i: s for i, s in enumerate(sets)}
+    nodes = dict(enumerate(sets))
     G.add_nodes_from(nodes)
     G.add_edges_from(
         (u, v) for u, v in combinations(nodes, 2) if len(nodes[u] & nodes[v]) >= k

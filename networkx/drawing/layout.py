@@ -323,9 +323,9 @@ def bipartite_layout(
     width = aspect_ratio * height
     offset = (width / 2, height / 2)
 
-    top = set(nodes)
-    bottom = set(G) - top
-    nodes = list(top) + list(bottom)
+    top = dict.fromkeys(nodes)
+    bottom = [v for v in G if v not in top]
+    nodes = list(top) + bottom
 
     left_xs = np.repeat(0, len(top))
     right_xs = np.repeat(width, len(bottom))
@@ -704,7 +704,7 @@ def kamada_kawai_layout(
         elif dim == 2:
             pos = circular_layout(G, dim=dim)
         else:
-            pos = {n: pt for n, pt in zip(G, np.linspace(0, 1, len(G)))}
+            pos = dict(zip(G, np.linspace(0, 1, len(G))))
     pos_arr = np.array([pos[n] for n in G])
 
     pos = _kamada_kawai_solve(dist_mtx, pos_arr, dim)
@@ -1151,7 +1151,7 @@ def arf_layout(
 
     References
     .. [1] "Self-Organization Applied to Dynamic Network Layout", M. Geipel,
-            International Jounral of Modern Physics C, 2007, Vol 18, No 10, pp. 1537-1549.
+            International Journal of Modern Physics C, 2007, Vol 18, No 10, pp. 1537-1549.
             https://doi.org/10.1142/S0129183107011558 https://arxiv.org/abs/0704.1748
 
     Returns
@@ -1220,7 +1220,7 @@ def arf_layout(
         if n_iter > max_iter:
             break
         n_iter += 1
-    return {node: pi for node, pi in zip(G.nodes(), p)}
+    return dict(zip(G.nodes(), p))
 
 
 def rescale_layout(pos, scale=1):

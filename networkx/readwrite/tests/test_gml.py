@@ -544,7 +544,7 @@ graph
             "directed 1 multigraph 1 ]"
         )
 
-        # Tests for string convertable alphanumeric id and label values
+        # Tests for string convertible alphanumeric id and label values
         nx.parse_gml("graph [edge [ source a target a ] node [ id a label b ] ]")
         nx.parse_gml(
             "graph [ node [ id n42 label 0 ] node [ id x43 label 1 ]"

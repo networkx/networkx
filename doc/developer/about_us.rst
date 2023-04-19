@@ -6,7 +6,7 @@ and has been developed with the help of many others. Thanks to everyone who has
 improved NetworkX by contributing code, bug reports (and fixes), documentation,
 and input on design, features, and the future of NetworkX.
 
-.. include:: team.rst
+.. include:: teams.inc
 
 Contributors
 ------------

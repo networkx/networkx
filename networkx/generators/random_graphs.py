@@ -1067,7 +1067,7 @@ def random_lobster(n, p1, p2, seed=None):
         If `p1` or `p2` parameters are >= 1 because the while loops would never finish.
     """
     p1, p2 = abs(p1), abs(p2)
-    if any([p >= 1 for p in [p1, p2]]):
+    if any(p >= 1 for p in [p1, p2]):
         raise nx.NetworkXError("Probability values for `p1` and `p2` must both be < 1.")
 
     # a necessary ingredient in any self-respecting graph library

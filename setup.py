@@ -151,6 +151,11 @@ package_data = {
     "networkx.utils": ["tests/*.py"],
 }
 
+# Loopback dispatcher required for testing nx._dispatch decorator
+entry_points = {
+    "networkx.plugins": "nx-loopback = networkx.classes.tests.dispatch_interface:dispatcher"
+}
+
 
 def parse_requirements_file(filename):
     with open(filename) as fid:
@@ -188,6 +193,7 @@ if __name__ == "__main__":
         package_data=package_data,
         install_requires=install_requires,
         extras_require=extras_require,
+        entry_points=entry_points,
         python_requires=">=3.8",
         zip_safe=False,
     )

@@ -126,6 +126,15 @@ def dijkstra_path(G, source, target, weight="weight"):
     >>> print(nx.dijkstra_path(G, 0, 4))
     [0, 1, 2, 3, 4]
 
+    Find edges of shortest path in Multigraph
+
+    >>> G = nx.MultiDiGraph()
+    >>> G.add_weighted_edges_from([(1, 2, 0.75), (1, 2, 0.5), (2, 3, 0.5), (1, 3, 1.5)])
+    >>> nodes = nx.dijkstra_path(G, 1, 3)
+    >>> edges = nx.utils.pairwise(nodes)
+    >>> list((u, v, min(G[u][v], key=lambda k: G[u][v][k].get('weight', 1))) for u, v in edges)
+    [(1, 2, 1), (2, 3, 0)]
+
     Notes
     -----
     Edge weight attributes must be numerical.
@@ -1088,8 +1097,9 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight="weight"):
 
     Returns
     -------
-    distance : dictionary
-        Dictionary, keyed by source and target, of shortest paths.
+    paths : iterator
+        (source, dictionary) iterator with dictionary keyed by target and
+        shortest path as the key value.
 
     Examples
     --------
@@ -1668,8 +1678,8 @@ def single_source_bellman_ford_path_length(G, source, weight="weight"):
 
     Returns
     -------
-    length : iterator
-        (target, shortest path length) iterator
+    length : dictionary
+        Dictionary of shortest path length keyed by target
 
     Raises
     ------
@@ -1679,7 +1689,7 @@ def single_source_bellman_ford_path_length(G, source, weight="weight"):
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> length = dict(nx.single_source_bellman_ford_path_length(G, 0))
+    >>> length = nx.single_source_bellman_ford_path_length(G, 0)
     >>> length[4]
     4
     >>> for node in [0, 1, 2, 3, 4]:
@@ -1876,8 +1886,9 @@ def all_pairs_bellman_ford_path(G, weight="weight"):
 
     Returns
     -------
-    distance : dictionary
-        Dictionary, keyed by source and target, of shortest paths.
+    paths : iterator
+        (source, dictionary) iterator with dictionary keyed by target and
+        shortest path as the key value.
 
     Examples
     --------
@@ -2129,6 +2140,7 @@ def negative_edge_cycle(G, weight="weight", heuristic=True):
     """
     if G.size() == 0:
         return False
+
     # find unused node to use temporarily
     newnode = -1
     while newnode in G:

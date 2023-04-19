@@ -289,7 +289,7 @@ def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
         "with_labels",
     }
 
-    if any([k not in valid_kwds for k in kwds]):
+    if any(k not in valid_kwds for k in kwds):
         invalid_args = ", ".join([k for k in kwds if k not in valid_kwds])
         raise ValueError(f"Received invalid argument(s): {invalid_args}")
 

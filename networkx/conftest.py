@@ -68,6 +68,19 @@ def set_warnings():
         category=DeprecationWarning,
         message="\n\nThe `attrs` keyword argument of node_link",
     )
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message="single_target_shortest_path_length will",
+    )
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message="shortest_path for all_pairs",
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\nforest_str is deprecated"
+    )
 
 
 @pytest.fixture(autouse=True)
