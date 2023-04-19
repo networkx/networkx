@@ -64,7 +64,7 @@ def cycle_basis(G, root=None):
     --------
     simple_cycles
     """
-    gnodes = dict.fromkeys(G.nodes())  # remove duplicates and maintain order
+    gnodes = dict.fromkeys(G)  # set-like object that maintains node order
     cycles = []
     while gnodes:  # loop over connected components
         if root is None:
