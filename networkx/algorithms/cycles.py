@@ -64,12 +64,11 @@ def cycle_basis(G, root=None):
     --------
     simple_cycles
     """
-    gnodes = G.nodes()
-    gnodes = list(dict.fromkeys(gnodes))  # remove duplicates and maintain order
+    gnodes = dict.fromkeys(G.nodes())  # remove duplicates and maintain order
     cycles = []
     while gnodes:  # loop over connected components
         if root is None:
-            root = gnodes.pop()
+            root = gnodes.popitem()[0]
         stack = [root]
         pred = {root: root}
         used = {root: set()}
@@ -93,9 +92,8 @@ def cycle_basis(G, root=None):
                     cycle.append(p)
                     cycles.append(cycle)
                     used[nbr].add(z)
-        for key in pred:
-            if key in gnodes:
-                gnodes.remove(key)
+        for node in pred:
+            gnodes.pop(node, None)
         root = None
     return cycles
 
