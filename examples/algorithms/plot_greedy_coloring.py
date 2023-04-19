@@ -6,7 +6,7 @@ We attempt to color a graph using as few colors as possible, where no neighbours
 """
 import networkx as nx
 import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
+import matplotlib.colors as mpl
 
 # Create a dodecahedral graph
 G = nx.dodecahedral_graph()
