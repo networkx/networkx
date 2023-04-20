@@ -126,9 +126,13 @@ def laplacian_centrality(
         new_diag = lap_matrix.diagonal() - abs(lap_matrix[:, i])
         np.fill_diagonal(A_2, new_diag[all_but_i])
 
-        new_energy = np.power(sp.linalg.eigh(A_2, eigvals_only=True), 2).sum()
+        if len(all_but_i) > 0:  # catches degenerate case of single node
+            new_energy = np.power(sp.linalg.eigh(A_2, eigvals_only=True), 2).sum()
+        else:
+            new_energy = 0.0
+
         lapl_cent = full_energy - new_energy
-        if normalized:
+        if normalized and full_energy != 0.0:
             lapl_cent = lapl_cent / full_energy
 
         laplace_centralities_dict[node] = lapl_cent

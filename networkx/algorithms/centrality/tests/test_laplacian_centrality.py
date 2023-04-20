@@ -6,6 +6,62 @@ np = pytest.importorskip("numpy")
 sp = pytest.importorskip("scipy")
 
 
+def test_laplacian_centrality_single_node():
+    """This test checks if issue #6571 is fixed - laplacian_centrality on a single node graph returned an error.
+    In a graph with a single node, the concept of Laplacian centrality becomes trivial, as there are no other nodes
+    or edges to consider. However, we can still calculate the Laplacian centrality for the sake of completeness.
+    For a single node graph, the adjacency matrix (A) will be a 1x1 matrix with a single entry of 0, as there are no
+    connections between nodes. The degree matrix (D) will also be a 1x1 matrix with a single entry of 0, as the single
+    node has a degree of 0.
+    As a result, the Laplacian matrix (L) will be a 1x1 matrix with a single entry of 0:
+    """
+
+    G = nx.Graph()
+    G.add_node(0)
+    d = nx.laplacian_centrality(G)
+    exact = {
+        0: 0.0,
+    }
+
+    assert d[0] == exact[0]
+
+
+def test_laplacian_centrality_unconnected_nodes():
+    """Checks for an issue similar to #6571 - laplacian_centrality on a unconnected node graph should return 0
+    In a graph with two unconnected nodes, the Laplacian centrality can still be calculated, but it may not be
+    as informative as in a connected graph. This is because the lack of connections means that the removal of a node
+    will not significantly change the graph structure.
+    For unconnected nodes, the adjacency matrix (A) will have all zero entries since there are no connections between
+    the nodes. The degree matrix (D) will also have all zero entries because both nodes have a degree of zero.
+    Consequently, the Laplacian matrix (L) will be a zero matrix, and the Laplacian energy (LE) of the graph will be
+    zero as well.
+    When you remove either node from the graph, the remaining graph will still have zero Laplacian energy since it is
+    essentially the same structure with one node removed. So the Laplacian centrality (LC) for each unconnected node
+    will be:
+
+        LC(v) = LE(G) - LE(G - v) = 0 - 0 = 0
+
+    In this case, the Laplacian centrality for both unconnected nodes is 0, indicating that their removal will not
+    affect the graph's structure. However, this measure is not as meaningful in this scenario, as the graph itself
+    is not connected, and there is no information about the nodes' influence or contribution to the overall network.
+    """
+
+    G = nx.Graph()
+    G.add_node(0)
+    G.add_node(1)
+    G.add_node(2)
+    d = nx.laplacian_centrality(G)
+
+    exact = {
+        0: 0.0,
+        1: 0.0,
+        2: 0.0,
+    }
+
+    for n, dc in d.items():
+        assert exact[n] == pytest.approx(dc, abs=1e-7)
+
+
 def test_laplacian_centrality_E():
     E = nx.Graph()
     E.add_weighted_edges_from(
