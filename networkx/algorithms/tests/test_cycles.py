@@ -56,7 +56,7 @@ class TestCycles:
     def test_cycle_basis_ordered(self):
         # see gh-6654 replace sets with (ordered) dicts
         G = nx.cycle_graph(5)
-        G.update(nx.cycle_graph(range(3,8)))
+        G.update(nx.cycle_graph(range(3, 8)))
         cbG = nx.cycle_basis(G)
 
         perm = {1: 0, 0: 1}  # switch 0 and 1
