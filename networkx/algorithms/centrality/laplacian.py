@@ -99,7 +99,7 @@ def laplacian_centrality(
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept("null graph has no centrality defined")
 
-    if nodelist != None:
+    if nodelist is not None:
         nodeset = set(G.nbunch_iter(nodelist))
         if len(nodeset) != len(nodelist):
             raise nx.NetworkXError("nodelist has duplicate nodes or nodes not in G")
@@ -113,6 +113,11 @@ def laplacian_centrality(
         lap_matrix = nx.laplacian_matrix(G, nodes, weight).toarray()
 
     full_energy = np.power(sp.linalg.eigh(lap_matrix, eigvals_only=True), 2).sum()
+
+    if full_energy == 0.0 and normalized:
+        raise nx.NetworkXPointlessConcept(
+            "graph without edges has centrality undefined or 0 and can not be be normalized"
+        )
 
     # calculate laplacian centrality
     laplace_centralities_dict = {}
@@ -132,7 +137,7 @@ def laplacian_centrality(
             new_energy = 0.0
 
         lapl_cent = full_energy - new_energy
-        if normalized and full_energy != 0.0:
+        if normalized:
             lapl_cent = lapl_cent / full_energy
 
         laplace_centralities_dict[node] = lapl_cent

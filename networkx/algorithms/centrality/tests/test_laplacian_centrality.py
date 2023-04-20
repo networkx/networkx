@@ -1,9 +1,16 @@
 import pytest
 
 import networkx as nx
+from networkx import NetworkXPointlessConcept
 
 np = pytest.importorskip("numpy")
 sp = pytest.importorskip("scipy")
+
+
+def test_laplacian_centrality_empty_graph_raises_pointless_concept():
+    G = nx.Graph()
+    with pytest.raises(NetworkXPointlessConcept):
+        d = nx.laplacian_centrality(G, normalized=False)
 
 
 def test_laplacian_centrality_single_node():
@@ -18,7 +25,7 @@ def test_laplacian_centrality_single_node():
 
     G = nx.Graph()
     G.add_node(0)
-    d = nx.laplacian_centrality(G)
+    d = nx.laplacian_centrality(G, normalized=False)
     exact = {
         0: 0.0,
     }
@@ -47,10 +54,8 @@ def test_laplacian_centrality_unconnected_nodes():
     """
 
     G = nx.Graph()
-    G.add_node(0)
-    G.add_node(1)
-    G.add_node(2)
-    d = nx.laplacian_centrality(G)
+    G.add_nodes_from([0, 1, 2])
+    d = nx.laplacian_centrality(G, normalized=False)
 
     exact = {
         0: 0.0,
@@ -60,6 +65,14 @@ def test_laplacian_centrality_unconnected_nodes():
 
     for n, dc in d.items():
         assert exact[n] == pytest.approx(dc, abs=1e-7)
+
+
+def test_laplacian_centrality_unconnected_nodes_normalized():
+    """Normalizing the Laplacian centrality of a graph without edges raises a NetworkXPointlessConcept."""
+    G = nx.Graph()
+    G.add_nodes_from([0, 1, 2])
+    with pytest.raises(NetworkXPointlessConcept):
+        d = nx.laplacian_centrality(G, normalized=True)
 
 
 def test_laplacian_centrality_E():
