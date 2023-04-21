@@ -53,6 +53,17 @@ class TestCycles:
             G = nx.MultiGraph()
             cy = networkx.cycle_basis(G, 0)
 
+    def test_cycle_basis_ordered(self):
+        # see gh-6654 replace sets with (ordered) dicts
+        G = nx.cycle_graph(5)
+        G.update(nx.cycle_graph(range(3, 8)))
+        cbG = nx.cycle_basis(G)
+
+        perm = {1: 0, 0: 1}  # switch 0 and 1
+        H = nx.relabel_nodes(G, perm)
+        cbH = [[perm.get(n, n) for n in cyc] for cyc in nx.cycle_basis(H)]
+        assert cbG == cbH
+
     def test_cycle_basis_self_loop(self):
         """Tests the function for graphs with self loops"""
         G = nx.Graph()
