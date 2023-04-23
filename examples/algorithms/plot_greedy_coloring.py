@@ -1,14 +1,15 @@
 """
-=========================
-Greedy Coloring Algorithm
-=========================
-We attempt to color a graph using as few colors as possible, where no neighbours of a node can have same color as the node itself.
+===============
+Greedy Coloring
+===============
+
+We attempt to color a graph using as few colors as possible, where no neighbours
+of a node can have same color as the node itself.
 """
 import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.colors as mpl
 
-# Create a dodecahedral graph
 G = nx.dodecahedral_graph()
 
 # Apply greedy coloring
@@ -19,10 +20,7 @@ unique_colors = set(graph_coloring.values())
 graph_color_to_mpl_color = dict(zip(unique_colors, mpl.TABLEAU_COLORS))
 node_colors = [graph_color_to_mpl_color[graph_coloring[n]] for n in G.nodes()]
 
-# Define the position of each node, Specify seed for reproducibility
 pos = nx.spring_layout(G, seed=14)
-
-# Draw the graph with node colors based on the greedy coloring
 nx.draw(
     G,
     pos,
@@ -34,6 +32,4 @@ nx.draw(
     font_color="#333333",
     width=2,
 )
-
-# Show the graph
 plt.show()
