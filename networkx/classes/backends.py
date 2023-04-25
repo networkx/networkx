@@ -127,7 +127,7 @@ def _dispatch(func=None, *, name=None, graphs="G"):
     #  - @_dispatch(graphs="G,H")
     #  - @_dispatch(name="override_name", graphs="G,H")
     if func is None:
-        if name is None and graphs is None:
+        if name is None and graphs == "G":
             return _dispatch
         return functools.partial(_dispatch, name=name, graphs=graphs)
     if isinstance(func, str):
@@ -191,7 +191,7 @@ def test_override_dispatch(func=None, *, name=None, graphs="G"):
     causing the dispatching mechanism to trigger for every
     decorated algorithm."""
     if func is None:
-        if name is None and graphs is None:
+        if name is None and graphs == "G":
             return _dispatch
         return functools.partial(_dispatch, name=name, graphs=graphs)
     if isinstance(func, str):
