@@ -124,7 +124,7 @@ def move_one_node(soln, seed):
 
 
 @not_implemented_for("directed")
-def christofides(G, weight="weight", tree=None):
+def christofides(G, weight="weight", tree=None, source=None):
     """Approximate a solution of the traveling salesman problem
 
     Compute a 3/2-approximation of the traveling salesman problem
@@ -143,6 +143,9 @@ def christofides(G, weight="weight", tree=None):
     tree : NetworkX graph or None (default: None)
         A minimum spanning tree of G. Or, if None, the minimum spanning
         tree is computed using :func:`networkx.minimum_spanning_tree`
+        
+    source : node label (default=`None`)
+        If given, return the cycle starting and ending at the given node.
 
     Returns
     -------
@@ -180,7 +183,7 @@ def christofides(G, weight="weight", tree=None):
     MG.add_edges_from(tree.edges)
     edges = nx.min_weight_matching(L, weight=weight)
     MG.add_edges_from(edges)
-    return _shortcutting(nx.eulerian_circuit(MG))
+    return _shortcutting(nx.eulerian_circuit(MG, source=source))
 
 
 def _shortcutting(circuit):
@@ -196,7 +199,7 @@ def _shortcutting(circuit):
     return nodes
 
 
-def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, method=None):
+def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, method=None, source=None):
     """Find the shortest path in `G` connecting specified nodes
 
     This function allows approximate solution to the traveling salesman
@@ -256,6 +259,9 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
         To specify parameters for these provided functions, construct lambda
         functions that state the specific value. `method` must have 2 inputs.
         (See examples).
+        
+    source : node label (default=`None`)
+        If given, return the cycle starting and ending at the given node.
 
     Returns
     -------
@@ -316,7 +322,7 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
             if u == v:
                 continue
             GG.add_edge(u, v, weight=dist[u][v])
-    best_GG = method(GG, weight)
+    best_GG = method(GG, weight, source=source)
 
     if not cycle:
         # find and remove the biggest edge
