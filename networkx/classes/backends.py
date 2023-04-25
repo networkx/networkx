@@ -107,7 +107,7 @@ def _register_algo(name, wrapped_func):
     wrapped_func.dispatchname = name
 
 
-def _dispatch(func=None, *, name=None, graphs=None):
+def _dispatch(func=None, *, name=None, graphs="G"):
     """Dispatches to a backend algorithm
     when the first argument is a backend graph-like object.
 
@@ -135,9 +135,6 @@ def _dispatch(func=None, *, name=None, graphs=None):
     # If name not provided, use the name of the function
     if name is None:
         name = func.__name__
-    # If graphs not provided, use the most common signature of a single graph named `G`
-    if graphs is None:
-        graphs = "G"
 
     graph_list = [g.strip() for g in graphs.split(",")]
     if len(graph_list) <= 0:
@@ -189,7 +186,7 @@ def _dispatch(func=None, *, name=None, graphs=None):
     return wrapper
 
 
-def test_override_dispatch(func=None, *, name=None, graphs=None):
+def test_override_dispatch(func=None, *, name=None, graphs="G"):
     """Auto-converts graph arguments into the backend equivalent,
     causing the dispatching mechanism to trigger for every
     decorated algorithm."""
@@ -202,9 +199,6 @@ def test_override_dispatch(func=None, *, name=None, graphs=None):
     # If name not provided, use the name of the function
     if name is None:
         name = func.__name__
-    # If graphs not provided, use the most common signature of a single graph named `G`
-    if graphs is None:
-        graphs = "G"
 
     graph_list = [g.strip() for g in graphs.split(",")]
     if len(graph_list) <= 0:
