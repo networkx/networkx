@@ -143,7 +143,7 @@ def christofides(G, weight="weight", tree=None, source=None):
     tree : NetworkX graph or None (default: None)
         A minimum spanning tree of G. Or, if None, the minimum spanning
         tree is computed using :func:`networkx.minimum_spanning_tree`
-        
+
     source : node label (default=`None`)
         If given, return the cycle starting and ending at the given node.
 
@@ -199,7 +199,9 @@ def _shortcutting(circuit):
     return nodes
 
 
-def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, method=None, source=None):
+def traveling_salesman_problem(
+    G, weight="weight", nodes=None, cycle=True, method=None, source=None
+):
     """Find the shortest path in `G` connecting specified nodes
 
     This function allows approximate solution to the traveling salesman
@@ -259,7 +261,7 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
         To specify parameters for these provided functions, construct lambda
         functions that state the specific value. `method` must have 2 inputs.
         (See examples).
-        
+
     source : node label (default=`None`)
         If given, return the cycle starting and ending at the given node.
 
