@@ -33,8 +33,8 @@ important in operations research and theoretical computer science.
 
 http://en.wikipedia.org/wiki/Travelling_salesman_problem
 """
-import math
 import inspect
+import math
 
 import networkx as nx
 from networkx.algorithms.tree.mst import random_spanning_tree
@@ -325,7 +325,7 @@ def traveling_salesman_problem(
             if u == v:
                 continue
             GG.add_edge(u, v, weight=dist[u][v])
-    if 'source' not in inspect.signature(method).parameters:
+    if "source" not in inspect.signature(method).parameters:
         best_GG = method(GG, weight)
     else:
         best_GG = method(GG, weight, source=source)
