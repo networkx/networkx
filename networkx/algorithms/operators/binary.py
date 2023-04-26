@@ -65,6 +65,29 @@ def union(G, H, rename=()):
     >>> U.edges
     EdgeView([('G0', 'G1'), ('G0', 'G2'), ('G1', 'G2'), ('H0', 'H1'), ('H0', 'H3'), ('H1', 'H3'), ('H1', 'H2')])
 
+    The propagated node and edge attributes are **shallow copies**, therefore
+    modifying mutable attributes directly will affect the corresponding
+    attribute in the input graph:
+
+    >>> G = nx.Graph([(0, 1, {"weights": [1, 2]})])
+    >>> H = nx.Graph([(2, 3)])
+    >>> U = nx.union(G, H)
+    >>> U[0][1]["weights"].pop()
+    2
+    >>> G.edges(data=True)
+    EdgeDataView([(0, 1, {'weights': [1]})])
+
+    This can be avoided by using ``nx.set_{node/edge}_attributes`` instead of
+    mutating the attribute directly:
+
+    >>> G = nx.Graph([(0, 1, {"weights": [1, 2]})])
+    >>> H = nx.Graph([(2, 3)])
+    >>> U = nx.union(G, H)
+    >>> nx.set_edge_attributes(U, {(0, 1): {"weights": [1]}})
+    >>> U[0][1]["weights"]  # Edge weights updated
+    [1]
+    >>> G[0][1]["weights"]  # G's edge weights unchanged
+    [1, 2]
 
     """
     return nx.union_all([G, H], rename)
