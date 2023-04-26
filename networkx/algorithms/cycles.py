@@ -1161,7 +1161,7 @@ def girth(G):
 
     The girth of a graph is the length of its shortest cycle, or infinity if
     the graph is acyclic. The algorithm follows the description given on the
-    Wikipedia page [1], and runs in time O(mn) on a graph with m edges and n
+    Wikipedia page [1]_, and runs in time O(mn) on a graph with m edges and n
     nodes.
 
     Parameters
@@ -1190,8 +1190,9 @@ def girth(G):
     >>> girth(nx.path_graph(5))
     inf
 
-    References:
-        [1] https://en.wikipedia.org/wiki/Girth_(graph_theory)
+    References
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Girth_(graph_theory)
 
     """
     len_shortest_cycle = inf
