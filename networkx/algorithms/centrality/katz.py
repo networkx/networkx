@@ -4,7 +4,7 @@ import math
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ["katz_centrality", "katz_centrality_numpy"]
+__all__ = ["katz_centrality", "katz_centrality_numpy", "katz_centrality_scipy"]
 
 
 @nx._dispatch
@@ -312,9 +312,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     try:
         nodelist = beta.keys()
         if set(nodelist) != set(G):
-            raise nx.NetworkXError(
-                "beta dictionary " "must have a value for every node"
-            )
+            raise nx.NetworkXError("beta dictionary must have a value for every node")
         b = np.array(list(beta.values()), dtype=float)
     except AttributeError:
         nodelist = list(G)
@@ -326,6 +324,37 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     A = nx.adjacency_matrix(G, nodelist=nodelist, weight=weight).todense().T
     n = A.shape[0]
     centrality = np.linalg.solve(np.eye(n, n) - (alpha * A), b)
+    if normalized:
+        norm = np.sign(sum(centrality)) * np.linalg.norm(centrality)
+    else:
+        norm = 1.0
+    centrality = dict(zip(nodelist, map(float, centrality / norm)))
+    return centrality
+
+
+@not_implemented_for("multigraph")
+def katz_centrality_scipy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
+    import numpy as np
+    import scipy as sp
+    import scipy.sparse.linalg  # call as sp.sparse.linalg
+
+    if len(G) == 0:
+        return {}
+    try:
+        nodelist = beta.keys()
+        if set(nodelist) != set(G):
+            raise nx.NetworkXError("beta dictionary must have a value for every node")
+        b = np.array(list(beta.values()), dtype=float)
+    except AttributeError:
+        nodelist = list(G)
+        try:
+            b = np.ones((len(nodelist), 1)) * float(beta)
+        except (TypeError, ValueError, AttributeError) as e:
+            raise nx.NetworkXError("beta must be a number") from e
+
+    A = nx.adjacency_matrix(G, nodelist=nodelist, weight=weight).T
+    n = A.shape[0]
+    centrality = sp.sparse.linalg.spsolve(sp.sparse.eye(n) - (alpha * A), b)
     if normalized:
         norm = np.sign(sum(centrality)) * np.linalg.norm(centrality)
     else:
