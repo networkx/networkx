@@ -52,7 +52,7 @@ to add your name to the bottom of the list.
 - Ben Reilly
 - Leo Lopes
 - Jordi Torrents, GitHub: `jtorrents <https://github.com/jtorrents>`_
-- Dheeraj M R
+- Dheeraj M R, Github: `dheerajrav <https://github.com/dheerajrav>`_
 - Franck Kalala
 - Simon Knight
 - Conrad Lee
