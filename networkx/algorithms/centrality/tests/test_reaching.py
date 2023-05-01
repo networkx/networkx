@@ -109,7 +109,6 @@ class TestLocalReachingCentrality:
         assert centrality == 1.5
 
     def test_local_reaching_centrality_normalized_weight(self):
-        # Test with a directed graph with normalized weights
         G = nx.Graph()
         G.add_weighted_edges_from([(1, 2, 1), (1, 3, 2)])
         centrality = nx.local_reaching_centrality(
