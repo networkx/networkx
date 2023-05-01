@@ -7,7 +7,7 @@ __all__ = ["cd_index"]
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
-def cd_index(G, node):
+def cd_index(G, node, time_delta = None):
    """Compute the CD index.
 
    Calculates the CD index for the graph based on the given "focal patent" node.
@@ -35,10 +35,16 @@ def cd_index(G, node):
 
    suc, pred = list(G.successors(node)), list(G.predecessors(node))
 
-   if not pred:
-      raise ValueError("This node has no predecessors.")
    if not suc:
       raise ValueError("This node has no successors.")
+   
+   if time_delta is not None:
+      for i in pred:
+         if G.nodes[i]['time'] > time_delta:
+            pred.remove(i)
+
+   if not pred:
+      raise ValueError("This node has no predecessors.")
 
    b = [int(any((i, j) in G.edges() for j in suc)) for i in pred]
 
