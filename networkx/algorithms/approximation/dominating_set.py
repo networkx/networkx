@@ -120,9 +120,7 @@ def min_edge_dominating_set(G):
 
     Examples
     --------
-    >>> G = nx.Graph()
-    >>> edges = [(0, 1),(0, 3),(1, 2),(1, 3),(1, 4)]
-    >>> G.add_edges_from(edges)
+    >>> G = nx.Graph([(1, 0), (1, 2), (1, 3), (1, 4), (0, 3)])
     >>> nx.approximation.min_edge_dominating_set(G)
     {(0, 1)}
 
