@@ -1177,17 +1177,17 @@ def girth(G):
     All examples below (except P_5) can easily be checked using Wikipedia,
     which has a page for each of these famous graphs.
 
-    >>> girth(nx.chvatal_graph())
+    >>> nx.girth(nx.chvatal_graph())
     4
-    >>> girth(nx.tutte_graph())
+    >>> nx.girth(nx.tutte_graph())
     4
-    >>> girth(nx.petersen_graph())
+    >>> nx.girth(nx.petersen_graph())
     5
-    >>> girth(nx.heawood_graph())
+    >>> nx.girth(nx.heawood_graph())
     6
-    >>> girth(nx.pappus_graph())
+    >>> nx.girth(nx.pappus_graph())
     6
-    >>> girth(nx.path_graph(5))
+    >>> nx.girth(nx.path_graph(5))
     inf
 
     References
