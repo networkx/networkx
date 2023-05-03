@@ -29,6 +29,10 @@ Improvements
 
 API Changes
 -----------
+- [`#6651 <https://github.com/networkx/networkx/pull/6651>`_]
+  In `is_semiconnected`, the keyword argument `topo_order` has been removed.
+  That argument resulted in silently incorrect results more often than not.
+
 
 
 Deprecations
