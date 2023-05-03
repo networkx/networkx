@@ -491,7 +491,7 @@ Merged PRs
 - Improve intersection function (#4588)
 - Pygraphviz choco (#4583)
 - Add prominent group algorithm (#4560)
-- Add partition_quality to compute coverage and performance  (coverage and perform… (#4536)
+- Add partition_quality to compute coverage and performance  (coverage and perfor… (#4536)
 - Use Pillow for viewing AGraph output and deprecate default_opener (#4600)
 - Remove mktemp usage (#4593)
 - Add an FAQ to the developer guide for new contributors (#4556)
