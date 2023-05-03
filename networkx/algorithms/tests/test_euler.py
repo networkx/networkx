@@ -239,11 +239,18 @@ class TestEulerianPath:
         with pytest.raises(nx.NetworkXError):
             list(nx.eulerian_path(G, source=1))
 
-    @pytest.mark.parametrize("graph_type", [nx.MultiGraph, nx.MultiDiGraph])
-    def test_eulerian_with_keys(self, graph_type):
-        G = graph_type([(1, 2), (2, 1), (2, 3), (3, 1)])
+    @pytest.mark.parametrize(
+        ("graph_type", "result"),
+        (
+            (nx.MultiGraph, [(0, 1, 0), (1, 0, 1)]),
+            (nx.MultiDiGraph, [(0, 1, 0), (1, 0, 0)]),
+        ),
+    )
+    def test_eulerian_with_keys(self, graph_type, result):
+        G = graph_type([(0, 1), (1, 0)])
         answer = nx.eulerian_path(G, keys=True)
-        assert list(answer) == [(1, 2, 1), (2, 3, 0), (3, 1, 0), (1, 2, 0)]
+        assert list(answer) == result
+
 
 class TestEulerize:
     def test_disconnected(self):
