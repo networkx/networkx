@@ -10,7 +10,7 @@ __all__ = ["cd_index"]
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
-def cd_index(G, node, time_delta=5):
+def cd_index(G, node, time_delta=5, weight=None):
     """Compute the CD index.
 
     Calculates the CD index for the graph based on the given "focal patent" node
@@ -24,6 +24,8 @@ def cd_index(G, node, time_delta=5):
        Focal node that represents the focal patent.
     time_delta : integer
        Number of years after creation of focal patent.
+    weight : list of floats
+       A list of weights for focal patent's predecessors at 'time_delta' years after its creation
 
     Returns
     -------
@@ -64,4 +66,10 @@ def cd_index(G, node, time_delta=5):
     for s in succ:
         n |= set(G.predecessors(s)) - {node}
 
-    return round(sum((-2) * bi + 1 for bi in b) / len(n), 2)
+    if weight is None:
+        return round(sum((-2) * bi + 1 for bi in b) / len(n), 2)
+    else:
+        summary = 0
+        for i in range(len(b)):
+            summary += ((-2) * b[i] + 1) / weight[i]
+        return round(summary / len(n), 2)
