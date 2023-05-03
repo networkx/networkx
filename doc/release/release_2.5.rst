@@ -67,7 +67,7 @@ Improvements
 - scale arrows better when drawing
 - more uniform creation of random lobster graphs
 - allow editing graph during iteration over connected_components
-- better column handling in coversion of pandas DataFrame
+- better column handling in conversion of pandas DataFrame
 - allow simrank_similarity with directed graph input
 - ensure VoteRank ability is nonnegative
 - speedup kernighan_lin_bisection
@@ -260,7 +260,7 @@ A total of 256 changes have been committed.
 - Fix: documentation of simrank_similarity_numpy (#3954)
 - Fix for #3930 (source & target columns not overwritten when converting to pd.DataFrame) (#3935)
 - Add weight function for shortest simple paths for #3948 (#3949)
-- Fix defination of communicability (#3973)
+- Fix definition of communicability (#3973)
 - Fix simrank_similarity with directed graph input (#3961)
 - Fixed weakening of voting ability (#3970)
 - implemented faster sweep algorithm for kernighan_lin_bisection (#3858)
@@ -356,7 +356,7 @@ A total of 256 changes have been committed.
 - Add team gallery (#4117)
 - CI: Setup circle CI for documentation builds (#4119)
 - Build pdf (#4123)
-- DOC: Suggestions and improvments from tutorial readthrough (#4121)
+- DOC: Suggestions and improvements from tutorial readthrough (#4121)
 - Enable 3.9-dev on travis (#4124)
 - Fix parse_edgelist behavior with multiple attributes (#4125)
 - CI: temporary fix for CI latex installation issues (#4131)
