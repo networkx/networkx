@@ -352,7 +352,7 @@ class Edmonds:
                 d[partition] = data.get(partition)
 
             if preserve_attrs:
-                for (d_k, d_v) in data.items():
+                for d_k, d_v in data.items():
                     if d_k != attr:
                         d[d_k] = d_v
 
@@ -698,7 +698,7 @@ class Edmonds:
             # Optionally, preserve the other edge attributes of the original
             # graph
             if preserve_attrs:
-                for (key, value) in d.items():
+                for key, value in d.items():
                     if key not in [self.attr, self.candidate_attr]:
                         dd[key] = value
 
@@ -932,7 +932,7 @@ class ArborescenceIterator:
         self.partition_queue.put(
             self.Partition(
                 mst_weight if self.minimum else -mst_weight,
-                dict()
+                {}
                 if self.init_partition is None
                 else self.init_partition.partition_dict,
             )

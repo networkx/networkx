@@ -137,6 +137,13 @@ def to_agraph(N):
         ) from err
     directed = N.is_directed()
     strict = nx.number_of_selfloops(N) == 0 and not N.is_multigraph()
+
+    for node in N:
+        if "pos" in N.nodes[node]:
+            N.nodes[node]["pos"] = "{},{}!".format(
+                N.nodes[node]["pos"][0], N.nodes[node]["pos"][1]
+            )
+
     A = pygraphviz.AGraph(name=N.name, strict=strict, directed=directed)
 
     # default graph attributes
@@ -324,7 +331,7 @@ def view_pygraphviz(
     G : NetworkX graph
         The machine to draw.
     edgelabel : str, callable, None
-        If a string, then it specifes the edge attribute to be displayed
+        If a string, then it specifies the edge attribute to be displayed
         on the edge labels. If a callable, then it is called for each
         edge and it should return the string to be displayed on the edges.
         The function signature of `edgelabel` should be edgelabel(data),

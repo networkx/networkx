@@ -7,6 +7,7 @@ from networkx.utils import not_implemented_for
 __all__ = ["katz_centrality", "katz_centrality_numpy"]
 
 
+@nx._dispatch
 @not_implemented_for("multigraph")
 def katz_centrality(
     G,
@@ -111,8 +112,8 @@ def katz_centrality(
     katz_centrality_numpy
     eigenvector_centrality
     eigenvector_centrality_numpy
-    pagerank
-    hits
+    :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`
+    :func:`~networkx.algorithms.link_analysis.hits_alg.hits`
 
     Notes
     -----
@@ -168,7 +169,7 @@ def katz_centrality(
     for _ in range(max_iter):
         xlast = x
         x = dict.fromkeys(xlast, 0)
-        # do the multiplication y^T = Alpha * x^T A - Beta
+        # do the multiplication y^T = Alpha * x^T A + Beta
         for n in x:
             for nbr in G[n]:
                 x[nbr] += xlast[n] * G[n][nbr].get(weight, 1)
@@ -274,8 +275,8 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     katz_centrality
     eigenvector_centrality_numpy
     eigenvector_centrality
-    pagerank
-    hits
+    :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`
+    :func:`~networkx.algorithms.link_analysis.hits_alg.hits`
 
     Notes
     -----

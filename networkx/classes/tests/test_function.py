@@ -252,6 +252,7 @@ class TestFunction:
         pytest.raises(nx.NetworkXError, G.add_edges_from, [(1, 2)])
         pytest.raises(nx.NetworkXError, G.remove_edge, 1, 2)
         pytest.raises(nx.NetworkXError, G.remove_edges_from, [(1, 2)])
+        pytest.raises(nx.NetworkXError, G.clear_edges)
         pytest.raises(nx.NetworkXError, G.clear)
 
     def test_is_frozen(self):
@@ -259,6 +260,18 @@ class TestFunction:
         G = nx.freeze(self.G)
         assert G.frozen == nx.is_frozen(self.G)
         assert G.frozen
+
+    def test_node_attributes_are_still_mutable_on_frozen_graph(self):
+        G = nx.freeze(nx.path_graph(3))
+        node = G.nodes[0]
+        node["node_attribute"] = True
+        assert node["node_attribute"] == True
+
+    def test_edge_attributes_are_still_mutable_on_frozen_graph(self):
+        G = nx.freeze(nx.path_graph(3))
+        edge = G.edges[(0, 1)]
+        edge["edge_attribute"] = True
+        assert edge["edge_attribute"] == True
 
     def test_neighbors_complete_graph(self):
         graph = nx.complete_graph(100)
@@ -317,13 +330,13 @@ class TestFunction:
         graph = nx.path_graph(4)
         expected = [(0, 2), (0, 3), (1, 3)]
         nedges = list(nx.non_edges(graph))
-        for (u, v) in expected:
+        for u, v in expected:
             assert (u, v) in nedges or (v, u) in nedges
 
         graph = nx.star_graph(4)
         expected = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
         nedges = list(nx.non_edges(graph))
-        for (u, v) in expected:
+        for u, v in expected:
             assert (u, v) in nedges or (v, u) in nedges
 
         # Directed graphs
@@ -725,9 +738,9 @@ def test_pathweight():
     invalid_path = [1, 3, 2]
     graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
     edges = [
-        (1, 2, dict(cost=5, dist=6)),
-        (2, 3, dict(cost=3, dist=4)),
-        (1, 2, dict(cost=1, dist=2)),
+        (1, 2, {"cost": 5, "dist": 6}),
+        (2, 3, {"cost": 3, "dist": 4}),
+        (1, 2, {"cost": 1, "dist": 2}),
     ]
     for graph in graphs:
         graph.add_edges_from(edges)

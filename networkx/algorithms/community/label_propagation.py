@@ -69,7 +69,6 @@ def asyn_lpa_communities(G, weight=None, seed=None):
         seed.shuffle(nodes)
 
         for node in nodes:
-
             if not G[node]:
                 continue
 
@@ -155,7 +154,7 @@ def _color_network(G):
 
     Returns a dict keyed by color to a set of nodes with that color.
     """
-    coloring = dict()  # color => set(node)
+    coloring = {}  # color => set(node)
     colors = nx.coloring.greedy_color(G)
     for node, color in colors.items():
         if color in coloring:

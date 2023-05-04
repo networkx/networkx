@@ -39,9 +39,10 @@ def all_node_cuts(G, k=None, flow_func=None):
         computed. Default value: None.
 
     flow_func : function
-        Function to perform the underlying flow computations. Default value
-        edmonds_karp. This function performs better in sparse graphs with
-        right tailed degree distributions. shortest_augmenting_path will
+        Function to perform the underlying flow computations. Default value is
+        :func:`~networkx.algorithms.flow.edmonds_karp`. This function performs
+        better in sparse graphs with right tailed degree distributions.
+        :func:`~networkx.algorithms.flow.shortest_augmenting_path` will
         perform better in denser graphs.
 
 
@@ -107,7 +108,7 @@ def all_node_cuts(G, k=None, flow_func=None):
     # Shallow copy is enough.
     original_H_pred = copy.copy(H._pred)
     R = build_residual_network(H, "capacity")
-    kwargs = dict(capacity="capacity", residual=R)
+    kwargs = {"capacity": "capacity", "residual": R}
     # Define default flow function
     if flow_func is None:
         flow_func = default_flow_func
@@ -188,7 +189,7 @@ def all_node_cuts(G, k=None, flow_func=None):
                         cutset.update((u, w) for w in original_H_pred[u] if w not in S)
                     # The edges in H that form the cutset are internal edges
                     # (ie edges that represent a node of the original graph G)
-                    if any([H_nodes[u]["id"] != H_nodes[w]["id"] for u, w in cutset]):
+                    if any(H_nodes[u]["id"] != H_nodes[w]["id"] for u, w in cutset):
                         continue
                     node_cut = {H_nodes[u]["id"] for u, _ in cutset}
 

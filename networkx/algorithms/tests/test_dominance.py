@@ -119,7 +119,7 @@ class TestDominanceFrontiers:
         # Software Practice & Experience, 4:110, 2001.
         edges = [(1, 2), (2, 1), (3, 2), (4, 1), (5, 3), (5, 4)]
         G = nx.DiGraph(edges)
-        assert {u: df for u, df in nx.dominance_frontiers(G, 5).items()} == {
+        assert dict(nx.dominance_frontiers(G, 5).items()) == {
             1: {2},
             2: {1},
             3: {2},

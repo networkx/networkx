@@ -255,7 +255,7 @@ def is_perfect_matching(G, matching):
 
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
-def min_weight_matching(G, maxcardinality=None, weight="weight"):
+def min_weight_matching(G, weight="weight"):
     """Computing a minimum-weight maximal matching of G.
 
     Use the maximum-weight algorithm with edge weights subtracted
@@ -290,15 +290,6 @@ def min_weight_matching(G, maxcardinality=None, weight="weight"):
     G : NetworkX graph
       Undirected graph
 
-    maxcardinality: bool
-        .. deprecated:: 2.8
-            The `maxcardinality` parameter will be removed in v3.0.
-            It doesn't make sense to set it to False when looking for
-            a min weight matching because then we just return no edges.
-
-        If maxcardinality is True, compute the maximum-cardinality matching
-        with minimum weight among all maximum-cardinality matchings.
-
     weight: string, optional (default='weight')
        Edge data key corresponding to the edge weight.
        If key not found, uses 1 as weight.
@@ -312,12 +303,6 @@ def min_weight_matching(G, maxcardinality=None, weight="weight"):
     --------
     max_weight_matching
     """
-    if maxcardinality not in (True, None):
-        raise nx.NetworkXError(
-            "The argument maxcardinality does not make sense "
-            "in the context of minimum weight matchings."
-            "It is deprecated and will be removed in v3.0."
-        )
     if len(G.edges) == 0:
         return max_weight_matching(G, maxcardinality=True, weight=weight)
     G_edges = G.edges(data=weight, default=1)
@@ -405,8 +390,6 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
 
     class NoNode:
         """Dummy value which is different from any node."""
-
-        pass
 
     class Blossom:
         """Representation of a non-trivial blossom or sub-blossom."""
@@ -821,7 +804,7 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
     # Swap matched/unmatched edges over an alternating path between two
     # single vertices. The augmenting path runs through S-vertices v and w.
     def augmentMatching(v, w):
-        for (s, j) in ((v, w), (w, v)):
+        for s, j in ((v, w), (w, v)):
             # Match vertex s to vertex j. Then trace back from s
             # until we find a single vertex, swapping matched and unmatched
             # edges as we go.
@@ -878,7 +861,7 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
                 jblossoms.append(blossomparent[jblossoms[-1]])
             iblossoms.reverse()
             jblossoms.reverse()
-            for (bi, bj) in zip(iblossoms, jblossoms):
+            for bi, bj in zip(iblossoms, jblossoms):
                 if bi != bj:
                     break
                 s += 2 * blossomdual[bi]
@@ -893,13 +876,12 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
         for b in blossomdual:
             if blossomdual[b] > 0:
                 assert len(b.edges) % 2 == 1
-                for (i, j) in b.edges[1::2]:
+                for i, j in b.edges[1::2]:
                     assert mate[i] == j and mate[j] == i
         # Ok.
 
     # Main loop: continue until no further improvement is possible.
     while 1:
-
         # Each iteration of this loop is a "stage".
         # A stage finds an augmenting path and uses that to improve
         # the matching.
@@ -928,7 +910,6 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
         # Loop until we succeed in augmenting the matching.
         augmented = 0
         while 1:
-
             # Each iteration of this loop is a "substage".
             # A substage tries to find an augmenting path;
             # if found, the path is used to improve the matching and
@@ -939,7 +920,6 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
             # Continue labeling until all vertices which are reachable
             # through an alternating path have got a label.
             while queue and not augmented:
-
                 # Take an S vertex from the queue.
                 v = queue.pop()
                 assert label[inblossom[v]] == 1
@@ -1057,7 +1037,7 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
             if deltatype == -1:
                 # No further improvement possible; max-cardinality optimum
                 # reached. Do a final delta update to make the optimum
-                # verifyable.
+                # verifiable.
                 assert maxcardinality
                 deltatype = 1
                 delta = max(0, min(dualvar.values()))

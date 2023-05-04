@@ -36,7 +36,7 @@ class WeightedTestBase:
 
     """
 
-    def setup(self):
+    def setup_method(self):
         """Creates some graphs for use in the unit tests."""
         cnlti = nx.convert_node_labels_to_integers
         self.grid = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
@@ -341,6 +341,10 @@ class TestWeightedPath(WeightedTestBase):
         pytest.raises(ValueError, nx.dijkstra_predecessor_and_distance, G, 8)
         G.add_edge(9, 10)
         pytest.raises(ValueError, nx.bidirectional_dijkstra, G, 8, 10)
+
+    def test_negative_edge_cycle_empty(self):
+        G = nx.DiGraph()
+        assert not nx.negative_edge_cycle(G)
 
     def test_negative_edge_cycle_custom_weight_key(self):
         d = nx.DiGraph()

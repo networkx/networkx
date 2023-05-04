@@ -34,7 +34,6 @@ from networkx.utils import not_implemented_for
 
 __all__ = [
     "core_number",
-    "find_cores",
     "k_core",
     "k_shell",
     "k_crust",
@@ -44,6 +43,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 @not_implemented_for("multigraph")
 def core_number(G):
     """Returns the core number for each vertex.
@@ -115,18 +115,6 @@ def core_number(G):
     return core
 
 
-def find_cores(G):
-    import warnings
-
-    msg = (
-        "\nfind_cores is deprecated as of version 2.7 and will be removed "
-        "in version 3.0.\n"
-        "The find_cores function is renamed core_number\n"
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-    return nx.core_number(G)
-
-
 def _core_subgraph(G, k_filter, k=None, core=None):
     """Returns the subgraph induced by nodes passing filter `k_filter`.
 
@@ -154,6 +142,7 @@ def _core_subgraph(G, k_filter, k=None, core=None):
     return G.subgraph(nodes).copy()
 
 
+@nx._dispatch
 def k_core(G, k=None, core_number=None):
     """Returns the k-core of G.
 
@@ -378,6 +367,7 @@ def k_corona(G, k, core_number=None):
     return _core_subgraph(G, func, k, core_number)
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def k_truss(G, k):
@@ -402,8 +392,8 @@ def k_truss(G, k):
     ------
     NetworkXError
 
-      The k-truss is not defined for graphs with self loops or parallel edges
-      or directed graphs.
+      The k-truss is not defined for graphs with self loops, directed graphs
+      and multigraphs.
 
     Notes
     -----
@@ -426,6 +416,13 @@ def k_truss(G, k):
     .. [2] Trusses: Cohesive Subgraphs for Social Network Analysis. Jonathan
        Cohen, 2005.
     """
+    if nx.number_of_selfloops(G) > 0:
+        msg = (
+            "Input graph has self loops which is not permitted; "
+            "Consider using G.remove_edges_from(nx.selfloop_edges(G))."
+        )
+        raise NetworkXError(msg)
+
     H = G.copy()
 
     n_dropped = 1
@@ -511,7 +508,7 @@ def onion_layers(G):
     current_core = 1
     current_layer = 1
     # Sets vertices of degree 0 to layer 1, if any.
-    isolated_nodes = [v for v in nx.isolates(G)]
+    isolated_nodes = list(nx.isolates(G))
     if len(isolated_nodes) > 0:
         for v in isolated_nodes:
             od_layers[v] = current_layer
