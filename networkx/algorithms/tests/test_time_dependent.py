@@ -77,5 +77,5 @@ class TestCdIndex:
         }
 
         nx.set_node_attributes(G, node_attrs)
-        w = [1, 2, 1, 2, 1]
-        assert nx.cd_index(G, 4, weight=w) == 0.17
+        w = [5, 2, 6, 3, 10]
+        assert nx.cd_index(G, 4, weight=w) == 0.04

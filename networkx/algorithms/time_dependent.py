@@ -14,18 +14,18 @@ def cd_index(G, node, time_delta=5, weight=None):
     r"""Compute the CD index.
 
     Calculates the CD index for the graph based on the given "focal patent" node
-    considering the patents after 'time_delta' years.
+    considering the patents after `time_delta` years.
 
     Parameters
     ----------
     G : graph
-       A directed networkx graph whose nodes have datetime 'time' attributes.
+       A directed networkx graph whose nodes have datetime `time` attributes.
     node : integer
        Focal node that represents the focal patent.
     time_delta : integer (Optional, default is 5)
        Number of years after creation of focal patent.
     weight : list of floats (Optional)
-       A list of weights for focal patent's predecessors 'time_delta' years after its creation.
+       A list of weights for focal patent's predecessors `time_delta` years after its creation.
 
     Returns
     -------
@@ -35,9 +35,9 @@ def cd_index(G, node, time_delta=5, weight=None):
     Raises
     ------
     ValueError
-       If not all nodes have a datetime 'time' attribute or
-       'node' has no successors or
-       'node' has no predecessors.
+       If not all nodes have a datetime `time` attribute or
+       `node` has no successors or
+       `node` has no predecessors.
 
     NetworkXNotImplemented
         If `G` is a non-directed graph or a multigraph.
@@ -64,10 +64,10 @@ def cd_index(G, node, time_delta=5, weight=None):
     .. math::
         CD_{t}=\frac{1}{n_{t}}\sum_{i=1}^{n}\frac{-2f_{it}b_{it}+f_{it}}{w_{it}},
 
-    where 'f_{it}' equals 1 if 'i' cites the focal patent else 0, 'b_{it}' equals
-    1 if 'i' cites any of the focal patents accessors else 0, 'n_{t}' is the number
-    of forward citations in 'i' and 'w_{it}' is a matrix of weight for patent 'i'
-    at time 't'.
+    where `f_{it}` equals 1 if `i` cites the focal patent else 0, `b_{it}` equals
+    1 if `i` cites any of the focal patents accessors else 0, `n_{t}` is the number
+    of forward citations in `i` and `w_{it}` is a matrix of weight for patent `i`
+    at time `t`.
 
     References
     ----------
