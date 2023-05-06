@@ -357,7 +357,6 @@ class TestLayout:
         self.check_kamada_kawai_costfn(pos, invdist, meanwt, 3)
 
     def test_spiral_layout(self):
-
         G = self.Gs
 
         # a lower value of resolution should result in a more compact layout

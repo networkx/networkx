@@ -4,7 +4,6 @@ from networkx.exception import NetworkXAlgorithmError
 from networkx.utils import not_implemented_for
 
 __all__ = [
-    "project",
     "projected_graph",
     "weighted_projected_graph",
     "collaboration_weighted_projected_graph",
@@ -522,17 +521,3 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
             weight = weight_function(B, u, v)
             G.add_edge(u, v, weight=weight)
     return G
-
-
-def project(B, nodes, create_using=None):
-    import warnings
-
-    warnings.warn(
-        (
-            "networkx.project is deprecated and will be removed"
-            "in NetworkX 3.0, use networkx.projected_graph instead."
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return projected_graph(B, nodes)

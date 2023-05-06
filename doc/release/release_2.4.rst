@@ -144,7 +144,7 @@ A total of 205 changes have been committed.
 - Add doc warning about self-loops for adamic_adar_index (#3427)
 - Fix UnionFind set extraction (#3224)
 - add required argument to `write_graphml` example (#3429)
-- Fix centrality betweeness subset (#3425)
+- Fix centrality betweenness subset (#3425)
 - Add two versions of Simrank similarity (#3222)
 - Fixed typo
 - Merge pull request #3436 from nandahkrishna/fix-typo-betweenness-centrality-subset-test
@@ -275,7 +275,7 @@ A total of 205 changes have been committed.
 - Remove unused imports
 - Fix some warnings
 - Update testing instructions
-- Reenable all test platforms
+- Re-enable all test platforms
 - Fix some __init__ warnings
 - replace nose yield tests in test_coloring.py
 - Add testing, coverage, and dev environment info
@@ -295,7 +295,7 @@ A total of 205 changes have been committed.
 - tracking down use of deprecated functions
 - Fix deprecated use of add_path/star/cycle
 - reduce warnings for deprecated functions
-- skirt issues wih raises in test_harmonic
+- skirt issues with raises in test_harmonic
 - reduce the number of warnings by removing deprecated functions
 - convert_matrix demo of one way to get doctests to work
 - Remove deprecated from examples

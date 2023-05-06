@@ -21,7 +21,7 @@ def _dict_product(d1, d2):
     return {k: (d1.get(k), d2.get(k)) for k in set(d1) | set(d2)}
 
 
-# Generators for producting graph products
+# Generators for producing graph products
 def _node_product(G, H):
     for u, v in product(G, H):
         yield ((u, v), _dict_product(G.nodes[u], H.nodes[v]))
@@ -110,7 +110,7 @@ def _edges_cross_nodes_and_nodes(G, H):
 
 
 def _init_product_graph(G, H):
-    if not G.is_directed() == H.is_directed():
+    if G.is_directed() != H.is_directed():
         msg = "G and H must be both directed or both undirected"
         raise nx.NetworkXError(msg)
     if G.is_multigraph() or H.is_multigraph():
@@ -512,7 +512,6 @@ def corona_product(G, H):
     GH.add_edges_from(G.edges)
 
     for G_node in G:
-
         # copy nodes of H in GH, call it H_i
         GH.add_nodes_from((G_node, v) for v in H)
 

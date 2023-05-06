@@ -36,7 +36,7 @@ def communicability(G):
        Communicability between all pairs of nodes in G  using spectral
        decomposition.
     communicability_betweenness_centrality:
-       Communicability betweeness centrality for each node in G.
+       Communicability betweenness centrality for each node in G.
 
     Notes
     -----
@@ -116,7 +116,7 @@ def communicability_exp(G):
     communicability:
        Communicability between pairs of nodes in G.
     communicability_betweenness_centrality:
-       Communicability betweeness centrality for each node in G.
+       Communicability betweenness centrality for each node in G.
 
     Notes
     -----

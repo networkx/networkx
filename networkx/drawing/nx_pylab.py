@@ -289,7 +289,7 @@ def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
         "with_labels",
     }
 
-    if any([k not in valid_kwds for k in kwds]):
+    if any(k not in valid_kwds for k in kwds):
         invalid_args = ", ".join([k for k in kwds if k not in valid_kwds])
         raise ValueError(f"Received invalid argument(s): {invalid_args}")
 
@@ -522,8 +522,11 @@ def draw_networkx_edges(
         Also, `(offset, onoffseq)` tuples can be used as style instead of a strings.
         (See `matplotlib.patches.FancyArrowPatch`: `linestyle`)
 
-    alpha : float or None (default=None)
-        The edge transparency
+    alpha : float or array of floats (default=None)
+        The edge transparency.  This can be a single alpha value,
+        in which case it will be applied to all specified edges. Otherwise,
+        if it is an array, the elements of alpha will be applied to the colors
+        in order (cycling through alpha multiple times if necessary).
 
     edge_cmap : Matplotlib colormap, optional
         Colormap for mapping intensities of edges
@@ -575,14 +578,14 @@ def draw_networkx_edges(
         Label for legend
 
     min_source_margin : int (default=0)
-        The minimum margin (gap) at the begining of the edge at the source.
+        The minimum margin (gap) at the beginning of the edge at the source.
 
     min_target_margin : int (default=0)
         The minimum margin (gap) at the end of the edge at the target.
 
     Returns
     -------
-     matplotlib.colections.LineCollection or a list of matplotlib.patches.FancyArrowPatch
+     matplotlib.collections.LineCollection or a list of matplotlib.patches.FancyArrowPatch
         If ``arrows=True``, a list of FancyArrowPatches is returned.
         If ``arrows=False``, a LineCollection is returned.
         If ``arrows=None`` (the default), then a LineCollection is returned if
@@ -650,16 +653,48 @@ def draw_networkx_edges(
     # undirected graphs (for performance reasons) and use FancyArrowPatches
     # for directed graphs.
     # The `arrows` keyword can be used to override the default behavior
+    use_linecollection = not G.is_directed()
+    if arrows in (True, False):
+        use_linecollection = not arrows
+
+    # Some kwargs only apply to FancyArrowPatches. Warn users when they use
+    # non-default values for these kwargs when LineCollection is being used
+    # instead of silently ignoring the specified option
+    if use_linecollection and any(
+        [
+            arrowstyle is not None,
+            arrowsize != 10,
+            connectionstyle != "arc3",
+            min_source_margin != 0,
+            min_target_margin != 0,
+        ]
+    ):
+        import warnings
+
+        msg = (
+            "\n\nThe {0} keyword argument is not applicable when drawing edges\n"
+            "with LineCollection.\n\n"
+            "To make this warning go away, either specify `arrows=True` to\n"
+            "force FancyArrowPatches or use the default value for {0}.\n"
+            "Note that using FancyArrowPatches may be slow for large graphs.\n"
+        )
+        if arrowstyle is not None:
+            msg = msg.format("arrowstyle")
+        if arrowsize != 10:
+            msg = msg.format("arrowsize")
+        if connectionstyle != "arc3":
+            msg = msg.format("connectionstyle")
+        if min_source_margin != 0:
+            msg = msg.format("min_source_margin")
+        if min_target_margin != 0:
+            msg = msg.format("min_target_margin")
+        warnings.warn(msg, category=UserWarning, stacklevel=2)
 
     if arrowstyle == None:
         if G.is_directed():
             arrowstyle = "-|>"
         else:
             arrowstyle = "-"
-
-    use_linecollection = not G.is_directed()
-    if arrows in (True, False):
-        use_linecollection = not arrows
 
     if ax is None:
         ax = plt.gca()
@@ -749,7 +784,7 @@ def draw_networkx_edges(
                 # is 0, e.g. for a single node. In this case, fall back to scaling
                 # by the maximum node size
                 selfloop_ht = 0.005 * max_nodesize if h == 0 else h
-                # this is called with _screen space_ values so covert back
+                # this is called with _screen space_ values so convert back
                 # to data space
                 data_loc = ax.transData.inverted().transform(posA)
                 v_shift = 0.1 * selfloop_ht
@@ -1077,7 +1112,7 @@ def draw_networkx_edge_labels(
     ax : Matplotlib Axes object, optional
         Draw the graph in the specified Matplotlib axes.
 
-    rotate : bool (deafult=True)
+    rotate : bool (default=True)
         Rotate edge labels to lie parallel to edges
 
     clip_on : bool (default=True)
@@ -1149,7 +1184,7 @@ def draw_networkx_edge_labels(
             trans_angle = 0.0
         # use default box of white with white border
         if bbox is None:
-            bbox = dict(boxstyle="round", ec=(1.0, 1.0, 1.0), fc=(1.0, 1.0, 1.0))
+            bbox = {"boxstyle": "round", "ec": (1.0, 1.0, 1.0), "fc": (1.0, 1.0, 1.0)}
         if not isinstance(label, str):
             label = str(label)  # this makes "1" and 1 labeled the same
 
@@ -1211,6 +1246,11 @@ def draw_circular(G, **kwargs):
         >>> # Draw a subgraph, reusing the same node positions
         >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
 
+    Examples
+    --------
+    >>> G = nx.path_graph(5)
+    >>> nx.draw_circular(G)
+
     See Also
     --------
     :func:`~networkx.drawing.layout.circular_layout`
@@ -1246,6 +1286,11 @@ def draw_kamada_kawai(G, **kwargs):
         >>> # Draw a subgraph, reusing the same node positions
         >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
 
+    Examples
+    --------
+    >>> G = nx.path_graph(5)
+    >>> nx.draw_kamada_kawai(G)
+
     See Also
     --------
     :func:`~networkx.drawing.layout.kamada_kawai_layout`
@@ -1279,6 +1324,11 @@ def draw_random(G, **kwargs):
         >>> nx.draw(G, pos=pos)  # Draw the original graph
         >>> # Draw a subgraph, reusing the same node positions
         >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
+
+    Examples
+    --------
+    >>> G = nx.lollipop_graph(4, 3)
+    >>> nx.draw_random(G)
 
     See Also
     --------
@@ -1317,6 +1367,11 @@ def draw_spectral(G, **kwargs):
         >>> # Draw a subgraph, reusing the same node positions
         >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
 
+    Examples
+    --------
+    >>> G = nx.path_graph(5)
+    >>> nx.draw_spectral(G)
+
     See Also
     --------
     :func:`~networkx.drawing.layout.spectral_layout`
@@ -1353,6 +1408,11 @@ def draw_spring(G, **kwargs):
         >>> nx.draw(G, pos=pos)  # Draw the original graph
         >>> # Draw a subgraph, reusing the same node positions
         >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
+
+    Examples
+    --------
+    >>> G = nx.path_graph(20)
+    >>> nx.draw_spring(G)
 
     See Also
     --------
@@ -1394,6 +1454,12 @@ def draw_shell(G, nlist=None, **kwargs):
         >>> # Draw a subgraph, reusing the same node positions
         >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
 
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> shells = [[0], [1, 2, 3]]
+    >>> nx.draw_shell(G, nlist=shells)
+
     See Also
     --------
     :func:`~networkx.drawing.layout.shell_layout`
@@ -1432,6 +1498,11 @@ def draw_planar(G, **kwargs):
         >>> nx.draw(G, pos=pos)  # Draw the original graph
         >>> # Draw a subgraph, reusing the same node positions
         >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
+
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> nx.draw_planar(G)
 
     See Also
     --------

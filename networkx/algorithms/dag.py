@@ -36,6 +36,7 @@ __all__ = [
 chaini = chain.from_iterable
 
 
+@nx._dispatch
 def descendants(G, source):
     """Returns all nodes reachable from `source` in `G`.
 
@@ -72,6 +73,7 @@ def descendants(G, source):
     return {child for parent, child in nx.bfs_edges(G, source)}
 
 
+@nx._dispatch
 def ancestors(G, source):
     """Returns all nodes having a path to `source` in `G`.
 
@@ -505,7 +507,7 @@ def all_topological_sorts(G):
 
     # do-while construct
     while True:
-        assert all([count[v] == 0 for v in D])
+        assert all(count[v] == 0 for v in D)
 
         if len(current_sort) == len(G):
             yield list(current_sort)
@@ -1006,7 +1008,15 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
     dist = {}  # stores {v : (length, u)}
     for v in topo_order:
         us = [
-            (dist[u][0] + data.get(weight, default_weight), u)
+            (
+                dist[u][0]
+                + (
+                    max(data.values(), key=lambda x: x.get(weight, default_weight))
+                    if G.is_multigraph()
+                    else data
+                ).get(weight, default_weight),
+                u,
+            )
             for u, data in G.pred[v].items()
         ]
 
@@ -1068,8 +1078,13 @@ def dag_longest_path_length(G, weight="weight", default_weight=1):
     """
     path = nx.dag_longest_path(G, weight, default_weight)
     path_length = 0
-    for (u, v) in pairwise(path):
-        path_length += G[u][v].get(weight, default_weight)
+    if G.is_multigraph():
+        for u, v in pairwise(path):
+            i = max(G[u][v], key=lambda x: G[u][v][x].get(weight, default_weight))
+            path_length += G[u][v][i].get(weight, default_weight)
+    else:
+        for u, v in pairwise(path):
+            path_length += G[u][v].get(weight, default_weight)
 
     return path_length
 
@@ -1208,6 +1223,13 @@ def compute_v_structures(G):
     vstructs : iterator of tuples
         The v structures within the graph. Each v structure is a 3-tuple with the
         parent, collider, and other parent.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph()
+    >>> G.add_edges_from([(1, 2), (0, 5), (3, 1), (2, 4), (3, 1), (4, 5), (1, 5)])
+    >>> list(nx.compute_v_structures(G))
+    [(0, 5, 4), (0, 5, 1), (1, 5, 4)]
 
     Notes
     -----

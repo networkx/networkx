@@ -5,7 +5,13 @@ import networkx as nx
 __all__ = ["node_link_data", "node_link_graph"]
 
 
-_attrs = dict(source="source", target="target", name="id", key="key", link="links")
+_attrs = {
+    "source": "source",
+    "target": "target",
+    "name": "id",
+    "key": "key",
+    "link": "links",
+}
 
 
 def _to_tuple(x):
@@ -163,18 +169,15 @@ def node_link_data(
         "directed": G.is_directed(),
         "multigraph": multigraph,
         "graph": G.graph,
-        "nodes": [dict(chain(G.nodes[n].items(), [(name, n)])) for n in G],
+        "nodes": [{**G.nodes[n], name: n} for n in G],
     }
     if multigraph:
         data[link] = [
-            dict(chain(d.items(), [(source, u), (target, v), (key, k)]))
+            {**d, source: u, target: v, key: k}
             for u, v, k, d in G.edges(keys=True, data=True)
         ]
     else:
-        data[link] = [
-            dict(chain(d.items(), [(source, u), (target, v)]))
-            for u, v, d in G.edges(data=True)
-        ]
+        data[link] = [{**d, source: u, target: v} for u, v, d in G.edges(data=True)]
     return data
 
 

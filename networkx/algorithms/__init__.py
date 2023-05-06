@@ -85,7 +85,6 @@ from networkx.algorithms import tree
 # to the user as direct imports from the `networkx` namespace.
 from networkx.algorithms.bipartite import complete_bipartite_graph
 from networkx.algorithms.bipartite import is_bipartite
-from networkx.algorithms.bipartite import project
 from networkx.algorithms.bipartite import projected_graph
 from networkx.algorithms.connectivity import all_pairs_node_connectivity
 from networkx.algorithms.connectivity import all_node_cuts
@@ -128,3 +127,4 @@ from networkx.algorithms.tree.decomposition import *
 from networkx.algorithms.tree.mst import *
 from networkx.algorithms.tree.operations import *
 from networkx.algorithms.tree.recognition import *
+from networkx.algorithms.tournament import is_tournament

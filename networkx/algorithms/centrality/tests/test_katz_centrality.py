@@ -295,14 +295,14 @@ class TestKatzCentralityDirected:
         G = self.G
         alpha = self.G.alpha
         p = nx.katz_centrality(G, alpha, weight="weight")
-        for (a, b) in zip(list(p.values()), self.G.evc):
+        for a, b in zip(list(p.values()), self.G.evc):
             assert a == pytest.approx(b, abs=1e-7)
 
     def test_katz_centrality_unweighted(self):
         H = self.H
         alpha = self.H.alpha
         p = nx.katz_centrality(H, alpha, weight="weight")
-        for (a, b) in zip(list(p.values()), self.H.evc):
+        for a, b in zip(list(p.values()), self.H.evc):
             assert a == pytest.approx(b, abs=1e-7)
 
 
@@ -318,14 +318,14 @@ class TestKatzCentralityDirectedNumpy(TestKatzCentralityDirected):
         G = self.G
         alpha = self.G.alpha
         p = nx.katz_centrality_numpy(G, alpha, weight="weight")
-        for (a, b) in zip(list(p.values()), self.G.evc):
+        for a, b in zip(list(p.values()), self.G.evc):
             assert a == pytest.approx(b, abs=1e-7)
 
     def test_katz_centrality_unweighted(self):
         H = self.H
         alpha = self.H.alpha
         p = nx.katz_centrality_numpy(H, alpha, weight="weight")
-        for (a, b) in zip(list(p.values()), self.H.evc):
+        for a, b in zip(list(p.values()), self.H.evc):
             assert a == pytest.approx(b, abs=1e-7)
 
 

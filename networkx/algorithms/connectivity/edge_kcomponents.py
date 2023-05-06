@@ -239,7 +239,7 @@ def bridge_components(G):
 class EdgeComponentAuxGraph:
     r"""A simple algorithm to find all k-edge-connected components in a graph.
 
-    Constructing the AuxillaryGraph (which may take some time) allows for the
+    Constructing the auxiliary graph (which may take some time) allows for the
     k-edge-ccs to be found in linear time for arbitrary k.
 
     Notes
@@ -288,7 +288,7 @@ class EdgeComponentAuxGraph:
     >>> sorted(map(sorted, aux_graph.k_edge_components(k=4)))
     [[0], [1], [2], [3], [4], [5], [6], [7]]
 
-    The auxiliary graph is primarilly used for k-edge-ccs but it
+    The auxiliary graph is primarily used for k-edge-ccs but it
     can also speed up the queries of k-edge-subgraphs by refining the
     search space.
 
