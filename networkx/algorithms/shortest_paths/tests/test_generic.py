@@ -204,6 +204,12 @@ class TestGenericPath:
             )
         )
         assert sorted(ans[11]) == grid_ans
+        G = nx.cycle_graph(4)
+        G.add_node(4)
+        ans = dict(nx.single_source_all_shortest_paths(G, 0))
+        assert sorted(ans[2]) == [[0, 1, 2], [0, 3, 2]]
+        ans = dict(nx.single_source_all_shortest_paths(G, 4))
+        assert sorted(ans[4]) == [[4]]
 
     def test_all_pairs_shortest_path(self):
         p = nx.shortest_path(self.cycle)
@@ -260,6 +266,10 @@ class TestGenericPath:
             weight="weight",
         )
         assert sorted(ans[1][3]) == [[1, 0, 3], [1, 2, 3]]
+        G = nx.cycle_graph(4)
+        G.add_node(4)
+        ans = dict(nx.all_pairs_all_shortest_paths(G))
+        assert sorted(ans[4][4]) == [[4]]
 
     def test_has_path(self):
         G = nx.Graph()
@@ -299,12 +309,6 @@ class TestGenericPath:
             G = nx.path_graph(4)
             G.add_node(4)
             list(nx.all_shortest_paths(G, 0, 4))
-
-    def test_single_source_all_shortest_paths_raise(self):
-        with pytest.raises(nx.NetworkXNoPath):
-            G = nx.path_graph(4)
-            G.add_node(4)
-            dict(nx.single_source_all_shortest_paths(G, 0))
 
     def test_bad_method(self):
         with pytest.raises(ValueError):

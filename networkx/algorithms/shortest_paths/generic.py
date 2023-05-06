@@ -552,9 +552,6 @@ def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
     ValueError
         If `method` is not among the supported options.
 
-    NetworkXNoPath
-        If a node in the graph cannot be reached from `source`.
-
     Examples
     --------
     >>> G = nx.Graph()
@@ -587,7 +584,10 @@ def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
     else:
         raise ValueError(f"method not supported: {method}")
     for n in G:
-        yield n, list(_build_paths_from_predecessors({source}, n, pred))
+        try:
+            yield n, list(_build_paths_from_predecessors({source}, n, pred))
+        except nx.NetworkXNoPath:
+            pass
 
 
 def all_pairs_all_shortest_paths(G, weight=None, method="dijkstra"):
@@ -633,6 +633,10 @@ def all_pairs_all_shortest_paths(G, weight=None, method="dijkstra"):
     >>> nx.add_path(G, [0, 1, 2, 3, 0])
     >>> print(dict(nx.all_pairs_all_shortest_paths(G)))
     {0: {0: [[0]], 1: [[0, 1]], 2: [[0, 1, 2], [0, 3, 2]], 3: [[0, 3]]}, 1: {0: [[1, 0]], 1: [[1]], 2: [[1, 2]], 3: [[1, 0, 3], [1, 2, 3]]}, 2: {0: [[2, 1, 0], [2, 3, 0]], 1: [[2, 1]], 2: [[2]], 3: [[2, 3]]}, 3: {0: [[3, 0]], 1: [[3, 2, 1], [3, 0, 1]], 2: [[3, 2]], 3: [[3]]}}
+
+    Notes
+    -----
+    There may be multiple shortest paths with equal lengths. Unlike all_pairs_shortest_path, this method returns all shortest paths.
 
     See Also
     --------
