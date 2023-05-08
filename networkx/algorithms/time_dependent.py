@@ -13,19 +13,22 @@ __all__ = ["cd_index"]
 def cd_index(G, node, time_delta=5, weight=None):
     r"""Compute the CD index.
 
-    Calculates the CD index for the graph based on the given "focal patent" node
-    considering the patents after `time_delta` years.
+    Calculates the CD index for the graph based on the given node,
+    considering only its predecessors who have `time` attribute
+    smaller than or equal to the `time` attribute of the `node`
+    plus `time_delta` years.
 
     Parameters
     ----------
     G : graph
        A directed networkx graph whose nodes have datetime `time` attributes.
-    node : integer
-       Focal node that represents the focal patent.
+    node : node
+       The node for which the CD index is calculated.
     time_delta : integer (Optional, default is 5)
-       Number of years after creation of focal patent.
+       Number of years after the `time` attribute of the `node`.
     weight : list of floats (Optional)
-       A list of weights for focal patent's predecessors `time_delta` years after its creation.
+       A list of weights for `node`'s predecessors `time_delta` years
+       after the `node`'s `time` attribute.
 
     Returns
     -------
@@ -58,7 +61,11 @@ def cd_index(G, node, time_delta=5, weight=None):
     Notes
     -----
     This method implements the algorithm for calculating the CD index,
-    as described in the paper by Funk and Owen-Smith [1]:
+    as described in the paper by Funk and Owen-Smith [1]. The CD index
+    is used in order to check how consolidating or destabilizing a patent
+    is, hence the nodes of the graph represent patents and the edges show
+    the citations between these patents. The mathematical model is given
+    below: 
 
     .. math::
         CD_{t}=\frac{1}{n_{t}}\sum_{i=1}^{n}\frac{-2f_{it}b_{it}+f_{it}}{w_{it}},
@@ -88,31 +95,24 @@ def cd_index(G, node, time_delta=5, weight=None):
 
     # get target_date's unix timestamp
     target_date = G.nodes[node]["time"].timestamp() + time_delta * 365 * 24 * 60 * 60
-    # get successors and predecessors of the focal node
-    succ, pred = list(G.successors(node)), list(G.predecessors(node))
 
-    if not succ:
+    if not G[node]:
         raise ValueError("This node has no successors.")
 
     # keep the predecessors that existed before the target date
-    actual_pred = [i for i in pred if G.nodes[i]["time"].timestamp() <= target_date]
-
-    if not actual_pred:
+    pred = {i for i in G.pred[node] if G.nodes[i]["time"].timestamp() <= target_date}
+    if not pred:
         raise ValueError("This node has no predecessors.")
 
-    # 1 if any edge between a focal node's predecessor and a focal node's accessor
-    # exists, else 0
-    b = [int(any((i, j) in G.edges() for j in succ)) for i in actual_pred]
-    n = set(actual_pred)
+    # -1 if any edge between the node's predecessor and the node's successor
+    # exists, else 1
+    b = [-1 if any((i, j) in G.edges() for j in G[node]) else 1 for i in pred]
 
-    # n is the union of the focal node's predecessors and its accessors' predecessors
-    for s in succ:
-        n |= set(G.predecessors(s)) - {node}
+    # n is size of the union of the focal node's predecessors and its successors' predecessors
+    n = len(pred.union(*(G.pred[s].keys() - {node} for s in G[node])))
 
     # calculate cd index
     if weight is None:
-        return round(sum((-2) * bi + 1 for bi in b) / len(n), 2)
+        return round(sum(b) / n, 2)
     else:
-        return round(
-            sum((-2 * b[i] + 1) / weight[i] for i in range(len(b))) / len(n), 2
-        )
+        return round(sum(bi / wt for bi, wt in zip(b, weight)) / n, 2)
