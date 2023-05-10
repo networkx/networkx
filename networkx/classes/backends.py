@@ -107,44 +107,75 @@ def _register_algo(name, wrapped_func):
     wrapped_func.dispatchname = name
 
 
-def _dispatch(func=None, *, name=None):
+def _dispatch(func=None, *, name=None, graphs="G"):
     """Dispatches to a backend algorithm
     when the first argument is a backend graph-like object.
+
+    The algorithm name is assumed to be the name of the wrapped function unless
+    `name` is provided. This is useful to avoid name conflicts, as all
+    dispatched algorithms live in a single namespace.
+
+    If more than one graph is required for the algorithm, provide a comma-separated
+    string of variable names as `graphs`. These must be the same order and name
+    as the variables passed to the algorithm. Dispatching does not support graphs
+    which are not the first argument(s) to an algorithm.
     """
     # Allow any of the following decorator forms:
     #  - @_dispatch
     #  - @_dispatch()
-    #  - @_dispatch("override_name")
     #  - @_dispatch(name="override_name")
+    #  - @_dispatch(graphs="G,H")
+    #  - @_dispatch(name="override_name", graphs="G,H")
     if func is None:
-        if name is None:
+        if name is None and graphs == "G":
             return _dispatch
-        return functools.partial(_dispatch, name=name)
+        return functools.partial(_dispatch, name=name, graphs=graphs)
     if isinstance(func, str):
-        return functools.partial(_dispatch, name=func)
+        raise TypeError("'name' and 'graphs' must be passed by keyword") from None
     # If name not provided, use the name of the function
     if name is None:
         name = func.__name__
 
+    graph_list = [g.strip() for g in graphs.split(",")]
+    if len(graph_list) <= 0:
+        raise KeyError("'graphs' must contain at least one variable name") from None
+
     @functools.wraps(func)
     def wrapper(*args, **kwds):
-        if args:
-            graph = args[0]
-        else:
-            try:
-                graph = kwds["G"]
-            except KeyError:
-                raise TypeError(f"{name}() missing positional argument: 'G'") from None
-        if hasattr(graph, "__networkx_plugin__") and plugins:
-            plugin_name = graph.__networkx_plugin__
-            if plugin_name in plugins:
-                backend = plugins[plugin_name].load()
-                if hasattr(backend, name):
-                    return getattr(backend, name).__call__(*args, **kwds)
-                else:
-                    raise NetworkXNotImplemented(
-                        f"'{name}' not implemented by {plugin_name}"
-                    )
+        # Select overlap of args and graph_list
+        graphs_resolved = dict(zip(graph_list, args))
+        # Check for duplicates from kwds
+        dups = set(kwds) & set(graphs_resolved)
+        if dups:
+            raise KeyError(f"{name}() got multiple values for {dups}") from None
+        # Add items from kwds
+        for gname in graph_list[len(graphs_resolved) :]:
+            if gname not in kwds:
+                raise TypeError(
+                    f"{name}() missing required graph argument: {gname}"
+                ) from None
+            graphs_resolved[gname] = kwds[gname]
+        # Check if any graph comes from a plugin
+        if any(hasattr(g, "__networkx_plugin__") for g in graphs_resolved.values()):
+            # Find common plugin name
+            plugin_names = {
+                getattr(g, "__networkx_plugin__", "networkx")
+                for g in graphs_resolved.values()
+            }
+            if len(plugin_names) != 1:
+                raise TypeError(
+                    f"{name}() graphs must all be from the same plugin, found {plugin_names}"
+                ) from None
+            plugin_name = plugin_names.pop()
+            if plugin_name not in plugins:
+                raise ImportError(f"Unable to load plugin: {plugin_name}") from None
+            backend = plugins[plugin_name].load()
+            if hasattr(backend, name):
+                return getattr(backend, name).__call__(*args, **kwds)
+            else:
+                raise NetworkXNotImplemented(
+                    f"'{name}' not implemented by {plugin_name}"
+                )
         return func(*args, **kwds)
 
     # Keep a handle to the original function to use when testing
@@ -155,19 +186,23 @@ def _dispatch(func=None, *, name=None):
     return wrapper
 
 
-def test_override_dispatch(func=None, *, name=None):
-    """Auto-converts the first argument into the backend equivalent,
+def test_override_dispatch(func=None, *, name=None, graphs="G"):
+    """Auto-converts graph arguments into the backend equivalent,
     causing the dispatching mechanism to trigger for every
     decorated algorithm."""
     if func is None:
-        if name is None:
-            return test_override_dispatch
-        return functools.partial(test_override_dispatch, name=name)
+        if name is None and graphs == "G":
+            return _dispatch
+        return functools.partial(_dispatch, name=name, graphs=graphs)
     if isinstance(func, str):
-        return functools.partial(test_override_dispatch, name=func)
+        raise TypeError("'name' and 'graphs' must be passed by keyword") from None
     # If name not provided, use the name of the function
     if name is None:
         name = func.__name__
+
+    graph_list = [g.strip() for g in graphs.split(",")]
+    if len(graph_list) <= 0:
+        raise ValueError("'graphs' must contain at least one variable name") from None
 
     sig = inspect.signature(func)
 
@@ -182,14 +217,12 @@ def test_override_dispatch(func=None, *, name=None):
             pytest.xfail(f"'{name}' not implemented by {plugin_name}")
         bound = sig.bind(*args, **kwds)
         bound.apply_defaults()
-        if args:
-            graph, *args = args
-        else:
-            try:
-                graph = kwds.pop("G")
-            except KeyError:
-                raise TypeError(f"{name}() missing positional argument: 'G'") from None
-        # Convert graph into backend graph-like object
+        # Check that graph names are actually in the signature
+        if set(graph_list) - set(bound.arguments):
+            raise KeyError(
+                f"Invalid graph names: {set(graph_list) - set(bound.arguments)}"
+            )
+        # Convert graphs into backend graph-like object
         #   Include the weight label, if provided to the algorithm
         weight = None
         if "weight" in bound.arguments:
@@ -200,8 +233,11 @@ def test_override_dispatch(func=None, *, name=None):
                 weight = bound.arguments["data"]
             elif bound.arguments["data"]:
                 weight = "weight"
-        graph = backend.convert_from_nx(graph, weight=weight, name=name)
-        result = getattr(backend, name).__call__(graph, *args, **kwds)
+        for gname in graph_list:
+            bound.arguments[gname] = backend.convert_from_nx(
+                bound.arguments[gname], weight=weight, name=name
+            )
+        result = getattr(backend, name).__call__(**bound.arguments)
         return backend.convert_to_nx(result, name=name)
 
     wrapper._orig_func = func

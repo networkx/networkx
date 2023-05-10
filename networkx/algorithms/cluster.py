@@ -16,7 +16,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch("triangles")
+@nx._dispatch(graphs="G")
 @not_implemented_for("directed")
 def triangles(G, nodes=None):
     """Compute the number of triangles.
@@ -395,7 +395,7 @@ def clustering(G, nodes=None, weight=None):
     return clusterc
 
 
-@nx._dispatch("transitivity")
+@nx._dispatch(name="transitivity")
 def transitivity(G):
     r"""Compute graph transitivity, the fraction of all possible triangles
     present in G.
@@ -512,7 +512,7 @@ def square_clustering(G, nodes=None):
     return clustering
 
 
-@nx._dispatch("generalized_degree")
+@nx._dispatch(name="generalized_degree", graphs="G")
 @not_implemented_for("directed")
 def generalized_degree(G, nodes=None):
     r"""Compute the generalized degree for nodes.
