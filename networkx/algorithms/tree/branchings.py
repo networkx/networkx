@@ -315,7 +315,6 @@ class Edmonds:
         # sure that our node names do not conflict with the real node names.
         self.template = random_string(seed=seed) + "_{0}"
 
-
     """
     So we need the code in _init and find_optimum to successfully run edmonds algorithm. 
     Responsibilities of the _init function:
@@ -739,15 +738,15 @@ class Edmonds:
         return H
 
 
-# Placeholder name, will eventually become maximum_branching 
-def _max_branching (
-        G,
-        weight="weight",
-        default=1,
-        preserve_attrs=False,
-        partition=None,
-        seed=None,
-    ):
+# Placeholder name, will eventually become maximum_branching
+def _max_branching(
+    G,
+    weight="weight",
+    default=1,
+    preserve_attrs=False,
+    partition=None,
+    seed=None,
+):
     """
     Edmonds algorithm [1]_ for finding optimal branchings and spanning
     arborescences.
@@ -801,8 +800,8 @@ def _max_branching (
     # Pick an attribute name that the original graph is unlikly to have
     candidate_attr = "edmonds' secret candidate attribute"
 
-    G_original = G 
-    G = MultiDiGraph_EdgeKey() 
+    G_original = G
+    G = MultiDiGraph_EdgeKey()
     for key, (u, v, d) in enumerate(G_original.edges(data=True)):
         if d.get(partition) is not None:
             d[partition] = d.get(partition)
@@ -811,31 +810,31 @@ def _max_branching (
             for d_k, d_v in d.items():
                 if d_k != weight:
                     d[d_k] = d_v
-        
+
         G.add_edge(u, v, key, **d)
 
-    level = 0 # Stores the number of contracted nodes 
+    level = 0  # Stores the number of contracted nodes
 
-    # These are the buckets from the paper. 
+    # These are the buckets from the paper.
     #
-    # In the paper, G^i are modifed versions of the original graph. 
-    # D^i and E^i are the nodes and edges of the maximal edges that are 
-    # consistent with G^i. In this implementation, D^i and E^i are stored 
-    # together as the graph B^i. We will have strictly more B^i then the 
-    # paper will have. 
+    # In the paper, G^i are modifed versions of the original graph.
+    # D^i and E^i are the nodes and edges of the maximal edges that are
+    # consistent with G^i. In this implementation, D^i and E^i are stored
+    # together as the graph B^i. We will have strictly more B^i then the
+    # paper will have.
     B = MultiDiGraph_EdgeKey()
     B.edge_index = {}
-    graphs = [] # G^i list 
-    branchings = [] # B^i list 
+    graphs = []  # G^i list
+    branchings = []  # B^i list
     uf = nx.utils.UnionFind()
 
-    # A list of lists of edge indices. Each list is a circuit for graph G^i. 
-    # Note the edge list is not required to be a circuit in G^0. 
+    # A list of lists of edge indices. Each list is a circuit for graph G^i.
+    # Note the edge list is not required to be a circuit in G^0.
     circuits = []
 
     # Stores the index of the minimum edge in the circuit found in G^i and B^i.
-    # The ordering of the edges seems to preserver the weight ordering from 
-    # G^0. So even if the circuit does not form a circuit in G^0, it is still 
+    # The ordering of the edges seems to preserver the weight ordering from
+    # G^0. So even if the circuit does not form a circuit in G^0, it is still
     # true that the minimum edges in circuit G^0 (despite their weights being
     # different)
     minedge_circuit = []
@@ -845,17 +844,17 @@ def _max_branching (
     ###########################
 
     # Each step listed in the algorithm is an inner function. Thus, the overall
-    # loop structure is: 
+    # loop structure is:
     #
-    # while True: 
+    # while True:
     #     setp_I1()
-    #     if cycle detected: 
+    #     if cycle detected:
     #         setp_I2()
     #     elif every node of G is in D and E is a branching:
-    #         break 
-    # 
-    # Before giving the step functions, we will list the other helper 
-    # inner functions. 
+    #         break
+    #
+    # Before giving the step functions, we will list the other helper
+    # inner functions.
 
     return None
 
