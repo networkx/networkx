@@ -122,14 +122,14 @@ def test_random_rooted_tree():
 def test_random_rooted_forest():
     raised = False
     try:
-        random_rooted_forest(10, 0, seed=42)
+        random_rooted_forest(10, 0, labeled=False, seed=42)
     except ValueError:
         raised = True
     assert raised
     for i in range(1,10):
         for q in range(1,i+1):
-            t1 = random_rooted_forest(i, q, seed=42)
-            t2 = random_rooted_forest(i, q, seed=42)
+            t1 = random_rooted_forest(i, q, labeled=False, seed=42)
+            t2 = random_rooted_forest(i, q, labeled=False, seed=42)
             assert nx.utils.misc.graphs_equal(t1,t2)
             for c in nx.connected_components(t1):
                 assert nx.is_tree(t1.subgraph(c))
@@ -137,9 +137,9 @@ def test_random_rooted_forest():
             assert "root" not in t1.graph
             assert "roots" in t1.graph
     random.seed(43)
-    t = random_rooted_forest(15, number_of_forests=10, seed=random)
+    t = random_rooted_forest(15, number_of_forests=10, labeled=False, seed=random)
     random.seed(43)
-    s = random_rooted_forest(15, number_of_forests=10, seed=random)
+    s = random_rooted_forest(15, number_of_forests=10, labeled=False, seed=random)
     for i in range(10):
         assert nx.utils.misc.graphs_equal(t[i], s[i])
         for c in nx.connected_components(t[i]):
