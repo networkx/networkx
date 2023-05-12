@@ -148,7 +148,7 @@ def test_random_rooted_forest():
         assert "roots" in t[i].graph
 
 
-def test_random_tree():
+def test_random_tree2():
     for i in range(1,10):
         t1 = nx.random_tree(i, labeled=False, seed=42)
         t2 = nx.random_tree(i, labeled=False, seed=42)
