@@ -52,7 +52,8 @@ def test_intersection():
     I2 = nx.intersection(G2, H2)
     assert set(I2.nodes()) == {1, 2, 3, 4}
     assert sorted(I2.edges()) == [(2, 3)]
-    if os.environ.get("NETWORKX_GRAPH_CONVERT", None) != "nx-loopback":
+    # Only test if not performing auto convert testing of backend implementations
+    if os.environ.get("NETWORKX_GRAPH_CONVERT", None) is None:
         with pytest.raises(TypeError):
             nx.intersection(G2, H)
         with pytest.raises(TypeError):
