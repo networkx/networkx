@@ -107,7 +107,16 @@ def _register_algo(name, wrapped_func):
     wrapped_func.dispatchname = name
 
 
-def _dispatch(func=None, *, name=None, graphs="G"):
+def _dispatch(
+    func=None,
+    *,
+    name=None,
+    graphs="G",
+    edge_attrs=None,
+    edge_defaults=None,
+    node_attrs=None,
+    node_defaults=None,
+):
     """Dispatches to a backend algorithm
     when the first argument is a backend graph-like object.
 
@@ -186,7 +195,16 @@ def _dispatch(func=None, *, name=None, graphs="G"):
     return wrapper
 
 
-def test_override_dispatch(func=None, *, name=None, graphs="G"):
+def test_override_dispatch(
+    func=None,
+    *,
+    name=None,
+    graphs="G",
+    edge_attrs=None,
+    edge_defaults=None,
+    node_attrs=None,
+    node_defaults=None,
+):
     """Auto-converts graph arguments into the backend equivalent,
     causing the dispatching mechanism to trigger for every
     decorated algorithm."""

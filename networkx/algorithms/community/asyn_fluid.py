@@ -2,6 +2,7 @@
 
 from collections import Counter
 
+import networkx as nx
 from networkx.algorithms.components import is_connected
 from networkx.exception import NetworkXError
 from networkx.utils import groups, not_implemented_for, py_random_state
@@ -9,6 +10,7 @@ from networkx.utils import groups, not_implemented_for, py_random_state
 __all__ = ["asyn_fluidc"]
 
 
+@nx._dispatch
 @py_random_state(3)
 @not_implemented_for("directed", "multigraph")
 def asyn_fluidc(G, k, max_iter=100, seed=None):

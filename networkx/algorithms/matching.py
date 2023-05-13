@@ -15,6 +15,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
 def maximal_matching(G):
@@ -81,6 +82,7 @@ def matching_dict_to_set(matching):
     return edges
 
 
+@nx._dispatch
 def is_matching(G, matching):
     """Return True if ``matching`` is a valid matching of ``G``
 
@@ -141,6 +143,7 @@ def is_matching(G, matching):
     return True
 
 
+@nx._dispatch
 def is_maximal_matching(G, matching):
     """Return True if ``matching`` is a maximal matching of ``G``
 
@@ -202,6 +205,7 @@ def is_maximal_matching(G, matching):
     return True
 
 
+@nx._dispatch
 def is_perfect_matching(G, matching):
     """Return True if ``matching`` is a perfect matching for ``G``
 
@@ -253,6 +257,7 @@ def is_perfect_matching(G, matching):
     return len(nodes) == len(G)
 
 
+@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
 def min_weight_matching(G, weight="weight"):
@@ -313,6 +318,7 @@ def min_weight_matching(G, weight="weight"):
     return max_weight_matching(InvG, maxcardinality=True, weight=weight)
 
 
+@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
 def max_weight_matching(G, maxcardinality=False, weight="weight"):

@@ -9,6 +9,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 @not_implemented_for("undirected")
 def attracting_components(G):
     """Generates the attracting components in `G`.
@@ -52,6 +53,7 @@ def attracting_components(G):
             yield scc[n]
 
 
+@nx._dispatch
 @not_implemented_for("undirected")
 def number_attracting_components(G):
     """Returns the number of attracting components in `G`.
@@ -80,6 +82,7 @@ def number_attracting_components(G):
     return sum(1 for ac in attracting_components(G))
 
 
+@nx._dispatch
 @not_implemented_for("undirected")
 def is_attracting_component(G):
     """Returns True if `G` consists of a single attracting component.

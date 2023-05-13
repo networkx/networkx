@@ -9,6 +9,7 @@ from ...utils import arbitrary_element
 __all__ = ["ramsey_R2"]
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def ramsey_R2(G):

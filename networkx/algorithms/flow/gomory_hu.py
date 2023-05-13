@@ -12,6 +12,7 @@ default_flow_func = edmonds_karp
 __all__ = ["gomory_hu_tree"]
 
 
+@nx._dispatch(edge_attrs="capacity")
 @not_implemented_for("directed")
 def gomory_hu_tree(G, capacity="capacity", flow_func=None):
     r"""Returns the Gomory-Hu tree of an undirected graph G.

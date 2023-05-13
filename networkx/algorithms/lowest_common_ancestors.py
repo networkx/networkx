@@ -13,6 +13,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 @not_implemented_for("undirected")
 def all_pairs_lowest_common_ancestor(G, pairs=None):
     """Return the lowest common ancestor of all pairs or the provided pairs
@@ -110,6 +111,7 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
     return generate_lca_from_pairs(G, pairs)
 
 
+@nx._dispatch
 @not_implemented_for("undirected")
 def lowest_common_ancestor(G, node1, node2, default=None):
     """Compute the lowest common ancestor of the given pair of nodes.
@@ -147,6 +149,7 @@ def lowest_common_ancestor(G, node1, node2, default=None):
     return default
 
 
+@nx._dispatch
 @not_implemented_for("undirected")
 def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
     r"""Yield the lowest common ancestor for sets of pairs in a tree.

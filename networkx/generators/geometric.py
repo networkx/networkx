@@ -19,6 +19,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 def geometric_edges(G, radius, p=2):
     """Returns edge list of node pairs within `radius` of each other.
 

@@ -8,6 +8,7 @@ from networkx.utils import not_implemented_for
 __all__ = ["rich_club_coefficient"]
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def rich_club_coefficient(G, normalized=True, Q=100, seed=None):

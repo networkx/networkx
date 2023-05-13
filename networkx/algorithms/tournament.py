@@ -101,6 +101,7 @@ def is_tournament(G):
     )
 
 
+@nx._dispatch
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
 def hamiltonian_path(G):
@@ -253,6 +254,7 @@ def tournament_matrix(G):
     return A - A.T
 
 
+@nx._dispatch
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
 def is_reachable(G, s, t):
@@ -340,6 +342,7 @@ def is_reachable(G, s, t):
     return all(not (is_closed(G, S) and s in S and t not in S) for S in neighborhoods)
 
 
+@nx._dispatch(name="tournament_is_strongly_connected")
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
 def is_strongly_connected(G):

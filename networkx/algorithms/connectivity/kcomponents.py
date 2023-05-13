@@ -16,6 +16,7 @@ default_flow_func = edmonds_karp
 __all__ = ["k_components"]
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 def k_components(G, flow_func=None):
     r"""Returns the k-component structure of a graph G.

@@ -9,6 +9,7 @@ from networkx.utils import not_implemented_for
 __all__ = ["mycielskian", "mycielski_graph"]
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def mycielskian(G, iterations=1):

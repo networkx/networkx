@@ -6,6 +6,7 @@ from networkx.utils import not_implemented_for
 __all__ = ["modularity_matrix", "directed_modularity_matrix"]
 
 
+@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def modularity_matrix(G, nodelist=None, weight=None):
@@ -74,6 +75,7 @@ def modularity_matrix(G, nodelist=None, weight=None):
     return A - X
 
 
+@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
 def directed_modularity_matrix(G, nodelist=None, weight=None):

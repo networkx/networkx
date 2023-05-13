@@ -317,6 +317,7 @@ def _get_fiedler_func(method):
     return find_fiedler
 
 
+@nx._dispatch(edge_attrs="weight")
 @np_random_state(5)
 @not_implemented_for("directed")
 def algebraic_connectivity(
@@ -412,6 +413,7 @@ def algebraic_connectivity(
     return sigma
 
 
+@nx._dispatch(edge_attrs="weight")
 @np_random_state(5)
 @not_implemented_for("directed")
 def fiedler_vector(
@@ -509,6 +511,7 @@ def fiedler_vector(
     return fiedler
 
 
+@nx._dispatch(edge_attrs="weight")
 @np_random_state(5)
 def spectral_ordering(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
@@ -592,6 +595,7 @@ def spectral_ordering(
     return order
 
 
+@nx._dispatch(edge_attrs="weight")
 def spectral_bisection(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
 ):

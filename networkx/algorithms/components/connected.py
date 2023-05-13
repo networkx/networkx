@@ -68,6 +68,7 @@ def connected_components(G):
             yield c
 
 
+@nx._dispatch
 def number_connected_components(G):
     """Returns the number of connected components.
 

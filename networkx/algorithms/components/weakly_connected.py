@@ -65,6 +65,7 @@ def weakly_connected_components(G):
             yield c
 
 
+@nx._dispatch
 @not_implemented_for("undirected")
 def number_weakly_connected_components(G):
     """Returns the number of weakly connected components in G.

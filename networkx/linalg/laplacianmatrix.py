@@ -12,6 +12,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("directed")
 def laplacian_matrix(G, nodelist=None, weight="weight"):
     """Returns the Laplacian matrix of G.
@@ -74,6 +75,7 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     return D - A
 
 
+@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("directed")
 def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     r"""Returns the normalized Laplacian matrix of G.
@@ -146,6 +148,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     return DH @ (L @ DH)
 
 
+@nx._dispatch(edge_attrs="weight")
 def total_spanning_tree_weight(G, weight=None):
     """
     Returns the total weight of all spanning trees of `G`.
@@ -182,6 +185,7 @@ def total_spanning_tree_weight(G, weight=None):
 # Code based on work from https://github.com/bjedwards
 
 
+@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
 def directed_laplacian_matrix(
@@ -271,6 +275,7 @@ def directed_laplacian_matrix(
     return I - (Q + Q.T) / 2.0
 
 
+@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
 def directed_combinatorial_laplacian_matrix(

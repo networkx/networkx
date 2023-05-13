@@ -20,6 +20,7 @@ from networkx.utils import not_implemented_for, py_random_state
 __all__ = ["random_reference", "lattice_reference", "sigma", "omega"]
 
 
+@nx._dispatch
 @py_random_state(3)
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
@@ -117,6 +118,7 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
     return G
 
 
+@nx._dispatch
 @py_random_state(4)
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
@@ -240,6 +242,7 @@ def lattice_reference(G, niter=5, D=None, connectivity=True, seed=None):
     return G
 
 
+@nx._dispatch
 @py_random_state(3)
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
@@ -308,6 +311,7 @@ def sigma(G, niter=100, nrand=10, seed=None):
     return sigma
 
 
+@nx._dispatch
 @py_random_state(3)
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")

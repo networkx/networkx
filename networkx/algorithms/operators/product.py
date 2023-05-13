@@ -122,6 +122,7 @@ def _init_product_graph(G, H):
     return GH
 
 
+@nx._dispatch(graphs="G,H")
 def tensor_product(G, H):
     r"""Returns the tensor product of G and H.
 
@@ -177,6 +178,7 @@ def tensor_product(G, H):
     return GH
 
 
+@nx._dispatch(graphs="G,H")
 def cartesian_product(G, H):
     r"""Returns the Cartesian product of G and H.
 
@@ -228,6 +230,7 @@ def cartesian_product(G, H):
     return GH
 
 
+@nx._dispatch(graphs="G,H")
 def lexicographic_product(G, H):
     r"""Returns the lexicographic product of G and H.
 
@@ -280,6 +283,7 @@ def lexicographic_product(G, H):
     return GH
 
 
+@nx._dispatch(graphs="G,H")
 def strong_product(G, H):
     r"""Returns the strong product of G and H.
 
@@ -335,6 +339,7 @@ def strong_product(G, H):
     return GH
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def power(G, k):
@@ -424,6 +429,7 @@ def power(G, k):
     return H
 
 
+@nx._dispatch(graphs="G,H")
 @not_implemented_for("multigraph")
 def rooted_product(G, H, root):
     """Return the rooted product of graphs G and H rooted at root in H.
@@ -462,6 +468,7 @@ def rooted_product(G, H, root):
     return R
 
 
+@nx._dispatch(graphs="G,H")
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def corona_product(G, H):

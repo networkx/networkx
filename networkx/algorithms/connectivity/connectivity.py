@@ -31,6 +31,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch(graphs="G,auxiliary,residual")
 def local_node_connectivity(
     G, s, t, flow_func=None, auxiliary=None, residual=None, cutoff=None
 ):
@@ -209,6 +210,7 @@ def local_node_connectivity(
     return nx.maximum_flow_value(H, f"{mapping[s]}B", f"{mapping[t]}A", **kwargs)
 
 
+@nx._dispatch
 def node_connectivity(G, s=None, t=None, flow_func=None):
     r"""Returns node connectivity for a graph or digraph G.
 
@@ -349,6 +351,7 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     return K
 
 
+@nx._dispatch
 def average_node_connectivity(G, flow_func=None):
     r"""Returns the average connectivity of a graph G.
 
@@ -417,6 +420,7 @@ def average_node_connectivity(G, flow_func=None):
     return num / den
 
 
+@nx._dispatch
 def all_pairs_node_connectivity(G, nbunch=None, flow_func=None):
     """Compute node connectivity between all pairs of nodes of G.
 
@@ -484,6 +488,7 @@ def all_pairs_node_connectivity(G, nbunch=None, flow_func=None):
     return all_pairs
 
 
+@nx._dispatch(graphs="G,auxiliary,residual")
 def local_edge_connectivity(
     G, s, t, flow_func=None, auxiliary=None, residual=None, cutoff=None
 ):
@@ -645,6 +650,7 @@ def local_edge_connectivity(
     return nx.maximum_flow_value(H, s, t, **kwargs)
 
 
+@nx._dispatch
 def edge_connectivity(G, s=None, t=None, flow_func=None, cutoff=None):
     r"""Returns the edge connectivity of the graph or digraph G.
 

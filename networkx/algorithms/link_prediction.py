@@ -40,6 +40,7 @@ def _apply_prediction(G, func, ebunch=None):
     return ((u, v, func(u, v)) for u, v in ebunch)
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def resource_allocation_index(G, ebunch=None):
@@ -151,6 +152,7 @@ def jaccard_coefficient(G, ebunch=None):
     return _apply_prediction(G, predict, ebunch)
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def adamic_adar_index(G, ebunch=None):
@@ -206,6 +208,7 @@ def adamic_adar_index(G, ebunch=None):
     return _apply_prediction(G, predict, ebunch)
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
@@ -303,6 +306,7 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
     return _apply_prediction(G, predict, ebunch)
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def preferential_attachment(G, ebunch=None):
@@ -356,6 +360,7 @@ def preferential_attachment(G, ebunch=None):
     return _apply_prediction(G, predict, ebunch)
 
 
+@nx._dispatch(node_attrs="community")
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
@@ -430,6 +435,7 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
     return _apply_prediction(G, predict, ebunch)
 
 
+@nx._dispatch(node_attrs="community")
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
@@ -505,6 +511,7 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
     return _apply_prediction(G, predict, ebunch)
 
 
+@nx._dispatch(node_attrs="community")
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):

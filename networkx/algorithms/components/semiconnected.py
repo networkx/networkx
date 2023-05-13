@@ -5,6 +5,7 @@ from networkx.utils import not_implemented_for, pairwise
 __all__ = ["is_semiconnected"]
 
 
+@nx._dispatch
 @not_implemented_for("undirected")
 def is_semiconnected(G):
     """Returns True if the graph is semiconnected, False otherwise.

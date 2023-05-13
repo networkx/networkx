@@ -38,6 +38,7 @@ from networkx.utils import not_implemented_for
 __all__ = ["second_order_centrality"]
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 def second_order_centrality(G):
     """Compute the second order centrality for nodes of G.

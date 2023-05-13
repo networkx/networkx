@@ -7,6 +7,7 @@ from networkx.utils import not_implemented_for
 __all__ = ["bridges", "has_bridges", "local_bridges"]
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 def bridges(G, root=None):
     """Generate all bridges in a graph.
@@ -79,6 +80,7 @@ def bridges(G, root=None):
             yield u, v
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 def has_bridges(G, root=None):
     """Decide whether a graph has any bridges.
@@ -138,6 +140,7 @@ def has_bridges(G, root=None):
         return True
 
 
+@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
 def local_bridges(G, with_span=True, weight=None):

@@ -9,6 +9,7 @@ from networkx.utils import groups, not_implemented_for, py_random_state
 __all__ = ["label_propagation_communities", "asyn_lpa_communities"]
 
 
+@nx._dispatch(edge_attrs="weight")
 @py_random_state(2)
 def asyn_lpa_communities(G, weight=None, seed=None):
     """Returns communities in `G` as detected by asynchronous label
@@ -104,6 +105,7 @@ def asyn_lpa_communities(G, weight=None, seed=None):
     yield from groups(labels).values()
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 def label_propagation_communities(G):
     """Generates community sets determined by label propagation

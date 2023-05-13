@@ -10,6 +10,7 @@ from networkx.algorithms.flow.utils import build_residual_network
 __all__ = ["boykov_kolmogorov"]
 
 
+@nx._dispatch(graphs="G,residual", edge_attrs="capacity")
 def boykov_kolmogorov(
     G, s, t, capacity="capacity", residual=None, value_only=False, cutoff=None
 ):

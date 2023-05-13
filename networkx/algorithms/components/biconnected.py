@@ -1,6 +1,7 @@
 """Biconnected components and articulation points."""
 from itertools import chain
 
+import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = [
@@ -11,6 +12,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 def is_biconnected(G):
     """Returns True if the graph is biconnected, False otherwise.
@@ -91,6 +93,7 @@ def is_biconnected(G):
         return False
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 def biconnected_component_edges(G):
     """Returns a generator of lists of edges, one list for each biconnected
@@ -163,6 +166,7 @@ def biconnected_component_edges(G):
     yield from _biconnected_dfs(G, components=True)
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 def biconnected_components(G):
     """Returns a generator of sets of nodes, one set for each biconnected
@@ -255,6 +259,7 @@ def biconnected_components(G):
         yield set(chain.from_iterable(comp))
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 def articulation_points(G):
     """Yield the articulation points, or cut vertices, of a graph.

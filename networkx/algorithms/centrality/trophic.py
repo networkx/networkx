@@ -5,6 +5,7 @@ from networkx.utils import not_implemented_for
 __all__ = ["trophic_levels", "trophic_differences", "trophic_incoherence_parameter"]
 
 
+@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("undirected")
 def trophic_levels(G, weight="weight"):
     r"""Compute the trophic levels of nodes.
@@ -80,6 +81,7 @@ def trophic_levels(G, weight="weight"):
     return levels
 
 
+@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("undirected")
 def trophic_differences(G, weight="weight"):
     r"""Compute the trophic differences of the edges of a directed graph.
@@ -114,6 +116,7 @@ def trophic_differences(G, weight="weight"):
     return diffs
 
 
+@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("undirected")
 def trophic_incoherence_parameter(G, weight="weight", cannibalism=False):
     r"""Compute the trophic incoherence parameter of a graph.

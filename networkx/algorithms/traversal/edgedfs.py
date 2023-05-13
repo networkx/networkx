@@ -14,6 +14,7 @@ REVERSE = "reverse"
 __all__ = ["edge_dfs"]
 
 
+@nx._dispatch
 def edge_dfs(G, source=None, orientation=None):
     """A directed, depth-first-search of edges in `G`, beginning at `source`.
 

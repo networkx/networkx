@@ -29,6 +29,7 @@ from networkx.utils import not_implemented_for
 __all__ = ["tutte_polynomial", "chromatic_polynomial"]
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 def tutte_polynomial(G):
     r"""Returns the Tutte polynomial of `G`
@@ -178,6 +179,7 @@ def tutte_polynomial(G):
     return sympy.simplify(polynomial)
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 def chromatic_polynomial(G):
     r"""Returns the chromatic polynomial of `G`

@@ -40,6 +40,7 @@ def _kernighan_lin_sweep(edges, side):
         yield totcost, i, (u, v)
 
 
+@nx._dispatch(edge_attrs="weight")
 @py_random_state(4)
 @not_implemented_for("directed")
 def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", seed=None):

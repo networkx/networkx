@@ -6,6 +6,7 @@ import networkx as nx
 __all__ = ["flow_hierarchy"]
 
 
+@nx._dispatch(node_attrs="weight")
 def flow_hierarchy(G, weight=None):
     """Returns the flow hierarchy of a directed network.
 

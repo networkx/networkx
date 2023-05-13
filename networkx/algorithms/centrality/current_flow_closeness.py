@@ -10,6 +10,7 @@ from networkx.utils import not_implemented_for, reverse_cuthill_mckee_ordering
 __all__ = ["current_flow_closeness_centrality", "information_centrality"]
 
 
+@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("directed")
 def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
     """Compute current-flow closeness centrality for nodes.

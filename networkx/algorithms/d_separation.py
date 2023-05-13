@@ -126,6 +126,7 @@ from networkx.utils import UnionFind, not_implemented_for
 __all__ = ["d_separated", "minimal_d_separator", "is_minimal_d_separator"]
 
 
+@nx._dispatch
 @not_implemented_for("undirected")
 def d_separated(G, x, y, z):
     """
@@ -212,6 +213,7 @@ def d_separated(G, x, y, z):
         return True
 
 
+@nx._dispatch
 @not_implemented_for("undirected")
 def minimal_d_separator(G, u, v):
     """Compute a minimal d-separating set between 'u' and 'v'.
@@ -294,6 +296,7 @@ def minimal_d_separator(G, u, v):
     return Z
 
 
+@nx._dispatch
 @not_implemented_for("undirected")
 def is_minimal_d_separator(G, u, v, z):
     """Determine if a d-separating set is minimal.

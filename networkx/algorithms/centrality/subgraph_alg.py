@@ -12,6 +12,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def subgraph_centrality_exp(G):
@@ -96,6 +97,7 @@ def subgraph_centrality_exp(G):
     return sc
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def subgraph_centrality(G):
@@ -186,6 +188,7 @@ def subgraph_centrality(G):
     return sc
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def communicability_betweenness_centrality(G):
@@ -290,6 +293,7 @@ def communicability_betweenness_centrality(G):
     return cbc
 
 
+@nx._dispatch
 def estrada_index(G):
     r"""Returns the Estrada index of a the graph G.
 

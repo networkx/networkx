@@ -10,6 +10,7 @@ from networkx.utils.decorators import not_implemented_for
 __all__ = ["line_graph", "inverse_line_graph"]
 
 
+@nx._dispatch
 def line_graph(G, create_using=None):
     r"""Returns the line graph of the graph or digraph `G`.
 
@@ -212,6 +213,7 @@ def _lg_undirected(G, selfloops=False, create_using=None):
     return L
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def inverse_line_graph(G):

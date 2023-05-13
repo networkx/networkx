@@ -8,6 +8,7 @@ from networkx.utils import not_implemented_for, py_random_state
 __all__ = ["maximal_independent_set"]
 
 
+@nx._dispatch
 @py_random_state(2)
 @not_implemented_for("directed")
 def maximal_independent_set(G, nodes=None, seed=None):

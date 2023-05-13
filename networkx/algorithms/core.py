@@ -195,6 +195,7 @@ def k_core(G, k=None, core_number=None):
     return _core_subgraph(G, k_filter, k, core_number)
 
 
+@nx._dispatch
 def k_shell(G, k=None, core_number=None):
     """Returns the k-shell of G.
 
@@ -313,6 +314,7 @@ def k_crust(G, k=None, core_number=None):
     return G.subgraph(nodes).copy()
 
 
+@nx._dispatch
 def k_corona(G, k, core_number=None):
     """Returns the k-corona of G.
 
@@ -444,6 +446,7 @@ def k_truss(G, k):
     return H
 
 
+@nx._dispatch
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
 def onion_layers(G):

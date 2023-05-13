@@ -6,6 +6,7 @@ from networkx.utils import not_implemented_for
 __all__ = ["chain_decomposition"]
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def chain_decomposition(G, root=None):

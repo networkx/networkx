@@ -6,6 +6,7 @@ import networkx as nx
 __all__ = ["spectral_bipartivity"]
 
 
+@nx._dispatch(edge_attrs="weight")
 def spectral_bipartivity(G, nodes=None, weight="weight"):
     """Returns the spectral bipartivity.
 

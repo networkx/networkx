@@ -67,6 +67,7 @@ def is_k_regular(G, k):
     return all(d == k for n, d in G.degree)
 
 
+@nx._dispatch(edge_attrs="matching_weight")
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def k_factor(G, k, matching_weight="weight"):

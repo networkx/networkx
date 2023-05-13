@@ -9,6 +9,7 @@ from networkx.algorithms.shortest_paths.weighted import _weight_function
 __all__ = ["astar_path", "astar_path_length"]
 
 
+@nx._dispatch(edge_attrs="weight")
 def astar_path(G, source, target, heuristic=None, weight="weight"):
     """Returns a list of nodes in a shortest path between source and target
     using the A* ("A-star") algorithm.
@@ -155,6 +156,7 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
     raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
 
 
+@nx._dispatch(edge_attrs="weight")
 def astar_path_length(G, source, target, heuristic=None, weight="weight"):
     """Returns the length of the shortest path between source and target using
     the A* ("A-star") algorithm.

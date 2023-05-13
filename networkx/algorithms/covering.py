@@ -9,6 +9,7 @@ from networkx.utils import arbitrary_element, not_implemented_for
 __all__ = ["min_edge_cover", "is_edge_cover"]
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def min_edge_cover(G, matching_algorithm=None):
@@ -104,6 +105,7 @@ def min_edge_cover(G, matching_algorithm=None):
     return min_cover
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 def is_edge_cover(G, cover):
     """Decides whether a set of edges is a valid edge cover of the graph.

@@ -11,6 +11,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def maximum_independent_set(G):
@@ -67,6 +68,7 @@ def maximum_independent_set(G):
     return iset
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def max_clique(G):
@@ -125,6 +127,7 @@ def max_clique(G):
     return iset
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def clique_removal(G):
@@ -177,6 +180,7 @@ def clique_removal(G):
     return maxiset, cliques
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def large_clique_size(G):

@@ -27,6 +27,7 @@ import networkx as nx
 __all__ = ["harmonic_function", "local_and_global_consistency"]
 
 
+@nx._dispatch(node_attrs="label_name")
 @nx.utils.not_implemented_for("directed")
 def harmonic_function(G, max_iter=30, label_name="label"):
     """Node classification by Harmonic function
@@ -104,6 +105,7 @@ def harmonic_function(G, max_iter=30, label_name="label"):
     return label_dict[np.argmax(F, axis=1)].tolist()
 
 
+@nx._dispatch(node_attrs="label_name")
 @nx.utils.not_implemented_for("directed")
 def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label"):
     """Node classification by Local and Global Consistency

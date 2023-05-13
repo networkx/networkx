@@ -40,6 +40,7 @@ class EdgePartition(Enum):
     EXCLUDED = 2
 
 
+@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("multigraph")
 def boruvka_mst_edges(
     G, minimum=True, weight="weight", keys=False, data=True, ignore_nan=False
@@ -137,6 +138,7 @@ def boruvka_mst_edges(
                 forest.union(u, v)
 
 
+@nx._dispatch(edge_attrs="weight,partition")
 def kruskal_mst_edges(
     G, minimum, weight="weight", keys=True, data=True, ignore_nan=False, partition=None
 ):
@@ -247,6 +249,7 @@ def kruskal_mst_edges(
                 subtrees.union(u, v)
 
 
+@nx._dispatch(edge_attrs="weight")
 def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan=False):
     """Iterate over edges of Prim's algorithm min/max spanning tree.
 
@@ -361,6 +364,7 @@ ALGORITHMS = {
 }
 
 
+@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("directed")
 def minimum_spanning_edges(
     G, algorithm="kruskal", weight="weight", keys=True, data=True, ignore_nan=False
@@ -455,6 +459,7 @@ def minimum_spanning_edges(
     )
 
 
+@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("directed")
 def maximum_spanning_edges(
     G, algorithm="kruskal", weight="weight", keys=True, data=True, ignore_nan=False
@@ -548,6 +553,7 @@ def maximum_spanning_edges(
     )
 
 
+@nx._dispatch(edge_attrs="weight")
 def minimum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=False):
     """Returns a minimum spanning tree or forest on an undirected graph `G`.
 
@@ -607,6 +613,7 @@ def minimum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
     return T
 
 
+@nx._dispatch(edge_attrs="weight,partition")
 def partition_spanning_tree(
     G, minimum=True, weight="weight", partition="partition", ignore_nan=False
 ):
@@ -670,6 +677,7 @@ def partition_spanning_tree(
     return T
 
 
+@nx._dispatch(edge_attrs="weight")
 def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=False):
     """Returns a maximum spanning tree or forest on an undirected graph `G`.
 
@@ -732,6 +740,7 @@ def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
     return T
 
 
+@nx._dispatch(edge_attrs="weight")
 @py_random_state(3)
 def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
     """

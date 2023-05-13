@@ -6,6 +6,7 @@ from networkx.utils import not_implemented_for, pairwise
 __all__ = ["metric_closure", "steiner_tree"]
 
 
+@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("directed")
 def metric_closure(G, weight="weight"):
     """Return the metric closure of a graph.
@@ -124,6 +125,7 @@ ALGORITHMS = {
 }
 
 
+@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("directed")
 def steiner_tree(G, terminal_nodes, weight="weight", method=None):
     r"""Return an approximation to the minimum Steiner tree of a graph.

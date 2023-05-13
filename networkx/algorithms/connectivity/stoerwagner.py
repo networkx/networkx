@@ -10,6 +10,7 @@ from ...utils import BinaryHeap, arbitrary_element, not_implemented_for
 __all__ = ["stoer_wagner"]
 
 
+@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def stoer_wagner(G, weight="weight", heap=BinaryHeap):

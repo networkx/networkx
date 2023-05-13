@@ -7,6 +7,7 @@ from networkx.utils import not_implemented_for
 __all__ = ["communicability", "communicability_exp"]
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def communicability(G):
@@ -88,6 +89,7 @@ def communicability(G):
     return c
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def communicability_exp(G):

@@ -4,6 +4,7 @@ from networkx.utils.decorators import not_implemented_for, py_random_state
 __all__ = ["randomized_partitioning", "one_exchange"]
 
 
+@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("directed", "multigraph")
 @py_random_state(1)
 def randomized_partitioning(G, seed=None, p=0.5, weight=None):
@@ -48,6 +49,7 @@ def _swap_node_partition(cut, node):
     return cut - {node} if node in cut else cut.union({node})
 
 
+@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("directed", "multigraph")
 @py_random_state(2)
 def one_exchange(G, initial_cut=None, seed=None, weight=None):
