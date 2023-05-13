@@ -14,6 +14,7 @@ kernelspec:
 # Introduction
 
 ```{currentmodule} networkx
+
 ```
 
 The structure of NetworkX can be seen by the organization of its source code.
@@ -22,8 +23,8 @@ graphs, IO routines for reading in existing datasets, algorithms to analyze
 the resulting networks and some basic drawing tools.
 
 Most of the NetworkX API is provided by functions which take a graph object
-as an argument.  Methods of the graph object are limited to basic manipulation
-and reporting.  This provides modularity of code and documentation.
+as an argument. Methods of the graph object are limited to basic manipulation
+and reporting. This provides modularity of code and documentation.
 It also makes it easier for newcomers to learn about the package in stages.
 The source code for each module is meant to be easy to read and reading
 this Python code is actually a good way to learn more about network algorithms,
@@ -54,7 +55,7 @@ The following basic graph types are provided as Python classes:
 - {class}`Graph`
 
   This class implements an undirected graph. It ignores
-  multiple edges between two nodes.  It does allow self-loop
+  multiple edges between two nodes. It does allow self-loop
   edges between a node and itself.
 
 - {class}`DiGraph`
@@ -66,7 +67,7 @@ The following basic graph types are provided as Python classes:
 - {class}`MultiGraph`
 
   A flexible graph class that allows multiple undirected edges between
-  pairs of nodes.  The additional flexibility leads to some degradation
+  pairs of nodes. The additional flexibility leads to some degradation
   in performance, though usually not significant.
 
 - {class}`MultiDiGraph`
@@ -94,9 +95,9 @@ The graph adjacency structure is
 implemented as a Python dictionary of
 dictionaries; the outer dictionary is keyed by nodes to values that are
 themselves dictionaries keyed by neighboring node to the
-edge attributes associated with that edge.  This "dict-of-dicts" structure
+edge attributes associated with that edge. This "dict-of-dicts" structure
 allows fast addition, deletion, and lookup of nodes and neighbors in
-large graphs.  The underlying datastructure is accessed directly
+large graphs. The underlying datastructure is accessed directly
 by methods (the programming interface "API") in the class definitions.
 All functions, on the other hand, manipulate graph-like objects
 solely via those API methods and not by acting directly on the datastructure.
@@ -107,20 +108,20 @@ same methods.
 ## Graphs
 
 The first choice to be made when using NetworkX is what type of graph
-object to use.  A graph (network) is a collection of nodes together
-with a collection of edges that are pairs of nodes.  Attributes are
-often associated with nodes and/or edges.  NetworkX graph objects come in
+object to use. A graph (network) is a collection of nodes together
+with a collection of edges that are pairs of nodes. Attributes are
+often associated with nodes and/or edges. NetworkX graph objects come in
 different flavors depending on two main properties of the network:
 
-> - Directed: Are the edges **directed**?  Does the order of the edge
->   pairs \$(u, v)\$ matter?  A directed graph is specified by the "Di"
->   prefix in the class name, e.g. `DiGraph()`.  We make this distinction
+> - Directed: Are the edges **directed**? Does the order of the edge
+>   pairs \$(u, v)\$ matter? A directed graph is specified by the "Di"
+>   prefix in the class name, e.g. `DiGraph()`. We make this distinction
 >   because many classical graph properties are defined differently for
 >   directed graphs.
 > - Multi-edges: Are multiple edges allowed between each pair of nodes?
 >   As you might imagine, multiple edges requires a different data
 >   structure, though clever users could design edge data attributes to
->   support this functionality.  We provide a standard data structure
+>   support this functionality. We provide a standard data structure
 >   and interface for this type of graph using the prefix "Multi",
 >   e.g., `MultiGraph()`.
 
@@ -137,22 +138,22 @@ of nodes and edges to use.
 
 If the topology of the network is all you
 care about then using integers or strings as the nodes makes sense and
-you need not worry about edge data.  If you have a data structure
+you need not worry about edge data. If you have a data structure
 already in place to describe nodes you can simply use that structure
-as your nodes provided it is {term}`hashable`.  If it is not hashable you can
+as your nodes provided it is {term}`hashable`. If it is not hashable you can
 use a unique identifier to represent the node and assign the data
 as a {term}`node attribute`.
 
-Edges often have data associated with them.  Arbitrary data
+Edges often have data associated with them. Arbitrary data
 can be associated with edges as an {term}`edge attribute`.
 If the data is numeric and the intent is to represent
-a *weighted* graph then use the 'weight' keyword for the attribute.
+a _weighted_ graph then use the 'weight' keyword for the attribute.
 Some of the graph algorithms, such as
 Dijkstra's shortest path algorithm, use this attribute
 name by default to get the weight for each edge.
 
 Attributes can be assigned to an edge by using keyword/value
-pairs when adding edges.  You can use any keyword
+pairs when adding edges. You can use any keyword
 to name your attribute and can then query the edge
 data using that attribute keyword.
 
@@ -169,7 +170,7 @@ NetworkX graph objects can be created in one of three ways:
 - Adding edges and nodes explicitly.
 
 Explicit addition and removal of nodes/edges is the easiest to describe.
-Each graph object supplies methods to manipulate the graph.  For example,
+Each graph object supplies methods to manipulate the graph. For example,
 
 ```{code-cell} ipython3
 G = nx.Graph()
@@ -223,7 +224,7 @@ provides specific attribute iteration e.g. `for e, e_color in G.edges.data('colo
 The basic graph relationship of an edge can be obtained in two ways.
 One can look for neighbors of a node or one can look for edges.
 We jokingly refer to people who focus on nodes/neighbors as node-centric
-and people who focus on edges as edge-centric.  The designers of NetworkX
+and people who focus on edges as edge-centric. The designers of NetworkX
 tend to be node-centric and view edges as a relationship between nodes.
 You can see this by our choice of lookup notation like `G[u]` providing neighbors
 (adjacency) while edge lookup is `G.edges[u, v]`.
@@ -233,8 +234,8 @@ you examine the graph. `G.edges` removes duplicate representations of undirected
 edges while neighbor reporting across all nodes will naturally report both directions.
 
 Any properties that are more complicated than edges, neighbors and degree are
-provided by functions.  For example `nx.triangles(G, n)` gives the number of triangles
-which include node n as a vertex.  These functions are grouped in the code and
+provided by functions. For example `nx.triangles(G, n)` gives the number of triangles
+which include node n as a vertex. These functions are grouped in the code and
 documentation under the term {ref}`algorithms<algorithms>`.
 
 ## Algorithms
@@ -242,8 +243,8 @@ documentation under the term {ref}`algorithms<algorithms>`.
 A number of graph algorithms are provided with NetworkX.
 These include shortest path, and breadth first search
 (see {ref}`traversal<traversal>`),
-clustering and isomorphism algorithms and others.  There are
-many that we have not developed yet too.  If you implement a
+clustering and isomorphism algorithms and others. There are
+many that we have not developed yet too. If you implement a
 graph algorithm that might be useful for others please let
 us know through the
 [NetworkX Google group](http://groups.google.com/group/networkx-discuss)
@@ -266,7 +267,7 @@ a simple interface to drawing packages and some simple layout algorithms.
 We interface to the excellent Graphviz layout tools like dot and neato
 with the (suggested) pygraphviz package or the pydot interface.
 Drawing can be done using external programs or the Matplotlib Python
-package.  Interactive GUI interfaces are possible, though not provided.
+package. Interactive GUI interfaces are possible, though not provided.
 The drawing tools are provided in the module {ref}`drawing <drawing>`.
 
 The basic drawing functions essentially place the nodes on a scatterplot
@@ -293,8 +294,8 @@ See the {doc}`examples </auto_examples/index>` for more ideas.
 ## Data Structure
 
 NetworkX uses a "dictionary of dictionaries of dictionaries" as the
-basic network data structure.  This allows fast lookup with reasonable
-storage for large sparse networks.  The keys are nodes so `G[u]` returns
+basic network data structure. This allows fast lookup with reasonable
+storage for large sparse networks. The keys are nodes so `G[u]` returns
 an adjacency dictionary keyed by neighbor to the edge attribute
 dictionary. A view of the adjacency data structure is provided
 by the dict-like object `G.adj` as e.g. `for node, nbrsdict in G.adj.items():`.
@@ -338,11 +339,13 @@ G = nx.Graph()
 G.add_edge(1, 2, color='red', weight=0.84, size=300)
 print(G[1][2]['size'])
 ```
+
 ```{code-cell} ipython3
 print(G.edges[1, 2]['color'])
 ```
 
 ```{rubric} Footnotes
+
 ```
 
 [^turtles]: "It's dictionaries all the way down."
