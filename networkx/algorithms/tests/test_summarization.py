@@ -194,11 +194,9 @@ class TestUnDirectedDedensification:
             nx.dedensify(G, threshold=1)
 
     def test_dedensify_prefix_kwargs(self):
-        G = nx.Graph()
-        G.add_edges_from([(1, 2), (1, 3), (1, 4), (2, 3), (3, 4)])
-        H, mapping = nx.dedensify(G, threshold=2, prefix="node_")
-        assert list(H.nodes()) == [1, 2, 3, 4]
-        assert mapping == set()
+        G = self.build_original_graph()
+        _, mapping = nx.dedensify(graph, threshold=2, prefix='node_')
+        assert mapping == {'node_6BA', 'node_CBA'}
 
     def test_dedensify_edges(self):
         """
