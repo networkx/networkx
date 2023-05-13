@@ -14,6 +14,7 @@ kernelspec:
 # Tutorial
 
 ```{currentmodule} networkx
+
 ```
 
 This guide can help you start working with NetworkX.
@@ -28,7 +29,7 @@ G = nx.Graph()
 ```
 
 By definition, a {class}`Graph` is a collection of nodes (vertices) along with
-identified pairs of nodes (called edges, links, etc).  In NetworkX, nodes can
+identified pairs of nodes (called edges, links, etc). In NetworkX, nodes can
 be any {py:term}`hashable` object e.g., a text string, an image, an XML object,
 another Graph, a customized node object, etc.
 
@@ -40,22 +41,22 @@ functions.
 
 ## Nodes
 
-The graph `G` can be grown in several ways.  NetworkX includes many
+The graph `G` can be grown in several ways. NetworkX includes many
 {doc}`graph generator functions <reference/generators>` and
 {doc}`facilities to read and write graphs in many formats <reference/readwrite/index>`.
-To get started though we'll look at simple manipulations.  You can add one node
+To get started though we'll look at simple manipulations. You can add one node
 at a time,
 
 ```{code-cell} ipython3
-
 G.add_node(1)
+G.nodes
 ```
 
 or add nodes from any {py:term}`iterable` container, such as a list
 
 ```{code-cell} ipython3
-
 G.add_nodes_from([2, 3])
+G.nodes
 ```
 
 You can also add nodes along with node
@@ -63,10 +64,8 @@ attributes if your container yields 2-tuples of the form
 `(node, node_attribute_dict)`:
 
 ```
->>> G.add_nodes_from([
-...     (4, {"color": "red"}),
-...     (5, {"color": "green"}),
-... ])
+G.add_nodes_from([(4, {"color": "red"}), (5, {"color": "green"})])
+G.nodes(data="color")
 ```
 
 Node attributes are discussed further {ref}`below <attributes>`.
@@ -74,23 +73,23 @@ Node attributes are discussed further {ref}`below <attributes>`.
 Nodes from one graph can be incorporated into another:
 
 ```{code-cell} ipython3
-
 H = nx.path_graph(10)
 G.add_nodes_from(H)
+G.nodes
 ```
 
 `G` now contains the nodes of `H` as nodes of `G`.
 In contrast, you could use the graph `H` as a node in `G`.
 
 ```{code-cell} ipython3
-
 G.add_node(H)
+G.nodes
 ```
 
-The graph `G` now contains `H` as a node.  This flexibility is very powerful as
+The graph `G` now contains `H` as a node. This flexibility is very powerful as
 it allows graphs of graphs, graphs of files, graphs of functions and much more.
 It is worth thinking about how to structure your application so that the nodes
-are useful entities.  Of course you can always use a unique identifier in `G`
+are useful entities. Of course you can always use a unique identifier in `G`
 and have a separate dictionary keyed by identifier to the node information if
 you prefer.
 
@@ -104,43 +103,42 @@ on its contents.
 `G` can also be grown by adding one edge at a time,
 
 ```{code-cell} ipython3
-
 G.add_edge(1, 2)
 e = (2, 3)
 G.add_edge(*e)  # unpack edge tuple*
+G.edges
 ```
 
 by adding a list of edges,
 
 ```{code-cell} ipython3
-
 G.add_edges_from([(1, 2), (1, 3)])
 ```
 
-or by adding any {term}`ebunch` of edges.  An *ebunch* is any iterable
-container of edge-tuples.  An edge-tuple can be a 2-tuple of nodes or a 3-tuple
+or by adding any {term}`ebunch` of edges. An _ebunch_ is any iterable
+container of edge-tuples. An edge-tuple can be a 2-tuple of nodes or a 3-tuple
 with 2 nodes followed by an edge attribute dictionary, e.g.,
-`(2, 3, {'weight': 3.1415})`.  Edge attributes are discussed further
+`(2, 3, {'weight': 3.1415})`. Edge attributes are discussed further
 {ref}`below <attributes>`.
 
 ```{code-cell} ipython3
 
 G.add_edges_from(H.edges)
+G.edges
 ```
 
 There are no complaints when adding existing nodes or edges. For example,
 after removing all nodes and edges,
 
 ```{code-cell} ipython3
-
 G.clear()
+print(G)
 ```
 
 we add new nodes/edges and NetworkX quietly ignores any that are
 already present.
 
 ```{code-cell} ipython3
-
 G.add_edges_from([(1, 2), (1, 3)])
 G.add_node(1)
 G.add_edge(1, 2)
@@ -163,7 +161,7 @@ G.number_of_edges()
 The order of adjacency reporting (e.g., {meth}`G.adj <networkx.Graph.adj>`,
 {meth}`G.successors <networkx.DiGraph.successors>`,
 {meth}`G.predecessors <networkx.DiGraph.predecessors>`) is the order of
-edge addition. However, the order of G.edges is the order of the adjacencies
+edge addition. However, the order of `G.edges` is the order of the adjacencies
 which includes both the order of the nodes and each
 node's adjacencies. See example below:
 ```
@@ -182,7 +180,7 @@ assert list(DG.edges) == [(2, 1), (2, 4), (1, 3), (1, 2)]
 ## Examining elements of a graph
 
 We can examine the nodes and edges. Four basic graph properties facilitate
-reporting: `G.nodes`, `G.edges`, `G.adj` and `G.degree`.  These
+reporting: `G.nodes`, `G.edges`, `G.adj` and `G.degree`. These
 are set-like views of the nodes, edges, neighbors (adjacencies), and degrees
 of nodes in a graph. They offer a continually updated read-only view into
 the graph structure. They are also dict-like in that you can look up node
@@ -209,7 +207,7 @@ G.degree[1]  # the number of edges incident to 1
 ```
 
 One can specify to report the edges and degree from a subset of all nodes
-using an {term}`nbunch`. An *nbunch* is any of: `None` (meaning all nodes),
+using an {term}`nbunch`. An _nbunch_ is any of: `None` (meaning all nodes),
 a node, or an iterable container of nodes that is not itself a node in the
 graph.
 
@@ -269,7 +267,7 @@ list(H.edges())
 ## What to use as nodes and edges
 
 You might notice that nodes and edges are not specified as NetworkX
-objects.  This leaves you free to use meaningful items as nodes and
+objects. This leaves you free to use meaningful items as nodes and
 edges. The most common choices are numbers or strings, but a node can
 be any hashable object (except `None`), and an edge can be associated
 with any object `x` using `G.add_edge(n1, n2, object=x)`.
@@ -292,9 +290,11 @@ access to edges and neighbors is possible using subscript notation.
 G = nx.Graph([(1, 2, {"color": "yellow"})])
 G[1]  # same as G.adj[1]
 ```
+
 ```{code-cell} ipython3
 G[1][2]
 ```
+
 ```{code-cell} ipython3
 G.edges[1, 2]
 ```
@@ -338,7 +338,7 @@ Attributes such as weights, labels, colors, or whatever Python object you like,
 can be attached to graphs, nodes, or edges.
 
 Each graph, node, and edge can hold key/value attribute pairs in an associated
-attribute dictionary (the keys must be hashable).  By default these are empty,
+attribute dictionary (the keys must be hashable). By default these are empty,
 but attributes can be added or changed using `add_edge`, `add_node` or direct
 manipulation of the attribute dictionaries named `G.graph`, `G.nodes`, and
 `G.edges` for a graph `G`.
@@ -368,6 +368,7 @@ G.add_node(1, time='5pm')
 G.add_nodes_from([3], time='2pm')
 G.nodes[1]
 ```
+
 ```{code-cell} ipython3
 G.nodes[1]['room'] = 714
 G.nodes.data()
@@ -408,19 +409,22 @@ DG = nx.DiGraph()
 DG.add_weighted_edges_from([(1, 2, 0.5), (3, 1, 0.75)])
 DG.out_degree(1, weight='weight')
 ```
+
 ```{code-cell} ipython3
 DG.degree(1, weight='weight')
 ```
+
 ```{code-cell} ipython3
 list(DG.successors(1))
 ```
+
 ```{code-cell} ipython3
 list(DG.neighbors(1))
 ```
 
 Some algorithms work only for directed graphs and others are not well
-defined for directed graphs.  Indeed the tendency to lump directed
-and undirected graphs together is dangerous.  If you want to treat
+defined for directed graphs. Indeed the tendency to lump directed
+and undirected graphs together is dangerous. If you want to treat
 a directed graph as undirected for some measurement you should probably
 convert it using {meth}`Graph.to_undirected` or with
 
@@ -431,13 +435,13 @@ H = nx.Graph(G)  # create an undirected graph H from a directed graph G
 ## Multigraphs
 
 NetworkX provides classes for graphs which allow multiple edges
-between any pair of nodes.  The {class}`MultiGraph` and
+between any pair of nodes. The {class}`MultiGraph` and
 {class}`MultiDiGraph`
 classes allow you to add the same edge twice, possibly with different
-edge data.  This can be powerful for some applications, but many
+edge data. This can be powerful for some applications, but many
 algorithms are not well defined on such graphs.
 Where results are well defined,
-e.g., {meth}`MultiGraph.degree` we provide the function.  Otherwise you
+e.g., {meth}`MultiGraph.degree` we provide the function. Otherwise you
 should convert to a standard graph in a way that makes the measurement
 well defined.
 
@@ -446,6 +450,7 @@ MG = nx.MultiGraph()
 MG.add_weighted_edges_from([(1, 2, 0.5), (1, 2, 0.75), (2, 3, 0.5)])
 dict(MG.degree(weight='weight'))
 ```
+
 ```{code-cell} ipython3
 GG = nx.Graph()
 for n, nbrs in MG.adjacency():
@@ -556,9 +561,11 @@ G.add_edges_from([(1, 2), (1, 3)])
 G.add_node("spam")       # adds node "spam"
 list(nx.connected_components(G))
 ```
+
 ```{code-cell} ipython3
 sorted(d for n, d in G.degree())
 ```
+
 ```{code-cell} ipython3
 nx.clustering(G)
 ```
@@ -578,7 +585,7 @@ supported.
 
 NetworkX is not primarily a graph drawing package but basic drawing with
 Matplotlib as well as an interface to use the open source Graphviz software
-package are included.  These are part of the {doc}`networkx.drawing <reference/drawing>`
+package are included. These are part of the {doc}`networkx.drawing <reference/drawing>`
 module and will be imported if possible.
 
 First import Matplotlib's plot interface (pylab works too)
@@ -604,7 +611,7 @@ subax2 = plt.subplot(122)
 nx.draw_shell(G, nlist=[range(5, 10), range(5)], with_labels=True, font_weight='bold')
 ```
 
-when drawing to an interactive display.  Note that you may need to issue a
+when drawing to an interactive display. Note that you may need to issue a
 Matplotlib
 
     >>> plt.show()
@@ -656,4 +663,3 @@ the graph in dot format for further processing.
     write_dot(G, 'file.dot')
 
 See {doc}`/reference/drawing` for additional details.
-
