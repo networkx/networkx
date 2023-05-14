@@ -119,7 +119,8 @@ def test_random_rooted_tree():
         assert "root" in t[i].graph
         assert "roots" not in t[i].graph
 
-def test_random_rooted_forest():
+
+def test_random_unlabeled_rooted_forest():
     raised = False
     try:
         nx.random_rooted_forest(10, 0, labeled=False, seed=42)
@@ -140,6 +141,30 @@ def test_random_rooted_forest():
     t = nx.random_rooted_forest(15, number_of_forests=10, labeled=False, seed=random)
     random.seed(43)
     s = nx.random_rooted_forest(15, number_of_forests=10, labeled=False, seed=random)
+    for i in range(10):
+        assert nx.utils.misc.graphs_equal(t[i], s[i])
+        for c in nx.connected_components(t[i]):
+            assert nx.is_tree(t[i].subgraph(c))
+        assert "root" not in t[i].graph
+        assert "roots" in t[i].graph
+
+
+def test_random_labeled_rooted_forest():
+    raised = False
+    for i in range(1,10):
+        t1 = nx.random_rooted_forest(i, labeled=True, seed=42)
+        t2 = nx.random_rooted_forest(i, labeled=True, seed=42)
+        print(t1.edges(), t1.graph["roots"])
+        print(t2.edges(), t2.graph["roots"])
+        assert nx.utils.misc.graphs_equal(t1,t2)
+        for c in nx.connected_components(t1):
+            assert nx.is_tree(t1.subgraph(c))
+        assert "root" not in t1.graph
+        assert "roots" in t1.graph
+    random.seed(43)
+    t = nx.random_rooted_forest(15, number_of_forests=10, labeled=True, seed=random)
+    random.seed(43)
+    s = nx.random_rooted_forest(15, number_of_forests=10, labeled=True, seed=random)
     for i in range(10):
         assert nx.utils.misc.graphs_equal(t[i], s[i])
         for c in nx.connected_components(t[i]):
