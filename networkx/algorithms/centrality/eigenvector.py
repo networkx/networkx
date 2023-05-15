@@ -14,8 +14,8 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
 
     Eigenvector centrality computes the centrality for a node by adding
     the centrality of its predecessors. The centrality for node $i$ is the
-    $i$-th element of a left eigenvector associated with the positive
-    eigenvalue $\lambda$ of maximum modulus. Such an eigenvector $x$ is
+    $i$-th element of a left eigenvector associated with the eigenvalue $\lambda$
+    of maximum modulus that is positive. Such an eigenvector $x$ is
     defined up to a multiplicative constant by the equation
 
     .. math::
