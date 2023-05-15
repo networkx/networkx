@@ -429,8 +429,9 @@ def _np_to_nx(edges_np, n_nodes, create_using, root=None, roots=None):
 
 
 def _random_unlabeled_rooted_tree(n, cache_trees, seed):
-    """Returns a random unlabeled rooted tree with `n` nodes drawn uniformly
-    at random: the tree is returned in its np-representation.
+    """Returns an unlabeled rooted tree with `n` nodes drawn uniformly
+    at random using the "RANRUT" algorithm from [1]_. The tree is returned 
+    in its np-representation.
 
     Parameters
     ----------
@@ -444,7 +445,15 @@ def _random_unlabeled_rooted_tree(n, cache_trees, seed):
     Returns
     -------
     (edges, n)
-        The tree, in its np-representation. The root is node 0.
+        A random unlabeled rooted tree with `n` nodes in np-representation.
+        The root is node 0.
+
+    References
+    ----------
+    .. [1] Nijenhuis, Albert, and Wilf, Herbert S. 
+        "Combinatorial algorithms: for computers and calculators".
+        Academic Press, 1978.
+        https://doi.org/10.1016/C2013-0-11243-3
     """
 
     if n == 1:
@@ -466,12 +475,8 @@ def _random_unlabeled_rooted_tree(n, cache_trees, seed):
 
 @py_random_state("seed")
 def random_rooted_tree(n, number_of_trees=None, labeled=True, seed=None, create_using=None):
-    """Returns one or more random rooted trees with `n` nodes drawn uniformly at 
-    random. 
-
-    Note that the interesting case is that of random unlabeled trees.
-    In the labeled case, this function just returns the result
-    of :ref:`random_tree` with a randomly selected root.
+    """Returns one or more rooted trees with `n` nodes drawn uniformly
+    at random. 
 
     Parameters
     ----------
@@ -498,6 +503,13 @@ def random_rooted_tree(n, number_of_trees=None, labeled=True, seed=None, create_
         identifies the root of the tree, which for unlabeled trees is always
         node 0.
 
+    Notes
+    -----
+        
+    The interesting case is that of random unlabeled trees. In the labeled case
+    this function just returns the result of :ref:`random_tree` with a 
+    randomly selected root.
+    
     Raises
     ------
     NetworkXPointlessConcept
@@ -607,9 +619,9 @@ def _select_jd_forests(n, q, cache_forests, seed):
 
 
 def _random_unlabeled_rooted_forest(n, q, cache_trees, cache_forests, seed):
-    """Returns a random unlabeled rooted forest with `n` nodes, and with no more
-    than q nodes per tree, drawn uniformly at random. It is an implementation
-    of algorithm Forest of [1]_.
+    """Returns an unlabeled rooted forest with `n` nodes, and with no more
+    than `q` nodes per tree, drawn uniformly at random. It is an implementation
+    of algorithm "Forest" of [1]_.
 
     Parameters
     ----------
@@ -627,7 +639,8 @@ def _random_unlabeled_rooted_forest(n, q, cache_trees, cache_forests, seed):
     Returns
     -------
     (edges, n, r)
-        The tree (edges, n), in its np-representation, and a list r of root nodes.
+        The tree (edges, n), in its np-representation, and a list r of 
+        root nodes.
 
     References
     ----------
@@ -648,7 +661,7 @@ def _random_unlabeled_rooted_forest(n, q, cache_trees, cache_forests, seed):
 
 
 def _random_labeled_rooted_forest(n, seed, create_using=None):
-    """Returns a random labeled rooted forest with `n` nodes drawn uniformly
+    """Returns a labeled rooted forest with `n` nodes drawn uniformly
     at random using a generalization of Prüfer sequences [1]_.
 
     Parameters
@@ -662,7 +675,7 @@ def _random_labeled_rooted_forest(n, seed, create_using=None):
 
     Returns
     -------
-    A random labeled rooted forest with `n` nodes drawn uniformly at random.
+    A labeled rooted forest with `n` nodes drawn uniformly at random.
     The attribute "roots" is a set of integers containing the roots.
 
     References
@@ -671,9 +684,10 @@ def _random_labeled_rooted_forest(n, seed, create_using=None):
         zur Erlangung des akademischen Grades Magister der 
         Naturwissenschaften an der Formal- und Naturwissenschaftlichen 
         Fakultät der Universität Wien. Wien, May 2000.
-
     """
     
+    # Select the number of roots by iterating over the cumulative count of trees
+    # with at most k roots
     def _select_k(n, seed):
         r = seed.randint(0, (n+1)**(n-1) - 1)
         cum_sum = 0
@@ -689,7 +703,6 @@ def _random_labeled_rooted_forest(n, seed, create_using=None):
     if n == 0:
         F.graph["roots"] = {}
         return F
-    F.add_nodes_from(range(n))
     # Select the number of roots k
     k = _select_k(n, seed)
     if k == n:
@@ -700,13 +713,14 @@ def _random_labeled_rooted_forest(n, seed, create_using=None):
     # Nonroots
     p = set(range(n)).difference(roots)
     # Coding sequence
-    N = [seed.choice(range(n)) for i in range(n - k - 1)]
+    N = [seed.randint(0, n - 1) for i in range(n - k - 1)]
     # Multiset of elements in N also in p
     degree = Counter([x for x in N if x in p])
     # Iterator over the elements of p with degree zero
     iterator = iter(x for x in p if degree[x] == 0)
     u = last = next(iterator)
-
+    # This loop is identical to that for Prüfer sequences,
+    # except that we can draw vertices only from p
     for v in N:
         F.add_edge(u, v)
         degree[v] -= 1
@@ -719,9 +733,10 @@ def _random_labeled_rooted_forest(n, seed, create_using=None):
     F.graph["roots"] = set(roots)
     return F
 
+
 @py_random_state("seed")
 def random_rooted_forest(n, q=None, number_of_forests=None, labeled=True, seed=None, create_using=None):
-    """Returns one or more random rooted forests with `n` nodes,
+    """Returns one or more rooted forests with `n` nodes,
     and with no more than q nodes per tree, drawn uniformly at random.
     The "roots" graph attribute identifies the roots of the forest.
 
@@ -730,10 +745,10 @@ def random_rooted_forest(n, q=None, number_of_forests=None, labeled=True, seed=N
     n : int
         The number of nodes
     q : int or None (default)
-        If not None, the maximum number of nodes per tree when `labeled``
+        If not None, the maximum number of nodes per tree when `labeled`
         is False. Raises an exception if `labeled` is True.
     number_of_forests : int or None (default)
-        If not None, this number of forests is generated and returned
+        If not None, this number of forests is generated and returned.
     labeled : bool
         If True (default), generates labeled rooted forests uniformly at 
         random. If False, generates unlabeled rooted forests uniformly at 
@@ -747,8 +762,8 @@ def random_rooted_forest(n, q=None, number_of_forests=None, labeled=True, seed=N
 
     Notes
     -----
-    The labeled version uses a generalization of Prüfer sequences [2]_.
-    The unlabeled version uses the algorithm "Forest" of [1]_.
+    The labeled version uses a generalization of Prüfer sequences [1]_.
+    The unlabeled version uses the algorithm "Forest" of [2]_.
 
     Returns
     -------
@@ -803,20 +818,20 @@ def random_rooted_forest(n, q=None, number_of_forests=None, labeled=True, seed=N
 
 
 def _num_trees(n, cache_trees):
-    """Returns the number of unlabeled trees with `n` nodes. See also https://oeis.org/A000055.
-
+    """Returns the number of unlabeled trees with `n` nodes.
+    See also https://oeis.org/A000055.
 
     Parameters
     ----------
     n : int
-        The number of nodes
+        The number of nodes.
     cache_trees : list of ints
         Cache for :ref:`_num_rooted_trees`.
 
     Returns
     -------
     int
-        the number of unlabeled trees with `n` nodes.
+        The number of unlabeled trees with `n` nodes.
     """
 
     r = _num_rooted_trees(n, cache_trees) - sum([_num_rooted_trees(j, cache_trees) * _num_rooted_trees(n - j, cache_trees) for j in range(1, n // 2 + 1)]) 
@@ -832,7 +847,7 @@ def _bicenter(n, cache, seed):
     Parameters
     ----------
     n : int
-        The number of nodes (must be even)
+        The number of nodes (must be even).
     cache : list of ints.
         Cache for :ref:`_num_rooted_trees`.
     seed : random_state
@@ -841,7 +856,7 @@ def _bicenter(n, cache, seed):
     Returns
     -------
     (edges, n)
-        The tree in its np-representation
+        The tree in its np-representation.
 
     References
     ----------
@@ -878,7 +893,7 @@ def _random_unlabeled_tree(n, cache_trees, cache_forests, seed):
     Returns
     -------
     (edges, n)
-        The tree in its np-representation
+        The tree in its np-representation.
 
     References
     ----------
@@ -902,7 +917,7 @@ def _random_unlabeled_tree(n, cache_trees, cache_forests, seed):
 
 @py_random_state("seed")
 def random_tree(n, labeled=True, number_of_trees=None, seed=None, create_using=None):
-    """Returns one or more random trees with `n` nodes.
+    """Returns one or more trees with `n` nodes drawn uniformly at random.
 
     Parameters
     ----------
