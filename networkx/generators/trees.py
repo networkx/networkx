@@ -662,7 +662,8 @@ def _random_unlabeled_rooted_forest(n, q, cache_trees, cache_forests, seed):
 
 def _random_labeled_rooted_forest(n, seed, create_using=None):
     """Returns a labeled rooted forest with `n` nodes drawn uniformly
-    at random using a generalization of Prüfer sequences [1]_.
+    at random using a generalization of Prüfer sequences [1]_ in
+    the form described in [2]_.
 
     Parameters
     ----------
@@ -680,7 +681,10 @@ def _random_labeled_rooted_forest(n, seed, create_using=None):
 
     References
     ----------
-    .. [1] Rubey, Martin. "Counting Spanning Trees". Diplomarbeit
+    .. [1] Knuth, Donald E. "Another Enumeration of Trees". 
+        Canadian Journal of Mathematics, 20, 1077-1086, 1968.
+        https://doi.org/10.4153/CJM-1968-104-8
+    .. [2] Rubey, Martin. "Counting Spanning Trees". Diplomarbeit
         zur Erlangung des akademischen Grades Magister der 
         Naturwissenschaften an der Formal- und Naturwissenschaftlichen 
         Fakultät der Universität Wien. Wien, May 2000.
@@ -762,8 +766,9 @@ def random_rooted_forest(n, q=None, number_of_forests=None, labeled=True, seed=N
 
     Notes
     -----
-    The labeled version uses a generalization of Prüfer sequences [1]_.
-    The unlabeled version uses the algorithm "Forest" of [2]_.
+    The labeled version uses a generalization of Prüfer sequences [1]_
+    in the form described in [2]_. The unlabeled version uses the 
+    algorithm "Forest" of [3]_.
 
     Returns
     -------
@@ -781,11 +786,14 @@ def random_rooted_forest(n, q=None, number_of_forests=None, labeled=True, seed=N
 
     References
     ----------
-    .. [1] Rubey, Martin. "Counting Spanning Trees". Diplomarbeit
+    .. [1] Knuth, Donald E. "Another Enumeration of Trees". 
+        Canadian Journal of Mathematics, 20, 1077-1086, 1968.
+        https://doi.org/10.4153/CJM-1968-104-8
+    .. [2] Rubey, Martin. "Counting Spanning Trees". Diplomarbeit
         zur Erlangung des akademischen Grades Magister der 
         Naturwissenschaften an der Formal- und Naturwissenschaftlichen 
         Fakultät der Universität Wien. Wien, May 2000.    
-    .. [2] Wilf, Herbert S. "The uniform selection of free trees."
+    .. [3] Wilf, Herbert S. "The uniform selection of free trees."
         Journal of Algorithms 2.2 (1981): 204-207.
         https://doi.org/10.1016/0196-6774(81)90021-3
     """
