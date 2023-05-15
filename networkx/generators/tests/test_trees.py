@@ -5,7 +5,8 @@ from networkx.utils import arbitrary_element, graphs_equal
 import random
 
 
-@pytest.mark.parametrize("prefix_tree_fn", (nx.prefix_tree, nx.prefix_tree_recursive))
+@pytest.mark.parametrize("prefix_tree_fn",
+                         (nx.prefix_tree, nx.prefix_tree_recursive))
 def test_basic_prefix_tree(prefix_tree_fn):
     # This example is from the Wikipedia article "Trie"
     # <https://en.wikipedia.org/wiki/Trie>.
@@ -165,7 +166,7 @@ def test_random_unlabeled_rooted_forest():
         raised = True
     assert raised
     for i in range(1, 10):
-        for q in range(1, i+1):
+        for q in range(1, i + 1):
             t1 = nx.random_rooted_forest(i, q, labeled=False, seed=42)
             t2 = nx.random_rooted_forest(i, q, labeled=False, seed=42)
             assert nx.utils.misc.graphs_equal(t1, t2)
