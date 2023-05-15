@@ -1,8 +1,9 @@
+import random
+
 import pytest
 
 import networkx as nx
 from networkx.utils import arbitrary_element, graphs_equal
-import random
 
 
 @pytest.mark.parametrize("prefix_tree_fn", (nx.prefix_tree, nx.prefix_tree_recursive))

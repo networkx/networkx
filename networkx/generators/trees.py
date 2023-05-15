@@ -1,9 +1,11 @@
 """Functions for generating trees."""
-from collections import defaultdict, Counter
-import networkx as nx
-import numpy as np
-from networkx.utils import py_random_state
+from collections import Counter, defaultdict
 from math import comb, factorial
+
+import numpy as np
+
+import networkx as nx
+from networkx.utils import py_random_state
 
 __all__ = [
     "prefix_tree",
@@ -441,7 +443,7 @@ def _np_to_nx(edges_np, n_nodes, create_using, root=None, roots=None):
 
     G = nx.empty_graph(n_nodes, create_using)
     G.add_edges_from(
-        list(map(lambda x: (x[0], x[1]), np.reshape(edges_np, (len(edges_np) // 2, 2))))
+        [(x[0], x[1]) for x in np.reshape(edges_np, (len(edges_np) // 2, 2))]
     )
     if root is not None:
         G.graph["root"] = root
