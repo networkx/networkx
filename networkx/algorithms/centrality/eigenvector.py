@@ -31,7 +31,8 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
 
     That is, adding the eigenvector centralities of the predecessors of
     $i$ one obtains the eigenvector centrality of $i$ multiplied by
-    $\lambda$.
+    $\lambda$. In the case of undirected graphs, $x$ also solves the familiar
+    right-eigenvector equation $Ax = \lambda x$.
 
     By virtue of the Perron–Frobenius theorem [1]_, if `G` is strongly
     connected there is a unique eigenvector $x$, and all its entries
