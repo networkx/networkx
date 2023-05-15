@@ -337,14 +337,14 @@ def _init_cache_num_rooted_trees():
 
 
 def _num_rooted_trees(n, cache_trees):
-    """Returns the number of unlabeled rooted trees with `n` nodes. 
+    """Returns the number of unlabeled rooted trees with `n` nodes.
     See also https://oeis.org/A000081.
 
     Parameters
     ----------
     n : int
         The number of nodes
-    cache_trees : list of ints 
+    cache_trees : list of ints
         The $i$-th element is the number of unlabeled rooted trees with $i$ nodes,
         which is used as a cache (and is extended to length $n+1$ if needed)
 
@@ -354,7 +354,7 @@ def _num_rooted_trees(n, cache_trees):
         The number of unlabeled rooted trees with `n` nodes.
     """
 
-    for n_i in range(len(cache_trees), n+1):
+    for n_i in range(len(cache_trees), n + 1):
         cache_trees.append(sum([d * cache_trees[n_i - j * d] * cache_trees[d]
                            for d in range(1, n_i) for j in range(1, (n_i - 1) // d + 1)]) // (n_i - 1))
     return cache_trees[n]
@@ -362,7 +362,7 @@ def _num_rooted_trees(n, cache_trees):
 
 def _select_jd_trees(n, cache_trees, seed):
     """Given $n$, returns a pair of positive integers $(j,d)$ with the probability
-        specified in formula (5) of Chapter 29 of [1]_. 
+        specified in formula (5) of Chapter 29 of [1]_.
 
     Parameters
     ----------
@@ -376,12 +376,12 @@ def _select_jd_trees(n, cache_trees, seed):
     Returns
     -------
     (int, int)
-        A pair of positive integers $(j,d)$ satisfying formula (5) of 
-        Chapter 29 of [1]_. 
+        A pair of positive integers $(j,d)$ satisfying formula (5) of
+        Chapter 29 of [1]_.
 
     References
     ----------
-    .. [1] Nijenhuis, Albert, and Wilf, Herbert S. 
+    .. [1] Nijenhuis, Albert, and Wilf, Herbert S.
         "Combinatorial algorithms: for computers and calculators."
         Academic Press, 1978.
         https://doi.org/10.1016/C2013-0-11243-3
@@ -412,7 +412,7 @@ def _np_to_nx(edges_np, n_nodes, create_using, root=None, roots=None):
     create_using : NetworkX graph constructor.
         Graph type to create. If graph instance, then cleared before populated.
     root: int
-        The "root" attribute of the graph will be set to this value, if not 
+        The "root" attribute of the graph will be set to this value, if not
         None (the default).
     roots: collection of ints
         The "roots" attribute of the graph will be set to this value, if not
@@ -426,7 +426,7 @@ def _np_to_nx(edges_np, n_nodes, create_using, root=None, roots=None):
 
     G = nx.empty_graph(n_nodes, create_using)
     G.add_edges_from(
-        list(map(lambda x: (x[0], x[1]), np.reshape(edges_np, (len(edges_np)//2, 2)))))
+        list(map(lambda x: (x[0], x[1]), np.reshape(edges_np, (len(edges_np) // 2, 2)))))
     if root is not None:
         G.graph["root"] = root
     if roots is not None:
@@ -436,7 +436,7 @@ def _np_to_nx(edges_np, n_nodes, create_using, root=None, roots=None):
 
 def _random_unlabeled_rooted_tree(n, cache_trees, seed):
     """Returns an unlabeled rooted tree with `n` nodes drawn uniformly
-    at random using the "RANRUT" algorithm from [1]_. The tree is returned 
+    at random using the "RANRUT" algorithm from [1]_. The tree is returned
     in its np-representation.
 
     Parameters
@@ -456,7 +456,7 @@ def _random_unlabeled_rooted_tree(n, cache_trees, seed):
 
     References
     ----------
-    .. [1] Nijenhuis, Albert, and Wilf, Herbert S. 
+    .. [1] Nijenhuis, Albert, and Wilf, Herbert S.
         "Combinatorial algorithms: for computers and calculators."
         Academic Press, 1978.
         https://doi.org/10.1016/C2013-0-11243-3
@@ -472,18 +472,19 @@ def _random_unlabeled_rooted_tree(n, cache_trees, seed):
     j, d = _select_jd_trees(n, cache_trees, seed)
     t1, t1_nodes = _random_unlabeled_rooted_tree(n - j * d, cache_trees, seed)
     t2, t2_nodes = _random_unlabeled_rooted_tree(d, cache_trees, seed)
-    t12 = np.array([(t2_nodes*((i-1)//2) + t1_nodes)*(i % 2)
-                   for i in range(2*j)])
+    t12 = np.array([(t2_nodes * ((i - 1) // 2) + t1_nodes) * (i % 2)
+                   for i in range(2 * j)])
     t1 = np.append(t1, t12)
     for i in range(j):
-        t1 = np.append(t1, t2+(t2_nodes*i+t1_nodes))
-    return t1, t1_nodes+j*t2_nodes
+        t1 = np.append(t1, t2 + (t2_nodes * i + t1_nodes))
+    return t1, t1_nodes + j * t2_nodes
 
 
 @py_random_state("seed")
-def random_rooted_tree(n, number_of_trees=None, labeled=True, seed=None, create_using=None):
+def random_rooted_tree(n, number_of_trees=None,
+                       labeled=True, seed=None, create_using=None):
     """Returns one or more rooted trees with `n` nodes drawn uniformly
-    at random. 
+    at random.
 
     Parameters
     ----------
@@ -492,8 +493,8 @@ def random_rooted_tree(n, number_of_trees=None, labeled=True, seed=None, create_
     number_of_trees : int or None (default)
         If not None, this number of trees is generated and returned.
     labeled : bool
-        If True (default), generates labeled rooted trees uniformly at 
-        random. If False, generates unlabeled rooted trees uniformly at 
+        If True (default), generates labeled rooted trees uniformly at
+        random. If False, generates unlabeled rooted trees uniformly at
         random.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
@@ -506,7 +507,7 @@ def random_rooted_tree(n, number_of_trees=None, labeled=True, seed=None, create_
     -------
     :ref:`networkx.Graph` or list of :ref:`networkx.Graph`
         A single `networkx.Graph` (or a list thereof, if `number_of_trees`
-        is specified) representing the tree. The "root" graph attribute 
+        is specified) representing the tree. The "root" graph attribute
         identifies the root of the tree, which for unlabeled trees is always
         node 0.
 
@@ -514,7 +515,7 @@ def random_rooted_tree(n, number_of_trees=None, labeled=True, seed=None, create_
     -----
 
     The interesting case is that of random unlabeled trees. In the labeled case
-    this function just returns the result of :ref:`random_tree` with a 
+    this function just returns the result of :ref:`random_tree` with a
     randomly selected root.
 
     Raises
@@ -532,7 +533,8 @@ def random_rooted_tree(n, number_of_trees=None, labeled=True, seed=None, create_
         t.graph["root"] = seed.randint(0, n - 1)
         return t
 
-    if number_of_trees != None and number_of_trees > 1 and hasattr(create_using, "adj"):
+    if number_of_trees is not None and number_of_trees > 1 and hasattr(
+            create_using, "adj"):
         raise nx.NetworkXException(
             "Cannot use a graph instance to generate many trees")
 
@@ -544,12 +546,15 @@ def random_rooted_tree(n, number_of_trees=None, labeled=True, seed=None, create_
         if number_of_trees is None:
             return _random_labeled_rooted_tree(n, seed, create_using)
 
-        return [_random_labeled_rooted_tree(n, seed, create_using) for i in range(number_of_trees)]
+        return [_random_labeled_rooted_tree(
+            n, seed, create_using) for i in range(number_of_trees)]
     else:
         cache_trees = _init_cache_num_rooted_trees()
         if number_of_trees is None:
-            return _np_to_nx(*_random_unlabeled_rooted_tree(n, cache_trees, seed), create_using, root=0)
-        return [_np_to_nx(*_random_unlabeled_rooted_tree(n, cache_trees, seed), create_using, root=0) for i in range(number_of_trees)]
+            return _np_to_nx(*_random_unlabeled_rooted_tree(n,
+                             cache_trees, seed), create_using, root=0)
+        return [_np_to_nx(*_random_unlabeled_rooted_tree(n, cache_trees, seed),
+                          create_using, root=0) for i in range(number_of_trees)]
 
 
 def _init_cache_num_rooted_forests():
@@ -569,8 +574,8 @@ def _num_rooted_forests(n, q, cache_forests):
     q : int
         The maximum number of nodes for each tree of the forest.
     cache_forests : list of ints
-        The $i$-th element is the number of unlabeled rooted forests with 
-        $i$ nodes, and with no more than `q` nodes per tree; this is used 
+        The $i$-th element is the number of unlabeled rooted forests with
+        $i$ nodes, and with no more than `q` nodes per tree; this is used
         as a cache (and is extended to length `n` + 1 if needed).
 
     Returns
@@ -585,7 +590,7 @@ def _num_rooted_forests(n, q, cache_forests):
         Journal of Algorithms 2.2 (1981): 204-207.
         https://doi.org/10.1016/0196-6774(81)90021-3
     """
-    for n_i in range(len(cache_forests), n+1):
+    for n_i in range(len(cache_forests), n + 1):
         q_i = min(n_i, q)
         cache_forests.append(sum([d * cache_forests[n_i - j * d] * cache_forests[d - 1]
                              for d in range(1, q_i + 1) for j in range(1, n_i // d + 1)]) // n_i)
@@ -602,7 +607,7 @@ def _select_jd_forests(n, q, cache_forests, seed):
     n : int
         The number of nodes.
     q : int
-        The maximum number of nodes for each tree of the forest  .      
+        The maximum number of nodes for each tree of the forest  .
     cache_forests : list of ints
         Cache for :ref:`_num_rooted_forests`.
     seed : random_state
@@ -640,7 +645,7 @@ def _random_unlabeled_rooted_forest(n, q, cache_trees, cache_forests, seed):
         The number of nodes.
     q : int
         The maximum number of nodes per tree.
-    cache_trees : 
+    cache_trees :
         Cache for :ref:`_num_rooted_trees`.
     cache_forests :
         Cache for :ref:`_num_rooted_forests`.
@@ -650,13 +655,13 @@ def _random_unlabeled_rooted_forest(n, q, cache_trees, cache_forests, seed):
     Returns
     -------
     (edges, n, r)
-        The tree (edges, n), in its np-representation, and a list r of 
+        The tree (edges, n), in its np-representation, and a list r of
         root nodes.
 
     References
     ----------
     .. [1] Wilf, Herbert S. "The uniform selection of free trees."
-        Journal of Algorithms 2.2 (1981): 204-207.  
+        Journal of Algorithms 2.2 (1981): 204-207.
         https://doi.org/10.1016/0196-6774(81)90021-3
     """
     if n == 0:
@@ -668,7 +673,7 @@ def _random_unlabeled_rooted_forest(n, q, cache_trees, cache_forests, seed):
     t2, t2_nodes = _random_unlabeled_rooted_tree(d, cache_trees, seed)
     for i in range(j):
         r1.append(t1_nodes)
-        t1 = np.append(t1, t2+t1_nodes)
+        t1 = np.append(t1, t2 + t1_nodes)
         t1_nodes += t2_nodes
     return (t1, t1_nodes, r1)
 
@@ -694,19 +699,19 @@ def _random_labeled_rooted_forest(n, seed, create_using=None):
 
     References
     ----------
-    .. [1] Knuth, Donald E. "Another Enumeration of Trees." 
+    .. [1] Knuth, Donald E. "Another Enumeration of Trees."
         Canadian Journal of Mathematics, 20 (1968): 1077-1086.
         https://doi.org/10.4153/CJM-1968-104-8
     .. [2] Rubey, Martin. "Counting Spanning Trees". Diplomarbeit
-        zur Erlangung des akademischen Grades Magister der 
-        Naturwissenschaften an der Formal- und Naturwissenschaftlichen 
+        zur Erlangung des akademischen Grades Magister der
+        Naturwissenschaften an der Formal- und Naturwissenschaftlichen
         Fakultät der Universität Wien. Wien, May 2000.
     """
 
     # Select the number of roots by iterating over the cumulative count of trees
     # with at most k roots
     def _select_k(n, seed):
-        r = seed.randint(0, (n+1)**(n-1) - 1)
+        r = seed.randint(0, (n + 1)**(n - 1) - 1)
         cum_sum = 0
         for k in range(1, n):
             cum_sum += (factorial(n - 1) * n**(n - k)
@@ -752,7 +757,8 @@ def _random_labeled_rooted_forest(n, seed, create_using=None):
 
 
 @py_random_state("seed")
-def random_rooted_forest(n, q=None, number_of_forests=None, labeled=True, seed=None, create_using=None):
+def random_rooted_forest(n, q=None, number_of_forests=None,
+                         labeled=True, seed=None, create_using=None):
     """Returns one or more rooted forests with `n` nodes,
     and with no more than q nodes per tree, drawn uniformly at random.
     The "roots" graph attribute identifies the roots of the forest.
@@ -767,8 +773,8 @@ def random_rooted_forest(n, q=None, number_of_forests=None, labeled=True, seed=N
     number_of_forests : int or None (default)
         If not None, this number of forests is generated and returned.
     labeled : bool
-        If True (default), generates labeled rooted forests uniformly at 
-        random. If False, generates unlabeled rooted forests uniformly at 
+        If True (default), generates labeled rooted forests uniformly at
+        random. If False, generates unlabeled rooted forests uniformly at
         random.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
@@ -780,13 +786,13 @@ def random_rooted_forest(n, q=None, number_of_forests=None, labeled=True, seed=N
     Notes
     -----
     The labeled version uses a generalization of Prüfer sequences [1]_
-    in the form described in [2]_. The unlabeled version uses the 
+    in the form described in [2]_. The unlabeled version uses the
     algorithm "Forest" of [3]_.
 
     Returns
     -------
         A single `networkx.Graph` (or a list thereof, if `number_of_forests`
-        is specified) representing the forest. The "roots" graph attribute 
+        is specified) representing the forest. The "roots" graph attribute
         is a set containing the roots of the trees in the forests.
 
     Raises
@@ -799,18 +805,19 @@ def random_rooted_forest(n, q=None, number_of_forests=None, labeled=True, seed=N
 
     References
     ----------
-    .. [1] Knuth, Donald E. "Another Enumeration of Trees". 
+    .. [1] Knuth, Donald E. "Another Enumeration of Trees".
         Canadian Journal of Mathematics, 20 (1968): 1077-1086.
         https://doi.org/10.4153/CJM-1968-104-8
     .. [2] Rubey, Martin. "Counting Spanning Trees". Diplomarbeit
-        zur Erlangung des akademischen Grades Magister der 
-        Naturwissenschaften an der Formal- und Naturwissenschaftlichen 
-        Fakultät der Universität Wien. Wien, May 2000.    
+        zur Erlangung des akademischen Grades Magister der
+        Naturwissenschaften an der Formal- und Naturwissenschaftlichen
+        Fakultät der Universität Wien. Wien, May 2000.
     .. [3] Wilf, Herbert S. "The uniform selection of free trees."
         Journal of Algorithms 2.2 (1981): 204-207.
         https://doi.org/10.1016/0196-6774(81)90021-3
     """
-    if number_of_forests != None and number_of_forests > 1 and hasattr(create_using, "adj"):
+    if number_of_forests is not None and number_of_forests > 1 and hasattr(
+            create_using, "adj"):
         raise nx.NetworkXException(
             "Cannot use a graph instance to generate many forests")
 
@@ -820,7 +827,8 @@ def random_rooted_forest(n, q=None, number_of_forests=None, labeled=True, seed=N
                 "q can only be specified for unlabeled forests")
         if number_of_forests is None:
             return _random_labeled_rooted_forest(n, seed, create_using)
-        return [_random_labeled_rooted_forest(n, seed, create_using) for i in range(number_of_forests)]
+        return [_random_labeled_rooted_forest(
+            n, seed, create_using) for i in range(number_of_forests)]
 
     if q is None:
         q = n
@@ -863,7 +871,7 @@ def _num_trees(n, cache_trees):
     r = _num_rooted_trees(n, cache_trees) - sum([_num_rooted_trees(
         j, cache_trees) * _num_rooted_trees(n - j, cache_trees) for j in range(1, n // 2 + 1)])
     if n % 2 == 0:
-        r += comb(_num_rooted_trees(n//2, cache_trees) + 1, 2)
+        r += comb(_num_rooted_trees(n // 2, cache_trees) + 1, 2)
     return r
 
 
@@ -944,7 +952,8 @@ def _random_unlabeled_tree(n, cache_trees, cache_forests, seed):
 
 
 @py_random_state("seed")
-def random_tree(n, labeled=True, number_of_trees=None, seed=None, create_using=None):
+def random_tree(n, labeled=True, number_of_trees=None,
+                seed=None, create_using=None):
     """Returns one or more trees with `n` nodes drawn uniformly at random.
 
     Parameters
@@ -966,8 +975,8 @@ def random_tree(n, labeled=True, number_of_trees=None, seed=None, create_using=N
     Returns
     -------
     :ref:`networkx.Graph` or list of :ref:`networkx.Graph`
-        A single `networkx.Graph` (or a list thereof, if `number_of_trees` is specified) 
-        representing the tree, generated uniformly at random. Each tree is given as an 
+        A single `networkx.Graph` (or a list thereof, if `number_of_trees` is specified)
+        representing the tree, generated uniformly at random. Each tree is given as an
         undirected graph, whose nodes are numbers in the set {0, …, *n* - 1}.
 
     Raises
@@ -980,7 +989,7 @@ def random_tree(n, labeled=True, number_of_trees=None, seed=None, create_using=N
 
     Notes
     -----
-    The current implementation of this function for labeled trees generates 
+    The current implementation of this function for labeled trees generates
     a uniformly random Prüfer sequence then converts that to a tree via the
     :func:`~networkx.from_prufer_sequence` function. Since there is a
     bijection between Prüfer sequences of length *n* - 2 and trees on
@@ -1029,7 +1038,8 @@ def random_tree(n, labeled=True, number_of_trees=None, seed=None, create_using=N
         Journal of Algorithms 2.2 (1981): 204-207.
         https://doi.org/10.1016/0196-6774(81)90021-3
     """
-    if number_of_trees != None and number_of_trees > 1 and hasattr(create_using, "adj"):
+    if number_of_trees is not None and number_of_trees > 1 and hasattr(
+            create_using, "adj"):
         raise nx.NetworkXException(
             "Cannot use a graph instance to generate many trees")
 
@@ -1040,11 +1050,14 @@ def random_tree(n, labeled=True, number_of_trees=None, seed=None, create_using=N
         if number_of_trees is None:
             return _random_labeled_tree(n, seed, create_using)
         else:
-            return [_random_labeled_tree(n, seed, create_using) for i in range(number_of_trees)]
+            return [_random_labeled_tree(n, seed, create_using)
+                    for i in range(number_of_trees)]
     else:
         cache_trees = _init_cache_num_rooted_trees()
         cache_forests = _init_cache_num_rooted_forests()
         if number_of_trees is None:
-            return _np_to_nx(*_random_unlabeled_tree(n, cache_trees, cache_forests, seed), create_using)
+            return _np_to_nx(
+                *_random_unlabeled_tree(n, cache_trees, cache_forests, seed), create_using)
         else:
-            return [_np_to_nx(*_random_unlabeled_tree(n, cache_trees, cache_forests, seed), create_using) for i in range(number_of_trees)]
+            return [_np_to_nx(*_random_unlabeled_tree(n, cache_trees, cache_forests,
+                              seed), create_using) for i in range(number_of_trees)]
