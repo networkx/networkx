@@ -23,9 +23,16 @@ X contributors. Highlights include:
 Improvements
 ------------
 
+- [`#6654 <https://github.com/networkx/networkx/pull/6654>`_]
+  Function ``cycle_basis`` switched from using Python sets to dicts so the
+  results are now deterministic (not dependent on order reported by a set).
 
 API Changes
 -----------
+- [`#6651 <https://github.com/networkx/networkx/pull/6651>`_]
+  In `is_semiconnected`, the keyword argument `topo_order` has been removed.
+  That argument resulted in silently incorrect results more often than not.
+
 
 
 Deprecations
