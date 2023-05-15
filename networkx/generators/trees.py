@@ -419,8 +419,8 @@ def _np_to_nx(edges_np, n_nodes, create_using, root=None, roots=None):
         The graph given in input (in its np-representation) as a :ref:`networkx.Graph`.
     """
 
-    G.add_edges_from(list(map(lambda x: (x[0],x[1]), np.reshape(edges_np,(len(edges_np)//2,2)))), create_using)
-    G.add_nodes_from(list(range(n_nodes)))
+    G = nx.empty_graph(n_nodes, create_using)
+    G.add_edges_from(list(map(lambda x: (x[0],x[1]), np.reshape(edges_np,(len(edges_np)//2,2)))))
     if root is not None:
         G.graph["root"] = root
     if roots is not None:
