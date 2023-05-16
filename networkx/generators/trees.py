@@ -12,8 +12,8 @@ __all__ = [
     "prefix_tree_recursive",
     "random_tree",
     "random_rooted_tree",
-    "random_rooted_forest"
- ]
+    "random_rooted_forest",
+]
 
 
 def prefix_tree(paths):
