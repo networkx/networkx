@@ -503,7 +503,7 @@ def _random_unlabeled_rooted_tree(n, cache_trees, seed):
 def random_rooted_tree(
     n, number_of_trees=None, labeled=True, seed=None, create_using=None
 ):
-    """Returns one or more rooted trees with `n` nodes drawn uniformly
+    """Returns one or more (depending on `number_of_trees`) rooted trees with `n` nodes drawn uniformly
     at random.
 
     Parameters
@@ -519,7 +519,7 @@ def random_rooted_tree(
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
-        Graph type to create. If graph instance, then cleared before populated.
+        Graph type to create. If it is a graph instance, then it gets cleared before being populated.
         It cannot be an instance if `number_of_trees` is greater than one.
 
     Returns
@@ -812,7 +812,7 @@ def _random_labeled_rooted_forest(n, seed, create_using=None):
 def random_rooted_forest(
     n, q=None, number_of_forests=None, labeled=True, seed=None, create_using=None
 ):
-    """Returns one or more rooted forests with `n` nodes,
+    """Returns one or more (depending on `number_of_forests`) rooted forests with `n` nodes,
     and with no more than q nodes per tree, drawn uniformly at random.
     The "roots" graph attribute identifies the roots of the forest.
 
@@ -832,7 +832,7 @@ def random_rooted_forest(
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
-        Graph type to create. If graph instance, then cleared before populated.
+        Graph type to create. If it is a graph instance, then it gets cleared before being populated.
         It cannot be an instance if `number_of_forests` is greater than one.
 
     Notes
@@ -1018,7 +1018,7 @@ def _random_unlabeled_tree(n, cache_trees, cache_forests, seed):
 
 @py_random_state("seed")
 def random_tree(n, labeled=True, number_of_trees=None, seed=None, create_using=None):
-    """Returns one or more trees with `n` nodes drawn uniformly at random.
+    """Returns one or more (depending on `number_of_trees`) trees with `n` nodes drawn uniformly at random.
 
     Parameters
     ----------
@@ -1033,7 +1033,7 @@ def random_tree(n, labeled=True, number_of_trees=None, seed=None, create_using=N
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
-        Graph type to create. If graph instance, then cleared before populated.
+        Graph type to create. If it is a graph instance, then it gets cleared before being populated.
         It cannot be an instance if `number_of_trees` is greater than one.
 
     Returns
