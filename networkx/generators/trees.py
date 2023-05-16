@@ -415,7 +415,7 @@ def _select_jd_trees(n, cache_trees, seed):
 
 
 def _np_to_nx(edges_np, n_nodes, create_using, root=None, roots=None):
-    """Converts the np-representation of a graph to a :ref:`networkx.Graph`.
+    """Converts the np-representation of a graph to a :class:`networkx.Graph`.
         The np-representation is given by list of even length, where each pair
         of consecutive integers represents an edge, and a integer `n_nodes`.
         Integers in the list are numbered in `range(n_nodes)`.
@@ -437,8 +437,8 @@ def _np_to_nx(edges_np, n_nodes, create_using, root=None, roots=None):
 
     Returns
     -------
-    :ref:`networkx.Graph`
-        The graph given in input (in its np-representation) as a :ref:`networkx.Graph`.
+    :class:`networkx.Graph`
+        The graph given in input (in its np-representation) as a :class:`networkx.Graph`.
     """
 
     G = nx.empty_graph(n_nodes, create_using)
@@ -512,10 +512,9 @@ def random_rooted_tree(
         The number of nodes
     number_of_trees : int or None (default)
         If not None, this number of trees is generated and returned.
-    labeled : bool
-        If True (default), generates labeled rooted trees uniformly at
-        random. If False, generates unlabeled rooted trees uniformly at
-        random.
+    labeled : bool (default=True)
+        If True, generates labeled rooted trees uniformly at random.
+        If False, generates unlabeled rooted trees uniformly at random.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
@@ -525,7 +524,7 @@ def random_rooted_tree(
 
     Returns
     -------
-    :ref:`networkx.Graph` or list of :ref:`networkx.Graph`
+    :class:`networkx.Graph` or list of :class:`networkx.Graph`
         A single `networkx.Graph` (or a list thereof, if `number_of_trees`
         is specified) representing the tree. The "root" graph attribute
         identifies the root of the tree, which for unlabeled trees is always
@@ -536,7 +535,7 @@ def random_rooted_tree(
 
     The interesting case is that of random unlabeled trees, whose generation
     uses the "RANRUT" algorithm from [1]_. In the labeled case
-    this function just returns the result of :ref:`random_tree` with a
+    this function just returns the result of :func:`random_tree` with a
     randomly selected root.
 
     Raises
@@ -826,10 +825,9 @@ def random_rooted_forest(
         is False. Raises an exception if `labeled` is True.
     number_of_forests : int or None (default)
         If not None, this number of forests is generated and returned.
-    labeled : bool
-        If True (default), generates labeled rooted forests uniformly at
-        random. If False, generates unlabeled rooted forests uniformly at
-        random.
+    labeled : bool (default=True)
+        If True, generates labeled rooted trees uniformly at random.
+        If False, generates unlabeled rooted trees uniformly at random.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
@@ -845,6 +843,7 @@ def random_rooted_forest(
 
     Returns
     -------
+    :class:`networkx.Graph` or list of :class:`networkx.Graph`
         A single `networkx.Graph` (or a list thereof, if `number_of_forests`
         is specified) representing the forest. The "roots" graph attribute
         is a set containing the roots of the trees in the forests.
@@ -1025,9 +1024,9 @@ def random_tree(n, labeled=True, number_of_trees=None, seed=None, create_using=N
     ----------
     n : int
         The number of nodes
-    labeled : bool
-        If True (default), generates labeled trees uniformly at random.
-        If False, generates unlabeled trees uniformly at random.
+    labeled : bool (default=True)
+        If True, generates labeled rooted trees uniformly at random.
+        If False, generates unlabeled rooted trees uniformly at random.
     number_of_trees : int or None (default)
         If not None, this number of trees is generated and returned.
     seed : integer, random_state, or None (default)
@@ -1039,7 +1038,7 @@ def random_tree(n, labeled=True, number_of_trees=None, seed=None, create_using=N
 
     Returns
     -------
-    :ref:`networkx.Graph` or list of :ref:`networkx.Graph`
+    :class:`networkx.Graph` or list of :class:`networkx.Graph`
         A single `networkx.Graph` (or a list thereof, if `number_of_trees` is specified)
         representing the tree, generated uniformly at random. Each tree is given as an
         undirected graph, whose nodes are numbers in the set {0, …, *n* - 1}.
