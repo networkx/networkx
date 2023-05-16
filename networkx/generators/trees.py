@@ -534,7 +534,8 @@ def random_rooted_tree(
     Notes
     -----
 
-    The interesting case is that of random unlabeled trees. In the labeled case
+    The interesting case is that of random unlabeled trees, whose generation
+    uses the "RANRUT" algorithm from [1]_. In the labeled case
     this function just returns the result of :ref:`random_tree` with a
     randomly selected root.
 
@@ -545,6 +546,13 @@ def random_rooted_tree(
     NetworkXException
         If `number_of_trees` is greater than one but `create_using` is a
         graph instance.
+
+    References
+    ----------
+    .. [1] Nijenhuis, Albert, and Wilf, Herbert S.
+        "Combinatorial algorithms: for computers and calculators."
+        Academic Press, 1978.
+        https://doi.org/10.1016/C2013-0-11243-3
     """
 
     def _random_labeled_rooted_tree(n, seed, create_using):
