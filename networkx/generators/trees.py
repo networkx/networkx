@@ -12,8 +12,8 @@ __all__ = [
     "prefix_tree_recursive",
     "random_tree",
     "random_rooted_tree",
-    "random_rooted_forest",
-]
+    "random_rooted_forest"
+ ]
 
 
 def prefix_tree(paths):
@@ -296,8 +296,9 @@ def prefix_tree_recursive(paths):
 # > method of generating uniformly distributed random labeled trees.
 #
 def _random_labeled_tree(n, seed, create_using):
-    """Returns a label tree on `n` nodes chosen uniformly at random
-        using Prüfer sequences.
+    """
+    Returns a label tree on `n` nodes chosen uniformly at random
+    using Prüfer sequences.
 
     Parameters
     ----------
@@ -307,11 +308,11 @@ def _random_labeled_tree(n, seed, create_using):
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`
     create_using : NetworkX graph constructor.
-        Graph type to create. If graph instance, then cleared before populated.
+        Graph type to create. If it is a graph instance, then it gets cleared before being populated.
 
     Returns
     -------
-     NetworkX graph
+     :class:`networkx.Graph`
         A tree, given as an undirected graph, whose nodes are numbers in
         the set {0, …, *n* - 1}.
     """
@@ -344,7 +345,8 @@ def _init_cache_num_rooted_trees():
 
 
 def _num_rooted_trees(n, cache_trees):
-    """Returns the number of unlabeled rooted trees with `n` nodes.
+    """
+    Returns the number of unlabeled rooted trees with `n` nodes.
     See also https://oeis.org/A000081.
 
     Parameters
@@ -376,8 +378,9 @@ def _num_rooted_trees(n, cache_trees):
 
 
 def _select_jd_trees(n, cache_trees, seed):
-    """Given $n$, returns a pair of positive integers $(j,d)$ with the probability
-        specified in formula (5) of Chapter 29 of [1]_.
+    """
+    Given $n$, returns a pair of positive integers $(j,d)$ with the probability
+    specified in formula (5) of Chapter 29 of [1]_.
 
     Parameters
     ----------
@@ -415,10 +418,11 @@ def _select_jd_trees(n, cache_trees, seed):
 
 
 def _np_to_nx(edges_np, n_nodes, create_using, root=None, roots=None):
-    """Converts the np-representation of a graph to a :class:`networkx.Graph`.
-        The np-representation is given by list of even length, where each pair
-        of consecutive integers represents an edge, and a integer `n_nodes`.
-        Integers in the list are numbered in `range(n_nodes)`.
+    """
+    Converts the np-representation of a graph to a :class:`networkx.Graph`.
+    The np-representation is given by a list of even length, where each pair
+    of consecutive integers represents an edge, and am integer `n_nodes`.
+    Integers in the list are elements of `range(n_nodes)`.
 
     Parameters
     ----------
@@ -427,7 +431,7 @@ def _np_to_nx(edges_np, n_nodes, create_using, root=None, roots=None):
     n_nodes : int
         The number of nodes of the graph.
     create_using : NetworkX graph constructor.
-        Graph type to create. If graph instance, then cleared before populated.
+        Graph type to create. If it is a graph instance, then it gets cleared before being populated.
     root: int
         The "root" attribute of the graph will be set to this value, if not
         None (the default).
@@ -646,7 +650,8 @@ def _num_rooted_forests(n, q, cache_forests):
 
 
 def _select_jd_forests(n, q, cache_forests, seed):
-    """Given n, returns a pair of positive integers $(j,d)$ such that $j\\leq d$,
+    """
+    Given $n$, returns a pair of positive integers $(j,d)$ such that $j\\leq d$,
     with probability satisfying (F1) of [1]_.
 
     Parameters
@@ -854,7 +859,7 @@ def random_rooted_forest(
         If `number_of_forests` is greater than one but `create_using` is a
         graph instance.
     NetworkXException
-        If `q` is specified for unlabeled forests.
+        If `q` is specified for labeled forests.
 
     References
     ----------
