@@ -282,8 +282,10 @@ Trees
 .. autosummary::
    :toctree: generated/
 
-   random_tree
    prefix_tree
+   random_tree
+   random_rooted_tree
+   random_rooted_forest
 
 
 Non Isomorphic Trees
