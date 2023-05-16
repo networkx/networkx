@@ -264,7 +264,7 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
 
     ArpackNoConvergence
         When the requested convergence is not obtained. The currently
-        converged eigenvalues and eigenvectors can be found as 
+        converged eigenvalues and eigenvectors can be found as
         eigenvalues and eigenvectors attributes of the exception object.
 
     See Also
