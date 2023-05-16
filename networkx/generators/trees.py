@@ -384,7 +384,7 @@ def _select_jd_trees(n, cache_trees, seed):
     n : int
         The number of nodes
     cache_trees : list of ints
-        Cache for :ref:`_num_rooted_trees`.
+        Cache for :func:`_num_rooted_trees`.
     seed : random_state
        See :ref:`Randomness<randomness>`.
 
@@ -462,7 +462,7 @@ def _random_unlabeled_rooted_tree(n, cache_trees, seed):
     n : int
         The number of nodes, greater than zero.
     cache_trees : list ints
-        Cache for :ref:`_num_rooted_trees`.
+        Cache for :func:`_num_rooted_trees`.
     seed : random_state
         See :ref:`Randomness<randomness>`.
 
@@ -656,7 +656,7 @@ def _select_jd_forests(n, q, cache_forests, seed):
     q : int
         The maximum number of nodes for each tree of the forest  .
     cache_forests : list of ints
-        Cache for :ref:`_num_rooted_forests`.
+        Cache for :func:`_num_rooted_forests`.
     seed : random_state
         See :ref:`Randomness<randomness>`.
 
@@ -696,9 +696,9 @@ def _random_unlabeled_rooted_forest(n, q, cache_trees, cache_forests, seed):
     q : int
         The maximum number of nodes per tree.
     cache_trees :
-        Cache for :ref:`_num_rooted_trees`.
+        Cache for :func:`_num_rooted_trees`.
     cache_forests :
-        Cache for :ref:`_num_rooted_forests`.
+        Cache for :func:`_num_rooted_forests`.
     seed : random_state
        See :ref:`Randomness<randomness>`.
 
@@ -920,7 +920,7 @@ def _num_trees(n, cache_trees):
     n : int
         The number of nodes.
     cache_trees : list of ints
-        Cache for :ref:`_num_rooted_trees`.
+        Cache for :func:`_num_rooted_trees`.
 
     Returns
     -------
@@ -948,7 +948,7 @@ def _bicenter(n, cache, seed):
     n : int
         The number of nodes (must be even).
     cache : list of ints.
-        Cache for :ref:`_num_rooted_trees`.
+        Cache for :func:`_num_rooted_trees`.
     seed : random_state
         See :ref:`Randomness<randomness>`
 
@@ -982,9 +982,9 @@ def _random_unlabeled_tree(n, cache_trees, cache_forests, seed):
     n : int
         The number of nodes, greater than zero.
     cache_trees : list of ints
-        Cache for :ref:`_num_rooted_trees`.
+        Cache for :func:`_num_rooted_trees`.
     cache_forests : list of ints
-        Cache for :ref:`_num_rooted_forests`.
+        Cache for :func:`_num_rooted_forests`.
     seed : random_state
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`
