@@ -10,7 +10,7 @@ __all__ = ["eigenvector_centrality", "eigenvector_centrality_numpy"]
 @nx._dispatch
 @not_implemented_for("multigraph")
 def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None):
-    r"""Compute the eigenvector centrality for the graph `G`.
+    r"""Compute the eigenvector centrality for the graph G.
 
     Eigenvector centrality computes the centrality for a node by adding
     the centrality of its predecessors. The centrality for node $i$ is the
@@ -22,7 +22,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
 
          \lambda x^T = x^T A,
 
-    where $A$ is the adjacency matrix of the graph `G`. By definition of
+    where $A$ is the adjacency matrix of the graph G. By definition of
     row-column product, the equation above is equivalent to
 
     .. math::
@@ -34,11 +34,11 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
     $\lambda$. In the case of undirected graphs, $x$ also solves the familiar
     right-eigenvector equation $Ax = \lambda x$.
 
-    By virtue of the Perron–Frobenius theorem [1]_, if `G` is strongly
+    By virtue of the Perron–Frobenius theorem [1]_, if G is strongly
     connected there is a unique eigenvector $x$, and all its entries
     are strictly positive.
 
-    If `G` is not strongly connected there might be several left
+    If G is not strongly connected there might be several left
     eigenvectors associated with $\lambda$, and some of their elements
     might be zero.
 
@@ -82,7 +82,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
     Raises
     ------
     NetworkXPointlessConcept
-        If the graph `G` is the null graph.
+        If the graph G is the null graph.
 
     NetworkXError
         If each value in `nstart` is zero.
@@ -107,7 +107,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
     [5]_. Bonacich [6]_ reintroduced again eigenvector centrality and made
     it popular in link analysis.
 
-    This method compute the left dominant eigenvector, which corresponds
+    This function computes the left dominant eigenvector, which corresponds
     to adding the centrality of predecessors: this is the usual approach.
     To add the centrality of successors first reverse the graph with
     ``G.reverse()``.
@@ -194,7 +194,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
 
 
 def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
-    r"""Compute the eigenvector centrality for the graph `G`.
+    r"""Compute the eigenvector centrality for the graph G.
 
     Eigenvector centrality computes the centrality for a node by adding
     the centrality of its predecessors. The centrality for node $i$ is the
@@ -206,7 +206,7 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
 
          \lambda x^T = x^T A,
 
-    where $A$ is the adjacency matrix of the graph `G`. By definition of
+    where $A$ is the adjacency matrix of the graph G. By definition of
     row-column product, the equation above is equivalent to
 
     .. math::
@@ -218,11 +218,11 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     $\lambda$. In the case of undirected graphs, $x$ also solves the familiar
     right-eigenvector equation $Ax = \lambda x$.
 
-    By virtue of the Perron–Frobenius theorem [1]_, if `G` is strongly
+    By virtue of the Perron–Frobenius theorem [1]_, if G is strongly
     connected there is a unique eigenvector $x$, and all its entries
     are strictly positive.
 
-    If `G` is not strongly connected there might be several left
+    If G is not strongly connected there might be several left
     eigenvectors associated with $\lambda$, and some of their elements
     might be zero.
 
@@ -260,7 +260,7 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     Raises
     ------
     NetworkXPointlessConcept
-        If the graph `G` is the null graph.
+        If the graph G is the null graph.
 
     ArpackNoConvergence
         When the requested convergence is not obtained. The currently
@@ -283,13 +283,15 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     [5]_. Bonacich [6]_ reintroduced again eigenvector centrality and made
     it popular in link analysis.
 
-    This method compute the left dominant eigenvector, which corresponds
+    This function computes the left dominant eigenvector, which corresponds
     to adding the centrality of predecessors: this is the usual approach.
     To add the centrality of successors first reverse the graph with
     ``G.reverse()``.
 
-    This implementation uses the SciPy sparse eigenvalue solver (ARPACK) to
-    find the largest eigenvalue/eigenvector pair.
+    This implementation uses the
+    :func:`SciPy sparse eigenvalue solver<scipy.sparse.linalg.eigs>` (ARPACK)
+    to find the largest eigenvalue/eigenvector pair using Arnoldi iterations
+    [7]_.
 
     References
     ----------
@@ -319,7 +321,7 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
        Sociological Methodology, 4:176–185, 1972.
        https://www.jstor.org/stable/270732
 
-    .. [7] Power iteration:: https://en.wikipedia.org/wiki/Power_iteration
+    .. [7] Arnoldi iteration:: https://en.wikipedia.org/wiki/Arnoldi_iteration
 
     """
     import numpy as np
