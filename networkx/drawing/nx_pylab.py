@@ -1246,6 +1246,11 @@ def draw_circular(G, **kwargs):
         >>> # Draw a subgraph, reusing the same node positions
         >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
 
+    Examples
+    --------
+    >>> G = nx.path_graph(5)
+    >>> nx.draw_circular(G)
+
     See Also
     --------
     :func:`~networkx.drawing.layout.circular_layout`
@@ -1281,6 +1286,11 @@ def draw_kamada_kawai(G, **kwargs):
         >>> # Draw a subgraph, reusing the same node positions
         >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
 
+    Examples
+    --------
+    >>> G = nx.path_graph(5)
+    >>> nx.draw_kamada_kawai(G)
+
     See Also
     --------
     :func:`~networkx.drawing.layout.kamada_kawai_layout`
@@ -1314,6 +1324,11 @@ def draw_random(G, **kwargs):
         >>> nx.draw(G, pos=pos)  # Draw the original graph
         >>> # Draw a subgraph, reusing the same node positions
         >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
+
+    Examples
+    --------
+    >>> G = nx.lollipop_graph(4, 3)
+    >>> nx.draw_random(G)
 
     See Also
     --------
@@ -1352,6 +1367,11 @@ def draw_spectral(G, **kwargs):
         >>> # Draw a subgraph, reusing the same node positions
         >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
 
+    Examples
+    --------
+    >>> G = nx.path_graph(5)
+    >>> nx.draw_spectral(G)
+
     See Also
     --------
     :func:`~networkx.drawing.layout.spectral_layout`
@@ -1388,6 +1408,11 @@ def draw_spring(G, **kwargs):
         >>> nx.draw(G, pos=pos)  # Draw the original graph
         >>> # Draw a subgraph, reusing the same node positions
         >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
+
+    Examples
+    --------
+    >>> G = nx.path_graph(20)
+    >>> nx.draw_spring(G)
 
     See Also
     --------
@@ -1429,6 +1454,12 @@ def draw_shell(G, nlist=None, **kwargs):
         >>> # Draw a subgraph, reusing the same node positions
         >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
 
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> shells = [[0], [1, 2, 3]]
+    >>> nx.draw_shell(G, nlist=shells)
+
     See Also
     --------
     :func:`~networkx.drawing.layout.shell_layout`
@@ -1467,6 +1498,11 @@ def draw_planar(G, **kwargs):
         >>> nx.draw(G, pos=pos)  # Draw the original graph
         >>> # Draw a subgraph, reusing the same node positions
         >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
+
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> nx.draw_planar(G)
 
     See Also
     --------

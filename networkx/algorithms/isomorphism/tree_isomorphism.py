@@ -269,11 +269,11 @@ def tree_isomorphism(t1, t2):
 
     # If there both have 2 centers,  then try the first for t1
     # with the first for t2.
-    attemps = rooted_tree_isomorphism(t1, center1[0], t2, center2[0])
+    attempts = rooted_tree_isomorphism(t1, center1[0], t2, center2[0])
 
     # If that worked we're done.
-    if len(attemps) > 0:
-        return attemps
+    if len(attempts) > 0:
+        return attempts
 
     # Otherwise, try center1[0] with the center2[1], and see if that works
     return rooted_tree_isomorphism(t1, center1[0], t2, center2[1])

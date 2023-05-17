@@ -21,5 +21,6 @@ jobs:
         uses: larsoner/circleci-artifacts-redirector-action@master
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+          api-token: ${{ secrets.CIRCLECI_ARTIFACT_REDIRECTOR_TOKEN }}
           artifact-path: 0/doc/build/html/index.html
           circleci-jobs: documentation
