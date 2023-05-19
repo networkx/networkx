@@ -865,27 +865,16 @@ class TestMinimumCycles:
         assert not minimum_cycle_basis(tg)
 
 
-class TestGirth:
-    def test_chvatal_graph(self):
-        graph = nx.chvatal_graph()
-        assert girth(graph) == 4
-
-    def test_tutte_graph(self):
-        graph = nx.tutte_graph()
-        assert girth(graph) == 4
-
-    def test_petersen_graph(self):
-        graph = nx.petersen_graph()
-        assert girth(graph) == 5
-
-    def test_heawood_graph(self):
-        graph = nx.heawood_graph()
-        assert girth(graph) == 6
-
-    def test_pappus_graph(self):
-        graph = nx.pappus_graph()
-        assert girth(graph) == 6
-
-    def test_random_tree(self, n=100):
-        graph = nx.random_tree(n, seed=42)
-        assert girth(graph) == inf
+@pytest.mark.parametrize(
+    ("G", "expected"),
+    (
+        (nx.chvatal_graph(), 4),
+        (nx.tutte_graph(), 4),
+        (nx.petersen_graph(), 5),
+        (nx.heawood_graph(), 6),
+        (nx.pappus_graph(), 6),
+        (nx.random_tree(10, seed=42), inf),
+    ),
+)
+def test_girth(G, expected):
+    assert nx.girth(G) == expected
