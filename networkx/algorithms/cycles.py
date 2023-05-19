@@ -4,9 +4,9 @@ Cycle finding algorithms
 ========================
 """
 
+import math
 from collections import defaultdict
 from itertools import combinations, product
-import math
 
 import networkx as nx
 from networkx.utils import not_implemented_for, pairwise
