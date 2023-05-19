@@ -7,7 +7,6 @@ import pytest
 import networkx
 import networkx as nx
 from networkx.algorithms import find_cycle, minimum_cycle_basis
-from networkx.algorithms.cycles import girth
 from networkx.algorithms.traversal.edgedfs import FORWARD, REVERSE
 
 class TestCycles:
