@@ -10,7 +10,7 @@ __all__ = ["cd_index"]
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
-def cd_index(G, node, time_delta=5, weight=None):
+def cd_index(G, node, time_delta=5):
     r"""Compute the CD index for `node` within the graph `G`.
 
     Calculates the CD index for the given node of the graph,
@@ -21,14 +21,11 @@ def cd_index(G, node, time_delta=5, weight=None):
     Parameters
     ----------
     G : graph
-       A directed networkx graph whose nodes have datetime `time` attributes.
+       A directed networkx graph whose nodes have datetime `time` attributes and optionally `weight` attributes (if a weight is not given, it is considered 1).
     node : node
        The node for which the CD index is calculated.
     time_delta : integer (Optional, default is 5)
        Number of years after the `time` attribute of the `node`.
-    weight : list of floats (Optional)
-       A list of weights for `node`'s predecessors `time_delta` years
-       after the `node`'s `time` attribute.
 
     Returns
     -------
@@ -49,7 +46,7 @@ def cd_index(G, node, time_delta=5, weight=None):
     --------
     >>> G = nx.DiGraph()
     >>> nodes = { 1: {'time': datetime(2015, 1, 1)}, \
-    ...     2: {'time': datetime(2012, 1, 1)}, \
+    ...     2: {'time': datetime(2012, 1, 1), 'weight': 4}, \
     ...     3: {'time': datetime(2010, 1, 1)}, \
     ...     4: {'time': datetime(2008, 1, 1)}, \
     ...     5: {'time': datetime(2014, 1, 1)}}
@@ -104,6 +101,9 @@ def cd_index(G, node, time_delta=5, weight=None):
     if not pred:
         raise ValueError("This node has no predecessors.")
 
+    # if not weight is given consider it equal to 1
+    weights = [G.nodes[i]["weight"] if "weight" in G.nodes[i] else 1 for i in pred]
+
     # -1 if any edge between the node's predecessor and the node's successor
     # exists, else 1
     b = [-1 if any((i, j) in G.edges() for j in G[node]) else 1 for i in pred]
@@ -112,7 +112,4 @@ def cd_index(G, node, time_delta=5, weight=None):
     n = len(pred.union(*(G.pred[s].keys() - {node} for s in G[node])))
 
     # calculate cd index
-    if weight is None:
-        return round(sum(b) / n, 2)
-    else:
-        return round(sum(bi / wt for bi, wt in zip(b, weight)) / n, 2)
+    return round(sum(bi / wt for bi, wt in zip(b, weights)) / n, 2)
