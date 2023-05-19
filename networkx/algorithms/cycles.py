@@ -6,7 +6,7 @@ Cycle finding algorithms
 
 from collections import defaultdict
 from itertools import combinations, product
-from math import inf
+import math
 
 import networkx as nx
 from networkx.utils import not_implemented_for, pairwise
@@ -1171,7 +1171,7 @@ def girth(G):
 
     Returns
     -------
-    An int, or infinity.
+    int or math.inf
 
     Examples
     --------
@@ -1196,25 +1196,20 @@ def girth(G):
     .. [1] https://en.wikipedia.org/wiki/Girth_(graph_theory)
 
     """
-    len_shortest_cycle = inf
-    all_edges = set(map(frozenset, G.edges))
-    for n in G.nodes:
+    len_shortest_cycle = math.inf
+    for n in G:
         # run a BFS from source n, keeping track of distances; since we want
-        # the shortest cycle, no need to explore beyond the current minimum
-        # length
-        tree = nx.bfs_tree(G, n, depth_limit=len_shortest_cycle)
+        # the shortest cycle, no need to explore beyond the current minimum length
+        tree = nx.Graph(nx.bfs_edges(G, n, depth_limit=len_shortest_cycle))
         distances = nx.single_source_shortest_path_length(tree, n)
 
-        # examine edges that belong to cycles, i.e. edges that bfs missed: the
-        # union of such an edge {u, v} and the paths from n to u and v is a
-        # cycle, whose length might be smaller than our current minimum
-        # mapping to frozensets is necessary since edges can be read both ways
-        for u, v in all_edges.difference(map(frozenset, tree.edges)):
-            # {u, v} might not belong to the same component as n, in which case
-            # the endpoints won't be in distances and will raise KeyError
-            if u in distances and v in distances:
-                len_shortest_cycle = min(
-                    len_shortest_cycle, 1 + distances[u] + distances[v]
-                )
+        # examine edges not in tree between nodes in tree, i.e. edges that bfs missed:
+        # the union of such an edge {u, v} and the paths from n to u and v is a cycle
+        # whose length might be smaller than our current minimum
+        for u, v in G.edges:
+            if u in tree and v in tree and v not in tree[u]:
+                len_cycle = 1 + distances[u] + distances[v]
+                if len_cycle < len_shortest_cycle:
+                    len_shortest_cycle = len_cycle
 
     return len_shortest_cycle
