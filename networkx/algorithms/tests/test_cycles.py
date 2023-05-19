@@ -9,6 +9,7 @@ import networkx as nx
 from networkx.algorithms import find_cycle, minimum_cycle_basis
 from networkx.algorithms.traversal.edgedfs import FORWARD, REVERSE
 
+
 class TestCycles:
     @classmethod
     def setup_class(cls):
