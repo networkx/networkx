@@ -11,9 +11,9 @@ __all__ = ["cd_index"]
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
 def cd_index(G, node, time_delta=5, weight=None):
-    r"""Compute the CD index.
+    r"""Compute the CD index for `node` within the graph `G`.
 
-    Calculates the CD index for the graph based on the given node,
+    Calculates the CD index for the given node of the graph,
     considering only its predecessors who have `time` attribute
     smaller than or equal to the `time` attribute of the `node`
     plus `time_delta` years.
@@ -33,7 +33,7 @@ def cd_index(G, node, time_delta=5, weight=None):
     Returns
     -------
     float
-       The CD index calculated for the G graph.
+       The CD index calculated for the node `node` within the graph `G`.
 
     Raises
     ------
