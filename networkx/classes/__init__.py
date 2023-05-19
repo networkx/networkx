@@ -5,6 +5,7 @@ from .multidigraph import MultiDiGraph
 from .backends import _dispatch
 
 from .function import *
+from .graphviews import subgraph_view, reverse_view
 
 from networkx.classes import filters
 
