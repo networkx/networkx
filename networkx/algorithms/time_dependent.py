@@ -21,7 +21,8 @@ def cd_index(G, node, time_delta=5):
     Parameters
     ----------
     G : graph
-       A directed networkx graph whose nodes have datetime `time` attributes and optionally `weight` attributes (if a weight is not given, it is considered 1).
+       A directed networkx graph whose nodes have datetime `time` attributes and
+       optionally `weight` attributes (if a weight is not given, it is considered 1).
     node : node
        The node for which the CD index is calculated.
     time_delta : integer (Optional, default is 5)
