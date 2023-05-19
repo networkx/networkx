@@ -118,9 +118,6 @@ def max_clique(G):
         BIT Numerical Mathematics, 32(2), 180–196. Springer.
         doi:10.1007/BF01994876
     """
-    if G is None:
-        raise ValueError("Expected NetworkX graph!")
-
     # finding the maximum clique in a graph is equivalent to finding
     # the independent set in the complementary graph
     cgraph = nx.complement(G)
