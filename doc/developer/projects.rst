@@ -48,7 +48,7 @@ Visualization API with Matplotlib
   are trying to add new features especially with regard to plotting edges. We'd like
   someone to read a lot about what we offer and also what Matplotlib offers, and
   come up with a nice way for users to draw graphs flexibly and yet with good defaults.
-  There is little chace just a broad topic could be completed in one summer, but a
+  There is little chance just a broad topic could be completed in one summer, but a
   roadmap and substantial headway on that road is possible.
 
 - Recommended Skills: Python, matplotlib experience.
