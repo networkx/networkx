@@ -28,6 +28,12 @@ def num_independent_sets(G):
     ----------
     nodes: list of nodes
 
+    Raises
+    ------
+    NetworkXNotImplemented
+        Independent sets are counted for trees only. If the graph 'G'
+        is not a tree a NetworkXNotImplemented is raised.
+
     Returns
     ----------
     total number of independent sets.
@@ -42,7 +48,8 @@ def num_independent_sets(G):
     This function takes a dynamic programming approach to counting the number
     of independent sets in tree graphs exclusively.
     '''
-    assert nx.is_tree(G), "Graph is not a tree"
+    if not nx.is_tree(G):
+        raise nx.NetworkXNotImplemented("Graph must be a tree.")
     postorder_nodes = nx.dfs_postorder_nodes(G)
     num_ind_sets_at_node = dict()
 
