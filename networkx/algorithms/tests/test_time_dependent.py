@@ -10,7 +10,7 @@ import networkx as nx
 class TestCdIndex:
     """Unit testing for the cd index function."""
 
-    def test_russellfunk(self):
+    def test_common_graph(self):
         G = nx.DiGraph()
         G.add_nodes_from([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
         G.add_edge(4, 2)
@@ -45,7 +45,7 @@ class TestCdIndex:
 
         assert nx.cd_index(G, 4) == 0.17
 
-    def test_russellfunk_with_weights(self):
+    def test_common_graph_with_weights(self):
         G = nx.DiGraph()
         G.add_nodes_from([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
         G.add_edge(4, 2)
@@ -69,16 +69,15 @@ class TestCdIndex:
             3: {"time": datetime(1993, 1, 1)},
             4: {"time": datetime(1995, 1, 1)},
             5: {"time": datetime(1997, 1, 1)},
-            6: {"time": datetime(1998, 1, 1)},
-            7: {"time": datetime(1999, 1, 1)},
-            8: {"time": datetime(1999, 1, 1)},
-            9: {"time": datetime(1998, 1, 1)},
-            10: {"time": datetime(1997, 4, 1)},
+            6: {"time": datetime(1998, 1, 1), "weight": 5},
+            7: {"time": datetime(1999, 1, 1), "weight": 2},
+            8: {"time": datetime(1999, 1, 1), "weight": 6},
+            9: {"time": datetime(1998, 1, 1), "weight": 3},
+            10: {"time": datetime(1997, 4, 1), "weight": 10},
         }
 
         nx.set_node_attributes(G, node_attrs)
-        w = [5, 2, 6, 3, 10]
-        assert nx.cd_index(G, 4, weight=w) == 0.04
+        assert nx.cd_index(G, 4) == 0.04
 
     def test_node_with_no_predecessors(self):
         G = nx.DiGraph()
