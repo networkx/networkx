@@ -39,6 +39,8 @@ def num_independent_sets(G):
 
     https://en.wikipedia.org/wiki/Independent_set_(graph_theory)
     
+    This function takes a dynamic programming approach to counting the number
+    of independent sets in tree graphs exclusively.
     '''
     assert nx.is_tree(G), "Graph is not a tree"
     postorder_nodes = nx.dfs_postorder_nodes(G)
