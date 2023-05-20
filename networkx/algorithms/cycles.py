@@ -1201,31 +1201,36 @@ def girth(G):
     for n in list(G.nodes):
         # run a BFS from source n, keeping track of distances; since we want
         # the shortest cycle, no need to explore beyond the current minimum length
-        tree = nx.Graph(nx.bfs_edges(G, n, depth_limit=depth_limit))
-        if tree:
-            # note there is a degenerate case where a node is isolated -- tree
-            # has no edges and single_source_shortest_path_length complains.  In
-            # that case, the distances variable remains unused.
-            distances = nx.single_source_shortest_path_length(tree, n)
-            tree_nodes = set(tree)
+        tree_edges, distance = nx.predecessor(
+            G, n, cutoff=depth_limit, return_seen=True
+        )
+        tree_nodes = set(distance)
+
+        # distance is happily in topological order -- iterate over it to collect
+        # the tree edges in an orderly fashion
+        for u in distance:
+            # Skip the root, as it has no predecessors
+            if u != n:
+                # Cull all but the first predecessor to extract a single parent.
+                (parent,) = tree_edges[u] = tree_edges[u][:1]
+
+                # now, add u to the edge list of parent -- which necessarily
+                # came before u because we're going in topological order
+                tree_edges[parent].append(u)
 
         # examine edges not in tree between nodes in tree, i.e. edges that bfs missed:
         # the union of such an edge {u, v} and the paths from n to u and v is a cycle
         # whose length might be smaller than our current minimum
-
-        # make sure to iterate over the nodes of tree, rather than G, because it
-        # is expected to be much smaller.
-        for u, Nu in tree.adj.items():
-            for v in tree_nodes.intersection(G[u]).difference(Nu):
-                length = 1 + distances[u] + distances[v]
+        for u, tree_neighbors in tree_edges.items():
+            for v in tree_nodes.intersection(G[u]).difference(tree_neighbors):
+                length = 1 + distance[u] + distance[v]
                 if length < girth:
                     girth = length
-
                     # future bfs's will find cycles at most 2*depth_limit+1.
                     # if length = 2*x+1, then let depth_limit = x
                     # if length = 2*x, then let depth_limit = x-1
                     # thus, future cycles will have length at most length-1
-                    depth_limit = girth // 2 if girth & 1 else (girth // 2) - 1
+                    depth_limit = girth // 2 if girth & 1 else (girth // 2) + 1
 
         # we have explored the node n; no shorter cycles will contain it.
         G.remove_node(n)

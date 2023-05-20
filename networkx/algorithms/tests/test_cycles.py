@@ -887,6 +887,7 @@ class TestMinimumCycles:
         (nx.pappus_graph(), 6),
         (nx.random_tree(10, seed=42), inf),
         (nx.empty_graph(10), inf),
+        (nx.Graph(chain(cycle_edges(range(5)), cycle_edges(range(6, 10)))), 4),
     ),
 )
 def test_girth(G, expected):
