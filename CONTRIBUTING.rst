@@ -487,12 +487,18 @@ it's best to keep it simple and readable.
 An example of a math formula::
       
       .. math:: 
-         Ax = \lambda x
+          Ax = \lambda x
+
+.. math:: 
+    Ax = \lambda x
 
 Some inline math::
     
-   These are Cheeger's Inequalities for \d-Regular graphs: 
-   \frac{d- \lambda_2}{2} \leq h(G) \leq \sqrt{2d(d- \lambda_2)}
+    These are Cheeger's Inequalities for \d-Regular graphs: 
+    $\frac{d- \lambda_2}{2} \leq h(G) \leq \sqrt{2d(d- \lambda_2)}$
+   
+These are Cheeger's Inequalities for \d-Regular graphs: 
+$\frac{d- \lambda_2}{2} \leq h(G) \leq \sqrt{2d(d- \lambda_2)}$
 
 Bugs
 ----
