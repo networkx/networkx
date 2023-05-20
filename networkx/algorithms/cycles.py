@@ -1201,36 +1201,48 @@ def girth(G):
     for n in list(G.nodes):
         # run a BFS from source n, keeping track of distances; since we want
         # the shortest cycle, no need to explore beyond the current minimum length
-        tree_edges, distance = nx.predecessor(
-            G, n, cutoff=depth_limit, return_seen=True
-        )
-        tree_nodes = set(distance)
+        preds, distance = nx.predecessor(G, n, cutoff=depth_limit, return_seen=True)
 
-        # distance is happily in topological order -- iterate over it to collect
-        # the tree edges in an orderly fashion
-        for u in distance:
-            # Skip the root, as it has no predecessors
-            if u != n:
-                # Cull all but the first predecessor to extract a single parent.
-                (parent,) = tree_edges[u] = tree_edges[u][:1]
+        # we take the first predecessor to be the tree-parent of a node.  Any
+        # remaining edges have a back-edge to a non-parent.  This produces a
+        # cycle of (depth) + (depth-1) + 1 = 2*depth.  While we scan for even-
+        # length cycles, we also construct the level sets up to the depth of
+        # the observed even-length cycle.  We'll use those to find odd-length
+        # cycles in the next loop
+        (level,) = levels = [set()]
+        for u, d in distance.items():
+            # update our levels list
+            if d == len(levels):
+                level = {u}
+                levels.append(level)
+            else:
+                level.add(u)
 
-                # now, add u to the edge list of parent -- which necessarily
-                # came before u because we're going in topological order
-                tree_edges[parent].append(u)
+            # now check for an even length cycle
+            if len(preds[u]) > 1:
+                # note: d <= depth_limit, so current girth >= 2*d
+                girth = 2 * d
+                depth_limit = d - 1
+                # note: any odd-length cycle at this level is longer -- toss em!
+                levels.pop()
+                break
 
-        # examine edges not in tree between nodes in tree, i.e. edges that bfs missed:
-        # the union of such an edge {u, v} and the paths from n to u and v is a cycle
-        # whose length might be smaller than our current minimum
-        for u, tree_neighbors in tree_edges.items():
-            for v in tree_nodes.intersection(G[u]).difference(tree_neighbors):
-                length = 1 + distance[u] + distance[v]
-                if length < girth:
-                    girth = length
-                    # future bfs's will find cycles at most 2*depth_limit+1.
-                    # if length = 2*x+1, then let depth_limit = x
-                    # if length = 2*x, then let depth_limit = x-1
-                    # thus, future cycles will have length at most length-1
-                    depth_limit = girth // 2 if girth & 1 else (girth // 2) + 1
+        # The previous loop searched for even cycles; now let's look for odd
+        # cycles up to our (possibly reduced) depth_limit
+        for d, level in enumerate(levels):
+            for u in level:
+                if level.intersection(G[u]):
+                    length = 1 + 2 * d
+                    if length < girth:
+                        girth = length
+                        depth_limit = d
+                    break
+            # The break, else, continue, break is one of Python's ugliest warts.
+            # It breaks out of two levels.  We do this because finding an odd
+            # cycle here is the shortest possible and we can stop looking.
+            else:
+                continue
+            break
 
         # we have explored the node n; no shorter cycles will contain it.
         G.remove_node(n)
