@@ -1197,8 +1197,7 @@ def girth(G):
 
     """
     girth = depth_limit = inf
-    G = G.copy()
-    for n in list(G.nodes):
+    for n in G:
         # run a BFS from source n, keeping track of distances; since we want
         # the shortest cycle, no need to explore beyond the current minimum length
         preds, distance = nx.predecessor(G, n, cutoff=depth_limit, return_seen=True)
@@ -1243,8 +1242,5 @@ def girth(G):
             else:
                 continue
             break
-
-        # we have explored the node n; no shorter cycles will contain it.
-        G.remove_node(n)
 
     return girth
