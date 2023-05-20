@@ -421,7 +421,7 @@ def _np_to_nx(edges_np, n_nodes, create_using, root=None, roots=None):
     """
     Converts the np-representation of a graph to a :class:`networkx.Graph`.
     The np-representation is given by a list of even length, where each pair
-    of consecutive integers represents an edge, and am integer `n_nodes`.
+    of consecutive integers represents an edge, and an integer `n_nodes`.
     Integers in the list are elements of `range(n_nodes)`.
 
     Parameters
@@ -432,12 +432,10 @@ def _np_to_nx(edges_np, n_nodes, create_using, root=None, roots=None):
         The number of nodes of the graph.
     create_using : NetworkX graph constructor.
         Graph type to create. If it is a graph instance, then it gets cleared before being populated.
-    root: int
-        The "root" attribute of the graph will be set to this value, if not
-        None (the default).
-    roots: collection of ints
-        The "roots" attribute of the graph will be set to this value, if not
-        None (the default).
+    root: int (default=None)
+        If not None, the "root" attribute of the graph will be set to this value.
+    roots: collection of ints (default=None)
+        If not None, he "roots" attribute of the graph will be set to this value.
 
     Returns
     -------
