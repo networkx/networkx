@@ -1203,7 +1203,7 @@ def girth(G):
         # the shortest cycle, no need to explore beyond the current minimum length
         tree = nx.Graph(nx.bfs_edges(G, n, depth_limit=depth_limit))
         if tree:
-            # note the is a degenerate case where a node is isolated -- tree
+            # note there is a degenerate case where a node is isolated -- tree
             # has no edges and single_source_shortest_path_length complains.  In
             # that case, the distances variable remains unused.
             distances = nx.single_source_shortest_path_length(tree, n)
