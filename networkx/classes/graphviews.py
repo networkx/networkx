@@ -65,9 +65,8 @@ def generic_graph_view(G, create_using=None):
 
     Notes
     -----
-    The returned graph view is read-only and changes in `G` will be reflected in the view.
-
-    The returned view is a frozen graph, meaning it cannot be modified.
+    The returned graph view is read-only (cannot modify the graph).
+    Yet the view reflects any changes in `G`. The intent is to mimic dict views.
 
     Examples
     --------
