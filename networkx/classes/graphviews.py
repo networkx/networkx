@@ -81,6 +81,23 @@ def generic_graph_view(G, create_using=None):
     >>> viewG = nx.graphviews.generic_graph_view(G)
     >>> viewG.edges(data=True)
     EdgeDataView([(1, 2, {'weight': 0.3}), (2, 3, {'weight': 0.5})])
+
+    Changes to `G` are reflected in `viewG`.
+
+    >>> G.remove_edge(2, 3)
+    >>> G.edges(data=True)
+    EdgeDataView([(1, 2, {'weight': 0.3})])
+
+    >>> viewG.edges(data=True)
+    EdgeDataView([(1, 2, {'weight': 0.3})])
+
+    We can change the graph type with the `create_using` parameter.
+
+    >>> type(G)
+    <class 'networkx.classes.graph.Graph'>
+    >>> viewDG = nx.graphviews.generic_graph_view(G, create_using=nx.DiGraph)
+    >>> type(viewDG)
+    <class 'networkx.classes.digraph.DiGraph'>
     """
     if create_using is None:
         newG = G.__class__()
