@@ -39,6 +39,50 @@ __all__ = ["generic_graph_view", "subgraph_view", "reverse_view"]
 
 
 def generic_graph_view(G, create_using=None):
+    """Returns a read-only view of `G`.
+
+    The graph `G` and its attributes are not copied but viewed through the new graph object
+    of the same class as `G` (or of the class specified in `create_using`).
+
+    Parameters
+    ----------
+    G : networkx.Graph
+        A directed/undirected graph/multigraph.
+
+    create_using : NetworkX graph constructor, optional (default=None)
+       Graph type to create. If graph instance, then cleared before populated.
+       If `None`, then the appropriate Graph type is inferred from `G`.
+
+    Returns
+    -------
+    newG : networkx.Graph
+        A view of the input graph `G` of the same class as `G` (or as `create_using`), with the attributes of `G` assigned to it.
+
+    Raises
+    ------
+    NetworkXError
+        If `G` is a multigraph (or multidigraph) but `create_using` is not, or vice versa.
+
+    Notes
+    -----
+    The returned graph view is read-only and changes in `G` will be reflected in the view.
+
+    The returned view is a frozen graph, meaning it cannot be modified.
+
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> G.add_edge(1, 2, weight=0.3)
+    >>> G.add_edge(2, 3, weight=0.5)
+    >>> G.edges(data=True)
+    EdgeDataView([(1, 2, {'weight': 0.3}), (2, 3, {'weight': 0.5})])
+
+    The view exposes the attributes from the original graph.
+
+    >>> viewG = nx.graphviews.generic_graph_view(G)
+    >>> viewG.edges(data=True)
+    EdgeDataView([(1, 2, {'weight': 0.3}), (2, 3, {'weight': 0.5})])
+    """
     if create_using is None:
         newG = G.__class__()
     else:
