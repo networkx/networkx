@@ -46,7 +46,7 @@ def generic_graph_view(G, create_using=None):
 
     Parameters
     ----------
-    G : networkx.Graph
+    G : graph
         A directed/undirected graph/multigraph.
 
     create_using : NetworkX graph constructor, optional (default=None)
