@@ -55,7 +55,7 @@ def generic_graph_view(G, create_using=None):
 
     Returns
     -------
-    newG : networkx.Graph
+    newG : graph
         A view of the input graph `G` of the same class as `G` (or as `create_using`), with the attributes of `G` assigned to it.
 
     Raises
