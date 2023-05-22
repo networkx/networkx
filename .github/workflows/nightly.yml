@@ -17,5 +17,5 @@ jobs:
           python -m build --sdist --wheel
       - uses: scientific-python/upload-nightly-action@main
         with:
-          anaconda_nightly_upload_token: ${{ github.anaconda_nightly_token }}
+          anaconda_nightly_upload_token: ${{ secrets.anaconda_nightly_token }}
           artifacts_path: dist/*
