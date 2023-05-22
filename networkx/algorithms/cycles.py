@@ -1199,9 +1199,9 @@ def girth(G, parity=None):
     6
     >>> nx.girth(nx.path_graph(5))
     inf
-    >>> nx.girth(nx.petersen_graph(5), parity='odd')
+    >>> nx.girth(nx.petersen_graph(), parity='odd')
     5
-    >>> nx.girth(nx.petersen_graph(5), parity='even')
+    >>> nx.girth(nx.petersen_graph(), parity='even')
     6
 
     References
