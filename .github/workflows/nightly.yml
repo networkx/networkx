@@ -2,6 +2,7 @@ name: Upload and build nightly wheels
 on:
   schedule:
     - cron: "0 0 * * *"
+  pull_request:
 
 jobs:
   cron:
