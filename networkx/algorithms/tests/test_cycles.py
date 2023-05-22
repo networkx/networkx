@@ -877,36 +877,54 @@ class TestMinimumCycles:
         assert not minimum_cycle_basis(tg)
 
 
-@pytest.mark.parametrize(
-    ("G", "expected"),
-    (
-        (nx.chvatal_graph(), 4),
-        (nx.tutte_graph(), 4),
-        (nx.petersen_graph(), 5),
-        (nx.heawood_graph(), 6),
-        (nx.pappus_graph(), 6),
-        (nx.random_tree(10, seed=42), inf),
-        (nx.empty_graph(10), inf),
-        (nx.Graph(chain(cycle_edges(range(5)), cycle_edges(range(6, 10)))), 4),
+class TestGirth:
+    @pytest.mark.parametrize(
+        ("G", "expected"),
         (
-            nx.Graph(
-                [
-                    (0, 6),
-                    (0, 8),
-                    (0, 9),
-                    (1, 8),
-                    (2, 8),
-                    (2, 9),
-                    (4, 9),
-                    (5, 9),
-                    (6, 8),
-                    (6, 9),
-                    (7, 8),
-                ]
+            (nx.chvatal_graph(), 4),
+            (nx.tutte_graph(), 4),
+            (nx.petersen_graph(), 5),
+            (nx.heawood_graph(), 6),
+            (nx.pappus_graph(), 6),
+            (nx.random_tree(10, seed=42), inf),
+            (nx.empty_graph(10), inf),
+            (nx.Graph(chain(cycle_edges(range(5)), cycle_edges(range(6, 10)))), 4),
+            (
+                nx.Graph(
+                    [
+                        (0, 6),
+                        (0, 8),
+                        (0, 9),
+                        (1, 8),
+                        (2, 8),
+                        (2, 9),
+                        (4, 9),
+                        (5, 9),
+                        (6, 8),
+                        (6, 9),
+                        (7, 8),
+                    ]
+                ),
+                3,
             ),
-            3,
         ),
-    ),
-)
-def test_girth(G, expected):
-    assert nx.girth(G) == expected
+    )
+    def test_girth(self, G, expected):
+        assert nx.girth(G) == expected
+
+    def test_bad_parity_argument(self):
+        G = nx.Graph()
+        with pytest.raises(ValueError):
+            nx.girth(G, parity=G)
+
+    def test_odd_girth(self):
+        G = nx.cycle_graph(4)
+        assert nx.girth(G, parity="odd") == inf
+        G.add_edges_from(nx.cycle_graph(range(5, 10)).edges)
+        assert nx.girth(G, parity="odd") == 5
+
+    def test_even_girth(self):
+        G = nx.cycle_graph(5)
+        assert nx.girth(G, parity="even") == inf
+        G.add_edges_from(nx.cycle_graph(range(6, 12)).edges)
+        assert nx.girth(G, parity="even") == 6

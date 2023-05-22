@@ -1157,7 +1157,7 @@ def _path_to_cycle(path):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-def girth(G):
+def girth(G, parity=None):
     """Returns the girth of the graph.
 
     The girth of a graph is the length of its shortest cycle, or infinity if
@@ -1165,9 +1165,18 @@ def girth(G):
     Wikipedia page [1]_, and runs in time O(mn) on a graph with m edges and n
     nodes.
 
+    Likewise, we define the "odd girth" and "even girth" to be the length of the
+    shortest odd-length or even-length cycle in G.
+
     Parameters
     ----------
     G : NetworkX Graph
+
+    parity : string (optional, default = None)
+        If parity is "odd", compute the odd girth
+        If parity is "even", compute the even girth
+        otherwise, compute the girth.
+
 
     Returns
     -------
@@ -1190,6 +1199,10 @@ def girth(G):
     6
     >>> nx.girth(nx.path_graph(5))
     inf
+    >>> nx.girth(nx.petersen_graph(5), parity='odd')
+    5
+    >>> nx.girth(nx.petersen_graph(5), parity='even')
+    6
 
     References
     ----------
@@ -1197,50 +1210,36 @@ def girth(G):
 
     """
     girth = depth_limit = inf
+    tree_edge = nx.algorithms.traversal.breadth_first_search.TREE_EDGE
+    level_edge = nx.algorithms.traversal.breadth_first_search.LEVEL_EDGE
+    forward_edge = nx.algorithms.traversal.breadth_first_search.FORWARD_EDGE
+    if parity == "odd":
+        skip = forward_edge
+    elif parity == "even":
+        skip = level_edge
+    elif parity is None:
+        skip = None
+    else:
+        raise ValueError("parity argument is unrecognized")
     for n in G:
         # run a BFS from source n, keeping track of distances; since we want
         # the shortest cycle, no need to explore beyond the current minimum length
-        preds, distance = nx.predecessor(G, n, cutoff=depth_limit, return_seen=True)
-
-        # we take the first predecessor to be the tree-parent of a node.  Any
-        # remaining edges have a back-edge to a non-parent.  This produces a
-        # cycle of (depth) + (depth-1) + 1 = 2*depth.  While we scan for even-
-        # length cycles, we also construct the level sets up to the depth of
-        # the observed even-length cycle.  We'll use those to find odd-length
-        # cycles in the next loop
-        (level,) = levels = [set()]
-        for u, d in distance.items():
-            # update our levels list
-            if d == len(levels):
-                level = {u}
-                levels.append(level)
-            else:
-                level.add(u)
-
-            # now check for an even length cycle
-            if len(preds[u]) > 1:
-                # note: d <= depth_limit, so current girth >= 2*d
-                girth = 2 * d
-                depth_limit = d - 1
-                # note: any odd-length cycle at this level is longer -- toss em!
-                levels.pop()
+        depth = {n: 0}
+        for u, v, label in nx.bfs_labeled_edges(G, n):
+            du = depth[u]
+            if du > depth_limit:
                 break
-
-        # The previous loop searched for even cycles; now let's look for odd
-        # cycles up to our (possibly reduced) depth_limit
-        for d, level in enumerate(levels):
-            for u in level:
-                if level.intersection(G[u]):
-                    length = 1 + 2 * d
-                    if length < girth:
-                        girth = length
-                        depth_limit = d
-                    break
-            # The break, else, continue, break is one of Python's ugliest warts.
-            # It breaks out of two levels.  We do this because finding an odd
-            # cycle here is the shortest possible and we can stop looking.
+            if label is tree_edge:
+                depth[v] = du + 1
+            elif label is skip:
+                pass
             else:
-                continue
-            break
+                # if (u, v) is a level edge, the length is du + du + 1 (odd)
+                # otherwise, it's a forward edge; length is du + (du + 1) + 1 (even)
+                delta = label is level_edge
+                length = du + du + 2 - delta
+                if length < girth:
+                    girth = length
+                    depth_limit = du - delta
 
     return girth

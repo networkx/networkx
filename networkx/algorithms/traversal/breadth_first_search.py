@@ -1,4 +1,5 @@
 """Basic algorithms for breadth-first searching the nodes of a graph."""
+import math
 from collections import deque
 
 import networkx as nx
@@ -10,6 +11,7 @@ __all__ = [
     "bfs_successors",
     "descendants_at_distance",
     "bfs_layers",
+    "bfs_labeled_edges",
 ]
 
 
@@ -424,6 +426,105 @@ def bfs_layers(G, sources):
                     visited.add(child)
                     next_layer.append(child)
         current_layer = next_layer
+
+
+REVERSE_EDGE = "reverse"
+TREE_EDGE = "tree"
+FORWARD_EDGE = "forward"
+LEVEL_EDGE = "level"
+
+
+def bfs_labeled_edges(G, sources):
+    """Iterate over edges in a breadth-first search (BFS) labeled by type.
+
+    We generate triple of the form (*u*, *v*, *d*), where (*u*, *v*) is the
+    edge being explored in the breadth-first search and *d* is one of the
+    strings 'tree', 'forward', 'level', or 'reverse'.  A 'tree' edge is one in
+    which *v* is first discovered and placed into the layer below *u*.  A
+    'forward' edge is one in which *u* is on the layer above *v* and *v* has
+    already been discovered.  A 'level' edge is one in which both *u* and *v*
+    occur on the same layer.  A 'reverse' edge is one in which *u* is on a layer
+    below *v*.
+
+    We emit each edge exactly once.  In an undirected graph, 'reverse' edges do
+    not occur, because each is discovered either as a 'tree' or 'forward' edge.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A graph over which to find the layers using breadth-first search.
+
+    sources : node in `G` or list of nodes in `G`
+        Starting nodes for single source or multiple sources breadth-first search
+
+    Yields
+    ------
+    edges: generator
+       A generator of triples (*u*, *v*, *d*) where (*u*, *v*) is the edge being
+       explored and *d* is described above.
+
+    Examples
+    --------
+    >>> G = nx.cycle_graph(4, create_using = nx.DiGraph)
+    >>> list(nx.bfs_labeled_edges(G, 0))
+    [(0, 1, 'tree'), (1, 2, 'tree'), (2, 3, 'tree'), (3, 0, 'reverse')]
+    >>> G = nx.complete_graph(3)
+    >>> list(nx.bfs_labeled_edges(G, 0))
+    [(0, 1, 'tree'), (0, 2, 'tree')', (2, 1, 'level')]
+    >>> list(nx.bfs_labeled_edges(G, [0, 1]))
+    [(1, 0, 'level'), (0, 2, 'tree')', (1, 2, 'forward')]
+    """
+    if G.is_directed():
+        yield from _directed_bfs_labeled_edges(G, sources)
+    else:
+        yield from _undirected_bfs_labeled_edges(G, sources)
+
+
+def _undirected_bfs_labeled_edges(G, sources):
+    if sources in G:
+        sources = [sources]
+
+    depth = {s: 0 for s in sources}
+    visited = set()
+    queue = deque(depth.items())
+    while queue:
+        u, du = queue.popleft()
+        visited.add(u)
+        for v in G[u]:
+            dv = depth.get(v)
+            if dv is None:
+                depth[v] = dv = du + 1
+                queue.append((v, dv))
+                yield u, v, TREE_EDGE
+            else:
+                if du == dv:
+                    # could use either "in" or "not in" -- this emits self-loops
+                    if v in visited:
+                        yield u, v, LEVEL_EDGE
+                elif du < dv:
+                    yield u, v, FORWARD_EDGE
+
+
+def _directed_bfs_labeled_edges(G, sources):
+    if sources in G:
+        sources = [sources]
+
+    depth = {s: 0 for s in sources}
+    queue = deque(depth.items())
+    while queue:
+        u, du = queue.popleft()
+        for v in G[u]:
+            dv = depth.get(v)
+            if dv is None:
+                depth[v] = dv = du + 1
+                queue.append((v, dv))
+                yield u, v, TREE_EDGE
+            elif du < dv:
+                yield u, v, FORWARD_EDGE
+            elif du > dv:
+                yield u, v, REVERSE_EDGE
+            else:
+                yield u, v, LEVEL_EDGE
 
 
 @nx._dispatch
