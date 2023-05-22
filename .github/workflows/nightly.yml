@@ -1,9 +1,8 @@
 name: Upload and build nightly wheels
 on:
+  workflow_dispatch:
   schedule:
     - cron: "0 0 * * *"
-  pull_request:
-
 jobs:
   cron:
     runs-on: ubuntu-latest
