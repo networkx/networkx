@@ -911,20 +911,3 @@ class TestGirth:
     )
     def test_girth(self, G, expected):
         assert nx.girth(G) == expected
-
-    def test_bad_parity_argument(self):
-        G = nx.Graph()
-        with pytest.raises(ValueError):
-            nx.girth(G, parity=G)
-
-    def test_odd_girth(self):
-        G = nx.cycle_graph(4)
-        assert nx.girth(G, parity="odd") == inf
-        G.add_edges_from(nx.cycle_graph(range(5, 10)).edges)
-        assert nx.girth(G, parity="odd") == 5
-
-    def test_even_girth(self):
-        G = nx.cycle_graph(5)
-        assert nx.girth(G, parity="even") == inf
-        G.add_edges_from(nx.cycle_graph(range(6, 12)).edges)
-        assert nx.girth(G, parity="even") == 6

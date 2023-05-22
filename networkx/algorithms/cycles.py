@@ -1157,7 +1157,7 @@ def _path_to_cycle(path):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-def girth(G, parity=None):
+def girth(G):
     """Returns the girth of the graph.
 
     The girth of a graph is the length of its shortest cycle, or infinity if
@@ -1165,18 +1165,9 @@ def girth(G, parity=None):
     Wikipedia page [1]_, and runs in time O(mn) on a graph with m edges and n
     nodes.
 
-    Likewise, we define the "odd girth" and "even girth" to be the length of the
-    shortest odd-length or even-length cycle in G.
-
     Parameters
     ----------
     G : NetworkX Graph
-
-    parity : string (optional, default = None)
-        If parity is "odd", compute the odd girth
-        If parity is "even", compute the even girth
-        otherwise, compute the girth.
-
 
     Returns
     -------
@@ -1199,10 +1190,6 @@ def girth(G, parity=None):
     6
     >>> nx.girth(nx.path_graph(5))
     inf
-    >>> nx.girth(nx.petersen_graph(), parity='odd')
-    5
-    >>> nx.girth(nx.petersen_graph(), parity='even')
-    6
 
     References
     ----------
@@ -1212,15 +1199,6 @@ def girth(G, parity=None):
     girth = depth_limit = inf
     tree_edge = nx.algorithms.traversal.breadth_first_search.TREE_EDGE
     level_edge = nx.algorithms.traversal.breadth_first_search.LEVEL_EDGE
-    forward_edge = nx.algorithms.traversal.breadth_first_search.FORWARD_EDGE
-    if parity == "odd":
-        skip = forward_edge
-    elif parity == "even":
-        skip = level_edge
-    elif parity is None:
-        skip = None
-    else:
-        raise ValueError("parity argument is unrecognized")
     for n in G:
         # run a BFS from source n, keeping track of distances; since we want
         # the shortest cycle, no need to explore beyond the current minimum length
@@ -1231,8 +1209,6 @@ def girth(G, parity=None):
                 break
             if label is tree_edge:
                 depth[v] = du + 1
-            elif label is skip:
-                pass
             else:
                 # if (u, v) is a level edge, the length is du + du + 1 (odd)
                 # otherwise, it's a forward edge; length is du + (du + 1) + 1 (even)
