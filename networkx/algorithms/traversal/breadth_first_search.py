@@ -470,7 +470,7 @@ def bfs_labeled_edges(G, sources):
     [(0, 1, 'tree'), (1, 2, 'tree'), (2, 3, 'tree'), (3, 0, 'reverse')]
     >>> G = nx.complete_graph(3)
     >>> list(nx.bfs_labeled_edges(G, 0))
-    [(0, 1, 'tree'), (0, 2, 'tree'), (2, 1, 'level')]
+    [(0, 2, 'tree'), (0, 1, 'tree'), (2, 1, 'level')]
     >>> list(nx.bfs_labeled_edges(G, [0, 1]))
     [(1, 0, 'level'), (0, 2, 'tree'), (1, 2, 'forward')]
     """
