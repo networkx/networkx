@@ -22,7 +22,7 @@ jobs:
       - name: Install packages
         run: |
           pip install --upgrade pip wheel setuptools
-          pip install -U --pre --only-binary -i https://pypi.anaconda.org/scipy-wheels-nightly/simple -r requirements/default.txt
+          pip install -U --pre --only-binary :all: -i https://pypi.anaconda.org/scipy-wheels-nightly/simple -r requirements/default.txt
           pip install --pre -r requirements/test.txt
           pip install .
           pip list
