@@ -115,11 +115,15 @@ class TestBFS:
             (0, 1, "tree"),
             (0, 2, "tree"),
             (0, 4, "tree"),
+            (1, 5, "tree"),
             (2, 1, "level"),
             (2, 3, "tree"),
-            (4, 3, "tree"),
+            (2, 5, "forward"),
+            (4, 3, "forward"),
             (4, 4, "level"),
         ]
+        answer = list(nx.bfs_labeled_edges(G, 0))
+        assert expected == answer
 
 
 class TestBreadthLimitedSearch:
