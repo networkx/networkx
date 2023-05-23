@@ -120,7 +120,8 @@ References
 
 See Also
 --------
-syntactic_feasibility(), semantic_feasibility()
+syntactic_feasibility
+semantic_feasibility
 
 Notes
 -----
