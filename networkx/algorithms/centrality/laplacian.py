@@ -94,7 +94,6 @@ def laplacian_centrality(
     """
     import numpy as np
     import scipy as sp
-    import scipy.linalg  # call as sp.linalg
 
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept("null graph has no centrality defined")

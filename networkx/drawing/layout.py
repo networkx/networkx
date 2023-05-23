@@ -571,7 +571,6 @@ def _sparse_fruchterman_reingold(
     # Sparse version
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     try:
         nnodes, _ = A.shape
@@ -720,7 +719,6 @@ def _kamada_kawai_solve(dist_mtx, pos_arr, dim):
 
     import numpy as np
     import scipy as sp
-    import scipy.optimize  # call as sp.optimize
 
     meanwt = 1e-3
     costargs = (np, 1 / (dist_mtx + np.eye(dist_mtx.shape[0]) * 1e-3), meanwt, dim)
@@ -867,8 +865,6 @@ def _sparse_spectral(A, dim=2):
     # Could use multilevel methods here, see Koren "On spectral graph drawing"
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
-    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     try:
         nnodes, _ = A.shape

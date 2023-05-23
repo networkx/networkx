@@ -144,7 +144,6 @@ def communicability_exp(G):
     >>> c = nx.communicability_exp(G)
     """
     import scipy as sp
-    import scipy.linalg  # call as sp.linalg
 
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)

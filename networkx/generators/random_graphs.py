@@ -1297,7 +1297,6 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
     """
     if kernel_root is None:
         import scipy as sp
-        import scipy.optimize  # call as sp.optimize
 
         def kernel_root(y, a, r):
             def my_function(b):

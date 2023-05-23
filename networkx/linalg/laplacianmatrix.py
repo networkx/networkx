@@ -63,7 +63,6 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
 
     """
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     if nodelist is None:
         nodelist = list(G)
@@ -128,7 +127,6 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     if nodelist is None:
         nodelist = list(G)
@@ -244,8 +242,6 @@ def directed_laplacian_matrix(
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
-    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     # NOTE: P has type ndarray if walk_type=="pagerank", else csr_array
     P = _transition_matrix(
@@ -331,8 +327,6 @@ def directed_combinatorial_laplacian_matrix(
        Annals of Combinatorics, 9(1), 2005
     """
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
-    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     P = _transition_matrix(
         G, nodelist=nodelist, weight=weight, walk_type=walk_type, alpha=alpha
@@ -390,7 +384,6 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     if walk_type is None:
         if nx.is_strongly_connected(G):

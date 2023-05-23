@@ -286,13 +286,12 @@ Guidelines
 
    import scipy as sp
 
-  use the following imports::
+  access the relevant scipy subpackages from the top-level ``sp`` namespace, e.g.::
 
-   import scipy.linalg  # call as sp.linalg
-   import scipy.sparse  # call as sp.sparse
-   import scipy.sparse.linalg  # call as sp.sparse.linalg
-   import scipy.stats  # call as sp.stats
-   import scipy.optimize  # call as sp.optimize
+   sp.sparse.linalg
+
+  Instead of ``from scipy.sparse import linalg`` or
+  ``import scipy.sparse.linalg as spla``.
 
   For example, many libraries have a ``linalg`` subpackage: ``nx.linalg``,
   ``np.linalg``, ``sp.linalg``, ``sp.sparse.linalg``. The above import
