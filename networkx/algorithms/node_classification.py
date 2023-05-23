@@ -73,7 +73,6 @@ def harmonic_function(G, max_iter=30, label_name="label"):
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     X = nx.to_scipy_sparse_array(G)  # adjacency matrix
     labels, label_dict = _get_label_info(G, label_name)
@@ -152,7 +151,6 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     X = nx.to_scipy_sparse_array(G)  # adjacency matrix
     labels, label_dict = _get_label_info(G, label_name)
