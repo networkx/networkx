@@ -21,7 +21,7 @@ to check for semantic feasibility. Feasibility, then, is defined
 as the logical AND of the two functions.
 
 To include a semantic check, the (Di)GraphMatcher class should be
-subclassed, and the :func:`~networkx.isomorphism.isomorphvf2.GraphMatcher.semantic_feasibility`
+subclassed, and the :meth:`~networkx.isomorphism.isomorphvf2.GraphMatcher.semantic_feasibility`
 function should be redefined.  By default, the semantic feasibility function always
 returns True.  The effect of this is that semantics are not
 considered in the matching of G1 and G2.
@@ -120,8 +120,8 @@ References
 
 See Also
 --------
-:func:`~networkx.isomorphism.isomorphvf2.GraphMatcher.syntactic_feasibility`
-:func:`~networkx.isomorphism.isomorphvf2.GraphMatcher.semantic_feasibility`
+:meth:`~networkx.isomorphism.isomorphvf2.GraphMatcher.syntactic_feasibility`
+:meth:`~networkx.isomorphism.isomorphvf2.GraphMatcher.semantic_feasibility`
 
 Notes
 -----
