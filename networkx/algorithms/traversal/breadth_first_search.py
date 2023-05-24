@@ -470,44 +470,22 @@ def bfs_labeled_edges(G, sources):
     [(0, 1, 'tree'), (1, 2, 'tree'), (2, 3, 'tree'), (3, 0, 'reverse')]
     >>> G = nx.complete_graph(3)
     >>> list(nx.bfs_labeled_edges(G, 0))
-    [(0, 1, 'tree'), (0, 2, 'tree'), (2, 1, 'level')]
+    [(0, 1, 'tree'), (0, 2, 'tree'), (1, 2, 'level')]
     >>> list(nx.bfs_labeled_edges(G, [0, 1]))
-    [(0, 2, 'tree'), (1, 0, 'level'), (1, 2, 'forward')]
+    [(0, 1, 'level'), (0, 2, 'tree'), (1, 2, 'forward')]
     """
-    if G.is_directed():
-        yield from _directed_bfs_labeled_edges(G, sources)
-    else:
-        yield from _undirected_bfs_labeled_edges(G, sources)
-
-
-def _undirected_bfs_labeled_edges(G, sources):
     if sources in G:
         sources = [sources]
 
-    depth = {s: 0 for s in sources}
     visited = set()
-    queue = deque(depth.items())
-    while queue:
-        u, du = queue.popleft()
-        visited.add(u)
-        for v in G[u]:
-            dv = depth.get(v)
-            if dv is None:
-                depth[v] = dv = du + 1
-                queue.append((v, dv))
-                yield u, v, TREE_EDGE
-            else:
-                if du == dv:
-                    # could use either "in" or "not in" -- this emits self-loops
-                    if v in visited:
-                        yield u, v, LEVEL_EDGE
-                elif du < dv:
-                    yield u, v, FORWARD_EDGE
+    directed = G.is_directed()
+    if directed:
 
+        def visit(_):
+            pass
 
-def _directed_bfs_labeled_edges(G, sources):
-    if sources in G:
-        sources = [sources]
+    else:
+        visit = visited.add
 
     depth = {s: 0 for s in sources}
     queue = deque(depth.items())
@@ -519,12 +497,17 @@ def _directed_bfs_labeled_edges(G, sources):
                 depth[v] = dv = du + 1
                 queue.append((v, dv))
                 yield u, v, TREE_EDGE
+            elif du == dv:
+                # note we visit nodes after exploring their neighbors; this
+                # "not in visited" ensures that undirected level edges and
+                # self-loops are reported exactly once
+                if v not in visited:
+                    yield u, v, LEVEL_EDGE
             elif du < dv:
                 yield u, v, FORWARD_EDGE
-            elif du > dv:
+            elif directed:
                 yield u, v, REVERSE_EDGE
-            else:
-                yield u, v, LEVEL_EDGE
+        visit(u)
 
 
 @nx._dispatch
