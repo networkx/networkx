@@ -434,6 +434,7 @@ FORWARD_EDGE = "forward"
 LEVEL_EDGE = "level"
 
 
+@nx._dispatch
 def bfs_labeled_edges(G, sources):
     """Iterate over edges in a breadth-first search (BFS) labeled by type.
 
@@ -477,16 +478,13 @@ def bfs_labeled_edges(G, sources):
     if sources in G:
         sources = [sources]
 
-    visited = set()
     directed = G.is_directed()
-    if directed:
-
-        def visit(_):
-            pass
-
-    else:
-        visit = visited.add
-
+    visited = set()
+    visit = visited.discard if directed else visited.add
+    # We use visited in a negative sense, so the visited set stays empty for the
+    # directed case and level edges are reported on their first occurrence in
+    # the undirected case.  Note our use of visited.discard -- this is built-in
+    # thus somewhat faster than a python-defined def nop(x): pass
     depth = {s: 0 for s in sources}
     queue = deque(depth.items())
     while queue:
@@ -498,9 +496,6 @@ def bfs_labeled_edges(G, sources):
                 queue.append((v, dv))
                 yield u, v, TREE_EDGE
             elif du == dv:
-                # note we visit nodes after exploring their neighbors; this
-                # "not in visited" ensures that undirected level edges and
-                # self-loops are reported exactly once
                 if v not in visited:
                     yield u, v, LEVEL_EDGE
             elif du < dv:
