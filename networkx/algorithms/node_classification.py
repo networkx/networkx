@@ -190,7 +190,7 @@ def _get_label_info(G, label_name):
         Name of the target label
 
     Returns
-    ----------
+    -------
     labels : numpy array, shape = [n_labeled_samples, 2]
         Array of pairs of labeled node ID and label ID
     label_dict : numpy array, shape = [n_classes]
