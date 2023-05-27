@@ -86,15 +86,15 @@ def dfs_edges(G, source=None, depth_limit=None):
         depth_now = 1
         while stack:
             parent, children = stack[-1]
-            try:
-                child = next(children)
+            for child in children:
                 if child not in visited:
                     yield parent, child
                     visited.add(child)
                     if depth_now < depth_limit:
                         stack.append((child, iter(G[child])))
                         depth_now += 1
-            except StopIteration:
+                        break
+            else:
                 stack.pop()
                 depth_now -= 1
 
@@ -436,8 +436,7 @@ def dfs_labeled_edges(G, source=None, depth_limit=None):
         depth_now = 1
         while stack:
             parent, children = stack[-1]
-            try:
-                child = next(children)
+           for child in children:
                 if child in visited:
                     yield parent, child, "nontree"
                 else:
@@ -446,9 +445,10 @@ def dfs_labeled_edges(G, source=None, depth_limit=None):
                     if depth_now < depth_limit:
                         stack.append((child, iter(G[child])))
                         depth_now += 1
+                        break
                     else:
                         yield parent, child, "reverse-depth_limit"
-            except StopIteration:
+            else:
                 stack.pop()
                 depth_now -= 1
                 if stack:
