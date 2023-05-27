@@ -478,6 +478,7 @@ def bfs_labeled_edges(G, sources):
     if sources in G:
         sources = [sources]
 
+    neighbors = G._adj
     directed = G.is_directed()
     visited = set()
     visit = visited.discard if directed else visited.add
@@ -487,21 +488,24 @@ def bfs_labeled_edges(G, sources):
     # thus somewhat faster than a python-defined def nop(x): pass
     depth = {s: 0 for s in sources}
     queue = deque(depth.items())
+    push = queue.append
+    pop = queue.popleft
     while queue:
-        u, du = queue.popleft()
-        for v in G[u]:
-            dv = depth.get(v)
-            if dv is None:
+        u, du = pop()
+        for v in neighbors[u]:
+            if v not in depth:
                 depth[v] = dv = du + 1
-                queue.append((v, dv))
+                push((v, dv))
                 yield u, v, TREE_EDGE
-            elif du == dv:
-                if v not in visited:
-                    yield u, v, LEVEL_EDGE
-            elif du < dv:
-                yield u, v, FORWARD_EDGE
-            elif directed:
-                yield u, v, REVERSE_EDGE
+            else:
+                dv = depth[v]
+                if du == dv:
+                    if v not in visited:
+                        yield u, v, LEVEL_EDGE
+                elif du < dv:
+                    yield u, v, FORWARD_EDGE
+                elif directed:
+                    yield u, v, REVERSE_EDGE
         visit(u)
 
 
