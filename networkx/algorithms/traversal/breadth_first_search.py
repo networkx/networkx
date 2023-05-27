@@ -38,7 +38,7 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
         given node, in any order.
 
     depth_limit : int, optional(default=len(G))
-        Specify the maximum search depth
+        Specify the maximum search depth.
 
     sort_neighbors : function
         A function that takes the list of neighbors of given node as input, and
@@ -67,25 +67,30 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
     .. _PADS: http://www.ics.uci.edu/~eppstein/PADS/BFS.py
     .. _Depth-limited-search: https://en.wikipedia.org/wiki/Depth-limited_search
     """
-    if callable(sort_neighbors):
+    if neighbors is None:
+        neighbors = G.neighbors
+    if sort_neighbors is not None:
         _neighbors = neighbors
         neighbors = lambda node: iter(sort_neighbors(_neighbors(node)))
-
-    visited = {source}
     if depth_limit is None:
         depth_limit = len(G)
-    queue = deque([(source, depth_limit, neighbors(source))])
-    while queue:
-        parent, depth_now, children = queue[0]
-        try:
-            child = next(children)
-            if child not in visited:
-                yield parent, child
-                visited.add(child)
-                if depth_now > 1:
-                    queue.append((child, depth_now - 1, neighbors(child)))
-        except StopIteration:
-            queue.popleft()
+
+    seen = {source}
+    n = len(G)
+    depth = 0
+    next_parents_children = [(source, neighbors(source))]
+    while next_parents_children and depth < depth_limit:
+        this_parents_children = next_parents_children
+        next_parents_children = []
+        for parent, children in this_parents_children:
+            for child in children:
+                if child not in seen:
+                    seen.add(child)
+                    next_parents_children.append((child, neighbors(child)))
+                    yield parent, child
+            if len(seen) == n:
+                return
+        depth += 1
 
 
 @nx._dispatch
