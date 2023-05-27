@@ -267,7 +267,7 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None):
     >>> list(nx.dfs_postorder_nodes(G, source=0))
     [4, 3, 2, 1, 0]
     >>> list(nx.dfs_postorder_nodes(G, source=0, depth_limit=2))
-    [1, 0]
+    [2, 1, 0]
 
     Notes
     -----
