@@ -291,7 +291,7 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None):
     bfs_tree
     """
     edges = nx.dfs_labeled_edges(G, source=source, depth_limit=depth_limit)
-    return (v for u, v, d in edges if d == "reverse")
+    return (v for u, v, d in edges if (d == "reverse" or d == "reverse-depth_limit"))
 
 
 def dfs_preorder_nodes(G, source=None, depth_limit=None):
