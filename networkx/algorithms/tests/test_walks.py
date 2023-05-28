@@ -28,7 +28,7 @@ def test_non_integer_nodes():
     expected = {
         "A": {"A": 0, "B": 0, "C": 1},
         "B": {"A": 1, "B": 0, "C": 0},
-        "C": {"A": 0, "B": 1, "C": 0}
+        "C": {"A": 0, "B": 1, "C": 0},
     }
     assert num_walks == expected
 
