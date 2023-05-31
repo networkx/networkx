@@ -1,7 +1,5 @@
 """Function for computing walks in a graph.
 """
-from itertools import starmap
-from operator import eq
 
 import networkx as nx
 
