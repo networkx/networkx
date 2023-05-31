@@ -36,7 +36,7 @@ def debug_print(*args, **kwargs):
     print(*args, **kwargs)
 
 
-@nx._dispatch(graphs="G1,G2")
+@nx._dispatch(graphs={"G1": 0, "G2": 1})
 def graph_edit_distance(
     G1,
     G2,
@@ -208,7 +208,7 @@ def graph_edit_distance(
     return bestcost
 
 
-@nx._dispatch(graphs="G1,G2")
+@nx._dispatch(graphs={"G1": 0, "G2": 1})
 def optimal_edit_paths(
     G1,
     G2,
@@ -371,7 +371,7 @@ def optimal_edit_paths(
     return paths, bestcost
 
 
-@nx._dispatch(graphs="G1,G2")
+@nx._dispatch(graphs={"G1": 0, "G2": 1})
 def optimize_graph_edit_distance(
     G1,
     G2,
@@ -522,7 +522,7 @@ def optimize_graph_edit_distance(
         yield cost
 
 
-@nx._dispatch(graphs="G1,G2")
+@nx._dispatch(graphs={"G1": 0, "G2": 1})
 def optimize_edit_paths(
     G1,
     G2,

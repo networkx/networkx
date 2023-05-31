@@ -21,7 +21,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch(graphs="G,auxiliary,residual")
+@nx._dispatch(graphs={"G": 0, "auxiliary?": 4, "residual?": 5})
 def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     """Returns the edges of the cut-set of a minimum (s, t)-cut.
 
@@ -154,7 +154,7 @@ def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     return cutset
 
 
-@nx._dispatch(graphs="G,auxiliary,residual")
+@nx._dispatch(graphs={"G": 0, "auxiliary?": 4, "residual?": 5})
 def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     r"""Returns a set of nodes of minimum cardinality that disconnect source
     from target in G.

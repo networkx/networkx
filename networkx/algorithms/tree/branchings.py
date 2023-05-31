@@ -72,7 +72,7 @@ def _max_weight(weight):
     return weight
 
 
-@nx._dispatch(edge_attrs="attr", edge_defaults="default")
+@nx._dispatch(edge_attrs={"attr": "default"})
 def branching_weight(G, attr="weight", default=1):
     """
     Returns the total weight of a branching.
@@ -106,7 +106,7 @@ def branching_weight(G, attr="weight", default=1):
     return sum(edge[2].get(attr, default) for edge in G.edges(data=True))
 
 
-@nx._dispatch(edge_attrs="attr", edge_defaults="default")
+@nx._dispatch(edge_attrs={"attr": "default"})
 @py_random_state(4)
 def greedy_branching(G, attr="weight", default=1, kind="max", seed=None):
     """
@@ -710,7 +710,10 @@ class Edmonds:
         return H
 
 
-@nx._dispatch(edge_attrs="attr,partition", edge_defaults={"attr": "default"})
+@nx._dispatch(
+    edge_attrs={"attr": "default", "partition": None},
+    preserve_edge_attrs="preserve_attrs",
+)
 def maximum_branching(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
@@ -726,7 +729,10 @@ def maximum_branching(
     return B
 
 
-@nx._dispatch(edge_attrs="attr,partition", edge_defaults={"attr": "default"})
+@nx._dispatch(
+    edge_attrs={"attr": "default", "partition": None},
+    preserve_edge_attrs="preserve_attrs",
+)
 def minimum_branching(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
@@ -742,7 +748,10 @@ def minimum_branching(
     return B
 
 
-@nx._dispatch(edge_attrs="attr,partition", edge_defaults={"attr": "default"})
+@nx._dispatch(
+    edge_attrs={"attr": "default", "partition": None},
+    preserve_edge_attrs="preserve_attrs",
+)
 def maximum_spanning_arborescence(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
@@ -761,7 +770,10 @@ def maximum_spanning_arborescence(
     return B
 
 
-@nx._dispatch(edge_attrs="attr,partition", edge_defaults={"attr": "default"})
+@nx._dispatch(
+    edge_attrs={"attr": "default", "partition": None},
+    preserve_edge_attrs="preserve_attrs",
+)
 def minimum_spanning_arborescence(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
 ):

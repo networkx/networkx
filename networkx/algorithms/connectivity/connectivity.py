@@ -31,7 +31,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch(graphs="G,auxiliary,residual")
+@nx._dispatch(graphs={"G": 0, "auxiliary?": 4, "residual?": 5})
 def local_node_connectivity(
     G, s, t, flow_func=None, auxiliary=None, residual=None, cutoff=None
 ):
@@ -488,7 +488,7 @@ def all_pairs_node_connectivity(G, nbunch=None, flow_func=None):
     return all_pairs
 
 
-@nx._dispatch(graphs="G,auxiliary,residual")
+@nx._dispatch(graphs={"G": 0, "auxiliary?": 4, "residual?": 5})
 def local_edge_connectivity(
     G, s, t, flow_func=None, auxiliary=None, residual=None, cutoff=None
 ):

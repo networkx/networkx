@@ -535,6 +535,7 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     weight : string, optional (default='weight')
 
        The edge data key used to provide each value in the matrix.
+       If None, then each edge has weight 1.
 
     Returns
     -------

@@ -66,7 +66,15 @@ class LoopbackDispatcher:
         raise AttributeError(item)
 
     @staticmethod
-    def convert_from_nx(graph, weight=None, *, name=None):
+    def convert_from_nx(
+        graph,
+        *,
+        edge_attrs=None,
+        node_attrs=None,
+        preserve_edge_attrs=None,
+        preserve_node_attrs=None,
+        name=None,
+    ):
         return graph
 
     @staticmethod

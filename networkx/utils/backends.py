@@ -113,9 +113,9 @@ def _dispatch(
     name=None,
     graphs="G",
     edge_attrs=None,
-    edge_defaults=None,
     node_attrs=None,
-    node_defaults=None,
+    preserve_edge_attrs=None,
+    preserve_node_attrs=None,
 ):
     """Dispatches to a backend algorithm
     when the first argument is a backend graph-like object.
@@ -136,34 +136,78 @@ def _dispatch(
     #  - @_dispatch(graphs="G,H")
     #  - @_dispatch(name="override_name", graphs="G,H")
     if func is None:
-        if name is None and graphs == "G":
+        if (
+            name is None
+            and graphs == "G"
+            and edge_attrs is None
+            and node_attrs is None
+            and preserve_edge_attrs is None
+            and preserve_node_attrs is None
+        ):
             return _dispatch
-        return functools.partial(_dispatch, name=name, graphs=graphs)
+        return functools.partial(
+            _dispatch,
+            name=name,
+            graphs=graphs,
+            edge_attrs=edge_attrs,
+            node_attrs=node_attrs,
+            preserve_edge_attrs=preserve_edge_attrs,
+            preserve_node_attrs=preserve_node_attrs,
+        )
     if isinstance(func, str):
         raise TypeError("'name' and 'graphs' must be passed by keyword") from None
     # If name not provided, use the name of the function
     if name is None:
         name = func.__name__
 
-    graph_list = [g.strip() for g in graphs.split(",")]
-    if len(graph_list) <= 0:
+    if isinstance(graphs, str):
+        graphs = {graphs: 0}
+    elif len(graphs) == 0:
         raise KeyError("'graphs' must contain at least one variable name") from None
+
+    # This dict comprehension is complicated for better performance; equivalent shown below.
+    optional_graphs = set()
+    graphs = {
+        optional_graphs.add(val := k[:-1]) or val if k[-1] == "?" else k: v
+        for k, v in graphs.items()
+    }
+    # The above is equivalent to:
+    # optional_graphs = {k[:-1] for k in graphs if k[-1] == "?"}
+    # graphs = {k[:-1] if k[-1] == "?" else k: v for k, v in graphs.items()}
 
     @functools.wraps(func)
     def wrapper(*args, **kwds):
-        # Select overlap of args and graph_list
-        graphs_resolved = dict(zip(graph_list, args))
-        # Check for duplicates from kwds
-        dups = set(kwds) & set(graphs_resolved)
-        if dups:
-            raise KeyError(f"{name}() got multiple values for {dups}") from None
-        # Add items from kwds
-        for gname in graph_list[len(graphs_resolved) :]:
-            if gname not in kwds:
+        graphs_resolved = {}
+        for gname, pos in graphs.items():
+            if pos < len(args):
+                if gname in kwds:
+                    raise TypeError(
+                        f"{name}() got multiple values for {gname!r}"
+                    ) from None
+                val = args[pos]
+            elif gname in kwds:
+                val = kwds[gname]
+            elif gname not in optional_graphs:
                 raise TypeError(
                     f"{name}() missing required graph argument: {gname}"
                 ) from None
-            graphs_resolved[gname] = kwds[gname]
+            else:
+                continue
+            if val is None:
+                if gname not in optional_graphs:
+                    raise TypeError(
+                        f"{name}() required graph argument {gname!r} is None; must be a graph"
+                    ) from None
+            else:
+                graphs_resolved[gname] = val
+
+        # Alternative to the above that does not check duplicated args or missing required graphs.
+        # graphs_resolved = {
+        #     val
+        #     for gname, pos in graphs.items()
+        #     if (val := args[pos] if pos < len(args) else kwds.get(gname)) is not None
+        # }
+
         # Check if any graph comes from a plugin
         if any(hasattr(g, "__networkx_plugin__") for g in graphs_resolved.values()):
             # Find common plugin name
@@ -175,7 +219,7 @@ def _dispatch(
                 raise TypeError(
                     f"{name}() graphs must all be from the same plugin, found {plugin_names}"
                 ) from None
-            plugin_name = plugin_names.pop()
+            [plugin_name] = plugin_names
             if plugin_name not in plugins:
                 raise ImportError(f"Unable to load plugin: {plugin_name}") from None
             backend = plugins[plugin_name].load()
@@ -201,26 +245,52 @@ def test_override_dispatch(
     name=None,
     graphs="G",
     edge_attrs=None,
-    edge_defaults=None,
     node_attrs=None,
-    node_defaults=None,
+    preserve_edge_attrs=None,
+    preserve_node_attrs=None,
 ):
     """Auto-converts graph arguments into the backend equivalent,
     causing the dispatching mechanism to trigger for every
     decorated algorithm."""
     if func is None:
-        if name is None and graphs == "G":
+        if (
+            name is None
+            and graphs == "G"
+            and edge_attrs is None
+            and node_attrs is None
+            and preserve_edge_attrs is None
+            and preserve_node_attrs is None
+        ):
             return _dispatch
-        return functools.partial(_dispatch, name=name, graphs=graphs)
+        return functools.partial(
+            _dispatch,
+            name=name,
+            graphs=graphs,
+            edge_attrs=edge_attrs,
+            node_attrs=node_attrs,
+            preserve_edge_attrs=preserve_edge_attrs,
+            preserve_node_attrs=preserve_node_attrs,
+        )
     if isinstance(func, str):
         raise TypeError("'name' and 'graphs' must be passed by keyword") from None
     # If name not provided, use the name of the function
     if name is None:
         name = func.__name__
 
-    graph_list = [g.strip() for g in graphs.split(",")]
-    if len(graph_list) <= 0:
-        raise ValueError("'graphs' must contain at least one variable name") from None
+    if isinstance(graphs, str):
+        graphs = {graphs: 0}
+    elif len(graphs) == 0:
+        raise KeyError("'graphs' must contain at least one variable name") from None
+
+    # This dict comprehension is complicated for better performance; equivalent shown below.
+    optional_graphs = set()
+    graphs = {
+        optional_graphs.add(val := k[:-1]) or val if k[-1] == "?" else k: v
+        for k, v in graphs.items()
+    }
+    # The above is equivalent to:
+    # optional_graphs = {k[:-1] for k in graphs if k[-1] == "?"}
+    # graphs = {k[:-1] if k[-1] == "?" else k: v for k, v in graphs.items()}
 
     sig = inspect.signature(func)
 
@@ -236,27 +306,78 @@ def test_override_dispatch(
         bound = sig.bind(*args, **kwds)
         bound.apply_defaults()
         # Check that graph names are actually in the signature
-        if set(graph_list) - set(bound.arguments):
-            raise KeyError(
-                f"Invalid graph names: {set(graph_list) - set(bound.arguments)}"
-            )
+        if set(graphs) - set(bound.arguments):
+            raise KeyError(f"Invalid graph names: {set(graphs) - set(bound.arguments)}")
         # Convert graphs into backend graph-like object
-        #   Include the weight label, if provided to the algorithm
-        weight = None
-        if "weight" in bound.arguments:
-            weight = bound.arguments["weight"]
-        elif "data" in bound.arguments and "default" in bound.arguments:
-            # This case exists for several MultiGraph edge algorithms
-            if isinstance(bound.arguments["data"], str):
-                weight = bound.arguments["data"]
-            elif bound.arguments["data"]:
-                weight = "weight"
-        elif "distance" in bound.arguments:
-            # For ego_graph
-            weight = bound.arguments["distance"]
-        for gname in graph_list:
+        #   Include the edge and/or node labels if provided to the algorithm
+        if preserve_edge_attrs is None:
+            preserve_edge_attrs = False
+        elif preserve_edge_attrs is True:
+            edge_attrs = None
+        elif (
+            isinstance(preserve_edge_attrs, str)
+            and bound.arguments[preserve_edge_attrs] is True
+        ):
+            edge_attrs = None
+            preserve_edge_attrs = True
+        else:
+            preserve_edge_attrs = False
+        if edge_attrs is None:
+            pass
+        elif isinstance(edge_attrs, str):
+            if edge_attrs[0] == "[":
+                edge_attrs = {
+                    edge_attr: 1 for edge_attr in bound.arguments[edge_attrs[1:-1]]
+                }
+            else:
+                edge_attrs = {bound.arguments[edge_attrs]: 1}
+        elif isinstance(edge_attrs, dict):
+            edge_attrs = {
+                bound.arguments[key]: bound.arguments.get(val, 1)
+                if isinstance(val, str)
+                else val
+            }
+        else:
+            raise RuntimeError(f"bad type for edge_attrs: {type(edge_attrs)}")
+
+        if preserve_node_attrs is None:
+            preserve_node_attrs = False
+        elif preserve_node_attrs is True:
+            node_attrs = None
+        elif (
+            isinstance(preserve_node_attrs, str)
+            and bound.arguments[preserve_node_attrs] is True
+        ):
+            node_attrs = None
+            preserve_node_attrs = True
+        else:
+            preserve_node_attrs = False
+        if node_attrs is None:
+            pass
+        elif isinstance(node_attrs, str):
+            if node_attrs[0] == "[":
+                node_attrs = {
+                    node_attr: None for node_attr in bound.arguments[node_attrs[1:-1]]
+                }
+            else:
+                node_attrs = {bound.arguments[node_attrs]: None}
+        elif isinstance(node_attrs, dict):
+            node_attrs = {
+                bound.arguments[key]: bound.arguments.get(val)
+                if isinstance(val, str)
+                else val
+            }
+        else:
+            raise RuntimeError(f"bad type for node_attrs: {type(node_attrs)}")
+
+        for gname in graphs:
             bound.arguments[gname] = backend.convert_from_nx(
-                bound.arguments[gname], weight=weight, name=name
+                bound.arguments[gname],
+                edge_attrs=edge_attrs,
+                node_attrs=node_attrs,
+                preserve_edge_attrs=preserve_edge_attrs,
+                preserve_node_attrs=preserve_node_attrs,
+                name=name,
             )
         result = getattr(backend, name).__call__(**bound.arguments)
         return backend.convert_to_nx(result, name=name)

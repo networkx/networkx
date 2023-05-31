@@ -953,7 +953,7 @@ def antichains(G, topo_order=None):
             antichains_stacks.append((new_antichain, new_stack))
 
 
-@nx._dispatch(edge_attrs="weight", edge_defaults="default_weight")
+@nx._dispatch(edge_attrs={"weight": "default_weight"})
 @not_implemented_for("undirected")
 def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
     """Returns the longest path in a directed acyclic graph (DAG).
@@ -1049,7 +1049,7 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
     return path
 
 
-@nx._dispatch(edge_attrs="weight", edge_defaults="default_weight")
+@nx._dispatch(edge_attrs={"weight": "default_weight"})
 @not_implemented_for("undirected")
 def dag_longest_path_length(G, weight="weight", default_weight=1):
     """Returns the longest path length in a DAG

@@ -24,7 +24,7 @@ from networkx.utils.decorators import not_implemented_for
 __all__ = ["rooted_tree_isomorphism", "tree_isomorphism"]
 
 
-@nx._dispatch(graphs="t1,t2")
+@nx._dispatch(graphs={"t1": 0, "t2": 2})
 def root_trees(t1, root1, t2, root2):
     """Create a single digraph dT of free trees t1 and t2
     #   with roots root1 and root2 respectively
@@ -102,7 +102,7 @@ def generate_isomorphism(v, w, M, ordered_children):
         generate_isomorphism(x, y, M, ordered_children)
 
 
-@nx._dispatch(graphs="t1,t2")
+@nx._dispatch(graphs={"t1": 0, "t2": 2})
 def rooted_tree_isomorphism(t1, root1, t2, root2):
     """
     Given two rooted trees `t1` and `t2`,
@@ -209,7 +209,7 @@ def rooted_tree_isomorphism(t1, root1, t2, root2):
     return isomorphism
 
 
-@nx._dispatch(graphs="t1,t2")
+@nx._dispatch(graphs={"t1": 0, "t2": 1})
 @not_implemented_for("directed", "multigraph")
 def tree_isomorphism(t1, t2):
     """

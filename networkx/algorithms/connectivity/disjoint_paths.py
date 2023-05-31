@@ -19,7 +19,7 @@ from .utils import build_auxiliary_edge_connectivity, build_auxiliary_node_conne
 __all__ = ["edge_disjoint_paths", "node_disjoint_paths"]
 
 
-@nx._dispatch(graphs="G,auxiliary,residual")
+@nx._dispatch(graphs={"G": 0, "auxiliary?": 5, "residual?": 6})
 def edge_disjoint_paths(
     G, s, t, flow_func=None, cutoff=None, auxiliary=None, residual=None
 ):
@@ -227,7 +227,7 @@ def edge_disjoint_paths(
             paths_found += 1
 
 
-@nx._dispatch(graphs="G,auxiliary,residual")
+@nx._dispatch(graphs={"G": 0, "auxiliary?": 5, "residual?": 6})
 def node_disjoint_paths(
     G, s, t, flow_func=None, cutoff=None, auxiliary=None, residual=None
 ):
