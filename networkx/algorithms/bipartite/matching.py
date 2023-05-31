@@ -582,3 +582,73 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     # add the ones from right to left as well.
     d.update({v: u for u, v in d.items()})
     return d
+
+
+def dulmage_mendelsohn_decomposition(G, top_nodes):
+    """Return a partition of the nodes of ``G`` into the subsets defined by
+    the Dulmage-Mendelsohn decomposition
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    top_nodes : container
+
+    Returns
+    -------
+    top_partition : tuple
+
+        Tuple of three elements: the top nodes that are possibly unmatched in a
+        maximum matching, the top nodes that are never unmatched in a maximum
+        matching, and the top nodes that are matched with possibly unmatched
+        bottom nodes
+
+    bot_partition : tuple
+
+        Tuple of three elements: the bottom nodes that are matched with possibly
+        unmatched top nodes, the bottom nodes that are never unmatched in a
+        maximum matching, and the bottom nodes that are possibly unmatched
+        in a maximum matching
+
+    """
+    top_node_set = set(top_nodes)
+    bot_nodes = [node for node in G if node not in top_node_set]
+    matching = maximum_matching(G, top_nodes=top_nodes)
+    unmatched_top = [node for node in top_nodes if node not in matching]
+    unmatched_bot = [node for node in bot_nodes if node not in matching]
+    reachable_from_top = _connected_by_alternating_paths(G, matching, unmatched_top)
+    reachable_from_bot = _connected_by_alternating_paths(G, matching, unmatched_bot)
+
+    always_matched_top = [
+        node for node in top_nodes
+        if node not in reachable_from_top and node not in reachable_from_bot
+    ]
+    always_matched_bot = [
+        node for node in bot_nodes
+        if node not in reachable_from_top and node not in reachable_from_bot
+    ]
+
+    top_reachable_from_unmatched_bot = [
+        node for node in top_nodes if node in reachable_from_bot
+    ]
+    bot_reachable_from_unmatched_bot = [
+        node for node in bot_nodes if node in reachable_from_bot
+    ]
+    bot_reachable_from_unmatched_top = [
+        node for node in bot_nodes if node in reachable_from_top
+    ]
+    top_reachable_from_unmatched_top = [
+        node for node in top_nodes if node in reachable_from_top
+    ]
+    return (
+        (
+            top_reachable_from_unmatched_top,
+            always_matched_top,
+            top_reachable_from_unmatched_bot,
+        ),
+        (
+            bot_reachable_from_unmatched_top,
+            always_matched_bot,
+            bot_reachable_from_unmatched_bot,
+        ),
+    )

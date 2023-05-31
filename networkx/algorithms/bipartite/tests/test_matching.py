@@ -10,6 +10,7 @@ from networkx.algorithms.bipartite.matching import (
     maximum_matching,
     minimum_weight_full_matching,
     to_vertex_cover,
+    dulmage_mendelsohn_decomposition,
 )
 
 
@@ -324,3 +325,68 @@ class TestMinimumWeightFullMatching:
         G.add_edge(1, 3, mass=2)
         matching = minimum_weight_full_matching(G, weight="mass")
         assert matching == {0: 3, 1: 2, 2: 1, 3: 0}
+
+
+class TestDulmageMendelsohnDecomposition:
+    def test_pothen_fan_example(self):
+        """Example from Pothen and Fan, 1990"""
+        G = nx.Graph()
+        NL = 12
+        NR = 11
+        left_nodes = list(range(NL))
+        right_nodes = list(range(NL, NL + NR))
+
+        G.add_nodes_from(left_nodes, bipartite=0)
+        G.add_nodes_from(right_nodes, bipartite=1)
+
+        edges = [ 
+            (0, 0),
+            (0, 1),
+            (0, 2),
+            (0, 3),
+            (0, 4),
+            (0, 5),
+            (1, 3),
+            (1, 4),
+            (1, 6),
+            (1, 7),
+            (1, 9),
+            (2, 0),
+            (2, 2),
+            (2, 4),
+            (3, 5),
+            (3, 6),
+            (3, 10),
+            (4, 5),
+            (4, 6),
+            (4, 8),
+            (5, 7),
+            (5, 8),
+            (6, 7),
+            (6, 8),
+            (6, 9),
+            (7, 9),
+            (7, 10),
+            (8, 10),
+            (9, 9),
+            (10, 9),
+            (10, 10),
+            (11, 10),
+        ]
+        # Edges above are labeled as in Pothen & Fan paper. Need to
+        # convert into our space of nodes
+        edges = [(i, j + NL) for i, j in edges]
+        G.add_edges_from(edges)
+
+        top_partition, bot_partition = dulmage_mendelsohn_decomposition(
+            G, left_nodes
+        )
+        assert len(top_partition) == 3
+        assert len(bot_partition) == 3
+
+        assert top_partition[0] == [7, 8, 9, 10, 11]
+        assert top_partition[1] == [3, 4, 5, 6]
+        assert top_partition[2] == [0, 1, 2]
+        assert bot_partition[0] == [21, 22]
+        assert bot_partition[1] == [17, 18, 19, 20]
+        assert bot_partition[2] == [12, 13, 14, 15, 16]
