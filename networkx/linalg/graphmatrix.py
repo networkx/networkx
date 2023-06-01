@@ -40,7 +40,7 @@ def incidence_matrix(
        If None, then each edge has weight 1.  Edge weights, if used,
        should be positive so that the orientation can provide the sign.
 
-    dtype : something or None, optional (default=None)
+    dtype : a NumPy dtype or None (default=None)
         The dtype of the output sparse array. This type should be a compatible
         type of the weight argument, eg. if weight would return a float this
         argument should also be a float.
