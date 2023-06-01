@@ -175,6 +175,9 @@ class TestGraphMatrix:
         )
         np.testing.assert_equal(I, np.abs(self.MGOI))
 
+        I = nx.incidence_matrix(self.G, dtype=np.uint8)
+        assert I.dtype == np.uint8
+
     def test_weighted_incidence_matrix(self):
         I = (
             nx.incidence_matrix(
