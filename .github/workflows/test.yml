@@ -138,6 +138,7 @@ jobs:
         run: |
           pip install --upgrade pip wheel setuptools
           pip install --pre -r requirements/default.txt -r requirements/test.txt
+          pip install scipy==1.10.1
           pip install .
           pip list
 
