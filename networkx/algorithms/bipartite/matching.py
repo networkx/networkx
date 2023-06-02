@@ -49,6 +49,7 @@ __all__ = [
     "eppstein_matching",
     "to_vertex_cover",
     "minimum_weight_full_matching",
+    "dulmage_mendelsohn_decomposition",
 ]
 
 INFINITY = float("inf")
@@ -588,10 +589,11 @@ def dulmage_mendelsohn_decomposition(G, top_nodes, matching=None):
     """Return a partition of the nodes of ``G`` into the subsets defined by
     the Dulmage-Mendelsohn decomposition
 
-    The Dulmage-Mendelsohn decomposition [1] partitions nodes of a bipartite
+    The Dulmage-Mendelsohn decomposition [1]_ partitions nodes of a bipartite
     graph into unique subsets that determine all nodes that can possibly be
     unmatched in some maximum matching. The subsets are defined in terms of
     the bipartite sets of the graph. They are:
+
     - The unmatched nodes in one set, and all nodes reachable via an alternating
       path from them
     - The unmatched nodes in the other set, and all nodes reachable via an
@@ -603,8 +605,10 @@ def dulmage_mendelsohn_decomposition(G, top_nodes, matching=None):
     particular maximum matching. However, the subsets are independent of the
     matching used to compute them.
 
-    [1] Dulmage and Mendelsohn. "Coverings of Bipartite Graphs". Can. J. Math.,
-        1958.
+    In contrast to the other functions in this module, ``top_nodes`` is a
+    required argument, even if there is only one possible bipartition. This
+    is so there is never ambiguity about which set of nodes each "reachable"
+    subset is reachable from.
 
     Parameters
     ----------
@@ -627,6 +631,11 @@ def dulmage_mendelsohn_decomposition(G, top_nodes, matching=None):
 
         List of nodes that are not reachable by an alternating path from
         unmatched nodes.
+
+    References
+    ----------
+    .. [1] Dulmage and Mendelsohn. "Coverings of Bipartite Graphs". Can. J. Math.,
+        1958.
 
     """
     if matching is None:
