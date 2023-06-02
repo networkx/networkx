@@ -584,7 +584,7 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     return d
 
 
-def dulmage_mendelsohn_decomposition(G, top_nodes):
+def dulmage_mendelsohn_decomposition(G, top_nodes, matching=None):
     """Return a partition of the nodes of ``G`` into the subsets defined by
     the Dulmage-Mendelsohn decomposition
 
@@ -596,59 +596,34 @@ def dulmage_mendelsohn_decomposition(G, top_nodes):
 
     Returns
     -------
-    top_partition : tuple
+    reachable_from_top : list
 
-        Tuple of three elements: the top nodes that are possibly unmatched in a
-        maximum matching, the top nodes that are never unmatched in a maximum
-        matching, and the top nodes that are matched with possibly unmatched
-        bottom nodes
+        List of nodes reachable by an alternating path from unmatched top nodes
 
-    bot_partition : tuple
+    reachable_from_bot : list
 
-        Tuple of three elements: the bottom nodes that are matched with possibly
-        unmatched top nodes, the bottom nodes that are never unmatched in a
-        maximum matching, and the bottom nodes that are possibly unmatched
-        in a maximum matching
+        List of nodes reachable by an alternating path from unmatched bottom
+        nodes
+
+    unreachable : list
+
+        List of nodes that are not reachable by an alternating path from
+        unmatched nodes.
 
     """
-    top_node_set = set(top_nodes)
-    bot_nodes = [node for node in G if node not in top_node_set]
-    matching = maximum_matching(G, top_nodes=top_nodes)
+    if matching is None:
+        matching = maximum_matching(G, top_nodes=top_nodes)
+    top_set = set(top_nodes)
+    bot_nodes = [node for node in G if node not in top_set]
+
     unmatched_top = [node for node in top_nodes if node not in matching]
     unmatched_bot = [node for node in bot_nodes if node not in matching]
-    reachable_from_top = _connected_by_alternating_paths(G, matching, unmatched_top)
-    reachable_from_bot = _connected_by_alternating_paths(G, matching, unmatched_bot)
+    set_reachable_from_top = _connected_by_alternating_paths(G, matching, unmatched_top)
+    set_reachable_from_bot = _connected_by_alternating_paths(G, matching, unmatched_bot)
+    set_reachable = set_reachable_from_top.union(set_reachable_from_bot)
+    unreachable = [node for node in G if node not in set_reachable]
 
-    always_matched_top = [
-        node for node in top_nodes
-        if node not in reachable_from_top and node not in reachable_from_bot
-    ]
-    always_matched_bot = [
-        node for node in bot_nodes
-        if node not in reachable_from_top and node not in reachable_from_bot
-    ]
+    reachable_from_top = [node for node in G if node in set_reachable_from_top]
+    reachable_from_bot = [node for node in G if node in set_reachable_from_bot]
 
-    top_reachable_from_unmatched_bot = [
-        node for node in top_nodes if node in reachable_from_bot
-    ]
-    bot_reachable_from_unmatched_bot = [
-        node for node in bot_nodes if node in reachable_from_bot
-    ]
-    bot_reachable_from_unmatched_top = [
-        node for node in bot_nodes if node in reachable_from_top
-    ]
-    top_reachable_from_unmatched_top = [
-        node for node in top_nodes if node in reachable_from_top
-    ]
-    return (
-        (
-            top_reachable_from_unmatched_top,
-            always_matched_top,
-            top_reachable_from_unmatched_bot,
-        ),
-        (
-            bot_reachable_from_unmatched_top,
-            always_matched_bot,
-            bot_reachable_from_unmatched_bot,
-        ),
-    )
+    return reachable_from_top, reachable_from_bot, unreachable
