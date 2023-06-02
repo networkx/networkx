@@ -588,6 +588,24 @@ def dulmage_mendelsohn_decomposition(G, top_nodes, matching=None):
     """Return a partition of the nodes of ``G`` into the subsets defined by
     the Dulmage-Mendelsohn decomposition
 
+    The Dulmage-Mendelsohn decomposition [1] partitions nodes of a bipartite
+    graph into unique subsets that determine all nodes that can possibly be
+    unmatched in some maximum matching. The subsets are defined in terms of
+    the bipartite sets of the graph. They are:
+    - The unmatched nodes in one set, and all nodes reachable via an alternating
+      path from them
+    - The unmatched nodes in the other set, and all nodes reachable via an
+      alternating path from them
+    - The nodes that are unreachable via alternating path from any unmatched
+      node
+
+    Unmatched nodes and alternating paths are defined with respect to a
+    particular maximum matching. However, the subsets are independent of the
+    matching used to compute them.
+
+    [1] Dulmage and Mendelsohn. "Coverings of Bipartite Graphs". Can. J. Math.,
+        1958.
+
     Parameters
     ----------
     G : NetworkX graph
