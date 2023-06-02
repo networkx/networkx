@@ -5,6 +5,9 @@ on:
     - cron: "0 0 * * *"
 jobs:
   cron:
+    # Do not attempt to upload nightly through forks
+    if: github.repository_owner == 'networkx'
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
