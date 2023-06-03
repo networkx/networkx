@@ -55,6 +55,7 @@ class LoopbackDispatcher:
         "mutual_weight": nx.algorithms.structuralholes.mutual_weight,
         "score_sequence": nx.algorithms.tournament.score_sequence,
         "tournament_matrix": nx.algorithms.tournament.tournament_matrix,
+        "normalized_mutual_weight": nx.algorithms.structuralholes.normalized_mutual_weight,
     }
 
     def __getattr__(self, item):
