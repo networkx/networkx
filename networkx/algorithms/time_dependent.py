@@ -115,5 +115,5 @@ def cd_index(G, node, time_delta=5, weight=None):
     else:
         # If a node has the specified weight attribute, its weight is used in the calculation
         # otherwise, a weight of 1 is assumed for that node
-        weights = [G.nodes[i][weight] if weight in G.nodes[i] else 1 for i in pred]
+        weights = [G.nodes[i].get(weight, 1) for i in pred]
         return round(sum(bi / wt for bi, wt in zip(b, weights)) / n, 2)
