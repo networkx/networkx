@@ -564,7 +564,6 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     """
     import numpy as np
     import scipy as sp
-    import scipy.optimize  # call as sp.optimize
 
     left, right = nx.bipartite.sets(G, top_nodes)
     U = list(left)

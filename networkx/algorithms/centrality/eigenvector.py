@@ -215,7 +215,6 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(

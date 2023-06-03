@@ -108,6 +108,20 @@ Development Workflow
      problems early and reduces the load on the continuous integration
      system.
 
+4. Ensure your contribution is properly formatted.
+
+   * If you installed ``pre-commit`` as recommended in step 1, all necessary
+     linting should run automatically at commit time. If there are any
+     formatting issues, the commit will not be successful and linting
+     suggestions will be applied to the patch automatically.
+     Simply ``git add`` and ``git commit`` a second time to accept the proposed
+     formatting changes.
+
+   * If the above fails for whatever reason, you can also run the linter over
+     the entire codebase with::
+
+         pre-commit run --all-files
+
 4. Submit your contribution:
 
    * Push your changes back to your fork on GitHub::
@@ -272,13 +286,12 @@ Guidelines
 
    import scipy as sp
 
-  use the following imports::
+  access the relevant scipy subpackages from the top-level ``sp`` namespace, e.g.::
 
-   import scipy.linalg  # call as sp.linalg
-   import scipy.sparse  # call as sp.sparse
-   import scipy.sparse.linalg  # call as sp.sparse.linalg
-   import scipy.stats  # call as sp.stats
-   import scipy.optimize  # call as sp.optimize
+   sp.sparse.linalg
+
+  Instead of ``from scipy.sparse import linalg`` or
+  ``import scipy.sparse.linalg as spla``.
 
   For example, many libraries have a ``linalg`` subpackage: ``nx.linalg``,
   ``np.linalg``, ``sp.linalg``, ``sp.sparse.linalg``. The above import

@@ -94,6 +94,8 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
     pop = heappop
     weight = _weight_function(G, weight)
 
+    G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
+
     # The queue stores priority, node, cost to reach, and parent.
     # Uses Python heapq to keep in priority order.
     # Add a counter to the queue to prevent the underlying heap from
@@ -134,7 +136,7 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
 
         explored[curnode] = parent
 
-        for neighbor, w in G[curnode].items():
+        for neighbor, w in G_succ[curnode].items():
             cost = weight(curnode, neighbor, w)
             if cost is None:
                 continue

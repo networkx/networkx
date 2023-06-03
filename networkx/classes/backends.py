@@ -233,6 +233,9 @@ def test_override_dispatch(func=None, *, name=None, graphs="G"):
                 weight = bound.arguments["data"]
             elif bound.arguments["data"]:
                 weight = "weight"
+        elif "distance" in bound.arguments:
+            # For ego_graph
+            weight = bound.arguments["distance"]
         for gname in graph_list:
             bound.arguments[gname] = backend.convert_from_nx(
                 bound.arguments[gname], weight=weight, name=name
