@@ -77,7 +77,7 @@ class TestCdIndex:
         }
 
         nx.set_node_attributes(G, node_attrs)
-        assert nx.cd_index(G, 4) == 0.04
+        assert nx.cd_index(G, 4, weight="weight") == 0.04
 
     def test_node_with_no_predecessors(self):
         G = nx.DiGraph()

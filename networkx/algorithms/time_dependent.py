@@ -10,7 +10,7 @@ __all__ = ["cd_index"]
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
-def cd_index(G, node, time_delta=5):
+def cd_index(G, node, time_delta=5, weight=None):
     r"""Compute the CD index for `node` within the graph `G`.
 
     Calculates the CD index for the given node of the graph,
@@ -54,7 +54,7 @@ def cd_index(G, node, time_delta=5):
     >>> G.add_nodes_from([(n, nodes[n]) for n in nodes])
     >>> edges = [(1, 3), (1, 4), (2, 3), (3, 4), (3, 5)]
     >>> G.add_edges_from(edges)
-    >>> cd = nx.cd_index(G, 3)
+    >>> cd = nx.cd_index(G, 3, weight="weight")
 
     Notes
     -----
@@ -102,9 +102,6 @@ def cd_index(G, node, time_delta=5):
     if not pred:
         raise ValueError("This node has no predecessors.")
 
-    # if not weight is given consider it equal to 1
-    weights = [G.nodes[i]["weight"] if "weight" in G.nodes[i] else 1 for i in pred]
-
     # -1 if any edge between the node's predecessor and the node's successor
     # exists, else 1
     b = [-1 if any((i, j) in G.edges() for j in G[node]) else 1 for i in pred]
@@ -113,4 +110,10 @@ def cd_index(G, node, time_delta=5):
     n = len(pred.union(*(G.pred[s].keys() - {node} for s in G[node])))
 
     # calculate cd index
-    return round(sum(bi / wt for bi, wt in zip(b, weights)) / n, 2)
+    if weight is None:
+        return round(sum(bi for bi in b) / n, 2)
+    else:
+        # If a node has the specified weight attribute, its weight is used in the calculation
+        # otherwise, a weight of 1 is assumed for that node
+        weights = [G.nodes[i][weight] if weight in G.nodes[i] else 1 for i in pred]
+        return round(sum(bi / wt for bi, wt in zip(b, weights)) / n, 2)
