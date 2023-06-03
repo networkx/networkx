@@ -38,6 +38,9 @@ API Changes
 Deprecations
 ------------
 
+- [`#5925 <https://github.com/networkx/networkx/issues/5925>`_]
+  The ``sort_neighbors`` input argument of ``nx.generic_bfs_edges`` is deprecated
+  and will be removed in v3.4.  Use ``neighbors`` to sort the nodes if desired.
 
 Merged PRs
 ----------
