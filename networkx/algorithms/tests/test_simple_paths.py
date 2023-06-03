@@ -195,6 +195,11 @@ def test_all_simple_paths_multigraph_with_cutoff():
     assert len(paths) == 2
     assert {tuple(p) for p in paths} == {(1, 2), (1, 2)}
 
+    # See GitHub issue #6732.
+    assert list(
+        nx.all_simple_paths(nx.MultiGraph([(0, 1), (0, 2)]), 0, {1, 2}, cutoff=1)
+    ) == [[0, 1], [0, 2]]
+
 
 def test_all_simple_paths_directed():
     G = nx.DiGraph()
