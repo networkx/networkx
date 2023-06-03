@@ -5,12 +5,12 @@ import pytest
 
 import networkx as nx
 from networkx.algorithms.bipartite.matching import (
+    dulmage_mendelsohn_decomposition,
     eppstein_matching,
     hopcroft_karp_matching,
     maximum_matching,
     minimum_weight_full_matching,
     to_vertex_cover,
-    dulmage_mendelsohn_decomposition,
 )
 
 
