@@ -339,7 +339,7 @@ class TestDulmageMendelsohnDecomposition:
         G.add_nodes_from(left_nodes, bipartite=0)
         G.add_nodes_from(right_nodes, bipartite=1)
 
-        edges = [ 
+        edges = [
             (0, 0),
             (0, 1),
             (0, 2),
@@ -378,15 +378,22 @@ class TestDulmageMendelsohnDecomposition:
         edges = [(i, j + NL) for i, j in edges]
         G.add_edges_from(edges)
 
-        top_partition, bot_partition = dulmage_mendelsohn_decomposition(
+        reachable_top, reachable_bot, unreachable = dulmage_mendelsohn_decomposition(
             G, left_nodes
         )
-        assert len(top_partition) == 3
-        assert len(bot_partition) == 3
+        # Here we switch from left/right to top/bot for consistency with
+        # function terminology
+        top_set = set(left_nodes)
+        top_reachable_from_top = [n for n in reachable_top if n in top_set]
+        bot_reachable_from_top = [n for n in reachable_top if n not in top_set]
+        bot_reachable_from_bot = [n for n in reachable_bot if n not in top_set]
+        top_reachable_from_bot = [n for n in reachable_bot if n in top_set]
+        top_unreachable = [n for n in unreachable if n in top_set]
+        bot_unreachable = [n for n in unreachable if n not in top_set]
 
-        assert top_partition[0] == [7, 8, 9, 10, 11]
-        assert top_partition[1] == [3, 4, 5, 6]
-        assert top_partition[2] == [0, 1, 2]
-        assert bot_partition[0] == [21, 22]
-        assert bot_partition[1] == [17, 18, 19, 20]
-        assert bot_partition[2] == [12, 13, 14, 15, 16]
+        assert top_reachable_from_top == [7, 8, 9, 10, 11]
+        assert top_unreachable == [3, 4, 5, 6]
+        assert top_reachable_from_bot == [0, 1, 2]
+        assert bot_reachable_from_top == [21, 22]
+        assert bot_unreachable == [17, 18, 19, 20]
+        assert bot_reachable_from_bot == [12, 13, 14, 15, 16]
