@@ -1,3 +1,4 @@
+import typing
 from heapq import heappop, heappush
 from itertools import count
 
@@ -251,74 +252,48 @@ def all_simple_paths(G, source, target, cutoff=None):
             targets = set(target)
         except TypeError as err:
             raise nx.NodeNotFound(f"target node {target} not in graph") from err
-    if source in targets:
+    if not targets:
         return _empty_generator()
     if cutoff is None:
         cutoff = len(G) - 1
-    if cutoff < 1:
+    if cutoff < 0:
         return _empty_generator()
-    if G.is_multigraph():
-        return _all_simple_paths_multigraph(G, source, targets, cutoff)
-    else:
-        return _all_simple_paths_graph(G, source, targets, cutoff)
+    return _all_simple_paths(G, source, targets, cutoff)
 
 
 def _empty_generator():
     yield from ()
 
 
-def _all_simple_paths_graph(G, source, targets, cutoff):
-    visited = {source: True}
-    stack = [iter(G[source])]
-    while stack:
-        children = stack[-1]
-        child = next(children, None)
-        if child is None:
-            stack.pop()
-            visited.popitem()
-        elif len(visited) < cutoff:
-            if child in visited:
-                continue
-            if child in targets:
-                yield list(visited) + [child]
-            visited[child] = True
-            if targets - set(visited.keys()):  # expand stack until find all targets
-                stack.append(iter(G[child]))
-            else:
-                visited.popitem()  # maybe other ways to child
-        else:  # len(visited) == cutoff:
-            for target in (targets & (set(children) | {child})) - set(visited.keys()):
-                yield list(visited) + [target]
-            stack.pop()
-            visited.popitem()
+def _all_simple_paths(G: nx.Graph, source, targets: set, cutoff: int):
+    # We simulate recursion with a stack, keeping the current path being explored
+    # and the child iterators at each point in the stack.
+    # To avoid unnecessary checks, the loop is structured in a way such that a path
+    # is considered for yielding only after adding a new node.
 
+    # The current_path is a dictionary (instead of a list or a set) because we want
+    # both a fast membership test and the preservation of order.
+    current_path: dict = {source: True}
+    stack: list[typing.Iterator] = [(v for u, v in G.edges(source))]
 
-def _all_simple_paths_multigraph(G, source, targets, cutoff):
-    visited = {source: True}
-    stack = [(v for u, v in G.edges(source))]
     while stack:
-        children = stack[-1]
-        child = next(children, None)
-        if child is None:
+        # 1. Try to extend the current path.
+        next_node = next((c for c in stack[-1] if c not in current_path), None)
+        if next_node is None:
+            # All children of the last node in the current path have been explored.
             stack.pop()
-            visited.popitem()
-        elif len(visited) < cutoff:
-            if child in visited:
-                continue
-            if child in targets:
-                yield list(visited) + [child]
-            visited[child] = True
-            if targets - set(visited.keys()):
-                stack.append((v for u, v in G.edges(child)))
-            else:
-                visited.popitem()
-        else:  # len(visited) == cutoff:
-            for target in targets - set(visited.keys()):
-                count = ([child] + list(children)).count(target)
-                for i in range(count):
-                    yield list(visited) + [target]
-            stack.pop()
-            visited.popitem()
+            if current_path:
+                current_path.popitem()
+            continue
+
+        # 2. Check if we've reached a target.
+        if next_node in targets:
+            yield list(current_path) + [next_node]
+
+        # 3. Only expand the search through next_node if it makes sense.
+        if len(current_path) < cutoff and (targets - current_path.keys() - {next_node}):
+            current_path[next_node] = True
+            stack.append((v for u, v in G.edges(next_node)))
 
 
 @nx._dispatch
@@ -412,7 +387,7 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
         for simp_path in _all_simple_edge_paths_multigraph(G, source, targets, cutoff):
             yield simp_path
     else:
-        for simp_path in _all_simple_paths_graph(G, source, targets, cutoff):
+        for simp_path in _all_simple_paths(G, source, targets, cutoff):
             yield list(zip(simp_path[:-1], simp_path[1:]))
 
 
