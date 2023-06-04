@@ -72,7 +72,6 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     if len(G) == 0:
         return {}, {}

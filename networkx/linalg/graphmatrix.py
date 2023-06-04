@@ -7,7 +7,9 @@ __all__ = ["incidence_matrix", "adjacency_matrix"]
 
 
 @nx._dispatch(edge_attrs="weight")
-def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=None):
+def incidence_matrix(
+    G, nodelist=None, edgelist=None, oriented=False, weight=None, dtype=None
+):
     """Returns incidence matrix of G.
 
     The incidence matrix assigns each row to a node and each column to an edge.
@@ -39,6 +41,12 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
        If None, then each edge has weight 1.  Edge weights, if used,
        should be positive so that the orientation can provide the sign.
 
+    dtype : a NumPy dtype or None (default=None)
+        The dtype of the output sparse array. This type should be a compatible
+        type of the weight argument, eg. if weight would return a float this
+        argument should also be a float.
+        If None, then the default for SciPy is used.
+
     Returns
     -------
     A : SciPy sparse array
@@ -58,7 +66,6 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
        http://videolectures.net/mit18085f07_strang_lec03/
     """
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     if nodelist is None:
         nodelist = list(G)
@@ -67,7 +74,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
             edgelist = list(G.edges(keys=True))
         else:
             edgelist = list(G.edges())
-    A = sp.sparse.lil_array((len(nodelist), len(edgelist)))
+    A = sp.sparse.lil_array((len(nodelist), len(edgelist)), dtype=dtype)
     node_index = {node: i for i, node in enumerate(nodelist)}
     for ei, e in enumerate(edgelist):
         (u, v) = e[:2]

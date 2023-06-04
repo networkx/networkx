@@ -51,7 +51,6 @@ class _PCGSolver:
     def _solve(self, b, tol):
         import numpy as np
         import scipy as sp
-        import scipy.linalg.blas  # call as sp.linalg.blas
 
         A = self._A
         M = self._M
@@ -89,7 +88,6 @@ class _LUSolver:
 
     def __init__(self, A):
         import scipy as sp
-        import scipy.sparse.linalg  # call as sp.sparse.linalg
 
         self._LU = sp.sparse.linalg.splu(
             A,
@@ -185,9 +183,6 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
     """
     import numpy as np
     import scipy as sp
-    import scipy.linalg  # call as sp.linalg
-    import scipy.linalg.blas  # call as sp.linalg.blas
-    import scipy.sparse  # call as sp.sparse
 
     n = X.shape[0]
 
@@ -278,8 +273,6 @@ def _get_fiedler_func(method):
 
         def find_fiedler(L, x, normalized, tol, seed):
             import scipy as sp
-            import scipy.sparse  # call as sp.sparse
-            import scipy.sparse.linalg  # call as sp.sparse.linalg
 
             L = sp.sparse.csc_array(L, dtype=float)
             n = L.shape[0]

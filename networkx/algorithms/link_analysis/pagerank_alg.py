@@ -451,7 +451,6 @@ def _pagerank_scipy(
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     N = len(G)
     if N == 0:
