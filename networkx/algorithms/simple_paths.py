@@ -364,26 +364,27 @@ def _all_simple_edge_paths(G: nx.Graph, source, targets: set, cutoff: int):
     # The current_path is a dictionary that maps nodes in the path to the edge that was
     # used to enter that node (instead of a list of edges) because we want both a fast
     # membership test for nodes in the path and the preservation of insertion order.
-    current_path: dict = {}
+    current_path: dict = {None: None}
     stack: list[typing.Iterator] = [iter([(None, source)])]
 
     while stack:
         # 1. Try to extend the current path.
         next_edge = next((e for e in stack[-1] if e[1] not in current_path), None)
         if next_edge is None:
-            # All children of the last node in the current path have been explored.
+            # All edges of the last node in the current path have been explored.
             stack.pop()
-            if current_path:
-                current_path.popitem()
+            current_path.popitem()
             continue
         previous_node, next_node, *_ = next_edge
 
         # 2. Check if we've reached a target.
         if next_node in targets:
-            yield (list(current_path.values()) + [next_edge])[1:]  # remove dummy edge
+            yield (list(current_path.values()) + [next_edge])[2:]  # remove dummy edge
 
         # 3. Only expand the search through the next node if it makes sense.
-        if len(current_path) < cutoff and (targets - current_path.keys() - {next_node}):
+        if len(current_path) - 1 < cutoff and (
+            targets - current_path.keys() - {next_node}
+        ):
             current_path[next_node] = next_edge
             stack.append(iter(get_edges(next_node)))
 
