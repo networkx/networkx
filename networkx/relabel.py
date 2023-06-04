@@ -3,7 +3,7 @@ import networkx as nx
 __all__ = ["convert_node_labels_to_integers", "relabel_nodes"]
 
 
-@nx._dispatch(preserve_edge_attrs=True)
+# @nx._dispatch(preserve_edge_attrs=True)  # TODO...
 def relabel_nodes(G, mapping, copy=True):
     """Relabel the nodes of the graph G according to a given mapping.
 

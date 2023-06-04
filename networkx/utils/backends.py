@@ -310,59 +310,64 @@ def test_override_dispatch(
             raise KeyError(f"Invalid graph names: {set(graphs) - set(bound.arguments)}")
         # Convert graphs into backend graph-like object
         #   Include the edge and/or node labels if provided to the algorithm
-        if preserve_edge_attrs is None:
-            preserve_edge_attrs = False
-        elif preserve_edge_attrs is True:
-            edge_attrs = None
+        _preserve_edge_attrs = preserve_edge_attrs
+        _edge_attrs = edge_attrs
+        if _preserve_edge_attrs is None:
+            _preserve_edge_attrs = False
+        elif _preserve_edge_attrs is True:
+            _edge_attrs = None
         elif (
-            isinstance(preserve_edge_attrs, str)
-            and bound.arguments[preserve_edge_attrs] is True
+            isinstance(_preserve_edge_attrs, str)
+            and bound.arguments[_preserve_edge_attrs] is True
         ):
-            edge_attrs = None
-            preserve_edge_attrs = True
+            _edge_attrs = None
+            _preserve_edge_attrs = True
         else:
-            preserve_edge_attrs = False
-        if edge_attrs is None:
+            _preserve_edge_attrs = False
+        if _edge_attrs is None:
             pass
-        elif isinstance(edge_attrs, str):
-            if edge_attrs[0] == "[":
-                edge_attrs = {
-                    edge_attr: 1 for edge_attr in bound.arguments[edge_attrs[1:-1]]
+        elif isinstance(_edge_attrs, str):
+            if _edge_attrs[0] == "[":
+                _edge_attrs = {
+                    edge_attr: 1 for edge_attr in bound.arguments[_edge_attrs[1:-1]]
                 }
             else:
-                edge_attrs = {bound.arguments[edge_attrs]: 1}
-        elif isinstance(edge_attrs, dict):
-            edge_attrs = {
+                _edge_attrs = {bound.arguments[_edge_attrs]: 1}
+        elif isinstance(_edge_attrs, dict):
+            _edge_attrs = {
                 bound.arguments[key]: bound.arguments.get(val, 1)
                 if isinstance(val, str)
                 else val
+                for key, val in _edge_attrs.items()
             }
         else:
             raise RuntimeError(f"bad type for edge_attrs: {type(edge_attrs)}")
 
-        if preserve_node_attrs is None:
-            preserve_node_attrs = False
-        elif preserve_node_attrs is True:
-            node_attrs = None
+        _preserve_node_attrs = preserve_node_attrs
+        _node_attrs = node_attrs
+        if _preserve_node_attrs is None:
+            _preserve_node_attrs = False
+        elif _preserve_node_attrs is True:
+            _node_attrs = None
         elif (
-            isinstance(preserve_node_attrs, str)
-            and bound.arguments[preserve_node_attrs] is True
+            isinstance(_preserve_node_attrs, str)
+            and bound.arguments[_preserve_node_attrs] is True
         ):
-            node_attrs = None
-            preserve_node_attrs = True
+            _node_attrs = None
+            _preserve_node_attrs = True
         else:
-            preserve_node_attrs = False
-        if node_attrs is None:
+            _preserve_node_attrs = False
+        if _node_attrs is None:
             pass
-        elif isinstance(node_attrs, str):
-            if node_attrs[0] == "[":
-                node_attrs = {
-                    node_attr: None for node_attr in bound.arguments[node_attrs[1:-1]]
+        elif isinstance(_node_attrs, str):
+            if _node_attrs[0] == "[":
+                _node_attrs = {
+                    node_attr: None for node_attr in bound.arguments[_node_attrs[1:-1]]
                 }
             else:
-                node_attrs = {bound.arguments[node_attrs]: None}
-        elif isinstance(node_attrs, dict):
-            node_attrs = {
+                _node_attrs = {bound.arguments[_node_attrs]: None}
+        elif isinstance(_node_attrs, dict):
+            _node_attrs = {
                 bound.arguments[key]: bound.arguments.get(val)
                 if isinstance(val, str)
                 else val
@@ -373,10 +378,10 @@ def test_override_dispatch(
         for gname in graphs:
             bound.arguments[gname] = backend.convert_from_nx(
                 bound.arguments[gname],
-                edge_attrs=edge_attrs,
-                node_attrs=node_attrs,
-                preserve_edge_attrs=preserve_edge_attrs,
-                preserve_node_attrs=preserve_node_attrs,
+                edge_attrs=_edge_attrs,
+                node_attrs=_node_attrs,
+                preserve_edge_attrs=_preserve_edge_attrs,
+                preserve_node_attrs=_preserve_node_attrs,
                 name=name,
             )
         result = getattr(backend, name).__call__(**bound.arguments)
