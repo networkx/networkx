@@ -256,6 +256,7 @@ def all_simple_paths(G, source, target, cutoff=None):
     """
     if source not in G:
         raise nx.NodeNotFound(f"source node {source} not in graph")
+
     if target in G:
         targets = {target}
     else:
@@ -263,17 +264,11 @@ def all_simple_paths(G, source, target, cutoff=None):
             targets = set(target)
         except TypeError as err:
             raise nx.NodeNotFound(f"target node {target} not in graph") from err
-    if not targets:
-        return _empty_generator()
-    if cutoff is None:
-        cutoff = len(G) - 1
-    if cutoff < 0:
-        return _empty_generator()
-    return _all_simple_paths(G, source, targets, cutoff)
 
+    cutoff = cutoff if cutoff is not None else len(G) - 1
 
-def _empty_generator():
-    yield from ()
+    if cutoff >= 0 and targets:
+        yield from _all_simple_paths(G, source, targets, cutoff)
 
 
 def _all_simple_paths(G: nx.Graph, source, targets: set, cutoff: int):
