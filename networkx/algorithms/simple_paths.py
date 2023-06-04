@@ -170,6 +170,17 @@ def all_simple_paths(G, source, target, cutoff=None):
         [0, 3, 1, 2]
         [0, 3, 2]
 
+    The singleton path from `source` to itself is considered a simple path and is
+    included in the results:
+
+        >>> G = nx.empty_graph(5)
+        >>> list(nx.all_simple_paths(G, source=0, target=0))
+        [[0]]
+
+        >>> G = nx.path_graph(3)
+        >>> list(nx.all_simple_paths(G, source=0, target={0, 1, 2}))
+        [[0], [0, 1], [0, 1, 2]]
+
     Iterate over each path from the root nodes to the leaf nodes in a
     directed acyclic graph using a functional programming approach::
 
@@ -270,11 +281,13 @@ def _all_simple_paths(G: nx.Graph, source, targets: set, cutoff: int):
     # and the child iterators at each point in the stack.
     # To avoid unnecessary checks, the loop is structured in a way such that a path
     # is considered for yielding only after adding a new node.
+    # We bootstrap the search by adding a dummy iterator to the stack that only yields
+    # the source (so that the singleton path has a chance of being included).
 
     # The current_path is a dictionary (instead of a list or a set) because we want
     # both a fast membership test and the preservation of order.
-    current_path: dict = {source: True}
-    stack: list[typing.Iterator] = [(v for u, v in G.edges(source))]
+    current_path: dict = {}
+    stack: list[typing.Iterator] = [iter([source])]
 
     while stack:
         # 1. Try to extend the current path.

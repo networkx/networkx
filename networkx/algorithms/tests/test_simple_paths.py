@@ -140,8 +140,7 @@ def test_all_simple_paths_with_two_targets_inside_cycle_emits_two_paths():
 
 def test_all_simple_paths_source_target():
     G = nx.path_graph(4)
-    paths = nx.all_simple_paths(G, 1, 1)
-    assert list(paths) == []
+    assert list(nx.all_simple_paths(G, 1, 1)) == [[1]]
 
 
 def test_all_simple_paths_cutoff():
@@ -181,8 +180,7 @@ def test_all_simple_paths_on_non_trivial_graph():
 
 def test_all_simple_paths_multigraph():
     G = nx.MultiGraph([(1, 2), (1, 2)])
-    paths = nx.all_simple_paths(G, 1, 1)
-    assert list(paths) == []
+    assert list(nx.all_simple_paths(G, 1, 1)) == [[1]]
     nx.add_path(G, [3, 1, 10, 2])
     paths = list(nx.all_simple_paths(G, 1, 2))
     assert len(paths) == 3
@@ -216,9 +214,18 @@ def test_all_simple_paths_empty():
 
 
 def test_all_simple_paths_corner_cases():
-    assert list(nx.all_simple_paths(nx.empty_graph(2), 0, 0)) == []
+    assert list(nx.all_simple_paths(nx.empty_graph(2), 0, 0)) == [[0]]
     assert list(nx.all_simple_paths(nx.empty_graph(2), 0, 1)) == []
     assert list(nx.all_simple_paths(nx.path_graph(9), 0, 8, 0)) == []
+
+
+def test_all_simple_paths_source_in_targets():
+    # See GitHub issue #6690.
+    assert list(nx.all_simple_paths(nx.path_graph(3), 0, {0, 1, 2})) == [
+        [0],
+        [0, 1],
+        [0, 1, 2],
+    ]
 
 
 def hamiltonian_path(G, source):
