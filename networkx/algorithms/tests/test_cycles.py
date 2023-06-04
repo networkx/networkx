@@ -97,6 +97,10 @@ class TestCycles:
         for c in cc:
             assert any(self.is_cyclic_permutation(c, rc) for rc in ca)
 
+    def test_simple_cycles_singleton(self):
+        G = nx.Graph([(0, 0)])  # self-loop
+        assert list(nx.simple_cycles(G)) == [[0]]
+
     def test_unsortable(self):
         # this test ensures that graphs whose nodes without an intrinsic
         # ordering do not cause issues
