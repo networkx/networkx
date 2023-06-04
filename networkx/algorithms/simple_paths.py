@@ -254,54 +254,8 @@ def all_simple_paths(G, source, target, cutoff=None):
     all_shortest_paths, shortest_path, has_path
 
     """
-    if source not in G:
-        raise nx.NodeNotFound(f"source node {source} not in graph")
-
-    if target in G:
-        targets = {target}
-    else:
-        try:
-            targets = set(target)
-        except TypeError as err:
-            raise nx.NodeNotFound(f"target node {target} not in graph") from err
-
-    cutoff = cutoff if cutoff is not None else len(G) - 1
-
-    if cutoff >= 0 and targets:
-        yield from _all_simple_paths(G, source, targets, cutoff)
-
-
-def _all_simple_paths(G: nx.Graph, source, targets: set, cutoff: int):
-    # We simulate recursion with a stack, keeping the current path being explored
-    # and the child iterators at each point in the stack.
-    # To avoid unnecessary checks, the loop is structured in a way such that a path
-    # is considered for yielding only after adding a new node.
-    # We bootstrap the search by adding a dummy iterator to the stack that only yields
-    # the source (so that the singleton path has a chance of being included).
-
-    # The current_path is a dictionary (instead of a list or a set) because we want
-    # both a fast membership test and the preservation of order.
-    current_path: dict = {}
-    stack: list[typing.Iterator] = [iter([source])]
-
-    while stack:
-        # 1. Try to extend the current path.
-        next_node = next((c for c in stack[-1] if c not in current_path), None)
-        if next_node is None:
-            # All children of the last node in the current path have been explored.
-            stack.pop()
-            if current_path:
-                current_path.popitem()
-            continue
-
-        # 2. Check if we've reached a target.
-        if next_node in targets:
-            yield list(current_path) + [next_node]
-
-        # 3. Only expand the search through next_node if it makes sense.
-        if len(current_path) < cutoff and (targets - current_path.keys() - {next_node}):
-            current_path[next_node] = True
-            stack.append((v for u, v in G.edges(next_node)))
+    for edge_path in all_simple_edge_paths(G, source, target, cutoff):
+        yield [source] + [edge[1] for edge in edge_path]
 
 
 @nx._dispatch
@@ -377,52 +331,61 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
 
     """
     if source not in G:
-        raise nx.NodeNotFound("source node %s not in graph" % source)
+        raise nx.NodeNotFound(f"source node {source} not in graph")
+
     if target in G:
         targets = {target}
     else:
         try:
             targets = set(target)
-        except TypeError:
-            raise nx.NodeNotFound("target node %s not in graph" % target)
-    if source in targets:
-        return []
-    if cutoff is None:
-        cutoff = len(G) - 1
-    if cutoff < 1:
-        return []
-    if G.is_multigraph():
-        for simp_path in _all_simple_edge_paths_multigraph(G, source, targets, cutoff):
-            yield simp_path
-    else:
-        for simp_path in _all_simple_paths(G, source, targets, cutoff):
-            yield list(zip(simp_path[:-1], simp_path[1:]))
+        except TypeError as err:
+            raise nx.NodeNotFound(f"target node {target} not in graph") from err
+
+    cutoff = cutoff if cutoff is not None else len(G) - 1
+
+    if cutoff >= 0 and targets:
+        yield from _all_simple_edge_paths(G, source, targets, cutoff)
 
 
-def _all_simple_edge_paths_multigraph(G, source, targets, cutoff):
-    if not cutoff or cutoff < 1:
-        return []
-    visited = [source]
-    stack = [iter(G.edges(source, keys=True))]
+def _all_simple_edge_paths(G: nx.Graph, source, targets: set, cutoff: int):
+    # We simulate recursion with a stack, keeping the current path being explored
+    # and the outgoing edge iterators at each point in the stack.
+    # To avoid unnecessary checks, the loop is structured in a way such that a path
+    # is considered for yielding only after a new node/edge is added.
+    # We bootstrap the search by adding a dummy iterator to the stack that only yields
+    # a dummy edge to source (so that the trivial path has a chance of being included).
+
+    get_edges = (
+        (lambda node: G.edges(node, keys=True))
+        if G.is_multigraph()
+        else (lambda node: G.edges(node))
+    )
+
+    # The current_path is a dictionary that maps nodes in the path to the edge that was
+    # used to enter that node (instead of a list of edges) because we want both a fast
+    # membership test for nodes in the path and the preservation of insertion order.
+    current_path: dict = {}
+    stack: list[typing.Iterator] = [iter([(None, source)])]
 
     while stack:
-        children = stack[-1]
-        child = next(children, None)
-        if child is None:
+        # 1. Try to extend the current path.
+        next_edge = next((e for e in stack[-1] if e[1] not in current_path), None)
+        if next_edge is None:
+            # All children of the last node in the current path have been explored.
             stack.pop()
-            visited.pop()
-        elif len(visited) < cutoff:
-            if child[1] in targets:
-                yield visited[1:] + [child]
-            elif child[1] not in [v[0] for v in visited[1:]]:
-                visited.append(child)
-                stack.append(iter(G.edges(child[1], keys=True)))
-        else:  # len(visited) == cutoff:
-            for u, v, k in [child] + list(children):
-                if v in targets:
-                    yield visited[1:] + [(u, v, k)]
-            stack.pop()
-            visited.pop()
+            if current_path:
+                current_path.popitem()
+            continue
+        previous_node, next_node, *_ = next_edge
+
+        # 2. Check if we've reached a target.
+        if next_node in targets:
+            yield (list(current_path.values()) + [next_edge])[1:]  # remove dummy edge
+
+        # 3. Only expand the search through the next node if it makes sense.
+        if len(current_path) < cutoff and (targets - current_path.keys() - {next_node}):
+            current_path[next_node] = next_edge
+            stack.append(iter(get_edges(next_node)))
 
 
 @not_implemented_for("multigraph")

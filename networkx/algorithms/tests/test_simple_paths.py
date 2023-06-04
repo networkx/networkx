@@ -423,6 +423,11 @@ def test_all_simple_edge_paths_corner_cases():
     assert list(nx.all_simple_edge_paths(nx.path_graph(9), 0, 8, 0)) == []
 
 
+def test_all_simple_edge_paths_ignores_self_loop():
+    G = nx.Graph([(0, 0), (0, 1), (1, 1), (1, 2)])
+    assert list(nx.all_simple_edge_paths(G, 0, 2)) == [[(0, 1), (1, 2)]]
+
+
 def hamiltonian_edge_path(G, source):
     source = arbitrary_element(G)
     neighbors = set(G[source]) - {source}
