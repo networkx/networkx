@@ -31,7 +31,21 @@ To assist in validating the backend algorithm implementations, if an
 environment variable ``NETWORKX_GRAPH_CONVERT`` is set to a registered
 plugin keys, the dispatch machinery will automatically convert regular
 networkx Graphs and DiGraphs to the backend equivalent by calling
-``<backend dispatcher>.convert_from_nx(G, weight=weight, name=name)``.
+``<backend dispatcher>.convert_from_nx(G, edge_attrs=edge_attrs, name=name)``.
+
+The arguments to ``convert_from_nx`` are:
+
+- ``G`` : networkx Graph
+- ``edge_attrs`` : dict, optional
+    Dict that maps edge attributes to default values if missing in ``G``.
+    If None, then no edge attributes will be converted and default may be 1.
+- ``node_attrs``: dict, optional
+    Dict that maps node attribute to default values if missing in ``G``.
+    If None, then no node attributes will be converted.
+- ``preserve_edge_attrs`` : bool
+    Whether to preserve all edge attributes.
+- ``preserve_node_attrs`` : bool
+    Whether to preserve all node attributes.
 
 The converted object is then passed to the backend implementation of
 the algorithm. The result is then passed to
@@ -117,24 +131,54 @@ def _dispatch(
     preserve_edge_attrs=None,
     preserve_node_attrs=None,
 ):
-    """Dispatches to a backend algorithm
-    when the first argument is a backend graph-like object.
+    """Dispatches to a backend algorithm based on input graph types.
 
-    The algorithm name is assumed to be the name of the wrapped function unless
-    `name` is provided. This is useful to avoid name conflicts, as all
-    dispatched algorithms live in a single namespace.
+    Parameters
+    ----------
+    func : function
 
-    If more than one graph is required for the algorithm, provide a comma-separated
-    string of variable names as `graphs`. These must be the same order and name
-    as the variables passed to the algorithm. Dispatching does not support graphs
-    which are not the first argument(s) to an algorithm.
+    name : str, optional
+        The name of the algorithm to use for dispatching. If not provided,
+        the name of ``func`` will be used. ``name`` is useful to avoid name
+        conflicts, as all dispatched algorithms live in a single namespace.
+
+    graphs : str or dict, default "G"
+        If a string, the parameter name of the graph, which must be the first
+        argument of the wrapped function. If more than one graph is required
+        for the algorithm (or if the graph is not the first argument), provide
+        a dict of parameter name to argument position for each graph argument.
+        For example, ``@_dispatch(graphs={"G": 0, "auxiliary?": 4})``
+        indicates the 0th parameter ``G`` of the function is a required graph,
+        and the 4th parameter ``auxiliary`` is an optional graph.
+
+    edge_attrs : str or dict, optional
+        ``edge_attrs`` may be strings of the function argument that indicate
+        a single edge attribute to use to convert the graph. They may also be
+        dicts that map argument name of attributes to argument name of default
+        values. The default value may be a non-string value such as 0.
+        If not provided, the default value is assumed to be 1.
+
+    node_attrs : str or dict, optional
+        Like ``edge_attrs``, but for node attributes.
+
+    preserve_edge_attrs : str or bool, optional
+        If a string, the parameter name that may indicate (with ``True``)
+        whether all edge attributes should be preserved when converting.
+        If ``preserve_edge_attrs`` itself is ``True``, then always preserve
+        edge attributes. When all edges are to be preserved, ``edge_attrs``
+        is ignored.
+
+    preserve_node_attrs : str or bool, optional
+        Like ``preserve_edge_attrs``, but for node attributes.
+
     """
     # Allow any of the following decorator forms:
     #  - @_dispatch
     #  - @_dispatch()
     #  - @_dispatch(name="override_name")
-    #  - @_dispatch(graphs="G,H")
-    #  - @_dispatch(name="override_name", graphs="G,H")
+    #  - @_dispatch(graphs="graph")
+    #  - @_dispatch(edge_attrs="weight")
+    #  - @_dispatch(graphs={"G": 0, "H": 1}, edge_attrs={"weight": "default"})
     if func is None:
         if (
             name is None
@@ -230,10 +274,6 @@ def _dispatch(
                     f"'{name}' not implemented by {plugin_name}"
                 )
         return func(*args, **kwds)
-
-    # Keep a handle to the original function to use when testing
-    # the dispatch mechanism internally
-    wrapper._orig_func = func
 
     _register_algo(name, wrapper)
     return wrapper
@@ -387,7 +427,6 @@ def test_override_dispatch(
         result = getattr(backend, name).__call__(**bound.arguments)
         return backend.convert_to_nx(result, name=name)
 
-    wrapper._orig_func = func
     _register_algo(name, wrapper)
     return wrapper
 

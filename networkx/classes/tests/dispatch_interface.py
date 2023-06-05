@@ -61,9 +61,9 @@ class LoopbackDispatcher:
     def __getattr__(self, item):
         # Return the original, undecorated NetworkX algorithm
         if hasattr(nx, item):
-            return getattr(nx, item)._orig_func
+            return getattr(nx, item).__wrapped__
         if item in self.non_toplevel:
-            return self.non_toplevel[item]._orig_func
+            return self.non_toplevel[item].__wrapped__
         raise AttributeError(item)
 
     @staticmethod
