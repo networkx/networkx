@@ -49,22 +49,11 @@ def convert(graph):
 
 
 class LoopbackDispatcher:
-    non_toplevel = {
-        "inter_community_edges": nx.community.quality.inter_community_edges,
-        "is_tournament": nx.algorithms.tournament.is_tournament,
-        "mutual_weight": nx.algorithms.structuralholes.mutual_weight,
-        "score_sequence": nx.algorithms.tournament.score_sequence,
-        "tournament_matrix": nx.algorithms.tournament.tournament_matrix,
-        "normalized_mutual_weight": nx.algorithms.structuralholes.normalized_mutual_weight,
-    }
-
     def __getattr__(self, item):
-        # Return the original, undecorated NetworkX algorithm
-        if hasattr(nx, item):
-            return getattr(nx, item).__wrapped__
-        if item in self.non_toplevel:
-            return self.non_toplevel[item].__wrapped__
-        raise AttributeError(item)
+        try:
+            return nx.utils.backends._registered_algorithms[item].__wrapped__
+        except KeyError:
+            raise AttributeError(item) from None
 
     @staticmethod
     def convert_from_nx(

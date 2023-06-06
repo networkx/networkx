@@ -150,6 +150,7 @@ def _dispatch(
         For example, ``@_dispatch(graphs={"G": 0, "auxiliary?": 4})``
         indicates the 0th parameter ``G`` of the function is a required graph,
         and the 4th parameter ``auxiliary`` is an optional graph.
+        To indicate an argument is a list of graphs, do e.g. ``"[graphs]"``.
 
     edge_attrs : str or dict, optional
         ``edge_attrs`` may be strings of the function argument that indicate
@@ -157,6 +158,7 @@ def _dispatch(
         dicts that map argument name of attributes to argument name of default
         values. The default value may be a non-string value such as 0.
         If not provided, the default value is assumed to be 1.
+        To indicate an argument is a list of attributes, do e.g. ``"[attrs]"``.
 
     node_attrs : str or dict, optional
         Like ``edge_attrs``, but for node attributes.
@@ -211,12 +213,18 @@ def _dispatch(
 
     # This dict comprehension is complicated for better performance; equivalent shown below.
     optional_graphs = set()
+    list_graphs = set()
     graphs = {
-        optional_graphs.add(val := k[:-1]) or val if k[-1] == "?" else k: v
+        optional_graphs.add(val := k[:-1]) or val
+        if (last := k[-1]) == "?"
+        else list_graphs.add(val := k[1:-1]) or val
+        if last == "]"
+        else k: v
         for k, v in graphs.items()
     }
     # The above is equivalent to:
     # optional_graphs = {k[:-1] for k in graphs if k[-1] == "?"}
+    # list_graphs = {k[1:-1] for k in graphs if k[-1] == "]"}
     # graphs = {k[:-1] if k[-1] == "?" else k: v for k, v in graphs.items()}
 
     @functools.wraps(func)
@@ -253,12 +261,43 @@ def _dispatch(
         # }
 
         # Check if any graph comes from a plugin
-        if any(hasattr(g, "__networkx_plugin__") for g in graphs_resolved.values()):
-            # Find common plugin name
+        if list_graphs:
+            # Make sure we don't lose values by consuming an iterator
+            args = list(args)
+            for gname in list_graphs & graphs_resolved.keys():
+                val = list(graphs_resolved[gname])
+                graphs_resolved[gname] = val
+                if gname in kwds:
+                    kwds[gname] = val
+                else:
+                    args[graphs[gname]] = val
+
+            has_plugins = any(
+                hasattr(g, "__networkx_plugin__")
+                if gname not in list_graphs
+                else any(hasattr(g2, "__networkx_plugin__") for g2 in g)
+                for gname, g in graphs_resolved.items()
+            )
+            if has_plugins:
+                plugin_names = {
+                    getattr(g, "__networkx_plugin__", "networkx")
+                    for gname, g in graphs_resolved.items()
+                    if gname not in list_graphs
+                }
+                for gname in list_graphs & graphs_resolved.keys():
+                    plugin_names.update(
+                        getattr(g, "__networkx_plugin__", "networkx")
+                        for g in graphs_resolved[gname]
+                    )
+        else:
+            has_plugins = any(
+                hasattr(g, "__networkx_plugin__") for g in graphs_resolved.values()
+            )
             plugin_names = {
                 getattr(g, "__networkx_plugin__", "networkx")
                 for g in graphs_resolved.values()
             }
+        if has_plugins:
             if len(plugin_names) != 1:
                 raise TypeError(
                     f"{name}() graphs must all be from the same plugin, found {plugin_names}"
@@ -268,11 +307,14 @@ def _dispatch(
                 raise ImportError(f"Unable to load plugin: {plugin_name}") from None
             backend = plugins[plugin_name].load()
             if hasattr(backend, name):
+                print("!!! calling backend", backend, name)
                 return getattr(backend, name).__call__(*args, **kwds)
             else:
                 raise NetworkXNotImplemented(
                     f"'{name}' not implemented by {plugin_name}"
                 )
+        print("args", args)
+        print("kwds", kwds)
         return func(*args, **kwds)
 
     _register_algo(name, wrapper)
@@ -324,12 +366,18 @@ def test_override_dispatch(
 
     # This dict comprehension is complicated for better performance; equivalent shown below.
     optional_graphs = set()
+    list_graphs = set()
     graphs = {
-        optional_graphs.add(val := k[:-1]) or val if k[-1] == "?" else k: v
+        optional_graphs.add(val := k[:-1]) or val
+        if (last := k[-1]) == "?"
+        else list_graphs.add(val := k[1:-1]) or val
+        if last == "]"
+        else k: v
         for k, v in graphs.items()
     }
     # The above is equivalent to:
     # optional_graphs = {k[:-1] for k in graphs if k[-1] == "?"}
+    # list_graphs = {k[1:-1] for k in graphs if k[-1] == "]"}
     # graphs = {k[:-1] if k[-1] == "?" else k: v for k, v in graphs.items()}
 
     sig = inspect.signature(func)
@@ -411,19 +459,42 @@ def test_override_dispatch(
                 bound.arguments[key]: bound.arguments.get(val)
                 if isinstance(val, str)
                 else val
+                for key, val in _node_attrs.items()
             }
         else:
             raise RuntimeError(f"bad type for node_attrs: {type(node_attrs)}")
 
         for gname in graphs:
-            bound.arguments[gname] = backend.convert_from_nx(
-                bound.arguments[gname],
-                edge_attrs=_edge_attrs,
-                node_attrs=_node_attrs,
-                preserve_edge_attrs=_preserve_edge_attrs,
-                preserve_node_attrs=_preserve_node_attrs,
-                name=name,
+            if gname in list_graphs:
+                bound.arguments[gname] = [
+                    backend.convert_from_nx(
+                        g,
+                        edge_attrs=_edge_attrs,
+                        node_attrs=_node_attrs,
+                        preserve_edge_attrs=_preserve_edge_attrs,
+                        preserve_node_attrs=_preserve_node_attrs,
+                        name=name,
+                    )
+                    for g in bound.arguments[gname]
+                ]
+            else:
+                bound.arguments[gname] = backend.convert_from_nx(
+                    bound.arguments[gname],
+                    edge_attrs=_edge_attrs,
+                    node_attrs=_node_attrs,
+                    preserve_edge_attrs=_preserve_edge_attrs,
+                    preserve_node_attrs=_preserve_node_attrs,
+                    name=name,
+                )
+        if any(arg.kind is arg.VAR_KEYWORD for arg in sig.parameters.values()):
+            # Handle **kwargs in function (which we don't convert)
+            [kwargs_name] = (
+                arg.name
+                for arg in sig.parameters.values()
+                if arg.kind is arg.VAR_KEYWORD
             )
+            kwargs = bound.arguments.pop(kwargs_name)
+            bound.arguments.update(kwargs)
         result = getattr(backend, name).__call__(**bound.arguments)
         return backend.convert_to_nx(result, name=name)
 
