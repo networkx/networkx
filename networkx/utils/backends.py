@@ -307,14 +307,11 @@ def _dispatch(
                 raise ImportError(f"Unable to load plugin: {plugin_name}") from None
             backend = plugins[plugin_name].load()
             if hasattr(backend, name):
-                print("!!! calling backend", backend, name)
                 return getattr(backend, name).__call__(*args, **kwds)
             else:
                 raise NetworkXNotImplemented(
                     f"'{name}' not implemented by {plugin_name}"
                 )
-        print("args", args)
-        print("kwds", kwds)
         return func(*args, **kwds)
 
     _register_algo(name, wrapper)
