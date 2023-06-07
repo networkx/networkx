@@ -225,7 +225,7 @@ def mwis(graph, pi, b_score=0):
         # For Gh, score increases by value of pi over {node_chosen}
         Gh = G.copy()
         Gh.remove_nodes_from(node_chosen_neighbors)
-        mwis_set_h, mwis_weight_h = tuple(), 0
+        mwis_set_h, mwis_weight_h = (), 0
         if Gh:
             ubh = ub - pi_neighbors - pi_chosen
             if score + pi_chosen + ubh > best_score + EPS:
@@ -237,7 +237,7 @@ def mwis(graph, pi, b_score=0):
         # Gp = G - {node_chosen}
         # For Gp, ub decreases by value of pi over {node_chosen}
         # For Gh, score does not increase
-        mwis_set_p, mwis_weight_p = tuple(), 0
+        mwis_set_p, mwis_weight_p = (), 0
         if G:
             ubp = ub - pi_chosen
             if score + ubp > best_score + EPS:

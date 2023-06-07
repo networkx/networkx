@@ -108,7 +108,7 @@ def test_random_check_disjoint():
     """This test is used to check that all the cycles in the result of the algorithm
     are disjointed"""
     graphEX3 = nx.fast_gnp_random_graph(20, 0.15, directed=True)
-    for (u, v, w) in graphEX3.edges(data=True):
+    for u, v, w in graphEX3.edges(data=True):
         w["weight"] = random.randint(0, 10)
     res = maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 3)
     nodes_seen = []
@@ -124,7 +124,7 @@ def test_random_check_cycle_len():
     """This test is used to check that the length of the received cycles
     are normal"""
     graphEX3 = nx.fast_gnp_random_graph(20, 0.15, directed=True)
-    for (u, v, w) in graphEX3.edges(data=True):
+    for u, v, w in graphEX3.edges(data=True):
         w["weight"] = random.randint(0, 10)
     res = maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 3)
     for cyc in res:
@@ -136,13 +136,12 @@ def test_random_check_1cycle():
     then the result of the algorithm should also contain at least 1 cycle
     """
 
-
     while 1:
         graphEX3 = nx.fast_gnp_random_graph(20, 0.15, directed=True)
         sc = nx.simple_cycles(graphEX3, 3)
         if next(sc) is not None:
             break
-    for (u, v, w) in graphEX3.edges(data=True):
+    for u, v, w in graphEX3.edges(data=True):
         w["weight"] = random.randint(0, 10)
     res = maximum_weight_cycle_packing_approximation_algorithm(graphEX3, 3)
     assert len(res) >= 1
