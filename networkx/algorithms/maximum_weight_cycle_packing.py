@@ -1,7 +1,6 @@
 import doctest
 
 import networkx as nx
-from networkx.algorithms.simple_cycles_le_k import simple_cycles_le_k
 
 """REUT HADAD & TAL SOMECH
 This is an implementation for two different algorithms described on "MAXIMUM WEIGHT CYCLE PACKING IN DIRECTED GRAPHS,
@@ -163,7 +162,7 @@ def create_Ys(graph, k):
 
     import numpy as np
 
-    temp_cycles = simple_cycles_le_k(graph, k)
+    temp_cycles = nx.simple_cycles(graph, k)
     cycles = []
     for cycle in temp_cycles:
         if len(cycle) == k:
