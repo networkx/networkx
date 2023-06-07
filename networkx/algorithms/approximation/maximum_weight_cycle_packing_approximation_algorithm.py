@@ -1,7 +1,6 @@
 import doctest
 
 import networkx as nx
-from networkx.algorithms.simple_cycles_le_k import simple_cycles_le_k
 
 """REUT HADAD & TAL SOMECH"""
 
@@ -74,7 +73,7 @@ def maximum_weight_cycle_packing_approximation_algorithm(graph: nx.DiGraph, k: i
     """
 
     # Find all cycles of size at most {k} in the graph
-    sc = simple_cycles_le_k(graph, k)
+    sc = nx.simple_cycles(graph, k)
     cycles = []
     for cycle in sc:
         cycles.append(tuple(cycle))

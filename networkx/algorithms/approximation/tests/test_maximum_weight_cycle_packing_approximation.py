@@ -135,11 +135,11 @@ def test_random_check_1cycle():
     """This test is used to check the case of if there are cycles in the graph
     then the result of the algorithm should also contain at least 1 cycle
     """
-    from networkx.algorithms.simple_cycles_le_k import simple_cycles_le_k
+
 
     while 1:
         graphEX3 = nx.fast_gnp_random_graph(20, 0.15, directed=True)
-        sc = simple_cycles_le_k(graphEX3, 3)
+        sc = nx.simple_cycles(graphEX3, 3)
         if next(sc) is not None:
             break
     for (u, v, w) in graphEX3.edges(data=True):
