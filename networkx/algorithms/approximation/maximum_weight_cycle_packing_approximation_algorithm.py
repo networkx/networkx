@@ -115,7 +115,7 @@ def maximum_weight_cycle_packing_approximation_algorithm(graph: nx.DiGraph, k: i
     temp = {}
     for node in nodes:
         temp2 = []
-        for edge in buildHype.keys():
+        for edge in buildHype:
             if edge.count(node):
                 temp2.append(edge)
         temp[node] = temp2
