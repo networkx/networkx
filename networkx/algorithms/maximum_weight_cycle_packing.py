@@ -170,7 +170,6 @@ def create_Ys(graph, k):
     S = {(cyc[0], cyc[1]) for cyc in cycles}
     Ys = []
     for i in range(len(S) + 1):
-
         for temp in itertools.combinations(S, i):
             temp = list(temp)
             if check_independent(temp):
