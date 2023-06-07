@@ -131,7 +131,7 @@ def test_random_check_1cycle():
 
     while 1:
         graphEX3 = nx.fast_gnp_random_graph(20, 0.15, directed=True)
-        sc = nx.simple_cycles(graphEX3, k)
+        sc = nx.simple_cycles(graphEX3, 3)
         if next(sc) is not None:
             break
     for (u, v, w) in graphEX3.edges(data=True):
