@@ -133,5 +133,5 @@ from networkx.algorithms.approximation.maximum_weight_cycle_packing_approximatio
 )
 from networkx.algorithms.maximum_weight_cycle_packing import (
     maximum_weight_cycle_packing,
-                                                              )
+)
 from networkx.algorithms.tournament import is_tournament
