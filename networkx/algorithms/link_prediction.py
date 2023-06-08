@@ -763,7 +763,7 @@ def direct_indirect_common_neighbors(G, ebunch=None):
 
         denominator = u_denominator * v_denominator
 
-        correlation_coefficient = numerator / denominator
+        correlation_coefficient = numerator / (denominator + 1e-6)
 
         return correlation_coefficient
 
