@@ -621,7 +621,6 @@ def direct_indirect_common_neighbors(G, ebunch=None):
 
         \frac{\sum_{z\in{UN_{uv}}}(N_u[z] - \overline{N_u})(N_v[z] - \overline{N_v})}{\sqrt{\sum_{z\in{UN_{uv}}}(N_u[z] - \overline{N_u})^2}\sqrt{\sum_{z\in{UN_{uv}}}(N_v[z] - \overline{N_v})^2}}
 
-
     where $N_i[z]$ is the neighborhood vector, $UN_{uv}$ is the
     union neighborhood set, and $\overline{N_u}$ is the mean of
     the values in the union neighborhood set over the vector $N_u$.
