@@ -619,8 +619,7 @@ def direct_indirect_common_neighbors(G, ebunch=None):
 
     .. math::
 
-        \frac{\sum_{z\in{UN_{uv}}}(N_u[z] - \overline{N_u})(N_v[z] - \overline{N_v})}{\sqrt{\sum_{z\in{UN_{uv}}}(N_u[z] - \overline{N_u})^2}\sqrt{\sum_{z\in{UN_{uv}}}(N_v[z] - \overline{N_v})^2}}
-
+        \frac{\sum_{z\in{UN_{uv}}}(N_u[z] - \overline{N_u})(N_v[z] - \overline{N_v})}{\sqrt{\sum_{z\in{UN_{uv}}}(N_u[z] - \overline{N_u})^2}\sqrt{\sum_{z\in{UN_{uv}}}(N_v[z] - \overline{N_v})^2D
     where $N_i[z]$ is the neighborhood vector, $UN_{uv}$ is the
     union neighborhood set, and $\overline{N_u}$ is the mean of
     the values in the union neighborhood set over the vector $N_u$.
@@ -667,7 +666,7 @@ def direct_indirect_common_neighbors(G, ebunch=None):
     Examples
     --------
     >>> G = nx.complete_graph(5)
-    >>> preds = nx.common_neighbor_centrality(G, [(0, 1), (2, 3)])
+    >>> preds = nx.direct_indirect_common_neighbors(G, [(0, 1), (2, 3)])
     >>> for u, v, p in preds:
     ...     print(f"({u}, {v}) -> {p}")
     (0, 1) -> 4.0
