@@ -598,9 +598,6 @@ def _community(G, u, community):
         raise nx.NetworkXAlgorithmError("No community information") from err
 
 
-## MY ADDITION
-
-
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def direct_indirect_common_neighbors(G, ebunch=None):
@@ -616,72 +613,78 @@ def direct_indirect_common_neighbors(G, ebunch=None):
         (1 + CN_{uv}) \cdot (1 + Corr_{uv})
 
     where $CN_{uv}$ denotes the number of common neighbors between
-    nodes $u$ and $v$ and $Corr_{uv}$ is defined as
+    nodes $u$ and $v$.
+
+    $Corr_{uv}$ is defined as
 
     .. math::
 
-        \frac{\sum_{z\in{UN_{uv}} (N_u[z] - \overline{N_u})(N_v[z] - \overline{N_v})}{\sqrt{\sum_{z\in{UN_{uv}}(N_u[z] - \overline{N_u})^2 \sqrt{\sum_{z\in{UN_{uv}}(N_v[z] - \overline{N_v})^2}}
+        \frac{\sum_{z\in{UN_{uv}}}(N_u[z] - \overline{N_u})(N_v[z] - \overline{N_v})}{\sqrt{\sum_{z\in{UN_{uv}}}(N_u[z] - \overline{N_u})^2}\sqrt{\sum_{z\in{UN_{uv}}}(N_v[z] - \overline{N_v})^2}}
 
 
-    # denotes the set of neighbors of $u$, $\Gamma(v)$ denotes the
-    # set of neighbors of $v$, $\alpha$ is  parameter varies between [0,1], $N$ denotes
-    # total number of nodes in the Graph and ${d}_{uv}$ denotes shortest distance
-    # between $u$ and $v$.
+    where $N_i[z]$ is the neighborhood vector, $UN_{uv}$ is the
+    union neighborhood set, and $\overline{N_u}$ is the mean of
+    the values in the union neighborhood set over the vector $N_u$.
 
-    # This algorithm is based on two vital properties of nodes, namely the number
-    # of common neighbors and their centrality. Common neighbor refers to the common
-    # nodes between two nodes. Centrality refers to the prestige that a node enjoys
-    # in a network.
+    $N_i[z]$ is equal to $d_i$ when $z = i$, is equal to $CN_{iz}$
+    when $v_z\in\Gamma_i^{(2)}$, is equal to $CN_{iz} + 1$
+    when $v_z\in\Gamma_i$, and is equal to 0 otherwise.
+    This gives more importance to first-order neighbors as opposed to second-order neighbors.
 
-    # .. seealso::
+    $UN_{uv}$ is given by
 
-    #     :func:`common_neighbors`
+    .. math::
 
-    # Parameters
-    # ----------
-    # G : graph
-    #     NetworkX undirected graph.
+        \N_u[z] = \{ z | (N_u[z] > 0) \text{ } Or \text{ } (N_v[z] > 0) \}
 
-    # ebunch : iterable of node pairs, optional (default = None)
-    #     Preferential attachment score will be computed for each pair of
-    #     nodes given in the iterable. The pairs must be given as
-    #     2-tuples (u, v) where u and v are nodes in the graph. If ebunch
-    #     is None then all non-existent edges in the graph will be used.
-    #     Default value: None.
+    This algorithm captures latent relationships between nodes, given by the
+    correlation of their union neighborhood sets. Even if nodes do not share
+    common neighbors, they could still have high union neighborhood set correlation
+    (and therefore, be plausible links) given their structural similarity in
+    the graph.
 
-    # alpha : Parameter defined for participation of Common Neighbor
-    #         and Centrality Algorithm share. Values for alpha should
-    #         normally be between 0 and 1. Default value set to 0.8
-    #         because author found better performance at 0.8 for all the
-    #         dataset.
-    #         Default value: 0.8
+    Runtime of this algorithm may be higher than other link prediction algorithms
+    given the need to compute union neighborhood sets.
 
+    Parameters
+    ----------
+    G : graph
+        NetworkX undirected graph.
 
-    # Returns
-    # -------
-    # piter : iterator
-    #     An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
-    #     pair of nodes and p is their Common Neighbor and Centrality based
-    #     Parameterized Algorithm(CCPA) score.
+    ebunch : iterable of node pairs, optional (default = None)
+        DICN score will be computed for each pair of
+        nodes given in the iterable. The pairs must be given as
+        2-tuples (u, v) where u and v are nodes in the graph. If ebunch
+        is None then all non-existent edges in the graph will be used.
+        Default value: None.
 
-    # Examples
-    # --------
-    # >>> G = nx.complete_graph(5)
-    # >>> preds = nx.common_neighbor_centrality(G, [(0, 1), (2, 3)])
-    # >>> for u, v, p in preds:
-    # ...     print(f"({u}, {v}) -> {p}")
-    # (0, 1) -> 3.4000000000000004
-    # (2, 3) -> 3.4000000000000004
+    Returns
+    -------
+    piter : iterator
+        An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
+        pair of nodes and p is their Direct-Indirect Common Neighbours
+        (DICN) score.
 
-    # References
-    # ----------
-    # .. [1] Zareie, A., Sakellariou, R.
-    #        Similarity-based link prediction in social networks using latent relationships between the users.
-    #        Sci Rep 10, 20137 (2020).
-    #        https://doi.org/10.1038/s41598-020-76799-4
-    #"""
+    Examples
+    --------
+    >>> G = nx.complete_graph(5)
+    >>> preds = nx.common_neighbor_centrality(G, [(0, 1), (2, 3)])
+    >>> for u, v, p in preds:
+    ...     print(f"({u}, {v}) -> {p}")
+    (0, 1) -> 4.0
+    (2, 3) -> 4.0
 
-    # When alpha == 1, the CCPA score simplifies to the number of common neighbors.
+    References
+    ----------
+    .. [1] Zareie, A., Sakellariou, R.
+           Similarity-based link prediction in social networks using latent relationships between the users.
+           Sci Rep 10, 20137 (2020).
+           https://doi.org/10.1038/s41598-020-76799-4
+    """
+
+    # funciton relies on consecutive, integer-indexed nodes
+    mapping = dict(zip(G, range(0, len(list(G.nodes())))))
+    G = nx.convert_node_labels_to_integers(G)
 
     def get_second_order_neighbors(G, node, first_order_neighbors):
         second_order_neighbors = set()
@@ -766,7 +769,8 @@ def direct_indirect_common_neighbors(G, ebunch=None):
 
         return correlation_coefficient
 
-    def predict(u, v):
+    def predict(u, v, mapping):
+        u, v = mapping[u], mapping[v]
         first_order_neighbors = set(G.neighbors(u))
         second_order_neighbors = get_second_order_neighbors(G, u, first_order_neighbors)
 
@@ -782,4 +786,4 @@ def direct_indirect_common_neighbors(G, ebunch=None):
                 1 + correlation_coefficient
             )
 
-    return _apply_prediction(G, predict, ebunch)
+    return _apply_prediction(G, lambda u, v: predict(u, v, mapping), ebunch)
