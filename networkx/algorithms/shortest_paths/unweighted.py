@@ -468,9 +468,15 @@ def all_pairs_shortest_path(G, cutoff=None):
     >>> print(path[0][4])
     [0, 1, 2, 3, 4]
 
+    Notes
+    -----
+    There can be multiple shortest paths between a pair of nodes, with the same 'shortest' length. For each pair, this function returns
+    only one of those paths.
+
     See Also
     --------
     floyd_warshall
+    all_pairs_all_shortest_paths
 
     """
     # TODO This can be trivially parallelized.
