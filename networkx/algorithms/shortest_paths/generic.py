@@ -631,6 +631,7 @@ def all_pairs_all_shortest_paths(G, weight=None, method="dijkstra"):
     [[0, 1, 2], [0, 3, 2]]
     >>> print(dict(nx.all_pairs_all_shortest_paths(G))[0][3])
     [[0, 3]]
+    
     Notes
     -----
     There may be multiple shortest paths with equal lengths. Unlike all_pairs_shortest_path, this method returns all
