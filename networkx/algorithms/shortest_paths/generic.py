@@ -556,7 +556,7 @@ def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
     --------
     >>> G = nx.Graph()
     >>> nx.add_path(G, [0, 1, 2, 3, 0])
-    >>> print(dict(nx.single_source_all_shortest_paths(G, source=0)))
+    >>> dict(nx.single_source_all_shortest_paths(G, source=0))
     {0: [[0]], 1: [[0, 1]], 2: [[0, 1, 2], [0, 3, 2]], 3: [[0, 3]]}
 
     Notes
@@ -627,15 +627,15 @@ def all_pairs_all_shortest_paths(G, weight=None, method="dijkstra"):
     Examples
     --------
     >>> G = nx.cycle_graph(4)
-    >>> print(dict(nx.all_pairs_all_shortest_paths(G))[0][2])
+    >>> dict(nx.all_pairs_all_shortest_paths(G))[0][2]
     [[0, 1, 2], [0, 3, 2]]
-    >>> print(dict(nx.all_pairs_all_shortest_paths(G))[0][3])
+    >>> dict(nx.all_pairs_all_shortest_paths(G))[0][3]
     [[0, 3]]
 
     Notes
     -----
-    There may be multiple shortest paths with equal lengths. Unlike all_pairs_shortest_path, this method returns all
-    shortest paths.
+    There may be multiple shortest paths with equal lengths. Unlike
+    all_pairs_shortest_path, this method returns all shortest paths.
 
     See Also
     --------
