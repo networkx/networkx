@@ -789,57 +789,7 @@ def _max_branching(
            Bureau of Standards, 1967, Vol. 71B, p.233-240,
            https://archive.org/details/jresv71Bn4p233
     """
-
-    #######################
-    ### Algorithm Setup ###
-    #######################
-
-    # Pick an attribute name that the original graph is unlikly to have
-    candidate_attr = "edmonds' secret candidate attribute"
-
-    G_original = G
-    G = nx.MultiDiGraph()
-    # A dict to reliably track mutations to the edges using the key of the edge.
-    G_edge_index = {}
-    # Each edge is given an arbitrary numerical key
-    for key, (u, v, d) in enumerate(G_original.edges(data=True)):
-        if d.get(partition) is not None:
-            d[partition] = d.get(partition)
-
-        if preserve_attrs:
-            for d_k, d_v in d.items():
-                if d_k != weight:
-                    d[d_k] = d_v
-
-        edmonds_add_edge(G, G_edge_index, u, v, key, **d)
-        G.add_edge(u, v, key, **d)
-
-    level = 0  # Stores the number of contracted nodes
-
-    # These are the buckets from the paper.
-    #
-    # In the paper, G^i are modifed versions of the original graph.
-    # D^i and E^i are the nodes and edges of the maximal edges that are
-    # consistent with G^i. In this implementation, D^i and E^i are stored
-    # together as the graph B^i. We will have strictly more B^i then the
-    # paper will have.
-    B = nx.MultiDiGraph()
-    B_edge_index = {}
-    graphs = []  # G^i list
-    branchings = []  # B^i list
-    selected_nodes = set()  # D^i bucket
-    uf = nx.utils.UnionFind()
-
-    # A list of lists of edge indices. Each list is a circuit for graph G^i.
-    # Note the edge list is not required to be a circuit in G^0.
-    circuits = []
-
-    # Stores the index of the minimum edge in the circuit found in G^i and B^i.
-    # The ordering of the edges seems to preserver the weight ordering from
-    # G^0. So even if the circuit does not form a circuit in G^0, it is still
-    # true that the minimum edges in circuit G^0 (despite their weights being
-    # different)
-    minedge_circuit = []
+    new_node_base_name = "edmounds new node base name "
 
     ###########################
     ### Algorithm Structure ###
@@ -1012,7 +962,7 @@ def _max_branching(
         branchings.append(B.copy())
 
         # Mutate the graph to contract the circuit
-        new_node = "edmonds branching new node " + str(level)
+        new_node = new_node_base_name + str(level)
         new_edges = []
         for u, v, key, data in G.edges(data=True, keys=True):
             if u in Q_incoming_weight:
@@ -1038,8 +988,10 @@ def _max_branching(
                     # Outside edge. No modification needed
                     continue
 
-        G.remove_nodes_from(Q_nodes)
-        B.remove_nodes_from(Q_nodes)
+        for node in Q_nodes:
+            edmonds_remove_node(G, G_edge_index, node)
+            edmonds_remove_node(B, B_edge_index, node)
+
         selected_nodes.difference_update(set(Q_nodes))
 
         for u, v, key, data in new_edges:
@@ -1048,6 +1000,77 @@ def _max_branching(
                 del data[candidate_attr]
                 edmonds_add_edge(B, B_edge_index, u, v, **data)
                 uf.union(u, v)
+
+    def is_root(G, u, edgekeys):
+        """
+        Returns True if `u` is a root node in G.
+
+        Node `u` is a root node if its in-degree over the specified edges is zero.
+        """
+
+        if u not in G:
+            raise Exception(f"{u!r} not in G")
+
+        for v in G.pred[u]:
+            for edgekey in G.pred[u][v]:
+                if edgekey in edgekeys:
+                    return False, edgekey
+                else:
+                    return True, None
+
+    #######################
+    ### Algorithm Setup ###
+    #######################
+
+    # Pick an attribute name that the original graph is unlikly to have
+    candidate_attr = "edmonds' secret candidate attribute"
+
+    G_original = G
+    G = nx.MultiDiGraph()
+    # A dict to reliably track mutations to the edges using the key of the edge.
+    G_edge_index = {}
+    # Each edge is given an arbitrary numerical key
+    for key, (u, v, d) in enumerate(G_original.edges(data=True)):
+        if d.get(partition) is not None:
+            d[partition] = d.get(partition)
+
+        if preserve_attrs:
+            for d_k, d_v in d.items():
+                if d_k != weight:
+                    d[d_k] = d_v
+
+        edmonds_add_edge(G, G_edge_index, u, v, key, **d)
+        G.add_edge(u, v, key, **d)
+
+    level = 0  # Stores the number of contracted nodes
+
+    # These are the buckets from the paper.
+    #
+    # In the paper, G^i are modifed versions of the original graph.
+    # D^i and E^i are the nodes and edges of the maximal edges that are
+    # consistent with G^i. In this implementation, D^i and E^i are stored
+    # together as the graph B^i. We will have strictly more B^i then the
+    # paper will have.
+    #
+    # Note that the data in graphs and branchings are tuples with the graph as
+    # the first element and the edge index as the second.
+    B = nx.MultiDiGraph()
+    B_edge_index = {}
+    graphs = []  # G^i list
+    branchings = []  # B^i list
+    selected_nodes = set()  # D^i bucket
+    uf = nx.utils.UnionFind()
+
+    # A list of lists of edge indices. Each list is a circuit for graph G^i.
+    # Note the edge list is not required to be a circuit in G^0.
+    circuits = []
+
+    # Stores the index of the minimum edge in the circuit found in G^i and B^i.
+    # The ordering of the edges seems to preserver the weight ordering from
+    # G^0. So even if the circuit does not form a circuit in G^0, it is still
+    # true that the minimum edges in circuit G^0 (despite their weights being
+    # different)
+    minedge_circuit = []
 
     nodes = iter(list(G.nodes))
     while True:
@@ -1061,8 +1084,8 @@ def _max_branching(
             if len(B):
                 assert is_branching(B)
 
-            graphs.append(G.copy())
-            branchings.append(B.copy)
+            graphs.append((G.copy(), G_edge_index.copy()))
+            branchings.append((B.copy(), B_edge_index.copy()))
             circuits.append([])
             minedge_circuit.append(None)
 
@@ -1112,7 +1135,69 @@ def _max_branching(
             ### END STEP I2 ###
             ###################
 
-    return None
+    #####################
+    ### BEGIN STEP I3 ###
+    #####################
+
+    H = G_original.copy()
+
+    # Start with the branching edges in the last level.
+    edges = set(branchings[level][1])
+    while level > 0:
+        level -= 1
+
+        # The current level is i, and we start counting from 0.
+        #
+        # We need the node at level i+1 that resuilts from merging a circuit
+        # at level i. randomname_0 is the first merged node and this happends
+        # at level 1. That is randomname_0 is a node at level 1 that results
+        # from merging a circuit at level 0.
+
+        merged_node = new_node_base_name + str(level)
+        circuit = circuits[level]
+        isroot, edgekey = is_root(graphs[level + 1][0], merged_node, edges)
+        edges.update(circuit)
+
+        if isroot:
+            minedge = minedge_circuit[level]
+            if minedge is None:
+                raise Exception
+
+            # Remove the edge in the cycle with minimum weight
+            edges.remove(minedge)
+        else:
+            # We have identified an edge at the next higher level that
+            # transitions into the merged node at this level. That edge
+            # transitions to some corresponding node at the current level.
+            #
+            # We want to remove an edge from the cycle that transitions
+            # into the corresponding node, otherwise the result would not
+            # be a branching.
+
+            G, G_edge_index = graphs[level]
+            target = G_edge_index[edgekey][1]
+            for edgekey in circuit:
+                u, v, data = G_edge_index[edgekey]
+                if v == target:
+                    break
+            else:
+                raise Exception("Couldn't find edge incoming to merged node.")
+
+            edges.remove(edgekey)
+
+    H.add_nodes_from(G_original)
+    for edgekey in edges:
+        u, v, d = graphs[0][1][edgekey]
+        dd = {weight: d[weight]}  # TODO reverse edge weight transformation
+
+        if preserve_attrs:
+            for key, value in d.items():
+                if key not in [weight, candidate_attr]:
+                    dd[key] = value
+
+        H.add_edge(u, v, *dd)
+
+    return H
 
 
 def maximum_branching(
