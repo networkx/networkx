@@ -1065,6 +1065,7 @@ def LFR_benchmark_graph(
             while G.degree(u) < s:
                 v = seed.choice(available_in)
                 G.add_edge(u, v)
+                available_in = list(set(available_in).difference({v}))
 
             # Filter non-neighbor nodes outside community
             available_out = list((all_nodes.difference(c)).difference(neigh))
@@ -1076,5 +1077,6 @@ def LFR_benchmark_graph(
             while G.degree(u) < deg_seq[u]:
                 v = seed.choice(available_out)
                 G.add_edge(u, v)
+                available_out = list(set(available_out).difference({v}))
             G.nodes[u]["community"] = c
     return G
