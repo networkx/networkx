@@ -470,8 +470,8 @@ def all_pairs_shortest_path(G, cutoff=None):
 
     Notes
     -----
-    There can be multiple shortest paths between a pair of nodes, with the same 'shortest' length. For each pair, this function returns
-    only one of those paths.
+    There may be multiple shortest paths with the same length between
+    two nodes. For each pair, this function returns only one of those paths.
 
     See Also
     --------
