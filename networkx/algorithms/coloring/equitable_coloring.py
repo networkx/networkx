@@ -384,12 +384,13 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
 
 
 def equitable_color(G, num_colors):
-    """Provides equitable (r + 1)-coloring for nodes of G in O(r * n^2) time
-    if deg(G) <= r. The algorithm is described in [1]_.
+    """Provides an equitable coloring for nodes of `G`.
 
-    Attempts to color a graph using r colors, where no neighbors of a node
-    can have same color as the node itself and the number of nodes with each
-    color differ by at most 1.
+    Attempts to color a graph using `num_colors` colors, where no neighbors of
+    a node can have same color as the node itself and the number of nodes with
+    each color differ by at most 1. `num_colors` must be greater than the
+    maximum degree of `G`. The algorithm is described in [1]_ and has
+    complexity O(num_colors * n**2).
 
     Parameters
     ----------
@@ -408,15 +409,13 @@ def equitable_color(G, num_colors):
     Examples
     --------
     >>> G = nx.cycle_graph(4)
-    >>> d = nx.coloring.equitable_color(G, num_colors=3)
-    >>> nx.algorithms.coloring.equitable_coloring.is_equitable(G, d)
-    True
+    >>> nx.coloring.equitable_color(G, num_colors=3)
+    {0: 2, 1: 1, 2: 2, 3: 0}
 
     Raises
     ------
     NetworkXAlgorithmError
-        If the maximum degree of the graph ``G`` is greater than
-        ``num_colors``.
+        If `num_colors` is not at least the maximum degree of the graph `G`
 
     References
     ----------

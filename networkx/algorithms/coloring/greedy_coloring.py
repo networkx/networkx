@@ -438,7 +438,7 @@ class _AdjEntry:
 
 
 def _greedy_coloring_with_interchange(G, nodes):
-    """Return a coloring for `orginal_graph` using interchange approach
+    """Return a coloring for `original_graph` using interchange approach
 
     This procedure is an adaption of the algorithm described by [1]_,
     and is an implementation of coloring with interchange. Please be

@@ -1,4 +1,4 @@
-3.1 (unreleased)
+3.2 (unreleased)
 ================
 
 Release date: TBD
@@ -23,17 +23,21 @@ X contributors. Highlights include:
 Improvements
 ------------
 
+- [`#6654 <https://github.com/networkx/networkx/pull/6654>`_]
+  Function ``cycle_basis`` switched from using Python sets to dicts so the
+  results are now deterministic (not dependent on order reported by a set).
 
 API Changes
 -----------
+- [`#6651 <https://github.com/networkx/networkx/pull/6651>`_]
+  In `is_semiconnected`, the keyword argument `topo_order` has been removed.
+  That argument resulted in silently incorrect results more often than not.
+
 
 
 Deprecations
 ------------
 
-[`#6564 <https://github.com/networkx/networkx/pull/6564>`_]
-Deprecate ``single_target_shortest_path_length`` to change return value to a dict in v3.3.
-Deprecate ``shortest_path`` in case of all_pairs to change return value to a iterator in v3.3.
 
 Merged PRs
 ----------

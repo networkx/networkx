@@ -74,25 +74,29 @@ def dfs_edges(G, source=None, depth_limit=None):
     else:
         # edges for components with source
         nodes = [source]
-    visited = set()
     if depth_limit is None:
         depth_limit = len(G)
+
+    visited = set()
     for start in nodes:
         if start in visited:
             continue
         visited.add(start)
-        stack = [(start, depth_limit, iter(G[start]))]
+        stack = [(start, iter(G[start]))]
+        depth_now = 1
         while stack:
-            parent, depth_now, children = stack[-1]
-            try:
-                child = next(children)
+            parent, children = stack[-1]
+            for child in children:
                 if child not in visited:
                     yield parent, child
                     visited.add(child)
-                    if depth_now > 1:
-                        stack.append((child, depth_now - 1, iter(G[child])))
-            except StopIteration:
+                    if depth_now < depth_limit:
+                        stack.append((child, iter(G[child])))
+                        depth_now += 1
+                        break
+            else:
                 stack.pop()
+                depth_now -= 1
 
 
 def dfs_tree(G, source=None, depth_limit=None):
@@ -419,30 +423,34 @@ def dfs_labeled_edges(G, source=None, depth_limit=None):
     else:
         # edges for components with source
         nodes = [source]
-    visited = set()
     if depth_limit is None:
         depth_limit = len(G)
+
+    visited = set()
     for start in nodes:
         if start in visited:
             continue
         yield start, start, "forward"
         visited.add(start)
-        stack = [(start, depth_limit, iter(G[start]))]
+        stack = [(start, iter(G[start]))]
+        depth_now = 1
         while stack:
-            parent, depth_now, children = stack[-1]
-            try:
-                child = next(children)
+            parent, children = stack[-1]
+            for child in children:
                 if child in visited:
                     yield parent, child, "nontree"
                 else:
                     yield parent, child, "forward"
                     visited.add(child)
-                    if depth_now > 1:
-                        stack.append((child, depth_now - 1, iter(G[child])))
+                    if depth_now < depth_limit:
+                        stack.append((child, iter(G[child])))
+                        depth_now += 1
+                        break
                     else:
                         yield parent, child, "reverse-depth_limit"
-            except StopIteration:
+            else:
                 stack.pop()
+                depth_now -= 1
                 if stack:
                     yield stack[-1][0], parent, "reverse"
         yield start, start, "reverse"

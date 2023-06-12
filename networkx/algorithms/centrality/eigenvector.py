@@ -72,8 +72,8 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
     See Also
     --------
     eigenvector_centrality_numpy
-    pagerank
-    hits
+    :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`
+    :func:`~networkx.algorithms.link_analysis.hits_alg.hits`
 
     Notes
     -----
@@ -184,8 +184,8 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     See Also
     --------
     eigenvector_centrality
-    pagerank
-    hits
+    :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`
+    :func:`~networkx.algorithms.link_analysis.hits_alg.hits`
 
     Notes
     -----
@@ -215,7 +215,6 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(

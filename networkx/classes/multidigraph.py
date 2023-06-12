@@ -960,4 +960,4 @@ class MultiDiGraph(MultiGraph, DiGraph):
                 for u, v, k, d in self.edges(keys=True, data=True)
             )
             return H
-        return nx.graphviews.reverse_view(self)
+        return nx.reverse_view(self)

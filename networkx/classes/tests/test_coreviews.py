@@ -318,7 +318,7 @@ class TestFilteredGraphs:
         self.Graphs = [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
 
     def test_hide_show_nodes(self):
-        SubGraph = nx.graphviews.subgraph_view
+        SubGraph = nx.subgraph_view
         for Graph in self.Graphs:
             G = nx.path_graph(4, Graph)
             SG = G.subgraph([2, 3])
@@ -331,7 +331,7 @@ class TestFilteredGraphs:
             assert SGC.edges == RGC.edges
 
     def test_str_repr(self):
-        SubGraph = nx.graphviews.subgraph_view
+        SubGraph = nx.subgraph_view
         for Graph in self.Graphs:
             G = nx.path_graph(4, Graph)
             SG = G.subgraph([2, 3])
@@ -346,7 +346,7 @@ class TestFilteredGraphs:
             repr(RG.adj[2])
 
     def test_copy(self):
-        SubGraph = nx.graphviews.subgraph_view
+        SubGraph = nx.subgraph_view
         for Graph in self.Graphs:
             G = nx.path_graph(4, Graph)
             SG = G.subgraph([2, 3])

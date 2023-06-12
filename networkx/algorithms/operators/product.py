@@ -21,7 +21,7 @@ def _dict_product(d1, d2):
     return {k: (d1.get(k), d2.get(k)) for k in set(d1) | set(d2)}
 
 
-# Generators for producting graph products
+# Generators for producing graph products
 def _node_product(G, H):
     for u, v in product(G, H):
         yield ((u, v), _dict_product(G.nodes[u], H.nodes[v]))

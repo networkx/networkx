@@ -30,7 +30,7 @@ print("#Friends, Member")
 for w in women:
     print(f"{W.degree(w)} {w}")
 
-# project bipartite graph onto women nodes keeping number of co-occurence
+# project bipartite graph onto women nodes keeping number of co-occurrence
 # the degree computed is weighted and counts the total number of shared contacts
 W = bipartite.weighted_projected_graph(G, women)
 print()

@@ -1,0 +1,31 @@
+name: Test with Nightly wheels
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 0"
+
+jobs:
+  nightly:
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      matrix:
+        os: [ubuntu, macos]
+        python-version: ["3.9", "3.10", "3.11"]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install packages
+        run: |
+          pip install --upgrade pip wheel setuptools
+          pip install -U --pre --extra-index-url https://pypi.org/simple -i https://pypi.anaconda.org/scipy-wheels-nightly/simple -r requirements/default.txt
+          pip install --pre -r requirements/test.txt
+          pip install .
+          pip list
+
+      - name: Test NetworkX
+        run: |
+          pytest --doctest-modules --durations=10 --pyargs networkx

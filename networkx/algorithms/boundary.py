@@ -60,7 +60,7 @@ def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False, default=None
         with keys and/or data, as in :meth:`MultiGraph.edges`.
 
     Examples
-    -------
+    --------
     >>> G = nx.wheel_graph(6)
 
     When nbunch2=None:
@@ -136,7 +136,7 @@ def node_boundary(G, nbunch1, nbunch2=None):
         The node boundary of `nbunch1` with respect to `nbunch2`.
 
     Examples
-    -------
+    --------
     >>> G = nx.wheel_graph(6)
 
     When nbunch2=None:

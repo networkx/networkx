@@ -63,7 +63,6 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
        arXiv:1507.00827, 2015.
     """
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     if nodelist is None:
         nodelist = list(G)

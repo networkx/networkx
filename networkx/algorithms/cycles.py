@@ -6,6 +6,7 @@ Cycle finding algorithms
 
 from collections import defaultdict
 from itertools import combinations, product
+from math import inf
 
 import networkx as nx
 from networkx.utils import not_implemented_for, pairwise
@@ -17,6 +18,7 @@ __all__ = [
     "find_cycle",
     "minimum_cycle_basis",
     "chordless_cycles",
+    "girth",
 ]
 
 
@@ -64,11 +66,11 @@ def cycle_basis(G, root=None):
     --------
     simple_cycles
     """
-    gnodes = set(G.nodes())
+    gnodes = dict.fromkeys(G)  # set-like object that maintains node order
     cycles = []
     while gnodes:  # loop over connected components
         if root is None:
-            root = gnodes.pop()
+            root = gnodes.popitem()[0]
         stack = [root]
         pred = {root: root}
         used = {root: set()}
@@ -92,7 +94,8 @@ def cycle_basis(G, root=None):
                     cycle.append(p)
                     cycles.append(cycle)
                     used[nbr].add(z)
-        gnodes -= set(pred)
+        for node in pred:
+            gnodes.pop(node, None)
         root = None
     return cycles
 
@@ -577,7 +580,7 @@ def chordless_cycles(G, length_bound=None):
         return
 
     # Nodes with loops cannot belong to longer cycles.  Let's delete them here.
-    # also, we implicitly reduce the multiplicty of edges down to 1 in the case
+    # also, we implicitly reduce the multiplicity of edges down to 1 in the case
     # of multiedges.
     if directed:
         F = nx.DiGraph((u, v) for u, Gu in G.adj.items() if u not in Gu for v in Gu)
@@ -599,7 +602,7 @@ def chordless_cycles(G, length_bound=None):
     #    present, then we remove both from F.
     #
     # In directed graphs, we need to consider both directions that edges can
-    # take, so iterate over all edges (u, v) and posibly (v, u).  In undirected
+    # take, so iterate over all edges (u, v) and possibly (v, u).  In undirected
     # graphs, we need to be a little careful to only consider every edge once,
     # so we use a "visited" set to emulate node-order comparisons.
 
@@ -1150,3 +1153,69 @@ def _path_to_cycle(path):
         # Toggle whether to keep the current edge.
         edges ^= {edge}
     return edges
+
+
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+def girth(G):
+    """Returns the girth of the graph.
+
+    The girth of a graph is the length of its shortest cycle, or infinity if
+    the graph is acyclic. The algorithm follows the description given on the
+    Wikipedia page [1]_, and runs in time O(mn) on a graph with m edges and n
+    nodes.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+
+    Returns
+    -------
+    int or math.inf
+
+    Examples
+    --------
+    All examples below (except P_5) can easily be checked using Wikipedia,
+    which has a page for each of these famous graphs.
+
+    >>> nx.girth(nx.chvatal_graph())
+    4
+    >>> nx.girth(nx.tutte_graph())
+    4
+    >>> nx.girth(nx.petersen_graph())
+    5
+    >>> nx.girth(nx.heawood_graph())
+    6
+    >>> nx.girth(nx.pappus_graph())
+    6
+    >>> nx.girth(nx.path_graph(5))
+    inf
+
+    References
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Girth_(graph_theory)
+
+    """
+    girth = depth_limit = inf
+    tree_edge = nx.algorithms.traversal.breadth_first_search.TREE_EDGE
+    level_edge = nx.algorithms.traversal.breadth_first_search.LEVEL_EDGE
+    for n in G:
+        # run a BFS from source n, keeping track of distances; since we want
+        # the shortest cycle, no need to explore beyond the current minimum length
+        depth = {n: 0}
+        for u, v, label in nx.bfs_labeled_edges(G, n):
+            du = depth[u]
+            if du > depth_limit:
+                break
+            if label is tree_edge:
+                depth[v] = du + 1
+            else:
+                # if (u, v) is a level edge, the length is du + du + 1 (odd)
+                # otherwise, it's a forward edge; length is du + (du + 1) + 1 (even)
+                delta = label is level_edge
+                length = du + du + 2 - delta
+                if length < girth:
+                    girth = length
+                    depth_limit = du - delta
+
+    return girth
