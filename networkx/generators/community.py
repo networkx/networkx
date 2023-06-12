@@ -777,18 +777,19 @@ def _generate_communities(degree_seq, community_sizes, mu, max_iters, seed):
     result = [set() for _ in community_sizes]
     n = len(degree_seq)
     free = list(range(n))
+    all_c = range(len(community_sizes))
     for i in range(max_iters):
         v = free.pop()
-        c = seed.choice(range(len(community_sizes)))
-        # s = int(degree_seq[v] * (1 - mu) + 0.5)
         s = round(degree_seq[v] * (1 - mu))
-        # If the community is large enough, add the node to the chosen
-        # community. Otherwise, return it to the list of unaffiliated
-        # nodes.
-        if s < community_sizes[c]:
-            result[c].add(v)
-        else:
-            free.append(v)
+        # Choose a community from communities which are large enough
+        available_c = list(filter(lambda x: community_sizes[x] > s, all_c))
+        if len(available_c) == 0:
+            msg = "Could not assign communities; try increasing min_community"
+            raise nx.ExceededMaxIterations(msg)
+        c = seed.choice(available_c)
+        # Add the node to the chosen community
+        result[c].add(v)
+
         # If the community is too big, remove a node from it.
         if len(result[c]) > community_sizes[c]:
             free.append(result[c].pop())
