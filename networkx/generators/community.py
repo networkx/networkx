@@ -1049,14 +1049,32 @@ def LFR_benchmark_graph(
     # inter-community degrees.
     G = nx.Graph()
     G.add_nodes_from(range(n))
+    all_nodes = set(range(n))
     for c in communities:
         for u in c:
-            while G.degree(u) < round(deg_seq[u] * (1 - mu)):
-                v = seed.choice(list(c))
+            neigh = set(G.neighbors(u))
+            s = round(deg_seq[u] * (1 - mu))
+
+            # Filter non-neighbor nodes in community
+            available_in = list(c.difference(neigh))
+            if len(available_in) + len(neigh.intersection(c)) < s:
+                msg = "Could not add edges; try increasing mu"
+                raise nx.exception.ExceededMaxIterations(msg)
+
+            # Choose nodes from available nodes in community
+            while G.degree(u) < s:
+                v = seed.choice(available_in)
                 G.add_edge(u, v)
+
+            # Filter non-neighbor nodes outside community
+            available_out = list((all_nodes.difference(c)).difference(neigh))
+            if len(available_out) + G.degree(u) < deg_seq[u]:
+                msg = "Could not add edges; try decreasing max_degree"
+                raise nx.exception.ExceededMaxIterations(msg)
+
+            # Choose nodes
             while G.degree(u) < deg_seq[u]:
-                v = seed.choice(range(n))
-                if v not in c:
-                    G.add_edge(u, v)
+                v = seed.choice(available_out)
+                G.add_edge(u, v)
             G.nodes[u]["community"] = c
     return G
