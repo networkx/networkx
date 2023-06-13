@@ -482,12 +482,14 @@ class Edmonds:
                 if data.get(partition) == nx.EdgePartition.INCLUDED:
                     weight = new_weight
                     edge = (u, v, key, new_weight, data)
+                    print(f"Old: {v=} -> {edge=}")
                     return edge, weight
                 # Find the best open edge
                 if new_weight > weight:
                     weight = new_weight
                     edge = (u, v, key, new_weight, data)
 
+            print(f"Old: {v=} -> {edge=}")
             return edge, weight
 
         while True:
@@ -499,6 +501,7 @@ class Edmonds:
                 # meet the break condition (b) from the paper:
                 #   (b) every node of G^i is in D^i and E^i is a branching
                 # Construction guarantees that it's a branching.
+                print(f"{len(G)=}, {len(B)=}")
                 assert len(G) == len(B)
                 if len(B):
                     assert is_branching(B)
@@ -562,12 +565,13 @@ class Edmonds:
                     dd = {attr: weight}
                     if edge[4].get(partition) is not None:
                         dd[partition] = edge[4].get(partition)
+                    print(f"Old: adding edge ({u}, {v}) to B!")
                     B.add_edge(u, v, edge[2], **dd)
                     G[u][v][edge[2]][self.candidate_attr] = True
                     uf.union(u, v)
                     if Q_edges is not None:
-                        # print("Edge introduced a simple cycle:")
-                        # print(Q_nodes, Q_edges)
+                        print("Edge introduced a simple cycle:")
+                        print(Q_nodes, Q_edges)
 
                         # Move to method
                         # Previous meaning of u and v is no longer important.
@@ -635,6 +639,7 @@ class Edmonds:
                             G.add_edge(u, v, key, **data)
                             if self.candidate_attr in data:
                                 del data[self.candidate_attr]
+                                print(f"Old: adding edge ({u}, {v}) to B")
                                 B.add_edge(u, v, key, **data)
                                 uf.union(u, v)
 
@@ -666,6 +671,8 @@ class Edmonds:
 
         # Start with the branching edges in the last level.
         edges = set(self.branchings[self.level].edge_index)
+        for b in self.branchings:
+            print(f"Old: {set(b.edge_index)}, {b.edges()=}, {b.nodes()=}")
         while self.level > 0:
             self.level -= 1
 
@@ -685,8 +692,9 @@ class Edmonds:
             # print("before", edges)
             # Note, we ask if it is a root in the full graph, not the branching.
             # The branching alone doesn't have all the edges.
-
+            print(f"Old: {circuit=}, {merged_node=}, {edges=}")
             isroot, edgekey = is_root(self.graphs[self.level + 1], merged_node, edges)
+            print(f"Old: {isroot=}, {edgekey=}")
             edges.update(circuit)
             if isroot:
                 minedge = self.minedge_circuit[self.level]
@@ -694,6 +702,7 @@ class Edmonds:
                     raise Exception
 
                 # Remove the edge in the cycle with minimum weight.
+                print(f"Old: Removing minedge {minedge}")
                 edges.remove(minedge)
             else:
                 # We have identified an edge at next higher level that
@@ -713,7 +722,7 @@ class Edmonds:
                         break
                 else:
                     raise Exception("Couldn't find edge incoming to merged node.")
-                # print(f"not a root. removing {edgekey}")
+                print(f"Old: not a root. removing {edgekey}")
 
                 edges.remove(edgekey)
 
@@ -737,59 +746,13 @@ class Edmonds:
         return H
 
 
-# Placeholder name, will eventually become maximum_branching
-def _max_branching(
+def maximum_branching(
     G,
-    weight="weight",
+    attr="weight",
     default=1,
     preserve_attrs=False,
     partition=None,
-    seed=None,
 ):
-    """
-    Edmonds algorithm [1]_ for finding optimal branchings and spanning
-    arborescences.
-
-    This algorithm can find both minimum and maximum spanning arborescences and
-    branchings.
-
-    Parameters
-    ----------
-    G : (multi)digraph-like
-        The graph to be searched.
-    weight_attr : str
-        The edge attribute used to in determining optimality.
-    default : float
-        The value of the edge attribute used if an edge does not have
-        the attribute `weight`.
-    preserve_attrs : bool
-        If True, preserve the other edge attributes of the original
-        graph (that are not the one passed to `attr`)
-    partition : str
-        The edge attribute holding edge partition data. Used in the
-        spanning arborescence iterator.
-    seed : integer, random_state, or None (default)
-        Indicator of random number generation state.
-        See :ref:`Randomness<randomness>`.
-
-    Returns
-    -------
-    H : (multi)digraph
-        The branching.
-
-    Notes
-    -----
-    While this algorithm can find a minimum branching, since it isn't required
-    to be spanning, the minimum branching is always from the set of negative
-    weight edges which is most likely the empty set for most graphs.
-
-    References
-    ----------
-    .. [1] J. Edmonds, Optimum Branchings, Journal of Research of the National
-           Bureau of Standards, 1967, Vol. 71B, p.233-240,
-           https://archive.org/details/jresv71Bn4p233
-    """
-
     #######################################
     ### Data Structure Helper Functions ###
     #######################################
@@ -827,27 +790,6 @@ def _max_branching(
         G.add_edge(u, v, key, **d)
         edge_index[key] = (u, v, G.succ[u][v][key])
 
-    def edmonds_remove_edge_with_key(G, edge_index, key):
-        """
-        Remove the edge in `G` with key `key` based on `edge_index`.
-
-        Parameters
-        ----------
-        G : MultiDiGraph
-            The graph to remove the edge from.
-        edge_index : dict
-            A mapping from integers to the edges of the graph.
-        key : int
-            The key whose edge will be removed.
-        """
-        try:
-            u, v, _ = edge_index[key]
-        except KeyError as err:
-            raise KeyError(f"Invali edge key {key!r}") from err
-        else:
-            del edge_index[key]
-            G.remove_edge(u, v, key)
-
     def edmonds_remove_node(G, edge_index, n):
         """
         Remove a node from the graph, updating the edge index to match.
@@ -878,6 +820,7 @@ def _max_branching(
 
     # Pick an attribute name that the original graph is unlikly to have
     candidate_attr = "edmonds' secret candidate attribute"
+    new_node_base_name = "edmounds new node base name "
 
     G_original = G
     G = nx.MultiDiGraph()
@@ -885,17 +828,17 @@ def _max_branching(
     G_edge_index = {}
     # Each edge is given an arbitrary numerical key
     for key, (u, v, data) in enumerate(G_original.edges(data=True)):
-        d = {weight: data.get(weight, default)}
+        d = {attr: data.get(attr, default)}
+
         if data.get(partition) is not None:
             d[partition] = data.get(partition)
 
         if preserve_attrs:
             for d_k, d_v in d.items():
-                if d_k != weight:
+                if d_k != attr:
                     d[d_k] = d_v
 
         edmonds_add_edge(G, G_edge_index, u, v, key, **d)
-        G.add_edge(u, v, key, **d)
 
     level = 0  # Stores the number of contracted nodes
 
@@ -926,7 +869,6 @@ def _max_branching(
     # true that the minimum edges in circuit G^0 (despite their weights being
     # different)
     minedge_circuit = []
-    new_node_base_name = "edmounds new node base name "
 
     ###########################
     ### Algorithm Structure ###
@@ -963,25 +905,25 @@ def _max_branching(
         """
         edge = None
         max_weight = -INF
-        # TODO I'm not sure that this should always reference G...
         for u, _, key, data in G.in_edges(v, data=True, keys=True):
             # Skip excluded edges
             if data.get(partition) == nx.EdgePartition.EXCLUDED:
                 continue
 
-            new_weight = data[weight]
+            new_weight = data[attr]
 
             # Return the included edge
             if data.get(partition) == nx.EdgePartition.INCLUDED:
                 max_weight = new_weight
                 edge = (u, v, key, new_weight, data)
-                return edge, max_weight
+                break
 
             # Find the best open edge
             if new_weight > max_weight:
                 max_weight = new_weight
                 edge = (u, v, key, new_weight, data)
 
+        print(f"{v=} -> {edge=}")
         return edge, max_weight
 
     def edmonds_step_I2(v, desired_edge, level):
@@ -1002,9 +944,14 @@ def _max_branching(
         """
         u = desired_edge[0]
 
-        Q_nodes, Q_edges = get_path(B, v, u)
+        Q_nodes = nx.shortest_path(B, v, u)
+        Q_edges = [
+            list(B[Q_nodes[i]][vv].keys())[0] for i, vv in enumerate(Q_nodes[1:])
+        ]
         Q_edges.append(desired_edge[2])  # Add the new edge key to complete the circuit
 
+        print("Edge introduced a simple cycle:")
+        print(Q_nodes, Q_edges)
         # Get the edge in the circuit with the minimum weight.
         # Also, save the incoming weights for each node.
         minweight = INF
@@ -1012,7 +959,7 @@ def _max_branching(
         Q_incoming_weight = {}
         for edge_key in Q_edges:
             u, v, data = B_edge_index[edge_key]
-            w = data[weight]
+            w = data[attr]
             # We cannot remove an included edge, even if it is the
             # minimum edge in the circuit
             Q_incoming_weight[v] = w
@@ -1046,10 +993,10 @@ def _max_branching(
                 if v in Q_incoming_weight:
                     # Incoming edge to the circuit.
                     # Update it's weight
-                    w = data[weight]
+                    w = data[attr]
                     w += minweight - Q_incoming_weight[v]
                     dd = data.copy()
-                    dd[weight] = w
+                    dd[attr] = w
                     new_edges.append((u, new_node, key, dd))
                 else:
                     # Outside edge. No modification needed
@@ -1065,6 +1012,7 @@ def _max_branching(
             edmonds_add_edge(G, G_edge_index, u, v, key, **data)
             if candidate_attr in data:
                 del data[candidate_attr]
+                print(f"adding edge ({u}, {v}) to B")
                 edmonds_add_edge(B, B_edge_index, u, v, key, **data)
                 uf.union(u, v)
 
@@ -1101,6 +1049,7 @@ def _max_branching(
             # If there are no more new nodes to consider, then we should
             # meet stopping condition (b) from the paper:
             #   (b) every node of G^i is in D^i and E^i is a branching
+            print(f"{len(G)=}, {len(B)=}")
             assert len(G) == len(B)
             if len(B):
                 assert is_branching(B)
@@ -1126,15 +1075,16 @@ def _max_branching(
 
         # There might be no desired edge if all edges are excluded or
         # v is the last node to be added to B, the ultimate root of the branching
-        # TODO edge weight check
-        if desired_edge is not None and desired_edge_weight > 0:
+        if desired_edge is not None and desired_edge_weight >= 0:
             u = desired_edge[0]
             # Flag adding the edge will create a circuit before merging the two
             # connected components of u and v in B
             circuit = uf[u] == uf[v]
-            dd = {weight: desired_edge_weight}
+            dd = {attr: desired_edge_weight}
             if desired_edge[4].get(partition) is not None:
                 dd[partition] = desired_edge[4].get(partition)
+
+            print(f"adding edge ({u}, {v}) to B")
             edmonds_add_edge(B, B_edge_index, u, v, desired_edge[2], **dd)
             G[u][v][desired_edge[2]][candidate_attr] = True
             uf.union(u, v)
@@ -1165,6 +1115,8 @@ def _max_branching(
 
     # Start with the branching edges in the last level.
     edges = set(branchings[level][1])
+    for b, be in branchings:
+        print(f"{set(be)}, {b.edges()=}, {b.nodes()=}")
     while level > 0:
         level -= 1
 
@@ -1177,7 +1129,9 @@ def _max_branching(
 
         merged_node = new_node_base_name + str(level)
         circuit = circuits[level]
+        print(f"{circuit=}, {merged_node=}, {edges=}")
         isroot, edgekey = is_root(graphs[level + 1][0], merged_node, edges)
+        print(f"{isroot=}, {edgekey=}")
         edges.update(circuit)
 
         if isroot:
@@ -1186,6 +1140,7 @@ def _max_branching(
                 raise Exception
 
             # Remove the edge in the cycle with minimum weight
+            print(f"Removing minedge {minedge}")
             edges.remove(minedge)
         else:
             # We have identified an edge at the next higher level that
@@ -1205,19 +1160,19 @@ def _max_branching(
             else:
                 raise Exception("Couldn't find edge incoming to merged node.")
 
+            print(f"Removing edge {edgekey}")
             edges.remove(edgekey)
 
     H.add_nodes_from(G_original)
     for edgekey in edges:
         u, v, d = graphs[0][1][edgekey]
-        dd = {weight: d[weight]}  # TODO reverse edge weight transformation
+        dd = {attr: d[attr]}
 
         if preserve_attrs:
             for key, value in d.items():
-                if key not in [weight, candidate_attr]:
+                if key not in [attr, candidate_attr]:
                     dd[key] = value
 
-        print(f"{d=}, {d[weight]=}, {dd=}")
         H.add_edge(u, v, **dd)
 
     ###################
@@ -1227,70 +1182,109 @@ def _max_branching(
     return H
 
 
-def maximum_branching(
-    G, attr="weight", default=1, preserve_attrs=False, partition=None
-):
-    # ed = Edmonds(G)
-    # B = ed.find_optimum(
-    #    attr,
-    #    default,
-    #    kind="max",
-    #    style="branching",
-    #    preserve_attrs=preserve_attrs,
-    #    partition=partition,
-    # )
-    return _max_branching(G, attr, default, preserve_attrs, partition)
-    # return B
-
-
 def minimum_branching(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
-    ed = Edmonds(G)
-    B = ed.find_optimum(
-        attr,
-        default,
-        kind="min",
-        style="branching",
-        preserve_attrs=preserve_attrs,
-        partition=partition,
-    )
+    for _, _, d in G.edges(data=True):
+        d[attr] = -d[attr]
+
+    B = maximum_branching(G, attr, default, preserve_attrs, partition)
+
+    for _, _, d in G.edges(data=True):
+        d[attr] = -d[attr]
+
+    for _, _, d in B.edges(data=True):
+        d[attr] = -d[attr]
+
     return B
 
 
 def maximum_spanning_arborescence(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
+    # In order to use the same algorithm is the maximum branching, we need to adjust
+    # the weights of the graph. The branching algorithm can choose to not include an
+    # edge if it doesn't help find a branching, mainly triggered by edges with negative
+    # weights.
+    #
+    # To prevent this from happening while trying to find a spanning arborescence, we
+    # just have to tweak the edge weights so that they are all positive, find the
+    # maximum branching and then return them to their original values.
+
     ed = Edmonds(G)
-    B = ed.find_optimum(
-        attr,
-        default,
-        kind="max",
-        style="arborescence",
-        preserve_attrs=preserve_attrs,
-        partition=partition,
+    B_old = ed.find_optimum(
+        attr, default, "max", "arborescence", preserve_attrs, partition
     )
-    if not is_arborescence(B):
-        msg = "No maximum spanning arborescence in G."
-        raise nx.exception.NetworkXException(msg)
-    return B
+
+    min_weight = INF
+    for _, _, w in G.edges(data=attr):
+        if w < min_weight:
+            min_weight = w
+
+    if min_weight < 0:
+        for _, _, d in G.edges(data=True):
+            d[attr] = d[attr] - min_weight + 1
+
+    B = maximum_branching(G, attr, default, preserve_attrs, partition)
+
+    if min_weight < 0:
+        for _, _, d in G.edges(data=True):
+            d[attr] = d[attr] + min_weight - 1
+
+        for _, _, d in B.edges(data=True):
+            d[attr] = d[attr] + min_weight - 1
+
+    from .tests.test_branchings import assert_equal_branchings
+
+    real_partition = [
+        f"({u}, {v}) : {d}"
+        for u, v, d in G.edges(data=partition)
+        if d is not nx.EdgePartition.OPEN
+    ]
+    assert_equal_branchings(B_old, B, partition=real_partition)
+
+    if not is_arborescence(B_old):
+        raise nx.exception.NetworkXException("No maximum spanning arborescence in G.")
+
+    return B_old
 
 
 def minimum_spanning_arborescence(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
     ed = Edmonds(G)
-    B = ed.find_optimum(
-        attr,
-        default,
-        kind="min",
-        style="arborescence",
-        preserve_attrs=preserve_attrs,
-        partition=partition,
+    B_old = ed.find_optimum(
+        attr, default, "min", "arborescence", preserve_attrs, partition
     )
+
+    max_weight = -INF
+    for _, _, w in G.edges(data=attr):
+        if w > max_weight:
+            max_weight = w
+
+    for _, _, d in G.edges(data=True):
+        d[attr] = max_weight + 1 - d[attr]
+
+    B = maximum_branching(G, attr, default, preserve_attrs, partition)
+
+    for _, _, d in G.edges(data=True):
+        d[attr] = max_weight + 1 - d[attr]
+
+    for _, _, d in B.edges(data=True):
+        d[attr] = max_weight + 1 - d[attr]
+
+    from .tests.test_branchings import assert_equal_branchings
+
+    real_partition = [
+        f"({u}, {v}) : {d}"
+        for u, v, d in G.edges(data=partition)
+        if d is not nx.EdgePartition.OPEN
+    ]
+    assert_equal_branchings(B_old, B, partition=real_partition)
+
     if not is_arborescence(B):
-        msg = "No minimum spanning arborescence in G."
-        raise nx.exception.NetworkXException(msg)
+        raise nx.exception.NetworkXException("No minimum spanning arborescence in G.")
+
     return B
 
 

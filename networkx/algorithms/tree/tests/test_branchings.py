@@ -136,15 +136,22 @@ def sorted_edges(G, attr="weight", default=1):
     return edges
 
 
-def assert_equal_branchings(G1, G2, attr="weight", default=1):
+def assert_equal_branchings(G1, G2, attr="weight", default=1, partition=None):
     edges1 = list(G1.edges(data=True))
     edges2 = list(G2.edges(data=True))
-    assert len(edges1) == len(edges2)
 
     # Grab the weights only.
     e1 = sorted_edges(G1, attr, default)
     e2 = sorted_edges(G2, attr, default)
+    should_print = False
+    for a, b in zip(e1, e2):
+        if a[:2] != b[:2]:
+            should_print = True
+    if should_print or len(edges1) != len(edges2):
+        print(f"\n{partition=}\n{e1=}\n{e2=}\n")
 
+    # TODO move back up
+    assert len(edges1) == len(edges2)
     for a, b in zip(e1, e2):
         assert a[:2] == b[:2]
         np.testing.assert_almost_equal(a[2], b[2])
@@ -607,3 +614,13 @@ def test_arborescence_iterator_initial_partition():
         for e in excluded_edges:
             assert e not in B.edges
     assert arborescence_count == 16
+
+
+def test_temp():
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    for u, v in [(0, 2), (1, 5)]:
+        G[u][v]["partition"] = nx.EdgePartition.INCLUDED
+    for u, v in [(1, 0), (2, 1), (2, 5), (6, 2)]:
+        G[u][v]["partition"] = nx.EdgePartition.EXCLUDED
+
+    branchings.maximum_spanning_arborescence(G, partition="partition")
