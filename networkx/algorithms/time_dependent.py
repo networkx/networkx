@@ -37,7 +37,7 @@ def cd_index(G, node, time_delta=5, weight=None):
     ------
     ValueError
        If not all nodes have a datetime `time` attribute or
-       `n` equals 0.
+       `n' equals 0.
 
     NetworkXNotImplemented
         If `G` is a non-directed graph or a multigraph.
@@ -75,9 +75,9 @@ def cd_index(G, node, time_delta=5, weight=None):
     References
     ----------
     .. [1] Funk, Russell J., and Jason Owen-Smith.
-    "A dynamic network measure of technological change."
-    Management science 63, no. 3 (2017): 791-817.
-    http://russellfunk.org/cdindex/static/papers/funk_ms_2017.pdf
+           "A dynamic network measure of technological change."
+           Management science 63, no. 3 (2017): 791-817.
+           http://russellfunk.org/cdindex/static/papers/funk_ms_2017.pdf
 
     """
     if not all(isinstance(G.nodes[n].get("time"), datetime) for n in G):
