@@ -37,7 +37,7 @@ def cd_index(G, node, time_delta=5, weight=None):
     ------
     ValueError
        If not all nodes have a datetime `time` attribute or
-       `n' equals 0.
+       `n` equals 0.
 
     NetworkXNotImplemented
         If `G` is a non-directed graph or a multigraph.

@@ -1,6 +1,6 @@
-********
-CD index
-********
+**************
+Time dependent
+**************
 
 .. automodule:: networkx.algorithms.time_dependent
 .. autosummary::
