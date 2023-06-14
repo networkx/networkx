@@ -208,7 +208,10 @@ def intersection_all(graphs):
 
     for i, G in enumerate(graphs):
         G_nodes_set = set(G.nodes)
-        G_edges_set = set(G.edges(keys=True) if G.is_multigraph() else G.edges())
+        G_edges_set = {
+            frozenset(e)
+            for e in (G.edges(keys=True) if G.is_multigraph() else G.edges())
+        }
         if i == 0:
             # create new graph
             R = G.__class__()
@@ -226,6 +229,6 @@ def intersection_all(graphs):
         raise ValueError("cannot apply intersection_all to an empty list")
 
     R.add_nodes_from(node_intersection)
-    R.add_edges_from(edge_intersection)
+    R.add_edges_from((u, v) for u, v in edge_intersection)
 
     return R
