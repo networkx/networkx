@@ -81,14 +81,7 @@ def cd_index(G, node, time_delta=5, weight=None):
     http://russellfunk.org/cdindex/static/papers/funk_ms_2017.pdf
 
     """
-    if not (
-        all(
-            G.has_node(n)
-            and "time" in G.nodes[n]
-            and isinstance(G.nodes[n]["time"], datetime)
-            for n in G
-        )
-    ):
+    if not all(isinstance(G.nodes[n].get("time"), datetime) for n in G):
         raise ValueError("Not all nodes have a datetime 'time' attribute.")
 
     # get target_date's unix timestamp
