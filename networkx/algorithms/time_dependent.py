@@ -37,8 +37,7 @@ def cd_index(G, node, time_delta=5, weight=None):
     ------
     ValueError
        If not all nodes have a datetime `time` attribute or
-       `node` has no successors or
-       `node` has no predecessors.
+       `n' equals 0.
 
     NetworkXNotImplemented
         If `G` is a non-directed graph or a multigraph.
@@ -87,19 +86,16 @@ def cd_index(G, node, time_delta=5, weight=None):
     # get target_date's unix timestamp
     target_date = G.nodes[node]["time"].timestamp() + time_delta * 365 * 24 * 60 * 60
 
-    if not G[node]:
-        raise ValueError("This node has no successors.")
-
     # keep the predecessors that existed before the target date
     pred = {i for i in G.pred[node] if G.nodes[i]["time"].timestamp() <= target_date}
-    if not pred:
-        raise ValueError("This node has no predecessors.")
 
     # -1 if any edge between node's predecessors and node's successors, else 1
     b = [-1 if any(j in G[i] for j in G[node]) else 1 for i in pred]
 
     # n is size of the union of the focal node's predecessors and its successors' predecessors
     n = len(pred.union(*(G.pred[s].keys() - {node} for s in G[node])))
+    if n == 0:
+        raise ValueError("The cd index cannot be defined.")
 
     # calculate cd index
     if weight is None:
