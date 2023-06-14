@@ -70,6 +70,7 @@ Algorithms
    summarization
    swap
    threshold
+   time_dependent
    tournament
    traversal
    tree
