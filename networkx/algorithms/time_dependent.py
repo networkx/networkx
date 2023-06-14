@@ -69,7 +69,7 @@ def cd_index(G, node, time_delta=5, weight=None):
         CD_{t}=\frac{1}{n_{t}}\sum_{i=1}^{n}\frac{-2f_{it}b_{it}+f_{it}}{w_{it}},
 
     where `f_{it}` equals 1 if `i` cites the focal patent else 0, `b_{it}` equals
-    1 if `i` cites any of the focal patents accessors else 0, `n_{t}` is the number
+    1 if `i` cites any of the focal patents successors else 0, `n_{t}` is the number
     of forward citations in `i` and `w_{it}` is a matrix of weight for patent `i`
     at time `t`.
 
