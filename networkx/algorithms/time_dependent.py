@@ -95,9 +95,8 @@ def cd_index(G, node, time_delta=5, weight=None):
     if not pred:
         raise ValueError("This node has no predecessors.")
 
-    # -1 if any edge between the node's predecessor and the node's successor
-    # exists, else 1
-    b = [-1 if any((i, j) in G.edges() for j in G[node]) else 1 for i in pred]
+    # -1 if any edge between node's predecessors and node's successors, else 1
+    b = [-1 if any(j in G[i] for j in G[node]) else 1 for i in pred]
 
     # n is size of the union of the focal node's predecessors and its successors' predecessors
     n = len(pred.union(*(G.pred[s].keys() - {node} for s in G[node])))
