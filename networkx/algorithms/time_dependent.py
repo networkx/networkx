@@ -37,7 +37,7 @@ def cd_index(G, node, time_delta=5, weight=None):
     ------
     ValueError
        If not all nodes have a datetime `time` attribute or
-       `n' equals 0.
+       `n` equals 0.
 
     NetworkXNotImplemented
         If `G` is a non-directed graph or a multigraph.
@@ -58,7 +58,7 @@ def cd_index(G, node, time_delta=5, weight=None):
     Notes
     -----
     This method implements the algorithm for calculating the CD index,
-    as described in the paper by Funk and Owen-Smith [1]. The CD index
+    as described in the paper by Funk and Owen-Smith [1]_. The CD index
     is used in order to check how consolidating or destabilizing a patent
     is, hence the nodes of the graph represent patents and the edges show
     the citations between these patents. The mathematical model is given
