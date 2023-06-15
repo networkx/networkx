@@ -45,8 +45,9 @@ def maximum_weight_cycle_packing_approximation_algorithm(graph: nx.DiGraph, k: i
     >>> Digraph=nx.DiGraph()
     >>> Digraph.add_nodes_from([1,2,3,4,5,6,7,8])
     >>> Digraph.add_weighted_edges_from([(1,8,2),(8,1,4),(2,1,5),(1,3,4),(3,8,2),(8,2,3),(8,5,4),(5,7,3),(7,6,2),(6,5,4)])
-    >>> print(maximum_weight_cycle_packing_approximation_algorithm(Digraph, 3))
-    [(5, 7, 6), (8, 2, 1)]
+    >>> res=maximum_weight_cycle_packing_approximation_algorithm(Digraph, 3)
+    >>> print(res ==[(5, 7, 6), (8, 2, 1)] or res == [(5, 7, 6), (8, 1, 3)])
+    True
     >>> Digraph =nx.DiGraph()
     >>> Digraph.add_nodes_from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20])
     >>> Digraph.add_weighted_edges_from([(1, 6, 11), (6, 1, 10), (1, 5, 3), (5, 1, 2), (8, 9, 11), (9, 8, 20), (3, 2, 6), (2, 6, 5), (6, 3, 8),(5, 7, 6), (7, 4, 11), (4, 5, 5), (10, 16, 1), (16, 11, 10), (11, 15, 3), (15, 11, 2), (18, 19, 11),(19, 18, 20), (13, 12, 6), (12, 16, 5), (16, 13, 8)])
