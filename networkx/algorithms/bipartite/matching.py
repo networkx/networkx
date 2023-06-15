@@ -592,24 +592,24 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     return d
 
 
-def __neighbours_of_set__(G, node_set):
+def _neighbours_of_set(G, node_set):
     r"""
     returns a set of the neighbours of a given set of nodes
     >>> G = nx.complete_bipartite_graph(3,3)
-    >>> __neighbours_of_set__(G, {})
+    >>> _neighbours_of_set(G, {})
     set()
-    >>> __neighbours_of_set__(G, {1, 2})
+    >>> _neighbours_of_set(G, {1, 2})
     {3, 4, 5}
 
     >>> G = nx.Graph([(0, 4), (1, 5), (2, 6)])
-    >>> __neighbours_of_set__(G, {0, 1})
+    >>> _neighbours_of_set(G, {0, 1})
     {4, 5}
 
     >>> G=nx.Graph([(0,3),(3,0),(0,4),(4,0),(1,4),(4,1),(2,4),(4,2)])
-    >>> __neighbours_of_set__(G, {0, 1})
+    >>> _neighbours_of_set(G, {0, 1})
     {3, 4}
 
-    >>> __neighbours_of_set__(G, {4})
+    >>> _neighbours_of_set(G, {4})
     {0, 1, 2}
     """
     ret_set = {}
@@ -619,7 +619,7 @@ def __neighbours_of_set__(G, node_set):
     return set(ret_set)
 
 
-def __M_alternating_sequence__(G, M, top_nodes=None):
+def _M_alternating_sequence(G, M, top_nodes=None):
     r"""
     Generates M-alternating-sequence for a graph G with regard to a matching M
     We generate two sets with the following recursive definition:
@@ -637,27 +637,27 @@ def __M_alternating_sequence__(G, M, top_nodes=None):
 
     >>> G = nx.complete_bipartite_graph(3,3)
     >>> M = nx.bipartite.hopcroft_karp_matching(G)
-    >>> __M_alternating_sequence__(G, M)
+    >>> _M_alternating_sequence(G, M)
     ((), ())
 
     >>> G = nx.Graph([(0,3),(3,0),(0,4),(4,0),(1,4),(4,1),(2,4),(4,2)])
     >>> M = {0:3, 3:0, 1:4, 4:1}
-    >>> __M_alternating_sequence__(G, M)
+    >>> _M_alternating_sequence(G, M)
     (({2}, {1}), ({4},))
 
     >>> G = nx.Graph([(0,3),(3,0),(1,3),(3,1),(1,4),(4,1),(2,4),(4,2)])
     >>> M = {0:3,3:0,4:1,1:4}
-    >>> __M_alternating_sequence__(G, M)
+    >>> _M_alternating_sequence(G, M)
     (({2}, {1}, {0}), ({4}, {3}))
 
     >>> G = nx.Graph([(0,3),(3,0),(1,3),(3,1),(1,4),(4,1),(2,4),(4,2)])
     >>> M = {0:3,3:0,4:1,1:4}
-    >>> __M_alternating_sequence__(G, M)
+    >>> _M_alternating_sequence(G, M)
     (({2}, {1}, {0}), ({4}, {3}))
 
     >>> G = nx.Graph([(0,6),(6,0),(1,6),(6,1),(1,7),(7,1),(2,6),(6,2),(2,8),(8,2),(3,9),(9,3),(3,6),(6,3),(4,8),(8,4),(4,7),(7,4),(5,9),(9,5)])
     >>> M = {0:6,6:0,1:7,7:1,2:8,8:2,3:9,9:3}
-    >>> __M_alternating_sequence__(G, M)
+    >>> _M_alternating_sequence(G, M)
     (({4, 5}, {1, 2, 3}, {0}), ({8, 9, 7}, {6}))
 
     """
@@ -679,14 +679,14 @@ def __M_alternating_sequence__(G, M, top_nodes=None):
             and (v, u) not in M.items(),
         )
         Y_current = (
-            __neighbours_of_set__(GMinusM, X_subsets[-1])
+            _neighbours_of_set(GMinusM, X_subsets[-1])
         ) - Y_subgroups_accumulate
         if Y_current == set():
             break
         G_M = nx.subgraph_view(
             G, filter_edge=lambda u, v: (u, v) in M.items() and (v, u) in M.items()
         )
-        X_current = __neighbours_of_set__(G_M, Y_current)
+        X_current = _neighbours_of_set(G_M, Y_current)
         if X_current == set():
             break
 
@@ -769,7 +769,7 @@ def _EFM_partition(G, M=None, top_nodes=None):
     if M is None:
         M = nx.bipartite.maximum_matching(G, top_nodes=top_nodes)
     X, Y = nx.bipartite.sets(G, top_nodes=top_nodes)
-    X_subsets, Y_subsets = __M_alternating_sequence__(G, M, top_nodes)
+    X_subsets, Y_subsets = _M_alternating_sequence(G, M, top_nodes)
     X_S = set()
     for subset in X_subsets:
         X_S.update(subset)
