@@ -739,12 +739,15 @@ def direct_indirect_common_neighbors(G, ebunch=None):
         u_neighborhood_vector = neighbor_vectors[u]
         v_neighborhood_vector = neighbor_vectors[v]
 
-        u_vector_average = (
-            sum([u_neighborhood_vector[idx] for idx in union_neighborhood_set])
-        ) / len(union_neighborhood_set)
-        v_vector_average = (
-            sum([v_neighborhood_vector[idx] for idx in union_neighborhood_set])
-        ) / len(union_neighborhood_set)
+        if len(union_neighborhood_set) == 0:
+            u_vector_average, v_vector_average = 0, 0
+        else:
+            u_vector_average = (
+                sum([u_neighborhood_vector[idx] for idx in union_neighborhood_set])
+            ) / len(union_neighborhood_set)
+            v_vector_average = (
+                sum([v_neighborhood_vector[idx] for idx in union_neighborhood_set])
+            ) / len(union_neighborhood_set)
 
         numerator = 0
         u_denominator_sq = 0
@@ -763,24 +766,22 @@ def direct_indirect_common_neighbors(G, ebunch=None):
 
         denominator = u_denominator * v_denominator
 
-        correlation_coefficient = numerator / (denominator + 1e-6)
+        if denominator == 0:
+            correlation_coefficient = 0
+        else:
+            correlation_coefficient = numerator / denominator
 
         return correlation_coefficient
 
     def predict(u, v, mapping):
         u, v = mapping[u], mapping[v]
-        first_order_neighbors = set(G.neighbors(u))
-        second_order_neighbors = get_second_order_neighbors(G, u, first_order_neighbors)
-
         if u == v:
             raise nx.NetworkXAlgorithmError("Self links are not supported")
-        elif v not in first_order_neighbors and v not in second_order_neighbors:
-            return 1
         else:
             correlation_coefficient = compute_correlation_coefficient(
                 G, u, v, neighbor_vectors
             )
-            return 1 + len(list(nx.common_neighbors(G, u, v))) * (
+            return (1 + len(list(nx.common_neighbors(G, u, v)))) * (
                 1 + correlation_coefficient
             )
 
