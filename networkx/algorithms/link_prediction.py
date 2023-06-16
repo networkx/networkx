@@ -669,8 +669,8 @@ def direct_indirect_common_neighbors(G, ebunch=None):
     >>> preds = nx.direct_indirect_common_neighbors(G, [(0, 1), (2, 3)])
     >>> for u, v, p in preds:
     ...     print(f"({u}, {v}) -> {p}")
-    (0, 1) -> 4.0
-    (2, 3) -> 4.0
+    (0, 1) -> 4
+    (2, 3) -> 4
 
     References
     ----------
