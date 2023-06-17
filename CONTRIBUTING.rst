@@ -477,11 +477,11 @@ to use the `wayback machine <https://web.archive.org/>`_ to create a snapshot of
 and link the internet archive link. The URL of the resource can change, and it creates unreachable
 links from the documentation.
 
-Using Math Formulas and Latex Formatting
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-When working with docstrings that contain math symbols or formulas
-use raw format (r""") to ensure proper rendering. 
-While LaTeX formatting can improve the appearance of the documentation, 
+Using Math Formulae and Latex Formatting in Documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+When working with docstrings that contain math symbols or formulae
+use raw strings (``r"""``) to ensure proper rendering. 
+While LaTeX formatting can improve the appearance of the rendered documentation, 
 it's best to keep it simple and readable. 
 
 An example of a math formula::
