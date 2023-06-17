@@ -27,6 +27,8 @@ def cd_index(G, node, time_delta=5, weight=None):
        The node for which the CD index is calculated.
     time_delta : integer (Optional, default is 5)
        Number of years after the `time` attribute of the `node`.
+    weight: string or None (Optional, default is None)
+        The possible weight that the nodes of the graph `G` might have.
 
     Returns
     -------
