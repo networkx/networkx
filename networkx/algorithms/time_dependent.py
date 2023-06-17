@@ -60,7 +60,7 @@ def cd_index(G, node, time_delta=5, weight=None):
     Notes
     -----
     This method implements the algorithm for calculating the CD index,
-    as described in the paper by Funk and Owen-Smith [1]. The CD index
+    as described in the paper by Funk and Owen-Smith [1]_. The CD index
     is used in order to check how consolidating or destabilizing a patent
     is, hence the nodes of the graph represent patents and the edges show
     the citations between these patents. The mathematical model is given
@@ -77,9 +77,9 @@ def cd_index(G, node, time_delta=5, weight=None):
     References
     ----------
     .. [1] Funk, Russell J., and Jason Owen-Smith.
-    "A dynamic network measure of technological change."
-    Management science 63, no. 3 (2017): 791-817.
-    http://russellfunk.org/cdindex/static/papers/funk_ms_2017.pdf
+           "A dynamic network measure of technological change."
+           Management science 63, no. 3 (2017): 791-817.
+           http://russellfunk.org/cdindex/static/papers/funk_ms_2017.pdf
 
     """
     if not all(isinstance(G.nodes[n].get("time"), datetime) for n in G):
