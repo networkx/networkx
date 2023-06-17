@@ -130,11 +130,21 @@ def test_intersection_all_multigraph_attributes_different_node_sets():
     g.add_edge(1, 2, key=2)
     h = nx.MultiGraph()
     h.add_edge(0, 1, key=0)
+    h.add_edge(0, 1, key=2)
     h.add_edge(0, 1, key=3)
     gh = nx.intersection_all([g, h])
     assert set(gh.nodes()) == set(h.nodes())
-    assert sorted(gh.edges()) == [(0, 1)]
-    assert sorted(gh.edges(keys=True)) == [(0, 1, 0)]
+    assert sorted(gh.edges()) == [(0, 1), (0, 1)]
+    assert sorted(gh.edges(keys=True)) == [(0, 1, 0), (0, 1, 2)]
+
+
+def test_intersection_all_digraph():
+    g = nx.DiGraph()
+    g.add_edges_from([(1, 2), (2, 3)])
+    h = nx.DiGraph()
+    h.add_edges_from([(2, 1), (2, 3)])
+    gh = nx.intersection_all([g, h])
+    assert sorted(gh.edges()) == [(2, 3)]
 
 
 def test_union_all_and_compose_all():
