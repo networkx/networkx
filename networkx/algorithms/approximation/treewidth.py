@@ -132,7 +132,6 @@ class MinDegreeHeuristic:
         return None
 
 
-@nx._dispatch(graphs="graph")
 def min_fill_in_heuristic(graph):
     """Implements the Minimum Degree heuristic.
 

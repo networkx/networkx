@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch(graphs="B")
+@nx._dispatch(graphs="B", preserve_node_attrs=True, preserve_graph_attrs=True)
 def projected_graph(B, nodes, multigraph=False):
     r"""Returns the projection of B onto one of its node sets.
 
@@ -412,7 +412,12 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
     return G
 
 
-@nx._dispatch(graphs="B")
+@nx._dispatch(
+    graphs="B",
+    preserve_edge_attrs=True,
+    preserve_node_attrs=True,
+    preserve_graph_attrs=True,
+)
 @not_implemented_for("multigraph")
 def generic_weighted_projected_graph(B, nodes, weight_function=None):
     r"""Weighted projection of B with a user-specified weight function.

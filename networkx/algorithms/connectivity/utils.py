@@ -26,7 +26,7 @@ def build_auxiliary_node_connectivity(G):
     each arc in D.
 
     A dictionary with a mapping between nodes in the original graph and the
-    auxiliary digraph is stored as a graph attribute: H.graph['mapping'].
+    auxiliary digraph is stored as a graph attribute: D.graph['mapping'].
 
     References
     ----------

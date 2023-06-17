@@ -221,7 +221,9 @@ def _relabel_copy(G, mapping):
     return H
 
 
-@nx._dispatch(preserve_edge_attrs=True)
+@nx._dispatch(
+    preserve_edge_attrs=True, preserve_node_attrs=True, preserve_graph_attrs=True
+)
 def convert_node_labels_to_integers(
     G, first_label=0, ordering="default", label_attribute=None
 ):

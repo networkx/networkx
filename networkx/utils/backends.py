@@ -46,6 +46,12 @@ The arguments to ``convert_from_nx`` are:
     Whether to preserve all edge attributes.
 - ``preserve_node_attrs`` : bool
     Whether to preserve all node attributes.
+- ``preserve_graph_attrs`` : bool
+    Whether to preserve all graph attributes.
+- ``name`` : str
+    The name of the algorithm.
+- ``graph_name`` : str
+    The name of the graph argument being converted.
 
 The converted object is then passed to the backend implementation of
 the algorithm. The result is then passed to
@@ -128,8 +134,9 @@ def _dispatch(
     graphs="G",
     edge_attrs=None,
     node_attrs=None,
-    preserve_edge_attrs=None,
-    preserve_node_attrs=None,
+    preserve_edge_attrs=False,
+    preserve_node_attrs=False,
+    preserve_graph_attrs=False,
 ):
     """Dispatches to a backend algorithm based on input graph types.
 
@@ -163,15 +170,20 @@ def _dispatch(
     node_attrs : str or dict, optional
         Like ``edge_attrs``, but for node attributes.
 
-    preserve_edge_attrs : str or bool, optional
-        If a string, the parameter name that may indicate (with ``True``)
-        whether all edge attributes should be preserved when converting.
-        If ``preserve_edge_attrs`` itself is ``True``, then always preserve
-        edge attributes. When all edges are to be preserved, ``edge_attrs``
-        is ignored.
+    preserve_edge_attrs : bool or str or dict, optional
+        For bool, whether to preserve all edge attributes.
+        For str, the parameter name that may indicate (with ``True`` or a
+        callable argument) whether all edge attributes should be preserved
+        when converting.
+        For dict of ``{graph_name: {attr: default}}``, indicate pre-determined
+        edge attributes (and defaults) to preserve for input graphs.
 
-    preserve_node_attrs : str or bool, optional
+    preserve_node_attrs : bool or str or dict, optional
         Like ``preserve_edge_attrs``, but for node attributes.
+
+    preserve_graph_attrs : bool or set
+        For bool, whether to preserve all graph attributes.
+        For set, which input graph arguments to preserve graph attributes.
 
     """
     # Allow any of the following decorator forms:
@@ -182,15 +194,6 @@ def _dispatch(
     #  - @_dispatch(edge_attrs="weight")
     #  - @_dispatch(graphs={"G": 0, "H": 1}, edge_attrs={"weight": "default"})
     if func is None:
-        if (
-            name is None
-            and graphs == "G"
-            and edge_attrs is None
-            and node_attrs is None
-            and preserve_edge_attrs is None
-            and preserve_node_attrs is None
-        ):
-            return _dispatch
         return functools.partial(
             _dispatch,
             name=name,
@@ -199,6 +202,7 @@ def _dispatch(
             node_attrs=node_attrs,
             preserve_edge_attrs=preserve_edge_attrs,
             preserve_node_attrs=preserve_node_attrs,
+            preserve_graph_attrs=preserve_graph_attrs,
         )
     if isinstance(func, str):
         raise TypeError("'name' and 'graphs' must be passed by keyword") from None
@@ -325,22 +329,14 @@ def test_override_dispatch(
     graphs="G",
     edge_attrs=None,
     node_attrs=None,
-    preserve_edge_attrs=None,
-    preserve_node_attrs=None,
+    preserve_edge_attrs=False,
+    preserve_node_attrs=False,
+    preserve_graph_attrs=False,
 ):
     """Auto-converts graph arguments into the backend equivalent,
     causing the dispatching mechanism to trigger for every
     decorated algorithm."""
     if func is None:
-        if (
-            name is None
-            and graphs == "G"
-            and edge_attrs is None
-            and node_attrs is None
-            and preserve_edge_attrs is None
-            and preserve_node_attrs is None
-        ):
-            return _dispatch
         return functools.partial(
             _dispatch,
             name=name,
@@ -349,6 +345,7 @@ def test_override_dispatch(
             node_attrs=node_attrs,
             preserve_edge_attrs=preserve_edge_attrs,
             preserve_node_attrs=preserve_node_attrs,
+            preserve_graph_attrs=preserve_graph_attrs,
         )
     if isinstance(func, str):
         raise TypeError("'name' and 'graphs' must be passed by keyword") from None
@@ -397,18 +394,23 @@ def test_override_dispatch(
         #   Include the edge and/or node labels if provided to the algorithm
         _preserve_edge_attrs = preserve_edge_attrs
         _edge_attrs = edge_attrs
-        if _preserve_edge_attrs is None:
-            _preserve_edge_attrs = False
+        if _preserve_edge_attrs is False:
+            pass
         elif _preserve_edge_attrs is True:
             _edge_attrs = None
-        elif (
-            isinstance(_preserve_edge_attrs, str)
-            and bound.arguments[_preserve_edge_attrs] is True
-        ):
-            _edge_attrs = None
-            _preserve_edge_attrs = True
-        else:
-            _preserve_edge_attrs = False
+        elif isinstance(_preserve_edge_attrs, str):
+            if bound.arguments[_preserve_edge_attrs] is True or callable(
+                bound.arguments[_preserve_edge_attrs]
+            ):
+                _preserve_edge_attrs = True
+                _edge_attrs = None
+            else:
+                _preserve_edge_attrs = False
+        elif not isinstance(_preserve_edge_attrs, dict):
+            raise TypeError(
+                f"Bad type for preserve_edge_attrs: {type(preserve_edge_attrs)}"
+            )
+
         if _edge_attrs is None:
             pass
         elif isinstance(_edge_attrs, str):
@@ -416,32 +418,48 @@ def test_override_dispatch(
                 _edge_attrs = {
                     edge_attr: 1 for edge_attr in bound.arguments[_edge_attrs[1:-1]]
                 }
-            else:
+            elif callable(bound.arguments[_edge_attrs]):
+                _preserve_edge_attrs = True
+                _edge_attrs = None
+            elif bound.arguments[_edge_attrs] is not None:
                 _edge_attrs = {bound.arguments[_edge_attrs]: 1}
+            elif name == "to_numpy_array" and hasattr(
+                bound.arguments["dtype"], "names"
+            ):
+                # Custom handling: attributes may be obtained from `dtype`
+                _edge_attrs = {
+                    edge_attr: 1 for edge_attr in bound.arguments["dtype"].names
+                }
+            else:
+                _edge_attrs = None
         elif isinstance(_edge_attrs, dict):
             _edge_attrs = {
-                bound.arguments[key]: bound.arguments.get(val, 1)
-                if isinstance(val, str)
-                else val
+                edge_attr: bound.arguments.get(val, 1) if isinstance(val, str) else val
                 for key, val in _edge_attrs.items()
+                if (edge_attr := bound.arguments[key]) is not None
             }
         else:
-            raise RuntimeError(f"bad type for edge_attrs: {type(edge_attrs)}")
+            raise TypeError(f"Bad type for edge_attrs: {type(edge_attrs)}")
 
         _preserve_node_attrs = preserve_node_attrs
         _node_attrs = node_attrs
-        if _preserve_node_attrs is None:
-            _preserve_node_attrs = False
+        if _preserve_node_attrs is False:
+            pass
         elif _preserve_node_attrs is True:
             _node_attrs = None
-        elif (
-            isinstance(_preserve_node_attrs, str)
-            and bound.arguments[_preserve_node_attrs] is True
-        ):
-            _node_attrs = None
-            _preserve_node_attrs = True
-        else:
-            _preserve_node_attrs = False
+        elif isinstance(_preserve_node_attrs, str):
+            if bound.arguments[_preserve_node_attrs] is True or callable(
+                bound.arguments[_preserve_node_attrs]
+            ):
+                _preserve_node_attrs = True
+                _node_attrs = None
+            else:
+                _preserve_node_attrs = False
+        elif not isinstance(_preserve_node_attrs, dict):
+            raise TypeError(
+                f"Bad type for preserve_node_attrs: {type(preserve_node_attrs)}"
+            )
+
         if _node_attrs is None:
             pass
         elif isinstance(_node_attrs, str):
@@ -449,17 +467,27 @@ def test_override_dispatch(
                 _node_attrs = {
                     node_attr: None for node_attr in bound.arguments[_node_attrs[1:-1]]
                 }
-            else:
+            elif callable(bound.arguments[_node_attrs]):
+                _preserve_node_attrs = True
+                _node_attrs = None
+            elif bound.arguments[_node_attrs] is not None:
                 _node_attrs = {bound.arguments[_node_attrs]: None}
+            else:
+                _node_attrs = None
         elif isinstance(_node_attrs, dict):
             _node_attrs = {
-                bound.arguments[key]: bound.arguments.get(val)
-                if isinstance(val, str)
-                else val
+                node_attr: bound.arguments.get(val) if isinstance(val, str) else val
                 for key, val in _node_attrs.items()
+                if (node_attr := bound.arguments[key]) is not None
             }
         else:
-            raise RuntimeError(f"bad type for node_attrs: {type(node_attrs)}")
+            raise TypeError(f"Bad type for node_attrs: {type(node_attrs)}")
+
+        _preserve_graph_attrs = preserve_graph_attrs
+        if not isinstance(_preserve_graph_attrs, (bool, set)):
+            raise TypeError(
+                f"Bad type for preserve_graph_attrs: {type(preserve_graph_attrs)}"
+            )
 
         for gname in graphs:
             if gname in list_graphs:
@@ -470,18 +498,46 @@ def test_override_dispatch(
                         node_attrs=_node_attrs,
                         preserve_edge_attrs=_preserve_edge_attrs,
                         preserve_node_attrs=_preserve_node_attrs,
+                        preserve_graph_attrs=_preserve_graph_attrs,
                         name=name,
+                        graph_name=gname,
                     )
                     for g in bound.arguments[gname]
                 ]
             else:
+                graph = bound.arguments[gname]
+                if graph is None:
+                    if gname in optional_graphs:
+                        continue
+                    else:
+                        raise TypeError(
+                            f"Missing required graph argument `{gname}` in {name} function"
+                        )
+                if isinstance(_preserve_edge_attrs, dict):
+                    preserve_edges = False
+                    edges = _preserve_edge_attrs.get(gname, _edge_attrs)
+                else:
+                    preserve_edges = _preserve_edge_attrs
+                    edges = _edge_attrs
+                if isinstance(_preserve_node_attrs, dict):
+                    preserve_nodes = False
+                    nodes = _preserve_node_attrs.get(gname, _node_attrs)
+                else:
+                    preserve_nodes = _preserve_node_attrs
+                    nodes = _node_attrs
+                if isinstance(_preserve_graph_attrs, set):
+                    preserve_graph = gname in _preserve_graph_attrs
+                else:
+                    preserve_graph = _preserve_graph_attrs
                 bound.arguments[gname] = backend.convert_from_nx(
-                    bound.arguments[gname],
-                    edge_attrs=_edge_attrs,
-                    node_attrs=_node_attrs,
-                    preserve_edge_attrs=_preserve_edge_attrs,
-                    preserve_node_attrs=_preserve_node_attrs,
+                    graph,
+                    edge_attrs=edges,
+                    node_attrs=nodes,
+                    preserve_edge_attrs=preserve_edges,
+                    preserve_node_attrs=preserve_nodes,
+                    preserve_graph_attrs=preserve_graph,
                     name=name,
+                    graph_name=gname,
                 )
         if any(arg.kind is arg.VAR_KEYWORD for arg in sig.parameters.values()):
             # Handle **kwargs in function (which we don't convert)
@@ -492,7 +548,46 @@ def test_override_dispatch(
             )
             kwargs = bound.arguments.pop(kwargs_name)
             bound.arguments.update(kwargs)
+
         result = getattr(backend, name).__call__(**bound.arguments)
+
+        if name in {
+            "edmonds_karp_core",
+            "barycenter",
+            "contracted_nodes",
+            "stochastic_graph",
+        }:
+            # For testing, special-case algorithms that mutate input graphs
+            if name == "edmonds_karp_core":
+                R1 = backend.convert_to_nx(bound.arguments["R"])
+                bound2 = sig.bind(*args, **kwds)
+                bound2.apply_defaults()
+                R2 = bound2.arguments["R"]
+                for k, v in R1.edges.items():
+                    R2.edges[k]["flow"] = v["flow"]
+            elif name == "barycenter" and bound.arguments["attr"] is not None:
+                G1 = backend.convert_to_nx(bound.arguments["G"])
+                bound2 = sig.bind(*args, **kwds)
+                bound2.apply_defaults()
+                G2 = bound2.arguments["G"]
+                attr = bound.arguments["attr"]
+                for k, v in G1.nodes.items():
+                    G2.nodes[k][attr] = v[attr]
+            elif name == "contracted_nodes" and not bound.arguments["copy"]:
+                # Edges and nodes changed; node "contraction" and edge "weight" attrs
+                G1 = backend.convert_to_nx(bound.arguments["G"])
+                bound2 = sig.bind(*args, **kwds)
+                bound2.apply_defaults()
+                G2 = bound2.arguments["G"]
+                G2.__dict__.update(G1.__dict__)
+            elif name == "stochastic_graph" and not bound.arguments["copy"]:
+                G1 = backend.convert_to_nx(bound.arguments["G"])
+                bound2 = sig.bind(*args, **kwds)
+                bound2.apply_defaults()
+                G2 = bound2.arguments["G"]
+                for k, v in G1.edges.items():
+                    G2.edges[k]["weight"] = v["weight"]
+
         return backend.convert_to_nx(result, name=name)
 
     _register_algo(name, wrapper)

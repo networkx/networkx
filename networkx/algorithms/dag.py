@@ -664,7 +664,9 @@ def is_aperiodic(G):
         return g == 1 and nx.is_aperiodic(G.subgraph(set(G) - set(levels)))
 
 
-@nx._dispatch
+@nx._dispatch(
+    preserve_edge_attrs=True, preserve_node_attrs=True, preserve_graph_attrs=True
+)
 def transitive_closure(G, reflexive=False):
     """Returns transitive closure of a graph
 
@@ -756,7 +758,9 @@ def transitive_closure(G, reflexive=False):
     return TC
 
 
-@nx._dispatch
+@nx._dispatch(
+    preserve_edge_attrs=True, preserve_node_attrs=True, preserve_graph_attrs=True
+)
 @not_implemented_for("undirected")
 def transitive_closure_dag(G, topo_order=None):
     """Returns the transitive closure of a directed acyclic graph.
@@ -1244,8 +1248,8 @@ def compute_v_structures(G):
     --------
     >>> G = nx.DiGraph()
     >>> G.add_edges_from([(1, 2), (0, 5), (3, 1), (2, 4), (3, 1), (4, 5), (1, 5)])
-    >>> list(nx.compute_v_structures(G))
-    [(0, 5, 4), (0, 5, 1), (1, 5, 4)]
+    >>> sorted(nx.compute_v_structures(G))
+    [(0, 5, 1), (0, 5, 4), (1, 5, 4)]
 
     Notes
     -----

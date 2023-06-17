@@ -762,7 +762,7 @@ def from_scipy_sparse_array(
     return G
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatch(edge_attrs="weight")  # edge attrs may also be obtained from `dtype`
 def to_numpy_array(
     G,
     nodelist=None,

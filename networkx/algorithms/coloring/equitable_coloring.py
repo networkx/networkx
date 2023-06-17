@@ -413,7 +413,7 @@ def equitable_color(G, num_colors):
     Examples
     --------
     >>> G = nx.cycle_graph(4)
-    >>> nx.coloring.equitable_color(G, num_colors=3)
+    >>> nx.coloring.equitable_color(G, num_colors=3)  # doctest: +SKIP
     {0: 2, 1: 1, 2: 2, 3: 0}
 
     Raises
