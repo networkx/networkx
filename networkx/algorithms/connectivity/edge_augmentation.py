@@ -737,7 +737,7 @@ def unconstrained_bridge_augmentation(G):
     implementation implicitly constructs T'.
 
     The leafs of T are the nodes with no existing edges in T'.
-    Order the leafs of T' by DFS prorder. Then break this list in half
+    Order the leafs of T' by DFS preorder. Then break this list in half
     and add the zipped pairs to A2.
 
     The set A = A1 + A2 is the minimum augmentation in the metagraph.
