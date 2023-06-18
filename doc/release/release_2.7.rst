@@ -99,7 +99,7 @@ Improvements
   problem.
 - [`#4897 <https://github.com/networkx/networkx/pull/4897>`_]
   Improve the validation and performance of ``nx.is_matching``,
-  ``nx.is_maximal_matching`` and ``nx.is_perfect_matcing``.
+  ``nx.is_maximal_matching`` and ``nx.is_perfect_matching``.
 - [`#4924 <https://github.com/networkx/networkx/pull/4924>`_]
   Fix handling of disconnected graphs when computing
   ``nx.common_neighbor_centrality``.
