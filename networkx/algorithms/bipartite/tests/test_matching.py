@@ -397,3 +397,49 @@ class TestDulmageMendelsohnDecomposition:
         assert bot_reachable_from_top == [21, 22]
         assert bot_unreachable == [17, 18, 19, 20]
         assert bot_reachable_from_bot == [12, 13, 14, 15, 16]
+
+    def test_bunus_fritzson_simple_example(self):
+        """
+        Test graph shown in Figure 11 of "Automatic static analysis of
+        equation-based components", Bunus and Fritzson, Simulation (2004).
+        """
+        n_eq = 7
+        n_var = 7
+        top_nodes = [f"eq{i}" for i in range(1, n_eq + 1)]
+        bot_nodes = [f"var{i}" for i in range(1, n_var + 1)]
+
+        G = nx.Graph()
+        G.add_nodes_from(top_nodes)
+        G.add_nodes_from(bot_nodes)
+
+        edges = [
+            ("eq1", "var1"),
+            ("eq2", "var1"),
+            ("eq2", "var2"),
+            ("eq3", "var1"),
+            ("eq3", "var2"),
+            ("eq4", "var2"),
+            ("eq4", "var3"),
+            ("eq4", "var4"),
+            ("eq5", "var4"),
+            ("eq5", "var5"),
+            ("eq6", "var3"),
+            ("eq6", "var4"),
+            ("eq6", "var5"),
+            ("eq7", "var5"),
+            ("eq7", "var6"),
+            ("eq7", "var7"),
+        ]
+        G.add_edges_from(edges)
+
+        reachable_top, reachable_bot, unreachable = dulmage_mendelsohn_decomposition(
+            G, top_nodes
+        )
+
+        pred_reachable_top = {"eq1", "eq2", "eq3", "var1", "var2"}
+        pred_reachable_bot = {"eq7", "var6", "var7"}
+        pred_unreachable = {"eq4", "eq5", "eq6", "var3", "var4", "var5"}
+
+        assert set(reachable_top) == pred_reachable_top
+        assert set(reachable_bot) == pred_reachable_bot
+        assert set(unreachable) == pred_unreachable
