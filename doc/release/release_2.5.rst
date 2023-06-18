@@ -271,7 +271,7 @@ A total of 256 changes have been committed.
 - Enhancement for voterank (#3972)
 - add d-separation algorithm (#3974)
 - DOC: added see also section to find_cycle (#3999)
-- improve docs for subgraph_view filter_egde (#4010)
+- improve docs for subgraph_view filter_edge (#4010)
 - Fix exception causes in dag.py (#4000)
 - use raise from for exceptions in to_networkx_graph (#4009)
 - Fix exception causes and messages in 12 modules (#4012)
