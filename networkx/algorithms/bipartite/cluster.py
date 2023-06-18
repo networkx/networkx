@@ -33,7 +33,7 @@ modes = {"dot": cc_dot, "min": cc_min, "max": cc_max}
 def latapy_clustering(G, nodes=None, mode="dot"):
     r"""Compute a bipartite clustering coefficient for nodes.
 
-    The bipartie clustering coefficient is a measure of local density
+    The bipartite clustering coefficient is a measure of local density
     of connections defined as [1]_:
 
     .. math::
