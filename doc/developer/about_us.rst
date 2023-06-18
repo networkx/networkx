@@ -89,7 +89,7 @@ to add your name to the bottom of the list.
 - Julien Klaus
 - Peter C. Kroon, GitHub: `pckroon <https://github.com/pckroon>`_
 - Weisheng Si, GitHub: `ws4u <https://github.com/ws4u>`_
-- Haakon H. Rød, Gitlab: `haakonhr <https://gitlab.com/haakonhr>`_, `<https://haakonhr.gitlab.io>`_
+- Haakon H. Rød, GitLab: `haakonhr <https://gitlab.com/haakonhr>`_, `<https://haakonhr.gitlab.io>`_
 - Efraim Rodrigues, GitHub: `efraimrodrigues <https://github.com/efraimrodrigues>`_, LinkedIn: `efraim-rodrigues <https://linkedin.com/in/efraim-rodrigues/>`_
 - Erwan Le Merrer
 - Søren Fuglede Jørgensen, GitHub: `fuglede <https://github.com/fuglede>`_
