@@ -430,7 +430,7 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     # a dict
     if not isinstance(z_star, dict):
         # Here we are using the shortcutting method to go from the list of edges
-        # returned from eularian_circuit to a list of nodes
+        # returned from eulerian_circuit to a list of nodes
         return _shortcutting(nx.eulerian_circuit(z_star, source=source))
 
     # Create the undirected support of z_star
