@@ -149,7 +149,7 @@ A few backwards *incompatible* changes were introduced.
   mapping dict needed for node connectivity and minimum node cuts is now a
   graph attribute of the auxiliary network. Thus we removed the
   :samp:`mapping` parameter from the local versions of connectivity and cut
-  functions. We also changed the parameter name for the auxuliary digraph
+  functions. We also changed the parameter name for the auxiliary digraph
   from :samp:`aux_digraph` to :samp:`auxiliary`.
 
 * We changed the name of the function :samp:`all_pairs_node_connectiviy_matrix`
