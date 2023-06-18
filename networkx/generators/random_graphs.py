@@ -905,7 +905,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
                 # The available nodes do have a neighbor at least.
                 neighbor_nodes = list(G[node])
 
-                # Choosing the other end that will get dettached
+                # Choosing the other end that will get detached
                 src_node = seed.choice(neighbor_nodes)
 
                 # Picking a target node that is not 'node' or
