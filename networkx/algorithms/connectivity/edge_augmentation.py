@@ -1002,7 +1002,7 @@ def weighted_bridge_augmentation(G, avail, weight=None):
 
     # For each edge e, in the branching that did not belong to the directed
     # tree T, add the corresponding edge that **GENERATED** it (this is not
-    # necesarilly e itself!)
+    # necessarily e itself!)
 
     # ensure the third case does not generate edges twice
     bridge_connectors = set()
@@ -1068,7 +1068,7 @@ def collapse(G, grouped_nodes):
 
     Examples
     --------
-    >>> # Collapses a graph using disjoint groups, but not necesarilly connected
+    >>> # Collapses a graph using disjoint groups, but not necessarily connected
     >>> G = nx.Graph([(1, 0), (2, 3), (3, 1), (3, 4), (4, 5), (5, 6), (5, 7)])
     >>> G.add_node("A")
     >>> grouped_nodes = [{0, 1, 2, 3}, {5, 6, 7}]
