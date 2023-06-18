@@ -190,7 +190,7 @@ API Changes
   arguments in the ``json_graph`` module.
 - [`#4843 <https://github.com/networkx/networkx/pull/4843>`_]
   The unused ``normalized`` parameter has been removed
-  from ``communicability_betweeness_centrality``
+  from ``communicability_betweenness_centrality``
 - [`#4850 <https://github.com/networkx/networkx/pull/4850>`_]
   Added ``dtype`` parameter to adjacency_matrix
 - [`#4851 <https://github.com/networkx/networkx/pull/4851>`_]

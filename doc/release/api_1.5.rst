@@ -50,8 +50,8 @@ will be used in the algorithms:
 
 Algorithms affected are:
 
-betweenness_centrality, closeness_centrality, edge_bewteeness_centrality,
-betweeness_centrality_subset, edge_betweenness_centrality_subset,
+betweenness_centrality, closeness_centrality, edge_betweenness_centrality,
+betweenness_centrality_subset, edge_betweenness_centrality_subset,
 betweenness_centrality_source, load, closness_vitality,
 weiner_index, spectral_bipartivity
 current_flow_betweenness_centrality,

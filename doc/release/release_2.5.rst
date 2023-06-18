@@ -123,7 +123,7 @@ Deprecations
   Deprecate `betweenness_centrality_source`.
 
 - [`#4161 <https://github.com/networkx/networkx/pull/4161>`_]
-  Deprecate `edge_betweeness`.
+  Deprecate `edge_betweenness`.
 
 - [`#4161 <https://github.com/networkx/networkx/pull/4161>`_]
   Rename `_naive_greedy_modularity_communities` as `naive_greedy_modularity_communities`.

@@ -678,7 +678,7 @@ def betweenness_sequence(creation_sequence, normalized=True):
     dlast = 0.0  # betweenness of last d
     for i, c in enumerate(cs):
         if c == "d":  # cs[i]=="d":
-            # betweennees = amt shared with earlier d's and i's
+            # betweenness = amt shared with earlier d's and i's
             #             + new isolated nodes covered
             #             + new paths to all previous nodes
             b = dlast + (irun - 1) * irun / dr + 2 * irun * (i - drun - irun) / dr
