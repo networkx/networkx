@@ -165,7 +165,7 @@ A total of 256 changes have been committed.
 - Optimize _single_shortest_path_length (#3647)
 - Fix issue 3431: Return error in case of bad input to make_small_graph (#3676)
 - avoid duplicate tests due to imports (#3684)
-- Fix typo: Laplacion -> Laplacian (#3689)
+- Fix typo: Laplacian -> Laplacian (#3689)
 - Add tests
 - Lukes algorithm implementation (#3666)
 - Remove shim that worked around using starmap
