@@ -556,7 +556,7 @@ Merged PRs
 - Update black (#4814)
 - Restructure documentation (#4744)
 - Pin upper bound on decorator for 2.6 release. (#4815)
-- Use `callable()` to check if the object is calllable (#1) (#4678)
+- Use `callable()` to check if the object is callable (#1) (#4678)
 - Remove dictionary from signature of tree_graph and tree_data (#4786)
 - Make nx.hits a wrapper around different implementations, use scipy one by default (#4812)
 - restructured networksimplex.py and added test_networksimplex.py (#4685)
