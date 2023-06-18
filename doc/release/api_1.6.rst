@@ -81,7 +81,7 @@ and 'edge_match' functions, users are encouraged to work with::
 
     categorical_node_match
     categorical_edge_match
-    categroical_multiedge_match
+    categorical_multiedge_match
     numerical_node_match
     numerical_edge_match
     numerical_multiedge_match
