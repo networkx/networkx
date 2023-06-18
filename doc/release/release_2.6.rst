@@ -501,7 +501,7 @@ Merged PRs
 - return earlier from `clique.graph_clique_number` (#4622)
 - More for projects page: TSP and Graph Isomorphism (#4620)
 - add recommended venv directory to .gitignore (#4619)
-- adding weight description to centrality metrices (#4610)
+- adding weight description to centrality metrics (#4610)
 - Add a good first issue badge to README  (#4627)
 - add test to regular (#4624)
 - Add scipy-1.6.1 to blocklist. (#4628)
