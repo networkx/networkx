@@ -351,7 +351,7 @@ A total of 256 changes have been committed.
 - Add function to calculate path cost for a specified path (#4069)
 - Update docstring for from_pandas_edgelist (#4108)
 - Add max_weight_clique to doc (#4110)
-- Update deprecation policyt (#4112)
+- Update deprecation policy (#4112)
 - Improve modularity calculation (#4103)
 - Add team gallery (#4117)
 - CI: Setup circle CI for documentation builds (#4119)
