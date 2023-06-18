@@ -294,7 +294,7 @@ A total of 166 changes have been committed.
 - Remove unused internal solver from algebraicconnectivity (#5190)
 - Remove check/comment for scipy 1.1 behavior. (#5191)
 - Test on Python 3.10 (#5185)
-- Add regression test for ancestors/descedants w/ undir. G. (#5188)
+- Add regression test for ancestors/descendants w/ undir. G. (#5188)
 - Rm internal function, use advanced indexing instead. (#5197)
 - Fix missing import + tests in laplacian fns. (#5194)
 - Investigate pre-release test failures (#5208)
