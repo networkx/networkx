@@ -41,6 +41,7 @@ import itertools
 
 import networkx as nx
 from networkx.algorithms.bipartite import sets as bipartite_sets
+from networkx.algorithms.bipartite import is_bipartite, is_bipartite_node_set
 from networkx.algorithms.bipartite.matrix import biadjacency_matrix
 
 __all__ = [
@@ -638,6 +639,10 @@ def dulmage_mendelsohn_decomposition(G, top_nodes, matching=None):
         1958.
 
     """
+    if not is_bipartite(G):
+        raise nx.NetworkXError("Provided graph is not bipartite")
+    elif not is_bipartite_node_set(G, top_nodes):
+        raise nx.NetworkXError("Provided nodes are not a valid bipartite set")
     if matching is None:
         matching = maximum_matching(G, top_nodes=top_nodes)
     top_set = set(top_nodes)

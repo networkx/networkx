@@ -618,3 +618,22 @@ class TestDulmageMendelsohnDecomposition:
         assert set(reach_from_con) == pred_reachable_from_con
         assert set(reach_from_var) == pred_reachable_from_var
         assert set(unreachable) == set()
+
+    def test_graph_not_bipartite(self):
+        G = nx.Graph()
+        G.add_nodes_from(range(3))
+        G.add_edges_from([(0, 1), (0, 2), (1, 2)])
+        top_nodes = [0, 1]
+
+        msg = "Provided graph is not bipartite"
+        with pytest.raises(nx.NetworkXError, match=msg):
+            dulmage_mendelsohn_decomposition(G, top_nodes)
+
+    def test_invalid_bipartite_set(self):
+        G = nx.Graph()
+        G.add_nodes_from(range(3))
+        G.add_edges_from([(0, 1), (0, 2)])
+        top_nodes = [0, 2]
+        msg = "Provided nodes are not a valid bipartite set"
+        with pytest.raises(nx.NetworkXError, match=msg):
+            dulmage_mendelsohn_decomposition(G, top_nodes)
