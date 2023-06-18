@@ -292,7 +292,7 @@ def partial_k_edge_augmentation(G, k, avail, weight=None):
     small set of edges that partially k-edge-connects as much of the graph as
     possible. All possible edges are generated between remaining parts.
     This minimizes the number of k-edge-connected subgraphs in the resulting
-    graph and maxmizes the edge connectivity between those subgraphs.
+    graph and maximizes the edge connectivity between those subgraphs.
 
     Parameters
     ----------
