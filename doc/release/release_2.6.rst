@@ -230,7 +230,7 @@ Deprecations
 - [`#4448 <https://github.com/networkx/networkx/pull/4448>`_]
   Deprecate ``iterable``.
 - [`#4536 <https://github.com/networkx/networkx/pull/4536>`_]
-  Deprecate ``performance`` and ``coverage`` in favor of ``parition_quality``.
+  Deprecate ``performance`` and ``coverage`` in favor of ``partition_quality``.
 - [`#4545 <https://github.com/networkx/networkx/pull/4545>`_]
   Deprecate ``generate_unique_node``.
 - [`#4599 <https://github.com/networkx/networkx/pull/4599>`_]
