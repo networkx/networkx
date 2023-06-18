@@ -443,3 +443,91 @@ class TestDulmageMendelsohnDecomposition:
         assert set(reachable_top) == pred_reachable_top
         assert set(reachable_bot) == pred_reachable_bot
         assert set(unreachable) == pred_unreachable
+
+    def test_bunus_fritzson_circuit_example(self):
+        """Test graph shown in Figure 15 of "Automatic static analysis of
+        equation-based components", Bunus and Fritzson, Simulation (2004).
+        """
+        n_eq = 15
+        n_var = 14
+        left_nodes = [f"eq{i}" for i in range(1, n_eq + 1)]
+        right_nodes = [f"var{i}" for i in range(1, n_var + 1)]
+        G = nx.Graph()
+        G.add_nodes_from(left_nodes)
+        G.add_nodes_from(right_nodes)
+
+        edges = [
+            ("eq1", "var1"),
+            ("eq1", "var3"),
+            ("eq1", "var5"),
+            ("eq2", "var2"),
+            ("eq2", "var4"),
+            ("eq3", "var2"),
+            ("eq3", "var6"),
+            ("eq4", "var5"),
+            ("eq4", "var6"),
+            ("eq5", "var6"),
+            ("eq6", "var7"),
+            ("eq6", "var9"),
+            ("eq6", "var11"),
+            ("eq7", "var8"),
+            ("eq7", "var10"),
+            ("eq8", "var8"),
+            ("eq8", "var12"),
+            ("eq9", "var11"),
+            ("eq10", "var13"),
+            ("eq11", "var1"),
+            ("eq11", "var7"),
+            ("eq12", "var2"),
+            ("eq12", "var8"),
+            ("eq13", "var3"),
+            ("eq13", "var9"),
+            ("eq14", "var9"),
+            ("eq14", "var13"),
+            ("eq15", "var4"),
+            ("eq15", "var10"),
+            ("eq15", "var14"),
+        ]
+        G.add_edges_from(edges)
+
+        reach_left, reach_right, unreachable = dulmage_mendelsohn_decomposition(
+            G, left_nodes
+        )
+
+        pred_reachable_left = {
+            "eq1",
+            "eq4",
+            "eq5",
+            "eq6",
+            "eq9",
+            "eq10",
+            "eq11",
+            "eq13",
+            "eq14",
+            "var1",
+            "var3",
+            "var5",
+            "var6",
+            "var7",
+            "var9",
+            "var11",
+            "var13",
+        }
+        pred_unreachable = {
+            "eq2",
+            "eq3",
+            "eq7",
+            "eq8",
+            "eq12",
+            "eq15",
+            "var2",
+            "var4",
+            "var8",
+            "var10",
+            "var12",
+            "var14",
+        }
+
+        assert set(reach_left) == pred_reachable_left
+        assert set(reach_right) == set()
+        assert set(unreachable) == pred_unreachable
