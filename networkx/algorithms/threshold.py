@@ -667,7 +667,7 @@ def betweenness_sequence(creation_sequence, normalized=True):
     """
     Return betweenness for the threshold graph with the given creation
     sequence.  The result is unscaled.  To scale the values
-    to the iterval [0,1] divide by (n-1)*(n-2).
+    to the interval [0,1] divide by (n-1)*(n-2).
     """
     cs = creation_sequence
     seq = []  # betweenness
