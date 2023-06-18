@@ -329,7 +329,9 @@ class TestMinimumWeightFullMatching:
 
 class TestDulmageMendelsohnDecomposition:
     def test_pothen_fan_example(self):
-        """Example from Pothen and Fan, 1990"""
+        """Test the graph shown in Figure 1 of "Computing the block triangular
+        form of a sparse matrix", Pothen and Fan, ACM Trans. Math. Softw., 1990.
+        """
         G = nx.Graph()
         NL = 12
         NR = 11
