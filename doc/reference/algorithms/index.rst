@@ -77,4 +77,5 @@ Algorithms
    triads
    vitality
    voronoi
+   walks
    wiener
