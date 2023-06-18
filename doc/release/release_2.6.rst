@@ -468,7 +468,7 @@ Merged PRs
 - Replace generate_unique_node internally where not needed (#4537)
 - Extend harmonic centrality to include source nodes (#4446)
 - improve group betweenness centrality (#4435)
-- fixes Github Actions failures (#4548)
+- fixes GitHub Actions failures (#4548)
 - updated cutoff def in weighted.py (#4546)
 - Less strict on mayavi constraint for doc building. (#4547)
 - Update docstring for ancestor and descendents (#4550)
