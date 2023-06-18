@@ -13,7 +13,7 @@ import networkx as nx
 
 
 def nonisomorphic_trees(order, create="graph"):
-    """Returns a list of nonisomporphic trees
+    """Returns a list of nonisomorphic trees
 
     Parameters
     ----------
