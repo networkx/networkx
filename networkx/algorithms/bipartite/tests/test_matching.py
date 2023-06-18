@@ -531,3 +531,88 @@ class TestDulmageMendelsohnDecomposition:
         assert set(reach_left) == pred_reachable_left
         assert set(reach_right) == set()
         assert set(unreachable) == pred_unreachable
+
+    def test_pyomo_example(self):
+        """Test the bipartite graph of variables and constraints from the Pyomo
+        example of the Dulmage-Mendelsohn partition, accessed at
+        https://pyomo.readthedocs.io/en/stable/contributed_packages/incidence/tutorial.dm.html
+        on June 17, 2023.
+        """
+        varnames = [
+            "x[1]",
+            "x[2]",
+            "x[3]",
+            "flow[1]",
+            "flow[2]",
+            "flow[3]",
+            "total_flow",
+            "density",
+        ]
+        connames = [
+            "sum_eqn",
+            "holdup_eqn[1]",
+            "holdup_eqn[2]",
+            "holdup_eqn[3]",
+            "density_eqn",
+            "flow_eqn[1]",
+            "flow_eqn[2]",
+            "flow_eqn[3]",
+        ]
+        G = nx.Graph()
+        G.add_nodes_from(varnames)
+        G.add_nodes_from(connames)
+
+        edges = [
+            ("sum_eqn", "x[1]"),
+            ("sum_eqn", "x[2]"),
+            ("sum_eqn", "x[3]"),
+            ("holdup_eqn[1]", "x[1]"),
+            ("holdup_eqn[1]", "density"),
+            ("holdup_eqn[2]", "x[2]"),
+            ("holdup_eqn[2]", "density"),
+            ("holdup_eqn[3]", "x[3]"),
+            ("holdup_eqn[3]", "density"),
+            ("density_eqn", "density"),
+            ("density_eqn", "x[1]"),
+            ("density_eqn", "x[2]"),
+            ("density_eqn", "x[3]"),
+            ("flow_eqn[1]", "x[1]"),
+            ("flow_eqn[1]", "flow[1]"),
+            ("flow_eqn[1]", "total_flow"),
+            ("flow_eqn[2]", "x[2]"),
+            ("flow_eqn[2]", "flow[2]"),
+            ("flow_eqn[2]", "total_flow"),
+            ("flow_eqn[3]", "x[3]"),
+            ("flow_eqn[3]", "flow[3]"),
+            ("flow_eqn[3]", "total_flow"),
+        ]
+        G.add_edges_from(edges)
+
+        reach_from_con, reach_from_var, unreachable = dulmage_mendelsohn_decomposition(
+            G, connames
+        )
+
+        pred_reachable_from_con = {
+            "x[1]",
+            "x[2]",
+            "x[3]",
+            "density",
+            "sum_eqn",
+            "holdup_eqn[1]",
+            "holdup_eqn[2]",
+            "holdup_eqn[3]",
+            "density_eqn",
+        }
+        pred_reachable_from_var = {
+            "flow[1]",
+            "flow[2]",
+            "flow[3]",
+            "total_flow",
+            "flow_eqn[1]",
+            "flow_eqn[2]",
+            "flow_eqn[3]",
+        }
+
+        assert set(reach_from_con) == pred_reachable_from_con
+        assert set(reach_from_var) == pred_reachable_from_var
+        assert set(unreachable) == set()
