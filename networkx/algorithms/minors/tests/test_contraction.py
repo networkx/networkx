@@ -436,7 +436,7 @@ def test_multigraph_edge_contraction():
 
 
 def test_nonexistent_edge():
-    """Tests that attempting to contract a non-existent edge raises an
+    """Tests that attempting to contract a nonexistent edge raises an
     exception.
 
     """
