@@ -118,7 +118,7 @@ plt.title("The original graph.")
 plt.show()
 
 ###############################################################################
-# Calculate the subgraphs with plotting all results of intemediate steps.
+# Calculate the subgraphs with plotting all results of intermediate steps.
 # -----------------------------------------------------------------------
 #
 subgraphs_of_G_ex, removed_edges = graph_partitioning(G_ex, plotting=True)
