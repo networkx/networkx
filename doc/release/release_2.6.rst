@@ -459,7 +459,7 @@ Merged PRs
 - Clustering for signed weighted graphs (#4519)
 - Fix docstrings and remove unused variables (#4501)
 - Improving code coverage of chordal.py (#4471)
-- Cliques on mutigraph/directed graph types (#4502)
+- Cliques on multigraph/directed graph types (#4502)
 - Approximated Diameter  (#4476)
 - `arrows` should be True by default for directed graphs (#4522)
 - Remove unnecessary node_list from gallery example (#4505)
