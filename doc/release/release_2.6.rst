@@ -367,7 +367,7 @@ Merged PRs
 - Install vtk before mayavi
 - Install vtk before mayavi
 - Install vtk before mayavi
-- Use bidirection_dijkstra as default in weighted shortest_path (#4356)
+- Use bidirectional_dijkstra as default in weighted shortest_path (#4356)
 - Add unit tests for utils.misc.flatten (#4359)
 - Improve test coverage for coreviews.py (#4355)
 - Update tutorial.rst - Fixes #4249 (#4358)
