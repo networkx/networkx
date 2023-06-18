@@ -451,7 +451,7 @@ Merged PRs
 - Fix broken link to the description of the P2G format. (#2211)
 - Test ordering (#2209)
 - add example of node weights (#2250)
-- added paramether nbunch (#2253)
+- added parameter nbunch (#2253)
 - Adds unit tests for using dtype with to_numpy_matrix (#2257)
 - Adds chain decomposition algorithm. (#2284)
 - add the Hoffman-Singleton graph (#2275)
