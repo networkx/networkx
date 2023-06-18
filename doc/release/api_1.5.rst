@@ -52,7 +52,7 @@ Algorithms affected are:
 
 betweenness_centrality, closeness_centrality, edge_betweenness_centrality,
 betweenness_centrality_subset, edge_betweenness_centrality_subset,
-betweenness_centrality_source, load, closness_vitality,
+betweenness_centrality_source, load, closeness_vitality,
 weiner_index, spectral_bipartivity
 current_flow_betweenness_centrality,
 edge_current_flow_betweenness_centrality,
