@@ -781,7 +781,7 @@ def tetrahedral_graph(create_using=None):
     Returns
     -------
     G : networkx Graph
-        Tetrahedral Grpah
+        Tetrahedral Graph
 
     References
     ----------
