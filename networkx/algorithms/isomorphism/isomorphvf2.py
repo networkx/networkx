@@ -319,7 +319,7 @@ class GraphMatcher:
                         newstate.restore()
 
     def semantic_feasibility(self, G1_node, G2_node):
-        """Returns True if adding (G1_node, G2_node) is symantically feasible.
+        """Returns True if adding (G1_node, G2_node) is semantically feasible.
 
         The semantic feasibility function should return True if it is
         acceptable to add the candidate pair (G1_node, G2_node) to the current
