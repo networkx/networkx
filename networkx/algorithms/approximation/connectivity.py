@@ -369,7 +369,7 @@ def _bidirectional_pred_succ(G, source, target, exclude):
         Gpred = G.neighbors
         Gsucc = G.neighbors
 
-    # predecesssor and successors in search
+    # predecessor and successors in search
     pred = {source: None}
     succ = {target: None}
 
