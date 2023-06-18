@@ -539,7 +539,7 @@ Merged PRs
 - CI: Fix cartopy build failure in docs workflow (#4751)
 - Add missing __all__'s to utils modules + test. (#4753)
 - Add 2 articles for TSP project as references (#4758)
-- Improve reproducibilty of geometric graphs (#4768)
+- Improve reproducibility of geometric graphs (#4768)
 - Updated decorator requirement for #4718 (#4773)
 - Gallery Example: Drawing custom node icons on network using MPL (#4633)
 - Get rid of invalid escape sequences. (#4789)
