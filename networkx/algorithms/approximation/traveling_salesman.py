@@ -643,7 +643,7 @@ def held_karp_ascent(G, weight="weight"):
         for n in G:
             d[n] = 0
         del n
-        # 2. Find a 1-Aborescence T^k such that k is in K(pi, d).
+        # 2. Find a 1-Arborescence T^k such that k is in K(pi, d).
         minimum_1_arborescences = k_pi()
         while True:
             # Reduce K(pi) to K(pi, d)
