@@ -120,7 +120,7 @@ True
 Connectivity package
 --------------------
 
-The flow-based connecitivity and cut algorithms from the connectivity
+The flow-based connectivity and cut algorithms from the connectivity
 package (:samp:`networkx.algorithms.connectivity`) are adapted to take
 advantage of the new interface to flow algorithms. As a result, flow-based
 connectivity algorithms are up to 10x faster than in NetworkX 1.8 for some
@@ -152,7 +152,7 @@ A few backwards *incompatible* changes were introduced.
   functions. We also changed the parameter name for the auxiliary digraph
   from :samp:`aux_digraph` to :samp:`auxiliary`.
 
-* We changed the name of the function :samp:`all_pairs_node_connectiviy_matrix`
+* We changed the name of the function :samp:`all_pairs_node_connectivity_matrix`
   to :samp:`all_pairs_node_connectivity`. This function now returns a dictionary
   instead of a NumPy 2D array. We added a new parameter :samp:`nbunch` for
   computing node connectivity only among pairs of nodes in :samp:`nbunch`.

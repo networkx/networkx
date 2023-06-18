@@ -128,7 +128,7 @@ def k_edge_subgraphs(G, k):
     --------
     :func:`edge_connectivity`
     :func:`k_edge_components` : similar to this function, but nodes only
-        need to have k-edge-connctivity within the graph G and the subgraphs
+        need to have k-edge-connectivity within the graph G and the subgraphs
         might not be k-edge-connected.
 
     Raises
