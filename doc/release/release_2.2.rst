@@ -60,7 +60,7 @@ reading them back in will not make the numpy values.
 
 A generator following the Stochastic Block Model is now available.
 
-New function `all_topolgical_sort` to generate all possible top_sorts.
+New function `all_topological_sort` to generate all possible top_sorts.
 
 New functions for tree width and tree decompositions.
 

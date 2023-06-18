@@ -279,7 +279,7 @@ Merged PRs
 - Speed up transitivity, remove redundant call (#4198)
 - NXEP 2 — API design of view slices (#4101)
 - Cleanup old platforms (#4202)
-- Fixed "topolgical_sort" typo (#4211)
+- Fixed "topological_sort" typo (#4211)
 - Make optional dependencies default on CPython
 - Simplify imports
 - Populate setup.py requires from requirements
