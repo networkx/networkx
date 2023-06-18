@@ -50,7 +50,7 @@ Individual functions can be optimized for performance and memory use.
 We are also interested in exploring new technologies to accelerate
 code and reduce memory use.  Before adopting any new technologies
 we will need to careful consider its impact on code readability
-and difficulty of building and installating NetworkX.
+and difficulty of building and installing NetworkX.
 For more information, see our :ref:`mission_and_values`.
 
 Many functions can be trivially parallelized.
