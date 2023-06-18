@@ -86,7 +86,7 @@ API Changes
 - removed unused "has_numpy" argument from create_py_random_state
 - fixed return values when drawing empty nodes and edges
 - allow sets and frozensets of edges as input to nx.Graph()
-- "weight" can be function for astar, directional_dijksta, all_shortest_path
+- "weight" can be function for astar, directional_dijkstra, all_shortest_path
 - allow named key ids for GraphML edge writing
 - all keywords are now checked for validity in nx.draw and friends
 - EdgeDataView "in" operator checks if nodes are "in nbunch"

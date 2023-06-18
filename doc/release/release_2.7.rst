@@ -175,7 +175,7 @@ Improvements
 - [`#5217 <https://github.com/networkx/networkx/pull/5217>`_]
   Improve performance and readability of ``betweenness_centrality``.
 - [`#5232 <https://github.com/networkx/networkx/pull/5232>`_]
-  Add support for `None` edge weights to bidirectional Djikstra algorithm.
+  Add support for `None` edge weights to bidirectional Dijkstra algorithm.
 - [`#5247 <https://github.com/networkx/networkx/pull/5247>`_]
   Improve performance of asynchronous label propagation algorithm for
   community detection, ``asyn_lpa_communities``.

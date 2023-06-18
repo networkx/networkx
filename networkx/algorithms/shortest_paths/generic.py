@@ -354,7 +354,7 @@ def average_shortest_path_length(G, weight=None, method=None):
         the dictionary of edge attributes for that edge.
         The function must return a number.
 
-    method : string, optional (default = 'unweighted' or 'djikstra')
+    method : string, optional (default = 'unweighted' or 'dijkstra')
         The algorithm to use to compute the path lengths.
         Supported options are 'unweighted', 'dijkstra', 'bellman-ford',
         'floyd-warshall' and 'floyd-warshall-numpy'.

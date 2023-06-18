@@ -90,7 +90,7 @@ Improvements
   New ``source`` argument to ``has_eulerian_path`` to look for path starting at
   source.
 - [`#4356 <https://github.com/networkx/networkx/pull/4356>`_]
-  Use ``bidirectional_djikstra`` in ``shortest_path`` for weighted graphs
+  Use ``bidirectional_dijkstra`` in ``shortest_path`` for weighted graphs
   to improve performance.
 - [`#4361 <https://github.com/networkx/networkx/pull/4361>`_]
   Adds ``nodelist`` argument to ``triadic_census``
