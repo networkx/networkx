@@ -22,7 +22,7 @@ def nonisomorphic_trees(order, create="graph"):
 
     create : graph or matrix (default="Graph)
       If graph is selected a list of trees will be returned,
-      if matrix is selected a list of adjancency matrix will
+      if matrix is selected a list of adjacency matrix will
       be returned
 
     Returns
