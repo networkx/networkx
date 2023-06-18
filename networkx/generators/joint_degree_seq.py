@@ -294,7 +294,7 @@ def is_valid_directed_joint_degree(in_degrees, out_degrees, nkk):
         out degree sequence contains the out degrees of nodes.
     nkk  :  dictionary of dictionary of integers
         directed joint degree dictionary. for nodes of out degree k (first
-        level of dict) and nodes of in degree l (seconnd level of dict)
+        level of dict) and nodes of in degree l (second level of dict)
         describes the number of edges.
 
     Returns
