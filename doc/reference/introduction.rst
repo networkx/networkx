@@ -157,7 +157,7 @@ Graph Creation
 NetworkX graph objects can be created in one of three ways:
 
 - Graph generators---standard algorithms to create network topologies.
-- Importing data from pre-existing (usually file) sources.
+- Importing data from preexisting (usually file) sources.
 - Adding edges and nodes explicitly.
 
 Explicit addition and removal of nodes/edges is the easiest to describe.
