@@ -573,7 +573,7 @@ def shortest_path(creation_sequence, u, v):
     u and v must be integers in (0,len(sequence)) referring
     to the position of the desired vertices in the sequence.
 
-    For a labeled creation_sequence, u and v are labels of veritices.
+    For a labeled creation_sequence, u and v are labels of vertices.
 
     Use cs=creation_sequence(degree_sequence,with_labels=True)
     to convert a degree sequence to a creation sequence.
