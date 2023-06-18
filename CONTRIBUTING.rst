@@ -490,6 +490,29 @@ to use the `wayback machine <https://web.archive.org/>`_ to create a snapshot of
 and link the internet archive link. The URL of the resource can change, and it creates unreachable
 links from the documentation.
 
+Using Math Formulae and Latex Formatting in Documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+When working with docstrings that contain math symbols or formulae
+use raw strings (``r"""``) to ensure proper rendering. 
+While LaTeX formatting can improve the appearance of the rendered documentation, 
+it's best to keep it simple and readable. 
+
+An example of a math formula::
+      
+      .. math:: 
+          Ax = \lambda x
+
+.. math:: 
+    Ax = \lambda x
+
+Some inline math::
+    
+    These are Cheeger's Inequalities for \d-Regular graphs: 
+    $\frac{d- \lambda_2}{2} \leq h(G) \leq \sqrt{2d(d- \lambda_2)}$
+   
+These are Cheeger's Inequalities for \d-Regular graphs: 
+$\frac{d- \lambda_2}{2} \leq h(G) \leq \sqrt{2d(d- \lambda_2)}$
+
 Bugs
 ----
 
