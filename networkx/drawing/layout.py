@@ -1124,7 +1124,7 @@ def arf_layout(
     strong forcing between nodes. Second, it utilizes the
     layout space more effectively by preventing large gaps
     that spring layout tends to create. Lastly, the arf
-    layout represents symmmetries in the layout better than
+    layout represents symmetries in the layout better than
     the default spring layout.
 
     Parameters
