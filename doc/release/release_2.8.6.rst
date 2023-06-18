@@ -47,7 +47,7 @@ Merged PRs
 - Replace LCA with naive implementations (#5883)
 - Update release notes
 - docstring update to lexicographical_topological_sort issue 5681 (#5930)
-- Support matplotlb 3.6rc1 failure (#5937)
+- Support matplotlib 3.6rc1 failure (#5937)
 
 Improvements
 ------------
