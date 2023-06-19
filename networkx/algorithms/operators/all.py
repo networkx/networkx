@@ -67,6 +67,8 @@ def union_all(graphs, rename=()):
         if i == 0:
             # Union is the same type as first graph
             R = G.__class__()
+        elif G.is_directed() != R.is_directed():
+            raise nx.NetworkXError("All graphs must be directed or undirected.")
         elif G.is_multigraph() != R.is_multigraph():
             raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
         elif not seen_nodes.isdisjoint(G_nodes_set):
@@ -166,6 +168,8 @@ def compose_all(graphs):
         if i == 0:
             # create new graph
             R = G.__class__()
+        elif G.is_directed() != R.is_directed():
+            raise nx.NetworkXError("All graphs must be directed or undirected.")
         elif G.is_multigraph() != R.is_multigraph():
             raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
 
@@ -219,6 +223,8 @@ def intersection_all(graphs):
             R = G.__class__()
             node_intersection = G_nodes_set
             edge_intersection = G_edges_set
+        elif G.is_directed() != R.is_directed():
+            raise nx.NetworkXError("All graphs must be directed or undirected.")
         elif G.is_multigraph() != R.is_multigraph():
             raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
         else:
@@ -232,5 +238,6 @@ def intersection_all(graphs):
 
     R.add_nodes_from(node_intersection)
     R.add_edges_from(edge_intersection)
+    R.graph.clear()  # remove graph attributes from intersection graph
 
     return R

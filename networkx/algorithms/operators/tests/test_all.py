@@ -47,7 +47,7 @@ def test_intersection_all():
     I = nx.intersection_all([G, H, R])
     assert set(I.nodes()) == {1, 2, 3, 4}
     assert sorted(I.edges()) == [(2, 3)]
-    assert I.graph["awesome"]
+    assert I.graph == {}
 
 
 def test_intersection_all_different_node_sets():
