@@ -5,6 +5,8 @@ Link prediction algorithms.
 
 from math import log, sqrt
 
+import numpy as np
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -681,7 +683,7 @@ def direct_indirect_common_neighbors(G, ebunch=None):
     """
 
     # funciton relies on consecutive, integer-indexed nodes
-    mapping = dict(zip(G, range(0, len(list(G.nodes())))))
+    mapping = dict(zip(G, range(0, sum(1 for _ in G.nodes()))))
     G = nx.convert_node_labels_to_integers(G)
 
     def get_second_order_neighbors(G, node, first_order_neighbors):
@@ -709,67 +711,65 @@ def direct_indirect_common_neighbors(G, ebunch=None):
                     u_neighborhood_vector.append(G.degree(u))
                 elif v in first_order_neighbors:
                     u_neighborhood_vector.append(
-                        len(list(nx.common_neighbors(G, u, v))) + 1
+                        sum(1 for _ in nx.common_neighbors(G, u, v)) + 1
                     )
                 elif v in second_order_neighbors and v not in first_order_neighbors:
                     u_neighborhood_vector.append(
-                        len(list(nx.common_neighbors(G, u, v)))
+                        sum(1 for _ in nx.common_neighbors(G, u, v))
                     )
                 else:
                     u_neighborhood_vector.append(0)
 
             neighbor_vectors.append(u_neighborhood_vector)
+        neighbor_vectors = np.array(neighbor_vectors)
 
         return neighbor_vectors
 
     neighbor_vectors = generate_neighborhood_vectors(G)
+    correlation_coefficients = {}
 
     def generate_union_neighborhood_set(G, u, v, neighbor_vectors):
-        union_neighborhood_set = [
-            idx if a > 0 or b > 0 else None
-            for idx, (a, b) in enumerate(zip(neighbor_vectors[u], neighbor_vectors[v]))
-        ]
-        union_neighborhood_set = [i for i in union_neighborhood_set if i is not None]
+        a = neighbor_vectors[u]
+        b = neighbor_vectors[v]
+        union_neighborhood_set = np.where((a + b) > 0)[0]
         return union_neighborhood_set
 
     def compute_correlation_coefficient(G, u, v, neighbor_vectors):
-        union_neighborhood_set = generate_union_neighborhood_set(
-            G, u, v, neighbor_vectors
-        )
-        u_neighborhood_vector = neighbor_vectors[u]
-        v_neighborhood_vector = neighbor_vectors[v]
-
-        if len(union_neighborhood_set) == 0:
-            u_vector_average, v_vector_average = 0, 0
+        if (v, u) in correlation_coefficients:
+            correlation_coefficient = correlation_coefficients[(v, u)]
         else:
-            u_vector_average = (
-                sum([u_neighborhood_vector[idx] for idx in union_neighborhood_set])
-            ) / len(union_neighborhood_set)
-            v_vector_average = (
-                sum([v_neighborhood_vector[idx] for idx in union_neighborhood_set])
-            ) / len(union_neighborhood_set)
+            union_neighborhood_set = generate_union_neighborhood_set(
+                G, u, v, neighbor_vectors
+            )
+            u_neighborhood_vector = neighbor_vectors[u]
+            v_neighborhood_vector = neighbor_vectors[v]
 
-        numerator = 0
-        u_denominator_sq = 0
-        v_denominator_sq = 0
+            if len(union_neighborhood_set) == 0:
+                u_vector_average, v_vector_average = 0, 0
+            else:
+                u_vector_average = np.mean(
+                    u_neighborhood_vector[union_neighborhood_set]
+                )
+                v_vector_average = np.mean(
+                    v_neighborhood_vector[union_neighborhood_set]
+                )
 
-        for i in union_neighborhood_set:
-            u_diff = u_neighborhood_vector[i] - u_vector_average
-            v_diff = v_neighborhood_vector[i] - v_vector_average
+            u_diff = u_neighborhood_vector[union_neighborhood_set] - u_vector_average
+            v_diff = v_neighborhood_vector[union_neighborhood_set] - v_vector_average
 
-            numerator += u_diff * v_diff
-            u_denominator_sq += u_diff**2
-            v_denominator_sq += v_diff**2
+            numerator = np.sum(u_diff * v_diff)
+            u_denominator_sq = np.sum(u_diff**2)
+            v_denominator_sq = np.sum(v_diff**2)
 
-        u_denominator = sqrt(u_denominator_sq)
-        v_denominator = sqrt(v_denominator_sq)
+            if u_denominator_sq == 0 or v_denominator_sq == 0:
+                correlation_coefficient = 0
+            else:
+                u_denominator = np.sqrt(u_denominator_sq)
+                v_denominator = np.sqrt(v_denominator_sq)
+                denominator = u_denominator * v_denominator
+                correlation_coefficient = numerator / denominator
 
-        denominator = u_denominator * v_denominator
-
-        if denominator == 0:
-            correlation_coefficient = 0
-        else:
-            correlation_coefficient = numerator / denominator
+            correlation_coefficients[(u, v)] = correlation_coefficient
 
         return correlation_coefficient
 
@@ -781,8 +781,9 @@ def direct_indirect_common_neighbors(G, ebunch=None):
             correlation_coefficient = compute_correlation_coefficient(
                 G, u, v, neighbor_vectors
             )
-            return (1 + len(list(nx.common_neighbors(G, u, v)))) * (
+            pred = (1 + sum(1 for _ in nx.common_neighbors(G, u, v))) * (
                 1 + correlation_coefficient
             )
+            return pred
 
     return _apply_prediction(G, lambda u, v: predict(u, v, mapping), ebunch)
