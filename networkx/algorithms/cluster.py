@@ -75,7 +75,7 @@ def triangles(G, nodes=None):
             n for n in neighbors if n not in later_neighbors and n is not node
         }
 
-    # instantiate with a zero count for each node
+    # instantiate Counter for each node to include isolated nodes
     # add 1 to the count if a nodes neighbor's neighbor is also a neighbor
     triangle_counts = Counter(dict.fromkeys(G, 0))
     for node1, neighbors in later_neighbors.items():
