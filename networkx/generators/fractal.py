@@ -53,6 +53,8 @@ def laakso_graph(k, create_using=nx.Graph):
     --------
     Create and plot a Laakso graph order 5:
 
+    >>> import matplotlib.pyplot as plt
+    >>> import networkx as nx
     >>> G = nx.laakso_graph(5)
     >>> pos = nx.get_node_attributes(G, "pos")
     >>> fig, ax = plt.subplots()
@@ -144,6 +146,8 @@ def sierpinski_gasket_graph(n, create_using=nx.Graph):
     --------
     Create and plot a Sierpinski gasket graph order 5:
 
+    >>> import matplotlib.pyplot as plt
+    >>> import networkx as nx
     >>> G = nx.sierpinski_gasket_graph(5)
     >>> pos = nx.get_node_attributes(G, "pos")
     >>> fig, ax = plt.subplots()
