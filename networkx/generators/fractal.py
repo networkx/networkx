@@ -2,8 +2,8 @@
 """Functions for generating fractal or self-similar graphs."""
 
 import numpy as np
-import networkx as nx
 
+import networkx as nx
 
 __all__ = [
     "laakso_graph",
@@ -76,22 +76,10 @@ def laakso_graph(k, create_using=nx.Graph):
 
     """
 
-    relative_positions = 0.25 * np.array([
-        [ 0, 0],
-        [ 0, 1],
-        [-1, 2],
-        [ 1, 2],
-        [ 0, 3],
-        [ 0, 4]
-    ])
-    expansion_motif = [
-        (0, 1),
-        (1, 2),
-        (1, 3),
-        (2, 4),
-        (3, 4),
-        (4, 5)
-    ]
+    relative_positions = 0.25 * np.array(
+        [[0, 0], [0, 1], [-1, 2], [1, 2], [0, 3], [0, 4]]
+    )
+    expansion_motif = [(0, 1), (1, 2), (1, 3), (2, 4), (3, 4), (4, 5)]
 
     def expand(edges):
         for start_point, end_point in edges:
@@ -99,7 +87,7 @@ def laakso_graph(k, create_using=nx.Graph):
             rotation = np.array([[dy, -dx], [dx, dy]])
             points = start_point + relative_positions @ rotation
             for ii, jj in expansion_motif:
-                yield((points[ii], points[jj]))
+                yield ((points[ii], points[jj]))
 
     edges = [(np.array([0, 0]), np.array([0, 1]))]
     for _ in range(1, k):
@@ -170,19 +158,21 @@ def sierpinski_gasket_graph(n, create_using=nx.Graph):
         shape = np.shape(edges)
         flattened = np.reshape(edges, (-1, 2))
         width, height = np.ptp(flattened, axis=0)
-        left  = (flattened + np.array([-width/2, -height])).reshape(shape)
-        right = (flattened + np.array([+width/2, -height])).reshape(shape)
+        left = (flattened + np.array([-width / 2, -height])).reshape(shape)
+        right = (flattened + np.array([+width / 2, -height])).reshape(shape)
         combined = np.vstack([edges, left, right])
         # normalize to original extent
         combined[:, :, 1] += height
         combined /= 2
         return combined
 
-    edges = np.array([
-        [np.array([0,   0]),            np.array([1,   0])],
-        [np.array([1,   0]),            np.array([0.5, np.sqrt(3)/2])],
-        [np.array([0.5, np.sqrt(3)/2]), np.array([0,   0])]
-    ])
+    edges = np.array(
+        [
+            [np.array([0, 0]), np.array([1, 0])],
+            [np.array([1, 0]), np.array([0.5, np.sqrt(3) / 2])],
+            [np.array([0.5, np.sqrt(3) / 2]), np.array([0, 0])],
+        ]
+    )
     for _ in range(1, n):
         edges = expand(edges)
 
@@ -210,8 +200,9 @@ def _convert_to_nx_graph(coordinate_pair_list, create_using):
 
     """
 
-    unique_coordinates, inverse_indices = \
-        np.unique(coordinate_pair_list.reshape((-1, 2)), return_inverse=True, axis=0)
+    unique_coordinates, inverse_indices = np.unique(
+        coordinate_pair_list.reshape((-1, 2)), return_inverse=True, axis=0
+    )
     G = nx.from_edgelist(inverse_indices.reshape((-1, 2)), create_using)
     nx.set_node_attributes(G, dict(enumerate(unique_coordinates)), name="pos")
     return G
