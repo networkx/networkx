@@ -760,10 +760,6 @@ def _init_cache_num_rooted_forests():
     return [1]
 
 
-def _init_cache_num_rooted_forests():
-    return [1]
-
-
 def _num_rooted_forests(n, q, cache_forests):
     """Returns the number of unlabeled rooted forests with `n` nodes, and with
     no more than `q` nodes per tree. A recursive formula for this is (2) in
