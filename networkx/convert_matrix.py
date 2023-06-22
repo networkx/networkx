@@ -544,7 +544,6 @@ def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format=
        https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     if len(G) == 0:
         raise nx.NetworkXError("Graph has no nodes or edges")
@@ -699,7 +698,6 @@ def from_scipy_sparse_array(
     Examples
     --------
     >>> import scipy as sp
-    >>> import scipy.sparse  # call as sp.sparse
     >>> A = sp.sparse.eye(2, 2, 1)
     >>> G = nx.from_scipy_sparse_array(A)
 
