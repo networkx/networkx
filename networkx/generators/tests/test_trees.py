@@ -84,34 +84,21 @@ def test_implementations_consistent(strings):
     assert graphs_equal(nx.prefix_tree(strings), nx.prefix_tree_recursive(strings))
 
 
+@pytest.mark.filterwarnings("ignore")
 def test_random_tree():
     """Tests that a random tree is in fact a tree."""
     T = nx.random_tree(10, seed=1234)
     assert nx.is_tree(T)
-    T = nx.random_tree(10, number_of_trees=5, seed=43)
-    assert len(T) == 5
-    for t in T:
-        assert nx.is_tree(t)
 
 
+@pytest.mark.filterwarnings("ignore")
 def test_random_directed_tree():
     """Generates a directed tree."""
     T = nx.random_tree(10, seed=1234, create_using=nx.DiGraph())
     assert T.is_directed()
 
 
-def test_random_tree_n_zero():
-    """Tests if n = 0 then the NetworkXPointlessConcept exception is raised."""
-    with pytest.raises(nx.NetworkXPointlessConcept):
-        T = nx.random_tree(0, labeled=True, seed=1234)
-    with pytest.raises(nx.NetworkXPointlessConcept):
-        T = nx.random_tree(0, labeled=False, seed=1234)
-    with pytest.raises(nx.NetworkXPointlessConcept):
-        T = nx.random_rooted_tree(0, labeled=True, seed=1234)
-    with pytest.raises(nx.NetworkXPointlessConcept):
-        T = nx.random_rooted_tree(0, labeled=False, seed=1234)
-
-
+@pytest.mark.filterwarnings("ignore")
 def test_random_tree_using_generator():
     """Tests that creating a ramdom tree with a generator works"""
     G = nx.Graph()
@@ -119,18 +106,30 @@ def test_random_tree_using_generator():
     assert nx.is_tree(T)
 
 
+def test_random_tree_n_zero():
+    """Tests if n = 0 then the NetworkXPointlessConcept exception is raised."""
+    with pytest.raises(nx.NetworkXPointlessConcept):
+        T = nx.random_labeled_tree(0, seed=1234)
+    with pytest.raises(nx.NetworkXPointlessConcept):
+        T = nx.random_unlabeled_tree(0, seed=1234)
+    with pytest.raises(nx.NetworkXPointlessConcept):
+        T = nx.random_labeled_rooted_tree(0, seed=1234)
+    with pytest.raises(nx.NetworkXPointlessConcept):
+        T = nx.random_unlabeled_rooted_tree(0, seed=1234)
+
+
 def test_random_unlabeled_rooted_tree():
     for i in range(1, 10):
-        t1 = nx.random_rooted_tree(i, labeled=False, seed=42)
-        t2 = nx.random_rooted_tree(i, labeled=False, seed=42)
+        t1 = nx.random_unlabeled_rooted_tree(i, seed=42)
+        t2 = nx.random_unlabeled_rooted_tree(i, seed=42)
         assert nx.utils.misc.graphs_equal(t1, t2)
         assert nx.is_tree(t1)
         assert "root" in t1.graph
         assert "roots" not in t1.graph
     random.seed(43)
-    t = nx.random_rooted_tree(15, labeled=False, number_of_trees=10, seed=43)
+    t = nx.random_unlabeled_rooted_tree(15, number_of_trees=10, seed=43)
     random.seed(43)
-    s = nx.random_rooted_tree(15, labeled=False, number_of_trees=10, seed=43)
+    s = nx.random_unlabeled_rooted_tree(15, number_of_trees=10, seed=43)
     for i in range(10):
         assert nx.utils.misc.graphs_equal(t[i], s[i])
         assert nx.is_tree(t[i])
@@ -140,34 +139,25 @@ def test_random_unlabeled_rooted_tree():
 
 def test_random_labeled_rooted_tree():
     for i in range(1, 10):
-        t1 = nx.random_rooted_tree(i, seed=42)
-        t2 = nx.random_rooted_tree(i, seed=42)
+        t1 = nx.random_labeled_rooted_tree(i, seed=42)
+        t2 = nx.random_labeled_rooted_tree(i, seed=42)
         assert nx.utils.misc.graphs_equal(t1, t2)
         assert nx.is_tree(t1)
         assert "root" in t1.graph
         assert "roots" not in t1.graph
-    random.seed(43)
-    t = nx.random_rooted_tree(15, number_of_trees=10, seed=43)
-    random.seed(43)
-    s = nx.random_rooted_tree(15, number_of_trees=10, seed=43)
-    for i in range(10):
-        assert nx.utils.misc.graphs_equal(t[i], s[i])
-        assert nx.is_tree(t[i])
-        assert "root" in t[i].graph
-        assert "roots" not in t[i].graph
 
 
 def test_random_unlabeled_rooted_forest():
     raised = False
     try:
-        nx.random_rooted_forest(10, 0, labeled=False, seed=42)
+        nx.random_unlabeled_rooted_forest(10, 0, seed=42)
     except ValueError:
         raised = True
     assert raised
     for i in range(1, 10):
         for q in range(1, i + 1):
-            t1 = nx.random_rooted_forest(i, q, labeled=False, seed=42)
-            t2 = nx.random_rooted_forest(i, q, labeled=False, seed=42)
+            t1 = nx.random_unlabeled_rooted_forest(i, q, seed=42)
+            t2 = nx.random_unlabeled_rooted_forest(i, q, seed=42)
             assert nx.utils.misc.graphs_equal(t1, t2)
             for c in nx.connected_components(t1):
                 assert nx.is_tree(t1.subgraph(c))
@@ -175,9 +165,9 @@ def test_random_unlabeled_rooted_forest():
             assert "root" not in t1.graph
             assert "roots" in t1.graph
     random.seed(43)
-    t = nx.random_rooted_forest(15, number_of_forests=10, labeled=False, seed=random)
+    t = nx.random_unlabeled_rooted_forest(15, number_of_forests=10, seed=random)
     random.seed(43)
-    s = nx.random_rooted_forest(15, number_of_forests=10, labeled=False, seed=random)
+    s = nx.random_unlabeled_rooted_forest(15, number_of_forests=10, seed=random)
     for i in range(10):
         assert nx.utils.misc.graphs_equal(t[i], s[i])
         for c in nx.connected_components(t[i]):
@@ -189,8 +179,8 @@ def test_random_unlabeled_rooted_forest():
 def test_random_labeled_rooted_forest():
     raised = False
     for i in range(1, 10):
-        t1 = nx.random_rooted_forest(i, labeled=True, seed=42)
-        t2 = nx.random_rooted_forest(i, labeled=True, seed=42)
+        t1 = nx.random_labeled_rooted_forest(i, seed=42)
+        t2 = nx.random_labeled_rooted_forest(i, seed=42)
         print(t1.edges(), t1.graph["roots"])
         print(t2.edges(), t2.graph["roots"])
         assert nx.utils.misc.graphs_equal(t1, t2)
@@ -198,30 +188,20 @@ def test_random_labeled_rooted_forest():
             assert nx.is_tree(t1.subgraph(c))
         assert "root" not in t1.graph
         assert "roots" in t1.graph
-    random.seed(43)
-    t = nx.random_rooted_forest(15, number_of_forests=10, labeled=True, seed=random)
-    random.seed(43)
-    s = nx.random_rooted_forest(15, number_of_forests=10, labeled=True, seed=random)
-    for i in range(10):
-        assert nx.utils.misc.graphs_equal(t[i], s[i])
-        for c in nx.connected_components(t[i]):
-            assert nx.is_tree(t[i].subgraph(c))
-        assert "root" not in t[i].graph
-        assert "roots" in t[i].graph
 
 
 def test_random_unlabeled_tree():
     for i in range(1, 10):
-        t1 = nx.random_tree(i, labeled=False, seed=42)
-        t2 = nx.random_tree(i, labeled=False, seed=42)
+        t1 = nx.random_unlabeled_tree(i, seed=42)
+        t2 = nx.random_unlabeled_tree(i, seed=42)
         assert nx.utils.misc.graphs_equal(t1, t2)
         assert nx.is_tree(t1)
         assert "root" not in t1.graph
         assert "roots" not in t1.graph
     random.seed(43)
-    t = nx.random_tree(10, labeled=False, number_of_trees=10, seed=random)
+    t = nx.random_unlabeled_tree(10, number_of_trees=10, seed=random)
     random.seed(43)
-    s = nx.random_tree(10, labeled=False, number_of_trees=10, seed=random)
+    s = nx.random_unlabeled_tree(10, number_of_trees=10, seed=random)
     for i in range(10):
         assert nx.utils.misc.graphs_equal(t[i], s[i])
         assert nx.is_tree(t[i])
@@ -229,39 +209,11 @@ def test_random_unlabeled_tree():
         assert "roots" not in t[i].graph
 
 
-def test_multiple_created_using_instance():
-    with pytest.raises(nx.NetworkXException):
-        T = nx.random_tree(
-            0, labeled=True, number_of_trees=2, seed=1234, create_using=nx.Graph()
-        )
-    with pytest.raises(nx.NetworkXException):
-        T = nx.random_tree(
-            0, labeled=False, number_of_trees=2, seed=1234, create_using=nx.Graph()
-        )
-    with pytest.raises(nx.NetworkXException):
-        T = nx.random_rooted_tree(
-            0, labeled=True, number_of_trees=2, seed=1234, create_using=nx.Graph()
-        )
-    with pytest.raises(nx.NetworkXException):
-        T = nx.random_rooted_tree(
-            0, labeled=False, number_of_trees=2, seed=1234, create_using=nx.Graph()
-        )
-    with pytest.raises(nx.NetworkXException):
-        T = nx.random_rooted_forest(
-            0, number_of_forests=2, seed=1234, create_using=nx.Graph()
-        )
-
-
-def test_random_q_labeled_forests():
-    with pytest.raises(nx.NetworkXException):
-        T = nx.random_rooted_forest(0, number_of_forests=2, q=1, seed=1234)
-
-
 def test_random_forest_n_zero():
     """Tests generation of empty forests."""
-    F = nx.random_rooted_forest(0, labeled=False, seed=1234)
+    F = nx.random_labeled_rooted_forest(0, seed=1234)
     assert len(F) == 0
     assert len(F.graph["roots"]) == 0
-    F = nx.random_rooted_forest(0, labeled=True, seed=1234)
+    F = nx.random_unlabeled_rooted_forest(0, seed=1234)
     assert len(F) == 0
     assert len(F.graph["roots"]) == 0

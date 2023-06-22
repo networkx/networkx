@@ -284,8 +284,12 @@ Trees
 
    prefix_tree
    random_tree
-   random_rooted_tree
-   random_rooted_forest
+   random_labeled_tree
+   random_labeled_rooted_tree
+   random_labeled_rooted_forest
+   random_unlabeled_tree
+   random_unlabeled_rooted_tree
+   random_unlabeled_rooted_forest
 
 
 Non Isomorphic Trees

@@ -1,4 +1,5 @@
 """Functions for generating trees."""
+import warnings
 from collections import Counter, defaultdict
 from math import comb, factorial
 
@@ -11,8 +12,12 @@ __all__ = [
     "prefix_tree",
     "prefix_tree_recursive",
     "random_tree",
-    "random_rooted_tree",
-    "random_rooted_forest",
+    "random_labeled_tree",
+    "random_labeled_rooted_tree",
+    "random_labeled_rooted_forest",
+    "random_unlabeled_tree",
+    "random_unlabeled_rooted_tree",
+    "random_unlabeled_rooted_forest",
 ]
 
 
@@ -289,33 +294,78 @@ def prefix_tree_recursive(paths):
     return tree
 
 
-# From the Wikipedia article on Prüfer sequences:
-#
-# > Generating uniformly distributed random Prüfer sequences and
-# > converting them into the corresponding trees is a straightforward
-# > method of generating uniformly distributed random labeled trees.
-#
-def _random_labeled_tree(n, seed, create_using):
-    """
-    Returns a label tree on `n` nodes chosen uniformly at random
-    using Prüfer sequences.
+@py_random_state(1)
+def random_tree(n, seed=None, create_using=None):
+    """Returns a uniformly random tree on `n` nodes.
 
     Parameters
     ----------
     n : int
-        The number of nodes, greater than zero.
-    seed : random_state
+        A positive integer representing the number of nodes in the tree.
+    seed : integer, random_state, or None (default)
         Indicator of random number generation state.
-        See :ref:`Randomness<randomness>`
-    create_using : NetworkX graph constructor.
-        Graph type to create. If it is a graph instance, then it gets cleared before being populated.
+        See :ref:`Randomness<randomness>`.
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+        Graph type to create. If graph instance, then cleared before populated.
 
     Returns
     -------
-     :class:`networkx.Graph`
+    NetworkX graph
         A tree, given as an undirected graph, whose nodes are numbers in
         the set {0, …, *n* - 1}.
+
+    Raises
+    ------
+    NetworkXPointlessConcept
+        If `n` is zero (because the null graph is not a tree).
+
+    Notes
+    -----
+    The current implementation of this function generates a uniformly
+    random Prüfer sequence then converts that to a tree via the
+    :func:`~networkx.from_prufer_sequence` function. Since there is a
+    bijection between Prüfer sequences of length *n* - 2 and trees on
+    *n* nodes, the tree is chosen uniformly at random from the set of
+    all trees on *n* nodes.
+
+    Examples
+    --------
+    >>> tree = nx.random_tree(n=10, seed=0)
+    >>> nx.write_network_text(tree, sources=[0])
+    ╙── 0
+        ├── 3
+        └── 4
+            ├── 6
+            │   ├── 1
+            │   ├── 2
+            │   └── 7
+            │       └── 8
+            │           └── 5
+            └── 9
+
+    >>> tree = nx.random_tree(n=10, seed=0, create_using=nx.DiGraph)
+    >>> nx.write_network_text(tree)
+    ╙── 0
+        ├─╼ 3
+        └─╼ 4
+            ├─╼ 6
+            │   ├─╼ 1
+            │   ├─╼ 2
+            │   └─╼ 7
+            │       └─╼ 8
+            │           └─╼ 5
+            └─╼ 9
     """
+    warnings.warn(
+        (
+            "\n\nrandom_trees is deprecated and will be removed.\n"
+            "Use random_labeled_tree instead."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    if n == 0:
+        raise nx.NetworkXPointlessConcept("the null graph is not a tree")
     # Cannot create a Prüfer sequence unless `n` is at least two.
     if n == 1:
         utree = nx.empty_graph(1, create_using)
@@ -338,6 +388,193 @@ def _random_labeled_tree(n, seed, create_using):
         tree.add_edges_from(edges)
 
     return tree
+
+
+@py_random_state("seed")
+def random_labeled_tree(n, seed=None):
+    """
+    Returns a label tree on `n` nodes chosen uniformly at random
+    using Prüfer sequences.
+
+    Parameters
+    ----------
+    n : int
+        The number of nodes, greater than zero.
+    seed : random_state
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`
+
+    Returns
+    -------
+     :class:`networkx.Graph`
+        A `networkx.Graph` with nodes in the set {0, …, *n* - 1}.
+
+    Raises
+    ------
+    NetworkXPointlessConcept
+        If `n` is zero (because the null graph is not a tree).
+    """
+    # Cannot create a Prüfer sequence unless `n` is at least two.
+    if n == 0:
+        raise nx.NetworkXPointlessConcept("the null graph is not a tree")
+    if n == 1:
+        return nx.empty_graph(1)
+    else:
+        sequence = [seed.choice(range(n)) for i in range(n - 2)]
+        return nx.from_prufer_sequence(sequence)
+
+
+@py_random_state("seed")
+def random_labeled_rooted_tree(n, seed=None):
+    """Returns a labeled rooted tree with `n` nodes drawn uniformly
+    at random.
+
+    Parameters
+    ----------
+    n : int
+        The number of nodes
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
+    Returns
+    -------
+    :class:`networkx.Graph`
+        A `networkx.Graph` with nodes in the set {0, …, *n* - 1}.
+        The "root" graph attribute identifies the root of the tree.
+
+    Notes
+    -----
+
+    This function just returns the result of :func:`random_labeled_tree`
+    with a randomly selected root.
+
+    Raises
+    ------
+    NetworkXPointlessConcept
+        If `n` is zero (because the null graph is not a tree).
+    """
+
+    t = random_labeled_tree(n, seed=seed)
+    t.graph["root"] = seed.randint(0, n - 1)
+    return t
+
+
+@py_random_state("seed")
+def random_labeled_rooted_forest(n, seed):
+    """Returns a labeled rooted forest with `n` nodes drawn uniformly
+    at random using a generalization of Prüfer sequences [1]_ in
+    the form described in [2]_.
+
+    Parameters
+    ----------
+    n : int
+        The number of nodes.
+    seed : random_state
+       See :ref:`Randomness<randomness>`.
+
+    Returns
+    -------
+    :class:`networkx.Graph`
+        A `networkx.Graph` with nodes in the set {0, …, *n* - 1}.
+        The "roots" graph attribute is a set of integers containing the roots.
+
+    References
+    ----------
+    .. [1] Knuth, Donald E. "Another Enumeration of Trees."
+        Canadian Journal of Mathematics, 20 (1968): 1077-1086.
+        https://doi.org/10.4153/CJM-1968-104-8
+    .. [2] Rubey, Martin. "Counting Spanning Trees". Diplomarbeit
+        zur Erlangung des akademischen Grades Magister der
+        Naturwissenschaften an der Formal- und Naturwissenschaftlichen
+        Fakultät der Universität Wien. Wien, May 2000.
+    """
+
+    # Select the number of roots by iterating over the cumulative count of trees
+    # with at most k roots
+    def _select_k(n, seed):
+        r = seed.randint(0, (n + 1) ** (n - 1) - 1)
+        cum_sum = 0
+        for k in range(1, n):
+            cum_sum += (factorial(n - 1) * n ** (n - k)) // (
+                factorial(k - 1) * factorial(n - k)
+            )
+            if r < cum_sum:
+                return k
+
+        return n
+
+    F = nx.empty_graph(n)
+    if n == 0:
+        F.graph["roots"] = {}
+        return F
+    # Select the number of roots k
+    k = _select_k(n, seed)
+    if k == n:
+        F.graph["roots"] = set(range(n))
+        return F  # Nothing to do
+    # Select the roots
+    roots = seed.sample(range(n), k)
+    # Nonroots
+    p = set(range(n)).difference(roots)
+    # Coding sequence
+    N = [seed.randint(0, n - 1) for i in range(n - k - 1)]
+    # Multiset of elements in N also in p
+    degree = Counter([x for x in N if x in p])
+    # Iterator over the elements of p with degree zero
+    iterator = iter(x for x in p if degree[x] == 0)
+    u = last = next(iterator)
+    # This loop is identical to that for Prüfer sequences,
+    # except that we can draw nodes only from p
+    for v in N:
+        F.add_edge(u, v)
+        degree[v] -= 1
+        if v < last and degree[v] == 0:
+            u = v
+        else:
+            last = u = next(iterator)
+
+    F.add_edge(u, roots[0])
+    F.graph["roots"] = set(roots)
+    return F
+
+
+# The following functions support generation of unlabeled trees and forests.
+
+
+def _np_to_nx(edges_np, n_nodes, root=None, roots=None):
+    """
+    Converts the np-representation of a graph to a :class:`networkx.Graph`.
+    The np-representation is given by a list of even length, where each pair
+    of consecutive integers represents an edge, and an integer `n_nodes`.
+    Integers in the list are elements of `range(n_nodes)`.
+
+    Parameters
+    ----------
+    edges_np : list of ints
+        The flattened list of edges of the graph.
+    n_nodes : int
+        The number of nodes of the graph.
+    root: int (default=None)
+        If not None, the "root" attribute of the graph will be set to this value.
+    roots: collection of ints (default=None)
+        If not None, he "roots" attribute of the graph will be set to this value.
+
+    Returns
+    -------
+    :class:`networkx.Graph`
+        The graph given in input (in its np-representation) as a :class:`networkx.Graph`.
+    """
+
+    G = nx.empty_graph(n_nodes)
+    G.add_edges_from(
+        [(x[0], x[1]) for x in np.reshape(edges_np, (len(edges_np) // 2, 2))]
+    )
+    if root is not None:
+        G.graph["root"] = root
+    if roots is not None:
+        G.graph["roots"] = roots
+    return G
 
 
 def _init_cache_num_rooted_trees():
@@ -417,43 +654,6 @@ def _select_jd_trees(n, cache_trees, seed):
                 return (j, d)
 
 
-def _np_to_nx(edges_np, n_nodes, create_using, root=None, roots=None):
-    """
-    Converts the np-representation of a graph to a :class:`networkx.Graph`.
-    The np-representation is given by a list of even length, where each pair
-    of consecutive integers represents an edge, and an integer `n_nodes`.
-    Integers in the list are elements of `range(n_nodes)`.
-
-    Parameters
-    ----------
-    edges_np : list of ints
-        The flattened list of edges of the graph.
-    n_nodes : int
-        The number of nodes of the graph.
-    create_using : NetworkX graph constructor.
-        Graph type to create. If it is a graph instance, then it gets cleared before being populated.
-    root: int (default=None)
-        If not None, the "root" attribute of the graph will be set to this value.
-    roots: collection of ints (default=None)
-        If not None, he "roots" attribute of the graph will be set to this value.
-
-    Returns
-    -------
-    :class:`networkx.Graph`
-        The graph given in input (in its np-representation) as a :class:`networkx.Graph`.
-    """
-
-    G = nx.empty_graph(n_nodes, create_using)
-    G.add_edges_from(
-        [(x[0], x[1]) for x in np.reshape(edges_np, (len(edges_np) // 2, 2))]
-    )
-    if root is not None:
-        G.graph["root"] = root
-    if roots is not None:
-        G.graph["roots"] = roots
-    return G
-
-
 def _random_unlabeled_rooted_tree(n, cache_trees, seed):
     """Returns an unlabeled rooted tree with `n` nodes drawn uniformly
     at random using the "RANRUT" algorithm from [1]_. The tree is returned
@@ -502,10 +702,9 @@ def _random_unlabeled_rooted_tree(n, cache_trees, seed):
 
 
 @py_random_state("seed")
-def random_rooted_tree(
-    n, number_of_trees=None, labeled=True, seed=None, create_using=None
-):
-    """Returns one or more (depending on `number_of_trees`) rooted trees with `n` nodes drawn uniformly
+def random_unlabeled_rooted_tree(n, number_of_trees=None, seed=None):
+    """Returns one or more (depending on `number_of_trees`)
+    unlabeled rooted trees with `n` nodes drawn uniformly
     at random.
 
     Parameters
@@ -514,39 +713,29 @@ def random_rooted_tree(
         The number of nodes
     number_of_trees : int or None (default)
         If not None, this number of trees is generated and returned.
-    labeled : bool (default=True)
-        If True, generates labeled rooted trees uniformly at random.
-        If False, generates unlabeled rooted trees uniformly at random.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
-    create_using : NetworkX graph constructor, optional (default=nx.Graph)
-        Graph type to create. If it is a graph instance, then it gets cleared before being populated.
-        It cannot be an instance if `number_of_trees` is greater than one.
 
     Returns
     -------
     :class:`networkx.Graph` or list of :class:`networkx.Graph`
         A single `networkx.Graph` (or a list thereof, if `number_of_trees`
-        is specified) representing the tree. The "root" graph attribute
-        identifies the root of the tree, which for unlabeled trees is always
-        node 0.
+        is specified) with nodes in the set {0, …, *n* - 1}.
+        The "root" graph attribute identifies the root of the tree.
 
     Notes
     -----
-
-    The interesting case is that of random unlabeled trees, whose generation
-    uses the "RANRUT" algorithm from [1]_. In the labeled case
-    this function just returns the result of :func:`random_tree` with a
-    randomly selected root.
+    The trees are generated using the "RANRUT" algorithm from [1]_.
+    The algorithm needs to compute some counting functions
+    that are relatively expensive: in case several trees are needed,
+    it is advisable to use the `number_of_trees` optional argument
+    to reuse the counting functions.
 
     Raises
     ------
     NetworkXPointlessConcept
         If `n` is zero (because the null graph is not a tree).
-    NetworkXException
-        If `number_of_trees` is greater than one but `create_using` is a
-        graph instance.
 
     References
     ----------
@@ -556,46 +745,19 @@ def random_rooted_tree(
         https://doi.org/10.1016/C2013-0-11243-3
     """
 
-    def _random_labeled_rooted_tree(n, seed, create_using):
-        """Generates a random labeled rooted tree by generating a labeled unrooted tree and selecting a root uniformly at random"""
-        t = random_tree(n, seed=seed, create_using=create_using)
-        t.graph["root"] = seed.randint(0, n - 1)
-        return t
-
-    if (
-        number_of_trees is not None
-        and number_of_trees > 1
-        and hasattr(create_using, "adj")
-    ):
-        raise nx.NetworkXException("Cannot use a graph instance to generate many trees")
-
     if n == 0:
-        raise nx.NetworkXPointlessConcept("The null graph is not a rooted tree")
+        raise nx.NetworkXPointlessConcept("the null graph is not a tree")
+    cache_trees = _init_cache_num_rooted_trees()
+    if number_of_trees is None:
+        return _np_to_nx(*_random_unlabeled_rooted_tree(n, cache_trees, seed), root=0)
+    return [
+        _np_to_nx(*_random_unlabeled_rooted_tree(n, cache_trees, seed), root=0)
+        for i in range(number_of_trees)
+    ]
 
-    if labeled:
-        if number_of_trees is None:
-            return _random_labeled_rooted_tree(n, seed, create_using)
 
-        return [
-            _random_labeled_rooted_tree(n, seed, create_using)
-            for i in range(number_of_trees)
-        ]
-    else:
-        cache_trees = _init_cache_num_rooted_trees()
-        if number_of_trees is None:
-            return _np_to_nx(
-                *_random_unlabeled_rooted_tree(n, cache_trees, seed),
-                create_using,
-                root=0
-            )
-        return [
-            _np_to_nx(
-                *_random_unlabeled_rooted_tree(n, cache_trees, seed),
-                create_using,
-                root=0
-            )
-            for i in range(number_of_trees)
-        ]
+def _init_cache_num_rooted_forests():
+    return [1]
 
 
 def _init_cache_num_rooted_forests():
@@ -690,7 +852,7 @@ def _select_jd_forests(n, q, cache_forests, seed):
 def _random_unlabeled_rooted_forest(n, q, cache_trees, cache_forests, seed):
     """Returns an unlabeled rooted forest with `n` nodes, and with no more
     than `q` nodes per tree, drawn uniformly at random. It is an implementation
-    of algorithm "Forest" of [1]_.
+    of the algorithm "Forest" of [1]_.
 
     Parameters
     ----------
@@ -732,90 +894,10 @@ def _random_unlabeled_rooted_forest(n, q, cache_trees, cache_forests, seed):
     return (t1, t1_nodes, r1)
 
 
-def _random_labeled_rooted_forest(n, seed, create_using=None):
-    """Returns a labeled rooted forest with `n` nodes drawn uniformly
-    at random using a generalization of Prüfer sequences [1]_ in
-    the form described in [2]_.
-
-    Parameters
-    ----------
-    n : int
-        The number of nodes.
-    seed : random_state
-       See :ref:`Randomness<randomness>`.
-    create_using : NetworkX graph constructor, optional (default=nx.Graph)
-        Graph type to create. If graph instance, then cleared before populated.
-
-    Returns
-    -------
-    A labeled rooted forest with `n` nodes drawn uniformly at random.
-    The attribute "roots" is a set of integers containing the roots.
-
-    References
-    ----------
-    .. [1] Knuth, Donald E. "Another Enumeration of Trees."
-        Canadian Journal of Mathematics, 20 (1968): 1077-1086.
-        https://doi.org/10.4153/CJM-1968-104-8
-    .. [2] Rubey, Martin. "Counting Spanning Trees". Diplomarbeit
-        zur Erlangung des akademischen Grades Magister der
-        Naturwissenschaften an der Formal- und Naturwissenschaftlichen
-        Fakultät der Universität Wien. Wien, May 2000.
-    """
-
-    # Select the number of roots by iterating over the cumulative count of trees
-    # with at most k roots
-    def _select_k(n, seed):
-        r = seed.randint(0, (n + 1) ** (n - 1) - 1)
-        cum_sum = 0
-        for k in range(1, n):
-            cum_sum += (factorial(n - 1) * n ** (n - k)) // (
-                factorial(k - 1) * factorial(n - k)
-            )
-            if r < cum_sum:
-                return k
-
-        return n
-
-    F = nx.empty_graph(n, create_using)
-    if n == 0:
-        F.graph["roots"] = {}
-        return F
-    # Select the number of roots k
-    k = _select_k(n, seed)
-    if k == n:
-        F.graph["roots"] = set(range(n))
-        return F  # Nothing to do
-    # Select the roots
-    roots = seed.sample(range(n), k)
-    # Nonroots
-    p = set(range(n)).difference(roots)
-    # Coding sequence
-    N = [seed.randint(0, n - 1) for i in range(n - k - 1)]
-    # Multiset of elements in N also in p
-    degree = Counter([x for x in N if x in p])
-    # Iterator over the elements of p with degree zero
-    iterator = iter(x for x in p if degree[x] == 0)
-    u = last = next(iterator)
-    # This loop is identical to that for Prüfer sequences,
-    # except that we can draw vertices only from p
-    for v in N:
-        F.add_edge(u, v)
-        degree[v] -= 1
-        if v < last and degree[v] == 0:
-            u = v
-        else:
-            last = u = next(iterator)
-
-    F.add_edge(u, roots[0])
-    F.graph["roots"] = set(roots)
-    return F
-
-
 @py_random_state("seed")
-def random_rooted_forest(
-    n, q=None, number_of_forests=None, labeled=True, seed=None, create_using=None
-):
-    """Returns one or more (depending on `number_of_forests`) rooted forests with `n` nodes,
+def random_unlabeled_rooted_forest(n, q=None, number_of_forests=None, seed=None):
+    """Returns one or more (depending on `number_of_forests`)
+    unlabeled rooted forests with `n` nodes,
     and with no more than q nodes per tree, drawn uniformly at random.
     The "roots" graph attribute identifies the roots of the forest.
 
@@ -824,72 +906,41 @@ def random_rooted_forest(
     n : int
         The number of nodes
     q : int or None (default)
-        If not None, the maximum number of nodes per tree when `labeled`
-        is False. Raises an exception if `labeled` is True.
+        The maximum number of nodes per tree.
     number_of_forests : int or None (default)
         If not None, this number of forests is generated and returned.
-    labeled : bool (default=True)
-        If True, generates labeled rooted trees uniformly at random.
-        If False, generates unlabeled rooted trees uniformly at random.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
-    create_using : NetworkX graph constructor, optional (default=nx.Graph)
-        Graph type to create. If it is a graph instance, then it gets cleared before being populated.
-        It cannot be an instance if `number_of_forests` is greater than one.
-
-    Notes
-    -----
-    The labeled version uses a generalization of Prüfer sequences [1]_
-    in the form described in [2]_. The unlabeled version uses the
-    algorithm "Forest" of [3]_.
 
     Returns
     -------
     :class:`networkx.Graph` or list of :class:`networkx.Graph`
         A single `networkx.Graph` (or a list thereof, if `number_of_forests`
-        is specified) representing the forest. The "roots" graph attribute
-        is a set containing the roots of the trees in the forests.
+        is specified) with nodes in the set {0, …, *n* - 1}.
+        The "roots" graph attribute is a set containing the roots
+        of the trees in the forest.
+
+    Notes
+    -----
+    This function implements the algorithm "Forest" of [1]_.
+    The algorithm needs to compute some counting functions
+    that are relatively expensive: in case several trees are needed,
+    it is advisable to use the `number_of_forests` optional argument
+    to reuse the counting functions.
+
 
     Raises
     ------
-    NetworkXException
-        If `number_of_forests` is greater than one but `create_using` is a
-        graph instance.
-    NetworkXException
-        If `q` is specified for labeled forests.
+    ValueError
+        If `n` is non-zero but `q` is zero.
 
     References
     ----------
-    .. [1] Knuth, Donald E. "Another Enumeration of Trees".
-        Canadian Journal of Mathematics, 20 (1968): 1077-1086.
-        https://doi.org/10.4153/CJM-1968-104-8
-    .. [2] Rubey, Martin. "Counting Spanning Trees". Diplomarbeit
-        zur Erlangung des akademischen Grades Magister der
-        Naturwissenschaften an der Formal- und Naturwissenschaftlichen
-        Fakultät der Universität Wien. Wien, May 2000.
-    .. [3] Wilf, Herbert S. "The uniform selection of free trees."
+    .. [1] Wilf, Herbert S. "The uniform selection of free trees."
         Journal of Algorithms 2.2 (1981): 204-207.
         https://doi.org/10.1016/0196-6774(81)90021-3
     """
-    if (
-        number_of_forests is not None
-        and number_of_forests > 1
-        and hasattr(create_using, "adj")
-    ):
-        raise nx.NetworkXException(
-            "Cannot use a graph instance to generate many forests"
-        )
-
-    if labeled:
-        if q is not None:
-            raise nx.NetworkXException("q can only be specified for unlabeled forests")
-        if number_of_forests is None:
-            return _random_labeled_rooted_forest(n, seed, create_using)
-        return [
-            _random_labeled_rooted_forest(n, seed, create_using)
-            for i in range(number_of_forests)
-        ]
 
     if q is None:
         q = n
@@ -903,14 +954,14 @@ def random_rooted_forest(
         g, nodes, rs = _random_unlabeled_rooted_forest(
             n, q, cache_trees, cache_forests, seed
         )
-        return _np_to_nx(g, nodes, create_using, roots=set(rs))
+        return _np_to_nx(g, nodes, roots=set(rs))
 
     res = []
     for i in range(number_of_forests):
         g, nodes, rs = _random_unlabeled_rooted_forest(
             n, q, cache_trees, cache_forests, seed
         )
-        res.append(_np_to_nx(g, nodes, create_using, roots=set(rs)))
+        res.append(_np_to_nx(g, nodes, roots=set(rs)))
     return res
 
 
@@ -1020,84 +1071,39 @@ def _random_unlabeled_tree(n, cache_trees, cache_forests, seed):
 
 
 @py_random_state("seed")
-def random_tree(n, labeled=True, number_of_trees=None, seed=None, create_using=None):
-    """Returns one or more (depending on `number_of_trees`) trees with `n` nodes drawn uniformly at random.
+def random_unlabeled_tree(n, number_of_trees=None, seed=None):
+    """Returns one or more (depending on `number_of_trees`)
+    unlabeled trees with `n` nodes drawn uniformly at random.
 
     Parameters
     ----------
     n : int
         The number of nodes
-    labeled : bool (default=True)
-        If True, generates labeled rooted trees uniformly at random.
-        If False, generates unlabeled rooted trees uniformly at random.
     number_of_trees : int or None (default)
         If not None, this number of trees is generated and returned.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
-    create_using : NetworkX graph constructor, optional (default=nx.Graph)
-        Graph type to create. If it is a graph instance, then it gets cleared before being populated.
-        It cannot be an instance if `number_of_trees` is greater than one.
 
     Returns
     -------
     :class:`networkx.Graph` or list of :class:`networkx.Graph`
-        A single `networkx.Graph` (or a list thereof, if `number_of_trees` is specified)
-        representing the tree, generated uniformly at random. Each tree is given as an
-        undirected graph, whose nodes are numbers in the set {0, …, *n* - 1}.
+        A single `networkx.Graph` (or a list thereof, if
+        `number_of_trees` is specified) with nodes in the set {0, …, *n* - 1}.
 
     Raises
     ------
     NetworkXPointlessConcept
         If `n` is zero (because the null graph is not a tree).
-    NetworkXException
-        If `number_of_trees` is greater than one but `create_using` is a
-        graph instance.
 
     Notes
     -----
-    The current implementation of this function for labeled trees generates
-    a uniformly random Prüfer sequence then converts that to a tree via the
-    :func:`~networkx.from_prufer_sequence` function. Since there is a
-    bijection between Prüfer sequences of length *n* - 2 and trees on
-    *n* nodes, the tree is chosen uniformly at random from the set of
-    all trees on *n* nodes.
-
-    The current implementation of this function for unlabeled trees
-    generates an unlabeled tree uniformly at random using Wilf's
-    algorithm "Free" of [1]_. The generation needs to
+    This function generates an unlabeled tree uniformly at random using
+    Wilf's algorithm "Free" of [1]_. The algorithm needs to
     compute some counting functions that are relatively expensive:
     in case several trees are needed, it is advisable to use the
     `number_of_trees` optional argument to reuse the counting
     functions.
-
-    Examples
-    --------
-    >>> tree = nx.random_tree(n=10, seed=0)
-    >>> nx.write_network_text(tree, sources=[0])
-    ╙── 0
-        ├── 3
-        └── 4
-            ├── 6
-            │   ├── 1
-            │   ├── 2
-            │   └── 7
-            │       └── 8
-            │           └── 5
-            └── 9
-
-    >>> tree = nx.random_tree(n=10, seed=0, create_using=nx.DiGraph)
-    >>> nx.write_network_text(tree)
-    ╙── 0
-        ├─╼ 3
-        └─╼ 4
-            ├─╼ 6
-            │   ├─╼ 1
-            │   ├─╼ 2
-            │   └─╼ 7
-            │       └─╼ 8
-            │           └─╼ 5
-            └─╼ 9
 
     References
     ----------
@@ -1105,37 +1111,15 @@ def random_tree(n, labeled=True, number_of_trees=None, seed=None, create_using=N
         Journal of Algorithms 2.2 (1981): 204-207.
         https://doi.org/10.1016/0196-6774(81)90021-3
     """
-    if (
-        number_of_trees is not None
-        and number_of_trees > 1
-        and hasattr(create_using, "adj")
-    ):
-        raise nx.NetworkXException("Cannot use a graph instance to generate many trees")
-
     if n == 0:
         raise nx.NetworkXPointlessConcept("the null graph is not a tree")
 
-    if labeled:
-        if number_of_trees is None:
-            return _random_labeled_tree(n, seed, create_using)
-        else:
-            return [
-                _random_labeled_tree(n, seed, create_using)
-                for i in range(number_of_trees)
-            ]
+    cache_trees = _init_cache_num_rooted_trees()
+    cache_forests = _init_cache_num_rooted_forests()
+    if number_of_trees is None:
+        return _np_to_nx(*_random_unlabeled_tree(n, cache_trees, cache_forests, seed))
     else:
-        cache_trees = _init_cache_num_rooted_trees()
-        cache_forests = _init_cache_num_rooted_forests()
-        if number_of_trees is None:
-            return _np_to_nx(
-                *_random_unlabeled_tree(n, cache_trees, cache_forests, seed),
-                create_using
-            )
-        else:
-            return [
-                _np_to_nx(
-                    *_random_unlabeled_tree(n, cache_trees, cache_forests, seed),
-                    create_using
-                )
-                for i in range(number_of_trees)
-            ]
+        return [
+            _np_to_nx(*_random_unlabeled_tree(n, cache_trees, cache_forests, seed))
+            for i in range(number_of_trees)
+        ]
