@@ -58,7 +58,7 @@ def laakso_graph(k, create_using=nx.Graph):
     >>> G = nx.laakso_graph(5)
     >>> pos = nx.get_node_attributes(G, "pos")
     >>> fig, ax = plt.subplots()
-    >>> nx.draw(g, pos, node_color="gray", edge_color="black", node_size=0.1, width=0.05, ax=ax)
+    >>> nx.draw(G, pos, node_color="gray", edge_color="black", node_size=0.1, width=0.05, ax=ax)
     >>> ax.set_aspect("equal")
     >>> plt.show()
 
@@ -151,7 +151,7 @@ def sierpinski_gasket_graph(n, create_using=nx.Graph):
     >>> G = nx.sierpinski_gasket_graph(5)
     >>> pos = nx.get_node_attributes(G, "pos")
     >>> fig, ax = plt.subplots()
-    >>> nx.draw(g, pos, node_color="gray", edge_color="black", node_size=0.1, width=0.05, ax=ax)
+    >>> nx.draw(G, pos, node_color="gray", edge_color="black", node_size=0.1, width=0.05, ax=ax)
     >>> ax.set_aspect("equal")
     >>> plt.show()
 
