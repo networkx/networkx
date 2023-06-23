@@ -1,6 +1,6 @@
 """Time dependent algorithms."""
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -10,23 +10,25 @@ __all__ = ["cd_index"]
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
-def cd_index(G, node, time_delta=timedelta(days=5 * 365), weight=None):
+def cd_index(G, node, attr, time_delta=timedelta(days=5 * 365), weight=None):
     r"""Compute the CD index for `node` within the graph `G`.
 
     Calculates the CD index for the given node of the graph,
-    considering only its predecessors who have `time` attribute
-    smaller than or equal to the `time` attribute of the `node`
+    considering only its predecessors who have the given attribute
+    smaller than or equal to the attribute of the `node`
     plus `time_delta`.
 
     Parameters
     ----------
     G : graph
-       A directed networkx graph whose nodes have `time` attributes and optionally
+       A directed networkx graph whose nodes have `attr` attributes and optionally
        `weight` attributes (if a weight is not given, it is considered 1).
     node : node
        The node for which the CD index is calculated.
+    attr : String
+        The name of the node attribute that will be used for the calculations.
     time_delta : timedelta, integer or float (Optional, default is timedelta(days=5*365))
-       Amount of time after the `time` attribute of the `node`.
+       Amount of time after the `attr` attribute of the `node`.
     weight : string (Optional, default is None)
         the name of the node attribute used as weight.
 
@@ -38,8 +40,8 @@ def cd_index(G, node, time_delta=timedelta(days=5 * 365), weight=None):
     Raises
     ------
     ValueError
-       If not all nodes have a datetime `time` attribute or
-       time_delta and time attribute types are not compatible or
+       If not all nodes have an `attr` attribute or
+       `time_delta` and `attr` attribute types are not compatible or
        `n` equals 0.
 
     NetworkXNotImplemented
@@ -56,7 +58,7 @@ def cd_index(G, node, time_delta=timedelta(days=5 * 365), weight=None):
     >>> G.add_nodes_from([(n, nodes[n]) for n in nodes])
     >>> edges = [(1, 3), (1, 4), (2, 3), (3, 4), (3, 5)]
     >>> G.add_edges_from(edges)
-    >>> cd = nx.cd_index(G, 3, weight="weight")
+    >>> cd = nx.cd_index(G, 3, 'time', weight="weight")
 
     Notes
     -----
@@ -83,17 +85,17 @@ def cd_index(G, node, time_delta=timedelta(days=5 * 365), weight=None):
            http://russellfunk.org/cdindex/static/papers/funk_ms_2017.pdf
 
     """
-    if not all("time" in G.nodes[n] for n in G):
-        raise ValueError("Not all nodes have a 'time' attribute.")
+    if not all(attr in G.nodes[n] for n in G):
+        raise ValueError("Not all nodes have the given attribute.")
 
     try:
         # get target_date
-        target_date = G.nodes[node]["time"] + time_delta
+        target_date = G.nodes[node][attr] + time_delta
         # keep the predecessors that existed before the target date
-        pred = {i for i in G.pred[node] if G.nodes[i]["time"] <= target_date}
+        pred = {i for i in G.pred[node] if G.nodes[i][attr] <= target_date}
     except:
         raise ValueError(
-            "Addition and comparison are not supported between time_delta and time attribute types, default time_delta = datetime.timedelta"
+            "Addition and comparison are not supported between time_delta and attribute types, default time_delta = datetime.timedelta."
         )
 
     # -1 if any edge between node's predecessors and node's successors, else 1
