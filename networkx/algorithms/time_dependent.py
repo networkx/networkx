@@ -1,6 +1,6 @@
 """Time dependent algorithms."""
 
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import networkx as nx
 from networkx.utils import not_implemented_for
