@@ -28,6 +28,28 @@ G_array = np.array([
     [0, 0, 0, 0, 0, 0, 0, 18, 0],  # 8
 ], dtype=int)
 
+# Two copied of the graph from the original paper as disconnected components
+G_big_array = np.array([
+    # 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17
+    [ 0,  0, 12,  0, 12,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],  # 0
+    [ 4,  0,  0,  0,  0, 13,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],  # 1
+    [ 0, 17,  0, 21,  0, 12,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],  # 2
+    [ 5,  0,  0,  0, 17,  0, 18,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],  # 3
+    [ 0,  0,  0,  0,  0,  0,  0, 12,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],  # 4
+    [ 0,  0,  0,  0,  0,  0, 14,  0, 12,  0,  0,  0,  0,  0,  0,  0,  0,  0],  # 5
+    [ 0,  0, 21,  0,  0,  0,  0,  0, 15,  0,  0,  0,  0,  0,  0,  0,  0,  0],  # 6
+    [ 0,  0,  0, 19,  0,  0, 15,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],  # 7
+    [ 0,  0,  0,  0,  0,  0,  0, 18,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],  # 8
+    [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 12,  0, 12,  0,  0,  0,  0],  # 9
+    [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  4,  0,  0,  0,  0, 13,  0,  0,  0],  # 10
+    [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 17,  0, 21,  0, 12,  0,  0,  0],  # 11
+    [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  5,  0,  0,  0, 17,  0, 18,  0,  0],  # 12
+    [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 12,  0],  # 13
+    [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 14,  0, 12],  # 14
+    [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 21,  0,  0,  0,  0,  0, 15],  # 15
+    [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 19,  0,  0, 15,  0,  0],  # 16
+    [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 18,  0],  # 17
+], dtype=int)
 
 # fmt: on
 
@@ -123,10 +145,12 @@ greedy_subopt_branching_1b = [
 ]
 
 
-def build_branching(edges):
+def build_branching(edges, double=False):
     G = nx.DiGraph()
     for u, v, weight in edges:
         G.add_edge(u, v, weight=weight)
+        if double:
+            G.add_edge(u + 9, v + 9, weight=weight)
     return G
 
 
@@ -293,6 +317,24 @@ def test_edmonds1_maxarbor():
     x = branchings.maximum_spanning_arborescence(G)
     x_ = build_branching(optimal_arborescence_1)
     assert_equal_branchings(x, x_)
+
+
+def test_edmonds1_minimal_branching():
+    # graph will have something like a minimum arborescence but no spanning one
+    G = nx.from_numpy_array(G_big_array, create_using=nx.DiGraph)
+    B = branchings.minimal_branching(G)
+    edges = [
+        (3, 0, 5),
+        (0, 2, 12),
+        (0, 4, 12),
+        (2, 5, 12),
+        (4, 7, 12),
+        (5, 8, 12),
+        (5, 6, 14),
+        (2, 1, 17),
+    ]
+    B_ = build_branching(edges, double=True)
+    assert_equal_branchings(B, B_)
 
 
 def test_edmonds2_maxbranch():

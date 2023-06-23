@@ -1176,6 +1176,36 @@ def minimum_branching(
     return B
 
 
+def minimal_branching(
+    G, attr="weight", default=1, preserve_attrs=False, partition=None
+):
+    max_weight = -INF
+    min_weight = INF
+    for _, _, w in G.edges(data=attr):
+        if w > max_weight:
+            max_weight = w
+        if w < min_weight:
+            min_weight = w
+
+    for _, _, d in G.edges(data=True):
+        # Transform the weights so that the minimum weight is larger than
+        # the difference between the max and min weights. This is important
+        # in order to prevent the edge weights from becoming negative during
+        # computation
+        d[attr] = max_weight + 1 + (max_weight - min_weight) - d[attr]
+
+    B = maximum_branching(G, attr, default, preserve_attrs, partition)
+
+    # Reverse the weight transformations
+    for _, _, d in G.edges(data=True):
+        d[attr] = max_weight + 1 + (max_weight - min_weight) - d[attr]
+
+    for _, _, d in B.edges(data=True):
+        d[attr] = max_weight + 1 + (max_weight - min_weight) - d[attr]
+
+    return B
+
+
 def maximum_spanning_arborescence(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
@@ -1217,29 +1247,7 @@ def maximum_spanning_arborescence(
 def minimum_spanning_arborescence(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
-    max_weight = -INF
-    min_weight = INF
-    for _, _, w in G.edges(data=attr):
-        if w > max_weight:
-            max_weight = w
-        if w < min_weight:
-            min_weight = w
-
-    for _, _, d in G.edges(data=True):
-        # Transform the weights so that the minimum weight is larger than
-        # the difference between the max and min weights. This is important
-        # in order to prevent the edge weights from becoming negative during
-        # computation
-        d[attr] = max_weight + 1 + (max_weight - min_weight) - d[attr]
-
-    B = maximum_branching(G, attr, default, preserve_attrs, partition)
-
-    # Reverse the weight transformations
-    for _, _, d in G.edges(data=True):
-        d[attr] = max_weight + 1 + (max_weight - min_weight) - d[attr]
-
-    for _, _, d in B.edges(data=True):
-        d[attr] = max_weight + 1 + (max_weight - min_weight) - d[attr]
+    B = minimal_branching(G, attr, default, preserve_attrs, partition)
 
     if not is_arborescence(B):
         raise nx.exception.NetworkXException("No minimum spanning arborescence in G.")
