@@ -1,6 +1,6 @@
 """Time dependent algorithms."""
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -10,23 +10,23 @@ __all__ = ["cd_index"]
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
-def cd_index(G, node, time_delta=5, weight=None):
+def cd_index(G, node, time_delta=timedelta(days=5 * 365), weight=None):
     r"""Compute the CD index for `node` within the graph `G`.
 
     Calculates the CD index for the given node of the graph,
     considering only its predecessors who have `time` attribute
     smaller than or equal to the `time` attribute of the `node`
-    plus `time_delta` years.
+    plus `time_delta`.
 
     Parameters
     ----------
     G : graph
-       A directed networkx graph whose nodes have datetime `time` attributes and
-       optionally `weight` attributes (if a weight is not given, it is considered 1).
+       A directed networkx graph whose nodes have `time` attributes and optionally
+       `weight` attributes (if a weight is not given, it is considered 1).
     node : node
        The node for which the CD index is calculated.
-    time_delta : integer (Optional, default is 5)
-       Number of years after the `time` attribute of the `node`.
+    time_delta : timedelta, integer or float (Optional, default is timedelta(days=5*365))
+       Amount of time after the `time` attribute of the `node`.
     weight : string (Optional, default is None)
         the name of the node attribute used as weight.
 
@@ -39,6 +39,7 @@ def cd_index(G, node, time_delta=5, weight=None):
     ------
     ValueError
        If not all nodes have a datetime `time` attribute or
+       time_delta and time attribute types are not compatible or
        `n` equals 0.
 
     NetworkXNotImplemented
@@ -82,14 +83,18 @@ def cd_index(G, node, time_delta=5, weight=None):
            http://russellfunk.org/cdindex/static/papers/funk_ms_2017.pdf
 
     """
-    if not all(isinstance(G.nodes[n].get("time"), datetime) for n in G):
-        raise ValueError("Not all nodes have a datetime 'time' attribute.")
+    if not all("time" in G.nodes[n] for n in G):
+        raise ValueError("Not all nodes have a 'time' attribute.")
 
-    # get target_date's unix timestamp
-    target_date = G.nodes[node]["time"].timestamp() + time_delta * 365 * 24 * 60 * 60
-
-    # keep the predecessors that existed before the target date
-    pred = {i for i in G.pred[node] if G.nodes[i]["time"].timestamp() <= target_date}
+    try:
+        # get target_date
+        target_date = G.nodes[node]["time"] + time_delta
+        # keep the predecessors that existed before the target date
+        pred = {i for i in G.pred[node] if G.nodes[i]["time"] <= target_date}
+    except:
+        raise ValueError(
+            "Addition and comparison are not supported between time_delta and time attribute types, default time_delta = datetime.timedelta"
+        )
 
     # -1 if any edge between node's predecessors and node's successors, else 1
     b = [-1 if any(j in G[i] for j in G[node]) else 1 for i in pred]
