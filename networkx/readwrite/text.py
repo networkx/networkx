@@ -194,8 +194,7 @@ def generate_network_text(
                 ├── E
                 └── F
     """
-    from typing import NamedTuple
-    from typing import Any
+    from typing import Any, NamedTuple
 
     class StackFrame(NamedTuple):
         parent: Any
