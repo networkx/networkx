@@ -24,14 +24,14 @@ class AsciiDirectedGlyphs(_AsciiBaseGlyphs):
     last = "L-> "
     mid = "|-> "
     backedge = "<-"
-    vertical_edge = 'v'
+    vertical_edge = "v"
 
 
 class AsciiUndirectedGlyphs(_AsciiBaseGlyphs):
     last = "L-- "
     mid = "|-- "
     backedge = "-"
-    vertical_edge = '|'
+    vertical_edge = "|"
 
 
 class _UtfBaseGlyphs:
@@ -50,18 +50,22 @@ class UtfDirectedGlyphs(_UtfBaseGlyphs):
     last = "└─╼ "
     mid = "├─╼ "
     backedge = "╾"
-    vertical_edge = '╽'
+    vertical_edge = "╽"
 
 
 class UtfUndirectedGlyphs(_UtfBaseGlyphs):
     last = "└── "
     mid = "├── "
     backedge = "─"
-    vertical_edge = '│'
+    vertical_edge = "│"
 
 
 def generate_network_text(
-    graph, with_labels=True, sources=None, max_depth=None, ascii_only=False,
+    graph,
+    with_labels=True,
+    sources=None,
+    max_depth=None,
+    ascii_only=False,
     vertical_chains=False,
 ):
     """Generate lines in the "network text" format
@@ -225,7 +229,6 @@ def generate_network_text(
     elif len(graph.nodes) == 0:
         yield glyphs.empty
     else:
-
         # If the nodes to traverse are unspecified, find the minimal set of
         # nodes that will reach the entire graph
         if sources is None:
@@ -259,15 +262,18 @@ def generate_network_text(
                     # any of that parents children, then we should emit an
                     # ellipsis at the end after this.
                     if num_skipped_children[parent] and parent is not None:
-
                         # Append the ellipsis to be emitted last
                         next_islast = True
-                        try_frame = StackFrame(node, Ellipsis, indents, next_islast, False)
+                        try_frame = StackFrame(
+                            node, Ellipsis, indents, next_islast, False
+                        )
                         stack.append(try_frame)
 
                         # Redo this frame, but not as a last object
                         next_islast = False
-                        try_frame = StackFrame(parent, node, indents, next_islast, this_vertical)
+                        try_frame = StackFrame(
+                            parent, node, indents, next_islast, this_vertical
+                        )
                         stack.append(try_frame)
                         continue
 
@@ -394,7 +400,9 @@ def generate_network_text(
             # the original order.
             for idx, child in enumerate(children[::-1]):
                 next_islast = idx == 0
-                try_frame = StackFrame(node, child, next_prefix, next_islast, next_is_vertical)
+                try_frame = StackFrame(
+                    node, child, next_prefix, next_islast, next_is_vertical
+                )
                 stack.append(try_frame)
 
 
@@ -407,7 +415,7 @@ def write_network_text(
     max_depth=None,
     ascii_only=False,
     end="\n",
-    vertical_chains=False
+    vertical_chains=False,
 ):
     """Creates a nice text representation of a graph
 
