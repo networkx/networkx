@@ -6,6 +6,7 @@ import itertools
 import numpy as np
 
 import networkx as nx
+from networkx.utils.misc import pairwise
 
 __all__ = [
     "margulis_gabber_galil_graph",
@@ -253,11 +254,13 @@ def maybe_regular_expander(d, n):
     if not (isinstance(d, int) and d % 2 == 0):
         raise nx.NetworkXError("d must be even")
 
-    if not (n - 1 >= 2 * d):
-        raise nx.NetworkXError(f"There is not enough room for {d/2} independent cycles in a graph of size {n}")
+    if not (n - 1 >= d):
+        raise nx.NetworkXError(
+            f"There is not enough room for {d//2} independent cycles in a graph of size {n}"
+        )
 
     G = nx.Graph()
-    G.add_edges_from(range(n))
+    G.add_nodes_from(range(n))
 
     # Faster than random.permutation(n) since there are only (n-1)! distinct cycles against n! permutations of size n
     random_cycle = lambda n: np.concatenate((np.random.permutation(n - 1), [n - 1]))
@@ -269,14 +272,14 @@ def maybe_regular_expander(d, n):
     edges = set()
 
     # Create d / 2 cycles
-    for i in range(d / 2):
+    for i in range(d // 2):
         # Make sure the cycles are independent to have a regular graph
         while len(edges) != (i + 1) * n:
             cycle = random_cycle(n)
 
-            cycle_edges = [*list(itertools.pairwise(cycle)), (cycle[-1], cycle[0])]
-            cycle_edges_sorted = list(map(lambda x: tuple(sorted(x)), cycle_edges))
-            edges_copy = set([*edges, *cycle_edges_sorted])
+            cycle_edges = list(pairwise(cycle, cyclic=True))
+            cycle_edges_sorted = [tuple(sorted(x)) for x in cycle_edges]
+            edges_copy = {*edges, *cycle_edges_sorted}
 
             # If the new cycle has no edges in common with previous cycles then add it to the list otherwise try again
             if len(edges_copy) == len(edges) + n:
@@ -289,7 +292,7 @@ def maybe_regular_expander(d, n):
 
 
 def is_regular_expander(G: nx.Graph, epsilon=0):
-    """Determines whether the graph ``G`` is a regular $(n, d, \lambda)$-expander with $\lambda$ close to the Alon-Boppana bound and given by $\lambda = 2 \sqrt{d - 1} + \epsilon$. [1]
+    """Determines whether the graph G is a regular $(n, d, \lambda)$-expander with $\lambda$ close to the Alon-Boppana bound and given by $\lambda = 2 \sqrt{d - 1} + \epsilon$. [1]
 
     In the case where $\epsilon = 0 $ then if the graph successfully passes the test it is a Ramanujan graph. [2]
 
@@ -309,12 +312,13 @@ def is_regular_expander(G: nx.Graph, epsilon=0):
     .. [2] Ramanujan graphs, https://en.wikipedia.org/wiki/Ramanujan_graph
 
     """
-    assert isinstance(epsilon, (int, float)) and epsilon > 0, "epsilon must be positive"
+    if not (isinstance(epsilon, (int, float)) and epsilon >= 0):
+        raise nx.NetworkXError("epsilon must be non negative")
 
     if not nx.is_regular(G):
         return False
 
-    d = G.degree[0]
+    d = list(G.degree)[0][1]
 
     A = nx.adjacency_matrix(G)
     eigen_vals, _ = np.linalg.eig(A.toarray())

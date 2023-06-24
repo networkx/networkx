@@ -63,49 +63,56 @@ def test_paley_graph(p):
             assert (v, u) in G.edges
 
 
-@pytest.mark.parametrize("d, n", [(2, 7), (3, 9), (4, 10)])
+@pytest.mark.parametrize("d, n", [(2, 7), (4, 10), (4, 16)])
 def test_maybe_regular_expander(d, n):
     """Test for the :func:`networkx.maybe_regular_expander` function."""
     G = nx.maybe_regular_expander(d, n)
 
     assert len(G) == n, "Should have n nodes"
-    assert len(G.edges) == n * d, "Should have n*d edges"
+    assert len(G.edges) == n * d / 2, "Should have n*d/2 edges"
     assert nx.is_k_regular(G, d), "Should be d-regular"
 
 
 @pytest.mark.parametrize("n", (2, 3, 5, 6, 10))
 def test_is_regular_expander(n):
     """Test for the :func:`networkx.is_regular_expander` function."""
+    # breakpoint()
     G = nx.margulis_gabber_galil_graph(n)
 
     assert nx.is_regular_expander(G) == True, "Should be a regular expander"
 
 
-@pytest.mark.parametrize("d, n", [(2, 7), (3, 9), (4, 10)])
+@pytest.mark.parametrize("d, n", [(2, 7), (4, 10), (4, 16)])
 def test_random_regular_expander(d, n):
     """Test for the :func:`networkx.random_regular_expander` function."""
     G = nx.random_regular_expander(d, n)
 
     assert len(G) == n, "Should have n nodes"
-    assert len(G.edges) == n * d, "Should have n*d edges"
+    assert len(G.edges) == n * d / 2, "Should have n*d/2 edges"
     assert nx.is_k_regular(G, d), "Should be d-regular"
     assert nx.is_regular_expander(G) == True, "Should be a regular expander"
 
 
 @pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph, nx.MultiDiGraph))
 def test_margulis_gabber_galil_graph_badinput(graph_type):
-    with pytest.raises(nx.NetworkXError, match="`create_using` must be an undirected multigraph"):
+    with pytest.raises(
+        nx.NetworkXError, match="`create_using` must be an undirected multigraph"
+    ):
         nx.margulis_gabber_galil_graph(3, create_using=graph_type)
 
 
 @pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph, nx.MultiDiGraph))
 def test_chordal_cycle_graph_badinput(graph_type):
-    with pytest.raises(nx.NetworkXError, match="`create_using` must be an undirected multigraph"):
+    with pytest.raises(
+        nx.NetworkXError, match="`create_using` must be an undirected multigraph"
+    ):
         nx.chordal_cycle_graph(3, create_using=graph_type)
 
 
 def test_paley_graph_badinput():
-    with pytest.raises(nx.NetworkXError, match="`create_using` cannot be a multigraph."):
+    with pytest.raises(
+        nx.NetworkXError, match="`create_using` cannot be a multigraph."
+    ):
         nx.paley_graph(3, create_using=nx.MultiGraph)
 
 
@@ -117,23 +124,23 @@ def test_maybe_regular_expander_badinput():
         nx.maybe_regular_expander(0, 10)
 
     with pytest.raises(nx.NetworkXError, match="There is not enough room"):
-        nx.maybe_regular_expander(3, 5)
+        nx.maybe_regular_expander(6, 5)
 
 
 def test_is_regular_expander_badinput():
-    with pytest.raises(nx.NetworkXError, match="epsilon must be positive"):
+    with pytest.raises(nx.NetworkXError, match="epsilon must be non negative"):
         nx.is_regular_expander(nx.Graph(), -1)
 
 
-def test_regular_expander_badinput():
+def test_random_regular_expander_badinput():
     with pytest.raises(nx.NetworkXError, match="n must be a positive integer"):
-        nx.regular_expander(2, -1)
+        nx.random_regular_expander(2, -1)
 
     with pytest.raises(nx.NetworkXError, match="d must be greater than or equal to 2"):
-        nx.regular_expander(0, 10)
+        nx.random_regular_expander(0, 10)
 
     with pytest.raises(nx.NetworkXError, match="There is not enough room"):
-        nx.regular_expander(3, 5)
+        nx.random_regular_expander(6, 5)
 
-    with pytest.raises(nx.NetworkXError, match="epsilon must be positive"):
-        nx.regular_expander(nx.Graph(), -1)
+    with pytest.raises(nx.NetworkXError, match="epsilon must be non negative"):
+        nx.random_regular_expander(2, 4, -1)
