@@ -376,14 +376,13 @@ def generate_network_text(
 
             # Emit the line for this node, this will be called for each node
             # exactly once.
-            # print(f'this_prefix={this_prefix}')
-            # print(f'this_islast={this_islast}')
             if this_vertical:
                 yield "".join(this_prefix + [glyphs.vertical_edge])
 
             yield "".join(this_prefix + [label, suffix])
 
-            # TODO: Can we determine if we are an only child?
+            # Determine if we are an only child.
+            # NOTE: Please reveiw this logic.
             if vertical_chains:
                 if is_directed:
                     num_children = len(set(children))
