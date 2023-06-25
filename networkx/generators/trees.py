@@ -1,4 +1,32 @@
-"""Functions for generating trees."""
+"""Functions for generating trees.
+
+    The functions drawing trees at random in this modules come
+    in two variants: labeled and unlabeled. The labeled variants
+    draw every possible tree with the given number of nodes 
+    uniformly at random. The unlabeled variants draw every possible
+    *isomorphism class* of trees with the given number of nodes
+    uniformly at random.
+
+    To understand the difference, consider the following example.
+    There are two isomorphism classes of trees with four nodes. 
+    One is that of the path graph, the other is that of the 
+    star graph. The unlabeled variant will draw a line graph or
+    a star graph with probability 1/2.
+    
+    The labeled variant will draw the line graph
+    with probability 3/4 and the star graph with probability 1/4,
+    because there are more labeled variants of the line graph
+    than of the star graph. More precisely, the line graph has
+    an automorphism group of order 2, whereas the star graph has
+    an automorphism group of order 6, so the line graph has three
+    times as many labeled variants as the star graph, and thus
+    three more chances to be drawn.
+
+    Additionally, the functions in this module can draw uniformly
+    at random rooted trees and forests. A rooted tree is a tree with
+    a designated root node. A rooted forest is a disjoint union
+    of rooted trees."""
+
 import warnings
 from collections import Counter, defaultdict
 from math import comb, factorial
