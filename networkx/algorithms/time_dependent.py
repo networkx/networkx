@@ -50,15 +50,17 @@ def cd_index(G, node, *, time_delta=timedelta(days=5 * 365), time="time", weight
     Examples
     --------
     >>> G = nx.DiGraph()
-    >>> nodes = { 1: {'time': datetime(2015, 1, 1)}, \
-    ...     2: {'time': datetime(2012, 1, 1), 'weight': 4}, \
-    ...     3: {'time': datetime(2010, 1, 1)}, \
-    ...     4: {'time': datetime(2008, 1, 1)}, \
-    ...     5: {'time': datetime(2014, 1, 1)}}
+    >>> nodes = { 
+    ...     1: {"time": datetime(2015, 1, 1)},
+    ...     2: {"time": datetime(2012, 1, 1), 'weight': 4},
+    ...     3: {"time": datetime(2010, 1, 1)},
+    ...     4: {"time": datetime(2008, 1, 1)},
+    ...     5: {"time": datetime(2014, 1, 1)}
+    ... }
     >>> G.add_nodes_from([(n, nodes[n]) for n in nodes])
     >>> edges = [(1, 3), (1, 4), (2, 3), (3, 4), (3, 5)]
     >>> G.add_edges_from(edges)
-    >>> cd = nx.cd_index(G, 3, time='time', weight='weight')
+    >>> cd = nx.cd_index(G, 3, time="time", weight="weight")
 
     Notes
     -----
