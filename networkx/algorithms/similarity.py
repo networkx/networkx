@@ -669,7 +669,6 @@ def optimize_edit_paths(
 
     import numpy as np
     import scipy as sp
-    import scipy.optimize  # call as sp.optimize
 
     @dataclass
     class CostMatrix:
