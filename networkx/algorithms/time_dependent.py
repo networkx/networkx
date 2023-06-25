@@ -95,7 +95,8 @@ def cd_index(G, node, *, time_delta=timedelta(days=5 * 365), time="time", weight
         pred = {i for i in G.pred[node] if G.nodes[i][time] <= target_date}
     except:
         raise ValueError(
-            "Addition and comparison are not supported between 'time_delta' and 'time' types, default time_delta = datetime.timedelta."
+            "Addition and comparison are not supported between 'time_delta' "
+            "and 'time' types, default time_delta = datetime.timedelta."
         )
 
     # -1 if any edge between node's predecessors and node's successors, else 1
