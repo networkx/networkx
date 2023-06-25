@@ -3,7 +3,7 @@ import warnings
 from collections import Counter, defaultdict
 from math import comb, factorial
 
-import numpy as np
+import pytest
 
 import networkx as nx
 from networkx.utils import py_random_state
@@ -540,6 +540,8 @@ def random_labeled_rooted_forest(n, seed):
 
 
 # The following functions support generation of unlabeled trees and forests.
+
+np = pytest.importorskip("numpy")
 
 
 def _np_to_nx(edges_np, n_nodes, root=None, roots=None):
