@@ -3,8 +3,6 @@
 """
 import itertools
 
-import numpy as np
-
 import networkx as nx
 from networkx.utils.misc import pairwise
 
@@ -248,6 +246,9 @@ def maybe_regular_expander(d, n):
        https://arxiv.org/abs/cs/0405020
 
     """
+
+    import numpy as np
+
     if not (isinstance(n, int) and n > 0):
         raise nx.NetworkXError("n must be a positive integer")
 
@@ -321,6 +322,9 @@ def is_regular_expander(G: nx.Graph, epsilon=0):
     .. [2] Ramanujan graphs, https://en.wikipedia.org/wiki/Ramanujan_graph
 
     """
+
+    import numpy as np
+
     if not (isinstance(epsilon, (int, float)) and epsilon >= 0):
         raise nx.NetworkXError("epsilon must be non negative")
 

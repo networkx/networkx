@@ -66,6 +66,7 @@ def test_paley_graph(p):
 @pytest.mark.parametrize("d, n", [(2, 7), (4, 10), (4, 16)])
 def test_maybe_regular_expander(d, n):
     """Test for the :func:`networkx.maybe_regular_expander` function."""
+    pytest.importorskip("numpy")
     G = nx.maybe_regular_expander(d, n)
 
     assert len(G) == n, "Should have n nodes"
@@ -76,7 +77,7 @@ def test_maybe_regular_expander(d, n):
 @pytest.mark.parametrize("n", (2, 3, 5, 6, 10))
 def test_is_regular_expander(n):
     """Test for the :func:`networkx.is_regular_expander` function."""
-    # breakpoint()
+    pytest.importorskip("numpy")
     G = nx.margulis_gabber_galil_graph(n)
 
     assert nx.is_regular_expander(G) == True, "Should be a regular expander"
@@ -85,6 +86,7 @@ def test_is_regular_expander(n):
 @pytest.mark.parametrize("d, n", [(2, 7), (4, 10), (4, 16)])
 def test_random_regular_expander(d, n):
     """Test for the :func:`networkx.random_regular_expander` function."""
+    pytest.importorskip("numpy")
     G = nx.random_regular_expander(d, n)
 
     assert len(G) == n, "Should have n nodes"
@@ -117,6 +119,8 @@ def test_paley_graph_badinput():
 
 
 def test_maybe_regular_expander_badinput():
+    pytest.importorskip("numpy")
+
     with pytest.raises(nx.NetworkXError, match="n must be a positive integer"):
         nx.maybe_regular_expander(2, -1)
 
@@ -128,11 +132,15 @@ def test_maybe_regular_expander_badinput():
 
 
 def test_is_regular_expander_badinput():
+    pytest.importorskip("numpy")
+
     with pytest.raises(nx.NetworkXError, match="epsilon must be non negative"):
         nx.is_regular_expander(nx.Graph(), -1)
 
 
 def test_random_regular_expander_badinput():
+    pytest.importorskip("numpy")
+
     with pytest.raises(nx.NetworkXError, match="n must be a positive integer"):
         nx.random_regular_expander(2, -1)
 
