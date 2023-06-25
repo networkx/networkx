@@ -50,7 +50,7 @@ def cd_index(G, node, *, time_delta=timedelta(days=5 * 365), time="time", weight
     Examples
     --------
     >>> G = nx.DiGraph()
-    >>> nodes = { 
+    >>> nodes = {
     ...     1: {"time": datetime(2015, 1, 1)},
     ...     2: {"time": datetime(2012, 1, 1), 'weight': 4},
     ...     3: {"time": datetime(2010, 1, 1)},
@@ -69,7 +69,7 @@ def cd_index(G, node, *, time_delta=timedelta(days=5 * 365), time="time", weight
     is used in order to check how consolidating or destabilizing a patent
     is, hence the nodes of the graph represent patents and the edges show
     the citations between these patents. The mathematical model is given
-    below: 
+    below:
 
     .. math::
         CD_{t}=\frac{1}{n_{t}}\sum_{i=1}^{n}\frac{-2f_{it}b_{it}+f_{it}}{w_{it}},
