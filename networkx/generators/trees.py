@@ -25,13 +25,14 @@
     Additionally, the functions in this module can draw uniformly
     at random rooted trees and forests. A rooted tree is a tree with
     a designated root node. A rooted forest is a disjoint union
-    of rooted trees."""
+    of rooted trees.
+    
+    The older function :func:`random_tree` is deprecated and will be
+    removed in a future release. It is replaced by :func:`random_labeled_tree`."""
 
 import warnings
 from collections import Counter, defaultdict
 from math import comb, factorial
-
-import pytest
 
 import networkx as nx
 from networkx.utils import py_random_state
@@ -569,8 +570,6 @@ def random_labeled_rooted_forest(n, seed):
 
 # The following functions support generation of unlabeled trees and forests.
 
-np = pytest.importorskip("numpy")
-
 
 def _np_to_nx(edges_np, n_nodes, root=None, roots=None):
     """
@@ -595,6 +594,7 @@ def _np_to_nx(edges_np, n_nodes, root=None, roots=None):
     :class:`networkx.Graph`
         The graph given in input (in its np-representation) as a :class:`networkx.Graph`.
     """
+    import numpy as np
 
     G = nx.empty_graph(n_nodes)
     G.add_edges_from(
@@ -711,6 +711,7 @@ def _random_unlabeled_rooted_tree(n, cache_trees, seed):
         Academic Press, 1978.
         https://doi.org/10.1016/C2013-0-11243-3
     """
+    import numpy as np
 
     if n == 1:
         edges, n_nodes = np.empty(0, dtype=np.int64), 1
@@ -905,6 +906,8 @@ def _random_unlabeled_rooted_forest(n, q, cache_trees, cache_forests, seed):
         Journal of Algorithms 2.2 (1981): 204-207.
         https://doi.org/10.1016/0196-6774(81)90021-3
     """
+    import numpy as np
+
     if n == 0:
         return (np.empty(0, dtype=np.int64), 0, [])
 
@@ -1043,6 +1046,8 @@ def _bicenter(n, cache, seed):
         Journal of Algorithms 2.2 (1981): 204-207.
         https://doi.org/10.1016/0196-6774(81)90021-3
     """
+    import numpy as np
+
     t, t_nodes = _random_unlabeled_rooted_tree(n // 2, cache, seed)
     if seed.randint(0, _num_rooted_trees(n // 2, cache)) == 0:
         t2, t2_nodes = t, t_nodes
@@ -1080,6 +1085,7 @@ def _random_unlabeled_tree(n, cache_trees, cache_forests, seed):
         Journal of Algorithms 2.2 (1981): 204-207.
         https://doi.org/10.1016/0196-6774(81)90021-3
     """
+    import numpy as np
 
     if n % 2 == 1:
         p = 0
