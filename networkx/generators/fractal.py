@@ -10,7 +10,7 @@ __all__ = [
 
 
 def laakso_graph(k, create_using=nx.Graph):
-    """Returns the Laakso graph $L_k$.
+    r"""Returns the Laakso graph $L_k$.
 
     The Laakso graph $L_k$ ([1]_, [2]_) is a self-similar or fractal
     graph defined recursively over the positive integers:
@@ -25,7 +25,7 @@ def laakso_graph(k, create_using=nx.Graph):
         |   0        0
         |   |   -->  |
         |   1        2
-        |           / \\
+        |           / \
         |          3   4
         |           \ /
         |            5
@@ -96,7 +96,7 @@ def laakso_graph(k, create_using=nx.Graph):
 
 
 def sierpinski_gasket_graph(n, create_using=nx.Graph):
-    """Returns the Sierpinski gasket graph $S_n$.
+    r"""Returns the Sierpinski gasket graph $S_n$.
 
     The Sierpinski gasket graph (or Sierpinski triangle graph; [1]_,
     [2]_) is a self-similar or fractal graph defined recursively over
@@ -110,9 +110,9 @@ def sierpinski_gasket_graph(n, create_using=nx.Graph):
         |    S_1   -->     S_2
         |
         |     2             2
-        |    / \\   -->     / \\
+        |    / \   -->     / \
         |   0 - 1         0 - 1
-        |                / \\ / \\
+        |                / \ / \
         |               3 - 4 - 5
 
     Parameters
