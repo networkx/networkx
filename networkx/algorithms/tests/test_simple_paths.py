@@ -194,9 +194,8 @@ def test_all_simple_paths_multigraph_with_cutoff():
     assert {tuple(p) for p in paths} == {(1, 2), (1, 2)}
 
     # See GitHub issue #6732.
-    assert list(
-        nx.all_simple_paths(nx.MultiGraph([(0, 1), (0, 2)]), 0, {1, 2}, cutoff=1)
-    ) == [[0, 1], [0, 2]]
+    G = nx.MultiGraph([(0, 1), (0, 2)])
+    assert list(nx.all_simple_paths(G, 0, {1, 2}, cutoff=1)) == [[0, 1], [0, 2]]
 
 
 def test_all_simple_paths_directed():
@@ -221,11 +220,8 @@ def test_all_simple_paths_corner_cases():
 
 def test_all_simple_paths_source_in_targets():
     # See GitHub issue #6690.
-    assert list(nx.all_simple_paths(nx.path_graph(3), 0, {0, 1, 2})) == [
-        [0],
-        [0, 1],
-        [0, 1, 2],
-    ]
+    G = nx.path_graph(3)
+    assert list(nx.all_simple_paths(G, 0, {0, 1, 2})) == [[0], [0, 1], [0, 1, 2]]
 
 
 def hamiltonian_path(G, source):
