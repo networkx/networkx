@@ -154,6 +154,7 @@ needs_numpy = [
     "linalg/laplacianmatrix.py",
     "utils/misc.py",
     "algorithms/centrality/laplacian.py",
+    "generators/fractal.py",
 ]
 needs_scipy = [
     "algorithms/approximation/traveling_salesman.py",
