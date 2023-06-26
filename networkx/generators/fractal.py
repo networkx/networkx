@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 """Functions for generating fractal or self-similar graphs."""
 
-import numpy as np
-
 import networkx as nx
 
 __all__ = [
@@ -75,6 +73,8 @@ def laakso_graph(k, create_using=nx.Graph):
             https://doi.org/10.1007/s11117-021-00821-w
 
     """
+
+    import numpy as np
 
     relative_positions = 0.25 * np.array(
         [[0, 0], [0, 1], [-1, 2], [1, 2], [0, 3], [0, 4]]
@@ -154,6 +154,8 @@ def sierpinski_gasket_graph(n, create_using=nx.Graph):
 
     """
 
+    import numpy as np
+
     def expand(edges):
         shape = np.shape(edges)
         flattened = np.reshape(edges, (-1, 2))
@@ -199,6 +201,8 @@ def _convert_to_nx_graph(coordinate_pair_list, create_using):
         Each node has a node attribute ``'pos'`` that stores its coordinate.
 
     """
+
+    import numpy as np
 
     unique_coordinates, inverse_indices = np.unique(
         coordinate_pair_list.reshape((-1, 2)), return_inverse=True, axis=0

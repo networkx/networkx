@@ -1,6 +1,5 @@
 """Tests for generators defined in fractal.py"""
 
-import numpy as np
 import pytest
 
 import networkx as nx
@@ -48,6 +47,9 @@ def test_laakso_graph(create_using):
 )
 def test_sierpinski_gasket_graph(create_using):
     """Tests for the :func:`sierpinski_gasket_graph` function."""
+
+    import numpy as np
+
     G = nx.sierpinski_gasket_graph(1, create_using)
     H = nx.from_edgelist([(0, 1), (1, 2), (2, 0)], create_using)
     assert nx.is_isomorphic(G, H)
