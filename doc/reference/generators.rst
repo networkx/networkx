@@ -359,3 +359,12 @@ Sudoku
    :toctree: generated/
 
    sudoku_graph
+
+Fractal Graphs
+--------------
+.. automodule:: networkx.generators.fractal
+.. autosummary::
+   :toctree: generated/
+
+   sierpinski_gasket_graph
+   laakso_graph
