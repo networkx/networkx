@@ -1,4 +1,3 @@
-import typing
 from heapq import heappop, heappush
 from itertools import count
 
@@ -347,7 +346,7 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
         yield from _all_simple_edge_paths(G, source, targets, cutoff)
 
 
-def _all_simple_edge_paths(G: nx.Graph, source, targets: set, cutoff: int):
+def _all_simple_edge_paths(G, source, targets, cutoff):
     # We simulate recursion with a stack, keeping the current path being explored
     # and the outgoing edge iterators at each point in the stack.
     # To avoid unnecessary checks, the loop is structured in a way such that a path
@@ -364,8 +363,8 @@ def _all_simple_edge_paths(G: nx.Graph, source, targets: set, cutoff: int):
     # The current_path is a dictionary that maps nodes in the path to the edge that was
     # used to enter that node (instead of a list of edges) because we want both a fast
     # membership test for nodes in the path and the preservation of insertion order.
-    current_path: dict = {None: None}
-    stack: list[typing.Iterator] = [iter([(None, source)])]
+    current_path = {None: None}
+    stack = [iter([(None, source)])]
 
     while stack:
         # 1. Try to extend the current path.
