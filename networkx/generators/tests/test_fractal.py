@@ -4,6 +4,8 @@ import pytest
 
 import networkx as nx
 
+np = pytest.importorskip("numpy")
+
 
 @pytest.mark.parametrize(
     "create_using", (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
@@ -47,9 +49,6 @@ def test_laakso_graph(create_using):
 )
 def test_sierpinski_gasket_graph(create_using):
     """Tests for the :func:`sierpinski_gasket_graph` function."""
-
-    import numpy as np
-
     G = nx.sierpinski_gasket_graph(1, create_using)
     H = nx.from_edgelist([(0, 1), (1, 2), (2, 0)], create_using)
     assert nx.is_isomorphic(G, H)
