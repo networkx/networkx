@@ -61,15 +61,15 @@ def laakso_graph(k, create_using=nx.Graph):
 
     References
     ----------
-    .. [1]: Tomi J. Laakso, Plane with A∞-Weighted Metric not Bilipschitz
-            Embeddable to Rn, Bulletin of the London Mathematical Society,
-            Volume 34, Issue 6, November 2002, Pages 667–676,
-            https://doi.org/10.1112/S0024609302001200
+    .. [1] Tomi J. Laakso, Plane with A∞-Weighted Metric not
+       Bilipschitz Embeddable to Rn, Bulletin of the London
+       Mathematical Society, Volume 34, Issue 6, November 2002, Pages
+       667–676, https://doi.org/10.1112/S0024609302001200
 
-    .. [2]: Dilworth, S.J., Kutzarova, D. & Ostrovskii, M.I. Analysis on
-            Laakso graphs with application to the structure of transportation
-            cost spaces. Positivity 25, 1403–1435 (2021).
-            https://doi.org/10.1007/s11117-021-00821-w
+    .. [2] Dilworth, S.J., Kutzarova, D. & Ostrovskii, M.I. Analysis
+       on Laakso graphs with application to the structure of
+       transportation cost spaces. Positivity 25, 1403–1435 (2021).
+       https://doi.org/10.1007/s11117-021-00821-w
 
     """
 
@@ -143,12 +143,13 @@ def sierpinski_gasket_graph(n, create_using=nx.Graph):
 
     References
     ----------
-    .. [1]: Scorer, R. S., Grundy, P. M., & Smith, C. A. B. (1944). Some
-            Binary Games. The Mathematical Gazette, 28(280), 96–103.
-            https://doi.org/10.2307/3606393
-    .. [2]: Teguia AM, Godbole AP. Sierpi\’ nski Gasket Graphs and Some of
-            Their Properties. 2005 Sep 12;1–14.
-            http://arxiv.org/abs/math/0509259
+    .. [1] Scorer, R. S., Grundy, P. M., & Smith,
+       C. A. B. (1944). Some Binary Games. The Mathematical Gazette,
+       28(280), 96–103.  https://doi.org/10.2307/3606393
+
+    .. [2] Teguia AM, Godbole AP. Sierpi\’ nski Gasket Graphs and
+       Some of Their Properties. 2005 Sep 12;1–14.
+       http://arxiv.org/abs/math/0509259
 
     """
 
