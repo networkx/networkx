@@ -16,22 +16,21 @@ def laakso_graph(k, create_using=nx.Graph):
     graph defined recursively over the positive integers:
 
     1. $L_1$ is simply two nodes joined by an edge.
-    2. $L_i$ is built from $L_{i-1}$ by inserting into each edge in
-       $L_{i-1}$ a 4-cycle graph:
 
-    .. code-block:: text
+    2. $L_i$ is built from $L_{i-1}$ by inserting into each edge
+       in $L_{i-1}$ a 4-cycle graph::
 
-        L_1 --> L_2
-
-        0        0
-        |   -->  |
-        1        2
-                / \
-               3   4
-                \ /
-                 5
-                 |
-                 1
+        |   L_1 --> L_2
+        |
+        |   0        0
+        |   |   -->  |
+        |   1        2
+        |           / \\
+        |          3   4
+        |           \ /
+        |            5
+        |            |
+        |            1
 
     Parameters
     ----------
@@ -104,17 +103,17 @@ def sierpinski_gasket_graph(n, create_using=nx.Graph):
     the positive integers:
 
     1. $S_1$ is simply a triangle.
-    2. $S_i$ is built by triplicating $S_{i-1}$ and arranging the three subgraphs in a triangle.
 
-    .. code-block:: text
+    2. $S_i$ is built by triplicating $S_{i-1}$ and arranging the
+       three subgraphs in a triangle::
 
-         S_1   -->     S_2
-
-          2             2
-         / \   -->     / \
-        0 - 1         0 - 1
-                     / \ / \
-                    3 - 4 - 5
+        |    S_1   -->     S_2
+        |
+        |     2             2
+        |    / \\   -->     / \\
+        |   0 - 1         0 - 1
+        |                / \\ / \\
+        |               3 - 4 - 5
 
     Parameters
     ----------
