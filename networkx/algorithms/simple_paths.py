@@ -169,7 +169,7 @@ def all_simple_paths(G, source, target, cutoff=None):
         [0, 3, 1, 2]
         [0, 3, 2]
 
-    The singleton path from `source` to itself is considered a simple path and is
+    The singleton path from ``source`` to itself is considered a simple path and is
     included in the results:
 
         >>> G = nx.empty_graph(5)
@@ -310,6 +310,19 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
         ...     print(path)
         [(1, 2, 'k0'), (2, 3, 'k0')]
         [(1, 2, 'k1'), (2, 3, 'k0')]
+
+    When ``source`` is one of the targets, the empty path starting and ending at
+    ``source`` without traversing any edge is considered a valid simple edge path
+    and is included in the results:
+
+        >>> G = nx.Graph()
+        >>> G.add_node(0)
+        >>> paths = list(nx.all_simple_edge_paths(G, 0, 0))
+        >>> for path in paths:
+        ...     print (path)
+        []
+        >>> len(paths)
+        1
 
 
     Notes
