@@ -721,7 +721,7 @@ def draw_networkx_edges(
     if (
         np.iterable(edge_color)
         and (len(edge_color) == len(edge_pos))
-        and np.alltrue([isinstance(c, Number) for c in edge_color])
+        and np.all([isinstance(c, Number) for c in edge_color])
     ):
         if edge_cmap is not None:
             assert isinstance(edge_cmap, mpl.colors.Colormap)

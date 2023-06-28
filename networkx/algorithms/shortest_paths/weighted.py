@@ -2426,11 +2426,6 @@ def johnson(G, weight="weight"):
     distance : dictionary
         Dictionary, keyed by source and target, of shortest paths.
 
-    Raises
-    ------
-    NetworkXError
-        If given graph is not weighted.
-
     Examples
     --------
     >>> graph = nx.DiGraph()
@@ -2465,9 +2460,6 @@ def johnson(G, weight="weight"):
     all_pairs_bellman_ford_path_length
 
     """
-    if not nx.is_weighted(G, weight=weight):
-        raise nx.NetworkXError("Graph is not weighted.")
-
     dist = {v: 0 for v in G}
     pred = {v: [] for v in G}
     weight = _weight_function(G, weight)
