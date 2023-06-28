@@ -490,7 +490,7 @@ def random_labeled_rooted_tree(n, seed=None):
 
 
 @py_random_state("seed")
-def random_labeled_rooted_forest(n, seed):
+def random_labeled_rooted_forest(n, seed=None):
     """Returns a labeled rooted forest with `n` nodes drawn uniformly
     at random using a generalization of Prüfer sequences [1]_ in
     the form described in [2]_.
