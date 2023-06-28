@@ -145,9 +145,6 @@ def test_random_labeled_rooted_forest_n_zero():
     assert len(F.graph["roots"]) == 0
 
 
-np = pytest.importorskip("numpy")
-
-
 def test_random_unlabeled_rooted_tree():
     for i in range(1, 10):
         t1 = nx.random_unlabeled_rooted_tree(i, seed=42)
