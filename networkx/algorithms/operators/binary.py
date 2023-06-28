@@ -135,7 +135,7 @@ def disjoint_union(G, H):
     return nx.disjoint_union_all([G, H])
 
 
-@nx._dispatch(graphs=_G_H, preserve_graph_attrs=True)
+@nx._dispatch(graphs=_G_H)
 def intersection(G, H):
     """Returns a new graph that contains only the nodes and the edges that exist in
     both G and H.

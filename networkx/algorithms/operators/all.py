@@ -216,7 +216,7 @@ def compose_all(graphs):
     return R
 
 
-@nx._dispatch(graphs="[graphs]", preserve_graph_attrs=True)
+@nx._dispatch(graphs="[graphs]")
 def intersection_all(graphs):
     """Returns a new graph that contains only the nodes and the edges that exist in
     all graphs.
