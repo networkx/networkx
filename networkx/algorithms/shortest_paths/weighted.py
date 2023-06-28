@@ -2413,7 +2413,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
     raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
 
 
-@nx._dispatch(edge_attrs={"weight": None})
+@nx._dispatch(edge_attrs="weight")
 def johnson(G, weight="weight"):
     r"""Uses Johnson's Algorithm to compute shortest paths.
 

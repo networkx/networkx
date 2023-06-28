@@ -404,6 +404,16 @@ def test_override_dispatch(
             ):
                 _preserve_edge_attrs = True
                 _edge_attrs = None
+            elif bound.arguments[_preserve_edge_attrs] is False and (
+                isinstance(_edge_attrs, str)
+                and _edge_attrs == _preserve_edge_attrs
+                or isinstance(_edge_attrs, dict)
+                and _preserve_edge_attrs in _edge_attrs
+            ):
+                # Treat `False` argument as meaning "preserve_edge_data=False"
+                # and not `False` as the edge attribute to use.
+                _preserve_edge_attrs = False
+                _edge_attrs = None
             else:
                 _preserve_edge_attrs = False
         elif not isinstance(_preserve_edge_attrs, dict):
@@ -452,6 +462,16 @@ def test_override_dispatch(
                 bound.arguments[_preserve_node_attrs]
             ):
                 _preserve_node_attrs = True
+                _node_attrs = None
+            elif bound.arguments[_preserve_node_attrs] is False and (
+                isinstance(_node_attrs, str)
+                and _node_attrs == _preserve_node_attrs
+                or isinstance(_node_attrs, dict)
+                and _preserve_node_attrs in _node_attrs
+            ):
+                # Treat `False` argument as meaning "preserve_node_data=False"
+                # and not `False` as the node attribute to use. Is this used?
+                _preserve_node_attrs = False
                 _node_attrs = None
             else:
                 _preserve_node_attrs = False
