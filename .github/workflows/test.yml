@@ -22,7 +22,6 @@ jobs:
 
       - name: Install packages
         run: |
-          python -m pip install --upgrade pip wheel setuptools
           python -m pip install -r requirements/test.txt
           python -m pip install .
           python -m pip list
