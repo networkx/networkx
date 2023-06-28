@@ -225,9 +225,9 @@ with `@graph_builder` would immediately support the notation
 `nx.complete_graph_generator(...)` without impacting existing code.
 Later generators could use `@node_and_edge_builder`.
 
-.. code-block:: python
-
 ** NEEDS UPDATING **
+
+.. code-block:: python
 
     def node_and_edge_builder(f):
         @wraps(f)
