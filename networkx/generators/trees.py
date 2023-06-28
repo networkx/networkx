@@ -2,17 +2,17 @@
 
     The functions drawing trees at random in this modules come
     in two variants: labeled and unlabeled. The labeled variants
-    draw every possible tree with the given number of nodes 
+    draw every possible tree with the given number of nodes
     uniformly at random. The unlabeled variants draw every possible
     *isomorphism class* of trees with the given number of nodes
     uniformly at random.
 
     To understand the difference, consider the following example.
-    There are two isomorphism classes of trees with four nodes. 
-    One is that of the path graph, the other is that of the 
+    There are two isomorphism classes of trees with four nodes.
+    One is that of the path graph, the other is that of the
     star graph. The unlabeled variant will draw a line graph or
     a star graph with probability 1/2.
-    
+
     The labeled variant will draw the line graph
     with probability 3/4 and the star graph with probability 1/4,
     because there are more labeled variants of the line graph
@@ -26,7 +26,7 @@
     at random rooted trees and forests. A rooted tree is a tree with
     a designated root node. A rooted forest is a disjoint union
     of rooted trees.
-    
+
     The older function :func:`random_tree` is deprecated and will be
     removed in a future release. It is replaced by :func:`random_labeled_tree`."""
 
@@ -571,7 +571,7 @@ def random_labeled_rooted_forest(n, seed=None):
 # The following functions support generation of unlabeled trees and forests.
 
 
-def _np_to_nx(edges_np, n_nodes, root=None, roots=None):
+def _to_nx(edges, n_nodes, root=None, roots=None):
     """
     Converts the np-representation of a graph to a :class:`networkx.Graph`.
     The np-representation is given by a list of even length, where each pair
@@ -580,7 +580,7 @@ def _np_to_nx(edges_np, n_nodes, root=None, roots=None):
 
     Parameters
     ----------
-    edges_np : list of ints
+    edges : list of ints
         The flattened list of edges of the graph.
     n_nodes : int
         The number of nodes of the graph.
@@ -594,12 +594,10 @@ def _np_to_nx(edges_np, n_nodes, root=None, roots=None):
     :class:`networkx.Graph`
         The graph given in input (in its np-representation) as a :class:`networkx.Graph`.
     """
-    import numpy as np
 
     G = nx.empty_graph(n_nodes)
-    G.add_edges_from(
-        [(x[0], x[1]) for x in np.reshape(edges_np, (len(edges_np) // 2, 2))]
-    )
+    ee = iter(edges)
+    G.add_edges_from(zip(ee, ee))
     if root is not None:
         G.graph["root"] = root
     if roots is not None:
@@ -711,24 +709,21 @@ def _random_unlabeled_rooted_tree(n, cache_trees, seed):
         Academic Press, 1978.
         https://doi.org/10.1016/C2013-0-11243-3
     """
-    import numpy as np
 
     if n == 1:
-        edges, n_nodes = np.empty(0, dtype=np.int64), 1
+        edges, n_nodes = [], 1
         return edges, n_nodes
     if n == 2:
-        edges, n_nodes = np.array([0, 1], dtype=np.int64), 2
+        edges, n_nodes = [0, 1], 2
         return edges, n_nodes
 
     j, d = _select_jd_trees(n, cache_trees, seed)
     t1, t1_nodes = _random_unlabeled_rooted_tree(n - j * d, cache_trees, seed)
     t2, t2_nodes = _random_unlabeled_rooted_tree(d, cache_trees, seed)
-    t12 = np.array(
-        [(t2_nodes * ((i - 1) // 2) + t1_nodes) * (i % 2) for i in range(2 * j)]
-    )
-    t1 = np.append(t1, t12)
+    t12 = [(t2_nodes * ((i - 1) // 2) + t1_nodes) * (i % 2) for i in range(2 * j)]
+    t1.extend(t12)
     for i in range(j):
-        t1 = np.append(t1, t2 + (t2_nodes * i + t1_nodes))
+        t1.extend(node + (t2_nodes * i + t1_nodes) for node in t2)
     return t1, t1_nodes + j * t2_nodes
 
 
@@ -780,9 +775,9 @@ def random_unlabeled_rooted_tree(n, number_of_trees=None, seed=None):
         raise nx.NetworkXPointlessConcept("the null graph is not a tree")
     cache_trees = _init_cache_num_rooted_trees()
     if number_of_trees is None:
-        return _np_to_nx(*_random_unlabeled_rooted_tree(n, cache_trees, seed), root=0)
+        return _to_nx(*_random_unlabeled_rooted_tree(n, cache_trees, seed), root=0)
     return [
-        _np_to_nx(*_random_unlabeled_rooted_tree(n, cache_trees, seed), root=0)
+        _to_nx(*_random_unlabeled_rooted_tree(n, cache_trees, seed), root=0)
         for i in range(number_of_trees)
     ]
 
@@ -906,10 +901,9 @@ def _random_unlabeled_rooted_forest(n, q, cache_trees, cache_forests, seed):
         Journal of Algorithms 2.2 (1981): 204-207.
         https://doi.org/10.1016/0196-6774(81)90021-3
     """
-    import numpy as np
 
     if n == 0:
-        return (np.empty(0, dtype=np.int64), 0, [])
+        return ([], 0, [])
 
     j, d = _select_jd_forests(n, q, cache_forests, seed)
     t1, t1_nodes, r1 = _random_unlabeled_rooted_forest(
@@ -918,7 +912,7 @@ def _random_unlabeled_rooted_forest(n, q, cache_trees, cache_forests, seed):
     t2, t2_nodes = _random_unlabeled_rooted_tree(d, cache_trees, seed)
     for i in range(j):
         r1.append(t1_nodes)
-        t1 = np.append(t1, t2 + t1_nodes)
+        t1.extend(node + t1_nodes for node in t2)
         t1_nodes += t2_nodes
     return (t1, t1_nodes, r1)
 
@@ -983,14 +977,14 @@ def random_unlabeled_rooted_forest(n, q=None, number_of_forests=None, seed=None)
         g, nodes, rs = _random_unlabeled_rooted_forest(
             n, q, cache_trees, cache_forests, seed
         )
-        return _np_to_nx(g, nodes, roots=set(rs))
+        return _to_nx(g, nodes, roots=set(rs))
 
     res = []
     for i in range(number_of_forests):
         g, nodes, rs = _random_unlabeled_rooted_forest(
             n, q, cache_trees, cache_forests, seed
         )
-        res.append(_np_to_nx(g, nodes, roots=set(rs)))
+        res.append(_to_nx(g, nodes, roots=set(rs)))
     return res
 
 
@@ -1046,15 +1040,14 @@ def _bicenter(n, cache, seed):
         Journal of Algorithms 2.2 (1981): 204-207.
         https://doi.org/10.1016/0196-6774(81)90021-3
     """
-    import numpy as np
 
     t, t_nodes = _random_unlabeled_rooted_tree(n // 2, cache, seed)
     if seed.randint(0, _num_rooted_trees(n // 2, cache)) == 0:
         t2, t2_nodes = t, t_nodes
     else:
         t2, t2_nodes = _random_unlabeled_rooted_tree(n // 2, cache, seed)
-    t = np.append(t, t2 + n // 2)
-    t = np.append(t, [0, n // 2])
+    t.extend([node + (n // 2) for node in t2])
+    t.extend((0, n // 2))
     return t, t_nodes + t2_nodes
 
 
@@ -1085,7 +1078,6 @@ def _random_unlabeled_tree(n, cache_trees, cache_forests, seed):
         Journal of Algorithms 2.2 (1981): 204-207.
         https://doi.org/10.1016/0196-6774(81)90021-3
     """
-    import numpy as np
 
     if n % 2 == 1:
         p = 0
@@ -1098,7 +1090,7 @@ def _random_unlabeled_tree(n, cache_trees, cache_forests, seed):
             n - 1, (n - 1) // 2, cache_trees, cache_forests, seed
         )
         for i in r:
-            f = np.append(f, [i, n_f])
+            f.extend((i, n_f))
         return f, n_f + 1
 
 
@@ -1149,9 +1141,9 @@ def random_unlabeled_tree(n, number_of_trees=None, seed=None):
     cache_trees = _init_cache_num_rooted_trees()
     cache_forests = _init_cache_num_rooted_forests()
     if number_of_trees is None:
-        return _np_to_nx(*_random_unlabeled_tree(n, cache_trees, cache_forests, seed))
+        return _to_nx(*_random_unlabeled_tree(n, cache_trees, cache_forests, seed))
     else:
         return [
-            _np_to_nx(*_random_unlabeled_tree(n, cache_trees, cache_forests, seed))
+            _to_nx(*_random_unlabeled_tree(n, cache_trees, cache_forests, seed))
             for i in range(number_of_trees)
         ]
