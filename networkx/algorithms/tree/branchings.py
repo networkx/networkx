@@ -808,7 +808,7 @@ def maximum_branching(
 
     # Pick an attribute name that the original graph is unlikly to have
     candidate_attr = "edmonds' secret candidate attribute"
-    new_node_base_name = "edmounds new node base name "
+    new_node_base_name = "edmonds new node base name "
 
     G_original = G
     G = nx.MultiDiGraph()
