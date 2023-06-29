@@ -583,11 +583,11 @@ class TestWithinInterCluster:
 
 
 class Test_Katz_Index:
-    np = pytest.importorskip("numpy")
-
     @classmethod
     def setup_class(cls):
-        cls.beta = .1
+        global np
+        np = pytest.importorskip("numpy")
+        cls.beta = 0.1
         cls.func = staticmethod(nx.katz_index)
         cls.test = partial(_test_func, predict_func=cls.func)
 
