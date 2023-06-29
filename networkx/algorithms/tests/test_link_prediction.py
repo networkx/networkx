@@ -3,8 +3,6 @@ from functools import partial
 
 import pytest
 
-np = pytest.importorskip("numpy")
-
 import networkx as nx
 
 
@@ -585,6 +583,8 @@ class TestWithinInterCluster:
 
 
 class Test_Katz_Index:
+    np = pytest.importorskip("numpy")
+
     @classmethod
     def setup_class(cls):
         cls.beta = .1
