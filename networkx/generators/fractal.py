@@ -9,7 +9,7 @@ __all__ = [
 ]
 
 
-def laakso_graph(k, create_using=nx.Graph):
+def laakso_graph(k, *, create_using=nx.Graph):
     r"""Returns the Laakso graph $L_k$.
 
     The Laakso graph $L_k$ ([1]_, [2]_) is a self-similar or fractal
@@ -95,7 +95,7 @@ def laakso_graph(k, create_using=nx.Graph):
     return G
 
 
-def sierpinski_gasket_graph(n, create_using=nx.Graph):
+def sierpinski_gasket_graph(n, *, create_using=nx.Graph):
     r"""Returns the Sierpinski gasket graph $S_n$.
 
     The Sierpinski gasket graph (or Sierpinski triangle graph; [1]_,
