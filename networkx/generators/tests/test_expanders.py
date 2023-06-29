@@ -135,7 +135,7 @@ def test_is_regular_expander_badinput():
     pytest.importorskip("numpy")
 
     with pytest.raises(nx.NetworkXError, match="epsilon must be non negative"):
-        nx.is_regular_expander(nx.Graph(), -1)
+        nx.is_regular_expander(nx.Graph(), epsilon=-1)
 
 
 def test_random_regular_expander_badinput():
@@ -151,4 +151,4 @@ def test_random_regular_expander_badinput():
         nx.random_regular_expander(6, 5)
 
     with pytest.raises(nx.NetworkXError, match="epsilon must be non negative"):
-        nx.random_regular_expander(2, 4, -1)
+        nx.random_regular_expander(2, 4, epsilon=-1)

@@ -284,20 +284,20 @@ def maybe_regular_expander(d, n):
 
             cycle_edges = list(pairwise(cycle, cyclic=True))
             cycle_edges_sorted = [tuple(sorted(x)) for x in cycle_edges]
-            edges_copy = {*edges, *cycle_edges_sorted}
+            new_edges = {*edges, *cycle_edges_sorted}
 
             # If the new cycle has no edges in common with previous cycles
             # then add it to the list otherwise try again
-            if len(edges_copy) == len(edges) + n:
+            if len(new_edges) == len(edges) + n:
                 cycles.append(cycle)
-                edges = edges_copy
+                edges = new_edges
 
     G.add_edges_from(list(edges))
 
     return G
 
 
-def is_regular_expander(G: nx.Graph, epsilon=0):
+def is_regular_expander(G: nx.Graph, *, epsilon=0):
     """Determines whether the graph G is a regular expander.
 
     More precisely, checks whether the graph is a regular $(n, d, \lambda)$-expander with $\lambda$ close to the Alon-Boppana bound and given by $\lambda = 2 \sqrt{d - 1} + \epsilon$. [1]_
@@ -346,7 +346,7 @@ def is_regular_expander(G: nx.Graph, epsilon=0):
     return lambda2 < 2 ** np.sqrt(d - 1) + epsilon
 
 
-def random_regular_expander(d, n, epsilon=0):
+def random_regular_expander(d, n, *, epsilon=0):
     r"""Returns a random regular expander graph on $n$ nodes with degree $d$.
 
     The returned graph is a $(n, d, \lambda)$-expander with
@@ -380,7 +380,7 @@ def random_regular_expander(d, n, epsilon=0):
     """
     G = maybe_regular_expander(d, n)
 
-    while not is_regular_expander(G, epsilon):
+    while not is_regular_expander(G, epsilon=epsilon):
         G = maybe_regular_expander(d, n)
 
     return G
