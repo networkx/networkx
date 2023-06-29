@@ -635,7 +635,14 @@ def dulmage_mendelsohn_decomposition(G, top_nodes, *, matching=None):
     unreachable : set
 
         Set of nodes that are not reachable by an alternating path from
-        unmatched nodes.
+        unmatched nodes
+
+    Raises
+    ------
+    NetworkXError
+
+        If the provided graph is not bipartite or the provided top nodes
+        are not a valid bipartite set
 
     References
     ----------
