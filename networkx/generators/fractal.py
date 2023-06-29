@@ -203,8 +203,9 @@ def _convert_to_nx_graph(coordinate_pair_list, create_using):
 
     import numpy as np
 
+    dimensionality = len(coordinate_pair_list[0][0])
     unique_coordinates, inverse_indices = np.unique(
-        coordinate_pair_list.reshape((-1, 2)), return_inverse=True, axis=0
+        coordinate_pair_list.reshape((-1, dimensionality)), return_inverse=True, axis=0
     )
     G = nx.from_edgelist(inverse_indices.reshape((-1, 2)), create_using)
     nx.set_node_attributes(G, dict(enumerate(unique_coordinates)), name="pos")
