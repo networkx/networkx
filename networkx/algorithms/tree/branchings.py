@@ -398,15 +398,13 @@ class Edmonds:
         # being different).
         self.minedge_circuit = []
 
-    """
-    We should seperate each step into an inner function. Then the overall loop would become
-    while True:
-        step_I1()
-        if cycle detected:
-            step_I2()
-        elif every node of G is in D and E is a branching
-            break
-    """
+    # We should seperate each step into an inner function. Then the overall loop would become
+    # while True:
+    #     step_I1()
+    #     if cycle detected:
+    #         step_I2()
+    #     elif every node of G is in D and E is a branching
+    #         break
 
     def find_optimum(
         self,
