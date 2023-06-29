@@ -266,7 +266,8 @@ def maybe_regular_expander(d, n):
     G = nx.Graph()
     G.add_nodes_from(range(n))
 
-    # Faster than random.permutation(n) since there are only (n-1)! distinct cycles against n! permutations of size n
+    # Faster than random.permutation(n) since there are only
+    # (n-1)! distinct cycles against n! permutations of size n
     random_cycle = lambda n: np.concatenate((np.random.permutation(n - 1), [n - 1]))
 
     if n < 2:
@@ -285,7 +286,8 @@ def maybe_regular_expander(d, n):
             cycle_edges_sorted = [tuple(sorted(x)) for x in cycle_edges]
             edges_copy = {*edges, *cycle_edges_sorted}
 
-            # If the new cycle has no edges in common with previous cycles then add it to the list otherwise try again
+            # If the new cycle has no edges in common with previous cycles
+            # then add it to the list otherwise try again
             if len(edges_copy) == len(edges) + n:
                 cycles.append(cycle)
                 edges = edges_copy
@@ -296,7 +298,9 @@ def maybe_regular_expander(d, n):
 
 
 def is_regular_expander(G: nx.Graph, epsilon=0):
-    """Determines whether the graph G is a regular $(n, d, \lambda)$-expander with $\lambda$ close to the Alon-Boppana bound and given by $\lambda = 2 \sqrt{d - 1} + \epsilon$. [1]_
+    """Determines whether the graph G is a regular expander.
+
+    More precisely, checks whether the graph is a regular $(n, d, \lambda)$-expander with $\lambda$ close to the Alon-Boppana bound and given by $\lambda = 2 \sqrt{d - 1} + \epsilon$. [1]_
 
     In the case where $\epsilon = 0 $ then if the graph successfully passes the test it is a Ramanujan graph. [2]_
 
@@ -343,9 +347,12 @@ def is_regular_expander(G: nx.Graph, epsilon=0):
 
 
 def random_regular_expander(d, n, epsilon=0):
-    r"""Returns a random $(n, d, \lambda)$ regular expander graph on $n$ nodes with degree $d$ and $\lambda = 2 \sqrt{d - 1} + \epsilon$ close to the Alon-Boppana bound.
+    r"""Returns a random regular expander graph on $n$ nodes with degree $d$.
 
-    In the case where $\epsilon = 0 $ then returns a Ramanujan graph.
+    The returned graph is a $(n, d, \lambda)$-expander with
+    $\lambda = 2 \sqrt{d - 1} + \epsilon$, close to the Alon-Boppana bound.
+
+    In the case where $\epsilon = 0 $ it returns a Ramanujan graph.
 
     Parameters
     ----------
