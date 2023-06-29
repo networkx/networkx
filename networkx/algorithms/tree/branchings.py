@@ -42,6 +42,7 @@ __all__ = [
     "greedy_branching",
     "maximum_branching",
     "minimum_branching",
+    "minimal_branching",
     "maximum_spanning_arborescence",
     "minimum_spanning_arborescence",
     "ArborescenceIterator",
@@ -1177,8 +1178,38 @@ def minimum_branching(
 
 
 def minimal_branching(
-    G, attr="weight", default=1, preserve_attrs=False, partition=None
+    G, *, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
+    """
+    Returns a minimal branching from G.
+
+    A minimal branching is a branching since to a minimal arborescence but
+    without the requirement that the result is actually a spanning arborescence.
+    This allows minimal branchinges to be computed over graphs which may not
+    have arborescence (such as multiple components).
+
+    Parameters
+    ----------
+    G : (multi)digraph-like
+        The graph to be searched.
+    attr : str
+        The edge attribute used to in determining optimality.
+    default : float
+        The value of the edge attribute used if an edge does not have
+        the attribute `attr`.
+    preserve_attrs : bool
+        If True, preserve the other attributes of the original graph (that are not
+        passed to `attr`)
+    partition : str
+        The key for the edge attribute containing the partition
+        data on the graph. Edges can be included, excluded or open using the
+        `EdgePartition` enum.
+
+    Returns
+    -------
+    B : (multi)digraph-like
+        A minimal branching.
+    """
     max_weight = -INF
     min_weight = INF
     for _, _, w in G.edges(data=attr):
@@ -1296,8 +1327,13 @@ maximum_branching.__doc__ = docstring_branching.format(
     kind="maximum", style="branching"
 )
 
-minimum_branching.__doc__ = docstring_branching.format(
-    kind="minimum", style="branching"
+minimum_branching.__doc__ = (
+    docstring_branching.format(kind="minimum", style="branching")
+    + """
+See Also 
+-------- 
+    `minimal_branching`
+"""
 )
 
 maximum_spanning_arborescence.__doc__ = docstring_arborescence.format(
