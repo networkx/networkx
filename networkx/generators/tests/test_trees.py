@@ -175,14 +175,14 @@ def test_random_unlabeled_tree_n_zero():
 def test_random_unlabeled_rooted_forest():
     raised = False
     try:
-        nx.random_unlabeled_rooted_forest(10, 0, seed=42)
+        nx.random_unlabeled_rooted_forest(10, q=0, seed=42)
     except ValueError:
         raised = True
     assert raised
     for i in range(1, 10):
         for q in range(1, i + 1):
-            t1 = nx.random_unlabeled_rooted_forest(i, q, seed=42)
-            t2 = nx.random_unlabeled_rooted_forest(i, q, seed=42)
+            t1 = nx.random_unlabeled_rooted_forest(i, q=q, seed=42)
+            t2 = nx.random_unlabeled_rooted_forest(i, q=q, seed=42)
             assert nx.utils.misc.graphs_equal(t1, t2)
             for c in nx.connected_components(t1):
                 assert nx.is_tree(t1.subgraph(c))

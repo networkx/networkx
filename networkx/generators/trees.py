@@ -420,7 +420,7 @@ def random_tree(n, seed=None, create_using=None):
 
 
 @py_random_state("seed")
-def random_labeled_tree(n, seed=None):
+def random_labeled_tree(n, *, seed=None):
     """
     Returns a label tree on `n` nodes chosen uniformly at random
     using Prüfer sequences.
@@ -454,7 +454,7 @@ def random_labeled_tree(n, seed=None):
 
 
 @py_random_state("seed")
-def random_labeled_rooted_tree(n, seed=None):
+def random_labeled_rooted_tree(n, *, seed=None):
     """Returns a labeled rooted tree with `n` nodes drawn uniformly
     at random.
 
@@ -490,7 +490,7 @@ def random_labeled_rooted_tree(n, seed=None):
 
 
 @py_random_state("seed")
-def random_labeled_rooted_forest(n, seed=None):
+def random_labeled_rooted_forest(n, *, seed=None):
     """Returns a labeled rooted forest with `n` nodes drawn uniformly
     at random using a generalization of Prüfer sequences [1]_ in
     the form described in [2]_.
@@ -728,7 +728,7 @@ def _random_unlabeled_rooted_tree(n, cache_trees, seed):
 
 
 @py_random_state("seed")
-def random_unlabeled_rooted_tree(n, number_of_trees=None, seed=None):
+def random_unlabeled_rooted_tree(n, *, number_of_trees=None, seed=None):
     """Returns one or more (depending on `number_of_trees`)
     unlabeled rooted trees with `n` nodes drawn uniformly
     at random.
@@ -918,7 +918,7 @@ def _random_unlabeled_rooted_forest(n, q, cache_trees, cache_forests, seed):
 
 
 @py_random_state("seed")
-def random_unlabeled_rooted_forest(n, q=None, number_of_forests=None, seed=None):
+def random_unlabeled_rooted_forest(n, *, q=None, number_of_forests=None, seed=None):
     """Returns one or more (depending on `number_of_forests`)
     unlabeled rooted forests with `n` nodes,
     and with no more than q nodes per tree, drawn uniformly at random.
@@ -1095,7 +1095,7 @@ def _random_unlabeled_tree(n, cache_trees, cache_forests, seed):
 
 
 @py_random_state("seed")
-def random_unlabeled_tree(n, number_of_trees=None, seed=None):
+def random_unlabeled_tree(n, *, number_of_trees=None, seed=None):
     """Returns one or more (depending on `number_of_trees`)
     unlabeled trees with `n` nodes drawn uniformly at random.
 
