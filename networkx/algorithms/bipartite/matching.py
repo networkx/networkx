@@ -619,7 +619,7 @@ def _neighbours_of_set(G, node_set):
     return set(ret_set)
 
 
-def _M_alternating_sequence(G, M, top_nodes=None):
+def _M_alternating_sequence(G, M, *, top_nodes=None):
     r"""
     Generates M-alternating-sequence for a graph G with regard to a matching M
     We generate two sets with the following recursive definition:
@@ -699,7 +699,7 @@ def _M_alternating_sequence(G, M, top_nodes=None):
     return tuple(X_subsets), tuple(Y_subsets)
 
 
-def _EFM_partition(G, M=None, top_nodes=None):
+def _EFM_partition(G, *, M=None, top_nodes=None):
     r"""Returns the unique EFM partition of bipartite graph.
 
     A matching in a bipartite graph with parts X and Y is called envy-free, if no unmatched
@@ -782,7 +782,7 @@ def _EFM_partition(G, M=None, top_nodes=None):
 
 
 @not_implemented_for("directed", "multigraph")
-def max_size_envy_free_matching(G, top_nodes=None):
+def max_size_envy_free_matching(G, *, top_nodes=None):
     r"""Return an envy-free matching of maximum cardinality
     Parameters
     ----------
@@ -836,7 +836,7 @@ def max_size_envy_free_matching(G, top_nodes=None):
 
 
 @not_implemented_for("directed", "multigraph")
-def min_weight_max_size_envy_free_matching(G, top_nodes=None):
+def min_weight_max_size_envy_free_matching(G, *, top_nodes=None):
     r"""Returns minimum-cost maximum-cardinality envy-free matching
     Parameters
     ----------
