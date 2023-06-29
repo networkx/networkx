@@ -315,21 +315,20 @@ class Edmonds:
         # sure that our node names do not conflict with the real node names.
         self.template = random_string(seed=seed) + "_{0}"
 
-    """
-    So we need the code in _init and find_optimum to successfully run edmonds algorithm.
-    Responsibilities of the _init function:
-    - Check that the kind argument is in {min, max} or raise a NetworkXException.
-    - Transform the graph if we need a minimum arborescence/branching.
-      - The current method is to map weight -> -weight. This is NOT a good approach since
-        the algorithm can and does choose to ignore negative weights when creating a branching
-        since that is always optimal when maximzing the weights. I think we should set the edge
-        weights to be (max_weight + 1) - edge_weight.
-    - Transform the graph into a MultiDiGraph, adding the partition information and potoentially
-      other edge attributes if we set preserve_attrs = True.
-    - Setup the buckets and union find data structures required for the algorithm.
-    """
-
     def _init(self, attr, default, kind, style, preserve_attrs, seed, partition):
+        """
+        So we need the code in _init and find_optimum to successfully run edmonds algorithm.
+        Responsibilities of the _init function:
+        - Check that the kind argument is in {min, max} or raise a NetworkXException.
+        - Transform the graph if we need a minimum arborescence/branching.
+          - The current method is to map weight -> -weight. This is NOT a good approach since
+            the algorithm can and does choose to ignore negative weights when creating a branching
+            since that is always optimal when maximzing the weights. I think we should set the edge
+            weights to be (max_weight + 1) - edge_weight.
+        - Transform the graph into a MultiDiGraph, adding the partition information and potoentially
+          other edge attributes if we set preserve_attrs = True.
+        - Setup the buckets and union find data structures required for the algorithm.
+        """
         if kind not in KINDS:
             raise nx.NetworkXException("Unknown value for `kind`.")
 
