@@ -593,8 +593,14 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
 
 
 def _neighbours_of_set(G, node_set):
-    r"""
-    returns a set of the neighbours of a given set of nodes
+    r"""Returns a set of the neighbours of a given set of nodes `node_set` in the bipartite graph `G`.
+    Denoted by :math:`N_Gnode_set`.
+
+    `G` is an undirected bipartite NetworkX graph.
+
+    `node_set` is a set of nodes in `G`.
+
+
     >>> G = nx.complete_bipartite_graph(3,3)
     >>> _neighbours_of_set(G, {})
     set()
@@ -620,9 +626,10 @@ def _neighbours_of_set(G, node_set):
 
 
 def _M_alternating_sequence(G, M, *, top_nodes=None):
-    r"""
-    Generates M-alternating-sequence for a graph G with regard to a matching M
-    We generate two sets with the following recursive definition:
+    r"""Generates a M-alternating-sequence of a bipartite graph `G` with regard to a matching M.
+
+    Two sets are calculated with the following recursive definition:
+
     X_0 = nodes in G unmatched by M.
     for i>=1:
         Latex:
@@ -700,7 +707,7 @@ def _M_alternating_sequence(G, M, *, top_nodes=None):
 
 
 def _EFM_partition(G, *, M=None, top_nodes=None):
-    r"""Returns the unique EFM partition of bipartite graph.
+    r"""Returns the unique EFM partition of bipartite graph `G`.
 
     A matching in a bipartite graph with parts X and Y is called envy-free, if no unmatched
     vertex in X is adjacent to a matched vertex in Y.
@@ -712,18 +719,23 @@ def _EFM_partition(G, *, M=None, top_nodes=None):
     G:  NetworkX graph
 
       Undirected bipartite graph
+
     M: dict
-       dictionary that represents a maximum matching in G.
-       If M is none, the function will calculate a maximum matching.
+
+      dictionary that represents a maximum matching in `G`.
+      If M is none, the function will calculate a maximum matching.
+
     top_nodes: list
-                if graph is not all connected top_nodes is the set of the top nodes in the bipartite graph G
+
+      if graph is not all connected top_nodes is the set of the top nodes in the bipartite graph `G`.
 
     Returns
     -------
     EFM: tuple of sets
-        The partition returns as a tuple of 4 sets of vertices:
-        X_L,X_S,Y_L,Y_S where X_L,Y_L are the "good vertices" of G and
-        X_S,Y_S are the "bad vertices" of G where no envy-free matching exists according to THM 1.3 in the article.
+
+      The partition returns as a tuple of 4 sets of vertices:
+      X_L,X_S,Y_L,Y_S where X_L,Y_L are the "good vertices" of G and
+      X_S,Y_S are the "bad vertices" of G where no envy-free matching exists according to THM 1.3 in the article.
 
     References
     ----------
@@ -736,7 +748,7 @@ def _EFM_partition(G, *, M=None, top_nodes=None):
         Example 1: Perfect matching
         >>> Graph=nx.complete_bipartite_graph(3,3)
         >>> Matching=nx.bipartite.hopcroft_karp_matching(Graph)
-        >>> _EFM_partition(Graph,Matching)
+        >>> _EFM_partition(Graph, M=Matching)
         ({0, 1, 2}, set(), {3, 4, 5}, set())
 
         Where there exists a perfect matching the maximum envy free matching is the perfect matching.
@@ -744,7 +756,7 @@ def _EFM_partition(G, *, M=None, top_nodes=None):
         Example 2: Non-empty envy-free matching
         >>> Graph=nx.Graph([(0,3),(3,0),(0,4),(4,0),(1,4),(4,1),(2,4),(4,2)])
         >>> Matching={0:3,3:0,1:4,4:1}
-        >>> _EFM_partition(Graph,Matching)
+        >>> _EFM_partition(Graph, M=Matching)
         ({0}, {1, 2}, {3}, {4})
 
         Here the graph contains non-empty envy-free matching so X_L,Y_L are not empty.
@@ -752,7 +764,7 @@ def _EFM_partition(G, *, M=None, top_nodes=None):
         Example 3: Odd path
         >>> Graph=nx.Graph([(0,3),(3,0),(1,3),(3,1),(1,4),(4,1),(2,4),(4,2)])
         >>> Matching={0:3,3:0,4:1,1:4}
-        >>> _EFM_partition(Graph,Matching)
+        >>> _EFM_partition(Graph, M=Matching)
         (set(), {0, 1, 2}, set(), {3, 4})
 
         Like presented in the article, odd path contains an empty envy-free matching so X_L and Y_L are empty in the partition.
@@ -760,7 +772,7 @@ def _EFM_partition(G, *, M=None, top_nodes=None):
         Example 4: Y-path-saturated graph
         >>> Graph=nx.Graph([(0,6),(6,0),(1,6),(6,1),(1,7),(7,1),(2,6),(6,2),(2,8),(8,2),(3,9),(9,3),(3,6),(6,3),(4,8),(8,4),(4,7),(7,4),(5,9),(9,5)])
         >>> Matching={0:6,6:0,1:7,7:1,2:8,8:2,3:9,9:3}
-        >>> _EFM_partition(Graph,Matching)
+        >>> _EFM_partition(Graph, M=Matching)
         (set(), {0, 1, 2, 3, 4, 5}, set(), {8, 9, 6, 7})
 
         Like presented in the article, Y-path-saturated graph contains an empty envy-free matching so X_L and Y_L are empty in the partition.
@@ -769,7 +781,7 @@ def _EFM_partition(G, *, M=None, top_nodes=None):
     if M is None:
         M = nx.bipartite.maximum_matching(G, top_nodes=top_nodes)
     X, Y = nx.bipartite.sets(G, top_nodes=top_nodes)
-    X_subsets, Y_subsets = _M_alternating_sequence(G, M, top_nodes)
+    X_subsets, Y_subsets = _M_alternating_sequence(G, M, top_nodes=top_nodes)
     X_S = set()
     for subset in X_subsets:
         X_S.update(subset)
@@ -783,19 +795,23 @@ def _EFM_partition(G, *, M=None, top_nodes=None):
 
 @not_implemented_for("directed", "multigraph")
 def max_size_envy_free_matching(G, *, top_nodes=None):
-    r"""Return an envy-free matching of maximum cardinality
+    r"""Returns an envy-free matching of maximum cardinality
+
     Parameters
     ----------
-    G:
-        NetworkX graph
-        Undirected bipartite graph
-    top_nodes:
-                list
-                if graph is not all connected top_nodes is the set of the top nodes in the bipartite graph G
+    G : NetworkX graph
+
+      Undirected bipartite graph
+
+    top_nodes : container
+
+      if graph is not all connected top_nodes is the set of the top nodes in the bipartite graph `G`.
+
     Returns
     -------
     Matching: dictionary
         The Maximum cardinallity envy-free matching is returned as a dictionary.
+
     References
     ----------
     .. [1] "Envy-free Matchings in Bipartite Graphs and their Applications to Fair Division",
@@ -829,7 +845,7 @@ def max_size_envy_free_matching(G, *, top_nodes=None):
         Like presented in the article, Y-path-saturated graph contains an empty envy-free matching so X_L and Y_L are empty in the partition.
     """
     M = nx.bipartite.maximum_matching(G, top_nodes=top_nodes)
-    EFM_PARTITION = _EFM_partition(G, M, top_nodes)
+    EFM_PARTITION = _EFM_partition(G, M=M, top_nodes=top_nodes)
     un = EFM_PARTITION[1].union(EFM_PARTITION[3])
     M = {node: M[node] for node in M if node not in un and M[node] not in un}
     return M
@@ -837,19 +853,23 @@ def max_size_envy_free_matching(G, *, top_nodes=None):
 
 @not_implemented_for("directed", "multigraph")
 def min_weight_max_size_envy_free_matching(G, *, top_nodes=None):
-    r"""Returns minimum-cost maximum-cardinality envy-free matching
+    r"""Returns a minimum-cost maximum-cardinality envy-free matching in the bipartite graph `G`.
+
     Parameters
     ----------
-    G
-        NetworkX graph
-        Undirected bipartite graph
-    top_nodes:
-                list
-                if graph is not all connected top_nodes is the set of the top nodes in the bipartite graph G
+    G : NetworkX graph
+
+      Undirected bipartite graph
+
+    top_nodes : container
+
+      if graph is not all connected top_nodes is the set of the top nodes in the bipartite graph `G`.
+
     Returns
     -------
     Matching: dictionary
-        The minimum cost maximum cardinallity matching is returned as a dictionary.
+      The minimum cost maximum cardinallity matching is returned as a dictionary.
+
     References
     ----------
     .. [1] "Envy-free Matchings in Bipartite Graphs and their Applications to Fair Division",
@@ -873,7 +893,7 @@ def min_weight_max_size_envy_free_matching(G, *, top_nodes=None):
         {2: 5, 3: 6, 5: 2, 6: 3}
     """
     M = nx.bipartite.maximum_matching(G, top_nodes=top_nodes)
-    EFM_PARTITION = _EFM_partition(G, M, top_nodes)
+    EFM_PARTITION = _EFM_partition(G, M=M, top_nodes=top_nodes)
     Union = EFM_PARTITION[0].union(EFM_PARTITION[2])
     M = nx.bipartite.minimum_weight_full_matching(G.subgraph(Union))
     return M
