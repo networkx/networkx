@@ -646,15 +646,15 @@ def dulmage_mendelsohn_decomposition(G, top_nodes, matching=None):
     if matching is None:
         matching = maximum_matching(G, top_nodes=top_nodes)
     top_set = set(top_nodes)
-    bot_nodes = [node for node in G if node not in top_set]
+    bot_set = G.nodes - top_set
 
-    unmatched_top = [node for node in top_nodes if node not in matching]
-    unmatched_bot = [node for node in bot_nodes if node not in matching]
+    unmatched_top = top_set - matching.keys()
+    unmatched_bot = bot_set - matching.keys()
     set_reachable_from_top = _connected_by_alternating_paths(G, matching, unmatched_top)
     set_reachable_from_bot = _connected_by_alternating_paths(G, matching, unmatched_bot)
-    set_reachable = set_reachable_from_top.union(set_reachable_from_bot)
-    unreachable = [node for node in G if node not in set_reachable]
+    set_reachable = set_reachable_from_top | set_reachable_from_bot
 
+    unreachable = [node for node in G if node not in set_reachable]
     reachable_from_top = [node for node in G if node in set_reachable_from_top]
     reachable_from_bot = [node for node in G if node in set_reachable_from_bot]
 
