@@ -614,6 +614,10 @@ def katz_index(G, ebunch=None, beta=0.1):
         then all non-existent edges in the graph will be used.
         Default value: None.
 
+    beta : float, optional (default = 0.1)
+        The damping factor, each path of length n will be multiplied by $\beta^n$
+        This parameter must be less than the reciprocal of the largest eigenvalue of the adjacency matrix to ensure meaningful output
+
     Returns
     -------
     piter : iterator
