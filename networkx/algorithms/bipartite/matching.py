@@ -595,10 +595,10 @@ def dulmage_mendelsohn_decomposition(G, top_nodes, *, matching=None):
     unmatched in some maximum matching. The subsets are defined in terms of
     the bipartite sets of the graph. They are:
 
-    - The unmatched nodes in one set, and all nodes reachable via an alternating
-      path from them
-    - The unmatched nodes in the other set, and all nodes reachable via an
-      alternating path from them
+    - The unmatched nodes in one set, and all nodes reachable from them via an
+      alternating path
+    - The unmatched nodes in the other set, and all nodes reachable from them
+      via an alternating path
     - The nodes that are unreachable via alternating path from any unmatched
       node
 
