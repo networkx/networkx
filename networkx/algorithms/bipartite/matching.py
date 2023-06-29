@@ -619,18 +619,18 @@ def dulmage_mendelsohn_decomposition(G, top_nodes, *, matching=None):
 
     Returns
     -------
-    reachable_from_top : list
+    reachable_from_top : set
 
-        List of nodes reachable by an alternating path from unmatched top nodes
+        Set of nodes reachable by an alternating path from unmatched top nodes
 
-    reachable_from_bot : list
+    reachable_from_bot : set
 
-        List of nodes reachable by an alternating path from unmatched bottom
+        Set of nodes reachable by an alternating path from unmatched bottom
         nodes
 
-    unreachable : list
+    unreachable : set
 
-        List of nodes that are not reachable by an alternating path from
+        Set of nodes that are not reachable by an alternating path from
         unmatched nodes.
 
     References
@@ -647,15 +647,9 @@ def dulmage_mendelsohn_decomposition(G, top_nodes, *, matching=None):
         matching = maximum_matching(G, top_nodes=top_nodes)
     top_set = set(top_nodes)
     bot_set = G.nodes - top_set
-
     unmatched_top = top_set - matching.keys()
     unmatched_bot = bot_set - matching.keys()
-    set_reachable_from_top = _connected_by_alternating_paths(G, matching, unmatched_top)
-    set_reachable_from_bot = _connected_by_alternating_paths(G, matching, unmatched_bot)
-    set_reachable = set_reachable_from_top | set_reachable_from_bot
-
-    unreachable = [node for node in G if node not in set_reachable]
-    reachable_from_top = [node for node in G if node in set_reachable_from_top]
-    reachable_from_bot = [node for node in G if node in set_reachable_from_bot]
-
+    reachable_from_top = _connected_by_alternating_paths(G, matching, unmatched_top)
+    reachable_from_bot = _connected_by_alternating_paths(G, matching, unmatched_bot)
+    unreachable = G.nodes - reachable_from_top - reachable_from_bot
     return reachable_from_top, reachable_from_bot, unreachable
