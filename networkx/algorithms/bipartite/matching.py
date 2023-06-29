@@ -795,7 +795,7 @@ def _EFM_partition(G, *, M=None, top_nodes=None):
 
 @not_implemented_for("directed", "multigraph")
 def max_size_envy_free_matching(G, *, top_nodes=None):
-    r"""Returns an envy-free matching of maximum cardinality
+    r"""Returns an envy-free matching of maximum cardinality in the bipartite graph `G`.
 
     Parameters
     ----------
