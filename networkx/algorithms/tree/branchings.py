@@ -1177,7 +1177,7 @@ def minimum_branching(
 
 
 def minimal_branching(
-    G, *, attr="weight", default=1, preserve_attrs=False, partition=None
+    G, /, *, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
     """
     Returns a minimal branching from G.
@@ -1277,7 +1277,13 @@ def maximum_spanning_arborescence(
 def minimum_spanning_arborescence(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
-    B = minimal_branching(G, attr, default, preserve_attrs, partition)
+    B = minimal_branching(
+        G,
+        attr=attr,
+        default=default,
+        preserve_attrs=preserve_attrs,
+        partition=partition,
+    )
 
     if not is_arborescence(B):
         raise nx.exception.NetworkXException("No minimum spanning arborescence in G.")
