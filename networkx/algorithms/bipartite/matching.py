@@ -615,7 +615,11 @@ def dulmage_mendelsohn_decomposition(G, top_nodes, *, matching=None):
     ----------
     G : NetworkX graph
 
+        Bipartite graph to which the decomposition is applied
+
     top_nodes : container
+
+        Contains the nodes in one bipartite set of ``G``
 
     Returns
     -------
