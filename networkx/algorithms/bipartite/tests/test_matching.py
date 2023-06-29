@@ -637,3 +637,16 @@ class TestDulmageMendelsohnDecomposition:
         msg = "Provided nodes are not a valid bipartite set"
         with pytest.raises(nx.NetworkXError, match=msg):
             dulmage_mendelsohn_decomposition(G, top_nodes)
+
+    def test_matching_provided(self):
+        G = nx.Graph()
+        G.add_nodes_from(range(3))
+        G.add_edges_from([(0, 1), (0, 2)])
+        top_nodes = [0]
+        matching = {0: 1, 1: 0}
+        reach_from_top, reach_from_bot, unreach = dulmage_mendelsohn_decomposition(
+            G, top_nodes, matching=matching
+        )
+        assert len(reach_from_top) == 0
+        assert set(reach_from_bot) == {0, 1, 2}
+        assert len(unreach) == 0

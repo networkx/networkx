@@ -586,7 +586,7 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     return d
 
 
-def dulmage_mendelsohn_decomposition(G, top_nodes, matching=None):
+def dulmage_mendelsohn_decomposition(G, top_nodes, *, matching=None):
     """Return a partition of the nodes of ``G`` into the subsets defined by
     the Dulmage-Mendelsohn decomposition
 
