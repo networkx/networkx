@@ -1335,7 +1335,7 @@ minimum_branching.__doc__ = (
     + """
 See Also 
 -------- 
-    `minimal_branching`
+    minimal_branching
 """
 )
 
