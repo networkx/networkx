@@ -1,0 +1,181 @@
+[build-system]
+requires = ["setuptools>=61.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "networkx"
+version = "3.2rc0.dev0"
+authors = [
+    { name = "Aric Hagberg", email = "hagberg@lanl.gov" },
+]
+maintainers = [
+    { name = "NetworkX Developers", email = "networkx-discuss@googlegroups.com" },
+]
+description = "Python package for creating and manipulating graphs and networks"
+keywords = [
+    "Networks",
+    "Graph Theory",
+    "Mathematics",
+    "network",
+    "graph",
+    "discrete mathematics",
+    "math",
+]
+readme = "README.rst"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+requires-python = ">=3.9"
+dependencies = []
+
+[project.urls]
+Homepage = "https://networkx.org/"
+"Bug Tracker" = "https://github.com/networkx/networkx/issues"
+Documentation = "https://networkx.org/documentation/stable/"
+"Source Code" = "https://github.com/networkx/networkx"
+
+[project.entry-points."networkx.plugins"]
+nx-loopback = "networkx.classes.tests.dispatch_interface:dispatcher"
+
+[project.optional-dependencies]
+default = [
+    "numpy>=1.22",
+    "scipy>=1.9,!=1.11.0,!=1.11.1",
+    "matplotlib>=3.5",
+    "pandas>=1.4",
+]
+developer = [
+    "pre-commit>=3.2",
+    "mypy>=1.1",
+]
+doc = [
+    "sphinx>=6.1,<7",
+    "pydata-sphinx-theme>=0.13",
+    "sphinx-gallery>=0.12",
+    "numpydoc>=1.5",
+    "pillow>=9.4",
+    "nb2plots>=0.6",
+    "texext>=0.6.7",
+]
+extra = [
+    "lxml>=4.6",
+    "pygraphviz>=1.11",
+    "pydot>=1.4.2",
+    "sympy>=1.10",
+]
+test = [
+    "pytest>=7.2",
+    "pytest-cov>=4.0",
+]
+
+[tool.setuptools]
+packages = [
+    "networkx",
+    "networkx.algorithms",
+    "networkx.algorithms.assortativity",
+    "networkx.algorithms.bipartite",
+    "networkx.algorithms.centrality",
+    "networkx.algorithms.community",
+    "networkx.algorithms.components",
+    "networkx.algorithms.connectivity",
+    "networkx.algorithms.coloring",
+    "networkx.algorithms.flow",
+    "networkx.algorithms.minors",
+    "networkx.algorithms.traversal",
+    "networkx.algorithms.isomorphism",
+    "networkx.algorithms.shortest_paths",
+    "networkx.algorithms.link_analysis",
+    "networkx.algorithms.operators",
+    "networkx.algorithms.approximation",
+    "networkx.algorithms.tree",
+    "networkx.classes",
+    "networkx.generators",
+    "networkx.drawing",
+    "networkx.linalg",
+    "networkx.readwrite",
+    "networkx.readwrite.json_graph",
+    "networkx.tests",
+    "networkx.utils",
+]
+zip-safe = false
+platforms = [
+    "Linux",
+    "Mac OSX",
+    "Windows",
+    "Unix",
+]
+include-package-data = false
+
+[tool.setuptools.package-data]
+networkx = ["tests/*.py"]
+"networkx.algorithms" = ["tests/*.py"]
+"networkx.algorithms.assortativity" = ["tests/*.py"]
+"networkx.algorithms.bipartite" = ["tests/*.py"]
+"networkx.algorithms.centrality" = ["tests/*.py"]
+"networkx.algorithms.community" = ["tests/*.py"]
+"networkx.algorithms.components" = ["tests/*.py"]
+"networkx.algorithms.connectivity" = ["tests/*.py"]
+"networkx.algorithms.coloring" = ["tests/*.py"]
+"networkx.algorithms.minors" = ["tests/*.py"]
+"networkx.algorithms.flow" = ["tests/*.py" ]
+"networkx.algorithms.isomorphism" = ["tests/*.py"]
+"networkx.algorithms.link_analysis" = ["tests/*.py"]
+"networkx.algorithms.approximation" = ["tests/*.py" ]
+"networkx.algorithms.operators" = ["tests/*.py"]
+"networkx.algorithms.shortest_paths" = ["tests/*.py"]
+"networkx.algorithms.traversal" = ["tests/*.py"]
+"networkx.algorithms.tree" = ["tests/*.py"]
+"networkx.classes" = ["tests/*.py"]
+"networkx.generators" = ["tests/*.py"]
+"networkx.drawing" = ["tests/*.py"]
+"networkx.linalg" = ["tests/*.py"]
+"networkx.readwrite" = ["tests/*.py"]
+"networkx.readwrite.json_graph" = ["tests/*.py"]
+"networkx.utils" = ["tests/*.py"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+select = [
+    "I",       # isort
+    "UP",      # pyupgrade
+    "C4",      # flake8-comprehensions
+    "E713",    # use 'key not in list'
+    "PIE",     # flake8-pie
+    "PGH003",  # forbid blanket 'type: ignore' comments
+    "PLR0402", # useless import alias
+    "SIM101",  # merge 'isinstance' calls
+    "SIM109",  # use a tuple for multiple comparisons
+    "SIM110",  # convert loop to 'any'
+    "SIM111",  # convert loop to 'all'
+    "SIM118",  # use 'key in dict'
+    "SIM2",    # simplify boolean comparisons
+]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["I"]
+"examples/*.py" = ["I"]
+"doc/*.py" = ["I"]
+"tools/*.py" = ["I"]
+
+[tool.mypy]
+ignore_missing_imports = true
+exclude =  "subgraphviews|reportviews"
+
+[[tool.mypy.overrides]]
+module = "networkx.classes.reportviews"
+ignore_errors = true
