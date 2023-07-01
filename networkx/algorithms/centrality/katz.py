@@ -313,7 +313,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
         nodelist = beta.keys()
         if set(nodelist) != set(G):
             raise nx.NetworkXError(
-                "beta dictionary " "must have a value for every node"
+                "beta dictionary must have a value for every node"
             )
         b = np.array(list(beta.values()), dtype=float)
     except AttributeError:
