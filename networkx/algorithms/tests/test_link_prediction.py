@@ -603,10 +603,14 @@ class Test_Katz_Index:
 
     def test_P4(self):
         G = nx.path_graph(4)
-        A = np.array([np.array([0, 1., 0, 0]), 
-                      np.array([1., 0, 1., 0]),
-                      np.array([0, 1., 0, 1.]), 
-                      np.array([0, 0, 1., 0])])
+        A = np.array(
+            [
+                np.array([0, 1.0, 0, 0]),
+                np.array([1.0, 0, 1.0, 0]),
+                np.array([0, 1.0, 0, 1.0]),
+                np.array([0, 0, 1.0, 0]),
+            ]
+        )
         A *= self.beta
         I = np.identity(4)
         res = np.linalg.inv(I - A) - I
@@ -641,10 +645,14 @@ class Test_Katz_Index:
 
     def test_all_nonexistent_edges(self):
         G = nx.Graph()
-        A = np.array([np.array([0, 1., 1., 0]), 
-                      np.array([1., 0, 0, 0]),
-                      np.array([1., 0, 0, 1.]), 
-                      np.array([0, 0, 1., 0])])
+        A = np.array(
+            [
+                np.array([0, 1.0, 1.0, 0]),
+                np.array([1.0, 0, 0, 0]),
+                np.array([1.0, 0, 0, 1.0]),
+                np.array([0, 0, 1.0, 0]),
+            ]
+        )
         A *= self.beta
         I = np.identity(4)
         exp = np.linalg.inv(I - A) - I
