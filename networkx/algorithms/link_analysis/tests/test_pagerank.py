@@ -1,13 +1,18 @@
 import random
 
-import networkx
 import pytest
 
-numpy = pytest.importorskip("numpy")
-scipy = pytest.importorskip("scipy")
+import networkx as nx
+from networkx.classes.tests import dispatch_interface
 
-from networkx.testing import almost_equal
-from networkx.algorithms.link_analysis.pagerank_alg import _pagerank_python
+np = pytest.importorskip("numpy")
+pytest.importorskip("scipy")
+
+from networkx.algorithms.link_analysis.pagerank_alg import (
+    _pagerank_numpy,
+    _pagerank_python,
+    _pagerank_scipy,
+)
 
 # Example from
 # A. Langville and C. Meyer, "A survey of eigenvector methods of web
@@ -17,7 +22,7 @@ from networkx.algorithms.link_analysis.pagerank_alg import _pagerank_python
 class TestPageRank:
     @classmethod
     def setup_class(cls):
-        G = networkx.DiGraph()
+        G = nx.DiGraph()
         edges = [
             (1, 2),
             (1, 3),
@@ -55,42 +60,43 @@ class TestPageRank:
             )
         )
 
-    @pytest.mark.parametrize("alg", (networkx.pagerank, _pagerank_python))
+    @pytest.mark.parametrize("alg", (nx.pagerank, _pagerank_python))
     def test_pagerank(self, alg):
         G = self.G
         p = alg(G, alpha=0.9, tol=1.0e-08)
         for n in G:
-            assert almost_equal(p[n], G.pagerank[n], places=4)
+            assert p[n] == pytest.approx(G.pagerank[n], abs=1e-4)
 
         nstart = {n: random.random() for n in G}
         p = alg(G, alpha=0.9, tol=1.0e-08, nstart=nstart)
         for n in G:
-            assert almost_equal(p[n], G.pagerank[n], places=4)
+            assert p[n] == pytest.approx(G.pagerank[n], abs=1e-4)
 
-    @pytest.mark.parametrize("alg", (networkx.pagerank, _pagerank_python))
+    @pytest.mark.parametrize("alg", (nx.pagerank, _pagerank_python))
     def test_pagerank_max_iter(self, alg):
-        with pytest.raises(networkx.PowerIterationFailedConvergence):
+        with pytest.raises(nx.PowerIterationFailedConvergence):
             alg(self.G, max_iter=0)
 
     def test_numpy_pagerank(self):
         G = self.G
-        p = networkx.pagerank_numpy(G, alpha=0.9)
+        p = _pagerank_numpy(G, alpha=0.9)
         for n in G:
-            assert almost_equal(p[n], G.pagerank[n], places=4)
+            assert p[n] == pytest.approx(G.pagerank[n], abs=1e-4)
 
-    def test_google_matrix(self):
-        G = self.G
-        M = networkx.google_matrix(G, alpha=0.9, nodelist=sorted(G))
-        e, ev = numpy.linalg.eig(M.T)
-        p = numpy.array(ev[:, 0] / ev[:, 0].sum())[:, 0]
-        for (a, b) in zip(p, self.G.pagerank.values()):
-            assert almost_equal(a, b)
+    # This additionally tests the @nx._dispatch mechanism, treating
+    # nx.google_matrix as if it were a re-implementation from another package
+    @pytest.mark.parametrize("wrapper", [lambda x: x, dispatch_interface.convert])
+    def test_google_matrix(self, wrapper):
+        G = wrapper(self.G)
+        M = nx.google_matrix(G, alpha=0.9, nodelist=sorted(G))
+        _, ev = np.linalg.eig(M.T)
+        p = ev[:, 0] / ev[:, 0].sum()
+        for a, b in zip(p, self.G.pagerank.values()):
+            assert a == pytest.approx(b, abs=1e-7)
 
-    @pytest.mark.parametrize(
-        "alg", (networkx.pagerank, _pagerank_python, networkx.pagerank_numpy)
-    )
+    @pytest.mark.parametrize("alg", (nx.pagerank, _pagerank_python, _pagerank_numpy))
     def test_personalization(self, alg):
-        G = networkx.complete_graph(4)
+        G = nx.complete_graph(4)
         personalize = {0: 1, 1: 1, 2: 4, 3: 4}
         answer = {
             0: 0.23246732615667579,
@@ -100,19 +106,17 @@ class TestPageRank:
         }
         p = alg(G, alpha=0.85, personalization=personalize)
         for n in G:
-            assert almost_equal(p[n], answer[n], places=4)
+            assert p[n] == pytest.approx(answer[n], abs=1e-4)
 
-    @pytest.mark.parametrize(
-        "alg", (networkx.pagerank, _pagerank_python, networkx.google_matrix)
-    )
+    @pytest.mark.parametrize("alg", (nx.pagerank, _pagerank_python, nx.google_matrix))
     def test_zero_personalization_vector(self, alg):
-        G = networkx.complete_graph(4)
+        G = nx.complete_graph(4)
         personalize = {0: 0, 1: 0, 2: 0, 3: 0}
         pytest.raises(ZeroDivisionError, alg, G, personalization=personalize)
 
-    @pytest.mark.parametrize("alg", (networkx.pagerank, _pagerank_python))
+    @pytest.mark.parametrize("alg", (nx.pagerank, _pagerank_python))
     def test_one_nonzero_personalization_value(self, alg):
-        G = networkx.complete_graph(4)
+        G = nx.complete_graph(4)
         personalize = {0: 0, 1: 0, 2: 0, 3: 1}
         answer = {
             0: 0.22077931820379187,
@@ -122,11 +126,11 @@ class TestPageRank:
         }
         p = alg(G, alpha=0.85, personalization=personalize)
         for n in G:
-            assert almost_equal(p[n], answer[n], places=4)
+            assert p[n] == pytest.approx(answer[n], abs=1e-4)
 
-    @pytest.mark.parametrize("alg", (networkx.pagerank, _pagerank_python))
+    @pytest.mark.parametrize("alg", (nx.pagerank, _pagerank_python))
     def test_incomplete_personalization(self, alg):
-        G = networkx.complete_graph(4)
+        G = nx.complete_graph(4)
         personalize = {3: 1}
         answer = {
             0: 0.22077931820379187,
@@ -136,7 +140,7 @@ class TestPageRank:
         }
         p = alg(G, alpha=0.85, personalization=personalize)
         for n in G:
-            assert almost_equal(p[n], answer[n], places=4)
+            assert p[n] == pytest.approx(answer[n], abs=1e-4)
 
     def test_dangling_matrix(self):
         """
@@ -145,36 +149,34 @@ class TestPageRank:
         """
         G = self.G
         dangling = self.dangling_edges
-        dangling_sum = float(sum(dangling.values()))
-        M1 = networkx.google_matrix(G, personalization=dangling)
-        M2 = networkx.google_matrix(G, personalization=dangling, dangling=dangling)
+        dangling_sum = sum(dangling.values())
+        M1 = nx.google_matrix(G, personalization=dangling)
+        M2 = nx.google_matrix(G, personalization=dangling, dangling=dangling)
         for i in range(len(G)):
             for j in range(len(G)):
                 if i == self.dangling_node_index and (j + 1) in dangling:
-                    assert almost_equal(
-                        M2[i, j], dangling[j + 1] / dangling_sum, places=4
+                    assert M2[i, j] == pytest.approx(
+                        dangling[j + 1] / dangling_sum, abs=1e-4
                     )
                 else:
-                    assert almost_equal(M2[i, j], M1[i, j], places=4)
+                    assert M2[i, j] == pytest.approx(M1[i, j], abs=1e-4)
 
-    @pytest.mark.parametrize(
-        "alg", (networkx.pagerank, _pagerank_python, networkx.pagerank_numpy)
-    )
+    @pytest.mark.parametrize("alg", (nx.pagerank, _pagerank_python, _pagerank_numpy))
     def test_dangling_pagerank(self, alg):
         pr = alg(self.G, dangling=self.dangling_edges)
         for n in self.G:
-            assert almost_equal(pr[n], self.G.dangling_pagerank[n], places=4)
+            assert pr[n] == pytest.approx(self.G.dangling_pagerank[n], abs=1e-4)
 
     def test_empty(self):
-        G = networkx.Graph()
-        assert networkx.pagerank(G) == {}
+        G = nx.Graph()
+        assert nx.pagerank(G) == {}
         assert _pagerank_python(G) == {}
-        assert networkx.pagerank_numpy(G) == {}
-        assert networkx.google_matrix(G).shape == (0, 0)
+        assert _pagerank_numpy(G) == {}
+        assert nx.google_matrix(G).shape == (0, 0)
 
-    @pytest.mark.parametrize("alg", (networkx.pagerank, _pagerank_python))
+    @pytest.mark.parametrize("alg", (nx.pagerank, _pagerank_python))
     def test_multigraph(self, alg):
-        G = networkx.MultiGraph()
+        G = nx.MultiGraph()
         G.add_edges_from([(1, 2), (1, 2), (1, 2), (2, 3), (2, 3), ("3", 3), ("3", 3)])
         answer = {
             1: 0.21066048614468322,
@@ -184,48 +186,32 @@ class TestPageRank:
         }
         p = alg(G)
         for n in G:
-            assert almost_equal(p[n], answer[n], places=4)
+            assert p[n] == pytest.approx(answer[n], abs=1e-4)
 
 
 class TestPageRankScipy(TestPageRank):
     def test_scipy_pagerank(self):
         G = self.G
-        p = networkx.pagerank_scipy(G, alpha=0.9, tol=1.0e-08)
+        p = _pagerank_scipy(G, alpha=0.9, tol=1.0e-08)
         for n in G:
-            assert almost_equal(p[n], G.pagerank[n], places=4)
+            assert p[n] == pytest.approx(G.pagerank[n], abs=1e-4)
         personalize = {n: random.random() for n in G}
-        p = networkx.pagerank_scipy(
-            G, alpha=0.9, tol=1.0e-08, personalization=personalize
-        )
+        p = _pagerank_scipy(G, alpha=0.9, tol=1.0e-08, personalization=personalize)
 
         nstart = {n: random.random() for n in G}
-        p = networkx.pagerank_scipy(G, alpha=0.9, tol=1.0e-08, nstart=nstart)
+        p = _pagerank_scipy(G, alpha=0.9, tol=1.0e-08, nstart=nstart)
         for n in G:
-            assert almost_equal(p[n], G.pagerank[n], places=4)
+            assert p[n] == pytest.approx(G.pagerank[n], abs=1e-4)
 
     def test_scipy_pagerank_max_iter(self):
-        with pytest.raises(networkx.PowerIterationFailedConvergence):
-            networkx.pagerank_scipy(self.G, max_iter=0)
+        with pytest.raises(nx.PowerIterationFailedConvergence):
+            _pagerank_scipy(self.G, max_iter=0)
 
     def test_dangling_scipy_pagerank(self):
-        pr = networkx.pagerank_scipy(self.G, dangling=self.dangling_edges)
+        pr = _pagerank_scipy(self.G, dangling=self.dangling_edges)
         for n in self.G:
-            assert almost_equal(pr[n], self.G.dangling_pagerank[n], places=4)
+            assert pr[n] == pytest.approx(self.G.dangling_pagerank[n], abs=1e-4)
 
     def test_empty_scipy(self):
-        G = networkx.Graph()
-        assert networkx.pagerank_scipy(G) == {}
-
-
-@pytest.mark.parametrize(
-    "pagerank_alg",
-    (networkx.pagerank_numpy, networkx.pagerank_scipy),
-)
-def test_deprecation_warnings(pagerank_alg):
-    """Make sure deprecation warnings are raised.
-
-    To be removed when deprecations expire.
-    """
-    G = networkx.DiGraph(networkx.path_graph(4))
-    with pytest.warns(DeprecationWarning):
-        pr = pagerank_alg(G, alpha=0.9)
+        G = nx.Graph()
+        assert _pagerank_scipy(G) == {}

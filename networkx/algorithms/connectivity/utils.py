@@ -32,7 +32,7 @@ def build_auxiliary_node_connectivity(G):
     .. [1] Kammer, Frank and Hanjo Taubig. Graph Connectivity. in Brandes and
         Erlebach, 'Network Analysis: Methodological Foundations', Lecture
         Notes in Computer Science, Volume 3418, Springer-Verlag, 2005.
-        http://www.informatik.uni-augsburg.de/thi/personen/kammer/Graph_Connectivity.pdf
+        https://doi.org/10.1007/978-3-540-31955-9_7
 
     """
     directed = G.is_directed()
@@ -47,7 +47,7 @@ def build_auxiliary_node_connectivity(G):
         H.add_edge(f"{i}A", f"{i}B", capacity=1)
 
     edges = []
-    for (source, target) in G.edges():
+    for source, target in G.edges():
         edges.append((f"{mapping[source]}B", f"{mapping[target]}A"))
         if not directed:
             edges.append((f"{mapping[target]}B", f"{mapping[source]}A"))
@@ -80,6 +80,6 @@ def build_auxiliary_edge_connectivity(G):
     else:
         H = nx.DiGraph()
         H.add_nodes_from(G.nodes())
-        for (source, target) in G.edges():
+        for source, target in G.edges():
             H.add_edges_from([(source, target), (target, source)], capacity=1)
         return H

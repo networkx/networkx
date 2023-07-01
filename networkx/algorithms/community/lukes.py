@@ -17,7 +17,7 @@ PKEY = "partitions"
 CLUSTER_EVAL_CACHE_SIZE = 2048
 
 
-def _split_n_from(n: int, min_size_of_first_part: int):
+def _split_n_from(n, min_size_of_first_part):
     # splits j in two parts of which the first is at least
     # the second argument
     assert n >= min_size_of_first_part
@@ -25,8 +25,7 @@ def _split_n_from(n: int, min_size_of_first_part: int):
         yield p1, n - p1
 
 
-def lukes_partitioning(G, max_size: int, node_weight=None, edge_weight=None) -> list:
-
+def lukes_partitioning(G, max_size, node_weight=None, edge_weight=None):
     """Optimal partitioning of a weighted tree using the Lukes algorithm.
 
     This algorithm partitions a connected, acyclic graph featuring integer
@@ -58,7 +57,7 @@ def lukes_partitioning(G, max_size: int, node_weight=None, edge_weight=None) -> 
         partition.
 
     Raises
-    -------
+    ------
     NotATree
         If G is not a tree.
     TypeError
@@ -126,35 +125,34 @@ def lukes_partitioning(G, max_size: int, node_weight=None, edge_weight=None) -> 
     def _a_parent_of_leaves_only(gr):
         tleaves = set(_leaves(gr))
         for n in set(gr.nodes) - tleaves:
-            if all([x in tleaves for x in nx.descendants(gr, n)]):
+            if all(x in tleaves for x in nx.descendants(gr, n)):
                 return n
 
     @lru_cache(CLUSTER_EVAL_CACHE_SIZE)
-    def _value_of_cluster(cluster: frozenset):
+    def _value_of_cluster(cluster):
         valid_edges = [e for e in safe_G.edges if e[0] in cluster and e[1] in cluster]
-        return sum([safe_G.edges[e][edge_weight] for e in valid_edges])
+        return sum(safe_G.edges[e][edge_weight] for e in valid_edges)
 
-    def _value_of_partition(partition: list):
-        return sum([_value_of_cluster(frozenset(c)) for c in partition])
+    def _value_of_partition(partition):
+        return sum(_value_of_cluster(frozenset(c)) for c in partition)
 
     @lru_cache(CLUSTER_EVAL_CACHE_SIZE)
-    def _weight_of_cluster(cluster: frozenset):
-        return sum([safe_G.nodes[n][node_weight] for n in cluster])
+    def _weight_of_cluster(cluster):
+        return sum(safe_G.nodes[n][node_weight] for n in cluster)
 
-    def _pivot(partition: list, node):
+    def _pivot(partition, node):
         ccx = [c for c in partition if node in c]
         assert len(ccx) == 1
         return ccx[0]
 
-    def _concatenate_or_merge(partition_1: list, partition_2: list, x, i, ref_weigth):
-
+    def _concatenate_or_merge(partition_1, partition_2, x, i, ref_weight):
         ccx = _pivot(partition_1, x)
         cci = _pivot(partition_2, i)
         merged_xi = ccx.union(cci)
 
         # We first check if we can do the merge.
         # If so, we do the actual calculations, otherwise we concatenate
-        if _weight_of_cluster(frozenset(merged_xi)) <= ref_weigth:
+        if _weight_of_cluster(frozenset(merged_xi)) <= ref_weight:
             cp1 = list(filter(lambda x: x != ccx, partition_1))
             cp2 = list(filter(lambda x: x != cci, partition_2))
 
@@ -167,13 +165,13 @@ def lukes_partitioning(G, max_size: int, node_weight=None, edge_weight=None) -> 
     # INITIALIZATION -----------------------
     leaves = set(_leaves(t_G))
     for lv in leaves:
-        t_G.nodes[lv][PKEY] = dict()
+        t_G.nodes[lv][PKEY] = {}
         slot = safe_G.nodes[lv][node_weight]
         t_G.nodes[lv][PKEY][slot] = [{lv}]
         t_G.nodes[lv][PKEY][0] = [{lv}]
 
     for inner in [x for x in t_G.nodes if x not in leaves]:
-        t_G.nodes[inner][PKEY] = dict()
+        t_G.nodes[inner][PKEY] = {}
         slot = safe_G.nodes[inner][node_weight]
         t_G.nodes[inner][PKEY][slot] = [{inner}]
 
@@ -183,7 +181,7 @@ def lukes_partitioning(G, max_size: int, node_weight=None, edge_weight=None) -> 
         weight_of_x = safe_G.nodes[x_node][node_weight]
         best_value = 0
         best_partition = None
-        bp_buffer = dict()
+        bp_buffer = {}
         x_descendants = nx.descendants(t_G, x_node)
         for i_node in x_descendants:
             for j in range(weight_of_x, max_size + 1):

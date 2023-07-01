@@ -13,9 +13,8 @@ def flow_matrix_row(G, weight=None, dtype=float, solver="lu"):
         "cg": CGInverseLaplacian,
     }
     n = G.number_of_nodes()
-    L = laplacian_sparse_matrix(
-        G, nodelist=range(n), weight=weight, dtype=dtype, format="csc"
-    )
+    L = nx.laplacian_matrix(G, nodelist=range(n), weight=weight).asformat("csc")
+    L = L.astype(dtype)
     C = solvername[solver](L, dtype=dtype)  # initialize solver
     w = C.w  # w is the Laplacian matrix width
     # row-by-row flow matrix
@@ -26,7 +25,7 @@ def flow_matrix_row(G, weight=None, dtype=float, solver="lu"):
         B[v % w] = -c
         # get only the rows needed in the inverse laplacian
         # and multiply to get the flow matrix row
-        row = np.dot(B, C.get_rows(u, v))
+        row = B @ C.get_rows(u, v)
         yield row, (u, v)
 
 
@@ -86,7 +85,7 @@ class FullInverseLaplacian(InverseLaplacian):
 
     def solve(self, rhs):
         s = np.zeros(rhs.shape, dtype=self.dtype)
-        s = np.dot(self.IL, rhs)
+        s = self.IL @ rhs
         return s
 
     def solve_inverse(self, r):
@@ -95,9 +94,9 @@ class FullInverseLaplacian(InverseLaplacian):
 
 class SuperLUInverseLaplacian(InverseLaplacian):
     def init_solver(self, L):
-        from scipy.sparse import linalg
+        import scipy as sp
 
-        self.lusolve = linalg.factorized(self.L1.tocsc())
+        self.lusolve = sp.sparse.linalg.factorized(self.L1.tocsc())
 
     def solve_inverse(self, r):
         rhs = np.zeros(self.n, dtype=self.dtype)
@@ -112,33 +111,19 @@ class SuperLUInverseLaplacian(InverseLaplacian):
 
 class CGInverseLaplacian(InverseLaplacian):
     def init_solver(self, L):
-        global linalg
-        from scipy.sparse import linalg
+        global sp
+        import scipy as sp
 
-        ilu = linalg.spilu(self.L1.tocsc())
+        ilu = sp.sparse.linalg.spilu(self.L1.tocsc())
         n = self.n - 1
-        self.M = linalg.LinearOperator(shape=(n, n), matvec=ilu.solve)
+        self.M = sp.sparse.linalg.LinearOperator(shape=(n, n), matvec=ilu.solve)
 
     def solve(self, rhs):
         s = np.zeros(rhs.shape, dtype=self.dtype)
-        s[1:] = linalg.cg(self.L1, rhs[1:], M=self.M, atol=0)[0]
+        s[1:] = sp.sparse.linalg.cg(self.L1, rhs[1:], M=self.M, atol=0)[0]
         return s
 
     def solve_inverse(self, r):
         rhs = np.zeros(self.n, self.dtype)
         rhs[r] = 1
-        return linalg.cg(self.L1, rhs[1:], M=self.M, atol=0)[0]
-
-
-# graph laplacian, sparse version, will move to linalg/laplacianmatrix.py
-def laplacian_sparse_matrix(G, nodelist=None, weight=None, dtype=None, format="csr"):
-    import numpy as np
-    import scipy.sparse
-
-    A = nx.to_scipy_sparse_matrix(
-        G, nodelist=nodelist, weight=weight, dtype=dtype, format=format
-    )
-    (n, n) = A.shape
-    data = np.asarray(A.sum(axis=1).T)
-    D = scipy.sparse.spdiags(data, 0, n, n, format=format)
-    return D - A
+        return sp.sparse.linalg.cg(self.L1, rhs[1:], M=self.M, atol=0)[0]

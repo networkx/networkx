@@ -1,6 +1,10 @@
+import os
+
 import pytest
+
 import networkx as nx
-from networkx.testing import assert_edges_equal
+from networkx.classes.tests import dispatch_interface
+from networkx.utils import edges_equal
 
 
 def test_union_attributes():
@@ -22,7 +26,7 @@ def test_union_attributes():
         assert gh.nodes[n] == eval(graph).nodes[int(node)]
 
     assert gh.graph["attr"] == "attr"
-    assert gh.graph["name"] == "h"  # h graph attributes take precendent
+    assert gh.graph["name"] == "h"  # h graph attributes take precedent
 
 
 def test_intersection():
@@ -34,6 +38,38 @@ def test_intersection():
     H.add_nodes_from([1, 2, 3, 4])
     H.add_edge(2, 3)
     H.add_edge(3, 4)
+    I = nx.intersection(G, H)
+    assert set(I.nodes()) == {1, 2, 3, 4}
+    assert sorted(I.edges()) == [(2, 3)]
+
+    ##################
+    # Tests for @nx._dispatch mechanism with multiple graph arguments
+    # nx.intersection is called as if it were a re-implementation
+    # from another package.
+    ###################
+    G2 = dispatch_interface.convert(G)
+    H2 = dispatch_interface.convert(H)
+    I2 = nx.intersection(G2, H2)
+    assert set(I2.nodes()) == {1, 2, 3, 4}
+    assert sorted(I2.edges()) == [(2, 3)]
+    # Only test if not performing auto convert testing of backend implementations
+    if os.environ.get("NETWORKX_GRAPH_CONVERT", None) is None:
+        with pytest.raises(TypeError):
+            nx.intersection(G2, H)
+        with pytest.raises(TypeError):
+            nx.intersection(G, H2)
+
+
+def test_intersection_node_sets_different():
+    G = nx.Graph()
+    H = nx.Graph()
+    G.add_nodes_from([1, 2, 3, 4, 7])
+    G.add_edge(1, 2)
+    G.add_edge(2, 3)
+    H.add_nodes_from([1, 2, 3, 4, 5, 6])
+    H.add_edge(2, 3)
+    H.add_edge(3, 4)
+    H.add_edge(5, 6)
     I = nx.intersection(G, H)
     assert set(I.nodes()) == {1, 2, 3, 4}
     assert sorted(I.edges()) == [(2, 3)]
@@ -50,14 +86,30 @@ def test_intersection_attributes():
     h.graph["name"] = "h"
     h.graph["attr"] = "attr"
     h.nodes[0]["x"] = 7
-
     gh = nx.intersection(g, h)
+
     assert set(gh.nodes()) == set(g.nodes())
     assert set(gh.nodes()) == set(h.nodes())
     assert sorted(gh.edges()) == sorted(g.edges())
 
-    h.remove_node(0)
-    pytest.raises(nx.NetworkXError, nx.intersection, g, h)
+
+def test_intersection_attributes_node_sets_different():
+    g = nx.Graph()
+    g.add_node(0, x=4)
+    g.add_node(1, x=5)
+    g.add_node(2, x=3)
+    g.add_edge(0, 1, size=5)
+    g.graph["name"] = "g"
+
+    h = g.copy()
+    h.graph["name"] = "h"
+    h.graph["attr"] = "attr"
+    h.nodes[0]["x"] = 7
+    h.remove_node(2)
+
+    gh = nx.intersection(g, h)
+    assert set(gh.nodes()) == set(h.nodes())
+    assert sorted(gh.edges()) == sorted(g.edges())
 
 
 def test_intersection_multigraph_attributes():
@@ -70,6 +122,22 @@ def test_intersection_multigraph_attributes():
     h.add_edge(0, 1, key=3)
     gh = nx.intersection(g, h)
     assert set(gh.nodes()) == set(g.nodes())
+    assert set(gh.nodes()) == set(h.nodes())
+    assert sorted(gh.edges()) == [(0, 1)]
+    assert sorted(gh.edges(keys=True)) == [(0, 1, 0)]
+
+
+def test_intersection_multigraph_attributes_node_set_different():
+    g = nx.MultiGraph()
+    g.add_edge(0, 1, key=0)
+    g.add_edge(0, 1, key=1)
+    g.add_edge(0, 1, key=2)
+    g.add_edge(0, 2, key=2)
+    g.add_edge(0, 2, key=1)
+    h = nx.MultiGraph()
+    h.add_edge(0, 1, key=0)
+    h.add_edge(0, 1, key=3)
+    gh = nx.intersection(g, h)
     assert set(gh.nodes()) == set(h.nodes())
     assert sorted(gh.edges()) == [(0, 1)]
     assert sorted(gh.edges(keys=True)) == [(0, 1, 0)]
@@ -132,9 +200,6 @@ def test_difference_attributes():
     assert set(gh.nodes()) == set(h.nodes())
     assert sorted(gh.edges()) == []
 
-    h.remove_node(0)
-    pytest.raises(nx.NetworkXError, nx.intersection, g, h)
-
 
 def test_difference_multigraph_attributes():
     g = nx.MultiGraph()
@@ -192,7 +257,7 @@ def test_union_and_compose():
 
     G = nx.union(G1, G2)
     H = nx.compose(G1, G2)
-    assert_edges_equal(G.edges(), H.edges())
+    assert edges_equal(G.edges(), H.edges())
     assert not G.has_edge("A", 1)
     pytest.raises(nx.NetworkXError, nx.union, K3, P3)
     H1 = nx.union(H, G1, rename=("H", "G1"))
@@ -230,7 +295,7 @@ def test_union_and_compose():
     assert not H1.has_edge("NB", "NA")
 
     G = nx.compose(G, G)
-    assert_edges_equal(G.edges(), H.edges())
+    assert edges_equal(G.edges(), H.edges())
 
     G2 = nx.union(G2, G2, rename=("", "copy"))
     assert sorted(G2.nodes()) == [

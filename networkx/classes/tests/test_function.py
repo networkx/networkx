@@ -1,7 +1,9 @@
 import random
+
 import pytest
+
 import networkx as nx
-from networkx.testing.utils import assert_edges_equal, assert_nodes_equal
+from networkx.utils import edges_equal, nodes_equal
 
 
 class TestFunction:
@@ -17,13 +19,13 @@ class TestFunction:
         self.DGedges = [(0, 1), (0, 2), (0, 3), (1, 0), (1, 1), (1, 2)]
 
     def test_nodes(self):
-        assert_nodes_equal(self.G.nodes(), list(nx.nodes(self.G)))
-        assert_nodes_equal(self.DG.nodes(), list(nx.nodes(self.DG)))
+        assert nodes_equal(self.G.nodes(), list(nx.nodes(self.G)))
+        assert nodes_equal(self.DG.nodes(), list(nx.nodes(self.DG)))
 
     def test_edges(self):
-        assert_edges_equal(self.G.edges(), list(nx.edges(self.G)))
+        assert edges_equal(self.G.edges(), list(nx.edges(self.G)))
         assert sorted(self.DG.edges()) == sorted(nx.edges(self.DG))
-        assert_edges_equal(
+        assert edges_equal(
             self.G.edges(nbunch=[0, 1, 3]), list(nx.edges(self.G, nbunch=[0, 1, 3]))
         )
         assert sorted(self.DG.edges(nbunch=[0, 1, 3])) == sorted(
@@ -31,15 +33,15 @@ class TestFunction:
         )
 
     def test_degree(self):
-        assert_edges_equal(self.G.degree(), list(nx.degree(self.G)))
+        assert edges_equal(self.G.degree(), list(nx.degree(self.G)))
         assert sorted(self.DG.degree()) == sorted(nx.degree(self.DG))
-        assert_edges_equal(
+        assert edges_equal(
             self.G.degree(nbunch=[0, 1]), list(nx.degree(self.G, nbunch=[0, 1]))
         )
         assert sorted(self.DG.degree(nbunch=[0, 1])) == sorted(
             nx.degree(self.DG, nbunch=[0, 1])
         )
-        assert_edges_equal(
+        assert edges_equal(
             self.G.degree(weight="weight"), list(nx.degree(self.G, weight="weight"))
         )
         assert sorted(self.DG.degree(weight="weight")) == sorted(
@@ -66,11 +68,11 @@ class TestFunction:
         G = self.G.copy()
         nlist = [12, 13, 14, 15]
         nx.add_star(G, nlist)
-        assert_edges_equal(G.edges(nlist), [(12, 13), (12, 14), (12, 15)])
+        assert edges_equal(G.edges(nlist), [(12, 13), (12, 14), (12, 15)])
 
         G = self.G.copy()
         nx.add_star(G, nlist, weight=2.0)
-        assert_edges_equal(
+        assert edges_equal(
             G.edges(nlist, data=True),
             [
                 (12, 13, {"weight": 2.0}),
@@ -82,22 +84,22 @@ class TestFunction:
         G = self.G.copy()
         nlist = [12]
         nx.add_star(G, nlist)
-        assert_nodes_equal(G, list(self.G) + nlist)
+        assert nodes_equal(G, list(self.G) + nlist)
 
         G = self.G.copy()
         nlist = []
         nx.add_star(G, nlist)
-        assert_nodes_equal(G.nodes, self.Gnodes)
-        assert_edges_equal(G.edges, self.G.edges)
+        assert nodes_equal(G.nodes, self.Gnodes)
+        assert edges_equal(G.edges, self.G.edges)
 
     def test_add_path(self):
         G = self.G.copy()
         nlist = [12, 13, 14, 15]
         nx.add_path(G, nlist)
-        assert_edges_equal(G.edges(nlist), [(12, 13), (13, 14), (14, 15)])
+        assert edges_equal(G.edges(nlist), [(12, 13), (13, 14), (14, 15)])
         G = self.G.copy()
         nx.add_path(G, nlist, weight=2.0)
-        assert_edges_equal(
+        assert edges_equal(
             G.edges(nlist, data=True),
             [
                 (12, 13, {"weight": 2.0}),
@@ -107,40 +109,40 @@ class TestFunction:
         )
 
         G = self.G.copy()
-        nlist = [None]
+        nlist = ["node"]
         nx.add_path(G, nlist)
-        assert_edges_equal(G.edges(nlist), [])
-        assert_nodes_equal(G, list(self.G) + [None])
+        assert edges_equal(G.edges(nlist), [])
+        assert nodes_equal(G, list(self.G) + ["node"])
 
         G = self.G.copy()
-        nlist = iter([None])
+        nlist = iter(["node"])
         nx.add_path(G, nlist)
-        assert_edges_equal(G.edges([None]), [])
-        assert_nodes_equal(G, list(self.G) + [None])
+        assert edges_equal(G.edges(["node"]), [])
+        assert nodes_equal(G, list(self.G) + ["node"])
 
         G = self.G.copy()
         nlist = [12]
         nx.add_path(G, nlist)
-        assert_edges_equal(G.edges(nlist), [])
-        assert_nodes_equal(G, list(self.G) + [12])
+        assert edges_equal(G.edges(nlist), [])
+        assert nodes_equal(G, list(self.G) + [12])
 
         G = self.G.copy()
         nlist = iter([12])
         nx.add_path(G, nlist)
-        assert_edges_equal(G.edges([12]), [])
-        assert_nodes_equal(G, list(self.G) + [12])
+        assert edges_equal(G.edges([12]), [])
+        assert nodes_equal(G, list(self.G) + [12])
 
         G = self.G.copy()
         nlist = []
         nx.add_path(G, nlist)
-        assert_edges_equal(G.edges, self.G.edges)
-        assert_nodes_equal(G, list(self.G))
+        assert edges_equal(G.edges, self.G.edges)
+        assert nodes_equal(G, list(self.G))
 
         G = self.G.copy()
         nlist = iter([])
         nx.add_path(G, nlist)
-        assert_edges_equal(G.edges, self.G.edges)
-        assert_nodes_equal(G, list(self.G))
+        assert edges_equal(G.edges, self.G.edges)
+        assert nodes_equal(G, list(self.G))
 
     def test_add_cycle(self):
         G = self.G.copy()
@@ -172,13 +174,13 @@ class TestFunction:
         G = self.G.copy()
         nlist = [12]
         nx.add_cycle(G, nlist)
-        assert_nodes_equal(G, list(self.G) + nlist)
+        assert nodes_equal(G, list(self.G) + nlist)
 
         G = self.G.copy()
         nlist = []
         nx.add_cycle(G, nlist)
-        assert_nodes_equal(G.nodes, self.Gnodes)
-        assert_edges_equal(G.edges, self.G.edges)
+        assert nodes_equal(G.nodes, self.Gnodes)
+        assert edges_equal(G.edges, self.G.edges)
 
     def test_subgraph(self):
         assert (
@@ -212,12 +214,12 @@ class TestFunction:
 
     def test_create_empty_copy(self):
         G = nx.create_empty_copy(self.G, with_data=False)
-        assert_nodes_equal(G, list(self.G))
+        assert nodes_equal(G, list(self.G))
         assert G.graph == {}
         assert G._node == {}.fromkeys(self.G.nodes(), {})
         assert G._adj == {}.fromkeys(self.G.nodes(), {})
         G = nx.create_empty_copy(self.G)
-        assert_nodes_equal(G, list(self.G))
+        assert nodes_equal(G, list(self.G))
         assert G.graph == self.G.graph
         assert G._node == self.G._node
         assert G._adj == {}.fromkeys(self.G.nodes(), {})
@@ -250,6 +252,7 @@ class TestFunction:
         pytest.raises(nx.NetworkXError, G.add_edges_from, [(1, 2)])
         pytest.raises(nx.NetworkXError, G.remove_edge, 1, 2)
         pytest.raises(nx.NetworkXError, G.remove_edges_from, [(1, 2)])
+        pytest.raises(nx.NetworkXError, G.clear_edges)
         pytest.raises(nx.NetworkXError, G.clear)
 
     def test_is_frozen(self):
@@ -258,37 +261,17 @@ class TestFunction:
         assert G.frozen == nx.is_frozen(self.G)
         assert G.frozen
 
-    def test_info(self):
-        G = nx.path_graph(5)
-        G.name = "path_graph(5)"
-        info = nx.info(G)
-        expected_graph_info = "Graph named 'path_graph(5)' with 5 nodes and 4 edges"
-        assert info == expected_graph_info
+    def test_node_attributes_are_still_mutable_on_frozen_graph(self):
+        G = nx.freeze(nx.path_graph(3))
+        node = G.nodes[0]
+        node["node_attribute"] = True
+        assert node["node_attribute"] == True
 
-        info = nx.info(G, n=1)
-        assert type(info) == str
-        expected_node_info = "\n".join(
-            ["Node 1 has the following properties:", "Degree: 2", "Neighbors: 0 2"]
-        )
-        assert info == expected_node_info
-
-        # must raise an error for a non-existent node
-        pytest.raises(nx.NetworkXError, nx.info, G, 1248)
-
-    def test_info_digraph(self):
-        G = nx.DiGraph(name="path_graph(5)")
-        nx.add_path(G, [0, 1, 2, 3, 4])
-        info = nx.info(G)
-        expected_graph_info = "DiGraph named 'path_graph(5)' with 5 nodes and 4 edges"
-        assert info == expected_graph_info
-
-        info = nx.info(G, n=1)
-        expected_node_info = "\n".join(
-            ["Node 1 has the following properties:", "Degree: 2", "Neighbors: 2"]
-        )
-        assert info == expected_node_info
-
-        pytest.raises(nx.NetworkXError, nx.info, G, n=-1)
+    def test_edge_attributes_are_still_mutable_on_frozen_graph(self):
+        G = nx.freeze(nx.path_graph(3))
+        edge = G.edges[(0, 1)]
+        edge["edge_attribute"] = True
+        assert edge["edge_attribute"] == True
 
     def test_neighbors_complete_graph(self):
         graph = nx.complete_graph(100)
@@ -347,13 +330,13 @@ class TestFunction:
         graph = nx.path_graph(4)
         expected = [(0, 2), (0, 3), (1, 3)]
         nedges = list(nx.non_edges(graph))
-        for (u, v) in expected:
+        for u, v in expected:
             assert (u, v) in nedges or (v, u) in nedges
 
         graph = nx.star_graph(4)
         expected = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
         nedges = list(nx.non_edges(graph))
-        for (u, v) in expected:
+        for u, v in expected:
             assert (u, v) in nedges or (v, u) in nedges
 
         # Directed graphs
@@ -684,9 +667,9 @@ def test_is_empty():
 def test_selfloops(graph_type):
     G = nx.complete_graph(3, create_using=graph_type)
     G.add_edge(0, 0)
-    assert_nodes_equal(nx.nodes_with_selfloops(G), [0])
-    assert_edges_equal(nx.selfloop_edges(G), [(0, 0)])
-    assert_edges_equal(nx.selfloop_edges(G, data=True), [(0, 0, {})])
+    assert nodes_equal(nx.nodes_with_selfloops(G), [0])
+    assert edges_equal(nx.selfloop_edges(G), [(0, 0)])
+    assert edges_equal(nx.selfloop_edges(G, data=True), [(0, 0, {})])
     assert nx.number_of_selfloops(G) == 1
 
 
@@ -697,19 +680,18 @@ def test_selfloop_edges_attr(graph_type):
     G = nx.complete_graph(3, create_using=graph_type)
     G.add_edge(0, 0)
     G.add_edge(1, 1, weight=2)
-    assert_edges_equal(
+    assert edges_equal(
         nx.selfloop_edges(G, data=True), [(0, 0, {}), (1, 1, {"weight": 2})]
     )
-    assert_edges_equal(nx.selfloop_edges(G, data="weight"), [(0, 0, None), (1, 1, 2)])
+    assert edges_equal(nx.selfloop_edges(G, data="weight"), [(0, 0, None), (1, 1, 2)])
 
 
 def test_selfloop_edges_multi_with_data_and_keys():
     G = nx.complete_graph(3, create_using=nx.MultiGraph)
     G.add_edge(0, 0, weight=10)
     G.add_edge(0, 0, weight=100)
-    assert_edges_equal(
-        nx.selfloop_edges(G, data="weight", keys=True),
-        [(0, 0, 0, 10), (0, 0, 1, 100)],
+    assert edges_equal(
+        nx.selfloop_edges(G, data="weight", keys=True), [(0, 0, 0, 10), (0, 0, 1, 100)]
     )
 
 
@@ -756,9 +738,9 @@ def test_pathweight():
     invalid_path = [1, 3, 2]
     graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
     edges = [
-        (1, 2, dict(cost=5, dist=6)),
-        (2, 3, dict(cost=3, dist=4)),
-        (1, 2, dict(cost=1, dist=2)),
+        (1, 2, {"cost": 5, "dist": 6}),
+        (2, 3, {"cost": 3, "dist": 4}),
+        (1, 2, {"cost": 1, "dist": 2}),
     ]
     for graph in graphs:
         graph.add_edges_from(edges)
@@ -767,15 +749,17 @@ def test_pathweight():
         pytest.raises(nx.NetworkXNoPath, nx.path_weight, graph, invalid_path, "cost")
 
 
-def test_ispath():
+@pytest.mark.parametrize(
+    "G", (nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph())
+)
+def test_ispath(G):
+    G.add_edges_from([(1, 2), (2, 3), (1, 2), (3, 4)])
     valid_path = [1, 2, 3, 4]
-    invalid_path = [1, 2, 4, 3]
-    graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
-    edges = [(1, 2), (2, 3), (1, 2), (3, 4)]
-    for graph in graphs:
-        graph.add_edges_from(edges)
-        assert nx.is_path(graph, valid_path)
-        assert not nx.is_path(graph, invalid_path)
+    invalid_path = [1, 2, 4, 3]  # wrong node order
+    another_invalid_path = [1, 2, 3, 4, 5]  # contains node not in G
+    assert nx.is_path(G, valid_path)
+    assert not nx.is_path(G, invalid_path)
+    assert not nx.is_path(G, another_invalid_path)
 
 
 @pytest.mark.parametrize("G", (nx.Graph(), nx.DiGraph()))

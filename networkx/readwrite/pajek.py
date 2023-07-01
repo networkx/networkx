@@ -56,8 +56,8 @@ def generate_pajek(G):
         y = na.pop("y", 0.0)
         try:
             id = int(na.pop("id", nodenumber[n]))
-        except ValueError as e:
-            e.args += (
+        except ValueError as err:
+            err.args += (
                 (
                     "Pajek format requires 'id' to be an int()."
                     " Refer to the 'Relabeling nodes' section."
@@ -176,7 +176,7 @@ def parse_pajek(lines):
 
     See Also
     --------
-    read_pajek()
+    read_pajek
 
     """
     import shlex

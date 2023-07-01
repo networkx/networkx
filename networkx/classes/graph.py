@@ -8,12 +8,59 @@ Self-loops are allowed but multiple edges are not (see MultiGraph).
 For directed graphs see DiGraph and MultiDiGraph.
 """
 from copy import deepcopy
+from functools import cached_property
 
 import networkx as nx
+from networkx import convert
 from networkx.classes.coreviews import AdjacencyView
-from networkx.classes.reportviews import NodeView, EdgeView, DegreeView
+from networkx.classes.reportviews import DegreeView, EdgeView, NodeView
 from networkx.exception import NetworkXError
-import networkx.convert as convert
+
+__all__ = ["Graph"]
+
+
+class _CachedPropertyResetterAdj:
+    """Data Descriptor class for _adj that resets ``adj`` cached_property when needed
+
+    This assumes that the ``cached_property`` ``G.adj`` should be reset whenever
+    ``G._adj`` is set to a new value.
+
+    This object sits on a class and ensures that any instance of that
+    class clears its cached property "adj" whenever the underlying
+    instance attribute "_adj" is set to a new object. It only affects
+    the set process of the obj._adj attribute. All get/del operations
+    act as they normally would.
+
+    For info on Data Descriptors see: https://docs.python.org/3/howto/descriptor.html
+    """
+
+    def __set__(self, obj, value):
+        od = obj.__dict__
+        od["_adj"] = value
+        if "adj" in od:
+            del od["adj"]
+
+
+class _CachedPropertyResetterNode:
+    """Data Descriptor class for _node that resets ``nodes`` cached_property when needed
+
+    This assumes that the ``cached_property`` ``G.node`` should be reset whenever
+    ``G._node`` is set to a new value.
+
+    This object sits on a class and ensures that any instance of that
+    class clears its cached property "nodes" whenever the underlying
+    instance attribute "_node" is set to a new object. It only affects
+    the set process of the obj._adj attribute. All get/del operations
+    act as they normally would.
+
+    For info on Data Descriptors see: https://docs.python.org/3/howto/descriptor.html
+    """
+
+    def __set__(self, obj, value):
+        od = obj.__dict__
+        od["_node"] = value
+        if "nodes" in od:
+            del od["nodes"]
 
 
 class Graph:
@@ -26,7 +73,7 @@ class Graph:
     (parallel) edges are not.
 
     Nodes can be arbitrary (hashable) Python objects with optional
-    key/value attributes. By convention `None` is not used as a node.
+    key/value attributes, except that `None` is not allowed as a node.
 
     Edges are represented as links between nodes with optional
     key/value attributes.
@@ -37,8 +84,8 @@ class Graph:
         Data to initialize graph. If None (default) an empty
         graph is created.  The data can be any format that is supported
         by the to_networkx_graph() function, currently including edge list,
-        dict of dicts, dict of lists, NetworkX graph, NumPy matrix
-        or 2d ndarray, SciPy sparse matrix, or PyGraphviz graph.
+        dict of dicts, dict of lists, NetworkX graph, 2D NumPy array, SciPy
+        sparse matrix, or PyGraphviz graph.
 
     attr : keyword arguments, optional (default= no attributes)
         Attributes to add to graph as key=value pairs.
@@ -48,7 +95,6 @@ class Graph:
     DiGraph
     MultiGraph
     MultiDiGraph
-    OrderedGraph
 
     Examples
     --------
@@ -189,9 +235,7 @@ class Graph:
     dict-like object. In general, the dict-like features should be
     maintained but extra features can be added. To replace one of the
     dicts create a new graph class by changing the class(!) variable
-    holding the factory for that dict-like structure. The variable names are
-    node_dict_factory, node_attr_dict_factory, adjlist_inner_dict_factory,
-    adjlist_outer_dict_factory, edge_attr_dict_factory and graph_attr_dict_factory.
+    holding the factory for that dict-like structure.
 
     node_dict_factory : function, (default: dict)
         Factory function to be used to create the dict containing node
@@ -237,8 +281,7 @@ class Graph:
         Class to create a new graph structure in the `to_undirected` method.
         If `None`, a NetworkX class (Graph or MultiGraph) is used.
 
-    Examples
-    --------
+    **Subclassing Example**
 
     Create a low memory graph class that effectively disallows edge
     attributes by using a single attribute dict for all edges.
@@ -258,11 +301,10 @@ class Graph:
     >>> G.add_edge(2, 2)
     >>> G[2][1] is G[2][2]
     True
-
-    Please see :mod:`~networkx.classes.ordered` for more examples of
-    creating graph subclasses by overwriting the base class `dict` with
-    a dictionary-like object.
     """
+
+    _adj = _CachedPropertyResetterAdj()
+    _node = _CachedPropertyResetterNode()
 
     node_dict_factory = dict
     node_attr_dict_factory = dict
@@ -296,8 +338,8 @@ class Graph:
             Data to initialize graph. If None (default) an empty
             graph is created.  The data can be an edge list, or any
             NetworkX graph object.  If the corresponding optional Python
-            packages are installed the data can also be a NumPy matrix
-            or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.
+            packages are installed the data can also be a 2D NumPy array, a
+            SciPy sparse array, or a PyGraphviz graph.
 
         attr : keyword arguments, optional (default= no attributes)
             Attributes to add to graph as key=value pairs.
@@ -320,13 +362,6 @@ class Graph:
         {'day': 'Friday'}
 
         """
-        self.graph_attr_dict_factory = self.graph_attr_dict_factory
-        self.node_dict_factory = self.node_dict_factory
-        self.node_attr_dict_factory = self.node_attr_dict_factory
-        self.adjlist_outer_dict_factory = self.adjlist_outer_dict_factory
-        self.adjlist_inner_dict_factory = self.adjlist_inner_dict_factory
-        self.edge_attr_dict_factory = self.edge_attr_dict_factory
-
         self.graph = self.graph_attr_dict_factory()  # dictionary for graph attributes
         self._node = self.node_dict_factory()  # empty node attribute dict
         self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
@@ -336,7 +371,7 @@ class Graph:
         # load graph attributes (must be after convert)
         self.graph.update(attr)
 
-    @property
+    @cached_property
     def adj(self):
         """Graph adjacency object holding the neighbors of each node.
 
@@ -375,7 +410,8 @@ class Graph:
         Returns
         -------
         info : string
-            Graph information as provided by `nx.info`
+            Graph information including the graph name (if any), graph type, and the
+            number of nodes and edges.
 
         Examples
         --------
@@ -391,7 +427,7 @@ class Graph:
         return "".join(
             [
                 type(self).__name__,
-                f" named '{self.name}'" if self.name else "",
+                f" named {self.name!r}" if self.name else "",
                 f" with {self.number_of_nodes()} nodes and {self.number_of_edges()} edges",
             ]
         )
@@ -438,7 +474,8 @@ class Graph:
 
         See Also
         --------
-        number_of_nodes, order  which are identical
+        number_of_nodes: identical method
+        order: identical method
 
         Examples
         --------
@@ -515,6 +552,8 @@ class Graph:
         doesn't change on mutables.
         """
         if node_for_adding not in self._node:
+            if node_for_adding is None:
+                raise ValueError("None cannot be a node")
             self._adj[node_for_adding] = self.adjlist_inner_dict_factory()
             attr_dict = self._node[node_for_adding] = self.node_attr_dict_factory()
             attr_dict.update(attr)
@@ -540,6 +579,16 @@ class Graph:
         --------
         add_node
 
+        Notes
+        -----
+        When adding nodes from an iterator over the graph you are changing,
+        a `RuntimeError` can be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
+        object, e.g. by using `list(iterator_of_nodes)`, and pass this
+        object to `G.add_nodes_from`.
+
         Examples
         --------
         >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -564,6 +613,13 @@ class Graph:
         >>> H.nodes[1]["size"]
         11
 
+        Evaluate an iterator over a graph if using it to modify the same graph
+
+        >>> G = nx.Graph([(0, 1), (1, 2), (3, 4)])
+        >>> # wrong way - will raise RuntimeError
+        >>> # G.add_nodes_from(n + 1 for n in G.nodes)
+        >>> # correct way
+        >>> G.add_nodes_from(list(n + 1 for n in G.nodes))
         """
         for n in nodes_for_adding:
             try:
@@ -575,6 +631,8 @@ class Graph:
                 newdict = attr.copy()
                 newdict.update(ndict)
             if newnode:
+                if n is None:
+                    raise ValueError("None cannot be a node")
                 self._adj[n] = self.adjlist_inner_dict_factory()
                 self._node[n] = self.node_attr_dict_factory()
             self._node[n].update(newdict)
@@ -591,7 +649,7 @@ class Graph:
            A node in the graph
 
         Raises
-        -------
+        ------
         NetworkXError
            If n is not in the graph.
 
@@ -613,8 +671,8 @@ class Graph:
         try:
             nbrs = list(adj[n])  # list handles self-loops (allows mutation)
             del self._node[n]
-        except KeyError as e:  # NetworkXError if n not in self
-            raise NetworkXError(f"The node {n} is not in the graph.") from e
+        except KeyError as err:  # NetworkXError if n not in self
+            raise NetworkXError(f"The node {n} is not in the graph.") from err
         for u in nbrs:
             del adj[u][n]  # remove all edges n-u in graph
         del adj[n]  # now remove node
@@ -633,6 +691,16 @@ class Graph:
         --------
         remove_node
 
+        Notes
+        -----
+        When removing nodes from an iterator over the graph you are changing,
+        a `RuntimeError` will be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
+        object, e.g. by using `list(iterator_of_nodes)`, and pass this
+        object to `G.remove_nodes_from`.
+
         Examples
         --------
         >>> G = nx.path_graph(3)  # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -643,6 +711,13 @@ class Graph:
         >>> list(G.nodes)
         []
 
+        Evaluate an iterator over a graph if using it to modify the same graph
+
+        >>> G = nx.Graph([(0, 1), (1, 2), (3, 4)])
+        >>> # this command will fail, as the graph's dict is modified during iteration
+        >>> # G.remove_nodes_from(n for n in G.nodes if n < 2)
+        >>> # this command will work, since the dictionary underlying graph is not modified
+        >>> G.remove_nodes_from(list(n for n in G.nodes if n < 2))
         """
         adj = self._adj
         for n in nodes:
@@ -654,7 +729,7 @@ class Graph:
             except KeyError:
                 pass
 
-    @property
+    @cached_property
     def nodes(self):
         """A NodeView of the Graph as G.nodes or G.nodes().
 
@@ -745,12 +820,7 @@ class Graph:
             {0: 1, 1: 2, 2: 3}
 
         """
-        nodes = NodeView(self)
-        # Lazy View creation: overload the (class) property on the instance
-        # Then future G.nodes use the existing View
-        # setattr doesn't work because attribute already exists
-        self.__dict__["nodes"] = nodes
-        return nodes
+        return NodeView(self)
 
     def number_of_nodes(self):
         """Returns the number of nodes in the graph.
@@ -762,7 +832,8 @@ class Graph:
 
         See Also
         --------
-        order, __len__  which are identical
+        order: identical method
+        __len__: identical method
 
         Examples
         --------
@@ -782,7 +853,8 @@ class Graph:
 
         See Also
         --------
-        number_of_nodes, __len__  which are identical
+        number_of_nodes: identical method
+        __len__: identical method
 
         Examples
         --------
@@ -829,7 +901,7 @@ class Graph:
 
         Parameters
         ----------
-        u, v : nodes
+        u_of_edge, v_of_edge : nodes
             Nodes can be, for example, strings or numbers.
             Nodes must be hashable (and not None) Python objects.
         attr : keyword arguments, optional
@@ -871,9 +943,13 @@ class Graph:
         u, v = u_of_edge, v_of_edge
         # add nodes
         if u not in self._node:
+            if u is None:
+                raise ValueError("None cannot be a node")
             self._adj[u] = self.adjlist_inner_dict_factory()
             self._node[u] = self.node_attr_dict_factory()
         if v not in self._node:
+            if v is None:
+                raise ValueError("None cannot be a node")
             self._adj[v] = self.adjlist_inner_dict_factory()
             self._node[v] = self.node_attr_dict_factory()
         # add the edge
@@ -889,7 +965,7 @@ class Graph:
         ----------
         ebunch_to_add : container of edges
             Each edge given in the container will be added to the
-            graph. The edges must be given as as 2-tuples (u, v) or
+            graph. The edges must be given as 2-tuples (u, v) or
             3-tuples (u, v, d) where d is a dictionary containing edge data.
         attr : keyword arguments, optional
             Edge data (or labels or objects) can be assigned using
@@ -908,6 +984,14 @@ class Graph:
         Edge attributes specified in an ebunch take precedence over
         attributes specified via keyword arguments.
 
+        When adding edges from an iterator over the graph you are changing,
+        a `RuntimeError` can be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
+        object, e.g. by using `list(iterator_of_edges)`, and pass this
+        object to `G.add_edges_from`.
+
         Examples
         --------
         >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -919,6 +1003,15 @@ class Graph:
 
         >>> G.add_edges_from([(1, 2), (2, 3)], weight=3)
         >>> G.add_edges_from([(3, 4), (1, 4)], label="WN2898")
+
+        Evaluate an iterator over a graph if using it to modify the same graph
+
+        >>> G = nx.Graph([(1, 2), (2, 3), (3, 4)])
+        >>> # Grow graph by one new node, adding edges to all existing nodes.
+        >>> # wrong way - will raise RuntimeError
+        >>> # G.add_edges_from(((5, n) for n in G.nodes))
+        >>> # correct way - note that there will be no self-edge for node 5
+        >>> G.add_edges_from(list((5, n) for n in G.nodes))
         """
         for e in ebunch_to_add:
             ne = len(e)
@@ -930,9 +1023,13 @@ class Graph:
             else:
                 raise NetworkXError(f"Edge tuple {e} must be a 2-tuple or 3-tuple.")
             if u not in self._node:
+                if u is None:
+                    raise ValueError("None cannot be a node")
                 self._adj[u] = self.adjlist_inner_dict_factory()
                 self._node[u] = self.node_attr_dict_factory()
             if v not in self._node:
+                if v is None:
+                    raise ValueError("None cannot be a node")
                 self._adj[v] = self.adjlist_inner_dict_factory()
                 self._node[v] = self.node_attr_dict_factory()
             datadict = self._adj[u].get(v, self.edge_attr_dict_factory())
@@ -966,10 +1063,28 @@ class Graph:
         the edge data. For MultiGraph/MultiDiGraph, duplicate edges
         are stored.
 
+        When adding edges from an iterator over the graph you are changing,
+        a `RuntimeError` can be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
+        object, e.g. by using `list(iterator_of_edges)`, and pass this
+        object to `G.add_weighted_edges_from`.
+
         Examples
         --------
         >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
         >>> G.add_weighted_edges_from([(0, 1, 3.0), (1, 2, 7.5)])
+
+        Evaluate an iterator over edges before passing it
+
+        >>> G = nx.Graph([(1, 2), (2, 3), (3, 4)])
+        >>> weight = 0.1
+        >>> # Grow graph by one new node, adding edges to all existing nodes.
+        >>> # wrong way - will raise RuntimeError
+        >>> # G.add_weighted_edges_from(((5, n, weight) for n in G.nodes))
+        >>> # correct way - note that there will be no self-edge for node 5
+        >>> G.add_weighted_edges_from(list((5, n, weight) for n in G.nodes))
         """
         self.add_edges_from(((u, v, {weight: d}) for u, v, d in ebunch_to_add), **attr)
 
@@ -1003,8 +1118,8 @@ class Graph:
             del self._adj[u][v]
             if u != v:  # self-loop needs only one entry removed
                 del self._adj[v][u]
-        except KeyError as e:
-            raise NetworkXError(f"The edge {u}-{v} is not in the graph") from e
+        except KeyError as err:
+            raise NetworkXError(f"The edge {u}-{v} is not in the graph") from err
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -1086,7 +1201,7 @@ class Graph:
         It you want to update the graph using an adjacency structure
         it is straightforward to obtain the edges/nodes from adjacency.
         The following examples provide common cases, your adjacency may
-        be slightly different and require tweaks of these examples.
+        be slightly different and require tweaks of these examples::
 
         >>> # dict-of-set/list/tuple
         >>> adj = {1: {2, 3}, 2: {1, 3}, 3: {1, 2}}
@@ -1237,10 +1352,10 @@ class Graph:
         """
         try:
             return iter(self._adj[n])
-        except KeyError as e:
-            raise NetworkXError(f"The node {n} is not in the graph.") from e
+        except KeyError as err:
+            raise NetworkXError(f"The node {n} is not in the graph.") from err
 
-    @property
+    @cached_property
     def edges(self):
         """An EdgeView of the Graph as G.edges or G.edges().
 
@@ -1259,7 +1374,7 @@ class Graph:
         Parameters
         ----------
         nbunch : single node, container, or all nodes (default= all nodes)
-            The view will only report edges incident to these nodes.
+            The view will only report edges from these nodes.
         data : string or bool, optional (default=False)
             The edge attribute returned in 3-tuple (u, v, ddict[data]).
             If True, return edge attribute dict in 3-tuple (u, v, ddict).
@@ -1290,9 +1405,9 @@ class Graph:
         EdgeDataView([(0, 1, {}), (1, 2, {}), (2, 3, {'weight': 5})])
         >>> G.edges.data("weight", default=1)
         EdgeDataView([(0, 1, 1), (1, 2, 1), (2, 3, 5)])
-        >>> G.edges([0, 3])  # only edges incident to these nodes
+        >>> G.edges([0, 3])  # only edges from these nodes
         EdgeDataView([(0, 1), (3, 2)])
-        >>> G.edges(0)  # only edges incident to a single node (use G.adj[0]?)
+        >>> G.edges(0)  # only edges from node 0
         EdgeDataView([(0, 1)])
         """
         return EdgeView(self)
@@ -1363,7 +1478,7 @@ class Graph:
         """
         return iter(self._adj.items())
 
-    @property
+    @cached_property
     def degree(self):
         """A DegreeView for the Graph as G.degree or G.degree().
 
@@ -1386,12 +1501,10 @@ class Graph:
 
         Returns
         -------
-        If a single node is requested
-        deg : int
-            Degree of the node
-
-        OR if multiple nodes are requested
-        nd_view : A DegreeView object capable of iterating (node, degree) pairs
+        DegreeView or int
+            If multiple nodes are requested (the default), returns a `DegreeView`
+            mapping nodes to their degree.
+            If a single node is requested, returns the degree of the node as an integer.
 
         Examples
         --------
@@ -1706,7 +1819,7 @@ class Graph:
         """
         induced_nodes = nx.filters.show_nodes(self.nbunch_iter(nodes))
         # if already a subgraph, don't make a chain
-        subgraph = nx.graphviews.subgraph_view
+        subgraph = nx.subgraph_view
         if hasattr(self, "_NODE_OK"):
             return subgraph(self._graph, induced_nodes, self._EDGE_OK)
         return subgraph(self, induced_nodes)
@@ -1737,7 +1850,7 @@ class Graph:
         To create a full graph version of the subgraph with its own copy
         of the edge or node attributes, use::
 
-            >>> G.edge_subgraph(edges).copy()  # doctest: +SKIP
+            G.edge_subgraph(edges).copy()
 
         Examples
         --------
@@ -1867,7 +1980,7 @@ class Graph:
         Raises
         ------
         NetworkXError
-            If nbunch is not a node or or sequence of nodes.
+            If nbunch is not a node or sequence of nodes.
             If a node in nbunch is not hashable.
 
         See Also
@@ -1897,8 +2010,8 @@ class Graph:
                     for n in nlist:
                         if n in adj:
                             yield n
-                except TypeError as e:
-                    exc, message = e, e.args[0]
+                except TypeError as err:
+                    exc, message = err, err.args[0]
                     # capture error for non-sequence/iterator nbunch.
                     if "iter" in message:
                         exc = NetworkXError(

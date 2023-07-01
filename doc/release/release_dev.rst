@@ -1,13 +1,15 @@
-Announcement: NetworkX 2.6
-==========================
+3.2 (unreleased)
+================
 
-We're happy to announce the release of NetworkX 2.6!
+Release date: TBD
+
+Supports Python 3.9, 3.10, and 3.11.
+
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
 
 For more information, please visit our `website <https://networkx.org/>`_
-and our `gallery of examples
-<https://networkx.org/documentation/latest/auto_examples/index.html>`_.
+and our :ref:`gallery of examples <examples_gallery>`.
 Please send comments and questions to the `networkx-discuss mailing list
 <http://groups.google.com/group/networkx-discuss>`_.
 
@@ -17,65 +19,33 @@ Highlights
 This release is the result of X of work with over X pull requests by
 X contributors. Highlights include:
 
-- NumPy, SciPy, Matplotlib, and pandas are now default requirements.
 
 Improvements
 ------------
 
-- [`#4319 <https://github.com/networkx/networkx/pull/4319>`_]
-pagerank uses scipy by default now.
-- [`#4317 <https://github.com/networkx/networkx/pull/4317>`_]
-  New ``source`` argument to ``has_eulerian_path`` to look for path starting at
-  source.
+- [`#6654 <https://github.com/networkx/networkx/pull/6654>`_]
+  Function ``cycle_basis`` switched from using Python sets to dicts so the
+  results are now deterministic (not dependent on order reported by a set).
 
 API Changes
 -----------
+- [`#6651 <https://github.com/networkx/networkx/pull/6651>`_]
+  In `is_semiconnected`, the keyword argument `topo_order` has been removed.
+  That argument resulted in silently incorrect results more often than not.
 
-- [`#4190 <https://github.com/networkx/networkx/pull/4190>`_]
-  Removed ``tracemin_chol``.  Use ``tracemin_lu`` instead.
 
-- [`#4216 <https://github.com/networkx/networkx/pull/4216>`_]
-  In `to_*_array/matrix`, nodes in nodelist but not in G now raise an exception.
-  Use G.add_nodes_from(nodelist) to add them to G before converting.
-
-- [`#4360  <https://github.com/networkx/networkx/pull/4360>`_]
-  Internally `.nx_pylab.draw_networkx_edges` now always generates a
-  list of `matplotlib.patches.FancyArrowPatch` rather than using
-  a `matplotlib.collections.LineCollection` for un-directed graphs.  This
-  unifies interface for all types of graphs.  In
-  addition to the API change this may cause a performance regression for
-  large graphs.
 
 Deprecations
 ------------
 
-- [`#4238 <https://github.com/networkx/networkx/pull/4238>`_]
-  Deprecate ``to_numpy_matrix`` and ``from_numpy_matrix``.
-- [`#4279 <https://github.com/networkx/networkx/pull/4279>`_]
-  Deprecate ``networkx.utils.misc.is_iterator``.
-  Use ``isinstance(obj, collections.abc.Iterator)`` instead.
-- [`#4280 <https://github.com/networkx/networkx/pull/4280>`_]
-  Deprecate ``networkx.utils.misc.is_list_of_ints`` as it is no longer used.
-  See ``networkx.utils.misc.make_list_of_ints`` for related functionality.
-- [`#4281 <https://github.com/networkx/networkx/pull/4281>`_]
-  Deprecate ``read_yaml`` and ``write_yaml``.
-- [`#4282 <https://github.com/networkx/networkx/pull/4282>`_]
-  Deprecate ``read_gpickle`` and ``write_gpickle``.
-- [`#4298 <https://github.com/networkx/networkx/pull/4298>`_]
-  Deprecate ``read_shp``, ``edges_from_line``, and ``write_shp``.
-- [`#4319 <https://github.com/networkx/networkx/pull/4319>`_]
-  Deprecate ``pagerank_numpy``, ``pagerank_scipy``.
-- [`#4355 <https://github.com/networkx/networkx/pull/4355>`_]
-  Deprecate ``copy`` method in the coreview Filtered-related classes.
 
-
-Contributors to this release
-----------------------------
+Merged PRs
+----------
 
 <output of contribs.py>
 
 
-Pull requests merged in this release
-------------------------------------
+Contributors
+------------
 
 <output of contribs.py>

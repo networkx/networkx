@@ -27,11 +27,11 @@ the proposed change.
 Usage and Impact
 ----------------
 
-This section describes how users of NumPy will use features described in this
+This section describes how users of NetworkX will use features described in this
 NXEP. It should be comprised mainly of code examples that wouldn't be possible
 without acceptance and implementation of this NXEP, as well as the impact the
 proposed changes would have on the ecosystem. This section should be written
-from the perspective of the users of NumPy, and the benefits it will provide
+from the perspective of the users of NetworkX, and the benefits it will provide
 them; and as such, it should include implementation details only if
 necessary to explain the functionality.
 

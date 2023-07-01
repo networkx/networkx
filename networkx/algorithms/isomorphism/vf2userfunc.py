@@ -46,7 +46,6 @@ def _semantic_feasibility(self, G1_node, G2_node):
 
     # Make sure the edges match
     if self.edge_match is not None:
-
         # Cached lookups
         G1nbrs = self.G1_adj[G1_node]
         G2nbrs = self.G2_adj[G2_node]
@@ -186,12 +185,8 @@ class DiGraphMatcher(vf2.DiGraphMatcher):
 
 
 class MultiGraphMatcher(GraphMatcher):
-    """VF2 isomorphism checker for undirected multigraphs. """
-
-    pass
+    """VF2 isomorphism checker for undirected multigraphs."""
 
 
 class MultiDiGraphMatcher(DiGraphMatcher):
-    """VF2 isomorphism checker for directed multigraphs. """
-
-    pass
+    """VF2 isomorphism checker for directed multigraphs."""

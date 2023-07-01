@@ -5,12 +5,13 @@ Generators for random graphs.
 
 import itertools
 import math
+from collections import defaultdict
 
 import networkx as nx
 from networkx.utils import py_random_state
-from .classic import empty_graph, path_graph, complete_graph
+
+from .classic import complete_graph, empty_graph, path_graph, star_graph
 from .degree_seq import degree_sequence_tree
-from collections import defaultdict
 
 __all__ = [
     "fast_gnp_random_graph",
@@ -77,28 +78,12 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
     if p <= 0 or p >= 1:
         return nx.gnp_random_graph(n, p, seed=seed, directed=directed)
 
-    w = -1
     lp = math.log(1.0 - p)
 
     if directed:
         G = nx.DiGraph(G)
-        # Nodes in graph are from 0,n-1 (start with v as the first node index).
-        v = 0
-        while v < n:
-            lr = math.log(1.0 - seed.random())
-            w = w + 1 + int(lr / lp)
-            if v == w:  # avoid self loops
-                w = w + 1
-            while v < n <= w:
-                w = w - n
-                v = v + 1
-                if v == w:  # avoid self loops
-                    w = w + 1
-            if v < n:
-                G.add_edge(v, w)
-    else:
-        # Nodes in graph are from 0,n-1 (start with v as the second node index).
         v = 1
+        w = -1
         while v < n:
             lr = math.log(1.0 - seed.random())
             w = w + 1 + int(lr / lp)
@@ -106,7 +91,19 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
                 w = w - v
                 v = v + 1
             if v < n:
-                G.add_edge(v, w)
+                G.add_edge(w, v)
+
+    # Nodes in graph are from 0,n-1 (start with v as the second node index).
+    v = 1
+    w = -1
+    while v < n:
+        lr = math.log(1.0 - seed.random())
+        w = w + 1 + int(lr / lp)
+        while w >= v and v < n:
+            w = w - v
+            v = v + 1
+        if v < n:
+            G.add_edge(v, w)
     return G
 
 
@@ -196,7 +193,7 @@ def dense_gnm_random_graph(n, m, seed=None):
 
     See Also
     --------
-    gnm_random_graph()
+    gnm_random_graph
 
     Notes
     -----
@@ -209,7 +206,7 @@ def dense_gnm_random_graph(n, m, seed=None):
     .. [1] Donald E. Knuth, The Art of Computer Programming,
         Volume 2/Seminumerical algorithms, Third Edition, Addison-Wesley, 1997.
     """
-    mmax = n * (n - 1) / 2
+    mmax = n * (n - 1) // 2
     if m >= mmax:
         G = complete_graph(n)
     else:
@@ -319,7 +316,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
 
     See Also
     --------
-    watts_strogatz_graph()
+    watts_strogatz_graph
 
     References
     ----------
@@ -346,7 +343,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     # for each edge u-v, with probability p, randomly select existing
     # node w and add new edge u-w
     e = list(G.edges())
-    for (u, v) in e:
+    for u, v in e:
         if seed.random() < p:
             w = seed.choice(nlist)
             # no self-loops and reject if edge u-w exists
@@ -379,8 +376,8 @@ def watts_strogatz_graph(n, k, p, seed=None):
 
     See Also
     --------
-    newman_watts_strogatz_graph()
-    connected_watts_strogatz_graph()
+    newman_watts_strogatz_graph
+    connected_watts_strogatz_graph
 
     Notes
     -----
@@ -469,8 +466,8 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
 
     See Also
     --------
-    newman_watts_strogatz_graph()
-    watts_strogatz_graph()
+    newman_watts_strogatz_graph
+    watts_strogatz_graph
 
     References
     ----------
@@ -489,6 +486,8 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
 @py_random_state(2)
 def random_regular_graph(d, n, seed=None):
     r"""Returns a random $d$-regular graph on $n$ nodes.
+
+    A regular graph is a graph where each node has the same number of neighbors.
 
     The resulting graph has no self-loops or parallel edges.
 
@@ -521,7 +520,7 @@ def random_regular_graph(d, n, seed=None):
     .. [1] A. Steger and N. Wormald,
        Generating random regular graphs quickly,
        Probability and Computing 8 (1999), 377-396, 1999.
-       http://citeseer.ist.psu.edu/steger99generating.html
+       https://doi.org/10.1017/S0963548399003867
 
     .. [2] Jeong Han Kim and Van H. Vu,
        Generating random regular graphs,
@@ -615,9 +614,8 @@ def _random_subset(seq, m, rng):
 
 
 @py_random_state(2)
-def barabasi_albert_graph(n, m, seed=None):
-    """Returns a random graph according to the Barabási–Albert preferential
-    attachment model.
+def barabasi_albert_graph(n, m, seed=None, initial_graph=None):
+    """Returns a random graph using Barabási–Albert preferential attachment
 
     A graph of $n$ nodes is grown by attaching new nodes each with $m$
     edges that are preferentially attached to existing nodes with high degree.
@@ -631,6 +629,11 @@ def barabasi_albert_graph(n, m, seed=None):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    initial_graph : Graph or None (default)
+        Initial network for Barabási–Albert algorithm.
+        It should be a connected graph for most use cases.
+        A copy of `initial_graph` is used.
+        If None, starts from a star graph on (m+1) nodes.
 
     Returns
     -------
@@ -639,7 +642,8 @@ def barabasi_albert_graph(n, m, seed=None):
     Raises
     ------
     NetworkXError
-        If `m` does not satisfy ``1 <= m < n``.
+        If `m` does not satisfy ``1 <= m < n``, or
+        the initial graph number of nodes m0 does not satisfy ``m <= m0 <= n``.
 
     References
     ----------
@@ -652,32 +656,38 @@ def barabasi_albert_graph(n, m, seed=None):
             f"Barabási–Albert network must have m >= 1 and m < n, m = {m}, n = {n}"
         )
 
-    # Add m initial nodes (m0 in barabasi-speak)
-    G = empty_graph(m)
-    # Target nodes for new edges
-    targets = list(range(m))
+    if initial_graph is None:
+        # Default initial graph : star graph on (m + 1) nodes
+        G = star_graph(m)
+    else:
+        if len(initial_graph) < m or len(initial_graph) > n:
+            raise nx.NetworkXError(
+                f"Barabási–Albert initial graph needs between m={m} and n={n} nodes"
+            )
+        G = initial_graph.copy()
+
     # List of existing nodes, with nodes repeated once for each adjacent edge
-    repeated_nodes = []
-    # Start adding the other n-m nodes. The first node is m.
-    source = m
+    repeated_nodes = [n for n, d in G.degree() for _ in range(d)]
+    # Start adding the other n - m0 nodes.
+    source = len(G)
     while source < n:
+        # Now choose m unique nodes from the existing nodes
+        # Pick uniformly from repeated_nodes (preferential attachment)
+        targets = _random_subset(repeated_nodes, m, seed)
         # Add edges to m nodes from the source.
         G.add_edges_from(zip([source] * m, targets))
         # Add one node to the list for each new edge just created.
         repeated_nodes.extend(targets)
         # And the new node "source" has m edges to add to the list.
         repeated_nodes.extend([source] * m)
-        # Now choose m unique nodes from the existing nodes
-        # Pick uniformly from repeated_nodes (preferential attachment)
-        targets = _random_subset(repeated_nodes, m, seed)
+
         source += 1
     return G
 
 
 @py_random_state(4)
-def dual_barabasi_albert_graph(n, m1, m2, p, seed=None):
-    """Returns a random graph according to the dual Barabási–Albert preferential
-    attachment model.
+def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial_graph=None):
+    """Returns a random graph using dual Barabási–Albert preferential attachment
 
     A graph of $n$ nodes is grown by attaching new nodes each with either $m_1$
     edges (with probability $p$) or $m_2$ edges (with probability $1-p$) that
@@ -688,14 +698,19 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None):
     n : int
         Number of nodes
     m1 : int
-        Number of edges to attach from a new node to existing nodes with probability $p$
+        Number of edges to link each new node to existing nodes with probability $p$
     m2 : int
-        Number of edges to attach from a new node to existing nodes with probability $1-p$
+        Number of edges to link each new node to existing nodes with probability $1-p$
     p : float
         The probability of attaching $m_1$ edges (as opposed to $m_2$ edges)
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    initial_graph : Graph or None (default)
+        Initial network for Barabási–Albert algorithm.
+        A copy of `initial_graph` is used.
+        It should be connected for most use cases.
+        If None, starts from an star graph on max(m1, m2) + 1 nodes.
 
     Returns
     -------
@@ -704,7 +719,9 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None):
     Raises
     ------
     NetworkXError
-        If `m1` and `m2` do not satisfy ``1 <= m1,m2 < n`` or `p` does not satisfy ``0 <= p <= 1``.
+        If `m1` and `m2` do not satisfy ``1 <= m1,m2 < n``, or
+        `p` does not satisfy ``0 <= p <= 1``, or
+        the initial graph number of nodes m0 does not satisfy m1, m2 <= m0 <= n.
 
     References
     ----------
@@ -713,11 +730,11 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None):
 
     if m1 < 1 or m1 >= n:
         raise nx.NetworkXError(
-            f"Dual Barabási–Albert network must have m1 >= 1 and m1 < n, m1 = {m1}, n = {n}"
+            f"Dual Barabási–Albert must have m1 >= 1 and m1 < n, m1 = {m1}, n = {n}"
         )
     if m2 < 1 or m2 >= n:
         raise nx.NetworkXError(
-            f"Dual Barabási–Albert network must have m2 >= 1 and m2 < n, m2 = {m2}, n = {n}"
+            f"Dual Barabási–Albert must have m2 >= 1 and m2 < n, m2 = {m2}, n = {n}"
         )
     if p < 0 or p > 1:
         raise nx.NetworkXError(
@@ -730,27 +747,25 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None):
     elif p == 0:
         return barabasi_albert_graph(n, m2, seed)
 
-    # Add max(m1,m2) initial nodes (m0 in barabasi-speak)
-    G = empty_graph(max(m1, m2))
-    # Target nodes for new edges
-    targets = list(range(max(m1, m2)))
-    # List of existing nodes, with nodes repeated once for each adjacent edge
-    repeated_nodes = []
-    # Start adding the remaining nodes.
-    source = max(m1, m2)
-    # Pick which m to use first time (m1 or m2)
-    if seed.random() < p:
-        m = m1
+    if initial_graph is None:
+        # Default initial graph : empty graph on max(m1, m2) nodes
+        G = star_graph(max(m1, m2))
     else:
-        m = m2
+        if len(initial_graph) < max(m1, m2) or len(initial_graph) > n:
+            raise nx.NetworkXError(
+                f"Barabási–Albert initial graph must have between "
+                f"max(m1, m2) = {max(m1, m2)} and n = {n} nodes"
+            )
+        G = initial_graph.copy()
+
+    # Target nodes for new edges
+    targets = list(G)
+    # List of existing nodes, with nodes repeated once for each adjacent edge
+    repeated_nodes = [n for n, d in G.degree() for _ in range(d)]
+    # Start adding the remaining nodes.
+    source = len(G)
     while source < n:
-        # Add edges to m nodes from the source.
-        G.add_edges_from(zip([source] * m, targets))
-        # Add one node to the list for each new edge just created.
-        repeated_nodes.extend(targets)
-        # And the new node "source" has m edges to add to the list.
-        repeated_nodes.extend([source] * m)
-        # Pick which m to use next time (m1 or m2)
+        # Pick which m to use (m1 or m2)
         if seed.random() < p:
             m = m1
         else:
@@ -758,6 +773,13 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None):
         # Now choose m unique nodes from the existing nodes
         # Pick uniformly from repeated_nodes (preferential attachment)
         targets = _random_subset(repeated_nodes, m, seed)
+        # Add edges to m nodes from the source.
+        G.add_edges_from(zip([source] * m, targets))
+        # Add one node to the list for each new edge just created.
+        repeated_nodes.extend(targets)
+        # And the new node "source" has m edges to add to the list.
+        repeated_nodes.extend([source] * m)
+
         source += 1
     return G
 
@@ -995,7 +1017,7 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
                 neighborhood = [
                     nbr
                     for nbr in G.neighbors(target)
-                    if not G.has_edge(source, nbr) and not nbr == source
+                    if not G.has_edge(source, nbr) and nbr != source
                 ]
                 if neighborhood:  # if there is a neighbor without a link
                     nbr = seed.choice(neighborhood)
@@ -1045,7 +1067,7 @@ def random_lobster(n, p1, p2, seed=None):
         If `p1` or `p2` parameters are >= 1 because the while loops would never finish.
     """
     p1, p2 = abs(p1), abs(p2)
-    if any([p >= 1 for p in [p1, p2]]):
+    if any(p >= 1 for p in [p1, p2]):
         raise nx.NetworkXError("Probability values for `p1` and `p2` must both be < 1.")
 
     # a necessary ingredient in any self-respecting graph library
@@ -1094,7 +1116,7 @@ def random_shell_graph(constructor, seed=None):
     intra_edges = []
     nnodes = 0
     # create gnm graphs for each shell
-    for (n, m, d) in constructor:
+    for n, m, d in constructor:
         inter_edges = int(m * d)
         intra_edges.append(m - inter_edges)
         g = nx.convert_node_labels_to_integers(
@@ -1190,12 +1212,12 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
     # get trial sequence
     z = nx.utils.powerlaw_sequence(n, exponent=gamma, seed=seed)
     # round to integer values in the range [0,n]
-    zseq = [min(n, max(int(round(s)), 0)) for s in z]
+    zseq = [min(n, max(round(s), 0)) for s in z]
 
     # another sequence to swap values from
     z = nx.utils.powerlaw_sequence(tries, exponent=gamma, seed=seed)
     # round to integer values in the range [0,n]
-    swap = [min(n, max(int(round(s)), 0)) for s in z]
+    swap = [min(n, max(round(s), 0)) for s in z]
 
     for deg in swap:
         # If this degree sequence can be the degree sequence of a tree, return
@@ -1226,7 +1248,7 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
     ----------
     n : int
         The number of nodes
-    kernal_integral : function
+    kernel_integral : function
         Function that returns the definite integral of the kernel $\kappa(x,y)$,
         $F(y,a,b) := \int_a^b \kappa(x,y)dx$
     kernel_root: function (optional)
@@ -1274,13 +1296,13 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
        PLoS ONE 10(9): e0135177, 2015. doi:10.1371/journal.pone.0135177
     """
     if kernel_root is None:
-        import scipy.optimize as optimize
+        import scipy as sp
 
         def kernel_root(y, a, r):
             def my_function(b):
                 return kernel_integral(y, a, b) - r
 
-            return optimize.brentq(my_function, a, 1)
+            return sp.optimize.brentq(my_function, a, 1)
 
     graph = nx.Graph()
     graph.add_nodes_from(range(n))
@@ -1290,6 +1312,6 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
         if kernel_integral(i / n, j / n, 1) <= r:
             i, j = i + 1, i + 1
         else:
-            j = int(math.ceil(n * kernel_root(i / n, j / n, r)))
+            j = math.ceil(n * kernel_root(i / n, j / n, r))
             graph.add_edge(i - 1, j - 1)
     return graph

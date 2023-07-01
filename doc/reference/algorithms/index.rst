@@ -56,6 +56,7 @@ Algorithms
    operators
    planarity
    planar_drawing
+   polynomials
    reciprocity
    regular
    rich_club
@@ -75,4 +76,5 @@ Algorithms
    triads
    vitality
    voronoi
+   walks
    wiener

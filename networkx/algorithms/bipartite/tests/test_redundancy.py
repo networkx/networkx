@@ -4,16 +4,20 @@
 
 import pytest
 
-from networkx import cycle_graph
-from networkx import NetworkXError
-from networkx.algorithms.bipartite import complete_bipartite_graph
-from networkx.algorithms.bipartite import node_redundancy
+from networkx import NetworkXError, cycle_graph
+from networkx.algorithms.bipartite import complete_bipartite_graph, node_redundancy
 
 
 def test_no_redundant_nodes():
     G = complete_bipartite_graph(2, 2)
+
+    # when nodes is None
     rc = node_redundancy(G)
     assert all(redundancy == 1 for redundancy in rc.values())
+
+    # when set of nodes is specified
+    rc = node_redundancy(G, (2, 3))
+    assert rc == {2: 1.0, 3: 1.0}
 
 
 def test_redundant_nodes():

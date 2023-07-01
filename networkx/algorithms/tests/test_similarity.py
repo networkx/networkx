@@ -37,10 +37,9 @@ def getCanonical():
 class TestSimilarity:
     @classmethod
     def setup_class(cls):
-        global numpy
-        global scipy
-        numpy = pytest.importorskip("numpy")
-        scipy = pytest.importorskip("scipy")
+        global np
+        np = pytest.importorskip("numpy")
+        pytest.importorskip("scipy")
 
     def test_graph_edit_distance_roots_and_timeout(self):
         G0 = nx.star_graph(5)
@@ -523,7 +522,14 @@ class TestSimilarity:
         G2.add_edge("B", "D", label="bad")
         assert graph_edit_distance(G1, G2, node_match=nmatch, edge_match=ematch) == 1
 
-    def test_simrank_no_source_no_target(self):
+    # note: nx.simrank_similarity_numpy not included because returns np.array
+    simrank_algs = [
+        nx.simrank_similarity,
+        nx.algorithms.similarity._simrank_similarity_python,
+    ]
+
+    @pytest.mark.parametrize("simrank_similarity", simrank_algs)
+    def test_simrank_no_source_no_target(self, simrank_similarity):
         G = nx.cycle_graph(5)
         expected = {
             0: {
@@ -562,8 +568,9 @@ class TestSimilarity:
                 4: 1,
             },
         }
-        actual = nx.simrank_similarity(G)
-        assert expected == actual
+        actual = simrank_similarity(G)
+        for k, v in expected.items():
+            assert v == pytest.approx(actual[k], abs=1e-2)
 
         # For a DiGraph test, use the first graph from the paper cited in
         # the docs: https://dl.acm.org/doi/pdf/10.1145/775047.775126
@@ -595,10 +602,12 @@ class TestSimilarity:
             },
         }
         # Use the importance_factor from the paper to get the same numbers.
-        actual = nx.algorithms.similarity.simrank_similarity(G, importance_factor=0.8)
-        assert expected == actual
+        actual = simrank_similarity(G, importance_factor=0.8)
+        for k, v in expected.items():
+            assert v == pytest.approx(actual[k], abs=1e-2)
 
-    def test_simrank_source_no_target(self):
+    @pytest.mark.parametrize("simrank_similarity", simrank_algs)
+    def test_simrank_source_no_target(self, simrank_similarity):
         G = nx.cycle_graph(5)
         expected = {
             0: 1,
@@ -607,8 +616,8 @@ class TestSimilarity:
             3: 0.5707317069281646,
             4: 0.3951219505902449,
         }
-        actual = nx.simrank_similarity(G, source=0)
-        assert expected == actual
+        actual = simrank_similarity(G, source=0)
+        assert expected == pytest.approx(actual, abs=1e-2)
 
         # For a DiGraph test, use the first graph from the paper cited in
         # the docs: https://dl.acm.org/doi/pdf/10.1145/775047.775126
@@ -622,15 +631,52 @@ class TestSimilarity:
 
         expected = {0: 1, 1: 0.0, 2: 0.1323363991265798, 3: 0.0, 4: 0.03387811817640443}
         # Use the importance_factor from the paper to get the same numbers.
-        actual = nx.algorithms.similarity.simrank_similarity(
-            G, importance_factor=0.8, source=0
-        )
-        assert expected == actual
+        actual = simrank_similarity(G, importance_factor=0.8, source=0)
+        assert expected == pytest.approx(actual, abs=1e-2)
 
-    def test_simrank_source_and_target(self):
+    @pytest.mark.parametrize("simrank_similarity", simrank_algs)
+    def test_simrank_noninteger_nodes(self, simrank_similarity):
+        G = nx.cycle_graph(5)
+        G = nx.relabel_nodes(G, dict(enumerate("abcde")))
+        expected = {
+            "a": 1,
+            "b": 0.3951219505902448,
+            "c": 0.5707317069281646,
+            "d": 0.5707317069281646,
+            "e": 0.3951219505902449,
+        }
+        actual = simrank_similarity(G, source="a")
+        assert expected == pytest.approx(actual, abs=1e-2)
+
+        # For a DiGraph test, use the first graph from the paper cited in
+        # the docs: https://dl.acm.org/doi/pdf/10.1145/775047.775126
+        G = nx.DiGraph()
+        G.add_node(0, label="Univ")
+        G.add_node(1, label="ProfA")
+        G.add_node(2, label="ProfB")
+        G.add_node(3, label="StudentA")
+        G.add_node(4, label="StudentB")
+        G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 4), (4, 2), (3, 0)])
+        node_labels = dict(enumerate(nx.get_node_attributes(G, "label").values()))
+        G = nx.relabel_nodes(G, node_labels)
+
+        expected = {
+            "Univ": 1,
+            "ProfA": 0.0,
+            "ProfB": 0.1323363991265798,
+            "StudentA": 0.0,
+            "StudentB": 0.03387811817640443,
+        }
+        # Use the importance_factor from the paper to get the same numbers.
+        actual = simrank_similarity(G, importance_factor=0.8, source="Univ")
+        assert expected == pytest.approx(actual, abs=1e-2)
+
+    @pytest.mark.parametrize("simrank_similarity", simrank_algs)
+    def test_simrank_source_and_target(self, simrank_similarity):
         G = nx.cycle_graph(5)
         expected = 1
-        actual = nx.simrank_similarity(G, source=0, target=0)
+        actual = simrank_similarity(G, source=0, target=0)
+        assert expected == pytest.approx(actual, abs=1e-2)
 
         # For a DiGraph test, use the first graph from the paper cited in
         # the docs: https://dl.acm.org/doi/pdf/10.1145/775047.775126
@@ -645,14 +691,47 @@ class TestSimilarity:
         expected = 0.1323363991265798
         # Use the importance_factor from the paper to get the same numbers.
         # Use the pair (0,2) because (0,0) and (0,1) have trivial results.
-        actual = nx.algorithms.similarity.simrank_similarity(
-            G, importance_factor=0.8, source=0, target=2
-        )
-        assert expected == actual
+        actual = simrank_similarity(G, importance_factor=0.8, source=0, target=2)
+        assert expected == pytest.approx(actual, abs=1e-5)
+
+    @pytest.mark.parametrize("alg", simrank_algs)
+    def test_simrank_max_iterations(self, alg):
+        G = nx.cycle_graph(5)
+        pytest.raises(nx.ExceededMaxIterations, alg, G, max_iterations=10)
+
+    def test_simrank_between_versions(self):
+        G = nx.cycle_graph(5)
+        # _python tolerance 1e-4
+        expected_python_tol4 = {
+            0: 1,
+            1: 0.394512499239852,
+            2: 0.5703550452791322,
+            3: 0.5703550452791323,
+            4: 0.394512499239852,
+        }
+        # _numpy tolerance 1e-4
+        expected_numpy_tol4 = {
+            0: 1.0,
+            1: 0.3947180735764555,
+            2: 0.570482097206368,
+            3: 0.570482097206368,
+            4: 0.3947180735764555,
+        }
+        actual = nx.simrank_similarity(G, source=0)
+        assert expected_numpy_tol4 == pytest.approx(actual, abs=1e-7)
+        # versions differ at 1e-4 level but equal at 1e-3
+        assert expected_python_tol4 != pytest.approx(actual, abs=1e-4)
+        assert expected_python_tol4 == pytest.approx(actual, abs=1e-3)
+
+        actual = nx.similarity._simrank_similarity_python(G, source=0)
+        assert expected_python_tol4 == pytest.approx(actual, abs=1e-7)
+        # versions differ at 1e-4 level but equal at 1e-3
+        assert expected_numpy_tol4 != pytest.approx(actual, abs=1e-4)
+        assert expected_numpy_tol4 == pytest.approx(actual, abs=1e-3)
 
     def test_simrank_numpy_no_source_no_target(self):
         G = nx.cycle_graph(5)
-        expected = numpy.array(
+        expected = np.array(
             [
                 [
                     1.0,
@@ -691,12 +770,12 @@ class TestSimilarity:
                 ],
             ]
         )
-        actual = nx.simrank_similarity_numpy(G)
-        numpy.testing.assert_allclose(expected, actual, atol=1e-7)
+        actual = nx.similarity._simrank_similarity_numpy(G)
+        np.testing.assert_allclose(expected, actual, atol=1e-7)
 
     def test_simrank_numpy_source_no_target(self):
         G = nx.cycle_graph(5)
-        expected = numpy.array(
+        expected = np.array(
             [
                 1.0,
                 0.3947180735764555,
@@ -705,11 +784,140 @@ class TestSimilarity:
                 0.3947180735764555,
             ]
         )
-        actual = nx.simrank_similarity_numpy(G, source=0)
-        numpy.testing.assert_allclose(expected, actual, atol=1e-7)
+        actual = nx.similarity._simrank_similarity_numpy(G, source=0)
+        np.testing.assert_allclose(expected, actual, atol=1e-7)
 
     def test_simrank_numpy_source_and_target(self):
         G = nx.cycle_graph(5)
         expected = 1.0
-        actual = nx.simrank_similarity_numpy(G, source=0, target=0)
-        numpy.testing.assert_allclose(expected, actual, atol=1e-7)
+        actual = nx.similarity._simrank_similarity_numpy(G, source=0, target=0)
+        np.testing.assert_allclose(expected, actual, atol=1e-7)
+
+    def test_panther_similarity_unweighted(self):
+        np.random.seed(42)
+
+        G = nx.Graph()
+        G.add_edge(0, 1)
+        G.add_edge(0, 2)
+        G.add_edge(0, 3)
+        G.add_edge(1, 2)
+        G.add_edge(2, 4)
+        expected = {3: 0.5, 2: 0.5, 1: 0.5, 4: 0.125}
+        sim = nx.panther_similarity(G, 0, path_length=2)
+        assert sim == expected
+
+    def test_panther_similarity_weighted(self):
+        np.random.seed(42)
+
+        G = nx.Graph()
+        G.add_edge("v1", "v2", weight=5)
+        G.add_edge("v1", "v3", weight=1)
+        G.add_edge("v1", "v4", weight=2)
+        G.add_edge("v2", "v3", weight=0.1)
+        G.add_edge("v3", "v5", weight=1)
+        expected = {"v3": 0.75, "v4": 0.5, "v2": 0.5, "v5": 0.25}
+        sim = nx.panther_similarity(G, "v1", path_length=2)
+        assert sim == expected
+
+    def test_generate_random_paths_unweighted(self):
+        np.random.seed(42)
+
+        index_map = {}
+        num_paths = 10
+        path_length = 2
+        G = nx.Graph()
+        G.add_edge(0, 1)
+        G.add_edge(0, 2)
+        G.add_edge(0, 3)
+        G.add_edge(1, 2)
+        G.add_edge(2, 4)
+        paths = nx.generate_random_paths(
+            G, num_paths, path_length=path_length, index_map=index_map
+        )
+        expected_paths = [
+            [3, 0, 3],
+            [4, 2, 1],
+            [2, 1, 0],
+            [2, 0, 3],
+            [3, 0, 1],
+            [3, 0, 1],
+            [4, 2, 0],
+            [2, 1, 0],
+            [3, 0, 2],
+            [2, 1, 2],
+        ]
+        expected_map = {
+            0: {0, 2, 3, 4, 5, 6, 7, 8},
+            1: {1, 2, 4, 5, 7, 9},
+            2: {1, 2, 3, 6, 7, 8, 9},
+            3: {0, 3, 4, 5, 8},
+            4: {1, 6},
+        }
+
+        assert expected_paths == list(paths)
+        assert expected_map == index_map
+
+    def test_generate_random_paths_weighted(self):
+        np.random.seed(42)
+
+        index_map = {}
+        num_paths = 10
+        path_length = 6
+        G = nx.Graph()
+        G.add_edge("a", "b", weight=0.6)
+        G.add_edge("a", "c", weight=0.2)
+        G.add_edge("c", "d", weight=0.1)
+        G.add_edge("c", "e", weight=0.7)
+        G.add_edge("c", "f", weight=0.9)
+        G.add_edge("a", "d", weight=0.3)
+        paths = nx.generate_random_paths(
+            G, num_paths, path_length=path_length, index_map=index_map
+        )
+
+        expected_paths = [
+            ["d", "c", "f", "c", "d", "a", "b"],
+            ["e", "c", "f", "c", "f", "c", "e"],
+            ["d", "a", "b", "a", "b", "a", "c"],
+            ["b", "a", "d", "a", "b", "a", "b"],
+            ["d", "a", "b", "a", "b", "a", "d"],
+            ["d", "a", "b", "a", "b", "a", "c"],
+            ["d", "a", "b", "a", "b", "a", "b"],
+            ["f", "c", "f", "c", "f", "c", "e"],
+            ["d", "a", "d", "a", "b", "a", "b"],
+            ["e", "c", "f", "c", "e", "c", "d"],
+        ]
+        expected_map = {
+            "d": {0, 2, 3, 4, 5, 6, 8, 9},
+            "c": {0, 1, 2, 5, 7, 9},
+            "f": {0, 1, 9, 7},
+            "a": {0, 2, 3, 4, 5, 6, 8},
+            "b": {0, 2, 3, 4, 5, 6, 8},
+            "e": {1, 9, 7},
+        }
+
+        assert expected_paths == list(paths)
+        assert expected_map == index_map
+
+    def test_symmetry_with_custom_matching(self):
+        print("G2 is edge (a,b) and G3 is edge (a,a)")
+        print("but node order for G2 is (a,b) while for G3 it is (b,a)")
+
+        a, b = "A", "B"
+        G2 = nx.Graph()
+        G2.add_nodes_from((a, b))
+        G2.add_edges_from([(a, b)])
+        G3 = nx.Graph()
+        G3.add_nodes_from((b, a))
+        G3.add_edges_from([(a, a)])
+        for G in (G2, G3):
+            for n in G:
+                G.nodes[n]["attr"] = n
+            for e in G.edges:
+                G.edges[e]["attr"] = e
+        match = lambda x, y: x == y
+
+        print("Starting G2 to G3 GED calculation")
+        assert nx.graph_edit_distance(G2, G3, node_match=match, edge_match=match) == 1
+
+        print("Starting G3 to G2 GED calculation")
+        assert nx.graph_edit_distance(G3, G2, node_match=match, edge_match=match) == 1

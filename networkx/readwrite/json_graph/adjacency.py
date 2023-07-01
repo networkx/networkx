@@ -1,9 +1,8 @@
-from itertools import chain
 import networkx as nx
 
 __all__ = ["adjacency_data", "adjacency_graph"]
 
-_attrs = dict(id="id", key="key")
+_attrs = {"id": "id", "key": "key"}
 
 
 def adjacency_data(G, attrs=_attrs):
@@ -69,15 +68,15 @@ def adjacency_data(G, attrs=_attrs):
     data["nodes"] = []
     data["adjacency"] = []
     for n, nbrdict in G.adjacency():
-        data["nodes"].append(dict(chain(G.nodes[n].items(), [(id_, n)])))
+        data["nodes"].append({**G.nodes[n], id_: n})
         adj = []
         if multigraph:
             for nbr, keys in nbrdict.items():
                 for k, d in keys.items():
-                    adj.append(dict(chain(d.items(), [(id_, nbr), (key, k)])))
+                    adj.append({**d, id_: nbr, key: k})
         else:
             for nbr, d in nbrdict.items():
-                adj.append(dict(chain(d.items(), [(id_, nbr)])))
+                adj.append({**d, id_: nbr})
         data["adjacency"].append(adj)
     return data
 
@@ -90,11 +89,6 @@ def adjacency_graph(data, directed=False, multigraph=True, attrs=_attrs):
     data : dict
         Adjacency list formatted graph data
 
-    Returns
-    -------
-    G : NetworkX graph
-       A NetworkX graph object
-
     directed : bool
         If True, and direction not specified in data, return a directed graph.
 
@@ -106,6 +100,11 @@ def adjacency_graph(data, directed=False, multigraph=True, attrs=_attrs):
         values provide the attribute names for storing NetworkX-internal graph
         data. The values should be unique. Default value:
         :samp:`dict(id='id', key='key')`.
+
+    Returns
+    -------
+    G : NetworkX graph
+       A NetworkX graph object
 
     Examples
     --------

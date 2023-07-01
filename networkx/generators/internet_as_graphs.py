@@ -25,7 +25,7 @@ def uniform_int_from_avg(a, m, seed):
     assert m >= a
     b = 2 * m - a
     p = (b - floor(b)) / 2
-    X1 = int(round(seed.random() * (floor(b) - a) + a))
+    X1 = round(seed.random() * (floor(b) - a) + a)
     if seed.random() < p:
         X2 = 1
     else:
@@ -94,9 +94,9 @@ class AS_graph_generator:
         """
 
         self.seed = seed
-        self.n_t = min(n, int(round(self.seed.random() * 2 + 4)))  # num of T nodes
-        self.n_m = int(round(0.15 * n))  # number of M nodes
-        self.n_cp = int(round(0.05 * n))  # number of CP nodes
+        self.n_t = min(n, round(self.seed.random() * 2 + 4))  # num of T nodes
+        self.n_m = round(0.15 * n)  # number of M nodes
+        self.n_cp = round(0.05 * n)  # number of CP nodes
         self.n_c = max(0, n - self.n_t - self.n_m - self.n_cp)  # number of C nodes
 
         self.d_m = 2 + (2.5 * n) / 10000  # average multihoming degree for M nodes
@@ -272,7 +272,7 @@ class AS_graph_generator:
     def add_cp_peering_link(self, cp, to_kind):
         """Add a peering link to a content provider (CP) node.
 
-        Target node j can be CP or M and it is drawn uniformely among the nodes
+        Target node j can be CP or M and it is drawn uniformly among the nodes
         belonging to the same region as cp.
 
         Parameters
@@ -308,7 +308,7 @@ class AS_graph_generator:
                 node_options.remove(j)
 
         if len(node_options) > 0:
-            j = self.seed.sample(node_options, 1)[0]
+            j = self.seed.sample(list(node_options), 1)[0]
             self.add_edge(cp, j, "peer")
             self.G.nodes[cp]["peers"] += 1
             self.G.nodes[j]["peers"] += 1
@@ -376,7 +376,7 @@ class AS_graph_generator:
         self.nodes = {"T": set(), "M": set(), "CP": set(), "C": set()}
 
         self.t_graph()
-        self.nodes["T"] = set(list(self.G.nodes()))
+        self.nodes["T"] = set(self.G.nodes())
 
         i = len(self.nodes["T"])
         for _ in range(self.n_m):
@@ -417,21 +417,22 @@ def random_internet_as_graph(n, seed=None):
     -----
     This algorithm returns an undirected graph resembling the Internet
     Autonomous System (AS) network, it uses the approach by Elmokashfi et al.
-    [1] and it grants the properties described in the related paper [1].
+    [1]_ and it grants the properties described in the related paper [1]_.
 
     Each node models an autonomous system, with an attribute 'type' specifying
     its kind; tier-1 (T), mid-level (M), customer (C) or content-provider (CP).
     Each edge models an ADV communication link (hence, bidirectional) with
     attributes:
-        - type: transit|peer, the kind of commercial agreement between nodes;
-        - customer: <node id>, the identifier of the node acting as customer
-            ('none' if type is peer).
+
+      - type: transit|peer, the kind of commercial agreement between nodes;
+      - customer: <node id>, the identifier of the node acting as customer
+        ('none' if type is peer).
 
     References
     ----------
-    [1] A. Elmokashfi, A. Kvalbein and C. Dovrolis, "On the Scalability of
-    BGP: The Role of Topology Growth," in IEEE Journal on Selected Areas
-    in Communications, vol. 28, no. 8, pp. 1250-1261, October 2010.
+    .. [1] A. Elmokashfi, A. Kvalbein and C. Dovrolis, "On the Scalability of
+       BGP: The Role of Topology Growth," in IEEE Journal on Selected Areas
+       in Communications, vol. 28, no. 8, pp. 1250-1261, October 2010.
     """
 
     GG = AS_graph_generator(n, seed)

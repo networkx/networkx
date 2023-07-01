@@ -1,7 +1,6 @@
 import pytest
 
 np = pytest.importorskip("numpy")
-import numpy.testing as npt
 
 import networkx as nx
 
@@ -20,7 +19,7 @@ def test_attr_matrix():
         return G[u][v].get("thickness", 0.5)
 
     M = nx.attr_matrix(G, edge_attr=edge_attr, node_attr=node_attr)
-    npt.assert_equal(M[0], np.array([[6.0]]))
+    np.testing.assert_equal(M[0], np.array([[6.0]]))
     assert M[1] == [1.5]
 
 
@@ -38,7 +37,7 @@ def test_attr_matrix_directed():
          [0., 0., 0.]]
     )
     # fmt: on
-    npt.assert_equal(M, np.array(data))
+    np.testing.assert_equal(M, np.array(data))
 
 
 def test_attr_matrix_multigraph():
@@ -56,7 +55,7 @@ def test_attr_matrix_multigraph():
          [1., 1., 0.]]
     )
     # fmt: on
-    npt.assert_equal(M, np.array(data))
+    np.testing.assert_equal(M, np.array(data))
     M = nx.attr_matrix(G, edge_attr="weight", rc_order=[0, 1, 2])
     # fmt: off
     data = np.array(
@@ -65,7 +64,7 @@ def test_attr_matrix_multigraph():
          [1., 1., 0.]]
     )
     # fmt: on
-    npt.assert_equal(M, np.array(data))
+    np.testing.assert_equal(M, np.array(data))
     M = nx.attr_matrix(G, edge_attr="thickness", rc_order=[0, 1, 2])
     # fmt: off
     data = np.array(
@@ -74,7 +73,7 @@ def test_attr_matrix_multigraph():
          [2., 3., 0.]]
     )
     # fmt: on
-    npt.assert_equal(M, np.array(data))
+    np.testing.assert_equal(M, np.array(data))
 
 
 def test_attr_sparse_matrix():
@@ -87,11 +86,12 @@ def test_attr_sparse_matrix():
     mtx = M[0]
     data = np.ones((3, 3), float)
     np.fill_diagonal(data, 0)
-    npt.assert_equal(mtx.todense(), np.array(data))
+    np.testing.assert_equal(mtx.todense(), np.array(data))
     assert M[1] == [0, 1, 2]
 
 
 def test_attr_sparse_matrix_directed():
+    pytest.importorskip("scipy")
     G = nx.DiGraph()
     G.add_edge(0, 1, thickness=1, weight=3)
     G.add_edge(0, 1, thickness=1, weight=3)
@@ -105,4 +105,4 @@ def test_attr_sparse_matrix_directed():
          [0., 0., 0.]]
     )
     # fmt: on
-    npt.assert_equal(M.todense(), np.array(data))
+    np.testing.assert_equal(M.todense(), np.array(data))

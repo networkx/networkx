@@ -4,8 +4,9 @@ Biadjacency matrices
 ====================
 """
 import itertools
-from networkx.convert_matrix import _generate_weighted_edges
+
 import networkx as nx
+from networkx.convert_matrix import _generate_weighted_edges
 
 __all__ = ["biadjacency_matrix", "from_biadjacency_matrix"]
 
@@ -49,7 +50,7 @@ def biadjacency_matrix(
 
     Returns
     -------
-    M : SciPy sparse matrix
+    M : SciPy sparse array
         Biadjacency matrix representation of the bipartite graph G.
 
     Notes
@@ -73,7 +74,7 @@ def biadjacency_matrix(
     .. [2] Scipy Dev. References, "Sparse Matrices",
        https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
-    from scipy import sparse
+    import scipy as sp
 
     nlen = len(row_order)
     if nlen == 0:
@@ -101,22 +102,20 @@ def biadjacency_matrix(
                 if u in row_index and v in col_index
             )
         )
-    M = sparse.coo_matrix((data, (row, col)), shape=(nlen, mlen), dtype=dtype)
+    A = sp.sparse.coo_array((data, (row, col)), shape=(nlen, mlen), dtype=dtype)
     try:
-        return M.asformat(format)
-    # From Scipy 1.1.0, asformat will throw a ValueError instead of an
-    # AttributeError if the format if not recognized.
-    except (AttributeError, ValueError) as e:
-        raise nx.NetworkXError(f"Unknown sparse matrix format: {format}") from e
+        return A.asformat(format)
+    except ValueError as err:
+        raise nx.NetworkXError(f"Unknown sparse array format: {format}") from err
 
 
 def from_biadjacency_matrix(A, create_using=None, edge_attribute="weight"):
     r"""Creates a new bipartite graph from a biadjacency matrix given as a
-    SciPy sparse matrix.
+    SciPy sparse array.
 
     Parameters
     ----------
-    A: scipy sparse matrix
+    A: scipy sparse array
       A biadjacency matrix representation of a graph
 
     create_using: NetworkX graph

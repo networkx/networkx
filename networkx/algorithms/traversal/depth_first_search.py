@@ -1,6 +1,7 @@
 """Basic algorithms for depth-first searching the nodes of a graph."""
-import networkx as nx
 from collections import defaultdict
+
+import networkx as nx
 
 __all__ = [
     "dfs_edges",
@@ -16,24 +17,25 @@ __all__ = [
 def dfs_edges(G, source=None, depth_limit=None):
     """Iterate over edges in a depth-first-search (DFS).
 
-    Perform a depth-first-search over the nodes of G and yield
-    the edges in order. This may not generate all edges in G (see edge_dfs).
+    Perform a depth-first-search over the nodes of `G` and yield
+    the edges in order. This may not generate all edges in `G`
+    (see `~networkx.algorithms.traversal.edgedfs.edge_dfs`).
 
     Parameters
     ----------
     G : NetworkX graph
 
     source : node, optional
-       Specify starting node for depth-first search and return edges in
+       Specify starting node for depth-first search and yield edges in
        the component reachable from source.
 
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
 
-    Returns
-    -------
-    edges: generator
-       A generator of edges in the depth-first-search.
+    Yields
+    ------
+    edge: 2-tuple of nodes
+       Yields edges resulting from the depth-first-search.
 
     Examples
     --------
@@ -49,20 +51,22 @@ def dfs_edges(G, source=None, depth_limit=None):
     repeatedly until all components in the graph are searched.
 
     The implementation of this function is adapted from David Eppstein's
-    depth-first search function in `PADS`_, with modifications
+    depth-first search function in PADS [1]_, with modifications
     to allow depth limits based on the Wikipedia article
-    "`Depth-limited search`_".
-
-    .. _PADS: http://www.ics.uci.edu/~eppstein/PADS
-    .. _Depth-limited search: https://en.wikipedia.org/wiki/Depth-limited_search
+    "Depth-limited search" [2]_.
 
     See Also
     --------
     dfs_preorder_nodes
     dfs_postorder_nodes
     dfs_labeled_edges
-    edge_dfs
-    bfs_edges
+    :func:`~networkx.algorithms.traversal.edgedfs.edge_dfs`
+    :func:`~networkx.algorithms.traversal.breadth_first_search.bfs_edges`
+
+    References
+    ----------
+    .. [1] http://www.ics.uci.edu/~eppstein/PADS
+    .. [2] https://en.wikipedia.org/wiki/Depth-limited_search
     """
     if source is None:
         # edges for all components
@@ -70,25 +74,29 @@ def dfs_edges(G, source=None, depth_limit=None):
     else:
         # edges for components with source
         nodes = [source]
-    visited = set()
     if depth_limit is None:
         depth_limit = len(G)
+
+    visited = set()
     for start in nodes:
         if start in visited:
             continue
         visited.add(start)
-        stack = [(start, depth_limit, iter(G[start]))]
+        stack = [(start, iter(G[start]))]
+        depth_now = 1
         while stack:
-            parent, depth_now, children = stack[-1]
-            try:
-                child = next(children)
+            parent, children = stack[-1]
+            for child in children:
                 if child not in visited:
                     yield parent, child
                     visited.add(child)
-                    if depth_now > 1:
-                        stack.append((child, depth_now - 1, iter(G[child])))
-            except StopIteration:
+                    if depth_now < depth_limit:
+                        stack.append((child, iter(G[child])))
+                        depth_now += 1
+                        break
+            else:
                 stack.pop()
+                depth_now -= 1
 
 
 def dfs_tree(G, source=None, depth_limit=None):
@@ -360,12 +368,15 @@ def dfs_labeled_edges(G, source=None, depth_limit=None):
     edges: generator
        A generator of triples of the form (*u*, *v*, *d*), where (*u*,
        *v*) is the edge being explored in the depth-first search and *d*
-       is one of the strings 'forward', 'nontree', or 'reverse'. A
-       'forward' edge is one in which *u* has been visited but *v* has
+       is one of the strings 'forward', 'nontree', 'reverse', or 'reverse-depth_limit'.
+       A 'forward' edge is one in which *u* has been visited but *v* has
        not. A 'nontree' edge is one in which both *u* and *v* have been
        visited but the edge is not in the DFS tree. A 'reverse' edge is
-       on in which both *u* and *v* have been visited and the edge is in
-       the DFS tree.
+       one in which both *u* and *v* have been visited and the edge is in
+       the DFS tree. When the `depth_limit` is reached via a 'forward' edge,
+       a 'reverse' edge is immediately generated rather than the subtree
+       being explored. To indicate this flavor of 'reverse' edge, the string
+       yielded is 'reverse-depth_limit'.
 
     Examples
     --------
@@ -412,28 +423,34 @@ def dfs_labeled_edges(G, source=None, depth_limit=None):
     else:
         # edges for components with source
         nodes = [source]
-    visited = set()
     if depth_limit is None:
         depth_limit = len(G)
+
+    visited = set()
     for start in nodes:
         if start in visited:
             continue
         yield start, start, "forward"
         visited.add(start)
-        stack = [(start, depth_limit, iter(G[start]))]
+        stack = [(start, iter(G[start]))]
+        depth_now = 1
         while stack:
-            parent, depth_now, children = stack[-1]
-            try:
-                child = next(children)
+            parent, children = stack[-1]
+            for child in children:
                 if child in visited:
                     yield parent, child, "nontree"
                 else:
                     yield parent, child, "forward"
                     visited.add(child)
-                    if depth_now > 1:
-                        stack.append((child, depth_now - 1, iter(G[child])))
-            except StopIteration:
+                    if depth_now < depth_limit:
+                        stack.append((child, iter(G[child])))
+                        depth_now += 1
+                        break
+                    else:
+                        yield parent, child, "reverse-depth_limit"
+            else:
                 stack.pop()
+                depth_now -= 1
                 if stack:
                     yield stack[-1][0], parent, "reverse"
         yield start, start, "reverse"

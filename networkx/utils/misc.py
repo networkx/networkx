@@ -11,13 +11,29 @@ can be accessed, for example, as
 1
 """
 
-from collections import defaultdict, deque
-from collections.abc import Iterator
-import warnings
 import sys
 import uuid
-from itertools import tee, chain
+import warnings
+from collections import defaultdict, deque
+from collections.abc import Iterable, Iterator, Sized
+from itertools import chain, tee
+
 import networkx as nx
+
+__all__ = [
+    "flatten",
+    "make_list_of_ints",
+    "dict_to_numpy_array",
+    "arbitrary_element",
+    "pairwise",
+    "groups",
+    "create_random_state",
+    "create_py_random_state",
+    "PythonRandomInterface",
+    "nodes_equal",
+    "edges_equal",
+    "graphs_equal",
+]
 
 
 # some cookbook stuff
@@ -25,40 +41,14 @@ import networkx as nx
 # see G.add_nodes and others in Graph Class in networkx/base.py
 
 
-def is_string_like(obj):  # from John Hunter, types-free version
-    """Check if obj is string."""
-    msg = (
-        "is_string_like is deprecated and will be removed in 3.0."
-        "Use isinstance(obj, str) instead."
-    )
-    warnings.warn(msg, DeprecationWarning)
-    return isinstance(obj, str)
-
-
-def iterable(obj):
-    """ Return True if obj is iterable with a well-defined len()."""
-    if hasattr(obj, "__iter__"):
-        return True
-    try:
-        len(obj)
-    except:
-        return False
-    return True
-
-
-def empty_generator():
-    """ Return a generator with no members """
-    yield from ()
-
-
 def flatten(obj, result=None):
-    """ Return flattened version of (possibly nested) iterable object. """
-    if not iterable(obj) or isinstance(obj, str):
+    """Return flattened version of (possibly nested) iterable object."""
+    if not isinstance(obj, (Iterable, Sized)) or isinstance(obj, str):
         return obj
     if result is None:
         result = []
     for item in obj:
-        if not iterable(item) or isinstance(item, str):
+        if not isinstance(item, (Iterable, Sized)) or isinstance(item, str):
             result.append(item)
         else:
             flatten(item, result)
@@ -101,75 +91,23 @@ def make_list_of_ints(sequence):
     return sequence
 
 
-def is_list_of_ints(intlist):
-    """
-    Return True if list is a list of ints.
-
-    .. deprecated:: 2.6
-    """
-    msg = (
-        "is_list_of_ints is deprecated and will be removed in 3.0."
-        "See also: ``networkx.utils.make_list_of_ints.``"
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-    if not isinstance(intlist, list):
-        return False
-    for i in intlist:
-        if not isinstance(i, int):
-            return False
-    return True
-
-
-def make_str(x):
-    """Returns the string representation of t."""
-    msg = "make_str is deprecated and will be removed in 3.0. Use str instead."
-    warnings.warn(msg, DeprecationWarning)
-    return str(x)
-
-
-def generate_unique_node():
-    """ Generate a unique node label."""
-    return str(uuid.uuid1())
-
-
-def default_opener(filename):
-    """Opens `filename` using system's default program.
-
-    Parameters
-    ----------
-    filename : str
-        The path of the file to be opened.
-
-    """
-    from subprocess import call
-
-    cmds = {
-        "darwin": ["open"],
-        "linux": ["xdg-open"],
-        "linux2": ["xdg-open"],
-        "win32": ["cmd.exe", "/C", "start", ""],
-    }
-    cmd = cmds[sys.platform] + [filename]
-    call(cmd)
-
-
 def dict_to_numpy_array(d, mapping=None):
     """Convert a dictionary of dictionaries to a numpy array
     with optional mapping."""
     try:
-        return dict_to_numpy_array2(d, mapping)
+        return _dict_to_numpy_array2(d, mapping)
     except (AttributeError, TypeError):
         # AttributeError is when no mapping was provided and v.keys() fails.
         # TypeError is when a mapping was provided and d[k1][k2] fails.
-        return dict_to_numpy_array1(d, mapping)
+        return _dict_to_numpy_array1(d, mapping)
 
 
-def dict_to_numpy_array2(d, mapping=None):
+def _dict_to_numpy_array2(d, mapping=None):
     """Convert a dictionary of dictionaries to a 2d numpy array
     with optional mapping.
 
     """
-    import numpy
+    import numpy as np
 
     if mapping is None:
         s = set(d.keys())
@@ -177,7 +115,7 @@ def dict_to_numpy_array2(d, mapping=None):
             s.update(v.keys())
         mapping = dict(zip(s, range(len(s))))
     n = len(mapping)
-    a = numpy.zeros((n, n))
+    a = np.zeros((n, n))
     for k1, i in mapping.items():
         for k2, j in mapping.items():
             try:
@@ -187,75 +125,88 @@ def dict_to_numpy_array2(d, mapping=None):
     return a
 
 
-def dict_to_numpy_array1(d, mapping=None):
-    """Convert a dictionary of numbers to a 1d numpy array
-    with optional mapping.
-
-    """
-    import numpy
+def _dict_to_numpy_array1(d, mapping=None):
+    """Convert a dictionary of numbers to a 1d numpy array with optional mapping."""
+    import numpy as np
 
     if mapping is None:
         s = set(d.keys())
         mapping = dict(zip(s, range(len(s))))
     n = len(mapping)
-    a = numpy.zeros(n)
+    a = np.zeros(n)
     for k1, i in mapping.items():
         i = mapping[k1]
         a[i] = d[k1]
     return a
 
 
-def is_iterator(obj):
-    """Returns True if and only if the given object is an iterator
-    object.
-
-    .. deprecated:: 2.6.0
-
-       Deprecated in favor of ``isinstance(obj, collections.abc.Iterator)``
-
-    """
-    msg = (
-        "is_iterator is deprecated and will be removed in version 3.0. "
-        "Use ``isinstance(obj, collections.abc.Iterator)`` instead."
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-    has_next_attr = hasattr(obj, "__next__") or hasattr(obj, "next")
-    return iter(obj) is obj and has_next_attr
-
-
 def arbitrary_element(iterable):
     """Returns an arbitrary element of `iterable` without removing it.
 
     This is most useful for "peeking" at an arbitrary element of a set,
-    but can be used for any list, dictionary, etc., as well::
+    but can be used for any list, dictionary, etc., as well.
 
-        >>> arbitrary_element({3, 2, 1})
+    Parameters
+    ----------
+    iterable : `abc.collections.Iterable` instance
+        Any object that implements ``__iter__``, e.g. set, dict, list, tuple,
+        etc.
+
+    Returns
+    -------
+    The object that results from ``next(iter(iterable))``
+
+    Raises
+    ------
+    ValueError
+        If `iterable` is an iterator (because the current implementation of
+        this function would consume an element from the iterator).
+
+    Examples
+    --------
+    Arbitrary elements from common Iterable objects:
+
+    >>> nx.utils.arbitrary_element([1, 2, 3])  # list
+    1
+    >>> nx.utils.arbitrary_element((1, 2, 3))  # tuple
+    1
+    >>> nx.utils.arbitrary_element({1, 2, 3})  # set
+    1
+    >>> d = {k: v for k, v in zip([1, 2, 3], [3, 2, 1])}
+    >>> nx.utils.arbitrary_element(d)  # dict_keys
+    1
+    >>> nx.utils.arbitrary_element(d.values())   # dict values
+    3
+
+    `str` is also an Iterable:
+
+    >>> nx.utils.arbitrary_element("hello")
+    'h'
+
+    :exc:`ValueError` is raised if `iterable` is an iterator:
+
+    >>> iterator = iter([1, 2, 3])  # Iterator, *not* Iterable
+    >>> nx.utils.arbitrary_element(iterator)
+    Traceback (most recent call last):
+        ...
+    ValueError: cannot return an arbitrary item from an iterator
+
+    Notes
+    -----
+    This function does not return a *random* element. If `iterable` is
+    ordered, sequential calls will return the same value::
+
+        >>> l = [1, 2, 3]
+        >>> nx.utils.arbitrary_element(l)
         1
-        >>> arbitrary_element("hello")
-        'h'
-
-    This function raises a :exc:`ValueError` if `iterable` is an
-    iterator (because the current implementation of this function would
-    consume an element from the iterator)::
-
-        >>> iterator = iter([1, 2, 3])
-        >>> arbitrary_element(iterator)
-        Traceback (most recent call last):
-            ...
-        ValueError: cannot return an arbitrary item from an iterator
+        >>> nx.utils.arbitrary_element(l)
+        1
 
     """
     if isinstance(iterable, Iterator):
         raise ValueError("cannot return an arbitrary item from an iterator")
     # Another possible implementation is ``for x in iterable: return x``.
     return next(iter(iterable))
-
-
-# Recipe from the itertools documentation.
-def consume(iterator):
-    "Consume the iterator entirely."
-    # Feed the entire iterator into a zero-length deque.
-    deque(iterator, maxlen=0)
 
 
 # Recipe from the itertools documentation.
@@ -277,13 +228,12 @@ def groups(many_to_one):
     The return value is a dictionary mapping values from `many_to_one`
     to sets of keys from `many_to_one` that have that value.
 
-    For example::
-
-        >>> from networkx.utils import groups
-        >>> many_to_one = {"a": 1, "b": 1, "c": 2, "d": 3, "e": 3}
-        >>> groups(many_to_one)  # doctest: +SKIP
-        {1: {'a', 'b'}, 2: {'c'}, 3: {'d', 'e'}}
-
+    Examples
+    --------
+    >>> from networkx.utils import groups
+    >>> many_to_one = {"a": 1, "b": 1, "c": 2, "d": 3, "e": 3}
+    >>> groups(many_to_one)  # doctest: +SKIP
+    {1: {'a', 'b'}, 2: {'c'}, 3: {'e', 'd'}}
     """
     one_to_many = defaultdict(set)
     for v, k in many_to_one.items():
@@ -291,30 +241,16 @@ def groups(many_to_one):
     return dict(one_to_many)
 
 
-def to_tuple(x):
-    """Converts lists to tuples.
-
-    For example::
-
-        >>> from networkx.utils import to_tuple
-        >>> a_list = [1, 2, [1, 4]]
-        >>> to_tuple(a_list)
-        (1, 2, (1, 4))
-
-    """
-    if not isinstance(x, (tuple, list)):
-        return x
-    return tuple(map(to_tuple, x))
-
-
 def create_random_state(random_state=None):
-    """Returns a numpy.random.RandomState instance depending on input.
+    """Returns a numpy.random.RandomState or numpy.random.Generator instance
+    depending on input.
 
     Parameters
     ----------
-    random_state : int or RandomState instance or None  optional (default=None)
+    random_state : int or NumPy RandomState or Generator instance, optional (default=None)
         If int, return a numpy.random.RandomState instance set with seed=int.
-        if numpy.random.RandomState instance, return it.
+        if `numpy.random.RandomState` instance, return it.
+        if `numpy.random.Generator` instance, return it.
         if None or numpy.random, return the global random number generator used
         by numpy.random.
     """
@@ -326,8 +262,11 @@ def create_random_state(random_state=None):
         return random_state
     if isinstance(random_state, int):
         return np.random.RandomState(random_state)
+    if isinstance(random_state, np.random.Generator):
+        return random_state
     msg = (
-        f"{random_state} cannot be used to generate a numpy.random.RandomState instance"
+        f"{random_state} cannot be used to create a numpy.random.RandomState or\n"
+        "numpy.random.Generator instance"
     )
     raise ValueError(msg)
 
@@ -335,27 +274,39 @@ def create_random_state(random_state=None):
 class PythonRandomInterface:
     def __init__(self, rng=None):
         try:
-            import numpy
+            import numpy as np
         except ImportError:
             msg = "numpy not found, only random.random available."
             warnings.warn(msg, ImportWarning)
 
         if rng is None:
-            self._rng = numpy.random.mtrand._rand
+            self._rng = np.random.mtrand._rand
         else:
             self._rng = rng
 
     def random(self):
-        return self._rng.random_sample()
+        return self._rng.random()
 
     def uniform(self, a, b):
-        return a + (b - a) * self._rng.random_sample()
+        return a + (b - a) * self._rng.random()
 
     def randrange(self, a, b=None):
+        import numpy as np
+
+        if isinstance(self._rng, np.random.Generator):
+            return self._rng.integers(a, b)
         return self._rng.randint(a, b)
 
+    # NOTE: the numpy implementations of `choice` don't support strings, so
+    # this cannot be replaced with self._rng.choice
     def choice(self, seq):
-        return seq[self._rng.randint(0, len(seq))]
+        import numpy as np
+
+        if isinstance(self._rng, np.random.Generator):
+            idx = self._rng.integers(0, len(seq))
+        else:
+            idx = self._rng.randint(0, len(seq))
+        return seq[idx]
 
     def gauss(self, mu, sigma):
         return self._rng.normal(mu, sigma)
@@ -370,6 +321,10 @@ class PythonRandomInterface:
         return self._rng.choice(list(seq), size=(k,), replace=False)
 
     def randint(self, a, b):
+        import numpy as np
+
+        if isinstance(self._rng, np.random.Generator):
+            return self._rng.integers(a, b + 1)
         return self._rng.randint(a, b + 1)
 
     #    exponential as expovariate with 1/argument,
@@ -404,8 +359,8 @@ def create_py_random_state(random_state=None):
         generator used by `random`.
         if np.random package, return the global numpy random number
         generator wrapped in a PythonRandomInterface class.
-        if np.random.RandomState instance, return it wrapped in
-        PythonRandomInterface
+        if np.random.RandomState or np.random.Generator instance, return it
+        wrapped in PythonRandomInterface
         if a PythonRandomInterface instance, return it
     """
     import random
@@ -415,7 +370,7 @@ def create_py_random_state(random_state=None):
 
         if random_state is np.random:
             return PythonRandomInterface(np.random.mtrand._rand)
-        if isinstance(random_state, np.random.RandomState):
+        if isinstance(random_state, (np.random.RandomState, np.random.Generator)):
             return PythonRandomInterface(random_state)
         if isinstance(random_state, PythonRandomInterface):
             return random_state
@@ -430,3 +385,107 @@ def create_py_random_state(random_state=None):
         return random.Random(random_state)
     msg = f"{random_state} cannot be used to generate a random.Random instance"
     raise ValueError(msg)
+
+
+def nodes_equal(nodes1, nodes2):
+    """Check if nodes are equal.
+
+    Equality here means equal as Python objects.
+    Node data must match if included.
+    The order of nodes is not relevant.
+
+    Parameters
+    ----------
+    nodes1, nodes2 : iterables of nodes, or (node, datadict) tuples
+
+    Returns
+    -------
+    bool
+        True if nodes are equal, False otherwise.
+    """
+    nlist1 = list(nodes1)
+    nlist2 = list(nodes2)
+    try:
+        d1 = dict(nlist1)
+        d2 = dict(nlist2)
+    except (ValueError, TypeError):
+        d1 = dict.fromkeys(nlist1)
+        d2 = dict.fromkeys(nlist2)
+    return d1 == d2
+
+
+def edges_equal(edges1, edges2):
+    """Check if edges are equal.
+
+    Equality here means equal as Python objects.
+    Edge data must match if included.
+    The order of the edges is not relevant.
+
+    Parameters
+    ----------
+    edges1, edges2 : iterables of with u, v nodes as
+        edge tuples (u, v), or
+        edge tuples with data dicts (u, v, d), or
+        edge tuples with keys and data dicts (u, v, k, d)
+
+    Returns
+    -------
+    bool
+        True if edges are equal, False otherwise.
+    """
+    from collections import defaultdict
+
+    d1 = defaultdict(dict)
+    d2 = defaultdict(dict)
+    c1 = 0
+    for c1, e in enumerate(edges1):
+        u, v = e[0], e[1]
+        data = [e[2:]]
+        if v in d1[u]:
+            data = d1[u][v] + data
+        d1[u][v] = data
+        d1[v][u] = data
+    c2 = 0
+    for c2, e in enumerate(edges2):
+        u, v = e[0], e[1]
+        data = [e[2:]]
+        if v in d2[u]:
+            data = d2[u][v] + data
+        d2[u][v] = data
+        d2[v][u] = data
+    if c1 != c2:
+        return False
+    # can check one direction because lengths are the same.
+    for n, nbrdict in d1.items():
+        for nbr, datalist in nbrdict.items():
+            if n not in d2:
+                return False
+            if nbr not in d2[n]:
+                return False
+            d2datalist = d2[n][nbr]
+            for data in datalist:
+                if datalist.count(data) != d2datalist.count(data):
+                    return False
+    return True
+
+
+def graphs_equal(graph1, graph2):
+    """Check if graphs are equal.
+
+    Equality here means equal as Python objects (not isomorphism).
+    Node, edge and graph data must match.
+
+    Parameters
+    ----------
+    graph1, graph2 : graph
+
+    Returns
+    -------
+    bool
+        True if graphs are equal, False otherwise.
+    """
+    return (
+        graph1.adj == graph2.adj
+        and graph1.nodes == graph2.nodes
+        and graph1.graph == graph2.graph
+    )

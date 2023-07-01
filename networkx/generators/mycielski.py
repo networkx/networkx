@@ -48,12 +48,11 @@ def mycielskian(G, iterations=1):
         The Mycielskian of G after the specified number of iterations.
 
     Notes
-    ------
+    -----
     Graph, node, and edge data are not necessarily propagated to the new graph.
 
     """
 
-    n = G.number_of_nodes()
     M = nx.convert_node_labels_to_integers(G)
 
     for i in range(iterations):

@@ -1,10 +1,11 @@
 import pytest
 
 import networkx as nx
-from networkx.testing import assert_nodes_equal
-from .test_graph import BaseGraphTester, BaseAttrGraphTester
-from .test_graph import TestGraph as _TestGraph
+from networkx.utils import nodes_equal
+
+from .test_graph import BaseAttrGraphTester, BaseGraphTester
 from .test_graph import TestEdgeSubgraph as _TestGraphEdgeSubgraph
+from .test_graph import TestGraph as _TestGraph
 
 
 class BaseDiGraphTester(BaseGraphTester):
@@ -128,8 +129,33 @@ class BaseDiGraphTester(BaseGraphTester):
         y = Foo()
         G = nx.DiGraph()
         G.add_edge(x, y)
-        assert_nodes_equal(G.nodes(), G.reverse().nodes())
+        assert nodes_equal(G.nodes(), G.reverse().nodes())
         assert [(y, x)] == list(G.reverse().edges())
+
+    def test_di_cache_reset(self):
+        G = self.K3.copy()
+        old_succ = G.succ
+        assert id(G.succ) == id(old_succ)
+        old_adj = G.adj
+        assert id(G.adj) == id(old_adj)
+
+        G._succ = {}
+        assert id(G.succ) != id(old_succ)
+        assert id(G.adj) != id(old_adj)
+
+        old_pred = G.pred
+        assert id(G.pred) == id(old_pred)
+        G._pred = {}
+        assert id(G.pred) != id(old_pred)
+
+    def test_di_attributes_cached(self):
+        G = self.K3.copy()
+        assert id(G.in_edges) == id(G.in_edges)
+        assert id(G.out_edges) == id(G.out_edges)
+        assert id(G.in_degree) == id(G.in_degree)
+        assert id(G.out_degree) == id(G.out_degree)
+        assert id(G.succ) == id(G.succ)
+        assert id(G.pred) == id(G.pred)
 
 
 class BaseAttrDiGraphTester(BaseDiGraphTester, BaseAttrGraphTester):
@@ -183,7 +209,7 @@ class TestDiGraph(BaseAttrDiGraphTester, _TestGraph):
         self.k3edges = [(0, 1), (0, 2), (1, 2)]
         self.k3nodes = [0, 1, 2]
         self.K3 = self.Graph()
-        self.K3._adj = self.K3._succ = self.k3adj
+        self.K3._succ = self.k3adj  # K3._adj is synced with K3._succ
         self.K3._pred = {0: {1: ed3, 2: ed5}, 1: {0: ed1, 2: ed6}, 2: {0: ed2, 1: ed4}}
         self.K3._node = {}
         self.K3._node[0] = {}
@@ -192,9 +218,9 @@ class TestDiGraph(BaseAttrDiGraphTester, _TestGraph):
 
         ed1, ed2 = ({}, {})
         self.P3 = self.Graph()
-        self.P3._adj = {0: {1: ed1}, 1: {2: ed2}, 2: {}}
-        self.P3._succ = self.P3._adj
+        self.P3._succ = {0: {1: ed1}, 1: {2: ed2}, 2: {}}
         self.P3._pred = {0: {}, 1: {0: ed1}, 2: {1: ed2}}
+        # P3._adj is synced with P3._succ
         self.P3._node = {}
         self.P3._node[0] = {}
         self.P3._node[1] = {}
@@ -218,6 +244,8 @@ class TestDiGraph(BaseAttrDiGraphTester, _TestGraph):
         assert G.adj == {0: {1: {}}, 1: {}}
         assert G.succ == {0: {1: {}}, 1: {}}
         assert G.pred == {0: {}, 1: {0: {}}}
+        with pytest.raises(ValueError, match="None cannot be a node"):
+            G.add_edge(None, 3)
 
     def test_add_edges_from(self):
         G = self.Graph()
@@ -232,6 +260,8 @@ class TestDiGraph(BaseAttrDiGraphTester, _TestGraph):
             G.add_edges_from([(0, 1, 2, 3)])  # too many in tuple
         with pytest.raises(TypeError):
             G.add_edges_from([0])  # not a tuple
+        with pytest.raises(ValueError, match="None cannot be a node"):
+            G.add_edges_from([(None, 3), (3, 2)])
 
     def test_remove_edge(self):
         G = self.K3.copy()

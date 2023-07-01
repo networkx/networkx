@@ -6,17 +6,19 @@ algorithms for solving or generating Sudoku puzzles.
 A completed Sudoku grid is a 9x9 array of integers between 1 and 9, with no
 number appearing twice in the same row, column, or 3x3 box.
 
-   8 6 4 | 3 7 1 | 2 5 9
-   3 2 5 | 8 4 9 | 7 6 1
-   9 7 1 | 2 6 5 | 8 4 3
-   ------+-------+------
-   4 3 6 | 1 9 2 | 5 8 7
-   1 9 8 | 6 5 7 | 4 3 2
-   2 5 7 | 4 8 3 | 9 1 6
-   ------+-------+------
-   6 8 9 | 7 3 4 | 1 2 5
-   7 1 3 | 5 2 8 | 6 9 4
-   5 4 2 | 9 1 6 | 3 7 8
++---------+---------+---------+
+| | 8 6 4 | | 3 7 1 | | 2 5 9 |
+| | 3 2 5 | | 8 4 9 | | 7 6 1 |
+| | 9 7 1 | | 2 6 5 | | 8 4 3 |
++---------+---------+---------+
+| | 4 3 6 | | 1 9 2 | | 5 8 7 |
+| | 1 9 8 | | 6 5 7 | | 4 3 2 |
+| | 2 5 7 | | 4 8 3 | | 9 1 6 |
++---------+---------+---------+
+| | 6 8 9 | | 7 3 4 | | 1 2 5 |
+| | 7 1 3 | | 5 2 8 | | 6 9 4 |
+| | 5 4 2 | | 9 1 6 | | 3 7 8 |
++---------+---------+---------+
 
 
 The Sudoku graph is an undirected graph with 81 vertices, corresponding to

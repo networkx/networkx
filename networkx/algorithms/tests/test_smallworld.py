@@ -1,13 +1,12 @@
 import pytest
 
-numpy = pytest.importorskip("numpy")
+pytest.importorskip("numpy")
 
 import random
 
-from networkx import random_reference, lattice_reference, sigma, omega
 import networkx as nx
+from networkx import lattice_reference, omega, random_reference, sigma
 
-rng = random.Random(0)
 rng = 42
 
 
@@ -18,8 +17,10 @@ def test_random_reference():
     Cr = nx.average_clustering(Gr)
     assert C > Cr
 
-    pytest.raises(nx.NetworkXError, random_reference, nx.Graph())
-    pytest.raises(nx.NetworkXNotImplemented, random_reference, nx.DiGraph())
+    with pytest.raises(nx.NetworkXError):
+        next(random_reference(nx.Graph()))
+    with pytest.raises(nx.NetworkXNotImplemented):
+        next(random_reference(nx.DiGraph()))
 
     H = nx.Graph(((0, 1), (2, 3)))
     Hl = random_reference(H, niter=1, seed=rng)
@@ -54,6 +55,24 @@ def test_omega():
     omegal = omega(Gl, niter=1, nrand=1, seed=rng)
     omegar = omega(Gr, niter=1, nrand=1, seed=rng)
     omegas = omega(Gs, niter=1, nrand=1, seed=rng)
-    print("omegas, omegal, omegar")
-    print(omegas, omegal, omegar)
     assert omegal < omegas and omegas < omegar
+
+    # Test that omega lies within the [-1, 1] bounds
+    G_barbell = nx.barbell_graph(5, 1)
+    G_karate = nx.karate_club_graph()
+
+    omega_barbell = nx.omega(G_barbell)
+    omega_karate = nx.omega(G_karate, nrand=2)
+
+    omegas = (omegal, omegar, omegas, omega_barbell, omega_karate)
+
+    for o in omegas:
+        assert -1 <= o <= 1
+
+
+@pytest.mark.parametrize("f", (nx.random_reference, nx.lattice_reference))
+def test_graph_no_edges(f):
+    G = nx.Graph()
+    G.add_nodes_from([0, 1, 2, 3])
+    with pytest.raises(nx.NetworkXError, match="Graph has fewer that 2 edges"):
+        f(G)

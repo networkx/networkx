@@ -1,11 +1,9 @@
-from heapq import heappush, heappop
+from heapq import heappop, heappush
 from itertools import count
 
 import networkx as nx
-from networkx.utils import not_implemented_for
-from networkx.utils import pairwise
-from networkx.utils import empty_generator
 from networkx.algorithms.shortest_paths.weighted import _weight_function
+from networkx.utils import not_implemented_for, pairwise
 
 __all__ = [
     "all_simple_paths",
@@ -15,6 +13,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 def is_simple_path(G, nodes):
     """Returns True if and only if `nodes` form a simple path in `G`.
 
@@ -24,6 +23,8 @@ def is_simple_path(G, nodes):
 
     Parameters
     ----------
+    G : graph
+        A NetworkX graph.
     nodes : list
         A list of one or more nodes in the graph `G`.
 
@@ -71,13 +72,23 @@ def is_simple_path(G, nodes):
     # NetworkXPointlessConcept here.
     if len(nodes) == 0:
         return False
+
     # If the list is a single node, just check that the node is actually
     # in the graph.
     if len(nodes) == 1:
         return nodes[0] in G
-    # Test that no node appears more than once, and that each
-    # adjacent pair of nodes is adjacent.
-    return len(set(nodes)) == len(nodes) and all(v in G[u] for u, v in pairwise(nodes))
+
+    # check that all nodes in the list are in the graph, if at least one
+    # is not in the graph, then this is not a simple path
+    if not all(n in G for n in nodes):
+        return False
+
+    # If the list contains repeated nodes, then it's not a simple path
+    if len(set(nodes)) != len(nodes):
+        return False
+
+    # Test that each adjacent pair of nodes is adjacent.
+    return all(v in G[u] for u, v in pairwise(nodes))
 
 
 def all_simple_paths(G, source, target, cutoff=None):
@@ -103,7 +114,9 @@ def all_simple_paths(G, source, target, cutoff=None):
     path_generator: generator
        A generator that produces lists of simple paths.  If there are no paths
        between the source and target within the given cutoff the generator
-       produces no output.
+       produces no output. If it is possible to traverse the same sequence of
+       nodes in multiple ways, namely through parallel edges, then it will be
+       returned multiple times (once for each viable edge combination).
 
     Examples
     --------
@@ -199,12 +212,24 @@ def all_simple_paths(G, source, target, cutoff=None):
         >>> all_paths
         [[0, 1, 3], [0, 1, 4], [2, 1, 3], [2, 1, 4]]
 
+    If parallel edges offer multiple ways to traverse a given sequence of
+    nodes, this sequence of nodes will be returned multiple times:
+
+        >>> G = nx.MultiDiGraph([(0, 1), (0, 1), (1, 2)])
+        >>> list(nx.all_simple_paths(G, 0, 2))
+        [[0, 1, 2], [0, 1, 2]]
+
     Notes
     -----
     This algorithm uses a modified depth-first search to generate the
     paths [1]_.  A single path can be found in $O(V+E)$ time but the
     number of simple paths in a graph can be very large, e.g. $O(n!)$ in
     the complete graph of order $n$.
+
+    This function does not check that a path exists between `source` and
+    `target`. For large graphs, this may result in very long runtimes.
+    Consider using `has_path` to check that a path exists between `source` and
+    `target` before calling this function on large graphs.
 
     References
     ----------
@@ -213,7 +238,7 @@ def all_simple_paths(G, source, target, cutoff=None):
 
     See Also
     --------
-    all_shortest_paths, shortest_path
+    all_shortest_paths, shortest_path, has_path
 
     """
     if source not in G:
@@ -223,22 +248,26 @@ def all_simple_paths(G, source, target, cutoff=None):
     else:
         try:
             targets = set(target)
-        except TypeError as e:
-            raise nx.NodeNotFound(f"target node {target} not in graph") from e
+        except TypeError as err:
+            raise nx.NodeNotFound(f"target node {target} not in graph") from err
     if source in targets:
-        return empty_generator()
+        return _empty_generator()
     if cutoff is None:
         cutoff = len(G) - 1
     if cutoff < 1:
-        return empty_generator()
+        return _empty_generator()
     if G.is_multigraph():
         return _all_simple_paths_multigraph(G, source, targets, cutoff)
     else:
         return _all_simple_paths_graph(G, source, targets, cutoff)
 
 
+def _empty_generator():
+    yield from ()
+
+
 def _all_simple_paths_graph(G, source, targets, cutoff):
-    visited = dict.fromkeys([source])
+    visited = {source: True}
     stack = [iter(G[source])]
     while stack:
         children = stack[-1]
@@ -251,7 +280,7 @@ def _all_simple_paths_graph(G, source, targets, cutoff):
                 continue
             if child in targets:
                 yield list(visited) + [child]
-            visited[child] = None
+            visited[child] = True
             if targets - set(visited.keys()):  # expand stack until find all targets
                 stack.append(iter(G[child]))
             else:
@@ -264,7 +293,7 @@ def _all_simple_paths_graph(G, source, targets, cutoff):
 
 
 def _all_simple_paths_multigraph(G, source, targets, cutoff):
-    visited = dict.fromkeys([source])
+    visited = {source: True}
     stack = [(v for u, v in G.edges(source))]
     while stack:
         children = stack[-1]
@@ -277,7 +306,7 @@ def _all_simple_paths_multigraph(G, source, targets, cutoff):
                 continue
             if child in targets:
                 yield list(visited) + [child]
-            visited[child] = None
+            visited[child] = True
             if targets - set(visited.keys()):
                 stack.append((v for u, v in G.edges(child)))
             else:
@@ -404,7 +433,7 @@ def _all_simple_edge_paths_multigraph(G, source, targets, cutoff):
                 visited.append(child)
                 stack.append(iter(G.edges(child[1], keys=True)))
         else:  # len(visited) == cutoff:
-            for (u, v, k) in [child] + list(children):
+            for u, v, k in [child] + list(children):
                 if v in targets:
                     yield visited[1:] + [(u, v, k)]
             stack.pop()
@@ -518,7 +547,7 @@ def shortest_simple_paths(G, source, target, weight=None):
 
         shortest_path_func = _bidirectional_dijkstra
 
-    listA = list()
+    listA = []
     listB = PathBuffer()
     prev_path = None
     while True:
@@ -561,7 +590,7 @@ def shortest_simple_paths(G, source, target, weight=None):
 class PathBuffer:
     def __init__(self):
         self.paths = set()
-        self.sortedpaths = list()
+        self.sortedpaths = []
         self.counter = count()
 
     def __len__(self):
@@ -820,6 +849,8 @@ def _bidirectional_dijkstra(
     if ignore_nodes and (source in ignore_nodes or target in ignore_nodes):
         raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
     if source == target:
+        if source not in G:
+            raise nx.NodeNotFound(f"Node {source} not in graph")
         return (0, [source])
 
     # handle either directed or undirected
@@ -933,7 +964,7 @@ def _bidirectional_dijkstra(
                 push(fringe[dir], (vwLength, next(c), w))
                 paths[dir][w] = paths[dir][v] + [w]
                 if w in seen[0] and w in seen[1]:
-                    # see if this path is better than than the already
+                    # see if this path is better than the already
                     # discovered shortest path
                     totaldist = seen[0][w] + seen[1][w]
                     if finalpath == [] or finaldist > totaldist:

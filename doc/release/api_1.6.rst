@@ -1,11 +1,20 @@
-*********************************
-Version 1.6 notes and API changes
-*********************************
+NetworkX 1.6
+============
 
-This page reflects API changes from networkx-1.5 to networkx-1.6.
+Release date:  20 November 2011
 
-Please send comments and questions to the networkx-discuss mailing list:
-http://groups.google.com/group/networkx-discuss .
+Highlights
+~~~~~~~~~~
+
+New functions for finding articulation points, generating random bipartite graphs, constructing adjacency matrix representations, forming graph products, computing assortativity coefficients, measuring subgraph centrality and communicability, finding k-clique communities, and writing JSON format output.
+
+New examples for drawing with D3 Javascript library, and ordering matrices with the Cuthill-McKee algorithm.
+
+More memory efficient implementation of current-flow betweenness and new approximation algorithms for current-flow betweenness and shortest-path betweenness.
+
+Simplified handling of "weight" attributes for algorithms that use weights/costs/values.
+
+Updated all code to work with the PyPy Python implementation http://pypy.org which produces faster performance on many algorithms.
 
 Graph Classes
 -------------
@@ -101,7 +110,7 @@ Other
 * degree connectivity
 
   average_in_degree_connectivity and average_out_degree_connectivity have
-  have been replaced with
+  been replaced with
 
   average_degree_connectivity(G, source='in', target='in')
 

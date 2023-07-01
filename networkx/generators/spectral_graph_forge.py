@@ -7,68 +7,6 @@ from networkx.utils import np_random_state
 __all__ = ["spectral_graph_forge"]
 
 
-def _mat_spect_approx(A, level, sorteigs=True, reverse=False, absolute=True):
-    """Returns the low-rank approximation of the given matrix A
-
-    Parameters
-    ----------
-    A : 2D numpy array
-    level : integer
-        It represents the fixed rank for the output approximation matrix
-    sorteigs : boolean
-        Whether eigenvectors should be sorted according to their associated
-        eigenvalues before removing the firsts of them
-    reverse : boolean
-        Whether eigenvectors list should be reversed before removing the firsts
-        of them
-    absolute : boolean
-        Whether eigenvectors should be sorted considering the absolute values
-        of the corresponding eigenvalues
-
-    Returns
-    -------
-    B : 2D numpy array
-        low-rank approximation of A
-
-    Notes
-    -----
-    Low-rank matrix approximation is about finding a fixed rank matrix close
-    enough to the input one with respect to a given norm (distance).
-    In the case of real symmetric input matrix and euclidean distance, the best
-    low-rank approximation is given by the sum of first eigenvector matrices.
-
-    References
-    ----------
-    ..  [1] G. Eckart and G. Young, The approximation of one matrix by another
-            of lower rank
-    ..  [2] L. Mirsky, Symmetric gauge functions and unitarily invariant norms
-
-    """
-
-    import numpy as np
-
-    d, V = np.linalg.eigh(A)
-    d = np.ravel(d)
-    n = len(d)
-    if sorteigs:
-        if absolute:
-            k = np.argsort(np.abs(d))
-        else:
-            k = np.argsort(d)
-        # ordered from the lowest to the highest
-    else:
-        k = range(n)
-    if not reverse:
-        k = np.flipud(k)
-
-    z = np.zeros(n)
-    for i in range(level, n):
-        V[:, k[i]] = z
-
-    B = V @ np.diag(d) @ V.T
-    return B
-
-
 @np_random_state(3)
 def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
     """Returns a random simple graph with spectrum resembling that of `G`
@@ -141,18 +79,17 @@ def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
     >>> H = nx.spectral_graph_forge(G, 0.3)
     >>>
     """
-
     import numpy as np
-    import scipy.stats as stats
+    import scipy as sp
 
     available_transformations = ["identity", "modularity"]
     alpha = np.clip(alpha, 0, 1)
     A = nx.to_numpy_array(G)
     n = A.shape[1]
-    level = int(round(n * alpha))
+    level = round(n * alpha)
 
     if transformation not in available_transformations:
-        msg = f"'{transformation}' is not a valid transformation. "
+        msg = f"{transformation!r} is not a valid transformation. "
         msg += f"Transformations: {available_transformations}"
         raise nx.NetworkXError(msg)
 
@@ -162,7 +99,11 @@ def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
     if transformation == "modularity":
         B -= K.T @ K / K.sum()
 
-    B = _mat_spect_approx(B, level, sorteigs=True, absolute=True)
+    # Compute low-rank approximation of B
+    evals, evecs = np.linalg.eigh(B)
+    k = np.argsort(np.abs(evals))[::-1]  # indices of evals in descending order
+    evecs[:, k[np.arange(level, n)]] = 0  # set smallest eigenvectors to 0
+    B = evecs @ np.diag(evals) @ evecs.T
 
     if transformation == "modularity":
         B += K.T @ K / K.sum()
@@ -171,7 +112,7 @@ def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
     np.fill_diagonal(B, 0)
 
     for i in range(n - 1):
-        B[i, i + 1 :] = stats.bernoulli.rvs(B[i, i + 1 :], random_state=seed)
+        B[i, i + 1 :] = sp.stats.bernoulli.rvs(B[i, i + 1 :], random_state=seed)
         B[i + 1 :, i] = np.transpose(B[i, i + 1 :])
 
     H = nx.from_numpy_array(B)

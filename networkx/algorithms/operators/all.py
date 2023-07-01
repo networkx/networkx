@@ -1,25 +1,27 @@
 """Operations on many graphs.
 """
-from itertools import zip_longest
+from itertools import chain, repeat
+
 import networkx as nx
 
 __all__ = ["union_all", "compose_all", "disjoint_union_all", "intersection_all"]
 
 
-def union_all(graphs, rename=(None,)):
+def union_all(graphs, rename=()):
     """Returns the union of all graphs.
 
     The graphs must be disjoint, otherwise an exception is raised.
 
     Parameters
     ----------
-    graphs : list of graphs
-       List of NetworkX graphs
+    graphs : iterable
+       Iterable of NetworkX graphs
 
-    rename : bool , default=(None, None)
-       Node names of G and H can be changed by specifying the tuple
+    rename : iterable , optional
+       Node names of graphs can be changed by specifying the tuple
        rename=('G-','H-') (for example).  Node "u" in G is then renamed
-       "G-u" and "v" in H is renamed "H-v".
+       "G-u" and "v" in H is renamed "H-v". Infinite generators (like itertools.count)
+       are also supported.
 
     Returns
     -------
@@ -30,8 +32,16 @@ def union_all(graphs, rename=(None,)):
     ValueError
        If `graphs` is an empty list.
 
+    NetworkXError
+        In case of mixed type graphs, like MultiGraph and Graph, or directed and undirected graphs.
+
     Notes
     -----
+    For operating on mixed type graphs, they should be converted to the same type.
+    >>> G = nx.Graph()
+    >>> H = nx.DiGraph()
+    >>> GH = union_all([nx.DiGraph(G), H])
+
     To force a disjoint union with node relabeling, use
     disjoint_union_all(G,H) or convert_node_labels_to integers().
 
@@ -44,14 +54,50 @@ def union_all(graphs, rename=(None,)):
     union
     disjoint_union_all
     """
-    if not graphs:
+    R = None
+    seen_nodes = set()
+
+    # rename graph to obtain disjoint node labels
+    def add_prefix(graph, prefix):
+        if prefix is None:
+            return graph
+
+        def label(x):
+            return f"{prefix}{x}"
+
+        return nx.relabel_nodes(graph, label)
+
+    rename = chain(rename, repeat(None))
+    graphs = (add_prefix(G, name) for G, name in zip(graphs, rename))
+
+    for i, G in enumerate(graphs):
+        G_nodes_set = set(G.nodes)
+        if i == 0:
+            # Union is the same type as first graph
+            R = G.__class__()
+        elif G.is_directed() != R.is_directed():
+            raise nx.NetworkXError("All graphs must be directed or undirected.")
+        elif G.is_multigraph() != R.is_multigraph():
+            raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
+        elif not seen_nodes.isdisjoint(G_nodes_set):
+            raise nx.NetworkXError(
+                "The node sets of the graphs are not disjoint.",
+                "Use appropriate rename"
+                "=(G1prefix,G2prefix,...,GNprefix)"
+                "or use disjoint_union(G1,G2,...,GN).",
+            )
+
+        seen_nodes |= G_nodes_set
+        R.graph.update(G.graph)
+        R.add_nodes_from(G.nodes(data=True))
+        R.add_edges_from(
+            G.edges(keys=True, data=True) if G.is_multigraph() else G.edges(data=True)
+        )
+
+    if R is None:
         raise ValueError("cannot apply union_all to an empty list")
-    graphs_names = zip_longest(graphs, rename)
-    U, gname = next(graphs_names)
-    for H, hname in graphs_names:
-        U = nx.union(U, H, (gname, hname))
-        gname = None
-    return U
+
+    return R
 
 
 def disjoint_union_all(graphs):
@@ -62,8 +108,8 @@ def disjoint_union_all(graphs):
 
     Parameters
     ----------
-    graphs : list
-       List of NetworkX graphs
+    graphs : iterable
+       Iterable of NetworkX graphs
 
     Returns
     -------
@@ -74,21 +120,27 @@ def disjoint_union_all(graphs):
     ValueError
        If `graphs` is an empty list.
 
+    NetworkXError
+        In case of mixed type graphs, like MultiGraph and Graph, or directed and undirected graphs.
+
     Notes
     -----
-    It is recommended that the graphs be either all directed or all undirected.
+    For operating on mixed type graphs, they should be converted to the same type.
 
     Graph, edge, and node attributes are propagated to the union graph.
     If a graph attribute is present in multiple graphs, then the value
     from the last graph in the list with that attribute is used.
     """
-    if not graphs:
-        raise ValueError("cannot apply disjoint_union_all to an empty list")
-    graphs = iter(graphs)
-    U = next(graphs)
-    for H in graphs:
-        U = nx.disjoint_union(U, H)
-    return U
+
+    def yield_relabeled(graphs):
+        first_label = 0
+        for G in graphs:
+            yield nx.convert_node_labels_to_integers(G, first_label=first_label)
+            first_label += len(G)
+
+    R = union_all(yield_relabeled(graphs))
+
+    return R
 
 
 def compose_all(graphs):
@@ -99,8 +151,8 @@ def compose_all(graphs):
 
     Parameters
     ----------
-    graphs : list
-       List of NetworkX graphs
+    graphs : iterable
+       Iterable of NetworkX graphs
 
     Returns
     -------
@@ -111,34 +163,49 @@ def compose_all(graphs):
     ValueError
        If `graphs` is an empty list.
 
+    NetworkXError
+        In case of mixed type graphs, like MultiGraph and Graph, or directed and undirected graphs.
+
     Notes
     -----
-    It is recommended that the supplied graphs be either all directed or all
-    undirected.
+    For operating on mixed type graphs, they should be converted to the same type.
 
     Graph, edge, and node attributes are propagated to the union graph.
     If a graph attribute is present in multiple graphs, then the value
     from the last graph in the list with that attribute is used.
     """
-    if not graphs:
+    R = None
+
+    # add graph attributes, H attributes take precedent over G attributes
+    for i, G in enumerate(graphs):
+        if i == 0:
+            # create new graph
+            R = G.__class__()
+        elif G.is_directed() != R.is_directed():
+            raise nx.NetworkXError("All graphs must be directed or undirected.")
+        elif G.is_multigraph() != R.is_multigraph():
+            raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
+
+        R.graph.update(G.graph)
+        R.add_nodes_from(G.nodes(data=True))
+        R.add_edges_from(
+            G.edges(keys=True, data=True) if G.is_multigraph() else G.edges(data=True)
+        )
+
+    if R is None:
         raise ValueError("cannot apply compose_all to an empty list")
-    graphs = iter(graphs)
-    C = next(graphs)
-    for H in graphs:
-        C = nx.compose(C, H)
-    return C
+
+    return R
 
 
 def intersection_all(graphs):
-    """Returns a new graph that contains only the edges that exist in
+    """Returns a new graph that contains only the nodes and the edges that exist in
     all graphs.
-
-    All supplied graphs must have the same node set.
 
     Parameters
     ----------
-    graphs : list
-       List of NetworkX graphs
+    graphs : iterable
+       Iterable of NetworkX graphs
 
     Returns
     -------
@@ -149,15 +216,60 @@ def intersection_all(graphs):
     ValueError
        If `graphs` is an empty list.
 
+    NetworkXError
+        In case of mixed type graphs, like MultiGraph and Graph, or directed and undirected graphs.
+
     Notes
     -----
+    For operating on mixed type graphs, they should be converted to the same type.
+
     Attributes from the graph, nodes, and edges are not copied to the new
     graph.
+
+    The resulting graph can be updated with attributes if desired. For example, code which adds the minimum attribute for each node across all graphs could work.
+    >>> g = nx.Graph()
+    >>> g.add_node(0, capacity=4)
+    >>> g.add_node(1, capacity=3)
+    >>> g.add_edge(0, 1)
+
+    >>> h = g.copy()
+    >>> h.nodes[0]["capacity"] = 2
+
+    >>> gh = nx.intersection_all([g, h])
+
+    >>> new_node_attr = {n: min(*(anyG.nodes[n].get('capacity', float('inf')) for anyG in [g, h])) for n in gh}
+    >>> nx.set_node_attributes(gh, new_node_attr, 'new_capacity')
+    >>> gh.nodes(data=True)
+    NodeDataView({0: {'new_capacity': 2}, 1: {'new_capacity': 3}})
+
     """
-    if not graphs:
+    R = None
+
+    for i, G in enumerate(graphs):
+        G_nodes_set = set(G.nodes)
+        G_edges_set = set(G.edges)
+        if not G.is_directed():
+            if type(G) is nx.MultiGraph:
+                G_edges_set.update((v, u, k) for u, v, k in list(G_edges_set))
+            else:
+                G_edges_set.update((v, u) for u, v in list(G_edges_set))
+        if i == 0:
+            # create new graph
+            R = G.__class__()
+            node_intersection = G_nodes_set
+            edge_intersection = G_edges_set
+        elif G.is_directed() != R.is_directed():
+            raise nx.NetworkXError("All graphs must be directed or undirected.")
+        elif G.is_multigraph() != R.is_multigraph():
+            raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
+        else:
+            node_intersection &= G_nodes_set
+            edge_intersection &= G_edges_set
+
+    if R is None:
         raise ValueError("cannot apply intersection_all to an empty list")
-    graphs = iter(graphs)
-    R = next(graphs)
-    for H in graphs:
-        R = nx.intersection(R, H)
+
+    R.add_nodes_from(node_intersection)
+    R.add_edges_from(edge_intersection)
+
     return R

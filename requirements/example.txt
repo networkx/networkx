@@ -1,11 +1,6 @@
-Cython>=0.29
-pyshp>=2.1
-six>=1.15
---no-binary shapely
-shapely>=1.5.17
-Cartopy>=0.18.0
-geopandas>=0.8
-osmnx>=0.16
-pysal>=2.3
-# For mayavi
-mayavi>=4.7
+osmnx>=1.2
+momepy>=0.5
+contextily>=1.2
+seaborn>=0.12
+cairocffi>=1.4
+igraph>=0.10

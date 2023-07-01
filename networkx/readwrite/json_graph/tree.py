@@ -1,12 +1,11 @@
 from itertools import chain
+
 import networkx as nx
 
 __all__ = ["tree_data", "tree_graph"]
 
-_attrs = dict(id="id", children="children")
 
-
-def tree_data(G, root, attrs=_attrs):
+def tree_data(G, root, ident="id", children="children"):
     """Returns data in tree format that is suitable for JSON serialization
     and use in Javascript documents.
 
@@ -18,14 +17,13 @@ def tree_data(G, root, attrs=_attrs):
     root : node
        The root of the tree
 
-    attrs : dict
-        A dictionary that contains two keys 'id' and 'children'. The
-        corresponding values provide the attribute names for storing
-        NetworkX-internal graph data. The values should be unique. Default
-        value: :samp:`dict(id='id', children='children')`.
+    ident : string
+        Attribute name for storing NetworkX-internal graph data. `ident` must
+        have a different value than `children`. The default is 'id'.
 
-        If some user-defined graph data use these attribute names as data keys,
-        they may be silently dropped.
+    children : string
+        Attribute name for storing NetworkX-internal graph data. `children`
+        must have a different value than `ident`. The default is 'children'.
 
     Returns
     -------
@@ -35,7 +33,7 @@ def tree_data(G, root, attrs=_attrs):
     Raises
     ------
     NetworkXError
-        If values in attrs are not unique.
+        If `children` and `ident` attributes are identical.
 
     Examples
     --------
@@ -55,8 +53,6 @@ def tree_data(G, root, attrs=_attrs):
 
     Graph and edge attributes are not stored.
 
-    The default value of attrs will be changed in a future release of NetworkX.
-
     See Also
     --------
     tree_graph, node_link_data, adjacency_data
@@ -65,11 +61,11 @@ def tree_data(G, root, attrs=_attrs):
         raise TypeError("G is not a tree.")
     if not G.is_directed():
         raise TypeError("G is not directed.")
+    if not nx.is_weakly_connected(G):
+        raise TypeError("G is not weakly connected.")
 
-    id_ = attrs["id"]
-    children = attrs["children"]
-    if id_ == children:
-        raise nx.NetworkXError("Attribute names are not unique.")
+    if ident == children:
+        raise nx.NetworkXError("The values for `id` and `children` must be different.")
 
     def add_children(n, G):
         nbrs = G[n]
@@ -77,19 +73,17 @@ def tree_data(G, root, attrs=_attrs):
             return []
         children_ = []
         for child in nbrs:
-            d = dict(chain(G.nodes[child].items(), [(id_, child)]))
+            d = {**G.nodes[child], ident: child}
             c = add_children(child, G)
             if c:
                 d[children] = c
             children_.append(d)
         return children_
 
-    data = dict(chain(G.nodes[root].items(), [(id_, root)]))
-    data[children] = add_children(root, G)
-    return data
+    return {**G.nodes[root], ident: root, children: add_children(root, G)}
 
 
-def tree_graph(data, attrs=_attrs):
+def tree_graph(data, ident="id", children="children"):
     """Returns graph from tree data format.
 
     Parameters
@@ -97,15 +91,17 @@ def tree_graph(data, attrs=_attrs):
     data : dict
         Tree formatted graph data
 
+    ident : string
+        Attribute name for storing NetworkX-internal graph data. `ident` must
+        have a different value than `children`. The default is 'id'.
+
+    children : string
+        Attribute name for storing NetworkX-internal graph data. `children`
+        must have a different value than `ident`. The default is 'children'.
+
     Returns
     -------
     G : NetworkX DiGraph
-
-    attrs : dict
-        A dictionary that contains two keys 'id' and 'children'. The
-        corresponding values provide the attribute names for storing
-        NetworkX-internal graph data. The values should be unique. Default
-        value: :samp:`dict(id='id', children='children')`.
 
     Examples
     --------
@@ -114,33 +110,27 @@ def tree_graph(data, attrs=_attrs):
     >>> data = json_graph.tree_data(G, root=1)
     >>> H = json_graph.tree_graph(data)
 
-    Notes
-    -----
-    The default value of attrs will be changed in a future release of NetworkX.
-
     See Also
     --------
     tree_data, node_link_data, adjacency_data
     """
     graph = nx.DiGraph()
-    id_ = attrs["id"]
-    children = attrs["children"]
 
     def add_children(parent, children_):
         for data in children_:
-            child = data[id_]
+            child = data[ident]
             graph.add_edge(parent, child)
             grandchildren = data.get(children, [])
             if grandchildren:
                 add_children(child, grandchildren)
             nodedata = {
-                str(k): v for k, v in data.items() if k != id_ and k != children
+                str(k): v for k, v in data.items() if k != ident and k != children
             }
             graph.add_node(child, **nodedata)
 
-    root = data[id_]
+    root = data[ident]
     children_ = data.get(children, [])
-    nodedata = {str(k): v for k, v in data.items() if k != id_ and k != children}
+    nodedata = {str(k): v for k, v in data.items() if k != ident and k != children}
     graph.add_node(root, **nodedata)
     add_children(root, children_)
     return graph

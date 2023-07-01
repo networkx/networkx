@@ -1,9 +1,8 @@
 """Node assortativity coefficients and correlation measures.
 """
 from networkx.algorithms.assortativity.mixing import (
-    degree_mixing_matrix,
     attribute_mixing_matrix,
-    numeric_mixing_matrix,
+    degree_mixing_matrix,
 )
 from networkx.algorithms.assortativity.pairs import node_degree_xy
 
@@ -56,7 +55,6 @@ def degree_assortativity_coefficient(G, x="out", y="in", weight=None, nodes=None
     --------
     attribute_assortativity_coefficient
     numeric_assortativity_coefficient
-    neighbor_connectivity
     degree_mixing_dict
     degree_mixing_matrix
 
@@ -74,8 +72,30 @@ def degree_assortativity_coefficient(G, x="out", y="in", weight=None, nodes=None
     .. [2] Foster, J.G., Foster, D.V., Grassberger, P. & Paczuski, M.
        Edge direction and the structure of networks, PNAS 107, 10815-20 (2010).
     """
-    M = degree_mixing_matrix(G, x=x, y=y, nodes=nodes, weight=weight)
-    return numeric_ac(M)
+    if nodes is None:
+        nodes = G.nodes
+
+    degrees = None
+
+    if G.is_directed():
+        indeg = (
+            {d for _, d in G.in_degree(nodes, weight=weight)}
+            if "in" in (x, y)
+            else set()
+        )
+        outdeg = (
+            {d for _, d in G.out_degree(nodes, weight=weight)}
+            if "out" in (x, y)
+            else set()
+        )
+        degrees = set.union(indeg, outdeg)
+    else:
+        degrees = {d for _, d in G.degree(nodes, weight=weight)}
+
+    mapping = {d: i for i, d, in enumerate(degrees)}
+    M = degree_mixing_matrix(G, x=x, y=y, nodes=nodes, weight=weight, mapping=mapping)
+
+    return _numeric_ac(M, mapping=mapping)
 
 
 def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, nodes=None):
@@ -129,11 +149,11 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
     .. [2] Foster, J.G., Foster, D.V., Grassberger, P. & Paczuski, M.
        Edge direction and the structure of networks, PNAS 107, 10815-20 (2010).
     """
-    import scipy.stats as stats
+    import scipy as sp
 
     xy = node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
     x, y = zip(*xy)
-    return stats.pearsonr(x, y)[0]
+    return sp.stats.pearsonr(x, y)[0]
 
 
 def attribute_assortativity_coefficient(G, attribute, nodes=None):
@@ -187,15 +207,13 @@ def numeric_assortativity_coefficient(G, attribute, nodes=None):
 
     Assortativity measures the similarity of connections
     in the graph with respect to the given numeric attribute.
-    The numeric attribute must be an integer.
 
     Parameters
     ----------
     G : NetworkX graph
 
     attribute : string
-        Node attribute key.  The corresponding attribute value must be an
-        integer.
+        Node attribute key.
 
     nodes: list or iterable (optional)
         Compute numeric assortativity only for attributes of nodes in
@@ -217,16 +235,20 @@ def numeric_assortativity_coefficient(G, attribute, nodes=None):
 
     Notes
     -----
-    This computes Eq. (21) in Ref. [1]_ , for the mixing matrix of
-    of the specified attribute.
+    This computes Eq. (21) in Ref. [1]_ , which is the Pearson correlation
+    coefficient of the specified (scalar valued) attribute across edges.
 
     References
     ----------
     .. [1] M. E. J. Newman, Mixing patterns in networks
            Physical Review E, 67 026126, 2003
     """
-    a = numeric_mixing_matrix(G, attribute, nodes)
-    return numeric_ac(a)
+    if nodes is None:
+        nodes = G.nodes
+    vals = {G.nodes[n][attribute] for n in nodes}
+    mapping = {d: i for i, d, in enumerate(vals)}
+    M = attribute_mixing_matrix(G, attribute, nodes, mapping)
+    return _numeric_ac(M, mapping)
 
 
 def attribute_ac(M):
@@ -256,20 +278,20 @@ def attribute_ac(M):
     return r
 
 
-def numeric_ac(M):
-    # M is a numpy matrix or array
+def _numeric_ac(M, mapping):
+    # M is a 2D numpy array
     # numeric assortativity coefficient, pearsonr
     import numpy as np
 
     if M.sum() != 1.0:
-        M = M / float(M.sum())
-    nx, ny = M.shape  # nx=ny
-    x = np.arange(nx)
-    y = np.arange(ny)
+        M = M / M.sum()
+    x = np.array(list(mapping.keys()))
+    y = x  # x and y have the same support
+    idx = list(mapping.values())
     a = M.sum(axis=0)
     b = M.sum(axis=1)
-    vara = (a * x ** 2).sum() - ((a * x).sum()) ** 2
-    varb = (b * x ** 2).sum() - ((b * x).sum()) ** 2
+    vara = (a[idx] * x**2).sum() - ((a[idx] * x).sum()) ** 2
+    varb = (b[idx] * y**2).sum() - ((b[idx] * y).sum()) ** 2
     xy = np.outer(x, y)
-    ab = np.outer(a, b)
+    ab = np.outer(a[idx], b[idx])
     return (xy * (M - ab)).sum() / np.sqrt(vara * varb)

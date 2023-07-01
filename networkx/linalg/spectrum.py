@@ -32,15 +32,27 @@ def laplacian_spectrum(G, weight="weight"):
     Notes
     -----
     For MultiGraph/MultiDiGraph, the edges weights are summed.
-    See to_numpy_array for other options.
+    See :func:`~networkx.convert_matrix.to_numpy_array` for other options.
 
     See Also
     --------
     laplacian_matrix
-    """
-    from scipy.linalg import eigvalsh
 
-    return eigvalsh(nx.laplacian_matrix(G, weight=weight).todense())
+    Examples
+    --------
+    The multiplicity of 0 as an eigenvalue of the laplacian matrix is equal
+    to the number of connected components of G.
+
+    >>> G = nx.Graph()  # Create a graph with 5 nodes and 3 connected components
+    >>> G.add_nodes_from(range(5))
+    >>> G.add_edges_from([(0, 2), (3, 4)])
+    >>> nx.laplacian_spectrum(G)
+    array([0., 0., 0., 2., 2.])
+
+    """
+    import scipy as sp
+
+    return sp.linalg.eigvalsh(nx.laplacian_matrix(G, weight=weight).todense())
 
 
 def normalized_laplacian_spectrum(G, weight="weight"):
@@ -69,9 +81,11 @@ def normalized_laplacian_spectrum(G, weight="weight"):
     --------
     normalized_laplacian_matrix
     """
-    from scipy.linalg import eigvalsh
+    import scipy as sp
 
-    return eigvalsh(nx.normalized_laplacian_matrix(G, weight=weight).todense())
+    return sp.linalg.eigvalsh(
+        nx.normalized_laplacian_matrix(G, weight=weight).todense()
+    )
 
 
 def adjacency_spectrum(G, weight="weight"):
@@ -100,9 +114,9 @@ def adjacency_spectrum(G, weight="weight"):
     --------
     adjacency_matrix
     """
-    from scipy.linalg import eigvals
+    import scipy as sp
 
-    return eigvals(nx.adjacency_matrix(G, weight=weight).todense())
+    return sp.linalg.eigvals(nx.adjacency_matrix(G, weight=weight).todense())
 
 
 def modularity_spectrum(G):
@@ -127,12 +141,12 @@ def modularity_spectrum(G):
     .. [1] M. E. J. Newman, "Modularity and community structure in networks",
        Proc. Natl. Acad. Sci. USA, vol. 103, pp. 8577-8582, 2006.
     """
-    from scipy.linalg import eigvals
+    import scipy as sp
 
     if G.is_directed():
-        return eigvals(nx.directed_modularity_matrix(G))
+        return sp.linalg.eigvals(nx.directed_modularity_matrix(G))
     else:
-        return eigvals(nx.modularity_matrix(G))
+        return sp.linalg.eigvals(nx.modularity_matrix(G))
 
 
 def bethe_hessian_spectrum(G, r=None):
@@ -161,6 +175,6 @@ def bethe_hessian_spectrum(G, r=None):
        "Spectral clustering of graphs with the bethe hessian",
        Advances in Neural Information Processing Systems. 2014.
     """
-    from scipy.linalg import eigvalsh
+    import scipy as sp
 
-    return eigvalsh(nx.bethe_hessian_matrix(G, r).todense())
+    return sp.linalg.eigvalsh(nx.bethe_hessian_matrix(G, r).todense())

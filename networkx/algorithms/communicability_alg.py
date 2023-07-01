@@ -36,7 +36,7 @@ def communicability(G):
        Communicability between all pairs of nodes in G  using spectral
        decomposition.
     communicability_betweenness_centrality:
-       Communicability betweeness centrality for each node in G.
+       Communicability betweenness centrality for each node in G.
 
     Notes
     -----
@@ -65,14 +65,14 @@ def communicability(G):
     >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3), (3, 6)])
     >>> c = nx.communicability(G)
     """
-    import numpy
+    import numpy as np
 
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
     A[A != 0.0] = 1
-    w, vec = numpy.linalg.eigh(A)
-    expw = numpy.exp(w)
+    w, vec = np.linalg.eigh(A)
+    expw = np.exp(w)
     mapping = dict(zip(nodelist, range(len(nodelist))))
     c = {}
     # computing communicabilities
@@ -116,7 +116,7 @@ def communicability_exp(G):
     communicability:
        Communicability between pairs of nodes in G.
     communicability_betweenness_centrality:
-       Communicability betweeness centrality for each node in G.
+       Communicability betweenness centrality for each node in G.
 
     Notes
     -----
@@ -143,14 +143,14 @@ def communicability_exp(G):
     >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3), (3, 6)])
     >>> c = nx.communicability_exp(G)
     """
-    import scipy.linalg
+    import scipy as sp
 
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
     A[A != 0.0] = 1
     # communicability matrix
-    expA = scipy.linalg.expm(A)
+    expA = sp.linalg.expm(A)
     mapping = dict(zip(nodelist, range(len(nodelist))))
     c = {}
     for u in G:

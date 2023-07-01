@@ -15,12 +15,12 @@ and biconnected_components algorithms but might also work for other
 algorithms.
 
 """
-import networkx as nx
-from networkx.exception import NetworkXError
 import matplotlib.pyplot as plt
+import networkx as nx
+from networkx import Graph
 
 
-class AntiGraph(nx.Graph):
+class AntiGraph(Graph):
     """
     Class for complement graphs.
 
@@ -65,8 +65,8 @@ class AntiGraph(nx.Graph):
         """
         try:
             return iter(set(self.adj) - set(self.adj[n]) - {n})
-        except KeyError as e:
-            raise NetworkXError(f"The node {n} is not in the graph.") from e
+        except KeyError as err:
+            raise nx.NetworkXError(f"The node {n} is not in the graph.") from err
 
     def degree(self, nbunch=None, weight=None):
         """Return an iterator for (node, degree) in the dense graph.
@@ -96,8 +96,8 @@ class AntiGraph(nx.Graph):
         Examples
         --------
         >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
-        >>> list(G.degree(0))  # node 0 with degree 1
-        [(0, 1)]
+        >>> G.degree(0)  # node 0 with degree 1
+        1
         >>> list(G.degree([0, 1]))
         [(0, 1), (1, 2)]
 

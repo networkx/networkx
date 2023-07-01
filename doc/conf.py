@@ -1,6 +1,5 @@
 from datetime import date
-from sphinx_gallery.sorting import ExplicitOrder
-import sphinx_rtd_theme
+from sphinx_gallery.sorting import ExplicitOrder, FileNameSortKey
 from warnings import filterwarnings
 
 filterwarnings(
@@ -19,12 +18,12 @@ extensions = [
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
-    "sphinx.ext.napoleon",
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
     "sphinx_gallery.gen_gallery",
     "nb2plots",
     "texext",
+    "numpydoc",
 ]
 
 # https://github.com/sphinx-gallery/sphinx-gallery
@@ -35,23 +34,31 @@ sphinx_gallery_conf = {
         [
             "../examples/basic",
             "../examples/drawing",
+            "../examples/3d_drawing",
+            "../examples/graphviz_layout",
+            "../examples/graphviz_drawing",
             "../examples/graph",
             "../examples/algorithms",
             "../examples/advanced",
-            "../examples/3d_drawing",
-            "../examples/pygraphviz",
+            "../examples/external",
             "../examples/geospatial",
-            "../examples/javascript",
-            "../examples/jit",
-            "../examples/applications",
             "../examples/subclass",
         ]
     ),
+    "within_subsection_order": FileNameSortKey,
     # path where to save gallery generated examples
     "gallery_dirs": "auto_examples",
     "backreferences_dir": "modules/generated",
-    "image_scrapers": ("matplotlib", "mayavi"),
+    "image_scrapers": ("matplotlib",),
+    "plot_gallery": "True",
 }
+# Add pygraphviz png scraper, if available
+try:
+    from pygraphviz.scraper import PNGScraper
+
+    sphinx_gallery_conf["image_scrapers"] += (PNGScraper(),)
+except ImportError:
+    pass
 
 # generate autosummary pages
 autosummary_generate = True
@@ -66,9 +73,6 @@ source_suffix = ".rst"
 
 # The encoding of source files.
 source_encoding = "utf-8"
-
-# The master toctree document.
-master_doc = "index"
 
 # Do not include release announcement template
 exclude_patterns = ["release/release_template.rst"]
@@ -114,23 +118,37 @@ modindex_common_prefix = ["networkx."]
 
 doctest_global_setup = "import networkx as nx"
 
-# treat ``x, y : type`` as vars x and y instead of default ``y(x,) : type``
-napoleon_use_param = False
-
 # Options for HTML output
 # -----------------------
 
-
-html_theme = "sphinx_rtd_theme"
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-
+html_baseurl = "https://networkx.org/documentation/stable/"
+html_theme = "pydata_sphinx_theme"
 html_theme_options = {
-    "canonical_url": "https://networkx.org/documentation/stable/",
-    "navigation_depth": 3,
-    "logo_only": True,
+    "collapse_navigation": True,
+    "navigation_depth": 2,
+    "show_prev_next": False,
+    "announcement": "<p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p>",
+    "icon_links": [
+        {"name": "Home Page", "url": "https://networkx.org", "icon": "fas fa-home"},
+        {
+            "name": "GitHub",
+            "url": "https://github.com/networkx/networkx",
+            "icon": "fab fa-github-square",
+        },
+    ],
+    "external_links": [{"name": "Guides", "url": "https://networkx.org/nx-guides/"}],
+    "navbar_end": ["theme-switcher", "navbar-icon-links", "version"],
+    "secondary_sidebar_items": ["search-field", "page-toc", "edit-this-page"],
+    "header_links_before_dropdown": 7,
 }
-
-html_logo = "_static/networkx_logo.svg"
+html_sidebars = {
+    "**": ["sidebar-nav-bs", "sidebar-ethical-ads"],
+    "index": [],
+    "install": [],
+    "tutorial": [],
+    "auto_examples/index": [],
+}
+html_logo = "_static/networkx_banner.svg"
 
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
@@ -168,9 +186,19 @@ html_use_opensearch = "https://networkx.org"
 # Output file base name for HTML help builder.
 htmlhelp_basename = "NetworkX"
 
+html_context = {
+    "versions_dropdown": {
+        "latest": "devel (latest)",
+        "stable": "current (stable)",
+    },
+    "default_mode": "light",
+}
+
 # Options for LaTeX output
 # ------------------------
 
+# Use a latex engine that allows for unicode characters in docstrings
+latex_engine = "xelatex"
 # The paper size ('letter' or 'a4').
 latex_paper_size = "letter"
 
@@ -196,9 +224,15 @@ latex_appendices = ["tutorial"]
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
-    "matplotlib": ("https://matplotlib.org", None),
-    "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
-    "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
+    "neps": ("https://numpy.org/neps/", None),
+    "matplotlib": ("https://matplotlib.org/stable/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
+    "geopandas": ("https://geopandas.org/en/stable/", None),
+    "pygraphviz": ("https://pygraphviz.github.io/documentation/stable/", None),
+    "sphinx-gallery": ("https://sphinx-gallery.github.io/stable/", None),
+    "nx-guides": ("https://networkx.org/nx-guides/", None),
+    "sympy": ("https://docs.sympy.org/latest/", None),
 }
 
 # The reST default role (used for this markup: `text`) to use for all

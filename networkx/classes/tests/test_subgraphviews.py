@@ -1,10 +1,11 @@
 import pytest
 
 import networkx as nx
+from networkx.utils import edges_equal
 
 
 class TestSubGraphView:
-    gview = staticmethod(nx.graphviews.subgraph_view)
+    gview = staticmethod(nx.subgraph_view)
     graph = nx.Graph
     hide_edges_filter = staticmethod(nx.filters.hide_edges)
     show_edges_filter = staticmethod(nx.filters.show_edges)
@@ -94,7 +95,7 @@ class TestSubGraphView:
 
 
 class TestSubDiGraphView(TestSubGraphView):
-    gview = staticmethod(nx.graphviews.subgraph_view)
+    gview = staticmethod(nx.subgraph_view)
     graph = nx.DiGraph
     hide_edges_filter = staticmethod(nx.filters.hide_diedges)
     show_edges_filter = staticmethod(nx.filters.show_diedges)
@@ -133,7 +134,7 @@ class TestSubDiGraphView(TestSubGraphView):
 
 # multigraph
 class TestMultiGraphView(TestSubGraphView):
-    gview = staticmethod(nx.graphviews.subgraph_view)
+    gview = staticmethod(nx.subgraph_view)
     graph = nx.MultiGraph
     hide_edges_filter = staticmethod(nx.filters.hide_multiedges)
     show_edges_filter = staticmethod(nx.filters.show_multiedges)
@@ -189,7 +190,7 @@ class TestMultiGraphView(TestSubGraphView):
 
 # multidigraph
 class TestMultiDiGraphView(TestMultiGraphView, TestSubDiGraphView):
-    gview = staticmethod(nx.graphviews.subgraph_view)
+    gview = staticmethod(nx.subgraph_view)
     graph = nx.MultiDiGraph
     hide_edges_filter = staticmethod(nx.filters.hide_multidiedges)
     show_edges_filter = staticmethod(nx.filters.show_multidiedges)
@@ -286,11 +287,15 @@ class TestEdgeSubGraph:
 
     def test_correct_nodes(self):
         """Tests that the subgraph has the correct nodes."""
-        assert [0, 1, 3, 4] == sorted(self.H.nodes)
+        assert [(0, "node0"), (1, "node1"), (3, "node3"), (4, "node4")] == sorted(
+            self.H.nodes.data("name")
+        )
 
     def test_correct_edges(self):
         """Tests that the subgraph has the correct edges."""
-        assert [(0, 1, "edge01"), (3, 4, "edge34")] == sorted(self.H.edges(data="name"))
+        assert edges_equal(
+            [(0, 1, "edge01"), (3, 4, "edge34")], self.H.edges.data("name")
+        )
 
     def test_add_node(self):
         """Tests that adding a node to the original graph does not
@@ -308,7 +313,8 @@ class TestEdgeSubGraph:
         """
         self.G.remove_node(0)
         assert [1, 3, 4] == sorted(self.H.nodes)
-        self.G.add_edge(0, 1)
+        self.G.add_node(0, name="node0")
+        self.G.add_edge(0, 1, name="edge01")
 
     def test_node_attr_dict(self):
         """Tests that the node attribute dictionary of the two graphs is
@@ -322,6 +328,9 @@ class TestEdgeSubGraph:
         assert self.G.nodes[0] == self.H.nodes[0]
         self.H.nodes[1]["name"] = "bar"
         assert self.G.nodes[1] == self.H.nodes[1]
+        # Revert the change, so tests pass with pytest-randomly
+        self.G.nodes[0]["name"] = "node0"
+        self.H.nodes[1]["name"] = "node1"
 
     def test_edge_attr_dict(self):
         """Tests that the edge attribute dictionary of the two graphs is
@@ -335,6 +344,9 @@ class TestEdgeSubGraph:
         assert self.G.edges[0, 1]["name"] == self.H.edges[0, 1]["name"]
         self.H.edges[3, 4]["name"] = "bar"
         assert self.G.edges[3, 4]["name"] == self.H.edges[3, 4]["name"]
+        # Revert the change, so tests pass with pytest-randomly
+        self.G.edges[0, 1]["name"] = "edge01"
+        self.H.edges[3, 4]["name"] = "edge34"
 
     def test_graph_attr_dict(self):
         """Tests that the graph attribute dictionary of the two graphs

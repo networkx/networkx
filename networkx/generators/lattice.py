@@ -13,16 +13,14 @@ be found about `Triangular Tiling`_, and `Square, Hex and Triangle Grids`_
 
 """
 
+from itertools import repeat
 from math import sqrt
 
 from networkx.classes import set_node_attributes
 from networkx.exception import NetworkXError
+from networkx.generators.classic import cycle_graph, empty_graph, path_graph
 from networkx.relabel import relabel_nodes
-from networkx.utils import flatten, nodes_or_number, pairwise, iterable
-from networkx.generators.classic import cycle_graph
-from networkx.generators.classic import empty_graph
-from networkx.generators.classic import path_graph
-from itertools import repeat
+from networkx.utils import flatten, nodes_or_number, pairwise
 
 __all__ = [
     "grid_2d_graph",
@@ -67,9 +65,9 @@ def grid_2d_graph(m, n, periodic=False, create_using=None):
     G.add_edges_from(((i, j), (pi, j)) for pi, i in pairwise(rows) for j in cols)
     G.add_edges_from(((i, j), (i, pj)) for i in rows for pj, j in pairwise(cols))
 
-    if iterable(periodic):
+    try:
         periodic_r, periodic_c = periodic
-    else:
+    except TypeError:
         periodic_r = periodic_c = periodic
 
     if periodic_r and len(rows) > 2:
@@ -128,9 +126,9 @@ def grid_graph(dim, periodic=False):
     if not dim:
         return empty_graph(0)
 
-    if iterable(periodic):
+    try:
         func = (cycle_graph if p else path_graph for p in periodic)
-    else:
+    except TypeError:
         func = repeat(cycle_graph if periodic else path_graph)
 
     G = next(func)(dim[0])
@@ -297,7 +295,7 @@ def hexagonal_lattice_graph(
 
     periodic : bool
         Whether to make a periodic grid by joining the boundary vertices.
-        For this to work `n` must be odd and both `n > 1` and `m > 1`.
+        For this to work `n` must be even and both `n > 1` and `m > 1`.
         The periodic connections create another row and column of hexagons
         so these graphs have fewer nodes as boundary nodes are identified.
 

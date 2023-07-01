@@ -1,12 +1,12 @@
+import math
+from operator import itemgetter
+
 import pytest
 
 np = pytest.importorskip("numpy")
 
 import networkx as nx
-
-
-from networkx.algorithms.tree import branchings
-from networkx.algorithms.tree import recognition
+from networkx.algorithms.tree import branchings, recognition
 
 #
 # Explicitly discussed examples from Edmonds paper.
@@ -17,16 +17,18 @@ from networkx.algorithms.tree import recognition
 # fmt: off
 G_array = np.array([
     # 0   1   2   3   4   5   6   7   8
-    [0,  0, 12,  0, 12,  0,  0,  0,  0],  # 0
-    [4,  0,  0,  0,  0, 13,  0,  0,  0],  # 1
-    [0, 17,  0, 21,  0, 12,  0,  0,  0],  # 2
-    [5,  0,  0,  0, 17,  0, 18,  0,  0],  # 3
-    [0,  0,  0,  0,  0,  0,  0, 12,  0],  # 4
-    [0,  0,  0,  0,  0,  0, 14,  0, 12],  # 5
-    [0,  0, 21,  0,  0,  0,  0,  0, 15],  # 6
-    [0,  0,  0, 19,  0,  0, 15,  0,  0],  # 7
-    [0,  0,  0,  0,  0,  0,  0, 18,  0],  # 8
+    [0, 0, 12, 0, 12, 0, 0, 0, 0],  # 0
+    [4, 0, 0, 0, 0, 13, 0, 0, 0],  # 1
+    [0, 17, 0, 21, 0, 12, 0, 0, 0],  # 2
+    [5, 0, 0, 0, 17, 0, 18, 0, 0],  # 3
+    [0, 0, 0, 0, 0, 0, 0, 12, 0],  # 4
+    [0, 0, 0, 0, 0, 0, 14, 0, 12],  # 5
+    [0, 0, 21, 0, 0, 0, 0, 0, 15],  # 6
+    [0, 0, 0, 19, 0, 0, 15, 0, 0],  # 7
+    [0, 0, 0, 0, 0, 0, 0, 18, 0],  # 8
 ], dtype=int)
+
+
 # fmt: on
 
 
@@ -143,11 +145,6 @@ def assert_equal_branchings(G1, G2, attr="weight", default=1):
     e1 = sorted_edges(G1, attr, default)
     e2 = sorted_edges(G2, attr, default)
 
-    # If we have an exception, let's see the edges.
-    print(e1)
-    print(e2)
-    print
-
     for a, b in zip(e1, e2):
         assert a[:2] == b[:2]
         np.testing.assert_almost_equal(a[2], b[2])
@@ -201,6 +198,26 @@ def test_greedy_max1():
     # that it should equal the second suboptimal branching: 1b.
     B_ = build_branching(greedy_subopt_branching_1b)
     assert_equal_branchings(B, B_)
+
+
+def test_greedy_branching_kwarg_kind():
+    G = G1()
+    with pytest.raises(nx.NetworkXException, match="Unknown value for `kind`."):
+        B = branchings.greedy_branching(G, kind="lol")
+
+
+def test_greedy_branching_for_unsortable_nodes():
+    G = nx.DiGraph()
+    G.add_weighted_edges_from([((2, 3), 5, 1), (3, "a", 1), (2, 4, 5)])
+    edges = [(u, v, data.get("weight", 1)) for (u, v, data) in G.edges(data=True)]
+    with pytest.raises(TypeError):
+        edges.sort(key=itemgetter(2, 0, 1), reverse=True)
+    B = branchings.greedy_branching(G, kind="max").edges(data=True)
+    assert list(B) == [
+        ((2, 3), 5, {"weight": 1}),
+        (3, "a", {"weight": 1}),
+        (2, 4, {"weight": 5}),
+    ]
 
 
 def test_greedy_max2():
@@ -413,7 +430,6 @@ def test_edge_attribute_preservation_normal_graph():
 
 
 def test_edge_attribute_preservation_multigraph():
-
     # Test that edge attributes are preserved when finding an optimum graph
     # using the Edmonds class for multigraphs.
     G = nx.MultiGraph()
@@ -430,6 +446,38 @@ def test_edge_attribute_preservation_multigraph():
 
     assert B[0][1][0]["otherattr"] == 1
     assert B[0][1][0]["otherattr2"] == 3
+
+
+def test_Edmond_kind():
+    G = nx.MultiGraph()
+
+    edgelist = [
+        (0, 1, [("weight", 5), ("otherattr", 1), ("otherattr2", 3)]),
+        (0, 2, [("weight", 5), ("otherattr", 2), ("otherattr2", 2)]),
+        (1, 2, [("weight", 6), ("otherattr", 3), ("otherattr2", 1)]),
+    ]
+    G.add_edges_from(edgelist * 2)  # Make sure we have duplicate edge paths
+    ed = branchings.Edmonds(G)
+    with pytest.raises(nx.NetworkXException, match="Unknown value for `kind`."):
+        ed.find_optimum(kind="lol", preserve_attrs=True)
+
+
+def test_MultiDiGraph_EdgeKey():
+    # test if more than one edges has the same key
+    G = branchings.MultiDiGraph_EdgeKey()
+    G.add_edge(1, 2, "A")
+    with pytest.raises(Exception, match="Key 'A' is already in use."):
+        G.add_edge(3, 4, "A")
+    # test if invalid edge key was specified
+    with pytest.raises(KeyError, match="Invalid edge key 'B'"):
+        G.remove_edge_with_key("B")
+    # test remove_edge_with_key works
+    if G.remove_edge_with_key("A"):
+        assert list(G.edges(data=True)) == []
+    # test that remove_edges_from doesn't work
+    G.add_edge(1, 3, "A")
+    with pytest.raises(NotImplementedError):
+        G.remove_edges_from([(1, 3)])
 
 
 def test_edge_attribute_discard():
@@ -449,3 +497,113 @@ def test_edge_attribute_discard():
     edge_dict = B[0][1]
     with pytest.raises(KeyError):
         _ = edge_dict["otherattr"]
+
+
+def test_partition_spanning_arborescence():
+    """
+    Test that we can generate minimum spanning arborescences which respect the
+    given partition.
+    """
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    G[3][0]["partition"] = nx.EdgePartition.EXCLUDED
+    G[2][3]["partition"] = nx.EdgePartition.INCLUDED
+    G[7][3]["partition"] = nx.EdgePartition.EXCLUDED
+    G[0][2]["partition"] = nx.EdgePartition.EXCLUDED
+    G[6][2]["partition"] = nx.EdgePartition.INCLUDED
+
+    actual_edges = [
+        (0, 4, 12),
+        (1, 0, 4),
+        (1, 5, 13),
+        (2, 3, 21),
+        (4, 7, 12),
+        (5, 6, 14),
+        (5, 8, 12),
+        (6, 2, 21),
+    ]
+
+    B = branchings.minimum_spanning_arborescence(G, partition="partition")
+    assert_equal_branchings(build_branching(actual_edges), B)
+
+
+def test_arborescence_iterator_min():
+    """
+    Tests the arborescence iterator.
+
+    A brute force method found 680 arboresecences in this graph.
+    This test will not verify all of them individually, but will check two
+    things
+
+    * The iterator returns 680 arboresecences
+    * The weight of the arborescences is non-strictly increasing
+
+    for more information please visit
+    https://mjschwenne.github.io/2021/06/10/implementing-the-iterators.html
+    """
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+
+    arborescence_count = 0
+    arborescence_weight = -math.inf
+    for B in branchings.ArborescenceIterator(G):
+        arborescence_count += 1
+        new_arborescence_weight = B.size(weight="weight")
+        assert new_arborescence_weight >= arborescence_weight
+        arborescence_weight = new_arborescence_weight
+
+    assert arborescence_count == 680
+
+
+def test_arborescence_iterator_max():
+    """
+    Tests the arborescence iterator.
+
+    A brute force method found 680 arboresecences in this graph.
+    This test will not verify all of them individually, but will check two
+    things
+
+    * The iterator returns 680 arboresecences
+    * The weight of the arborescences is non-strictly decreasing
+
+    for more information please visit
+    https://mjschwenne.github.io/2021/06/10/implementing-the-iterators.html
+    """
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+
+    arborescence_count = 0
+    arborescence_weight = math.inf
+    for B in branchings.ArborescenceIterator(G, minimum=False):
+        arborescence_count += 1
+        new_arborescence_weight = B.size(weight="weight")
+        assert new_arborescence_weight <= arborescence_weight
+        arborescence_weight = new_arborescence_weight
+
+    assert arborescence_count == 680
+
+
+def test_arborescence_iterator_initial_partition():
+    """
+    Tests the arborescence iterator with three included edges and three excluded
+    in the initial partition.
+
+    A brute force method similar to the one used in the above tests found that
+    there are 16 arborescences which contain the included edges and not the
+    excluded edges.
+    """
+    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
+    included_edges = [(1, 0), (5, 6), (8, 7)]
+    excluded_edges = [(0, 2), (3, 6), (1, 5)]
+
+    arborescence_count = 0
+    arborescence_weight = -math.inf
+    for B in branchings.ArborescenceIterator(
+        G, init_partition=(included_edges, excluded_edges)
+    ):
+        arborescence_count += 1
+        new_arborescence_weight = B.size(weight="weight")
+        assert new_arborescence_weight >= arborescence_weight
+        arborescence_weight = new_arborescence_weight
+        for e in included_edges:
+            assert e in B.edges
+        for e in excluded_edges:
+            assert e not in B.edges
+    assert arborescence_count == 16

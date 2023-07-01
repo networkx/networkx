@@ -1,14 +1,15 @@
 """
     Unit tests for bipartite edgelists.
 """
-import pytest
 import io
-import tempfile
 import os
+import tempfile
+
+import pytest
 
 import networkx as nx
-from networkx.testing import assert_edges_equal, assert_nodes_equal, assert_graphs_equal
 from networkx.algorithms import bipartite
+from networkx.utils import edges_equal, graphs_equal, nodes_equal
 
 
 class TestEdgelist:
@@ -35,7 +36,7 @@ class TestEdgelist:
 """
         bytesIO = io.BytesIO(s)
         G = bipartite.read_edgelist(bytesIO, nodetype=int)
-        assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
+        assert edges_equal(G.edges(), [(1, 2), (2, 3)])
 
     def test_read_edgelist_3(self):
         s = b"""\
@@ -46,11 +47,11 @@ class TestEdgelist:
 """
         bytesIO = io.BytesIO(s)
         G = bipartite.read_edgelist(bytesIO, nodetype=int, data=False)
-        assert_edges_equal(G.edges(), [(1, 2), (2, 3)])
+        assert edges_equal(G.edges(), [(1, 2), (2, 3)])
 
         bytesIO = io.BytesIO(s)
         G = bipartite.read_edgelist(bytesIO, nodetype=int, data=True)
-        assert_edges_equal(
+        assert edges_equal(
             G.edges(data=True), [(1, 2, {"weight": 2.0}), (2, 3, {"weight": 3.0})]
         )
 
@@ -110,7 +111,7 @@ class TestEdgelist:
         fd, fname = tempfile.mkstemp()
         bipartite.write_edgelist(G, fname)
         H = bipartite.read_edgelist(fname)
-        assert_graphs_equal(G, H)
+        assert graphs_equal(G, H)
         os.close(fd)
         os.unlink(fname)
 
@@ -138,7 +139,7 @@ class TestEdgelist:
         fd, fname = tempfile.mkstemp()
         bipartite.write_edgelist(G, fname, encoding="latin-1")
         H = bipartite.read_edgelist(fname, encoding="latin-1")
-        assert_graphs_equal(G, H)
+        assert graphs_equal(G, H)
         os.close(fd)
         os.unlink(fname)
 
@@ -148,10 +149,10 @@ class TestEdgelist:
         bipartite.write_edgelist(G, fname)
         H = bipartite.read_edgelist(fname)
         H2 = bipartite.read_edgelist(fname)
-        assert H != H2  # they should be different graphs
+        assert H is not H2  # they should be different graphs
         G.remove_node("g")  # isolated nodes are not written in edgelist
-        assert_nodes_equal(list(H), list(G))
-        assert_edges_equal(list(H.edges()), list(G.edges()))
+        assert nodes_equal(list(H), list(G))
+        assert edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 
@@ -162,8 +163,8 @@ class TestEdgelist:
         H = bipartite.read_edgelist(fname, nodetype=int)
         # isolated nodes are not written in edgelist
         G.remove_nodes_from(list(nx.isolates(G)))
-        assert_nodes_equal(list(H), list(G))
-        assert_edges_equal(list(H.edges()), list(G.edges()))
+        assert nodes_equal(list(H), list(G))
+        assert edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 
@@ -173,9 +174,9 @@ class TestEdgelist:
         bipartite.write_edgelist(G, fname)
         H = bipartite.read_edgelist(fname, nodetype=int, create_using=nx.MultiGraph())
         H2 = bipartite.read_edgelist(fname, nodetype=int, create_using=nx.MultiGraph())
-        assert H != H2  # they should be different graphs
-        assert_nodes_equal(list(H), list(G))
-        assert_edges_equal(list(H.edges()), list(G.edges()))
+        assert H is not H2  # they should be different graphs
+        assert nodes_equal(list(H), list(G))
+        assert edges_equal(list(H.edges()), list(G.edges()))
         os.close(fd)
         os.unlink(fname)
 
@@ -189,3 +190,40 @@ class TestEdgelist:
             G = nx.path_graph(4)
             bytesIO = io.BytesIO()
             bipartite.write_edgelist(G, bytesIO)
+
+    def test_parse_edgelist(self):
+        """Tests for conditions specific to
+        parse_edge_list method"""
+
+        # ignore strings of length less than 2
+        lines = ["1 2", "2 3", "3 1", "4", " "]
+        G = bipartite.parse_edgelist(lines, nodetype=int)
+        assert list(G.nodes) == [1, 2, 3]
+
+        # Exception raised when node is not convertible
+        # to specified data type
+        with pytest.raises(TypeError, match=".*Failed to convert nodes"):
+            lines = ["a b", "b c", "c a"]
+            G = bipartite.parse_edgelist(lines, nodetype=int)
+
+        # Exception raised when format of data is not
+        # convertible to dictionary object
+        with pytest.raises(TypeError, match=".*Failed to convert edge data"):
+            lines = ["1 2 3", "2 3 4", "3 1 2"]
+            G = bipartite.parse_edgelist(lines, nodetype=int)
+
+        # Exception raised when edge data and data
+        # keys are not of same length
+        with pytest.raises(IndexError):
+            lines = ["1 2 3 4", "2 3 4"]
+            G = bipartite.parse_edgelist(
+                lines, nodetype=int, data=[("weight", int), ("key", int)]
+            )
+
+        # Exception raised when edge data is not
+        # convertible to specified data type
+        with pytest.raises(TypeError, match=".*Failed to convert key data"):
+            lines = ["1 2 3 a", "2 3 4 b"]
+            G = bipartite.parse_edgelist(
+                lines, nodetype=int, data=[("weight", int), ("key", int)]
+            )

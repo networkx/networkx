@@ -2,6 +2,7 @@
     Tests for VF2 isomorphism algorithm for weighted graphs.
 """
 
+import math
 from operator import eq
 
 import networkx as nx
@@ -13,7 +14,6 @@ def test_simple():
     w = "weight"
     edges = [(0, 0, 1), (0, 0, 1.5), (0, 1, 2), (1, 0, 3)]
     for g1 in [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]:
-
         g1.add_weighted_edges_from(edges)
         g2 = g1.subgraph(g1.nodes())
         if g1.is_multigraph():
@@ -150,7 +150,7 @@ class TestEdgeMatch_MultiGraph:
             self.emg2 = iso.generic_multiedge_match(
                 ["color", "weight", "size"],
                 ["red", 1, 0.5],
-                [eq, eq, iso.matchhelpers.close],
+                [eq, eq, math.isclose],
             )
         else:
             self.em = iso.numerical_edge_match("weight", 1)
@@ -160,7 +160,7 @@ class TestEdgeMatch_MultiGraph:
             self.emg2 = iso.generic_edge_match(
                 ["color", "weight", "size"],
                 ["red", 1, 0.5],
-                [eq, eq, iso.matchhelpers.close],
+                [eq, eq, math.isclose],
             )
 
     def test_weights_only(self):

@@ -1,8 +1,7 @@
 import pytest
+
 import networkx as nx
-from networkx.testing import assert_nodes_equal
-from networkx.testing import assert_edges_equal
-from networkx.testing import assert_graphs_equal
+from networkx.utils import edges_equal, graphs_equal, nodes_equal
 
 np = pytest.importorskip("numpy")
 pd = pytest.importorskip("pandas")
@@ -20,7 +19,7 @@ class TestConvertPandas:
         self.df = df
 
         mdf = pd.DataFrame([[4, 16, "A", "D"]], columns=["weight", "cost", 0, "b"])
-        self.mdf = df.append(mdf)
+        self.mdf = pd.concat([df, mdf])
 
     def test_exceptions(self):
         G = pd.DataFrame(["a"])  # adj
@@ -39,12 +38,12 @@ class TestConvertPandas:
             ]
         )
         G = nx.from_pandas_edgelist(self.df, 0, "b", True)
-        assert_graphs_equal(G, Gtrue)
+        assert graphs_equal(G, Gtrue)
         # MultiGraph
         MGtrue = nx.MultiGraph(Gtrue)
         MGtrue.add_edge("A", "D", cost=16, weight=4)
         MG = nx.from_pandas_edgelist(self.mdf, 0, "b", True, nx.MultiGraph())
-        assert_graphs_equal(MG, MGtrue)
+        assert graphs_equal(MG, MGtrue)
 
     def test_from_edgelist_multi_attr(self):
         Gtrue = nx.Graph(
@@ -55,7 +54,7 @@ class TestConvertPandas:
             ]
         )
         G = nx.from_pandas_edgelist(self.df, 0, "b", ["weight", "cost"])
-        assert_graphs_equal(G, Gtrue)
+        assert graphs_equal(G, Gtrue)
 
     def test_from_edgelist_multi_attr_incl_target(self):
         Gtrue = nx.Graph(
@@ -66,7 +65,7 @@ class TestConvertPandas:
             ]
         )
         G = nx.from_pandas_edgelist(self.df, 0, "b", [0, "b", "weight"])
-        assert_graphs_equal(G, Gtrue)
+        assert graphs_equal(G, Gtrue)
 
     def test_from_edgelist_multidigraph_and_edge_attr(self):
         # example from issue #2374
@@ -101,8 +100,8 @@ class TestConvertPandas:
             edge_attr=["St", "Co", "Mi"],
             create_using=nx.MultiDiGraph,
         )
-        assert_graphs_equal(G1, Gtrue)
-        assert_graphs_equal(G2, Gtrue)
+        assert graphs_equal(G1, Gtrue)
+        assert graphs_equal(G2, Gtrue)
 
     def test_from_edgelist_one_attr(self):
         Gtrue = nx.Graph(
@@ -113,7 +112,7 @@ class TestConvertPandas:
             ]
         )
         G = nx.from_pandas_edgelist(self.df, 0, "b", "weight")
-        assert_graphs_equal(G, Gtrue)
+        assert graphs_equal(G, Gtrue)
 
     def test_from_edgelist_int_attr_name(self):
         # note: this also tests that edge_attr can be `source`
@@ -121,7 +120,7 @@ class TestConvertPandas:
             [("E", "C", {0: "C"}), ("B", "A", {0: "B"}), ("A", "D", {0: "A"})]
         )
         G = nx.from_pandas_edgelist(self.df, 0, "b", 0)
-        assert_graphs_equal(G, Gtrue)
+        assert graphs_equal(G, Gtrue)
 
     def test_from_edgelist_invalid_attr(self):
         pytest.raises(
@@ -148,7 +147,7 @@ class TestConvertPandas:
     def test_from_edgelist_no_attr(self):
         Gtrue = nx.Graph([("E", "C", {}), ("B", "A", {}), ("A", "D", {})])
         G = nx.from_pandas_edgelist(self.df, 0, "b")
-        assert_graphs_equal(G, Gtrue)
+        assert graphs_equal(G, Gtrue)
 
     def test_from_edgelist(self):
         # Pandas DataFrame
@@ -162,14 +161,13 @@ class TestConvertPandas:
         edges = pd.DataFrame({"source": source, "target": target, "weight": weight})
 
         GG = nx.from_pandas_edgelist(edges, edge_attr="weight")
-        assert_nodes_equal(G.nodes(), GG.nodes())
-        assert_edges_equal(G.edges(), GG.edges())
+        assert nodes_equal(G.nodes(), GG.nodes())
+        assert edges_equal(G.edges(), GG.edges())
         GW = nx.to_networkx_graph(edges, create_using=nx.Graph)
-        assert_nodes_equal(G.nodes(), GW.nodes())
-        assert_edges_equal(G.edges(), GW.edges())
+        assert nodes_equal(G.nodes(), GW.nodes())
+        assert edges_equal(G.edges(), GW.edges())
 
     def test_to_edgelist_default_source_or_target_col_exists(self):
-
         G = nx.path_graph(10)
         G.add_weighted_edges_from((u, v, u) for u, v in list(G.edges))
         nx.set_edge_attributes(G, 0, name="source")
@@ -183,7 +181,6 @@ class TestConvertPandas:
         pytest.raises(nx.NetworkXError, nx.to_pandas_edgelist, G)
 
     def test_to_edgelist_custom_source_or_target_col_exists(self):
-
         G = nx.path_graph(10)
         G.add_weighted_edges_from((u, v, u) for u, v in list(G.edges))
         nx.set_edge_attributes(G, 0, name="source_col_name")
@@ -200,6 +197,14 @@ class TestConvertPandas:
             nx.NetworkXError, nx.to_pandas_edgelist, G, target="target_col_name"
         )
 
+    def test_to_edgelist_edge_key_col_exists(self):
+        G = nx.path_graph(10, create_using=nx.MultiGraph)
+        G.add_weighted_edges_from((u, v, u) for u, v in list(G.edges()))
+        nx.set_edge_attributes(G, 0, name="edge_key_name")
+        pytest.raises(
+            nx.NetworkXError, nx.to_pandas_edgelist, G, edge_key="edge_key_name"
+        )
+
     def test_from_adjacency(self):
         nodelist = [1, 2]
         dftrue = pd.DataFrame(
@@ -209,18 +214,19 @@ class TestConvertPandas:
         df = nx.to_pandas_adjacency(G, dtype=int)
         pd.testing.assert_frame_equal(df, dftrue)
 
-    def test_roundtrip(self):
+    @pytest.mark.parametrize("graph", [nx.Graph, nx.MultiGraph])
+    def test_roundtrip(self, graph):
         # edgelist
-        Gtrue = nx.Graph([(1, 1), (1, 2)])
+        Gtrue = graph([(1, 1), (1, 2)])
         df = nx.to_pandas_edgelist(Gtrue)
-        G = nx.from_pandas_edgelist(df)
-        assert_graphs_equal(Gtrue, G)
+        G = nx.from_pandas_edgelist(df, create_using=graph)
+        assert graphs_equal(Gtrue, G)
         # adjacency
         adj = {1: {1: {"weight": 1}, 2: {"weight": 1}}, 2: {1: {"weight": 1}}}
-        Gtrue = nx.Graph(adj)
+        Gtrue = graph(adj)
         df = nx.to_pandas_adjacency(Gtrue, dtype=int)
-        G = nx.from_pandas_adjacency(df)
-        assert_graphs_equal(Gtrue, G)
+        G = nx.from_pandas_adjacency(df, create_using=graph)
+        assert graphs_equal(Gtrue, G)
 
     def test_from_adjacency_named(self):
         # example from issue #3105
@@ -238,18 +244,19 @@ class TestConvertPandas:
     def test_edgekey_with_multigraph(self):
         df = pd.DataFrame(
             {
-                "attr1": {"A": "F1", "B": "F2", "C": "F3"},
-                "attr2": {"A": 1, "B": 0, "C": 0},
-                "attr3": {"A": 0, "B": 1, "C": 0},
-                "source": {"A": "N1", "B": "N2", "C": "N1"},
-                "target": {"A": "N2", "B": "N3", "C": "N1"},
+                "source": {"A": "N1", "B": "N2", "C": "N1", "D": "N1"},
+                "target": {"A": "N2", "B": "N3", "C": "N1", "D": "N2"},
+                "attr1": {"A": "F1", "B": "F2", "C": "F3", "D": "F4"},
+                "attr2": {"A": 1, "B": 0, "C": 0, "D": 0},
+                "attr3": {"A": 0, "B": 1, "C": 0, "D": 1},
             }
         )
-        Gtrue = nx.Graph(
+        Gtrue = nx.MultiGraph(
             [
-                ("N1", "N2", {"F1": {"attr2": 1, "attr3": 0}}),
-                ("N2", "N3", {"F2": {"attr2": 0, "attr3": 1}}),
-                ("N1", "N1", {"F3": {"attr2": 0, "attr3": 0}}),
+                ("N1", "N2", "F1", {"attr2": 1, "attr3": 0}),
+                ("N2", "N3", "F2", {"attr2": 0, "attr3": 1}),
+                ("N1", "N1", "F3", {"attr2": 0, "attr3": 0}),
+                ("N1", "N2", "F4", {"attr2": 0, "attr3": 1}),
             ]
         )
         # example from issue #4065
@@ -261,7 +268,14 @@ class TestConvertPandas:
             edge_key="attr1",
             create_using=nx.MultiGraph(),
         )
-        assert_graphs_equal(G, Gtrue)
+        assert graphs_equal(G, Gtrue)
+
+        df_roundtrip = nx.to_pandas_edgelist(G, edge_key="attr1")
+        df_roundtrip = df_roundtrip.sort_values("attr1")
+        df_roundtrip.index = ["A", "B", "C", "D"]
+        pd.testing.assert_frame_equal(
+            df, df_roundtrip[["source", "target", "attr1", "attr2", "attr3"]]
+        )
 
     def test_edgekey_with_normal_graph_no_action(self):
         Gtrue = nx.Graph(
@@ -272,7 +286,7 @@ class TestConvertPandas:
             ]
         )
         G = nx.from_pandas_edgelist(self.df, 0, "b", True, edge_key="weight")
-        assert_graphs_equal(G, Gtrue)
+        assert graphs_equal(G, Gtrue)
 
     def test_nonexisting_edgekey_raises(self):
         with pytest.raises(nx.exception.NetworkXError):

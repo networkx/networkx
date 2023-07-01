@@ -8,7 +8,6 @@ import pytest
 import networkx as nx
 import networkx.algorithms.threshold as nxt
 from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
-from networkx.testing import almost_equal
 
 cnlti = nx.convert_node_labels_to_integers
 
@@ -17,11 +16,11 @@ class TestGeneratorThreshold:
     def test_threshold_sequence_graph_test(self):
         G = nx.star_graph(10)
         assert nxt.is_threshold_graph(G)
-        assert nxt.is_threshold_sequence(list(d for n, d in G.degree()))
+        assert nxt.is_threshold_sequence([d for n, d in G.degree()])
 
         G = nx.complete_graph(10)
         assert nxt.is_threshold_graph(G)
-        assert nxt.is_threshold_sequence(list(d for n, d in G.degree()))
+        assert nxt.is_threshold_sequence([d for n, d in G.degree()])
 
         deg = [3, 2, 2, 1, 1, 1]
         assert not nxt.is_threshold_sequence(deg)
@@ -142,7 +141,7 @@ class TestGeneratorThreshold:
         ]
         assert pytest.raises(TypeError, nxt.shortest_path, [3.0, 1.0, 2.0], 1)
 
-    def random_threshold_sequence(self):
+    def test_random_threshold_sequence(self):
         assert len(nxt.random_threshold_sequence(10, 0.5)) == 10
         assert nxt.random_threshold_sequence(10, 0.5, seed=42) == [
             "d",
@@ -190,8 +189,8 @@ class TestGeneratorThreshold:
         assert wseq == [s * 0.1 for s in [5, 5, 4, 6, 3, 3, 3, 7, 2, 8, 1, 9, 0]]
 
         wseq = nxt.creation_sequence_to_weights("ddidiiidididid")
-        ws = [s / float(12) for s in [6, 6, 5, 7, 4, 4, 4, 8, 3, 9, 2, 10, 1, 11]]
-        assert sum([abs(c - d) for c, d in zip(wseq, ws)]) < 1e-14
+        ws = [s / 12 for s in [6, 6, 5, 7, 4, 4, 4, 8, 3, 9, 2, 10, 1, 11]]
+        assert sum(abs(c - d) for c, d in zip(wseq, ws)) < 1e-14
 
     def test_finding_routines(self):
         G = nx.Graph({1: [2], 2: [3], 3: [4], 4: [5], 5: [6]})
@@ -224,11 +223,11 @@ class TestGeneratorThreshold:
 
         c1 = nxt.cluster_sequence(cs)
         c2 = list(nx.clustering(G).values())
-        assert almost_equal(sum([abs(c - d) for c, d in zip(c1, c2)]), 0)
+        assert sum(abs(c - d) for c, d in zip(c1, c2)) == pytest.approx(0, abs=1e-7)
 
         b1 = nx.betweenness_centrality(G).values()
         b2 = nxt.betweenness_sequence(cs)
-        assert sum([abs(c - d) for c, d in zip(b1, b2)]) < 1e-14
+        assert sum(abs(c - d) for c, d in zip(b1, b2)) < 1e-14
 
         assert nxt.eigenvalues(cs) == [0, 1, 3, 3, 5, 7, 7, 8]
 
@@ -249,21 +248,13 @@ class TestGeneratorThreshold:
     def test_eigenvectors(self):
         np = pytest.importorskip("numpy")
         eigenval = np.linalg.eigvals
-        scipy = pytest.importorskip("scipy")
+        pytest.importorskip("scipy")
 
         cs = "ddiiddid"
         G = nxt.threshold_graph(cs)
         (tgeval, tgevec) = nxt.eigenvectors(cs)
-        dot = np.dot
-        assert [abs(dot(lv, lv) - 1.0) < 1e-9 for lv in tgevec] == [True] * 8
+        np.testing.assert_allclose([np.dot(lv, lv) for lv in tgevec], 1.0, rtol=1e-9)
         lapl = nx.laplacian_matrix(G)
-
-    #        tgev=[ dot(lv,dot(lapl,lv)) for lv in tgevec ]
-    #        assert_true(sum([abs(c-d) for c,d in zip(tgev,tgeval)]) < 1e-9)
-    #        tgev.sort()
-    #        lev=list(eigenval(lapl))
-    #        lev.sort()
-    #        assert_true(sum([abs(c-d) for c,d in zip(tgev,lev)]) < 1e-9)
 
     def test_create_using(self):
         cs = "ddiiddid"

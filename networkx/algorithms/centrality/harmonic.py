@@ -6,7 +6,7 @@ import networkx as nx
 __all__ = ["harmonic_centrality"]
 
 
-def harmonic_centrality(G, nbunch=None, distance=None):
+def harmonic_centrality(G, nbunch=None, distance=None, sources=None):
     r"""Compute harmonic centrality for nodes.
 
     Harmonic centrality [1]_ of a node `u` is the sum of the reciprocal
@@ -18,6 +18,11 @@ def harmonic_centrality(G, nbunch=None, distance=None):
 
     where `d(v, u)` is the shortest-path distance between `v` and `u`.
 
+    If `sources` is given as an argument, the returned harmonic centrality
+    values are calculated as the sum of the reciprocals of the shortest
+    path distances from the nodes specified in `sources` to `u` instead
+    of from all nodes to `u`.
+
     Notice that higher values indicate higher centrality.
 
     Parameters
@@ -25,9 +30,12 @@ def harmonic_centrality(G, nbunch=None, distance=None):
     G : graph
       A NetworkX graph
 
-    nbunch : container
-      Container of nodes. If provided harmonic centrality will be computed
-      only over the nodes in nbunch.
+    nbunch : container (default: all nodes in G)
+      Container of nodes for which harmonic centrality values are calculated.
+
+    sources : container (default: all nodes in G)
+      Container of nodes `v` over which reciprocal distances are computed.
+      Nodes not in `G` are silently ignored.
 
     distance : edge attribute key, optional (default=None)
       Use the specified edge attribute as the edge distance in shortest
@@ -54,10 +62,18 @@ def harmonic_centrality(G, nbunch=None, distance=None):
     .. [1] Boldi, Paolo, and Sebastiano Vigna. "Axioms for centrality."
            Internet Mathematics 10.3-4 (2014): 222-262.
     """
-    if G.is_directed():
-        G = G.reverse()
+
+    nbunch = set(G.nbunch_iter(nbunch)) if nbunch is not None else set(G.nodes)
+    sources = set(G.nbunch_iter(sources)) if sources is not None else G.nodes
+
     spl = partial(nx.shortest_path_length, G, weight=distance)
-    return {
-        u: sum(1 / d if d > 0 else 0 for v, d in spl(source=u).items())
-        for u in G.nbunch_iter(nbunch)
-    }
+    centrality = {u: 0 for u in nbunch}
+    for v in sources:
+        dist = spl(v)
+        for u in nbunch.intersection(dist):
+            d = dist[u]
+            if d == 0:  # handle u == v and edges with 0 weight
+                continue
+            centrality[u] += 1 / d
+
+    return centrality

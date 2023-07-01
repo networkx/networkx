@@ -1,13 +1,16 @@
-from ast import literal_eval
 import codecs
-from contextlib import contextmanager
 import io
-import pytest
-import networkx as nx
-from networkx.readwrite.gml import literal_stringizer, literal_destringizer
+import math
 import os
 import tempfile
+from ast import literal_eval
+from contextlib import contextmanager
 from textwrap import dedent
+
+import pytest
+
+import networkx as nx
+from networkx.readwrite.gml import literal_destringizer, literal_stringizer
 
 
 class TestGraph:
@@ -143,13 +146,13 @@ graph   [
     def test_parse_gml(self):
         G = nx.parse_gml(self.simple_data, label="label")
         assert sorted(G.nodes()) == ["Node 1", "Node 2", "Node 3"]
-        assert [e for e in sorted(G.edges())] == [
+        assert sorted(G.edges()) == [
             ("Node 1", "Node 2"),
             ("Node 2", "Node 3"),
             ("Node 3", "Node 1"),
         ]
 
-        assert [e for e in sorted(G.edges(data=True))] == [
+        assert sorted(G.edges(data=True)) == [
             (
                 "Node 1",
                 "Node 2",
@@ -212,7 +215,7 @@ graph
     def test_tuplelabels(self):
         # https://github.com/networkx/networkx/pull/1048
         # Writing tuple labels to GML failed.
-        G = nx.OrderedGraph()
+        G = nx.Graph()
         G.add_edge((0, 1), (1, 0))
         data = "\n".join(nx.generate_gml(G, stringizer=literal_stringizer))
         answer = """graph [
@@ -287,6 +290,108 @@ graph
 ]"""
         assert data == answer
 
+    def test_special_float_label(self):
+        special_floats = [float("nan"), float("+inf"), float("-inf")]
+        try:
+            import numpy as np
+
+            special_floats += [np.nan, np.inf, np.inf * -1]
+        except ImportError:
+            special_floats += special_floats
+
+        G = nx.cycle_graph(len(special_floats))
+        attrs = dict(enumerate(special_floats))
+        nx.set_node_attributes(G, attrs, "nodefloat")
+        edges = list(G.edges)
+        attrs = {edges[i]: value for i, value in enumerate(special_floats)}
+        nx.set_edge_attributes(G, attrs, "edgefloat")
+
+        fobj = tempfile.NamedTemporaryFile()
+        nx.write_gml(G, fobj)
+        fobj.seek(0)
+        # Should be bytes in 2.x and 3.x
+        data = fobj.read().strip().decode("ascii")
+        answer = """graph [
+  node [
+    id 0
+    label "0"
+    nodefloat NAN
+  ]
+  node [
+    id 1
+    label "1"
+    nodefloat +INF
+  ]
+  node [
+    id 2
+    label "2"
+    nodefloat -INF
+  ]
+  node [
+    id 3
+    label "3"
+    nodefloat NAN
+  ]
+  node [
+    id 4
+    label "4"
+    nodefloat +INF
+  ]
+  node [
+    id 5
+    label "5"
+    nodefloat -INF
+  ]
+  edge [
+    source 0
+    target 1
+    edgefloat NAN
+  ]
+  edge [
+    source 0
+    target 5
+    edgefloat +INF
+  ]
+  edge [
+    source 1
+    target 2
+    edgefloat -INF
+  ]
+  edge [
+    source 2
+    target 3
+    edgefloat NAN
+  ]
+  edge [
+    source 3
+    target 4
+    edgefloat +INF
+  ]
+  edge [
+    source 4
+    target 5
+    edgefloat -INF
+  ]
+]"""
+        assert data == answer
+
+        fobj.seek(0)
+        graph = nx.read_gml(fobj)
+        for indx, value in enumerate(special_floats):
+            node_value = graph.nodes[str(indx)]["nodefloat"]
+            if math.isnan(value):
+                assert math.isnan(node_value)
+            else:
+                assert node_value == value
+
+            edge = edges[indx]
+            string_edge = (str(edge[0]), str(edge[1]))
+            edge_value = graph.edges[string_edge]["edgefloat"]
+            if math.isnan(value):
+                assert math.isnan(edge_value)
+            else:
+                assert edge_value == value
+
     def test_name(self):
         G = nx.parse_gml('graph [ name "x" node [ id 0 label "x" ] ]')
         assert "x" == G.graph["name"]
@@ -330,7 +435,7 @@ graph
         data = [
             True,
             False,
-            10 ** 20,
+            10**20,
             -2e33,
             "'",
             '"&&amp;&&#34;"',
@@ -341,14 +446,14 @@ graph
         G = nx.Graph()
         G.name = data
         G.graph["data"] = data
-        G.add_node(0, int=-1, data=dict(data=data))
+        G.add_node(0, int=-1, data={"data": data})
         G.add_edge(0, 0, float=-2.5, data=data)
         gml = "\n".join(nx.generate_gml(G, stringizer=literal_stringizer))
         G = nx.parse_gml(gml, destringizer=literal_destringizer)
         assert data == G.name
         assert {"name": data, "data": data} == G.graph
-        assert list(G.nodes(data=True)) == [(0, dict(int=-1, data=dict(data=data)))]
-        assert list(G.edges(data=True)) == [(0, 0, dict(float=-2.5, data=data))]
+        assert list(G.nodes(data=True)) == [(0, {"int": -1, "data": {"data": data}})]
+        assert list(G.edges(data=True)) == [(0, 0, {"float": -2.5, "data": data})]
         G = nx.Graph()
         G.graph["data"] = "frozenset([1, 2, 3])"
         G = nx.parse_gml(nx.generate_gml(G), destringizer=literal_eval)
@@ -439,7 +544,7 @@ graph
             "directed 1 multigraph 1 ]"
         )
 
-        # Tests for string convertable alphanumeric id and label values
+        # Tests for string convertible alphanumeric id and label values
         nx.parse_gml("graph [edge [ source a target a ] node [ id a label b ] ]")
         nx.parse_gml(
             "graph [ node [ id n42 label 0 ] node [ id x43 label 1 ]"
@@ -466,10 +571,6 @@ graph
         G = nx.Graph()
         G.graph["data"] = frozenset([1, 2, 3])
         assert_generate_error(G, stringizer=literal_stringizer)
-        G = nx.Graph()
-        G.graph["data"] = []
-        assert_generate_error(G)
-        assert_generate_error(G, stringizer=len)
 
     def test_label_kwarg(self):
         G = nx.parse_gml(self.simple_data, label="id")
@@ -489,13 +590,13 @@ graph
         # Test export for numbers that barely fit or don't fit into 32 bits,
         # and 3 numbers in the middle
         numbers = {
-            "toosmall": (-(2 ** 31)) - 1,
-            "small": -(2 ** 31),
+            "toosmall": (-(2**31)) - 1,
+            "small": -(2**31),
             "med1": -4,
             "med2": 0,
             "med3": 17,
-            "big": (2 ** 31) - 1,
-            "toobig": 2 ** 31,
+            "big": (2**31) - 1,
+            "toobig": 2**31,
         }
         G.add_node("Node", **numbers)
 
@@ -607,3 +708,23 @@ class TestPropertyLists:
             f.seek(0)
             graph = nx.read_gml(f)
         assert graph.nodes(data=True)["n1"] == {"properties": ["element"]}
+
+
+@pytest.mark.parametrize("coll", ([], ()))
+def test_stringize_empty_list_tuple(coll):
+    G = nx.path_graph(2)
+    G.nodes[0]["test"] = coll  # test serializing an empty collection
+    f = io.BytesIO()
+    nx.write_gml(G, f)  # Smoke test - should not raise
+    f.seek(0)
+    H = nx.read_gml(f)
+    assert H.nodes["0"]["test"] == coll  # Check empty list round-trips properly
+    # Check full round-tripping. Note that nodes are loaded as strings by
+    # default, so there needs to be some remapping prior to comparison
+    H = nx.relabel_nodes(H, {"0": 0, "1": 1})
+    assert nx.utils.graphs_equal(G, H)
+    # Same as above, but use destringizer for node remapping. Should have no
+    # effect on node attr
+    f.seek(0)
+    H = nx.read_gml(f, destringizer=int)
+    assert nx.utils.graphs_equal(G, H)

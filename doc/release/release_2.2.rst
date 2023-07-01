@@ -1,7 +1,11 @@
-Announcement: NetworkX 2.2
-==========================
+NetworkX 2.2
+============
 
-We're happy to announce the release of NetworkX 2.2!
+Release date: 19 September 2018
+
+Supports Python 2.7, 3.5, 3.6 and 3.7.
+This is the last release to support Python 2.
+
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
 
@@ -34,7 +38,7 @@ default RNG. You can also create your own RNG and pass it into the `seed`
 argument. Finally, you can use an integer to indicate the state to set for
 the RNG. In this case a local RNG is created leaving the global RNG untouched.
 Some functions use `random` and some use `numpy.random`, but we have written
-a translater so that all functions CAN take a `numpy.random.RandomState`
+a translator so that all functions CAN take a `numpy.random.RandomState`
 object. So a single RNG can be used for the entire package.
 
 Cyclic references between graph classes and views have been removed to ease
@@ -87,7 +91,7 @@ H.update(e), and H.update(nodes=n) are also allowed.
 First argument is a graph if it has `edges` and `nodes` attributes.
 Otherwise the first argument is treated as a list of edges.
 
-The bellman_ford predecessor dicts had sentinal value `[None]` for
+The bellman_ford predecessor dicts had sentinel value `[None]` for
 source nodes. That has been changed so source nodes have pred value '[]'
 
 
@@ -103,8 +107,8 @@ And `GraphView`, `DiGraphView`, `MultiGraphView`, `MultiDiGraphView`
 are derecated in favor of `generic_graph_view(graph, create_using)`.
 
 
-Contributors to this release
-----------------------------
+Contributors
+------------
 
 - Luca Baldesi
 - William Bernoudy

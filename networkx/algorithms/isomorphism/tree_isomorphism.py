@@ -74,7 +74,7 @@ def root_trees(t1, root1, t2, root2):
 def assign_levels(G, root):
     level = {}
     level[root] = 0
-    for (v1, v2) in nx.bfs_edges(G, root):
+    for v1, v2 in nx.bfs_edges(G, root):
         level[v2] = level[v1] + 1
 
     return level
@@ -83,7 +83,7 @@ def assign_levels(G, root):
 # now group the nodes at each level
 def group_by_levels(levels):
     L = {}
-    for (n, lev) in levels.items():
+    for n, lev in levels.items():
         if lev not in L:
             L[lev] = []
         L[lev].append(n)
@@ -103,7 +103,7 @@ def generate_isomorphism(v, w, M, ordered_children):
 def rooted_tree_isomorphism(t1, root1, t2, root2):
     """
     Given two rooted trees `t1` and `t2`,
-    with roots `root1` and `root2` respectivly
+    with roots `root1` and `root2` respectively
     this routine will determine if they are isomorphic.
 
     These trees may be either directed or undirected,
@@ -168,14 +168,14 @@ def rooted_tree_isomorphism(t1, root1, t2, root2):
     # nothing to do on last level so start on h-1
     # also nothing to do for our fake level 0, so skip that
     for i in range(h - 1, 0, -1):
-        # update the ordered_labels and ordered_childen
+        # update the ordered_labels and ordered_children
         # for any children
         for v in L[i]:
             # nothing to do if no children
             if dT.out_degree(v) > 0:
                 # get all the pairs of labels and nodes of children
                 # and sort by labels
-                s = sorted([(label[u], u) for u in dT.successors(v)])
+                s = sorted((label[u], u) for u in dT.successors(v))
 
                 # invert to give a list of two tuples
                 # the sorted labels, and the corresponding children
@@ -183,10 +183,10 @@ def rooted_tree_isomorphism(t1, root1, t2, root2):
 
         # now collect and sort the sorted ordered_labels
         # for all nodes in L[i], carrying along the node
-        forlabel = sorted([(ordered_labels[v], v) for v in L[i]])
+        forlabel = sorted((ordered_labels[v], v) for v in L[i])
 
         # now assign labels to these nodes, according to the sorted order
-        # starting from 0, where idential ordered_labels get the same label
+        # starting from 0, where identical ordered_labels get the same label
         current = 0
         for i, (ol, v) in enumerate(forlabel):
             # advance to next label if not 0, and different from previous
@@ -249,8 +249,8 @@ def tree_isomorphism(t1, t2):
         return []
 
     # Another shortcut is that the sorted degree sequences need to be the same.
-    degree_sequence1 = sorted([d for (n, d) in t1.degree()])
-    degree_sequence2 = sorted([d for (n, d) in t2.degree()])
+    degree_sequence1 = sorted(d for (n, d) in t1.degree())
+    degree_sequence2 = sorted(d for (n, d) in t2.degree())
 
     if degree_sequence1 != degree_sequence2:
         return []
@@ -269,11 +269,11 @@ def tree_isomorphism(t1, t2):
 
     # If there both have 2 centers,  then try the first for t1
     # with the first for t2.
-    attemps = rooted_tree_isomorphism(t1, center1[0], t2, center2[0])
+    attempts = rooted_tree_isomorphism(t1, center1[0], t2, center2[0])
 
     # If that worked we're done.
-    if len(attemps) > 0:
-        return attemps
+    if len(attempts) > 0:
+        return attempts
 
     # Otherwise, try center1[0] with the center2[1], and see if that works
     return rooted_tree_isomorphism(t1, center1[0], t2, center2[1])

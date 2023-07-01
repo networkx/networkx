@@ -1,4 +1,5 @@
 import pytest
+
 import networkx as nx
 
 # smoke tests for exceptions

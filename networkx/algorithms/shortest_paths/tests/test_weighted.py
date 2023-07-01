@@ -36,7 +36,7 @@ class WeightedTestBase:
 
     """
 
-    def setup(self):
+    def setup_method(self):
         """Creates some graphs for use in the unit tests."""
         cnlti = nx.convert_node_labels_to_integers
         self.grid = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
@@ -198,7 +198,7 @@ class TestWeightedPath(WeightedTestBase):
 
     def test_weight_functions(self):
         def heuristic(*z):
-            return sum(val ** 2 for val in z)
+            return sum(val**2 for val in z)
 
         def getpath(pred, v, s):
             return [v] if v == s else getpath(pred, pred[v], s) + [v]
@@ -223,7 +223,7 @@ class TestWeightedPath(WeightedTestBase):
         path = [6] + list(range(t + 1))
 
         def weight(u, v, _):
-            return 1 + v ** 2
+            return 1 + v**2
 
         length = sum(weight(u, v, None) for u, v in pairwise(path))
         vlp(G, s, t, length, nx.bidirectional_dijkstra, weight)
@@ -249,20 +249,24 @@ class TestWeightedPath(WeightedTestBase):
             nx.add_path(G, [4, 5, 6])
             path = nx.bidirectional_dijkstra(G, 1, 6)
 
-    def test_absent_source(self):
-        # the check is in _dijkstra_multisource, but this will provide
-        # regression testing against later changes to any of the "client"
-        # Dijkstra or Bellman-Ford functions
-        G = nx.path_graph(2)
-        for fn in (
+    @pytest.mark.parametrize(
+        "fn",
+        (
             nx.dijkstra_path,
             nx.dijkstra_path_length,
             nx.single_source_dijkstra_path,
             nx.single_source_dijkstra_path_length,
             nx.single_source_dijkstra,
             nx.dijkstra_predecessor_and_distance,
-        ):
-            pytest.raises(nx.NodeNotFound, fn, G, 3, 0)
+        ),
+    )
+    def test_absent_source(self, fn):
+        G = nx.path_graph(2)
+        with pytest.raises(nx.NodeNotFound):
+            fn(G, 3, 0)
+        # Test when source == target, which is handled specially by some functions
+        with pytest.raises(nx.NodeNotFound):
+            fn(G, 3, 3)
 
     def test_dijkstra_predecessor1(self):
         G = nx.path_graph(4)
@@ -338,6 +342,16 @@ class TestWeightedPath(WeightedTestBase):
         G.add_edge(9, 10)
         pytest.raises(ValueError, nx.bidirectional_dijkstra, G, 8, 10)
 
+    def test_negative_edge_cycle_empty(self):
+        G = nx.DiGraph()
+        assert not nx.negative_edge_cycle(G)
+
+    def test_negative_edge_cycle_custom_weight_key(self):
+        d = nx.DiGraph()
+        d.add_edge("a", "b", w=-2)
+        d.add_edge("b", "a", w=-1)
+        assert nx.negative_edge_cycle(d, weight="w")
+
     def test_weight_function(self):
         """Tests that a callable weight is interpreted as a weight
         function instead of an edge attribute.
@@ -349,6 +363,7 @@ class TestWeightedPath(WeightedTestBase):
         G.adj[0][2]["weight"] = 10
         G.adj[0][1]["weight"] = 1
         G.adj[1][2]["weight"] = 1
+
         # The weight function will take the multiplicative inverse of
         # the weights on the edges. This way, weights that were large
         # before now become small and vice versa.
@@ -414,6 +429,7 @@ class TestDijkstraPathLength:
         G.adj[0][2]["weight"] = 10
         G.adj[0][1]["weight"] = 1
         G.adj[1][2]["weight"] = 1
+
         # The weight function will take the multiplicative inverse of
         # the weights on the edges. This way, weights that were large
         # before now become small and vice versa.
@@ -447,14 +463,20 @@ class TestMultiSourceDijkstra:
         with pytest.raises(ValueError):
             nx.multi_source_dijkstra_path_length(nx.Graph(), {})
 
-    def test_absent_source(self):
-        G = nx.path_graph(2)
-        for fn in (
+    @pytest.mark.parametrize(
+        "fn",
+        (
             nx.multi_source_dijkstra_path,
             nx.multi_source_dijkstra_path_length,
             nx.multi_source_dijkstra,
-        ):
-            pytest.raises(nx.NodeNotFound, fn, G, [3], 0)
+        ),
+    )
+    def test_absent_source(self, fn):
+        G = nx.path_graph(2)
+        with pytest.raises(nx.NodeNotFound):
+            fn(G, [3], 0)
+        with pytest.raises(nx.NodeNotFound):
+            fn(G, [3], 3)
 
     def test_two_sources(self):
         edges = [(0, 1, 1), (1, 2, 1), (2, 3, 10), (3, 4, 1)]
@@ -498,13 +520,14 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
             nx.single_source_bellman_ford,
         ):
             pytest.raises(nx.NodeNotFound, fn, G, 3, 0)
+            pytest.raises(nx.NodeNotFound, fn, G, 3, 3)
 
     def test_absent_source_goldberg_radzik(self):
         with pytest.raises(nx.NodeNotFound):
             G = nx.path_graph(2)
             nx.goldberg_radzik(G, 3, 0)
 
-    def test_negative_weight_cycle_heuristic(self):
+    def test_negative_cycle_heuristic(self):
         G = nx.DiGraph()
         G.add_edge(0, 1, weight=-1)
         G.add_edge(1, 2, weight=-1)
@@ -516,7 +539,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         G.edges[2, 0]["weight"] = 2
         assert not nx.negative_edge_cycle(G, heuristic=True)
 
-    def test_negative_weight_cycle_consistency(self):
+    def test_negative_cycle_consistency(self):
         import random
 
         unif = random.uniform
@@ -533,7 +556,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
                         with_heuristic = nx.negative_edge_cycle(G, heuristic=True)
                         assert no_heuristic == with_heuristic
 
-    def test_negative_weight_cycle(self):
+    def test_negative_cycle(self):
         G = nx.cycle_graph(5, create_using=nx.DiGraph())
         G.add_edge(1, 2, weight=-7)
         for i in range(5):
@@ -572,7 +595,24 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
             nx.NetworkXUnbounded, nx.bellman_ford_predecessor_and_distance, G, 1
         )
         pytest.raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, 1)
-        # no negative cycle but negative weight
+
+    def test_find_negative_cycle_longer_cycle(self):
+        G = nx.cycle_graph(5, create_using=nx.DiGraph())
+        nx.add_cycle(G, [3, 5, 6, 7, 8, 9])
+        G.add_edge(1, 2, weight=-30)
+        assert nx.find_negative_cycle(G, 1) == [0, 1, 2, 3, 4, 0]
+        assert nx.find_negative_cycle(G, 7) == [2, 3, 4, 0, 1, 2]
+
+    def test_find_negative_cycle_no_cycle(self):
+        G = nx.path_graph(5, create_using=nx.DiGraph())
+        pytest.raises(nx.NetworkXError, nx.find_negative_cycle, G, 3)
+
+    def test_find_negative_cycle_single_edge(self):
+        G = nx.Graph()
+        G.add_edge(0, 1, weight=-1)
+        assert nx.find_negative_cycle(G, 1) == [1, 0, 1]
+
+    def test_negative_weight(self):
         G = nx.cycle_graph(5, create_using=nx.DiGraph())
         G.add_edge(1, 2, weight=-3)
         assert nx.single_source_bellman_ford_path(G, 0) == {
@@ -636,7 +676,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         )
 
         # not connected, with a component not containing the source that
-        # contains a negative cost cycle.
+        # contains a negative cycle.
         G = nx.complete_graph(6)
         G.add_edges_from(
             [
@@ -802,7 +842,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert pred[3] == 0
         assert dist == {0: 0, 1: 1, 2: 2, 3: 1}
 
-    def test_negative_weight(self):
+    def test_negative_weight_bf_path(self):
         G = nx.DiGraph()
         G.add_nodes_from("abcd")
         G.add_edge("a", "d", weight=0)
@@ -825,10 +865,9 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
 
 class TestJohnsonAlgorithm(WeightedTestBase):
     def test_single_node_graph(self):
-        with pytest.raises(nx.NetworkXError):
-            G = nx.DiGraph()
-            G.add_node(0)
-            nx.johnson(G)
+        G = nx.DiGraph()
+        G.add_node(0)
+        assert nx.johnson(G) == {0: {0: [0]}}
 
     def test_negative_cycle(self):
         G = nx.DiGraph()
@@ -875,9 +914,27 @@ class TestJohnsonAlgorithm(WeightedTestBase):
         }
 
     def test_unweighted_graph(self):
-        with pytest.raises(nx.NetworkXError):
-            G = nx.path_graph(5)
-            nx.johnson(G)
+        G = nx.Graph()
+        G.add_edges_from([(1, 0), (2, 1)])
+        H = G.copy()
+        nx.set_edge_attributes(H, values=1, name="weight")
+        assert nx.johnson(G) == nx.johnson(H)
+
+    def test_partially_weighted_graph_with_negative_edges(self):
+        G = nx.DiGraph()
+        G.add_edges_from([(0, 1), (1, 2), (2, 0), (1, 0)])
+        G[1][0]["weight"] = -2
+        G[0][1]["weight"] = 3
+        G[1][2]["weight"] = -4
+
+        H = G.copy()
+        H[2][0]["weight"] = 1
+
+        I = G.copy()
+        I[2][0]["weight"] = 8
+
+        assert nx.johnson(G) == nx.johnson(H)
+        assert nx.johnson(G) != nx.johnson(I)
 
     def test_graphs(self):
         validate_path(self.XG, "s", "v", 9, nx.johnson(self.XG)["s"]["v"])

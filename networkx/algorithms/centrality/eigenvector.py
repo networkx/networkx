@@ -1,6 +1,5 @@
 """Functions for computing eigenvector centrality."""
-
-from math import sqrt
+import math
 
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -8,6 +7,7 @@ from networkx.utils import not_implemented_for
 __all__ = ["eigenvector_centrality", "eigenvector_centrality_numpy"]
 
 
+@nx._dispatch
 @not_implemented_for("multigraph")
 def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None):
     r"""Compute the eigenvector centrality for the graph `G`.
@@ -42,6 +42,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      In this measure the weight is interpreted as the connection strength.
 
     Returns
     -------
@@ -71,8 +72,8 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
     See Also
     --------
     eigenvector_centrality_numpy
-    pagerank
-    hits
+    :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`
+    :func:`~networkx.algorithms.link_analysis.hits_alg.hits`
 
     Notes
     -----
@@ -117,7 +118,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
     x = {k: v / nstart_sum for k, v in nstart.items()}
     nnodes = G.number_of_nodes()
     # make up to max_iter iterations
-    for i in range(max_iter):
+    for _ in range(max_iter):
         xlast = x
         x = xlast.copy()  # Start with xlast times I to iterate with (A+I)
         # do the multiplication y^T = x^T A (left eigenvector)
@@ -129,7 +130,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
         # should never be zero by the Perron--Frobenius
         # theorem. However, in case it is due to numerical error, we
         # assume the norm to be one instead.
-        norm = sqrt(sum(z ** 2 for z in x.values())) or 1
+        norm = math.hypot(*x.values()) or 1
         x = {k: v / norm for k, v in x.items()}
         # Check for convergence (in the L_1 norm).
         if sum(abs(x[n] - xlast[n]) for n in x) < nnodes * tol:
@@ -160,7 +161,7 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     weight : None or string, optional (default=None)
       The name of the edge attribute used as weight.
       If None, all edge weights are considered equal.
-
+      In this measure the weight is interpreted as the connection strength.
     max_iter : integer, optional (default=100)
       Maximum number of iterations in power method.
 
@@ -183,8 +184,8 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     See Also
     --------
     eigenvector_centrality
-    pagerank
-    hits
+    :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`
+    :func:`~networkx.algorithms.link_analysis.hits_alg.hits`
 
     Notes
     -----
@@ -214,14 +215,13 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     """
     import numpy as np
     import scipy as sp
-    from scipy.sparse import linalg
 
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
             "cannot compute centrality for the null graph"
         )
-    M = nx.to_scipy_sparse_matrix(G, nodelist=list(G), weight=weight, dtype=float)
-    eigenvalue, eigenvector = linalg.eigs(
+    M = nx.to_scipy_sparse_array(G, nodelist=list(G), weight=weight, dtype=float)
+    _, eigenvector = sp.sparse.linalg.eigs(
         M.T, k=1, which="LR", maxiter=max_iter, tol=tol
     )
     largest = eigenvector.flatten().real

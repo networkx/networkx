@@ -1,7 +1,22 @@
-import pytest
-import networkx
+"""
+Testing
+=======
+
+General guidelines for writing good tests:
+
+- doctests always assume ``import networkx as nx`` so don't add that
+- prefer pytest fixtures over classes with setup methods.
+- use the ``@pytest.mark.parametrize``  decorator
+- use ``pytest.importorskip`` for numpy, scipy, pandas, and matplotlib b/c of PyPy.
+  and add the module to the relevant entries below.
+
+"""
 import sys
 import warnings
+
+import pytest
+
+import networkx
 
 
 def pytest_addoption(parser):
@@ -15,6 +30,10 @@ def pytest_configure(config):
 
 
 def pytest_collection_modifyitems(config, items):
+    # Allow pluggable backends to add markers to tests when
+    # running in auto-conversion test mode
+    networkx.classes.backends._mark_tests(items)
+
     if config.getoption("--runslow"):
         # --runslow given in cli: do not skip slow tests
         return
@@ -30,51 +49,37 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
-        message="literal_stringizer is deprecated*",
+        message="literal_stringizer is deprecated",
     )
     warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
-        message="literal_destringizer is deprecated*",
+        message="literal_destringizer is deprecated",
+    )
+    # create_using for scale_free_graph
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="The create_using argument"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="is_string_like is deprecated*"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="make_str is deprecated*"
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="context manager reversed is deprecated*",
+        "ignore", category=DeprecationWarning, message="nx.nx_pydot"
     )
     warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
-        message="This will return a generator in 3.0*",
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="betweenness_centrality_source*"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="edge_betweeness*"
+        message="\n\nThe `attrs` keyword argument of node_link",
     )
     warnings.filterwarnings(
         "ignore",
-        category=PendingDeprecationWarning,
-        message="the matrix subclass is not the recommended way*",
+        category=DeprecationWarning,
+        message="single_target_shortest_path_length will",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="to_numpy_matrix"
+        "ignore",
+        category=DeprecationWarning,
+        message="shortest_path for all_pairs",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="from_numpy_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="networkx.pagerank_numpy*"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="networkx.pagerank_scipy*"
+        "ignore", category=DeprecationWarning, message="\nforest_str is deprecated"
     )
 
 
@@ -121,13 +126,6 @@ except ImportError:
     has_pygraphviz = False
 
 try:
-    import yaml
-
-    has_yaml = True
-except ImportError:
-    has_yaml = False
-
-try:
     import pydot
 
     has_pydot = True
@@ -135,11 +133,11 @@ except ImportError:
     has_pydot = False
 
 try:
-    import ogr
+    import sympy
 
-    has_ogr = True
+    has_sympy = True
 except ImportError:
-    has_ogr = False
+    has_sympy = False
 
 
 # List of files that pytest should ignore
@@ -147,15 +145,18 @@ except ImportError:
 collect_ignore = []
 
 needs_numpy = [
+    "algorithms/approximation/traveling_salesman.py",
     "algorithms/centrality/current_flow_closeness.py",
-    "algorithms/node_classification/__init__.py",
+    "algorithms/node_classification.py",
     "algorithms/non_randomness.py",
     "algorithms/shortest_paths/dense.py",
     "linalg/bethehessianmatrix.py",
     "linalg/laplacianmatrix.py",
     "utils/misc.py",
+    "algorithms/centrality/laplacian.py",
 ]
 needs_scipy = [
+    "algorithms/approximation/traveling_salesman.py",
     "algorithms/assortativity/correlation.py",
     "algorithms/assortativity/mixing.py",
     "algorithms/assortativity/pairs.py",
@@ -170,25 +171,25 @@ needs_scipy = [
     "algorithms/communicability_alg.py",
     "algorithms/link_analysis/hits_alg.py",
     "algorithms/link_analysis/pagerank_alg.py",
-    "algorithms/node_classification/hmn.py",
-    "algorithms/node_classification/lgc.py",
+    "algorithms/node_classification.py",
     "algorithms/similarity.py",
     "convert_matrix.py",
     "drawing/layout.py",
     "generators/spectral_graph_forge.py",
     "linalg/algebraicconnectivity.py",
     "linalg/attrmatrix.py",
+    "linalg/bethehessianmatrix.py",
     "linalg/graphmatrix.py",
     "linalg/modularitymatrix.py",
     "linalg/spectrum.py",
     "utils/rcm.py",
+    "algorithms/centrality/laplacian.py",
 ]
 needs_matplotlib = ["drawing/nx_pylab.py"]
 needs_pandas = ["convert_matrix.py"]
-needs_yaml = ["readwrite/nx_yaml.py"]
 needs_pygraphviz = ["drawing/nx_agraph.py"]
 needs_pydot = ["drawing/nx_pydot.py"]
-needs_ogr = ["readwrite/nx_shp.py"]
+needs_sympy = ["algorithms/polynomials.py"]
 
 if not has_numpy:
     collect_ignore += needs_numpy
@@ -198,15 +199,9 @@ if not has_matplotlib:
     collect_ignore += needs_matplotlib
 if not has_pandas:
     collect_ignore += needs_pandas
-if not has_yaml:
-    collect_ignore += needs_yaml
 if not has_pygraphviz:
     collect_ignore += needs_pygraphviz
 if not has_pydot:
     collect_ignore += needs_pydot
-if not has_ogr:
-    collect_ignore += needs_ogr
-
-# FIXME:  This is to avoid errors on AppVeyor
-if sys.platform.startswith("win"):
-    collect_ignore += ["readwrite/graph6.py", "readwrite/sparse6.py"]
+if not has_sympy:
+    collect_ignore += needs_sympy

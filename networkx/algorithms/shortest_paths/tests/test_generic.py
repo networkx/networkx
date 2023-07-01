@@ -1,8 +1,6 @@
 import pytest
 
-
 import networkx as nx
-from networkx.testing import almost_equal
 
 
 def validate_grid_path(r, c, s, t, p):
@@ -287,51 +285,54 @@ class TestGenericPath:
 class TestAverageShortestPathLength:
     def test_cycle_graph(self):
         ans = nx.average_shortest_path_length(nx.cycle_graph(7))
-        assert almost_equal(ans, 2)
+        assert ans == pytest.approx(2, abs=1e-7)
 
     def test_path_graph(self):
         ans = nx.average_shortest_path_length(nx.path_graph(5))
-        assert almost_equal(ans, 2)
+        assert ans == pytest.approx(2, abs=1e-7)
 
     def test_weighted(self):
         G = nx.Graph()
         nx.add_cycle(G, range(7), weight=2)
         ans = nx.average_shortest_path_length(G, weight="weight")
-        assert almost_equal(ans, 4)
+        assert ans == pytest.approx(4, abs=1e-7)
         G = nx.Graph()
         nx.add_path(G, range(5), weight=2)
         ans = nx.average_shortest_path_length(G, weight="weight")
-        assert almost_equal(ans, 4)
+        assert ans == pytest.approx(4, abs=1e-7)
 
     def test_specified_methods(self):
         G = nx.Graph()
         nx.add_cycle(G, range(7), weight=2)
         ans = nx.average_shortest_path_length(G, weight="weight", method="dijkstra")
-        assert almost_equal(ans, 4)
+        assert ans == pytest.approx(4, abs=1e-7)
         ans = nx.average_shortest_path_length(G, weight="weight", method="bellman-ford")
-        assert almost_equal(ans, 4)
+        assert ans == pytest.approx(4, abs=1e-7)
         ans = nx.average_shortest_path_length(
             G, weight="weight", method="floyd-warshall"
         )
-        assert almost_equal(ans, 4)
+        assert ans == pytest.approx(4, abs=1e-7)
 
         G = nx.Graph()
         nx.add_path(G, range(5), weight=2)
         ans = nx.average_shortest_path_length(G, weight="weight", method="dijkstra")
-        assert almost_equal(ans, 4)
+        assert ans == pytest.approx(4, abs=1e-7)
         ans = nx.average_shortest_path_length(G, weight="weight", method="bellman-ford")
-        assert almost_equal(ans, 4)
+        assert ans == pytest.approx(4, abs=1e-7)
         ans = nx.average_shortest_path_length(
             G, weight="weight", method="floyd-warshall"
         )
-        assert almost_equal(ans, 4)
+        assert ans == pytest.approx(4, abs=1e-7)
 
-    def test_disconnected(self):
+    def test_directed_not_strongly_connected(self):
+        G = nx.DiGraph([(0, 1)])
+        with pytest.raises(nx.NetworkXError, match="Graph is not strongly connected"):
+            nx.average_shortest_path_length(G)
+
+    def test_undirected_not_connected(self):
         g = nx.Graph()
         g.add_nodes_from(range(3))
         g.add_edge(0, 1)
-        pytest.raises(nx.NetworkXError, nx.average_shortest_path_length, g)
-        g = g.to_directed()
         pytest.raises(nx.NetworkXError, nx.average_shortest_path_length, g)
 
     def test_trivial_graph(self):
@@ -358,12 +359,10 @@ class TestAverageShortestPathLength:
 class TestAverageShortestPathLengthNumpy:
     @classmethod
     def setup_class(cls):
-        global numpy
-        global npt
+        global np
         import pytest
 
-        numpy = pytest.importorskip("numpy")
-        npt = pytest.importorskip("numpy.testing")
+        np = pytest.importorskip("numpy")
 
     def test_specified_methods_numpy(self):
         G = nx.Graph()
@@ -371,11 +370,11 @@ class TestAverageShortestPathLengthNumpy:
         ans = nx.average_shortest_path_length(
             G, weight="weight", method="floyd-warshall-numpy"
         )
-        npt.assert_almost_equal(ans, 4)
+        np.testing.assert_almost_equal(ans, 4)
 
         G = nx.Graph()
         nx.add_path(G, range(5), weight=2)
         ans = nx.average_shortest_path_length(
             G, weight="weight", method="floyd-warshall-numpy"
         )
-        npt.assert_almost_equal(ans, 4)
+        np.testing.assert_almost_equal(ans, 4)

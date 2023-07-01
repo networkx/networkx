@@ -29,6 +29,7 @@ Branchings and Spanning Arborescences
    minimum_branching
    maximum_spanning_arborescence
    minimum_spanning_arborescence
+   ArborescenceIterator
    Edmonds
 
 Encoding and decoding
@@ -58,8 +59,10 @@ Spanning Trees
 
    minimum_spanning_tree
    maximum_spanning_tree
+   random_spanning_tree
    minimum_spanning_edges
    maximum_spanning_edges
+   SpanningTreeIterator
 
 Decomposition
 -------------
