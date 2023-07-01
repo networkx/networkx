@@ -397,7 +397,7 @@ class Edmonds:
         # being different).
         self.minedge_circuit = []
 
-    # We should seperate each step into an inner function. Then the overall loop would become
+    # TODO: separate each step into an inner function. Then the overall loop would become
     # while True:
     #     step_I1()
     #     if cycle detected:
@@ -1178,7 +1178,7 @@ def minimal_branching(
     G, /, *, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
     """
-    Returns a minimal branching from G.
+    Returns a minimal branching from `G`.
 
     A minimal branching is a branching since to a minimal arborescence but
     without the requirement that the result is actually a spanning arborescence.
@@ -1190,7 +1190,7 @@ def minimal_branching(
     G : (multi)digraph-like
         The graph to be searched.
     attr : str
-        The edge attribute used to in determining optimality.
+        The edge attribute used in determining optimality.
     default : float
         The value of the edge attribute used if an edge does not have
         the attribute `attr`.
