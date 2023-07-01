@@ -323,7 +323,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
 
     A = nx.adjacency_matrix(G, nodelist=nodelist, weight=weight).todense().T
     n = A.shape[0]
-    centrality = np.linalg.solve(np.eye(n, n) - (alpha * A), b)
+    centrality = np.linalg.solve(np.eye(n, n) - (alpha * A), b).squeeze()
 
     # Normalize: rely on truediv to cast to float
     norm = np.sign(sum(centrality)) * np.linalg.norm(centrality) if normalized else 1
