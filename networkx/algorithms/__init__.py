@@ -72,6 +72,7 @@ from networkx.algorithms import components
 from networkx.algorithms import connectivity
 from networkx.algorithms import community
 from networkx.algorithms import coloring
+from networkx.algorithms import minors
 from networkx.algorithms import flow
 from networkx.algorithms import isomorphism
 from networkx.algorithms import link_analysis
@@ -102,6 +103,7 @@ from networkx.algorithms.connectivity import minimum_node_cut
 from networkx.algorithms.connectivity import node_connectivity
 from networkx.algorithms.connectivity import node_disjoint_paths
 from networkx.algorithms.connectivity import stoer_wagner
+from networkx.algorithms.minors import *
 from networkx.algorithms.flow import capacity_scaling
 from networkx.algorithms.flow import cost_of_flow
 from networkx.algorithms.flow import gomory_hu_tree

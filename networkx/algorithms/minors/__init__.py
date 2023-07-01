@@ -17,11 +17,15 @@ from networkx.algorithms.minors.contraction import (
     identified_nodes,
     quotient_graph,
 )
+from networkx.algorithms.minors.tree_embedding import (
+    maximum_common_ordered_subtree_embedding,
+)
 
 __all__ = [
     "contracted_edge",
     "contracted_nodes",
     "equivalence_classes",
     "identified_nodes",
+    "maximum_common_ordered_subtree_embedding",
     "quotient_graph",
 ]
