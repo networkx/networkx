@@ -647,9 +647,9 @@ def katz_index(G, ebunch=None, beta=0.1):
         ebunch = nx.non_edges(G)
     A = nx.adjacency_matrix(G)
     AB = A.multiply(beta)
-    I = sp.sparse.identity(AB.shape[0])
-    indices = sp.sparse.linalg.spsolve(I - AB, I) - I
-    return ((u, v, indices[u, v]) for u, v in ebunch)
+    I = sp.sparse.identity(AB.shape[0], format="csc")
+    indices = sp.sparse.linalg.spsolve((I - AB).tocsc(), I) - I
+    return _apply_prediction(G, lambda u, v: indices[u, v], ebunch)
 
 
 def _community(G, u, community):
