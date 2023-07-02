@@ -641,14 +641,12 @@ def katz_index(G, ebunch=None, beta=0.1):
            https://arxiv.org/pdf/1010.0725v1.pdf
     """
     import scipy as sp
-    from scipy import sparse
 
     if ebunch is None:
         ebunch = nx.non_edges(G)
     A = nx.adjacency_matrix(G)
-    AB = A.multiply(beta)
-    I = sp.sparse.identity(AB.shape[0], format="csc")
-    indices = sp.sparse.linalg.spsolve((I - AB).tocsc(), I) - I
+    I = sp.sparse.identity(A.shape[0], format="csc")
+    indices = sp.sparse.linalg.spsolve((I - A * beta), I) - I
     return _apply_prediction(G, lambda u, v: indices[u, v], ebunch)
 
 
