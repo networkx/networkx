@@ -48,6 +48,7 @@ Algorithms
    link_prediction
    lowest_common_ancestors
    matching
+   maximum_common_subgraph
    minors
    mis
    non_randomness

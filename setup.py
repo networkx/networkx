@@ -71,6 +71,7 @@ packages = [
     "networkx.algorithms.operators",
     "networkx.algorithms.approximation",
     "networkx.algorithms.tree",
+    "networkx.algorithms.maximum_common_subgraph",
     "networkx.classes",
     "networkx.generators",
     "networkx.drawing",

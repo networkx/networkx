@@ -30,6 +30,7 @@ from networkx.algorithms.link_prediction import *
 from networkx.algorithms.lowest_common_ancestors import *
 from networkx.algorithms.isolate import *
 from networkx.algorithms.matching import *
+from networkx.algorithms.maximum_common_subgraph import *
 from networkx.algorithms.minors import *
 from networkx.algorithms.mis import *
 from networkx.algorithms.moral import *
@@ -76,6 +77,7 @@ from networkx.algorithms import flow
 from networkx.algorithms import isomorphism
 from networkx.algorithms import link_analysis
 from networkx.algorithms import lowest_common_ancestors
+from networkx.algorithms import maximum_common_subgraph
 from networkx.algorithms import operators
 from networkx.algorithms import shortest_paths
 from networkx.algorithms import tournament
