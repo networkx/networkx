@@ -22,3 +22,10 @@ repos:
       - id: ruff
         args:
           - --fix
+  - repo: local
+    hooks:
+      - id: pyproject.toml
+        name: pyproject.toml
+        language: system
+        entry: python tools/generate_pyproject.toml.py
+        files: "pyproject.toml|requirements/.*\\.txt|tools/.*pyproject.*"
