@@ -97,7 +97,7 @@ def generate_network_text(
 
     2. Each reachable node will be printed exactly once on it's own line.
 
-    3. Edges are indicated in one of three ways:
+    3. Edges are indicated in one of four ways:
 
         a. a parent "L-style" connection on the upper left. This corresponds to
         a traversal in the directed DFS tree.
@@ -111,6 +111,9 @@ def generate_network_text(
         c. a child "L-style" connection on the lower right. Drawing of the
         children are handled recursively.
 
+        d. if ``vertical_chains`` is true, and a parent node only has one child
+        a "vertical-style" edge is drawn between them.
+
     4. The children of each node (wrt the directed DFS tree) are drawn
     underneath and to the right of it. In the case that a child node has already
     been drawn the connection is replaced with an ellipsis ("...") to indicate
@@ -118,6 +121,9 @@ def generate_network_text(
 
     5. If a maximum depth is specified, an edge to nodes past this maximum
     depth will be represented by an ellipsis.
+
+    6. If a a node has a truthy "collapse" value, then we do not traverse past
+    that node.
 
     Parameters
     ----------
@@ -513,13 +519,13 @@ def write_network_text(
 
     >>> nx.write_network_text(graph, vertical_chains=True, ascii_only=True)
     +-- 0 <- 4
-        v
+        !
         1
-        v
+        !
         2
-        v
+        !
         3
-        v
+        !
         4
         L->  ...
 
