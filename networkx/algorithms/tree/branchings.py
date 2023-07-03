@@ -1180,7 +1180,7 @@ def minimal_branching(
     """
     Returns a minimal branching from G.
 
-    A minimal branching is a branching since to a minimal arborescence but
+    A minimal branching is a branching similar to a minimal arborescence but
     without the requirement that the result is actually a spanning arborescence.
     This allows minimal branchinges to be computed over graphs which may not
     have arborescence (such as multiple components).
