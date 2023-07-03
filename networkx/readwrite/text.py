@@ -757,7 +757,7 @@ def parse_network_text(lines):
         The graph corresponding to the lines in network text format.
     """
     from itertools import chain
-    from typing import Any, Union, NamedTuple
+    from typing import Any, NamedTuple, Union
 
     class ParseStackFrame(NamedTuple):
         node: Any
@@ -801,21 +801,18 @@ def parse_network_text(lines):
             raise AssertionError(f"Unexpected first character: {first_char}")
 
     if is_ascii:
-        directed_glyphs = AsciiDirectedGlyphs
-        undirected_glyphs = AsciiUndirectedGlyphs
+        directed_glyphs = AsciiDirectedGlyphs.as_dict()
+        undirected_glyphs = AsciiUndirectedGlyphs.as_dict()
     else:
-        directed_glyphs = UtfDirectedGlyphs
-        undirected_glyphs = UtfUndirectedGlyphs
-
-    directed_glyphs_lut = directed_glyphs.as_dict()
-    undirected_glyphs_lut = undirected_glyphs.as_dict()
+        directed_glyphs = UtfDirectedGlyphs.as_dict()
+        undirected_glyphs = UtfUndirectedGlyphs.as_dict()
 
     # For both directed / undirected glyphs, determine which glyphs never
     # appear as substrings in the other undirected / directed glyphs.  Glyphs
     # with this property unambiguously indicates if a graph is directed /
     # undirected.
-    directed_items = {v for v in directed_glyphs_lut.values()}
-    undirected_items = {v for v in undirected_glyphs_lut.values()}
+    directed_items = set(directed_glyphs.values())
+    undirected_items = set(undirected_glyphs.values())
     unambiguous_directed_items = []
     for item in directed_items:
         other_items = undirected_items
@@ -842,11 +839,11 @@ def parse_network_text(lines):
         # Not enough information to determine, choose undirected by default
         is_directed = False
 
-    glyphs_lut = directed_glyphs_lut if is_directed else undirected_glyphs_lut
+    glyphs = directed_glyphs if is_directed else undirected_glyphs
 
     # the backedge symbol by itself can be ambiguous, but with spaces around it
     # becomes unambiguous.
-    backedge_symbol = " " + glyphs_lut["backedge"] + " "
+    backedge_symbol = " " + glyphs["backedge"] + " "
 
     # Reconstruct an iterator over all of the lines.
     parsing_line_iter = chain(initial_lines, initial_line_iter)
@@ -865,7 +862,7 @@ def parse_network_text(lines):
     stack = [ParseStackFrame(noparent, -1, None)]
 
     for line in parsing_line_iter:
-        if line == glyphs_lut["empty"]:
+        if line == glyphs["empty"]:
             # If the line is the empty glyph, we are done.
             # There shouldn't be anything else after this.
             is_empty = True
@@ -888,7 +885,7 @@ def parse_network_text(lines):
 
         prev = stack.pop()
 
-        if node in glyphs_lut["vertical_edge"]:
+        if node in glyphs["vertical_edge"]:
             # Previous node is still the previous node, but we know it will
             # have exactly one child, which will need to have its nesting level
             # adjusted.
