@@ -11,7 +11,7 @@ except ImportError:
 
 
 if not os.path.isfile("pyproject.toml"):
-    print("Please run this script from the skimage repository root:")
+    print("Please run this script from the networkx repository root:")
     print("  python tools/generate_pyproject.toml.py")
     sys.exit(1)
 
