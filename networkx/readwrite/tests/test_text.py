@@ -1509,14 +1509,18 @@ def test_write_network_text_vertical_chains():
 
     lines = []
     write = lines.append
-    write('--- Undirected UTF ---')
+    write("--- Undirected UTF ---")
     nx.write_network_text(graph1, path=write, end="", vertical_chains=True)
-    write('--- Undirected ASCI ---')
-    nx.write_network_text(graph1, path=write, end="", vertical_chains=True, ascii_only=True)
-    write('--- Directed UTF ---')
+    write("--- Undirected ASCI ---")
+    nx.write_network_text(
+        graph1, path=write, end="", vertical_chains=True, ascii_only=True
+    )
+    write("--- Directed UTF ---")
     nx.write_network_text(graph2, path=write, end="", vertical_chains=True)
-    write('--- Directed ASCI ---')
-    nx.write_network_text(graph2, path=write, end="", vertical_chains=True, ascii_only=True)
+    write("--- Directed ASCI ---")
+    nx.write_network_text(
+        graph2, path=write, end="", vertical_chains=True, ascii_only=True
+    )
 
     text = "\n".join(lines)
     print(text)
@@ -1600,6 +1604,7 @@ def generate_test_graphs():
     Generate a gauntlet of different test graphs with different properties
     """
     import random
+
     rng = random.Random(976689776)
     num_randomized = 3
 
@@ -1607,7 +1612,6 @@ def generate_test_graphs():
         cls = nx.DiGraph if directed else nx.Graph
 
         for num_nodes in range(0, 17):
-
             # Disconnected graph
             graph = cls()
             graph.add_nodes_from(range(num_nodes))
@@ -1617,7 +1621,9 @@ def generate_test_graphs():
             if num_nodes > 0:
                 for p in [0.1, 0.3, 0.5, 0.7, 0.9]:
                     for seed in range(num_randomized):
-                        graph = nx.erdos_renyi_graph(num_nodes, p, directed=directed, seed=rng)
+                        graph = nx.erdos_renyi_graph(
+                            num_nodes, p, directed=directed, seed=rng
+                        )
                         yield graph
 
                 yield nx.complete_graph(num_nodes, cls)
@@ -1634,11 +1640,13 @@ def generate_test_graphs():
 
 @pytest.mark.parametrize(
     ("vertical_chains", "ascii_only"),
-    tuple([
-        (vertical_chains, ascii_only)
-        for vertical_chains in [0, 1]
-        for ascii_only in [0, 1]
-    ]),
+    tuple(
+        [
+            (vertical_chains, ascii_only)
+            for vertical_chains in [0, 1]
+            for ascii_only in [0, 1]
+        ]
+    ),
 )
 def test_network_text_round_trip(vertical_chains, ascii_only):
     """
@@ -1647,15 +1655,19 @@ def test_network_text_round_trip(vertical_chains, ascii_only):
     both the format generator and parser.
     """
     from networkx.readwrite.text import parse_network_text
+
     for graph in generate_test_graphs():
         graph = nx.relabel_nodes(graph, {n: str(n) for n in graph.nodes})
-        lines = list(nx.generate_network_text(
-            graph, vertical_chains=vertical_chains, ascii_only=ascii_only))
+        lines = list(
+            nx.generate_network_text(
+                graph, vertical_chains=vertical_chains, ascii_only=ascii_only
+            )
+        )
         new = parse_network_text(lines)
         try:
             assert new.nodes == graph.nodes
             assert new.edges == graph.edges
         except Exception:
-            print('ERROR in round trip with graph')
+            print("ERROR in round trip with graph")
             nx.write_network_text(graph)
             raise

@@ -14,8 +14,11 @@ __all__ = ["forest_str", "generate_network_text", "write_network_text"]
 class BaseGlyphs:
     @classmethod
     def as_dict(cls):
-        return {a: getattr(cls, a) for a in dir(cls)
-                if not a.startswith('_') and a != 'as_dict'}
+        return {
+            a: getattr(cls, a)
+            for a in dir(cls)
+            if not a.startswith("_") and a != "as_dict"
+        }
 
 
 class AsciiBaseGlyphs(BaseGlyphs):
@@ -31,14 +34,14 @@ class AsciiDirectedGlyphs(AsciiBaseGlyphs):
     last: str = "L-> "
     mid: str = "|-> "
     backedge: str = "<-"
-    vertical_edge: str = '!'
+    vertical_edge: str = "!"
 
 
 class AsciiUndirectedGlyphs(AsciiBaseGlyphs):
     last: str = "L-- "
     mid: str = "|-- "
     backedge: str = "-"
-    vertical_edge: str = '|'
+    vertical_edge: str = "|"
 
 
 class UtfBaseGlyphs(BaseGlyphs):
@@ -57,14 +60,14 @@ class UtfDirectedGlyphs(UtfBaseGlyphs):
     last: str = "└─╼ "
     mid: str = "├─╼ "
     backedge: str = "╾"
-    vertical_edge: str = '╽'
+    vertical_edge: str = "╽"
 
 
 class UtfUndirectedGlyphs(UtfBaseGlyphs):
     last: str = "└── "
     mid: str = "├── "
     backedge: str = "─"
-    vertical_edge: str = '│'
+    vertical_edge: str = "│"
 
 
 def generate_network_text(
@@ -785,12 +788,20 @@ def parse_network_text(lines):
         initial_lines.append(first_line)
         # The first character indicates if it is an ASCII or UTF graph
         first_char = first_line[0]
-        if first_char in {UtfBaseGlyphs.empty, UtfBaseGlyphs.newtree_mid[0], UtfBaseGlyphs.newtree_last[0]}:
+        if first_char in {
+            UtfBaseGlyphs.empty,
+            UtfBaseGlyphs.newtree_mid[0],
+            UtfBaseGlyphs.newtree_last[0],
+        }:
             is_ascii = False
-        elif first_char in {AsciiBaseGlyphs.empty, AsciiBaseGlyphs.newtree_mid[0], AsciiBaseGlyphs.newtree_last[0]}:
+        elif first_char in {
+            AsciiBaseGlyphs.empty,
+            AsciiBaseGlyphs.newtree_mid[0],
+            AsciiBaseGlyphs.newtree_last[0],
+        }:
             is_ascii = True
         else:
-            raise AssertionError(f'Unexpected first character: {first_char}')
+            raise AssertionError(f"Unexpected first character: {first_char}")
 
     if is_ascii:
         directed_glyphs = AsciiDirectedGlyphs
@@ -838,7 +849,7 @@ def parse_network_text(lines):
 
     # the backedge symbol by itself can be ambiguous, but with spaces around it
     # becomes unambiguous.
-    backedge_symbol = ' ' + glyphs_lut['backedge'] + ' '
+    backedge_symbol = " " + glyphs_lut["backedge"] + " "
 
     # Reconstruct an iterator over all of the lines.
     parsing_line_iter = chain(initial_lines, initial_line_iter)
@@ -857,8 +868,7 @@ def parse_network_text(lines):
     stack = [ParseStackFrame(noparent, -1, None)]
 
     for line in parsing_line_iter:
-
-        if line == glyphs_lut['empty']:
+        if line == glyphs_lut["empty"]:
             # If the line is the empty glyph, we are done.
             # There shouldn't be anything else after this.
             is_empty = True
@@ -867,21 +877,21 @@ def parse_network_text(lines):
         if backedge_symbol in line:
             # This line has one or more backedges, separate those out
             node_part, backedge_part = line.split(backedge_symbol)
-            backedge_nodes = backedge_part.split(', ')
+            backedge_nodes = backedge_part.split(", ")
             # Now the node can be parsed
             node_part = node_part.rstrip()
-            prefix, node = node_part.rsplit(' ', 1)
+            prefix, node = node_part.rsplit(" ", 1)
             node = node.strip()
             # Add the backedges to the edge list
             edges.extend([(u.strip(), node) for u in backedge_nodes])
         else:
             # No backedge, the tail of this line is the node
-            prefix, node = line.rsplit(' ', 1)
+            prefix, node = line.rsplit(" ", 1)
             node = node.strip()
 
         prev = stack.pop()
 
-        if node in glyphs_lut['vertical_edge']:
+        if node in glyphs_lut["vertical_edge"]:
             # Previous node is still the previous node, but we know it will
             # have exactly one child, which will need to have its nesting level
             # adjusted.
@@ -913,7 +923,7 @@ def parse_network_text(lines):
             while curr.indent <= (prev.indent + bool(prev.has_vertical_child)):
                 prev = stack.pop()
 
-        if node == '...':
+        if node == "...":
             # The current previous node is no longer a valid parent,
             # keep it popped from the stack.
             stack.append(prev)
