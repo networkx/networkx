@@ -27,6 +27,11 @@ Improvements
   Function ``cycle_basis`` switched from using Python sets to dicts so the
   results are now deterministic (not dependent on order reported by a set).
 
+- [`#6759 <https://github.com/networkx/networkx/pull/6759>`_]
+  Function ``write_network_text`` has new argument ``vertical_chains``
+  which, if true, reduces horizontal space by rendering chains of nodes
+  vertically.
+
 API Changes
 -----------
 - [`#6651 <https://github.com/networkx/networkx/pull/6651>`_]
