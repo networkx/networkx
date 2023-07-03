@@ -1605,14 +1605,14 @@ def test_collapse_directed():
     write = lines.append
     write("--- Original ---")
     nx.write_network_text(graph, path=write, end="")
-    graph.nodes[1]['collapse'] = True
+    graph.nodes[1]["collapse"] = True
     write("--- Collapse Node 1 ---")
     nx.write_network_text(graph, path=write, end="")
     write("--- Add alternate path (5, 3) to collapsed zone")
     graph.add_edge(5, 3)
     nx.write_network_text(graph, path=write, end="")
     write("--- Collapse Node 0 ---")
-    graph.nodes[0]['collapse'] = True
+    graph.nodes[0]["collapse"] = True
     nx.write_network_text(graph, path=write, end="")
     text = "\n".join(lines)
     print(text)
@@ -1673,14 +1673,14 @@ def test_collapse_undirected():
     write = lines.append
     write("--- Original ---")
     nx.write_network_text(graph, path=write, end="", sources=[0])
-    graph.nodes[1]['collapse'] = True
+    graph.nodes[1]["collapse"] = True
     write("--- Collapse Node 1 ---")
     nx.write_network_text(graph, path=write, end="", sources=[0])
     write("--- Add alternate path (5, 3) to collapsed zone")
     graph.add_edge(5, 3)
     nx.write_network_text(graph, path=write, end="", sources=[0])
     write("--- Collapse Node 0 ---")
-    graph.nodes[0]['collapse'] = True
+    graph.nodes[0]["collapse"] = True
     nx.write_network_text(graph, path=write, end="", sources=[0])
     text = "\n".join(lines)
     print(text)
