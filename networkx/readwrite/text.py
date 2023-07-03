@@ -392,14 +392,12 @@ def generate_network_text(
 
             yield "".join(this_prefix + [label, suffix])
 
-            # Determine if we are an only child.
-            # NOTE: Please reveiw this logic.
             if vertical_chains:
                 if is_directed:
                     num_children = len(set(children))
                 else:
                     num_children = len(set(children) - {parent})
-                # Only can draw the next node vertically if it is the only
+                # The next node can be drawn vertically if it is the only
                 # remaining child of this node.
                 next_is_vertical = num_children == 1
             else:
@@ -744,7 +742,7 @@ def parse_network_text(lines):
 
     This is mainly used for testing.  Network text is for display, not
     serialization, as such this cannot parse all network text representations
-    because node labels can be ambiguous with the glphys and indentation used
+    because node labels can be ambiguous with the glyphs and indentation used
     to represent edge structure. Additionally, there is no way to determine if
     disconnected graphs were originally directed or undirected.
 
@@ -759,8 +757,7 @@ def parse_network_text(lines):
         The graph corresponding to the lines in network text format.
     """
     from itertools import chain
-    from typing import Any, Union
-    from typing import NamedTuple
+    from typing import Any, Union, NamedTuple
 
     class ParseStackFrame(NamedTuple):
         node: Any
@@ -810,15 +807,15 @@ def parse_network_text(lines):
         directed_glyphs = UtfDirectedGlyphs
         undirected_glyphs = UtfUndirectedGlyphs
 
-    directed_glphys_lut = directed_glyphs.as_dict()
-    undirected_glphys_lut = undirected_glyphs.as_dict()
+    directed_glyphs_lut = directed_glyphs.as_dict()
+    undirected_glyphs_lut = undirected_glyphs.as_dict()
 
-    # For both directed / undirected glyphs, determine which glphys never
+    # For both directed / undirected glyphs, determine which glyphs never
     # appear as substrings in the other undirected / directed glyphs.  Glyphs
     # with this property unambiguously indicates if a graph is directed /
     # undirected.
-    directed_items = {v for v in directed_glphys_lut.values()}
-    undirected_items = {v for v in undirected_glphys_lut.values()}
+    directed_items = {v for v in directed_glyphs_lut.values()}
+    undirected_items = {v for v in undirected_glyphs_lut.values()}
     unambiguous_directed_items = []
     for item in directed_items:
         other_items = undirected_items
@@ -845,7 +842,7 @@ def parse_network_text(lines):
         # Not enough information to determine, choose undirected by default
         is_directed = False
 
-    glyphs_lut = directed_glphys_lut if is_directed else undirected_glphys_lut
+    glyphs_lut = directed_glyphs_lut if is_directed else undirected_glyphs_lut
 
     # the backedge symbol by itself can be ambiguous, but with spaces around it
     # becomes unambiguous.
@@ -862,7 +859,7 @@ def parse_network_text(lines):
     nodes = []
     is_empty = None
 
-    noparent = object()  # sentinal value
+    noparent = object()  # sentinel value
 
     # keep a stack of previous nodes that could be parents of subsequent nodes
     stack = [ParseStackFrame(noparent, -1, None)]
@@ -877,13 +874,13 @@ def parse_network_text(lines):
         if backedge_symbol in line:
             # This line has one or more backedges, separate those out
             node_part, backedge_part = line.split(backedge_symbol)
-            backedge_nodes = backedge_part.split(", ")
+            backedge_nodes = [u.strip() for u in backedge_part.split(", ")]
             # Now the node can be parsed
             node_part = node_part.rstrip()
             prefix, node = node_part.rsplit(" ", 1)
             node = node.strip()
             # Add the backedges to the edge list
-            edges.extend([(u.strip(), node) for u in backedge_nodes])
+            edges.extend([(u, node) for u in backedge_nodes])
         else:
             # No backedge, the tail of this line is the node
             prefix, node = line.rsplit(" ", 1)
@@ -905,7 +902,7 @@ def parse_network_text(lines):
 
         # The length of the string before the node characters give us a hint
         # about our nesting level. The only case where this doesn't work is
-        # when there are vertical chains, which is handled explictly.
+        # when there are vertical chains, which is handled explicitly.
         indent = len(prefix)
         curr = ParseStackFrame(node, indent, None)
 
@@ -915,12 +912,12 @@ def parse_network_text(lines):
             # indentation check wouldn't work in this case).
             ...
         else:
-            # If the previous node nesting-level is greater than the curret
+            # If the previous node nesting-level is greater than the current
             # nodes nesting-level than the previous node was the end of a path,
             # and is not our parent. We can safely pop nodes off the stack
             # until we find one with a comparable nesting-level, which is our
             # parent.
-            while curr.indent <= (prev.indent + bool(prev.has_vertical_child)):
+            while curr.indent <= prev.indent:
                 prev = stack.pop()
 
         if node == "...":
