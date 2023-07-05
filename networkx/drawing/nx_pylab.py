@@ -377,7 +377,7 @@ def draw_networkx_nodes(
         Colors of node borders. Can be a single color or a sequence of colors with the
         same length as nodelist. Color can be string or rgb (or rgba) tuple of floats
         from 0-1. If numeric values are specified they will be mapped to colors
-        using the cmap and vmin,vmax parameters. See matplotlib.scatter for more details.
+        using the cmap and vmin,vmax parameters. See `~matplotlib.pyplot.scatter` for more details.
 
     label : [None | string]
         Label for legend
