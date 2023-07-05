@@ -3,7 +3,7 @@ Link prediction algorithms.
 """
 
 
-from math import log, sqrt
+from math import log
 
 import numpy as np
 
@@ -726,52 +726,44 @@ def direct_indirect_common_neighbors(G, ebunch=None):
         return neighbor_vectors
 
     neighbor_vectors = generate_neighborhood_vectors(G)
-    correlation_coefficients = {}
+    correlations_coefficients = {}
 
-    def generate_union_neighborhood_set(G, u, v, neighbor_vectors):
-        a = neighbor_vectors[u]
-        b = neighbor_vectors[v]
-        union_neighborhood_set = np.where((a + b) > 0)[0]
-        return union_neighborhood_set
+    def generate_union_neighborhood_set(
+        G, u_neighborhood_vector, v_neighborhood_vector
+    ):
+        return np.where((u_neighborhood_vector + v_neighborhood_vector) > 0)[0]
 
     def compute_correlation_coefficient(G, u, v, neighbor_vectors):
-        if (v, u) in correlation_coefficients:
-            correlation_coefficient = correlation_coefficients[(v, u)]
+        if (v, u) in correlations_coefficients:
+            return correlations_coefficients[(v, u)]
         else:
-            union_neighborhood_set = generate_union_neighborhood_set(
-                G, u, v, neighbor_vectors
-            )
             u_neighborhood_vector = neighbor_vectors[u]
             v_neighborhood_vector = neighbor_vectors[v]
-
+            union_neighborhood_set = generate_union_neighborhood_set(
+                G, u_neighborhood_vector, v_neighborhood_vector
+            )
+            u_neighborhood_vector = u_neighborhood_vector[union_neighborhood_set]
+            v_neighborhood_vector = v_neighborhood_vector[union_neighborhood_set]
             if len(union_neighborhood_set) == 0:
                 u_vector_average, v_vector_average = 0, 0
             else:
-                u_vector_average = np.mean(
-                    u_neighborhood_vector[union_neighborhood_set]
-                )
-                v_vector_average = np.mean(
-                    v_neighborhood_vector[union_neighborhood_set]
-                )
-
-            u_diff = u_neighborhood_vector[union_neighborhood_set] - u_vector_average
-            v_diff = v_neighborhood_vector[union_neighborhood_set] - v_vector_average
-
+                u_vector_average = np.mean(u_neighborhood_vector)
+                v_vector_average = np.mean(v_neighborhood_vector)
+            u_diff = u_neighborhood_vector - u_vector_average
+            v_diff = v_neighborhood_vector - v_vector_average
             numerator = np.sum(u_diff * v_diff)
             u_denominator_sq = np.sum(u_diff**2)
             v_denominator_sq = np.sum(v_diff**2)
-
             if u_denominator_sq == 0 or v_denominator_sq == 0:
-                correlation_coefficient = 0
+                correlations_coefficients[(u, v)] = 0.0
+                return 0.0
             else:
                 u_denominator = np.sqrt(u_denominator_sq)
                 v_denominator = np.sqrt(v_denominator_sq)
                 denominator = u_denominator * v_denominator
                 correlation_coefficient = numerator / denominator
-
-            correlation_coefficients[(u, v)] = correlation_coefficient
-
-        return correlation_coefficient
+                correlations_coefficients[(u, v)] = correlation_coefficient
+                return correlation_coefficient
 
     def predict(u, v, mapping):
         u, v = mapping[u], mapping[v]
