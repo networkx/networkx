@@ -105,8 +105,14 @@ networkx = ['tests/*.py']
 "networkx.algorithms.connectivity" = ['tests/*.py']
 "networkx.algorithms.coloring" = ['tests/*.py']
 "networkx.algorithms.minors" = ['tests/*.py']
-"networkx.algorithms.flow" = ['tests/*.py']
-"networkx.algorithms.isomorphism" = ['tests/*.py']
+"networkx.algorithms.flow" = [
+    'tests/*.py',
+    'tests/*.bz2',
+]
+"networkx.algorithms.isomorphism" = [
+    'tests/*.py',
+    'tests/*.*99',
+]
 "networkx.algorithms.link_analysis" = ['tests/*.py']
 "networkx.algorithms.approximation" = ['tests/*.py']
 "networkx.algorithms.operators" = ['tests/*.py']
@@ -114,8 +120,14 @@ networkx = ['tests/*.py']
 "networkx.algorithms.traversal" = ['tests/*.py']
 "networkx.algorithms.tree" = ['tests/*.py']
 "networkx.classes" = ['tests/*.py']
-"networkx.generators" = ['tests/*.py']
-"networkx.drawing" = ['tests/*.py']
+"networkx.generators" = [
+    'tests/*.py',
+    'atlas.dat.gz',
+]
+"networkx.drawing" = [
+    'tests/*.py',
+    'tests/baseline/*png',
+]
 "networkx.linalg" = ['tests/*.py']
 "networkx.readwrite" = ['tests/*.py']
 "networkx.readwrite.json_graph" = ['tests/*.py']
