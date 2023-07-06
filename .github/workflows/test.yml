@@ -22,7 +22,7 @@ jobs:
 
       - name: Install packages
         run: |
-          python -m pip install --upgrade pip wheel setuptools
+          python -m pip install --upgrade pip
           python -m pip install -r requirements/test.txt
           python -m pip install .
           python -m pip list
@@ -46,7 +46,7 @@ jobs:
 
       - name: Install packages
         run: |
-          python -m pip install --upgrade pip wheel setuptools
+          python -m pip install --upgrade pip
           python -m pip install -r requirements/default.txt -r requirements/test.txt
           python -m pip install .
           python -m pip list
@@ -89,7 +89,7 @@ jobs:
       - name: Install packages (Linux)
         if: runner.os == 'Linux'
         run: |
-          pip install --upgrade pip wheel setuptools
+          pip install --upgrade pip
           pip install -r requirements/default.txt -r requirements/test.txt
           pip install -r requirements/extra.txt
           pip install .
@@ -97,7 +97,7 @@ jobs:
       - name: Install packages (macOS)
         if: runner.os == 'macOS'
         run: |
-          pip install --upgrade pip wheel setuptools
+          pip install --upgrade pip
           pip install -r requirements/default.txt -r requirements/test.txt
           pip install --global-option=build_ext --global-option="-I/usr/local/include/" --global-option="-L/usr/local/lib/" pygraphviz
           pip install -r requirements/extra.txt
@@ -107,7 +107,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           echo "C:\Program Files\Graphviz\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          python -m pip install --upgrade pip wheel setuptools
+          python -m pip install --upgrade pip
           python -m pip install -r requirements/default.txt -r requirements/test.txt
           python -m pip install --global-option=build_ext `
                                 --global-option="-IC:\Program Files\Graphviz\include" `
@@ -136,7 +136,7 @@ jobs:
 
       - name: Install packages
         run: |
-          pip install --upgrade pip wheel setuptools
+          pip install --upgrade pip
           pip install --pre -r requirements/default.txt -r requirements/test.txt
           pip install scipy==1.10.1
           pip install .

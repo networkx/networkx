@@ -14,7 +14,7 @@ repos:
     rev: v2.7.1
     hooks:
       - id: prettier
-        files: \.(html|md|yml|yaml)
+        files: \.(html|md|toml|yml|yaml)
         args: [--prose-wrap=preserve]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: v0.0.258
@@ -22,3 +22,10 @@ repos:
       - id: ruff
         args:
           - --fix
+  - repo: local
+    hooks:
+      - id: pyproject.toml
+        name: pyproject.toml
+        language: system
+        entry: python tools/generate_pyproject.toml.py
+        files: "pyproject.toml|requirements/.*\\.txt|tools/.*pyproject.*"
