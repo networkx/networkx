@@ -3,6 +3,8 @@ from functools import partial
 
 import pytest
 
+pytest.importorskip("numpy")
+
 import networkx as nx
 
 
@@ -636,6 +638,3 @@ class TestDirectIndirectCommonNeighbors:
         self.test(
             G, None, [(0, 3, (8.0 / 3.0)), (1, 2, (8.0 / 3.0)), (1, 3, (2.0 / 3.0))]
         )
-
-
-np = pytest.importorskip("numpy")

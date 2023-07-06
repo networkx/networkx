@@ -5,8 +5,6 @@ Link prediction algorithms.
 
 from math import log
 
-import numpy as np
-
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -681,6 +679,8 @@ def direct_indirect_common_neighbors(G, ebunch=None):
            Sci Rep 10, 20137 (2020).
            https://doi.org/10.1038/s41598-020-76799-4
     """
+
+    import numpy as np
 
     # funciton relies on consecutive, integer-indexed nodes
     mapping = dict(zip(G, range(0, sum(1 for _ in G.nodes()))))
