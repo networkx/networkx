@@ -28,6 +28,10 @@ G_array = np.array([
     [0, 0, 0, 0, 0, 0, 0, 18, 0],  # 8
 ], dtype=int)
 
+# Two copies of the graph from the original paper as disconnected components
+G_big_array = np.zeros(np.array(G_array.shape) * 2, dtype=int)
+G_big_array[:G_array.shape[0], :G_array.shape[1]] = G_array
+G_big_array[G_array.shape[0]:, G_array.shape[1]:] = G_array
 
 # fmt: on
 
@@ -123,10 +127,12 @@ greedy_subopt_branching_1b = [
 ]
 
 
-def build_branching(edges):
+def build_branching(edges, double=False):
     G = nx.DiGraph()
     for u, v, weight in edges:
         G.add_edge(u, v, weight=weight)
+        if double:
+            G.add_edge(u + 9, v + 9, weight=weight)
     return G
 
 
@@ -293,6 +299,24 @@ def test_edmonds1_maxarbor():
     x = branchings.maximum_spanning_arborescence(G)
     x_ = build_branching(optimal_arborescence_1)
     assert_equal_branchings(x, x_)
+
+
+def test_edmonds1_minimal_branching():
+    # graph will have something like a minimum arborescence but no spanning one
+    G = nx.from_numpy_array(G_big_array, create_using=nx.DiGraph)
+    B = branchings.minimal_branching(G)
+    edges = [
+        (3, 0, 5),
+        (0, 2, 12),
+        (0, 4, 12),
+        (2, 5, 12),
+        (4, 7, 12),
+        (5, 8, 12),
+        (5, 6, 14),
+        (2, 1, 17),
+    ]
+    B_ = build_branching(edges, double=True)
+    assert_equal_branchings(B, B_)
 
 
 def test_edmonds2_maxbranch():
