@@ -23,7 +23,7 @@ jobs:
 
       - name: Install packages
         run: |
-          pip install --upgrade pip wheel setuptools
+          pip install --upgrade pip
           pip install -r requirements/developer.txt
           pip list
 

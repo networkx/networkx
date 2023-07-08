@@ -228,8 +228,9 @@ def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
     font_size : int (default=12 for nodes, 10 for edges)
         Font size for text labels
 
-    font_color : string (default='k' black)
-        Font color string
+    font_color : color (default='k' black)
+        Font color string. Color can be string or rgb (or rgba) tuple of
+        floats from 0-1.
 
     font_weight : string (default='normal')
         Font weight
@@ -373,7 +374,10 @@ def draw_networkx_nodes(
         Line width of symbol border
 
     edgecolors : [None | scalar | sequence] (default = node_color)
-        Colors of node borders
+        Colors of node borders. Can be a single color or a sequence of colors with the
+        same length as nodelist. Color can be string or rgb (or rgba) tuple of floats
+        from 0-1. If numeric values are specified they will be mapped to colors
+        using the cmap and vmin,vmax parameters. See `~matplotlib.pyplot.scatter` for more details.
 
     label : [None | string]
         Label for legend
@@ -959,8 +963,9 @@ def draw_networkx_labels(
     font_size : int (default=12)
         Font size for text labels
 
-    font_color : string (default='k' black)
-        Font color string
+    font_color : color (default='k' black)
+        Font color string. Color can be string or rgb (or rgba) tuple of
+        floats from 0-1.
 
     font_weight : string (default='normal')
         Font weight
@@ -1087,8 +1092,9 @@ def draw_networkx_edge_labels(
     font_size : int (default=10)
         Font size for text labels
 
-    font_color : string (default='k' black)
-        Font color string
+    font_color : color (default='k' black)
+        Font color string. Color can be string or rgb (or rgba) tuple of
+        floats from 0-1.
 
     font_weight : string (default='normal')
         Font weight
