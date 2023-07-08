@@ -559,17 +559,8 @@ def test_override_dispatch(
                     name=name,
                     graph_name=gname,
                 )
-        if any(arg.kind is arg.VAR_KEYWORD for arg in sig.parameters.values()):
-            # Handle **kwargs in function (which we don't convert)
-            [kwargs_name] = (
-                arg.name
-                for arg in sig.parameters.values()
-                if arg.kind is arg.VAR_KEYWORD
-            )
-            kwargs = bound.arguments.pop(kwargs_name)
-            bound.arguments.update(kwargs)
 
-        result = getattr(backend, name).__call__(**bound.arguments)
+        result = getattr(backend, name).__call__(*bound.args, **bound.kwargs)
 
         if name in {
             "edmonds_karp_core",
