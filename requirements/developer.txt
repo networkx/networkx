@@ -1,2 +1,4 @@
 pre-commit>=2.20
 mypy>=0.990
+certifi>=2023.5.7
+requests>=2.31.0,<3.0.0

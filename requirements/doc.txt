@@ -5,3 +5,5 @@ numpydoc>=1.5
 pillow>=9.2
 nb2plots>=0.6
 texext>=0.6.7
+certifi>=2023.5.7
+requests>=2.31.0,<3.0.0
