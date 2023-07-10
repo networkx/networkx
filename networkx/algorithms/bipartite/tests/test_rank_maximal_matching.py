@@ -1,4 +1,5 @@
 import pytest
+
 import networkx as nx
 import networkx.algorithms.bipartite.rank_maximal_matching as rmm
 
@@ -7,14 +8,14 @@ class TestRankMaximalMatching:
     def test_rank_maximal_matching_empty_graph(self):
         G = nx.Graph()
         M = rmm.rank_maximal_matching(G)
-        assert M == dict()
+        assert M == {}
 
     def test_rank_maximal_matching_no_edges(self):
         G = nx.Graph()
         G.add_nodes_from(["a1"], bipartite=0)
         G.add_nodes_from(["p1"], bipartite=1)
         M = rmm.rank_maximal_matching(G)
-        assert M == dict()
+        assert M == {}
 
     def test_rank_maximal_matching_small_graph(self):
         G = nx.Graph()

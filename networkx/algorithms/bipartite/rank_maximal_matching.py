@@ -94,7 +94,7 @@ def rank_maximal_matching(G, rank="rank", top_nodes=None):
     """
 
     if G.number_of_nodes() == 0 or G.number_of_edges() == 0:
-        return dict()
+        return {}
     graph = nx.Graph(G)
     Gi = nx.Graph()
     Gi.add_nodes_from(G.nodes)
