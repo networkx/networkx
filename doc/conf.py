@@ -50,6 +50,7 @@ sphinx_gallery_conf = {
     "gallery_dirs": "auto_examples",
     "backreferences_dir": "modules/generated",
     "image_scrapers": ("matplotlib",),
+    "plot_gallery": "True",
 }
 # Add pygraphviz png scraper, if available
 try:
@@ -126,6 +127,7 @@ html_theme_options = {
     "collapse_navigation": True,
     "navigation_depth": 2,
     "show_prev_next": False,
+    "announcement": "<p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p>",
     "icon_links": [
         {"name": "Home Page", "url": "https://networkx.org", "icon": "fas fa-home"},
         {
@@ -135,8 +137,9 @@ html_theme_options = {
         },
     ],
     "external_links": [{"name": "Guides", "url": "https://networkx.org/nx-guides/"}],
-    "navbar_end": ["navbar-icon-links", "version"],
-    "page_sidebar_items": ["search-field", "page-toc", "edit-this-page"],
+    "navbar_end": ["theme-switcher", "navbar-icon-links", "version"],
+    "secondary_sidebar_items": ["search-field", "page-toc", "edit-this-page"],
+    "header_links_before_dropdown": 7,
 }
 html_sidebars = {
     "**": ["sidebar-nav-bs", "sidebar-ethical-ads"],
@@ -188,6 +191,7 @@ html_context = {
         "latest": "devel (latest)",
         "stable": "current (stable)",
     },
+    "default_mode": "light",
 }
 
 # Options for LaTeX output
@@ -220,11 +224,11 @@ latex_appendices = ["tutorial"]
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
-    "neps": ("https://numpy.org/neps", None),
-    "matplotlib": ("https://matplotlib.org/stable", None),
-    "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
-    "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
-    "geopandas": ("https://geopandas.org/", None),
+    "neps": ("https://numpy.org/neps/", None),
+    "matplotlib": ("https://matplotlib.org/stable/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
+    "geopandas": ("https://geopandas.org/en/stable/", None),
     "pygraphviz": ("https://pygraphviz.github.io/documentation/stable/", None),
     "sphinx-gallery": ("https://sphinx-gallery.github.io/stable/", None),
     "nx-guides": ("https://networkx.org/nx-guides/", None),

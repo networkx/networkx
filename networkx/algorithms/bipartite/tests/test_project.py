@@ -1,6 +1,8 @@
+import pytest
+
 import networkx as nx
 from networkx.algorithms import bipartite
-from networkx.utils import nodes_equal, edges_equal
+from networkx.utils import edges_equal, nodes_equal
 
 
 class TestBipartiteProject:
@@ -12,6 +14,9 @@ class TestBipartiteProject:
         P = bipartite.projected_graph(G, [0, 2])
         assert nodes_equal(list(P), [0, 2])
         assert edges_equal(list(P.edges()), [(0, 2)])
+        G = nx.MultiGraph([(0, 1)])
+        with pytest.raises(nx.NetworkXError, match="not defined for multigraphs"):
+            bipartite.projected_graph(G, [0])
 
     def test_path_projected_properties_graph(self):
         G = nx.path_graph(4)
@@ -51,6 +56,10 @@ class TestBipartiteProject:
 
     def test_path_weighted_projected_graph(self):
         G = nx.path_graph(4)
+
+        with pytest.raises(nx.NetworkXAlgorithmError):
+            bipartite.weighted_projected_graph(G, [1, 2, 3, 3])
+
         P = bipartite.weighted_projected_graph(G, [1, 3])
         assert nodes_equal(list(P), [1, 3])
         assert edges_equal(list(P.edges()), [(1, 3)])
@@ -59,6 +68,12 @@ class TestBipartiteProject:
         assert nodes_equal(list(P), [0, 2])
         assert edges_equal(list(P.edges()), [(0, 2)])
         P[0][2]["weight"] = 1
+
+    def test_digraph_weighted_projection(self):
+        G = nx.DiGraph([(0, 1), (1, 2), (2, 3), (3, 4)])
+        P = bipartite.overlap_weighted_projected_graph(G, [1, 3])
+        assert nx.get_edge_attributes(P, "weight") == {(1, 3): 1.0}
+        assert len(P) == 2
 
     def test_path_weighted_projected_directed_graph(self):
         G = nx.DiGraph()
@@ -347,14 +362,14 @@ class TestBipartiteWeightedProjection:
         )
         assert nodes_equal(list(G), [0, 2, 4])
         assert edges_equal(
-            list(list(G.edges(data=True))),
+            list(G.edges(data=True)),
             [(0, 2, {"weight": 1}), (2, 4, {"weight": 1})],
         )
 
         G = bipartite.generic_weighted_projected_graph(B, [0, 2, 4])
         assert nodes_equal(list(G), [0, 2, 4])
         assert edges_equal(
-            list(list(G.edges(data=True))),
+            list(G.edges(data=True)),
             [(0, 2, {"weight": 1}), (2, 4, {"weight": 1})],
         )
         B = nx.DiGraph()
@@ -369,7 +384,7 @@ class TestBipartiteWeightedProjection:
         def jaccard(G, u, v):
             unbrs = set(G[u])
             vnbrs = set(G[v])
-            return float(len(unbrs & vnbrs)) / len(unbrs | vnbrs)
+            return len(unbrs & vnbrs) / len(unbrs | vnbrs)
 
         def my_weight(G, u, v, weight="weight"):
             w = 0

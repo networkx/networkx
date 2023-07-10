@@ -1,19 +1,20 @@
 """Base class for MultiDiGraph."""
 from copy import deepcopy
+from functools import cached_property
 
 import networkx as nx
+from networkx import convert
+from networkx.classes.coreviews import MultiAdjacencyView
 from networkx.classes.digraph import DiGraph
 from networkx.classes.multigraph import MultiGraph
-from networkx.classes.coreviews import MultiAdjacencyView
 from networkx.classes.reportviews import (
-    OutMultiEdgeView,
-    InMultiEdgeView,
     DiMultiDegreeView,
-    OutMultiDegreeView,
     InMultiDegreeView,
+    InMultiEdgeView,
+    OutMultiDegreeView,
+    OutMultiEdgeView,
 )
 from networkx.exception import NetworkXError
-import networkx.convert as convert
 
 __all__ = ["MultiDiGraph"]
 
@@ -62,7 +63,6 @@ class MultiDiGraph(MultiGraph, DiGraph):
     Graph
     DiGraph
     MultiGraph
-    OrderedMultiDiGraph
 
     Examples
     --------
@@ -270,9 +270,26 @@ class MultiDiGraph(MultiGraph, DiGraph):
         Class to create a new graph structure in the `to_undirected` method.
         If `None`, a NetworkX class (Graph or MultiGraph) is used.
 
-    Please see :mod:`~networkx.classes.ordered` for examples of
-    creating graph subclasses by overwriting the base class `dict` with
-    a dictionary-like object.
+    **Subclassing Example**
+
+    Create a low memory graph class that effectively disallows edge
+    attributes by using a single attribute dict for all edges.
+    This reduces the memory used, but you lose edge attributes.
+
+    >>> class ThinGraph(nx.Graph):
+    ...     all_edge_dict = {"weight": 1}
+    ...
+    ...     def single_edge_dict(self):
+    ...         return self.all_edge_dict
+    ...
+    ...     edge_attr_dict_factory = single_edge_dict
+    >>> G = ThinGraph()
+    >>> G.add_edge(2, 1)
+    >>> G[2][1]
+    {'weight': 1}
+    >>> G.add_edge(2, 2)
+    >>> G[2][1] is G[2][2]
+    True
     """
 
     # node_dict_factory = dict    # already assigned in Graph
@@ -291,7 +308,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
             an empty graph is created.  The data can be an edge list, or any
             NetworkX graph object.  If the corresponding optional Python
             packages are installed the data can also be a 2D NumPy array, a
-            SciPy sparse matrix, or a PyGraphviz graph.
+            SciPy sparse array, or a PyGraphviz graph.
 
         multigraph_input : bool or None (default None)
             Note: Only used when `incoming_graph_data` is a dict.
@@ -327,7 +344,6 @@ class MultiDiGraph(MultiGraph, DiGraph):
         {'day': 'Friday'}
 
         """
-        self.edge_key_dict_factory = self.edge_key_dict_factory
         # multigraph_input can be None/True/False. So check "is not False"
         if isinstance(incoming_graph_data, dict) and multigraph_input is not False:
             DiGraph.__init__(self)
@@ -345,7 +361,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         else:
             DiGraph.__init__(self, incoming_graph_data, **attr)
 
-    @property
+    @cached_property
     def adj(self):
         """Graph adjacency object holding the neighbors of each node.
 
@@ -364,7 +380,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         """
         return MultiAdjacencyView(self._succ)
 
-    @property
+    @cached_property
     def succ(self):
         """Graph adjacency object holding the successors of each node.
 
@@ -383,7 +399,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         """
         return MultiAdjacencyView(self._succ)
 
-    @property
+    @cached_property
     def pred(self):
         """Graph adjacency object holding the predecessors of each node.
 
@@ -503,7 +519,9 @@ class MultiDiGraph(MultiGraph, DiGraph):
             Remove an edge between nodes u and v.
         key : hashable identifier, optional (default=None)
             Used to distinguish multiple edges between a pair of nodes.
-            If None remove a single (arbitrary) edge between u and v.
+            If None, remove a single edge between u and v. If there are
+            multiple edges, removes the last edge added in terms of
+            insertion order.
 
         Raises
         ------
@@ -528,7 +546,13 @@ class MultiDiGraph(MultiGraph, DiGraph):
         >>> G = nx.MultiDiGraph()
         >>> G.add_edges_from([(1, 2), (1, 2), (1, 2)])  # key_list returned
         [0, 1, 2]
-        >>> G.remove_edge(1, 2)  # remove a single (arbitrary) edge
+
+        When ``key=None`` (the default), edges are removed in the opposite
+        order that they were added:
+
+        >>> G.remove_edge(1, 2)
+        >>> G.edges(keys=True)
+        OutMultiEdgeView([(1, 2, 0), (1, 2, 1)])
 
         For edges with keys
 
@@ -537,7 +561,9 @@ class MultiDiGraph(MultiGraph, DiGraph):
         'first'
         >>> G.add_edge(1, 2, key="second")
         'second'
-        >>> G.remove_edge(1, 2, key="second")
+        >>> G.remove_edge(1, 2, key="first")
+        >>> G.edges(keys=True)
+        OutMultiEdgeView([(1, 2, 'second')])
 
         """
         try:
@@ -558,7 +584,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
             del self._succ[u][v]
             del self._pred[v][u]
 
-    @property
+    @cached_property
     def edges(self):
         """An OutMultiEdgeView of the Graph as G.edges or G.edges().
 
@@ -568,14 +594,14 @@ class MultiDiGraph(MultiGraph, DiGraph):
         as well as edge attribute lookup. When called, it also provides
         an EdgeDataView object which allows control of access to edge
         attributes (but does not provide set-like operations).
-        Hence, `G.edges[u, v, k]['color']` provides the value of the color
-        attribute for edge from `u` to `v` with key `k` while
-        `for (u, v, k, c) in G.edges(data='color', default='red',
-        keys=True):` iterates through all the edges yielding the color
-        attribute with default `'red'` if no color attribute exists.
+        Hence, ``G.edges[u, v, k]['color']`` provides the value of the color
+        attribute for the edge from ``u`` to ``v`` with key ``k`` while
+        ``for (u, v, k, c) in G.edges(data='color', default='red', keys=True):``
+        iterates through all the edges yielding the color attribute with
+        default `'red'` if no color attribute exists.
 
         Edges are returned as tuples with optional data and keys
-        in the order (node, neighbor, key, data). If `keys=True` is not
+        in the order (node, neighbor, key, data). If ``keys=True`` is not
         provided, the tuples will just be (node, neighbor, data), but
         multiple tuples with the same node and neighbor will be
         generated when multiple edges between two nodes exist.
@@ -598,10 +624,10 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         Returns
         -------
-        edges : EdgeView
+        edges : OutMultiEdgeView
             A view of edge attributes, usually it iterates over (u, v)
             (u, v, k) or (u, v, k, d) tuples of edges, but can also be
-            used for attribute lookup as `edges[u, v, k]['foo']`.
+            used for attribute lookup as ``edges[u, v, k]['foo']``.
 
         Notes
         -----
@@ -640,11 +666,15 @@ class MultiDiGraph(MultiGraph, DiGraph):
         return OutMultiEdgeView(self)
 
     # alias out_edges to edges
-    out_edges = edges
+    @cached_property
+    def out_edges(self):
+        return OutMultiEdgeView(self)
 
-    @property
+    out_edges.__doc__ = edges.__doc__
+
+    @cached_property
     def in_edges(self):
-        """An InMultiEdgeView of the Graph as G.in_edges or G.in_edges().
+        """A view of the in edges of the graph as G.in_edges or G.in_edges().
 
         in_edges(self, nbunch=None, data=False, keys=False, default=None)
 
@@ -665,7 +695,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         Returns
         -------
-        in_edges : InMultiEdgeView
+        in_edges : InMultiEdgeView or InMultiEdgeDataView
             A view of edge attributes, usually it iterates over (u, v)
             or (u, v, k) or (u, v, k, d) tuples of edges, but can also be
             used for attribute lookup as `edges[u, v, k]['foo']`.
@@ -676,7 +706,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         """
         return InMultiEdgeView(self)
 
-    @property
+    @cached_property
     def degree(self):
         """A DegreeView for the Graph as G.degree or G.degree().
 
@@ -699,13 +729,10 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         Returns
         -------
-        If a single nodes is requested
-        deg : int
-            Degree of the node
-
-        OR if multiple nodes are requested
-        nd_iter : iterator
-            The iterator returns two-tuples of (node, degree).
+        DiMultiDegreeView or int
+            If multiple nodes are requested (the default), returns a `DiMultiDegreeView`
+            mapping nodes to their degree.
+            If a single node is requested, returns the degree of the node as an integer.
 
         See Also
         --------
@@ -727,7 +754,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         """
         return DiMultiDegreeView(self)
 
-    @property
+    @cached_property
     def in_degree(self):
         """A DegreeView for (node, in_degree) or in_degree for single node.
 
@@ -778,7 +805,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         """
         return InMultiDegreeView(self)
 
-    @property
+    @cached_property
     def out_degree(self):
         """Returns an iterator for (node, out-degree) or out-degree for single node.
 
@@ -933,4 +960,4 @@ class MultiDiGraph(MultiGraph, DiGraph):
                 for u, v, k, d in self.edges(keys=True, data=True)
             )
             return H
-        return nx.graphviews.reverse_view(self)
+        return nx.reverse_view(self)

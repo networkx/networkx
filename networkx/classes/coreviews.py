@@ -2,7 +2,6 @@
 These ``Views`` often restrict element access, with either the entire view or
 layers of nested mappings being read-only.
 """
-import warnings
 from collections.abc import Mapping
 
 __all__ = [
@@ -135,7 +134,7 @@ class UnionAtlas(Mapping):
         self._pred = pred
 
     def __len__(self):
-        return len(self._succ) + len(self._pred)
+        return len(self._succ.keys() | self._pred.keys())
 
     def __iter__(self):
         return iter(set(self._succ.keys()) | set(self._pred.keys()))
@@ -286,25 +285,6 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
             return self._atlas[key]
         raise KeyError(f"Key {key} not found")
 
-    # FIXME should this just be removed? we don't use it, but someone might
-    def copy(self):
-        warnings.warn(
-            (
-                "FilterAtlas.copy is deprecated.\n"
-                "It will be removed in NetworkX 3.0.\n"
-                "Please open an Issue on https://github.com/networkx/networkx/issues\n"
-                "if you use this feature. We think that no one does use it."
-            ),
-            DeprecationWarning,
-        )
-        try:  # check that NODE_OK has attr 'nodes'
-            node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
-        except AttributeError:
-            node_ok_shorter = False
-        if node_ok_shorter:
-            return {u: self._atlas[u] for u in self.NODE_OK.nodes if u in self._atlas}
-        return {u: d for u, d in self._atlas.items() if self.NODE_OK(u)}
-
     def __str__(self):
         return str({nbr: self[nbr] for nbr in self})
 
@@ -338,38 +318,6 @@ class FilterAdjacency(Mapping):  # edgedict
 
             return FilterAtlas(self._atlas[node], new_node_ok)
         raise KeyError(f"Key {node} not found")
-
-    # FIXME should this just be removed? we don't use it, but someone might
-    def copy(self):
-        warnings.warn(
-            (
-                "FilterAdjacency.copy is deprecated.\n"
-                "It will be removed in NetworkX 3.0.\n"
-                "Please open an Issue on https://github.com/networkx/networkx/issues\n"
-                "if you use this feature. We think that no one does use it."
-            ),
-            DeprecationWarning,
-        )
-        try:  # check that NODE_OK has attr 'nodes'
-            node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
-        except AttributeError:
-            node_ok_shorter = False
-        if node_ok_shorter:
-            return {
-                u: {
-                    v: d
-                    for v, d in self._atlas[u].items()
-                    if self.NODE_OK(v)
-                    if self.EDGE_OK(u, v)
-                }
-                for u in self.NODE_OK.nodes
-                if u in self._atlas
-            }
-        return {
-            u: {v: d for v, d in nbrs.items() if self.NODE_OK(v) if self.EDGE_OK(u, v)}
-            for u, nbrs in self._atlas.items()
-            if self.NODE_OK(u)
-        }
 
     def __str__(self):
         return str({nbr: self[nbr] for nbr in self})
@@ -407,33 +355,6 @@ class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
             return FilterAtlas(self._atlas[nbr], new_node_ok)
         raise KeyError(f"Key {nbr} not found")
 
-    # FIXME should this just be removed? we don't use it, but someone might
-    def copy(self):
-        warnings.warn(
-            (
-                "FilterMultiInner.copy is deprecated.\n"
-                "It will be removed in NetworkX 3.0.\n"
-                "Please open an Issue on https://github.com/networkx/networkx/issues\n"
-                "if you use this feature. We think that no one does use it."
-            ),
-            DeprecationWarning,
-        )
-        try:  # check that NODE_OK has attr 'nodes'
-            node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
-        except AttributeError:
-            node_ok_shorter = False
-        if node_ok_shorter:
-            return {
-                v: {k: d for k, d in self._atlas[v].items() if self.EDGE_OK(v, k)}
-                for v in self.NODE_OK.nodes
-                if v in self._atlas
-            }
-        return {
-            v: {k: d for k, d in nbrs.items() if self.EDGE_OK(v, k)}
-            for v, nbrs in self._atlas.items()
-            if self.NODE_OK(v)
-        }
-
 
 class FilterMultiAdjacency(FilterAdjacency):  # multiedgedict
     def __getitem__(self, node):
@@ -444,39 +365,3 @@ class FilterMultiAdjacency(FilterAdjacency):  # multiedgedict
 
             return FilterMultiInner(self._atlas[node], self.NODE_OK, edge_ok)
         raise KeyError(f"Key {node} not found")
-
-    # FIXME should this just be removed? we don't use it, but someone might
-    def copy(self):
-        warnings.warn(
-            (
-                "FilterMultiAdjacency.copy is deprecated.\n"
-                "It will be removed in NetworkX 3.0.\n"
-                "Please open an Issue on https://github.com/networkx/networkx/issues\n"
-                "if you use this feature. We think that no one does use it."
-            ),
-            DeprecationWarning,
-        )
-        try:  # check that NODE_OK has attr 'nodes'
-            node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
-        except AttributeError:
-            node_ok_shorter = False
-        if node_ok_shorter:
-            my_nodes = self.NODE_OK.nodes
-            return {
-                u: {
-                    v: {k: d for k, d in kd.items() if self.EDGE_OK(u, v, k)}
-                    for v, kd in self._atlas[u].items()
-                    if v in my_nodes
-                }
-                for u in my_nodes
-                if u in self._atlas
-            }
-        return {
-            u: {
-                v: {k: d for k, d in kd.items() if self.EDGE_OK(u, v, k)}
-                for v, kd in nbrs.items()
-                if self.NODE_OK(v)
-            }
-            for u, nbrs in self._atlas.items()
-            if self.NODE_OK(u)
-        }

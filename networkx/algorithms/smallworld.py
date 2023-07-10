@@ -15,8 +15,7 @@ For more information, see the Wikipedia article on small-world network [1]_.
 
 """
 import networkx as nx
-from networkx.utils import not_implemented_for
-from networkx.utils import py_random_state
+from networkx.utils import not_implemented_for, py_random_state
 
 __all__ = ["random_reference", "lattice_reference", "sigma", "omega"]
 
@@ -47,6 +46,11 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
     G : graph
         The randomized graph.
 
+    Raises
+    ------
+    NetworkXError
+        If there are fewer than 4 nodes or 2 edges in `G`
+
     Notes
     -----
     The implementation is adapted from the algorithm by Maslov and Sneppen
@@ -59,7 +63,9 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
            Science 296.5569 (2002): 910-913.
     """
     if len(G) < 4:
-        raise nx.NetworkXError("Graph has less than four nodes.")
+        raise nx.NetworkXError("Graph has fewer than four nodes.")
+    if len(G.edges) < 2:
+        raise nx.NetworkXError("Graph has fewer that 2 edges")
 
     from networkx.utils import cumulative_distribution, discrete_sequence
 
@@ -120,10 +126,10 @@ def lattice_reference(G, niter=5, D=None, connectivity=True, seed=None):
     Parameters
     ----------
     G : graph
-        An undirected graph with 4 or more nodes.
+        An undirected graph.
 
     niter : integer (optional, default=1)
-        An edge is rewired approximatively niter times.
+        An edge is rewired approximately niter times.
 
     D : numpy.array (optional, default=None)
         Distance to the diagonal matrix.
@@ -140,6 +146,11 @@ def lattice_reference(G, niter=5, D=None, connectivity=True, seed=None):
     G : graph
         The latticized graph.
 
+    Raises
+    ------
+    NetworkXError
+        If there are fewer than 4 nodes or 2 edges in `G`
+
     Notes
     -----
     The implementation is adapted from the algorithm by Sporns et al. [1]_.
@@ -155,12 +166,15 @@ def lattice_reference(G, niter=5, D=None, connectivity=True, seed=None):
        Science 296.5569 (2002): 910-913.
     """
     import numpy as np
+
     from networkx.utils import cumulative_distribution, discrete_sequence
 
     local_conn = nx.connectivity.local_edge_connectivity
 
     if len(G) < 4:
-        raise nx.NetworkXError("Graph has less than four nodes.")
+        raise nx.NetworkXError("Graph has fewer than four nodes.")
+    if len(G.edges) < 2:
+        raise nx.NetworkXError("Graph has fewer that 2 edges")
     # Instead of choosing uniformly at random from a generated edge list,
     # this algorithm chooses nonuniformly from the set of nodes with
     # probability weighted by degree.

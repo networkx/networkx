@@ -7,6 +7,7 @@ from networkx.utils import not_implemented_for
 __all__ = ["katz_centrality", "katz_centrality_numpy"]
 
 
+@nx._dispatch
 @not_implemented_for("multigraph")
 def katz_centrality(
     G,
@@ -111,8 +112,8 @@ def katz_centrality(
     katz_centrality_numpy
     eigenvector_centrality
     eigenvector_centrality_numpy
-    pagerank
-    hits
+    :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`
+    :func:`~networkx.algorithms.link_analysis.hits_alg.hits`
 
     Notes
     -----
@@ -165,10 +166,10 @@ def katz_centrality(
             ) from err
 
     # make up to max_iter iterations
-    for i in range(max_iter):
+    for _ in range(max_iter):
         xlast = x
         x = dict.fromkeys(xlast, 0)
-        # do the multiplication y^T = Alpha * x^T A - Beta
+        # do the multiplication y^T = Alpha * x^T A + Beta
         for n in x:
             for nbr in G[n]:
                 x[nbr] += xlast[n] * G[n][nbr].get(weight, 1)
@@ -274,8 +275,8 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     katz_centrality
     eigenvector_centrality_numpy
     eigenvector_centrality
-    pagerank
-    hits
+    :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`
+    :func:`~networkx.algorithms.link_analysis.hits_alg.hits`
 
     Notes
     -----
@@ -311,23 +312,19 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     try:
         nodelist = beta.keys()
         if set(nodelist) != set(G):
-            raise nx.NetworkXError(
-                "beta dictionary " "must have a value for every node"
-            )
+            raise nx.NetworkXError("beta dictionary must have a value for every node")
         b = np.array(list(beta.values()), dtype=float)
     except AttributeError:
         nodelist = list(G)
         try:
-            b = np.ones((len(nodelist), 1)) * float(beta)
+            b = np.ones((len(nodelist), 1)) * beta
         except (TypeError, ValueError, AttributeError) as err:
             raise nx.NetworkXError("beta must be a number") from err
 
     A = nx.adjacency_matrix(G, nodelist=nodelist, weight=weight).todense().T
     n = A.shape[0]
-    centrality = np.linalg.solve(np.eye(n, n) - (alpha * A), b)
-    if normalized:
-        norm = np.sign(sum(centrality)) * np.linalg.norm(centrality)
-    else:
-        norm = 1.0
-    centrality = dict(zip(nodelist, map(float, centrality / norm)))
-    return centrality
+    centrality = np.linalg.solve(np.eye(n, n) - (alpha * A), b).squeeze()
+
+    # Normalize: rely on truediv to cast to float
+    norm = np.sign(sum(centrality)) * np.linalg.norm(centrality) if normalized else 1
+    return dict(zip(nodelist, centrality / norm))

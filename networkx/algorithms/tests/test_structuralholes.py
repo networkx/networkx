@@ -1,7 +1,10 @@
 """Unit tests for the :mod:`networkx.algorithms.structuralholes` module."""
 import math
+
 import pytest
+
 import networkx as nx
+from networkx.classes.tests import dispatch_interface
 
 
 class TestStructuralHoles:
@@ -16,7 +19,7 @@ class TestStructuralHoles:
 
     """
 
-    def setup(self):
+    def setup_method(self):
         self.D = nx.DiGraph()
         self.D.add_edges_from([(0, 1), (0, 2), (1, 0), (2, 1)])
         self.D_weights = {(0, 1): 2, (0, 2): 2, (1, 0): 1, (2, 1): 1}
@@ -49,8 +52,11 @@ class TestStructuralHoles:
             ("G", "C"): 10,
         }
 
-    def test_constraint_directed(self):
-        constraint = nx.constraint(self.D)
+    # This additionally tests the @nx._dispatch mechanism, treating
+    # nx.mutual_weight as if it were a re-implementation from another package
+    @pytest.mark.parametrize("wrapper", [lambda x: x, dispatch_interface.convert])
+    def test_constraint_directed(self, wrapper):
+        constraint = nx.constraint(wrapper(self.D))
         assert constraint[0] == pytest.approx(1.003, abs=1e-3)
         assert constraint[1] == pytest.approx(1.003, abs=1e-3)
         assert constraint[2] == pytest.approx(1.389, abs=1e-3)

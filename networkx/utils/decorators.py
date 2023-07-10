@@ -1,21 +1,21 @@
+import bz2
+import collections
+import gzip
+import inspect
+import itertools
+import re
 from collections import defaultdict
-from os.path import splitext
 from contextlib import contextmanager
+from os.path import splitext
 from pathlib import Path
 
 import networkx as nx
-from networkx.utils import create_random_state, create_py_random_state
-
-import inspect, itertools, collections
-
-import re, gzip, bz2
+from networkx.utils import create_py_random_state, create_random_state
 
 __all__ = [
     "not_implemented_for",
     "open_file",
     "nodes_or_number",
-    "preserve_random_state",
-    "random_state",
     "np_random_state",
     "py_random_state",
     "argmap",
@@ -75,8 +75,8 @@ def not_implemented_for(*graph_types):
         )
 
     # 3-way logic: True if "directed" input, False if "undirected" input, else None
-    dval = ("directed" in graph_types) or not ("undirected" in graph_types) and None
-    mval = ("multigraph" in graph_types) or not ("graph" in graph_types) and None
+    dval = ("directed" in graph_types) or "undirected" not in graph_types and None
+    mval = ("multigraph" in graph_types) or "graph" not in graph_types and None
     errmsg = f"not implemented for {' '.join(graph_types)} type"
 
     def _not_implemented_for(g):
@@ -97,7 +97,7 @@ fopeners = {
     ".gzip": gzip.open,
     ".bz2": bz2.BZ2File,
 }
-_dispatch_dict = defaultdict(lambda: open, **fopeners)  # type: ignore
+_dispatch_dict = defaultdict(lambda: open, **fopeners)
 
 
 def open_file(path_arg, mode="r"):
@@ -245,8 +245,7 @@ def nodes_or_number(which_args):
             nodes = tuple(n)
         else:
             if n < 0:
-                msg = f"Negative number of nodes not valid: {n}"
-                raise nx.NetworkXError(msg)
+                raise nx.NetworkXError(f"Negative number of nodes not valid: {n}")
         return (n, nodes)
 
     try:
@@ -255,62 +254,6 @@ def nodes_or_number(which_args):
         iter_wa = (which_args,)
 
     return argmap(_nodes_or_number, *iter_wa)
-
-
-def preserve_random_state(func):
-    """Decorator to preserve the numpy.random state during a function.
-
-    .. deprecated:: 2.6
-        This is deprecated and will be removed in NetworkX v3.0.
-
-    Parameters
-    ----------
-    func : function
-        function around which to preserve the random state.
-
-    Returns
-    -------
-    wrapper : function
-        Function which wraps the input function by saving the state before
-        calling the function and restoring the function afterward.
-
-    Examples
-    --------
-    Decorate functions like this::
-
-        @preserve_random_state
-        def do_random_stuff(x, y):
-            return x + y * numpy.random.random()
-
-    Notes
-    -----
-    If numpy.random is not importable, the state is not saved or restored.
-    """
-    import warnings
-
-    msg = "preserve_random_state is deprecated and will be removed in 3.0."
-    warnings.warn(msg, DeprecationWarning)
-
-    try:
-        import numpy as np
-
-        @contextmanager
-        def save_random_state():
-            state = np.random.get_state()
-            try:
-                yield
-            finally:
-                np.random.set_state(state)
-
-        def wrapper(*args, **kwargs):
-            with save_random_state():
-                np.random.seed(1234567890)
-                return func(*args, **kwargs)
-
-        wrapper.__name__ = func.__name__
-        return wrapper
-    except ImportError:
-        return func
 
 
 def np_random_state(random_state_argument):
@@ -355,27 +298,6 @@ def np_random_state(random_state_argument):
     py_random_state
     """
     return argmap(create_random_state, random_state_argument)
-
-
-def random_state(random_state_argument):
-    """Decorator to generate a `numpy.random.RandomState` instance.
-
-    .. deprecated:: 2.7
-
-       This function is a deprecated alias for `np_random_state` and will be
-       removed in version 3.0. Use np_random_state instead.
-    """
-    import warnings
-
-    warnings.warn(
-        (
-            "`random_state` is a deprecated alias for `np_random_state`\n"
-            "and will be removed in version 3.0. Use `np_random_state` instead."
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return np_random_state(random_state_argument)
 
 
 def py_random_state(random_state_argument):

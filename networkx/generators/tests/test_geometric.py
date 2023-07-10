@@ -1,6 +1,8 @@
-from itertools import combinations
 import math
 import random
+from itertools import combinations
+
+import pytest
 
 import networkx as nx
 
@@ -99,6 +101,7 @@ class TestSoftRandomGeometricGraph:
         generator.
 
         """
+
         # Use the L1 metric.
         def dist(x, y):
             return sum(abs(a - b) for a, b in zip(x, y))
@@ -135,7 +138,7 @@ class TestSoftRandomGeometricGraph:
         assert len(SRGG.edges()) <= len(RGG.edges())
 
     def test_p_dist_zero(self):
-        """Tests if p_dict = 0 returns disconencted graph with 0 edges"""
+        """Tests if p_dict = 0 returns disconnected graph with 0 edges"""
 
         def p_dist(dist):
             return 0
@@ -206,7 +209,7 @@ class TestGeographicalThresholdGraph:
                 assert not join(G, u, v, 10, -2, l1dist)
 
     def test_p_dist_zero(self):
-        """Tests if p_dict = 0 returns disconencted graph with 0 edges"""
+        """Tests if p_dict = 0 returns disconnected graph with 0 edges"""
 
         def p_dist(dist):
             return 0
@@ -285,6 +288,7 @@ class TestThresholdedRandomGeometricGraph:
         generator.
 
         """
+
         # Use the L1 metric.
         def dist(x, y):
             return sum(abs(a - b) for a, b in zip(x, y))
@@ -318,3 +322,10 @@ class TestThresholdedRandomGeometricGraph:
             # Adjacent vertices must be within the given distance.
             if v in G[u]:
                 assert (G.nodes[u]["weight"] + G.nodes[v]["weight"]) >= 0.1
+
+
+def test_geometric_edges_raises_no_pos():
+    G = nx.path_graph(3)
+    msg = "All nodes in `G` must have a 'pos' attribute"
+    with pytest.raises(nx.NetworkXError, match=msg):
+        nx.geometric_edges(G, radius=1)

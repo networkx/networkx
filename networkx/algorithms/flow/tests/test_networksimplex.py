@@ -1,6 +1,10 @@
-import pytest
-import networkx as nx
+import bz2
 import os
+import pickle
+
+import pytest
+
+import networkx as nx
 
 
 @pytest.fixture
@@ -34,8 +38,8 @@ def simple_no_flow_graph():
 def get_flowcost_from_flowdict(G, flowDict):
     """Returns flow cost calculated from flow dictionary"""
     flowCost = 0
-    for u in flowDict.keys():
-        for v in flowDict[u].keys():
+    for u in flowDict:
+        for v in flowDict[u]:
             flowCost += flowDict[u][v] * G[u][v]["weight"]
     return flowCost
 
@@ -138,7 +142,8 @@ def test_google_or_tools_example2():
 
 def test_large():
     fname = os.path.join(os.path.dirname(__file__), "netgen-2.gpickle.bz2")
-    G = nx.read_gpickle(fname)
+    with bz2.BZ2File(fname, "rb") as f:
+        G = pickle.load(f)
     flowCost, flowDict = nx.network_simplex(G)
     assert 6749969302 == flowCost
     assert 6749969302 == nx.cost_of_flow(G, flowDict)

@@ -16,11 +16,11 @@ class TestGeneratorThreshold:
     def test_threshold_sequence_graph_test(self):
         G = nx.star_graph(10)
         assert nxt.is_threshold_graph(G)
-        assert nxt.is_threshold_sequence(list(d for n, d in G.degree()))
+        assert nxt.is_threshold_sequence([d for n, d in G.degree()])
 
         G = nx.complete_graph(10)
         assert nxt.is_threshold_graph(G)
-        assert nxt.is_threshold_sequence(list(d for n, d in G.degree()))
+        assert nxt.is_threshold_sequence([d for n, d in G.degree()])
 
         deg = [3, 2, 2, 1, 1, 1]
         assert not nxt.is_threshold_sequence(deg)
@@ -189,7 +189,7 @@ class TestGeneratorThreshold:
         assert wseq == [s * 0.1 for s in [5, 5, 4, 6, 3, 3, 3, 7, 2, 8, 1, 9, 0]]
 
         wseq = nxt.creation_sequence_to_weights("ddidiiidididid")
-        ws = [s / float(12) for s in [6, 6, 5, 7, 4, 4, 4, 8, 3, 9, 2, 10, 1, 11]]
+        ws = [s / 12 for s in [6, 6, 5, 7, 4, 4, 4, 8, 3, 9, 2, 10, 1, 11]]
         assert sum(abs(c - d) for c, d in zip(wseq, ws)) < 1e-14
 
     def test_finding_routines(self):

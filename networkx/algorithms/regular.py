@@ -5,6 +5,7 @@ from networkx.utils import not_implemented_for
 __all__ = ["is_regular", "is_k_regular", "k_factor"]
 
 
+@nx._dispatch
 def is_regular(G):
     """Determines whether the graph ``G`` is a regular graph.
 
@@ -21,6 +22,12 @@ def is_regular(G):
     bool
         Whether the given graph or digraph is regular.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 4), (4, 1)])
+    >>> nx.is_regular(G)
+    True
+
     """
     n1 = nx.utils.arbitrary_element(G)
     if not G.is_directed():
@@ -34,6 +41,7 @@ def is_regular(G):
         return in_regular and out_regular
 
 
+@nx._dispatch
 @not_implemented_for("directed")
 def is_k_regular(G, k):
     """Determines whether the graph ``G`` is a k-regular graph.
@@ -48,6 +56,12 @@ def is_k_regular(G, k):
     -------
     bool
         Whether the given graph is k-regular.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (2, 3), (3, 4), (4, 1)])
+    >>> nx.is_k_regular(G, k=3)
+    False
 
     """
     return all(d == k for n, d in G.degree)
@@ -78,6 +92,13 @@ def k_factor(G, k, matching_weight="weight"):
     G2 : NetworkX graph
         A k-factor of G
 
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (2, 3), (3, 4), (4, 1)])
+    >>> G2 = nx.k_factor(G, k=1)
+    >>> G2.edges()
+    EdgeView([(1, 2), (3, 4)])
+
     References
     ----------
     .. [1] "An algorithm for computing simple k-factors.",
@@ -85,8 +106,7 @@ def k_factor(G, k, matching_weight="weight"):
        Information processing letters, 2009.
     """
 
-    from networkx.algorithms.matching import max_weight_matching
-    from networkx.algorithms.matching import is_perfect_matching
+    from networkx.algorithms.matching import is_perfect_matching, max_weight_matching
 
     class LargeKGadget:
         def __init__(self, k, degree, node, g):
@@ -102,7 +122,7 @@ def k_factor(G, k, matching_weight="weight"):
             adj_view = self.g[self.original]
             neighbors = list(adj_view.keys())
             edge_attrs = list(adj_view.values())
-            for (outer, neighbor, edge_attrs) in zip(
+            for outer, neighbor, edge_attrs in zip(
                 self.outer_vertices, neighbors, edge_attrs
             ):
                 self.g.add_edge(outer, neighbor, **edge_attrs)
@@ -135,7 +155,7 @@ def k_factor(G, k, matching_weight="weight"):
 
         def replace_node(self):
             adj_view = self.g[self.original]
-            for (outer, inner, (neighbor, edge_attrs)) in zip(
+            for outer, inner, (neighbor, edge_attrs) in zip(
                 self.outer_vertices, self.inner_vertices, list(adj_view.items())
             ):
                 self.g.add_edge(outer, inner)

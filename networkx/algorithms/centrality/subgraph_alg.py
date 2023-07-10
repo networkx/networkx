@@ -84,7 +84,6 @@ def subgraph_centrality_exp(G):
     """
     # alternative implementation that calculates the matrix exponential
     import scipy as sp
-    import scipy.linalg  # call as sp.linalg
 
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)
@@ -255,7 +254,6 @@ def communicability_betweenness_centrality(G):
     """
     import numpy as np
     import scipy as sp
-    import scipy.linalg  # call as sp.linalg
 
     nodelist = list(G)  # ordering of nodes in matrix
     n = len(nodelist)
@@ -277,7 +275,7 @@ def communicability_betweenness_centrality(G):
         B[i, :] = 0
         B[:, i] = 0
         B -= np.diag(np.diag(B))
-        cbc[v] = float(B.sum())
+        cbc[v] = B.sum()
         # put row and col back
         A[i, :] = row
         A[:, i] = col

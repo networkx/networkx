@@ -4,7 +4,6 @@ import networkx as nx
 from networkx.utils import not_implemented_for
 
 __all__ = [
-    "extrema_bounding",
     "eccentricity",
     "diameter",
     "radius",
@@ -15,76 +14,7 @@ __all__ = [
 ]
 
 
-def extrema_bounding(G, compute="diameter"):
-    """Compute requested extreme distance metric of undirected graph G
-
-    .. deprecated:: 2.8
-
-       extrema_bounding is deprecated and will be removed in NetworkX 3.0.
-       Use the corresponding distance measure with the `usebounds=True` option
-       instead.
-
-    Computation is based on smart lower and upper bounds, and in practice
-    linear in the number of nodes, rather than quadratic (except for some
-    border cases such as complete graphs or circle shaped graphs).
-
-    Parameters
-    ----------
-    G : NetworkX graph
-       An undirected graph
-
-    compute : string denoting the requesting metric
-       "diameter" for the maximal eccentricity value,
-       "radius" for the minimal eccentricity value,
-       "periphery" for the set of nodes with eccentricity equal to the diameter,
-       "center" for the set of nodes with eccentricity equal to the radius,
-       "eccentricities" for the maximum distance from each node to all other nodes in G
-
-    Returns
-    -------
-    value : value of the requested metric
-       int for "diameter" and "radius" or
-       list of nodes for "center" and "periphery" or
-       dictionary of eccentricity values keyed by node for "eccentricities"
-
-    Raises
-    ------
-    NetworkXError
-        If the graph consists of multiple components
-    ValueError
-        If `compute` is not one of "diameter", "radius", "periphery", "center", or "eccentricities".
-    Notes
-    -----
-    This algorithm was proposed in the following papers:
-
-    F.W. Takes and W.A. Kosters, Determining the Diameter of Small World
-    Networks, in Proceedings of the 20th ACM International Conference on
-    Information and Knowledge Management (CIKM 2011), pp. 1191-1196, 2011.
-    doi: https://doi.org/10.1145/2063576.2063748
-
-    F.W. Takes and W.A. Kosters, Computing the Eccentricity Distribution of
-    Large Graphs, Algorithms 6(1): 100-118, 2013.
-    doi: https://doi.org/10.3390/a6010100
-
-    M. Borassi, P. Crescenzi, M. Habib, W.A. Kosters, A. Marino and F.W. Takes,
-    Fast Graph Diameter and Radius BFS-Based Computation in (Weakly Connected)
-    Real-World Graphs, Theoretical Computer Science 586: 59-80, 2015.
-    doi: https://doi.org/10.1016/j.tcs.2015.02.033
-    """
-    import warnings
-
-    msg = "extrema_bounding is deprecated and will be removed in networkx 3.0\n"
-    # NOTE: _extrema_bounding does input checking, so it is skipped here
-    if compute in {"diameter", "radius", "periphery", "center"}:
-        msg += f"Use nx.{compute}(G, usebounds=True) instead."
-    if compute == "eccentricities":
-        msg += f"Use nx.eccentricity(G) instead."
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-
-    return _extrema_bounding(G, compute=compute)
-
-
-def _extrema_bounding(G, compute="diameter"):
+def _extrema_bounding(G, compute="diameter", weight=None):
     """Compute requested extreme distance metric of undirected graph G
 
     Computation is based on smart lower and upper bounds, and in practice
@@ -103,6 +33,26 @@ def _extrema_bounding(G, compute="diameter"):
        "center" for the set of nodes with eccentricity equal to the radius,
        "eccentricities" for the maximum distance from each node to all other nodes in G
 
+    weight : string, function, or None
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number.
+
+        If this is None, every edge has weight/distance/cost 1.
+
+        Weights stored as floating point values can lead to small round-off
+        errors in distances. Use integer weights to avoid this.
+
+        Weights should be positive, since they are distances.
+
     Returns
     -------
     value : value of the requested metric
@@ -116,25 +66,26 @@ def _extrema_bounding(G, compute="diameter"):
         If the graph consists of multiple components
     ValueError
         If `compute` is not one of "diameter", "radius", "periphery", "center", or "eccentricities".
+
     Notes
     -----
-    This algorithm was proposed in the following papers:
+    This algorithm was proposed in [1]_ and discussed further in [2]_ and [3]_.
 
-    F.W. Takes and W.A. Kosters, Determining the Diameter of Small World
-    Networks, in Proceedings of the 20th ACM International Conference on
-    Information and Knowledge Management (CIKM 2011), pp. 1191-1196, 2011.
-    doi: https://doi.org/10.1145/2063576.2063748
-
-    F.W. Takes and W.A. Kosters, Computing the Eccentricity Distribution of
-    Large Graphs, Algorithms 6(1): 100-118, 2013.
-    doi: https://doi.org/10.3390/a6010100
-
-    M. Borassi, P. Crescenzi, M. Habib, W.A. Kosters, A. Marino and F.W. Takes,
-    Fast Graph Diameter and Radius BFS-Based Computation in (Weakly Connected)
-    Real-World Graphs, Theoretical Computer Science 586: 59-80, 2015.
-    doi: https://doi.org/10.1016/j.tcs.2015.02.033
+    References
+    ----------
+    .. [1] F. W. Takes, W. A. Kosters,
+       "Determining the diameter of small world networks."
+       Proceedings of the 20th ACM international conference on Information and knowledge management, 2011
+       https://dl.acm.org/doi/abs/10.1145/2063576.2063748
+    .. [2] F. W. Takes, W. A. Kosters,
+       "Computing the Eccentricity Distribution of Large Graphs."
+       Algorithms, 2013
+       https://www.mdpi.com/1999-4893/6/1/100
+    .. [3] M. Borassi, P. Crescenzi, M. Habib, W. A. Kosters, A. Marino, F. W. Takes,
+       "Fast diameter and radius BFS-based computation in (weakly connected) real-world graphs: With an application to the six degrees of separation games. "
+       Theoretical Computer Science, 2015
+       https://www.sciencedirect.com/science/article/pii/S0304397515001644
     """
-
     # init variables
     degrees = dict(G.degree())  # start with the highest degree node
     minlowernode = max(degrees, key=degrees.get)
@@ -161,7 +112,8 @@ def _extrema_bounding(G, compute="diameter"):
         high = not high
 
         # get distances from/to current node and derive eccentricity
-        dist = dict(nx.single_source_shortest_path_length(G, current))
+        dist = nx.shortest_path_length(G, source=current, weight=weight)
+
         if len(dist) != N:
             msg = "Cannot compute metric because graph is not connected."
             raise nx.NetworkXError(msg)
@@ -270,20 +222,20 @@ def _extrema_bounding(G, compute="diameter"):
     # return the correct value of the requested metric
     if compute == "diameter":
         return maxlower
-    elif compute == "radius":
+    if compute == "radius":
         return minupper
-    elif compute == "periphery":
+    if compute == "periphery":
         p = [v for v in G if ecc_lower[v] == maxlower]
         return p
-    elif compute == "center":
+    if compute == "center":
         c = [v for v in G if ecc_upper[v] == minupper]
         return c
-    elif compute == "eccentricities":
+    if compute == "eccentricities":
         return ecc_lower
     return None
 
 
-def eccentricity(G, v=None, sp=None):
+def eccentricity(G, v=None, sp=None, weight=None):
     """Returns the eccentricity of nodes in G.
 
     The eccentricity of a node v is the maximum distance from v to
@@ -300,10 +252,40 @@ def eccentricity(G, v=None, sp=None):
     sp : dict of dicts, optional
        All pairs shortest path lengths as a dictionary of dictionaries
 
+    weight : string, function, or None (default=None)
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number.
+
+        If this is None, every edge has weight/distance/cost 1.
+
+        Weights stored as floating point values can lead to small round-off
+        errors in distances. Use integer weights to avoid this.
+
+        Weights should be positive, since they are distances.
+
     Returns
     -------
     ecc : dictionary
        A dictionary of eccentricity values keyed by node.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> dict(nx.eccentricity(G))
+    {1: 2, 2: 3, 3: 2, 4: 2, 5: 3}
+
+    >>> dict(nx.eccentricity(G, v=[1, 5]))  # This returns the eccentrity of node 1 & 5
+    {1: 2, 5: 3}
+
     """
     #    if v is None:                # none, use entire graph
     #        nodes=G.nodes()
@@ -312,11 +294,11 @@ def eccentricity(G, v=None, sp=None):
     #    else:                      # assume v is a container of nodes
     #        nodes=v
     order = G.order()
-
     e = {}
     for n in G.nbunch_iter(v):
         if sp is None:
-            length = nx.single_source_shortest_path_length(G, n)
+            length = nx.shortest_path_length(G, source=n, weight=weight)
+
             L = len(length)
         else:
             try:
@@ -338,11 +320,10 @@ def eccentricity(G, v=None, sp=None):
 
     if v in G:
         return e[v]  # return single value
-    else:
-        return e
+    return e
 
 
-def diameter(G, e=None, usebounds=False):
+def diameter(G, e=None, usebounds=False, weight=None):
     """Returns the diameter of the graph G.
 
     The diameter is the maximum eccentricity.
@@ -355,23 +336,49 @@ def diameter(G, e=None, usebounds=False):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
+    weight : string, function, or None
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number.
+
+        If this is None, every edge has weight/distance/cost 1.
+
+        Weights stored as floating point values can lead to small round-off
+        errors in distances. Use integer weights to avoid this.
+
+        Weights should be positive, since they are distances.
+
     Returns
     -------
     d : integer
        Diameter of graph
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> nx.diameter(G)
+    3
 
     See Also
     --------
     eccentricity
     """
     if usebounds is True and e is None and not G.is_directed():
-        return _extrema_bounding(G, compute="diameter")
+        return _extrema_bounding(G, compute="diameter", weight=weight)
     if e is None:
-        e = eccentricity(G)
+        e = eccentricity(G, weight=weight)
     return max(e.values())
 
 
-def periphery(G, e=None, usebounds=False):
+def periphery(G, e=None, usebounds=False, weight=None):
     """Returns the periphery of the graph G.
 
     The periphery is the set of nodes with eccentricity equal to the diameter.
@@ -384,10 +391,36 @@ def periphery(G, e=None, usebounds=False):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
+    weight : string, function, or None
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number.
+
+        If this is None, every edge has weight/distance/cost 1.
+
+        Weights stored as floating point values can lead to small round-off
+        errors in distances. Use integer weights to avoid this.
+
+        Weights should be positive, since they are distances.
+
     Returns
     -------
     p : list
        List of nodes in periphery
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> nx.periphery(G)
+    [2, 5]
 
     See Also
     --------
@@ -395,15 +428,15 @@ def periphery(G, e=None, usebounds=False):
     center
     """
     if usebounds is True and e is None and not G.is_directed():
-        return _extrema_bounding(G, compute="periphery")
+        return _extrema_bounding(G, compute="periphery", weight=weight)
     if e is None:
-        e = eccentricity(G)
+        e = eccentricity(G, weight=weight)
     diameter = max(e.values())
     p = [v for v in e if e[v] == diameter]
     return p
 
 
-def radius(G, e=None, usebounds=False):
+def radius(G, e=None, usebounds=False, weight=None):
     """Returns the radius of the graph G.
 
     The radius is the minimum eccentricity.
@@ -416,19 +449,46 @@ def radius(G, e=None, usebounds=False):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
+    weight : string, function, or None
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number.
+
+        If this is None, every edge has weight/distance/cost 1.
+
+        Weights stored as floating point values can lead to small round-off
+        errors in distances. Use integer weights to avoid this.
+
+        Weights should be positive, since they are distances.
+
     Returns
     -------
     r : integer
        Radius of graph
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> nx.radius(G)
+    2
+
     """
     if usebounds is True and e is None and not G.is_directed():
-        return _extrema_bounding(G, compute="radius")
+        return _extrema_bounding(G, compute="radius", weight=weight)
     if e is None:
-        e = eccentricity(G)
+        e = eccentricity(G, weight=weight)
     return min(e.values())
 
 
-def center(G, e=None, usebounds=False):
+def center(G, e=None, usebounds=False, weight=None):
     """Returns the center of the graph G.
 
     The center is the set of nodes with eccentricity equal to radius.
@@ -441,10 +501,36 @@ def center(G, e=None, usebounds=False):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
+    weight : string, function, or None
+        If this is a string, then edge weights will be accessed via the
+        edge attribute with this key (that is, the weight of the edge
+        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+        such edge attribute exists, the weight of the edge is assumed to
+        be one.
+
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number.
+
+        If this is None, every edge has weight/distance/cost 1.
+
+        Weights stored as floating point values can lead to small round-off
+        errors in distances. Use integer weights to avoid this.
+
+        Weights should be positive, since they are distances.
+
     Returns
     -------
     c : list
        List of nodes in center
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> list(nx.center(G))
+    [1, 3, 4]
 
     See Also
     --------
@@ -452,9 +538,9 @@ def center(G, e=None, usebounds=False):
     periphery
     """
     if usebounds is True and e is None and not G.is_directed():
-        return _extrema_bounding(G, compute="center")
+        return _extrema_bounding(G, compute="center", weight=weight)
     if e is None:
-        e = eccentricity(G)
+        e = eccentricity(G, weight=weight)
     radius = min(e.values())
     p = [v for v in e if e[v] == radius]
     return p
@@ -502,6 +588,12 @@ def barycenter(G, weight=None, attr=None, sp=None):
         lengths for any pairs.
     ValueError
         If `sp` and `weight` are both given.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> nx.barycenter(G)
+    [1, 3, 4]
 
     See Also
     --------
@@ -581,20 +673,34 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     rd : float
        Value of effective resistance distance
 
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> nx.resistance_distance(G, 1, 3)
+    0.625
+
     Notes
     -----
-    Overview discussion:
-    * https://en.wikipedia.org/wiki/Resistance_distance
-    * http://mathworld.wolfram.com/ResistanceDistance.html
+    Overviews are provided in [1]_ and [2]_. Additional details on computational
+    methods, proofs of properties, and corresponding MATLAB codes are provided
+    in [3]_.
 
-    Additional details:
-    Vaya Sapobi Samui Vos, “Methods for determining the effective resistance,” M.S.,
-    Mathematisch Instituut, Universiteit Leiden, Leiden, Netherlands, 2016
-    Available: `Link to thesis <https://www.universiteitleiden.nl/binaries/content/assets/science/mi/scripties/master/vos_vaya_master.pdf>`_
+    References
+    ----------
+    .. [1] Wikipedia
+       "Resistance distance."
+       https://en.wikipedia.org/wiki/Resistance_distance
+    .. [2] E. W. Weisstein
+       "Resistance Distance."
+       MathWorld--A Wolfram Web Resource
+       https://mathworld.wolfram.com/ResistanceDistance.html
+    .. [3] V. S. S. Vos,
+       "Methods for determining the effective resistance."
+       Mestrado, Mathematisch Instituut Universiteit Leiden, 2016
+       https://www.universiteitleiden.nl/binaries/content/assets/science/mi/scripties/master/vos_vaya_master.pdf
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     if not nx.is_connected(G):
         msg = "Graph G must be strongly connected."
@@ -614,15 +720,15 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
 
     if invert_weight and weight is not None:
         if G.is_multigraph():
-            for (u, v, k, d) in G.edges(keys=True, data=True):
+            for u, v, k, d in G.edges(keys=True, data=True):
                 d[weight] = 1 / d[weight]
         else:
-            for (u, v, d) in G.edges(data=True):
+            for u, v, d in G.edges(data=True):
                 d[weight] = 1 / d[weight]
     # Replace with collapsing topology or approximated zero?
 
     # Using determinants to compute the effective resistance is more memory
-    # efficent than directly calculating the psuedo-inverse
+    # efficient than directly calculating the pseudo-inverse
     L = nx.laplacian_matrix(G, node_list, weight=weight).asformat("csc")
     indices = list(range(L.shape[0]))
     # w/ nodeA removed
@@ -635,24 +741,24 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     # Factorize Laplacian submatrixes and extract diagonals
     # Order the diagonals to minimize the likelihood over overflows
     # during computing the determinant
-    lu_a = sp.sparse.linalg.splu(L_a, options=dict(SymmetricMode=True))
+    lu_a = sp.sparse.linalg.splu(L_a, options={"SymmetricMode": True})
     LdiagA = lu_a.U.diagonal()
-    LdiagA_s = np.product(np.sign(LdiagA)) * np.product(lu_a.L.diagonal())
+    LdiagA_s = np.prod(np.sign(LdiagA)) * np.prod(lu_a.L.diagonal())
     LdiagA_s *= (-1) ** _count_lu_permutations(lu_a.perm_r)
     LdiagA_s *= (-1) ** _count_lu_permutations(lu_a.perm_c)
     LdiagA = np.absolute(LdiagA)
     LdiagA = np.sort(LdiagA)
 
-    lu_ab = sp.sparse.linalg.splu(L_ab, options=dict(SymmetricMode=True))
+    lu_ab = sp.sparse.linalg.splu(L_ab, options={"SymmetricMode": True})
     LdiagAB = lu_ab.U.diagonal()
-    LdiagAB_s = np.product(np.sign(LdiagAB)) * np.product(lu_ab.L.diagonal())
+    LdiagAB_s = np.prod(np.sign(LdiagAB)) * np.prod(lu_ab.L.diagonal())
     LdiagAB_s *= (-1) ** _count_lu_permutations(lu_ab.perm_r)
     LdiagAB_s *= (-1) ** _count_lu_permutations(lu_ab.perm_c)
     LdiagAB = np.absolute(LdiagAB)
     LdiagAB = np.sort(LdiagAB)
 
     # Calculate the ratio of determinant, rd = det(L_ab)/det(L_a)
-    Ldet = np.product(np.divide(np.append(LdiagAB, [1]), LdiagA))
+    Ldet = np.prod(np.divide(np.append(LdiagAB, [1]), LdiagA))
     rd = Ldet * LdiagAB_s / LdiagA_s
 
     return rd

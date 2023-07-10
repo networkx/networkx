@@ -14,7 +14,7 @@ from itertools import islice
 
 import networkx as nx
 from networkx.exception import NetworkXError
-from networkx.utils import open_file, not_implemented_for
+from networkx.utils import not_implemented_for, open_file
 
 __all__ = ["from_graph6_bytes", "read_graph6", "to_graph6_bytes", "write_graph6"]
 
@@ -121,7 +121,7 @@ def from_graph6_bytes(bytes_in):
 
     G = nx.Graph()
     G.add_nodes_from(range(n))
-    for (i, j), b in zip([(i, j) for j in range(1, n) for i in range(j)], bits()):
+    for (i, j), b in zip(((i, j) for j in range(1, n) for i in range(j)), bits()):
         if b:
             G.add_edge(i, j)
 
@@ -206,7 +206,7 @@ def read_graph6(path):
     You can read a graph6 file by giving the path to the file::
 
         >>> import tempfile
-        >>> with tempfile.NamedTemporaryFile() as f:
+        >>> with tempfile.NamedTemporaryFile(delete=False) as f:
         ...     _ = f.write(b">>graph6<<A_\\n")
         ...     _ = f.seek(0)
         ...     G = nx.read_graph6(f.name)
@@ -279,7 +279,7 @@ def write_graph6(G, path, nodes=None, header=True):
     You can write a graph6 file by giving the path to a file::
 
         >>> import tempfile
-        >>> with tempfile.NamedTemporaryFile() as f:
+        >>> with tempfile.NamedTemporaryFile(delete=False) as f:
         ...     nx.write_graph6(nx.path_graph(2), f.name)
         ...     _ = f.seek(0)
         ...     print(f.read())

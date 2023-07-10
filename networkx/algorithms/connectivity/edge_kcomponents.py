@@ -8,12 +8,12 @@ A k-edge-connected subgraph (k-edge-subgraph) is a maximal set of nodes in G,
 such that the subgraph of G defined by the nodes has an edge-connectivity at
 least k.
 """
-import networkx as nx
-from networkx.utils import arbitrary_element
-from networkx.utils import not_implemented_for
-from networkx.algorithms import bridges
-from functools import partial
 import itertools as it
+from functools import partial
+
+import networkx as nx
+from networkx.algorithms import bridges
+from networkx.utils import arbitrary_element, not_implemented_for
 
 __all__ = [
     "k_edge_components",
@@ -239,7 +239,7 @@ def bridge_components(G):
 class EdgeComponentAuxGraph:
     r"""A simple algorithm to find all k-edge-connected components in a graph.
 
-    Constructing the AuxillaryGraph (which may take some time) allows for the
+    Constructing the auxiliary graph (which may take some time) allows for the
     k-edge-ccs to be found in linear time for arbitrary k.
 
     Notes
@@ -288,7 +288,7 @@ class EdgeComponentAuxGraph:
     >>> sorted(map(sorted, aux_graph.k_edge_components(k=4)))
     [[0], [1], [2], [3], [4], [5], [6], [7]]
 
-    The auxiliary graph is primarilly used for k-edge-ccs but it
+    The auxiliary graph is primarily used for k-edge-ccs but it
     can also speed up the queries of k-edge-subgraphs by refining the
     search space.
 

@@ -1,9 +1,14 @@
-import networkx as nx
-from networkx.algorithms.approximation import treewidth_min_degree
-from networkx.algorithms.approximation import treewidth_min_fill_in
-from networkx.algorithms.approximation.treewidth import min_fill_in_heuristic
-from networkx.algorithms.approximation.treewidth import MinDegreeHeuristic
 import itertools
+
+import networkx as nx
+from networkx.algorithms.approximation import (
+    treewidth_min_degree,
+    treewidth_min_fill_in,
+)
+from networkx.algorithms.approximation.treewidth import (
+    MinDegreeHeuristic,
+    min_fill_in_heuristic,
+)
 
 
 def is_tree_decomp(graph, decomp):
@@ -17,7 +22,7 @@ def is_tree_decomp(graph, decomp):
         assert appear_once
 
     # Check if each connected pair of nodes are at least once together in a bag
-    for (x, y) in graph.edges():
+    for x, y in graph.edges():
         appear_together = False
         for bag in decomp.nodes():
             if x in bag and y in bag:
@@ -127,12 +132,15 @@ class TestTreewidthMinDegree:
         _, _ = treewidth_min_degree(G)
 
     def test_two_component_graph(self):
-        """Test empty graph"""
         G = nx.Graph()
         G.add_node(1)
         G.add_node(2)
         treewidth, _ = treewidth_min_degree(G)
         assert treewidth == 0
+
+    def test_not_sortable_nodes(self):
+        G = nx.Graph([(0, "a")])
+        treewidth_min_degree(G)
 
     def test_heuristic_first_steps(self):
         """Test first steps of min_degree heuristic"""
@@ -232,12 +240,15 @@ class TestTreewidthMinFillIn:
         _, _ = treewidth_min_fill_in(G)
 
     def test_two_component_graph(self):
-        """Test empty graph"""
         G = nx.Graph()
         G.add_node(1)
         G.add_node(2)
         treewidth, _ = treewidth_min_fill_in(G)
         assert treewidth == 0
+
+    def test_not_sortable_nodes(self):
+        G = nx.Graph([(0, "a")])
+        treewidth_min_fill_in(G)
 
     def test_heuristic_first_steps(self):
         """Test first steps of min_fill_in heuristic"""

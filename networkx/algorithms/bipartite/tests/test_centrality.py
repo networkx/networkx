@@ -1,4 +1,5 @@
 import pytest
+
 import networkx as nx
 from networkx.algorithms import bipartite
 
@@ -50,9 +51,25 @@ class TestBipartiteCentrality:
         G.add_node(0)
         G.add_node(1)
         c = bipartite.closeness_centrality(G, [0])
-        assert c == {1: 0.0}
+        assert c == {0: 0.0, 1: 0.0}
         c = bipartite.closeness_centrality(G, [1])
-        assert c == {1: 0.0}
+        assert c == {0: 0.0, 1: 0.0}
+
+    def test_bipartite_closeness_centrality_unconnected(self):
+        G = nx.complete_bipartite_graph(3, 3)
+        G.add_edge(6, 7)
+        c = bipartite.closeness_centrality(G, [0, 2, 4, 6], normalized=False)
+        answer = {
+            0: 10.0 / 7,
+            2: 10.0 / 7,
+            4: 10.0 / 7,
+            6: 10.0,
+            1: 10.0 / 7,
+            3: 10.0 / 7,
+            5: 10.0 / 7,
+            7: 10.0,
+        }
+        assert c == answer
 
     def test_davis_degree_centrality(self):
         G = self.davis

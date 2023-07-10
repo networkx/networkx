@@ -64,6 +64,7 @@ def dominating_set(G, start_with=None):
     return dominating_set
 
 
+@nx._dispatch
 def is_dominating_set(G, nbunch):
     """Checks if `nbunch` is a dominating set for `G`.
 

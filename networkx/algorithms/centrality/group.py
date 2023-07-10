@@ -2,13 +2,12 @@
 from copy import deepcopy
 
 import networkx as nx
-from networkx.utils.decorators import not_implemented_for
 from networkx.algorithms.centrality.betweenness import (
-    _single_source_shortest_path_basic,
-    _single_source_dijkstra_path_basic,
     _accumulate_endpoints,
+    _single_source_dijkstra_path_basic,
+    _single_source_shortest_path_basic,
 )
-
+from networkx.utils.decorators import not_implemented_for
 
 __all__ = [
     "group_betweenness_centrality",
@@ -194,8 +193,7 @@ def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=F
         GBC.append(GBC_group)
     if list_of_groups:
         return GBC
-    else:
-        return GBC[0]
+    return GBC[0]
 
 
 def _group_preprocessing(G, set_v, weight):
@@ -209,7 +207,7 @@ def _group_preprocessing(G, set_v, weight):
         else:  # use Dijkstra's algorithm
             S, P, sigma[s], D[s] = _single_source_dijkstra_path_basic(G, s, weight)
         betweenness, delta[s] = _accumulate_endpoints(betweenness, S, P, sigma[s], s)
-        for i in delta[s].keys():  # add the paths from s to i and rescale sigma
+        for i in delta[s]:  # add the paths from s to i and rescale sigma
             if s != i:
                 delta[s][i] += 1
             if weight is not None:
@@ -339,8 +337,8 @@ def prominent_group(
        "Fast algorithm for successive computation of group betweenness centrality."
        https://journals.aps.org/pre/pdf/10.1103/PhysRevE.76.056709
     """
-    import pandas as pd
     import numpy as np
+    import pandas as pd
 
     if C is not None:
         C = set(C)
@@ -416,7 +414,7 @@ def _dfbnb(G, k, DF_tree, max_GBC, root, D, max_group, nodes, greedy):
     if len(DF_tree.nodes[root]["GM"]) == k and DF_tree.nodes[root]["GBC"] > max_GBC:
         return DF_tree.nodes[root]["GBC"], DF_tree, DF_tree.nodes[root]["GM"]
     # stopping condition - if the size of group members equal to k or there are less than
-    # k - |GM| in the candidate list or the heuristic function plus the GBC is bellow the
+    # k - |GM| in the candidate list or the heuristic function plus the GBC is below the
     # maximal GBC found then prune
     if (
         len(DF_tree.nodes[root]["GM"]) == k
@@ -464,7 +462,7 @@ def _heuristic(k, root, DF_tree, D, nodes, greedy):
     node_m = DF_tree.number_of_nodes() + 2
     added_node = DF_tree.nodes[root]["CL"][0]
 
-    # adding the plus nude
+    # adding the plus node
     DF_tree.add_nodes_from([(node_p, deepcopy(DF_tree.nodes[root]))])
     DF_tree.nodes[node_p]["GM"].append(added_node)
     DF_tree.nodes[node_p]["GBC"] += DF_tree.nodes[node_p]["cont"][added_node]
@@ -509,14 +507,14 @@ def _heuristic(k, root, DF_tree, D, nodes, greedy):
                 DF_tree.nodes[node_p]["betweenness"][x][y] -= (
                     root_node["betweenness"][added_node][y] * dvxy
                 )
-    CL = [
+
+    DF_tree.nodes[node_p]["CL"] = [
         node
         for _, node in sorted(
             zip(np.diag(DF_tree.nodes[node_p]["betweenness"]), nodes), reverse=True
         )
+        if node not in DF_tree.nodes[node_p]["GM"]
     ]
-    [CL.remove(m) for m in CL if m in DF_tree.nodes[node_p]["GM"]]
-    DF_tree.nodes[node_p]["CL"] = CL
     DF_tree.nodes[node_p]["cont"] = dict(
         zip(nodes, np.diag(DF_tree.nodes[node_p]["betweenness"]))
     )
@@ -684,7 +682,7 @@ def group_degree_centrality(G, S):
        Journal of Mathematical Sociology. 23(3): 181-201. 1999.
        http://www.analytictech.com/borgatti/group_centrality.htm
     """
-    centrality = len(set().union(*list(set(G.neighbors(i)) for i in S)) - set(S))
+    centrality = len(set().union(*[set(G.neighbors(i)) for i in S]) - set(S))
     centrality /= len(G.nodes()) - len(S)
     return centrality
 

@@ -38,7 +38,7 @@ def betweenness_centrality_parallel(G, processes=None):
     """Parallel betweenness centrality  function"""
     p = Pool(processes=processes)
     node_divisor = len(p._pool) * 4
-    node_chunks = list(chunks(G.nodes(), int(G.order() / node_divisor)))
+    node_chunks = list(chunks(G.nodes(), G.order() // node_divisor))
     num_chunks = len(node_chunks)
     bt_sc = p.starmap(
         nx.betweenness_centrality_subset,
@@ -65,7 +65,7 @@ G_ws = nx.connected_watts_strogatz_graph(1000, 4, 0.1)
 for G in [G_ba, G_er, G_ws]:
     print("")
     print("Computing betweenness centrality for:")
-    print(nx.info(G))
+    print(G)
     print("\tParallel version")
     start = time.time()
     bt = betweenness_centrality_parallel(G)

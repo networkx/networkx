@@ -1,11 +1,10 @@
 """Asynchronous Fluid Communities algorithm for community detection."""
 
 from collections import Counter
-from networkx.exception import NetworkXError
+
 from networkx.algorithms.components import is_connected
-from networkx.utils import groups
-from networkx.utils import not_implemented_for
-from networkx.utils import py_random_state
+from networkx.exception import NetworkXError
+from networkx.utils import groups, not_implemented_for, py_random_state
 
 __all__ = ["asyn_fluidc"]
 
@@ -80,7 +79,7 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
     communities = {n: i for i, n in enumerate(vertices[:k])}
     density = {}
     com_to_numvertices = {}
-    for vertex in communities.keys():
+    for vertex in communities:
         com_to_numvertices[communities[vertex]] = 1
         density[communities[vertex]] = max_density
     # Set up control variables and start iterating

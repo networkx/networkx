@@ -36,7 +36,7 @@ def communicability(G):
        Communicability between all pairs of nodes in G  using spectral
        decomposition.
     communicability_betweenness_centrality:
-       Communicability betweeness centrality for each node in G.
+       Communicability betweenness centrality for each node in G.
 
     Notes
     -----
@@ -116,7 +116,7 @@ def communicability_exp(G):
     communicability:
        Communicability between pairs of nodes in G.
     communicability_betweenness_centrality:
-       Communicability betweeness centrality for each node in G.
+       Communicability betweenness centrality for each node in G.
 
     Notes
     -----
@@ -144,7 +144,6 @@ def communicability_exp(G):
     >>> c = nx.communicability_exp(G)
     """
     import scipy as sp
-    import scipy.linalg  # call as sp.linalg
 
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)

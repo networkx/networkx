@@ -1,10 +1,10 @@
 """ Functions related to graph covers."""
 
-import networkx as nx
-from networkx.utils import not_implemented_for, arbitrary_element
 from functools import partial
 from itertools import chain
 
+import networkx as nx
+from networkx.utils import arbitrary_element, not_implemented_for
 
 __all__ = ["min_edge_cover", "is_edge_cover"]
 
@@ -48,6 +48,12 @@ def min_edge_cover(G, matching_algorithm=None):
         for each edge. If a bipartite method is used to compute the matching,
         the returned set contains both the 2-tuples `(u, v)` and `(v, u)`
         for each edge of a minimum edge cover.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)])
+    >>> sorted(nx.min_edge_cover(G))
+    [(2, 1), (3, 0)]
 
     Notes
     -----
@@ -118,6 +124,13 @@ def is_edge_cover(G, cover):
     -------
     bool
         Whether the set of edges is a valid edge cover of the graph.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)])
+    >>> cover = {(2, 1), (3, 0)}
+    >>> nx.is_edge_cover(G, cover)
+    True
 
     Notes
     -----

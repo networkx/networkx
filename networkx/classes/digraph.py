@@ -1,20 +1,70 @@
 """Base class for directed graphs."""
 from copy import deepcopy
+from functools import cached_property
 
 import networkx as nx
-from networkx.classes.graph import Graph
+from networkx import convert
 from networkx.classes.coreviews import AdjacencyView
+from networkx.classes.graph import Graph
 from networkx.classes.reportviews import (
-    OutEdgeView,
-    InEdgeView,
     DiDegreeView,
     InDegreeView,
+    InEdgeView,
     OutDegreeView,
+    OutEdgeView,
 )
 from networkx.exception import NetworkXError
-import networkx.convert as convert
 
 __all__ = ["DiGraph"]
+
+
+class _CachedPropertyResetterAdjAndSucc:
+    """Data Descriptor class that syncs and resets cached properties adj and succ
+
+    The cached properties `adj` and `succ` are reset whenever `_adj` or `_succ`
+    are set to new objects. In addition, the attributes `_succ` and `_adj`
+    are synced so these two names point to the same object.
+
+    This object sits on a class and ensures that any instance of that
+    class clears its cached properties "succ" and "adj" whenever the
+    underlying instance attributes "_succ" or "_adj" are set to a new object.
+    It only affects the set process of the obj._adj and obj._succ attribute.
+    All get/del operations act as they normally would.
+
+    For info on Data Descriptors see: https://docs.python.org/3/howto/descriptor.html
+    """
+
+    def __set__(self, obj, value):
+        od = obj.__dict__
+        od["_adj"] = value
+        od["_succ"] = value
+        # reset cached properties
+        if "adj" in od:
+            del od["adj"]
+        if "succ" in od:
+            del od["succ"]
+
+
+class _CachedPropertyResetterPred:
+    """Data Descriptor class for _pred that resets ``pred`` cached_property when needed
+
+    This assumes that the ``cached_property`` ``G.pred`` should be reset whenever
+    ``G._pred`` is set to a new value.
+
+    This object sits on a class and ensures that any instance of that
+    class clears its cached property "pred" whenever the underlying
+    instance attribute "_pred" is set to a new object. It only affects
+    the set process of the obj._pred attribute. All get/del operations
+    act as they normally would.
+
+    For info on Data Descriptors see: https://docs.python.org/3/howto/descriptor.html
+    """
+
+    def __set__(self, obj, value):
+        od = obj.__dict__
+        od["_pred"] = value
+        if "pred" in od:
+            del od["pred"]
 
 
 class DiGraph(Graph):
@@ -49,7 +99,6 @@ class DiGraph(Graph):
     Graph
     MultiGraph
     MultiDiGraph
-    OrderedDiGraph
 
     Examples
     --------
@@ -258,12 +307,11 @@ class DiGraph(Graph):
     >>> G.add_edge(2, 2)
     >>> G[2][1] is G[2][2]
     True
-
-
-    Please see :mod:`~networkx.classes.ordered` for more examples of
-    creating graph subclasses by overwriting the base class `dict` with
-    a dictionary-like object.
     """
+
+    _adj = _CachedPropertyResetterAdjAndSucc()  # type: ignore[assignment]
+    _succ = _adj  # type: ignore[has-type]
+    _pred = _CachedPropertyResetterPred()
 
     def __init__(self, incoming_graph_data=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
@@ -275,7 +323,7 @@ class DiGraph(Graph):
             graph is created.  The data can be an edge list, or any
             NetworkX graph object.  If the corresponding optional Python
             packages are installed the data can also be a 2D NumPy array, a
-            SciPy sparse matrix, or a PyGraphviz graph.
+            SciPy sparse array, or a PyGraphviz graph.
 
         attr : keyword arguments, optional (default= no attributes)
             Attributes to add to graph as key=value pairs.
@@ -298,21 +346,14 @@ class DiGraph(Graph):
         {'day': 'Friday'}
 
         """
-        self.graph_attr_dict_factory = self.graph_attr_dict_factory
-        self.node_dict_factory = self.node_dict_factory
-        self.node_attr_dict_factory = self.node_attr_dict_factory
-        self.adjlist_outer_dict_factory = self.adjlist_outer_dict_factory
-        self.adjlist_inner_dict_factory = self.adjlist_inner_dict_factory
-        self.edge_attr_dict_factory = self.edge_attr_dict_factory
-
         self.graph = self.graph_attr_dict_factory()  # dictionary for graph attributes
         self._node = self.node_dict_factory()  # dictionary for node attr
         # We store two adjacency lists:
         # the predecessors of node n are stored in the dict self._pred
         # the successors of node n are stored in the dict self._succ=self._adj
-        self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict
+        self._adj = self.adjlist_outer_dict_factory()  # empty adjacency dict successor
         self._pred = self.adjlist_outer_dict_factory()  # predecessor
-        self._succ = self._adj  # successor
+        # Note: self._succ = self._adj  # successor
 
         # attempt to load graph with data
         if incoming_graph_data is not None:
@@ -320,7 +361,7 @@ class DiGraph(Graph):
         # load graph attributes (must be after convert)
         self.graph.update(attr)
 
-    @property
+    @cached_property
     def adj(self):
         """Graph adjacency object holding the neighbors of each node.
 
@@ -339,7 +380,7 @@ class DiGraph(Graph):
         """
         return AdjacencyView(self._succ)
 
-    @property
+    @cached_property
     def succ(self):
         """Graph adjacency object holding the successors of each node.
 
@@ -360,7 +401,7 @@ class DiGraph(Graph):
         """
         return AdjacencyView(self._succ)
 
-    @property
+    @cached_property
     def pred(self):
         """Graph adjacency object holding the predecessors of each node.
 
@@ -444,6 +485,16 @@ class DiGraph(Graph):
         --------
         add_node
 
+        Notes
+        -----
+        When adding nodes from an iterator over the graph you are changing,
+        a `RuntimeError` can be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
+        object, e.g. by using `list(iterator_of_nodes)`, and pass this
+        object to `G.add_nodes_from`.
+
         Examples
         --------
         >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -468,6 +519,13 @@ class DiGraph(Graph):
         >>> H.nodes[1]["size"]
         11
 
+        Evaluate an iterator over a graph if using it to modify the same graph
+
+        >>> G = nx.DiGraph([(0, 1), (1, 2), (3, 4)])
+        >>> # wrong way - will raise RuntimeError
+        >>> # G.add_nodes_from(n + 1 for n in G.nodes)
+        >>> # correct way
+        >>> G.add_nodes_from(list(n + 1 for n in G.nodes))
         """
         for n in nodes_for_adding:
             try:
@@ -541,6 +599,16 @@ class DiGraph(Graph):
         --------
         remove_node
 
+        Notes
+        -----
+        When removing nodes from an iterator over the graph you are changing,
+        a `RuntimeError` will be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
+        object, e.g. by using `list(iterator_of_nodes)`, and pass this
+        object to `G.remove_nodes_from`.
+
         Examples
         --------
         >>> G = nx.path_graph(3)  # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -551,6 +619,13 @@ class DiGraph(Graph):
         >>> list(G.nodes)
         []
 
+        Evaluate an iterator over a graph if using it to modify the same graph
+
+        >>> G = nx.DiGraph([(0, 1), (1, 2), (3, 4)])
+        >>> # this command will fail, as the graph's dict is modified during iteration
+        >>> # G.remove_nodes_from(n for n in G.nodes if n < 2)
+        >>> # this command will work, since the dictionary underlying graph is not modified
+        >>> G.remove_nodes_from(list(n for n in G.nodes if n < 2))
         """
         for n in nodes:
             try:
@@ -661,6 +736,14 @@ class DiGraph(Graph):
         Edge attributes specified in an ebunch take precedence over
         attributes specified via keyword arguments.
 
+        When adding edges from an iterator over the graph you are changing,
+        a `RuntimeError` can be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
+        object, e.g. by using `list(iterator_of_edges)`, and pass this
+        object to `G.add_edges_from`.
+
         Examples
         --------
         >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -672,6 +755,15 @@ class DiGraph(Graph):
 
         >>> G.add_edges_from([(1, 2), (2, 3)], weight=3)
         >>> G.add_edges_from([(3, 4), (1, 4)], label="WN2898")
+
+        Evaluate an iterator over a graph if using it to modify the same graph
+
+        >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
+        >>> # Grow graph by one new node, adding edges to all existing nodes.
+        >>> # wrong way - will raise RuntimeError
+        >>> # G.add_edges_from(((5, n) for n in G.nodes))
+        >>> # right way - note that there will be no self-edge for node 5
+        >>> G.add_edges_from(list((5, n) for n in G.nodes))
         """
         for e in ebunch_to_add:
             ne = len(e)
@@ -836,7 +928,7 @@ class DiGraph(Graph):
         except KeyError as err:
             raise NetworkXError(f"The node {n} is not in the digraph.") from err
 
-    @property
+    @cached_property
     def edges(self):
         """An OutEdgeView of the DiGraph as G.edges or G.edges().
 
@@ -900,11 +992,15 @@ class DiGraph(Graph):
         return OutEdgeView(self)
 
     # alias out_edges to edges
-    out_edges = edges
+    @cached_property
+    def out_edges(self):
+        return OutEdgeView(self)
 
-    @property
+    out_edges.__doc__ = edges.__doc__
+
+    @cached_property
     def in_edges(self):
-        """An InEdgeView of the Graph as G.in_edges or G.in_edges().
+        """A view of the in edges of the graph as G.in_edges or G.in_edges().
 
         in_edges(self, nbunch=None, data=False, default=None):
 
@@ -922,10 +1018,19 @@ class DiGraph(Graph):
 
         Returns
         -------
-        in_edges : InEdgeView
+        in_edges : InEdgeView or InEdgeDataView
             A view of edge attributes, usually it iterates over (u, v)
             or (u, v, d) tuples of edges, but can also be used for
             attribute lookup as `edges[u, v]['foo']`.
+
+        Examples
+        --------
+        >>> G = nx.DiGraph()
+        >>> G.add_edge(1, 2, color='blue')
+        >>> G.in_edges()
+        InEdgeView([(1, 2)])
+        >>> G.in_edges(nbunch=2)
+        InEdgeDataView([(1, 2)])
 
         See Also
         --------
@@ -933,7 +1038,7 @@ class DiGraph(Graph):
         """
         return InEdgeView(self)
 
-    @property
+    @cached_property
     def degree(self):
         """A DegreeView for the Graph as G.degree or G.degree().
 
@@ -956,13 +1061,10 @@ class DiGraph(Graph):
 
         Returns
         -------
-        If a single node is requested
-        deg : int
-            Degree of the node
-
-        OR if multiple nodes are requested
-        nd_iter : iterator
-            The iterator returns two-tuples of (node, degree).
+        DiDegreeView or int
+            If multiple nodes are requested (the default), returns a `DiDegreeView`
+            mapping nodes to their degree.
+            If a single node is requested, returns the degree of the node as an integer.
 
         See Also
         --------
@@ -980,7 +1082,7 @@ class DiGraph(Graph):
         """
         return DiDegreeView(self)
 
-    @property
+    @cached_property
     def in_degree(self):
         """An InDegreeView for (node, in_degree) or in_degree for single node.
 
@@ -1027,7 +1129,7 @@ class DiGraph(Graph):
         """
         return InDegreeView(self)
 
-    @property
+    @cached_property
     def out_degree(self):
         """An OutDegreeView for (node, out_degree)
 
@@ -1218,4 +1320,4 @@ class DiGraph(Graph):
             H.add_nodes_from((n, deepcopy(d)) for n, d in self.nodes.items())
             H.add_edges_from((v, u, deepcopy(d)) for u, v, d in self.edges(data=True))
             return H
-        return nx.graphviews.reverse_view(self)
+        return nx.reverse_view(self)

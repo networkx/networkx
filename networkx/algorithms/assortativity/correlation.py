@@ -150,7 +150,6 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
        Edge direction and the structure of networks, PNAS 107, 10815-20 (2010).
     """
     import scipy as sp
-    import scipy.stats  # call as sp.stats
 
     xy = node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
     x, y = zip(*xy)
@@ -285,7 +284,7 @@ def _numeric_ac(M, mapping):
     import numpy as np
 
     if M.sum() != 1.0:
-        M = M / float(M.sum())
+        M = M / M.sum()
     x = np.array(list(mapping.keys()))
     y = x  # x and y have the same support
     idx = list(mapping.values())

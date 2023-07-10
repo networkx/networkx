@@ -1,7 +1,7 @@
 Install
 =======
 
-NetworkX requires Python 3.8, 3.9, or 3.10.  If you do not already
+NetworkX requires Python 3.9, 3.10, or 3.11.  If you do not already
 have a Python environment configured on your computer, please see the
 instructions for installing the full `scientific Python stack
 <https://scipy.org/install.html>`_.
@@ -78,7 +78,7 @@ Extra packages
 --------------
 
 .. note::
-   Some optional packages (e.g., `gdal`) may require compiling
+   Some optional packages may require compiling
    C or C++ code.  If you have difficulty installing these packages
    with `pip`, please consult the homepages of those packages.
 
@@ -89,8 +89,6 @@ version requirements.
 - `PyGraphviz <http://pygraphviz.github.io/>`_ and
   `pydot <https://github.com/erocarrera/pydot>`_ provide graph drawing
   and graph layout algorithms via `GraphViz <http://graphviz.org/>`_.
-- `PyYAML <http://pyyaml.org/>`_ provides YAML format reading and writing.
-- `gdal <http://www.gdal.org/>`_ provides shapefile format reading and writing.
 - `lxml <http://lxml.de/>`_ used for GraphML XML format.
 
 To install ``networkx`` and extra packages, do::
@@ -99,7 +97,7 @@ To install ``networkx`` and extra packages, do::
 
 To explicitly install all optional packages, do::
 
-    $ pip install pygraphviz pydot pyyaml gdal lxml
+    $ pip install pygraphviz pydot lxml
 
 Or, install any optional package (e.g., ``pygraphviz``) individually::
 

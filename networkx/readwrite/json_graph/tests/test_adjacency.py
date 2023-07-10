@@ -1,5 +1,7 @@
 import json
+
 import pytest
+
 import networkx as nx
 from networkx.readwrite.json_graph import adjacency_data, adjacency_graph
 
@@ -8,7 +10,7 @@ class TestAdjacency:
     def test_graph(self):
         G = nx.path_graph(4)
         H = adjacency_graph(adjacency_data(G))
-        nx.is_isomorphic(G, H)
+        assert nx.is_isomorphic(G, H)
 
     def test_graph_attributes(self):
         G = nx.path_graph(4)
@@ -34,7 +36,7 @@ class TestAdjacency:
         nx.add_path(G, [1, 2, 3])
         H = adjacency_graph(adjacency_data(G))
         assert H.is_directed()
-        nx.is_isomorphic(G, H)
+        assert nx.is_isomorphic(G, H)
 
     def test_multidigraph(self):
         G = nx.MultiDiGraph()
@@ -48,11 +50,11 @@ class TestAdjacency:
         G.add_edge(1, 2, key="first")
         G.add_edge(1, 2, key="second", color="blue")
         H = adjacency_graph(adjacency_data(G))
-        nx.is_isomorphic(G, H)
+        assert nx.is_isomorphic(G, H)
         assert H[1][2]["second"]["color"] == "blue"
 
     def test_exception(self):
         with pytest.raises(nx.NetworkXError):
             G = nx.MultiDiGraph()
-            attrs = dict(id="node", key="node")
+            attrs = {"id": "node", "key": "node"}
             adjacency_data(G, attrs)

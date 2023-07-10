@@ -1,8 +1,5 @@
 """Provides functions for computing minors of a graph."""
-from itertools import chain
-from itertools import combinations
-from itertools import permutations
-from itertools import product
+from itertools import chain, combinations, permutations, product
 
 import networkx as nx
 from networkx import density
@@ -274,13 +271,12 @@ def quotient_graph(
     [(0, 1), (1, 2)]
 
     Partitions can be represented in various ways:
-    ::
 
-        (0) a list/tuple/set of block lists/tuples/sets
-        (1) a dict with block labels as keys and blocks lists/tuples/sets as values
-        (2) a dict with block lists/tuples/sets as keys and block labels as values
-        (3) a function from nodes in the original iterable to block labels
-        (4) an equivalence relation function on the target iterable
+    0. a list/tuple/set of block lists/tuples/sets
+    1. a dict with block labels as keys and blocks lists/tuples/sets as values
+    2. a dict with block lists/tuples/sets as keys and block labels as values
+    3. a function from nodes in the original iterable to block labels
+    4. an equivalence relation function on the target iterable
 
     As `quotient_graph` is designed to accept partitions represented as (0), (1) or
     (4) only, the `equivalence_classes` function can be used to get the partitions
@@ -312,7 +308,7 @@ def quotient_graph(
     # If the partition is a dict, it is assumed to be one where the keys are
     # user-defined block labels, and values are block lists, tuples or sets.
     if isinstance(partition, dict):
-        partition = [block for block in partition.values()]
+        partition = list(partition.values())
 
     # If the user provided partition as a collection of sets. Then we
     # need to check if partition covers all of G nodes. If the answer
@@ -348,9 +344,12 @@ def _quotient_graph(
 
         def node_data(b):
             S = G.subgraph(b)
-            return dict(
-                graph=S, nnodes=len(S), nedges=S.number_of_edges(), density=density(S)
-            )
+            return {
+                "graph": S,
+                "nnodes": len(S),
+                "nedges": S.number_of_edges(),
+                "density": density(S),
+            }
 
     # Each block of the partition becomes a node in the quotient graph.
     partition = [frozenset(b) for b in partition]
@@ -509,7 +508,7 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
     v_data = H.nodes[v]
     H.remove_node(v)
 
-    for (prev_w, prev_x, d) in edges_to_remap:
+    for prev_w, prev_x, d in edges_to_remap:
         w = prev_w if prev_w != v else u
         x = prev_x if prev_x != v else u
 

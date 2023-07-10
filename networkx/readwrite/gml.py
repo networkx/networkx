@@ -27,18 +27,18 @@ For additional documentation on the GML file format, please see the
 Several example graphs in GML format may be found on Mark Newman's
 `Network data page <http://www-personal.umich.edu/~mejn/netdata/>`_.
 """
-from io import StringIO
+import html.entities as htmlentitydefs
+import re
+import warnings
 from ast import literal_eval
 from collections import defaultdict
 from enum import Enum
+from io import StringIO
 from typing import Any, NamedTuple
+
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import open_file
-
-import warnings
-import re
-import html.entities as htmlentitydefs
 
 __all__ = ["read_gml", "parse_gml", "generate_gml", "write_gml"]
 
@@ -363,6 +363,11 @@ def parse_gml_lines(lines, label, destringizer):
                         value = destringizer(value)
                     except ValueError:
                         pass
+                # Special handling for empty lists and tuples
+                if value == "()":
+                    value = ()
+                if value == "[]":
+                    value = []
                 curr_token = next(tokens)
             elif category == Pattern.DICT_START:
                 curr_token, value = parse_dict(curr_token)
@@ -381,7 +386,7 @@ def parse_gml_lines(lines, label, destringizer):
                     except Exception:
                         msg = (
                             "an int, float, string, '[' or string"
-                            + " convertable ASCII value for node id or label"
+                            + " convertible ASCII value for node id or label"
                         )
                         unexpected(curr_token, msg)
                 # Special handling for nan and infinity.  Since the gml language
@@ -658,7 +663,7 @@ def generate_gml(G, stringizer=None):
         label "1"
       ]
     ]
-    >>> G = nx.OrderedMultiGraph([("a", "b"), ("a", "b")])
+    >>> G = nx.MultiGraph([("a", "b"), ("a", "b")])
     >>> print("\n".join(nx.generate_gml(G)))
     graph [
       multigraph 1
@@ -728,12 +733,9 @@ def generate_gml(G, stringizer=None):
                 for key, value in value.items():
                     yield from stringize(key, value, (), next_indent)
                 yield indent + "]"
-            elif (
-                isinstance(value, (list, tuple))
-                and key != "label"
-                and value
-                and not in_list
-            ):
+            elif isinstance(value, (list, tuple)) and key != "label" and not in_list:
+                if len(value) == 0:
+                    yield indent + key + " " + f'"{value!r}"'
                 if len(value) == 1:
                     yield indent + key + " " + f'"{LIST_START_VALUE}"'
                 for val in value:

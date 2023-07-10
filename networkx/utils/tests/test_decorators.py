@@ -1,18 +1,17 @@
-import tempfile
 import os
 import pathlib
 import random
+import tempfile
 
 import pytest
 
 import networkx as nx
-from networkx.utils.decorators import open_file, not_implemented_for
 from networkx.utils.decorators import (
-    preserve_random_state,
-    py_random_state,
-    np_random_state,
-    random_state,
     argmap,
+    not_implemented_for,
+    np_random_state,
+    open_file,
+    py_random_state,
 )
 from networkx.utils.misc import PythonRandomInterface
 
@@ -205,17 +204,6 @@ class TestOpenFileDecorator:
         self.writer_kwarg(path=None)
 
 
-@preserve_random_state
-def test_preserve_random_state():
-    try:
-        import numpy.random
-
-        r = numpy.random.random()
-    except ImportError:
-        return
-    assert abs(r - 0.61879477158568) < 1e-16
-
-
 class TestRandomState:
     @classmethod
     def setup_class(cls):
@@ -229,9 +217,7 @@ class TestRandomState:
 
     @py_random_state(1)
     def instantiate_py_random_state(self, random_state):
-        assert isinstance(random_state, random.Random) or isinstance(
-            random_state, PythonRandomInterface
-        )
+        assert isinstance(random_state, (random.Random, PythonRandomInterface))
         return random_state.random()
 
     def test_random_state_None(self):

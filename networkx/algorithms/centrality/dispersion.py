@@ -19,6 +19,13 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
         The target of the dispersion score if specified.
     normalized : bool
         If True (default) normalize by the embededness of the nodes (u and v).
+    alpha, b, c : float
+        Parameters for the normalization procedure. When `normalized` is True,
+        the dispersion value is normalized by::
+
+            result = ((dispersion + b) ** alpha) / (embeddedness + c)
+
+        as long as the denominator is nonzero.
 
     Returns
     -------
@@ -52,7 +59,7 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
         # all possible ties of connections that u and b share
         possib = combinations(ST, 2)
         total = 0
-        for (s, t) in possib:
+        for s, t in possib:
             # neighbors of s that are in G_u, not including u and v
             nbrs_s = u_nbrs.intersection(G_u[s]) - set_uv
             # s and t are not directly connected
@@ -64,17 +71,13 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
         # neighbors that u and v share
         embededness = len(ST)
 
+        dispersion_val = total
         if normalized:
+            dispersion_val = (total + b) ** alpha
             if embededness + c != 0:
-                norm_disp = ((total + b) ** alpha) / (embededness + c)
-            else:
-                norm_disp = (total + b) ** alpha
-            dispersion = norm_disp
+                dispersion_val /= embededness + c
 
-        else:
-            dispersion = total
-
-        return dispersion
+        return dispersion_val
 
     if u is None:
         # v and u are not specified

@@ -2,9 +2,10 @@
 """
 import networkx as nx
 
-__all__ = ["hits", "hits_numpy", "hits_scipy", "authority_matrix", "hub_matrix"]
+__all__ = ["hits"]
 
 
+@nx._dispatch
 def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
     """Returns HITS hubs and authorities values for nodes.
 
@@ -71,7 +72,6 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     if len(G) == 0:
         return {}, {}
@@ -144,50 +144,8 @@ def _hits_python(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
     return h, a
 
 
-def authority_matrix(G, nodelist=None):
-    """Returns the HITS authority matrix.
-
-    .. deprecated:: 2.6
-    """
-    import warnings
-
-    msg = (
-        "\nauthority_matrix is deprecated as of version 2.6 and will be removed "
-        "in version 3.0.\n"
-        "The authority matrix can be computed by::\n"
-        "    >>> M = nx.to_numpy_array(G, nodelist=nodelist)\n"
-        "    >>> M.T @ M"
-    )
-    warnings.warn(msg, DeprecationWarning)
-    M = nx.to_numpy_array(G, nodelist=nodelist)
-    return M.T @ M
-
-
-def hub_matrix(G, nodelist=None):
-    """Returns the HITS hub matrix.
-
-    .. deprecated:: 2.6
-    """
-    import warnings
-
-    msg = (
-        "\nhub_matrix is deprecated as of version 2.6 and will be removed "
-        "in version 3.0.\n"
-        "The hub matrix can be computed by::\n"
-        "    >>> M = nx.to_numpy_array(G, nodelist=nodelist)\n"
-        "    >>> M @ M.T"
-    )
-    warnings.warn(msg, DeprecationWarning)
-    M = nx.to_numpy_array(G, nodelist=nodelist)
-    return M @ M.T
-
-
-def hits_numpy(G, normalized=True):
+def _hits_numpy(G, normalized=True):
     """Returns HITS hubs and authorities values for nodes.
-
-    .. deprecated:: 2.6
-
-       hits_numpy is deprecated and will be removed in networkx 3.0.
 
     The HITS algorithm computes two numbers for a node.
     Authorities estimates the node value based on the incoming links.
@@ -221,10 +179,11 @@ def hits_numpy(G, normalized=True):
     >>> hubs_matrix = adj_ary @ adj_ary.T
     >>> authority_matrix = adj_ary.T @ adj_ary
 
-    `hits_numpy` maps the eigenvector corresponding to the maximum eigenvalue
+    `_hits_numpy` maps the eigenvector corresponding to the maximum eigenvalue
     of the respective matrices to the nodes in `G`:
 
-    >>> hubs, authority = nx.hits_numpy(G)
+    >>> from networkx.algorithms.link_analysis.hits_alg import _hits_numpy
+    >>> hubs, authority = _hits_numpy(G)
 
     Notes
     -----
@@ -245,18 +204,7 @@ def hits_numpy(G, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
-    import warnings
-
     import numpy as np
-
-    warnings.warn(
-        (
-            "networkx.hits_numpy is deprecated and will be removed"
-            "in NetworkX 3.0, use networkx.hits instead."
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
 
     if len(G) == 0:
         return {}, {}
@@ -280,12 +228,9 @@ def hits_numpy(G, normalized=True):
     return hubs, authorities
 
 
-def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
+def _hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
     """Returns HITS hubs and authorities values for nodes.
 
-    .. deprecated:: 2.6
-
-       hits_scipy is deprecated and will be removed in networkx 3.0
 
     The HITS algorithm computes two numbers for a node.
     Authorities estimates the node value based on the incoming links.
@@ -316,8 +261,9 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
 
     Examples
     --------
+    >>> from networkx.algorithms.link_analysis.hits_alg import _hits_scipy
     >>> G = nx.path_graph(4)
-    >>> h, a = nx.hits(G)
+    >>> h, a = _hits_scipy(G)
 
     Notes
     -----
@@ -350,18 +296,7 @@ def hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
        doi:10.1145/324133.324140.
        http://www.cs.cornell.edu/home/kleinber/auth.pdf.
     """
-    import warnings
-
     import numpy as np
-
-    warnings.warn(
-        (
-            "networkx.hits_scipy is deprecated and will be removed"
-            "in NetworkX 3.0, use networkx.hits instead."
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
 
     if len(G) == 0:
         return {}, {}

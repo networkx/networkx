@@ -3,9 +3,11 @@ Shortest augmenting path algorithm for maximum flow problems.
 """
 
 from collections import deque
+
 import networkx as nx
-from .utils import build_residual_network, CurrentEdge
+
 from .edmondskarp import edmonds_karp_core
+from .utils import CurrentEdge, build_residual_network
 
 __all__ = ["shortest_augmenting_path"]
 

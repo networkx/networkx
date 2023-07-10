@@ -24,8 +24,8 @@ adjacency list (anything following the # in a line is a comment)::
 
 __all__ = ["generate_adjlist", "write_adjlist", "parse_adjlist", "read_adjlist"]
 
-from networkx.utils import open_file
 import networkx as nx
+from networkx.utils import open_file
 
 
 def generate_adjlist(G, delimiter=" "):
@@ -59,6 +59,14 @@ def generate_adjlist(G, delimiter=" "):
     See Also
     --------
     write_adjlist, read_adjlist
+
+    Notes
+    -----
+    The default `delimiter=" "` will result in unexpected results if node names contain
+    whitespace characters. To avoid this problem, specify an alternate delimiter when spaces are
+    valid in node names.
+
+    NB: This option is not available for data that isn't user-generated.
 
     """
     directed = G.is_directed()
@@ -113,6 +121,11 @@ def write_adjlist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
 
     Notes
     -----
+    The default `delimiter=" "` will result in unexpected results if node names contain
+    whitespace characters. To avoid this problem, specify an alternate delimiter when spaces are
+    valid in node names.
+    NB: This option is not available for data that isn't user-generated.
+
     This format does not store graph, node, or edge data.
 
     See Also
