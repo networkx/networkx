@@ -282,7 +282,7 @@ Guidelines
    import pandas as pd
    import networkx as nx
 
-  After importing `sp`` for ``scipy``::
+  After importing ``sp`` for ``scipy``::
 
    import scipy as sp
 
