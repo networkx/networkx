@@ -81,6 +81,14 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\nforest_str is deprecated"
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="Edmonds has been deprecated"
+    )
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message="MultiDiGraph_EdgeKey has been deprecated",
+    )
 
 
 @pytest.fixture(autouse=True)
