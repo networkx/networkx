@@ -88,7 +88,6 @@ def _geometric_edges(G, radius, p=2):
     nodes_pos = G.nodes(data="pos")
     try:
         import scipy as sp
-        import scipy.spatial  # call as sp.spatial
     except ImportError:
         # no scipy KDTree so compute by for-loop
         radius_p = radius**p

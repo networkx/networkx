@@ -5,7 +5,6 @@ from collections import Counter
 from itertools import chain
 
 import networkx as nx
-from networkx.classes.graphviews import reverse_view, subgraph_view
 from networkx.utils import not_implemented_for, pairwise
 
 __all__ = [
@@ -21,9 +20,7 @@ __all__ = [
     "freeze",
     "is_frozen",
     "subgraph",
-    "subgraph_view",
     "induced_subgraph",
-    "reverse_view",
     "edge_subgraph",
     "restricted_view",
     "to_directed",
@@ -391,7 +388,7 @@ def induced_subgraph(G, nbunch):
     [0, 1, 3]
     """
     induced_nodes = nx.filters.show_nodes(G.nbunch_iter(nbunch))
-    return nx.graphviews.subgraph_view(G, induced_nodes)
+    return nx.subgraph_view(G, induced_nodes)
 
 
 def edge_subgraph(G, edges):
@@ -450,7 +447,7 @@ def edge_subgraph(G, edges):
             induced_edges = nxf.show_diedges(edges)
         else:
             induced_edges = nxf.show_edges(edges)
-    return nx.graphviews.subgraph_view(G, induced_nodes, induced_edges)
+    return nx.subgraph_view(G, induced_nodes, induced_edges)
 
 
 def restricted_view(G, nodes, edges):
@@ -506,7 +503,7 @@ def restricted_view(G, nodes, edges):
             hide_edges = nxf.hide_diedges(edges)
         else:
             hide_edges = nxf.hide_edges(edges)
-    return nx.graphviews.subgraph_view(G, hide_nodes, hide_edges)
+    return nx.subgraph_view(G, hide_nodes, hide_edges)
 
 
 def to_directed(graph):

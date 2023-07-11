@@ -587,6 +587,7 @@ class Test_Katz_Index:
     def setup_class(cls):
         global np
         np = pytest.importorskip("numpy")
+        pytest.importorskip("scipy")
         cls.beta = 0.1
         cls.func = staticmethod(nx.katz_index)
         cls.test = partial(_test_func, predict_func=cls.func)
@@ -603,14 +604,7 @@ class Test_Katz_Index:
 
     def test_P4(self):
         G = nx.path_graph(4)
-        A = np.array(
-            [
-                np.array([0, 1.0, 0, 0]),
-                np.array([1.0, 0, 1.0, 0]),
-                np.array([0, 1.0, 0, 1.0]),
-                np.array([0, 0, 1.0, 0]),
-            ]
-        )
+        A = np.array([[0.0, 1, 0, 0], [1, 0, 1, 0], [0, 1, 0, 1], [0, 0, 1, 0]])
         A *= self.beta
         I = np.identity(4)
         res = np.linalg.inv(I - A) - I
@@ -644,18 +638,9 @@ class Test_Katz_Index:
         self.test(G, [(0, 1)], [(0, 1, 0)])
 
     def test_all_nonexistent_edges(self):
-        G = nx.Graph()
-        A = np.array(
-            [
-                np.array([0, 1.0, 1.0, 0]),
-                np.array([1.0, 0, 0, 0]),
-                np.array([1.0, 0, 0, 1.0]),
-                np.array([0, 0, 1.0, 0]),
-            ]
-        )
+        G = nx.Graph([(0, 1), (0, 2), (2, 3)])
+        A = np.array([[0.0, 1, 1, 0], [1, 0, 0, 0], [1, 0, 0, 1], [0, 0, 1, 0]])
         A *= self.beta
         I = np.identity(4)
-        exp = np.linalg.inv(I - A) - I
-        exp = np.linalg.inv(I - A) - I
-        G.add_edges_from([(0, 1), (0, 2), (2, 3)])
-        self.test(G, None, [(0, 3, exp[0, 3]), (1, 2, exp[1, 2]), (1, 3, exp[1, 3])])
+        res = np.linalg.inv(I - A) - I
+        self.test(G, None, [(0, 3, res[0, 3]), (1, 2, res[1, 2]), (1, 3, res[1, 3])])

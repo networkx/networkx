@@ -101,7 +101,7 @@ Improvements
   Improve the validation and performance of ``nx.is_matching``,
   ``nx.is_maximal_matching`` and ``nx.is_perfect_matcing``.
 - [`#4924 <https://github.com/networkx/networkx/pull/4924>`_]
-  Fix handling of disconnected graphs whne computing
+  Fix handling of disconnected graphs when computing
   ``nx.common_neighbor_centrality``.
 - [`#4929 <https://github.com/networkx/networkx/pull/4929>`_]
   Add Louvain community detection.
@@ -156,7 +156,7 @@ Improvements
 - [`#5139 <https://github.com/networkx/networkx/pull/5139>`_]
   Add support for the `scipy.sparse` array interface.
 - [`#5144 <https://github.com/networkx/networkx/pull/5144>`_]
-  Improve readibility of ``node_classification`` functions.
+  Improve readability of ``node_classification`` functions.
 - [`#5145 <https://github.com/networkx/networkx/pull/5145>`_]
   Adopt `math.hypot` which was added in Python 3.8.
 - [`#5153 <https://github.com/networkx/networkx/pull/5153>`_]
@@ -263,7 +263,7 @@ A total of 166 changes have been committed.
 - Change exception varname e to err (#5130)
 - minor tweaks in assortativity docs and code (#5129)
 - Allow edge style to be a list of styles for DiGraphs (#5131)
-- Add examples and minor documentaion refactor for operators/binary.py (#5099)
+- Add examples and minor documentation refactor for operators/binary.py (#5099)
 - Improve random graphs test suite for gnp generators (issue #5092) (#5115)
 - Add note about checking for path existence to all_simple_paths. (#5059)
 - Fix message of raised exception in decorators. (#5136)

@@ -75,7 +75,6 @@ def biadjacency_matrix(
        https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     nlen = len(row_order)
     if nlen == 0:

@@ -590,7 +590,7 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-def katz_index(G, ebunch=None, beta=0.1):
+def katz_index(G, ebunch=None, *, beta=0.1):
     r"""Compute the Katz index of all node pairs in ebunch.
 
     Katz index of nodes `u` and `v` is defined as
@@ -641,15 +641,11 @@ def katz_index(G, ebunch=None, beta=0.1):
            https://arxiv.org/pdf/1010.0725v1.pdf
     """
     import scipy as sp
-    from scipy import sparse
 
-    if ebunch is None:
-        ebunch = nx.non_edges(G)
     A = nx.adjacency_matrix(G)
-    AB = A.multiply(beta)
-    I = sp.sparse.identity(AB.shape[0])
-    indices = sp.sparse.linalg.spsolve(I - AB, I) - I
-    return ((u, v, indices[u, v]) for u, v in ebunch)
+    I = sp.sparse.identity(A.shape[0], format="csc")
+    indices = sp.sparse.linalg.spsolve((I - A * beta), I) - I
+    return _apply_prediction(G, lambda u, v: indices[u, v], ebunch)
 
 
 def _community(G, u, community):

@@ -1,4 +1,5 @@
 from itertools import chain, islice, tee
+from math import inf
 from random import shuffle
 
 import pytest
@@ -52,6 +53,17 @@ class TestCycles:
         with pytest.raises(nx.NetworkXNotImplemented):
             G = nx.MultiGraph()
             cy = networkx.cycle_basis(G, 0)
+
+    def test_cycle_basis_ordered(self):
+        # see gh-6654 replace sets with (ordered) dicts
+        G = nx.cycle_graph(5)
+        G.update(nx.cycle_graph(range(3, 8)))
+        cbG = nx.cycle_basis(G)
+
+        perm = {1: 0, 0: 1}  # switch 0 and 1
+        H = nx.relabel_nodes(G, perm)
+        cbH = [[perm.get(n, n) for n in cyc] for cyc in nx.cycle_basis(H)]
+        assert cbG == cbH
 
     def test_cycle_basis_self_loop(self):
         """Tests the function for graphs with self loops"""
@@ -863,3 +875,39 @@ class TestMinimumCycles:
     def test_tree_graph(self):
         tg = nx.balanced_tree(3, 3)
         assert not minimum_cycle_basis(tg)
+
+
+class TestGirth:
+    @pytest.mark.parametrize(
+        ("G", "expected"),
+        (
+            (nx.chvatal_graph(), 4),
+            (nx.tutte_graph(), 4),
+            (nx.petersen_graph(), 5),
+            (nx.heawood_graph(), 6),
+            (nx.pappus_graph(), 6),
+            (nx.random_tree(10, seed=42), inf),
+            (nx.empty_graph(10), inf),
+            (nx.Graph(chain(cycle_edges(range(5)), cycle_edges(range(6, 10)))), 4),
+            (
+                nx.Graph(
+                    [
+                        (0, 6),
+                        (0, 8),
+                        (0, 9),
+                        (1, 8),
+                        (2, 8),
+                        (2, 9),
+                        (4, 9),
+                        (5, 9),
+                        (6, 8),
+                        (6, 9),
+                        (7, 8),
+                    ]
+                ),
+                3,
+            ),
+        ),
+    )
+    def test_girth(self, G, expected):
+        assert nx.girth(G) == expected
