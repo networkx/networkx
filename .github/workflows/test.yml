@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu, macos, windows]
-        python-version: ["pypy-3.8"]
+        python-version: ["pypy-3.9", "3.12-dev"]
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
@@ -22,7 +22,7 @@ jobs:
 
       - name: Install packages
         run: |
-          python -m pip install --upgrade pip wheel setuptools
+          python -m pip install --upgrade pip
           python -m pip install -r requirements/test.txt
           python -m pip install .
           python -m pip list
@@ -36,7 +36,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu, macos, windows]
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11"]
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
@@ -46,7 +46,7 @@ jobs:
 
       - name: Install packages
         run: |
-          python -m pip install --upgrade pip wheel setuptools
+          python -m pip install --upgrade pip
           python -m pip install -r requirements/default.txt -r requirements/test.txt
           python -m pip install .
           python -m pip list
@@ -55,12 +55,18 @@ jobs:
         run: |
           pytest --doctest-modules --durations=10 --pyargs networkx
 
+      - name: Test Dispatching
+        # Limit this to only a single combination from the matrix
+        if: ${{ (matrix.os == 'ubuntu') && (matrix.python-version == '3.11') }}
+        run: |
+          NETWORKX_GRAPH_CONVERT=nx-loopback pytest --doctest-modules --durations=10 --pyargs networkx
+
   extra:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-22.04, macos-latest, windows-latest]
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11"]
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
@@ -83,7 +89,7 @@ jobs:
       - name: Install packages (Linux)
         if: runner.os == 'Linux'
         run: |
-          pip install --upgrade pip wheel setuptools
+          pip install --upgrade pip
           pip install -r requirements/default.txt -r requirements/test.txt
           pip install -r requirements/extra.txt
           pip install .
@@ -91,7 +97,7 @@ jobs:
       - name: Install packages (macOS)
         if: runner.os == 'macOS'
         run: |
-          pip install --upgrade pip wheel setuptools
+          pip install --upgrade pip
           pip install -r requirements/default.txt -r requirements/test.txt
           pip install --global-option=build_ext --global-option="-I/usr/local/include/" --global-option="-L/usr/local/lib/" pygraphviz
           pip install -r requirements/extra.txt
@@ -101,7 +107,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           echo "C:\Program Files\Graphviz\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          python -m pip install --upgrade pip wheel setuptools
+          python -m pip install --upgrade pip
           python -m pip install -r requirements/default.txt -r requirements/test.txt
           python -m pip install --global-option=build_ext `
                                 --global-option="-IC:\Program Files\Graphviz\include" `
@@ -120,7 +126,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu, macos]
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11"]
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
@@ -130,8 +136,9 @@ jobs:
 
       - name: Install packages
         run: |
-          pip install --upgrade pip wheel setuptools
+          pip install --upgrade pip
           pip install --pre -r requirements/default.txt -r requirements/test.txt
+          pip install scipy==1.10.1
           pip install .
           pip list
 

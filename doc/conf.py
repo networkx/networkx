@@ -50,6 +50,7 @@ sphinx_gallery_conf = {
     "gallery_dirs": "auto_examples",
     "backreferences_dir": "modules/generated",
     "image_scrapers": ("matplotlib",),
+    "plot_gallery": "True",
 }
 # Add pygraphviz png scraper, if available
 try:
@@ -126,6 +127,7 @@ html_theme_options = {
     "collapse_navigation": True,
     "navigation_depth": 2,
     "show_prev_next": False,
+    "announcement": "<p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p>",
     "icon_links": [
         {"name": "Home Page", "url": "https://networkx.org", "icon": "fas fa-home"},
         {
@@ -136,7 +138,7 @@ html_theme_options = {
     ],
     "external_links": [{"name": "Guides", "url": "https://networkx.org/nx-guides/"}],
     "navbar_end": ["theme-switcher", "navbar-icon-links", "version"],
-    "page_sidebar_items": ["search-field", "page-toc", "edit-this-page"],
+    "secondary_sidebar_items": ["search-field", "page-toc", "edit-this-page"],
     "header_links_before_dropdown": 7,
 }
 html_sidebars = {

@@ -104,6 +104,7 @@ def number_weakly_connected_components(G):
     return sum(1 for wcc in weakly_connected_components(G))
 
 
+@nx._dispatch
 @not_implemented_for("undirected")
 def is_weakly_connected(G):
     """Test directed graph for weak connectivity.
@@ -169,17 +170,26 @@ def _plain_bfs(G, source):
     For directed graphs only.
 
     """
-    Gsucc = G.succ
-    Gpred = G.pred
+    n = len(G)
+    Gsucc = G._succ
+    Gpred = G._pred
+    seen = {source}
+    nextlevel = [source]
 
-    seen = set()
-    nextlevel = {source}
+    yield source
     while nextlevel:
         thislevel = nextlevel
-        nextlevel = set()
+        nextlevel = []
         for v in thislevel:
-            if v not in seen:
-                seen.add(v)
-                nextlevel.update(Gsucc[v])
-                nextlevel.update(Gpred[v])
-                yield v
+            for w in Gsucc[v]:
+                if w not in seen:
+                    seen.add(w)
+                    nextlevel.append(w)
+                    yield w
+            for w in Gpred[v]:
+                if w not in seen:
+                    seen.add(w)
+                    nextlevel.append(w)
+                    yield w
+            if len(seen) == n:
+                return

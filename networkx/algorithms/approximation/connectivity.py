@@ -357,12 +357,6 @@ def _bidirectional_shortest_path(G, source, target, exclude):
 def _bidirectional_pred_succ(G, source, target, exclude):
     # does BFS from both source and target and meets in the middle
     # excludes nodes in the container "exclude" from the search
-    if source is None or target is None:
-        raise nx.NetworkXException(
-            "Bidirectional shortest path called without source or target"
-        )
-    if target == source:
-        return ({target: None}, {source: None}, source)
 
     # handle either directed or undirected
     if G.is_directed():
@@ -387,7 +381,7 @@ def _bidirectional_pred_succ(G, source, target, exclude):
         # thus source and target will only trigger "found path" when they are
         # adjacent and then they can be safely included in the container 'exclude'
         level += 1
-        if not level % 2 == 0:
+        if level % 2 != 0:
             this_level = forward_fringe
             forward_fringe = []
             for v in this_level:

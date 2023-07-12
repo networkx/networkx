@@ -155,7 +155,7 @@ class TestUnionAtlas:
         assert view.__slots__ == pview.__slots__
 
     def test_len(self):
-        assert len(self.av) == len(self.s) + len(self.p)
+        assert len(self.av) == len(self.s.keys() | self.p.keys()) == 5
 
     def test_iter(self):
         assert set(self.av) == set(self.s) | set(self.p)
@@ -257,7 +257,7 @@ class TestUnionMultiInner(TestUnionAdjacency):
         self.adjview = nx.classes.coreviews.UnionMultiInner(self.s, self.p)
 
     def test_len(self):
-        assert len(self.adjview) == len(self.s) + len(self.p)
+        assert len(self.adjview) == len(self.s.keys() | self.p.keys()) == 4
 
     def test_getitem(self):
         assert self.adjview[1] is not self.s[1]
@@ -318,7 +318,7 @@ class TestFilteredGraphs:
         self.Graphs = [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
 
     def test_hide_show_nodes(self):
-        SubGraph = nx.graphviews.subgraph_view
+        SubGraph = nx.subgraph_view
         for Graph in self.Graphs:
             G = nx.path_graph(4, Graph)
             SG = G.subgraph([2, 3])
@@ -331,7 +331,7 @@ class TestFilteredGraphs:
             assert SGC.edges == RGC.edges
 
     def test_str_repr(self):
-        SubGraph = nx.graphviews.subgraph_view
+        SubGraph = nx.subgraph_view
         for Graph in self.Graphs:
             G = nx.path_graph(4, Graph)
             SG = G.subgraph([2, 3])
@@ -346,7 +346,7 @@ class TestFilteredGraphs:
             repr(RG.adj[2])
 
     def test_copy(self):
-        SubGraph = nx.graphviews.subgraph_view
+        SubGraph = nx.subgraph_view
         for Graph in self.Graphs:
             G = nx.path_graph(4, Graph)
             SG = G.subgraph([2, 3])

@@ -701,7 +701,6 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     if not nx.is_connected(G):
         msg = "Graph G must be strongly connected."
@@ -721,15 +720,15 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
 
     if invert_weight and weight is not None:
         if G.is_multigraph():
-            for (u, v, k, d) in G.edges(keys=True, data=True):
+            for u, v, k, d in G.edges(keys=True, data=True):
                 d[weight] = 1 / d[weight]
         else:
-            for (u, v, d) in G.edges(data=True):
+            for u, v, d in G.edges(data=True):
                 d[weight] = 1 / d[weight]
     # Replace with collapsing topology or approximated zero?
 
     # Using determinants to compute the effective resistance is more memory
-    # efficent than directly calculating the psuedo-inverse
+    # efficient than directly calculating the pseudo-inverse
     L = nx.laplacian_matrix(G, node_list, weight=weight).asformat("csc")
     indices = list(range(L.shape[0]))
     # w/ nodeA removed
@@ -742,24 +741,24 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     # Factorize Laplacian submatrixes and extract diagonals
     # Order the diagonals to minimize the likelihood over overflows
     # during computing the determinant
-    lu_a = sp.sparse.linalg.splu(L_a, options=dict(SymmetricMode=True))
+    lu_a = sp.sparse.linalg.splu(L_a, options={"SymmetricMode": True})
     LdiagA = lu_a.U.diagonal()
-    LdiagA_s = np.product(np.sign(LdiagA)) * np.product(lu_a.L.diagonal())
+    LdiagA_s = np.prod(np.sign(LdiagA)) * np.prod(lu_a.L.diagonal())
     LdiagA_s *= (-1) ** _count_lu_permutations(lu_a.perm_r)
     LdiagA_s *= (-1) ** _count_lu_permutations(lu_a.perm_c)
     LdiagA = np.absolute(LdiagA)
     LdiagA = np.sort(LdiagA)
 
-    lu_ab = sp.sparse.linalg.splu(L_ab, options=dict(SymmetricMode=True))
+    lu_ab = sp.sparse.linalg.splu(L_ab, options={"SymmetricMode": True})
     LdiagAB = lu_ab.U.diagonal()
-    LdiagAB_s = np.product(np.sign(LdiagAB)) * np.product(lu_ab.L.diagonal())
+    LdiagAB_s = np.prod(np.sign(LdiagAB)) * np.prod(lu_ab.L.diagonal())
     LdiagAB_s *= (-1) ** _count_lu_permutations(lu_ab.perm_r)
     LdiagAB_s *= (-1) ** _count_lu_permutations(lu_ab.perm_c)
     LdiagAB = np.absolute(LdiagAB)
     LdiagAB = np.sort(LdiagAB)
 
     # Calculate the ratio of determinant, rd = det(L_ab)/det(L_a)
-    Ldet = np.product(np.divide(np.append(LdiagAB, [1]), LdiagA))
+    Ldet = np.prod(np.divide(np.append(LdiagAB, [1]), LdiagA))
     rd = Ldet * LdiagAB_s / LdiagA_s
 
     return rd

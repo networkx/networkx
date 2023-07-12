@@ -23,7 +23,6 @@ def test_margulis_gabber_galil_graph_properties(n):
 def test_margulis_gabber_galil_graph_eigvals(n):
     np = pytest.importorskip("numpy")
     sp = pytest.importorskip("scipy")
-    import scipy.linalg
 
     g = nx.margulis_gabber_galil_graph(n)
     # Eigenvalues are already sorted using the scipy eigvalsh,
@@ -60,7 +59,7 @@ def test_paley_graph(p):
     # If p = 1 mod 4, -1 is a square mod 4 and therefore the
     # edge in the Paley graph are symmetric.
     if p % 4 == 1:
-        for (u, v) in G.edges:
+        for u, v in G.edges:
             assert (v, u) in G.edges
 
 

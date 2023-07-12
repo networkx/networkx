@@ -129,7 +129,7 @@ def lattice_reference(G, niter=5, D=None, connectivity=True, seed=None):
         An undirected graph.
 
     niter : integer (optional, default=1)
-        An edge is rewired approximatively niter times.
+        An edge is rewired approximately niter times.
 
     D : numpy.array (optional, default=None)
         Distance to the diagonal matrix.

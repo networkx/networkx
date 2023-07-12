@@ -103,7 +103,7 @@ def LCF_graph(n, shift_list, repeats, create_using=None):
     if G.is_directed():
         raise NetworkXError("Directed Graph not supported")
     G.name = "LCF_graph"
-    nodes = sorted(list(G))
+    nodes = sorted(G)
 
     n_extra_edges = repeats * len(shift_list)
     # edges are added n_extra_edges times

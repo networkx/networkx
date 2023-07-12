@@ -16,7 +16,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch("triangles")
+@nx._dispatch(graphs="G")
 @not_implemented_for("directed")
 def triangles(G, nodes=None):
     """Compute the number of triangles.
@@ -316,8 +316,7 @@ def clustering(G, nodes=None, weight=None):
 
     .. math::
 
-       c_u = \frac{2}{deg^{tot}(u)(deg^{tot}(u)-1) - 2deg^{\leftrightarrow}(u)}
-             T(u),
+       c_u = \frac{T(u)}{2(deg^{tot}(u)(deg^{tot}(u)-1) - 2deg^{\leftrightarrow}(u))},
 
     where :math:`T(u)` is the number of directed triangles through node
     :math:`u`, :math:`deg^{tot}(u)` is the sum of in degree and out degree of
@@ -329,8 +328,10 @@ def clustering(G, nodes=None, weight=None):
     ----------
     G : graph
 
-    nodes : container of nodes, optional (default=all nodes in G)
-       Compute clustering for nodes in this container.
+    nodes : node, iterable of nodes, or None (default=None)
+        If a singleton node, return the number of triangles for that node.
+        If an iterable, compute the number of triangles for each of those nodes.
+        If `None` (the default) compute the number of triangles for all nodes in `G`.
 
     weight : string or None, optional (default=None)
        The edge attribute that holds the numerical value used as a weight.
@@ -394,7 +395,7 @@ def clustering(G, nodes=None, weight=None):
     return clusterc
 
 
-@nx._dispatch("transitivity")
+@nx._dispatch(name="transitivity")
 def transitivity(G):
     r"""Compute graph transitivity, the fraction of all possible triangles
     present in G.
@@ -511,7 +512,7 @@ def square_clustering(G, nodes=None):
     return clustering
 
 
-@nx._dispatch("generalized_degree")
+@nx._dispatch(name="generalized_degree", graphs="G")
 @not_implemented_for("directed")
 def generalized_degree(G, nodes=None):
     r"""Compute the generalized degree for nodes.
@@ -553,7 +554,7 @@ def generalized_degree(G, nodes=None):
 
     Notes
     -----
-    In a network of N nodes, the highest triangle multiplicty an edge can have
+    In a network of N nodes, the highest triangle multiplicity an edge can have
     is N-2.
 
     The return value does not include a `zero` entry if no edges of a

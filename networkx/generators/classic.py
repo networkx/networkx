@@ -403,9 +403,38 @@ def cycle_graph(n, create_using=None):
 def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     """Returns the hierarchically constructed Dorogovtsev-Goltsev-Mendes graph.
 
-    n is the generation.
-    See: arXiv:/cond-mat/0112143 by Dorogovtsev, Goltsev and Mendes.
+    The Dorogovtsev-Goltsev-Mendes [1]_ procedure produces a scale-free graph
+    deterministically with the following properties for a given `n`:
+    - Total number of nodes = ``3 * (3**n + 1) / 2``
+    - Total number of edges = ``3 ** (n + 1)``
 
+    Parameters
+    ----------
+    n : integer
+       The generation number.
+
+    create_using : NetworkX Graph, optional
+       Graph type to be returned. Directed graphs and multi graphs are not
+       supported.
+
+    Returns
+    -------
+    G : NetworkX Graph
+
+    Examples
+    --------
+    >>> G = nx.dorogovtsev_goltsev_mendes_graph(3)
+    >>> G.number_of_nodes()
+    15
+    >>> G.number_of_edges()
+    27
+    >>> nx.is_planar(G)
+    True
+
+    References
+    ----------
+    .. [1] Dorogotsev S.N., Goltsev A.V., and Mendes J.F.F "Pseudofractal
+       Scale-free Web". arXiv:cond-mat/0112143
     """
     G = empty_graph(0, create_using)
     if G.is_directed():
@@ -507,7 +536,7 @@ def empty_graph(n=0, create_using=None, default=Graph):
     """
     if create_using is None:
         G = default()
-    elif type(create_using) is type:
+    elif isinstance(create_using, type):
         G = create_using()
     elif not hasattr(create_using, "adj"):
         raise TypeError("create_using is not a valid NetworkX graph type or instance")
@@ -802,7 +831,7 @@ def complete_multipartite_graph(*subset_sizes):
     # add nodes with subset attribute
     # while checking that ints are not mixed with iterables
     try:
-        for (i, subset) in enumerate(subsets):
+        for i, subset in enumerate(subsets):
             G.add_nodes_from(subset, subset=i)
     except TypeError as err:
         raise NetworkXError("Arguments must be all ints or all iterables") from err

@@ -3,8 +3,7 @@ from copy import deepcopy
 from functools import cached_property
 
 import networkx as nx
-import networkx.convert as convert
-from networkx import NetworkXError
+from networkx import NetworkXError, convert
 from networkx.classes.coreviews import MultiAdjacencyView
 from networkx.classes.graph import Graph
 from networkx.classes.reportviews import MultiDegreeView, MultiEdgeView

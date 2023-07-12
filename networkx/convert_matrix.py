@@ -544,7 +544,6 @@ def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format=
        https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     if len(G) == 0:
         raise nx.NetworkXError("Graph has no nodes or edges")
@@ -699,7 +698,6 @@ def from_scipy_sparse_array(
     Examples
     --------
     >>> import scipy as sp
-    >>> import scipy.sparse  # call as sp.sparse
     >>> A = sp.sparse.eye(2, 2, 1)
     >>> G = nx.from_scipy_sparse_array(A)
 
@@ -1147,7 +1145,7 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
             ((u, v, {"weight": 1}) for d in range(A[u, v])) for (u, v) in edges
         )
     else:  # basic data type
-        triples = ((u, v, dict(weight=python_type(A[u, v]))) for u, v in edges)
+        triples = ((u, v, {"weight": python_type(A[u, v])}) for u, v in edges)
     # If we are creating an undirected multigraph, only add the edges from the
     # upper triangle of the matrix. Otherwise, add all the edges. This relies
     # on the fact that the vertices created in the

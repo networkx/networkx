@@ -10,7 +10,7 @@ k-edge-augmentation exists.
 See Also
 --------
 :mod:`edge_kcomponents` : algorithms for finding k-edge-connected components
-:mod:`connectivity` : algorithms for determening edge connectivity.
+:mod:`connectivity` : algorithms for determining edge connectivity.
 """
 import itertools as it
 import math
@@ -262,7 +262,7 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
             aug_edges = greedy_k_edge_augmentation(
                 G, k=k, avail=avail, weight=weight, seed=0
             )
-        # Do eager evaulation so we can catch any exceptions
+        # Do eager evaluation so we can catch any exceptions
         # Before executing partial code.
         yield from list(aug_edges)
     except nx.NetworkXUnfeasible:
@@ -368,13 +368,13 @@ def partial_k_edge_augmentation(G, k, avail, weight=None):
             }
             # Remove potential augmenting edges
             C.remove_edges_from(sub_avail.keys())
-            # Find a subset of these edges that makes the compoment
+            # Find a subset of these edges that makes the component
             # k-edge-connected and ignore the rest
             yield from nx.k_edge_augmentation(C, k=k, avail=sub_avail)
 
     # Generate all edges between CCs that could not be k-edge-connected
     for cc1, cc2 in it.combinations(k_edge_subgraphs, 2):
-        for (u, v) in _edges_between_disjoint(H, cc1, cc2):
+        for u, v in _edges_between_disjoint(H, cc1, cc2):
             d = H.get_edge_data(u, v)
             edge = d.get("generator", None)
             if edge is not None:
@@ -542,7 +542,7 @@ def _lightest_meta_edges(mapping, avail_uv, avail_w):
     -----
     Each node in the metagraph is a k-edge-connected component in the original
     graph.  We don't care about any edge within the same k-edge-connected
-    component, so we ignore self edges.  We also are only intereseted in the
+    component, so we ignore self edges.  We also are only interested in the
     minimum weight edge bridging each k-edge-connected component so, we group
     the edges by meta-edge and take the lightest in each group.
 
@@ -1223,7 +1223,7 @@ def greedy_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
 
     # Incrementally add edges in until we are k-connected
     H = G.copy()
-    for (u, v) in avail_uv:
+    for u, v in avail_uv:
         done = False
         if not is_locally_k_edge_connected(H, u, v, k=k):
             # Only add edges in parts that are not yet locally k-edge-connected
@@ -1241,7 +1241,7 @@ def greedy_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
 
     # Randomized attempt to reduce the size of the solution
     _compat_shuffle(seed, aug_edges)
-    for (u, v) in list(aug_edges):
+    for u, v in list(aug_edges):
         # Don't remove if we know it would break connectivity
         if H.degree(u) <= k or H.degree(v) <= k:
             continue

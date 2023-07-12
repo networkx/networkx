@@ -29,7 +29,7 @@ However, NetworkX 3.0 includes many changes and improvements centered around
 tighter integration with other scientific Python libraries; namely
 ``numpy``, ``scipy``, ``matplotlib``, and ``pandas``.
 
-There are no dependencies for NetworkX's core funtionality, such as the data
+There are no dependencies for NetworkX's core functionality, such as the data
 structures (``Graph``, ``DiGraph``, etc.) and common algorithms, but some
 functionality, e.g. functions found in the ``networkx.linalg`` package, are
 only available if these additional libraries are installed.

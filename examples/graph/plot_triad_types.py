@@ -57,7 +57,7 @@ for (title, triad), ax in zip(triads.items(), axes.flatten()):
         fontsize=15,
         fontweight="extra bold",
         horizontalalignment="center",
-        bbox=dict(boxstyle="square,pad=0.3", fc="none"),
+        bbox={"boxstyle": "square,pad=0.3", "fc": "none"},
     )
 fig.tight_layout()
 plt.show()

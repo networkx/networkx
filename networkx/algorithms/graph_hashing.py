@@ -163,9 +163,14 @@ def weisfeiler_lehman_subgraph_hashes(
     """
     Return a dictionary of subgraph hashes by node.
 
-    The dictionary is keyed by node to a list of hashes in increasingly
-    sized induced subgraphs containing the nodes within 2*k edges
-    of the key node for increasing integer k until all nodes are included.
+    Dictionary keys are nodes in `G`, and values are a list of hashes.
+    Each hash corresponds to a subgraph rooted at a given node u in `G`.
+    Lists of subgraph hashes are sorted in increasing order of depth from
+    their root node, with the hash at index i corresponding to a subgraph
+    of nodes at most i edges distance from u. Thus, each list will contain
+    ``iterations + 1`` elements - a hash for a subgraph at each depth, and
+    additionally a hash of the initial node label (or equivalently a
+    subgraph of depth 0)
 
     The function iteratively aggregates and hashes neighbourhoods of each node.
     This is achieved for each step by replacing for each node its label from
@@ -179,13 +184,13 @@ def weisfeiler_lehman_subgraph_hashes(
     along the connecting edge from this neighbor to node $n$. The resulting string
     is then hashed to compress this information into a fixed digest size.
 
-    Thus, at the $i$th iteration nodes within $2i$ distance influence any given
+    Thus, at the $i$-th iteration, nodes within $i$ hops influence any given
     hashed node label. We can therefore say that at depth $i$ for node $n$
     we have a hash for a subgraph induced by the $2i$-hop neighborhood of $n$.
 
-    Can be used to to create general Weisfeiler-Lehman graph kernels, or
-    generate features for graphs or nodes, for example to generate 'words' in a
-    graph as seen in the 'graph2vec' algorithm.
+    The output can be used to to create general Weisfeiler-Lehman graph kernels,
+    or generate features for graphs or nodes - for example to generate 'words' in
+    a graph as seen in the 'graph2vec' algorithm.
     See [1]_ & [2]_ respectively for details.
 
     Hashes are identical for isomorphic subgraphs and there exist strong

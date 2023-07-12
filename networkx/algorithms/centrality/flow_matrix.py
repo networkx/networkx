@@ -95,7 +95,6 @@ class FullInverseLaplacian(InverseLaplacian):
 class SuperLUInverseLaplacian(InverseLaplacian):
     def init_solver(self, L):
         import scipy as sp
-        import scipy.sparse.linalg  # call as sp.sparse.linalg
 
         self.lusolve = sp.sparse.linalg.factorized(self.L1.tocsc())
 
@@ -114,7 +113,6 @@ class CGInverseLaplacian(InverseLaplacian):
     def init_solver(self, L):
         global sp
         import scipy as sp
-        import scipy.sparse.linalg  # call as sp.sparse.linalg
 
         ilu = sp.sparse.linalg.spilu(self.L1.tocsc())
         n = self.n - 1

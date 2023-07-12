@@ -224,7 +224,7 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     if k is None:
         nodes = G
     else:
-        nodes = seed.sample(G.nodes(), k)
+        nodes = seed.sample(list(G.nodes()), k)
     for s in nodes:
         # single source shortest paths
         if weight is None:  # use BFS

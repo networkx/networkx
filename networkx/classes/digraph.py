@@ -3,7 +3,7 @@ from copy import deepcopy
 from functools import cached_property
 
 import networkx as nx
-import networkx.convert as convert
+from networkx import convert
 from networkx.classes.coreviews import AdjacencyView
 from networkx.classes.graph import Graph
 from networkx.classes.reportviews import (
@@ -309,8 +309,8 @@ class DiGraph(Graph):
     True
     """
 
-    _adj = _CachedPropertyResetterAdjAndSucc()  # type: ignore
-    _succ = _adj  # type: ignore
+    _adj = _CachedPropertyResetterAdjAndSucc()  # type: ignore[assignment]
+    _succ = _adj  # type: ignore[has-type]
     _pred = _CachedPropertyResetterPred()
 
     def __init__(self, incoming_graph_data=None, **attr):
@@ -486,7 +486,7 @@ class DiGraph(Graph):
         add_node
 
         Notes
-        -------
+        -----
         When adding nodes from an iterator over the graph you are changing,
         a `RuntimeError` can be raised with message:
         `RuntimeError: dictionary changed size during iteration`. This
@@ -600,7 +600,7 @@ class DiGraph(Graph):
         remove_node
 
         Notes
-        -------
+        -----
         When removing nodes from an iterator over the graph you are changing,
         a `RuntimeError` will be raised with message:
         `RuntimeError: dictionary changed size during iteration`. This
@@ -1024,7 +1024,7 @@ class DiGraph(Graph):
             attribute lookup as `edges[u, v]['foo']`.
 
         Examples
-        -------
+        --------
         >>> G = nx.DiGraph()
         >>> G.add_edge(1, 2, color='blue')
         >>> G.in_edges()
@@ -1320,4 +1320,4 @@ class DiGraph(Graph):
             H.add_nodes_from((n, deepcopy(d)) for n, d in self.nodes.items())
             H.add_edges_from((v, u, deepcopy(d)) for u, v, d in self.edges(data=True))
             return H
-        return nx.graphviews.reverse_view(self)
+        return nx.reverse_view(self)

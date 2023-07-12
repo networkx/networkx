@@ -11,7 +11,7 @@ from copy import deepcopy
 from functools import cached_property
 
 import networkx as nx
-import networkx.convert as convert
+from networkx import convert
 from networkx.classes.coreviews import AdjacencyView
 from networkx.classes.reportviews import DegreeView, EdgeView, NodeView
 from networkx.exception import NetworkXError
@@ -580,7 +580,7 @@ class Graph:
         add_node
 
         Notes
-        -------
+        -----
         When adding nodes from an iterator over the graph you are changing,
         a `RuntimeError` can be raised with message:
         `RuntimeError: dictionary changed size during iteration`. This
@@ -692,7 +692,7 @@ class Graph:
         remove_node
 
         Notes
-        -------
+        -----
         When removing nodes from an iterator over the graph you are changing,
         a `RuntimeError` will be raised with message:
         `RuntimeError: dictionary changed size during iteration`. This
@@ -1819,7 +1819,7 @@ class Graph:
         """
         induced_nodes = nx.filters.show_nodes(self.nbunch_iter(nodes))
         # if already a subgraph, don't make a chain
-        subgraph = nx.graphviews.subgraph_view
+        subgraph = nx.subgraph_view
         if hasattr(self, "_NODE_OK"):
             return subgraph(self._graph, induced_nodes, self._EDGE_OK)
         return subgraph(self, induced_nodes)
