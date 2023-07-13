@@ -847,11 +847,11 @@ class TestMinimumCycles:
 
     def test_unweighted_diamond(self):
         mcb = nx.minimum_cycle_basis(self.diamond_graph)
-        assert_basis_equal([sorted(c) for c in mcb], [[1, 2, 4], [2, 3, 4]])
+        assert_basis_equal(mcb, [[2, 4, 1], [3, 4, 2]])
 
     def test_weighted_diamond(self):
         mcb = nx.minimum_cycle_basis(self.diamond_graph, weight="weight")
-        assert_basis_equal([sorted(c) for c in mcb], [[1, 2, 4], [1, 2, 3, 4]])
+        assert_basis_equal(mcb, [[2, 4, 1], [4, 3, 2, 1]])
 
     def test_dimensionality(self):
         # checks |MCB|=|E|-|V|+|NC|
@@ -873,6 +873,38 @@ class TestMinimumCycles:
     def test_tree_graph(self):
         tg = nx.balanced_tree(3, 3)
         assert not nx.minimum_cycle_basis(tg)
+
+    def test_petersen_graph(self):
+        G = nx.petersen_graph()
+        mcb = list(nx.minimum_cycle_basis(G))
+        expected = [
+            [4, 9, 7, 5, 0],
+            [1, 2, 3, 4, 0],
+            [1, 6, 8, 5, 0],
+            [4, 3, 8, 5, 0],
+            [1, 6, 9, 4, 0],
+            [1, 2, 7, 5, 0],
+        ]
+        assert len(mcb) == len(expected)
+        assert all(c in expected for c in mcb)
+
+        # check that order of the nodes is a path
+        for c in mcb:
+            assert all(G.has_edge(u, v) for u, v in nx.utils.pairwise(c, cyclic=True))
+
+    def test_gh6787_and_edge_attribute_names(self):
+        G = nx.cycle_graph(4)
+        G.add_weighted_edges_from([(0, 2, 10), (1, 3, 10)], weight="dist")
+        expected = [[1, 3, 0], [3, 2, 1, 0], [1, 2, 0]]
+        mcb = list(nx.minimum_cycle_basis(G, weight="dist"))
+        assert len(mcb) == len(expected)
+        assert all(c in expected for c in mcb)
+
+        # test not using a weight with weight attributes
+        expected = [[1, 3, 0], [1, 2, 0], [3, 2, 0]]
+        mcb = list(nx.minimum_cycle_basis(G))
+        assert len(mcb) == len(expected)
+        assert all(c in expected for c in mcb)
 
 
 class TestGirth:
