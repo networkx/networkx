@@ -4,7 +4,7 @@ Cycle finding algorithms
 ========================
 """
 
-from collections import defaultdict
+from collections import Counter, defaultdict
 from itertools import combinations, product
 from math import inf
 
@@ -50,7 +50,7 @@ def cycle_basis(G, root=None):
     >>> G = nx.Graph()
     >>> nx.add_cycle(G, [0, 1, 2, 3])
     >>> nx.add_cycle(G, [0, 3, 4, 5])
-    >>> print(nx.cycle_basis(G, 0))
+    >>> nx.cycle_basis(G, 0)
     [[3, 4, 5, 0], [1, 2, 3, 0]]
 
     Notes
@@ -1053,8 +1053,8 @@ def minimum_cycle_basis(G, weight=None):
     >>> G = nx.Graph()
     >>> nx.add_cycle(G, [0, 1, 2, 3])
     >>> nx.add_cycle(G, [0, 3, 4, 5])
-    >>> print([sorted(c) for c in nx.minimum_cycle_basis(G)])
-    [[0, 1, 2, 3], [0, 3, 4, 5]]
+    >>> nx.minimum_cycle_basis(G)
+    [[5, 4, 3, 0], [3, 2, 1, 0]]
 
     References:
         [1] Kavitha, Telikepalli, et al. "An O(m^2n) Algorithm for
@@ -1074,85 +1074,87 @@ def minimum_cycle_basis(G, weight=None):
     )
 
 
-def _min_cycle_basis(comp, weight):
+def _min_cycle_basis(G, weight):
     cb = []
     # We  extract the edges not in a spanning tree. We do not really need a
     # *minimum* spanning tree. That is why we call the next function with
     # weight=None. Depending on implementation, it may be faster as well
-    spanning_tree_edges = list(nx.minimum_spanning_edges(comp, weight=None, data=False))
-    edges_excl = [frozenset(e) for e in comp.edges() if e not in spanning_tree_edges]
-    N = len(edges_excl)
+    tree_edges = list(nx.minimum_spanning_edges(G, weight=None, data=False))
+    chords = G.edges - tree_edges - {(v, u) for u, v in tree_edges}
 
     # We maintain a set of vectors orthogonal to sofar found cycles
-    set_orth = [{edge} for edge in edges_excl]
-    for k in range(N):
+    set_orth = [{edge} for edge in chords]
+    while set_orth:
+        base = set_orth.pop()
         # kth cycle is "parallel" to kth vector in set_orth
-        new_cycle = _min_cycle(comp, set_orth[k], weight=weight)
-        cb.append(list(set().union(*new_cycle)))
+        cycle_edges = _min_cycle(G, base, weight)
+        cb.append([v for u, v in cycle_edges])
+
         # now update set_orth so that k+1,k+2... th elements are
         # orthogonal to the newly found cycle, as per [p. 336, 1]
-        base = set_orth[k]
-        set_orth[k + 1 :] = [
-            orth ^ base if len(orth & new_cycle) % 2 else orth
-            for orth in set_orth[k + 1 :]
+        set_orth = [
+            (
+                {e for e in orth if e not in base if e[::-1] not in base}
+                | {e for e in base if e not in orth if e[::-1] not in orth}
+            )
+            if any((e in orth or e[::-1] in orth) for e in cycle_edges)
+            else orth
+            for orth in set_orth
         ]
     return cb
 
 
-def _min_cycle(G, orth, weight=None):
+def _min_cycle(G, orth, weight):
     """
     Computes the minimum weight cycle in G,
     orthogonal to the vector orth as per [p. 338, 1]
+    Use (u, 1) to indicate the lifted copy of u (denoted u' in paper).
     """
-    T = nx.Graph()
+    Gi = nx.Graph()
 
-    nodes_idx = {node: idx for idx, node in enumerate(G.nodes())}
-    idx_nodes = {idx: node for node, idx in nodes_idx.items()}
-
-    nnodes = len(nodes_idx)
-
-    # Add 2 copies of each edge in G to T. If edge is in orth, add cross edge;
-    # otherwise in-plane edge
-    for u, v, data in G.edges(data=True):
-        uidx, vidx = nodes_idx[u], nodes_idx[v]
-        edge_w = data.get(weight, 1)
-        if frozenset((u, v)) in orth:
-            T.add_edges_from(
-                [(uidx, nnodes + vidx), (nnodes + uidx, vidx)], weight=edge_w
-            )
+    # Add 2 copies of each edge in G to Gi.
+    # If edge is in orth, add cross edge; otherwise in-plane edge
+    for u, v, wt in G.edges(data=weight, default=1):
+        if (u, v) in orth or (v, u) in orth:
+            Gi.add_edges_from([(u, (v, 1)), ((u, 1), v)], Gi_weight=wt)
         else:
-            T.add_edges_from(
-                [(uidx, vidx), (nnodes + uidx, nnodes + vidx)], weight=edge_w
-            )
+            Gi.add_edges_from([(u, v), ((u, 1), (v, 1))], Gi_weight=wt)
 
-    all_shortest_pathlens = dict(nx.shortest_path_length(T, weight=weight))
-    cross_paths_w_lens = {
-        n: all_shortest_pathlens[n][nnodes + n] for n in range(nnodes)
-    }
+    # find the shortest length in Gi between n and (n, 1) for each n
+    # Note: Use "Gi_weight" for name of weight attribute
+    spl = nx.shortest_path_length
+    lift = {n: spl(Gi, source=n, target=(n, 1), weight="Gi_weight") for n in G}
 
-    # Now compute shortest paths in T, which translates to cyles in G
-    start = min(cross_paths_w_lens, key=cross_paths_w_lens.get)
-    end = nnodes + start
-    min_path = nx.shortest_path(T, source=start, target=end, weight="weight")
+    # Now compute that short path in Gi, which translates to a cycle in G
+    start = min(lift, key=lift.get)
+    end = (start, 1)
+    min_path_i = nx.shortest_path(Gi, source=start, target=end, weight="Gi_weight")
 
-    # Now we obtain the actual path, re-map nodes in T to those in G
-    min_path_nodes = [node if node < nnodes else node - nnodes for node in min_path]
+    # Now we obtain the actual path, re-map nodes in Gi to those in G
+    min_path = [n if n in G else n[0] for n in min_path_i]
+
     # Now remove the edges that occur two times
-    mcycle_pruned = _path_to_cycle(min_path_nodes)
+    # two passes: flag which edges get kept, then build it
+    edgelist = list(pairwise(min_path))
+    edgeset = set()
+    for e in edgelist:
+        if e in edgeset:
+            edgeset.remove(e)
+        elif e[::-1] in edgeset:
+            edgeset.remove(e[::-1])
+        else:
+            edgeset.add(e)
 
-    return {frozenset((idx_nodes[u], idx_nodes[v])) for u, v in mcycle_pruned}
+    min_edgelist = []
+    for e in edgelist:
+        if e in edgeset:
+            min_edgelist.append(e)
+            edgeset.remove(e)
+        elif e[::-1] in edgeset:
+            min_edgelist.append(e[::-1])
+            edgeset.remove(e[::-1])
 
-
-def _path_to_cycle(path):
-    """
-    Removes the edges from path that occur even number of times.
-    Returns a set of edges
-    """
-    edges = set()
-    for edge in pairwise(path):
-        # Toggle whether to keep the current edge.
-        edges ^= {edge}
-    return edges
+    return min_edgelist
 
 
 @not_implemented_for("directed")
