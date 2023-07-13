@@ -1053,7 +1053,7 @@ def minimum_cycle_basis(G, weight=None):
     >>> G = nx.Graph()
     >>> nx.add_cycle(G, [0, 1, 2, 3])
     >>> nx.add_cycle(G, [0, 3, 4, 5])
-    >>> [c for c in nx.minimum_cycle_basis(G)]
+    >>> nx.minimum_cycle_basis(G)
     [[5, 4, 3, 0], [3, 2, 1, 0]]
 
     References:
