@@ -917,7 +917,7 @@ class TestMinimumCycleBasis:
         cg = nx.complete_graph(N)
         cg.add_weighted_edges_from([(u, v, 9) for u, v in cg.edges])
         cg.add_weighted_edges_from([(u, v, 1) for u, v in nx.cycle_graph(N).edges])
-        mcb = nx.minimum_cycle_basis(cg, weight='weight')
+        mcb = nx.minimum_cycle_basis(cg, weight="weight")
         check_independent(mcb)
 
     def test_gh6787_and_edge_attribute_names(self):
