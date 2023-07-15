@@ -340,9 +340,9 @@ def strong_product(G, H):
     return GH
 
 
-@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def power(G, k):
     """Returns the specified power of a graph.
 
@@ -430,8 +430,8 @@ def power(G, k):
     return H
 
 
-@nx._dispatch(graphs=_G_H)
 @not_implemented_for("multigraph")
+@nx._dispatch(graphs=_G_H)
 def rooted_product(G, H, root):
     """Return the rooted product of graphs G and H rooted at root in H.
 
@@ -469,9 +469,9 @@ def rooted_product(G, H, root):
     return R
 
 
-@nx._dispatch(graphs=_G_H)
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch(graphs=_G_H)
 def corona_product(G, H):
     r"""Returns the Corona product of G and H.
 

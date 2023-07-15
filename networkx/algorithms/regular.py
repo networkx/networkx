@@ -41,8 +41,8 @@ def is_regular(G):
         return in_regular and out_regular
 
 
-@nx._dispatch
 @not_implemented_for("directed")
+@nx._dispatch
 def is_k_regular(G, k):
     """Determines whether the graph ``G`` is a k-regular graph.
 
@@ -67,9 +67,9 @@ def is_k_regular(G, k):
     return all(d == k for n, d in G.degree)
 
 
-@nx._dispatch(edge_attrs="matching_weight")
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch(edge_attrs="matching_weight")
 def k_factor(G, k, matching_weight="weight"):
     """Compute a k-factor of G
 

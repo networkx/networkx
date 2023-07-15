@@ -8,8 +8,8 @@ from networkx.utils import not_implemented_for
 __all__ = ["moral_graph"]
 
 
-@nx._dispatch
 @not_implemented_for("undirected")
+@nx._dispatch
 def moral_graph(G):
     r"""Return the Moral Graph
 

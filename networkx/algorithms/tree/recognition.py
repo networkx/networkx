@@ -78,8 +78,8 @@ import networkx as nx
 __all__ = ["is_arborescence", "is_branching", "is_forest", "is_tree"]
 
 
-@nx._dispatch
 @nx.utils.not_implemented_for("undirected")
+@nx._dispatch
 def is_arborescence(G):
     """
     Returns True if `G` is an arborescence.
@@ -118,8 +118,8 @@ def is_arborescence(G):
     return is_tree(G) and max(d for n, d in G.in_degree()) <= 1
 
 
-@nx._dispatch
 @nx.utils.not_implemented_for("undirected")
+@nx._dispatch
 def is_branching(G):
     """
     Returns True if `G` is a branching.

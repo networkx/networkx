@@ -9,9 +9,9 @@ from ...utils import arbitrary_element
 __all__ = ["ramsey_R2"]
 
 
-@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def ramsey_R2(G):
     r"""Compute the largest clique and largest independent set in `G`.
 

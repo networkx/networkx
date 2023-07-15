@@ -7,9 +7,9 @@ from networkx.utils import not_implemented_for
 __all__ = ["communicability", "communicability_exp"]
 
 
-@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def communicability(G):
     r"""Returns communicability between all pairs of nodes in G.
 
@@ -89,9 +89,9 @@ def communicability(G):
     return c
 
 
-@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def communicability_exp(G):
     r"""Returns communicability between all pairs of nodes in G.
 

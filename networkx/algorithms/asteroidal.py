@@ -16,9 +16,9 @@ from networkx.utils import not_implemented_for
 __all__ = ["is_at_free", "find_asteroidal_triple"]
 
 
-@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def find_asteroidal_triple(G):
     r"""Find an asteroidal triple in the given graph.
 
@@ -89,9 +89,9 @@ def find_asteroidal_triple(G):
     return None
 
 
-@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def is_at_free(G):
     """Check if a graph is AT-free.
 
@@ -123,9 +123,9 @@ def is_at_free(G):
     return find_asteroidal_triple(G) is None
 
 
-@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def create_component_structure(G):
     r"""Create component structure for G.
 

@@ -19,8 +19,8 @@ __all__ = ["min_weighted_dominating_set", "min_edge_dominating_set"]
 
 
 # TODO Why doesn't this algorithm work for directed graphs?
-@nx._dispatch(node_attrs="weight")
 @not_implemented_for("directed")
+@nx._dispatch(node_attrs="weight")
 def min_weighted_dominating_set(G, weight=None):
     r"""Returns a dominating set that approximates the minimum weight node
     dominating set.

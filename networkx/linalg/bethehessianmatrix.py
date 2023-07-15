@@ -5,9 +5,9 @@ from networkx.utils import not_implemented_for
 __all__ = ["bethe_hessian_matrix"]
 
 
-@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def bethe_hessian_matrix(G, r=None, nodelist=None):
     r"""Returns the Bethe Hessian matrix of G.
 

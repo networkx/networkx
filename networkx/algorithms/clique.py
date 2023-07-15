@@ -28,8 +28,8 @@ __all__ = [
 ]
 
 
-@nx._dispatch
 @not_implemented_for("directed")
+@nx._dispatch
 def enumerate_all_cliques(G):
     """Returns all cliques in an undirected graph.
 
@@ -100,8 +100,8 @@ def enumerate_all_cliques(G):
             )
 
 
-@nx._dispatch
 @not_implemented_for("directed")
+@nx._dispatch
 def find_cliques(G, nodes=None):
     """Returns all maximal cliques in an undirected graph.
 
@@ -863,8 +863,8 @@ class MaxWeightClique:
         self.expand([], 0, nodes)
 
 
-@nx._dispatch(node_attrs="weight")
 @not_implemented_for("directed")
+@nx._dispatch(node_attrs="weight")
 def max_weight_clique(G, weight="weight"):
     """Find a maximum weight clique in G.
 

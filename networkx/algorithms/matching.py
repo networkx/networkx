@@ -15,9 +15,9 @@ __all__ = [
 ]
 
 
-@nx._dispatch
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
+@nx._dispatch
 def maximal_matching(G):
     r"""Find a maximal matching in the graph.
 
@@ -257,9 +257,9 @@ def is_perfect_matching(G, matching):
     return len(nodes) == len(G)
 
 
-@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight")
 def min_weight_matching(G, weight="weight"):
     """Computing a minimum-weight maximal matching of G.
 
@@ -318,9 +318,9 @@ def min_weight_matching(G, weight="weight"):
     return max_weight_matching(InvG, maxcardinality=True, weight=weight)
 
 
-@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight")
 def max_weight_matching(G, maxcardinality=False, weight="weight"):
     """Compute a maximum-weighted matching of G.
 

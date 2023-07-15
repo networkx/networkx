@@ -26,9 +26,9 @@ class NetworkXTreewidthBoundExceeded(nx.NetworkXException):
     been exceeded"""
 
 
-@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def is_chordal(G):
     """Checks whether G is a chordal graph.
 
@@ -366,8 +366,8 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
     return ()
 
 
-@nx._dispatch
 @not_implemented_for("directed")
+@nx._dispatch
 def complete_to_chordal_graph(G):
     """Return a copy of G completed to a chordal graph
 

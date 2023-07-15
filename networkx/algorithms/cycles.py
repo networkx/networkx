@@ -22,9 +22,9 @@ __all__ = [
 ]
 
 
-@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def cycle_basis(G, root=None):
     """Returns a list of cycles which form a basis for cycles of G.
 
@@ -762,8 +762,8 @@ def _chordless_cycle_search(F, B, path, length_bound):
                 blocked[v] -= 1
 
 
-@nx._dispatch
 @not_implemented_for("undirected")
+@nx._dispatch
 def recursive_simple_cycles(G):
     """Find simple cycles (elementary circuits) of a directed graph.
 
@@ -1033,9 +1033,9 @@ def find_cycle(G, source=None, orientation=None):
     return cycle[i:]
 
 
-@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch(edge_attrs="weight")
 def minimum_cycle_basis(G, weight=None):
     """Returns a minimum weight cycle basis for G
 
@@ -1163,9 +1163,9 @@ def _min_cycle(G, orth, weight):
     return min_edgelist
 
 
-@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def girth(G):
     """Returns the girth of the graph.
 

@@ -442,8 +442,8 @@ def _all_simple_edge_paths_multigraph(G, source, targets, cutoff):
             visited.pop()
 
 
-@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("multigraph")
+@nx._dispatch(edge_attrs="weight")
 def shortest_simple_paths(G, source, target, weight=None):
     """Generate all simple paths in the graph G from source to target,
        starting from shortest ones.

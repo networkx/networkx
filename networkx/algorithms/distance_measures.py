@@ -644,8 +644,8 @@ def _count_lu_permutations(perm_array):
     return perm_cnt
 
 
-@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight")
 def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     """Returns the resistance distance between node A and node B on graph G.
 

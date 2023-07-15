@@ -40,8 +40,8 @@ class EdgePartition(Enum):
     EXCLUDED = 2
 
 
-@nx._dispatch(edge_attrs="weight", preserve_edge_attrs="data")
 @not_implemented_for("multigraph")
+@nx._dispatch(edge_attrs="weight", preserve_edge_attrs="data")
 def boruvka_mst_edges(
     G, minimum=True, weight="weight", keys=False, data=True, ignore_nan=False
 ):
@@ -366,8 +366,8 @@ ALGORITHMS = {
 }
 
 
-@nx._dispatch(edge_attrs="weight", preserve_edge_attrs="data")
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight", preserve_edge_attrs="data")
 def minimum_spanning_edges(
     G, algorithm="kruskal", weight="weight", keys=True, data=True, ignore_nan=False
 ):
@@ -461,8 +461,8 @@ def minimum_spanning_edges(
     )
 
 
-@nx._dispatch(edge_attrs="weight", preserve_edge_attrs="data")
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight", preserve_edge_attrs="data")
 def maximum_spanning_edges(
     G, algorithm="kruskal", weight="weight", keys=True, data=True, ignore_nan=False
 ):

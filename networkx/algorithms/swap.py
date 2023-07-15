@@ -9,9 +9,9 @@ from networkx.utils import py_random_state
 __all__ = ["double_edge_swap", "connected_double_edge_swap", "directed_edge_swap"]
 
 
+@nx.utils.not_implemented_for("undirected")
 @nx._dispatch
 @py_random_state(3)
-@nx.utils.not_implemented_for("undirected")
 def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
     """Swap three edges in a directed graph while keeping the node degrees fixed.
 

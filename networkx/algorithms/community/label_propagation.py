@@ -105,8 +105,8 @@ def asyn_lpa_communities(G, weight=None, seed=None):
     yield from groups(labels).values()
 
 
-@nx._dispatch
 @not_implemented_for("directed")
+@nx._dispatch
 def label_propagation_communities(G):
     """Generates community sets determined by label propagation
 

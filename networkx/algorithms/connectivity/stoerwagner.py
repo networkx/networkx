@@ -10,9 +10,9 @@ from ...utils import BinaryHeap, arbitrary_element, not_implemented_for
 __all__ = ["stoer_wagner"]
 
 
-@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch(edge_attrs="weight")
 def stoer_wagner(G, weight="weight", heap=BinaryHeap):
     r"""Returns the weighted minimum edge cut using the Stoer-Wagner algorithm.
 

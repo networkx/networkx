@@ -123,8 +123,8 @@ def move_one_node(soln, seed):
     return soln
 
 
-@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight")
 def christofides(G, weight="weight", tree=None):
     """Approximate a solution of the traveling salesman problem
 
@@ -335,8 +335,8 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
     return best_path
 
 
-@nx._dispatch(edge_attrs="weight")
 @not_implemented_for("undirected")
+@nx._dispatch(edge_attrs="weight")
 @py_random_state(2)
 def asadpour_atsp(G, weight="weight", seed=None, source=None):
     """

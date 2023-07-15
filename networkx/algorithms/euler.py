@@ -385,8 +385,8 @@ def eulerian_path(G, source=None, keys=False):
             )
 
 
-@nx._dispatch
 @not_implemented_for("directed")
+@nx._dispatch
 def eulerize(G):
     """Transforms a graph into an Eulerian graph.
 

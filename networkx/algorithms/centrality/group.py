@@ -691,8 +691,8 @@ def group_degree_centrality(G, S):
     return centrality
 
 
-@nx._dispatch
 @not_implemented_for("undirected")
+@nx._dispatch
 def group_in_degree_centrality(G, S):
     """Compute the group in-degree centrality for a group of nodes.
 
@@ -738,8 +738,8 @@ def group_in_degree_centrality(G, S):
     return group_degree_centrality(G.reverse(), S)
 
 
-@nx._dispatch
 @not_implemented_for("undirected")
+@nx._dispatch
 def group_out_degree_centrality(G, S):
     """Compute the group out-degree centrality for a group of nodes.
 

@@ -23,8 +23,8 @@ __all__ = [
 ]
 
 
-@nx._dispatch
 @not_implemented_for("multigraph")
+@nx._dispatch
 def k_edge_components(G, k):
     """Generates nodes in each maximal k-edge-connected component in G.
 
@@ -107,8 +107,8 @@ def k_edge_components(G, k):
             return aux_graph.k_edge_components(k)
 
 
-@nx._dispatch
 @not_implemented_for("multigraph")
+@nx._dispatch
 def k_edge_subgraphs(G, k):
     """Generates nodes in each maximal k-edge-connected subgraph in G.
 
@@ -195,9 +195,9 @@ def _k_edge_subgraphs_nodes(G, k):
         yield set(C.nodes())
 
 
-@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def bridge_components(G):
     """Finds all bridge-connected components G.
 

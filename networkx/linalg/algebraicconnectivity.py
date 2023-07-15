@@ -310,9 +310,9 @@ def _get_fiedler_func(method):
     return find_fiedler
 
 
+@not_implemented_for("directed")
 @nx._dispatch(edge_attrs="weight")
 @np_random_state(5)
-@not_implemented_for("directed")
 def algebraic_connectivity(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
 ):
@@ -406,9 +406,9 @@ def algebraic_connectivity(
     return sigma
 
 
+@not_implemented_for("directed")
 @nx._dispatch(edge_attrs="weight")
 @np_random_state(5)
-@not_implemented_for("directed")
 def fiedler_vector(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
 ):

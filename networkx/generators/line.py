@@ -213,9 +213,9 @@ def _lg_undirected(G, selfloops=False, create_using=None):
     return L
 
 
-@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def inverse_line_graph(G):
     """Returns the inverse line graph of graph G.
 

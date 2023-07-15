@@ -4,9 +4,9 @@ from networkx.utils import not_implemented_for, py_random_state
 __all__ = ["average_clustering"]
 
 
+@not_implemented_for("directed")
 @nx._dispatch(name="approximate_average_clustering")
 @py_random_state(2)
-@not_implemented_for("directed")
 def average_clustering(G, trials=1000, seed=None):
     r"""Estimates the average clustering coefficient of G.
 

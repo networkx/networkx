@@ -16,8 +16,8 @@ __all__ = [
 ]
 
 
-@nx._dispatch
 @not_implemented_for("directed")
+@nx._dispatch
 def triangles(G, nodes=None):
     """Compute the number of triangles.
 
@@ -512,8 +512,8 @@ def square_clustering(G, nodes=None):
     return clustering
 
 
-@nx._dispatch
 @not_implemented_for("directed")
+@nx._dispatch
 def generalized_degree(G, nodes=None):
     r"""Compute the generalized degree for nodes.
 

@@ -22,9 +22,9 @@ from networkx.utils import not_implemented_for, py_random_state
 __all__ = ["k_edge_augmentation", "is_k_edge_connected", "is_locally_k_edge_connected"]
 
 
-@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def is_k_edge_connected(G, k):
     """Tests to see if a graph is k-edge-connected.
 
@@ -73,9 +73,9 @@ def is_k_edge_connected(G, k):
             return nx.edge_connectivity(G, cutoff=k) >= k
 
 
-@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def is_locally_k_edge_connected(G, s, t, k):
     """Tests to see if an edge in a graph is locally k-edge-connected.
 
@@ -131,9 +131,9 @@ def is_locally_k_edge_connected(G, s, t, k):
             return localk >= k
 
 
-@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
     """Finds set of edges to k-edge-connect G.
 
@@ -385,9 +385,9 @@ def partial_k_edge_augmentation(G, k, avail, weight=None):
                 yield edge
 
 
-@nx._dispatch
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
+@nx._dispatch
 def one_edge_augmentation(G, avail=None, weight=None, partial=False):
     """Finds minimum weight set of edges to connect G.
 
@@ -440,9 +440,9 @@ def one_edge_augmentation(G, avail=None, weight=None, partial=False):
         )
 
 
-@nx._dispatch
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
+@nx._dispatch
 def bridge_augmentation(G, avail=None, weight=None):
     """Finds the a set of edges that bridge connects G.
 
@@ -1155,10 +1155,10 @@ def _compat_shuffle(rng, input):
     rng.shuffle(input)
 
 
-@nx._dispatch
-@py_random_state(4)
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
+@nx._dispatch
+@py_random_state(4)
 def greedy_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
     """Greedy algorithm for finding a k-edge-augmentation
 

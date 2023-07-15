@@ -61,9 +61,9 @@ def index_satisfying(iterable, condition):
         raise ValueError("iterable must be non-empty") from err
 
 
-@nx._dispatch
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def is_tournament(G):
     """Returns True if and only if `G` is a tournament.
 
@@ -101,9 +101,9 @@ def is_tournament(G):
     )
 
 
-@nx._dispatch
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def hamiltonian_path(G):
     """Returns a Hamiltonian path in the given tournament graph.
 
@@ -181,9 +181,9 @@ def random_tournament(n, seed=None):
     return nx.DiGraph(edges)
 
 
-@nx._dispatch
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def score_sequence(G):
     """Returns the score sequence for the given tournament graph.
 
@@ -211,9 +211,9 @@ def score_sequence(G):
     return sorted(d for v, d in G.out_degree())
 
 
-@nx._dispatch
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def tournament_matrix(G):
     r"""Returns the tournament matrix for the given tournament graph.
 
@@ -254,9 +254,9 @@ def tournament_matrix(G):
     return A - A.T
 
 
-@nx._dispatch
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def is_reachable(G, s, t):
     """Decides whether there is a path from `s` to `t` in the
     tournament.
@@ -342,9 +342,9 @@ def is_reachable(G, s, t):
     return all(not (is_closed(G, S) and s in S and t not in S) for S in neighborhoods)
 
 
-@nx._dispatch(name="tournament_is_strongly_connected")
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch(name="tournament_is_strongly_connected")
 def is_strongly_connected(G):
     """Decides whether the given tournament is strongly connected.
 

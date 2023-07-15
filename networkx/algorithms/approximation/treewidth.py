@@ -39,9 +39,9 @@ from networkx.utils import not_implemented_for
 __all__ = ["treewidth_min_degree", "treewidth_min_fill_in"]
 
 
-@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def treewidth_min_degree(G):
     """Returns a treewidth decomposition using the Minimum Degree heuristic.
 
@@ -63,9 +63,9 @@ def treewidth_min_degree(G):
     return treewidth_decomp(G, lambda graph: deg_heuristic.best_node(graph))
 
 
-@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def treewidth_min_fill_in(G):
     """Returns a treewidth decomposition using the Minimum Fill-in heuristic.
 
