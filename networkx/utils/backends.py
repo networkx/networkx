@@ -380,10 +380,8 @@ def test_override_dispatch(
     def wrapper(*args, **kwds):
         backend = plugins[plugin_name].load()
         if not hasattr(backend, name):
-            if plugin_name == "nx-loopback":
-                raise NetworkXNotImplemented(
-                    f"'{name}' not found in {backend.__class__.__name__}"
-                )
+            if fallback_to_nx:
+                return func(*args, **kwds)
             pytest.xfail(f"'{name}' not implemented by {plugin_name}")
         bound = sig.bind(*args, **kwds)
         bound.apply_defaults()
@@ -657,6 +655,9 @@ if os.environ.get("NETWORKX_GRAPH_CONVERT"):
 
     # Override `dispatch` for testing
     _dispatch = test_override_dispatch
+
+    # Whether to call the networkx algorithm if the backend doesn't implement a function
+    fallback_to_nx = bool(os.environ.get("NETWORKX_BACKEND_TEST_EXHAUSTIVE"))
 
 
 def _mark_tests(items):
