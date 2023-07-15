@@ -469,13 +469,17 @@ def test_override_dispatch(
         _preserve_node_attrs = preserve_node_attrs
         _node_attrs = node_attrs
         if _preserve_node_attrs is False:
+            # e.g. `preserve_node_attrs=False`
             pass
         elif _preserve_node_attrs is True:
+            # e.g. `preserve_node_attrs=True`
             _node_attrs = None
         elif isinstance(_preserve_node_attrs, str):
             if bound.arguments[_preserve_node_attrs] is True or callable(
                 bound.arguments[_preserve_node_attrs]
             ):
+                # e.g. `preserve_node_attrs="attr"` and `func(attr=True)`
+                # e.g. `preserve_node_attrs="attr"` and `func(attr=myfunc)`
                 _preserve_node_attrs = True
                 _node_attrs = None
             elif bound.arguments[_preserve_node_attrs] is False and (
@@ -484,32 +488,43 @@ def test_override_dispatch(
                 or isinstance(_node_attrs, dict)
                 and _preserve_node_attrs in _node_attrs
             ):
+                # e.g. `preserve_node_attrs="attr"` and `func(attr=False)`
                 # Treat `False` argument as meaning "preserve_node_data=False"
                 # and not `False` as the node attribute to use. Is this used?
                 _preserve_node_attrs = False
                 _node_attrs = None
             else:
+                # e.g. `preserve_node_attrs="attr"` and `func(attr="weight")`
                 _preserve_node_attrs = False
         elif not isinstance(_preserve_node_attrs, dict):
             raise TypeError(
                 f"Bad type for preserve_node_attrs: {type(preserve_node_attrs)}"
             )
+            # e.g. `preserve_node_attrs={"G": {"pos": None}}`
 
         if _node_attrs is None:
+            # May have been set to None above b/c all attributes are preserved
             pass
         elif isinstance(_node_attrs, str):
             if _node_attrs[0] == "[":
+                # e.g. `node_attrs="[node_attributes]"` (argument of list of attributes)
+                # e.g. `func(node_attributes=["foo", "bar"])`
                 _node_attrs = {
                     node_attr: None for node_attr in bound.arguments[_node_attrs[1:-1]]
                 }
             elif callable(bound.arguments[_node_attrs]):
+                # e.g. `node_attrs="weight"` and `func(weight=myfunc)`
                 _preserve_node_attrs = True
                 _node_attrs = None
             elif bound.arguments[_node_attrs] is not None:
+                # e.g. `node_attrs="weight"` and `func(weight="foo")`
                 _node_attrs = {bound.arguments[_node_attrs]: None}
             else:
+                # e.g. `node_attrs="weight"` and `func(weight=None)`
                 _node_attrs = None
         elif isinstance(_node_attrs, dict):
+            # e.g. `node_attrs={"attr": "default"}` and `func(attr="foo", default=7)`
+            # e.g. `node_attrs={"attr": 0}` and `func(attr="foo")`
             _node_attrs = {
                 node_attr: bound.arguments.get(val) if isinstance(val, str) else val
                 for key, val in _node_attrs.items()
@@ -544,10 +559,9 @@ def test_override_dispatch(
                 if graph is None:
                     if gname in optional_graphs:
                         continue
-                    else:
-                        raise TypeError(
-                            f"Missing required graph argument `{gname}` in {name} function"
-                        )
+                    raise TypeError(
+                        f"Missing required graph argument `{gname}` in {name} function"
+                    )
                 if isinstance(_preserve_edge_attrs, dict):
                     preserve_edges = False
                     edges = _preserve_edge_attrs.get(gname, _edge_attrs)
