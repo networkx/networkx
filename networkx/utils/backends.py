@@ -395,13 +395,17 @@ def test_override_dispatch(
         _preserve_edge_attrs = preserve_edge_attrs
         _edge_attrs = edge_attrs
         if _preserve_edge_attrs is False:
+            # e.g. `preserve_edge_attrs=False`
             pass
         elif _preserve_edge_attrs is True:
+            # e.g. `preserve_edge_attrs=True`
             _edge_attrs = None
         elif isinstance(_preserve_edge_attrs, str):
             if bound.arguments[_preserve_edge_attrs] is True or callable(
                 bound.arguments[_preserve_edge_attrs]
             ):
+                # e.g. `preserve_edge_attrs="attr"` and `func(attr=True)`
+                # e.g. `preserve_edge_attrs="attr"` and `func(attr=myfunc)`
                 _preserve_edge_attrs = True
                 _edge_attrs = None
             elif bound.arguments[_preserve_edge_attrs] is False and (
@@ -410,28 +414,36 @@ def test_override_dispatch(
                 or isinstance(_edge_attrs, dict)
                 and _preserve_edge_attrs in _edge_attrs
             ):
+                # e.g. `preserve_edge_attrs="attr"` and `func(attr=False)`
                 # Treat `False` argument as meaning "preserve_edge_data=False"
                 # and not `False` as the edge attribute to use.
                 _preserve_edge_attrs = False
                 _edge_attrs = None
             else:
+                # e.g. `preserve_edge_attrs="attr"` and `func(attr="weight")`
                 _preserve_edge_attrs = False
         elif not isinstance(_preserve_edge_attrs, dict):
             raise TypeError(
                 f"Bad type for preserve_edge_attrs: {type(preserve_edge_attrs)}"
             )
+            # e.g. `preserve_edge_attrs={"G": {"weight": 1}}`
 
         if _edge_attrs is None:
+            # May have been set to None above b/c all attributes are preserved
             pass
         elif isinstance(_edge_attrs, str):
             if _edge_attrs[0] == "[":
+                # e.g. `edge_attrs="[edge_attributes]"` (argument of list of attributes)
+                # e.g. `func(edge_attributes=["foo", "bar"])`
                 _edge_attrs = {
                     edge_attr: 1 for edge_attr in bound.arguments[_edge_attrs[1:-1]]
                 }
             elif callable(bound.arguments[_edge_attrs]):
+                # e.g. `edge_attrs="weight"` and `func(weight=myfunc)`
                 _preserve_edge_attrs = True
                 _edge_attrs = None
             elif bound.arguments[_edge_attrs] is not None:
+                # e.g. `edge_attrs="weight"` and `func(weight="foo")` (default of 1)
                 _edge_attrs = {bound.arguments[_edge_attrs]: 1}
             elif name == "to_numpy_array" and hasattr(
                 bound.arguments["dtype"], "names"
@@ -441,8 +453,11 @@ def test_override_dispatch(
                     edge_attr: 1 for edge_attr in bound.arguments["dtype"].names
                 }
             else:
+                # e.g. `edge_attrs="weight"` and `func(weight=None)`
                 _edge_attrs = None
         elif isinstance(_edge_attrs, dict):
+            # e.g. `edge_attrs={"attr": "default"}` and `func(attr="foo", default=7)`
+            # e.g. `edge_attrs={"attr": 0}` and `func(attr="foo")`
             _edge_attrs = {
                 edge_attr: bound.arguments.get(val, 1) if isinstance(val, str) else val
                 for key, val in _edge_attrs.items()
