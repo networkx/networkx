@@ -163,6 +163,9 @@ def louvain_partitions(
     """
 
     partition = [{u} for u in G.nodes()]
+    if nx.is_empty(G):
+        yield partition
+        return
     mod = modularity(G, partition, resolution=resolution, weight=weight)
     is_directed = G.is_directed()
     if G.is_multigraph():
