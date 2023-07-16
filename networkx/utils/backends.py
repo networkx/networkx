@@ -594,6 +594,7 @@ def test_override_dispatch(
             "barycenter",
             "contracted_nodes",
             "stochastic_graph",
+            "relabel_nodes",
         }:
             # For testing, special-case algorithms that mutate input graphs
             if name == "edmonds_karp_core":
@@ -625,6 +626,15 @@ def test_override_dispatch(
                 G2 = bound2.arguments["G"]
                 for k, v in G1.edges.items():
                     G2.edges[k]["weight"] = v["weight"]
+            elif name == "relabel_nodes" and not bound.arguments["copy"]:
+                G1 = backend.convert_to_nx(bound.arguments["G"])
+                bound2 = sig.bind(*args, **kwds)
+                bound2.apply_defaults()
+                G2 = bound2.arguments["G"]
+                G2._node.clear()
+                G2._node.update(G1._node)
+                G2._adj.clear()
+                G2._adj.update(G1._adj)
 
         return backend.convert_to_nx(result, name=name)
 

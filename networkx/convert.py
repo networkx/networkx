@@ -242,7 +242,6 @@ def from_dict_of_lists(d, create_using=None):
     return G
 
 
-# @nx._dispatch(...)  # Not implemented
 def to_dict_of_dicts(G, nodelist=None, edge_data=None):
     """Returns adjacency representation of graph as a dictionary of dictionaries.
 

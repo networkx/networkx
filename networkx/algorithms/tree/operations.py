@@ -7,7 +7,6 @@ import networkx as nx
 __all__ = ["join"]
 
 
-# @nx._dispatch(graphs=...)  # Not implemented
 def join(rooted_trees, label_attribute=None):
     """Returns a new rooted tree with a root node joined with the roots
     of each of the given rooted trees.
