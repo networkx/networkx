@@ -1097,7 +1097,7 @@ def _min_cycle_basis(G, weight):
                 {e for e in orth if e not in base if e[::-1] not in base}
                 | {e for e in base if e not in orth if e[::-1] not in orth}
             )
-            if any((e in orth or e[::-1] in orth) for e in cycle_edges)
+            if sum((e in orth or e[::-1] in orth) for e in cycle_edges) % 2
             else orth
             for orth in set_orth
         ]

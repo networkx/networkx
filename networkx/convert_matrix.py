@@ -605,7 +605,7 @@ def _csr_gen_triples(A):
     data, indices, indptr = A.data, A.indices, A.indptr
     for i in range(nrows):
         for j in range(indptr[i], indptr[i + 1]):
-            yield i, indices[j], data[j]
+            yield i, int(indices[j]), data[j]
 
 
 def _csc_gen_triples(A):
@@ -617,7 +617,7 @@ def _csc_gen_triples(A):
     data, indices, indptr = A.data, A.indices, A.indptr
     for i in range(ncols):
         for j in range(indptr[i], indptr[i + 1]):
-            yield indices[j], i, data[j]
+            yield int(indices[j]), i, data[j]
 
 
 def _coo_gen_triples(A):
@@ -625,8 +625,7 @@ def _coo_gen_triples(A):
     of weighted edge triples.
 
     """
-    row, col, data = A.row, A.col, A.data
-    return zip(row, col, data)
+    return ((int(i), int(j), d) for i, j, d in zip(A.row, A.col, A.data))
 
 
 def _dok_gen_triples(A):

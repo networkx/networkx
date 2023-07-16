@@ -8,6 +8,22 @@ import networkx as nx
 from networkx.algorithms.traversal.edgedfs import FORWARD, REVERSE
 
 
+def check_independent(basis):
+    if len(basis) == 0:
+        return
+    try:
+        import numpy as np
+    except ImportError:
+        return
+
+    H = nx.Graph()
+    for b in basis:
+        nx.add_cycle(H, b)
+    inc = nx.incidence_matrix(H, oriented=True)
+    rank = np.linalg.matrix_rank(inc.toarray(), tol=None, hermitian=False)
+    assert inc.shape[1] - rank == len(basis)
+
+
 class TestCycles:
     @classmethod
     def setup_class(cls):
@@ -837,7 +853,7 @@ def assert_basis_equal(a, b):
     assert sorted(a) == sorted(b)
 
 
-class TestMinimumCycles:
+class TestMinimumCycleBasis:
     @classmethod
     def setup_class(cls):
         T = nx.Graph()
@@ -856,19 +872,21 @@ class TestMinimumCycles:
     def test_dimensionality(self):
         # checks |MCB|=|E|-|V|+|NC|
         ntrial = 10
-        for _ in range(ntrial):
-            rg = nx.erdos_renyi_graph(10, 0.3)
+        for seed in range(1234, 1234 + ntrial):
+            rg = nx.erdos_renyi_graph(10, 0.3, seed=seed)
             nnodes = rg.number_of_nodes()
             nedges = rg.number_of_edges()
             ncomp = nx.number_connected_components(rg)
 
-            dim_mcb = len(nx.minimum_cycle_basis(rg))
-            assert dim_mcb == nedges - nnodes + ncomp
+            mcb = nx.minimum_cycle_basis(rg)
+            assert len(mcb) == nedges - nnodes + ncomp
+            check_independent(mcb)
 
     def test_complete_graph(self):
         cg = nx.complete_graph(5)
         mcb = nx.minimum_cycle_basis(cg)
         assert all(len(cycle) == 3 for cycle in mcb)
+        check_independent(mcb)
 
     def test_tree_graph(self):
         tg = nx.balanced_tree(3, 3)
@@ -891,6 +909,16 @@ class TestMinimumCycles:
         # check that order of the nodes is a path
         for c in mcb:
             assert all(G.has_edge(u, v) for u, v in nx.utils.pairwise(c, cyclic=True))
+        # check independence of the basis
+        check_independent(mcb)
+
+    def test_gh6787_variable_weighted_complete_graph(self):
+        N = 8
+        cg = nx.complete_graph(N)
+        cg.add_weighted_edges_from([(u, v, 9) for u, v in cg.edges])
+        cg.add_weighted_edges_from([(u, v, 1) for u, v in nx.cycle_graph(N).edges])
+        mcb = nx.minimum_cycle_basis(cg, weight="weight")
+        check_independent(mcb)
 
     def test_gh6787_and_edge_attribute_names(self):
         G = nx.cycle_graph(4)
