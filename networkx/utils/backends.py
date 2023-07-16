@@ -161,11 +161,11 @@ def _dispatch(
 
     edge_attrs : str or dict, optional
         ``edge_attrs`` holds information about edge attribute arguments
-        and default values for those edge attributes. 
+        and default values for those edge attributes.
         If a string, ``edge_attrs`` holds the function argument name that
-        indicates a single edge attribute to include in the converted graph. 
+        indicates a single edge attribute to include in the converted graph.
         The default value for this attribute is 1. To indicate that an argument
-        is a list of attributes (all with deafult value 1), use e.g. ``"[attrs]"``. 
+        is a list of attributes (all with deafult value 1), use e.g. ``"[attrs]"``.
         If a dict, ``edge_attrs`` holds a dict keyed by argument names, with
         values that are either the default value or, if a string, the argument
         name that indicates the default value.
