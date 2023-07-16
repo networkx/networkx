@@ -24,8 +24,8 @@ __all__ = [
 @nx._dispatch(
     graphs={"G": 0, "auxiliary?": 4, "residual?": 5},
     preserve_edge_attrs={
-        "auxiliary": {"capacity": None},
-        "residual": {"capacity": None},
+        "auxiliary": {"capacity": float("inf")},
+        "residual": {"capacity": float("inf")},
     },
     preserve_graph_attrs={"auxiliary", "residual"},
 )
@@ -163,7 +163,7 @@ def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
 
 @nx._dispatch(
     graphs={"G": 0, "auxiliary?": 4, "residual?": 5},
-    preserve_edge_attrs={"residual": {"capacity": None}},
+    preserve_edge_attrs={"residual": {"capacity": float("inf")}},
     preserve_node_attrs={"auxiliary": {"id": None}},
     preserve_graph_attrs={"auxiliary", "residual"},
 )

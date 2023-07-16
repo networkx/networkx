@@ -33,7 +33,7 @@ __all__ = [
 
 @nx._dispatch(
     graphs={"G": 0, "auxiliary?": 4, "residual?": 5},
-    preserve_edge_attrs={"residual": {"capacity": None}},
+    preserve_edge_attrs={"residual": {"capacity": float("inf")}},
     preserve_graph_attrs={"auxiliary", "residual"},
 )
 def local_node_connectivity(
@@ -494,7 +494,7 @@ def all_pairs_node_connectivity(G, nbunch=None, flow_func=None):
 
 @nx._dispatch(
     graphs={"G": 0, "auxiliary?": 4, "residual?": 5},
-    preserve_edge_attrs={"residual": {"capacity": None}},
+    preserve_edge_attrs={"residual": {"capacity": float("inf")}},
     preserve_graph_attrs={"residual"},
 )
 def local_edge_connectivity(

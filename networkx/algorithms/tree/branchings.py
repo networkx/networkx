@@ -736,7 +736,7 @@ class Edmonds:
 
 
 @nx._dispatch(
-    edge_attrs={"attr": "default", "partition": None},
+    edge_attrs={"attr": "default", "partition": 0},
     preserve_edge_attrs="preserve_attrs",
 )
 def maximum_branching(

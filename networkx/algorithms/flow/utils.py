@@ -156,7 +156,7 @@ def build_residual_network(G, capacity):
 
 @nx._dispatch(
     graphs="R",
-    preserve_edge_attrs={"R": {"capacity": None}},
+    preserve_edge_attrs={"R": {"capacity": float("inf")}},
     preserve_graph_attrs=True,
 )
 def detect_unboundedness(R, s, t):

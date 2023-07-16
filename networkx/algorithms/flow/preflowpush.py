@@ -291,7 +291,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq, value_on
 @nx._dispatch(
     graphs={"G": 0, "residual?": 4},
     edge_attrs={"capacity": float("inf")},
-    preserve_edge_attrs={"residual": {"capacity": None}},
+    preserve_edge_attrs={"residual": {"capacity": float("inf")}},
     preserve_graph_attrs={"residual"},
 )
 def preflow_push(

@@ -10,7 +10,7 @@ __all__ = ["edmonds_karp"]
 
 @nx._dispatch(
     graphs="R",
-    preserve_edge_attrs={"R": {"capacity": None, "flow": None}},
+    preserve_edge_attrs={"R": {"capacity": float("inf"), "flow": None}},
     preserve_graph_attrs=True,
 )
 def edmonds_karp_core(R, s, t, cutoff):
@@ -125,7 +125,7 @@ def edmonds_karp_impl(G, s, t, capacity, residual, cutoff):
 @nx._dispatch(
     graphs={"G": 0, "residual?": 4},
     edge_attrs={"capacity": float("inf")},
-    preserve_edge_attrs={"residual": {"capacity": None}},
+    preserve_edge_attrs={"residual": {"capacity": float("inf")}},
     preserve_graph_attrs={"residual"},
 )
 def edmonds_karp(

@@ -22,8 +22,8 @@ __all__ = ["edge_disjoint_paths", "node_disjoint_paths"]
 @nx._dispatch(
     graphs={"G": 0, "auxiliary?": 5, "residual?": 6},
     preserve_edge_attrs={
-        "auxiliary": {"capacity": None},
-        "residual": {"capacity": None},
+        "auxiliary": {"capacity": float("inf")},
+        "residual": {"capacity": float("inf")},
     },
     preserve_graph_attrs={"residual"},
 )
@@ -236,7 +236,7 @@ def edge_disjoint_paths(
 
 @nx._dispatch(
     graphs={"G": 0, "auxiliary?": 5, "residual?": 6},
-    preserve_edge_attrs={"residual": {"capacity": None}},
+    preserve_edge_attrs={"residual": {"capacity": float("inf")}},
     preserve_node_attrs={"auxiliary": {"id": None}},
     preserve_graph_attrs={"auxiliary", "residual"},
 )
