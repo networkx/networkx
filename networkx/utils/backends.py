@@ -160,12 +160,15 @@ def _dispatch(
         To indicate an argument is a list of graphs, do e.g. ``"[graphs]"``.
 
     edge_attrs : str or dict, optional
-        ``edge_attrs`` may be strings of the function argument that indicate
-        a single edge attribute to use to convert the graph. They may also be
-        dicts that map argument name of attributes to argument name of default
-        values. The default value may be a non-string value such as 0.
-        If not provided, the default value is assumed to be 1.
-        To indicate an argument is a list of attributes, do e.g. ``"[attrs]"``.
+        ``edge_attrs`` holds information about edge attribute arguments
+        and default values for those edge attributes. 
+        If a string, ``edge_attrs`` holds the function argument name that
+        indicates a single edge attribute to include in the converted graph. 
+        The default value for this attribute is 1. To indicate that an argument
+        is a list of attributes (all with deafult value 1), use e.g. ``"[attrs]"``. 
+        If a dict, ``edge_attrs`` holds a dict keyed by argument names, with
+        values that are either the default value or, if a string, the argument
+        name that indicates the default value.
 
     node_attrs : str or dict, optional
         Like ``edge_attrs``, but for node attributes.
