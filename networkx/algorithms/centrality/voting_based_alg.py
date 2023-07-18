@@ -9,14 +9,16 @@ __all__ = ["sav_voting", "copeland_voting", "spav_voting"]
 
 
 @not_implemented_for("directed")
-def sav_voting(G, number_of_nodes):
-    """Select a set of influential nodes using Satisfaction Approval Voting (SAV).
+def sav_voting(G):
+    """
+    Rank nodes using Satisfaction Approval Voting (SAV).
 
     SAV [1]_ [2]_ lets each node vote on the centrality of its neighbors. Thereby, each node x
     contributes 1/|degree(x)| points to the total score of each neighbor. In other words: node
     x distributes a total of 1 point equally to all neighbors.
-
-    Eventually, the nodes with the highest total score are selected.
+    
+    One interpretation is that a node is more central according to SAV if it has many neighbors
+    which highly rely on the connection to this node (they have no, or only a few, other neighbors).
 
     SAV only works with undirected networks. Weights are ignored.
 
@@ -25,13 +27,10 @@ def sav_voting(G, number_of_nodes):
     G : graph
         A NetworkX graph.
 
-    number_of_nodes : integer
-        Number of nodes to select.
-
     Returns
     -------
-    sav_voting : set
-        The number_of_nodes nodes with highest SAV score.
+    sav_voting : dict
+        For each node the dict contains the SAV score.
 
     Examples
     --------
@@ -59,19 +58,14 @@ def sav_voting(G, number_of_nodes):
         for candidate in neighbors:
             scores[candidate] += voting_capability
     
-    # Select best nodes
-    selected_nodes = set()
-    for i in range(number_of_nodes):
-        best = max(G.nodes, key=scores.get)
-        selected_nodes.add(best)
-        scores[best] = -1
-    return selected_nodes
+    return scores
 
 
 
 @not_implemented_for("directed")
 def copeland_voting(G):
-    """Rank nodes using the Condorcet-consistent voting rule due to Copeland.
+    """
+    Rank nodes using the Condorcet-consistent voting rule due to Copeland.
 
     According to Condorcet, a candidate should win an election whenever it is preferred
     to each other candidate by a majority of voters in direct comparison. Although this
