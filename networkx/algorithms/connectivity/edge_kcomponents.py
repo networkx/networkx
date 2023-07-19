@@ -12,7 +12,6 @@ import itertools as it
 from functools import partial
 
 import networkx as nx
-from networkx.algorithms import bridges
 from networkx.utils import arbitrary_element, not_implemented_for
 
 __all__ = [
@@ -235,7 +234,7 @@ def bridge_components(G):
     [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]
     """
     H = G.copy()
-    H.remove_edges_from(bridges(G))
+    H.remove_edges_from(nx.bridges(G))
     yield from nx.connected_components(H)
 
 
