@@ -4,6 +4,8 @@ centrality using voting methods from Computational Social Choice.
 """
 
 import itertools
+import networkx as nx
+from networkx.utils import not_implemented_for
 
 __all__ = ["sav_voting", "copeland_voting", "spav_voting"]
 
@@ -53,7 +55,7 @@ def sav_voting(G):
     # Compute Scores
     scores = {candidate : 0 for candidate in G.nodes}
     for voter in G.nodes:
-        neighbors = G.neighbors(voter)
+        neighbors = list(G.neighbors(voter))
         voting_capability = 1/len(neighbors)
         for candidate in neighbors:
             scores[candidate] += voting_capability
@@ -106,7 +108,7 @@ def copeland_voting(G):
     """
 
     shortest_paths_len = dict()
-    for start, distances in nx.shortest_path_length(graph, source=None, target=None):
+    for start, distances in nx.shortest_path_length(G, source=None, target=None):
         shortest_paths_len[start] = distances
 
     def pairwise_comparison(A, B):
@@ -195,7 +197,7 @@ def spav_voting(G, number_of_nodes=None, voting_ability_fn=None):
             for voter in G.neighbors(candidate):
                 candidate_score += voting_ability_fn(neighbors_already_selected[voter])
             scores[candidate] = candidate_score
-        best = max(G.nodes, key=scores.get)
+        best = max(candidates, key=scores.get)
         selected_nodes.append(best)
         candidates.remove(best)
         for voter in G.neighbors(best):
