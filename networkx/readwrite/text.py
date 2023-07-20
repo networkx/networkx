@@ -743,7 +743,7 @@ def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fal
         return "\n".join(printbuf)
 
 
-def parse_network_text(lines):
+def _parse_network_text(lines):
     """Reconstructs a graph from a network text representation.
 
     This is mainly used for testing.  Network text is for display, not

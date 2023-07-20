@@ -1790,7 +1790,7 @@ def test_network_text_round_trip(vertical_chains, ascii_only):
     the same as the original graph. Passing this test is strong validation of
     both the format generator and parser.
     """
-    from networkx.readwrite.text import parse_network_text
+    from networkx.readwrite.text import _parse_network_text
 
     for graph in generate_test_graphs():
         graph = nx.relabel_nodes(graph, {n: str(n) for n in graph.nodes})
@@ -1799,7 +1799,7 @@ def test_network_text_round_trip(vertical_chains, ascii_only):
                 graph, vertical_chains=vertical_chains, ascii_only=ascii_only
             )
         )
-        new = parse_network_text(lines)
+        new = _parse_network_text(lines)
         try:
             assert new.nodes == graph.nodes
             assert new.edges == graph.edges
