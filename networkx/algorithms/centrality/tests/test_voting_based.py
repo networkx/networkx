@@ -26,6 +26,29 @@ class TestSPAVCentrality:
             ]
         )
         assert [1, 7, 11] == nx.spav_voting(G, number_of_nodes=3)
+    
+    def test_spav_2(self):
+        G = nx.Graph()
+        G.add_edges_from(
+            [
+                (1, 2),
+                (1, 3),
+                (1, 4),
+                (1, 5),
+                (1, 6),
+                (2, 6),
+                (3, 6),
+                (4, 6),
+                (5, 6),
+                (7, 6),
+                (7, 8),
+                (7, 9),
+                (10, 6),
+                (10, 1),
+            ]
+        )
+        assert [6, 1] == nx.spav_voting(G, number_of_nodes=2)
+        assert [6, 7] == nx.spav_voting(G, number_of_nodes=2, voting_ability_fn=lambda x : 1 if x==0 else 0)
 
 class TestSAVCentrality:
     def test_sav_1(self):
