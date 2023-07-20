@@ -1,5 +1,4 @@
-"""
-Algorithms to select influential nodes in a network, or to rank nodes by their
+"""Algorithms to select influential nodes in a network, or to rank nodes by their
 centrality using voting methods from Computational Social Choice.
 """
 
@@ -12,8 +11,7 @@ __all__ = ["sav_voting", "copeland_voting", "spav_voting"]
 
 @not_implemented_for("directed")
 def sav_voting(G):
-    """
-    Rank nodes using Satisfaction Approval Voting (SAV).
+    """Rank nodes using Satisfaction Approval Voting (SAV).
 
     SAV [1]_ [2]_ lets each node vote on the centrality of its neighbors. Thereby, each node x
     contributes 1/|degree(x)| points to the total score of each neighbor. In other words: node
@@ -34,9 +32,15 @@ def sav_voting(G):
     sav_voting : dict
         For each node the dict contains the SAV score.
 
+    See Also
+    --------
+    copeland_voting, spav_voting
+
     Examples
     --------
-    TODO
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (1, 5), (5, 6), (6, 7), (7, 8), (7, 9)])
+    >>> nx.sav_voting(G)
+    {1: 3.5, 2: 0.25, 3: 0.25, 4: 0.25, 5: 0.75, 6: 0.833, 7: 2.5, 8: 0.33, 9: 0.33}
 
     References
     ----------
@@ -66,8 +70,7 @@ def sav_voting(G):
 
 @not_implemented_for("directed")
 def copeland_voting(G):
-    """
-    Rank nodes using the Condorcet-consistent voting rule due to Copeland.
+    """Rank nodes using the Condorcet-consistent voting rule due to Copeland.
 
     According to Condorcet, a candidate should win an election whenever it is preferred
     to each other candidate by a majority of voters in direct comparison. Although this
@@ -83,6 +86,8 @@ def copeland_voting(G):
     comparison. If A and B are tied (neither A nor B wins), both receive no points. The
     Copeland centrality index is achieved by summing up all the points from all comparisons.
     
+    Notes
+    -----
     The Copeland centrality index was introduced in [1]_ .
 
     Parameters
@@ -95,9 +100,15 @@ def copeland_voting(G):
     copeland_voting : dict
         For each node the dict contains the copeland score.
 
+    See Also
+    --------
+    sav_voting, spav_voting
+    
     Examples
     --------
-    TODO
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (1, 5), (5, 6), (6, 7), (7, 8), (7, 9)])
+    >>> nx.copeland_voting(G)
+    {1: 5, 2: -1, 3: -1, 4: -1, 5: 8, 6: 5, 7: -1, 8: -7, 9: -7}
 
     References
     ----------
@@ -133,8 +144,7 @@ def copeland_voting(G):
 
 @not_implemented_for("directed")
 def spav_voting(G, number_of_nodes=None, voting_ability_fn=None):
-    """
-    Select a set of influential nodes using Sequential Proportional Approval Voting (SPAV).
+    """Select a set of influential nodes using Sequential Proportional Approval Voting (SPAV).
 
     SPAV [1]_ [2]_ lets each node vote on the centrality of its neighbors in multiple rounds. In each
     round, the node with the highest voting score is elected where each node contributes the same
@@ -163,9 +173,15 @@ def spav_voting(G, number_of_nodes=None, voting_ability_fn=None):
     spav_voting : list
         The sequence in which the number_of_nodes nodes are elected.
 
+    See Also
+    --------
+    copeland_voting, sav_voting
+    
     Examples
     --------
-    TODO
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (1, 5), (5, 6), (6, 7), (7, 8), (7, 9)])
+    >>> nx.spav_voting(G, number_of_nodes=2)
+    [1, 7]
 
     References
     ----------
