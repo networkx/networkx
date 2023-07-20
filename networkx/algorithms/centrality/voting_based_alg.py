@@ -8,8 +8,8 @@ import networkx as nx
 __all__ = ["sav_voting", "copeland_voting", "spav_voting"]
 
 
-@nx.not_implemented_for("directed")
-@nx.not_implemented_for("multigraph")
+@nx.utils.not_implemented_for("directed")
+@nx.utils.not_implemented_for("multigraph")
 def sav_voting(G):
     """Rank nodes using Satisfaction Approval Voting (SAV).
 
@@ -80,8 +80,8 @@ def sav_voting(G):
 
 
 
-@nx.not_implemented_for("directed")
-@nx.not_implemented_for("multigraph")
+@nx.utils.not_implemented_for("directed")
+@nx.utils.not_implemented_for("multigraph")
 def copeland_voting(G):
     """Rank nodes using the Condorcet-consistent voting rule due to Copeland.
 
@@ -161,8 +161,8 @@ def copeland_voting(G):
     return scores
 
 
-@nx.not_implemented_for("directed")
-@nx.not_implemented_for("multigraph")
+@nx.utils.not_implemented_for("directed")
+@nx.utils.not_implemented_for("multigraph")
 def spav_voting(G, number_of_nodes=None, voting_ability_fn=None):
     """Select a set of influential nodes using Sequential Proportional Approval Voting (SPAV).
 
