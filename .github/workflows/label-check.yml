@@ -1,0 +1,19 @@
+name: Labels
+
+on:
+  pull_request:
+    types:
+      - opened
+      - labeled
+      - unlabeled
+
+env:
+  LABELS: ${{ join( github.event.pull_request.labels.*.name, ' ' ) }}
+
+jobs:
+  check-type-label:
+    name: ensure type label
+    runs-on: ubuntu-latest
+    steps:
+      - if: "contains( env.LABELS, 'type: ' ) == false"
+        run: exit 1
