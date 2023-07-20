@@ -1109,6 +1109,70 @@ class PlanarEmbedding(nx.DiGraph):
         """
         self.add_half_edge(start_node, end_node, ccw=reference_neighbor)
 
+    def remove_edge(self, u, v):
+        """Remove the edge between u and v.
+
+        Parameters
+        ----------
+        u, v : nodes
+        Remove the half-edges (u, v) and (v, u) and update the
+        edge ordering around the removed edge.
+
+        Raises
+        ------
+        NetworkXError
+        If there is not an edge between u and v.
+
+        See Also
+        --------
+        remove_edges_from : remove a collection of edges
+        """
+        uv_cw = self[u][v]["cw"]
+        uv_ccw = self[u][v]["ccw"]
+        vu_cw = self[v][u]["cw"]
+        vu_ccw = self[v][u]["ccw"]
+        super().remove_edge(u, v)
+        super().remove_edge(v, u)
+        if v != uv_cw:
+            self[u][uv_cw]["ccw"] = uv_ccw
+            self[u][uv_ccw]["cw"] = uv_cw
+        if u != vu_cw:
+            self[v][vu_cw]["ccw"] = vu_ccw
+            self[v][vu_ccw]["cw"] = vu_cw
+
+    def remove_edges_from(self, ebunch):
+        """Remove all edges specified in ebunch.
+
+        Parameters
+        ----------
+        ebunch: list or container of edge tuples
+            Each pair of half-edges between the nodes given in the tuples
+            will be removed from the graph. The nodes can be passed as:
+
+                - 2-tuples (u, v) half-edges (u, v) and (v, u).
+                - 3-tuples (u, v, k) where k is ignored.
+
+        See Also
+        --------
+        remove_edge : remove a single edge
+
+        Notes
+        -----
+        Will fail silently if an edge in ebunch is not in the graph.
+
+        Examples
+        --------
+        >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> ebunch = [(1, 2), (2, 3)]
+        >>> G.remove_edges_from(ebunch)
+        """
+        for e in ebunch:
+            u, v = e[:2]  # ignore edge data
+            # assuming that the PlanarEmbedding is valid, if the half_edge
+            # (u, v) is in the graph, then so is half_edge (v, u)
+            if u in self._succ and v in self._succ[u]:
+                self.remove_edge(u, v)
+
     def connect_components(self, v, w):
         """Adds half-edges for (v, w) and (w, v) at some position.
 
