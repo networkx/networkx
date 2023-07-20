@@ -155,3 +155,12 @@ Laplacian
    :toctree: generated/
 
    laplacian_centrality
+
+Voting-Based Centrality
+---------
+.. autosummary::
+   :toctree: generated/
+
+   sav_voting
+   copeland_voting
+   spav_voting
