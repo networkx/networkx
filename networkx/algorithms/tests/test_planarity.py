@@ -277,6 +277,20 @@ class TestLRPlanarity:
             G.add_node(1)
             get_counterexample_recursive(G)
 
+    def test_edge_removal_from_planar_embedding(self):
+        # PlanarEmbedding.check_structure() must succeed after edge removal
+        edges = ((0, 1), (1, 2), (2, 3), (3, 4), (4, 0), (0, 2), (0, 3))
+        G = nx.Graph(edges)
+        cert, P = nx.check_planarity(G)
+        assert cert is True
+        P.remove_edge(0, 2)
+        self.check_graph(P, is_planar=True)
+        P.add_half_edge_ccw(1, 3, 2)
+        P.add_half_edge_cw(3, 1, 2)
+        self.check_graph(P, is_planar=True)
+        P.remove_edges_from(((0, 3), (1, 3)))
+        self.check_graph(P, is_planar=True)
+
 
 def check_embedding(G, embedding):
     """Raises an exception if the combinatorial embedding is not correct
