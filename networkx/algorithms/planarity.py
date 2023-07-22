@@ -1,6 +1,7 @@
 from collections import defaultdict
 
 import networkx as nx
+from networkx.exception import NetworkXError
 
 __all__ = ["check_planarity", "is_planar", "PlanarEmbedding"]
 
@@ -896,6 +897,81 @@ class PlanarEmbedding(nx.DiGraph):
                 self.add_half_edge(v, w, cw=ref)
                 ref = w
 
+    def remove_node(self, n):
+        """Remove node n.
+
+        Removes the node n and all adjacent edges, updating the
+        PlanarEmbedding to account for any resulting edge removal.
+        Attempting to remove a non-existent node will raise an exception.
+
+        Parameters
+        ----------
+        n : node
+           A node in the graph
+
+        Raises
+        ------
+        NetworkXError
+           If n is not in the graph.
+
+        See Also
+        --------
+        remove_nodes_from
+
+        """
+        try:
+            nbrs = self._pred[n]
+            for u in tuple(nbrs):
+                un_cw = self._succ[u][n]["cw"]
+                un_ccw = self._succ[u][n]["ccw"]
+                del self._succ[u][n]
+                del self._pred[n][u]
+                del self._succ[n][u]
+                del self._pred[u][n]
+                if n != un_cw:
+                    self._succ[u][un_cw]["ccw"] = un_ccw
+                    self._succ[u][un_ccw]["cw"] = un_cw
+                    if self._node[u]["first_nbr"] == n:
+                        self._node[u]["first_nbr"] = un_ccw
+                else:
+                    del self._node[u]["first_nbr"]
+            del self._node[n]
+            del self._succ[n]
+            del self._pred[n]
+        except KeyError as err:  # NetworkXError if n not in self
+            raise NetworkXError(
+                f"The node {n} is not in the planar embedding."
+            ) from err
+
+    def remove_nodes_from(self, nodes):
+        """Remove multiple nodes.
+
+        Parameters
+        ----------
+        nodes : iterable container
+            A container of nodes (list, dict, set, etc.).  If a node
+            in the container is not in the graph it is silently ignored.
+
+        See Also
+        --------
+        remove_node
+
+        Notes
+        -----
+        When removing nodes from an iterator over the graph you are changing,
+        a `RuntimeError` will be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
+        object, e.g. by using `list(iterator_of_nodes)`, and pass this
+        object to `G.remove_nodes_from`.
+
+        """
+        for n in nodes:
+            if n in self._node:
+                self.remove_node(n)
+            # silently skip non-existing nodes
+
     def neighbors_cw_order(self, v):
         """Generator for the neighbors of v in clockwise order.
 
@@ -1127,18 +1203,33 @@ class PlanarEmbedding(nx.DiGraph):
         --------
         remove_edges_from : remove a collection of edges
         """
-        uv_cw = self[u][v]["cw"]
-        uv_ccw = self[u][v]["ccw"]
-        vu_cw = self[v][u]["cw"]
-        vu_ccw = self[v][u]["ccw"]
-        super().remove_edge(u, v)
-        super().remove_edge(v, u)
-        if v != uv_cw:
-            self[u][uv_cw]["ccw"] = uv_ccw
-            self[u][uv_ccw]["cw"] = uv_cw
-        if u != vu_cw:
-            self[v][vu_cw]["ccw"] = vu_ccw
-            self[v][vu_ccw]["cw"] = vu_cw
+        try:
+            uv_cw = self._succ[u][v]["cw"]
+            uv_ccw = self._succ[u][v]["ccw"]
+            vu_cw = self._succ[v][u]["cw"]
+            vu_ccw = self._succ[v][u]["ccw"]
+            del self._succ[u][v]
+            del self._pred[v][u]
+            del self._succ[v][u]
+            del self._pred[u][v]
+            if v != uv_cw:
+                self._succ[u][uv_cw]["ccw"] = uv_ccw
+                self._succ[u][uv_ccw]["cw"] = uv_cw
+                if self._node[u]["first_nbr"] == v:
+                    self._node[u]["first_nbr"] = uv_ccw
+            else:
+                del self._node[u]["first_nbr"]
+            if u != vu_cw:
+                self._succ[v][vu_cw]["ccw"] = vu_ccw
+                self._succ[v][vu_ccw]["cw"] = vu_cw
+                if self._node[v]["first_nbr"] == u:
+                    self._node[v]["first_nbr"] = vu_ccw
+            else:
+                del self._node[v]["first_nbr"]
+        except KeyError as err:
+            raise NetworkXError(
+                f"The edge {u}-{v} not in the planar embedding."
+            ) from err
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
