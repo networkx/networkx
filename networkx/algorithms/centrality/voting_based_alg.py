@@ -11,7 +11,7 @@ __all__ = ["sav_voting", "copeland_voting", "spav_voting"]
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
 def sav_voting(G):
-    """Rank nodes using Satisfaction Approval Voting (SAV).
+    """Rank nodes using Satisfaction Approval Voting (SAV) [1]_ .
 
     SAV centrality (introduced in [2]_ and based on the framework in [3]_ ) lets each node vote
     on the centrality of its neighbors. Thereby, each node x contributes 1/|degree(x)| points
@@ -83,7 +83,7 @@ def sav_voting(G):
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
 def copeland_voting(G):
-    """Rank nodes using the Condorcet-consistent voting rule due to Copeland.
+    """Rank nodes using the Condorcet-consistent voting rule due to Arthur Copeland.
 
     According to Condorcet, a candidate should win an election whenever it is preferred
     to each other candidate by a majority of voters in direct comparison. Although this
@@ -170,9 +170,9 @@ def spav_voting(G, number_of_nodes=None, voting_ability_fn=None):
     on the centrality of its neighbors in multiple rounds. In each round, the node with the highest
     voting score is elected where each node contributes the same points to each of its neighbors.
     Thereby, whenever a node is elected, all neighbors' voting ability is reduced so that in the
-    next round they contribute less points to their neighbors (similar to VoteRank). By how far the
-    voting ability is reduced depends on the voting_ability_fn, which maps an integer (how many nodes
-    from the neighborhood of a "voter" are already selected) to a real number (voting ability).
+    next round they contribute less points to their neighbors (similar to VoteRank [4]_). By how far
+    the voting ability is reduced depends on the voting_ability_fn, which maps an integer (how many
+    nodes from the neighborhood of a "voter" are already selected) to a real number (voting ability).
     By default, voting_ability_fn(0) = 1, voting_ability_fn(1) = 1/2, voting_ability_fn(2) = 1/3,
     etc., is used.
     
@@ -232,7 +232,7 @@ def spav_voting(G, number_of_nodes=None, voting_ability_fn=None):
         In: Proceedings of the 21st International Conference on Autonomous Agents and Multiagent Systems (AAMAS)
         Publisher: IFAAMAS
         https://www.ifaamas.org/Proceedings/aamas2022/pdfs/p1554.pdf
-       [1] Zhang, J.-X. et al. (2016).
+       [4] Zhang, J.-X. et al. (2016).
         "Identifying a set of influential spreaders in complex networks."
         In: Sci. Rep. 6, 27823.
         https://doi.org/10.1038/srep27823
