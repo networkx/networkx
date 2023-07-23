@@ -634,10 +634,19 @@ def test_override_dispatch(
                 bound2 = sig.bind(*args, **kwds)
                 bound2.apply_defaults()
                 G2 = bound2.arguments["G"]
+                if G1 is G2:
+                    return G2
                 G2._node.clear()
                 G2._node.update(G1._node)
                 G2._adj.clear()
                 G2._adj.update(G1._adj)
+                if hasattr(G1, "_pred") and hasattr(G2, "_pred"):
+                    G2._pred.clear()
+                    G2._pred.update(G1._pred)
+                if hasattr(G1, "_succ") and hasattr(G2, "_succ"):
+                    G2._succ.clear()
+                    G2._succ.update(G1._succ)
+                return G2
 
         return backend.convert_to_nx(result, name=name)
 
