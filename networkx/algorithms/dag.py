@@ -28,7 +28,9 @@ __all__ = [
     "transitive_reduction",
     "antichains",
     "dag_longest_path",
+    "dag_longest_path_between",
     "dag_longest_path_length",
+    "dag_longest_path_between_length",
     "dag_to_branching",
     "compute_v_structures",
 ]
@@ -1038,6 +1040,138 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
 
 
 @not_implemented_for("undirected")
+def dag_longest_path_between(
+    G, source, target, weight="weight", default_weight=1, topo_order=None
+):
+    """Returns the longest path in a directed acyclic graph (DAG) between the nodes `source` and `target`
+
+    If `G` has edges with `weight` attribute the edge data are used as
+    weight values.
+
+    If `source` parameter is not None, the longest path starting at `source` is returned.
+    If `target` parameter is not None, the longest path ending at `target` is returned.
+    If `source` and `target` parameters are not None, the longest `source`-`target`-path is returned.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+        A directed acyclic graph (DAG)
+
+    weight : str, optional
+        Edge data key to use for weight
+
+    default_weight : int, optional
+        The weight of edges that do not have a weight attribute
+
+    topo_order: list or tuple, optional
+        A topological order for `G` (if None, the function will compute one)
+
+    source: The source node
+
+    target: The target node
+
+    Returns
+    -------
+    list
+        Longest path
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is not directed
+    Exception
+        If `source` and `target` are None
+
+    Examples
+    --------
+    >>> DG = nx.DiGraph([(0, 1, {'cost':1}), (1, 2, {'cost':1}), (0, 2, {'cost':42})])
+    >>> list(nx.all_simple_paths(DG, 0, 2))
+    [[0, 1, 2], [0, 2]]
+    >>> nx.dag_longest_path_between(DG, 0, 2, "cost", 1)
+    [0, 2]
+    >>> nx.dag_longest_path_between(DG, 0, None, weight="cost")
+    [0, 2]
+
+    In the case where multiple valid topological orderings exist, `topo_order`
+    can be used to specify a specific ordering:
+
+    >>> DG = nx.DiGraph([(0, 1), (0, 2)])
+    >>> sorted(nx.all_topological_sorts(DG))  # Valid topological orderings
+    [[0, 1, 2], [0, 2, 1]]
+    >>> nx.dag_longest_path_between(DG, 0, 1, topo_order=[0, 1, 2])
+    [0, 1]
+    >>> nx.dag_longest_path_between(DG, 0, 2, topo_order=[0, 2, 1])
+    [0, 2]
+
+    See also
+    --------
+    dag_longest_path_length
+
+    """
+    # edge case
+    if source == None and target == None:
+        raise Exception("Nodes `source` and `target` not provided.")
+
+    # topological sorting
+    if topo_order is None:
+        topo_order = nx.topological_sort(G)
+
+    topo_order = list(topo_order)
+
+    # indexes
+    topo_order_idxs = {v: idx for (idx, v) in enumerate(topo_order)}
+
+    source_idx = topo_order_idxs[source] if source != None else 0
+    target_idx = topo_order_idxs[target] if target != None else len(topo_order_idxs) - 1
+
+    # edge case: No path between `source` and `target`
+    if source_idx > target_idx:
+        return []
+
+    # bfs distance
+    dist = {}  # stores {v : (length, u)}
+
+    # predecessor callback
+    valid_predecessor = lambda u: True
+    if source != None:
+        valid_predecessor = lambda u: u == source or dist[u][1] != u
+
+    # bfs
+    for v in topo_order[source_idx : target_idx + 1]:
+        us = [
+            (
+                dist[u][0]
+                + (
+                    max(data.values(), key=lambda x: x.get(weight, default_weight))
+                    if G.is_multigraph()
+                    else data
+                ).get(weight, default_weight),
+                u,
+            )
+            for u, data in G.pred[v].items()
+            if source_idx <= topo_order_idxs[u]
+            and topo_order_idxs[u] < target_idx
+            and valid_predecessor(u)
+        ]
+
+        # Use the best predecessor if there is one and its distance is
+        # non-negative, otherwise terminate.
+        maxu = max(us, key=lambda x: x[0]) if us else (0, v)
+        dist[v] = maxu if maxu[0] >= 0 else (0, v)
+
+    u = None
+    v = target if target != None else max(dist, key=lambda x: dist[x][0])
+    path = []
+    while u != v:
+        path.append(v)
+        u = v
+        v = dist[v][1]
+
+    path.reverse()
+    return path
+
+
+@not_implemented_for("undirected")
 def dag_longest_path_length(G, weight="weight", default_weight=1):
     """Returns the longest path length in a DAG
 
@@ -1084,6 +1218,71 @@ def dag_longest_path_length(G, weight="weight", default_weight=1):
             path_length += G[u][v][i].get(weight, default_weight)
     else:
         for u, v in pairwise(path):
+            path_length += G[u][v].get(weight, default_weight)
+
+    return path_length
+
+
+@not_implemented_for("undirected")
+def dag_longest_path_between_length(
+    G, source, target, weight="weight", default_weight=1
+):
+    """Returns the longest path length in a DAG between the nodes `source` and `target`
+
+    If `G` has edges with `weight` attribute the edge data are used as
+    weight values.
+
+    If `source` parameter is not None, the longest path length starting at `source` is returned.
+    If `target` parameter is not None, the longest path length ending at `target` is returned.
+    If `source` and `target` parameters are not None, the longest `source`-`target`-path length is returned.
+
+    Parameters
+    ----------
+    G : NetworkX DiGraph
+        A directed acyclic graph (DAG)
+
+    source: The source node
+
+    target: The target node
+
+    weight : string, optional
+        Edge data key to use for weight
+
+    default_weight : int, optional
+        The weight of edges that do not have a weight attribute
+
+    Returns
+    -------
+    int
+        Longest path length
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is not directed
+
+    Examples
+    --------
+    >>> DG = nx.DiGraph([(0, 1, {'cost':1}), (1, 2, {'cost':1}), (0, 2, {'cost':42})])
+    >>> list(nx.all_simple_paths(DG, 0, 2))
+    [[0, 1, 2], [0, 2]]
+    >>> nx.dag_longest_path_between_length(DG, 0, None)
+    2
+    >>> nx.dag_longest_path_between_length(DG, 0, 2, weight="cost")
+    42
+
+    See also
+    --------
+    dag_longest_path_between
+    """
+    path = nx.dag_longest_path_between(G, source, target, weight, default_weight)
+    path_length = 0
+    if G.is_multigraph():
+        for u, v in pairwise(path):
+            i = max(G[u][v], key=lambda x: G[u][v][x].get(weight, default_weight))
+            path_length += G[u][v][i].get(weight, default_weight)
+    else:
+        for (u, v) in pairwise(path):
             path_length += G[u][v].get(weight, default_weight)
 
     return path_length
