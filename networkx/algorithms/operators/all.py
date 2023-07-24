@@ -268,7 +268,7 @@ def intersection_all(graphs):
         G_nodes_set = set(G.nodes)
         G_edges_set = set(G.edges)
         if not G.is_directed():
-            if type(G) is nx.MultiGraph:
+            if G.is_multigraph():
                 G_edges_set.update((v, u, k) for u, v, k in list(G_edges_set))
             else:
                 G_edges_set.update((v, u) for u, v in list(G_edges_set))

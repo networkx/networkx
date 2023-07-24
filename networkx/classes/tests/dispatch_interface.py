@@ -12,6 +12,7 @@
 
 import networkx as nx
 from networkx import DiGraph, Graph, MultiDiGraph, MultiGraph, PlanarEmbedding
+from networkx.classes.reportviews import NodeView
 
 
 class LoopbackGraph(Graph):
@@ -76,15 +77,33 @@ class LoopbackDispatcher:
             "dfs_labeled_edges",
         }:
             return graph
-        if not isinstance(graph, Graph):
-            if name == "is_partition":
-                # May be NodeView
-                return graph
+        if isinstance(graph, NodeView):
+            # Convert to a Graph with only nodes (no edges)
+            new_graph = Graph()
+            new_graph.add_nodes_from(graph.items())
+            graph = new_graph
+            G = LoopbackGraph()
+        elif not isinstance(graph, Graph):
             raise TypeError(
-                f"Bad type for graph argument {graph_name} in {name}: type(graph)"
+                f"Bad type for graph argument {graph_name} in {name}: {type(graph)}"
             )
-
-        G = graph.__class__()
+        elif graph.__class__ in {Graph, LoopbackGraph}:
+            G = LoopbackGraph()
+        elif graph.__class__ in {DiGraph, LoopbackDiGraph}:
+            G = LoopbackDiGraph()
+        elif graph.__class__ in {MultiGraph, LoopbackMultiGraph}:
+            G = LoopbackMultiGraph()
+        elif graph.__class__ in {MultiDiGraph, LoopbackMultiDiGraph}:
+            G = LoopbackMultiDiGraph()
+        elif graph.__class__ in {PlanarEmbedding, LoopbackPlanarEmbedding}:
+            G = LoopbackDiGraph()  # or LoopbackPlanarEmbedding
+        else:
+            # It would be nice to be able to convert _AntiGraph to a regular Graph
+            # nx.algorithms.approximation.kcomponents._AntiGraph
+            # nx.algorithms.tree.branchings.MultiDiGraph_EdgeKey
+            # nx.classes.tests.test_multidigraph.MultiDiGraphSubClass
+            # nx.classes.tests.test_multigraph.MultiGraphSubClass
+            G = graph.__class__()
 
         if preserve_graph_attrs:
             G.graph.update(graph.graph)
