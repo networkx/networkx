@@ -65,18 +65,18 @@ class TestDegreeMixingCorrelation(BaseTestDegreeMixing):
 
 class TestAttributeMixingCorrelation(BaseTestAttributeMixing):
     def test_attribute_assortativity_undirected(self):
-        r = nx.attribute_assortativity_coefficient(self.G, "fish")
+        r = nx.discrete_assortativity_coefficient(self.G, "fish")
         assert r == 6.0 / 22.0
 
     def test_attribute_assortativity_directed(self):
-        r = nx.attribute_assortativity_coefficient(self.D, "fish")
+        r = nx.discrete_assortativity_coefficient(self.D, "fish")
         assert r == 1.0 / 3.0
 
     def test_attribute_assortativity_multigraph(self):
-        r = nx.attribute_assortativity_coefficient(self.M, "fish")
+        r = nx.discrete_assortativity_coefficient(self.M, "fish")
         assert r == 1.0
 
-    def test_attribute_assortativity_coefficient(self):
+    def test_discrete_assortativity_coefficient(self):
         # from "Mixing patterns in networks"
         # fmt: off
         a = np.array([[0.258, 0.016, 0.035, 0.013],
@@ -87,7 +87,7 @@ class TestAttributeMixingCorrelation(BaseTestAttributeMixing):
         r = attribute_ac(a)
         np.testing.assert_almost_equal(r, 0.623, decimal=3)
 
-    def test_attribute_assortativity_coefficient2(self):
+    def test_discrete_assortativity_coefficient2(self):
         # fmt: off
         a = np.array([[0.18, 0.02, 0.01, 0.03],
                       [0.02, 0.20, 0.03, 0.02],
@@ -103,7 +103,7 @@ class TestAttributeMixingCorrelation(BaseTestAttributeMixing):
         np.testing.assert_almost_equal(r, 0.029, decimal=3)
 
     def test_attribute_assortativity_negative(self):
-        r = nx.numeric_assortativity_coefficient(self.N, "margin")
+        r = nx.scalar_assortativity_coefficient(self.N, "margin")
         np.testing.assert_almost_equal(r, -0.2903, decimal=4)
 
     def test_assortativity_node_kwargs(self):
@@ -115,9 +115,9 @@ class TestAttributeMixingCorrelation(BaseTestAttributeMixing):
         np.testing.assert_almost_equal(r, 1.0, decimal=4)
 
     def test_attribute_assortativity_float(self):
-        r = nx.numeric_assortativity_coefficient(self.F, "margin")
+        r = nx.scalar_assortativity_coefficient(self.F, "margin")
         np.testing.assert_almost_equal(r, -0.1429, decimal=4)
 
     def test_attribute_assortativity_mixed(self):
-        r = nx.numeric_assortativity_coefficient(self.K, "margin")
+        r = nx.scalar_assortativity_coefficient(self.K, "margin")
         np.testing.assert_almost_equal(r, 0.4340, decimal=4)

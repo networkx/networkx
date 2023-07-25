@@ -1,5 +1,7 @@
 """Node assortativity coefficients and correlation measures.
 """
+import warnings
+
 from networkx.algorithms.assortativity.mixing import (
     attribute_mixing_matrix,
     degree_mixing_matrix,
@@ -11,6 +13,8 @@ __all__ = [
     "degree_assortativity_coefficient",
     "attribute_assortativity_coefficient",
     "numeric_assortativity_coefficient",
+    "discrete_assortativity_coefficient",
+    "scalar_assortativity_coefficient",
 ]
 
 
@@ -149,6 +153,13 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
     .. [2] Foster, J.G., Foster, D.V., Grassberger, P. & Paczuski, M.
        Edge direction and the structure of networks, PNAS 107, 10815-20 (2010).
     """
+    warnings.warn(
+        (
+            "degree_pearson_correlation_coefficient is deprecated and will be removed in NetworkX 3.0.\n"
+            "Use degree_assortativity_coefficient instead."
+        ),
+        DeprecationWarning,
+    )
     import scipy as sp
 
     xy = node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
@@ -198,8 +209,14 @@ def attribute_assortativity_coefficient(G, attribute, nodes=None):
     .. [1] M. E. J. Newman, Mixing patterns in networks,
        Physical Review E, 67 026126, 2003
     """
-    M = attribute_mixing_matrix(G, attribute, nodes)
-    return attribute_ac(M)
+    warnings.warn(
+        (
+            "attribute_assortativity_coefficient is deprecated and will be removed in NetworkX 3.0.\n"
+            "Use discrete_assortativity_coefficient instead."
+        ),
+        DeprecationWarning,
+    )
+    return discrete_assortativity_coefficient(G, attribute, nodes)
 
 
 def numeric_assortativity_coefficient(G, attribute, nodes=None):
@@ -243,12 +260,14 @@ def numeric_assortativity_coefficient(G, attribute, nodes=None):
     .. [1] M. E. J. Newman, Mixing patterns in networks
            Physical Review E, 67 026126, 2003
     """
-    if nodes is None:
-        nodes = G.nodes
-    vals = {G.nodes[n][attribute] for n in nodes}
-    mapping = {d: i for i, d, in enumerate(vals)}
-    M = attribute_mixing_matrix(G, attribute, nodes, mapping)
-    return _numeric_ac(M, mapping)
+    warnings.warn(
+        (
+            "numeric_assortativity_coefficient is deprecated and will be removed in NetworkX 3.0.\n"
+            "Use scalar_assortativity_coefficient instead."
+        ),
+        DeprecationWarning,
+    )
+    return scalar_assortativity_coefficient(G, attribute, nodes)
 
 
 def attribute_ac(M):
@@ -295,3 +314,98 @@ def _numeric_ac(M, mapping):
     xy = np.outer(x, y)
     ab = np.outer(a[idx], b[idx])
     return (xy * (M - ab)).sum() / np.sqrt(vara * varb)
+
+
+def discrete_assortativity_coefficient(G, attribute, nodes=None):
+    """Compute assortativity for discrete node attributes.
+
+    Assortativity measures the similarity of connections
+    in the graph with respect to the given discrete attribute.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    attribute : string
+        Node attribute key
+
+    nodes: list or iterable (optional)
+        Compute discrete assortativity for nodes in container.
+        The default is all nodes.
+
+    Returns
+    -------
+    r: float
+       Assortativity of graph for given discrete attribute
+
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> G.add_nodes_from([0, 1], color="red")
+    >>> G.add_nodes_from([2, 3], color="blue")
+    >>> G.add_edges_from([(0, 1), (2, 3)])
+    >>> print(nx.attribute_assortativity_coefficient(G, "color"))
+    1.0
+
+    Notes
+    -----
+    This computes Eq. (2) in Ref. [1]_ , (trace(M)-sum(M^2))/(1-sum(M^2)),
+    where M is the joint probability distribution (mixing matrix)
+    of the specified attribute.
+
+    References
+    ----------
+    .. [1] M. E. J. Newman, Mixing patterns in networks,
+       Physical Review E, 67 026126, 2003
+    """
+    M = attribute_mixing_matrix(G, attribute, nodes)
+    return attribute_ac(M)
+
+
+def scalar_assortativity_coefficient(G, attribute, nodes=None):
+    """Compute assortativity for scalar node attributes.
+
+    Assortativity measures the similarity of connections
+    in the graph with respect to the given scalar attribute.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    attribute : string
+        Node attribute key.
+
+    nodes: list or iterable (optional)
+        Compute scalar assortativity only for attributes of nodes in
+        container. The default is all nodes.
+
+    Returns
+    -------
+    r: float
+       Assortativity of graph for given attribute
+
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> G.add_nodes_from([0, 1], size=2)
+    >>> G.add_nodes_from([2, 3], size=3)
+    >>> G.add_edges_from([(0, 1), (2, 3)])
+    >>> print(nx.numeric_assortativity_coefficient(G, "size"))
+    1.0
+
+    Notes
+    -----
+    This computes Eq. (21) in Ref. [1]_ , which is the Pearson correlation
+    coefficient of the specified (scalar valued) attribute across edges.
+
+    References
+    ----------
+    .. [1] M. E. J. Newman, Mixing patterns in networks
+           Physical Review E, 67 026126, 2003
+    """
+    if nodes is None:
+        nodes = G.nodes
+    vals = {G.nodes[n][attribute] for n in nodes}
+    mapping = {d: i for i, d, in enumerate(vals)}
+    M = attribute_mixing_matrix(G, attribute, nodes, mapping)
+    return _numeric_ac(M, mapping)
