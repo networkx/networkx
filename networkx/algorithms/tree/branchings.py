@@ -211,7 +211,7 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
 
         import warnings
 
-        msg = "MultiDiGraph_EdgeKey has been deprecated and will be removed in NetworkX 3.3."
+        msg = "MultiDiGraph_EdgeKey has been deprecated and will be removed in NetworkX 3.4."
         warnings.warn(msg, DeprecationWarning)
 
     def remove_node(self, n):
@@ -322,7 +322,7 @@ class Edmonds:
 
         import warnings
 
-        msg = "Edmonds has been deprecated and will be removed in NetworkX 3.3. Please use the approiate minimum or maximum branching or arborescence function directly."
+        msg = "Edmonds has been deprecated and will be removed in NetworkX 3.4. Please use the approiate minimum or maximum branching or arborescence function directly."
         warnings.warn(msg, DeprecationWarning)
 
     def _init(self, attr, default, kind, style, preserve_attrs, seed, partition):
