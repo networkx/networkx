@@ -5,7 +5,6 @@ from collections import Counter
 from itertools import chain
 
 import networkx as nx
-from networkx.classes.graphviews import reverse_view, subgraph_view
 from networkx.utils import not_implemented_for, pairwise
 
 __all__ = [
@@ -21,9 +20,7 @@ __all__ = [
     "freeze",
     "is_frozen",
     "subgraph",
-    "subgraph_view",
     "induced_subgraph",
-    "reverse_view",
     "edge_subgraph",
     "restricted_view",
     "to_directed",
@@ -201,6 +198,7 @@ def freeze(G):
     G.remove_edge = frozen
     G.remove_edges_from = frozen
     G.clear = frozen
+    G.clear_edges = frozen
     G.frozen = True
     return G
 
@@ -390,7 +388,7 @@ def induced_subgraph(G, nbunch):
     [0, 1, 3]
     """
     induced_nodes = nx.filters.show_nodes(G.nbunch_iter(nbunch))
-    return nx.graphviews.subgraph_view(G, induced_nodes)
+    return nx.subgraph_view(G, induced_nodes)
 
 
 def edge_subgraph(G, edges):
@@ -449,7 +447,7 @@ def edge_subgraph(G, edges):
             induced_edges = nxf.show_diedges(edges)
         else:
             induced_edges = nxf.show_edges(edges)
-    return nx.graphviews.subgraph_view(G, induced_nodes, induced_edges)
+    return nx.subgraph_view(G, induced_nodes, induced_edges)
 
 
 def restricted_view(G, nodes, edges):
@@ -505,7 +503,7 @@ def restricted_view(G, nodes, edges):
             hide_edges = nxf.hide_diedges(edges)
         else:
             hide_edges = nxf.hide_edges(edges)
-    return nx.graphviews.subgraph_view(G, hide_nodes, hide_edges)
+    return nx.subgraph_view(G, hide_nodes, hide_edges)
 
 
 def to_directed(graph):
@@ -740,6 +738,11 @@ def set_edge_attributes(G, values, name=None):
         >>> G[1][2]["attr2"]
         3
 
+    The attributes of one Graph can be used to set those of another.
+
+        >>> H = nx.path_graph(3)
+        >>> nx.set_edge_attributes(H, G.edges)
+
     Note that if the dict contains edges that are not in `G`, they are
     silently ignored::
 
@@ -747,6 +750,29 @@ def set_edge_attributes(G, values, name=None):
         >>> nx.set_edge_attributes(G, {(1, 2): {"weight": 2.0}})
         >>> (1, 2) in G.edges()
         False
+
+    For multigraphs, the `values` dict is expected to be keyed by 3-tuples
+    including the edge key::
+
+        >>> MG = nx.MultiGraph()
+        >>> edges = [(0, 1), (0, 1)]
+        >>> MG.add_edges_from(edges)  # Returns list of edge keys
+        [0, 1]
+        >>> attributes = {(0, 1, 0): {"cost": 21}, (0, 1, 1): {"cost": 7}}
+        >>> nx.set_edge_attributes(MG, attributes)
+        >>> MG[0][1][0]["cost"]
+        21
+        >>> MG[0][1][1]["cost"]
+        7
+
+    If MultiGraph attributes are desired for a Graph, you must convert the 3-tuple
+    multiedge to a 2-tuple edge and the last multiedge's attribute value will
+    overwrite the previous values. Continuing from the previous case we get::
+
+        >>> H = nx.path_graph([0, 1, 2])
+        >>> nx.set_edge_attributes(H, {(u, v): ed for u, v, ed in MG.edges.data()})
+        >>> nx.get_edge_attributes(H, "cost")
+        {(0, 1): 7}
 
     """
     if name is not None:
@@ -1205,26 +1231,26 @@ def number_of_selfloops(G):
 
 
 def is_path(G, path):
-    """Returns whether or not the specified path exists
+    """Returns whether or not the specified path exists.
+
+    For it to return True, every node on the path must exist and
+    each consecutive pair must be connected via one or more edges.
 
     Parameters
     ----------
     G : graph
         A NetworkX graph.
 
-    path: list
-        A list of node labels which defines the path to traverse
+    path : list
+        A list of nodes which defines the path to traverse
 
     Returns
     -------
-    isPath: bool
-        A boolean representing whether or not the path exists
+    bool
+        True if `path` is a valid path in `G`
 
     """
-    for node, nbr in nx.utils.pairwise(path):
-        if nbr not in G[node]:
-            return False
-    return True
+    return all((node in G and nbr in G[node]) for node, nbr in nx.utils.pairwise(path))
 
 
 def path_weight(G, path, weight):

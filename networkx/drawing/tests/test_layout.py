@@ -66,6 +66,7 @@ class TestLayout:
         nx.kamada_kawai_layout(G)
         nx.kamada_kawai_layout(G, dim=1)
         nx.kamada_kawai_layout(G, dim=3)
+        nx.arf_layout(G)
 
     def test_smoke_string(self):
         G = self.Gs
@@ -80,6 +81,7 @@ class TestLayout:
         nx.kamada_kawai_layout(G)
         nx.kamada_kawai_layout(G, dim=1)
         nx.kamada_kawai_layout(G, dim=3)
+        nx.arf_layout(G)
 
     def check_scale_and_center(self, pos, scale, center):
         center = np.array(center)
@@ -175,6 +177,10 @@ class TestLayout:
         pos = nx.circular_layout(self.Gi)
         npos = nx.fruchterman_reingold_layout(self.Gi, pos=pos)
 
+    def test_smoke_initial_pos_arf(self):
+        pos = nx.circular_layout(self.Gi)
+        npos = nx.arf_layout(self.Gi, pos=pos)
+
     def test_fixed_node_fruchterman_reingold(self):
         # Dense version (numpy based)
         pos = nx.circular_layout(self.Gi)
@@ -241,6 +247,8 @@ class TestLayout:
         vpos = nx.multipartite_layout(G, center=(1, 1))
         assert vpos == {}
         vpos = nx.kamada_kawai_layout(G, center=(1, 1))
+        assert vpos == {}
+        vpos = nx.arf_layout(G)
         assert vpos == {}
 
     def test_bipartite_layout(self):
@@ -349,7 +357,6 @@ class TestLayout:
         self.check_kamada_kawai_costfn(pos, invdist, meanwt, 3)
 
     def test_spiral_layout(self):
-
         G = self.Gs
 
         # a lower value of resolution should result in a more compact layout
@@ -402,7 +409,6 @@ class TestLayout:
         for k, v in expectation.items():
             assert (s_vpos[k] == v).all()
         s_vpos = nx.rescale_layout_dict(vpos, scale=2)
-
         expectation = {
             0: np.array((-2, -2)),
             1: np.array((2, 2)),
@@ -410,6 +416,24 @@ class TestLayout:
         }
         for k, v in expectation.items():
             assert (s_vpos[k] == v).all()
+
+    def test_arf_layout_partial_input_test(self):
+        """
+        Checks whether partial pos input still returns a proper position.
+        """
+        G = self.Gs
+        node = nx.utils.arbitrary_element(G)
+        pos = nx.circular_layout(G)
+        del pos[node]
+        pos = nx.arf_layout(G, pos=pos)
+        assert len(pos) == len(G)
+
+    def test_arf_layout_negative_a_check(self):
+        """
+        Checks input parameters correctly raises errors. For example,  `a` should be larger than 1
+        """
+        G = self.Gs
+        pytest.raises(ValueError, nx.arf_layout, G=G, a=-1)
 
 
 def test_multipartite_layout_nonnumeric_partition_labels():

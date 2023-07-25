@@ -26,7 +26,6 @@ nx_agraph, nx_pydot
 """
 
 import itertools
-import warnings
 from collections import defaultdict
 
 import networkx as nx
@@ -512,7 +511,7 @@ def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format=
     diagonal matrix entry value to the weight attribute of the edge
     (or the number 1 if the edge has no weight attribute).  If the
     alternate convention of doubling the edge weight is desired the
-    resulting Scipy sparse matrix can be modified as follows:
+    resulting SciPy sparse array can be modified as follows:
 
     >>> G = nx.Graph([(1, 1)])
     >>> A = nx.to_scipy_sparse_array(G)
@@ -545,7 +544,6 @@ def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format=
        https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     if len(G) == 0:
         raise nx.NetworkXError("Graph has no nodes or edges")
@@ -599,7 +597,7 @@ def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format=
 
 
 def _csr_gen_triples(A):
-    """Converts a SciPy sparse matrix in **Compressed Sparse Row** format to
+    """Converts a SciPy sparse array in **Compressed Sparse Row** format to
     an iterable of weighted edge triples.
 
     """
@@ -607,11 +605,11 @@ def _csr_gen_triples(A):
     data, indices, indptr = A.data, A.indices, A.indptr
     for i in range(nrows):
         for j in range(indptr[i], indptr[i + 1]):
-            yield i, indices[j], data[j]
+            yield i, int(indices[j]), data[j]
 
 
 def _csc_gen_triples(A):
-    """Converts a SciPy sparse matrix in **Compressed Sparse Column** format to
+    """Converts a SciPy sparse array in **Compressed Sparse Column** format to
     an iterable of weighted edge triples.
 
     """
@@ -619,20 +617,19 @@ def _csc_gen_triples(A):
     data, indices, indptr = A.data, A.indices, A.indptr
     for i in range(ncols):
         for j in range(indptr[i], indptr[i + 1]):
-            yield indices[j], i, data[j]
+            yield int(indices[j]), i, data[j]
 
 
 def _coo_gen_triples(A):
-    """Converts a SciPy sparse matrix in **Coordinate** format to an iterable
+    """Converts a SciPy sparse array in **Coordinate** format to an iterable
     of weighted edge triples.
 
     """
-    row, col, data = A.row, A.col, A.data
-    return zip(row, col, data)
+    return ((int(i), int(j), d) for i, j, d in zip(A.row, A.col, A.data))
 
 
 def _dok_gen_triples(A):
-    """Converts a SciPy sparse matrix in **Dictionary of Keys** format to an
+    """Converts a SciPy sparse array in **Dictionary of Keys** format to an
     iterable of weighted edge triples.
 
     """
@@ -644,7 +641,7 @@ def _generate_weighted_edges(A):
     """Returns an iterable over (u, v, w) triples, where u and v are adjacent
     vertices and w is the weight of the edge joining u and v.
 
-    `A` is a SciPy sparse matrix (in any format).
+    `A` is a SciPy sparse array (in any format).
 
     """
     if A.format == "csr":
@@ -700,7 +697,6 @@ def from_scipy_sparse_array(
     Examples
     --------
     >>> import scipy as sp
-    >>> import scipy.sparse  # call as sp.sparse
     >>> A = sp.sparse.eye(2, 2, 1)
     >>> G = nx.from_scipy_sparse_array(A)
 
@@ -1148,7 +1144,7 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
             ((u, v, {"weight": 1}) for d in range(A[u, v])) for (u, v) in edges
         )
     else:  # basic data type
-        triples = ((u, v, dict(weight=python_type(A[u, v]))) for u, v in edges)
+        triples = ((u, v, {"weight": python_type(A[u, v])}) for u, v in edges)
     # If we are creating an undirected multigraph, only add the edges from the
     # upper triangle of the matrix. Otherwise, add all the edges. This relies
     # on the fact that the vertices created in the

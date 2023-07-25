@@ -73,16 +73,14 @@ def tree_data(G, root, ident="id", children="children"):
             return []
         children_ = []
         for child in nbrs:
-            d = dict(chain(G.nodes[child].items(), [(ident, child)]))
+            d = {**G.nodes[child], ident: child}
             c = add_children(child, G)
             if c:
                 d[children] = c
             children_.append(d)
         return children_
 
-    data = dict(chain(G.nodes[root].items(), [(ident, root)]))
-    data[children] = add_children(root, G)
-    return data
+    return {**G.nodes[root], ident: root, children: add_children(root, G)}
 
 
 def tree_graph(data, ident="id", children="children"):

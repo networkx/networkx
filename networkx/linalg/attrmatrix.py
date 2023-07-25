@@ -307,7 +307,7 @@ def attr_matrix(
 def attr_sparse_matrix(
     G, edge_attr=None, node_attr=None, normalized=False, rc_order=None, dtype=None
 ):
-    """Returns a SciPy sparse matrix using attributes from G.
+    """Returns a SciPy sparse array using attributes from G.
 
     If only `G` is passed in, then the adjacency matrix is constructed.
 
@@ -326,7 +326,7 @@ def attr_sparse_matrix(
     edge_attr : str, optional
         Each element of the matrix represents a running total of the
         specified edge attribute for edges whose node attributes correspond
-        to the rows/cols of the matirx. The attribute must be present for
+        to the rows/cols of the matrix. The attribute must be present for
         all edges in the graph. If no attribute is specified, then we
         just count the number of edges whose node attributes correspond
         to the matrix element.
@@ -356,7 +356,7 @@ def attr_sparse_matrix(
 
     Returns
     -------
-    M : SciPy sparse matrix
+    M : SciPy sparse array
         The attribute matrix.
 
     ordering : list
@@ -425,7 +425,6 @@ def attr_sparse_matrix(
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     edge_value = _edge_value(G, edge_attr)
     node_value = _node_value(G, node_attr)

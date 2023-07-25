@@ -6,7 +6,9 @@ import networkx as nx
 __all__ = ["incidence_matrix", "adjacency_matrix"]
 
 
-def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=None):
+def incidence_matrix(
+    G, nodelist=None, edgelist=None, oriented=False, weight=None, dtype=None
+):
     """Returns incidence matrix of G.
 
     The incidence matrix assigns each row to a node and each column to an edge.
@@ -38,9 +40,15 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
        If None, then each edge has weight 1.  Edge weights, if used,
        should be positive so that the orientation can provide the sign.
 
+    dtype : a NumPy dtype or None (default=None)
+        The dtype of the output sparse array. This type should be a compatible
+        type of the weight argument, eg. if weight would return a float this
+        argument should also be a float.
+        If None, then the default for SciPy is used.
+
     Returns
     -------
-    A : SciPy sparse matrix
+    A : SciPy sparse array
       The incidence matrix of G.
 
     Notes
@@ -57,7 +65,6 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
        http://videolectures.net/mit18085f07_strang_lec03/
     """
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     if nodelist is None:
         nodelist = list(G)
@@ -66,7 +73,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
             edgelist = list(G.edges(keys=True))
         else:
             edgelist = list(G.edges())
-    A = sp.sparse.lil_array((len(nodelist), len(edgelist)))
+    A = sp.sparse.lil_array((len(nodelist), len(edgelist)), dtype=dtype)
     node_index = {node: i for i, node in enumerate(nodelist)}
     for ei, e in enumerate(edgelist):
         (u, v) = e[:2]
@@ -93,14 +100,6 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
         else:
             A[ui, ei] = wt
             A[vi, ei] = wt
-    import warnings
-
-    warnings.warn(
-        "incidence_matrix will return a scipy.sparse array instead of a matrix in Networkx 3.0.",
-        FutureWarning,
-        stacklevel=2,
-    )
-    # TODO: Rm sp.sparse.csc_matrix in Networkx 3.0
     return A.asformat("csc")
 
 
@@ -126,7 +125,7 @@ def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight"):
 
     Returns
     -------
-    A : SciPy sparse matrix
+    A : SciPy sparse array
       Adjacency matrix representation of G.
 
     Notes
@@ -145,7 +144,7 @@ def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight"):
     diagonal matrix entry value to the edge weight attribute
     (or the number 1 if the edge has no weight attribute).  If the
     alternate convention of doubling the edge weight is desired the
-    resulting Scipy sparse matrix can be modified as follows:
+    resulting SciPy sparse array can be modified as follows:
 
     >>> G = nx.Graph([(1, 1)])
     >>> A = nx.adjacency_matrix(G)

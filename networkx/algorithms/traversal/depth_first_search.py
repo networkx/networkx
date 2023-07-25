@@ -74,25 +74,29 @@ def dfs_edges(G, source=None, depth_limit=None):
     else:
         # edges for components with source
         nodes = [source]
-    visited = set()
     if depth_limit is None:
         depth_limit = len(G)
+
+    visited = set()
     for start in nodes:
         if start in visited:
             continue
         visited.add(start)
-        stack = [(start, depth_limit, iter(G[start]))]
+        stack = [(start, iter(G[start]))]
+        depth_now = 1
         while stack:
-            parent, depth_now, children = stack[-1]
-            try:
-                child = next(children)
+            parent, children = stack[-1]
+            for child in children:
                 if child not in visited:
                     yield parent, child
                     visited.add(child)
-                    if depth_now > 1:
-                        stack.append((child, depth_now - 1, iter(G[child])))
-            except StopIteration:
+                    if depth_now < depth_limit:
+                        stack.append((child, iter(G[child])))
+                        depth_now += 1
+                        break
+            else:
                 stack.pop()
+                depth_now -= 1
 
 
 def dfs_tree(G, source=None, depth_limit=None):
@@ -364,12 +368,15 @@ def dfs_labeled_edges(G, source=None, depth_limit=None):
     edges: generator
        A generator of triples of the form (*u*, *v*, *d*), where (*u*,
        *v*) is the edge being explored in the depth-first search and *d*
-       is one of the strings 'forward', 'nontree', or 'reverse'. A
-       'forward' edge is one in which *u* has been visited but *v* has
+       is one of the strings 'forward', 'nontree', 'reverse', or 'reverse-depth_limit'.
+       A 'forward' edge is one in which *u* has been visited but *v* has
        not. A 'nontree' edge is one in which both *u* and *v* have been
        visited but the edge is not in the DFS tree. A 'reverse' edge is
-       on in which both *u* and *v* have been visited and the edge is in
-       the DFS tree.
+       one in which both *u* and *v* have been visited and the edge is in
+       the DFS tree. When the `depth_limit` is reached via a 'forward' edge,
+       a 'reverse' edge is immediately generated rather than the subtree
+       being explored. To indicate this flavor of 'reverse' edge, the string
+       yielded is 'reverse-depth_limit'.
 
     Examples
     --------
@@ -416,28 +423,34 @@ def dfs_labeled_edges(G, source=None, depth_limit=None):
     else:
         # edges for components with source
         nodes = [source]
-    visited = set()
     if depth_limit is None:
         depth_limit = len(G)
+
+    visited = set()
     for start in nodes:
         if start in visited:
             continue
         yield start, start, "forward"
         visited.add(start)
-        stack = [(start, depth_limit, iter(G[start]))]
+        stack = [(start, iter(G[start]))]
+        depth_now = 1
         while stack:
-            parent, depth_now, children = stack[-1]
-            try:
-                child = next(children)
+            parent, children = stack[-1]
+            for child in children:
                 if child in visited:
                     yield parent, child, "nontree"
                 else:
                     yield parent, child, "forward"
                     visited.add(child)
-                    if depth_now > 1:
-                        stack.append((child, depth_now - 1, iter(G[child])))
-            except StopIteration:
+                    if depth_now < depth_limit:
+                        stack.append((child, iter(G[child])))
+                        depth_now += 1
+                        break
+                    else:
+                        yield parent, child, "reverse-depth_limit"
+            else:
                 stack.pop()
+                depth_now -= 1
                 if stack:
                     yield stack[-1][0], parent, "reverse"
         yield start, start, "reverse"

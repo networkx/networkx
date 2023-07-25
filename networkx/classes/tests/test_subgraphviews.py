@@ -5,7 +5,7 @@ from networkx.utils import edges_equal
 
 
 class TestSubGraphView:
-    gview = staticmethod(nx.graphviews.subgraph_view)
+    gview = staticmethod(nx.subgraph_view)
     graph = nx.Graph
     hide_edges_filter = staticmethod(nx.filters.hide_edges)
     show_edges_filter = staticmethod(nx.filters.show_edges)
@@ -95,7 +95,7 @@ class TestSubGraphView:
 
 
 class TestSubDiGraphView(TestSubGraphView):
-    gview = staticmethod(nx.graphviews.subgraph_view)
+    gview = staticmethod(nx.subgraph_view)
     graph = nx.DiGraph
     hide_edges_filter = staticmethod(nx.filters.hide_diedges)
     show_edges_filter = staticmethod(nx.filters.show_diedges)
@@ -134,7 +134,7 @@ class TestSubDiGraphView(TestSubGraphView):
 
 # multigraph
 class TestMultiGraphView(TestSubGraphView):
-    gview = staticmethod(nx.graphviews.subgraph_view)
+    gview = staticmethod(nx.subgraph_view)
     graph = nx.MultiGraph
     hide_edges_filter = staticmethod(nx.filters.hide_multiedges)
     show_edges_filter = staticmethod(nx.filters.show_multiedges)
@@ -190,7 +190,7 @@ class TestMultiGraphView(TestSubGraphView):
 
 # multidigraph
 class TestMultiDiGraphView(TestMultiGraphView, TestSubDiGraphView):
-    gview = staticmethod(nx.graphviews.subgraph_view)
+    gview = staticmethod(nx.subgraph_view)
     graph = nx.MultiDiGraph
     hide_edges_filter = staticmethod(nx.filters.hide_multidiedges)
     show_edges_filter = staticmethod(nx.filters.show_multidiedges)

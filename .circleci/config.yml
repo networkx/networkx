@@ -2,10 +2,9 @@
 
 version: 2.1
 jobs:
-
   documentation:
     docker:
-      - image: cimg/python:3.9
+      - image: cimg/python:3.10
 
     steps:
       - checkout
@@ -21,15 +20,10 @@ jobs:
             sudo apt-get install graphviz libgraphviz-dev
 
       - run:
-          name: Install TeX
-          command: |
-            sudo apt-get install texlive texlive-latex-extra latexmk texlive-xetex fonts-freefont-otf xindy
-
-      - run:
           name: Install pysal dependencies
           command: |
             sudo apt-get install libspatialindex-dev
-      
+
       - restore_cache:
           keys:
             - pip-cache-v1
@@ -39,7 +33,7 @@ jobs:
           command: |
             python3 -m venv venv
             source venv/bin/activate
-            pip install --upgrade pip wheel setuptools
+            pip install --upgrade pip
             pip install -r requirements/default.txt -r requirements/test.txt
             pip install -r requirements/extra.txt
             pip install -r requirements/example.txt
@@ -64,15 +58,13 @@ jobs:
             export OMP_NUM_THREADS=1
             source venv/bin/activate
             make -C doc/ html
-            make -C doc/ latexpdf LATEXOPTS="-file-line-error -halt-on-error"
-            cp -a doc/build/latex/networkx_reference.pdf doc/build/html/_downloads/.
 
       - store_artifacts:
           path: doc/build/html
 
   image:
     docker:
-      - image: cimg/python:3.9
+      - image: cimg/python:3.10
 
     steps:
       - checkout
@@ -82,7 +74,7 @@ jobs:
           command: |
             python -m venv venv
             source venv/bin/activate
-            pip install --upgrade pip wheel setuptools
+            pip install --upgrade pip
             pip install -r requirements/default.txt -r requirements/test.txt
             pip install pytest-mpl  # NOTE: specified here to avoid confusing conda
             pip list
@@ -101,7 +93,6 @@ jobs:
 
       - store_artifacts:
           path: results
-
 
 workflows:
   documentation_and_image_comparison:

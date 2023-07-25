@@ -324,12 +324,15 @@ class TestAverageShortestPathLength:
         )
         assert ans == pytest.approx(4, abs=1e-7)
 
-    def test_disconnected(self):
+    def test_directed_not_strongly_connected(self):
+        G = nx.DiGraph([(0, 1)])
+        with pytest.raises(nx.NetworkXError, match="Graph is not strongly connected"):
+            nx.average_shortest_path_length(G)
+
+    def test_undirected_not_connected(self):
         g = nx.Graph()
         g.add_nodes_from(range(3))
         g.add_edge(0, 1)
-        pytest.raises(nx.NetworkXError, nx.average_shortest_path_length, g)
-        g = g.to_directed()
         pytest.raises(nx.NetworkXError, nx.average_shortest_path_length, g)
 
     def test_trivial_graph(self):

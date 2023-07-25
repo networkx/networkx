@@ -3,7 +3,7 @@ from copy import deepcopy
 from functools import cached_property
 
 import networkx as nx
-import networkx.convert as convert
+from networkx import convert
 from networkx.classes.coreviews import MultiAdjacencyView
 from networkx.classes.digraph import DiGraph
 from networkx.classes.multigraph import MultiGraph
@@ -269,6 +269,27 @@ class MultiDiGraph(MultiGraph, DiGraph):
     to_undirected_class : callable, (default: Graph or MultiGraph)
         Class to create a new graph structure in the `to_undirected` method.
         If `None`, a NetworkX class (Graph or MultiGraph) is used.
+
+    **Subclassing Example**
+
+    Create a low memory graph class that effectively disallows edge
+    attributes by using a single attribute dict for all edges.
+    This reduces the memory used, but you lose edge attributes.
+
+    >>> class ThinGraph(nx.Graph):
+    ...     all_edge_dict = {"weight": 1}
+    ...
+    ...     def single_edge_dict(self):
+    ...         return self.all_edge_dict
+    ...
+    ...     edge_attr_dict_factory = single_edge_dict
+    >>> G = ThinGraph()
+    >>> G.add_edge(2, 1)
+    >>> G[2][1]
+    {'weight': 1}
+    >>> G.add_edge(2, 2)
+    >>> G[2][1] is G[2][2]
+    True
     """
 
     # node_dict_factory = dict    # already assigned in Graph
@@ -287,7 +308,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
             an empty graph is created.  The data can be an edge list, or any
             NetworkX graph object.  If the corresponding optional Python
             packages are installed the data can also be a 2D NumPy array, a
-            SciPy sparse matrix, or a PyGraphviz graph.
+            SciPy sparse array, or a PyGraphviz graph.
 
         multigraph_input : bool or None (default None)
             Note: Only used when `incoming_graph_data` is a dict.
@@ -653,7 +674,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
     @cached_property
     def in_edges(self):
-        """An InMultiEdgeView of the Graph as G.in_edges or G.in_edges().
+        """A view of the in edges of the graph as G.in_edges or G.in_edges().
 
         in_edges(self, nbunch=None, data=False, keys=False, default=None)
 
@@ -674,7 +695,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         Returns
         -------
-        in_edges : InMultiEdgeView
+        in_edges : InMultiEdgeView or InMultiEdgeDataView
             A view of edge attributes, usually it iterates over (u, v)
             or (u, v, k) or (u, v, k, d) tuples of edges, but can also be
             used for attribute lookup as `edges[u, v, k]['foo']`.
@@ -939,4 +960,4 @@ class MultiDiGraph(MultiGraph, DiGraph):
                 for u, v, k, d in self.edges(keys=True, data=True)
             )
             return H
-        return nx.graphviews.reverse_view(self)
+        return nx.reverse_view(self)

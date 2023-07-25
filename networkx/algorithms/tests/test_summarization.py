@@ -253,7 +253,7 @@ class AbstractSNAP:
         node_labels = sorted(node_labels, key=lambda n: sorted(G.nodes[n]["group"])[0])
         node_labels.sort()
 
-        label_mapping = dict()
+        label_mapping = {}
         for index, node in enumerate(node_labels):
             label = "Supernode-%s" % index
             label_mapping[node] = label
@@ -277,18 +277,18 @@ class TestSNAPNoEdgeTypes(AbstractSNAP):
 
     def build_original_graph(self):
         nodes = {
-            "A": dict(color="Red"),
-            "B": dict(color="Red"),
-            "C": dict(color="Red"),
-            "D": dict(color="Red"),
-            "E": dict(color="Blue"),
-            "F": dict(color="Blue"),
-            "G": dict(color="Blue"),
-            "H": dict(color="Blue"),
-            "I": dict(color="Yellow"),
-            "J": dict(color="Yellow"),
-            "K": dict(color="Yellow"),
-            "L": dict(color="Yellow"),
+            "A": {"color": "Red"},
+            "B": {"color": "Red"},
+            "C": {"color": "Red"},
+            "D": {"color": "Red"},
+            "E": {"color": "Blue"},
+            "F": {"color": "Blue"},
+            "G": {"color": "Blue"},
+            "H": {"color": "Blue"},
+            "I": {"color": "Yellow"},
+            "J": {"color": "Yellow"},
+            "K": {"color": "Yellow"},
+            "L": {"color": "Yellow"},
         }
         edges = [
             ("A", "B"),
@@ -316,12 +316,12 @@ class TestSNAPNoEdgeTypes(AbstractSNAP):
 
     def build_summary_graph(self):
         nodes = {
-            "Supernode-0": dict(color="Red"),
-            "Supernode-1": dict(color="Red"),
-            "Supernode-2": dict(color="Blue"),
-            "Supernode-3": dict(color="Blue"),
-            "Supernode-4": dict(color="Yellow"),
-            "Supernode-5": dict(color="Yellow"),
+            "Supernode-0": {"color": "Red"},
+            "Supernode-1": {"color": "Red"},
+            "Supernode-2": {"color": "Blue"},
+            "Supernode-3": {"color": "Blue"},
+            "Supernode-4": {"color": "Yellow"},
+            "Supernode-5": {"color": "Yellow"},
         }
         edges = [
             ("Supernode-0", "Supernode-0"),
@@ -355,18 +355,18 @@ class TestSNAPNoEdgeTypes(AbstractSNAP):
 class TestSNAPUndirected(AbstractSNAP):
     def build_original_graph(self):
         nodes = {
-            "A": dict(color="Red"),
-            "B": dict(color="Red"),
-            "C": dict(color="Red"),
-            "D": dict(color="Red"),
-            "E": dict(color="Blue"),
-            "F": dict(color="Blue"),
-            "G": dict(color="Blue"),
-            "H": dict(color="Blue"),
-            "I": dict(color="Yellow"),
-            "J": dict(color="Yellow"),
-            "K": dict(color="Yellow"),
-            "L": dict(color="Yellow"),
+            "A": {"color": "Red"},
+            "B": {"color": "Red"},
+            "C": {"color": "Red"},
+            "D": {"color": "Red"},
+            "E": {"color": "Blue"},
+            "F": {"color": "Blue"},
+            "G": {"color": "Blue"},
+            "H": {"color": "Blue"},
+            "I": {"color": "Yellow"},
+            "J": {"color": "Yellow"},
+            "K": {"color": "Yellow"},
+            "L": {"color": "Yellow"},
         }
         edges = [
             ("A", "B", "Strong"),
@@ -394,12 +394,12 @@ class TestSNAPUndirected(AbstractSNAP):
 
     def build_summary_graph(self):
         nodes = {
-            "Supernode-0": dict(color="Red"),
-            "Supernode-1": dict(color="Red"),
-            "Supernode-2": dict(color="Blue"),
-            "Supernode-3": dict(color="Blue"),
-            "Supernode-4": dict(color="Yellow"),
-            "Supernode-5": dict(color="Yellow"),
+            "Supernode-0": {"color": "Red"},
+            "Supernode-1": {"color": "Red"},
+            "Supernode-2": {"color": "Blue"},
+            "Supernode-3": {"color": "Blue"},
+            "Supernode-4": {"color": "Yellow"},
+            "Supernode-5": {"color": "Yellow"},
         }
         edges = [
             ("Supernode-0", "Supernode-0", "Strong"),
@@ -416,7 +416,7 @@ class TestSNAPUndirected(AbstractSNAP):
             G.add_node(node, **attributes)
 
         for source, target, type in edges:
-            G.add_edge(source, target, types=[dict(type=type)])
+            G.add_edge(source, target, types=[{"type": type}])
 
         supernodes = {
             "Supernode-0": {"A", "B"},
@@ -433,14 +433,14 @@ class TestSNAPUndirected(AbstractSNAP):
 class TestSNAPDirected(AbstractSNAP):
     def build_original_graph(self):
         nodes = {
-            "A": dict(color="Red"),
-            "B": dict(color="Red"),
-            "C": dict(color="Green"),
-            "D": dict(color="Green"),
-            "E": dict(color="Blue"),
-            "F": dict(color="Blue"),
-            "G": dict(color="Yellow"),
-            "H": dict(color="Yellow"),
+            "A": {"color": "Red"},
+            "B": {"color": "Red"},
+            "C": {"color": "Green"},
+            "D": {"color": "Green"},
+            "E": {"color": "Blue"},
+            "F": {"color": "Blue"},
+            "G": {"color": "Yellow"},
+            "H": {"color": "Yellow"},
         }
         edges = [
             ("A", "C", "Strong"),
@@ -468,10 +468,10 @@ class TestSNAPDirected(AbstractSNAP):
 
     def build_summary_graph(self):
         nodes = {
-            "Supernode-0": dict(color="Red"),
-            "Supernode-1": dict(color="Green"),
-            "Supernode-2": dict(color="Blue"),
-            "Supernode-3": dict(color="Yellow"),
+            "Supernode-0": {"color": "Red"},
+            "Supernode-1": {"color": "Green"},
+            "Supernode-2": {"color": "Blue"},
+            "Supernode-3": {"color": "Yellow"},
         }
         edges = [
             ("Supernode-0", "Supernode-1", [{"type": "Strong"}]),
@@ -503,15 +503,15 @@ class TestSNAPDirected(AbstractSNAP):
 class TestSNAPUndirectedMulti(AbstractSNAP):
     def build_original_graph(self):
         nodes = {
-            "A": dict(color="Red"),
-            "B": dict(color="Red"),
-            "C": dict(color="Red"),
-            "D": dict(color="Blue"),
-            "E": dict(color="Blue"),
-            "F": dict(color="Blue"),
-            "G": dict(color="Yellow"),
-            "H": dict(color="Yellow"),
-            "I": dict(color="Yellow"),
+            "A": {"color": "Red"},
+            "B": {"color": "Red"},
+            "C": {"color": "Red"},
+            "D": {"color": "Blue"},
+            "E": {"color": "Blue"},
+            "F": {"color": "Blue"},
+            "G": {"color": "Yellow"},
+            "H": {"color": "Yellow"},
+            "I": {"color": "Yellow"},
         }
         edges = [
             ("A", "D", ["Weak", "Strong"]),
@@ -536,12 +536,12 @@ class TestSNAPUndirectedMulti(AbstractSNAP):
 
     def build_summary_graph(self):
         nodes = {
-            "Supernode-0": dict(color="Red"),
-            "Supernode-1": dict(color="Blue"),
-            "Supernode-2": dict(color="Yellow"),
-            "Supernode-3": dict(color="Blue"),
-            "Supernode-4": dict(color="Yellow"),
-            "Supernode-5": dict(color="Red"),
+            "Supernode-0": {"color": "Red"},
+            "Supernode-1": {"color": "Blue"},
+            "Supernode-2": {"color": "Yellow"},
+            "Supernode-3": {"color": "Blue"},
+            "Supernode-4": {"color": "Yellow"},
+            "Supernode-5": {"color": "Red"},
         }
         edges = [
             ("Supernode-1", "Supernode-2", [{"type": "Weak"}]),
@@ -574,14 +574,14 @@ class TestSNAPUndirectedMulti(AbstractSNAP):
 class TestSNAPDirectedMulti(AbstractSNAP):
     def build_original_graph(self):
         nodes = {
-            "A": dict(color="Red"),
-            "B": dict(color="Red"),
-            "C": dict(color="Green"),
-            "D": dict(color="Green"),
-            "E": dict(color="Blue"),
-            "F": dict(color="Blue"),
-            "G": dict(color="Yellow"),
-            "H": dict(color="Yellow"),
+            "A": {"color": "Red"},
+            "B": {"color": "Red"},
+            "C": {"color": "Green"},
+            "D": {"color": "Green"},
+            "E": {"color": "Blue"},
+            "F": {"color": "Blue"},
+            "G": {"color": "Yellow"},
+            "H": {"color": "Yellow"},
         }
         edges = [
             ("A", "C", ["Weak", "Strong"]),
@@ -610,10 +610,10 @@ class TestSNAPDirectedMulti(AbstractSNAP):
 
     def build_summary_graph(self):
         nodes = {
-            "Supernode-0": dict(color="Red"),
-            "Supernode-1": dict(color="Blue"),
-            "Supernode-2": dict(color="Yellow"),
-            "Supernode-3": dict(color="Blue"),
+            "Supernode-0": {"color": "Red"},
+            "Supernode-1": {"color": "Blue"},
+            "Supernode-2": {"color": "Yellow"},
+            "Supernode-3": {"color": "Blue"},
         }
         edges = [
             ("Supernode-0", "Supernode-1", ["Weak", "Strong"]),

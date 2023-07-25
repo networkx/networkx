@@ -32,6 +32,7 @@ __all__ = [
     "fruchterman_reingold_layout",
     "spiral_layout",
     "multipartite_layout",
+    "arf_layout",
 ]
 
 
@@ -322,9 +323,9 @@ def bipartite_layout(
     width = aspect_ratio * height
     offset = (width / 2, height / 2)
 
-    top = set(nodes)
-    bottom = set(G) - top
-    nodes = list(top) + list(bottom)
+    top = dict.fromkeys(nodes)
+    bottom = [v for v in G if v not in top]
+    nodes = list(top) + bottom
 
     left_xs = np.repeat(0, len(top))
     right_xs = np.repeat(width, len(bottom))
@@ -570,7 +571,6 @@ def _sparse_fruchterman_reingold(
     # Sparse version
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     try:
         nnodes, _ = A.shape
@@ -703,7 +703,7 @@ def kamada_kawai_layout(
         elif dim == 2:
             pos = circular_layout(G, dim=dim)
         else:
-            pos = {n: pt for n, pt in zip(G, np.linspace(0, 1, len(G)))}
+            pos = dict(zip(G, np.linspace(0, 1, len(G))))
     pos_arr = np.array([pos[n] for n in G])
 
     pos = _kamada_kawai_solve(dist_mtx, pos_arr, dim)
@@ -719,7 +719,6 @@ def _kamada_kawai_solve(dist_mtx, pos_arr, dim):
 
     import numpy as np
     import scipy as sp
-    import scipy.optimize  # call as sp.optimize
 
     meanwt = 1e-3
     costargs = (np, 1 / (dist_mtx + np.eye(dist_mtx.shape[0]) * 1e-3), meanwt, dim)
@@ -866,8 +865,6 @@ def _sparse_spectral(A, dim=2):
     # Could use multilevel methods here, see Koren "On spectral graph drawing"
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
-    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     try:
         nnodes, _ = A.shape
@@ -1108,6 +1105,118 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
         pos = pos[:, ::-1]  # swap x and y coords
     pos = dict(zip(nodes, pos))
     return pos
+
+
+def arf_layout(
+    G,
+    pos=None,
+    scaling=1,
+    a=1.1,
+    etol=1e-6,
+    dt=1e-3,
+    max_iter=1000,
+):
+    """Arf layout for networkx
+
+    The attractive and repulsive forces (arf) layout [1]
+    improves the spring layout in three ways. First, it
+    prevents congestion of highly connected nodes due to
+    strong forcing between nodes. Second, it utilizes the
+    layout space more effectively by preventing large gaps
+    that spring layout tends to create. Lastly, the arf
+    layout represents symmmetries in the layout better than
+    the default spring layout.
+
+    Parameters
+    ----------
+    G : nx.Graph or nx.DiGraph
+        Networkx graph.
+    pos : dict
+        Initial  position of  the nodes.  If set  to None  a
+        random layout will be used.
+    scaling : float
+        Scales the radius of the circular layout space.
+    a : float
+        Strength of springs between connected nodes. Should be larger than 1. The greater a, the clearer the separation ofunconnected sub clusters.
+    etol : float
+        Graduent sum of spring forces must be larger than `etol` before successful termination.
+    dt : float
+        Time step for force differential equation simulations.
+    max_iter : int
+        Max iterations before termination of the algorithm.
+
+    References
+    .. [1] "Self-Organization Applied to Dynamic Network Layout", M. Geipel,
+            International Journal of Modern Physics C, 2007, Vol 18, No 10, pp. 1537-1549.
+            https://doi.org/10.1142/S0129183107011558 https://arxiv.org/abs/0704.1748
+
+    Returns
+    -------
+    pos : dict
+        A dictionary of positions keyed by node.
+
+    Examples
+    --------
+    >>> G = nx.grid_graph((5, 5))
+    >>> pos = nx.arf_layout(G)
+
+    """
+    import warnings
+
+    import numpy as np
+
+    if a <= 1:
+        msg = "The parameter a should be larger than 1"
+        raise ValueError(msg)
+
+    pos_tmp = nx.random_layout(G)
+    if pos is None:
+        pos = pos_tmp
+    else:
+        for node in G.nodes():
+            if node not in pos:
+                pos[node] = pos_tmp[node].copy()
+
+    # Initialize spring constant matrix
+    N = len(G)
+    # No nodes no computation
+    if N == 0:
+        return pos
+
+    # init force of springs
+    K = np.ones((N, N)) - np.eye(N)
+    node_order = {node: i for i, node in enumerate(G)}
+    for x, y in G.edges():
+        if x != y:
+            idx, jdx = (node_order[i] for i in (x, y))
+            K[idx, jdx] = a
+
+    # vectorize values
+    p = np.asarray(list(pos.values()))
+
+    # equation 10 in [1]
+    rho = scaling * np.sqrt(N)
+
+    # looping variables
+    error = etol + 1
+    n_iter = 0
+    while error > etol:
+        diff = p[:, np.newaxis] - p[np.newaxis]
+        A = np.linalg.norm(diff, axis=-1)[..., np.newaxis]
+        # attraction_force - repulsions force
+        # suppress nans due to division; caused by diagonal set to zero.
+        # Does not affect the computation due to nansum
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            change = K[..., np.newaxis] * diff - rho / A * diff
+        change = np.nansum(change, axis=0)
+        p += change * dt
+
+        error = np.linalg.norm(change, axis=-1).sum()
+        if n_iter > max_iter:
+            break
+        n_iter += 1
+    return dict(zip(G.nodes(), p))
 
 
 def rescale_layout(pos, scale=1):

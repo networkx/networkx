@@ -196,7 +196,7 @@ def strategy_connected_sequential(G, colors, traversal="bfs"):
         # Yield the source node, then all the nodes in the specified
         # traversal order.
         yield source
-        for (_, end) in traverse(G.subgraph(component), source):
+        for _, end in traverse(G.subgraph(component), source):
             yield end
 
 
@@ -209,29 +209,42 @@ def strategy_saturation_largest_first(G, colors):
 
     """
     distinct_colors = {v: set() for v in G}
-    for i in range(len(G)):
-        # On the first time through, simply choose the node of highest degree.
-        if i == 0:
-            node = max(G, key=G.degree)
-            yield node
-            # Add the color 0 to the distinct colors set for each
-            # neighbors of that node.
-            for v in G[node]:
-                distinct_colors[v].add(0)
-        else:
-            # Compute the maximum saturation and the set of nodes that
-            # achieve that saturation.
-            saturation = {
-                v: len(c) for v, c in distinct_colors.items() if v not in colors
-            }
-            # Yield the node with the highest saturation, and break ties by
-            # degree.
-            node = max(saturation, key=lambda v: (saturation[v], G.degree(v)))
-            yield node
-            # Update the distinct color sets for the neighbors.
-            color = colors[node]
-            for v in G[node]:
-                distinct_colors[v].add(color)
+
+    # Add the node color assignments given in colors to the
+    # distinct colors set for each neighbor of that node
+    for node, color in colors.items():
+        for neighbor in G[node]:
+            distinct_colors[neighbor].add(color)
+
+    # Check that the color assignments in colors are valid
+    # i.e. no neighboring nodes have the same color
+    if len(colors) >= 2:
+        for node, color in colors.items():
+            if color in distinct_colors[node]:
+                raise nx.NetworkXError("Neighboring nodes must have different colors")
+
+    # If 0 nodes have been colored, simply choose the node of highest degree.
+    if not colors:
+        node = max(G, key=G.degree)
+        yield node
+        # Add the color 0 to the distinct colors set for each
+        # neighbor of that node.
+        for v in G[node]:
+            distinct_colors[v].add(0)
+
+    while len(G) != len(colors):
+        # Update the distinct color sets for the neighbors.
+        for node, color in colors.items():
+            for neighbor in G[node]:
+                distinct_colors[neighbor].add(color)
+
+        # Compute the maximum saturation and the set of nodes that
+        # achieve that saturation.
+        saturation = {v: len(c) for v, c in distinct_colors.items() if v not in colors}
+        # Yield the node with the highest saturation, and break ties by
+        # degree.
+        node = max(saturation, key=lambda v: (saturation[v], G.degree(v)))
+        yield node
 
 
 #: Dictionary mapping name of a strategy as a string to the strategy function.
@@ -425,7 +438,7 @@ class _AdjEntry:
 
 
 def _greedy_coloring_with_interchange(G, nodes):
-    """Return a coloring for `orginal_graph` using interchange approach
+    """Return a coloring for `original_graph` using interchange approach
 
     This procedure is an adaption of the algorithm described by [1]_,
     and is an implementation of coloring with interchange. Please be
@@ -457,7 +470,7 @@ def _greedy_coloring_with_interchange(G, nodes):
 
     graph = {node: _Node(node, n) for node in G}
 
-    for (node1, node2) in G.edges():
+    for node1, node2 in G.edges():
         adj_entry1 = _AdjEntry(node2)
         adj_entry2 = _AdjEntry(node1)
         adj_entry1.mate = adj_entry2
@@ -486,7 +499,7 @@ def _greedy_coloring_with_interchange(G, nodes):
             while connected and col1 < k:
                 col1 += 1
                 neighbor_cols = graph[node].iter_neighbors_color(col1)
-                col1_adj = [it for it in neighbor_cols]
+                col1_adj = list(neighbor_cols)
 
                 col2 = col1
                 while connected and col2 < k:

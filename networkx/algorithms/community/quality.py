@@ -18,7 +18,7 @@ class NotAPartition(NetworkXError):
     """Raised if a given collection is not a partition."""
 
     def __init__(self, G, collection):
-        msg = f"{G} is not a valid partition of the graph {collection}"
+        msg = f"{collection} is not a valid partition of the graph {G}"
         super().__init__(msg)
 
 
@@ -59,6 +59,7 @@ def _require_partition(G, partition):
 require_partition = argmap(_require_partition, (0, 1))
 
 
+@nx._dispatch
 def intra_community_edges(G, partition):
     """Returns the number of intra-community edges for a partition of `G`.
 
@@ -76,6 +77,7 @@ def intra_community_edges(G, partition):
     return sum(G.subgraph(block).size() for block in partition)
 
 
+@nx._dispatch
 def inter_community_edges(G, partition):
     """Returns the number of inter-community edges for a partition of `G`.
     according to the given
@@ -191,7 +193,7 @@ def modularity(G, communities, weight="weight", resolution=1):
     Returns
     -------
     Q : float
-        The modularity of the paritition.
+        The modularity of the partition.
 
     Raises
     ------
@@ -200,11 +202,10 @@ def modularity(G, communities, weight="weight", resolution=1):
 
     Examples
     --------
-    >>> import networkx.algorithms.community as nx_comm
     >>> G = nx.barbell_graph(3, 0)
-    >>> nx_comm.modularity(G, [{0, 1, 2}, {3, 4, 5}])
+    >>> nx.community.modularity(G, [{0, 1, 2}, {3, 4, 5}])
     0.35714285714285715
-    >>> nx_comm.modularity(G, nx_comm.label_propagation_communities(G))
+    >>> nx.community.modularity(G, nx.community.label_propagation_communities(G))
     0.35714285714285715
 
     References

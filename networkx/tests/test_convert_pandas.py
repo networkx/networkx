@@ -168,7 +168,6 @@ class TestConvertPandas:
         assert edges_equal(G.edges(), GW.edges())
 
     def test_to_edgelist_default_source_or_target_col_exists(self):
-
         G = nx.path_graph(10)
         G.add_weighted_edges_from((u, v, u) for u, v in list(G.edges))
         nx.set_edge_attributes(G, 0, name="source")
@@ -182,7 +181,6 @@ class TestConvertPandas:
         pytest.raises(nx.NetworkXError, nx.to_pandas_edgelist, G)
 
     def test_to_edgelist_custom_source_or_target_col_exists(self):
-
         G = nx.path_graph(10)
         G.add_weighted_edges_from((u, v, u) for u, v in list(G.edges))
         nx.set_edge_attributes(G, 0, name="source_col_name")

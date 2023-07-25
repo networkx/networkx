@@ -36,7 +36,7 @@ class WeightedTestBase:
 
     """
 
-    def setup(self):
+    def setup_method(self):
         """Creates some graphs for use in the unit tests."""
         cnlti = nx.convert_node_labels_to_integers
         self.grid = cnlti(nx.grid_2d_graph(4, 4), first_label=1, ordering="sorted")
@@ -341,6 +341,10 @@ class TestWeightedPath(WeightedTestBase):
         pytest.raises(ValueError, nx.dijkstra_predecessor_and_distance, G, 8)
         G.add_edge(9, 10)
         pytest.raises(ValueError, nx.bidirectional_dijkstra, G, 8, 10)
+
+    def test_negative_edge_cycle_empty(self):
+        G = nx.DiGraph()
+        assert not nx.negative_edge_cycle(G)
 
     def test_negative_edge_cycle_custom_weight_key(self):
         d = nx.DiGraph()
@@ -861,10 +865,9 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
 
 class TestJohnsonAlgorithm(WeightedTestBase):
     def test_single_node_graph(self):
-        with pytest.raises(nx.NetworkXError):
-            G = nx.DiGraph()
-            G.add_node(0)
-            nx.johnson(G)
+        G = nx.DiGraph()
+        G.add_node(0)
+        assert nx.johnson(G) == {0: {0: [0]}}
 
     def test_negative_cycle(self):
         G = nx.DiGraph()
@@ -911,9 +914,27 @@ class TestJohnsonAlgorithm(WeightedTestBase):
         }
 
     def test_unweighted_graph(self):
-        with pytest.raises(nx.NetworkXError):
-            G = nx.path_graph(5)
-            nx.johnson(G)
+        G = nx.Graph()
+        G.add_edges_from([(1, 0), (2, 1)])
+        H = G.copy()
+        nx.set_edge_attributes(H, values=1, name="weight")
+        assert nx.johnson(G) == nx.johnson(H)
+
+    def test_partially_weighted_graph_with_negative_edges(self):
+        G = nx.DiGraph()
+        G.add_edges_from([(0, 1), (1, 2), (2, 0), (1, 0)])
+        G[1][0]["weight"] = -2
+        G[0][1]["weight"] = 3
+        G[1][2]["weight"] = -4
+
+        H = G.copy()
+        H[2][0]["weight"] = 1
+
+        I = G.copy()
+        I[2][0]["weight"] = 8
+
+        assert nx.johnson(G) == nx.johnson(H)
+        assert nx.johnson(G) != nx.johnson(I)
 
     def test_graphs(self):
         validate_path(self.XG, "s", "v", 9, nx.johnson(self.XG)["s"]["v"])

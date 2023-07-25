@@ -15,7 +15,6 @@ class _DataEssentialsAndFunctions:
     def __init__(
         self, G, multigraph, demand="demand", capacity="capacity", weight="weight"
     ):
-
         # Number all nodes and edges and hereafter reference them using ONLY their numbers
         self.node_list = list(G)  # nodes
         self.node_indices = {u: i for i, u in enumerate(self.node_list)}  # node indices
