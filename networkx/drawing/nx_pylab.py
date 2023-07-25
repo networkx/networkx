@@ -822,7 +822,6 @@ def _draw_networkx_edges(
 
     if nodelist is None:
         nodelist = list(G.nodes())
-
     # FancyArrowPatch handles color=None different from LineCollection
     if edge_color is None:
         edge_color = "k"
@@ -830,9 +829,9 @@ def _draw_networkx_edges(
 
     # set edge positions
     edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
-
     # Check if edge_color is an array of floats and map to edge_cmap.
     # This is the only case handled differently from matplotlib
+
     if (
         np.iterable(edge_color)
         and (len(edge_color) == len(edge_pos))
@@ -1064,6 +1063,8 @@ def _draw_networkx_multigraph_edges(
 ):
     from collections import Counter
 
+    import matplotlib as mpl
+
     if edgelist == None:
         edgelist = list(G.edges())
 
@@ -1090,14 +1091,25 @@ def _draw_networkx_multigraph_edges(
 
     all_edge_info = list(zip(edgelist, widthlist, colorlist, stylelist))
 
+    if edge_cmap is not None:
+        assert isinstance(edge_cmap, mpl.colors.Colormap)
+    else:
+        edge_cmap = plt.get_cmap()
+    if edge_vmin is None:
+        edge_vmin = min(edge_color)
+    if edge_vmax is None:
+        edge_vmax = max(edge_color)
+    color_normal = mpl.colors.Normalize(vmin=edge_vmin, vmax=edge_vmax)
+
     for edge, ewidth, ecolor, estyle in all_edge_info:
+        edge_color = [edge_cmap(color_normal(ecolor))]
         if edge_counts[edge] == 1 and list(G.edges()).count((edge[1], edge[0])) == 0:
             drawnEdge = _draw_networkx_edges(
                 G,
                 pos,
                 edgelist=[edge],
                 width=ewidth,
-                edge_color=ecolor,
+                edge_color=edge_color,
                 style=estyle,
                 alpha=alpha,
                 arrowstyle=arrowstyle,
@@ -1119,13 +1131,14 @@ def _draw_networkx_multigraph_edges(
         else:
             bend = 0.5 / edge_counts[edge]
             rad = bend
+
             for i in range(edge_counts[edge]):
                 drawnEdge = _draw_networkx_edges(
                     G,
                     pos,
                     edgelist=[edge],
                     width=ewidth,
-                    edge_color=ecolor,
+                    edge_color=edge_color,
                     style=estyle,
                     alpha=alpha,
                     arrowstyle=arrowstyle,
