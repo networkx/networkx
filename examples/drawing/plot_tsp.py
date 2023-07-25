@@ -5,7 +5,7 @@ Traveling Salesman Problem
 
 This is an example of a drawing solution of the traveling salesman problem
 
-The function used to produce the solution is `christofides <nx.approximation.christofides>`_,
+The function used to produce the solution is `christofides <nx.algorithms.approximation.christofides>`_,
 where given a set of nodes, it calculates the route of the nodes
 that the traveler has to follow in order to minimize the total cost.
 """
