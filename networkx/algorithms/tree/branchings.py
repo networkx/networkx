@@ -209,6 +209,11 @@ class MultiDiGraph_EdgeKey(nx.MultiDiGraph):
         self._cls = cls
         self.edge_index = {}
 
+        import warnings
+
+        msg = "MultiDiGraph_EdgeKey has been deprecated and will be removed in NetworkX 3.4."
+        warnings.warn(msg, DeprecationWarning)
+
     def remove_node(self, n):
         keys = set()
         for keydict in self.pred[n].values():
@@ -314,6 +319,11 @@ class Edmonds:
         # Since we will be creating graphs with new nodes, we need to make
         # sure that our node names do not conflict with the real node names.
         self.template = random_string(seed=seed) + "_{0}"
+
+        import warnings
+
+        msg = "Edmonds has been deprecated and will be removed in NetworkX 3.4. Please use the approiate minimum or maximum branching or arborescence function directly."
+        warnings.warn(msg, DeprecationWarning)
 
     def _init(self, attr, default, kind, style, preserve_attrs, seed, partition):
         """
@@ -821,7 +831,7 @@ def maximum_branching(
             d[partition] = data.get(partition)
 
         if preserve_attrs:
-            for d_k, d_v in d.items():
+            for d_k, d_v in data.items():
                 if d_k != attr:
                     d[d_k] = d_v
 

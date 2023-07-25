@@ -77,3 +77,8 @@ Version 3.3
   to return a dict. See #6527
 * Change ``shortest_path`` in ``algorithms/shortest_path/generic.py``
   to return a iterator. See #6527
+
+Version 3.4
+~~~~~~~~~~~
+* Remove ``MultiDiGraph_EdgeKey`` class from ``algorithms/tree/branchings.py``. 
+* Remove ``Edmonds`` class from ``algorithms/tree/branchings.py``.

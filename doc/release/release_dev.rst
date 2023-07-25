@@ -42,7 +42,9 @@ API Changes
 
 Deprecations
 ------------
-
+- [`#6785 <https://github.com/networkx/pull/6785>`_]
+  Deprecate ``MultiDiGraph_EdgeKey`` subclass used in ``Edmonds`` class.
+  Deprecate ``Edmonds`` class for computing minimum and maximum branchings and arborescences (use ``minimum_branching``, ``minimal_branching``, ``maximum_branching``, ``minimum_arborescence`` and ``maximum_arborescence`` directly).
 
 Merged PRs
 ----------
