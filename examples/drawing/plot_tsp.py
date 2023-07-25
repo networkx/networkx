@@ -5,10 +5,9 @@ Traveling Salesman Problem
 
 This is an example of a drawing solution of the traveling salesman problem
 
-The function used to produce the solution is `christofides <networkx.algorithms.approximation.christofides>`_,
-where given a set of nodes, it calculates the route of the nodes
-that the traveler has to follow in order to minimize the total cost.
-"""
+The function used to produce the solution is :func:`networkx.algorithms.approximation.traveling_salesman.christofides`,
+where given a set of nodes, it calculates the route of the nodes that the traveler has to follow in order to
+minimize the total cost."""
 
 import matplotlib.pyplot as plt
 import networkx as nx
