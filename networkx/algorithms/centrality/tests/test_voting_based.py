@@ -177,3 +177,4 @@ class TestCopelandCentrality:
         result = nx.copeland_voting(G)
         assert max(result, key=result.get) == "CW"
         assert len([n for n in result if result[n] == result["CW"]]) == 1
+        

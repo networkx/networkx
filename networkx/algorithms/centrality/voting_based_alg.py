@@ -249,7 +249,7 @@ def spav_voting(G, number_of_nodes=None, voting_ability_fn=None):
     if number_of_nodes == None or number_of_nodes > len(G.nodes):
         number_of_nodes = len(G.nodes)
     if voting_ability_fn == None:
-        voting_ability_fn = lambda x: 1 / (x+1)
+        voting_ability_fn = lambda x: 1 / (x + 1)
     
     # Select nodes sequentially
     selected_nodes = []
