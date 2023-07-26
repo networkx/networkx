@@ -1051,7 +1051,9 @@ def LFR_benchmark_graph(
     G.add_nodes_from(range(n))
 
     desired_internal_degree = [round(deg_seq[u] * (1 - mu)) for u in range(n)]
-    desired_external_degree = [deg_seq[u] - desired_internal_degree[u] for u in range(n)]
+    desired_external_degree = [
+        deg_seq[u] - desired_internal_degree[u] for u in range(n)
+    ]
 
     realized_internal_degree = [0 for _ in range(n)]
     realized_external_degree = [0 for _ in range(n)]
@@ -1059,7 +1061,7 @@ def LFR_benchmark_graph(
     for c in communities:
 
         comm_degrees = [desired_internal_degree[u] for u in c]
-        comm_sort_by_deg = [u for _,u in sorted(zip(comm_degrees, c), reverse = True)]
+        comm_sort_by_deg = [u for _, u in sorted(zip(comm_degrees, c), reverse = True)]
 
         for u in comm_sort_by_deg:
 
@@ -1077,19 +1079,25 @@ def LFR_benchmark_graph(
 
     q = len(communities)
     comm_sizes = [len(c) for c in communities]
-    comm_idx_sort_by_size = [i for _,i in sorted(zip(comm_sizes, range(q)), reverse = True)]
+    comm_idx_sort_by_size = [
+        i for _,i in sorted(zip(comm_sizes, range(q)), reverse = True)
+    ]
 
     for i in comm_idx_sort_by_size:
 
         ci = communities[i]
-        ci_degrees = [desired_external_degree[u] for u in c1]
-        ci_sort_by_deg = [u for _,u in sorted(zip(ci_degrees, ci), reverse = True)]
+        ci_degrees = [desired_external_degree[u] for u in ci]
+        ci_sort_by_deg = [u for _, u in sorted(zip(ci_degrees, ci), reverse = True)]
 
         for u in ci_sort_by_deg:
 
             its = 0
 
-            while realized_external_degree[u] < desired_external_degree[u] and its < 10 * n:
+            while (
+                realized_external_degree[u] < desired_external_degree[u] 
+                and its < 10 * n
+                ):
+
                 j = i
                 while j == i:
                     j = seed.choice(range(q))
