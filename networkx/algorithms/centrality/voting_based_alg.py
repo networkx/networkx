@@ -68,7 +68,6 @@ def sav_voting(G):
         https://www.ifaamas.org/Proceedings/aamas2022/pdfs/p1554.pdf
     """
 
-    # Compute Scores
     scores = {candidate: 0 for candidate in G.nodes}
     for voter in G.nodes:
         neighbors = list(G.neighbors(voter))
@@ -97,7 +96,7 @@ def copeland_voting(G):
     comparison), and B loses one point. The same holds vice versa when B wins the pairwise
     comparison. If A and B are tied (neither A nor B wins), both receive no points. The
     Copeland centrality index is achieved by summing up all the points from all comparisons.
-    
+
     The Copeland centrality index was introduced in [1]_ . Although the Copeland voting
     method is mostly known under Copeland's name, it dates back at least to Llull (1299).
     See also https://en.wikipedia.org/wiki/Copeland%27s_method
@@ -120,7 +119,7 @@ def copeland_voting(G):
     See Also
     --------
     sav_voting, spav_voting
-    
+
     Examples
     --------
     >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (1, 5), (5, 6), (6, 7), (7, 8), (7, 9)])
@@ -139,7 +138,7 @@ def copeland_voting(G):
     shortest_paths_len = {}
     for start, distances in nx.shortest_path_length(G, source=None, target=None):
         shortest_paths_len[start] = distances
-
+    # Function for computing who wins pairwise comparison
     def pairwise_comparison(A, B):
         other_nodes = G.nodes - {A, B}
         prefers_A = [
@@ -157,14 +156,12 @@ def copeland_voting(G):
         elif len(prefers_A) < len(prefers_B):
             return -1
         return 0
-
     # Compute Scores
     scores = {candidate: 0 for candidate in G.nodes}
     for X, Y in itertools.combinations(G.nodes, 2):
         comparison = pairwise_comparison(X, Y)
         scores[X] += comparison
         scores[Y] -= comparison
-
     return scores
 
 
@@ -182,7 +179,7 @@ def spav_voting(G, number_of_nodes=None, voting_ability_fn=None):
     nodes from the neighborhood of a "voter" are already selected) to a real number (voting ability).
     By default, voting_ability_fn(0) = 1, voting_ability_fn(1) = 1/2, voting_ability_fn(2) = 1/3,
     etc., is used.
-    
+
     The original voting method SPAV was first proposed by Thorvald Thiele around 1900. For an
     introduction, and astudy on SPAV's properties, see e.g. [1]_ as well as
     https://en.wikipedia.org/wiki/Sequential_proportional_approval_voting
@@ -196,7 +193,7 @@ def spav_voting(G, number_of_nodes=None, voting_ability_fn=None):
     ----------
     G : graph
         A NetworkX graph.
-    
+
     number_of_nodes : integer (Optional)
         The number of nodes to select. If None, all nodes are selected.
 
@@ -212,7 +209,7 @@ def spav_voting(G, number_of_nodes=None, voting_ability_fn=None):
     See Also
     --------
     copeland_voting, sav_voting
-    
+
     Examples
     --------
     >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (1, 5), (5, 6), (6, 7), (7, 8), (7, 9)])
@@ -250,7 +247,6 @@ def spav_voting(G, number_of_nodes=None, voting_ability_fn=None):
         number_of_nodes = len(G.nodes)
     if voting_ability_fn == None:
         voting_ability_fn = lambda x: 1 / (x + 1)
-    
     # Select nodes sequentially
     selected_nodes = []
     neighbors_already_selected = {voter: 0 for voter in G.nodes}

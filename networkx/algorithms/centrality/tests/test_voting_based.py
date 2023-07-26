@@ -26,7 +26,7 @@ class TestSPAVCentrality:
             ]
         )
         assert [1, 7, 11] == nx.spav_voting(G, number_of_nodes=3)
-    
+
     def test_spav_2(self):
         G = nx.Graph()
         G.add_edges_from(
@@ -51,6 +51,7 @@ class TestSPAVCentrality:
         assert [6, 7] == nx.spav_voting(
             G, number_of_nodes=2, voting_ability_fn=lambda x: 1 if x == 0 else 0
         )
+
 
 class TestSAVCentrality:
     def test_sav_1(self):
@@ -77,7 +78,7 @@ class TestSAVCentrality:
         assert result[3] == 1 / 4
         assert result[7] == 2
         assert result[10] == 1 / 2 + 1 / 3
-    
+
     def test_sav_2(self):
         # Graph from reference paper.
         G = nx.Graph()
@@ -148,7 +149,7 @@ class TestCopelandCentrality:
         assert result["A"] < 13
         assert result["B"] < 13
         assert result["C"] < 13
-    
+
     def test_copeland_condorcet_winner_exists(self):
         # Graph from reference paper: Condorcet winner exists, and Copeland chooses it.
         G = nx.Graph()
@@ -177,4 +178,3 @@ class TestCopelandCentrality:
         result = nx.copeland_voting(G)
         assert max(result, key=result.get) == "CW"
         assert len([n for n in result if result[n] == result["CW"]]) == 1
-        
