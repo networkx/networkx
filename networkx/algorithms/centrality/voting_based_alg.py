@@ -69,13 +69,12 @@ def sav_voting(G):
     """
 
     # Compute Scores
-    scores = {candidate : 0 for candidate in G.nodes}
+    scores = {candidate: 0 for candidate in G.nodes}
     for voter in G.nodes:
         neighbors = list(G.neighbors(voter))
-        voting_capability = 1/len(neighbors)
+        voting_capability = 1 / len(neighbors)
         for candidate in neighbors:
             scores[candidate] += voting_capability
-    
     return scores
 
 
@@ -137,14 +136,22 @@ def copeland_voting(G):
         https://www.ifaamas.org/Proceedings/aamas2022/pdfs/p1554.pdf
     """
 
-    shortest_paths_len = dict()
+    shortest_paths_len = {}
     for start, distances in nx.shortest_path_length(G, source=None, target=None):
         shortest_paths_len[start] = distances
 
     def pairwise_comparison(A, B):
-        other_nodes = G.nodes - {A,B}
-        prefers_A = [n for n in other_nodes if shortest_paths_len[n][A] < shortest_paths_len[n][B]]
-        prefers_B = [n for n in other_nodes if shortest_paths_len[n][A] > shortest_paths_len[n][B]]
+        other_nodes = G.nodes - {A, B}
+        prefers_A = [
+            n
+            for n in other_nodes
+            if shortest_paths_len[n][A] < shortest_paths_len[n][B]
+        ]
+        prefers_B = [
+            n
+            for n in other_nodes
+            if shortest_paths_len[n][A] > shortest_paths_len[n][B]
+        ]
         if len(prefers_A) > len(prefers_B):
             return 1
         elif len(prefers_A) < len(prefers_B):
@@ -152,9 +159,9 @@ def copeland_voting(G):
         return 0
 
     # Compute Scores
-    scores = {candidate : 0 for candidate in G.nodes}
-    for X,Y in itertools.combinations(G.nodes, 2):
-        comparison = pairwise_comparison(X,Y)
+    scores = {candidate: 0 for candidate in G.nodes}
+    for X, Y in itertools.combinations(G.nodes, 2):
+        comparison = pairwise_comparison(X, Y)
         scores[X] += comparison
         scores[Y] -= comparison
 
@@ -242,14 +249,14 @@ def spav_voting(G, number_of_nodes=None, voting_ability_fn=None):
     if number_of_nodes == None or number_of_nodes > len(G.nodes):
         number_of_nodes = len(G.nodes)
     if voting_ability_fn == None:
-        voting_ability_fn = lambda x : 1/(x+1)
+        voting_ability_fn = lambda x: 1 / (x+1)
     
     # Select nodes sequentially
-    selected_nodes = list()
-    neighbors_already_selected = {voter : 0 for voter in G.nodes}
+    selected_nodes = []
+    neighbors_already_selected = {voter: 0 for voter in G.nodes}
     candidates = set(G.nodes)
     for _ in range(number_of_nodes):
-        scores = dict()
+        scores = {}
         for candidate in candidates:
             candidate_score = 0
             for voter in G.neighbors(candidate):
