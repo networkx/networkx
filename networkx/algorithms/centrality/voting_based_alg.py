@@ -3,6 +3,7 @@ centrality using voting methods from Computational Social Choice.
 """
 
 import itertools
+
 import networkx as nx
 
 __all__ = ["sav_voting", "copeland_voting", "spav_voting"]
@@ -77,7 +78,6 @@ def sav_voting(G):
     return scores
 
 
-
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
 def copeland_voting(G):
@@ -138,6 +138,7 @@ def copeland_voting(G):
     shortest_paths_len = {}
     for start, distances in nx.shortest_path_length(G, source=None, target=None):
         shortest_paths_len[start] = distances
+
     # Function for computing who wins pairwise comparison
     def pairwise_comparison(A, B):
         other_nodes = G.nodes - {A, B}
@@ -156,6 +157,7 @@ def copeland_voting(G):
         elif len(prefers_A) < len(prefers_B):
             return -1
         return 0
+
     # Compute Scores
     scores = {candidate: 0 for candidate in G.nodes}
     for X, Y in itertools.combinations(G.nodes, 2):
