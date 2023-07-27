@@ -555,9 +555,7 @@ def maximum_spanning_edges(
     )
 
 
-@nx._dispatch(
-    preserve_edge_attrs=True, preserve_node_attrs=True, preserve_graph_attrs=True
-)
+@nx._dispatch(preserve_all_attrs=True)
 def minimum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=False):
     """Returns a minimum spanning tree or forest on an undirected graph `G`.
 
@@ -617,9 +615,7 @@ def minimum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
     return T
 
 
-@nx._dispatch(
-    preserve_edge_attrs=True, preserve_node_attrs=True, preserve_graph_attrs=True
-)
+@nx._dispatch(preserve_all_attrs=True)
 def partition_spanning_tree(
     G, minimum=True, weight="weight", partition="partition", ignore_nan=False
 ):
@@ -683,9 +679,7 @@ def partition_spanning_tree(
     return T
 
 
-@nx._dispatch(
-    preserve_edge_attrs=True, preserve_node_attrs=True, preserve_graph_attrs=True
-)
+@nx._dispatch(preserve_all_attrs=True)
 def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=False):
     """Returns a maximum spanning tree or forest on an undirected graph `G`.
 

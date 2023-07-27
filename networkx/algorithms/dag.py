@@ -664,9 +664,7 @@ def is_aperiodic(G):
         return g == 1 and nx.is_aperiodic(G.subgraph(set(G) - set(levels)))
 
 
-@nx._dispatch(
-    preserve_edge_attrs=True, preserve_node_attrs=True, preserve_graph_attrs=True
-)
+@nx._dispatch(preserve_all_attrs=True)
 def transitive_closure(G, reflexive=False):
     """Returns transitive closure of a graph
 
@@ -759,9 +757,7 @@ def transitive_closure(G, reflexive=False):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch(
-    preserve_edge_attrs=True, preserve_node_attrs=True, preserve_graph_attrs=True
-)
+@nx._dispatch(preserve_all_attrs=True)
 def transitive_closure_dag(G, topo_order=None):
     """Returns the transitive closure of a directed acyclic graph.
 

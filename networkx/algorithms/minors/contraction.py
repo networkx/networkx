@@ -412,9 +412,7 @@ def _quotient_graph(
     return H
 
 
-@nx._dispatch(
-    preserve_edge_attrs=True, preserve_node_attrs=True, preserve_graph_attrs=True
-)
+@nx._dispatch(preserve_all_attrs=True)
 def contracted_nodes(G, u, v, self_loops=True, copy=True):
     """Returns the graph that results from contracting `u` and `v`.
 
