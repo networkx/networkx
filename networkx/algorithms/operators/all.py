@@ -7,10 +7,7 @@ import networkx as nx
 __all__ = ["union_all", "compose_all", "disjoint_union_all", "intersection_all"]
 
 
-@nx._dispatch(
-    graphs="[graphs]",
-    preserve_all_attrs=True,
-)
+@nx._dispatch(graphs="[graphs]", preserve_all_attrs=True)
 def union_all(graphs, rename=()):
     """Returns the union of all graphs.
 
@@ -104,10 +101,7 @@ def union_all(graphs, rename=()):
     return R
 
 
-@nx._dispatch(
-    graphs="[graphs]",
-    preserve_all_attrs=True,
-)
+@nx._dispatch(graphs="[graphs]", preserve_all_attrs=True)
 def disjoint_union_all(graphs):
     """Returns the disjoint union of all graphs.
 
@@ -151,10 +145,7 @@ def disjoint_union_all(graphs):
     return R
 
 
-@nx._dispatch(
-    graphs="[graphs]",
-    preserve_all_attrs=True,
-)
+@nx._dispatch(graphs="[graphs]", preserve_all_attrs=True)
 def compose_all(graphs):
     """Returns the composition of all graphs.
 

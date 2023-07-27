@@ -288,10 +288,7 @@ def symmetric_difference(G, H):
     return R
 
 
-@nx._dispatch(
-    graphs=_G_H,
-    preserve_all_attrs=True,
-)
+@nx._dispatch(graphs=_G_H, preserve_all_attrs=True)
 def compose(G, H):
     """Compose graph G with H by combining nodes and edges into a single graph.
 
@@ -368,10 +365,7 @@ def compose(G, H):
     return nx.compose_all([G, H])
 
 
-@nx._dispatch(
-    graphs=_G_H,
-    preserve_all_attrs=True,
-)
+@nx._dispatch(graphs=_G_H, preserve_all_attrs=True)
 def full_join(G, H, rename=(None, None)):
     """Returns the full join of graphs G and H.
 

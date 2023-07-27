@@ -413,10 +413,7 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
 
 
 @not_implemented_for("multigraph")
-@nx._dispatch(
-    graphs="B",
-    preserve_all_attrs=True,
-)
+@nx._dispatch(graphs="B", preserve_all_attrs=True)
 def generic_weighted_projected_graph(B, nodes, weight_function=None):
     r"""Weighted projection of B with a user-specified weight function.
 
