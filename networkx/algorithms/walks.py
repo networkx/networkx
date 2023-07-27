@@ -6,7 +6,7 @@ import networkx as nx
 __all__ = ["number_of_walks"]
 
 
-@nx._dispatch(preserve_edge_attrs={"G": {"weight": 1}})
+@nx._dispatch
 def number_of_walks(G, walk_length):
     """Returns the number of walks connecting each pair of nodes in `G`
 
