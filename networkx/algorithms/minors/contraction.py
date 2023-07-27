@@ -94,7 +94,7 @@ def equivalence_classes(iterable, relation):
     return {frozenset(block) for block in blocks}
 
 
-@nx._dispatch(preserve_edge_attrs={"G": {"weight": 1}})
+@nx._dispatch(edge_attrs="weight")
 def quotient_graph(
     G,
     partition,
