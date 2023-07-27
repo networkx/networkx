@@ -1495,8 +1495,10 @@ def _simrank_similarity_numpy(
     return newsim
 
 
-@nx._dispatch(preserve_edge_attrs={"G": {"weight": 1}})
-def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
+@nx._dispatch(edge_attrs="weight")
+def panther_similarity(
+    G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None, weight="weight"
+):
     r"""Returns the Panther similarity of nodes in the graph `G` to node ``v``.
 
     Panther is a similarity metric that says "two objects are considered
@@ -1522,6 +1524,9 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
     eps : float or None (default = None)
         The error bound. Per [1]_, a good value is ``sqrt(1/|E|)``. Therefore,
         if no value is provided, the recommended computed value will be used.
+    weight : string or None, optional (default="weight")
+        The name of an edge attribute that holds the numerical value
+        used as a weight. If None then each edge has weight 1.
 
     Returns
     -------
@@ -1567,7 +1572,7 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
     index_map = {}
     _ = list(
         generate_random_paths(
-            G, sample_size, path_length=path_length, index_map=index_map
+            G, sample_size, path_length=path_length, index_map=index_map, weight=weight
         )
     )
     S = np.zeros(num_nodes)
@@ -1601,8 +1606,10 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
     return top_k_with_val
 
 
-@nx._dispatch(preserve_edge_attrs={"G": {"weight": 1}})
-def generate_random_paths(G, sample_size, path_length=5, index_map=None):
+@nx._dispatch(edge_attrs="weight")
+def generate_random_paths(
+    G, sample_size, path_length=5, index_map=None, weight="weight"
+):
     """Randomly generate `sample_size` paths of length `path_length`.
 
     Parameters
@@ -1619,6 +1626,9 @@ def generate_random_paths(G, sample_size, path_length=5, index_map=None):
         If provided, this will be populated with the inverted
         index of nodes mapped to the set of generated random path
         indices within ``paths``.
+    weight : string or None, optional (default="weight")
+        The name of an edge attribute that holds the numerical value
+        used as a weight. If None then each edge has weight 1.
 
     Returns
     -------
@@ -1652,7 +1662,7 @@ def generate_random_paths(G, sample_size, path_length=5, index_map=None):
 
     # Calculate transition probabilities between
     # every pair of vertices according to Eq. (3)
-    adj_mat = nx.to_numpy_array(G)
+    adj_mat = nx.to_numpy_array(G, weight=weight)
     inv_row_sums = np.reciprocal(adj_mat.sum(axis=1)).reshape(-1, 1)
     transition_probabilities = adj_mat * inv_row_sums
 
