@@ -15,6 +15,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbors=None):
     """Iterate over edges in a breadth-first search.
 
@@ -177,6 +178,7 @@ def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     yield from generic_bfs_edges(G, source, successors, depth_limit, sort_neighbors)
 
 
+@nx._dispatch
 def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     """Returns an oriented tree constructed from of a breadth-first-search
     starting at source.

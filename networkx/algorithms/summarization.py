@@ -65,6 +65,7 @@ import networkx as nx
 __all__ = ["dedensify", "snap_aggregation"]
 
 
+@nx._dispatch
 def dedensify(G, threshold, prefix=None, copy=True):
     """Compresses neighborhoods around high-degree nodes
 
@@ -403,6 +404,7 @@ def _snap_split(groups, neighbor_info, group_lookup, group_id):
     return groups
 
 
+@nx._dispatch(node_attrs="[node_attributes]", edge_attrs="[edge_attributes]")
 def snap_aggregation(
     G,
     node_attributes,

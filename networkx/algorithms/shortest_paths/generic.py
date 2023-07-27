@@ -40,7 +40,7 @@ def has_path(G, source, target):
     return True
 
 
-@nx._dispatch
+@nx._dispatch(edge_attrs="weight")
 def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     """Compute shortest paths in the graph.
 
@@ -178,7 +178,7 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     return paths
 
 
-@nx._dispatch
+@nx._dispatch(edge_attrs="weight")
 def shortest_path_length(G, source=None, target=None, weight=None, method="dijkstra"):
     """Compute shortest path lengths in the graph.
 
@@ -322,6 +322,7 @@ def shortest_path_length(G, source=None, target=None, weight=None, method="dijks
     return paths
 
 
+@nx._dispatch(edge_attrs="weight")
 def average_shortest_path_length(G, weight=None, method=None):
     r"""Returns the average shortest path length.
 
@@ -438,6 +439,7 @@ def average_shortest_path_length(G, weight=None, method=None):
     return s / (n * (n - 1))
 
 
+@nx._dispatch(edge_attrs="weight")
 def all_shortest_paths(G, source, target, weight=None, method="dijkstra"):
     """Compute all shortest simple paths in the graph.
 

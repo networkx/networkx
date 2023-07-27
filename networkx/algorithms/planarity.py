@@ -5,6 +5,7 @@ import networkx as nx
 __all__ = ["check_planarity", "is_planar", "PlanarEmbedding"]
 
 
+@nx._dispatch
 def is_planar(G):
     """Returns True if and only if `G` is planar.
 
@@ -37,6 +38,7 @@ def is_planar(G):
     return check_planarity(G, counterexample=False)[0]
 
 
+@nx._dispatch
 def check_planarity(G, counterexample=False):
     """Check if a graph is planar and return a counterexample or an embedding.
 
@@ -112,6 +114,7 @@ def check_planarity(G, counterexample=False):
         return True, embedding
 
 
+@nx._dispatch
 def check_planarity_recursive(G, counterexample=False):
     """Recursive version of :meth:`check_planarity`."""
     planarity_state = LRPlanarity(G)
@@ -127,6 +130,7 @@ def check_planarity_recursive(G, counterexample=False):
         return True, embedding
 
 
+@nx._dispatch
 def get_counterexample(G):
     """Obtains a Kuratowski subgraph.
 
@@ -165,6 +169,7 @@ def get_counterexample(G):
     return subgraph
 
 
+@nx._dispatch
 def get_counterexample_recursive(G):
     """Recursive version of :meth:`get_counterexample`."""
 

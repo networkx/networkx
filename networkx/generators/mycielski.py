@@ -11,6 +11,7 @@ __all__ = ["mycielskian", "mycielski_graph"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def mycielskian(G, iterations=1):
     r"""Returns the Mycielskian of a simple, undirected graph G
 

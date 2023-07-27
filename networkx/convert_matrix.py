@@ -43,6 +43,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch(edge_attrs="weight")
 def to_pandas_adjacency(
     G,
     nodelist=None,
@@ -209,6 +210,7 @@ def from_pandas_adjacency(df, create_using=None):
     return G
 
 
+@nx._dispatch(preserve_edge_attrs=True)
 def to_pandas_edgelist(
     G,
     source="source",
@@ -463,6 +465,7 @@ def from_pandas_edgelist(
     return g
 
 
+@nx._dispatch(edge_attrs="weight")
 def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format="csr"):
     """Returns the graph adjacency matrix as a SciPy sparse array.
 
@@ -758,6 +761,7 @@ def from_scipy_sparse_array(
     return G
 
 
+@nx._dispatch(edge_attrs="weight")  # edge attrs may also be obtained from `dtype`
 def to_numpy_array(
     G,
     nodelist=None,

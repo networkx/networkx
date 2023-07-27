@@ -39,6 +39,7 @@ __all__ = ["second_order_centrality"]
 
 
 @not_implemented_for("directed")
+@nx._dispatch(preserve_edge_attrs={"G": {"weight": 1}})
 def second_order_centrality(G):
     """Compute the second order centrality for nodes of G.
 

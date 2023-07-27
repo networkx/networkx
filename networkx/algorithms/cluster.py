@@ -16,8 +16,8 @@ __all__ = [
 ]
 
 
-@nx._dispatch(graphs="G")
 @not_implemented_for("directed")
+@nx._dispatch
 def triangles(G, nodes=None):
     """Compute the number of triangles.
 
@@ -249,7 +249,7 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
         yield (i, dtotal, dbidirectional, directed_triangles)
 
 
-@nx._dispatch(name="average_clustering")
+@nx._dispatch(edge_attrs="weight")
 def average_clustering(G, nodes=None, weight=None, count_zeros=True):
     r"""Compute the average clustering coefficient for the graph G.
 
@@ -309,7 +309,7 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
     return sum(c) / len(c)
 
 
-@nx._dispatch(name="clustering")
+@nx._dispatch(edge_attrs="weight")
 def clustering(G, nodes=None, weight=None):
     r"""Compute the clustering coefficient for nodes.
 
@@ -424,7 +424,7 @@ def clustering(G, nodes=None, weight=None):
     return clusterc
 
 
-@nx._dispatch(name="transitivity")
+@nx._dispatch
 def transitivity(G):
     r"""Compute graph transitivity, the fraction of all possible triangles
     present in G.
@@ -463,7 +463,7 @@ def transitivity(G):
     return 0 if triangles == 0 else triangles / contri
 
 
-@nx._dispatch(name="square_clustering")
+@nx._dispatch
 def square_clustering(G, nodes=None):
     r"""Compute the squares clustering coefficient for nodes.
 
@@ -541,8 +541,8 @@ def square_clustering(G, nodes=None):
     return clustering
 
 
-@nx._dispatch(name="generalized_degree", graphs="G")
 @not_implemented_for("directed")
+@nx._dispatch
 def generalized_degree(G, nodes=None):
     r"""Compute the generalized degree for nodes.
 

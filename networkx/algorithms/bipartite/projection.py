@@ -12,6 +12,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch(graphs="B", preserve_node_attrs=True, preserve_graph_attrs=True)
 def projected_graph(B, nodes, multigraph=False):
     r"""Returns the projection of B onto one of its node sets.
 
@@ -116,6 +117,7 @@ def projected_graph(B, nodes, multigraph=False):
 
 
 @not_implemented_for("multigraph")
+@nx._dispatch(graphs="B")
 def weighted_projected_graph(B, nodes, ratio=False):
     r"""Returns a weighted projection of B onto one of its node sets.
 
@@ -216,6 +218,7 @@ def weighted_projected_graph(B, nodes, ratio=False):
 
 
 @not_implemented_for("multigraph")
+@nx._dispatch(graphs="B")
 def collaboration_weighted_projected_graph(B, nodes):
     r"""Newman's weighted projection of B onto one of its node sets.
 
@@ -310,6 +313,7 @@ def collaboration_weighted_projected_graph(B, nodes):
 
 
 @not_implemented_for("multigraph")
+@nx._dispatch(graphs="B")
 def overlap_weighted_projected_graph(B, nodes, jaccard=True):
     r"""Overlap weighted projection of B onto one of its node sets.
 
@@ -409,6 +413,12 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
 
 
 @not_implemented_for("multigraph")
+@nx._dispatch(
+    graphs="B",
+    preserve_edge_attrs=True,
+    preserve_node_attrs=True,
+    preserve_graph_attrs=True,
+)
 def generic_weighted_projected_graph(B, nodes, weight_function=None):
     r"""Weighted projection of B with a user-specified weight function.
 

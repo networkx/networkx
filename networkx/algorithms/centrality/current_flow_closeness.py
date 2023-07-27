@@ -11,6 +11,7 @@ __all__ = ["current_flow_closeness_centrality", "information_centrality"]
 
 
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight")
 def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
     """Compute current-flow closeness centrality for nodes.
 

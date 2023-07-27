@@ -10,7 +10,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch
+@nx._dispatch(edge_attrs="weight")
 def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
     """Find all-pairs shortest path lengths using Floyd's algorithm.
 
@@ -84,7 +84,7 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
     return A
 
 
-@nx._dispatch
+@nx._dispatch(edge_attrs="weight")
 def floyd_warshall_predecessor_and_distance(G, weight="weight"):
     """Find all-pairs shortest path lengths using Floyd's algorithm.
 
@@ -210,7 +210,7 @@ def reconstruct_path(source, target, predecessors):
     return list(reversed(path))
 
 
-@nx._dispatch
+@nx._dispatch(edge_attrs="weight")
 def floyd_warshall(G, weight="weight"):
     """Find all-pairs shortest path lengths using Floyd's algorithm.
 

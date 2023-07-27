@@ -12,9 +12,15 @@ __all__ = [
     "symmetric_difference",
     "full_join",
 ]
+_G_H = {"G": 0, "H": 1}
 
 
-@nx._dispatch(graphs="G,H")
+@nx._dispatch(
+    graphs=_G_H,
+    preserve_edge_attrs=True,
+    preserve_node_attrs=True,
+    preserve_graph_attrs=True,
+)
 def union(G, H, rename=()):
     """Combine graphs G and H. The names of nodes must be unique.
 
@@ -70,7 +76,12 @@ def union(G, H, rename=()):
     return nx.union_all([G, H], rename)
 
 
-@nx._dispatch(graphs="G,H")
+@nx._dispatch(
+    graphs=_G_H,
+    preserve_edge_attrs=True,
+    preserve_node_attrs=True,
+    preserve_graph_attrs=True,
+)
 def disjoint_union(G, H):
     """Combine graphs G and H. The nodes are assumed to be unique (disjoint).
 
@@ -124,7 +135,7 @@ def disjoint_union(G, H):
     return nx.disjoint_union_all([G, H])
 
 
-@nx._dispatch(graphs="G,H")
+@nx._dispatch(graphs=_G_H)
 def intersection(G, H):
     """Returns a new graph that contains only the nodes and the edges that exist in
     both G and H.
@@ -169,7 +180,7 @@ def intersection(G, H):
     return nx.intersection_all([G, H])
 
 
-@nx._dispatch(graphs="G,H")
+@nx._dispatch(graphs=_G_H)
 def difference(G, H):
     """Returns a new graph that contains the edges that exist in G but not in H.
 
@@ -224,7 +235,7 @@ def difference(G, H):
     return R
 
 
-@nx._dispatch(graphs="G,H")
+@nx._dispatch(graphs=_G_H)
 def symmetric_difference(G, H):
     """Returns new graph with edges that exist in either G or H but not both.
 
@@ -287,7 +298,12 @@ def symmetric_difference(G, H):
     return R
 
 
-@nx._dispatch(graphs="G,H")
+@nx._dispatch(
+    graphs=_G_H,
+    preserve_edge_attrs=True,
+    preserve_node_attrs=True,
+    preserve_graph_attrs=True,
+)
 def compose(G, H):
     """Compose graph G with H by combining nodes and edges into a single graph.
 
@@ -364,7 +380,12 @@ def compose(G, H):
     return nx.compose_all([G, H])
 
 
-@nx._dispatch(graphs="G,H")
+@nx._dispatch(
+    graphs=_G_H,
+    preserve_edge_attrs=True,
+    preserve_node_attrs=True,
+    preserve_graph_attrs=True,
+)
 def full_join(G, H, rename=(None, None)):
     """Returns the full join of graphs G and H.
 

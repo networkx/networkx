@@ -193,6 +193,7 @@ def all_pairs_shortest_path_length(G, cutoff=None):
         yield (n, length(G, n, cutoff=cutoff))
 
 
+@nx._dispatch
 def bidirectional_shortest_path(G, source, target):
     """Returns a list of nodes in a shortest path between source and target.
 
@@ -484,6 +485,7 @@ def all_pairs_shortest_path(G, cutoff=None):
         yield (n, single_source_shortest_path(G, n, cutoff=cutoff))
 
 
+@nx._dispatch
 def predecessor(G, source, target=None, cutoff=None, return_seen=None):
     """Returns dict of predecessors for the path from source to all nodes in G.
 

@@ -36,6 +36,9 @@ def debug_print(*args, **kwargs):
     print(*args, **kwargs)
 
 
+@nx._dispatch(
+    graphs={"G1": 0, "G2": 1}, preserve_edge_attrs=True, preserve_node_attrs=True
+)
 def graph_edit_distance(
     G1,
     G2,
@@ -207,6 +210,7 @@ def graph_edit_distance(
     return bestcost
 
 
+@nx._dispatch(graphs={"G1": 0, "G2": 1})
 def optimal_edit_paths(
     G1,
     G2,
@@ -369,6 +373,7 @@ def optimal_edit_paths(
     return paths, bestcost
 
 
+@nx._dispatch(graphs={"G1": 0, "G2": 1})
 def optimize_graph_edit_distance(
     G1,
     G2,
@@ -519,6 +524,9 @@ def optimize_graph_edit_distance(
         yield cost
 
 
+@nx._dispatch(
+    graphs={"G1": 0, "G2": 1}, preserve_edge_attrs=True, preserve_node_attrs=True
+)
 def optimize_edit_paths(
     G1,
     G2,
@@ -1195,6 +1203,7 @@ def optimize_edit_paths(
         yield list(vertex_path), list(edge_path), cost
 
 
+@nx._dispatch
 def simrank_similarity(
     G,
     source=None,
@@ -1486,6 +1495,7 @@ def _simrank_similarity_numpy(
     return newsim
 
 
+@nx._dispatch(preserve_edge_attrs={"G": {"weight": 1}})
 def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
     r"""Returns the Panther similarity of nodes in the graph `G` to node ``v``.
 
@@ -1591,6 +1601,7 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
     return top_k_with_val
 
 
+@nx._dispatch(preserve_edge_attrs={"G": {"weight": 1}})
 def generate_random_paths(G, sample_size, path_length=5, index_map=None):
     """Randomly generate `sample_size` paths of length `path_length`.
 

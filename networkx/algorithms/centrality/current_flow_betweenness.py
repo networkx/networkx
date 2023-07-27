@@ -19,8 +19,9 @@ __all__ = [
 ]
 
 
-@py_random_state(7)
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight")
+@py_random_state(7)
 def approximate_current_flow_betweenness_centrality(
     G,
     normalized=True,
@@ -143,6 +144,7 @@ def approximate_current_flow_betweenness_centrality(
 
 
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight")
 def current_flow_betweenness_centrality(
     G, normalized=True, weight=None, dtype=float, solver="full"
 ):
@@ -239,6 +241,7 @@ def current_flow_betweenness_centrality(
 
 
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight")
 def edge_current_flow_betweenness_centrality(
     G, normalized=True, weight=None, dtype=float, solver="full"
 ):

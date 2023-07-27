@@ -7,8 +7,8 @@ from networkx.utils import not_implemented_for
 __all__ = ["eigenvector_centrality", "eigenvector_centrality_numpy"]
 
 
-@nx._dispatch
 @not_implemented_for("multigraph")
+@nx._dispatch(edge_attrs="weight")
 def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None):
     r"""Compute the eigenvector centrality for the graph G.
 
@@ -193,6 +193,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
     raise nx.PowerIterationFailedConvergence(max_iter)
 
 
+@nx._dispatch(edge_attrs="weight")
 def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     r"""Compute the eigenvector centrality for the graph G.
 
