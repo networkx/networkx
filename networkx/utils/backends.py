@@ -403,9 +403,7 @@ def test_override_dispatch(
             raise KeyError(f"Invalid graph names: {set(graphs) - set(bound.arguments)}")
         # Convert graphs into backend graph-like object
         #   Include the edge and/or node labels if provided to the algorithm
-        if preserve_all_attrs:
-            preserve_edge_attrs = preserve_node_attrs = preserve_graph_attrs = True
-        _preserve_edge_attrs = preserve_edge_attrs
+        _preserve_edge_attrs = preserve_edge_attrs or preserve_all_attrs
         _edge_attrs = edge_attrs
         if _preserve_edge_attrs is False:
             # e.g. `preserve_edge_attrs=False`
@@ -479,7 +477,7 @@ def test_override_dispatch(
         else:
             raise TypeError(f"Bad type for edge_attrs: {type(edge_attrs)}")
 
-        _preserve_node_attrs = preserve_node_attrs
+        _preserve_node_attrs = preserve_node_attrs or preserve_all_attrs
         _node_attrs = node_attrs
         if _preserve_node_attrs is False:
             # e.g. `preserve_node_attrs=False`
@@ -546,7 +544,7 @@ def test_override_dispatch(
         else:
             raise TypeError(f"Bad type for node_attrs: {type(node_attrs)}")
 
-        _preserve_graph_attrs = preserve_graph_attrs
+        _preserve_graph_attrs = preserve_graph_attrs or preserve_all_attrs
         if not isinstance(_preserve_graph_attrs, (bool, set)):
             raise TypeError(
                 f"Bad type for preserve_graph_attrs: {type(preserve_graph_attrs)}"
