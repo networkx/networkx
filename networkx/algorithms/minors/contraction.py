@@ -94,13 +94,14 @@ def equivalence_classes(iterable, relation):
     return {frozenset(block) for block in blocks}
 
 
-@nx._dispatch(preserve_edge_attrs={"G": {"weight": 1}})
+@nx._dispatch(edge_attrs="weight")
 def quotient_graph(
     G,
     partition,
     edge_relation=None,
     node_data=None,
     edge_data=None,
+    weight="weight",
     relabel=False,
     create_using=None,
 ):
@@ -141,18 +142,6 @@ def quotient_graph(
         only if some node in *B* is adjacent to some node in *C*,
         according to the edge set of `G`.
 
-    edge_data : function
-        This function takes two arguments, *B* and *C*, each one a set
-        of nodes, and must return a dictionary representing the edge
-        data attributes to set on the edge joining *B* and *C*, should
-        there be an edge joining *B* and *C* in the quotient graph (if
-        no such edge occurs in the quotient graph as determined by
-        `edge_relation`, then the output of this function is ignored).
-
-        If the quotient graph would be a multigraph, this function is
-        not applied, since the edge data from each edge in the graph
-        `G` appears in the edges of the quotient graph.
-
     node_data : function
         This function takes one argument, *B*, a set of nodes in `G`,
         and must return a dictionary representing the node data
@@ -165,6 +154,22 @@ def quotient_graph(
         * 'nedges', the number of edges within this block,
         * 'density', the density of the subgraph of `G` that this
           block represents.
+
+    edge_data : function
+        This function takes two arguments, *B* and *C*, each one a set
+        of nodes, and must return a dictionary representing the edge
+        data attributes to set on the edge joining *B* and *C*, should
+        there be an edge joining *B* and *C* in the quotient graph (if
+        no such edge occurs in the quotient graph as determined by
+        `edge_relation`, then the output of this function is ignored).
+
+        If the quotient graph would be a multigraph, this function is
+        not applied, since the edge data from each edge in the graph
+        `G` appears in the edges of the quotient graph.
+
+    weight : string or None, optional (default="weight")
+        The name of an edge attribute that holds the numerical value
+        used as a weight. If None then each edge has weight 1.
 
     relabel : bool
         If True, relabel the nodes of the quotient graph to be
@@ -303,7 +308,14 @@ def quotient_graph(
                 "Input `partition` is not an equivalence relation for nodes of G"
             )
         return _quotient_graph(
-            G, partition, edge_relation, node_data, edge_data, relabel, create_using
+            G,
+            partition,
+            edge_relation,
+            node_data,
+            edge_data,
+            weight,
+            relabel,
+            create_using,
         )
 
     # If the partition is a dict, it is assumed to be one where the keys are
@@ -321,18 +333,19 @@ def quotient_graph(
     if not nx.community.is_partition(G, partition):
         raise NetworkXException("each node must be in exactly one part of `partition`")
     return _quotient_graph(
-        G, partition, edge_relation, node_data, edge_data, relabel, create_using
+        G,
+        partition,
+        edge_relation,
+        node_data,
+        edge_data,
+        weight,
+        relabel,
+        create_using,
     )
 
 
 def _quotient_graph(
-    G,
-    partition,
-    edge_relation=None,
-    node_data=None,
-    edge_data=None,
-    relabel=False,
-    create_using=None,
+    G, partition, edge_relation, node_data, edge_data, weight, relabel, create_using
 ):
     """Construct the quotient graph assuming input has been checked"""
     if create_using is None:
@@ -377,7 +390,7 @@ def _quotient_graph(
                 for u, v, d in G.edges(b | c, data=True)
                 if (u in b and v in c) or (u in c and v in b)
             )
-            return {"weight": sum(d.get("weight", 1) for d in edgedata)}
+            return {"weight": sum(d.get(weight, 1) for d in edgedata)}
 
     block_pairs = permutations(H, 2) if H.is_directed() else combinations(H, 2)
     # In a multigraph, add one edge in the quotient graph for each edge
