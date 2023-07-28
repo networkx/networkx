@@ -69,7 +69,7 @@ def number_of_walks(G, walk_length):
     if walk_length < 0:
         raise ValueError(f"`walk_length` cannot be negative: {walk_length}")
 
-    A = nx.adjacency_matrix(G)
+    A = nx.adjacency_matrix(G, weight=None)
     # TODO: Use matrix_power from scipy.sparse when available
     # power = sp.sparse.linalg.matrix_power(A, walk_length)
     power = np.linalg.matrix_power(A.toarray(), walk_length)
