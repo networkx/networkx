@@ -48,6 +48,8 @@ The arguments to ``convert_from_nx`` are:
     Whether to preserve all node attributes.
 - ``preserve_graph_attrs`` : bool
     Whether to preserve all graph attributes.
+- ``preserve_all_attrs`` : bool
+    Whether to preserve all graph, node, and edge attributes.
 - ``name`` : str
     The name of the algorithm.
 - ``graph_name`` : str
@@ -137,6 +139,7 @@ def _dispatch(
     preserve_edge_attrs=False,
     preserve_node_attrs=False,
     preserve_graph_attrs=False,
+    preserve_all_attrs=False,
 ):
     """Dispatches to a backend algorithm based on input graph types.
 
@@ -188,6 +191,10 @@ def _dispatch(
         For bool, whether to preserve all graph attributes.
         For set, which input graph arguments to preserve graph attributes.
 
+    preserve_all_attrs : bool
+        Whether to preserve all edge, node and graph attributes.
+        This overrides all the other preserve_*_attrs.
+
     """
     # Allow any of the following decorator forms:
     #  - @_dispatch
@@ -206,6 +213,7 @@ def _dispatch(
             preserve_edge_attrs=preserve_edge_attrs,
             preserve_node_attrs=preserve_node_attrs,
             preserve_graph_attrs=preserve_graph_attrs,
+            preserve_all_attrs=preserve_all_attrs,
         )
     if isinstance(func, str):
         raise TypeError("'name' and 'graphs' must be passed by keyword") from None
@@ -335,6 +343,7 @@ def test_override_dispatch(
     preserve_edge_attrs=False,
     preserve_node_attrs=False,
     preserve_graph_attrs=False,
+    preserve_all_attrs=False,
 ):
     """Auto-converts graph arguments into the backend equivalent,
     causing the dispatching mechanism to trigger for every
@@ -349,6 +358,7 @@ def test_override_dispatch(
             preserve_edge_attrs=preserve_edge_attrs,
             preserve_node_attrs=preserve_node_attrs,
             preserve_graph_attrs=preserve_graph_attrs,
+            preserve_all_attrs=preserve_all_attrs,
         )
     if isinstance(func, str):
         raise TypeError("'name' and 'graphs' must be passed by keyword") from None
@@ -393,7 +403,7 @@ def test_override_dispatch(
             raise KeyError(f"Invalid graph names: {set(graphs) - set(bound.arguments)}")
         # Convert graphs into backend graph-like object
         #   Include the edge and/or node labels if provided to the algorithm
-        _preserve_edge_attrs = preserve_edge_attrs
+        _preserve_edge_attrs = preserve_edge_attrs or preserve_all_attrs
         _edge_attrs = edge_attrs
         if _preserve_edge_attrs is False:
             # e.g. `preserve_edge_attrs=False`
@@ -467,7 +477,7 @@ def test_override_dispatch(
         else:
             raise TypeError(f"Bad type for edge_attrs: {type(edge_attrs)}")
 
-        _preserve_node_attrs = preserve_node_attrs
+        _preserve_node_attrs = preserve_node_attrs or preserve_all_attrs
         _node_attrs = node_attrs
         if _preserve_node_attrs is False:
             # e.g. `preserve_node_attrs=False`
@@ -534,7 +544,7 @@ def test_override_dispatch(
         else:
             raise TypeError(f"Bad type for node_attrs: {type(node_attrs)}")
 
-        _preserve_graph_attrs = preserve_graph_attrs
+        _preserve_graph_attrs = preserve_graph_attrs or preserve_all_attrs
         if not isinstance(_preserve_graph_attrs, (bool, set)):
             raise TypeError(
                 f"Bad type for preserve_graph_attrs: {type(preserve_graph_attrs)}"
