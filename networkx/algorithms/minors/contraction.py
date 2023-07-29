@@ -1,6 +1,6 @@
 """Provides functions for computing minors of a graph."""
 from collections import Counter, defaultdict
-from itertools import chain, combinations, permutations, product
+from itertools import chain
 
 import networkx as nx
 from networkx.exception import NetworkXException
@@ -96,9 +96,7 @@ def equivalence_classes(iterable, relation):
 def quotient_graph(
     G,
     partition,
-    edge_relation=None,
     node_data=None,
-    edge_data=None,
     edge_data_reduce=None,
     edge_data_default=None,
     weight="weight",
@@ -132,38 +130,11 @@ def quotient_graph(
         the nodes of the graph. That is, each node must be in exactly
         one block of the partition.
 
-    edge_relation : Boolean function with two arguments
-        This function must represent an edge relation on the *blocks* of
-        the `partition` of `G`. It must take two arguments, *B* and *C*,
-        each one a set of nodes, and return True exactly when there should be
-        an edge joining block *B* to block *C* in the returned graph.
-
-        If `edge_relation` is not specified, it is assumed to be the
-        following relation. Block *B* is related to block *C* if and
-        only if some node in *B* is adjacent to some node in *C*,
-        according to the edge set of `G`.
-
     node_data : function
         This function takes one argument, *B*, a set of nodes in `G`,
         and must return a dictionary representing the node data
         attributes to set on the node representing *B* in the quotient graph.
         If None, the no node attributes are set.
-
-    edge_data : function
-        This function takes two arguments, *B* and *C*, each one a set
-        of nodes, and must return a dictionary representing the edge
-        data attributes to set on the edge joining *B* and *C*, should
-        there be an edge joining *B* and *C* in the quotient graph (if
-        no such edge occurs in the quotient graph as determined by
-        `edge_relation`, then the output of this function is ignored).
-
-        This parameter may only be specified if `edge_reduce` is None.
-        Specifying `edge_reduce` is much more efficient than `edge_data`,
-        so it's advised to do so when possible.
-
-        If the quotient graph would be a multigraph, this function is
-        not applied, since the edge data from each edge in the graph
-        `G` appears in the edges of the quotient graph.
 
     edge_data_reduce : function
         This function takes two arguments, both dictionaries of
@@ -329,35 +300,17 @@ def quotient_graph(
                 "each node must be in exactly one part of `partition`"
             )
 
-    if edge_relation is None and edge_data is None:
-        return _quotient_graph(
-            G,
-            partition,
-            node_data,
-            edge_data_reduce,
-            edge_data_default,
-            weight,
-            relabel,
-            self_loops,
-            create_using,
-        )
-    elif edge_data_reduce is None and edge_data_default is None:
-        return _grouped_relation_graph(
-            G,
-            partition,
-            edge_relation,
-            node_data,
-            edge_data,
-            weight,
-            relabel,
-            self_loops,
-            create_using,
-        )
-    else:
-        raise ValueError(
-            "`edge_relation` and `edge_data` cannot be specified at the "
-            "same time as `edge_data_reduce` or `edge_data_default`."
-        )
+    return _quotient_graph(
+        G,
+        partition,
+        node_data,
+        edge_data_reduce,
+        edge_data_default,
+        weight,
+        relabel,
+        self_loops,
+        create_using,
+    )
 
 
 def _quotient_graph(
@@ -413,81 +366,6 @@ def _quotient_graph(
 
     if not relabel:
         nx.relabel_nodes(H, partition2nodes, copy=False)
-    return H
-
-
-def _grouped_relation_graph(
-    G,
-    partition,
-    edge_relation,
-    node_data,
-    edge_data,
-    weight,
-    relabel,
-    self_loops,
-    create_using,
-):
-    """Construct the quotient graph assuming input has been checked"""
-    if create_using is None:
-        H = G.__class__()
-    else:
-        H = nx.empty_graph(0, create_using)
-
-    if edge_relation is None:
-
-        def edge_relation(b, c):
-            return any(v in G[u] for u, v in product(b, c))
-
-    if node_data is None:
-        node_data = lambda _: {}
-
-    if edge_data is None:
-
-        def edge_data(b, c):
-            weights = (
-                d
-                for u, v, d in G.edges(b | c, data=weight, default=1)
-                if (u in b and v in c) or (u in c and v in b)
-            )
-            return {"weight": sum(weights)}
-
-    # Each block of the partition becomes a node in the quotient graph.
-    partition = [frozenset(b) for b in partition]
-    H.add_nodes_from((b, node_data(b)) for b in partition)
-
-    block_pairs = permutations(H, 2) if H.is_directed() else combinations(H, 2)
-    if self_loops:
-        block_pairs = chain(block_pairs, ((u, u) for u in H))
-
-    # In a multigraph, add one edge in the quotient graph for each edge
-    # in the original graph.
-    if H.is_multigraph():
-        edges = chain.from_iterable(
-            (
-                (b, c, G.get_edge_data(u, v, default={}))
-                for u, v in product(b, c)
-                if v in G[u]
-            )
-            for b, c in block_pairs
-            if edge_relation(b, c)
-        )
-    # In a simple graph, apply the edge data function to each pair of
-    # blocks to determine the edge data attributes to apply to each edge
-    # in the quotient graph.
-    else:
-        edges = (
-            (b, c, edge_data(b, c)) for (b, c) in block_pairs if edge_relation(b, c)
-        )
-    H.add_edges_from(edges)
-    # If requested by the user, relabel the nodes to be integers,
-    # numbered in increasing order from zero in the same order as the
-    # iteration order of `partition`.
-    if relabel:
-        # Can't use nx.convert_node_labels_to_integers() here since we
-        # want the order of iteration to be the same for backward
-        # compatibility with the nx.blockmodel() function.
-        labels = {b: i for i, b in enumerate(partition)}
-        H = nx.relabel_nodes(H, labels)
     return H
 
 
