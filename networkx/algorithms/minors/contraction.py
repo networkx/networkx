@@ -99,7 +99,6 @@ def quotient_graph(
     edge_relation=None,
     node_data=None,
     edge_data=None,
-    edge_reduce=None,
     weight="weight",
     edge_data_reduce=None,
     edge_data_default=None,
@@ -181,34 +180,6 @@ def quotient_graph(
         Factory function taking no parameters for initial value of each
         quotient graph edge attributes. Any edges in the original graph will
         be reduced with this value. By default, `dict` is used.
-
-    edge_data : function
-        This function takes two arguments, *B* and *C*, each one a set
-        of nodes, and must return a dictionary representing the edge
-        data attributes to set on the edge joining *B* and *C*, should
-        there be an edge joining *B* and *C* in the quotient graph (if
-        no such edge occurs in the quotient graph as determined by
-        `edge_relation`, then the output of this function is ignored).
-
-        If the quotient graph would be a multigraph, this function is
-        not applied, since the edge data from each edge in the graph
-        `G` appears in the edges of the quotient graph.
-
-    weight : string or None, optional (default="weight")
-        The name of an edge attribute that holds the numerical value
-        used as a weight. If None then each edge has weight 1.
-
-    edge_data : function
-        This function takes two arguments, *B* and *C*, each one a set
-        of nodes, and must return a dictionary representing the edge
-        data attributes to set on the edge joining *B* and *C*, should
-        there be an edge joining *B* and *C* in the quotient graph (if
-        no such edge occurs in the quotient graph as determined by
-        `edge_relation`, then the output of this function is ignored).
-
-        If the quotient graph would be a multigraph, this function is
-        not applied, since the edge data from each edge in the graph
-        `G` appears in the edges of the quotient graph.
 
     weight : string or None, optional (default="weight")
         The name of an edge attribute that holds the numerical value
@@ -364,6 +335,7 @@ def quotient_graph(
             node_data,
             edge_data_reduce,
             edge_data_default,
+            weight,
             relabel,
             self_loops,
             create_using,
@@ -375,6 +347,7 @@ def quotient_graph(
             edge_relation,
             node_data,
             edge_data,
+            weight,
             relabel,
             self_loops,
             create_using,
@@ -389,12 +362,13 @@ def quotient_graph(
 def _quotient_graph(
     G,
     partition,
-    node_data=None,
-    edge_data_reduce=None,
-    edge_data_default=None,
-    relabel=False,
-    self_loops=False,
-    create_using=None,
+    node_data,
+    edge_data_reduce,
+    edge_data_default,
+    weight,
+    relabel,
+    self_loops,
+    create_using,
 ):
     """Construct the quotient graph assuming input has been checked"""
     if create_using is None:
@@ -409,7 +383,7 @@ def _quotient_graph(
     if reduce_weights:
         if edge_data_default is not None:
             raise ValueError(
-                "`edge_data_initial` may not be set if `edge_data_reduce is None."
+                "`edge_data_default` may not be set if `edge_data_reduce is None."
             )
     elif edge_data_default is None:
         edge_data_default = dict
@@ -423,7 +397,7 @@ def _quotient_graph(
         H.add_edges_from(edges)
 
     elif reduce_weights:
-        edges = _map_edges(G, node2partition, self_loops, data="weight", default=1)
+        edges = _map_edges(G, node2partition, self_loops, data=weight, default=1)
         agg_edges = Counter()
         for u, v, weight in edges:
             agg_edges[u, v] += weight
@@ -444,12 +418,13 @@ def _quotient_graph(
 def _grouped_relation_graph(
     G,
     partition,
-    edge_relation=None,
-    node_data=None,
-    edge_data=None,
-    relabel=False,
-    self_loops=False,
-    create_using=None,
+    edge_relation,
+    node_data,
+    edge_data,
+    weight,
+    relabel,
+    self_loops,
+    create_using,
 ):
     """Construct the quotient graph assuming input has been checked"""
     if create_using is None:
@@ -470,7 +445,7 @@ def _grouped_relation_graph(
         def edge_data(b, c):
             weights = (
                 d
-                for u, v, d in G.edges(b | c, data="weight", default=1)
+                for u, v, d in G.edges(b | c, data=weight, default=1)
                 if (u in b and v in c) or (u in c and v in b)
             )
             return {"weight": sum(weights)}
