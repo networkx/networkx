@@ -92,16 +92,16 @@ def equivalence_classes(iterable, relation):
     return {frozenset(block) for block in blocks}
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatch(preserve_edge_attrs=True)
 def quotient_graph(
     G,
     partition,
     edge_relation=None,
     node_data=None,
     edge_data=None,
-    weight="weight",
     edge_data_reduce=None,
     edge_data_default=None,
+    weight="weight",
     relabel=False,
     self_loops=False,
     create_using=None,
@@ -173,8 +173,8 @@ def quotient_graph(
         Specifying `edge_data_reduce` is much more efficient than `edge_data`,
         so it's advised to do so when possible.
 
-        By default, each edge is queried to find its 'weight' attribute,
-        and these attributes are summed in a reduce.
+        By default, each edge is queried to find its weight attribute specified
+        by the `weight` parameter, and these attributes are summed.
 
     edge_data_default : function
         Factory function taking no parameters for initial value of each
@@ -183,7 +183,8 @@ def quotient_graph(
 
     weight : string or None, optional (default="weight")
         The name of an edge attribute that holds the numerical value
-        used as a weight. If None then each edge has weight 1.
+        used as a weight. If None then each edge has weight 1. This is only
+        used if `edge_data_reduce` is None.
 
     relabel : bool
         If True, relabel the nodes of the quotient graph to be
