@@ -540,7 +540,7 @@ def stochastic_block_model(
     >>> len(g)
     450
     >>> H = nx.quotient_graph(g, g.graph["partition"],
-    ...                       node_data=lambda x: {"size": len(x)}, relabel=True)
+    ...                       node_data=lambda x: {"size": len(x)})
     >>> for v in H.nodes(data=True):
     ...     print(v[1]["size"])
     ...

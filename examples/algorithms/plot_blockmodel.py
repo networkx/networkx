@@ -70,7 +70,7 @@ def node_data(b):
     }
 
 
-BM = nx.quotient_graph(H, partitions, node_data=node_data, relabel=True)
+BM = nx.quotient_graph(H, partitions, node_data=node_data)
 
 # Draw original graph
 pos = nx.spring_layout(H, iterations=100, seed=83)  # Seed for reproducibility

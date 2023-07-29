@@ -100,12 +100,12 @@ def quotient_graph(
     edge_data_reduce=None,
     edge_data_default=None,
     weight="weight",
-    relabel=False,
     self_loops=False,
     create_using=None,
 ):
     """Returns the quotient graph of `G` under the specified equivalence
-    relation on nodes.
+    relation on nodes. The nodes in the quotient graph are labeled by
+    non-negative integers.
 
     Parameters
     ----------
@@ -157,12 +157,6 @@ def quotient_graph(
         used as a weight. If None then each edge has weight 1. This is only
         used if `edge_data_reduce` is None.
 
-    relabel : bool
-        If True, relabel the nodes of the quotient graph to be
-        nonnegative integers. Otherwise, the nodes are identified with
-        :class:`frozenset` instances representing the blocks given in
-        `partition`.
-
     self_loops : bool
         If True, create self edges in the quotient graph for any edges in `G`
         that belong to the same equivalence class.
@@ -174,10 +168,7 @@ def quotient_graph(
     -------
     NetworkX graph
         The quotient graph of `G` under the equivalence relation
-        specified by `partition`. If the partition were given as a
-        list of :class:`set` instances and `relabel` is False,
-        each node will be a :class:`frozenset` corresponding to the same
-        :class:`set`.
+        specified by `partition`.
 
     Raises
     ------
@@ -254,7 +245,7 @@ def quotient_graph(
 
     >>> G = nx.path_graph(6)
     >>> partition = [{0, 1}, {2, 3}, {4, 5}]
-    >>> M = nx.quotient_graph(G, partition, relabel=True)
+    >>> M = nx.quotient_graph(G, partition)
     >>> list(M.edges())
     [(0, 1), (1, 2)]
 
@@ -262,7 +253,7 @@ def quotient_graph(
 
     >>> G = nx.path_graph(6)
     >>> partition = {0: {0, 1}, 2: {2, 3}, 4: {4, 5}}
-    >>> M = nx.quotient_graph(G, partition, relabel=True)
+    >>> M = nx.quotient_graph(G, partition)
     >>> list(M.edges())
     [(0, 1), (1, 2)]
 
@@ -307,7 +298,6 @@ def quotient_graph(
         edge_data_reduce,
         edge_data_default,
         weight,
-        relabel,
         self_loops,
         create_using,
     )
@@ -320,7 +310,6 @@ def _quotient_graph(
     edge_data_reduce,
     edge_data_default,
     weight,
-    relabel,
     self_loops,
     create_using,
 ):
@@ -342,9 +331,10 @@ def _quotient_graph(
     elif edge_data_default is None:
         edge_data_default = dict
 
-    partition2nodes = {i: frozenset(b) for i, b in enumerate(partition)}
-    node2partition = dict(_node2partition(partition2nodes.items()))
-    H.add_nodes_from((u, node_data(b)) for u, b in partition2nodes.items())
+    node2partition = {}
+    for i, nbunch in enumerate(partition):
+        H.add_node(i, **node_data(nbunch))
+        node2partition.update((u, i) for u in nbunch)
 
     if H.is_multigraph():
         edges = _map_edges(G, node2partition, self_loops, data=True)
@@ -364,8 +354,6 @@ def _quotient_graph(
             agg_edges[u, v](edge_data_reduce, data)
         H.add_edges_from((u, v, d.value) for (u, v), d in agg_edges.items())
 
-    if not relabel:
-        nx.relabel_nodes(H, partition2nodes, copy=False)
     return H
 
 
@@ -570,13 +558,6 @@ class _reducible:
 
     def __call__(self, reduce_fn, other):
         self.value = reduce_fn(self.value, other)
-
-
-def _node2partition(partition2nodes):
-    "iterate over node, partition pairs."
-    for i, bunch in partition2nodes:
-        for u in bunch:
-            yield u, i
 
 
 def _map_edges(G, mapping, self_loops=True, data=None, **kw):

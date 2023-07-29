@@ -106,7 +106,7 @@ def inter_community_edges(G, partition):
     #     return sum(1 for u, v in G.edges() if aff[u] != aff[v])
     #
     MG = nx.MultiDiGraph if G.is_directed() else nx.MultiGraph
-    Q = nx.quotient_graph(G, partition, create_using=MG, relabel=True)
+    Q = nx.quotient_graph(G, partition, create_using=MG)
     return Q.size()
 
 
