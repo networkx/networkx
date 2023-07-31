@@ -3,6 +3,7 @@ import networkx as nx
 __all__ = ["degree_centrality", "betweenness_centrality", "closeness_centrality"]
 
 
+@nx._dispatch(name="bipartite_degree_centrality")
 def degree_centrality(G, nodes):
     r"""Compute the degree centrality for nodes in a bipartite network.
 
@@ -77,6 +78,7 @@ def degree_centrality(G, nodes):
     return centrality
 
 
+@nx._dispatch(name="bipartite_betweenness_centrality")
 def betweenness_centrality(G, nodes):
     r"""Compute betweenness centrality for nodes in a bipartite network.
 
@@ -180,6 +182,7 @@ def betweenness_centrality(G, nodes):
     return betweenness
 
 
+@nx._dispatch(name="bipartite_closeness_centrality")
 def closeness_centrality(G, nodes, normalized=True):
     r"""Compute the closeness centrality for nodes in a bipartite network.
 

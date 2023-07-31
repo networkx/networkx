@@ -149,6 +149,7 @@ def _build_flow_dict(G, R, capacity, weight):
     return flow_dict
 
 
+@nx._dispatch(node_attrs="demand", edge_attrs={"capacity": float("inf"), "weight": 0})
 def capacity_scaling(
     G, demand="demand", capacity="capacity", weight="weight", heap=BinaryHeap
 ):

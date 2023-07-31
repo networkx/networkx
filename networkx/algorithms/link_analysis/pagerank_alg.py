@@ -6,7 +6,7 @@ import networkx as nx
 __all__ = ["pagerank", "google_matrix"]
 
 
-@nx._dispatch
+@nx._dispatch(edge_attrs="weight")
 def pagerank(
     G,
     alpha=0.85,
@@ -172,7 +172,7 @@ def _pagerank_python(
     raise nx.PowerIterationFailedConvergence(max_iter)
 
 
-@nx._dispatch
+@nx._dispatch(edge_attrs="weight")
 def google_matrix(
     G, alpha=0.85, personalization=None, nodelist=None, weight="weight", dangling=None
 ):

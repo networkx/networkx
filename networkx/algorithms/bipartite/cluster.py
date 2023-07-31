@@ -29,6 +29,7 @@ def cc_min(nu, nv):
 modes = {"dot": cc_dot, "min": cc_min, "max": cc_max}
 
 
+@nx._dispatch
 def latapy_clustering(G, nodes=None, mode="dot"):
     r"""Compute a bipartite clustering coefficient for nodes.
 
@@ -133,6 +134,7 @@ def latapy_clustering(G, nodes=None, mode="dot"):
 clustering = latapy_clustering
 
 
+@nx._dispatch(name="bipartite_average_clustering")
 def average_clustering(G, nodes=None, mode="dot"):
     r"""Compute the average bipartite clustering coefficient.
 
@@ -209,6 +211,7 @@ def average_clustering(G, nodes=None, mode="dot"):
     return sum(ccs[v] for v in nodes) / len(nodes)
 
 
+@nx._dispatch
 def robins_alexander_clustering(G):
     r"""Compute the bipartite clustering of G.
 

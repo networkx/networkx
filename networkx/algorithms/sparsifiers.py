@@ -7,9 +7,10 @@ from networkx.utils import not_implemented_for, py_random_state
 __all__ = ["spanner"]
 
 
-@py_random_state(3)
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch(edge_attrs="weight")
+@py_random_state(3)
 def spanner(G, stretch, weight=None, seed=None):
     """Returns a spanner of the given graph with the given stretch.
 
