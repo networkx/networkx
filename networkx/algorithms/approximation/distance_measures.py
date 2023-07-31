@@ -6,6 +6,7 @@ from networkx.utils.decorators import py_random_state
 __all__ = ["diameter"]
 
 
+@nx._dispatch(name="approximate_diameter")
 @py_random_state(1)
 def diameter(G, seed=None):
     """Returns a lower bound on the diameter of the graph G.

@@ -17,11 +17,11 @@ from networkx.lazy_imports import _lazy_import
 from networkx.exception import *
 
 from networkx import utils
+from networkx.utils.backends import _dispatch
 
 from networkx import classes
 from networkx.classes import filters
 from networkx.classes import *
-from networkx.classes import _dispatch
 
 from networkx import convert
 from networkx.convert import *

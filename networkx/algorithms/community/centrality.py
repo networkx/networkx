@@ -5,6 +5,7 @@ import networkx as nx
 __all__ = ["girvan_newman"]
 
 
+@nx._dispatch(preserve_edge_attrs="most_valuable_edge")
 def girvan_newman(G, most_valuable_edge=None):
     """Finds communities in a graph using the Girvan–Newman method.
 

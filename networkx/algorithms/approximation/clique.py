@@ -13,6 +13,7 @@ __all__ = [
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def maximum_independent_set(G):
     """Returns an approximate maximum independent set.
 
@@ -69,6 +70,7 @@ def maximum_independent_set(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def max_clique(G):
     r"""Find the Maximum Clique
 
@@ -127,6 +129,7 @@ def max_clique(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def clique_removal(G):
     r"""Repeatedly remove cliques from the graph.
 
@@ -179,6 +182,7 @@ def clique_removal(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def large_clique_size(G):
     """Find the size of a large clique in a graph.
 

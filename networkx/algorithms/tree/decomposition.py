@@ -10,6 +10,7 @@ __all__ = ["junction_tree"]
 
 
 @not_implemented_for("multigraph")
+@nx._dispatch
 def junction_tree(G):
     r"""Returns a junction tree of a given graph.
 

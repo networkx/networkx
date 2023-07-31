@@ -11,6 +11,7 @@ from networkx.algorithms.centrality.betweenness import (
 __all__ = ["percolation_centrality"]
 
 
+@nx._dispatch(node_attrs="attribute", edge_attrs="weight")
 def percolation_centrality(G, attribute="percolation", states=None, weight=None):
     r"""Compute the percolation centrality for nodes.
 

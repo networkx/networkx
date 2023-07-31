@@ -54,6 +54,7 @@ __all__ = [
 INFINITY = float("inf")
 
 
+@nx._dispatch
 def hopcroft_karp_matching(G, top_nodes=None):
     """Returns the maximum cardinality matching of the bipartite graph `G`.
 
@@ -180,6 +181,7 @@ def hopcroft_karp_matching(G, top_nodes=None):
     return dict(itertools.chain(leftmatches.items(), rightmatches.items()))
 
 
+@nx._dispatch
 def eppstein_matching(G, top_nodes=None):
     """Returns the maximum cardinality matching of the bipartite graph `G`.
 
@@ -418,6 +420,7 @@ def _connected_by_alternating_paths(G, matching, targets):
     }
 
 
+@nx._dispatch
 def to_vertex_cover(G, matching, top_nodes=None):
     """Returns the minimum vertex cover corresponding to the given maximum
     matching of the bipartite graph `G`.
@@ -498,6 +501,7 @@ def to_vertex_cover(G, matching, top_nodes=None):
 maximum_matching = hopcroft_karp_matching
 
 
+@nx._dispatch(edge_attrs="weight")
 def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     r"""Returns a minimum weight full matching of the bipartite graph `G`.
 
@@ -531,6 +535,7 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     weight : string, optional (default='weight')
 
        The edge data key used to provide each value in the matrix.
+       If None, then each edge has weight 1.
 
     Returns
     -------

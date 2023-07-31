@@ -73,3 +73,16 @@ Mapped Queue
    :toctree: generated/
 
    MappedQueue
+
+Backends
+--------
+.. note:: This is an experimental feature to dispatch your computations to an alternate
+   backend like `GraphBLAS <https://github.com/python-graphblas/graphblas-algorithms>`_
+   instead of using pure Python dictionaries for computation.
+   Things will change and break in the future!
+
+.. automodule:: networkx.utils.backends
+.. autosummary::
+   :toctree: generated/
+
+   _dispatch
