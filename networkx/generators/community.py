@@ -1016,9 +1016,9 @@ def LFR_benchmark_graph(
 
     # Validate parameters for generating the community size sequence.
     if min_community is None:
-        min_community = min(deg_seq)
+        min_community = min(deg_seq) + 1
     if max_community is None:
-        max_community = max(deg_seq)
+        max_community = max(deg_seq) + 1
 
     # Generate a community size sequence with a power law distribution.
     #
