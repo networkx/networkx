@@ -1041,6 +1041,7 @@ def LFR_benchmark_graph(
     # Generate the communities based on the given degree sequence and
     # community sizes.
     max_iters *= 10 * n
+
     communities = _generate_communities(deg_seq, comms, mu, max_iters, seed)
 
     # Finally, generate the benchmark graph based on the given
@@ -1105,5 +1106,7 @@ def LFR_benchmark_graph(
                     G.add_edge(u, v)
                     realized_external_degree[u] += 1
                     realized_external_degree[v] += 1
+
+                its += 1
 
     return G
