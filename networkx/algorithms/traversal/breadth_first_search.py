@@ -35,17 +35,13 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
     neighbors : function
         A function that takes a newly visited node of the graph as input
         and returns an *iterator* (not just a list) of nodes that are
-        neighbors of that node. If not specified, this is just the
-        ``G.neighbors`` method, but in general it can be any function
+        neighbors of that node with custom ordering. If not specified, this is
+        just the``G.neighbors`` method, but in general it can be any function
         that returns an iterator over some or all of the neighbors of a
         given node, in any order.
 
     depth_limit : int, optional(default=len(G))
         Specify the maximum search depth.
-
-    sort_neighbors : function
-        A function that takes the list of neighbors of given node as input, and
-        returns an *iterator* over these neighbors but with custom ordering.
 
     Yields
     ------
@@ -55,9 +51,9 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
     Examples
     --------
     >>> G = nx.path_graph(3)
-    >>> print(list(nx.bfs_edges(G, 0)))
+    >>> list(nx.bfs_edges(G, 0))
     [(0, 1), (1, 2)]
-    >>> print(list(nx.bfs_edges(G, source=0, depth_limit=1)))
+    >>> list(nx.bfs_edges(G, source=0, depth_limit=1))
     [(0, 1)]
 
     Notes
@@ -73,6 +69,16 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
     if neighbors is None:
         neighbors = G.neighbors
     if sort_neighbors is not None:
+        import warnings
+
+        warnings.warn(
+            (
+                "sort_neighbors parameter is deprecated and will be removed "
+                "in NetworkX 3.2, use neighbors parameter instead."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
         _neighbors = neighbors
         neighbors = lambda node: iter(sort_neighbors(_neighbors(node)))
     if depth_limit is None:
@@ -175,7 +181,13 @@ def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
         successors = G.predecessors
     else:
         successors = G.neighbors
-    yield from generic_bfs_edges(G, source, successors, depth_limit, sort_neighbors)
+
+    if callable(sort_neighbors):
+        yield from generic_bfs_edges(
+            G, source, lambda node: iter(sort_neighbors(successors(node))), depth_limit
+        )
+    else:
+        yield from generic_bfs_edges(G, source, successors, depth_limit)
 
 
 @nx._dispatch
@@ -208,12 +220,12 @@ def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     Examples
     --------
     >>> G = nx.path_graph(3)
-    >>> print(list(nx.bfs_tree(G, 1).edges()))
+    >>> list(nx.bfs_tree(G, 1).edges())
     [(1, 0), (1, 2)]
     >>> H = nx.Graph()
     >>> nx.add_path(H, [0, 1, 2, 3, 4, 5, 6])
     >>> nx.add_path(H, [2, 7, 8, 9, 10])
-    >>> print(sorted(list(nx.bfs_tree(H, source=3, depth_limit=3).edges())))
+    >>> sorted(list(nx.bfs_tree(H, source=3, depth_limit=3).edges()))
     [(1, 0), (2, 1), (2, 7), (3, 2), (3, 4), (4, 5), (5, 6), (7, 8)]
 
 
@@ -272,21 +284,21 @@ def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
     Examples
     --------
     >>> G = nx.path_graph(3)
-    >>> print(dict(nx.bfs_predecessors(G, 0)))
+    >>> dict(nx.bfs_predecessors(G, 0))
     {1: 0, 2: 1}
     >>> H = nx.Graph()
     >>> H.add_edges_from([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)])
-    >>> print(dict(nx.bfs_predecessors(H, 0)))
+    >>> dict(nx.bfs_predecessors(H, 0))
     {1: 0, 2: 0, 3: 1, 4: 1, 5: 2, 6: 2}
     >>> M = nx.Graph()
     >>> nx.add_path(M, [0, 1, 2, 3, 4, 5, 6])
     >>> nx.add_path(M, [2, 7, 8, 9, 10])
-    >>> print(sorted(nx.bfs_predecessors(M, source=1, depth_limit=3)))
+    >>> sorted(nx.bfs_predecessors(M, source=1, depth_limit=3))
     [(0, 1), (2, 1), (3, 2), (4, 3), (7, 2), (8, 7)]
     >>> N = nx.DiGraph()
     >>> nx.add_path(N, [0, 1, 2, 3, 4, 7])
     >>> nx.add_path(N, [3, 5, 6, 7])
-    >>> print(sorted(nx.bfs_predecessors(N, source=2)))
+    >>> sorted(nx.bfs_predecessors(N, source=2))
     [(3, 2), (4, 3), (5, 3), (6, 5), (7, 4)]
 
     Notes
@@ -338,20 +350,20 @@ def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
     Examples
     --------
     >>> G = nx.path_graph(3)
-    >>> print(dict(nx.bfs_successors(G, 0)))
+    >>> dict(nx.bfs_successors(G, 0))
     {0: [1], 1: [2]}
     >>> H = nx.Graph()
     >>> H.add_edges_from([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)])
-    >>> print(dict(nx.bfs_successors(H, 0)))
+    >>> dict(nx.bfs_successors(H, 0))
     {0: [1, 2], 1: [3, 4], 2: [5, 6]}
     >>> G = nx.Graph()
     >>> nx.add_path(G, [0, 1, 2, 3, 4, 5, 6])
     >>> nx.add_path(G, [2, 7, 8, 9, 10])
-    >>> print(dict(nx.bfs_successors(G, source=1, depth_limit=3)))
+    >>> dict(nx.bfs_successors(G, source=1, depth_limit=3))
     {1: [0, 2], 2: [3, 7], 3: [4], 7: [8]}
     >>> G = nx.DiGraph()
     >>> nx.add_path(G, [0, 1, 2, 3, 4, 5])
-    >>> print(dict(nx.bfs_successors(G, source=3)))
+    >>> dict(nx.bfs_successors(G, source=3))
     {3: [4], 4: [5]}
 
     Notes
