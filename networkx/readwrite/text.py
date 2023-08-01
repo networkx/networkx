@@ -11,53 +11,72 @@ from networkx.utils import open_file
 __all__ = ["forest_str", "generate_network_text", "write_network_text"]
 
 
-class _AsciiBaseGlyphs:
-    empty = "+"
-    newtree_last = "+-- "
-    newtree_mid = "+-- "
-    endof_forest = "    "
-    within_forest = ":   "
-    within_tree = "|   "
+class BaseGlyphs:
+    @classmethod
+    def as_dict(cls):
+        return {
+            a: getattr(cls, a)
+            for a in dir(cls)
+            if not a.startswith("_") and a != "as_dict"
+        }
 
 
-class AsciiDirectedGlyphs(_AsciiBaseGlyphs):
-    last = "L-> "
-    mid = "|-> "
-    backedge = "<-"
+class AsciiBaseGlyphs(BaseGlyphs):
+    empty: str = "+"
+    newtree_last: str = "+-- "
+    newtree_mid: str = "+-- "
+    endof_forest: str = "    "
+    within_forest: str = ":   "
+    within_tree: str = "|   "
 
 
-class AsciiUndirectedGlyphs(_AsciiBaseGlyphs):
-    last = "L-- "
-    mid = "|-- "
-    backedge = "-"
+class AsciiDirectedGlyphs(AsciiBaseGlyphs):
+    last: str = "L-> "
+    mid: str = "|-> "
+    backedge: str = "<-"
+    vertical_edge: str = "!"
 
 
-class _UtfBaseGlyphs:
+class AsciiUndirectedGlyphs(AsciiBaseGlyphs):
+    last: str = "L-- "
+    mid: str = "|-- "
+    backedge: str = "-"
+    vertical_edge: str = "|"
+
+
+class UtfBaseGlyphs(BaseGlyphs):
     # Notes on available box and arrow characters
     # https://en.wikipedia.org/wiki/Box-drawing_character
     # https://stackoverflow.com/questions/2701192/triangle-arrow
-    empty = "╙"
-    newtree_last = "╙── "
-    newtree_mid = "╟── "
-    endof_forest = "    "
-    within_forest = "╎   "
-    within_tree = "│   "
+    empty: str = "╙"
+    newtree_last: str = "╙── "
+    newtree_mid: str = "╟── "
+    endof_forest: str = "    "
+    within_forest: str = "╎   "
+    within_tree: str = "│   "
 
 
-class UtfDirectedGlyphs(_UtfBaseGlyphs):
-    last = "└─╼ "
-    mid = "├─╼ "
-    backedge = "╾"
+class UtfDirectedGlyphs(UtfBaseGlyphs):
+    last: str = "└─╼ "
+    mid: str = "├─╼ "
+    backedge: str = "╾"
+    vertical_edge: str = "╽"
 
 
-class UtfUndirectedGlyphs(_UtfBaseGlyphs):
-    last = "└── "
-    mid = "├── "
-    backedge = "─"
+class UtfUndirectedGlyphs(UtfBaseGlyphs):
+    last: str = "└── "
+    mid: str = "├── "
+    backedge: str = "─"
+    vertical_edge: str = "│"
 
 
 def generate_network_text(
-    graph, with_labels=True, sources=None, max_depth=None, ascii_only=False
+    graph,
+    with_labels=True,
+    sources=None,
+    max_depth=None,
+    ascii_only=False,
+    vertical_chains=False,
 ):
     """Generate lines in the "network text" format
 
@@ -78,7 +97,7 @@ def generate_network_text(
 
     2. Each reachable node will be printed exactly once on it's own line.
 
-    3. Edges are indicated in one of three ways:
+    3. Edges are indicated in one of four ways:
 
         a. a parent "L-style" connection on the upper left. This corresponds to
         a traversal in the directed DFS tree.
@@ -92,6 +111,9 @@ def generate_network_text(
         c. a child "L-style" connection on the lower right. Drawing of the
         children are handled recursively.
 
+        d. if ``vertical_chains`` is true, and a parent node only has one child
+        a "vertical-style" edge is drawn between them.
+
     4. The children of each node (wrt the directed DFS tree) are drawn
     underneath and to the right of it. In the case that a child node has already
     been drawn the connection is replaced with an ellipsis ("...") to indicate
@@ -99,6 +121,9 @@ def generate_network_text(
 
     5. If a maximum depth is specified, an edge to nodes past this maximum
     depth will be represented by an ellipsis.
+
+    6. If a a node has a truthy "collapse" value, then we do not traverse past
+    that node.
 
     Parameters
     ----------
@@ -122,10 +147,81 @@ def generate_network_text(
     ascii_only : Boolean
         If True only ASCII characters are used to construct the visualization
 
+    vertical_chains : Boolean
+        If True, chains of nodes will be drawn vertically when possible.
+
     Yields
     ------
     str : a line of generated text
+
+    Example
+    -------
+    >>> graph = nx.path_graph(10)
+    >>> graph.add_node('A')
+    >>> graph.add_node('B')
+    >>> graph.add_node('C')
+    >>> graph.add_node('D')
+    >>> graph.add_edge(9, 'A')
+    >>> graph.add_edge(9, 'B')
+    >>> graph.add_edge(9, 'C')
+    >>> graph.add_edge('C', 'D')
+    >>> graph.add_edge('C', 'E')
+    >>> graph.add_edge('C', 'F')
+    >>> nx.write_network_text(graph)
+    ╙── 0
+        └── 1
+            └── 2
+                └── 3
+                    └── 4
+                        └── 5
+                            └── 6
+                                └── 7
+                                    └── 8
+                                        └── 9
+                                            ├── A
+                                            ├── B
+                                            └── C
+                                                ├── D
+                                                ├── E
+                                                └── F
+    >>> nx.write_network_text(graph, vertical_chains=True)
+    ╙── 0
+        │
+        1
+        │
+        2
+        │
+        3
+        │
+        4
+        │
+        5
+        │
+        6
+        │
+        7
+        │
+        8
+        │
+        9
+        ├── A
+        ├── B
+        └── C
+            ├── D
+            ├── E
+            └── F
     """
+    from typing import Any, NamedTuple
+
+    class StackFrame(NamedTuple):
+        parent: Any
+        node: Any
+        indents: list
+        this_islast: bool
+        this_vertical: bool
+
+    collapse_attr = "collapse"
+
     is_directed = graph.is_directed()
 
     if is_directed:
@@ -162,13 +258,14 @@ def generate_network_text(
         # Reverse the stack so sources are popped in the correct order.
         last_idx = len(sources) - 1
         stack = [
-            (None, node, [], (idx == last_idx)) for idx, node in enumerate(sources)
+            StackFrame(None, node, [], (idx == last_idx), False)
+            for idx, node in enumerate(sources)
         ][::-1]
 
         num_skipped_children = defaultdict(lambda: 0)
         seen_nodes = set()
         while stack:
-            parent, node, indents, this_islast = stack.pop()
+            parent, node, indents, this_islast, this_vertical = stack.pop()
 
             if node is not Ellipsis:
                 skip = node in seen_nodes
@@ -183,12 +280,16 @@ def generate_network_text(
                     if num_skipped_children[parent] and parent is not None:
                         # Append the ellipsis to be emitted last
                         next_islast = True
-                        try_frame = (node, Ellipsis, indents, next_islast)
+                        try_frame = StackFrame(
+                            node, Ellipsis, indents, next_islast, False
+                        )
                         stack.append(try_frame)
 
                         # Redo this frame, but not as a last object
                         next_islast = False
-                        try_frame = (parent, node, indents, next_islast)
+                        try_frame = StackFrame(
+                            parent, node, indents, next_islast, this_vertical
+                        )
                         stack.append(try_frame)
                         continue
 
@@ -200,6 +301,7 @@ def generate_network_text(
                 # Top level items (i.e. trees in the forest) get different
                 # glyphs to indicate they are not actually connected
                 if this_islast:
+                    this_vertical = False
                     this_prefix = indents + [glyphs.newtree_last]
                     next_prefix = indents + [glyphs.endof_forest]
                 else:
@@ -207,14 +309,17 @@ def generate_network_text(
                     next_prefix = indents + [glyphs.within_forest]
 
             else:
-                # For individual tree edges distinguish between directed and
-                # undirected cases
-                if this_islast:
-                    this_prefix = indents + [glyphs.last]
-                    next_prefix = indents + [glyphs.endof_forest]
+                # Non-top-level items
+                if this_vertical:
+                    this_prefix = indents
+                    next_prefix = indents
                 else:
-                    this_prefix = indents + [glyphs.mid]
-                    next_prefix = indents + [glyphs.within_tree]
+                    if this_islast:
+                        this_prefix = indents + [glyphs.last]
+                        next_prefix = indents + [glyphs.endof_forest]
+                    else:
+                        this_prefix = indents + [glyphs.mid]
+                        next_prefix = indents + [glyphs.within_tree]
 
             if node is Ellipsis:
                 label = " ..."
@@ -225,6 +330,12 @@ def generate_network_text(
                     label = str(graph.nodes[node].get(label_attr, node))
                 else:
                     label = str(node)
+
+                # Determine if we want to show the children of this node.
+                if collapse_attr is not None:
+                    collapse = graph.nodes[node].get(collapse_attr, False)
+                else:
+                    collapse = False
 
                 # Determine:
                 # (1) children to traverse into after showing this node.
@@ -255,6 +366,12 @@ def generate_network_text(
                         children = [Ellipsis]
                     handled_parents = {parent}
 
+                if collapse:
+                    # Collapsing a node is the same as reaching maximum depth
+                    if children:
+                        children = [Ellipsis]
+                    handled_parents = {parent}
+
                 # The other parents are other predecessors of this node that
                 # are not handled elsewhere.
                 other_parents = [p for p in pred[node] if p not in handled_parents]
@@ -276,13 +393,29 @@ def generate_network_text(
 
             # Emit the line for this node, this will be called for each node
             # exactly once.
+            if this_vertical:
+                yield "".join(this_prefix + [glyphs.vertical_edge])
+
             yield "".join(this_prefix + [label, suffix])
+
+            if vertical_chains:
+                if is_directed:
+                    num_children = len(set(children))
+                else:
+                    num_children = len(set(children) - {parent})
+                # The next node can be drawn vertically if it is the only
+                # remaining child of this node.
+                next_is_vertical = num_children == 1
+            else:
+                next_is_vertical = False
 
             # Push children on the stack in reverse order so they are popped in
             # the original order.
             for idx, child in enumerate(children[::-1]):
                 next_islast = idx == 0
-                try_frame = (node, child, next_prefix, next_islast)
+                try_frame = StackFrame(
+                    node, child, next_prefix, next_islast, next_is_vertical
+                )
                 stack.append(try_frame)
 
 
@@ -295,6 +428,7 @@ def write_network_text(
     max_depth=None,
     ascii_only=False,
     end="\n",
+    vertical_chains=False,
 ):
     """Creates a nice text representation of a graph
 
@@ -334,8 +468,11 @@ def write_network_text(
     end : string
         The line ending character
 
-    Examples
-    --------
+    vertical_chains : Boolean
+        If True, chains of nodes will be drawn vertically when possible.
+
+    Example
+    -------
     >>> graph = nx.balanced_tree(r=2, h=2, create_using=nx.DiGraph)
     >>> nx.write_network_text(graph)
     ╙── 0
@@ -367,8 +504,33 @@ def write_network_text(
         │           └── 4 ─ 0
         └──  ...
 
+    >>> graph = nx.cycle_graph(5, nx.DiGraph)
+    >>> nx.write_network_text(graph, vertical_chains=True)
+    ╙── 0 ╾ 4
+        ╽
+        1
+        ╽
+        2
+        ╽
+        3
+        ╽
+        4
+        └─╼  ...
+
+    >>> nx.write_network_text(graph, vertical_chains=True, ascii_only=True)
+    +-- 0 <- 4
+        !
+        1
+        !
+        2
+        !
+        3
+        !
+        4
+        L->  ...
+
     >>> graph = nx.generators.barbell_graph(4, 2)
-    >>> nx.write_network_text(graph)
+    >>> nx.write_network_text(graph, vertical_chains=False)
     ╙── 4
         ├── 5
         │   └── 6
@@ -381,6 +543,24 @@ def write_network_text(
             ├── 0
             │   ├── 1 ─ 3
             │   │   └── 2 ─ 0, 3
+            │   └──  ...
+            └──  ...
+    >>> nx.write_network_text(graph, vertical_chains=True)
+    ╙── 4
+        ├── 5
+        │   │
+        │   6
+        │   ├── 7
+        │   │   ├── 8 ─ 6
+        │   │   │   │
+        │   │   │   9 ─ 6, 7
+        │   │   └──  ...
+        │   └──  ...
+        └── 3
+            ├── 0
+            │   ├── 1 ─ 3
+            │   │   │
+            │   │   2 ─ 0, 3
             │   └──  ...
             └──  ...
 
@@ -422,6 +602,7 @@ def write_network_text(
         sources=sources,
         max_depth=max_depth,
         ascii_only=ascii_only,
+        vertical_chains=vertical_chains,
     ):
         _write(line + end)
 
@@ -560,3 +741,210 @@ def forest_str(graph, with_labels=True, sources=None, write=None, ascii_only=Fal
     if write is None:
         # Only return a string if the custom write function was not specified
         return "\n".join(printbuf)
+
+
+def _parse_network_text(lines):
+    """Reconstructs a graph from a network text representation.
+
+    This is mainly used for testing.  Network text is for display, not
+    serialization, as such this cannot parse all network text representations
+    because node labels can be ambiguous with the glyphs and indentation used
+    to represent edge structure. Additionally, there is no way to determine if
+    disconnected graphs were originally directed or undirected.
+
+    Parameters
+    ----------
+    lines : list or iterator of strings
+        Input data in network text format
+
+    Returns
+    -------
+    G: NetworkX graph
+        The graph corresponding to the lines in network text format.
+    """
+    from itertools import chain
+    from typing import Any, NamedTuple, Union
+
+    class ParseStackFrame(NamedTuple):
+        node: Any
+        indent: int
+        has_vertical_child: Union[int, None]
+
+    initial_line_iter = iter(lines)
+
+    is_ascii = None
+    is_directed = None
+
+    ##############
+    # Initial Pass
+    ##############
+
+    # Do an initial pass over the lines to determine what type of graph it is.
+    # Remember what these lines were, so we can reiterate over them in the
+    # parsing pass.
+    initial_lines = []
+    try:
+        first_line = next(initial_line_iter)
+    except StopIteration:
+        ...
+    else:
+        initial_lines.append(first_line)
+        # The first character indicates if it is an ASCII or UTF graph
+        first_char = first_line[0]
+        if first_char in {
+            UtfBaseGlyphs.empty,
+            UtfBaseGlyphs.newtree_mid[0],
+            UtfBaseGlyphs.newtree_last[0],
+        }:
+            is_ascii = False
+        elif first_char in {
+            AsciiBaseGlyphs.empty,
+            AsciiBaseGlyphs.newtree_mid[0],
+            AsciiBaseGlyphs.newtree_last[0],
+        }:
+            is_ascii = True
+        else:
+            raise AssertionError(f"Unexpected first character: {first_char}")
+
+    if is_ascii:
+        directed_glyphs = AsciiDirectedGlyphs.as_dict()
+        undirected_glyphs = AsciiUndirectedGlyphs.as_dict()
+    else:
+        directed_glyphs = UtfDirectedGlyphs.as_dict()
+        undirected_glyphs = UtfUndirectedGlyphs.as_dict()
+
+    # For both directed / undirected glyphs, determine which glyphs never
+    # appear as substrings in the other undirected / directed glyphs.  Glyphs
+    # with this property unambiguously indicates if a graph is directed /
+    # undirected.
+    directed_items = set(directed_glyphs.values())
+    undirected_items = set(undirected_glyphs.values())
+    unambiguous_directed_items = []
+    for item in directed_items:
+        other_items = undirected_items
+        other_supersets = [other for other in other_items if item in other]
+        if not other_supersets:
+            unambiguous_directed_items.append(item)
+    unambiguous_undirected_items = []
+    for item in undirected_items:
+        other_items = directed_items
+        other_supersets = [other for other in other_items if item in other]
+        if not other_supersets:
+            unambiguous_undirected_items.append(item)
+
+    for line in initial_line_iter:
+        initial_lines.append(line)
+        if any(item in line for item in unambiguous_undirected_items):
+            is_directed = False
+            break
+        elif any(item in line for item in unambiguous_directed_items):
+            is_directed = True
+            break
+
+    if is_directed is None:
+        # Not enough information to determine, choose undirected by default
+        is_directed = False
+
+    glyphs = directed_glyphs if is_directed else undirected_glyphs
+
+    # the backedge symbol by itself can be ambiguous, but with spaces around it
+    # becomes unambiguous.
+    backedge_symbol = " " + glyphs["backedge"] + " "
+
+    # Reconstruct an iterator over all of the lines.
+    parsing_line_iter = chain(initial_lines, initial_line_iter)
+
+    ##############
+    # Parsing Pass
+    ##############
+
+    edges = []
+    nodes = []
+    is_empty = None
+
+    noparent = object()  # sentinel value
+
+    # keep a stack of previous nodes that could be parents of subsequent nodes
+    stack = [ParseStackFrame(noparent, -1, None)]
+
+    for line in parsing_line_iter:
+        if line == glyphs["empty"]:
+            # If the line is the empty glyph, we are done.
+            # There shouldn't be anything else after this.
+            is_empty = True
+            continue
+
+        if backedge_symbol in line:
+            # This line has one or more backedges, separate those out
+            node_part, backedge_part = line.split(backedge_symbol)
+            backedge_nodes = [u.strip() for u in backedge_part.split(", ")]
+            # Now the node can be parsed
+            node_part = node_part.rstrip()
+            prefix, node = node_part.rsplit(" ", 1)
+            node = node.strip()
+            # Add the backedges to the edge list
+            edges.extend([(u, node) for u in backedge_nodes])
+        else:
+            # No backedge, the tail of this line is the node
+            prefix, node = line.rsplit(" ", 1)
+            node = node.strip()
+
+        prev = stack.pop()
+
+        if node in glyphs["vertical_edge"]:
+            # Previous node is still the previous node, but we know it will
+            # have exactly one child, which will need to have its nesting level
+            # adjusted.
+            modified_prev = ParseStackFrame(
+                prev.node,
+                prev.indent,
+                True,
+            )
+            stack.append(modified_prev)
+            continue
+
+        # The length of the string before the node characters give us a hint
+        # about our nesting level. The only case where this doesn't work is
+        # when there are vertical chains, which is handled explicitly.
+        indent = len(prefix)
+        curr = ParseStackFrame(node, indent, None)
+
+        if prev.has_vertical_child:
+            # In this case we know prev must be the parent of our current line,
+            # so we don't have to search the stack. (which is good because the
+            # indentation check wouldn't work in this case).
+            ...
+        else:
+            # If the previous node nesting-level is greater than the current
+            # nodes nesting-level than the previous node was the end of a path,
+            # and is not our parent. We can safely pop nodes off the stack
+            # until we find one with a comparable nesting-level, which is our
+            # parent.
+            while curr.indent <= prev.indent:
+                prev = stack.pop()
+
+        if node == "...":
+            # The current previous node is no longer a valid parent,
+            # keep it popped from the stack.
+            stack.append(prev)
+        else:
+            # The previous and current nodes may still be parents, so add them
+            # back onto the stack.
+            stack.append(prev)
+            stack.append(curr)
+
+            # Add the node and the edge to its parent to the node / edge lists.
+            nodes.append(curr.node)
+            if prev.node is not noparent:
+                edges.append((prev.node, curr.node))
+
+    if is_empty:
+        # Sanity check
+        assert len(nodes) == 0
+
+    # Reconstruct the graph
+    cls = nx.DiGraph if is_directed else nx.Graph
+    new = cls()
+    new.add_nodes_from(nodes)
+    new.add_edges_from(edges)
+    return new

@@ -47,7 +47,7 @@ def test_intersection_all():
     I = nx.intersection_all([G, H, R])
     assert set(I.nodes()) == {1, 2, 3, 4}
     assert sorted(I.edges()) == [(2, 3)]
-    assert I.graph["awesome"]
+    assert I.graph == {}
 
 
 def test_intersection_all_different_node_sets():
@@ -130,11 +130,21 @@ def test_intersection_all_multigraph_attributes_different_node_sets():
     g.add_edge(1, 2, key=2)
     h = nx.MultiGraph()
     h.add_edge(0, 1, key=0)
+    h.add_edge(0, 1, key=2)
     h.add_edge(0, 1, key=3)
     gh = nx.intersection_all([g, h])
     assert set(gh.nodes()) == set(h.nodes())
-    assert sorted(gh.edges()) == [(0, 1)]
-    assert sorted(gh.edges(keys=True)) == [(0, 1, 0)]
+    assert sorted(gh.edges()) == [(0, 1), (0, 1)]
+    assert sorted(gh.edges(keys=True)) == [(0, 1, 0), (0, 1, 2)]
+
+
+def test_intersection_all_digraph():
+    g = nx.DiGraph()
+    g.add_edges_from([(1, 2), (2, 3)])
+    h = nx.DiGraph()
+    h.add_edges_from([(2, 1), (2, 3)])
+    gh = nx.intersection_all([g, h])
+    assert sorted(gh.edges()) == [(2, 3)]
 
 
 def test_union_all_and_compose_all():
@@ -256,6 +266,10 @@ def test_mixed_type_union():
         H = nx.MultiGraph()
         I = nx.Graph()
         U = nx.union_all([G, H, I])
+    with pytest.raises(nx.NetworkXError):
+        X = nx.Graph()
+        Y = nx.DiGraph()
+        XY = nx.union_all([X, Y])
 
 
 def test_mixed_type_disjoint_union():
@@ -264,6 +278,10 @@ def test_mixed_type_disjoint_union():
         H = nx.MultiGraph()
         I = nx.Graph()
         U = nx.disjoint_union_all([G, H, I])
+    with pytest.raises(nx.NetworkXError):
+        X = nx.Graph()
+        Y = nx.DiGraph()
+        XY = nx.disjoint_union_all([X, Y])
 
 
 def test_mixed_type_intersection():
@@ -272,6 +290,10 @@ def test_mixed_type_intersection():
         H = nx.MultiGraph()
         I = nx.Graph()
         U = nx.intersection_all([G, H, I])
+    with pytest.raises(nx.NetworkXError):
+        X = nx.Graph()
+        Y = nx.DiGraph()
+        XY = nx.intersection_all([X, Y])
 
 
 def test_mixed_type_compose():
@@ -280,6 +302,10 @@ def test_mixed_type_compose():
         H = nx.MultiGraph()
         I = nx.Graph()
         U = nx.compose_all([G, H, I])
+    with pytest.raises(nx.NetworkXError):
+        X = nx.Graph()
+        Y = nx.DiGraph()
+        XY = nx.compose_all([X, Y])
 
 
 def test_empty_union():

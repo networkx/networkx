@@ -42,6 +42,7 @@ def _apply_prediction(G, func, ebunch=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def resource_allocation_index(G, ebunch=None):
     r"""Compute the resource allocation index of all node pairs in ebunch.
 
@@ -94,9 +95,9 @@ def resource_allocation_index(G, ebunch=None):
     return _apply_prediction(G, predict, ebunch)
 
 
-@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def jaccard_coefficient(G, ebunch=None):
     r"""Compute the Jaccard coefficient of all node pairs in ebunch.
 
@@ -153,6 +154,7 @@ def jaccard_coefficient(G, ebunch=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def adamic_adar_index(G, ebunch=None):
     r"""Compute the Adamic-Adar index of all node pairs in ebunch.
 
@@ -208,6 +210,7 @@ def adamic_adar_index(G, ebunch=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
     r"""Return the CCPA score for each pair of nodes.
 
@@ -305,6 +308,7 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def preferential_attachment(G, ebunch=None):
     r"""Compute the preferential attachment score of all node pairs in ebunch.
 
@@ -358,6 +362,7 @@ def preferential_attachment(G, ebunch=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch(node_attrs="community")
 def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
     r"""Count the number of common neighbors of all node pairs in ebunch
         using community information.
@@ -432,6 +437,7 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch(node_attrs="community")
 def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
     r"""Compute the resource allocation index of all node pairs in
     ebunch using community information.
@@ -507,6 +513,7 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch(node_attrs="community")
 def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
     """Compute the ratio of within- and inter-cluster common neighbors
     of all node pairs in ebunch.

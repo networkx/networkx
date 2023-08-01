@@ -9,8 +9,8 @@ __all__ = [
 ]
 
 
-@nx._dispatch
 @not_implemented_for("undirected")
+@nx._dispatch
 def weakly_connected_components(G):
     """Generate weakly connected components of G.
 
@@ -66,6 +66,7 @@ def weakly_connected_components(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def number_weakly_connected_components(G):
     """Returns the number of weakly connected components in G.
 
@@ -104,8 +105,8 @@ def number_weakly_connected_components(G):
     return sum(1 for wcc in weakly_connected_components(G))
 
 
-@nx._dispatch
 @not_implemented_for("undirected")
+@nx._dispatch
 def is_weakly_connected(G):
     """Test directed graph for weak connectivity.
 

@@ -223,6 +223,7 @@ def _greedy_modularity_communities_generator(G, weight=None, resolution=1):
         yield communities.values()
 
 
+@nx._dispatch(edge_attrs="weight")
 def greedy_modularity_communities(
     G,
     weight=None,
@@ -352,6 +353,7 @@ def greedy_modularity_communities(
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch(edge_attrs="weight")
 def naive_greedy_modularity_communities(G, resolution=1, weight=None):
     r"""Find communities in G using greedy modularity maximization.
 

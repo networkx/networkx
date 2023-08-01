@@ -14,6 +14,7 @@ __all__ = ["k_components"]
 
 
 @not_implemented_for("directed")
+@nx._dispatch(name="approximate_k_components")
 def k_components(G, min_density=0.95):
     r"""Returns the approximate k-component structure of a graph G.
 

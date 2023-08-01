@@ -235,6 +235,7 @@ def _extrema_bounding(G, compute="diameter", weight=None):
     return None
 
 
+@nx._dispatch(edge_attrs="weight")
 def eccentricity(G, v=None, sp=None, weight=None):
     """Returns the eccentricity of nodes in G.
 
@@ -323,6 +324,7 @@ def eccentricity(G, v=None, sp=None, weight=None):
     return e
 
 
+@nx._dispatch(edge_attrs="weight")
 def diameter(G, e=None, usebounds=False, weight=None):
     """Returns the diameter of the graph G.
 
@@ -378,6 +380,7 @@ def diameter(G, e=None, usebounds=False, weight=None):
     return max(e.values())
 
 
+@nx._dispatch(edge_attrs="weight")
 def periphery(G, e=None, usebounds=False, weight=None):
     """Returns the periphery of the graph G.
 
@@ -436,6 +439,7 @@ def periphery(G, e=None, usebounds=False, weight=None):
     return p
 
 
+@nx._dispatch(edge_attrs="weight")
 def radius(G, e=None, usebounds=False, weight=None):
     """Returns the radius of the graph G.
 
@@ -488,6 +492,7 @@ def radius(G, e=None, usebounds=False, weight=None):
     return min(e.values())
 
 
+@nx._dispatch(edge_attrs="weight")
 def center(G, e=None, usebounds=False, weight=None):
     """Returns the center of the graph G.
 
@@ -546,6 +551,7 @@ def center(G, e=None, usebounds=False, weight=None):
     return p
 
 
+@nx._dispatch(edge_attrs="weight")
 def barycenter(G, weight=None, attr=None, sp=None):
     r"""Calculate barycenter of a connected graph, optionally with edge weights.
 
@@ -639,6 +645,7 @@ def _count_lu_permutations(perm_array):
 
 
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight")
 def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     """Returns the resistance distance between node A and node B on graph G.
 
@@ -743,7 +750,7 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     # during computing the determinant
     lu_a = sp.sparse.linalg.splu(L_a, options={"SymmetricMode": True})
     LdiagA = lu_a.U.diagonal()
-    LdiagA_s = np.product(np.sign(LdiagA)) * np.product(lu_a.L.diagonal())
+    LdiagA_s = np.prod(np.sign(LdiagA)) * np.prod(lu_a.L.diagonal())
     LdiagA_s *= (-1) ** _count_lu_permutations(lu_a.perm_r)
     LdiagA_s *= (-1) ** _count_lu_permutations(lu_a.perm_c)
     LdiagA = np.absolute(LdiagA)
@@ -751,14 +758,14 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
 
     lu_ab = sp.sparse.linalg.splu(L_ab, options={"SymmetricMode": True})
     LdiagAB = lu_ab.U.diagonal()
-    LdiagAB_s = np.product(np.sign(LdiagAB)) * np.product(lu_ab.L.diagonal())
+    LdiagAB_s = np.prod(np.sign(LdiagAB)) * np.prod(lu_ab.L.diagonal())
     LdiagAB_s *= (-1) ** _count_lu_permutations(lu_ab.perm_r)
     LdiagAB_s *= (-1) ** _count_lu_permutations(lu_ab.perm_c)
     LdiagAB = np.absolute(LdiagAB)
     LdiagAB = np.sort(LdiagAB)
 
     # Calculate the ratio of determinant, rd = det(L_ab)/det(L_a)
-    Ldet = np.product(np.divide(np.append(LdiagAB, [1]), LdiagA))
+    Ldet = np.prod(np.divide(np.append(LdiagAB, [1]), LdiagA))
     rd = Ldet * LdiagAB_s / LdiagA_s
 
     return rd

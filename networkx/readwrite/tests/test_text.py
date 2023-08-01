@@ -1496,3 +1496,314 @@ def test_write_network_text_custom_label():
         """
     ).strip()
     assert target == text
+
+
+def test_write_network_text_vertical_chains():
+    graph1 = nx.lollipop_graph(4, 2, create_using=nx.Graph)
+    graph1.add_edge(0, -1)
+    graph1.add_edge(-1, -2)
+    graph1.add_edge(-2, -3)
+
+    graph2 = graph1.to_directed()
+    graph2.remove_edges_from([(u, v) for u, v in graph2.edges if v > u])
+
+    lines = []
+    write = lines.append
+    write("--- Undirected UTF ---")
+    nx.write_network_text(graph1, path=write, end="", vertical_chains=True)
+    write("--- Undirected ASCI ---")
+    nx.write_network_text(
+        graph1, path=write, end="", vertical_chains=True, ascii_only=True
+    )
+    write("--- Directed UTF ---")
+    nx.write_network_text(graph2, path=write, end="", vertical_chains=True)
+    write("--- Directed ASCI ---")
+    nx.write_network_text(
+        graph2, path=write, end="", vertical_chains=True, ascii_only=True
+    )
+
+    text = "\n".join(lines)
+    print(text)
+    target = dedent(
+        """
+        --- Undirected UTF ---
+        ╙── 5
+            │
+            4
+            │
+            3
+            ├── 0
+            │   ├── 1 ─ 3
+            │   │   │
+            │   │   2 ─ 0, 3
+            │   ├── -1
+            │   │   │
+            │   │   -2
+            │   │   │
+            │   │   -3
+            │   └──  ...
+            └──  ...
+        --- Undirected ASCI ---
+        +-- 5
+            |
+            4
+            |
+            3
+            |-- 0
+            |   |-- 1 - 3
+            |   |   |
+            |   |   2 - 0, 3
+            |   |-- -1
+            |   |   |
+            |   |   -2
+            |   |   |
+            |   |   -3
+            |   L--  ...
+            L--  ...
+        --- Directed UTF ---
+        ╙── 5
+            ╽
+            4
+            ╽
+            3
+            ├─╼ 0 ╾ 1, 2
+            │   ╽
+            │   -1
+            │   ╽
+            │   -2
+            │   ╽
+            │   -3
+            ├─╼ 1 ╾ 2
+            │   └─╼  ...
+            └─╼ 2
+                └─╼  ...
+        --- Directed ASCI ---
+        +-- 5
+            !
+            4
+            !
+            3
+            |-> 0 <- 1, 2
+            |   !
+            |   -1
+            |   !
+            |   -2
+            |   !
+            |   -3
+            |-> 1 <- 2
+            |   L->  ...
+            L-> 2
+                L->  ...
+        """
+    ).strip()
+    assert target == text
+
+
+def test_collapse_directed():
+    graph = nx.balanced_tree(r=2, h=3, create_using=nx.DiGraph)
+    lines = []
+    write = lines.append
+    write("--- Original ---")
+    nx.write_network_text(graph, path=write, end="")
+    graph.nodes[1]["collapse"] = True
+    write("--- Collapse Node 1 ---")
+    nx.write_network_text(graph, path=write, end="")
+    write("--- Add alternate path (5, 3) to collapsed zone")
+    graph.add_edge(5, 3)
+    nx.write_network_text(graph, path=write, end="")
+    write("--- Collapse Node 0 ---")
+    graph.nodes[0]["collapse"] = True
+    nx.write_network_text(graph, path=write, end="")
+    text = "\n".join(lines)
+    print(text)
+    target = dedent(
+        """
+        --- Original ---
+        ╙── 0
+            ├─╼ 1
+            │   ├─╼ 3
+            │   │   ├─╼ 7
+            │   │   └─╼ 8
+            │   └─╼ 4
+            │       ├─╼ 9
+            │       └─╼ 10
+            └─╼ 2
+                ├─╼ 5
+                │   ├─╼ 11
+                │   └─╼ 12
+                └─╼ 6
+                    ├─╼ 13
+                    └─╼ 14
+        --- Collapse Node 1 ---
+        ╙── 0
+            ├─╼ 1
+            │   └─╼  ...
+            └─╼ 2
+                ├─╼ 5
+                │   ├─╼ 11
+                │   └─╼ 12
+                └─╼ 6
+                    ├─╼ 13
+                    └─╼ 14
+        --- Add alternate path (5, 3) to collapsed zone
+        ╙── 0
+            ├─╼ 1
+            │   └─╼  ...
+            └─╼ 2
+                ├─╼ 5
+                │   ├─╼ 11
+                │   ├─╼ 12
+                │   └─╼ 3 ╾ 1
+                │       ├─╼ 7
+                │       └─╼ 8
+                └─╼ 6
+                    ├─╼ 13
+                    └─╼ 14
+        --- Collapse Node 0 ---
+        ╙── 0
+            └─╼  ...
+        """
+    ).strip()
+    assert target == text
+
+
+def test_collapse_undirected():
+    graph = nx.balanced_tree(r=2, h=3, create_using=nx.Graph)
+    lines = []
+    write = lines.append
+    write("--- Original ---")
+    nx.write_network_text(graph, path=write, end="", sources=[0])
+    graph.nodes[1]["collapse"] = True
+    write("--- Collapse Node 1 ---")
+    nx.write_network_text(graph, path=write, end="", sources=[0])
+    write("--- Add alternate path (5, 3) to collapsed zone")
+    graph.add_edge(5, 3)
+    nx.write_network_text(graph, path=write, end="", sources=[0])
+    write("--- Collapse Node 0 ---")
+    graph.nodes[0]["collapse"] = True
+    nx.write_network_text(graph, path=write, end="", sources=[0])
+    text = "\n".join(lines)
+    print(text)
+    target = dedent(
+        """
+        --- Original ---
+        ╙── 0
+            ├── 1
+            │   ├── 3
+            │   │   ├── 7
+            │   │   └── 8
+            │   └── 4
+            │       ├── 9
+            │       └── 10
+            └── 2
+                ├── 5
+                │   ├── 11
+                │   └── 12
+                └── 6
+                    ├── 13
+                    └── 14
+        --- Collapse Node 1 ---
+        ╙── 0
+            ├── 1 ─ 3, 4
+            │   └──  ...
+            └── 2
+                ├── 5
+                │   ├── 11
+                │   └── 12
+                └── 6
+                    ├── 13
+                    └── 14
+        --- Add alternate path (5, 3) to collapsed zone
+        ╙── 0
+            ├── 1 ─ 3, 4
+            │   └──  ...
+            └── 2
+                ├── 5
+                │   ├── 11
+                │   ├── 12
+                │   └── 3 ─ 1
+                │       ├── 7
+                │       └── 8
+                └── 6
+                    ├── 13
+                    └── 14
+        --- Collapse Node 0 ---
+        ╙── 0 ─ 1, 2
+            └──  ...
+        """
+    ).strip()
+    assert target == text
+
+
+def generate_test_graphs():
+    """
+    Generate a gauntlet of different test graphs with different properties
+    """
+    import random
+
+    rng = random.Random(976689776)
+    num_randomized = 3
+
+    for directed in [0, 1]:
+        cls = nx.DiGraph if directed else nx.Graph
+
+        for num_nodes in range(0, 17):
+            # Disconnected graph
+            graph = cls()
+            graph.add_nodes_from(range(num_nodes))
+            yield graph
+
+            # Randomize graphs
+            if num_nodes > 0:
+                for p in [0.1, 0.3, 0.5, 0.7, 0.9]:
+                    for seed in range(num_randomized):
+                        graph = nx.erdos_renyi_graph(
+                            num_nodes, p, directed=directed, seed=rng
+                        )
+                        yield graph
+
+                yield nx.complete_graph(num_nodes, cls)
+
+        yield nx.path_graph(3, create_using=cls)
+        yield nx.balanced_tree(r=1, h=3, create_using=cls)
+        if not directed:
+            yield nx.circular_ladder_graph(4, create_using=cls)
+            yield nx.star_graph(5, create_using=cls)
+            yield nx.lollipop_graph(4, 2, create_using=cls)
+            yield nx.wheel_graph(7, create_using=cls)
+            yield nx.dorogovtsev_goltsev_mendes_graph(4, create_using=cls)
+
+
+@pytest.mark.parametrize(
+    ("vertical_chains", "ascii_only"),
+    tuple(
+        [
+            (vertical_chains, ascii_only)
+            for vertical_chains in [0, 1]
+            for ascii_only in [0, 1]
+        ]
+    ),
+)
+def test_network_text_round_trip(vertical_chains, ascii_only):
+    """
+    Write the graph to network text format, then parse it back in, assert it is
+    the same as the original graph. Passing this test is strong validation of
+    both the format generator and parser.
+    """
+    from networkx.readwrite.text import _parse_network_text
+
+    for graph in generate_test_graphs():
+        graph = nx.relabel_nodes(graph, {n: str(n) for n in graph.nodes})
+        lines = list(
+            nx.generate_network_text(
+                graph, vertical_chains=vertical_chains, ascii_only=ascii_only
+            )
+        )
+        new = _parse_network_text(lines)
+        try:
+            assert new.nodes == graph.nodes
+            assert new.edges == graph.edges
+        except Exception:
+            print("ERROR in round trip with graph")
+            nx.write_network_text(graph)
+            raise

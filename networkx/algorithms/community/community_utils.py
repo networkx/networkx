@@ -1,8 +1,10 @@
 """Helper functions for community-finding algorithms."""
+import networkx as nx
 
 __all__ = ["is_partition"]
 
 
+@nx._dispatch
 def is_partition(G, communities):
     """Returns *True* if `communities` is a partition of the nodes of `G`.
 

@@ -20,9 +20,10 @@ from networkx.utils import not_implemented_for, py_random_state
 __all__ = ["random_reference", "lattice_reference", "sigma", "omega"]
 
 
-@py_random_state(3)
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
+@py_random_state(3)
 def random_reference(G, niter=1, connectivity=True, seed=None):
     """Compute a random graph by swapping edges of a given graph.
 
@@ -117,9 +118,10 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
     return G
 
 
-@py_random_state(4)
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
+@py_random_state(4)
 def lattice_reference(G, niter=5, D=None, connectivity=True, seed=None):
     """Latticize the given graph by swapping edges.
 
@@ -240,9 +242,10 @@ def lattice_reference(G, niter=5, D=None, connectivity=True, seed=None):
     return G
 
 
-@py_random_state(3)
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
+@py_random_state(3)
 def sigma(G, niter=100, nrand=10, seed=None):
     """Returns the small-world coefficient (sigma) of the given graph.
 
@@ -308,9 +311,10 @@ def sigma(G, niter=100, nrand=10, seed=None):
     return sigma
 
 
-@py_random_state(3)
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
+@py_random_state(3)
 def omega(G, niter=5, nrand=10, seed=None):
     """Returns the small-world coefficient (omega) of a graph
 

@@ -26,7 +26,7 @@ jobs:
 
       - name: Install packages
         run: |
-          pip install --upgrade pip wheel setuptools
+          pip install --upgrade pip
           pip install -r requirements/default.txt -r requirements/test.txt
           pip install -r requirements/extra.txt
           pip install -r requirements/example.txt
@@ -45,7 +45,7 @@ jobs:
       #   - Make sure the name is the same as below: CI_DEPLOY_KEY
       - name: Install SSH agent
         if: github.ref == 'refs/heads/main'
-        uses: webfactory/ssh-agent@v0.7.0
+        uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.CI_DEPLOY_KEY }}
 

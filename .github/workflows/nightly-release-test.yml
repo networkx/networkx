@@ -20,7 +20,7 @@ jobs:
 
       - name: Install packages
         run: |
-          pip install --upgrade pip wheel setuptools
+          pip install --upgrade pip
           pip install -U --pre --extra-index-url https://pypi.org/simple -i https://pypi.anaconda.org/scipy-wheels-nightly/simple -r requirements/default.txt
           pip install --pre -r requirements/test.txt
           pip install .

@@ -12,8 +12,8 @@ __all__ = [
 ]
 
 
-@nx._dispatch
 @not_implemented_for("directed")
+@nx._dispatch
 def connected_components(G):
     """Generate connected components.
 
@@ -68,6 +68,7 @@ def connected_components(G):
             yield c
 
 
+@nx._dispatch
 def number_connected_components(G):
     """Returns the number of connected components.
 
@@ -101,8 +102,8 @@ def number_connected_components(G):
     return sum(1 for cc in connected_components(G))
 
 
-@nx._dispatch
 @not_implemented_for("directed")
+@nx._dispatch
 def is_connected(G):
     """Returns True if the graph is connected, False otherwise.
 
@@ -147,8 +148,8 @@ def is_connected(G):
     return sum(1 for node in _plain_bfs(G, arbitrary_element(G))) == len(G)
 
 
-@nx._dispatch
 @not_implemented_for("directed")
+@nx._dispatch
 def node_connected_component(G, n):
     """Returns the set of nodes in the component of graph containing node n.
 
