@@ -81,8 +81,10 @@ the test using `item.add_marker(pytest.mark.xfail(reason=...))`.
 import functools
 import inspect
 import os
+import pkgutil
 import sys
 from importlib.metadata import entry_points
+from itertools import chain
 
 from ..exception import NetworkXNotImplemented
 
@@ -122,11 +124,33 @@ plugins = PluginInfo()
 _registered_algorithms = {}
 
 
-def _register_algo(name, wrapped_func):
+def _register_algo(name, wrapped_func, dispatch_args):
     if name in _registered_algorithms:
         raise KeyError(f"Algorithm already exists in dispatch registry: {name}")
     _registered_algorithms[name] = wrapped_func
     wrapped_func.dispatchname = name
+    wrapped_func.dispatchargs = dispatch_args
+
+
+def reregister_all_algos(dispatch_override=None):
+    global _registered_algorithms
+
+    dispatch_fn = _dispatch if dispatch_override is None else dispatch_override
+    algos, _registered_algorithms = _registered_algorithms.copy(), {}
+    _registered_algorithms = {}
+
+    for wrapped_func in algos.values():
+        functools.partial(dispatch_fn, **wrapped_func.dispatchargs)(
+            wrapped_func.__wrapped__
+        )
+
+    pkg = sys.modules[__name__.partition(".")[0]]
+    modules = chain([pkg], pkgutil.walk_packages(pkg.__path__, pkg.__name__ + "."))
+
+    for module in modules:
+        for fname, f in inspect.getmembers(module, inspect.isfunction):
+            if (dispatchname := getattr(f, "dispatchname", None)) is not None:
+                setattr(pkg, fname, _registered_algorithms[dispatchname])
 
 
 def _dispatch(
@@ -203,23 +227,24 @@ def _dispatch(
     #  - @_dispatch(graphs="graph")
     #  - @_dispatch(edge_attrs="weight")
     #  - @_dispatch(graphs={"G": 0, "H": 1}, edge_attrs={"weight": "default"})
+    dispatch_args = {
+        "name": name,
+        "graphs": graphs,
+        "edge_attrs": edge_attrs,
+        "node_attrs": node_attrs,
+        "preserve_edge_attrs": preserve_edge_attrs,
+        "preserve_node_attrs": preserve_node_attrs,
+        "preserve_graph_attrs": preserve_graph_attrs,
+        "preserve_all_attrs": preserve_all_attrs,
+    }
     if func is None:
-        return functools.partial(
-            _dispatch,
-            name=name,
-            graphs=graphs,
-            edge_attrs=edge_attrs,
-            node_attrs=node_attrs,
-            preserve_edge_attrs=preserve_edge_attrs,
-            preserve_node_attrs=preserve_node_attrs,
-            preserve_graph_attrs=preserve_graph_attrs,
-            preserve_all_attrs=preserve_all_attrs,
-        )
+        return functools.partial(_dispatch, **dispatch_args)
     if isinstance(func, str):
         raise TypeError("'name' and 'graphs' must be passed by keyword") from None
     # If name not provided, use the name of the function
     if name is None:
         name = func.__name__
+        dispatch_args["name"] = name
 
     if isinstance(graphs, str):
         graphs = {graphs: 0}
@@ -329,7 +354,7 @@ def _dispatch(
                 )
         return func(*args, **kwds)
 
-    _register_algo(name, wrapper)
+    _register_algo(name, wrapper, dispatch_args)
     return wrapper
 
 
@@ -348,23 +373,24 @@ def test_override_dispatch(
     """Auto-converts graph arguments into the backend equivalent,
     causing the dispatching mechanism to trigger for every
     decorated algorithm."""
+    dispatch_args = {
+        "name": name,
+        "graphs": graphs,
+        "edge_attrs": edge_attrs,
+        "node_attrs": node_attrs,
+        "preserve_edge_attrs": preserve_edge_attrs,
+        "preserve_node_attrs": preserve_node_attrs,
+        "preserve_graph_attrs": preserve_graph_attrs,
+        "preserve_all_attrs": preserve_all_attrs,
+    }
     if func is None:
-        return functools.partial(
-            _dispatch,
-            name=name,
-            graphs=graphs,
-            edge_attrs=edge_attrs,
-            node_attrs=node_attrs,
-            preserve_edge_attrs=preserve_edge_attrs,
-            preserve_node_attrs=preserve_node_attrs,
-            preserve_graph_attrs=preserve_graph_attrs,
-            preserve_all_attrs=preserve_all_attrs,
-        )
+        return functools.partial(_dispatch, **dispatch_args)
     if isinstance(func, str):
         raise TypeError("'name' and 'graphs' must be passed by keyword") from None
     # If name not provided, use the name of the function
     if name is None:
         name = func.__name__
+        dispatch_args["name"] = name
 
     if isinstance(graphs, str):
         graphs = {graphs: 0}
@@ -660,7 +686,7 @@ def test_override_dispatch(
 
         return backend.convert_to_nx(result, name=name)
 
-    _register_algo(name, wrapper)
+    _register_algo(name, wrapper, dispatch_args)
     return wrapper
 
 

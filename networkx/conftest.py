@@ -11,7 +11,6 @@ General guidelines for writing good tests:
   and add the module to the relevant entries below.
 
 """
-import sys
 import warnings
 
 import pytest
@@ -23,10 +22,21 @@ def pytest_addoption(parser):
     parser.addoption(
         "--runslow", action="store_true", default=False, help="run slow tests"
     )
+    parser.addoption(
+        "--backend",
+        action="store",
+        default="",
+        help="set plugin name for auto-converting nx graphs",
+    )
 
 
 def pytest_configure(config):
     config.addinivalue_line("markers", "slow: mark test as slow to run")
+    if backend := config.getoption("--backend"):
+        import networkx.utils.backends as nxb
+
+        nxb.plugin_name = backend
+        nxb.reregister_all_algos(nxb.test_override_dispatch)
 
 
 def pytest_collection_modifyitems(config, items):
