@@ -1138,7 +1138,7 @@ def from_numpy_array(A, parallel_edges=False, create_using=None, edge_attr="weig
                 else {
                     name: kind_to_python_type[dtype.kind](val)
                     for (_, dtype, name), val in zip(fields, A[u, v])
-                }
+                },
             )
             for u, v in edges
         )
@@ -1160,7 +1160,7 @@ def from_numpy_array(A, parallel_edges=False, create_using=None, edge_attr="weig
         else:
             triples = chain(
                 ((u, v, {edge_attr: 1}) for d in range(A[u, v])) for (u, v) in edges
-            ) 
+            )
     else:  # basic data type
         if edge_attr in [False, None]:
             triples = ((u, v, {}) for u, v in edges)
