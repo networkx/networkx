@@ -1000,7 +1000,7 @@ def to_numpy_array(
     return A
 
 
-def from_numpy_array(A, parallel_edges=False, create_using=None):
+def from_numpy_array(A, parallel_edges=False, create_using=None, edge_attr="weight"):
     """Returns a graph from a 2D NumPy array.
 
     The 2D NumPy array is interpreted as an adjacency matrix for the graph.
@@ -1020,6 +1020,10 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
+    edge_attr : String, optional (default="weight")
+        The attribute to which the array values are assigned on each edge. If
+        it is None, edge attributes will not be assigned.
+
     Notes
     -----
     For directed graphs, explicitly mention create_using=nx.DiGraph,
@@ -1033,6 +1037,11 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
     If `create_using` indicates an undirected multigraph, then only the edges
     indicated by the upper triangle of the array `A` will be added to the
     graph.
+
+    If `edge_attr` is Falsy (False or None), edge attributes will not be
+    assigned, and the array data will be treated like a binary mask of
+    edge presence or absence. Otherwise, the attributes will be assigned
+    as follows:
 
     If the NumPy array has a single data type for each array entry it
     will be converted to an appropriate Python data type.
@@ -1127,7 +1136,9 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
                 {
                     name: kind_to_python_type[dtype.kind](val)
                     for (_, dtype, name), val in zip(fields, A[u, v])
-                },
+                }
+                if edge_attr
+                else {},
             )
             for u, v in edges
         )
@@ -1144,11 +1155,17 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
         #         for d in range(A[u, v]):
         #             G.add_edge(u, v, weight=1)
         #
-        triples = chain(
-            ((u, v, {"weight": 1}) for d in range(A[u, v])) for (u, v) in edges
-        )
+        if edge_attr:
+            triples = chain(
+                ((u, v, {edge_attr: 1}) for d in range(A[u, v])) for (u, v) in edges
+            )
+        else:
+            triples = chain(((u, v, {}) for d in range(A[u, v])) for (u, v) in edges)
     else:  # basic data type
-        triples = ((u, v, {"weight": python_type(A[u, v])}) for u, v in edges)
+        if edge_attr:
+            triples = ((u, v, {edge_attr: python_type(A[u, v])}) for u, v in edges)
+        else:
+            triples = ((u, v, {}) for u, v in edges)
     # If we are creating an undirected multigraph, only add the edges from the
     # upper triangle of the matrix. Otherwise, add all the edges. This relies
     # on the fact that the vertices created in the
