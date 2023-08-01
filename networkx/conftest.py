@@ -18,6 +18,18 @@ import pytest
 
 import networkx
 
+_is_pytest_running = False
+
+
+def is_pytest_running():
+    return _is_pytest_running
+
+
+@pytest.fixture(autouse=True)
+def set_is_pytest_running():
+    global _is_pytest_running
+    _is_pytest_running = True
+
 
 def pytest_addoption(parser):
     parser.addoption(

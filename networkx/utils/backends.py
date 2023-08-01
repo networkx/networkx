@@ -391,6 +391,9 @@ def test_override_dispatch(
 
     @functools.wraps(func)
     def wrapper(*args, **kwds):
+        if not is_pytest_running():
+            # Allow tests to get set up
+            return func(*args, **kwds)
         backend = plugins[plugin_name].load()
         if not hasattr(backend, name):
             if fallback_to_nx:
@@ -600,7 +603,14 @@ def test_override_dispatch(
                     graph_name=gname,
                 )
 
-        result = getattr(backend, name).__call__(*bound.args, **bound.kwargs)
+        try:
+            result = getattr(backend, name).__call__(*bound.args, **bound.kwargs)
+        except NotImplementedError as exc:
+            if fallback_to_nx:
+                return func(*args, **kwds)
+            pytest.xfail(
+                exc.args[0] if exc.args else f"{name} raised NotImplementedError"
+            )
 
         if name in {
             "edmonds_karp_core",
@@ -684,6 +694,7 @@ if os.environ.get("NETWORKX_GRAPH_CONVERT"):
         raise ImportError(
             f"Missing pytest, which is required when using NETWORKX_GRAPH_CONVERT"
         )
+    from networkx.conftest import is_pytest_running
 
     # Override `dispatch` for testing
     _dispatch = test_override_dispatch
