@@ -5,7 +5,7 @@ on:
 
 jobs:
   benchmark:
-    if: github.repository == 'networkx/networkx' && ${{ github.event.label.name == 'run:benchmark' && github.event_name == 'pull_request' }}
+    if: contains(github.event.pull_request.labels.*.name, 'run:benchmark') || ${{ github.event.label.name == 'run:benchmark'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -24,7 +24,7 @@ jobs:
       
       - run: git remote add upstream https://github.com/networkx/networkx
       - run: git fetch upstream main
-      - run: MERGEBASE=$(git merge-base upstream/main ${{ github.sha }})
+      - run: echo "MERGEBASE=$(git merge-base upstream/main ${{ github.sha }})" >> $GITHUB_ENV
       - run: git clone https://github.com/MridulS/nx-continuous-benchmarks.git
       - run: cd nx-continuous-benchmarks/
       - run: asv continuous $MERGEBASE ${{ github.sha }}
