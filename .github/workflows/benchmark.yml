@@ -35,7 +35,9 @@ jobs:
           cd nx-continuous-benchmarks/
           asv machine --yes
           asv continuous ${{ github.base_ref }} ${{ github.sha }}
-          asv compare ${{ github.base_ref }} ${{ github.sha }} --factor 1.15 --only-changed > regression.txt
+      - name: Compare results
+        run: asv compare ${{ github.base_ref }} ${{ github.sha }} --factor 1.15 --only-changed > regression.txt
+        working-directory: ./nx-continuous-benchmarks
       
       - name: Regression artifact
         uses: actions/upload-artifact@v3
@@ -43,18 +45,18 @@ jobs:
           name: regression
           path: nx-continuous-benchmarks/regression.txt
 
-      # - name: Find Comment
-      #   uses: peter-evans/find-comment@v2
-      #   id: fc
-      #   with:
-      #     issue-number: ${{ github.event.pull_request.number }}
-      #     comment-author: 'github-actions[bot]'
-      #     body-includes: ASV Comparison between merge-base and HEAD
+      - name: Find Comment
+        uses: peter-evans/find-comment@v2
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: ASV Comparison between merge-base and HEAD
 
-      # - name: Create or update comment
-      #   uses: peter-evans/create-or-update-comment@v3
-      #   with:
-      #     comment-id: ${{ steps.fc.outputs.comment-id }}
-      #     issue-number: ${{ github.event.pull_request.number }}
-      #     body-path: regression.txt
-      #     edit-mode: replace  
+      - name: Create or update comment
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body-path: nx-continuous-benchmarks/regression.txt
+          edit-mode: replace  
