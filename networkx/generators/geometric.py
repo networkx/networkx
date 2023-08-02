@@ -19,8 +19,8 @@ __all__ = [
 ]
 
 
-@nx._dispatch(preserve_node_attrs={"G": {"pos": None}})
-def geometric_edges(G, radius, p=2):
+@nx._dispatch(node_attrs="position")
+def geometric_edges(G, radius, p=2, position="pos"):
     """Returns edge list of node pairs within `radius` of each other.
 
     Parameters
@@ -32,6 +32,9 @@ def geometric_edges(G, radius, p=2):
     radius : scalar
         The distance threshold. Edges are included in the edge list if the
         distance between the two nodes is less than `radius`.
+    position : string, default="pos"
+        The node attribute which represents the position of the node in 2D
+        coordinates. Every node in the Graph should have this attribute.
     p : scalar, default=2
         The `Minkowski distance metric
         <https://en.wikipedia.org/wiki/Minkowski_distance>`_ used to compute
@@ -68,25 +71,25 @@ def geometric_edges(G, radius, p=2):
     [(0, 1), (0, 2), (1, 2)]
     """
     # Input validation - every node must have a "pos" attribute
-    for n, pos in G.nodes(data="pos"):
+    for n, pos in G.nodes(data=position):
         if pos is None:
             raise nx.NetworkXError(
-                f"All nodes in `G` must have a 'pos' attribute. Check node {n}"
+                f"All nodes in `G` must have a '{position}' attribute. Check node {n}"
             )
 
     # NOTE: See _geometric_edges for the actual implementation. The reason this
     # is split into two functions is to avoid the overhead of input validation
     # every time the function is called internally in one of the other
     # geometric generators
-    return _geometric_edges(G, radius, p)
+    return _geometric_edges(G, radius, p, position)
 
 
-def _geometric_edges(G, radius, p=2):
+def _geometric_edges(G, radius, p=2, position):
     """
     Implements `geometric_edges` without input validation. See `geometric_edges`
     for complete docstring.
     """
-    nodes_pos = G.nodes(data="pos")
+    nodes_pos = G.nodes(data=position)
     try:
         import scipy as sp
     except ImportError:
@@ -190,7 +193,7 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2, seed=None):
         pos = {v: [seed.random() for i in range(dim)] for v in G}
     nx.set_node_attributes(G, pos, "pos")
 
-    G.add_edges_from(_geometric_edges(G, radius, p))
+    G.add_edges_from(_geometric_edges(G, radius, p, "pos"))
     return G
 
 
@@ -316,7 +319,7 @@ def soft_random_geometric_graph(
         dist = (sum(abs(a - b) ** p for a, b in zip(pos[u], pos[v]))) ** (1 / p)
         return seed.random() < p_dist(dist)
 
-    G.add_edges_from(filter(should_join, _geometric_edges(G, radius, p)))
+    G.add_edges_from(filter(should_join, _geometric_edges(G, radius, p, "pos")))
     return G
 
 
@@ -779,7 +782,7 @@ def thresholded_random_geometric_graph(
 
     edges = (
         (u, v)
-        for u, v in _geometric_edges(G, radius, p)
+        for u, v in _geometric_edges(G, radius, p, "pos")
         if weight[u] + weight[v] >= theta
     )
     G.add_edges_from(edges)

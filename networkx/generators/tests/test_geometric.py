@@ -324,6 +324,19 @@ class TestThresholdedRandomGeometricGraph:
                 assert (G.nodes[u]["weight"] + G.nodes[v]["weight"]) >= 0.1
 
 
+def test_geometric_edges_pos_attribute():
+    G = nx.Graph()
+    G.add_nodes_from(
+        [
+            (0, {"position": (0, 0)}),
+            (1, {"position": (0, 1)}),
+            (2, {"position": (1, 0)}),
+        ]
+    )
+    expected_edges = [(0, 1), (0, 2)]
+    assert expected_edges == nx.geometric_edges(G, radius=1, position="position")
+
+
 def test_geometric_edges_raises_no_pos():
     G = nx.path_graph(3)
     msg = "All nodes in `G` must have a 'pos' attribute"
