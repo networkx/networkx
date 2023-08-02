@@ -18,7 +18,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements/default.txt
-          pip install asv
+          pip install asv virtualenv
           pip install .
           pip list
       
