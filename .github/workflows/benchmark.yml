@@ -25,13 +25,14 @@ jobs:
       - run: git remote add upstream https://github.com/networkx/networkx
       - run: git fetch upstream main
       - run: echo "MERGEBASE=$(git merge-base upstream/main ${{ github.sha }})" >> $GITHUB_ENV
+      - run: echo ${{ env.MERGEBASE }}
       - name: Run benchmark
         run: |
           git clone https://github.com/MridulS/nx-continuous-benchmarks.git
           cd nx-continuous-benchmarks/
           asv machine --yes
-          asv continuous $MERGEBASE ${{ github.sha }}
-          asv compare $MERGEBASE ${{ github.sha }} --factor 1.15 --only-changed > ../regression.txt
+          asv continuous ${{ env.MERGEBASE }} ${{ github.sha }}
+          asv compare ${{ env.MERGEBASE }} ${{ github.sha }} --factor 1.15 --only-changed > ../regression.txt
 
       - name: Find Comment
         uses: peter-evans/find-comment@v2
