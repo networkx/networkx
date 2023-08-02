@@ -5,7 +5,7 @@ on:
 
 jobs:
   benchmark:
-    if: contains(github.event.pull_request.labels.*.name, 'run:benchmark') || ${{ github.event.label.name == 'run:benchmark'
+    if: contains(github.event.pull_request.labels.*.name, 'run:benchmark') || ${{ github.event.label.name == 'run:benchmark' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
