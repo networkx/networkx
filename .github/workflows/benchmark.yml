@@ -29,6 +29,7 @@ jobs:
         run: |
           git clone https://github.com/MridulS/nx-continuous-benchmarks.git
           cd nx-continuous-benchmarks/
+          asv machine --yes
           asv continuous $MERGEBASE ${{ github.sha }}
           asv compare $MERGEBASE ${{ github.sha }} --factor 1.15 --only-changed > ../regression.txt
 
