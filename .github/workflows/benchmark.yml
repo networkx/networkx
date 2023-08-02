@@ -36,7 +36,7 @@ jobs:
           asv machine --yes
           asv continuous ${{ github.base_ref }} ${{ github.sha }}
       - name: Compare results
-        run: asv compare ${{ github.base_ref }} ${{ github.sha }} --factor 1.15 --only-changed > regression.txt
+        run: asv compare ${{ github.base_ref }} ${{ github.sha }} --factor 1.15 --only-changed | tee regression.txt
         working-directory: ./nx-continuous-benchmarks
       
       - name: Regression artifact
