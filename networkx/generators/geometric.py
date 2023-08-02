@@ -84,7 +84,7 @@ def geometric_edges(G, radius, p=2, position="pos"):
     return _geometric_edges(G, radius, p, position)
 
 
-def _geometric_edges(G, radius, p=2, position):
+def _geometric_edges(G, radius, p, position):
     """
     Implements `geometric_edges` without input validation. See `geometric_edges`
     for complete docstring.
