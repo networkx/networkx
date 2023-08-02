@@ -24,7 +24,7 @@ jobs:
       
       - run: git remote add upstream https://github.com/networkx/networkx
       - run: git fetch upstream main
-      - run: echo "MERGEBASE=$(git merge-base upstream/main ${{ github.sha }})" >> $GITHUB_ENV
+      - run: echo "MERGEBASE=$(git merge-base upstream/main ${{ github.sha }})" >> "$GITHUB_ENV"
       - run: echo ${{ env.MERGEBASE }}
       - name: Run benchmark
         run: |
