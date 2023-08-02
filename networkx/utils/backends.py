@@ -136,7 +136,7 @@ def reregister_all_algos(dispatch_override=None):
     global _registered_algorithms
 
     dispatch_fn = _dispatch if dispatch_override is None else dispatch_override
-    algos, _registered_algorithms = _registered_algorithms.copy(), {}
+    algos = _registered_algorithms.copy()
     _registered_algorithms = {}
 
     for wrapped_func in algos.values():
