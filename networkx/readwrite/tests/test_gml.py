@@ -614,6 +614,24 @@ graph
             os.close(fd)
             os.unlink(fname)
 
+    def test_multiline(self):
+        # example from issue #6836
+        multiline_example = """
+graph
+[
+    node
+    [
+	    id 0
+	    label "multiline node"
+	    label2 "multiline1
+    multiline2
+    multiline3"
+	    alt_name "id 0"
+    ]
+]
+"""
+        nx.parse_gml(multiline_example)
+
 
 @contextmanager
 def byte_file():
