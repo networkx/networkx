@@ -10,6 +10,7 @@ __all__ = ["cd_index"]
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch(node_attrs={"time": None, "weight": 1})
 def cd_index(G, node, *, time_delta=timedelta(days=5 * 365), time="time", weight=None):
     r"""Compute the CD index for `node` within the graph `G`.
 
@@ -39,7 +40,7 @@ def cd_index(G, node, *, time_delta=timedelta(days=5 * 365), time="time", weight
 
     Raises
     ------
-    ValueError
+    NetworkXError
        If not all nodes have a `time` attribute or
        `time_delta` and `time` attribute types are not compatible or
        `n` equals 0.
@@ -88,7 +89,7 @@ def cd_index(G, node, *, time_delta=timedelta(days=5 * 365), time="time", weight
 
     """
     if not all(time in G.nodes[n] for n in G):
-        raise ValueError("Not all nodes have a 'time' attribute.")
+        raise nx.NetworkXError("Not all nodes have a 'time' attribute.")
 
     try:
         # get target_date
@@ -96,7 +97,7 @@ def cd_index(G, node, *, time_delta=timedelta(days=5 * 365), time="time", weight
         # keep the predecessors that existed before the target date
         pred = {i for i in G.pred[node] if G.nodes[i][time] <= target_date}
     except:
-        raise ValueError(
+        raise nx.NetworkXError(
             "Addition and comparison are not supported between 'time_delta' "
             "and 'time' types, default time_delta = datetime.timedelta."
         )
@@ -107,7 +108,7 @@ def cd_index(G, node, *, time_delta=timedelta(days=5 * 365), time="time", weight
     # n is size of the union of the focal node's predecessors and its successors' predecessors
     n = len(pred.union(*(G.pred[s].keys() - {node} for s in G[node])))
     if n == 0:
-        raise ValueError("The cd index cannot be defined.")
+        raise nx.NetworkXError("The cd index cannot be defined.")
 
     # calculate cd index
     if weight is None:
