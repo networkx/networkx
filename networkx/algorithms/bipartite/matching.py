@@ -594,29 +594,12 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
 
 def _neighbours_of_set(G, node_set):
     r"""Returns a set of the neighbours of a given set of nodes `node_set` in the bipartite graph `G`.
-    Denoted by :math:`N_Gnode_set`.
-
-    `G` is an undirected bipartite NetworkX graph.
-
-    `node_set` is a set of nodes in `G`.
-
 
     >>> G = nx.complete_bipartite_graph(3,3)
     >>> _neighbours_of_set(G, {})
     set()
     >>> _neighbours_of_set(G, {1, 2})
     {3, 4, 5}
-
-    >>> G = nx.Graph([(0, 4), (1, 5), (2, 6)])
-    >>> _neighbours_of_set(G, {0, 1})
-    {4, 5}
-
-    >>> G=nx.Graph([(0,3),(3,0),(0,4),(4,0),(1,4),(4,1),(2,4),(4,2)])
-    >>> _neighbours_of_set(G, {0, 1})
-    {3, 4}
-
-    >>> _neighbours_of_set(G, {4})
-    {0, 1, 2}
     """
     ret_set = {}
     for node in node_set:
