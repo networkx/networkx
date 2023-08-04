@@ -660,7 +660,6 @@ def _M_alternating_sequence(G, M, *, top_nodes=None):
     Y_subsets = []
 
     Y_subgroups_accumulate = set()
-    index = 1
 
     while len(X_subsets) == 1 or X_subsets[-1] != set() and Y_subsets[-1] != set():
         GMinusM = nx.subgraph_view(
@@ -684,7 +683,6 @@ def _M_alternating_sequence(G, M, *, top_nodes=None):
         X_subsets.append(X_current)
 
         Y_subgroups_accumulate.update(Y_current)
-        index += 1
 
     return tuple(X_subsets), tuple(Y_subsets)
 
