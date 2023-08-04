@@ -2,7 +2,7 @@
 
 # A full test of all dispatchable algorithms is performed by
 # modifying the pytest invocation and setting an environment variable
-# NETWORKX_GRAPH_CONVERT=nx-loopback pytest
+# NETWORKX_TEST_BACKEND=nx-loopback pytest
 # This is comprehensive, but only tests the `test_override_dispatch`
 # function in networkx.classes.backends.
 
@@ -52,7 +52,7 @@ def convert(graph):
 class LoopbackDispatcher:
     def __getattr__(self, item):
         try:
-            return nx.utils.backends._registered_algorithms[item].__wrapped__
+            return nx.utils.backends._registered_algorithms[item].orig_func
         except KeyError:
             raise AttributeError(item) from None
 
@@ -67,8 +67,9 @@ class LoopbackDispatcher:
         preserve_graph_attrs=None,
         name=None,
         graph_name=None,
+        is_testing=False,
     ):
-        if name in {
+        if is_testing and name in {
             # Raise if input graph changes
             "lexicographical_topological_sort",
             "topological_generations",
