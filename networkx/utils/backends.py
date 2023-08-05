@@ -671,3 +671,10 @@ class _dispatch:
         if is_testing:
             return backend.convert_to_nx(result, name=self.name)
         return result
+
+    def __reduce__(self):
+        return _restore_dispatch, (self.name,)
+
+
+def _restore_dispatch(name):
+    return _registered_algorithms[name]
