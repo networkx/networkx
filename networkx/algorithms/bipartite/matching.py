@@ -601,11 +601,8 @@ def _neighbours_of_set(G, node_set):
     >>> _neighbours_of_set(G, {1, 2})
     {3, 4, 5}
     """
-    ret_set = {}
-    for node in node_set:
-        ret_set.update(G[node])
-
-    return set(ret_set)
+    neighbors_iter = itertools.chain.from_iterable(G.neighbors(n) for n in node_set)
+    return set(neighbors_iter)
 
 
 def _M_alternating_sequence(G, M, *, top_nodes=None):
