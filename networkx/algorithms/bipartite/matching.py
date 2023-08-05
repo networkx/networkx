@@ -630,22 +630,22 @@ def _M_alternating_sequence(G, M, *, top_nodes=None):
     >>> _M_alternating_sequence(G, M)
     ((), ())
 
-    >>> G = nx.Graph([(0,3),(3,0),(0,4),(4,0),(1,4),(4,1),(2,4),(4,2)])
+    >>> G = nx.Graph([(0,3),(0,4),(1,4),(2,4)])
     >>> M = {0:3, 3:0, 1:4, 4:1}
     >>> _M_alternating_sequence(G, M)
     (({2}, {1}), ({4},))
 
-    >>> G = nx.Graph([(0,3),(3,0),(1,3),(3,1),(1,4),(4,1),(2,4),(4,2)])
+    >>> G = nx.Graph([(0,3),(1,3),(1,4),(2,4)])
     >>> M = {0:3,3:0,4:1,1:4}
     >>> _M_alternating_sequence(G, M)
     (({2}, {1}, {0}), ({4}, {3}))
 
-    >>> G = nx.Graph([(0,3),(3,0),(1,3),(3,1),(1,4),(4,1),(2,4),(4,2)])
+    >>> G = nx.Graph([(0,3),(1,3),(1,4),(2,4)])
     >>> M = {0:3,3:0,4:1,1:4}
     >>> _M_alternating_sequence(G, M)
     (({2}, {1}, {0}), ({4}, {3}))
 
-    >>> G = nx.Graph([(0,6),(6,0),(1,6),(6,1),(1,7),(7,1),(2,6),(6,2),(2,8),(8,2),(3,9),(9,3),(3,6),(6,3),(4,8),(8,4),(4,7),(7,4),(5,9),(9,5)])
+    >>> G = nx.Graph([(0,6),(1,6),(1,7),(2,6),(2,8),(3,9),(3,6),(4,8),(4,7),(5,9)])
     >>> M = {0:6,6:0,1:7,7:1,2:8,8:2,3:9,9:3}
     >>> _M_alternating_sequence(G, M)
     (({4, 5}, {1, 2, 3}, {0}), ({8, 9, 7}, {6}))
@@ -727,33 +727,33 @@ def _EFM_partition(G, *, M=None, top_nodes=None):
     Examples
     --------
         Example 1: Perfect matching
-        >>> Graph=nx.complete_bipartite_graph(3,3)
-        >>> Matching=nx.bipartite.hopcroft_karp_matching(Graph)
-        >>> _EFM_partition(Graph, M=Matching)
+        >>> G=nx.complete_bipartite_graph(3,3)
+        >>> M=nx.bipartite.hopcroft_karp_matching(G)
+        >>> _EFM_partition(G, M=M)
         ({0, 1, 2}, set(), {3, 4, 5}, set())
 
         Where there exists a perfect matching the maximum envy free matching is the perfect matching.
 
         Example 2: Non-empty envy-free matching
-        >>> Graph=nx.Graph([(0,3),(3,0),(0,4),(4,0),(1,4),(4,1),(2,4),(4,2)])
-        >>> Matching={0:3,3:0,1:4,4:1}
-        >>> _EFM_partition(Graph, M=Matching)
+        >>> G=nx.Graph([(0,3),(0,4),(1,4),(2,4)])
+        >>> M={0:3,3:0,1:4,4:1}
+        >>> _EFM_partition(G, M=M)
         ({0}, {1, 2}, {3}, {4})
 
         Here the graph contains non-empty envy-free matching so X_L,Y_L are not empty.
 
         Example 3: Odd path
-        >>> Graph=nx.Graph([(0,3),(3,0),(1,3),(3,1),(1,4),(4,1),(2,4),(4,2)])
-        >>> Matching={0:3,3:0,4:1,1:4}
-        >>> _EFM_partition(Graph, M=Matching)
+        >>> G=nx.Graph([(0,3),(1,3),(1,4),(2,4)])
+        >>> M={0:3,3:0,4:1,1:4}
+        >>> _EFM_partition(G, M=M)
         (set(), {0, 1, 2}, set(), {3, 4})
 
         Like presented in the article, odd path contains an empty envy-free matching so X_L and Y_L are empty in the partition.
 
         Example 4: Y-path-saturated graph
-        >>> Graph=nx.Graph([(0,6),(6,0),(1,6),(6,1),(1,7),(7,1),(2,6),(6,2),(2,8),(8,2),(3,9),(9,3),(3,6),(6,3),(4,8),(8,4),(4,7),(7,4),(5,9),(9,5)])
-        >>> Matching={0:6,6:0,1:7,7:1,2:8,8:2,3:9,9:3}
-        >>> _EFM_partition(Graph, M=Matching)
+        >>> G=nx.Graph([(0,6),(1,6),(1,7),(2,6),(2,8),(3,9),(3,6),(4,8),(4,7),(5,9)])
+        >>> M={0:6,6:0,1:7,7:1,2:8,8:2,3:9,9:3}
+        >>> _EFM_partition(G, M=M)
         (set(), {0, 1, 2, 3, 4, 5}, set(), {8, 9, 6, 7})
 
         Like presented in the article, Y-path-saturated graph contains an empty envy-free matching so X_L and Y_L are empty in the partition.
@@ -802,25 +802,25 @@ def max_size_envy_free_matching(G, *, top_nodes=None):
     Examples
     --------
         Example 1: Perfect matching
-        >>> Graph=nx.complete_bipartite_graph(3,3)
-        >>> max_size_envy_free_matching(Graph)
+        >>> G=nx.complete_bipartite_graph(3,3)
+        >>> max_size_envy_free_matching(G)
         {0: 3, 1: 4, 2: 5, 3: 0, 4: 1, 5: 2}
 
         Where there exists a perfect matching the maximum envy free matching is the perfect matching.
         Example 2: Non-empty envy-free matching
-        >>> Graph=nx.Graph([(0,3),(3,0),(0,4),(4,0),(1,4),(4,1),(2,4),(4,2)])
-        >>> max_size_envy_free_matching(Graph)
+        >>> G=nx.Graph([(0,3),(0,4),(1,4),(2,4)])
+        >>> max_size_envy_free_matching(G)
         {0: 3, 3: 0}
 
         Example 3: Odd path
-        >>> Graph=nx.Graph([(0,3),(3,0),(1,3),(3,1),(1,4),(4,1),(2,4),(4,2)])
-        >>> max_size_envy_free_matching(Graph)
+        >>> G=nx.Graph([(0,3),(1,3),(1,4),(2,4)])
+        >>> max_size_envy_free_matching(G)
         {}
 
         Like presented in the article, odd path contains an empty envy-free matching so the returned matching is empty.
         Example 4: Y-path-saturated graph
-        >>> Graph=nx.Graph([(0,6),(6,0),(1,6),(6,1),(1,7),(7,1),(2,6),(6,2),(2,8),(8,2),(3,9),(9,3),(3,6),(6,3),(4,8),(8,4),(4,7),(7,4),(5,9),(9,5)])
-        >>> max_size_envy_free_matching(Graph)
+        >>> G=nx.Graph([(0,6),(1,6),(1,7),(2,6),(2,8),(3,9),(3,6),(4,8),(4,7),(5,9)])
+        >>> max_size_envy_free_matching(G)
         {}
 
         Like presented in the article, Y-path-saturated graph contains an empty envy-free matching so X_L and Y_L are empty in the partition.
