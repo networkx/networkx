@@ -10,3 +10,9 @@ Currently we have two broad categories for benchmarks:
 - `benchmark_algorithms.py`: This runs a tiny subset of algorithms which cover
   different parts of our codebase. We use graphs with different density, and a
   real world dataset from SNAP datasets to run the algorithms.
+
+## Running the benchmark suite
+
+```
+asv run -n -e --python="same"
+```

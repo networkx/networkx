@@ -2,7 +2,7 @@
     "version": 1,
     "project": "networkx",
     "project_url": "https://networkx.org/",
-    "repo": ".",
+    "repo": "..",
     "build_command": [
            "python -m pip install build",
            "python -m build .",
