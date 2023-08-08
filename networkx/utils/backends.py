@@ -56,8 +56,6 @@ The arguments to ``convert_from_nx`` are:
     The name of the algorithm.
 - ``graph_name`` : str
     The name of the graph argument being converted.
-- ``is_testing`` : bool
-    Whether the conversion is being done while running NetworkX tests.
 
 The converted object is then passed to the backend implementation of
 the algorithm. The result is then passed to
@@ -76,6 +74,10 @@ Example pytest invocation::
 Dispatchable algorithms which are not implemented by the backend
 will cause a ``pytest.xfail()``, giving some indication that not all
 tests are working, while avoiding causing an explicit failure.
+
+If a backend only partially implements some algorithms, it can define
+a ``can_run(name, args, kwargs)`` function that returns True or False
+indicating whether it can run the algorithm with the given arguments.
 
 A special ``on_start_tests(items)`` function may be defined by the backend.
 It will be called with the list of NetworkX tests discovered. Each item
@@ -101,6 +103,9 @@ class PluginInfo:
 
     def __bool__(self):
         return len(self.items) > 0
+
+    def __len__(self):
+        return len(self.items)
 
     @property
     def items(self):
@@ -242,6 +247,7 @@ class _dispatch:
         self.preserve_edge_attrs = preserve_edge_attrs or preserve_all_attrs
         self.preserve_node_attrs = preserve_node_attrs or preserve_all_attrs
         self.preserve_graph_attrs = preserve_graph_attrs or preserve_all_attrs
+        self._sig = None
 
         if isinstance(graphs, str):
             graphs = {graphs: 0}
@@ -264,24 +270,30 @@ class _dispatch:
         # self.list_graphs = {k[1:-1] for k in graphs if k[-1] == "]"}
         # self.graphs = {k[:-1] if k[-1] == "?" else k: v for k, v in graphs.items()}
 
-        sig = inspect.signature(func)
-        if not any(
-            p.kind == inspect.Parameter.VAR_KEYWORD for p in sig.parameters.values()
-        ):
-            sig = sig.replace(
-                parameters=[
-                    *sig.parameters.values(),
-                    inspect.Parameter("backend_kwargs", inspect.Parameter.VAR_KEYWORD),
-                ]
-            )
-        self.__signature__ = sig
-
         if name in _registered_algorithms:
             raise KeyError(f"Algorithm already exists in dispatch registry: {name}")
         _registered_algorithms[name] = self
         return self
 
-    def __call__(self, *args, **kwargs):
+    @property
+    def __signature__(self):
+        if self._sig is None:
+            sig = inspect.signature(self.orig_func)
+            if not any(
+                p.kind == inspect.Parameter.VAR_KEYWORD for p in sig.parameters.values()
+            ):
+                sig = sig.replace(
+                    parameters=[
+                        *sig.parameters.values(),
+                        inspect.Parameter(
+                            "backend_kwargs", inspect.Parameter.VAR_KEYWORD
+                        ),
+                    ]
+                )
+            self._sig = sig
+        return self._sig
+
+    def __call__(self, /, *args, **kwargs):
         graphs_resolved = {}
         for gname, pos in self.graphs.items():
             if pos < len(args):
@@ -381,10 +393,16 @@ class _dispatch:
     ):
         """Call this dispatchable function with a plugin."""
         backend = plugins[plugin_name].load()
-        if not hasattr(backend, self.name):
+        if (
+            not hasattr(backend, self.name)
+            or hasattr(backend, "can_run")
+            and not backend.can_run(self.name, args, kwargs)
+        ):
             if fallback_to_nx:
                 return self.orig_func(*args, **kwargs)
             msg = f"'{self.name}' not implemented by {plugin_name}"
+            if hasattr(backend, self.name):
+                msg += " with the given arguments"
             if is_testing:
                 import pytest
 
@@ -559,7 +577,6 @@ class _dispatch:
                         preserve_graph_attrs=preserve_graph_attrs,
                         name=self.name,
                         graph_name=gname,
-                        is_testing=is_testing,
                     )
                     for g in bound.arguments[gname]
                 ]
@@ -596,7 +613,6 @@ class _dispatch:
                     preserve_graph_attrs=preserve_graph,
                     name=self.name,
                     graph_name=gname,
-                    is_testing=is_testing,
                 )
 
         try:
@@ -608,7 +624,9 @@ class _dispatch:
                 import pytest
 
                 pytest.xfail(
-                    exc.args[0] if exc.args else f"{name} raised {type(exc).__name__}"
+                    exc.args[0]
+                    if exc.args
+                    else f"{self.name} raised {type(exc).__name__}"
                 )
             raise
 

@@ -67,9 +67,8 @@ class LoopbackDispatcher:
         preserve_graph_attrs=None,
         name=None,
         graph_name=None,
-        is_testing=False,
     ):
-        if is_testing and name in {
+        if name in {
             # Raise if input graph changes
             "lexicographical_topological_sort",
             "topological_generations",
@@ -185,6 +184,11 @@ class LoopbackDispatcher:
         # Verify that items can be xfailed
         for item in items:
             assert hasattr(item, "add_marker")
+
+    def can_run(self, name, args, kwargs):
+        # It is unnecessary to define this function if algorithms are fully supported.
+        # We include it for illustration purposes.
+        return hasattr(self, name)
 
 
 dispatcher = LoopbackDispatcher()
