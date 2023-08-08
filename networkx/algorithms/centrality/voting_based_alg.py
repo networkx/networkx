@@ -41,7 +41,7 @@ def sav_voting(G):
 
     See Also
     --------
-    copeland_voting, spav_voting
+    copeland_voting, spav_voting, borda_voting
 
     Examples
     --------
@@ -118,7 +118,7 @@ def copeland_voting(G):
 
     See Also
     --------
-    sav_voting, spav_voting
+    sav_voting, spav_voting, borda_voting
 
     Examples
     --------
@@ -166,6 +166,91 @@ def copeland_voting(G):
         scores[Y] -= comparison
     return scores
 
+@nx.utils.not_implemented_for("directed")
+@nx.utils.not_implemented_for("multigraph")
+def borda_voting(G):
+    """Rank nodes using Borda's voting rule.
+
+    According to Borda voting, each voter V assigns (m-1) points to the best candidate in
+    V's perspective, (m-2) to the second best, and so on. Thereby, m is the total number
+    of candidates. In other words, V assigns 1 point to a candidate X for every candidate
+    X beats. Assigned points from all voters are summed up. The candidate with the most
+    total points wins.
+
+    This function applies a variant of this Borda rule to networks. A voter node prefers
+    candidate nodes which are closer to him/her. Due to the many ties (nodes at same
+    distance), in this function a voter assigns one point to a candidate X for every
+    candidate X beats, and subtracts one point from X for every candidate X is beaten by.
+    This version of Borda was proposed e.g. in [2]_ and applied to networks in [1]_.
+
+    For more background on Borda see https://en.wikipedia.org/wiki/Borda_count
+
+    Notes
+    -----
+    Borda centrality only works with undirected networks (no multigraph).
+    Weights are ignored.
+
+    Parameters
+    ----------
+    G : graph
+        A NetworkX graph.
+
+    Returns
+    -------
+    borda_voting : dict
+        For each node the dict contains the Borda score.
+
+    See Also
+    --------
+    sav_voting, spav_voting, copeland_voting
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 6), (1, 2), (2, 3), (2, 4), (3, 4), (3, 4), (4, 5)])
+    >>> nx.borda_voting(G)
+    {1: 0, 2: 9, 3: 5, 4: 5, 5: -7, 6: -12}
+
+    References
+    ----------
+    .. [1] Brandes, U. and Laussmann, C. and Rothe, J. (2022).
+        "Voting for Centrality (Extended Abstract)"
+        In: Proceedings of the 21st International Conference on Autonomous Agents and Multiagent Systems (AAMAS)
+        Publisher: IFAAMAS
+        https://www.ifaamas.org/Proceedings/aamas2022/pdfs/p1554.pdf
+       [2] Gärdenfors, P. (1973)
+        "Positionalist voting functions."
+        In: Theory and Decision 4
+        Pages: 6, 16
+    """
+
+    shortest_paths_len = {}
+    for start, distances in nx.shortest_path_length(G, source=None, target=None):
+        shortest_paths_len[start] = distances
+
+    # Function for computing Borda score candidate receives from voter
+    def borda_score(candidate, voter):
+        if candidate == voter:
+            return 0 # by convention, nodes do not vote for themselves
+        nodes_remaining = set(G.nodes).difference({candidate, voter})
+        distance_candidate = shortest_paths_len[voter][candidate]
+        better = [c
+                  for c in nodes_remaining
+                  if shortest_paths_len[voter][c] < distance_candidate
+        ]
+        worse = [c
+                  for c in nodes_remaining
+                  if shortest_paths_len[voter][c] > distance_candidate
+        ]
+        return len(worse) - len(better)
+
+    # Compute Scores
+    scores = {
+        candidate: sum(borda_score(candidate, voter) for voter in G.nodes)
+        for candidate in G.nodes
+    }
+    return scores
+
+
 
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
@@ -210,7 +295,7 @@ def spav_voting(G, number_of_nodes=None, voting_ability_fn=None):
 
     See Also
     --------
-    copeland_voting, sav_voting
+    copeland_voting, sav_voting, borda_voting
 
     Examples
     --------

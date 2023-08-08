@@ -164,3 +164,4 @@ Voting-Based Centrality
    sav_voting
    copeland_voting
    spav_voting
+   borda_voting

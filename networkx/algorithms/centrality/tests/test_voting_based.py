@@ -178,3 +178,26 @@ class TestCopelandCentrality:
         result = nx.copeland_voting(G)
         assert max(result, key=result.get) == "CW"
         assert len([n for n in result if result[n] == result["CW"]]) == 1
+
+
+class TestBordaCentrality:
+    def test_borda(self):
+        G = nx.Graph()
+        G.add_edges_from(
+            [
+                ("A", "F"),
+                ("A", "B"),
+                ("B", "C"),
+                ("B", "D"),
+                ("C", "D"),
+                ("C", "E"),
+                ("D", "E"),
+            ]
+        )
+        result = nx.borda_voting(G)
+        assert result["A"] == 0
+        assert result["B"] == 9
+        assert result["C"] == 5
+        assert result["D"] == 5
+        assert result["E"] == -7
+        assert result["F"] == -12
