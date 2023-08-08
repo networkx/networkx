@@ -166,6 +166,7 @@ def copeland_voting(G):
         scores[Y] -= comparison
     return scores
 
+
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
 def borda_voting(G):
@@ -206,7 +207,7 @@ def borda_voting(G):
 
     Examples
     --------
-    >>> G = nx.Graph([(1, 6), (1, 2), (2, 3), (2, 4), (3, 4), (3, 4), (4, 5)])
+    >>> G = nx.Graph([(1, 6), (1, 2), (2, 3), (2, 4), (3, 4), (3, 5), (4, 5)])
     >>> nx.borda_voting(G)
     {1: 0, 2: 9, 3: 5, 4: 5, 5: -7, 6: -12}
 
@@ -230,16 +231,18 @@ def borda_voting(G):
     # Function for computing Borda score candidate receives from voter
     def borda_score(candidate, voter):
         if candidate == voter:
-            return 0 # by convention, nodes do not vote for themselves
+            return 0  # by convention, nodes do not vote for themselves
         nodes_remaining = set(G.nodes).difference({candidate, voter})
         distance_candidate = shortest_paths_len[voter][candidate]
-        better = [c
-                  for c in nodes_remaining
-                  if shortest_paths_len[voter][c] < distance_candidate
+        better = [
+            c
+            for c in nodes_remaining
+            if shortest_paths_len[voter][c] < distance_candidate
         ]
-        worse = [c
-                  for c in nodes_remaining
-                  if shortest_paths_len[voter][c] > distance_candidate
+        worse = [
+            c
+            for c in nodes_remaining
+            if shortest_paths_len[voter][c] > distance_candidate
         ]
         return len(worse) - len(better)
 
@@ -249,7 +252,6 @@ def borda_voting(G):
         for candidate in G.nodes
     }
     return scores
-
 
 
 @nx.utils.not_implemented_for("directed")
