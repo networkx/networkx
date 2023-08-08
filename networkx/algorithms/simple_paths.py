@@ -91,6 +91,7 @@ def is_simple_path(G, nodes):
     return all(v in G[u] for u, v in pairwise(nodes))
 
 
+@nx._dispatch
 def all_simple_paths(G, source, target, cutoff=None):
     """Generate all simple paths in the graph G from source to target.
 
@@ -320,6 +321,7 @@ def _all_simple_paths_multigraph(G, source, targets, cutoff):
             visited.popitem()
 
 
+@nx._dispatch
 def all_simple_edge_paths(G, source, target, cutoff=None):
     """Generate lists of edges for all simple paths in G from source to target.
 
@@ -441,6 +443,7 @@ def _all_simple_edge_paths_multigraph(G, source, targets, cutoff):
 
 
 @not_implemented_for("multigraph")
+@nx._dispatch(edge_attrs="weight")
 def shortest_simple_paths(G, source, target, weight=None):
     """Generate all simple paths in the graph G from source to target,
        starting from shortest ones.

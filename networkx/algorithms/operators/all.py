@@ -7,6 +7,7 @@ import networkx as nx
 __all__ = ["union_all", "compose_all", "disjoint_union_all", "intersection_all"]
 
 
+@nx._dispatch(graphs="[graphs]", preserve_all_attrs=True)
 def union_all(graphs, rename=()):
     """Returns the union of all graphs.
 
@@ -100,6 +101,7 @@ def union_all(graphs, rename=()):
     return R
 
 
+@nx._dispatch(graphs="[graphs]", preserve_all_attrs=True)
 def disjoint_union_all(graphs):
     """Returns the disjoint union of all graphs.
 
@@ -143,6 +145,7 @@ def disjoint_union_all(graphs):
     return R
 
 
+@nx._dispatch(graphs="[graphs]", preserve_all_attrs=True)
 def compose_all(graphs):
     """Returns the composition of all graphs.
 
@@ -198,6 +201,7 @@ def compose_all(graphs):
     return R
 
 
+@nx._dispatch(graphs="[graphs]")
 def intersection_all(graphs):
     """Returns a new graph that contains only the nodes and the edges that exist in
     all graphs.
@@ -249,7 +253,7 @@ def intersection_all(graphs):
         G_nodes_set = set(G.nodes)
         G_edges_set = set(G.edges)
         if not G.is_directed():
-            if type(G) is nx.MultiGraph:
+            if G.is_multigraph():
                 G_edges_set.update((v, u, k) for u, v, k in list(G_edges_set))
             else:
                 G_edges_set.update((v, u) for u, v in list(G_edges_set))

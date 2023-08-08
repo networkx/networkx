@@ -12,6 +12,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch(graphs={"G1": 0, "G2": 1})
 def could_be_isomorphic(G1, G2):
     """Returns False if graphs are definitely not isomorphic.
     True does NOT guarantee isomorphism.
@@ -59,6 +60,7 @@ def could_be_isomorphic(G1, G2):
 graph_could_be_isomorphic = could_be_isomorphic
 
 
+@nx._dispatch(graphs={"G1": 0, "G2": 1})
 def fast_could_be_isomorphic(G1, G2):
     """Returns False if graphs are definitely not isomorphic.
 
@@ -99,6 +101,7 @@ def fast_could_be_isomorphic(G1, G2):
 fast_graph_could_be_isomorphic = fast_could_be_isomorphic
 
 
+@nx._dispatch(graphs={"G1": 0, "G2": 1})
 def faster_could_be_isomorphic(G1, G2):
     """Returns False if graphs are definitely not isomorphic.
 
@@ -131,6 +134,11 @@ def faster_could_be_isomorphic(G1, G2):
 faster_graph_could_be_isomorphic = faster_could_be_isomorphic
 
 
+@nx._dispatch(
+    graphs={"G1": 0, "G2": 1},
+    preserve_edge_attrs="edge_match",
+    preserve_node_attrs="node_match",
+)
 def is_isomorphic(G1, G2, node_match=None, edge_match=None):
     """Returns True if the graphs G1 and G2 are isomorphic and False otherwise.
 

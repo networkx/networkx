@@ -8,6 +8,7 @@ import networkx as nx
 __all__ = ["closeness_vitality"]
 
 
+@nx._dispatch(edge_attrs="weight")
 def closeness_vitality(G, node=None, weight=None, wiener_index=None):
     """Returns the closeness vitality for nodes in the graph.
 

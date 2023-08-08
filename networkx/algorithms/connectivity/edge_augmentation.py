@@ -24,6 +24,7 @@ __all__ = ["k_edge_augmentation", "is_k_edge_connected", "is_locally_k_edge_conn
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def is_k_edge_connected(G, k):
     """Tests to see if a graph is k-edge-connected.
 
@@ -74,6 +75,7 @@ def is_k_edge_connected(G, k):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def is_locally_k_edge_connected(G, s, t, k):
     """Tests to see if an edge in a graph is locally k-edge-connected.
 
@@ -131,6 +133,7 @@ def is_locally_k_edge_connected(G, s, t, k):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
     """Finds set of edges to k-edge-connect G.
 
@@ -281,6 +284,7 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
             raise
 
 
+@nx._dispatch
 def partial_k_edge_augmentation(G, k, avail, weight=None):
     """Finds augmentation that k-edge-connects as much of the graph as possible.
 
@@ -383,6 +387,7 @@ def partial_k_edge_augmentation(G, k, avail, weight=None):
 
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
+@nx._dispatch
 def one_edge_augmentation(G, avail=None, weight=None, partial=False):
     """Finds minimum weight set of edges to connect G.
 
@@ -437,6 +442,7 @@ def one_edge_augmentation(G, avail=None, weight=None, partial=False):
 
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
+@nx._dispatch
 def bridge_augmentation(G, avail=None, weight=None):
     """Finds the a set of edges that bridge connects G.
 
@@ -572,6 +578,7 @@ def _lightest_meta_edges(mapping, avail_uv, avail_w):
             yield MetaEdge((mu, mv), (u, v), w)
 
 
+@nx._dispatch
 def unconstrained_one_edge_augmentation(G):
     """Finds the smallest set of edges to connect G.
 
@@ -614,6 +621,7 @@ def unconstrained_one_edge_augmentation(G):
         yield (inverse[mu][0], inverse[mv][0])
 
 
+@nx._dispatch
 def weighted_one_edge_augmentation(G, avail, weight=None, partial=False):
     """Finds the minimum weight set of edges to connect G if one exists.
 
@@ -682,6 +690,7 @@ def weighted_one_edge_augmentation(G, avail, weight=None, partial=False):
             yield edge
 
 
+@nx._dispatch
 def unconstrained_bridge_augmentation(G):
     """Finds an optimal 2-edge-augmentation of G using the fewest edges.
 
@@ -836,6 +845,7 @@ def unconstrained_bridge_augmentation(G):
                 break
 
 
+@nx._dispatch
 def weighted_bridge_augmentation(G, avail, weight=None):
     """Finds an approximate min-weight 2-edge-augmentation of G.
 
@@ -1030,6 +1040,7 @@ def _minimum_rooted_branching(D, root):
     return A
 
 
+@nx._dispatch
 def collapse(G, grouped_nodes):
     """Collapses each group of nodes into a single node.
 
@@ -1101,6 +1112,7 @@ def collapse(G, grouped_nodes):
     return C
 
 
+@nx._dispatch
 def complement_edges(G):
     """Returns only the edges in the complement of G
 
@@ -1143,9 +1155,10 @@ def _compat_shuffle(rng, input):
     rng.shuffle(input)
 
 
-@py_random_state(4)
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
+@nx._dispatch
+@py_random_state(4)
 def greedy_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
     """Greedy algorithm for finding a k-edge-augmentation
 

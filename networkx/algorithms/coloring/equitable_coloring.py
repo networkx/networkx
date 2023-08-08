@@ -9,12 +9,14 @@ import networkx as nx
 __all__ = ["equitable_color"]
 
 
+@nx._dispatch
 def is_coloring(G, coloring):
     """Determine if the coloring is a valid coloring for the graph G."""
     # Verify that the coloring is valid.
     return all(coloring[s] != coloring[d] for s, d in G.edges)
 
 
+@nx._dispatch
 def is_equitable(G, coloring, num_colors=None):
     """Determines if the coloring is valid and equitable for the graph G."""
 
@@ -110,6 +112,7 @@ def move_witnesses(src_color, dst_color, N, H, F, C, T_cal, L):
         X = Y
 
 
+@nx._dispatch
 def pad_graph(G, num_colors):
     """Add a disconnected complete clique K_p such that the number of nodes in
     the graph becomes a multiple of `num_colors`.
@@ -383,6 +386,7 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
                 break
 
 
+@nx._dispatch
 def equitable_color(G, num_colors):
     """Provides an equitable coloring for nodes of `G`.
 
@@ -409,7 +413,7 @@ def equitable_color(G, num_colors):
     Examples
     --------
     >>> G = nx.cycle_graph(4)
-    >>> nx.coloring.equitable_color(G, num_colors=3)
+    >>> nx.coloring.equitable_color(G, num_colors=3)  # doctest: +SKIP
     {0: 2, 1: 1, 2: 2, 3: 0}
 
     Raises

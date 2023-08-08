@@ -43,6 +43,12 @@ API Changes
 Deprecations
 ------------
 
+- [`#5925 <https://github.com/networkx/networkx/issues/5925>`_]
+  The ``sort_neighbors`` input argument of ``nx.generic_bfs_edges`` is deprecated
+  and will be removed in v3.4.  Use ``neighbors`` to sort the nodes if desired.
+- [`#6785 <https://github.com/networkx/pull/6785>`_]
+  Deprecate ``MultiDiGraph_EdgeKey`` subclass used in ``Edmonds`` class.
+  Deprecate ``Edmonds`` class for computing minimum and maximum branchings and arborescences (use ``minimum_branching``, ``minimal_branching``, ``maximum_branching``, ``minimum_arborescence`` and ``maximum_arborescence`` directly).
 
 Merged PRs
 ----------

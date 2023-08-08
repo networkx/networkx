@@ -30,6 +30,7 @@ __all__ = ["tutte_polynomial", "chromatic_polynomial"]
 
 
 @not_implemented_for("directed")
+@nx._dispatch
 def tutte_polynomial(G):
     r"""Returns the Tutte polynomial of `G`
 
@@ -179,6 +180,7 @@ def tutte_polynomial(G):
 
 
 @not_implemented_for("directed")
+@nx._dispatch
 def chromatic_polynomial(G):
     r"""Returns the chromatic polynomial of `G`
 

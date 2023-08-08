@@ -12,8 +12,8 @@ __all__ = [
 ]
 
 
-@nx._dispatch
 @not_implemented_for("undirected")
+@nx._dispatch
 def strongly_connected_components(G):
     """Generate nodes in strongly connected components of graph.
 
@@ -112,6 +112,7 @@ def strongly_connected_components(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def kosaraju_strongly_connected_components(G, source=None):
     """Generate nodes in strongly connected components of graph.
 
@@ -173,6 +174,7 @@ def kosaraju_strongly_connected_components(G, source=None):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def strongly_connected_components_recursive(G):
     """Generate nodes in strongly connected components of graph.
 
@@ -266,6 +268,7 @@ def strongly_connected_components_recursive(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def number_strongly_connected_components(G):
     """Returns number of strongly connected components in graph.
 
@@ -304,6 +307,7 @@ def number_strongly_connected_components(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def is_strongly_connected(G):
     """Test directed graph for strong connectivity.
 
@@ -355,6 +359,7 @@ def is_strongly_connected(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def condensation(G, scc=None):
     """Returns the condensation of G.
 

@@ -32,7 +32,7 @@ def pytest_configure(config):
 def pytest_collection_modifyitems(config, items):
     # Allow pluggable backends to add markers to tests when
     # running in auto-conversion test mode
-    networkx.classes.backends._mark_tests(items)
+    networkx.utils.backends._mark_tests(items)
 
     if config.getoption("--runslow"):
         # --runslow given in cli: do not skip slow tests
@@ -80,6 +80,14 @@ def set_warnings():
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\nforest_str is deprecated"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="Edmonds has been deprecated"
+    )
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message="MultiDiGraph_EdgeKey has been deprecated",
     )
 
 
