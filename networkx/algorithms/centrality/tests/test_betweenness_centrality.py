@@ -572,7 +572,7 @@ class TestEdgeBetweennessCentrality:
         )
         for n in sorted(G.edges()):
             assert b_sample[n] == pytest.approx(b_answer[n], abs=1e-7)
-    
+
     def test_samples_normalized_K5(self):
         """Edge betweenness centrality: K5"""
         G = nx.complete_graph(5)
