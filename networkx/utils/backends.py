@@ -247,10 +247,37 @@ class _dispatch:
         self.preserve_edge_attrs = preserve_edge_attrs or preserve_all_attrs
         self.preserve_node_attrs = preserve_node_attrs or preserve_all_attrs
         self.preserve_graph_attrs = preserve_graph_attrs or preserve_all_attrs
-        self._sig = None
+
+        if edge_attrs is not None and not isinstance(edge_attrs, (str, dict)):
+            raise TypeError(
+                f"Bad type for edge_attrs: {type(edge_attrs)}. Expected str or dict."
+            )
+        if node_attrs is not None and not isinstance(node_attrs, (str, dict)):
+            raise TypeError(
+                f"Bad type for node_attrs: {type(node_attrs)}. Expected str or dict."
+            )
+        if not isinstance(self.preserve_edge_attrs, (bool, str, dict)):
+            raise TypeError(
+                f"Bad type for preserve_edge_attrs: {type(self.preserve_edge_attrs)}."
+                " Expected bool, str, or dict."
+            )
+        if not isinstance(self.preserve_node_attrs, (bool, str, dict)):
+            raise TypeError(
+                f"Bad type for preserve_node_attrs: {type(self.preserve_node_attrs)}."
+                " Expected bool, str, or dict."
+            )
+        if not isinstance(self.preserve_graph_attrs, (bool, set)):
+            raise TypeError(
+                f"Bad type for preserve_graph_attrs: {type(self.preserve_graph_attrs)}."
+                " Expected bool or set."
+            )
 
         if isinstance(graphs, str):
             graphs = {graphs: 0}
+        elif not isinstance(graphs, dict):
+            raise TypeError(
+                f"Bad type for graphs: {type(graphs)}. Expected str or dict."
+            )
         elif len(graphs) == 0:
             raise KeyError("'graphs' must contain at least one variable name") from None
 
@@ -269,6 +296,9 @@ class _dispatch:
         # self.optional_graphs = {k[:-1] for k in graphs if k[-1] == "?"}
         # self.list_graphs = {k[1:-1] for k in graphs if k[-1] == "]"}
         # self.graphs = {k[:-1] if k[-1] == "?" else k: v for k, v in graphs.items()}
+
+        # Compute and cache the signature on-demand
+        self._sig = None
 
         if name in _registered_algorithms:
             raise KeyError(f"Algorithm already exists in dispatch registry: {name}")
@@ -411,13 +441,8 @@ class _dispatch:
 
         bound = self.__signature__.bind(*args, **kwargs)
         bound.apply_defaults()
-        # Check that graph names are actually in the signature
-        if set(self.graphs) - set(bound.arguments):
-            raise KeyError(
-                f"Invalid graph names: {set(self.graphs) - set(bound.arguments)}"
-            )
         # Convert graphs into backend graph-like object
-        #   Include the edge and/or node labels if provided to the algorithm
+        # Include the edge and/or node labels if provided to the algorithm
         preserve_edge_attrs = self.preserve_edge_attrs
         edge_attrs = self.edge_attrs
         if preserve_edge_attrs is False:
@@ -448,11 +473,7 @@ class _dispatch:
             else:
                 # e.g. `preserve_edge_attrs="attr"` and `func(attr="weight")`
                 preserve_edge_attrs = False
-        elif not isinstance(preserve_edge_attrs, dict):
-            raise TypeError(
-                f"Bad type for preserve_edge_attrs: {type(self.preserve_edge_attrs)}"
-            )
-            # e.g. `preserve_edge_attrs={"G": {"weight": 1}}`
+        # Else: e.g. `preserve_edge_attrs={"G": {"weight": 1}}`
 
         if edge_attrs is None:
             # May have been set to None above b/c all attributes are preserved
@@ -481,7 +502,7 @@ class _dispatch:
             else:
                 # e.g. `edge_attrs="weight"` and `func(weight=None)`
                 edge_attrs = None
-        elif isinstance(edge_attrs, dict):
+        else:
             # e.g. `edge_attrs={"attr": "default"}` and `func(attr="foo", default=7)`
             # e.g. `edge_attrs={"attr": 0}` and `func(attr="foo")`
             edge_attrs = {
@@ -489,8 +510,6 @@ class _dispatch:
                 for key, val in edge_attrs.items()
                 if (edge_attr := bound.arguments[key]) is not None
             }
-        else:
-            raise TypeError(f"Bad type for edge_attrs: {type(self.edge_attrs)}")
 
         preserve_node_attrs = self.preserve_node_attrs
         node_attrs = self.node_attrs
@@ -522,11 +541,7 @@ class _dispatch:
             else:
                 # e.g. `preserve_node_attrs="attr"` and `func(attr="weight")`
                 preserve_node_attrs = False
-        elif not isinstance(preserve_node_attrs, dict):
-            raise TypeError(
-                f"Bad type for preserve_node_attrs: {type(self.preserve_node_attrs)}"
-            )
-            # e.g. `preserve_node_attrs={"G": {"pos": None}}`
+        # Else: e.g. `preserve_node_attrs={"G": {"pos": None}}`
 
         if node_attrs is None:
             # May have been set to None above b/c all attributes are preserved
@@ -548,7 +563,7 @@ class _dispatch:
             else:
                 # e.g. `node_attrs="weight"` and `func(weight=None)`
                 node_attrs = None
-        elif isinstance(node_attrs, dict):
+        else:
             # e.g. `node_attrs={"attr": "default"}` and `func(attr="foo", default=7)`
             # e.g. `node_attrs={"attr": 0}` and `func(attr="foo")`
             node_attrs = {
@@ -556,14 +571,8 @@ class _dispatch:
                 for key, val in node_attrs.items()
                 if (node_attr := bound.arguments[key]) is not None
             }
-        else:
-            raise TypeError(f"Bad type for node_attrs: {type(self.node_attrs)}")
 
         preserve_graph_attrs = self.preserve_graph_attrs
-        if not isinstance(preserve_graph_attrs, (bool, set)):
-            raise TypeError(
-                f"Bad type for preserve_graph_attrs: {type(self.preserve_graph_attrs)}"
-            )
 
         for gname in self.graphs:
             if gname in self.list_graphs:
