@@ -6,7 +6,7 @@ import itertools
 
 import networkx as nx
 
-__all__ = ["sav_voting", "copeland_voting", "spav_voting"]
+__all__ = ["sav_voting", "copeland_voting", "spav_voting", "borda_voting"]
 
 
 @nx.utils.not_implemented_for("directed")
