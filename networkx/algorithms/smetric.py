@@ -4,20 +4,18 @@ __all__ = ["s_metric"]
 
 
 @nx._dispatch
-def s_metric(G, normalized=True):
-    """Returns the s-metric of graph.
+def s_metric(G, normalized=False):
+    """Returns the s-metric [1]_ of graph.
 
-    The s-metric is defined as the sum of the products deg(u)*deg(v)
-    for every edge (u,v) in G. If norm is provided construct the
-    s-max graph and compute it's s_metric, and return the normalized
-    s value
+    The s-metric is defined as the sum of the products ``deg(u) * deg(v)``
+    for every edge ``(u, v)`` in `G`.
 
     Parameters
     ----------
-    G    : graph
-           The graph used to compute the s-metric.
+    G : graph
+        The graph used to compute the s-metric.
     normalized : bool (optional)
-           Normalize the value.
+        Normalize the value.
 
     Returns
     -------
