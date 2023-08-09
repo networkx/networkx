@@ -5,6 +5,8 @@ import math
 import types
 from itertools import permutations
 
+from networkx.classes.coreviews import AtlasView
+
 __all__ = [
     "categorical_node_match",
     "categorical_edge_match",
@@ -73,44 +75,41 @@ Examples
 def categorical_node_match(attr, default):
     if isinstance(attr, str):
 
-        def match(data1, data2):
-            return data1.get(attr, default) == data2.get(attr, default)
+        def match(datasets1, datasets2):
+            if isinstance(datasets1, AtlasView) and isinstance(datasets2, AtlasView):
+                values1 = {data.get(attr, default) for data in datasets1.values()}
+                values2 = {data.get(attr, default) for data in datasets2.values()}
+                return values1 == values2
+            else:
+                return datasets1.get(attr, default) == datasets2.get(attr, default)
 
     else:
         attrs = list(zip(attr, default))  # Python 3
 
-        def match(data1, data2):
-            return all(data1.get(attr, d) == data2.get(attr, d) for attr, d in attrs)
+        def match(datasets1, datasets2):
+            if isinstance(datasets1, AtlasView) and isinstance(datasets2, AtlasView):
+                values1 = set()
+                for data1 in datasets1.values():
+                    x = tuple(data1.get(attr, d) for attr, d in attrs)
+                    values1.add(x)
+                values2 = set()
+                for data2 in datasets2.values():
+                    x = tuple(data2.get(attr, d) for attr, d in attrs)
+                    values2.add(x)
+                return values1 == values2
+            else:
+                return all(
+                    datasets1.get(attr, d) == datasets2.get(attr, d)
+                    for attr, d in attrs
+                )
 
     return match
 
 
 categorical_edge_match = copyfunc(categorical_node_match, "categorical_edge_match")
-
-
-def categorical_multiedge_match(attr, default):
-    if isinstance(attr, str):
-
-        def match(datasets1, datasets2):
-            values1 = {data.get(attr, default) for data in datasets1.values()}
-            values2 = {data.get(attr, default) for data in datasets2.values()}
-            return values1 == values2
-
-    else:
-        attrs = list(zip(attr, default))  # Python 3
-
-        def match(datasets1, datasets2):
-            values1 = set()
-            for data1 in datasets1.values():
-                x = tuple(data1.get(attr, d) for attr, d in attrs)
-                values1.add(x)
-            values2 = set()
-            for data2 in datasets2.values():
-                x = tuple(data2.get(attr, d) for attr, d in attrs)
-                values2.add(x)
-            return values1 == values2
-
-    return match
+categorical_multiedge_match = copyfunc(
+    categorical_node_match, "categorical_multiedge_match"
+)
 
 
 # Docstrings for categorical functions.
@@ -158,57 +157,48 @@ Examples
 def numerical_node_match(attr, default, rtol=1.0000000000000001e-05, atol=1e-08):
     if isinstance(attr, str):
 
-        def match(data1, data2):
-            return math.isclose(
-                data1.get(attr, default),
-                data2.get(attr, default),
-                rel_tol=rtol,
-                abs_tol=atol,
-            )
+        def match(datasets1, datasets2):
+            if isinstance(datasets1, AtlasView) and isinstance(datasets2, AtlasView):
+                values1 = sorted(data.get(attr, default) for data in datasets1.values())
+                values2 = sorted(data.get(attr, default) for data in datasets2.values())
+                return allclose(values1, values2, rtol=rtol, atol=atol)
+            else:
+                return math.isclose(
+                    datasets1.get(attr, default),
+                    datasets2.get(attr, default),
+                    rel_tol=rtol,
+                    abs_tol=atol,
+                )
 
     else:
         attrs = list(zip(attr, default))  # Python 3
 
-        def match(data1, data2):
-            values1 = [data1.get(attr, d) for attr, d in attrs]
-            values2 = [data2.get(attr, d) for attr, d in attrs]
-            return allclose(values1, values2, rtol=rtol, atol=atol)
+        def match(datasets1, datasets2):
+            if isinstance(datasets1, AtlasView) and isinstance(datasets2, AtlasView):
+                values1 = []
+                for data1 in datasets1.values():
+                    x = tuple(data1.get(attr, d) for attr, d in attrs)
+                    values1.append(x)
+                values2 = []
+                for data2 in datasets2.values():
+                    x = tuple(data2.get(attr, d) for attr, d in attrs)
+                    values2.append(x)
+                values1.sort()
+                values2.sort()
+                return all(
+                    allclose(xi, yi, rtol=rtol, atol=atol)
+                    for xi, yi in zip(values1, values2)
+                )
+            else:
+                values1 = [datasets1.get(attr, d) for attr, d in attrs]
+                values2 = [datasets2.get(attr, d) for attr, d in attrs]
+                return allclose(values1, values2, rtol=rtol, atol=atol)
 
     return match
 
 
 numerical_edge_match = copyfunc(numerical_node_match, "numerical_edge_match")
-
-
-def numerical_multiedge_match(attr, default, rtol=1.0000000000000001e-05, atol=1e-08):
-    if isinstance(attr, str):
-
-        def match(datasets1, datasets2):
-            values1 = sorted(data.get(attr, default) for data in datasets1.values())
-            values2 = sorted(data.get(attr, default) for data in datasets2.values())
-            return allclose(values1, values2, rtol=rtol, atol=atol)
-
-    else:
-        attrs = list(zip(attr, default))  # Python 3
-
-        def match(datasets1, datasets2):
-            values1 = []
-            for data1 in datasets1.values():
-                x = tuple(data1.get(attr, d) for attr, d in attrs)
-                values1.append(x)
-            values2 = []
-            for data2 in datasets2.values():
-                x = tuple(data2.get(attr, d) for attr, d in attrs)
-                values2.append(x)
-            values1.sort()
-            values2.sort()
-            for xi, yi in zip(values1, values2):
-                if not allclose(xi, yi, rtol=rtol, atol=atol):
-                    return False
-            else:
-                return True
-
-    return match
+numerical_multiedge_match = copyfunc(numerical_node_match, "numerical_multiedge_match")
 
 
 # Docstrings for numerical functions.
@@ -224,7 +214,7 @@ Returns a comparison function for a generic attribute.
 
 The value(s) of the attr(s) are compared using the specified
 operators. If all the attributes are equal, then the constructed
-function returns True.
+function returns True. {multiedges_warning}
 
 Parameters
 ----------
@@ -251,90 +241,36 @@ Examples
 >>> nm = generic_node_match("weight", 1.0, isclose)
 >>> nm = generic_node_match("color", "red", eq)
 >>> nm = generic_node_match(["weight", "color"], [1.0, "red"], [isclose, eq])
+...
 
 """
 
 
 def generic_node_match(attr, default, op):
-    if isinstance(attr, str):
-
-        def match(data1, data2):
-            return op(data1.get(attr, default), data2.get(attr, default))
-
-    else:
-        attrs = list(zip(attr, default, op))  # Python 3
-
-        def match(data1, data2):
-            for attr, d, operator in attrs:
-                if not operator(data1.get(attr, d), data2.get(attr, d)):
-                    return False
-            else:
-                return True
-
-    return match
-
-
-generic_edge_match = copyfunc(generic_node_match, "generic_edge_match")
-
-
-def generic_multiedge_match(attr, default, op):
-    """Returns a comparison function for a generic attribute.
-
-    The value(s) of the attr(s) are compared using the specified
-    operators. If all the attributes are equal, then the constructed
-    function returns True. Potentially, the constructed edge_match
-    function can be slow since it must verify that no isomorphism
-    exists between the multiedges before it returns False.
-
-    Parameters
-    ----------
-    attr : string | list
-        The edge attribute to compare, or a list of node attributes
-        to compare.
-    default : value | list
-        The default value for the edge attribute, or a list of
-        default values for the dgeattributes.
-    op : callable | list
-        The operator to use when comparing attribute values, or a list
-        of operators to use when comparing values for each attribute.
-
-    Returns
-    -------
-    match : function
-        The customized, generic `edge_match` function.
-
-    Examples
-    --------
-    >>> from operator import eq
-    >>> from math import isclose
-    >>> from networkx.algorithms.isomorphism import generic_node_match
-    >>> nm = generic_node_match("weight", 1.0, isclose)
-    >>> nm = generic_node_match("color", "red", eq)
-    >>> nm = generic_node_match(["weight", "color"], [1.0, "red"], [isclose, eq])
-    ...
-
-    """
-
     # This is slow, but generic.
     # We must test every possible isomorphism between the edges.
     if isinstance(attr, str):
-        attr = [attr]
-        default = [default]
-        op = [op]
-    attrs = list(zip(attr, default))  # Python 3
+        _attr = [attr]
+        _default = [default]
+        _op = [op]
+    else:
+        _attr = attr
+        _default = default
+        _op = op
+    _attrs = list(zip(_attr, _default))  # Python 3
 
-    def match(datasets1, datasets2):
+    def multimatch(datasets1, datasets2):
         values1 = []
         for data1 in datasets1.values():
-            x = tuple(data1.get(attr, d) for attr, d in attrs)
+            x = tuple(data1.get(attr, d) for attr, d in _attrs)
             values1.append(x)
         values2 = []
         for data2 in datasets2.values():
-            x = tuple(data2.get(attr, d) for attr, d in attrs)
+            x = tuple(data2.get(attr, d) for attr, d in _attrs)
             values2.append(x)
         for vals2 in permutations(values2):
             for xi, yi in zip(values1, vals2):
-                if not all(map(lambda x, y, z: z(x, y), xi, yi, op)):
+                if not all(map(lambda x, y, z: z(x, y), xi, yi, _op)):
                     # This is not an isomorphism, go to next permutation.
                     break
             else:
@@ -344,9 +280,44 @@ def generic_multiedge_match(attr, default, op):
             # Then there are no isomorphisms between the multiedges.
             return False
 
+    if isinstance(attr, str):
+
+        def match(datasets1, datasets2):
+            if isinstance(datasets1, AtlasView) and isinstance(datasets2, AtlasView):
+                return multimatch(datasets1, datasets2)
+            else:
+                return op(datasets1.get(attr, default), datasets2.get(attr, default))
+
+    else:
+        attrs = list(zip(attr, default, op))  # Python 3
+
+        def match(datasets1, datasets2):
+            if isinstance(datasets1, AtlasView) and isinstance(datasets2, AtlasView):
+                return multimatch(datasets1, datasets2)
+            else:
+                return all(
+                    operator(data1.get(attr, d), data2.get(attr, d))
+                    for attr, d, operator in attrs
+                )
+
     return match
 
 
+generic_edge_match = copyfunc(generic_node_match, "generic_edge_match")
+generic_multiedge_match = copyfunc(generic_node_match, "generic_multiedge_match")
+
+
 # Docstrings for numerical functions.
-generic_node_match.__doc__ = generic_doc
-generic_edge_match.__doc__ = generic_doc.replace("node", "edge")
+tmpdoc = generic_doc.format(multiedges_warning="")
+generic_node_match.__doc__ = str(tmpdoc)
+generic_edge_match.__doc__ = tmpdoc.replace("node", "edge")
+tmpdoc = generic_doc.format(
+    multiedges_warning="""
+Potentially, the constructed edge_match
+function can be slow since it must verify that no isomorphism
+exists between the multiedges before it returns False.
+"""
+)
+tmpdoc = tmpdoc.replace("node", "edge")
+tmpdoc = tmpdoc.replace("generic_edge_match", "generic_multiedge_match")
+numerical_multiedge_match.__doc__ = tmpdoc
