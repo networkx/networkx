@@ -84,10 +84,10 @@ It will be called with the list of NetworkX tests discovered. Each item
 is a test object that can be marked as xfail if the backend does not support
 the test using `item.add_marker(pytest.mark.xfail(reason=...))`.
 """
-import functools
 import inspect
 import os
 import sys
+from functools import partial
 from importlib.metadata import entry_points
 
 from ..exception import NetworkXNotImplemented
@@ -216,7 +216,7 @@ class _dispatch:
         preserve_all_attrs=False,
     ):
         if func is None:
-            return functools.partial(
+            return partial(
                 _dispatch,
                 name=name,
                 graphs=graphs,
@@ -235,10 +235,16 @@ class _dispatch:
 
         self = object.__new__(cls)
 
-        # Make it look like the original function
-        functools.update_wrapper(self, func)
+        # standard function-wrapping stuff
+        # __annotations__ not used
+        self.__name__ = func.__name__
+        self.__doc__ = func.__doc__
         self.__defaults__ = func.__defaults__
         self.__kwdefaults__ = func.__kwdefaults__
+        self.__module__ = func.__module__
+        self.__qualname__ = func.__qualname__
+        self.__dict__.update(func.__dict__)
+        self.__wrapped__ = func
 
         self.orig_func = func
         self.name = name
@@ -356,7 +362,6 @@ class _dispatch:
         # }
 
         if self._is_testing and self._plugin_name is not None:
-            # Can we use graphs_resolved here?
             return self._convert_and_call(
                 self._plugin_name,
                 args,
