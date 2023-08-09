@@ -1,12 +1,123 @@
 """
 Label propagation community detection algorithms.
 """
-from collections import Counter, defaultdict
+from collections import Counter, defaultdict, deque
 
 import networkx as nx
 from networkx.utils import groups, not_implemented_for, py_random_state
 
-__all__ = ["label_propagation_communities", "asyn_lpa_communities"]
+__all__ = [
+    "label_propagation_communities",
+    "asyn_lpa_communities",
+    "fast_label_propagation_communities",
+]
+
+
+@nx._dispatch(edge_attrs="weight")
+@py_random_state("seed")
+def fast_label_propagation_communities(G, weight=None, seed=None):
+    """Returns communities in `G` as detected by fast label propagation.
+
+    The fast label propagation algorithm is described in [1]_. The algorithm is probabilistic and the found communities may vary in different executions.
+
+    The algorithm operates as follows. First, the community label of each node is set to a unique label. The algorithm then repeatedly updates the labels of the nodes to the most frequent label in their neighborhood. In case of ties, a random label is chosen from the most frequent labels.
+
+    The algorithm maintains a queue of nodes that still need to be processed. Initially, all nodes are added to the queue in a random order. Then the nodes are removed from the queue one by one and processed. If a node updates its label, all its neighbors that have a different label are added to the queue (if not already in the queue). The algorithm stops when the queue is empty.
+
+    Parameters
+    ----------
+    G : Graph, DiGraph, MultiGraph, or MultiDiGraph
+      Any NetworkX graph.
+
+    weight : string, or None (default)
+      The edge attribute representing a non-negative weight of an edge. If None, each edge is assumed to have weight one. The weight of an edge is used in determining the frequency with which a label appears among the neighbors of a node (an edge with a non-negative weight `w` is equivalent to `w` unweighted edges).
+
+    seed : integer, random_state, or None (default)
+      Indicator of random number generation state. See :ref:`Randomness<randomness>`.
+
+    Returns
+    -------
+    communities : iterable
+      Iterable of communities given as sets of nodes.
+
+    Notes
+    -----
+    Edge directions are ignored for directed graphs. Edge weights must be non-negative numbers.
+
+    References
+    ----------
+    .. [1] Vincent A. Traag & Lovro Šubelj. "Large network community detection by fast label propagation." Scientific Reports 13 (2023): 2701. https://doi.org/10.1038/s41598-023-29610-z
+    """
+
+    # Queue of nodes to be processed.
+    Q = deque(G)
+    seed.shuffle(Q)
+
+    # Set of nodes in the queue.
+    S = set(G)
+
+    # Assign unique label to each node.
+    C = {i: c for c, i in enumerate(G)}
+
+    while Q:
+        # Remove next node from the queue to process.
+        i = Q.popleft()
+        S.remove(i)
+
+        # Isolated nodes retain their initial label.
+        if G.degree(i) > 0:
+            # Compute frequency of labels in node's neighborhood.
+            L = _fast_label_count(G, C, i, weight)
+            maxl = max(L.values())
+
+            # Always sample new label from most frequent labels.
+            c = seed.choice([c for c in L if L[c] == maxl])
+
+            if C[i] != c:
+                C[i] = c
+
+                # Add neighbors that have different label to the queue.
+                for j in nx.all_neighbors(G, i):
+                    if C[j] != c and j not in S:
+                        Q.append(j)
+                        S.add(j)
+
+    yield from groups(C).values()
+
+
+def _fast_label_count(G, C, i, weight=None):
+    """Computes the frequency of labels in the neighborhood of node `i`.
+
+    Returns a dictionary keyed by label to the frequency of that label.
+    """
+
+    if weight is None:
+        # Unweighted (un)directed simple graph.
+        if type(G) == nx.Graph or type(G) == nx.DiGraph:
+            L = Counter(map(C.get, nx.all_neighbors(G, i)))
+
+        # Unweighted (un)directed multigraph.
+        else:
+            L = defaultdict(int)
+            for j in G[i]:
+                L[C[j]] += len(G[i][j])
+
+            if type(G) == nx.MultiDiGraph:
+                for j in G.pred[i]:
+                    L[C[j]] += len(G.pred[i][j])
+
+    else:
+        # Weighted undirected simple/multigraph.
+        L = defaultdict(float)
+        for _, j, w in G.edges(i, data=weight, default=1):
+            L[C[j]] += w
+
+        # Weighted directed simple/multigraph.
+        if type(G) == nx.DiGraph or type(G) == nx.MultiDiGraph:
+            for j, _, w in G.in_edges(i, data=weight, default=1):
+                L[C[j]] += w
+
+    return L
 
 
 @nx._dispatch(edge_attrs="weight")
