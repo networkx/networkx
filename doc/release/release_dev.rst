@@ -37,6 +37,10 @@ API Changes
 
 Deprecations
 ------------
+- [`#6758 <https://github.com/networkx/networkx/pull/6758>`_]
+  Remove `random_tree` and replace with the new `random_labeled_tree`.
+  In the newly named version, the argument `create_using` is no longer
+  available and `seed` is now keyword-only.
 
 
 Merged PRs

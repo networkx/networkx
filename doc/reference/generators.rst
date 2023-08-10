@@ -283,7 +283,6 @@ Trees
    :toctree: generated/
 
    prefix_tree
-   random_tree
    random_labeled_tree
    random_labeled_rooted_tree
    random_labeled_rooted_forest
