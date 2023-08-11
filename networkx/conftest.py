@@ -53,13 +53,12 @@ def pytest_configure(config):
         networkx.utils.backends._dispatch._fallback_to_nx = bool(fallback_to_nx)
     # nx-loopback plugin is only available when testing
     if sys.version_info < (3, 10):
-        networkx.utils.backends.plugins["nx-loopback"] = entry_points()[
-            "networkx.plugins"
-        ]["nx-loopback"]
-    else:
-        [networkx.utils.backends.plugins["nx-loopback"]] = entry_points(
-            name="nx-loopback", group="networkx.plugins"
+        plugins = (
+            ep for ep in entry_points()["networkx.plugins"] if ep.name == "nx-loopback"
         )
+    else:
+        plugins = entry_points(name="nx-loopback", group="networkx.plugins")
+    [networkx.utils.backends.plugins["nx-loopback"]] = plugins
 
 
 def pytest_collection_modifyitems(config, items):
