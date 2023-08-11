@@ -81,6 +81,9 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\nforest_str is deprecated"
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\nrandom_tree is deprecated"
+    )
 
 
 @pytest.fixture(autouse=True)
@@ -150,7 +153,6 @@ needs_numpy = [
     "algorithms/node_classification.py",
     "algorithms/non_randomness.py",
     "algorithms/shortest_paths/dense.py",
-    "generators/trees.py",
     "linalg/bethehessianmatrix.py",
     "linalg/laplacianmatrix.py",
     "utils/misc.py",
