@@ -58,7 +58,7 @@ def pytest_configure(config):
         )
     else:
         plugins = entry_points(name="nx-loopback", group="networkx.plugins")
-    [networkx.utils.backends.plugins["nx-loopback"]] = plugins
+    networkx.utils.backends.plugins["nx-loopback"] = next(iter(plugins))
 
 
 def pytest_collection_modifyitems(config, items):
