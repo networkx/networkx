@@ -631,7 +631,11 @@ graph
 ]
 """
         G = nx.parse_gml(multiline_example)
-        assert G.nodes["multiline node"] == {"label2": "multiline1 multiline2 multiline3", "alt_name": "id 0"}
+        assert G.nodes["multiline node"] == {
+            "label2": "multiline1 multiline2 multiline3",
+            "alt_name": "id 0",
+        }
+
 
 @contextmanager
 def byte_file():
