@@ -1,8 +1,11 @@
 from itertools import combinations
 
+import networkx as nx
+
 __all__ = ["dispersion"]
 
 
+@nx._dispatch
 def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
     r"""Calculate dispersion between `u` and `v` in `G`.
 

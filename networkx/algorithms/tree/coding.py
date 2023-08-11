@@ -32,6 +32,7 @@ class NotATree(nx.NetworkXException):
 
 
 @not_implemented_for("directed")
+@nx._dispatch(graphs="T")
 def to_nested_tuple(T, root, canonical_form=False):
     """Returns a nested tuple representation of the given tree.
 
@@ -211,6 +212,7 @@ def from_nested_tuple(sequence, sensible_relabeling=False):
 
 
 @not_implemented_for("directed")
+@nx._dispatch(graphs="T")
 def to_prufer_sequence(T):
     r"""Returns the Prüfer sequence of the given tree.
 

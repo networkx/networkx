@@ -6,6 +6,7 @@ import networkx as nx
 __all__ = ["incidence_matrix", "adjacency_matrix"]
 
 
+@nx._dispatch(edge_attrs="weight")
 def incidence_matrix(
     G, nodelist=None, edgelist=None, oriented=False, weight=None, dtype=None
 ):
@@ -103,6 +104,7 @@ def incidence_matrix(
     return A.asformat("csc")
 
 
+@nx._dispatch(edge_attrs="weight")
 def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight"):
     """Returns adjacency matrix of G.
 

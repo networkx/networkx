@@ -446,8 +446,7 @@ def test_edge_attribute_preservation_normal_graph():
     ]
     G.add_edges_from(edgelist)
 
-    ed = branchings.Edmonds(G)
-    B = ed.find_optimum("weight", preserve_attrs=True, seed=1)
+    B = branchings.maximum_branching(G, preserve_attrs=True)
 
     assert B[0][1]["otherattr"] == 1
     assert B[0][1]["otherattr2"] == 3
@@ -465,13 +464,13 @@ def test_edge_attribute_preservation_multigraph():
     ]
     G.add_edges_from(edgelist * 2)  # Make sure we have duplicate edge paths
 
-    ed = branchings.Edmonds(G)
-    B = ed.find_optimum("weight", preserve_attrs=True)
+    B = branchings.maximum_branching(G, preserve_attrs=True)
 
     assert B[0][1][0]["otherattr"] == 1
     assert B[0][1][0]["otherattr2"] == 3
 
 
+# TODO remove with Edmonds
 def test_Edmond_kind():
     G = nx.MultiGraph()
 
@@ -486,6 +485,7 @@ def test_Edmond_kind():
         ed.find_optimum(kind="lol", preserve_attrs=True)
 
 
+# TODO remove with MultiDiGraph_EdgeKey
 def test_MultiDiGraph_EdgeKey():
     # test if more than one edges has the same key
     G = branchings.MultiDiGraph_EdgeKey()
@@ -515,8 +515,7 @@ def test_edge_attribute_discard():
     ]
     G.add_edges_from(edgelist)
 
-    ed = branchings.Edmonds(G)
-    B = ed.find_optimum("weight", preserve_attrs=False)
+    B = branchings.maximum_branching(G, preserve_attrs=False)
 
     edge_dict = B[0][1]
     with pytest.raises(KeyError):

@@ -10,6 +10,7 @@ from networkx.utils import py_random_state
 __all__ = ["louvain_communities", "louvain_partitions"]
 
 
+@nx._dispatch(edge_attrs="weight")
 @py_random_state("seed")
 def louvain_communities(
     G, weight="weight", resolution=1, threshold=0.0000001, seed=None
@@ -111,6 +112,7 @@ def louvain_communities(
     return q.pop()
 
 
+@nx._dispatch(edge_attrs="weight")
 @py_random_state("seed")
 def louvain_partitions(
     G, weight="weight", resolution=1, threshold=0.0000001, seed=None
