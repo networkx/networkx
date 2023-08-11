@@ -13,6 +13,7 @@ General guidelines for writing good tests:
 """
 import os
 import warnings
+from importlib.metadata import entry_points
 
 import pytest
 
@@ -44,6 +45,11 @@ def pytest_configure(config):
     if backend is None:
         backend = os.environ.get("NETWORKX_TEST_BACKEND")
     if backend:
+        if backend == "nx-loopback":
+            # nx-loopback plugin is only available when it's being tested
+            [networkx.utils.backends.plugins["nx-loopback"]] = entry_points(
+                name="nx-loopback", group="networkx.plugins"
+            )
         networkx.utils.backends._dispatch._plugin_name = backend
         fallback_to_nx = config.getoption("--fallback-to-nx")
         if not fallback_to_nx:

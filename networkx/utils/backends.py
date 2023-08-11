@@ -87,47 +87,36 @@ the test using `item.add_marker(pytest.mark.xfail(reason=...))`.
 import inspect
 import os
 import sys
+import warnings
 from functools import partial
 from importlib.metadata import entry_points
 
 from ..exception import NetworkXNotImplemented
 
-__all__ = ["_dispatch", "_mark_tests"]
+__all__ = ["_dispatch"]
 
 
-class PluginInfo:
-    """Lazily loaded entry_points plugin information"""
-
-    def __init__(self):
-        self._items = None
-
-    def __bool__(self):
-        return len(self.items) > 0
-
-    def __len__(self):
-        return len(self.items)
-
-    @property
-    def items(self):
-        if self._items is None:
-            if sys.version_info < (3, 10):
-                self._items = entry_points()["networkx.plugins"]
-            else:
-                self._items = entry_points(group="networkx.plugins")
-        return self._items
-
-    def __contains__(self, name):
-        if sys.version_info < (3, 10):
-            return len([ep for ep in self.items if ep.name == name]) > 0
-        return name in self.items.names
-
-    def __getitem__(self, name):
-        if sys.version_info < (3, 10):
-            return [ep for ep in self.items if ep.name == name][0]
-        return self.items[name]
+def _get_plugins():
+    if sys.version_info < (3, 10):
+        items = entry_points()["networkx.plugins"]
+    else:
+        items = entry_points(group="networkx.plugins")
+    rv = {}
+    for ep in items:
+        if ep.name in rv:
+            warnings.warn(
+                f"networkx plugin defined more than once: {ep.name}",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+        else:
+            rv[ep.name] = ep
+    # nx-loopback plugin is only available when it's being tested (added in conftest.py)
+    del rv["nx-loopback"]
+    return rv
 
 
-plugins = PluginInfo()
+plugins = _get_plugins()
 _registered_algorithms = {}
 
 
@@ -330,6 +319,9 @@ class _dispatch:
         return self._sig
 
     def __call__(self, /, *args, **kwargs):
+        if not plugins:
+            # Fast path if no backends are installed
+            return self.orig_func(*args, **kwargs)
         graphs_resolved = {}
         for gname, pos in self.graphs.items():
             if pos < len(args):
