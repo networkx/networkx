@@ -45,16 +45,15 @@ def pytest_configure(config):
     if backend is None:
         backend = os.environ.get("NETWORKX_TEST_BACKEND")
     if backend:
-        if backend == "nx-loopback":
-            # nx-loopback plugin is only available when it's being tested
-            [networkx.utils.backends.plugins["nx-loopback"]] = entry_points(
-                name="nx-loopback", group="networkx.plugins"
-            )
         networkx.utils.backends._dispatch._plugin_name = backend
         fallback_to_nx = config.getoption("--fallback-to-nx")
         if not fallback_to_nx:
             fallback_to_nx = os.environ.get("NETWORKX_TEST_FALLBACK_TO_NX")
         networkx.utils.backends._dispatch._fallback_to_nx = bool(fallback_to_nx)
+    # nx-loopback plugin is only available when testing
+    [networkx.utils.backends.plugins["nx-loopback"]] = entry_points(
+        name="nx-loopback", group="networkx.plugins"
+    )
 
 
 def pytest_collection_modifyitems(config, items):

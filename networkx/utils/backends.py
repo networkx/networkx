@@ -111,7 +111,7 @@ def _get_plugins():
             )
         else:
             rv[ep.name] = ep
-    # nx-loopback plugin is only available when it's being tested (added in conftest.py)
+    # nx-loopback plugin is only available when testing (added in conftest.py)
     del rv["nx-loopback"]
     return rv
 
