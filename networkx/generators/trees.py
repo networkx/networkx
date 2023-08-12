@@ -600,8 +600,7 @@ def _to_nx(edges, n_nodes, root=None, roots=None):
         The graph with `n_nodes` nodes and edges given by `edges`.
     """
     G = nx.empty_graph(n_nodes)
-    ee = iter(edges)
-    G.add_edges_from(zip(ee, ee))
+    G.add_edges_from(edges)
     if root is not None:
         G.graph["root"] = root
     if roots is not None:
@@ -716,17 +715,20 @@ def _random_unlabeled_rooted_tree(n, cache_trees, seed):
         edges, n_nodes = [], 1
         return edges, n_nodes
     if n == 2:
-        edges, n_nodes = [0, 1], 2
+        edges, n_nodes = [(0, 1)], 2
         return edges, n_nodes
 
     j, d = _select_jd_trees(n, cache_trees, seed)
     t1, t1_nodes = _random_unlabeled_rooted_tree(n - j * d, cache_trees, seed)
     t2, t2_nodes = _random_unlabeled_rooted_tree(d, cache_trees, seed)
-    t12 = [(t2_nodes * ((i - 1) // 2) + t1_nodes) * (i % 2) for i in range(2 * j)]
+    t12 = [(0, t2_nodes * i + t1_nodes) for i in range(j)]
     t1.extend(t12)
-    for i in range(j):
-        t1.extend(node + (t2_nodes * i + t1_nodes) for node in t2)
-    return t1, t1_nodes + j * t2_nodes
+    for _ in range(j):
+        t1.extend((n1 + t1_nodes, n2 + t1_nodes)
+                  for n1,n2 in t2)
+        t1_nodes += t2_nodes
+        
+    return t1, t1_nodes
 
 
 @py_random_state("seed")
@@ -906,9 +908,10 @@ def _random_unlabeled_rooted_forest(n, q, cache_trees, cache_forests, seed):
         n - j * d, q, cache_trees, cache_forests, seed
     )
     t2, t2_nodes = _random_unlabeled_rooted_tree(d, cache_trees, seed)
-    for i in range(j):
+    for _ in range(j):
         r1.append(t1_nodes)
-        t1.extend(node + t1_nodes for node in t2)
+        t1.extend((n1 + t1_nodes, n2 + t1_nodes)
+                   for n1,n2 in t2)
         t1_nodes += t2_nodes
     return t1, t1_nodes, r1
 
@@ -1042,8 +1045,8 @@ def _bicenter(n, cache, seed):
         t2, t2_nodes = t, t_nodes
     else:
         t2, t2_nodes = _random_unlabeled_rooted_tree(n // 2, cache, seed)
-    t.extend([node + (n // 2) for node in t2])
-    t.extend((0, n // 2))
+    t.extend([(n1 + (n // 2), n2 + (n // 2)) for n1,n2 in t2])
+    t.append((0, n // 2))
     return t, t_nodes + t2_nodes
 
 
@@ -1085,7 +1088,7 @@ def _random_unlabeled_tree(n, cache_trees, cache_forests, seed):
             n - 1, (n - 1) // 2, cache_trees, cache_forests, seed
         )
         for i in r:
-            f.extend((i, n_f))
+            f.append((i, n_f))
         return f, n_f + 1
 
 
