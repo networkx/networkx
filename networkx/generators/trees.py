@@ -724,10 +724,9 @@ def _random_unlabeled_rooted_tree(n, cache_trees, seed):
     t12 = [(0, t2_nodes * i + t1_nodes) for i in range(j)]
     t1.extend(t12)
     for _ in range(j):
-        t1.extend((n1 + t1_nodes, n2 + t1_nodes)
-                  for n1,n2 in t2)
+        t1.extend((n1 + t1_nodes, n2 + t1_nodes) for n1, n2 in t2)
         t1_nodes += t2_nodes
-        
+
     return t1, t1_nodes
 
 
@@ -910,8 +909,7 @@ def _random_unlabeled_rooted_forest(n, q, cache_trees, cache_forests, seed):
     t2, t2_nodes = _random_unlabeled_rooted_tree(d, cache_trees, seed)
     for _ in range(j):
         r1.append(t1_nodes)
-        t1.extend((n1 + t1_nodes, n2 + t1_nodes)
-                   for n1,n2 in t2)
+        t1.extend((n1 + t1_nodes, n2 + t1_nodes) for n1, n2 in t2)
         t1_nodes += t2_nodes
     return t1, t1_nodes, r1
 
@@ -1045,7 +1043,7 @@ def _bicenter(n, cache, seed):
         t2, t2_nodes = t, t_nodes
     else:
         t2, t2_nodes = _random_unlabeled_rooted_tree(n // 2, cache, seed)
-    t.extend([(n1 + (n // 2), n2 + (n // 2)) for n1,n2 in t2])
+    t.extend([(n1 + (n // 2), n2 + (n // 2)) for n1, n2 in t2])
     t.append((0, n // 2))
     return t, t_nodes + t2_nodes
 
