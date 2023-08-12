@@ -153,10 +153,9 @@ def test_random_unlabeled_rooted_tree():
         assert nx.is_tree(t1)
         assert "root" in t1.graph
         assert "roots" not in t1.graph
-    random.seed(43)
     t = nx.random_unlabeled_rooted_tree(15, number_of_trees=10, seed=43)
     random.seed(43)
-    s = nx.random_unlabeled_rooted_tree(15, number_of_trees=10, seed=43)
+    s = nx.random_unlabeled_rooted_tree(15, number_of_trees=10, seed=random)
     for i in range(10):
         assert nx.utils.misc.graphs_equal(t[i], s[i])
         assert nx.is_tree(t[i])
@@ -189,8 +188,7 @@ def test_random_unlabeled_rooted_forest():
                 assert len(c) <= q
             assert "root" not in t1.graph
             assert "roots" in t1.graph
-    random.seed(43)
-    t = nx.random_unlabeled_rooted_forest(15, number_of_forests=10, seed=random)
+    t = nx.random_unlabeled_rooted_forest(15, number_of_forests=10, seed=43)
     random.seed(43)
     s = nx.random_unlabeled_rooted_forest(15, number_of_forests=10, seed=random)
     for i in range(10):
@@ -216,8 +214,7 @@ def test_random_unlabeled_tree():
         assert nx.is_tree(t1)
         assert "root" not in t1.graph
         assert "roots" not in t1.graph
-    random.seed(43)
-    t = nx.random_unlabeled_tree(10, number_of_trees=10, seed=random)
+    t = nx.random_unlabeled_tree(10, number_of_trees=10, seed=43)
     random.seed(43)
     s = nx.random_unlabeled_tree(10, number_of_trees=10, seed=random)
     for i in range(10):
