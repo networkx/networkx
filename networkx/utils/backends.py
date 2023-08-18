@@ -193,7 +193,9 @@ class _dispatch:
         os.environ.get("NETWORKX_FALLBACK_TO_NX", "true").strip().lower() == "true"
     )
     _automatic_backends = [
-        x.strip() for x in os.environ.get("NETWORKX_AUTOMATIC_BACKENDS", "").split(",")
+        x.strip()
+        for x in os.environ.get("NETWORKX_AUTOMATIC_BACKENDS", "").split(",")
+        if x.strip()
     ]
 
     def __new__(
