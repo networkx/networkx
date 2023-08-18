@@ -866,6 +866,7 @@ def S1_graph(n, beta, gamma, mean_degree, kappas=None, seed=None):
 
     # Generate random positions on a circle
     thetas = [seed.uniform(0, 2 * math.pi) for _ in range(n)]
+    kappas = [k if k > 0 else 1e-10 for k in kappas]
 
     for i in range(n):
         for j in range(i):
