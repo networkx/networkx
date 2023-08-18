@@ -21,6 +21,7 @@ jobs:
       - name: Install packages
         run: |
           pip install --upgrade pip
+          sed -i 's/numpy>=1.22/numpy>=1.22,<2.0/g' requirements/default.txt 
           pip install -U --pre --extra-index-url https://pypi.org/simple -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple -r requirements/default.txt
           pip install --pre -r requirements/test.txt
           pip install .
