@@ -75,7 +75,7 @@ developer = [
     'rtoml',
 ]
 doc = [
-    'sphinx>=6.1,<7',
+    'sphinx>=6.1',
     'pydata-sphinx-theme>=0.13',
     'sphinx-gallery>=0.12',
     'numpydoc>=1.5',
