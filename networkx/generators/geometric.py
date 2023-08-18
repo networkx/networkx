@@ -836,7 +836,7 @@ def S1_graph(n, beta, gamma, mean_degree, kappas=None, seed=None):
     >>> G = nx.S1_graph(100, 1.5, 2.7, 5)
     >>> thetas = list(nx.get_node_attributes(G, 'theta'))
     >>> kappas = list(nx.get_node_attributes(G, 'kappa'))
-    >>> G = nx.S1_graph(1, 3.5, 2.7, kappas=kappas)
+    >>> G = nx.S1_graph(100, 2.5, 2.7, 5, kappas=kappas)
     References
     ----------
     .. [1] Serrano, M. Angeles, Dmitri, Krioukov, and Marián, Boguñá. "Self-Similarity
