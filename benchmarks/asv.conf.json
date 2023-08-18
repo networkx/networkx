@@ -11,11 +11,10 @@
     "install_command": ["in-dir={env_dir} python -mpip install {wheel_file}"],
 
     "branches": ["main"],
-    "environment_type": "virtualenv",
+    "environment_type": "conda",
     "show_commit_url": "http://github.com/networkx/networkx/commit/",
     "pythons": ["3.9", "3.10", "3.11"],
     "matrix": {
-         "virtualenv": [],
          "numpy": [],
          "scipy": [],
          "pandas": []

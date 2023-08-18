@@ -21,28 +21,30 @@ class AlgorithmBenchmarks:
         "Drug Interaction network",
     ]
 
-    def setup(self, n):
+    param_names = ["graph"]
+
+    def setup(self, graph):
         self.graphs_dict = dict(zip(self.params, self._graphs))
 
-    def time_betweenness_centrality(self, n):
+    def time_betweenness_centrality(self, graph):
         # timing this should also give us information about
         # underlying shortest path methods
-        _ = nx.betweenness_centrality(self.graphs_dict[n])
+        _ = nx.betweenness_centrality(self.graphs_dict[graph])
 
-    def time_greedy_modularity_communities(self, n):
-        _ = community.greedy_modularity_communities(self.graphs_dict[n])
+    def time_greedy_modularity_communities(self, graph):
+        _ = community.greedy_modularity_communities(self.graphs_dict[graph])
 
-    def time_louvain_communities(self, n):
-        _ = community.louvain_communities(self.graphs_dict[n])
+    def time_louvain_communities(self, graph):
+        _ = community.louvain_communities(self.graphs_dict[graph])
 
-    def time_pagerank(self, n):
-        _ = nx.pagerank(self.graphs_dict[n])
+    def time_pagerank(self, graph):
+        _ = nx.pagerank(self.graphs_dict[graph])
 
-    def time_connected_components(self, n):
-        _ = list(nx.connected_components(self.graphs_dict[n]))
+    def time_connected_components(self, graph):
+        _ = list(nx.connected_components(self.graphs_dict[graph]))
 
-    def time_k_core(self, n):
-        _ = nx.k_core(self.graphs_dict[n])
+    def time_k_core(self, graph):
+        _ = nx.k_core(self.graphs_dict[graph])
 
-    def time_average_clustering(self, n):
-        _ = nx.average_clustering(self.graphs_dict[n])
+    def time_average_clustering(self, graph):
+        _ = nx.average_clustering(self.graphs_dict[graph])
