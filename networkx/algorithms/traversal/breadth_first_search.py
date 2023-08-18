@@ -11,6 +11,7 @@ __all__ = [
     "bfs_successors",
     "descendants_at_distance",
     "bfs_layers",
+    "bfs_layers_limited",
     "bfs_labeled_edges",
 ]
 
@@ -452,6 +453,57 @@ TREE_EDGE = "tree"
 FORWARD_EDGE = "forward"
 LEVEL_EDGE = "level"
 
+@nx._dispatch
+def bfs_layers_limited(G, sources, m):
+    """Returns an iterator of the first m layers in breadth-first search traversal.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A graph over which to find the first m layers using breadth-first search.
+
+    sources : node in `G` or list of nodes in `G`
+        Specify starting nodes for single source or multiple sources breadth-first search
+
+    Yields
+    ------
+    layer: list of nodes
+        Yields list of nodes at the same distance from sources
+
+    Examples
+    --------
+    >>>
+    """
+    if sources in G:
+        sources = [sources]
+
+    current_layer = list(sources)
+    visited = set(sources)
+
+    for source in current_layer:
+        if source not in G:
+            raise nx.NetworkXError(f"The node {source} is not in the graph.")
+
+    # this is basically BFS, except that the current layer only stores the nodes at
+    # same distance from sources at each iteration
+    layer_count = 0
+    while current_layer and layer_count<m:
+        layer_count += 1
+        yield current_layer
+        next_layer = []
+        for node in current_layer:
+            for child in G[node]:
+                if child not in visited:
+                    visited.add(child)
+                    next_layer.append(child)
+        current_layer = next_layer
+
+
+REVERSE_EDGE = "reverse"
+TREE_EDGE = "tree"
+FORWARD_EDGE = "forward"
+LEVEL_EDGE = "level"
+
 
 @nx._dispatch
 def bfs_labeled_edges(G, sources):
@@ -561,7 +613,7 @@ def descendants_at_distance(G, source, distance):
     if source not in G:
         raise nx.NetworkXError(f"The node {source} is not in the graph.")
 
-    bfs_generator = nx.bfs_layers(G, source)
+    bfs_generator = nx.bfs_layers_limited(G, source,distance)
     for i, layer in enumerate(bfs_generator):
         if i == distance:
             return set(layer)
