@@ -13,6 +13,14 @@ Currently we have two broad categories for benchmarks:
 
 ## Running the benchmark suite
 
+To run the benchmark on the current HEAD commit:
+
 ```
-asv run -n -e --python="same"
+asv run
+```
+
+Run the benchmark to compare two commits:
+
+```
+asv continuous base_commit_hash test_commit_hash
 ```
