@@ -257,33 +257,33 @@ class _dispatch:
         if edge_attrs is not None and not isinstance(edge_attrs, (str, dict)):
             raise TypeError(
                 f"Bad type for edge_attrs: {type(edge_attrs)}. Expected str or dict."
-            )
+            ) from None
         if node_attrs is not None and not isinstance(node_attrs, (str, dict)):
             raise TypeError(
                 f"Bad type for node_attrs: {type(node_attrs)}. Expected str or dict."
-            )
+            ) from None
         if not isinstance(self.preserve_edge_attrs, (bool, str, dict)):
             raise TypeError(
                 f"Bad type for preserve_edge_attrs: {type(self.preserve_edge_attrs)}."
                 " Expected bool, str, or dict."
-            )
+            ) from None
         if not isinstance(self.preserve_node_attrs, (bool, str, dict)):
             raise TypeError(
                 f"Bad type for preserve_node_attrs: {type(self.preserve_node_attrs)}."
                 " Expected bool, str, or dict."
-            )
+            ) from None
         if not isinstance(self.preserve_graph_attrs, (bool, set)):
             raise TypeError(
                 f"Bad type for preserve_graph_attrs: {type(self.preserve_graph_attrs)}."
                 " Expected bool or set."
-            )
+            ) from None
 
         if isinstance(graphs, str):
             graphs = {graphs: 0}
         elif not isinstance(graphs, dict):
             raise TypeError(
                 f"Bad type for graphs: {type(graphs)}. Expected str or dict."
-            )
+            ) from None
         elif len(graphs) == 0:
             raise KeyError("'graphs' must contain at least one variable name") from None
 
@@ -307,7 +307,9 @@ class _dispatch:
         self._sig = None
 
         if name in _registered_algorithms:
-            raise KeyError(f"Algorithm already exists in dispatch registry: {name}")
+            raise KeyError(
+                f"Algorithm already exists in dispatch registry: {name}"
+            ) from None
         _registered_algorithms[name] = self
         return self
 
@@ -359,23 +361,21 @@ class _dispatch:
         for gname, pos in self.graphs.items():
             if pos < len(args):
                 if gname in kwargs:
-                    raise TypeError(
-                        f"{self.name}() got multiple values for {gname!r}"
-                    ) from None
+                    raise TypeError(f"{self.name}() got multiple values for {gname!r}")
                 val = args[pos]
             elif gname in kwargs:
                 val = kwargs[gname]
             elif gname not in self.optional_graphs:
                 raise TypeError(
                     f"{self.name}() missing required graph argument: {gname}"
-                ) from None
+                )
             else:
                 continue
             if val is None:
                 if gname not in self.optional_graphs:
                     raise TypeError(
                         f"{self.name}() required graph argument {gname!r} is None; must be a graph"
-                    ) from None
+                    )
             else:
                 graphs_resolved[gname] = val
 
@@ -442,7 +442,7 @@ class _dispatch:
                 # Future work: convert between backends and run if multiple plugins found
                 raise TypeError(
                     f"{self.name}() graphs must all be from the same plugin, found {backend_names}"
-                ) from None
+                )
             [plugin_name] = backend_names
             if backend_name is not None and backend_name != plugin_name:
                 # Future work: convert between backends to `backend_name` backend
@@ -451,7 +451,7 @@ class _dispatch:
                     f"to the specified backend {backend_name!r}."
                 )
             if plugin_name not in plugins:
-                raise ImportError(f"Unable to load plugin: {plugin_name}") from None
+                raise ImportError(f"Unable to load plugin: {plugin_name}")
             if (
                 "networkx" in plugin_names
                 and plugin_name not in self._automatic_backends
