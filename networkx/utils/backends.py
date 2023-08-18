@@ -236,7 +236,11 @@ class _dispatch:
         self.__name__ = func.__name__
         self.__doc__ = func.__doc__
         self.__defaults__ = func.__defaults__
-        self.__kwdefaults__ = func.__kwdefaults__
+        # We "magically" add `backend=` keyword argument to allow backend to be specified
+        if func.__kwdefaults__:
+            self.__kwdefaults__ = {**func.__kwdefaults__, "backend": None}
+        else:
+            self.__kwdefaults__ = {"backend": None}
         self.__module__ = func.__module__
         self.__qualname__ = func.__qualname__
         self.__dict__.update(func.__dict__)
@@ -311,6 +315,8 @@ class _dispatch:
     def __signature__(self):
         if self._sig is None:
             sig = inspect.signature(self.orig_func)
+            # `backend` is now a reserved argument used by dispatching.
+            # assert "backend" not in sig.parameters
             if not any(
                 p.kind == inspect.Parameter.VAR_KEYWORD for p in sig.parameters.values()
             ):
@@ -318,17 +324,37 @@ class _dispatch:
                     parameters=[
                         *sig.parameters.values(),
                         inspect.Parameter(
+                            "backend", inspect.Parameter.KEYWORD_ONLY, default=None
+                        ),
+                        inspect.Parameter(
                             "backend_kwargs", inspect.Parameter.VAR_KEYWORD
                         ),
+                    ]
+                )
+            else:
+                *parameters, var_keyword = sig.parameters.values()
+                sig = sig.replace(
+                    parameters=[
+                        *parameters,
+                        inspect.Parameter(
+                            "backend", inspect.Parameter.KEYWORD_ONLY, default=None
+                        ),
+                        var_keyword,
                     ]
                 )
             self._sig = sig
         return self._sig
 
-    def __call__(self, /, *args, **kwargs):
+    def __call__(self, /, *args, backend=None, **kwargs):
         if not plugins:
             # Fast path if no backends are installed
             return self.orig_func(*args, **kwargs)
+
+        # Use `backend_name` in this function instead of `backend`
+        backend_name = backend
+        if backend_name is not None and backend_name not in plugins:
+            raise ImportError(f"Unable to load plugin: {backend_name}")
+
         graphs_resolved = {}
         for gname, pos in self.graphs.items():
             if pos < len(args):
@@ -360,7 +386,7 @@ class _dispatch:
         #     if (val := args[pos] if pos < len(args) else kwargs.get(gname)) is not None
         # }
 
-        if self._is_testing and self._automatic_backends:
+        if self._is_testing and self._automatic_backends and backend_name is None:
             # Special path if we are running networkx tests with a backend.
             return self._convert_and_call_for_tests(
                 self._automatic_backends[0],
@@ -418,6 +444,12 @@ class _dispatch:
                     f"{self.name}() graphs must all be from the same plugin, found {backend_names}"
                 ) from None
             [plugin_name] = backend_names
+            if backend_name is not None and backend_name != plugin_name:
+                # Future work: convert between backends to `backend_name` backend
+                raise TypeError(
+                    f"{self.name}() is unable to convert graph from backend {plugin_name!r} "
+                    f"to the specified backend {backend_name!r}."
+                )
             if plugin_name not in plugins:
                 raise ImportError(f"Unable to load plugin: {plugin_name}") from None
             if (
@@ -443,6 +475,13 @@ class _dispatch:
             raise NetworkXNotImplemented(
                 f"'{self.name}' not implemented by {plugin_name}"
             )
+
+        # If backend was explicitly given by the user, so we need to use it no matter what
+        if backend_name is not None:
+            return self._convert_and_call(
+                backend_name, args, kwargs, fallback_to_nx=False
+            )
+
         # Only networkx graphs; try to convert and run with a backend with automatic conversion
         for plugin_name in self._automatic_backends:
             if self._can_backend_run(plugin_name, *args, **kwargs):
@@ -659,7 +698,9 @@ class _dispatch:
                         name=self.name,
                         graph_name=gname,
                     )
-        return bound.args, bound.kwargs
+        bound_kwargs = bound.kwargs
+        del bound_kwargs["backend"]
+        return bound.args, bound_kwargs
 
     def _convert_and_call(self, plugin_name, args, kwargs, *, fallback_to_nx=False):
         """Call this dispatchable function with a backend, converting graphs if necessary."""
