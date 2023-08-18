@@ -790,15 +790,19 @@ def thresholded_random_geometric_graph(
 @py_random_state(5)
 def S1_graph(n, beta, gamma, mean_degree, kappas=None, seed=None):
     r"""Returns a $\mathbb{S}^1$ model.
+
     The $\mathbb{S}^1$ model is the simplest among the class of geometric models [1].
     The similarity space is a one dimensional sphere—a circle of radius R—where N nodes are
     distributed with a fixed density, set to one without loss of generality, so that $N = 2\pi R$.
     Each node is also given a hidden variable ``'kappa'`` proportional to its expected degree.
     The connection probability between a node i and a node j takes the form of a gravity law
+
     $p_{ij} = \frac{1}{1 + \left( \frac{d_{ij}}{\mu \kappa_i \kappa_j} \right)^\beta}$
+
     where $d_{ij} = R\Delta\theta_{ij}$ is the arc length of the circle between
     nodes i and j separated by an angular distance $\Delta\theta_{ij}$. Parameters $\mu$ and $\beta$
     control the average degree and the clustering coefficient, respectively.
+
     Parameters
     ----------
     n: int
@@ -814,29 +818,37 @@ def S1_graph(n, beta, gamma, mean_degree, kappas=None, seed=None):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+
     Returns
     -------
     Graph
         A $\mathbb{S}^1$ model, undirected and without self-loops.
         Each node has two attributes: ``'kappa'`` that represents the
         hidden degree and ``'theta'`` the position in the similarity space.
+
     Examples
     --------
     Default Graph:
+
     G = nx.S1_graph(100, 1.5, 2.7, 5)
+
     Custom Graph:
+
     Create a $\mathbb{S}^1$ model with 100 nodes. The $\beta$ parameter is set to 1.5
     and the exponent of the powerlaw distribution of the hidden degrees is 2.7
     with mean value of 5.
+
     Notes
     -----
     If the ``'kappas'`` parameter is provided then parameters ``'n'``, ``'gamma'``
     and ``'mean_degree'`` are ignored.
-    ::
+
     >>> G = nx.S1_graph(100, 1.5, 2.7, 5)
     >>> thetas = list(nx.get_node_attributes(G, 'theta'))
     >>> kappas = list(nx.get_node_attributes(G, 'kappa'))
-    >>> G = nx.S1_graph(100, 2.5, 2.7, 5, kappas=kappas)
+    >>> G = nx.S1_graph(1, 2.5, 2.7, 5, kappas=kappas)
+    >>> nx.number_of_nodes(G) # 100
+
     References
     ----------
     .. [1] Serrano, M. Angeles, Dmitri, Krioukov, and Marián, Boguñá. "Self-Similarity
