@@ -32,7 +32,7 @@ environment variable ``NETWORKX_TEST_BACKEND`` is set to a registered
 plugin keys, the dispatch machinery will automatically convert regular
 networkx Graphs and DiGraphs to the backend equivalent by calling
 ``<backend dispatcher>.convert_from_nx(G, edge_attrs=edge_attrs, name=name)``.
-Set ``NETWORKX_TEST_FALLBACK_TO_NX`` environment variable to have tests
+Set ``NETWORKX_FALLBACK_TO_NX`` environment variable to have tests
 use networkx graphs for algorithms not implemented by the backend.
 
 The arguments to ``convert_from_nx`` are:
@@ -187,9 +187,14 @@ class _dispatch:
 
     # These class attributes are currently used to allow backends to run networkx tests.
     # For example: `PYTHONPATH=. pytest --backend graphblas --fallback-to-nx`
+    # Future work: add configuration to control these
     _is_testing = False
-    _fallback_to_nx = False
-    _plugin_name = None
+    _fallback_to_nx = (
+        os.environ.get("NETWORKX_FALLBACK_TO_NX", "true").strip().lower() == "true"
+    )
+    _automatic_backends = [
+        x.strip() for x in os.environ.get("NETWORKX_AUTOMATIC_BACKENDS", "").split(",")
+    ]
 
     def __new__(
         cls,
@@ -353,12 +358,12 @@ class _dispatch:
         #     if (val := args[pos] if pos < len(args) else kwargs.get(gname)) is not None
         # }
 
-        if self._is_testing and self._plugin_name is not None:
-            return self._convert_and_call(
-                self._plugin_name,
+        if self._is_testing and self._automatic_backends:
+            # Special path if we are running networkx tests with a backend.
+            return self._convert_and_call_for_tests(
+                self._automatic_backends[0],
                 args,
                 kwargs,
-                is_testing=True,
                 fallback_to_nx=self._fallback_to_nx,
             )
 
@@ -395,47 +400,73 @@ class _dispatch:
             has_plugins = any(
                 hasattr(g, "__networkx_plugin__") for g in graphs_resolved.values()
             )
-            plugin_names = {
-                getattr(g, "__networkx_plugin__", "networkx")
-                for g in graphs_resolved.values()
-            }
+            if has_plugins:
+                plugin_names = {
+                    getattr(g, "__networkx_plugin__", "networkx")
+                    for g in graphs_resolved.values()
+                }
         if has_plugins:
-            if len(plugin_names) != 1:
+            # Dispatchable graphs found! Dispatch to backend function.
+            # We don't handle calls with different backend graphs yet,
+            # but we may be able to convert additional networkx graphs.
+            backend_names = plugin_names - {"networkx"}
+            if len(backend_names) != 1:
+                # Future work: convert between backends and run if multiple plugins found
                 raise TypeError(
-                    f"{self.name}() graphs must all be from the same plugin, found {plugin_names}"
+                    f"{self.name}() graphs must all be from the same plugin, found {backend_names}"
                 ) from None
-            [plugin_name] = plugin_names
+            [plugin_name] = backend_names
             if plugin_name not in plugins:
                 raise ImportError(f"Unable to load plugin: {plugin_name}") from None
+            if (
+                "networkx" in plugin_names
+                and plugin_name not in self._automatic_backends
+            ):
+                # Not configured to convert networkx graphs to this backend
+                raise TypeError(
+                    f"Unable to convert inputs and run {self.name}. "
+                    f"{self.name}() has networkx and {plugin_name} graphs, but NetworkX is not "
+                    f"configured to automatically convert graphs from networkx to {plugin_name}."
+                )
             backend = plugins[plugin_name].load()
             if hasattr(backend, self.name):
+                if "networkx" in plugin_names:
+                    # We need to convert networkx graphs to backend graphs
+                    return self._convert_and_call(
+                        plugin_name, args, kwargs, fallback_to_nx=self._fallback_to_nx
+                    )
+                # All graphs are backend graphs--no need to convert!
                 return getattr(backend, self.name)(*args, **kwargs)
+            # Future work: try to convert and run with other backends in self._automatic_backends
             raise NetworkXNotImplemented(
                 f"'{self.name}' not implemented by {plugin_name}"
             )
+        # Only networkx graphs; try to convert and run with a backend with automatic conversion
+        for plugin_name in self._automatic_backends:
+            if self._can_backend_run(plugin_name, *args, **kwargs):
+                return self._convert_and_call(
+                    plugin_name,
+                    args,
+                    kwargs,
+                    fallback_to_nx=self._fallback_to_nx,
+                )
+        # Default: run with networkx on networkx inputs
         return self.orig_func(*args, **kwargs)
 
-    def _convert_and_call(
-        self, plugin_name, args, kwargs, *, is_testing=False, fallback_to_nx=False
-    ):
-        """Call this dispatchable function with a plugin."""
+    def _can_backend_run(self, plugin_name, /, *args, **kwargs):
+        """Can the specified backend run this algorithms with these arguments?"""
         backend = plugins[plugin_name].load()
-        if (
-            not hasattr(backend, self.name)
-            or hasattr(backend, "can_run")
-            and not backend.can_run(self.name, args, kwargs)
-        ):
-            if fallback_to_nx:
-                return self.orig_func(*args, **kwargs)
-            msg = f"'{self.name}' not implemented by {plugin_name}"
-            if hasattr(backend, self.name):
-                msg += " with the given arguments"
-            if is_testing:
-                import pytest
+        return hasattr(backend, self.name) and (
+            not hasattr(backend, "can_run") or backend.can_run(self.name, args, kwargs)
+        )
 
-                pytest.xfail(msg)
-            raise RuntimeError(msg)
+    def _convert_arguments(self, plugin_name, args, kwargs):
+        """Convert graph arguments to the specified backend.
 
+        Returns
+        -------
+        args tuple and kwargs dict
+        """
         bound = self.__signature__.bind(*args, **kwargs)
         bound.apply_defaults()
         # Convert graphs into backend graph-like object
@@ -571,6 +602,9 @@ class _dispatch:
 
         preserve_graph_attrs = self.preserve_graph_attrs
 
+        # It should be safe to assume that we either have networkx graphs or backend graphs.
+        # Future work: allow conversions between backends.
+        backend = plugins[plugin_name].load()
         for gname in self.graphs:
             if gname in self.list_graphs:
                 bound.arguments[gname] = [
@@ -584,6 +618,8 @@ class _dispatch:
                         name=self.name,
                         graph_name=gname,
                     )
+                    if getattr(g, "__networkx_plugin__", "networkx") == "networkx"
+                    else g
                     for g in bound.arguments[gname]
                 ]
             else:
@@ -610,51 +646,93 @@ class _dispatch:
                     preserve_graph = gname in preserve_graph_attrs
                 else:
                     preserve_graph = preserve_graph_attrs
-                bound.arguments[gname] = backend.convert_from_nx(
-                    graph,
-                    edge_attrs=edges,
-                    node_attrs=nodes,
-                    preserve_edge_attrs=preserve_edges,
-                    preserve_node_attrs=preserve_nodes,
-                    preserve_graph_attrs=preserve_graph,
-                    name=self.name,
-                    graph_name=gname,
-                )
+                if getattr(graph, "__networkx_plugin__", "networkx") == "networkx":
+                    bound.arguments[gname] = backend.convert_from_nx(
+                        graph,
+                        edge_attrs=edges,
+                        node_attrs=nodes,
+                        preserve_edge_attrs=preserve_edges,
+                        preserve_node_attrs=preserve_nodes,
+                        preserve_graph_attrs=preserve_graph,
+                        name=self.name,
+                        graph_name=gname,
+                    )
+        return bound.args, bound.kwargs
+
+    def _convert_and_call(self, plugin_name, args, kwargs, *, fallback_to_nx=False):
+        """Call this dispatchable function with a backend, converting graphs if necessary."""
+        backend = plugins[plugin_name].load()
+        if not self._can_backend_run(plugin_name, *args, **kwargs):
+            if fallback_to_nx:
+                return self.orig_func(*args, **kwargs)
+            msg = f"'{self.name}' not implemented by {plugin_name}"
+            if hasattr(backend, self.name):
+                msg += " with the given arguments"
+            raise RuntimeError(msg)
+
+        converted_args, converted_kwargs = self._convert_arguments(
+            plugin_name, args, kwargs
+        )
 
         try:
-            result = getattr(backend, self.name)(*bound.args, **bound.kwargs)
+            result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, NetworkXNotImplemented) as exc:
             if fallback_to_nx:
                 return self.orig_func(*args, **kwargs)
-            if is_testing:
-                import pytest
-
-                pytest.xfail(
-                    exc.args[0]
-                    if exc.args
-                    else f"{self.name} raised {type(exc).__name__}"
-                )
             raise
 
-        if is_testing and self.name in {
+        return result
+
+    def _convert_and_call_for_tests(
+        self, plugin_name, args, kwargs, *, fallback_to_nx=False
+    ):
+        """Call this dispatchable function with a backend; for use with testing."""
+        backend = plugins[plugin_name].load()
+        if not self._can_backend_run(plugin_name, *args, **kwargs):
+            if fallback_to_nx:
+                return self.orig_func(*args, **kwargs)
+
+            import pytest
+
+            msg = f"'{self.name}' not implemented by {plugin_name}"
+            if hasattr(backend, self.name):
+                msg += " with the given arguments"
+            pytest.xfail(msg)
+
+        converted_args, converted_kwargs = self._convert_arguments(
+            plugin_name, args, kwargs
+        )
+
+        try:
+            result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
+        except (NotImplementedError, NetworkXNotImplemented) as exc:
+            if fallback_to_nx:
+                return self.orig_func(*args, **kwargs)
+            import pytest
+
+            pytest.xfail(
+                exc.args[0] if exc.args else f"{self.name} raised {type(exc).__name__}"
+            )
+
+        if self.name in {
             "edmonds_karp_core",
             "barycenter",
             "contracted_nodes",
             "stochastic_graph",
             "relabel_nodes",
         }:
-            # For testing, special-case algorithms that mutate input graphs
+            # Special-case algorithms that mutate input graphs
+            bound = self.__signature__.bind(*converted_args, **converted_kwargs)
+            bound.apply_defaults()
+            bound2 = self.__signature__.bind(*args, **kwargs)
+            bound2.apply_defaults()
             if self.name == "edmonds_karp_core":
                 R1 = backend.convert_to_nx(bound.arguments["R"])
-                bound2 = self.__signature__.bind(*args, **kwargs)
-                bound2.apply_defaults()
                 R2 = bound2.arguments["R"]
                 for k, v in R1.edges.items():
                     R2.edges[k]["flow"] = v["flow"]
             elif self.name == "barycenter" and bound.arguments["attr"] is not None:
                 G1 = backend.convert_to_nx(bound.arguments["G"])
-                bound2 = self.__signature__.bind(*args, **kwargs)
-                bound2.apply_defaults()
                 G2 = bound2.arguments["G"]
                 attr = bound.arguments["attr"]
                 for k, v in G1.nodes.items():
@@ -662,21 +740,15 @@ class _dispatch:
             elif self.name == "contracted_nodes" and not bound.arguments["copy"]:
                 # Edges and nodes changed; node "contraction" and edge "weight" attrs
                 G1 = backend.convert_to_nx(bound.arguments["G"])
-                bound2 = self.__signature__.bind(*args, **kwargs)
-                bound2.apply_defaults()
                 G2 = bound2.arguments["G"]
                 G2.__dict__.update(G1.__dict__)
             elif self.name == "stochastic_graph" and not bound.arguments["copy"]:
                 G1 = backend.convert_to_nx(bound.arguments["G"])
-                bound2 = self.__signature__.bind(*args, **kwargs)
-                bound2.apply_defaults()
                 G2 = bound2.arguments["G"]
                 for k, v in G1.edges.items():
                     G2.edges[k]["weight"] = v["weight"]
             elif self.name == "relabel_nodes" and not bound.arguments["copy"]:
                 G1 = backend.convert_to_nx(bound.arguments["G"])
-                bound2 = self.__signature__.bind(*args, **kwargs)
-                bound2.apply_defaults()
                 G2 = bound2.arguments["G"]
                 if G1 is G2:
                     return G2
@@ -692,11 +764,13 @@ class _dispatch:
                     G2._succ.update(G1._succ)
                 return G2
 
-        if is_testing:
-            return backend.convert_to_nx(result, name=self.name)
-        return result
+        return backend.convert_to_nx(result, name=self.name)
 
     def __reduce__(self):
+        """Allow this object to be serialized with pickle.
+
+        This uses the global registry `_registered_algorithms` to deserialize.
+        """
         return _restore_dispatch, (self.name,)
 
 
