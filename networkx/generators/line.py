@@ -398,7 +398,7 @@ def _find_partition(G, starting_cell):
                 for v in new_cell:
                     if (u != v) and (v not in G_partition[u]):
                         msg = (
-                            "G is not a line graph"
+                            "G is not a line graph "
                             "(partition cell not a complete subgraph)"
                         )
                         raise nx.NetworkXError(msg)
