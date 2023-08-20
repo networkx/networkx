@@ -4,7 +4,7 @@ __all__ = ["s_metric"]
 
 
 @nx._dispatch
-def s_metric(G, normalized=False):
+def s_metric(G, **kwargs):
     """Returns the s-metric [1]_ of graph.
 
     The s-metric is defined as the sum of the products ``deg(u) * deg(v)``
@@ -15,6 +15,10 @@ def s_metric(G, normalized=False):
     G : graph
         The graph used to compute the s-metric.
     normalized : bool (optional)
+        .. deprecated:: 3.2
+
+           The `normalized` keyword argument is deprecated and will be removed
+           in the future
         Normalize the value.
 
     Returns
@@ -29,9 +33,28 @@ def s_metric(G, normalized=False):
            Definition, Properties, and  Implications (Extended Version), 2005.
            https://arxiv.org/abs/cond-mat/0501169
     """
-    if normalized:
-        raise nx.NetworkXError("Normalization not implemented")
-    #        Gmax = li_smax_graph(list(G.degree().values()))
-    #        return s_metric(G,normalized=False)/s_metric(Gmax,normalized=False)
-    #    else:
+    # NOTE: This entire code block + the **kwargs in the signature can all be
+    # removed when the deprecation expires.
+    # Normalized is always False, since all `normalized=True` did was raise
+    # a NotImplementedError
+    normalized = False
+    if kwargs:
+        # Warn for `normalize`, raise for any other kwarg
+        if "normalized" in kwargs:
+            import warnings
+
+            warnings.warn(
+                "\n\nThe `normalized` keyword is deprecated and will be removed\n"
+                "in the future. To silence this warning, remove `normalized`\n"
+                "when calling `s_metric`.\n\n"
+                "The value of `normalized` is ignored.",
+                DeprecationWarning,
+                stacklevel=3,
+            )
+        else:
+            # Typical raising behavior for Python when kwarg not recognized
+            raise TypeError(
+                f"s_metric got an unexpected keyword argument '{list(kwargs.keys())[0]}'"
+            )
+
     return float(sum(G.degree(u) * G.degree(v) for (u, v) in G.edges()))
