@@ -257,7 +257,8 @@ def directed_laplacian_matrix(
     evals, evecs = sp.sparse.linalg.eigs(P.T, k=1)
     v = evecs.flatten().real
     p = v / v.sum()
-    sqrtp = np.sqrt(p)
+    # p>=0 by Perron-Frobenius Thm. Use abs() to fix roundoff across zero gh-6865
+    sqrtp = np.sqrt(np.abs(p))
     Q = (
         # TODO: rm csr_array wrapper when spdiags creates arrays
         sp.sparse.csr_array(sp.sparse.spdiags(sqrtp, 0, n, n))
