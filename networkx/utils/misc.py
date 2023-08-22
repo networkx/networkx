@@ -356,6 +356,8 @@ class PythonRandomInterface:
     def randrange(self, a, b=None):
         import numpy as np
 
+        if b is None:
+            a, b = 0, a
         if b > 9223372036854775807:  # from np.iinfo(np.int64).max
             tmp_rng = PythonRandomViaNumpyBits(self._rng)
             return tmp_rng.randrange(a, b)
@@ -459,7 +461,7 @@ def create_py_random_state(random_state=None):
     except ImportError:
         pass
     else:
-        if isinstance(random_state, (PythonRandomInterface, PythonRandomViaNumpyBits)):
+        if isinstance(random_state, PythonRandomInterface | PythonRandomViaNumpyBits):
             return random_state
         if isinstance(random_state, np.random.Generator):
             return PythonRandomViaNumpyBits(random_state)
