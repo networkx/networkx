@@ -713,11 +713,10 @@ class _dispatch:
                 msg += " with the given arguments"
             raise RuntimeError(msg)
 
-        converted_args, converted_kwargs = self._convert_arguments(
-            plugin_name, args, kwargs
-        )
-
         try:
+            converted_args, converted_kwargs = self._convert_arguments(
+                plugin_name, args, kwargs
+            )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, NetworkXNotImplemented) as exc:
             if fallback_to_nx:
@@ -742,11 +741,10 @@ class _dispatch:
                 msg += " with the given arguments"
             pytest.xfail(msg)
 
-        converted_args, converted_kwargs = self._convert_arguments(
-            plugin_name, args, kwargs
-        )
-
         try:
+            converted_args, converted_kwargs = self._convert_arguments(
+                plugin_name, args, kwargs
+            )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, NetworkXNotImplemented) as exc:
             if fallback_to_nx:
