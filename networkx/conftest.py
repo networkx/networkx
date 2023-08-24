@@ -11,8 +11,10 @@ General guidelines for writing good tests:
   and add the module to the relevant entries below.
 
 """
+import os
 import sys
 import warnings
+from importlib.metadata import entry_points
 
 import pytest
 
@@ -23,16 +25,52 @@ def pytest_addoption(parser):
     parser.addoption(
         "--runslow", action="store_true", default=False, help="run slow tests"
     )
+    parser.addoption(
+        "--backend",
+        action="store",
+        default=None,
+        help="Run tests with a plugin by auto-converting nx graphs to backend graphs",
+    )
+    parser.addoption(
+        "--fallback-to-nx",
+        action="store_true",
+        default=False,
+        help="Run nx function if a plugin doesn't implement a dispatchable function"
+        " (use with --backend)",
+    )
 
 
 def pytest_configure(config):
     config.addinivalue_line("markers", "slow: mark test as slow to run")
+    backend = config.getoption("--backend")
+    if backend is None:
+        backend = os.environ.get("NETWORKX_TEST_BACKEND")
+    if backend:
+        networkx.utils.backends._dispatch._automatic_backends = [backend]
+        fallback_to_nx = config.getoption("--fallback-to-nx")
+        if not fallback_to_nx:
+            fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
+        networkx.utils.backends._dispatch._fallback_to_nx = bool(fallback_to_nx)
+    # nx-loopback plugin is only available when testing
+    if sys.version_info < (3, 10):
+        plugins = (
+            ep for ep in entry_points()["networkx.plugins"] if ep.name == "nx-loopback"
+        )
+    else:
+        plugins = entry_points(name="nx-loopback", group="networkx.plugins")
+    networkx.utils.backends.plugins["nx-loopback"] = next(iter(plugins))
 
 
 def pytest_collection_modifyitems(config, items):
-    # Allow pluggable backends to add markers to tests when
-    # running in auto-conversion test mode
-    networkx.utils.backends._mark_tests(items)
+    # Setting this to True here allows tests to be set up before dispatching
+    # any function call to a backend.
+    networkx.utils.backends._dispatch._is_testing = True
+    if automatic_backends := networkx.utils.backends._dispatch._automatic_backends:
+        # Allow pluggable backends to add markers to tests (such as skip or xfail)
+        # when running in auto-conversion test mode
+        backend = networkx.utils.backends.plugins[automatic_backends[0]].load()
+        if hasattr(backend, "on_start_tests"):
+            getattr(backend, "on_start_tests")(items)
 
     if config.getoption("--runslow"):
         # --runslow given in cli: do not skip slow tests
