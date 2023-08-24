@@ -815,7 +815,7 @@ class TestMultiGraphISOVF2pp:
         m = vf2pp_isomorphism(G1, G2, node_label="label")
         assert m
 
-        # Obtain two non-somorphic subgraphs from the graph
+        # Obtain two non-isomorphic subgraphs from the graph
         G2.remove_edges_from([(mapped[1], mapped[2]), (mapped[1], mapped[2])])
         G2.add_edge(mapped[1], mapped[4])
         H1 = nx.MultiGraph(G1.subgraph([2, 3, 4, 7]))

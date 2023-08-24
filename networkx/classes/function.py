@@ -888,12 +888,12 @@ def non_neighbors(graph, node):
 
 
 def non_edges(graph):
-    """Returns the non-existent edges in the graph.
+    """Returns the nonexistent edges in the graph.
 
     Parameters
     ----------
     graph : NetworkX graph.
-        Graph to find non-existent edges.
+        Graph to find nonexistent edges.
 
     Returns
     -------

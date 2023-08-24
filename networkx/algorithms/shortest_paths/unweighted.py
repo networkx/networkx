@@ -276,7 +276,7 @@ def _bidirectional_pred_succ(G, source, target):
         Gpred = G.adj
         Gsucc = G.adj
 
-    # predecesssor and successors in search
+    # predecessor and successors in search
     pred = {source: None}
     succ = {target: None}
 

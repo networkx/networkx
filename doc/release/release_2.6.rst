@@ -90,7 +90,7 @@ Improvements
   New ``source`` argument to ``has_eulerian_path`` to look for path starting at
   source.
 - [`#4356 <https://github.com/networkx/networkx/pull/4356>`_]
-  Use ``bidirectional_djikstra`` in ``shortest_path`` for weighted graphs
+  Use ``bidirectional_dijkstra`` in ``shortest_path`` for weighted graphs
   to improve performance.
 - [`#4361 <https://github.com/networkx/networkx/pull/4361>`_]
   Adds ``nodelist`` argument to ``triadic_census``
@@ -190,7 +190,7 @@ API Changes
   arguments in the ``json_graph`` module.
 - [`#4843 <https://github.com/networkx/networkx/pull/4843>`_]
   The unused ``normalized`` parameter has been removed
-  from ``communicability_betweeness_centrality``
+  from ``communicability_betweenness_centrality``
 - [`#4850 <https://github.com/networkx/networkx/pull/4850>`_]
   Added ``dtype`` parameter to adjacency_matrix
 - [`#4851 <https://github.com/networkx/networkx/pull/4851>`_]
@@ -230,7 +230,7 @@ Deprecations
 - [`#4448 <https://github.com/networkx/networkx/pull/4448>`_]
   Deprecate ``iterable``.
 - [`#4536 <https://github.com/networkx/networkx/pull/4536>`_]
-  Deprecate ``performance`` and ``coverage`` in favor of ``parition_quality``.
+  Deprecate ``performance`` and ``coverage`` in favor of ``partition_quality``.
 - [`#4545 <https://github.com/networkx/networkx/pull/4545>`_]
   Deprecate ``generate_unique_node``.
 - [`#4599 <https://github.com/networkx/networkx/pull/4599>`_]
@@ -279,7 +279,7 @@ Merged PRs
 - Speed up transitivity, remove redundant call (#4198)
 - NXEP 2 — API design of view slices (#4101)
 - Cleanup old platforms (#4202)
-- Fixed "topolgical_sort" typo (#4211)
+- Fixed "topological_sort" typo (#4211)
 - Make optional dependencies default on CPython
 - Simplify imports
 - Populate setup.py requires from requirements
@@ -367,7 +367,7 @@ Merged PRs
 - Install vtk before mayavi
 - Install vtk before mayavi
 - Install vtk before mayavi
-- Use bidirection_dijkstra as default in weighted shortest_path (#4356)
+- Use bidirectional_dijkstra as default in weighted shortest_path (#4356)
 - Add unit tests for utils.misc.flatten (#4359)
 - Improve test coverage for coreviews.py (#4355)
 - Update tutorial.rst - Fixes #4249 (#4358)
@@ -459,7 +459,7 @@ Merged PRs
 - Clustering for signed weighted graphs (#4519)
 - Fix docstrings and remove unused variables (#4501)
 - Improving code coverage of chordal.py (#4471)
-- Cliques on mutigraph/directed graph types (#4502)
+- Cliques on multigraph/directed graph types (#4502)
 - Approximated Diameter  (#4476)
 - `arrows` should be True by default for directed graphs (#4522)
 - Remove unnecessary node_list from gallery example (#4505)
@@ -468,7 +468,7 @@ Merged PRs
 - Replace generate_unique_node internally where not needed (#4537)
 - Extend harmonic centrality to include source nodes (#4446)
 - improve group betweenness centrality (#4435)
-- fixes Github Actions failures (#4548)
+- fixes GitHub Actions failures (#4548)
 - updated cutoff def in weighted.py (#4546)
 - Less strict on mayavi constraint for doc building. (#4547)
 - Update docstring for ancestor and descendents (#4550)
@@ -501,7 +501,7 @@ Merged PRs
 - return earlier from `clique.graph_clique_number` (#4622)
 - More for projects page: TSP and Graph Isomorphism (#4620)
 - add recommended venv directory to .gitignore (#4619)
-- adding weight description to centrality metrices (#4610)
+- adding weight description to centrality metrics (#4610)
 - Add a good first issue badge to README  (#4627)
 - add test to regular (#4624)
 - Add scipy-1.6.1 to blocklist. (#4628)
@@ -539,7 +539,7 @@ Merged PRs
 - CI: Fix cartopy build failure in docs workflow (#4751)
 - Add missing __all__'s to utils modules + test. (#4753)
 - Add 2 articles for TSP project as references (#4758)
-- Improve reproducibilty of geometric graphs (#4768)
+- Improve reproducibility of geometric graphs (#4768)
 - Updated decorator requirement for #4718 (#4773)
 - Gallery Example: Drawing custom node icons on network using MPL (#4633)
 - Get rid of invalid escape sequences. (#4789)
@@ -556,7 +556,7 @@ Merged PRs
 - Update black (#4814)
 - Restructure documentation (#4744)
 - Pin upper bound on decorator for 2.6 release. (#4815)
-- Use `callable()` to check if the object is calllable (#1) (#4678)
+- Use `callable()` to check if the object is callable (#1) (#4678)
 - Remove dictionary from signature of tree_graph and tree_data (#4786)
 - Make nx.hits a wrapper around different implementations, use scipy one by default (#4812)
 - restructured networksimplex.py and added test_networksimplex.py (#4685)

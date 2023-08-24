@@ -113,7 +113,7 @@ add_module_names = False
 # pygments_style = 'friendly'
 pygments_style = "sphinx"
 
-# A list of prefixs that are ignored when creating the module index. (new in Sphinx 0.6)
+# A list of prefixes that are ignored when creating the module index. (new in Sphinx 0.6)
 modindex_common_prefix = ["networkx."]
 
 doctest_global_setup = "import networkx as nx"

@@ -863,10 +863,10 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
         # Adding m new edges, if there is room to add them
         if a_probability < p and G.size() <= clique_size - m:
             # Select the nodes where an edge can be added
-            elligible_nodes = [nd for nd, deg in G.degree() if deg < clique_degree]
+            eligible_nodes = [nd for nd, deg in G.degree() if deg < clique_degree]
             for i in range(m):
-                # Choosing a random source node from elligible_nodes
-                src_node = seed.choice(elligible_nodes)
+                # Choosing a random source node from eligible_nodes
+                src_node = seed.choice(eligible_nodes)
 
                 # Picking a possible node that is not 'src_node' or
                 # neighbor with 'src_node', with preferential attachment
@@ -883,29 +883,26 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
                 attachment_preference.append(src_node)
                 attachment_preference.append(dest_node)
 
-                # Adjusting the elligible nodes. Degree may be saturated.
+                # Adjusting the eligible nodes. Degree may be saturated.
                 if G.degree(src_node) == clique_degree:
-                    elligible_nodes.remove(src_node)
-                if (
-                    G.degree(dest_node) == clique_degree
-                    and dest_node in elligible_nodes
-                ):
-                    elligible_nodes.remove(dest_node)
+                    eligible_nodes.remove(src_node)
+                if G.degree(dest_node) == clique_degree and dest_node in eligible_nodes:
+                    eligible_nodes.remove(dest_node)
 
         # Rewiring m edges, if there are enough edges
         elif p <= a_probability < (p + q) and m <= G.size() < clique_size:
             # Selecting nodes that have at least 1 edge but that are not
             # fully connected to ALL other nodes (center of star).
             # These nodes are the pivot nodes of the edges to rewire
-            elligible_nodes = [nd for nd, deg in G.degree() if 0 < deg < clique_degree]
+            eligible_nodes = [nd for nd, deg in G.degree() if 0 < deg < clique_degree]
             for i in range(m):
                 # Choosing a random source node
-                node = seed.choice(elligible_nodes)
+                node = seed.choice(eligible_nodes)
 
                 # The available nodes do have a neighbor at least.
                 neighbor_nodes = list(G[node])
 
-                # Choosing the other end that will get dettached
+                # Choosing the other end that will get detached
                 src_node = seed.choice(neighbor_nodes)
 
                 # Picking a target node that is not 'node' or
@@ -922,16 +919,16 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
                 attachment_preference.remove(src_node)
                 attachment_preference.append(dest_node)
 
-                # Adjusting the elligible nodes.
+                # Adjusting the eligible nodes.
                 # nodes may be saturated or isolated.
-                if G.degree(src_node) == 0 and src_node in elligible_nodes:
-                    elligible_nodes.remove(src_node)
-                if dest_node in elligible_nodes:
+                if G.degree(src_node) == 0 and src_node in eligible_nodes:
+                    eligible_nodes.remove(src_node)
+                if dest_node in eligible_nodes:
                     if G.degree(dest_node) == clique_degree:
-                        elligible_nodes.remove(dest_node)
+                        eligible_nodes.remove(dest_node)
                 else:
                     if G.degree(dest_node) == 1:
-                        elligible_nodes.append(dest_node)
+                        eligible_nodes.append(dest_node)
 
         # Adding new node with m edges
         else:

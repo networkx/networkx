@@ -63,7 +63,7 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
 
     max_iter : int
         Maximum number of times to attempt swaps to find an
-        improvemement before giving up.
+        improvement before giving up.
 
     weight : key
         Edge data key to use as weight. If None, the weights are all

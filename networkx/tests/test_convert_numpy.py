@@ -72,7 +72,7 @@ class TestConvertNumpyArray:
         nodelist += [nodelist[0]]
         pytest.raises(nx.NetworkXError, nx.to_numpy_array, P3, nodelist=nodelist)
 
-        # Make nodelist invalid by including non-existent nodes
+        # Make nodelist invalid by including nonexistent nodes
         nodelist = [-1, 0, 1]
         with pytest.raises(
             nx.NetworkXError,

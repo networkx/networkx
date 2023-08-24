@@ -745,7 +745,7 @@ def _bidirectional_pred_succ(G, source, target, ignore_nodes=None, ignore_edges=
             Gpred = filter_iter(Gpred)
             Gsucc = filter_iter(Gsucc)
 
-    # predecesssor and successors in search
+    # predecessor and successors in search
     pred = {source: None}
     succ = {target: None}
 

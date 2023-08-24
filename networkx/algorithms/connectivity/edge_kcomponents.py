@@ -128,7 +128,7 @@ def k_edge_subgraphs(G, k):
     --------
     :func:`edge_connectivity`
     :func:`k_edge_components` : similar to this function, but nodes only
-        need to have k-edge-connctivity within the graph G and the subgraphs
+        need to have k-edge-connectivity within the graph G and the subgraphs
         might not be k-edge-connected.
 
     Raises
@@ -484,7 +484,7 @@ def _high_degree_components(G, k):
     Removes and generates each node with degree less than k.  Then generates
     remaining components where all nodes have degree at least k.
     """
-    # Iteravely remove parts of the graph that are not k-edge-connected
+    # Iteratively remove parts of the graph that are not k-edge-connected
     H = G.copy()
     singletons = set(_low_degree_nodes(H, k))
     while singletons:

@@ -1124,7 +1124,7 @@ def arf_layout(
     strong forcing between nodes. Second, it utilizes the
     layout space more effectively by preventing large gaps
     that spring layout tends to create. Lastly, the arf
-    layout represents symmmetries in the layout better than
+    layout represents symmetries in the layout better than
     the default spring layout.
 
     Parameters
@@ -1139,7 +1139,7 @@ def arf_layout(
     a : float
         Strength of springs between connected nodes. Should be larger than 1. The greater a, the clearer the separation ofunconnected sub clusters.
     etol : float
-        Graduent sum of spring forces must be larger than `etol` before successful termination.
+        Gradient sum of spring forces must be larger than `etol` before successful termination.
     dt : float
         Time step for force differential equation simulations.
     max_iter : int

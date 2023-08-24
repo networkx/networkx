@@ -19,7 +19,7 @@ def junction_tree(G):
     The tree's nodes consist of maximal cliques and sepsets of the revised graph.
     The sepset of two cliques is the intersection of the nodes of these cliques,
     e.g. the sepset of (A,B,C) and (A,C,E,F) is (A,C). These nodes are often called
-    "variables" in this literature. The tree is bipartitie with each sepset
+    "variables" in this literature. The tree is bipartite with each sepset
     connected to its two cliques.
 
     Junction Trees are not unique as the order of clique consideration determines
