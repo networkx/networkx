@@ -103,7 +103,7 @@ class TestDirectedDedensification:
 
     def test_dedensify_edge_count(self):
         """
-        Verifies that dedensify produced the correct number of comrpessor nodes
+        Verifies that dedensify produced the correct number of compressor nodes
         in a directed graph
         """
         G = self.build_original_graph()

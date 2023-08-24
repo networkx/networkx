@@ -430,7 +430,7 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     # a dict
     if not isinstance(z_star, dict):
         # Here we are using the shortcutting method to go from the list of edges
-        # returned from eularian_circuit to a list of nodes
+        # returned from eulerian_circuit to a list of nodes
         return _shortcutting(nx.eulerian_circuit(z_star, source=source))
 
     # Create the undirected support of z_star
@@ -643,7 +643,7 @@ def held_karp_ascent(G, weight="weight"):
         for n in G:
             d[n] = 0
         del n
-        # 2. Find a 1-Aborescence T^k such that k is in K(pi, d).
+        # 2. Find a 1-Arborescence T^k such that k is in K(pi, d).
         minimum_1_arborescences = k_pi()
         while True:
             # Reduce K(pi) to K(pi, d)

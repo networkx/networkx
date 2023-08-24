@@ -293,7 +293,7 @@ def test_neither_degrees_none():
         nx.LFR_benchmark_graph(n, tau1, tau2, mu, min_degree=2, average_degree=5)
 
 
-def test_max_iters_exeded():
+def test_max_iters_exceeded():
     with pytest.raises(
         nx.ExceededMaxIterations,
         match="Could not assign communities; try increasing min_community",

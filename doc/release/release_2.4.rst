@@ -198,7 +198,7 @@ A total of 205 changes have been committed.
 - Ignore other failures for now
 - Fix a typo in docstring for get_edge_data (#3564)
 - Fix wrong title (#3566)
-- Fix typo in doctring (#3568)
+- Fix typo in docstring (#3568)
 - Fix and Improve docstrings in graph.py (#3569)
 - Improved graph class selection table (#3570)
 - Add spiral layout for graph drawing (#3534)

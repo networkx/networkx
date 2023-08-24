@@ -909,7 +909,7 @@ def max_weight_clique(G, weight="weight"):
            algoritmo de branch and bound para o problema da clique máxima
            ponderada.  Proceedings of XLVII SBPO 1 (2015).
 
-    .. [2] Warrent, Jeffrey S, Hicks, Illya V.: Combinatorial Branch-and-Bound
+    .. [2] Warren, Jeffrey S, Hicks, Illya V.: Combinatorial Branch-and-Bound
            for the Maximum Weight Independent Set Problem.  Technical Report,
            Texas A&M University (2016).
     """

@@ -177,7 +177,7 @@ def test_hashable_pydot(graph_type):
     )
 
 
-def test_pydot_numrical_name():
+def test_pydot_numerical_name():
     G = nx.Graph()
     G.add_edges_from([("A", "B"), (0, 1)])
     graph_layout = nx.nx_pydot.pydot_layout(G, prog="dot")

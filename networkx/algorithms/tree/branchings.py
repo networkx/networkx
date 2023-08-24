@@ -277,7 +277,7 @@ def get_path(G, u, v):
     # in the shortest path.
 
     def first_key(i, vv):
-        # Needed for 2.x/3.x compatibilitity
+        # Needed for 2.x/3.x compatibility
         keys = G[nodes[i]][vv].keys()
         # Normalize behavior
         keys = list(keys)

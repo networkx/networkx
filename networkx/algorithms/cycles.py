@@ -599,7 +599,7 @@ def chordless_cycles(G, length_bound=None):
     #    must not construct longer cycles along (u, v).
     # 2. If G is not directed, then a pair of parallel edges between (u, v) is a
     #    chordless cycle unless there exists a third (or more) parallel edge.
-    # 3. If G is directed, then parallel edges do not form cyles, but do
+    # 3. If G is directed, then parallel edges do not form cycles, but do
     #    preclude back-edges from forming cycles (handled in the next section),
     #    Thus, if an edge (u, v) is duplicated and the reverse (v, u) is also
     #    present, then we remove both from F.

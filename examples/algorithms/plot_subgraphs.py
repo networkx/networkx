@@ -54,7 +54,7 @@ def graph_partitioning(G, plotting=True):
         plt.axis("off")
         plt.title("The stripped graph with the edges removed.")
         plt.show()
-        # Plot the the edges removed.
+        # Plot the edges removed.
         _pos = nx.spring_layout(G_minus_H)
         plt.figure(figsize=(8, 8))
         ncl = [G.nodes[n]["node_color"] for n in G_minus_H.nodes]
@@ -118,7 +118,7 @@ plt.title("The original graph.")
 plt.show()
 
 ###############################################################################
-# Calculate the subgraphs with plotting all results of intemediate steps.
+# Calculate the subgraphs with plotting all results of intermediate steps.
 # -----------------------------------------------------------------------
 #
 subgraphs_of_G_ex, removed_edges = graph_partitioning(G_ex, plotting=True)

@@ -172,7 +172,7 @@ def _hits_numpy(G, normalized=True):
     The `hubs` and `authorities` are given by the eigenvectors corresponding to the
     maximum eigenvalues of the hubs_matrix and the authority_matrix, respectively.
 
-    The ``hubs`` and ``authority`` matrices are computed from the adjancency
+    The ``hubs`` and ``authority`` matrices are computed from the adjacency
     matrix:
 
     >>> adj_ary = nx.to_numpy_array(G)
