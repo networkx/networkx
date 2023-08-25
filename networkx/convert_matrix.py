@@ -302,6 +302,7 @@ def to_pandas_edgelist(
     return pd.DataFrame(edgelistdict, dtype=dtype)
 
 
+@nx._dispatch(graphs=None)
 def from_pandas_edgelist(
     df,
     source="source",
@@ -657,6 +658,7 @@ def _generate_weighted_edges(A):
     return _coo_gen_triples(A.tocoo())
 
 
+@nx._dispatch(graphs=None)
 def from_scipy_sparse_array(
     A, parallel_edges=False, create_using=None, edge_attribute="weight"
 ):
