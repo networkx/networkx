@@ -1252,7 +1252,7 @@ def rescale_layout(pos, scale=1):
 
     # Find max length over all dimensions
     pos -= pos.mean(axis=0)
-    lim = max(np.abs(pos).max(), 0)  # max coordinate for all axes
+    lim = np.abs(pos).max()  # max coordinate for all axes
     # rescale to (-scale, scale) in all directions, preserves aspect
     if lim > 0:
         pos *= scale / lim
