@@ -336,8 +336,8 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
 
 
 @not_implemented_for("undirected")
-@nx._dispatch(edge_attrs="weight")
 @py_random_state(2)
+@nx._dispatch(edge_attrs="weight")
 def asadpour_atsp(G, weight="weight", seed=None, source=None):
     """
     Returns an approximate solution to the traveling salesman problem.
@@ -1001,8 +1001,8 @@ def greedy_tsp(G, weight="weight", source=None):
     return cycle
 
 
-@nx._dispatch(edge_attrs="weight")
 @py_random_state(9)
+@nx._dispatch(edge_attrs="weight")
 def simulated_annealing_tsp(
     G,
     init_cycle,
@@ -1220,8 +1220,8 @@ def simulated_annealing_tsp(
     return best_cycle
 
 
-@nx._dispatch(edge_attrs="weight")
 @py_random_state(9)
+@nx._dispatch(edge_attrs="weight")
 def threshold_accepting_tsp(
     G,
     init_cycle,

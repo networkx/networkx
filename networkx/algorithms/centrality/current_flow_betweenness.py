@@ -20,8 +20,8 @@ __all__ = [
 
 
 @not_implemented_for("directed")
-@nx._dispatch(edge_attrs="weight")
 @py_random_state(7)
+@nx._dispatch(edge_attrs="weight")
 def approximate_current_flow_betweenness_centrality(
     G,
     normalized=True,

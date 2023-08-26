@@ -11,8 +11,8 @@ __all__ = ["asyn_fluidc"]
 
 
 @not_implemented_for("directed", "multigraph")
-@nx._dispatch
 @py_random_state(3)
+@nx._dispatch
 def asyn_fluidc(G, k, max_iter=100, seed=None):
     """Returns communities in `G` as detected by Fluid Communities algorithm.
 
