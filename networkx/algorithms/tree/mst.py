@@ -742,8 +742,8 @@ def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
     return T
 
 
-@nx._dispatch(preserve_edge_attrs=True)
 @py_random_state(3)
+@nx._dispatch(preserve_edge_attrs=True)
 def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
     """
     Sample a random spanning tree using the edges weights of `G`.

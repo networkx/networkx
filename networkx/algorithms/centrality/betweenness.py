@@ -11,8 +11,8 @@ from networkx.utils.decorators import not_implemented_for
 __all__ = ["betweenness_centrality", "edge_betweenness_centrality"]
 
 
-@nx._dispatch(edge_attrs="weight")
 @py_random_state(5)
+@nx._dispatch(edge_attrs="weight")
 def betweenness_centrality(
     G, k=None, normalized=True, weight=None, endpoints=False, seed=None
 ):
@@ -148,8 +148,8 @@ def betweenness_centrality(
     return betweenness
 
 
-@nx._dispatch(edge_attrs="weight")
 @py_random_state(4)
+@nx._dispatch(edge_attrs="weight")
 def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=None):
     r"""Compute betweenness centrality for edges.
 

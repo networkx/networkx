@@ -31,8 +31,8 @@ def strategy_largest_first(G, colors):
     return sorted(G, key=G.degree, reverse=True)
 
 
-@nx._dispatch
 @py_random_state(2)
+@nx._dispatch
 def strategy_random_sequential(G, colors, seed=None):
     """Returns a random permutation of the nodes of ``G`` as a list.
 
