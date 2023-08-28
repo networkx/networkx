@@ -56,3 +56,28 @@ networkx.egg-info/
 
 # Virtual environment directory
 networkx-dev/
+examples/geospatial/graph.gpkg
+examples/geospatial/graph.graphml
+examples/geospatial/cache/938bd1643fb6fdd622385ab3d32d38046bf4b9fa.json
+examples/graphviz_drawing/G0.dot
+examples/graphviz_drawing/G1.dot
+examples/graphviz_drawing/G2.dot
+examples/graphviz_drawing/G3.dot
+examples/graphviz_drawing/G4.dot
+examples/graphviz_drawing/G5.dot
+examples/graphviz_drawing/G6.dot
+examples/graphviz_drawing/G7.dot
+examples/graphviz_drawing/G8.dot
+examples/graphviz_drawing/G9.dot
+examples/graphviz_drawing/G10.dot
+examples/graphviz_drawing/G11.dot
+examples/graphviz_drawing/G12.dot
+examples/graphviz_drawing/G13.dot
+examples/graphviz_drawing/G14.dot
+examples/graphviz_drawing/G15.dot
+examples/graphviz_drawing/G16.dot
+examples/graphviz_drawing/G17.dot
+examples/graphviz_drawing/G18.dot
+examples/graphviz_drawing/G19.dot
+examples/graphviz_drawing/grid.dot
+examples/graphviz_drawing/k5.dot
