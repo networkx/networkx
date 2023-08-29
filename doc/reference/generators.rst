@@ -359,3 +359,11 @@ Sudoku
    :toctree: generated/
 
    sudoku_graph
+
+Transport Networks
+____________
+.. automodule:: networkx.generators.transport_networks
+.. autosummary::
+   :toctree: generated/
+
+   gradient_network
