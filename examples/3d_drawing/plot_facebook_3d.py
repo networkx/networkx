@@ -1,3 +1,11 @@
+"""
+================
+3D Facebook Network Plot with Subplots
+================
+
+The 3D version of spring plot of the graph investigated at https://networkx.org/nx-guides/content/exploratory_notebooks/facebook_notebook.html
+
+"""
 import networkx as nx
 import numpy as np
 import pandas as pd
@@ -13,36 +21,44 @@ facebook = pd.read_csv(
 )
 # generate graph from csv data
 graph = nx.from_pandas_edgelist(facebook, "start_node", "end_node")
-print("graph read")
-# generate layout of the graph using spinrg_layout in 3-D
+
+# generate layout of the graph using spring_layout in 3-D
 pos = nx.spring_layout(
     graph,
     iterations=30,  # convergence expected
     dim=3,
     seed=1721,
 )
-print("positins calculated")
+
 # getting nodes and edges into right format for matplotlib
 nodes = np.array([pos[v] for v in graph])
 edges = np.array([(pos[u], pos[v]) for u, v in graph.edges()])
 
-# initialize 3D plot
-fig = plt.figure()
-axis = fig.add_subplot(111, projection="3d")
-axis.view_init(elev=50.0, azim=50)
-# the size of the nodes should be depending on the number of nodes
+
 point_size = int(1000 / np.sqrt(len(nodes)))
 
-# plot the nodes as scatter plot
-axis.scatter(*nodes.T, s=point_size, ec="w")
-print("nodes plot")
-# plot the edges
-for vizedge in edges:
-    axis.plot(*vizedge.T, color="tab:gray", linewidth=0.15)
-print("edges plot")
-# Turn gridlines off
-axis.grid(False)
-axis.axis("off")
+# Create the 3D subplots
+fig = plt.figure(figsize=(12, 6))
+azimuthal_angles = [30, 120]  # Azimuthal angles for the three subplots
 
+for i, angle in enumerate(azimuthal_angles):
+    # Create a 3D subplot
+    ax = fig.add_subplot(1, 2, i + 1, projection="3d")
+
+    # Plot the nodes as scatter plot
+    scatter = ax.scatter(*nodes.T, s=point_size, ec="w")
+
+    # Plot the edges
+    for vizedge in edges:
+        ax.plot(*vizedge.T, color="tab:gray", linewidth=0.15)
+
+    # Turn gridlines off
+    ax.grid(False)
+    ax.set_axis_off()
+
+    # Set azimuthal angle for this subplot
+    ax.view_init(elev=50.0, azim=angle)
+
+# Adjust layout
 fig.tight_layout()
 plt.show()
