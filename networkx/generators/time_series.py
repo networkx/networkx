@@ -3,6 +3,7 @@ Time Series Graphs
 """
 import itertools
 from collections.abc import Iterable
+from typing import Callable
 
 import networkx as nx
 
@@ -63,11 +64,13 @@ def visibility_graph(series: Iterable[float]) -> nx.Graph:
        https://www.pnas.org/doi/10.1073/pnas.0709247105
     """
 
-    def obstruction_predicate(n1, t1, n2, t2):
+    def obstruction_predicate(
+        n1: int, t1: float, n2: int, t2: float
+    ) -> Callable[[int, float], bool]:
         slope = (t2 - t1) / (n2 - n1)
         constant = t2 - slope * n2
 
-        def is_obstruction(n, t):
+        def is_obstruction(n: int, t: float) -> bool:
             return t >= constant + slope * n
 
         return is_obstruction
