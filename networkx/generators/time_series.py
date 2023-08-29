@@ -36,20 +36,20 @@ def visibility_graph(series: Iterable[float]) -> nx.Graph:
     >>> import networkx as nx
     >>> from matplotlib import pyplot
     >>>
-    >>> series_list = [range(10), [2, 1, 3, 2, 1, 3, 2, 1, 3, 2, 1, 3], random.sample(range(100), 100)]
+    >>> series_list = [range(10), [2, 1, 3, 2, 1, 3, 2, 1, 3, 2, 1, 3]]
     >>>
     >>> for s in series_list:
     ...     g = nx.visibility_graph(s)
     ...     print(g)
-    ...     pos = [[x, 0] for x in range(len(s))]
-    ...     labels = nx.get_node_attributes(g, 'value')
-    ...     nx.draw_networkx_nodes(g, pos)
-    ...     nx.draw_networkx_labels(g, pos, labels=labels)
-    ...     nx.draw_networkx_edges(g, pos, arrows=True, connectionstyle='arc3,rad=-1.57079632679')
-    ...     pyplot.show()
+    ...     # Uncomment to following lines to plot the Graph.
+    ...     # pos = [[x, 0] for x in range(len(s))]
+    ...     # labels = nx.get_node_attributes(g, 'value')
+    ...     # nx.draw_networkx_nodes(g, pos)
+    ...     # nx.draw_networkx_labels(g, pos, labels=labels)
+    ...     # nx.draw_networkx_edges(g, pos, arrows=True, connectionstyle='arc3,rad=-1.57079632679')
+    ...     # pyplot.show()
     Graph with 10 nodes and 9 edges
     Graph with 12 nodes and 18 edges
-    Graph with 100 nodes and {xxx} edges
 
     References
     ----------
