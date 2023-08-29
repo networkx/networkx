@@ -82,10 +82,12 @@ def visibility_graph(series: Iterable[float]) -> nx.Graph:
         n2, t2 = s2
 
         if n2 == n1 + 1:
+            # Sequential values are always connected
             G.add_node(n1, value=t1)
             G.add_node(n2, value=t2)
             G.add_edge(n1, n2)
         else:
+            # Otherwise check if any value between obstructs line of sight
             is_obstruction = obstruction_predicate(n1, t1, n2, t2)
             obstructed = any(
                 is_obstruction(n, t) for n, t in enumerate(series) if n1 < n < n2

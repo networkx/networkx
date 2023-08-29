@@ -14,7 +14,6 @@ class TestVisibilityGraph:
         actual_graph = networkx.generators.time_series.visibility_graph(series)
 
         # assert
-
         assert actual_graph.number_of_nodes() == expected_series_length
         assert actual_graph.number_of_edges() == 9
 
@@ -22,10 +21,10 @@ class TestVisibilityGraph:
         # arrange
         series = [2, 1, 3, 2, 1, 3, 2, 1, 3, 2, 1, 3]
         expected_series_length = len(series)
+
         # act
         actual_graph = networkx.generators.time_series.visibility_graph(series)
 
         # assert
-
         assert actual_graph.number_of_nodes() == expected_series_length
         assert actual_graph.number_of_edges() == 18
