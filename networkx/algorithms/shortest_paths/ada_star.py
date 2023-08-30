@@ -174,12 +174,6 @@ class ada_star:
 
         NodeNotFound
             If either source or target is not in G.
-        
-        
-
-
-
-
 
         """
 
@@ -266,11 +260,9 @@ class ada_star:
 
         while True:
             s, v = self.__smallest_key__()
-
-            if  (not ada_star.__key_lt__(v, self.__key__(self.s_start))) and \
+            if (not ada_star.__key_lt__(v, self.__key__(self.s_start))) and \
                   self.rhs[self.s_start] == self.g[self.s_start]:
                 break
-
             self.OPEN.pop(s)
             self.visited.add(s)
 
