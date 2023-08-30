@@ -21,7 +21,7 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
     v : node, optional
         The target of the dispersion score if specified.
     normalized : bool
-        If True (default) normalize by the embededness of the nodes (u and v).
+        If True (default) normalize by the embeddedness of the nodes (u and v).
     alpha, b, c : float
         Parameters for the normalization procedure. When `normalized` is True,
         the dispersion value is normalized by::
@@ -72,13 +72,13 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
                     # tick for disp(u, v)
                     total += 1
         # neighbors that u and v share
-        embededness = len(ST)
+        embeddedness = len(ST)
 
         dispersion_val = total
         if normalized:
             dispersion_val = (total + b) ** alpha
-            if embededness + c != 0:
-                dispersion_val /= embededness + c
+            if embeddedness + c != 0:
+                dispersion_val /= embeddedness + c
 
         return dispersion_val
 

@@ -525,8 +525,8 @@ def triad_type(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
 @py_random_state(1)
+@nx._dispatch
 def random_triad(G, seed=None):
     """Returns a random triad from a directed graph.
 

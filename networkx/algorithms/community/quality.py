@@ -253,8 +253,8 @@ def modularity(G, communities, weight="weight", resolution=1):
     return sum(map(community_contribution, communities))
 
 
-@nx._dispatch
 @require_partition
+@nx._dispatch
 def partition_quality(G, partition):
     """Returns the coverage and performance of a partition of G.
 

@@ -108,7 +108,7 @@ def _neighbor_switch(G, w, unsat, h_node_residual, avoid_node_id=None):
     """
 
     if (avoid_node_id is None) or (h_node_residual[avoid_node_id] > 1):
-        # select unsatured node w_prime that has the same degree as w
+        # select unsaturated node w_prime that has the same degree as w
         w_prime = next(iter(unsat))
     else:
         # assume that the node pair (v,w) has been selected for connection. if
@@ -294,7 +294,7 @@ def is_valid_directed_joint_degree(in_degrees, out_degrees, nkk):
         out degree sequence contains the out degrees of nodes.
     nkk  :  dictionary of dictionary of integers
         directed joint degree dictionary. for nodes of out degree k (first
-        level of dict) and nodes of in degree l (seconnd level of dict)
+        level of dict) and nodes of in degree l (second level of dict)
         describes the number of edges.
 
     Returns

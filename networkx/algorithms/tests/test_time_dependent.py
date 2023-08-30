@@ -279,7 +279,9 @@ class TestCdIndex:
 
         nx.set_node_attributes(G, node_attrs)
 
-        with pytest.raises(ValueError, match="The cd index cannot be defined.") as ve:
+        with pytest.raises(
+            nx.NetworkXError, match="The cd index cannot be defined."
+        ) as ve:
             nx.cd_index(G, 4)
 
     def test_time_timedelta_compatibility(self):
@@ -312,7 +314,7 @@ class TestCdIndex:
         nx.set_node_attributes(G, node_attrs)
 
         with pytest.raises(
-            ValueError,
+            nx.NetworkXError,
             match="Addition and comparison are not supported between 'time_delta' and 'time' types, default time_delta = datetime.timedelta",
         ) as ve:
             nx.cd_index(G, 4)
@@ -349,7 +351,7 @@ class TestCdIndex:
         nx.set_node_attributes(G, node_attrs)
 
         with pytest.raises(
-            ValueError, match="Not all nodes have a 'time' attribute."
+            nx.NetworkXError, match="Not all nodes have a 'time' attribute."
         ) as ve:
             nx.cd_index(G, 4)
 

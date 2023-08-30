@@ -156,6 +156,9 @@ def dfs_predecessors(G, source=None, depth_limit=None):
 
     source : node, optional
        Specify starting node for depth-first search.
+       Note that you will get predecessors for all nodes in the
+       component containing `source`. This input only specifies
+       where the DFS starts.
 
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
@@ -207,6 +210,9 @@ def dfs_successors(G, source=None, depth_limit=None):
 
     source : node, optional
        Specify starting node for depth-first search.
+       Note that you will get successors for all nodes in the
+       component containing `source`. This input only specifies
+       where the DFS starts.
 
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.

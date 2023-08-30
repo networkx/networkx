@@ -99,7 +99,7 @@ Improvements
   problem.
 - [`#4897 <https://github.com/networkx/networkx/pull/4897>`_]
   Improve the validation and performance of ``nx.is_matching``,
-  ``nx.is_maximal_matching`` and ``nx.is_perfect_matcing``.
+  ``nx.is_maximal_matching`` and ``nx.is_perfect_matching``.
 - [`#4924 <https://github.com/networkx/networkx/pull/4924>`_]
   Fix handling of disconnected graphs when computing
   ``nx.common_neighbor_centrality``.
@@ -175,7 +175,7 @@ Improvements
 - [`#5217 <https://github.com/networkx/networkx/pull/5217>`_]
   Improve performance and readability of ``betweenness_centrality``.
 - [`#5232 <https://github.com/networkx/networkx/pull/5232>`_]
-  Add support for `None` edge weights to bidirectional Djikstra algorithm.
+  Add support for `None` edge weights to bidirectional Dijkstra algorithm.
 - [`#5247 <https://github.com/networkx/networkx/pull/5247>`_]
   Improve performance of asynchronous label propagation algorithm for
   community detection, ``asyn_lpa_communities``.
@@ -294,7 +294,7 @@ A total of 166 changes have been committed.
 - Remove unused internal solver from algebraicconnectivity (#5190)
 - Remove check/comment for scipy 1.1 behavior. (#5191)
 - Test on Python 3.10 (#5185)
-- Add regression test for ancestors/descedants w/ undir. G. (#5188)
+- Add regression test for ancestors/descendants w/ undir. G. (#5188)
 - Rm internal function, use advanced indexing instead. (#5197)
 - Fix missing import + tests in laplacian fns. (#5194)
 - Investigate pre-release test failures (#5208)

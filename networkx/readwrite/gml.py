@@ -311,9 +311,34 @@ def parse_gml_lines(lines, label, destringizer):
         ]
         tokens = re.compile("|".join(f"({pattern})" for pattern in patterns))
         lineno = 0
+        multilines = []  # entries spread across multiple lines
         for line in lines:
-            length = len(line)
             pos = 0
+
+            # deal with entries spread across multiple lines
+            #
+            # should we actually have to deal with escaped "s then do it here
+            if multilines:
+                multilines.append(line.strip())
+                if line[-1] == '"':  # closing multiline entry
+                    # multiline entries will be joined by space. cannot
+                    # reintroduce newlines as this will break the tokenizer
+                    line = " ".join(multilines)
+                    multilines = []
+                else:  # continued multiline entry
+                    lineno += 1
+                    continue
+            else:
+                if line.count('"') == 1:  # opening multiline entry
+                    if line.strip()[0] != '"' and line.strip()[-1] != '"':
+                        # since we expect something like key "value", the " should not be found at ends
+                        # otherwise tokenizer will pick up the formatting mistake.
+                        multilines = [line.rstrip()]
+                        lineno += 1
+                        continue
+
+            length = len(line)
+
             while pos < length:
                 match = tokens.match(line, pos)
                 if match is None:

@@ -42,7 +42,7 @@ def node_link_data(
     link="links",
 ):
     """Returns data in node-link format that is suitable for JSON serialization
-    and use in Javascript documents.
+    and use in JavaScript documents.
 
     Parameters
     ----------

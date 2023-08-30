@@ -712,7 +712,7 @@ def transitive_closure(G, reflexive=False):
         >>> TC.edges()
         OutEdgeView([(1, 2), (1, 3), (2, 3)])
 
-    However, nontrivial (i.e. length greater then 0) cycles create self-loops
+    However, nontrivial (i.e. length greater than 0) cycles create self-loops
     when ``reflexive=False`` (the default)::
 
         >>> DG = nx.DiGraph([(1, 2), (2, 3), (3, 1)])

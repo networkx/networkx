@@ -248,7 +248,7 @@ def tree_isomorphism(t1, t2):
     assert nx.is_tree(t1)
     assert nx.is_tree(t2)
 
-    # To be isomrophic, t1 and t2 must have the same number of nodes.
+    # To be isomorphic, t1 and t2 must have the same number of nodes.
     if nx.number_of_nodes(t1) != nx.number_of_nodes(t2):
         return []
 
