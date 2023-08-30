@@ -263,7 +263,7 @@ class ada_star:
 
         while True:
             s, v = self.__smallest_key__()
-            if (not ada_star.__key_lt__(v, self.__key__(self.s_start))) and \
+            if (not self.__key_lt__(v, self.__key__(self.s_start))) and \
                   self.rhs[self.s_start] == self.g[self.s_start]:
                 break
             self.OPEN.pop(s)
@@ -389,7 +389,7 @@ class ada_star:
             ]
         return [self.g[s] + self.heursistic(self.s_start, s), self.g[s]]
 
-    def __key_lt__(key1: list, key2: list) -> bool:
+    def __key_lt__(self, key1: list, key2: list) -> bool:
         # compare two keys
         # return the higher of two keys, by prioritizing the first element and
         # then the second element
