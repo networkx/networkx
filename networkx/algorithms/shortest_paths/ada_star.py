@@ -389,7 +389,7 @@ class ada_star:
             ]
         return [self.g[s] + self.heursistic(self.s_start, s), self.g[s]]
 
-    def __key_lt__(key1, key2) -> bool:
+    def __key_lt__(key1: list, key2: list) -> bool:
         # compare two keys
         # return the higher of two keys, by prioritizing the first element and
         # then the second element
