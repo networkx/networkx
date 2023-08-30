@@ -1,8 +1,10 @@
 import math
 import random
 import time
-import networkx as nx
+
 import numpy as np
+
+import networkx as nx
 
 
 class ada_star:
@@ -205,7 +207,7 @@ class ada_star:
 
         # initialize OPEN, CLOSED, INCONS
         self.OPEN[self.s_goal] = self.__key__(self.s_goal)
-        self.CLOSED, self.INCONS = set(), dict()
+        self.CLOSED, self.INCONS = set(), {}
 
         # keep track of visited states
         self.visited = set()
@@ -256,7 +258,7 @@ class ada_star:
             # move states from INCONS to OPEN
             for state in self.INCONS:
                 self.OPEN[state] = self.__key__(state)
-            self.INCONS = dict()
+            self.INCONS = {}
             for state in self.OPEN:
                 # update keys
                 self.OPEN[state] = self.__key__(state)
@@ -265,7 +267,8 @@ class ada_star:
         while True:
             s, v = self.__smallest_key__()
 
-            if  (not ada_star.__key_lt__(v, self.__key__(self.s_start))) and self.rhs[self.s_start] == self.g[self.s_start]:
+            if  (not ada_star.__key_lt__(v, self.__key__(self.s_start))) and \
+                  self.rhs[self.s_start] == self.g[self.s_start]:
                 break
 
             self.OPEN.pop(s)
@@ -327,7 +330,7 @@ class ada_star:
         # move states from INCONS to OPEN
         for state in self.INCONS:
             self.OPEN[state] = self.__key__(state)
-        self.INCONS = dict()
+        self.INCONS = {}
         for state in self.OPEN:
             # update keys
             self.OPEN[state] = self.__key__(state)
