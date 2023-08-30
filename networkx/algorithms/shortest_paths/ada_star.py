@@ -6,6 +6,7 @@ import numpy as np
 
 import networkx as nx
 
+__all__ = ["ada_star"]
 
 class ada_star:
     """A dynamic anytime path planning algorithm.
@@ -156,7 +157,8 @@ class ada_star:
     """
 
     def __init__(
-        self, s_start, s_goal, G, heursistic, weight="weight", initial_epsilon=1000
+        self, s_start, s_goal, G, heuristic=None, weight="weight",
+        initial_epsilon=1000
     ):
         """initializer for ADA* algorithm
 
@@ -182,7 +184,12 @@ class ada_star:
             raise nx.NodeNotFound(msg)
 
         self.s_start, self.s_goal = s_start, s_goal
-        self.heursistic = heursistic
+        if heuristic is None:
+        # The default heuristic is h=0 - same as Dijkstra's algorithm
+            def heuristic(u, v):
+                return 0
+        self.heursistic = heuristic
+        
         self.weight = weight
         self.G = G
         self.g, self.rhs, self.OPEN = {}, {}, {}
