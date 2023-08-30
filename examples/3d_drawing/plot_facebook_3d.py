@@ -1,6 +1,6 @@
 """
 ================
-3D Facebook Network Plot with Subplots
+3D Facebook Network Plot 
 ================
 
 3D spring plot for the Facebook graph investigated at https://networkx.org/nx-guides/content/exploratory_notebooks/facebook_notebook.html.
