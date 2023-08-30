@@ -1,4 +1,4 @@
-# Helpers for current-flow betweenness and current-flow closness
+# Helpers for current-flow betweenness and current-flow closeness
 # Lazy computations for inverse Laplacian and flow-matrix rows.
 import networkx as nx
 

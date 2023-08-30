@@ -7,7 +7,7 @@ _attrs = {"id": "id", "key": "key"}
 
 def adjacency_data(G, attrs=_attrs):
     """Returns data in adjacency format that is suitable for JSON serialization
-    and use in Javascript documents.
+    and use in JavaScript documents.
 
     Parameters
     ----------

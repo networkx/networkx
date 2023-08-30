@@ -138,7 +138,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     # TODO: rm csr_array wrapper when spdiags can produce arrays
     D = sp.sparse.csr_array(sp.sparse.spdiags(diags, 0, m, n, format="csr"))
     L = D - A
-    with sp.errstate(divide="ignore"):
+    with np.errstate(divide="ignore"):
         diags_sqrt = 1.0 / np.sqrt(diags)
     diags_sqrt[np.isinf(diags_sqrt)] = 0
     # TODO: rm csr_array wrapper when spdiags can produce arrays
@@ -257,7 +257,8 @@ def directed_laplacian_matrix(
     evals, evecs = sp.sparse.linalg.eigs(P.T, k=1)
     v = evecs.flatten().real
     p = v / v.sum()
-    sqrtp = np.sqrt(p)
+    # p>=0 by Perron-Frobenius Thm. Use abs() to fix roundoff across zero gh-6865
+    sqrtp = np.sqrt(np.abs(p))
     Q = (
         # TODO: rm csr_array wrapper when spdiags creates arrays
         sp.sparse.csr_array(sp.sparse.spdiags(sqrtp, 0, n, n))

@@ -573,7 +573,7 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     left, right = nx.bipartite.sets(G, top_nodes)
     U = list(left)
     V = list(right)
-    # We explicitly create the biadjancency matrix having infinities
+    # We explicitly create the biadjacency matrix having infinities
     # where edges are missing (as opposed to zeros, which is what one would
     # get by using toarray on the sparse matrix).
     weights_sparse = biadjacency_matrix(

@@ -45,7 +45,7 @@ def color(G):
     >>> print(c)
     {0: 1, 1: 0, 2: 1, 3: 0}
 
-    You can use this to set a node attribute indicating the biparite set:
+    You can use this to set a node attribute indicating the bipartite set:
 
     >>> nx.set_node_attributes(G, c, "bipartite")
     >>> print(G.nodes[0]["bipartite"])

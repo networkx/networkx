@@ -63,7 +63,7 @@ def resource_allocation_index(G, ebunch=None):
         Resource allocation index will be computed for each pair of
         nodes given in the iterable. The pairs must be given as
         2-tuples (u, v) where u and v are nodes in the graph. If ebunch
-        is None then all non-existent edges in the graph will be used.
+        is None then all nonexistent edges in the graph will be used.
         Default value: None.
 
     Returns
@@ -118,7 +118,7 @@ def jaccard_coefficient(G, ebunch=None):
         Jaccard coefficient will be computed for each pair of nodes
         given in the iterable. The pairs must be given as 2-tuples
         (u, v) where u and v are nodes in the graph. If ebunch is None
-        then all non-existent edges in the graph will be used.
+        then all nonexistent edges in the graph will be used.
         Default value: None.
 
     Returns
@@ -177,7 +177,7 @@ def adamic_adar_index(G, ebunch=None):
         Adamic-Adar index will be computed for each pair of nodes given
         in the iterable. The pairs must be given as 2-tuples (u, v)
         where u and v are nodes in the graph. If ebunch is None then all
-        non-existent edges in the graph will be used.
+        nonexistent edges in the graph will be used.
         Default value: None.
 
     Returns
@@ -246,7 +246,7 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
         Preferential attachment score will be computed for each pair of
         nodes given in the iterable. The pairs must be given as
         2-tuples (u, v) where u and v are nodes in the graph. If ebunch
-        is None then all non-existent edges in the graph will be used.
+        is None then all nonexistent edges in the graph will be used.
         Default value: None.
 
     alpha : Parameter defined for participation of Common Neighbor
@@ -329,7 +329,7 @@ def preferential_attachment(G, ebunch=None):
         Preferential attachment score will be computed for each pair of
         nodes given in the iterable. The pairs must be given as
         2-tuples (u, v) where u and v are nodes in the graph. If ebunch
-        is None then all non-existent edges in the graph will be used.
+        is None then all nonexistent edges in the graph will be used.
         Default value: None.
 
     Returns
@@ -388,7 +388,7 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
         The score will be computed for each pair of nodes given in the
         iterable. The pairs must be given as 2-tuples (u, v) where u
         and v are nodes in the graph. If ebunch is None then all
-        non-existent edges in the graph will be used.
+        nonexistent edges in the graph will be used.
         Default value: None.
 
     community : string, optional (default = 'community')
@@ -463,7 +463,7 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
         The score will be computed for each pair of nodes given in the
         iterable. The pairs must be given as 2-tuples (u, v) where u
         and v are nodes in the graph. If ebunch is None then all
-        non-existent edges in the graph will be used.
+        nonexistent edges in the graph will be used.
         Default value: None.
 
     community : string, optional (default = 'community')
@@ -534,7 +534,7 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
         The WIC measure will be computed for each pair of nodes given in
         the iterable. The pairs must be given as 2-tuples (u, v) where
         u and v are nodes in the graph. If ebunch is None then all
-        non-existent edges in the graph will be used.
+        nonexistent edges in the graph will be used.
         Default value: None.
 
     delta : float, optional (default = 0.001)

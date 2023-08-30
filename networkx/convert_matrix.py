@@ -787,7 +787,7 @@ def to_numpy_array(
         default is used. The dtype can be structured if `weight=None`, in which
         case the dtype field names are used to look up edge attributes. The
         result is a structured array where each named field in the dtype
-        corresponds to the adjaceny for that edge attribute. See examples for
+        corresponds to the adjacency for that edge attribute. See examples for
         details.
 
     order : {'C', 'F'}, optional
@@ -807,7 +807,7 @@ def to_numpy_array(
         dtype is used.
 
     nonedge : array_like (default = 0.0)
-        The value used to represent non-edges in the adjaceny matrix.
+        The value used to represent non-edges in the adjacency matrix.
         The array values corresponding to nonedges are typically set to zero.
         However, this could be undesirable if there are array values
         corresponding to actual edges that also have the value zero. If so,

@@ -5,8 +5,8 @@ __all__ = ["average_clustering"]
 
 
 @not_implemented_for("directed")
-@nx._dispatch(name="approximate_average_clustering")
 @py_random_state(2)
+@nx._dispatch(name="approximate_average_clustering")
 def average_clustering(G, trials=1000, seed=None):
     r"""Estimates the average clustering coefficient of G.
 

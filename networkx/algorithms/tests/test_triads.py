@@ -243,7 +243,7 @@ def test_triadic_census_nodelist():
 
 
 @pytest.mark.parametrize("N", [5, 10])
-def test_triandic_census_on_random_graph(N):
+def test_triadic_census_on_random_graph(N):
     G = nx.binomial_graph(N, 0.3, directed=True, seed=42)
     tc1 = nx.triadic_census(G)
     tbt = nx.triads_by_type(G)

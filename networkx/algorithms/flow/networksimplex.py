@@ -172,7 +172,7 @@ class _DataEssentialsAndFunctions:
         self.prev_node_dft[next_last_t] = prev_t
         self.next_node_dft[last_t] = t
         self.prev_node_dft[t] = last_t
-        # Update the subtree sizes and last descendants of the (old) acenstors
+        # Update the subtree sizes and last descendants of the (old) ancestors
         # of t.
         while s is not None:
             self.subtree_size[s] -= size_t

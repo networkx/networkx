@@ -2,7 +2,7 @@
 
 # A full test of all dispatchable algorithms is performed by
 # modifying the pytest invocation and setting an environment variable
-# NETWORKX_GRAPH_CONVERT=nx-loopback pytest
+# NETWORKX_TEST_BACKEND=nx-loopback pytest
 # This is comprehensive, but only tests the `test_override_dispatch`
 # function in networkx.classes.backends.
 
@@ -52,7 +52,7 @@ def convert(graph):
 class LoopbackDispatcher:
     def __getattr__(self, item):
         try:
-            return nx.utils.backends._registered_algorithms[item].__wrapped__
+            return nx.utils.backends._registered_algorithms[item].orig_func
         except KeyError:
             raise AttributeError(item) from None
 
@@ -184,6 +184,11 @@ class LoopbackDispatcher:
         # Verify that items can be xfailed
         for item in items:
             assert hasattr(item, "add_marker")
+
+    def can_run(self, name, args, kwargs):
+        # It is unnecessary to define this function if algorithms are fully supported.
+        # We include it for illustration purposes.
+        return hasattr(self, name)
 
 
 dispatcher = LoopbackDispatcher()

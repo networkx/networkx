@@ -9,8 +9,8 @@ __all__ = ["spanner"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch(edge_attrs="weight")
 @py_random_state(3)
+@nx._dispatch(edge_attrs="weight")
 def spanner(G, stretch, weight=None, seed=None):
     """Returns a spanner of the given graph with the given stretch.
 

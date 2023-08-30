@@ -10,8 +10,8 @@ from networkx.utils import py_random_state
 __all__ = ["louvain_communities", "louvain_partitions"]
 
 
-@nx._dispatch(edge_attrs="weight")
 @py_random_state("seed")
+@nx._dispatch(edge_attrs="weight")
 def louvain_communities(
     G, weight="weight", resolution=1, threshold=0.0000001, seed=None
 ):
@@ -112,8 +112,8 @@ def louvain_communities(
     return q.pop()
 
 
-@nx._dispatch(edge_attrs="weight")
 @py_random_state("seed")
+@nx._dispatch(edge_attrs="weight")
 def louvain_partitions(
     G, weight="weight", resolution=1, threshold=0.0000001, seed=None
 ):
@@ -122,7 +122,7 @@ def louvain_partitions(
     Louvain Community Detection Algorithm is a simple method to extract the community
     structure of a network. This is a heuristic method based on modularity optimization. [1]_
 
-    The partitions at each level (step of the algorithm) form a dendogram of communities.
+    The partitions at each level (step of the algorithm) form a dendrogram of communities.
     A dendrogram is a diagram representing a tree and each level represents
     a partition of the G graph. The top level contains the smallest communities
     and as you traverse to the bottom of the tree the communities get bigger

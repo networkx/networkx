@@ -691,7 +691,7 @@ def validate_length_path(G, s, t, soln_len, length, path):
     validate_path(G, s, t, length, path)
 
 
-def test_bidirectional_dijksta_restricted():
+def test_bidirectional_dijkstra_restricted():
     XG = nx.DiGraph()
     XG.add_weighted_edges_from(
         [

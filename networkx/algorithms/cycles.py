@@ -29,11 +29,11 @@ def cycle_basis(G, root=None):
     """Returns a list of cycles which form a basis for cycles of G.
 
     A basis for cycles of a network is a minimal collection of
-    cycles such that any cycle in the network can be written
-    as a sum of cycles in the basis.  Here summation of cycles
-    is defined as "exclusive or" of the edges. Cycle bases are
-    useful, e.g. when deriving equations for electric circuits
-    using Kirchhoff's Laws.
+    cycles  such that any  simple cycle in  the network can be
+    written as a sum of cycles in the basis. Here summation of
+    cycles  is defined as "exclusive or" of  the edges.  Cycle
+    bases   are  useful,  e.g.  when  deriving  equations  for
+    electric circuits using Kirchhoff's Laws.
 
     Parameters
     ----------
@@ -599,7 +599,7 @@ def chordless_cycles(G, length_bound=None):
     #    must not construct longer cycles along (u, v).
     # 2. If G is not directed, then a pair of parallel edges between (u, v) is a
     #    chordless cycle unless there exists a third (or more) parallel edge.
-    # 3. If G is directed, then parallel edges do not form cyles, but do
+    # 3. If G is directed, then parallel edges do not form cycles, but do
     #    preclude back-edges from forming cycles (handled in the next section),
     #    Thus, if an edge (u, v) is duplicated and the reverse (v, u) is also
     #    present, then we remove both from F.
