@@ -4,7 +4,7 @@
 ================
 
 3D spring plot for the Facebook graph investigated at https://networkx.org/nx-guides/content/exploratory_notebooks/facebook_notebook.html.
-The plots are shown for two different azimuthal angles. One can see a slightly different behavior than in 2D.
+The plots are shown for two different azimuthal angles. One can see a slightly better clustering than the coreesponding spring layout in 2D.
 
 """
 import networkx as nx
@@ -55,17 +55,6 @@ ax.set_axis_off()
 # Set azimuthal angle
 azimuthal_angle = 30
 ax.view_init(elev=50.0, azim=azimuthal_angle)
-
-# Add caption with angles
-ax.text2D(
-    0.05,
-    0.95,
-    f"Azimuth: {azimuthal_angle}°\nElevation: 50°",
-    transform=ax.transAxes,
-    fontsize=12,
-    va="top",
-    ha="left",
-)
 
 # Define the rectangular region to zoom into
 x_min, x_max = -0.5, 0.5
