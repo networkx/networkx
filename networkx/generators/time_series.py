@@ -2,7 +2,6 @@
 Time Series Graphs
 """
 import itertools
-from collections.abc import Iterable
 from typing import Callable
 
 import networkx as nx
@@ -10,7 +9,7 @@ import networkx as nx
 __all__ = ["visibility_graph"]
 
 
-def visibility_graph(series: Iterable[float]) -> nx.Graph:
+def visibility_graph(series):
     """
     Return a Visibility Graph of an input Time Series.
 
@@ -21,18 +20,16 @@ def visibility_graph(series: Iterable[float]) -> nx.Graph:
 
     Parameters
     ----------
-    series: Iterable[float]
-       Time Series iterable of float values
+    series: list[float] | tuple[float] | list[int] | tuple[int]
+       Time Series iterable of float or int values
 
     Returns
     -------
-    NetworkX graph
-        The Visibility Graph of series
+    NetworkX Graph
+        The Visibility Graph of the input series
 
     Examples
     --------
-    >>> import random
-    >>>
     >>> import networkx as nx
     >>> from matplotlib import pyplot
     >>>
@@ -62,16 +59,11 @@ def visibility_graph(series: Iterable[float]) -> nx.Graph:
        https://www.pnas.org/doi/10.1073/pnas.0709247105
     """
 
-    def obstruction_predicate(
-        n1: int, t1: float, n2: int, t2: float
-    ) -> Callable[[int, float], bool]:
-        slope = (t2 - t1) / (n2 - n1)
-        constant = t2 - slope * n2
-
-        def is_obstruction(n: int, t: float) -> bool:
-            return t >= constant + slope * n
-
-        return is_obstruction
+    if not isinstance(series, (list, tuple, range)):
+        raise nx.NetworkXError(
+            "Input series must be a sliceable Iterable, "
+            "i.e. of one the following types: list, tuple or range"
+        )
 
     G = nx.Graph()
     # Check all combinations of nodes n series
@@ -79,18 +71,31 @@ def visibility_graph(series: Iterable[float]) -> nx.Graph:
         n1, t1 = s1
         n2, t2 = s2
 
-        if n2 == n1 + 1:
+        if n1 + 1 == n2:
             # Sequential values are always connected
             G.add_node(n1, value=t1)
             G.add_node(n2, value=t2)
             G.add_edge(n1, n2)
         else:
             # Otherwise check if any value between obstructs line of sight
-            is_obstruction = obstruction_predicate(n1, t1, n2, t2)
+            is_obstruction = _obstruction_predicate(n1, t1, n2, t2)
             obstructed = any(
-                is_obstruction(n, t) for n, t in enumerate(series) if n1 < n < n2
+                is_obstruction(n, t)
+                for n, t in enumerate(series[n1 + 1 : n2], start=n1 + 1)
             )
             if not obstructed:
                 G.add_edge(n1, n2)
 
     return G
+
+
+def _obstruction_predicate(
+    n1: int, t1: float, n2: int, t2: float
+) -> Callable[[int, float], bool]:
+    slope = (t2 - t1) / (n2 - n1)
+    constant = t2 - slope * n2
+
+    def is_obstruction(n: int, t: float) -> bool:
+        return t >= constant + slope * n
+
+    return is_obstruction
