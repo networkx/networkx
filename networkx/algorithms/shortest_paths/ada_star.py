@@ -4,9 +4,7 @@ import time
 import networkx as nx
 import numpy as np
 
-__all__ = ["ADA_star"]
-
-class ADA_star:
+class ada_star:
     """A dynamic anytime path planning algorithm.
     
     Class is responsible for the implementation of the Dynamic Anytime
@@ -105,7 +103,7 @@ class ADA_star:
     A* path:  [42, 32, 19, 72, 49, 29, 31, 94, 35, 25]
 
     >>> #create search object
-    >>> search = ADA_star(s_start, s_goal, G, heursistic)
+    >>> search = ada_star(s_start, s_goal, G, heursistic)
 
     >>> #compute first suboptimal path epsilon = 2
     >>> start_time = time.time()
@@ -145,8 +143,6 @@ class ADA_star:
     >>> print("changed epsilon = 1 path_weight: ", nx.path_weight(G, path, "weight"))
     changed epsilon = 1 path_weight:  1.1428811257616596
 
-
-
     """
 
     def __init__(self, s_start, s_goal, G, heursistic, weight = "weight", initial_epsilon = 1000):
@@ -181,11 +177,11 @@ class ADA_star:
         self.G = G
         self.g, self.rhs, self.OPEN = {}, {}, {}
 
-        # estimate g(s) of the cost from each state to the goal
+        # estimate g[s] of the cost from each state to the goal
         self.g = {s:math.inf for s in G.nodes()}
 
-        # one-step lookahead cost, 0 is s is the goal, otherwise, is the 
-        # minimum of the following sum: 
+        # one-step lookahead cost, rhs[s], 0 is s is the goal, otherwise,
+        # is the minimum of the following sum: 
             # The cost between s and its neighbours plus the g value 
             # of that neighbour
         self.rhs = {s:math.inf for s in G.nodes()}
@@ -194,7 +190,7 @@ class ADA_star:
         self.epsilon = initial_epsilon
 
         #initialize OPEN, CLOSED, INCONS 
-        self.OPEN[self.s_goal] = self.key(self.s_goal)
+        self.OPEN[self.s_goal] = self.__key__(self.s_goal)
         self.CLOSED, self.INCONS = set(), dict()
 
         #keep track of visited states
@@ -224,7 +220,7 @@ class ADA_star:
         Examples
         --------        
         >>> #create search object
-        >>> search = ADA_star(s_start, s_goal, G, heursistic)
+        >>> search = ada_star(s_start, s_goal, G, heursistic)
  
         >>> #compute first suboptimal path epsilon = 2
         >>> search.compute_or_improve_path(epsilon=2)
@@ -245,17 +241,17 @@ class ADA_star:
             self.epsilon = epsilon
             #move states from INCONS to OPEN
             for state in self.INCONS:
-                self.OPEN[state] = self.key(state)
+                self.OPEN[state] = self.__key__(state)
             self.INCONS = dict()
             for state in self.OPEN:
                 #update keys
-                self.OPEN[state] = self.key(state)
+                self.OPEN[state] = self.__key__(state)
             self.CLOSED = set()
 
         while True:
-            s, v = self.smallest_key()
+            s, v = self.__smallest_key__()
             
-            if  (not ADA_star.key_lt(v, self.key(self.s_start))) and self.rhs[self.s_start] == self.g[self.s_start]:
+            if  (not ada_star.__key_lt__(v, self.__key__(self.s_start))) and self.rhs[self.s_start] == self.g[self.s_start]:
                 break
 
             self.OPEN.pop(s)
@@ -264,103 +260,13 @@ class ADA_star:
             if self.g[s] > self.rhs[s]:
                 self.g[s] = self.rhs[s]
                 self.CLOSED.add(s)
-                for sn in self.get_neighbor(s):
-                    self.update_state(sn)
+                for sn in self.__get_neighbor__(s):
+                    self.__update_state__(sn)
             else:
                 self.g[s] = float("inf")
-                for sn in self.get_neighbor(s):
-                    self.update_state(sn)
-                self.update_state(s)
-
-
-    def update_state(self, s) -> None:
-
-        if s != self.s_goal:
-            self.rhs[s] = float("inf")
-            for x in self.get_neighbor(s):
-                self.rhs[s] = min(self.rhs[s], self.g[x] + self.cost(s, x))
-
-        if s in self.OPEN:
-            self.OPEN.pop(s)
-
-        if self.g[s] != self.rhs[s]:
-            if s not in self.CLOSED:
-                self.OPEN[s] = self.key(s)
-            else:
-                self.INCONS[s] = 0
-
-
-    def key(self, s):
-        #return the key of a state
-        if self.g[s] > self.rhs[s]:
-            return [self.rhs[s] + (self.epsilon * self.heursistic(self.s_start, s)), self.rhs[s]]
-        return [self.g[s] + self.heursistic(self.s_start, s), self.g[s]]
-
-
-    def key_lt(key1, key2)-> bool:
-        #compare two keys
-        if key1[0] < key2[0]:
-            return True
-        if key1[0] == key2[0] and key1[1] < key2[1]:
-            return True
-        return False
-    
-
-    def smallest_key(self):
-        # return the smallest key, smallest being the one with the lowest first element as priority, 
-        # if the first elements are equal, the one with the lowest second element is chosen
-
-        min_primary = math.inf
-        min_secondary = math.inf
-        min_index = None
-        for key, value in self.OPEN.items():
-            if value[0] <= min_primary:
-                min_primary = value[0]
-                min_index = key
-                if value[1] < min_secondary:
-                    min_secondary = value[1]
-                    min_index = key
-
-        return min_index, [min_primary, min_secondary]
-
-
-    def cost(self, s, s_prime):
-        return self.G[s][s_prime][self.weight]
-
-
-    def get_neighbor(self, s):
-        return self.G[s].keys()
-
-
-    def extract_path(self) -> list:
-        """Extract the path based on current potentially suboptimal solution.
-
-        Returns a path from the start state to the goal state. The path is
-        suboptimal by the bound given in the compute_or_improve_path function.
-
-        Returns
-        -------
-        list of nodes in the path
-
-        Raises
-        -------
-        NetworkXNoPath
-            If no path exists between source and target.
-
-        """
-
-        path = [self.s_start]
-        s = self.s_start
-
-        while True: #TODO raise exception if no path exists
-            neighbours = self.get_neighbor(s)
-            # find neighbour with lowest g value
-            s = min(neighbours, key=lambda x: self.g[x] + self.cost(s, x))
-            path.append(s)
-            if s == self.s_goal:
-                break
-
-        return list(path)
+                for sn in self.__get_neighbor__(s):
+                    self.__update_state__(sn)
+                self.__update_state__(s)
 
 
     def update_graph(self, changes) -> None:
@@ -403,16 +309,107 @@ class ADA_star:
         for change in changes:
             self.G[change[0]][change[1]][self.weight] = change[2]
             self.G[change[1]][change[0]][self.weight] = change[2]
-            self.update_state(change[0])
-            self.update_state(change[1])
+            self.__update_state__(change[0])
+            self.__update_state__(change[1])
         #move states from INCONS to OPEN
         for state in self.INCONS:
-            self.OPEN[state] = self.key(state)
+            self.OPEN[state] = self.__key__(state)
         self.INCONS = dict()
         for state in self.OPEN:
             #update keys
-            self.OPEN[state] = self.key(state)
+            self.OPEN[state] = self.__key__(state)
         self.CLOSED = set()
+
+
+    def extract_path(self) -> list:
+        """Extract the path based on current potentially suboptimal solution.
+
+        Returns a path from the start state to the goal state. The path is
+        suboptimal by the bound given in the compute_or_improve_path function.
+
+        Returns
+        -------
+        list of nodes in the path
+
+        Raises
+        -------
+        NetworkXNoPath
+            If no path exists between source and target.
+
+        """
+
+        path = [self.s_start]
+        s = self.s_start
+
+        while True: #TODO raise exception if no path exists
+            neighbours = self.__get_neighbor__(s)
+            # find neighbour with lowest g value
+            s = min(neighbours, key=lambda x: self.g[x] + self.__cost__(s, x))
+            path.append(s)
+            if s == self.s_goal:
+                break
+
+        return list(path)
+
+
+    def __update_state__(self, s) -> None:
+
+        if s != self.s_goal:
+            self.rhs[s] = float("inf")
+            for x in self.__get_neighbor__(s):
+                self.rhs[s] = min(self.rhs[s], self.g[x] + self.__cost__(s, x))
+
+        if s in self.OPEN:
+            self.OPEN.pop(s)
+
+        if self.g[s] != self.rhs[s]:
+            if s not in self.CLOSED:
+                self.OPEN[s] = self.__key__(s)
+            else:
+                self.INCONS[s] = 0
+
+
+    def __key__(self, s):
+        #return the key of a state
+        if self.g[s] > self.rhs[s]:
+            return [self.rhs[s] + (self.epsilon * self.heursistic(self.s_start, s)), self.rhs[s]]
+        return [self.g[s] + self.heursistic(self.s_start, s), self.g[s]]
+
+
+    def __key_lt__(key1, key2)-> bool:
+        #compare two keys
+        if key1[0] < key2[0]:
+            return True
+        if key1[0] == key2[0] and key1[1] < key2[1]:
+            return True
+        return False
+    
+
+    def __smallest_key__(self):
+        # return the smallest key, smallest being the one with the lowest first element as priority, 
+        # if the first elements are equal, the one with the lowest second element is chosen
+
+        min_primary = math.inf
+        min_secondary = math.inf
+        min_index = None
+        for key, value in self.OPEN.items():
+            if value[0] <= min_primary:
+                min_primary = value[0]
+                min_index = key
+                if value[1] < min_secondary:
+                    min_secondary = value[1]
+                    min_index = key
+
+        return min_index, [min_primary, min_secondary]
+
+
+    def __cost__(self, s, s_prime):
+        return self.G[s][s_prime][self.weight]
+
+
+    def __get_neighbor__(self, s):
+        return self.G[s].keys()
+
 
 
 if __name__ == "__main__":
@@ -431,7 +428,7 @@ if __name__ == "__main__":
     print("A* path: ", path)
 
     #create search object
-    search = ADA_star(s_start, s_goal, G, heursistic)
+    search = ada_star(s_start, s_goal, G, heursistic)
 
     #compute first suboptimal path epsilon = 2
     start_time = time.time()
