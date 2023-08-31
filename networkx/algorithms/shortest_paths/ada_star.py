@@ -92,17 +92,17 @@ class ada_star:
 
     >>> G = nx.random_geometric_graph(100, 0.20, seed=896803)
     >>> for u, v, w in G.edges(data=True):  # Euclidean distance between nodes
-    >>>     w["weight"] = math.sqrt(
-    >>>         (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
-    >>>         + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
-    >>>     )
+    ...     w["weight"] = math.sqrt(
+    ...         (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
+    ...         + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
+    ...     )
     >>> source, target = 42, 25
 
     >>> def heursistic(u, v):  # Euclidean distance between nodes
-    >>>     return math.sqrt(
-    >>>         (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
-    >>>         + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
-    >>>     )
+    ...     return math.sqrt(
+    ...         (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
+    ...         + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
+    ...     )
 
     >>> # A* search for comparison
     >>> path = nx.astar_path(G, source, target, heursistic)
