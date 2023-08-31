@@ -89,29 +89,34 @@ class ada_star:
     Examples
     --------
     >>> import math
+
     >>> G = nx.random_geometric_graph(100, 0.20, seed=896803)
     >>> for u, v, w in G.edges(data=True):  # Euclidean distance between nodes
-    ...     w["weight"] = math.sqrt(
-    ...         (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
-    ...         + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
-    ...     )
-
+    >>>     w["weight"] = math.sqrt(
+    >>>         (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
+    >>>         + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
+    >>>     )
     >>> source, target = 42, 25
+
     >>> def heursistic(u, v):  # Euclidean distance between nodes
-    ...     return math.sqrt(
-    ...         (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
-    ...         + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
-    ...     )
+    >>>     return math.sqrt(
+    >>>         (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
+    >>>         + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
+    >>>     )
+
+    >>> # A* search for comparison
     >>> path = nx.astar_path(G, source, target, heursistic)
     >>> print("A* path: ", path)
     A* path:  [42, 32, 19, 72, 49, 29, 31, 94, 35, 25]
-
     >>> search = ada_star(source, target, G, heursistic)
+
     >>> search.compute_or_improve_path(epsilon=2)
     >>> path = search.extract_path()
     >>> print("epsilon = 2 path: ", path)
     epsilon = 2 path:  [42, 32, 24, 40, 59, 4, 66, 27, 35, 25]
-    >>> print("epsilon = 2 path_weight: ", nx.path_weight(G, search.extract_path(), "weight"))
+    >>> print(
+    >>>     "epsilon = 2 path_weight: ", nx.path_weight(G, search.extract_path(), "weight")
+    >>> )
     epsilon = 2 path_weight:  1.4679609830956495
 
     >>> search.compute_or_improve_path(epsilon=1.2)
@@ -128,15 +133,14 @@ class ada_star:
     >>> print("epsilon = 1 path_weight: ", nx.path_weight(G, path, "weight"))
     epsilon = 1 path_weight:  1.29129785933092
 
-    >>> search.update_graph([[49, 97, 0]]) #add edge between 77 and 15 with weight 0
+    >>> search.update_graph([[49, 97, 0]])  # set weight between 49 and 97 to 0
     >>> search.compute_or_improve_path(epsilon=1)
     >>> path = search.extract_path()
     >>> print("changed epsilon = 1 path: ", path)
-    changed epsilon = 1 path:  [42, 32, 19, 72, 49, 97, 11, 31, 94, 35, 25]
+    changed epsilon = 1 path:  [42, 32, 19, 72, 49, 29, 31, 94, 35, 25]
     >>> print("changed epsilon = 1 path_weight: ", nx.path_weight(G, path, "weight"))
-    changed epsilon = 1 path_weight:  1.1428811257616596
-
-    """
+    changed epsilon = 1 path_weight:  1.29129785933092
+    >>>"""
 
     def __init__(
         self, source, target, G, heuristic=None, weight="weight", initial_epsilon=1000
