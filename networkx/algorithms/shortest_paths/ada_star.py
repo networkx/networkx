@@ -172,6 +172,9 @@ class ada_star:
 
         """
 
+        if type(G) == nx.MultiDiGraph or type(G) == nx.MultiGraph:
+            raise nx.NetworkXNotImplemented("MultiGraph and MultiDiGraph not supported")
+        
         if source not in G or target not in G:
             msg = f"Either source {source} or target {target} is not in G"
             raise nx.NodeNotFound(msg)
@@ -183,9 +186,10 @@ class ada_star:
                 return 0
         self.heursistic = heuristic
         
-        self.weight = weight
         self.G = G
         self.g, self.rhs, self.OPEN = {}, {}, {}
+
+        self.weight = _weight_function(self.G, weight)
 
         # estimate g[n] of the cost from each state to the goal
         self.g = {n: math.inf for n in G.nodes()}
@@ -308,7 +312,7 @@ class ada_star:
             change graph edge weight
             >>> print("changing graph weight for edge (49, 97)")
             changing graph weight for edge (49, 97)
-            >>> search.update_graph([[49, 97, 0]]) #add edge between 77 and 15 with weight 0
+            >>> search.update_graph([[49, 97, 0]]) #add edge between 49 and 97 with weight 0
             >>> search.compute_or_improve_path(epsilon=1)
             >>> path = search.extract_path()
             >>> print("changed epsilon = 1 path: ", path)
@@ -354,7 +358,11 @@ class ada_star:
         while True:  # TODO raise exception if no path exists
             neighbours = self._get_neighbor(source)
             # find neighbour with lowest g value
-            source = min(neighbours, key=lambda x: self.g[x] + self._cost(source, x))
+            try: 
+                source = min(neighbours, key=lambda x: self.g[x] + self._cost(source, x))
+            except:
+                raise nx.NetworkXNoPath(f"No path exists between {self.source} and {self.target}")
+            
             path.append(source)
             if source == self.target:
                 break
@@ -414,7 +422,8 @@ class ada_star:
         return min_index, [min_primary, min_secondary]
 
     def _cost(self, n, nbr):
-        return self.G[n][nbr][self.weight]
+        return self.weight(n, nbr, self.G[n][nbr])
+    # self.G[n][nbr][self.weight]
 
     def _get_neighbor(self, n):
         return self.G[n].keys()
@@ -422,6 +431,8 @@ class ada_star:
 
 # if __name__ == "__main__":
     # import numpy as np
+    # import random
+    # import time
 
     # random.seed(1)
     # G = nx.random_geometric_graph(100, 0.20, seed=896803)
