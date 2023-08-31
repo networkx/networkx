@@ -193,14 +193,14 @@ class ada_star:
         self.G = G
         self.g, self.rhs, self.OPEN = {}, {}, {}
 
-        # estimate g[s] of the cost from each state to the goal
-        self.g = {s: math.inf for s in G.nodes()}
+        # estimate g[n] of the cost from each state to the goal
+        self.g = {n: math.inf for n in G.nodes()}
 
-        # one-step lookahead cost, rhs[s], 0 is s is the goal, otherwise,
+        # one-step lookahead cost, rhs[n], 0 is n is the goal, otherwise,
         # is the minimum of the following sum:
-        # The cost between s and its neighbours plus the g value
+        # The cost between n and its neighbours plus the g value
         # of that neighbour
-        self.rhs = {s: math.inf for s in G.nodes()}
+        self.rhs = {n: math.inf for n in G.nodes()}
 
         self.rhs[self.target] = 0.0
         self.epsilon = initial_epsilon
@@ -265,23 +265,23 @@ class ada_star:
             self.CLOSED = set()
 
         while True:
-            s, v = self.__smallest_key__()
+            u, v = self.__smallest_key__()
             if (not self.__key_lt__(v, self.__key__(self.source))) and \
                   self.rhs[self.source] == self.g[self.source]:
                 break
-            self.OPEN.pop(s)
-            self.visited.add(s)
+            self.OPEN.pop(u)
+            self.visited.add(u)
 
-            if self.g[s] > self.rhs[s]:
-                self.g[s] = self.rhs[s]
-                self.CLOSED.add(s)
-                for sn in self.__get_neighbor__(s):
-                    self.__update_state__(sn)
+            if self.g[u] > self.rhs[u]:
+                self.g[u] = self.rhs[u]
+                self.CLOSED.add(u)
+                for un in self.__get_neighbor__(u):
+                    self.__update_state__(un)
             else:
-                self.g[s] = float("inf")
-                for sn in self.__get_neighbor__(s):
-                    self.__update_state__(sn)
-                self.__update_state__(s)
+                self.g[u] = float("inf")
+                for un in self.__get_neighbor__(u):
+                    self.__update_state__(un)
+                self.__update_state__(u)
 
     def update_graph(self, changes):
         """Update the graph with new edge weights
@@ -355,42 +355,42 @@ class ada_star:
         """
 
         path = [self.source]
-        s = self.source
+        source = self.source
 
         while True:  # TODO raise exception if no path exists
-            neighbours = self.__get_neighbor__(s)
+            neighbours = self.__get_neighbor__(source)
             # find neighbour with lowest g value
-            s = min(neighbours, key=lambda x: self.g[x] + self.__cost__(s, x))
-            path.append(s)
-            if s == self.target:
+            source = min(neighbours, key=lambda x: self.g[x] + self.__cost__(source, x))
+            path.append(source)
+            if source == self.target:
                 break
 
         return list(path)
 
-    def __update_state__(self, s):
-        if s != self.target:
-            self.rhs[s] = float("inf")
-            for x in self.__get_neighbor__(s):
-                self.rhs[s] = min(self.rhs[s], self.g[x] + self.__cost__(s, x))
+    def __update_state__(self, n):
+        if n != self.target:
+            self.rhs[n] = float("inf")
+            for nbr in self.__get_neighbor__(n):
+                self.rhs[n] = min(self.rhs[n], self.g[nbr] + self.__cost__(n, nbr))
 
-        if s in self.OPEN:
-            self.OPEN.pop(s)
+        if n in self.OPEN:
+            self.OPEN.pop(n)
 
-        if self.g[s] != self.rhs[s]:
-            if s not in self.CLOSED:
-                self.OPEN[s] = self.__key__(s)
+        if self.g[n] != self.rhs[n]:
+            if n not in self.CLOSED:
+                self.OPEN[n] = self.__key__(n)
             else:
-                self.INCONS[s] = 0
+                self.INCONS[n] = 0
 
-    def __key__(self, s):
+    def __key__(self, n):
         # return the key of a state
         # the key of a state is a list of two floats, (k1, k2)
-        if self.g[s] > self.rhs[s]:
+        if self.g[n] > self.rhs[n]:
             return [
-                self.rhs[s] + (self.epsilon * self.heursistic(self.source, s)),
-                self.rhs[s],
+                self.rhs[n] + (self.epsilon * self.heursistic(self.source, n)),
+                self.rhs[n],
             ]
-        return [self.g[s] + self.heursistic(self.source, s), self.g[s]]
+        return [self.g[n] + self.heursistic(self.source, n), self.g[n]]
 
     def __key_lt__(self, key1: list, key2: list):
         # compare two keys
@@ -419,11 +419,11 @@ class ada_star:
 
         return min_index, [min_primary, min_secondary]
 
-    def __cost__(self, s, s_prime):
-        return self.G[s][s_prime][self.weight]
+    def __cost__(self, n, nbr):
+        return self.G[n][nbr][self.weight]
 
-    def __get_neighbor__(self, s):
-        return self.G[s].keys()
+    def __get_neighbor__(self, n):
+        return self.G[n].keys()
 
 
 # if __name__ == "__main__":
