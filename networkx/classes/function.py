@@ -649,7 +649,7 @@ def set_node_attributes(G, values, name=None):
                 pass
 
 
-def get_node_attributes(G, name):
+def get_node_attributes(G, name, default=None):
     """Get node attributes from graph
 
     Parameters
@@ -658,6 +658,11 @@ def get_node_attributes(G, name):
 
     name : string
        Attribute name
+
+    default: object (default=None)
+       Default value of the node attribute if there is no value set for that
+       node in graph. If `None` then nodes without this attribute are not
+       included in the returned dict.
 
     Returns
     -------
@@ -670,7 +675,13 @@ def get_node_attributes(G, name):
     >>> color = nx.get_node_attributes(G, "color")
     >>> color[1]
     'red'
+    >>> G.add_node(4)
+    >>> color = nx.get_node_attributes(G, "color", default="yellow")
+    >>> color[4]
+    'yellow'
     """
+    if default is not None:
+        return {n: d.get(name, default) for n, d in G.nodes.items()}
     return {n: d[name] for n, d in G.nodes.items() if name in d}
 
 
@@ -811,7 +822,7 @@ def set_edge_attributes(G, values, name=None):
                     pass
 
 
-def get_edge_attributes(G, name):
+def get_edge_attributes(G, name, default=None):
     """Get edge attributes from graph
 
     Parameters
@@ -820,6 +831,11 @@ def get_edge_attributes(G, name):
 
     name : string
        Attribute name
+
+    default: object (default=None)
+       Default value of the edge attribute if there is no value set for that
+       edge in graph. If `None` then edges without this attribute are not
+       included in the returned dict.
 
     Returns
     -------
@@ -834,11 +850,17 @@ def get_edge_attributes(G, name):
     >>> color = nx.get_edge_attributes(G, "color")
     >>> color[(1, 2)]
     'red'
+    >>> G.add_edge(3, 4)
+    >>> color = nx.get_edge_attributes(G, "color", default="yellow")
+    >>> color[(3, 4)]
+    'yellow'
     """
     if G.is_multigraph():
         edges = G.edges(keys=True, data=True)
     else:
         edges = G.edges(data=True)
+    if default is not None:
+        return {x[:-1]: x[-1].get(name, default) for x in edges}
     return {x[:-1]: x[-1][name] for x in edges if name in x[-1]}
 
 
