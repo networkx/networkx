@@ -1,7 +1,6 @@
 import math
 
 import networkx as nx
-
 from networkx.algorithms.shortest_paths.weighted import _weight_function
 
 __all__ = ["ada_star"]
