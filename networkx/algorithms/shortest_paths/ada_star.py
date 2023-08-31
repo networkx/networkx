@@ -4,9 +4,7 @@ import networkx as nx
 
 from networkx.algorithms.shortest_paths.weighted import _weight_function
 
-
 __all__ = ["ada_star"]
-
 
 class ada_star:
     """A dynamic anytime path planning algorithm.
@@ -301,9 +299,6 @@ class ada_star:
             >>> def heursistic(u, v): #Euclidean distance between nodes
             >>> return np.sqrt((G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0])**2 + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1])**2)
 
-            change graph edge weight
-            >>> print("changing graph weight for edge (49, 97)")
-            changing graph weight for edge (49, 97)
             >>> search.update_graph([[49, 97, 0]]) #add edge between 49 and 97 with weight 0
             >>> search.compute_or_improve_path(epsilon=1)
             >>> path = search.extract_path()

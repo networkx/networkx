@@ -1,11 +1,8 @@
 import pytest
 
 import networkx as nx
-from networkx.utils import pairwise
-
-
 from networkx.algorithms.shortest_paths.ada_star import ada_star
-
+from networkx.utils import pairwise
 
 class TestADAStar:
     @classmethod
