@@ -19,7 +19,6 @@ Highlights
 This release is the result of X of work with over X pull requests by
 X contributors. Highlights include:
 
-
 Improvements
 ------------
 
@@ -42,6 +41,10 @@ API Changes
   In `is_semiconnected`, the keyword argument `topo_order` has been removed.
   That argument resulted in silently incorrect results more often than not.
 
+- [`#6887 <https://github.com/networkx/networkx/pull/6887>`_]
+  A new ``default`` argument is added to ``get_node_attributes`` and
+  ``get_edge_attributes``. The ``default`` keyword can be used to set
+  a default value if the attribute is missing from a node/edge.
 
 
 Deprecations
