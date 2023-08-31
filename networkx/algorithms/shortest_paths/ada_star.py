@@ -7,6 +7,7 @@ from networkx.algorithms.shortest_paths.weighted import _weight_function
 
 __all__ = ["ada_star"]
 
+
 class ada_star:
     """A dynamic anytime path planning algorithm.
 
@@ -150,8 +151,7 @@ class ada_star:
     """
 
     def __init__(
-        self, source, target, G, heuristic=None, weight="weight",
-        initial_epsilon=1000
+        self, source, target, G, heuristic=None, weight="weight", initial_epsilon=1000
     ):
         """initializer for ADA* algorithm
 
@@ -174,18 +174,19 @@ class ada_star:
 
         if type(G) == nx.MultiDiGraph or type(G) == nx.MultiGraph:
             raise nx.NetworkXNotImplemented("MultiGraph and MultiDiGraph not supported")
-        
+
         if source not in G or target not in G:
             msg = f"Either source {source} or target {target} is not in G"
             raise nx.NodeNotFound(msg)
 
         self.source, self.target = source, target
         if heuristic is None:
-        # The default heuristic is h=0 - same as Dijkstra's algorithm
+            # The default heuristic is h=0 - same as Dijkstra's algorithm
             def heuristic(u, v):
                 return 0
+
         self.heursistic = heuristic
-        
+
         self.G = G
         self.g, self.rhs, self.OPEN = {}, {}, {}
 
@@ -264,8 +265,9 @@ class ada_star:
 
         while True:
             u, v = self._smallest_key()
-            if (not self._key_lt(v, self._key(self.source))) and \
-                  self.rhs[self.source] == self.g[self.source]:
+            if (not self._key_lt(v, self._key(self.source))) and self.rhs[
+                self.source
+            ] == self.g[self.source]:
                 break
             self.OPEN.pop(u)
             self.visited.add(u)
@@ -358,11 +360,15 @@ class ada_star:
         while True:  # TODO raise exception if no path exists
             neighbours = self._get_neighbor(source)
             # find neighbour with lowest g value
-            try: 
-                source = min(neighbours, key=lambda x: self.g[x] + self._cost(source, x))
+            try:
+                source = min(
+                    neighbours, key=lambda x: self.g[x] + self._cost(source, x)
+                )
             except:
-                raise nx.NetworkXNoPath(f"No path exists between {self.source} and {self.target}")
-            
+                raise nx.NetworkXNoPath(
+                    f"No path exists between {self.source} and {self.target}"
+                )
+
             path.append(source)
             if source == self.target:
                 break
@@ -423,6 +429,7 @@ class ada_star:
 
     def _cost(self, n, nbr):
         return self.weight(n, nbr, self.G[n][nbr])
+
     # self.G[n][nbr][self.weight]
 
     def _get_neighbor(self, n):
@@ -430,56 +437,56 @@ class ada_star:
 
 
 # if __name__ == "__main__":
-    # import numpy as np
-    # import random
-    # import time
+# import numpy as np
+# import random
+# import time
 
-    # random.seed(1)
-    # G = nx.random_geometric_graph(100, 0.20, seed=896803)
-    # for u, v, w in G.edges(data=True):  # Euclidean distance between nodes
-    #     w["weight"] = np.sqrt(
-    #         (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
-    #         + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
-    #     )
-    # source, target = 42, 25
+# random.seed(1)
+# G = nx.random_geometric_graph(100, 0.20, seed=896803)
+# for u, v, w in G.edges(data=True):  # Euclidean distance between nodes
+#     w["weight"] = np.sqrt(
+#         (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
+#         + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
+#     )
+# source, target = 42, 25
 
-    # def heursistic(u, v):  # Euclidean distance between nodes
-    #     return np.sqrt(
-    #         (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
-    #         + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
-    #     )
+# def heursistic(u, v):  # Euclidean distance between nodes
+#     return np.sqrt(
+#         (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
+#         + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
+#     )
 
-    # # A* search for comparison
-    # path = nx.astar_path(G, source, target, heursistic)
-    # print("A* path: ", path)
+# # A* search for comparison
+# path = nx.astar_path(G, source, target, heursistic)
+# print("A* path: ", path)
 
-    # # create search object
-    # search = ada_star(source, target, G, heursistic)
+# # create search object
+# search = ada_star(source, target, G, heursistic)
 
-    # # compute first suboptimal path epsilon = 2
-    # search.compute_or_improve_path(epsilon=2)
-    # path = search.extract_path()
-    # print("epsilon = 2 path: ", path)
-    # print(
-    #     "epsilon = 2 path_weight: ", nx.path_weight(G, search.extract_path(), "weight")
-    # )
+# # compute first suboptimal path epsilon = 2
+# search.compute_or_improve_path(epsilon=2)
+# path = search.extract_path()
+# print("epsilon = 2 path: ", path)
+# print(
+#     "epsilon = 2 path_weight: ", nx.path_weight(G, search.extract_path(), "weight")
+# )
 
-    # # compute second (better) suboptimal path
-    # search.compute_or_improve_path(epsilon=1.2)
-    # path = search.extract_path()
-    # print("epsilon = 1.2 path: ", path)
-    # print("epsilon = 1.2 path_weight: ", nx.path_weight(G, path, "weight"))
+# # compute second (better) suboptimal path
+# search.compute_or_improve_path(epsilon=1.2)
+# path = search.extract_path()
+# print("epsilon = 1.2 path: ", path)
+# print("epsilon = 1.2 path_weight: ", nx.path_weight(G, path, "weight"))
 
-    # # compute third (best) suboptimal path
-    # search.compute_or_improve_path(epsilon=1)
-    # path = search.extract_path()
-    # print("epsilon = 1 path: ", path)
-    # print("epsilon = 1 path_weight: ", nx.path_weight(G, path, "weight"))
+# # compute third (best) suboptimal path
+# search.compute_or_improve_path(epsilon=1)
+# path = search.extract_path()
+# print("epsilon = 1 path: ", path)
+# print("epsilon = 1 path_weight: ", nx.path_weight(G, path, "weight"))
 
-    # # change graph edge weight
-    # print("changing graph weight for edge (49, 97)")
-    # search.update_graph([[49, 97, 0]])  # add edge between 77 and 15 with weight 0
-    # search.compute_or_improve_path(epsilon=1)
-    # path = search.extract_path()
-    # print("changed epsilon = 1 path: ", path)
-    # print("changed epsilon = 1 path_weight: ", nx.path_weight(G, path, "weight"))
+# # change graph edge weight
+# print("changing graph weight for edge (49, 97)")
+# search.update_graph([[49, 97, 0]])  # add edge between 77 and 15 with weight 0
+# search.compute_or_improve_path(epsilon=1)
+# path = search.extract_path()
+# print("changed epsilon = 1 path: ", path)
+# print("changed epsilon = 1 path_weight: ", nx.path_weight(G, path, "weight"))

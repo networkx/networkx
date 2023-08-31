@@ -61,7 +61,7 @@ class TestADAStar:
     #     assert nx.astar_path_length(self.XG, "x", "u", weight=w1) == 3
     #     assert nx.astar_path(self.XG, "s", "v", weight=w1) == ["s", "x", "u", "v"]
     #     assert nx.astar_path_length(self.XG, "s", "v", weight=w1) == 9
-        
+
     # def test_ada_star_directed_weight_function(self): #TODO resolve directed case
     #     w1 = lambda u, v, d: d["weight"]
     #     assert nx.astar_path(self.XG, "x", "u", weight=w1) == ["x", "u"]
@@ -69,22 +69,22 @@ class TestADAStar:
     #     assert nx.astar_path(self.XG, "s", "v", weight=w1) == ["s", "x", "u", "v"]
     #     assert nx.astar_path_length(self.XG, "s", "v", weight=w1) == 9
 
-        # assert nx.astar_path(self.XG, "x", "u", weight=w1) == ["x", "u"]
-        # assert nx.astar_path_length(self.XG, "x", "u", weight=w1) == 3
-        # assert nx.astar_path(self.XG, "s", "v", weight=w1) == ["s", "x", "u", "v"]
-        # assert nx.astar_path_length(self.XG, "s", "v", weight=w1) == 9
+    # assert nx.astar_path(self.XG, "x", "u", weight=w1) == ["x", "u"]
+    # assert nx.astar_path_length(self.XG, "x", "u", weight=w1) == 3
+    # assert nx.astar_path(self.XG, "s", "v", weight=w1) == ["s", "x", "u", "v"]
+    # assert nx.astar_path_length(self.XG, "s", "v", weight=w1) == 9
 
-        # w2 = lambda u, v, d: None if (u, v) == ("x", "u") else d["weight"]
-        # assert nx.astar_path(self.XG, "x", "u", weight=w2) == ["x", "y", "s", "u"]
-        # assert nx.astar_path_length(self.XG, "x", "u", weight=w2) == 19
-        # assert nx.astar_path(self.XG, "s", "v", weight=w2) == ["s", "x", "v"]
-        # assert nx.astar_path_length(self.XG, "s", "v", weight=w2) == 10
+    # w2 = lambda u, v, d: None if (u, v) == ("x", "u") else d["weight"]
+    # assert nx.astar_path(self.XG, "x", "u", weight=w2) == ["x", "y", "s", "u"]
+    # assert nx.astar_path_length(self.XG, "x", "u", weight=w2) == 19
+    # assert nx.astar_path(self.XG, "s", "v", weight=w2) == ["s", "x", "v"]
+    # assert nx.astar_path_length(self.XG, "s", "v", weight=w2) == 10
 
-        # w3 = lambda u, v, d: d["weight"] + 10
-        # assert nx.astar_path(self.XG, "x", "u", weight=w3) == ["x", "u"]
-        # assert nx.astar_path_length(self.XG, "x", "u", weight=w3) == 13
-        # assert nx.astar_path(self.XG, "s", "v", weight=w3) == ["s", "x", "v"]
-        # assert nx.astar_path_length(self.XG, "s", "v", weight=w3) == 30
+    # w3 = lambda u, v, d: d["weight"] + 10
+    # assert nx.astar_path(self.XG, "x", "u", weight=w3) == ["x", "u"]
+    # assert nx.astar_path_length(self.XG, "x", "u", weight=w3) == 13
+    # assert nx.astar_path(self.XG, "s", "v", weight=w3) == ["s", "x", "v"]
+    # assert nx.astar_path_length(self.XG, "s", "v", weight=w3) == 30
 
     # def test_ada_star_multigraph(self): #TODO resolve case with multigraph
     #     G = nx.MultiDiGraph(self.XG)
@@ -94,13 +94,12 @@ class TestADAStar:
     #     assert path == ["s", "x", "u", "v"]
     #     assert nx.shortest_path_length(G, "s", "v") == 9
 
-    def test_ada_star_undirected(self): 
+    def test_ada_star_undirected(self):
         GG = self.XG.to_undirected()
         # make sure we get lower weight
         # to_undirected might choose either edge with weight 2 or weight 3
         GG["u"]["x"]["weight"] = 2
         GG["y"]["v"]["weight"] = 2
-
 
         search = ada_star("s", "v", GG, None, "weight", initial_epsilon=1)
         path = search.extract_path()
@@ -119,11 +118,10 @@ class TestADAStar:
     #         (2, 3, 100),
     #     ]
     #     XG2.add_weighted_edges_from(edges)
-        
+
     #     search = ada_star(1, 3, XG2, None, "weight", initial_epsilon=1)
     #     path = search.extract_path()
     #     assert path == [1, 4, 5, 6, 3]
-        
 
     def test_ada_star_undirected2(self):
         XG3 = nx.Graph()
@@ -193,7 +191,7 @@ class TestADAStar:
     # >>> NX.dijkstra_path(MXG4,0,2)
     # [0, 1, 2]
 
-    def test_ada_star_w1(self): 
+    def test_ada_star_w1(self):
         G = nx.DiGraph()
         G.add_edges_from(
             [
@@ -210,12 +208,12 @@ class TestADAStar:
                 ("y", "v"),
             ]
         )
-        
+
         search = ada_star("s", "v", G, None, "weight", initial_epsilon=1)
         path = search.extract_path()
         assert path == ["s", "u", "v"]
         assert nx.shortest_path_length(G, "s", "v") == 2
- 
+
     def test_cycle(self):
         C = nx.cycle_graph(7)
         search = ada_star(0, 3, C, None, "weight", initial_epsilon=1)
@@ -224,7 +222,7 @@ class TestADAStar:
         assert nx.shortest_path_length(C, 0, 4) == 3
         assert nx.dijkstra_path(C, 0, 4) == [0, 6, 5, 4]
 
-    def test_unorderable_nodes(self): 
+    def test_unorderable_nodes(self):
         """Tests that A* accommodates nodes that are not orderable.
 
         For more information, see issue #554.
@@ -238,7 +236,6 @@ class TestADAStar:
         search = ada_star(nodes[0], nodes[2], G, None, initial_epsilon=1)
         path = search.extract_path()
         assert len(path) == 3
-
 
     def test_ada_star_NetworkXNoPath(self):
         """Tests that exception is raised when there exists no
@@ -254,4 +251,3 @@ class TestADAStar:
         G = nx.gnp_random_graph(10, 0.2, seed=10)
         with pytest.raises(nx.NodeNotFound):
             search = ada_star(11, 9, G, None, initial_epsilon=1)
-
