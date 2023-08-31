@@ -322,26 +322,42 @@ class ada_star:
 
         Examples
         --------
+        >>> import math
 
-            >>> import numpy as np
-            >>> import networkx as nx
-            >>> from networkx.algorithms.shortest_paths.ada_star import ada_star
-            >>> random.seed(1)
-            >>> G = nx.random_geometric_graph(100, 0.20, seed=896803)
-            >>> for (u, v, w) in G.edges(data=True): #Euclidean distance between nodes
-            ...     w['weight'] = np.sqrt((G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0])**2 + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1])**2)
-            >>> source, target = 42, 25
-            >>> def heursistic(u, v): #Euclidean distance between nodes
-            >>> return np.sqrt((G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0])**2 + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1])**2)
+        >>> G = nx.random_geometric_graph(100, 0.20, seed=896803)
+        >>> for u, v, w in G.edges(data=True):  # Euclidean distance between nodes
+        ...     w["weight"] = math.sqrt(
+        ...         (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
+        ...         + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
+        ...     )
+        >>> source, target = 42, 25
 
-            >>> search.update_graph([[49, 97, 0]]) #add edge between 49 and 97 with weight 0
-            >>> search.compute_or_improve_path(epsilon=1)
-            >>> path = search.extract_path()
-            >>> print("changed epsilon = 1 path: ", path)
-            changed epsilon = 1 path:  [42, 32, 19, 72, 49, 97, 11, 31, 94, 35, 25]
-            >>> print("changed epsilon = 1 path_weight: ", nx.path_weight(G, path, "weight"))
-            changed epsilon = 1 path_weight:  1.1428811257616596
+        >>> def heursistic(u, v):  # Euclidean distance between nodes
+        ...     return math.sqrt(
+        ...         (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
+        ...         + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
+        ...     )
 
+        >>> # A* search for comparison
+        >>> path = nx.astar_path(G, source, target, heursistic)
+        >>> print("A* path: ", path)
+        A* path:  [42, 32, 19, 72, 49, 29, 31, 94, 35, 25]
+        >>> search = ada_star(source, target, G, heursistic)
+
+        >>> search.compute_or_improve_path(epsilon=1)
+        >>> path = search.extract_path()
+        >>> print("epsilon = 1 path: ", path)
+        epsilon = 1 path:  [42, 32, 19, 72, 49, 29, 31, 94, 35, 25]
+        >>> print("epsilon = 1 path_weight: ", nx.path_weight(G, path, "weight"))
+        epsilon = 1 path_weight:  1.29129785933092
+
+        >>> search.update_graph([[49, 97, 0]])  # set weight between 49 and 97 to 0
+        >>> search.compute_or_improve_path(epsilon=1)
+        >>> path = search.extract_path()
+        >>> print("changed epsilon = 1 path: ", path)
+        changed epsilon = 1 path:  [42, 32, 19, 72, 49, 29, 31, 94, 35, 25]
+        >>> print("changed epsilon = 1 path_weight: ", nx.path_weight(G, path, "weight"))
+        changed epsilon = 1 path_weight:  1.29129785933092
         """
         for change in changes:
             self.G[change[0]][change[1]][self.weight] = change[2]
