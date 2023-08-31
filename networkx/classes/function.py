@@ -662,7 +662,8 @@ def get_node_attributes(G, name, default=None):
     default: object (default=None)
        Default value of the node attribute if there
        is no value set for that node in graph.
-
+       If `None` then nodes without this attribute
+       are not included in the returned dict.
     Returns
     -------
     Dictionary of attributes keyed by node.
@@ -834,7 +835,8 @@ def get_edge_attributes(G, name, default=None):
     default: object (default=None)
        Default value of the edge attribute if there
        is no value set for that edge in graph.
-
+       If `None` then edges without this attribute
+       are not included in the returned dict.
     Returns
     -------
     Dictionary of attributes keyed by edge. For (di)graphs, the keys are
