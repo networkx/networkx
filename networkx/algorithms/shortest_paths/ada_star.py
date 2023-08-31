@@ -2,6 +2,9 @@ import math
 
 import networkx as nx
 
+from networkx.algorithms.shortest_paths.weighted import _weight_function
+
+
 __all__ = ["ada_star"]
 
 class ada_star:
@@ -213,7 +216,7 @@ class ada_star:
         # compute first suboptimal path
         self.compute_or_improve_path(self.epsilon)
 
-    def compute_or_improve_path(self, epsilon) -> None:
+    def compute_or_improve_path(self, epsilon):
         """Compute or improve the path from the start state to the goal state.
 
         Compute or improve a path from the start state to the goal state.
@@ -280,7 +283,7 @@ class ada_star:
                     self.__update_state__(sn)
                 self.__update_state__(s)
 
-    def update_graph(self, changes) -> None:
+    def update_graph(self, changes):
         """Update the graph with new edge weights
 
         Updates the graph with new edge weights. The algorithm will use
@@ -334,7 +337,7 @@ class ada_star:
             self.OPEN[state] = self.__key__(state)
         self.CLOSED = set()
 
-    def extract_path(self) -> list:
+    def extract_path(self):
         """Extract the path based on current potentially suboptimal solution.
 
         Returns a path from the start state to the goal state. The path is
@@ -364,7 +367,7 @@ class ada_star:
 
         return list(path)
 
-    def __update_state__(self, s) -> None:
+    def __update_state__(self, s):
         if s != self.s_goal:
             self.rhs[s] = float("inf")
             for x in self.__get_neighbor__(s):
@@ -389,7 +392,7 @@ class ada_star:
             ]
         return [self.g[s] + self.heursistic(self.s_start, s), self.g[s]]
 
-    def __key_lt__(self, key1: list, key2: list) -> bool:
+    def __key_lt__(self, key1: list, key2: list):
         # compare two keys
         # return the higher of two keys, by prioritizing the first element and
         # then the second element
