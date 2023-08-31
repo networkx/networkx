@@ -59,6 +59,7 @@ def visibility_graph(series):
        https://www.pnas.org/doi/10.1073/pnas.0709247105
     """
 
+    # TO-DO: Consider adding support for generator, numpy array, pandas series etc.
     if not isinstance(series, (list, tuple, range)):
         raise nx.NetworkXError(
             "Input series must be a sliceable Iterable, "
@@ -66,6 +67,7 @@ def visibility_graph(series):
         )
 
     G = nx.Graph()
+
     # Check all combinations of nodes n series
     for s1, s2 in itertools.combinations(enumerate(series), 2):
         n1, t1 = s1
