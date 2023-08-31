@@ -105,10 +105,7 @@ class ada_star:
     ...     )
 
     >>> # A* search for comparison
-    >>> start_time = time.time()
     >>> path = nx.astar_path(G, source, target, heursistic)
-    >>> print("A* time: ", time.time() - start_time)
-    A* time:  0.00012803077697753906
     >>> print("A* path: ", path)
     A* path:  [42, 32, 19, 72, 49, 29, 31, 94, 35, 25]
 
@@ -116,11 +113,8 @@ class ada_star:
     >>> search = ada_star(source, target, G, heursistic)
 
     >>> #compute first suboptimal path epsilon = 2
-    >>> start_time = time.time()
     >>> search.compute_or_improve_path(epsilon=2)
     >>> path = search.extract_path()
-    >>> print("ADA* epsilon = 2 time: ", time.time() - start_time)
-    ADA* epsilon = 2 time:  0.0009984970092773438
     >>> print("epsilon = 2 path: ", path)
     epsilon = 2 path:  [42, 32, 24, 40, 59, 4, 66, 27, 35, 25]
     >>> print("epsilon = 2 path_weight: ", nx.path_weight(G, search.extract_path(), "weight"))
@@ -206,7 +200,7 @@ class ada_star:
         self.epsilon = initial_epsilon
 
         # initialize OPEN, CLOSED, INCONS
-        self.OPEN[self.target] = self.__key__(self.target)
+        self.OPEN[self.target] = self._key(self.target)
         self.CLOSED, self.INCONS = set(), {}
 
         # keep track of visited states
@@ -257,16 +251,16 @@ class ada_star:
             self.epsilon = epsilon
             # move states from INCONS to OPEN
             for state in self.INCONS:
-                self.OPEN[state] = self.__key__(state)
+                self.OPEN[state] = self._key(state)
             self.INCONS = {}
             for state in self.OPEN:
                 # update keys
-                self.OPEN[state] = self.__key__(state)
+                self.OPEN[state] = self._key(state)
             self.CLOSED = set()
 
         while True:
-            u, v = self.__smallest_key__()
-            if (not self.__key_lt__(v, self.__key__(self.source))) and \
+            u, v = self._smallest_key()
+            if (not self._key_lt(v, self._key(self.source))) and \
                   self.rhs[self.source] == self.g[self.source]:
                 break
             self.OPEN.pop(u)
@@ -275,13 +269,13 @@ class ada_star:
             if self.g[u] > self.rhs[u]:
                 self.g[u] = self.rhs[u]
                 self.CLOSED.add(u)
-                for un in self.__get_neighbor__(u):
-                    self.__update_state__(un)
+                for un in self._get_neighbor(u):
+                    self._update_state(un)
             else:
                 self.g[u] = float("inf")
-                for un in self.__get_neighbor__(u):
-                    self.__update_state__(un)
-                self.__update_state__(u)
+                for un in self._get_neighbor(u):
+                    self._update_state(un)
+                self._update_state(u)
 
     def update_graph(self, changes):
         """Update the graph with new edge weights
@@ -326,15 +320,15 @@ class ada_star:
         for change in changes:
             self.G[change[0]][change[1]][self.weight] = change[2]
             self.G[change[1]][change[0]][self.weight] = change[2]
-            self.__update_state__(change[0])
-            self.__update_state__(change[1])
+            self._update_state(change[0])
+            self._update_state(change[1])
         # move states from INCONS to OPEN
         for state in self.INCONS:
-            self.OPEN[state] = self.__key__(state)
+            self.OPEN[state] = self._key(state)
         self.INCONS = {}
         for state in self.OPEN:
             # update keys
-            self.OPEN[state] = self.__key__(state)
+            self.OPEN[state] = self._key(state)
         self.CLOSED = set()
 
     def extract_path(self):
@@ -358,31 +352,31 @@ class ada_star:
         source = self.source
 
         while True:  # TODO raise exception if no path exists
-            neighbours = self.__get_neighbor__(source)
+            neighbours = self._get_neighbor(source)
             # find neighbour with lowest g value
-            source = min(neighbours, key=lambda x: self.g[x] + self.__cost__(source, x))
+            source = min(neighbours, key=lambda x: self.g[x] + self._cost(source, x))
             path.append(source)
             if source == self.target:
                 break
 
         return list(path)
 
-    def __update_state__(self, n):
+    def _update_state(self, n):
         if n != self.target:
             self.rhs[n] = float("inf")
-            for nbr in self.__get_neighbor__(n):
-                self.rhs[n] = min(self.rhs[n], self.g[nbr] + self.__cost__(n, nbr))
+            for nbr in self._get_neighbor(n):
+                self.rhs[n] = min(self.rhs[n], self.g[nbr] + self._cost(n, nbr))
 
         if n in self.OPEN:
             self.OPEN.pop(n)
 
         if self.g[n] != self.rhs[n]:
             if n not in self.CLOSED:
-                self.OPEN[n] = self.__key__(n)
+                self.OPEN[n] = self._key(n)
             else:
                 self.INCONS[n] = 0
 
-    def __key__(self, n):
+    def _key(self, n):
         # return the key of a state
         # the key of a state is a list of two floats, (k1, k2)
         if self.g[n] > self.rhs[n]:
@@ -392,7 +386,7 @@ class ada_star:
             ]
         return [self.g[n] + self.heursistic(self.source, n), self.g[n]]
 
-    def __key_lt__(self, key1: list, key2: list):
+    def _key_lt(self, key1: list, key2: list):
         # compare two keys
         # return the higher of two keys, by prioritizing the first element and
         # then the second element
@@ -402,7 +396,7 @@ class ada_star:
             return True
         return False
 
-    def __smallest_key__(self):
+    def _smallest_key(self):
         # return the smallest key, smallest being the one with the lowest first element as priority,
         # if the first elements are equal, the one with the lowest second element is chosen
 
@@ -419,10 +413,10 @@ class ada_star:
 
         return min_index, [min_primary, min_secondary]
 
-    def __cost__(self, n, nbr):
+    def _cost(self, n, nbr):
         return self.G[n][nbr][self.weight]
 
-    def __get_neighbor__(self, n):
+    def _get_neighbor(self, n):
         return self.G[n].keys()
 
 
@@ -445,19 +439,15 @@ class ada_star:
     #     )
 
     # # A* search for comparison
-    # start_time = time.time()
     # path = nx.astar_path(G, source, target, heursistic)
-    # print("A* time: ", time.time() - start_time)
     # print("A* path: ", path)
 
     # # create search object
     # search = ada_star(source, target, G, heursistic)
 
     # # compute first suboptimal path epsilon = 2
-    # start_time = time.time()
     # search.compute_or_improve_path(epsilon=2)
     # path = search.extract_path()
-    # print("ADA* epsilon = 2 time: ", time.time() - start_time)
     # print("epsilon = 2 path: ", path)
     # print(
     #     "epsilon = 2 path_weight: ", nx.path_weight(G, search.extract_path(), "weight")
