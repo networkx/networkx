@@ -32,6 +32,10 @@ Improvements
   which, if true, reduces horizontal space by rendering chains of nodes
   vertically.
 
+- [`#6892 <https://github.com/networkx/networkx/pull/6892>`_]
+  The shortest path function `goldberg_radzik` handles a zero-weight-cycle
+  correctly instead of raising an exception as a negative weight cycle.
+
 API Changes
 -----------
 - [`#6651 <https://github.com/networkx/networkx/pull/6651>`_]
