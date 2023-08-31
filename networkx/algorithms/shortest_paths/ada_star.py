@@ -28,10 +28,10 @@ class ada_star:
 
     Parameters
     ----------
-    s_start : node
+    source : node
         Starting node for the path
 
-    s_goal : node
+    target : node
         Goal node for the path
 
     G : networkx graph
@@ -97,7 +97,7 @@ class ada_star:
     ...         + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
     ...     )
 
-    >>> s_start, s_goal = 42, 25
+    >>> source, target = 42, 25
     >>> def heursistic(u, v):  # Euclidean distance between nodes
     ...     return np.sqrt(
     ...         (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
@@ -106,14 +106,14 @@ class ada_star:
 
     >>> # A* search for comparison
     >>> start_time = time.time()
-    >>> path = nx.astar_path(G, s_start, s_goal, heursistic)
+    >>> path = nx.astar_path(G, source, target, heursistic)
     >>> print("A* time: ", time.time() - start_time)
     A* time:  0.00012803077697753906
     >>> print("A* path: ", path)
     A* path:  [42, 32, 19, 72, 49, 29, 31, 94, 35, 25]
 
     >>> #create search object
-    >>> search = ada_star(s_start, s_goal, G, heursistic)
+    >>> search = ada_star(source, target, G, heursistic)
 
     >>> #compute first suboptimal path epsilon = 2
     >>> start_time = time.time()
@@ -156,7 +156,7 @@ class ada_star:
     """
 
     def __init__(
-        self, s_start, s_goal, G, heuristic=None, weight="weight",
+        self, source, target, G, heuristic=None, weight="weight",
         initial_epsilon=1000
     ):
         """initializer for ADA* algorithm
@@ -178,11 +178,11 @@ class ada_star:
 
         """
 
-        if s_start not in G or s_goal not in G:
-            msg = f"Either source {s_start} or target {s_goal} is not in G"
+        if source not in G or target not in G:
+            msg = f"Either source {source} or target {target} is not in G"
             raise nx.NodeNotFound(msg)
 
-        self.s_start, self.s_goal = s_start, s_goal
+        self.source, self.target = source, target
         if heuristic is None:
         # The default heuristic is h=0 - same as Dijkstra's algorithm
             def heuristic(u, v):
@@ -202,11 +202,11 @@ class ada_star:
         # of that neighbour
         self.rhs = {s: math.inf for s in G.nodes()}
 
-        self.rhs[self.s_goal] = 0.0
+        self.rhs[self.target] = 0.0
         self.epsilon = initial_epsilon
 
         # initialize OPEN, CLOSED, INCONS
-        self.OPEN[self.s_goal] = self.__key__(self.s_goal)
+        self.OPEN[self.target] = self.__key__(self.target)
         self.CLOSED, self.INCONS = set(), {}
 
         # keep track of visited states
@@ -236,7 +236,7 @@ class ada_star:
         Examples
         --------
         >>> #create search object
-        >>> search = ada_star(s_start, s_goal, G, heursistic)
+        >>> search = ada_star(source, target, G, heursistic)
 
         >>> #compute first suboptimal path epsilon = 2
         >>> search.compute_or_improve_path(epsilon=2)
@@ -266,8 +266,8 @@ class ada_star:
 
         while True:
             s, v = self.__smallest_key__()
-            if (not self.__key_lt__(v, self.__key__(self.s_start))) and \
-                  self.rhs[self.s_start] == self.g[self.s_start]:
+            if (not self.__key_lt__(v, self.__key__(self.source))) and \
+                  self.rhs[self.source] == self.g[self.source]:
                 break
             self.OPEN.pop(s)
             self.visited.add(s)
@@ -307,7 +307,7 @@ class ada_star:
             >>> G = nx.random_geometric_graph(100, 0.20, seed=896803)
             >>> for (u, v, w) in G.edges(data=True): #Euclidean distance between nodes
             ...     w['weight'] = np.sqrt((G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0])**2 + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1])**2)
-            >>> s_start, s_goal = 42, 25
+            >>> source, target = 42, 25
             >>> def heursistic(u, v): #Euclidean distance between nodes
             >>> return np.sqrt((G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0])**2 + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1])**2)
 
@@ -354,21 +354,21 @@ class ada_star:
 
         """
 
-        path = [self.s_start]
-        s = self.s_start
+        path = [self.source]
+        s = self.source
 
         while True:  # TODO raise exception if no path exists
             neighbours = self.__get_neighbor__(s)
             # find neighbour with lowest g value
             s = min(neighbours, key=lambda x: self.g[x] + self.__cost__(s, x))
             path.append(s)
-            if s == self.s_goal:
+            if s == self.target:
                 break
 
         return list(path)
 
     def __update_state__(self, s):
-        if s != self.s_goal:
+        if s != self.target:
             self.rhs[s] = float("inf")
             for x in self.__get_neighbor__(s):
                 self.rhs[s] = min(self.rhs[s], self.g[x] + self.__cost__(s, x))
@@ -387,10 +387,10 @@ class ada_star:
         # the key of a state is a list of two floats, (k1, k2)
         if self.g[s] > self.rhs[s]:
             return [
-                self.rhs[s] + (self.epsilon * self.heursistic(self.s_start, s)),
+                self.rhs[s] + (self.epsilon * self.heursistic(self.source, s)),
                 self.rhs[s],
             ]
-        return [self.g[s] + self.heursistic(self.s_start, s), self.g[s]]
+        return [self.g[s] + self.heursistic(self.source, s), self.g[s]]
 
     def __key_lt__(self, key1: list, key2: list):
         # compare two keys
@@ -436,7 +436,7 @@ class ada_star:
     #         (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
     #         + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
     #     )
-    # s_start, s_goal = 42, 25
+    # source, target = 42, 25
 
     # def heursistic(u, v):  # Euclidean distance between nodes
     #     return np.sqrt(
@@ -446,12 +446,12 @@ class ada_star:
 
     # # A* search for comparison
     # start_time = time.time()
-    # path = nx.astar_path(G, s_start, s_goal, heursistic)
+    # path = nx.astar_path(G, source, target, heursistic)
     # print("A* time: ", time.time() - start_time)
     # print("A* path: ", path)
 
     # # create search object
-    # search = ada_star(s_start, s_goal, G, heursistic)
+    # search = ada_star(source, target, G, heursistic)
 
     # # compute first suboptimal path epsilon = 2
     # start_time = time.time()
