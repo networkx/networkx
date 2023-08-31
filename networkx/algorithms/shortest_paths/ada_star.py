@@ -6,6 +6,7 @@ from networkx.algorithms.shortest_paths.weighted import _weight_function
 
 __all__ = ["ada_star"]
 
+
 class ada_star:
     """A dynamic anytime path planning algorithm.
 
