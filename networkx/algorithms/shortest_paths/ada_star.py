@@ -115,8 +115,8 @@ class ada_star:
     >>> print("epsilon = 2 path: ", path)
     epsilon = 2 path:  [42, 32, 24, 40, 59, 4, 66, 27, 35, 25]
     >>> print(
-    >>>     "epsilon = 2 path_weight: ", nx.path_weight(G, search.extract_path(), "weight")
-    >>> )
+    ...     "epsilon = 2 path_weight: ", nx.path_weight(G, search.extract_path(), "weight")
+    ... )
     epsilon = 2 path_weight:  1.4679609830956495
 
     >>> search.compute_or_improve_path(epsilon=1.2)
@@ -456,81 +456,55 @@ class ada_star:
         return self.G[n].keys()
 
 
-if __name__ == "__main__":
-    import math
+# if __name__ == "__main__":
+#     import math
 
-    # random.seed(1)
-    G = nx.random_geometric_graph(100, 0.20, seed=896803)
-    for u, v, w in G.edges(data=True):  # Euclidean distance between nodes
-        w["weight"] = math.sqrt(
-            (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
-            + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
-        )
-    source, target = 42, 25
+#     # random.seed(1)
+#     G = nx.random_geometric_graph(100, 0.20, seed=896803)
+#     for u, v, w in G.edges(data=True):  # Euclidean distance between nodes
+#         w["weight"] = math.sqrt(
+#             (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
+#             + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
+#         )
+#     source, target = 42, 25
 
-    def heursistic(u, v):  # Euclidean distance between nodes
-        return math.sqrt(
-            (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
-            + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
-        )
+#     def heursistic(u, v):  # Euclidean distance between nodes
+#         return math.sqrt(
+#             (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
+#             + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
+#         )
 
-    # A* search for comparison
-    path = nx.astar_path(G, source, target, heursistic)
-    print("A* path: ", path)
+#     # A* search for comparison
+#     path = nx.astar_path(G, source, target, heursistic)
+#     print("A* path: ", path)
 
-    # create search object
-    search = ada_star(source, target, G, heursistic)
+#     # create search object
+#     search = ada_star(source, target, G, heursistic)
 
-    # compute first suboptimal path epsilon = 2
-    search.compute_or_improve_path(epsilon=2)
-    path = search.extract_path()
-    print("epsilon = 2 path: ", path)
-    print(
-        "epsilon = 2 path_weight: ", nx.path_weight(G, search.extract_path(), "weight")
-    )
-
-    # compute second (better) suboptimal path
-    search.compute_or_improve_path(epsilon=1.2)
-    path = search.extract_path()
-    print("epsilon = 1.2 path: ", path)
-    print("epsilon = 1.2 path_weight: ", nx.path_weight(G, path, "weight"))
-
-    # compute third (best) suboptimal path
-    search.compute_or_improve_path(epsilon=1)
-    path = search.extract_path()
-    print("epsilon = 1 path: ", path)
-    print("epsilon = 1 path_weight: ", nx.path_weight(G, path, "weight"))
-
-    # change graph edge weight
-    print("changing graph weight for edge (49, 97)")
-    search.update_graph([[49, 97, 0]])  # add edge between 77 and 15 with weight 0
-    search.compute_or_improve_path(epsilon=1)
-    path = search.extract_path()
-    print("changed epsilon = 1 path: ", path)
-    print("changed epsilon = 1 path_weight: ", nx.path_weight(G, path, "weight"))
-
-
-# import math
-
-# AG1 = nx.random_geometric_graph(100, 0.20, seed=896803)
-# for u, v, w in AG1.edges(data=True):  # Euclidean distance between nodes
-#     w["weight"] = math.sqrt(
-#         (AG1.nodes[v]["pos"][0] - AG1.nodes[u]["pos"][0]) ** 2
-#         + (AG1.nodes[v]["pos"][1] - AG1.nodes[u]["pos"][1]) ** 2
+#     # compute first suboptimal path epsilon = 2
+#     search.compute_or_improve_path(epsilon=2)
+#     path = search.extract_path()
+#     print("epsilon = 2 path: ", path)
+#     print(
+#         "epsilon = 2 path_weight: ", nx.path_weight(G, search.extract_path(), "weight")
 #     )
 
-# source, target = 42, 25
+#     # compute second (better) suboptimal path
+#     search.compute_or_improve_path(epsilon=1.2)
+#     path = search.extract_path()
+#     print("epsilon = 1.2 path: ", path)
+#     print("epsilon = 1.2 path_weight: ", nx.path_weight(G, path, "weight"))
 
+#     # compute third (best) suboptimal path
+#     search.compute_or_improve_path(epsilon=1)
+#     path = search.extract_path()
+#     print("epsilon = 1 path: ", path)
+#     print("epsilon = 1 path_weight: ", nx.path_weight(G, path, "weight"))
 
-# search = ada_star(source, target, AG1, None, "weight", initial_epsilon=2)
-# path = search.extract_path()
-# print("epsilon = 2 path: ", path)
-# # assert path == [42, 32, 19, 72, 49, 29, 31, 94, 35, 25]
-
-# search.compute_or_improve_path(epsilon=1.2)
-# path = search.extract_path()
-# print("epsilon = 1.2 path: ", path)
-
-# search.compute_or_improve_path(epsilon=1)
-# path = search.extract_path()
-# print("epsilon = 1 path: ", path)
+#     # change graph edge weight
+#     print("changing graph weight for edge (49, 97)")
+#     search.update_graph([[49, 97, 0]])  # add edge between 77 and 15 with weight 0
+#     search.compute_or_improve_path(epsilon=1)
+#     path = search.extract_path()
+#     print("changed epsilon = 1 path: ", path)
+#     print("changed epsilon = 1 path_weight: ", nx.path_weight(G, path, "weight"))
