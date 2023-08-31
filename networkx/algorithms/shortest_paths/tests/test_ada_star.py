@@ -237,6 +237,56 @@ class TestADAStar:
         path = search.extract_path()
         assert len(path) == 3
 
+    def test_ada_star_anytime_dynamic(self):
+        import math
+
+        G = nx.random_geometric_graph(100, 0.20, seed=896803)
+        for u, v, w in G.edges(data=True):  # Euclidean distance between nodes
+            w["weight"] = math.sqrt(
+                (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
+                + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
+            )
+        source, target = 42, 25
+
+        def heursistic(u, v):  # Euclidean distance between nodes
+            return math.sqrt(
+                (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
+                + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
+            )
+
+        # A* search for comparison
+        path = nx.astar_path(G, source, target, heursistic)
+        # create search object
+        search = ada_star(source, target, G, heursistic)
+
+        # compute first suboptimal path epsilon = 2
+        search.compute_or_improve_path(epsilon=2)
+        path = search.extract_path()
+        assert path == [42, 32, 24, 40, 59, 4, 66, 27, 35, 25]
+
+        # compute second (better) suboptimal path
+        search.compute_or_improve_path(epsilon=1.2)
+        path = search.extract_path()
+        assert path == [42, 32, 24, 12, 59, 4, 1, 27, 35, 25]
+
+        # compute third (best) suboptimal path
+        search.compute_or_improve_path(epsilon=1)
+        path = search.extract_path()
+        assert path == nx.astar_path(G, source, target, heursistic)
+        assert nx.path_weight(G, path, "weight") == nx.astar_path_length(
+            G, source, target, heursistic
+        )
+
+        # change graph edge weight
+        search.update_graph([[49, 97, 0]])  # add edge between 77 and 15 with weight 0
+        search.compute_or_improve_path(epsilon=1)
+        path = search.extract_path()
+        assert path == [42, 32, 19, 72, 49, 29, 31, 94, 35, 25]
+        assert path == nx.astar_path(G, source, target, heursistic)
+        assert nx.path_weight(G, path, "weight") == nx.astar_path_length(
+            G, source, target, heursistic
+        )
+
     def test_ada_star_NetworkXNoPath(self):
         """Tests that exception is raised when there exists no
         path between source and target"""
