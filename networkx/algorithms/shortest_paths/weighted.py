@@ -2057,7 +2057,7 @@ def goldberg_radzik(G, source, weight="weight"):
                     continue
                 t = d[u] + weight(u, v, e)
                 d_v = d[v]
-                if t <= d_v:
+                if t < d_v:
                     is_neg = t < d_v
                     d[v] = t
                     pred[v] = u
