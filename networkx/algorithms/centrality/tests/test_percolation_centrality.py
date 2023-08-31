@@ -80,3 +80,8 @@ class TestPercolationCentrality:
         p_answer = nx.percolation_centrality(G, states=p_states)
         for n in sorted(G):
             assert p_answer[n] == pytest.approx(b_answer[n], abs=1e-3)
+
+
+def test_default_percolation():
+    G = nx.erdos_renyi_graph(42, 0.42, seed=42)
+    assert nx.percolation_centrality(G) == pytest.approx(nx.betweenness_centrality(G))
