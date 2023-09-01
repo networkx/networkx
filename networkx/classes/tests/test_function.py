@@ -623,6 +623,10 @@ def test_get_node_attributes():
         assert attrs[0] == vals
         assert attrs[1] == vals
         assert attrs[2] == vals
+        default_val = 1
+        G.add_node(4)
+        attrs = nx.get_node_attributes(G, attr, default=default_val)
+        assert attrs[4] == default_val
 
 
 def test_get_edge_attributes():
@@ -633,22 +637,18 @@ def test_get_edge_attributes():
         vals = 100
         nx.set_edge_attributes(G, vals, attr)
         attrs = nx.get_edge_attributes(G, attr)
-
         assert len(attrs) == 2
-        if G.is_multigraph():
-            keys = [(0, 1, 0), (1, 2, 0)]
-            for u, v, k in keys:
-                try:
-                    assert attrs[(u, v, k)] == 100
-                except KeyError:
-                    assert attrs[(v, u, k)] == 100
-        else:
-            keys = [(0, 1), (1, 2)]
-            for u, v in keys:
-                try:
-                    assert attrs[(u, v)] == 100
-                except KeyError:
-                    assert attrs[(v, u)] == 100
+
+        for edge in G.edges:
+            assert attrs[edge] == vals
+
+        default_val = vals
+        G.add_edge(4, 5)
+        deafult_attrs = nx.get_edge_attributes(G, attr, default=default_val)
+        assert len(deafult_attrs) == 3
+
+        for edge in G.edges:
+            assert deafult_attrs[edge] == vals
 
 
 def test_is_empty():

@@ -1973,6 +1973,10 @@ def goldberg_radzik(G, source, weight="weight"):
         negative (di)cycle.  Note: any negative weight edge in an
         undirected graph is a negative cycle.
 
+        As of NetworkX v3.2, a zero weight cycle is no longer
+        incorrectly reported as a negative weight cycle.
+
+
     Examples
     --------
     >>> G = nx.path_graph(5, create_using=nx.DiGraph())
@@ -2057,7 +2061,7 @@ def goldberg_radzik(G, source, weight="weight"):
                     continue
                 t = d[u] + weight(u, v, e)
                 d_v = d[v]
-                if t <= d_v:
+                if t < d_v:
                     is_neg = t < d_v
                     d[v] = t
                     pred[v] = u
