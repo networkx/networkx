@@ -468,4 +468,3 @@ class ada_star:
 
     def _get_neighbor(self, n):
         return self.G[n].keys()
-
