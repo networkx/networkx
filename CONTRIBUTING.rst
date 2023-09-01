@@ -122,7 +122,7 @@ Development Workflow
 
          pre-commit run --all-files
 
-4. Submit your contribution:
+5. Submit your contribution:
 
    * Push your changes back to your fork on GitHub::
 
@@ -135,7 +135,7 @@ Development Workflow
      <http://groups.google.com/group/networkx-discuss>`_ to explain your changes or
      to ask for review.
 
-5. Review process:
+6. Review process:
 
    * Every Pull Request (PR) update triggers a set of `continuous integration
      <https://en.wikipedia.org/wiki/Continuous_integration>`_ services
@@ -165,7 +165,7 @@ Development Workflow
       issue number 1480, you could use the phrase "Fixes #1480" in the PR
       description or commit message.
 
-6. Document changes
+7. Document changes
 
    If your change introduces any API modifications, please update
    ``doc/release/release_dev.rst``.
