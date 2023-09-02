@@ -3,6 +3,8 @@ Shortest path algorithms for unweighted graphs.
 """
 import warnings
 
+from joblib import Parallel, delayed
+
 import networkx as nx
 
 __all__ = [
@@ -149,7 +151,7 @@ def single_target_shortest_path_length(G, target, cutoff=None):
 
 
 @nx._dispatch
-def all_pairs_shortest_path_length(G, cutoff=None):
+def all_pairs_shortest_path_length(G, cutoff=None, parallel=False):
     """Computes the shortest path lengths between all nodes in `G`.
 
     Parameters
@@ -188,9 +190,24 @@ def all_pairs_shortest_path_length(G, cutoff=None):
 
     """
     length = single_source_shortest_path_length
-    # TODO This can be trivially parallelized.
-    for n in G:
-        yield (n, length(G, n, cutoff=cutoff))
+
+    if not parallel:
+        # TODO This can be trivially parallelized.
+        for n in G:
+            yield (n, length(G, n, cutoff=cutoff))
+    else:
+        num_processes = 4  # how can we define this value?
+        args_list = [(length, G, n, cutoff) for n in G.nodes]
+
+        results = Parallel(n_jobs=num_processes)(
+            delayed(_calculate_shortest_path_length)(*args) for args in args_list
+        )
+
+        yield from results
+
+
+def _calculate_shortest_path_length(length, G, n, cutoff):
+    return (n, length(G, n, cutoff=cutoff))
 
 
 @nx._dispatch
