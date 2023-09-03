@@ -237,16 +237,17 @@ def strongly_connected_components_recursive(G):
 
     """
 
-    def visit(v, cnt):
-        root[v] = cnt
-        visited[v] = cnt
-        cnt += 1
+   def visit(v, cnt):
+        root[v] = cnt[0]
+        visited[v] = cnt[0]
+        cnt[0] += 1
         stack.append(v)
         for w in G[v]:
             if w not in visited:
                 yield from visit(w, cnt)
-            if w not in component:
                 root[v] = min(root[v], root[w])
+            elif w not in component:
+                root[v] = min(root[v], visited[w])
         if root[v] == visited[v]:
             component[v] = root[v]
             tmpc = {v}  # hold nodes in this component
@@ -260,7 +261,7 @@ def strongly_connected_components_recursive(G):
     visited = {}
     component = {}
     root = {}
-    cnt = 0
+    cnt = [0]
     stack = []
     for source in G:
         if source not in visited:
