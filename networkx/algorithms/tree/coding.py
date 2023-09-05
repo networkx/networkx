@@ -333,6 +333,11 @@ def from_prufer_sequence(sequence):
     NetworkX graph
         The tree corresponding to the given Prüfer sequence.
 
+    Raises
+    ------
+    NetworkXError
+        If the Prüfer sequence is not valid.
+
     Notes
     -----
     There is a bijection from labeled trees to Prüfer sequences. This
@@ -386,6 +391,11 @@ def from_prufer_sequence(sequence):
     not_orphaned = set()
     index = u = next(k for k in range(n) if degree[k] == 1)
     for v in sequence:
+        # check the validity of the prufer sequence
+        if v < 0 or v > n - 1:
+            raise nx.NetworkXError(
+                f"Invalid Prufer sequence: Values must be between 0 and {n-1}, got {v}"
+            )
         T.add_edge(u, v)
         not_orphaned.add(u)
         degree[v] -= 1
