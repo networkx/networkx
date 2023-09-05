@@ -827,7 +827,7 @@ if os.environ.get("_NETWORKX_BUILDING_DOCS_"):
     # updated based on the installed backends.
     _orig_dispatch = _dispatch
 
-    def _dispatch(func=None, **kwargs): # type: ignore
+    def _dispatch(func=None, **kwargs):  # type: ignore
         if func is None:
             return partial(_dispatch, **kwargs)
         dispatched_func = _orig_dispatch(func, **kwargs)
