@@ -13,6 +13,7 @@ from .katz import *
 from .load import *
 from .percolation import *
 from .reaching import *
+from .rumor import *
 from .second_order import *
 from .subgraph_alg import *
 from .trophic import *
