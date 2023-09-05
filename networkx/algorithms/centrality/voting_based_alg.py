@@ -6,7 +6,7 @@ import itertools
 
 import networkx as nx
 
-__all__ = ["sav_voting", "copeland_voting", "spav_voting", "borda_voting"]
+__all__ = ["sav_voting", "copeland_voting", "spav_voting", "borda_voting", "stv_voting"]
 
 
 @nx.utils.not_implemented_for("directed")
@@ -41,7 +41,7 @@ def sav_voting(G):
 
     See Also
     --------
-    copeland_voting, spav_voting, borda_voting
+    copeland_voting, spav_voting, borda_voting, stv_voting
 
     Examples
     --------
@@ -118,7 +118,7 @@ def copeland_voting(G):
 
     See Also
     --------
-    sav_voting, spav_voting, borda_voting
+    sav_voting, spav_voting, borda_voting, stv_voting
 
     Examples
     --------
@@ -203,7 +203,7 @@ def borda_voting(G):
 
     See Also
     --------
-    sav_voting, spav_voting, copeland_voting
+    sav_voting, spav_voting, copeland_voting, stv_voting
 
     Examples
     --------
@@ -256,6 +256,111 @@ def borda_voting(G):
 
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
+def stv_voting(G, number_of_nodes):
+    """Select a set of influential nodes using Single Transferable Vote (STV).
+
+    Single transferable vote (STV) follows the idea that a committee should be representative
+    for the set of voters. The key idea is that each of X committee members should be supported
+    by strictly more than the 1/(X+1) fraction of the voters (in fact, N/(X+1) + 1; the droop
+    quota). For X = 2 it simply means that to be elected one needs strictly more than half of
+    all voters' support. For X = 2 members, each member should be supported by strictly more
+    than 1/3 of the voters. This way, even the combined support of all non-elected candidates is
+    less than the support of each elected candidate. This goes on for larger X, too.
+    
+    Since usually there are no X candidates which reach the quota N/(X+1) + 1, STV repeats the
+    following until X candidates are elected. If no candidate reaches the quota, remove the
+    worst candidate from the election. Everyone who voted for this candidate now votes for
+    their second-most preferred candidate. If a candidate reaches the quota, elect the candidate
+    C with the most support among the voters. The excess to the quota of C is then distributed
+    among the voters for C, so that they can still vote for their second-most preferred candidate
+    with a reduced voting ability.
+
+    This function computes the STV winners of a network. Nodes prefer candidates more the closer
+    they are (shortest-path distance). This method has been proposed for networks in [1]_ (although
+    this implementation is slightly different as it doesn't involve nondeterminsm). For more
+    information on STV, we refer to https://en.wikipedia.org/wiki/Single_transferable_vote
+
+    Notes
+    -----
+    STV centrality only works with undirected networks (no multigraph).
+    Weights are ignored.
+
+    Parameters
+    ----------
+    G : graph
+        A NetworkX graph.
+
+    number_of_nodes : integer
+        The number of nodes to select.
+
+    Returns
+    -------
+    stv_voting : set
+        The selected nodes.
+
+    See Also
+    --------
+    copeland_voting, sav_voting, borda_voting, spav_voting
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (2, 3), (4, 3), (3, 5), (5, 6), (6, 7), (6, 8), (8, 9), (9, 10), (10, 11), (10, 12)])
+    >>> nx.stv_voting(G, 2)
+    {9, 3}
+
+    References
+    ----------
+    .. [1] Laussmann, C. (2023).
+        "Network Centrality Through Voting Rules"
+        In: COMSOC Methods in Real-World Applications (Dissertation).
+        Publisher: Universitaets- und Landesbibliothek der Heinrich-Heine-Universitaet Duesseldorf
+        Pages 27-45.
+    """
+
+    shortest_path_len = {}
+    for start, distances in nx.shortest_path_length(G, source=None, target=None):
+        shortest_path_len[start] = distances
+
+    selected_nodes = set()
+    voting_abilities = {v: 1 for v in G.nodes}
+    candidates_left = set(G.nodes)
+    # This is not the Droop quota, since we implicitly assume nodes to prefer themselves
+    # over the others, although they do not formally vote for themselves. Thus our quota
+    # is lower by one.
+    quota = len(G.nodes) // (number_of_nodes + 1)
+
+    def plurality_winner_loser():
+        plur_scores = {c: 0 for c in candidates_left}
+        for v in G.nodes:
+            best_candidate = min(candidates_left.difference(v), key=shortest_path_len[v].get)
+            for c in candidates_left:
+                if shortest_path_len[v][c] == shortest_path_len[v][best_candidate]:
+                    plur_scores[c] += voting_abilities[v]
+        best = max(candidates_left, key=plur_scores.get)
+        worst = min(candidates_left, key=plur_scores.get)
+        return (best, plur_scores[best], worst)
+
+    def reduce_voting_ability(elected_candidate, score_of_elected):
+        exceed = score_of_elected - quota
+        avg_voting_ability_afterwards = exceed / score_of_elected
+        for v in G.nodes:
+            best_candidate = min(candidates_left.difference(v), key=shortest_path_len[v].get)
+            if shortest_path_len[v][best_candidate] == shortest_path_len[v][elected_candidate]:
+                voting_abilities[v] = voting_abilities[v] * avg_voting_ability_afterwards
+
+    while len(selected_nodes) < number_of_nodes:
+        winner, win_score, loser = plurality_winner_loser()
+        if win_score >= quota:
+            reduce_voting_ability(winner, win_score)
+            selected_nodes.add(winner)
+            candidates_left.remove(winner)
+        else:
+            candidates_left.remove(loser)
+    return selected_nodes
+
+
+@nx.utils.not_implemented_for("directed")
+@nx.utils.not_implemented_for("multigraph")
 def spav_voting(G, number_of_nodes=None, voting_ability_fn=None):
     """Select a set of influential nodes using Sequential Proportional Approval Voting (SPAV).
 
@@ -297,7 +402,7 @@ def spav_voting(G, number_of_nodes=None, voting_ability_fn=None):
 
     See Also
     --------
-    copeland_voting, sav_voting, borda_voting
+    copeland_voting, sav_voting, borda_voting, stv_voting
 
     Examples
     --------
