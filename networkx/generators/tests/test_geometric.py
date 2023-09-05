@@ -331,45 +331,64 @@ def test_geometric_edges_raises_no_pos():
         nx.geometric_edges(G, radius=1)
 
 
-class TestS1Graph:
-    """Unit tests for the :func:`~networkx.S1_graph` function."""
+def test_number_of_nodes_S1():
+    G = nx.S1_graph(1.5, n=100, gamma=2.7, mean_degree=10)
+    assert len(G) == 100
 
-    def test_number_of_nodes(self):
-        G = nx.S1_graph(100, 1.5, 2.7, 10)
-        assert len(G) == 100
 
-    def test_beta_lower_1(self):
-        try:
-            G = nx.S1_graph(100, 0.5, 2.7, 10)
-        except AssertionError:
-            pass
+def test_set_attributes_S1():
+    G = nx.S1_graph(1.5, n=100, gamma=2.7, mean_degree=10)
+    kappas = list(nx.get_node_attributes(G, "kappa").values())
+    assert len(kappas) == 100
+    thetas = list(nx.get_node_attributes(G, "theta").values())
+    assert len(thetas) == 100
 
-    def test_set_attributes(self):
-        G = nx.S1_graph(100, 1.5, 2.7, 10)
-        kappas = list(nx.get_node_attributes(G, "kappa").values())
-        assert len(kappas) == 100
-        thetas = list(nx.get_node_attributes(G, "theta").values())
-        assert len(thetas) == 100
 
-    def test_mean_degree(self):
-        G = nx.S1_graph(100, 1.5, 2.7, 10)
-        kappas = list(nx.get_node_attributes(G, "kappa").values())
-        mean_degree = sum(kappas) / len(kappas)
-        assert math.fabs(mean_degree - 10) < 0.1
+def test_mean_kappas_S1():
+    G = nx.S1_graph(2.5, n=5000, gamma=2.7, mean_degree=10)
+    kappas = list(nx.get_node_attributes(G, "kappa").values())
+    mean_kappas = sum(kappas) / len(kappas)
+    assert math.fabs(mean_kappas - 10) < 0.5
 
-    def test_list_kappas(self):
-        kappas = [10] * 1000
-        G = nx.S1_graph(1, 3, 2.7, 10, kappas=kappas)
-        assert len(G) == 1000
-        kappas = list(nx.get_node_attributes(G, "kappa").values())
-        mean_degree = sum(kappas) / len(kappas)
-        assert mean_degree == 10
 
-    def test_beta_limit(self):
-        G = nx.S1_graph(100, 1.00001, 3.5, 10)
-        assert nx.number_of_edges(G) == 0
+def test_list_kappas_S1():
+    kappas = [10] * 1000
+    G = nx.S1_graph(1, kappas=kappas)
+    assert len(G) == 1000
+    kappas = list(nx.get_node_attributes(G, "kappa").values())
+    mean_kappas = sum(kappas) / len(kappas)
+    assert mean_kappas == 10
 
-    def test_beta_clustering(self):
-        G1 = nx.S1_graph(100, 1.5, 3.5, 10)
-        G2 = nx.S1_graph(100, 3.5, 3.5, 10)
-        assert nx.average_clustering(G1) < nx.average_clustering(G2)
+
+def test_beta_clustering_S1():
+    G1 = nx.S1_graph(1.5, n=100, gamma=3.5, mean_degree=10)
+    G2 = nx.S1_graph(3.0, n=100, gamma=3.5, mean_degree=10)
+    assert nx.average_clustering(G1) < nx.average_clustering(G2)
+
+
+def test_wrong_parameters_S1():
+    try:
+        G = nx.S1_graph(1.5, gamma=3.5, mean_degree=10)
+    except nx.NetworkXError:
+        pass
+    try:
+        kappas = [10] * 100
+        G = nx.S1_graph(1.5, kappas=kappas, gamma=2.3)
+    except nx.NetworkXError:
+        pass
+    try:
+        G = nx.S1_graph(1.5)
+    except nx.NetworkXError:
+        pass
+
+
+def test_negative_beta_S1():
+    try:
+        G = nx.S1_graph(-1, n=100, gamma=2.3, mean_degree=10)
+    except nx.NetworkXError:
+        pass
+
+
+def test_non_zero_clustering_beta_lower_one_S1():
+    G = nx.S1_graph(0.5, n=100, gamma=3.5, mean_degree=10)
+    assert nx.average_clustering(G) > 0

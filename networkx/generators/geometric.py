@@ -788,16 +788,16 @@ def thresholded_random_geometric_graph(
 
 
 @py_random_state(5)
-def S1_graph(n, beta, gamma, mean_degree, kappas=None, seed=None):
+def S1_graph(beta, *, n=None, gamma=None, mean_degree=None, kappas=None, seed=None):
     r"""Returns a $\mathbb{S}^1$ model.
 
-    The $\mathbb{S}^1$ model is the simplest among the class of geometric models [1].
+    The $\mathbb{S}^1$ model is the simplest among the class of geometric models [1]_.
     The similarity space is a one dimensional sphere—a circle of radius R—where N nodes are
     distributed with a fixed density, set to one without loss of generality, so that $N = 2\pi R$.
-    Each node is also given a hidden variable ``'kappa'`` proportional to its expected degree.
+    Each node is also given a hidden variable ``kappa`` proportional to its expected degree.
     The connection probability between a node i and a node j takes the form of a gravity law
 
-    $p_{ij} = \frac{1}{1 + \left( \frac{d_{ij}}{\mu \kappa_i \kappa_j} \right)^\beta}$
+    $p_{ij} = \frac{1}{1 + \frac{d_{ij}^\beta}{\left(\mu \kappa_i \kappa_j\right)^{\max(1, \beta)}}}$
 
     where $d_{ij} = R\Delta\theta_{ij}$ is the arc length of the circle between
     nodes i and j separated by an angular distance $\Delta\theta_{ij}$. Parameters $\mu$ and $\beta$
@@ -805,14 +805,14 @@ def S1_graph(n, beta, gamma, mean_degree, kappas=None, seed=None):
 
     Parameters
     ----------
-    n: int
-        Size of the network
     beta: float
         Inverse temperature
-    gamma: float
+    n: int, optional
+        Size of the network
+    gamma: float, optional
         Exponent of powerlaw distribution of the hidden degrees
-    mean_degree: float
-        The mean degree of the network
+    mean_degree: float, optional
+        The mean degree in the network
     kappas: list, optional
         Values of hidden degrees for each node
     seed : integer, random_state, or None (default)
@@ -823,67 +823,96 @@ def S1_graph(n, beta, gamma, mean_degree, kappas=None, seed=None):
     -------
     Graph
         A $\mathbb{S}^1$ model, undirected and without self-loops.
-        Each node has two attributes: ``'kappa'`` that represents the
-        hidden degree and ``'theta'`` the position in the similarity space.
+        Each node has two attributes: ``kappa`` that represents the
+        hidden degree and ``theta`` the position in the similarity space.
 
     Examples
     --------
     Default Graph:
 
-    G = nx.S1_graph(100, 1.5, 2.7, 5)
-
-    Custom Graph:
+    >>> G = nx.S1_graph(1.5, n=100, gamma=2.7, mean_degree=5)
 
     Create a $\mathbb{S}^1$ model with 100 nodes. The $\beta$ parameter is set to 1.5
     and the exponent of the powerlaw distribution of the hidden degrees is 2.7
     with mean value of 5.
 
+
+    Custom Graph:
+
+    >>> kappas = [10] * 100
+    >>> G = nx.S1_graph(2.5, kappas=kappas)
+
+    Create a $\mathbb{S}^1$ model with 100 nodes. The $\beta$ parameter is set to 2.5
+    and every node has the same $\kappa=10$ value.
+
+
     Notes
     -----
-    If the ``'kappas'`` parameter is provided then parameters ``'n'``, ``'gamma'``
-    and ``'mean_degree'`` are ignored.
+    If the ``kappas`` parameter is provided then parameters ``n``, ``gamma``
+    and ``mean_degree`` are ignored.
 
-    >>> G = nx.S1_graph(100, 1.5, 2.7, 5)
-    >>> thetas = list(nx.get_node_attributes(G, 'theta'))
-    >>> kappas = list(nx.get_node_attributes(G, 'kappa'))
-    >>> G = nx.S1_graph(1, 2.5, 2.7, 5, kappas=kappas)
 
     References
     ----------
     .. [1] Serrano, M. Angeles, Dmitri, Krioukov, and Marián, Boguñá. "Self-Similarity
     of Complex Networks and Hidden Metric Spaces". Phys. Rev. Lett. 100 (2008): 078701.
     """
-    assert beta > 1
+    if beta < 0:
+        raise nx.NetworkXError("The inverse temperature cannot be smaller than 0.")
 
     if kappas is not None:
+        if not all((n is None, gamma is None, mean_degree is None)):
+            raise nx.NetworkXError(
+                "When kappas is set other parameters should be empty."
+            )
+
         n = len(kappas)
         mean_degree = sum(kappas) / len(kappas)
     else:
+        if any((n is None, gamma is None, mean_degree is None)):
+            raise nx.NetworkXError(
+                "Please provide all parameters: n, gamma and mean_degree."
+            )
+
         # Generate hidden degrees from the powerlaw distribution with given exponent `gamma`
-        #  and mean value `mean_degree` based on Table D.1 from https://arxiv.org/pdf/0706.1062.pdf
+        #  and mean value `mean_degree`
+        kappa_0 = (
+            (1 - 1 / n)
+            / (1 - n ** ((2 - gamma) / (gamma - 1)))
+            * (gamma - 2)
+            / (gamma - 1)
+            * mean_degree
+        )
+        kappa_c = kappa_0 * n ** (1 / (gamma - 1))
+
         kappas = []
-        xmin = 1
-        current_mean_degree = 0
-        while math.fabs(current_mean_degree - mean_degree) > 0.01:
-            kappas = [
-                xmin * math.pow(1 - seed.random(), -1 / (gamma - 1)) for _ in range(n)
-            ]
-            current_mean_degree = sum(kappas) / len(kappas)
-            xmin += 0.001
+        for _ in range(n):
+            kappas.append(
+                kappa_0
+                * (1 - seed.uniform(0, 1) * (1 - (kappa_c / kappa_0) ** (1 - gamma)))
+                ** (1 / (1 - gamma))
+            )
 
     G = nx.empty_graph(n)
     R = n / (2 * math.pi)
-    mu = beta / (2 * math.pi * mean_degree) * math.sin(math.pi / beta)
+
+    # Approximate values for mu in the thermodynamic limit (when n -> infinity)
+    if beta > 1:
+        mu = beta * math.sin(math.pi / beta) / (2 * math.pi * mean_degree)
+    elif beta == 1:
+        mu = 1 / (2 * mean_degree * math.log(n))
+    else:
+        mu = (1 - beta) / (2**beta * mean_degree * n ** (1 - beta))
 
     # Generate random positions on a circle
     thetas = [seed.uniform(0, 2 * math.pi) for _ in range(n)]
-    kappas = [k if k > 0 else 1e-10 for k in kappas]
 
     for i in range(n):
         for j in range(i):
             angle = math.pi - math.fabs(math.pi - math.fabs(thetas[i] - thetas[j]))
-            chi = R * angle / (mu * kappas[i] * kappas[j])
-            p_ij = 1 / (1 + math.pow(chi, beta))
+            dij = math.pow(R * angle, beta)
+            mu_kappas = math.pow(mu * kappas[i] * kappas[j], max(1, beta))
+            p_ij = 1 / (1 + dij / mu_kappas)
 
             # Create an edge with a certain connection probability
             if seed.random() < p_ij:
