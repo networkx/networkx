@@ -37,7 +37,6 @@ def s_metric(G, **kwargs):
     # removed when the deprecation expires.
     # Normalized is always False, since all `normalized=True` did was raise
     # a NotImplementedError
-    normalized = False
     if kwargs:
         # Warn for `normalize`, raise for any other kwarg
         if "normalized" in kwargs:
