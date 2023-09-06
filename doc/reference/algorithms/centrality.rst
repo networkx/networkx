@@ -161,8 +161,8 @@ Voting-Based Centrality
 .. autosummary::
    :toctree: generated/
 
-   sav_voting
-   copeland_voting
-   spav_voting
-   borda_voting
-   stv_voting
+   satisfaction_approval_centrality
+   pairwise_centrality
+   sequential_proportional_voting
+   borda_centrality
+   single_transferable_vote

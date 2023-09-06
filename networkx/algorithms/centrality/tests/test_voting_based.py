@@ -6,8 +6,8 @@
 import networkx as nx
 
 
-class TestSTVCentrality:
-    def test_stv1(self):
+class TestSingleTransferableVoteCentrality:
+    def test_single_transferable_vote_1(self):
         G = nx.Graph()
         G.add_edges_from(
             [
@@ -25,10 +25,10 @@ class TestSTVCentrality:
                 ("F", "M"),
             ]
         )
-        assert nx.stv_voting(G, 1) == {"D"}
-        assert nx.stv_voting(G, 2) == {"B", "F"}
+        assert nx.single_transferable_vote(G, 1) == {"D"}
+        assert nx.single_transferable_vote(G, 2) == {"B", "F"}
 
-    def test_stv2(self):
+    def test_single_transferable_vote_2(self):
         G = nx.Graph()
         G.add_edges_from(
             [
@@ -47,12 +47,12 @@ class TestSTVCentrality:
                 ("H", "J"),
             ]
         )
-        result = nx.stv_voting(G, 2)
+        result = nx.single_transferable_vote(G, 2)
         assert result in [{"A", "H"}, {"B", "H"}]
 
 
-class TestSPAVCentrality:
-    def test_spav_1(self):
+class TestSequentialProportionalCentrality:
+    def test_sequential_proportional_voting_1(self):
         G = nx.Graph()
         G.add_edges_from(
             [
@@ -70,9 +70,9 @@ class TestSPAVCentrality:
                 (11, 2),
             ]
         )
-        assert [1, 7, 11] == nx.spav_voting(G, number_of_nodes=3)
+        assert [1, 7, 11] == nx.sequential_proportional_voting(G, number_of_nodes=3)
 
-    def test_spav_2(self):
+    def test_sequential_proportional_voting_2(self):
         G = nx.Graph()
         G.add_edges_from(
             [
@@ -92,14 +92,14 @@ class TestSPAVCentrality:
                 (10, 1),
             ]
         )
-        assert [6, 1] == nx.spav_voting(G, number_of_nodes=2)
-        assert [6, 7] == nx.spav_voting(
+        assert [6, 1] == nx.sequential_proportional_voting(G, number_of_nodes=2)
+        assert [6, 7] == nx.sequential_proportional_voting(
             G, number_of_nodes=2, voting_ability_fn=lambda x: 1 if x == 0 else 0
         )
 
 
-class TestSAVCentrality:
-    def test_sav_1(self):
+class TestSatisfactionApprovalCentrality:
+    def test_satisfaction_approval_centrality_1(self):
         G = nx.Graph()
         G.add_edges_from(
             [
@@ -117,14 +117,14 @@ class TestSAVCentrality:
                 (11, 2),
             ]
         )
-        result = nx.sav_voting(G)
+        result = nx.satisfaction_approval_centrality(G)
         assert result[1] == 3
         assert result[2] == 1 / 3 + 1 / 4
         assert result[3] == 1 / 4
         assert result[7] == 2
         assert result[10] == 1 / 2 + 1 / 3
 
-    def test_sav_2(self):
+    def test_satisfaction_approval_centrality_2(self):
         # Graph from reference paper.
         G = nx.Graph()
         G.add_edges_from(
@@ -156,15 +156,15 @@ class TestSAVCentrality:
                 (8, 1),
             ]
         )
-        result = nx.sav_voting(G)
+        result = nx.satisfaction_approval_centrality(G)
         assert max(result, key=result.get) == 10
         assert result[10] == 7 + 1 / 2
         assert result[0] == 7 * (1 / 3) + 1 / 4
         assert result[1] == 1 / 8 + 2 * (1 / 3) + 1 / 2
 
 
-class TestCopelandCentrality:
-    def test_copeland_no_condorcet_winner(self):
+class TestPairwiseCentrality:
+    def test_no_condorcet_winner(self):
         # Graph from reference paper: Condorcet Paradox.
         G = nx.Graph()
         G.add_edges_from(
@@ -190,12 +190,12 @@ class TestCopelandCentrality:
                 (11, 4),
             ]
         )
-        result = nx.copeland_voting(G)
+        result = nx.pairwise_centrality(G)
         assert result["A"] < 13
         assert result["B"] < 13
         assert result["C"] < 13
 
-    def test_copeland_condorcet_winner_exists(self):
+    def test_condorcet_winner_exists(self):
         # Graph from reference paper: Condorcet winner exists, and Copeland chooses it.
         G = nx.Graph()
         G.add_edges_from(
@@ -220,7 +220,7 @@ class TestCopelandCentrality:
                 (1, 9),
             ]
         )
-        result = nx.copeland_voting(G)
+        result = nx.pairwise_centrality(G)
         assert max(result, key=result.get) == "CW"
         assert len([n for n in result if result[n] == result["CW"]]) == 1
 
@@ -239,7 +239,7 @@ class TestBordaCentrality:
                 ("D", "E"),
             ]
         )
-        result = nx.borda_voting(G)
+        result = nx.borda_centrality(G)
         assert result["A"] == 0
         assert result["B"] == 9
         assert result["C"] == 5
