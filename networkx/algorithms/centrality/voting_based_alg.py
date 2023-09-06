@@ -11,14 +11,14 @@ __all__ = [
     "pairwise_centrality",
     "borda_centrality",
     "single_transferable_vote",
-    "sequential_proportional_voting"
-    ]
+    "sequential_proportional_voting",
+]
 
 
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
 def satisfaction_approval_centrality(G):
-    """Rank nodes using Satisfaction Approval Voting (SAV) [1]_ .
+    """Rank nodes using Satisfaction Approval Voting (SAV).
 
     Satisfaction approval centrality (introduced in [2]_ and based on the
     framework in [3]_ ) lets each node vote on the centrality of its neighbors.
@@ -286,7 +286,7 @@ def single_transferable_vote(G, number_of_nodes):
     strictly more than 1/3 of the voters. This way, even the combined support of
     all non-elected candidates is less than the support of each elected
     candidate. This goes on for larger X, too.
-    
+
     Since usually there are no X candidates which reach the quota N/(X+1) + 1,
     STV repeats the following until X candidates are elected. If no candidate
     reaches the quota, remove the worst candidate from the election. Everyone
@@ -356,9 +356,7 @@ def single_transferable_vote(G, number_of_nodes):
     def plurality_winner_loser():
         plur_scores = {c: 0 for c in candidates_left}
         for v in G.nodes:
-            best_candidate = min(
-                candidates_left - {v}, key=shortest_path_len[v].get
-            )
+            best_candidate = min(candidates_left - {v}, key=shortest_path_len[v].get)
             for c in candidates_left:
                 if shortest_path_len[v][c] == shortest_path_len[v][best_candidate]:
                     plur_scores[c] += voting_abilities[v]
@@ -370,9 +368,7 @@ def single_transferable_vote(G, number_of_nodes):
         exceed = score_of_elected - quota
         avg_voting_ability_afterwards = exceed / score_of_elected
         for v in G.nodes:
-            best_candidate = min(
-                candidates_left - {v}, key=shortest_path_len[v].get
-            )
+            best_candidate = min(candidates_left - {v}, key=shortest_path_len[v].get)
             if (
                 shortest_path_len[v][best_candidate]
                 == shortest_path_len[v][elected_candidate]

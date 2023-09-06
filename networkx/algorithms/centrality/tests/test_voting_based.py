@@ -94,7 +94,7 @@ class TestSequentialProportionalCentrality:
         )
         assert [6, 1] == nx.sequential_proportional_voting(G, number_of_nodes=2)
         assert [6, 7] == nx.sequential_proportional_voting(
-            G, number_of_nodes=2, voting_ability_fn=lambda x: 1 if x == 0 else 0
+            G, number_of_nodes=2, reduction_fn=lambda x: 1 if x == 0 else 0
         )
 
 
