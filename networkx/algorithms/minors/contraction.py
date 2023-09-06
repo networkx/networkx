@@ -503,10 +503,10 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
 
     >>> G = nx.MultiDiGraph([(1, 2), (2, 2)])
     >>> H = nx.contracted_nodes(G, 1, 2)
-    >>> list(H.edges()) # edge 1->2, 2->2, 2->2 from the original Graph G
+    >>> list(H.edges())  # edge 1->2, 2->2, 2<-2 from the original Graph G
     [(1, 1), (1, 1), (1, 1)]
     >>> H = nx.contracted_nodes(G, 1, 2, self_loops=False)
-    >>> list(H.edges()) # edge 2->2, 2->2 from the original Graph G
+    >>> list(H.edges())  # edge 2->2, 2<-2 from the original Graph G
     [(1, 1), (1, 1)]
 
     See Also
