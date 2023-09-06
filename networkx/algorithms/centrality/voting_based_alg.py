@@ -332,7 +332,9 @@ def stv_voting(G, number_of_nodes):
     def plurality_winner_loser():
         plur_scores = {c: 0 for c in candidates_left}
         for v in G.nodes:
-            best_candidate = min(candidates_left.difference(v), key=shortest_path_len[v].get)
+            best_candidate = min(
+                candidates_left.difference(v), key=shortest_path_len[v].get
+            )
             for c in candidates_left:
                 if shortest_path_len[v][c] == shortest_path_len[v][best_candidate]:
                     plur_scores[c] += voting_abilities[v]
@@ -344,9 +346,16 @@ def stv_voting(G, number_of_nodes):
         exceed = score_of_elected - quota
         avg_voting_ability_afterwards = exceed / score_of_elected
         for v in G.nodes:
-            best_candidate = min(candidates_left.difference(v), key=shortest_path_len[v].get)
-            if shortest_path_len[v][best_candidate] == shortest_path_len[v][elected_candidate]:
-                voting_abilities[v] = voting_abilities[v] * avg_voting_ability_afterwards
+            best_candidate = min(
+                candidates_left.difference(v), key=shortest_path_len[v].get
+            )
+            if (
+                shortest_path_len[v][best_candidate]
+                == shortest_path_len[v][elected_candidate]
+            ):
+                voting_abilities[v] = (
+                    voting_abilities[v] * avg_voting_ability_afterwards
+                )
 
     while len(selected_nodes) < number_of_nodes:
         winner, win_score, loser = plurality_winner_loser()

@@ -7,26 +7,48 @@ import networkx as nx
 
 
 class TestSTVCentrality:
-    def test_stv(self):
-        # Graph from reference paper.
+    def test_stv1(self):
         G = nx.Graph()
         G.add_edges_from(
             [
                 ("A", "B"),
                 ("B", "C"),
-                ("D", "C"),
-                ("C", "E"),
+                ("C", "D"),
+                ("D", "E"),
                 ("E", "F"),
                 ("F", "G"),
-                ("F", "H"),
-                ("H", "I"),
-                ("I", "J"),
+                ("B", "H"),
+                ("B", "I"),
+                ("D", "J"),
                 ("J", "K"),
-                ("J", "L"),
+                ("F", "L"),
+                ("F", "M"),
             ]
         )
-        assert nx.stv_voting(G, 1) == {"F"}
-        assert nx.stv_voting(G, 2) == {"C", "J"}
+        assert nx.stv_voting(G, 1) == {"D"}
+        assert nx.stv_voting(G, 2) == {"B", "F"}
+
+    def test_stv2(self):
+        G = nx.Graph()
+        G.add_edges_from(
+            [
+                ("A", "B"),
+                ("A", "C"),
+                ("A", "D"),
+                ("A", "E"),
+                ("A", "F"),
+                ("B", "C"),
+                ("B", "D"),
+                ("B", "E"),
+                ("B", "F"),
+                ("D", "G"),
+                ("G", "H"),
+                ("H", "I"),
+                ("H", "J"),
+            ]
+        )
+        result = nx.stv_voting(G, 2)
+        assert result in [{"A", "H"}, {"B", "H"}]
 
 
 class TestSPAVCentrality:
