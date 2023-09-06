@@ -111,7 +111,7 @@ def louvain_communities(
     it = louvain_partitions(G, weight, resolution, threshold, seed)
     if max_level is not None:
         if max_level <= 0:
-            raise ValueError("max_level argument must be a positive integer")
+            raise ValueError("max_level argument must be a positive integer or None")
         it = itertools.islice(it, max_level)
     q = deque(it, maxlen=1)
     return q.pop()
