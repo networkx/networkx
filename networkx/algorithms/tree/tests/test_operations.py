@@ -10,10 +10,10 @@ from networkx.utils import edges_equal, nodes_equal
 
 def _check_label_attribute(input_trees, res_tree, label_attribute="_old"):
     res_attr_dict = nx.get_node_attributes(res_tree, label_attribute)
-    res_attr_list = set(res_attr_dict.values())
+    res_attr_set = set(res_attr_dict.values())
     input_label = (list(tree[0].nodes()) for tree in input_trees)
-    input_label_list = set(chain.from_iterable(input_label))
-    return res_attr_list == input_label_list
+    input_label_set = set(chain.from_iterable(input_label))
+    return res_attr_set == input_label_set
 
 
 class TestJoin:
