@@ -1,6 +1,7 @@
 """Function for detecting communities based on Louvain Community Detection
 Algorithm"""
 
+import itertools
 from collections import defaultdict, deque
 
 import networkx as nx
@@ -13,7 +14,7 @@ __all__ = ["louvain_communities", "louvain_partitions"]
 @py_random_state("seed")
 @nx._dispatch(edge_attrs="weight")
 def louvain_communities(
-    G, weight="weight", resolution=1, threshold=0.0000001, seed=None
+    G, weight="weight", resolution=1, threshold=0.0000001, max_level=None, seed=None
 ):
     r"""Find the best partition of a graph using the Louvain Community Detection
     Algorithm.
@@ -107,8 +108,12 @@ def louvain_communities(
     louvain_partitions
     """
 
-    d = louvain_partitions(G, weight, resolution, threshold, seed)
-    q = deque(d, maxlen=1)
+    it = louvain_partitions(G, weight, resolution, threshold, seed)
+    if max_level is not None:
+        if max_level <= 0:
+            raise ValueError("max_level argument must be a positive integer")
+        it = itertools.islice(it, max_level)
+    q = deque(it, maxlen=1)
     return q.pop()
 
 
