@@ -78,25 +78,13 @@ def join(rooted_trees, label_attribute=None):
 
     # Get the relabeled roots.
     roots = [
-        next(v for v, d in tree.nodes(data=True) if d.get("_old") == root)
+        next(v for v, d in tree.nodes(data=True) if d.get(label_attribute) == root)
         for tree, root in zip(trees, roots)
     ]
 
-    # Remove the old node labels.
+    # Add all sets of nodes and edges, attributes
     for tree in trees:
-        for v in tree:
-            tree.nodes[v].pop("_old")
-
-    # Add all sets of nodes and edges, with data.
-    nodes = (tree.nodes(data=True) for tree in trees)
-    edges = (tree.edges(data=True) for tree in trees)
-    R.add_nodes_from(chain.from_iterable(nodes))
-    R.add_edges_from(chain.from_iterable(edges))
-
-    # Add graph attributes; later attributes take precedent over earlier
-    # attributes.
-    for tree in trees:
-        R.graph.update(tree.graph)
+        R.update(tree)
 
     # Finally, join the subtrees at the root. We know 0 is unused by the
     # way we relabeled the subtrees.

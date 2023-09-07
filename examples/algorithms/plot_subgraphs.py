@@ -119,7 +119,7 @@ plt.show()
 
 ###############################################################################
 # Calculate the subgraphs with plotting all results of intermediate steps.
-# -----------------------------------------------------------------------
+# ------------------------------------------------------------------------
 #
 subgraphs_of_G_ex, removed_edges = graph_partitioning(G_ex, plotting=True)
 

@@ -127,6 +127,9 @@ def set_warnings():
         category=DeprecationWarning,
         message="MultiDiGraph_EdgeKey has been deprecated",
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nThe `normalized`"
+    )
 
 
 @pytest.fixture(autouse=True)
