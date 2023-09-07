@@ -98,7 +98,10 @@ __all__ = ["_dispatch"]
 
 def _get_plugins(group, *, load_and_call=False):
     if sys.version_info < (3, 10):
-        items = entry_points()[group]
+        eps = entry_points()
+        if group not in eps:
+            return {}
+        items = eps[group]
     else:
         items = entry_points(group=group)
     rv = {}
