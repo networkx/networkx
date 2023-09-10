@@ -589,6 +589,35 @@ def test_draw_edges_min_source_target_margins(node_shape):
     assert padded_extent[1] < default_extent[1]
 
 
+def test_draw_edges_account_for_node_boundaries():
+    """Test that the calculation of shrinkA and shrinkB for an FancyArrowPatch
+    accounts for the node boundary with (additional to the node size).
+    """
+    fig, ax = plt.subplots()
+    G = nx.DiGraph([(0, 1)])
+    pos = {0: (0, 0), 1: (1, 0)}  # horizontal layout
+    node_size = 300
+    linewidths = [10, 1]
+
+    # Draw an edge assuming no node boundaries
+    edge_ignore = nx.draw_networkx_edges(
+        G, pos, ax=ax, node_size=node_size, linewidths=0
+    )[0]
+    # Draw an edge assuming node boundaries of a certain width. This should be
+    # accounted for through some extra padding between edge and source and
+    # target node.
+    edge = nx.draw_networkx_edges(
+        G, pos, ax=ax, node_size=node_size, linewidths=linewidths
+    )[0]
+
+    # Get the extents of the FancyArrowPatch objects in display coordinates
+    edge_ignore_extent = edge_ignore.get_extents().corners()[::2, 0]
+    edge_extent = edge.get_extents().corners()[::2, 0]
+    # Ensure that there is extra padding
+    assert edge_extent[0] >= edge_ignore_extent[0]
+    assert edge_extent[1] <= edge_ignore_extent[1]
+
+
 def test_nonzero_selfloop_with_single_node():
     """Ensure that selfloop extent is non-zero when there is only one node."""
     # Create explicit axis object for test

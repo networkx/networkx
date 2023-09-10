@@ -486,6 +486,7 @@ def draw_networkx_edges(
     node_size=300,
     nodelist=None,
     node_shape="o",
+    linewidths=None,
     connectionstyle="arc3",
     min_source_margin=0,
     min_target_margin=0,
@@ -577,6 +578,10 @@ def draw_networkx_edges(
     node_shape :  string (default='o')
         The marker used for nodes, used in determining edge positioning.
         Specification is as a `matplotlib.markers` marker, e.g. one of 'so^>v<dph8'.
+
+    linewidths : scalar or array, optional
+        The linewidth of the node marker edges. Defaults to
+        `matplotlib.rcParams["lines.linewidth"]`.
 
     label : None or string
         Label for legend
@@ -760,11 +765,11 @@ def draw_networkx_edges(
         # marker.  Meanwhile, this works well for polygons with more than 4
         # sides and circle.
 
-        def to_marker_edge(marker_size, marker):
+        def to_marker_edge(marker_size, marker, boundary_width):
             if marker in "s^>v<d":  # `large` markers need extra space
-                return np.sqrt(2 * marker_size) / 2
+                return (np.sqrt(2 * marker_size) + boundary_width) / 2
             else:
-                return np.sqrt(marker_size) / 2
+                return (np.sqrt(marker_size) + boundary_width) / 2
 
         # Draw arrows with `matplotlib.patches.FancyarrowPatch`
         arrow_collection = []
@@ -826,14 +831,34 @@ def draw_networkx_edges(
                 # Scale each factor of each arrow based on arrowsize list
                 mutation_scale = arrowsize[i]
 
+            if np.iterable(linewidths):
+                source, target = edgelist[i][:2]
+                source_node_linewidth = linewidths[nodelist.index(source)]
+                target_node_linewidth = linewidths[nodelist.index(target)]
+            elif linewidths is None:
+                source_node_linewidth = target_node_linewidth = mpl.rcParams[
+                    "lines.linewidth"
+                ]
+            else:
+                source_node_linewidth = target_node_linewidth = linewidths
+
             if np.iterable(node_size):  # many node sizes
                 source, target = edgelist[i][:2]
                 source_node_size = node_size[nodelist.index(source)]
                 target_node_size = node_size[nodelist.index(target)]
-                shrink_source = to_marker_edge(source_node_size, node_shape)
-                shrink_target = to_marker_edge(target_node_size, node_shape)
+                shrink_source = to_marker_edge(
+                    source_node_size, node_shape, source_node_linewidth
+                )
+                shrink_target = to_marker_edge(
+                    target_node_size, node_shape, target_node_linewidth
+                )
             else:
-                shrink_source = shrink_target = to_marker_edge(node_size, node_shape)
+                shrink_source = to_marker_edge(
+                    node_size, node_shape, source_node_linewidth
+                )
+                shrink_target = to_marker_edge(
+                    node_size, node_shape, target_node_linewidth
+                )
 
             if shrink_source < min_source_margin:
                 shrink_source = min_source_margin

@@ -46,6 +46,9 @@ API Changes
   ``get_edge_attributes``. The ``default`` keyword can be used to set
   a default value if the attribute is missing from a node/edge.
 
+- [`#6368 <https://github.com/networkx/networkx/pull/6368>`_]
+  Added ``linewidths`` parameter to ``draw_networkx_edges``.
+
 
 Deprecations
 ------------
