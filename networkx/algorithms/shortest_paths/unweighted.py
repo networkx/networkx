@@ -199,11 +199,11 @@ def all_pairs_shortest_path_length(G, cutoff=None, parallel=False):
         num_processes = 4  # how can we define this value?
         args_list = [(length, G, n, cutoff) for n in G.nodes]
 
-        results = Parallel(n_jobs=num_processes)(
+        results_generator = (
             delayed(_calculate_shortest_path_length)(*args) for args in args_list
         )
 
-        yield from results
+        yield from Parallel(n_jobs=num_processes)(results_generator)
 
 
 def _calculate_shortest_path_length(length, G, n, cutoff):
