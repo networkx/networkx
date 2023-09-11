@@ -1328,13 +1328,13 @@ def cluster_layout(G, **options):
     
     Examples
     --------
-    >>> G = nx.gnp_random_graph(n, p)
+    >>> G = nx.gnp_random_graph(100, 0.1)
     >>> pos = nx.cluster_layout(G)
     """
     import numpy as np
-    clusters_ = options.pop('clusters', {})
-    std = options.pop('std', 0.1)
-    jump = options.pop('jump', 1.0)
+    clusters_ = options.pop("clusters", {})
+    std = options.pop("std", 0.1)
+    jump = options.pop("jump", 1.0)
     G, center = _process_params(G, None, 2)
     pos = {}
     if len(G) == 0:
