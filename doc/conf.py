@@ -1,3 +1,4 @@
+import os
 from datetime import date
 from sphinx_gallery.sorting import ExplicitOrder, FileNameSortKey
 from warnings import filterwarnings
@@ -81,12 +82,15 @@ exclude_patterns = ["release/release_template.rst"]
 project = "NetworkX"
 copyright = f"2004-{date.today().year}, NetworkX Developers"
 
+# Used in networkx.utils.backends for cleaner rendering of functions.
+# We need to set this before we import networkx.
+os.environ["_NETWORKX_BUILDING_DOCS_"] = "True"
+import networkx
+
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
 #
 # The short X.Y version.
-import networkx
-
 version = networkx.__version__
 # The full version, including dev info
 release = networkx.__version__.replace("_", "")
