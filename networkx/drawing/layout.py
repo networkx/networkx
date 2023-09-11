@@ -33,6 +33,7 @@ __all__ = [
     "spiral_layout",
     "multipartite_layout",
     "arf_layout",
+    "cluster_layout",
 ]
 
 
@@ -1295,3 +1296,59 @@ def rescale_layout_dict(pos, scale=1):
     pos_v = np.array(list(pos.values()))
     pos_v = rescale_layout(pos_v, scale=scale)
     return dict(zip(pos, pos_v))
+
+
+def cluster_layout(G, **options):
+    """Return a dictionary of scaled positions keyed by node
+    
+    The cluster_layout method builds a dictionary of node positions based on 
+    their relative clusters, where clusters are grouped together. Gaussian noise
+    is used to determine random positions within and between clusters, with a
+    larger variation between clusters.
+    
+    This layout method only works in two dimensions.
+
+    Parameters
+    ----------
+    G : nx.Graph or nx.DiGraph
+    Networkx graph.
+    
+    clusters : dict (default : {})
+        A dictionary of cluster lists keyed by cluster number.
+
+    std : float (default: 0.1)
+        The standard deviation of Gaussian noise within clusters.
+        
+    jump : float (default: 1.0)
+        The size of position variation between clusters.
+
+    Returns
+    -------
+    pos : A dictionary of positions keyed by node
+    
+    Examples
+    --------
+    >>> G = nx.gnp_random_graph(n, p)
+    >>> pos = nx.cluster_layout(G)
+    """
+    import numpy as np
+    clusters_ = options.pop('clusters', {})
+    std = options.pop('std', 0.1)
+    jump = options.pop('jump', 1.0)
+    G, center = _process_params(G, None, 2)
+    pos = {}
+    if len(G) == 0:
+        pos = {}
+    elif len(G) == 1:
+        pos = {nx.utils.arbitrary_element(G): center}
+    else:
+        if len(clusters_.keys()) == 0:
+            cluster_list = nx.community.greedy_modularity_communities(G)
+            clusters_ = dict(zip(list(range(len(cluster_list))), cluster_list))
+        for cluster in list(clusters_.values()):
+            startx = np.random.rand() + jump - center[0]
+            starty = np.random.rand() + jump - center[1]
+            for c in cluster:
+                pos.update({c:np.array([startx+np.random.normal(startx,std), starty+np.random.normal(starty,std)])})
+        pos = rescale_layout_dict(pos, scale=1)
+    return pos
