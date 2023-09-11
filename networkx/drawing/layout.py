@@ -1353,11 +1353,11 @@ def cluster_layout(G, **options):
                     {
                         c: np.array(
                             [
-                                startx+np.random.normal(startx,std),
-                                starty+np.random.normal(starty,std),
+                                startx + np.random.normal(startx,std),
+                                starty + np.random.normal(starty,std),
                             ]
                         )
                     }
                 )
-        pos = rescale_layout_dict(pos, scale=1)
+        pos = rescale_layout_dict(pos, scale = 1)
     return pos
