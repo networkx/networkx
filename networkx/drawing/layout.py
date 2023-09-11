@@ -1300,32 +1300,32 @@ def rescale_layout_dict(pos, scale=1):
 
 def cluster_layout(G, **options):
     """Return a dictionary of scaled positions keyed by node
-    
+
     The cluster_layout method builds a dictionary of node positions based on 
     their relative clusters, where clusters are grouped together. Gaussian noise
     is used to determine random positions within and between clusters, with a
     larger variation between clusters.
-    
+
     This layout method only works in two dimensions.
 
     Parameters
     ----------
     G : nx.Graph or nx.DiGraph
     Networkx graph.
-    
+
     clusters : dict (default : {})
         A dictionary of cluster lists keyed by cluster number.
-    
+
     std : float (default: 0.1)
         The standard deviation of Gaussian noise within clusters.
-    
+
     jump : float (default: 1.0)
         The size of position variation between clusters.
-    
+
     Returns
     -------
     pos : A dictionary of positions keyed by node
-    
+
     Examples
     --------
     >>> G = nx.gnp_random_graph(100, 0.1)
