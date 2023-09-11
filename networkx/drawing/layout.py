@@ -1315,13 +1315,13 @@ def cluster_layout(G, **options):
     
     clusters : dict (default : {})
         A dictionary of cluster lists keyed by cluster number.
-
+    
     std : float (default: 0.1)
         The standard deviation of Gaussian noise within clusters.
-        
+    
     jump : float (default: 1.0)
         The size of position variation between clusters.
-
+    
     Returns
     -------
     pos : A dictionary of positions keyed by node
@@ -1332,6 +1332,7 @@ def cluster_layout(G, **options):
     >>> pos = nx.cluster_layout(G)
     """
     import numpy as np
+
     clusters_ = options.pop("clusters", {})
     std = options.pop("std", 0.1)
     jump = options.pop("jump", 1.0)
