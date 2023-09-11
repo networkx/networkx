@@ -1349,6 +1349,15 @@ def cluster_layout(G, **options):
             startx = np.random.rand() + jump - center[0]
             starty = np.random.rand() + jump - center[1]
             for c in cluster:
-                pos.update({c:np.array([startx+np.random.normal(startx,std), starty+np.random.normal(starty,std)])})
+                pos.update(
+                    {
+                        c: np.array(
+                            [
+                                startx+np.random.normal(startx,std),
+                                starty+np.random.normal(starty,std),
+                            ]
+                        )
+                    }
+                )
         pos = rescale_layout_dict(pos, scale=1)
     return pos
