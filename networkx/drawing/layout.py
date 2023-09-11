@@ -1311,7 +1311,7 @@ def cluster_layout(G, **options):
     Parameters
     ----------
     G : nx.Graph or nx.DiGraph
-    Networkx graph.
+        Networkx graph.
 
     clusters : dict (default : {})
         A dictionary of cluster lists keyed by cluster number.
@@ -1324,7 +1324,7 @@ def cluster_layout(G, **options):
 
     Returns
     -------
-    pos : A dictionary of positions keyed by node
+    pos : A dictionary of positions keyed by node.
 
     Examples
     --------
