@@ -360,9 +360,9 @@ Sudoku
 
    sudoku_graph
 
-Transport Networks
+Dynamic Networks
 ____________
-.. automodule:: networkx.generators.transport_networks
+.. automodule:: networkx.generators.dynamic_networks
 .. autosummary::
    :toctree: generated/
 
