@@ -130,9 +130,7 @@ def betweenness_centrality(
     betweenness_centrality_func = (
         _parallel_betweenness_centrality if parallel else _betweenness_centrality
     )
-    betweenness = betweenness_centrality_func(
-        G, nodes, normalized, weight, endpoints, seed
-    )
+    betweenness = betweenness_centrality_func(G, nodes, weight, endpoints)
 
     # rescaling
     betweenness = _rescale(
@@ -146,9 +144,7 @@ def betweenness_centrality(
     return betweenness
 
 
-def _betweenness_centrality(
-    G, nodes, normalized=True, weight=None, endpoints=False, seed=None
-):
+def _betweenness_centrality(G, nodes, weight=None, endpoints=False):
     betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
     for s in nodes:
         # single source shortest paths
@@ -164,11 +160,8 @@ def _betweenness_centrality(
     return betweenness
 
 
-def _parallel_betweenness_centrality(
-    G, nodes, normalized=True, weight=None, endpoints=False, seed=None
-):
-    def worker(s):
-        betweenness_partial = dict.fromkeys(G, 0.0)
+def _parallel_betweenness_centrality(G, nodes, weight=None, endpoints=False):
+    def worker(s, betweenness_partial):
         if weight is None:
             S, P, sigma, _ = _single_source_shortest_path_basic(G, s)
         else:
@@ -186,9 +179,10 @@ def _parallel_betweenness_centrality(
         return betweenness_partial
 
     num_processes = 4
+    betweenness_partial = dict.fromkeys(G, 0.0)
 
     betweenness_results = Parallel(n_jobs=num_processes)(
-        delayed(worker)(s) for s in nodes
+        delayed(worker)(s, betweenness_partial.copy()) for s in nodes
     )
 
     betweenness = {}
