@@ -59,10 +59,10 @@ def visibility_graph(series):
     for (n1, t1), (n2, t2) in itertools.combinations(enumerate(series), 2):
         # check if any value between obstructs line of sight
         slope = (t2 - t1) / (n2 - n1)
-        constant = t2 - slope * n2
+        offset = t2 - slope * n2
 
         obstructed = any(
-            t >= constant + slope * n
+            t >= slope * n + offset
             for n, t in enumerate(series[n1 + 1 : n2], start=n1 + 1)
         )
 
