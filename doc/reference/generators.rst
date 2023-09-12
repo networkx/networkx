@@ -361,7 +361,7 @@ Sudoku
    sudoku_graph
 
 Time Series
-____________
+-----------
 .. automodule:: networkx.generators.time_series
 .. autosummary::
    :toctree: generated/
