@@ -360,7 +360,7 @@ Sudoku
 
    sudoku_graph
 
-Times Series
+Time Series
 ____________
 .. automodule:: networkx.generators.time_series
 .. autosummary::
