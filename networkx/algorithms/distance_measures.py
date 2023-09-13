@@ -684,7 +684,7 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
        Resistance distance between `nodeA` and `nodeB`.
          dictionary (if `nodeA` or `nodeB` is unspecified)
        Dictionary of nodes with effective resistances as the value.
-       
+
     Raises
     -------
     NetworkXError
@@ -749,7 +749,7 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
     # Replace with collapsing topology or approximated zero?
 
     # Compute resistance distance using the Pseudo-inverse of the Laplacian
-    # Self-loops are ignored.
+    # Self-loops are ignored
     L = nx.laplacian_matrix(G, weight=weight).todense()
     Linv = np.linalg.pinv(L, hermitian=True)
 
@@ -758,7 +758,7 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
         i = node_list.index(nodeA)
         j = node_list.index(nodeB)
         return Linv[i, i] + Linv[j, j] - Linv[i, j] - Linv[j, i]
-    
+
     elif nodeA is not None:
         i = node_list.index(nodeA)
         d = {}
@@ -766,7 +766,7 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
             j = node_list.index(n)
             d[n] = Linv[i, i] + Linv[j, j] - Linv[i, j] - Linv[j, i]
         return d
-    
+
     elif nodeB is not None:
         j = node_list.index(nodeB)
         d = {}
@@ -774,7 +774,7 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
             i = node_list.index(n)
             d[n] = Linv[i, i] + Linv[j, j] - Linv[i, j] - Linv[j, i]
         return d
-    
+
     else:
         d = {}
         for n in G:
@@ -784,6 +784,3 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
                 j = node_list.index(n2)
                 d[n][n2] = Linv[i, i] + Linv[j, j] - Linv[i, j] - Linv[j, i]
         return d
-
-
-

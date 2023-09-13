@@ -394,7 +394,6 @@ class TestResistanceDistance:
         rd = nx.resistance_distance(self.G)
         assert type(rd) == dict
         assert round(rd[1][3], 5) == 1
-        
 
 
 class TestBarycenter:
