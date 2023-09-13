@@ -391,9 +391,7 @@ class TestKirchhoffIndex:
     @classmethod
     def setup_class(cls):
         global np
-        global sp
         np = pytest.importorskip("numpy")
-        sp = pytest.importorskip("scipy")
 
     def setup_method(self):
         G = nx.Graph()
