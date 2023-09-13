@@ -904,7 +904,7 @@ def kirchhoff_index(G, weight=None, invert_weight=True):
     mu = nx.laplacian_spectrum(G, weight=weight)
     mu = sorted(mu)
     for i in range(1, G.number_of_nodes()):
-        Kf += 1/mu[i]
+        Kf += 1 / mu[i]
     return Kf * G.number_of_nodes()
 
 
