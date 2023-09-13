@@ -833,7 +833,6 @@ def kirchhoff_index(G, weight=None, invert_weight=True):
         Lin. Alg. Appl. 435:2491-2506, 2011.
     """
     import numpy as np
-    import scipy as sp
 
     if len(G) == 0:
         msg = "Graph G must contain at least one node."
