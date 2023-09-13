@@ -699,7 +699,7 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
     Examples
     --------
     >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
-    >>> nx.resistance_distance(G, 1, 3)
+    >>> round(resistance_distance(G, 1, 3), 10)
     0.625
 
     Notes
@@ -757,14 +757,14 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
     if nodeA is not None and nodeB is not None:
         i = node_list.index(nodeA)
         j = node_list.index(nodeB)
-        return Linv[i,i] + Linv[j,j] - Linv[i,j] - Linv[j,i]
+        return Linv[i, i] + Linv[j, j] - Linv[i, j] - Linv[j, i]
     
     elif nodeA is not None:
         i = node_list.index(nodeA)
         d = {}
         for n in G:
             j = node_list.index(n)
-            d[n] = Linv[i,i] + Linv[j,j] - Linv[i,j] - Linv[j,i]
+            d[n] = Linv[i, i] + Linv[j, j] - Linv[i, j] - Linv[j, i]
         return d
     
     elif nodeB is not None:
@@ -772,7 +772,7 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
         d = {}
         for n in G:
             i = node_list.index(n)
-            d[n] = Linv[i,i] + Linv[j,j] - Linv[i,j] - Linv[j,i]
+            d[n] = Linv[i, i] + Linv[j, j] - Linv[i, j] - Linv[j, i]
         return d
     
     else:
@@ -782,7 +782,7 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
             d[n] = {}
             for n2 in G:
                 j = node_list.index(n2)
-                d[n][n2] = Linv[i,i] + Linv[j,j] - Linv[i,j] - Linv[j,i]
+                d[n][n2] = Linv[i, i] + Linv[j, j] - Linv[i, j] - Linv[j, i]
         return d
 
 
