@@ -236,7 +236,7 @@ def _extrema_bounding(G, compute="diameter", weight=None):
     return None
 
 
-#@nx._dispatch(edge_attrs="weight")
+@nx._dispatch(edge_attrs="weight")
 def eccentricity(G, v=None, sp=None, weight=None):
     """Returns the eccentricity of nodes in G.
 
@@ -325,7 +325,7 @@ def eccentricity(G, v=None, sp=None, weight=None):
     return e
 
 
-#@nx._dispatch(edge_attrs="weight")
+@nx._dispatch(edge_attrs="weight")
 def diameter(G, e=None, usebounds=False, weight=None):
     """Returns the diameter of the graph G.
 
@@ -381,7 +381,7 @@ def diameter(G, e=None, usebounds=False, weight=None):
     return max(e.values())
 
 
-#@nx._dispatch(edge_attrs="weight")
+@nx._dispatch(edge_attrs="weight")
 def periphery(G, e=None, usebounds=False, weight=None):
     """Returns the periphery of the graph G.
 
@@ -440,7 +440,7 @@ def periphery(G, e=None, usebounds=False, weight=None):
     return p
 
 
-#@nx._dispatch(edge_attrs="weight")
+@nx._dispatch(edge_attrs="weight")
 def radius(G, e=None, usebounds=False, weight=None):
     """Returns the radius of the graph G.
 
@@ -493,7 +493,7 @@ def radius(G, e=None, usebounds=False, weight=None):
     return min(e.values())
 
 
-#@nx._dispatch(edge_attrs="weight")
+@nx._dispatch(edge_attrs="weight")
 def center(G, e=None, usebounds=False, weight=None):
     """Returns the center of the graph G.
 
@@ -552,7 +552,7 @@ def center(G, e=None, usebounds=False, weight=None):
     return p
 
 
-#@nx._dispatch(edge_attrs="weight")
+@nx._dispatch(edge_attrs="weight")
 def barycenter(G, weight=None, attr=None, sp=None):
     r"""Calculate barycenter of a connected graph, optionally with edge weights.
 
@@ -646,7 +646,7 @@ def _count_lu_permutations(perm_array):
 
 
 @not_implemented_for("directed")
-#@nx._dispatch(edge_attrs="weight")
+@nx._dispatch(edge_attrs="weight")
 def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     """Returns the resistance distance between node A and node B on graph G.
 
@@ -772,7 +772,7 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     return rd
 
 
-#@nx._dispatch(edge_attrs="weight")
+@nx._dispatch(edge_attrs="weight")
 def kirchhoff_index(G, weight=None, invert_weight=True):
     """Returns the Kirchhoff index of G.
 
@@ -855,7 +855,6 @@ def kirchhoff_index(G, weight=None, invert_weight=True):
         else:
             for u, v, d in G.edges(data=True):
                 d[weight] = 1 / d[weight]
-    # Replace with collapsing topology or approximated zero?
 
     # Compute Kirchhoff based on spectrum of the Laplacian
     # Self-loops are ignored
