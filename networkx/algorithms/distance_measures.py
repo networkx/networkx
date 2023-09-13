@@ -699,7 +699,7 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
     Examples
     --------
     >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
-    >>> round(resistance_distance(G, 1, 3), 10)
+    >>> round(nx.resistance_distance(G, 1, 3), 10)
     0.625
 
     Notes
