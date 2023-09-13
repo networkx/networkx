@@ -11,6 +11,7 @@ __all__ = [
     "center",
     "barycenter",
     "resistance_distance",
+    "kirchhoff_index",
     "kemeny_constant",
 ]
 
@@ -648,7 +649,7 @@ def _count_lu_permutations(perm_array):
 @not_implemented_for("directed")
 @nx._dispatch(edge_attrs="weight")
 def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=True):
-    """Returns the resistance distance between every pair of nodes on graph G.
+    """Returns the resistance distance between pairs of nodes in graph G.
 
     The resistance distance between two nodes of a graph is akin to treating
     the graph as a grid of resistors with a resistance equal to the provided
@@ -812,6 +813,101 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
     rd = Ldet * LdiagAB_s / LdiagA_s
 
     return rd
+
+
+@nx._dispatch(edge_attrs="weight")
+def kirchhoff_index(G, weight=None, invert_weight=True):
+    """Returns the Kirchhoff index of G.
+
+    Also known as the Effective graph resistance.
+
+    The Kirchhoff index is defined as the sum
+    of the resistance distance of every node pair in G [1]_.
+
+    If weight is not provided, then a weight of 1 is used for all edges.
+
+    The Kirchhoff index of a disconnected graph is infinite.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       A graph
+
+    weight : string or None, optional (default=None)
+       The edge data key used to compute the resistance distance.
+       If None, then each edge has weight 1.
+
+    invert_weight : boolean (default=True)
+        Proper calculation of resistance distance requires building the
+        Laplacian matrix with the reciprocal of the weight. Not required
+        if the weight is already inverted. Weight cannot be zero.
+
+    Returns
+    -------
+    Kf : float
+        The Kirchhoff index of `G`.
+
+    Raises
+    -------
+    NetworkXError
+        If `G` is a directed graph.
+
+    NetworkXError
+        If `G` does not contain any nodes.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> round(nx.kirchhoff_index(G), 10)
+    10.25
+
+    Notes
+    -----
+    The implementation is based on Theorem 2.2 in [2]_. Self-loops are ignored.
+    Multi-edges are contracted in one edge with weight equal to the sum of the weights.
+
+    References
+    ----------
+    .. [1] Wolfram
+       "Kirchhoff Index."
+       https://mathworld.wolfram.com/KirchhoffIndex.html
+    .. [2] W. Ellens, F. M. Spieksma, P. Van Mieghem, A. Jamakovic, R. E. Kooij.
+        Effective graph resistance.
+        Lin. Alg. Appl. 435:2491-2506, 2011.
+    """
+    import numpy as np
+    import scipy as sp
+
+    if len(G) == 0:
+        msg = "Graph G must contain at least one node."
+        raise nx.NetworkXError(msg)
+    elif nx.is_directed(G):
+        msg = "Graph G must be undirected."
+        raise nx.NetworkXError(msg)
+
+    # Disconnected graphs have infinite Kirchhoff index
+    if not nx.is_connected(G):
+        return np.inf
+
+    # Invert weights
+    G = G.copy()
+    if invert_weight and weight is not None:
+        if G.is_multigraph():
+            for u, v, k, d in G.edges(keys=True, data=True):
+                d[weight] = 1 / d[weight]
+        else:
+            for u, v, d in G.edges(data=True):
+                d[weight] = 1 / d[weight]
+    # Replace with collapsing topology or approximated zero?
+
+    # Compute Kirchhoff based on spectrum of the Laplacian
+    # Self-loops are ignored
+    Kf = 0
+    mu = nx.laplacian_spectrum(G, weight=weight)
+    mu = sorted(mu)
+    for i in range(1, G.number_of_nodes()):
+        Kf += 1/mu[i]
+    return Kf * G.number_of_nodes()
 
 
 @nx.utils.not_implemented_for("directed")
