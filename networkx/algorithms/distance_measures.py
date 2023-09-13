@@ -898,7 +898,6 @@ def kirchhoff_index(G, weight=None, invert_weight=True):
         else:
             for u, v, d in G.edges(data=True):
                 d[weight] = 1 / d[weight]
-    # Replace with collapsing topology or approximated zero?
 
     # Compute Kirchhoff based on spectrum of the Laplacian
     # Self-loops are ignored
