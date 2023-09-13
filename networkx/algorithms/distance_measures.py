@@ -11,6 +11,7 @@ __all__ = [
     "center",
     "barycenter",
     "resistance_distance",
+    "kirchhoff_index",
 ]
 
 
@@ -235,7 +236,7 @@ def _extrema_bounding(G, compute="diameter", weight=None):
     return None
 
 
-@nx._dispatch(edge_attrs="weight")
+#@nx._dispatch(edge_attrs="weight")
 def eccentricity(G, v=None, sp=None, weight=None):
     """Returns the eccentricity of nodes in G.
 
@@ -324,7 +325,7 @@ def eccentricity(G, v=None, sp=None, weight=None):
     return e
 
 
-@nx._dispatch(edge_attrs="weight")
+#@nx._dispatch(edge_attrs="weight")
 def diameter(G, e=None, usebounds=False, weight=None):
     """Returns the diameter of the graph G.
 
@@ -380,7 +381,7 @@ def diameter(G, e=None, usebounds=False, weight=None):
     return max(e.values())
 
 
-@nx._dispatch(edge_attrs="weight")
+#@nx._dispatch(edge_attrs="weight")
 def periphery(G, e=None, usebounds=False, weight=None):
     """Returns the periphery of the graph G.
 
@@ -439,7 +440,7 @@ def periphery(G, e=None, usebounds=False, weight=None):
     return p
 
 
-@nx._dispatch(edge_attrs="weight")
+#@nx._dispatch(edge_attrs="weight")
 def radius(G, e=None, usebounds=False, weight=None):
     """Returns the radius of the graph G.
 
@@ -492,7 +493,7 @@ def radius(G, e=None, usebounds=False, weight=None):
     return min(e.values())
 
 
-@nx._dispatch(edge_attrs="weight")
+#@nx._dispatch(edge_attrs="weight")
 def center(G, e=None, usebounds=False, weight=None):
     """Returns the center of the graph G.
 
@@ -551,7 +552,7 @@ def center(G, e=None, usebounds=False, weight=None):
     return p
 
 
-@nx._dispatch(edge_attrs="weight")
+#@nx._dispatch(edge_attrs="weight")
 def barycenter(G, weight=None, attr=None, sp=None):
     r"""Calculate barycenter of a connected graph, optionally with edge weights.
 
@@ -645,7 +646,7 @@ def _count_lu_permutations(perm_array):
 
 
 @not_implemented_for("directed")
-@nx._dispatch(edge_attrs="weight")
+#@nx._dispatch(edge_attrs="weight")
 def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     """Returns the resistance distance between node A and node B on graph G.
 
@@ -769,3 +770,98 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     rd = Ldet * LdiagAB_s / LdiagA_s
 
     return rd
+
+
+#@nx._dispatch(edge_attrs="weight")
+def kirchhoff_index(G, weight=None, invert_weight=True):
+    """Returns the Kirchhoff index of G.
+
+    Also known as the Effective graph resistance.
+
+    The Kirchhoff index is defined as the sum
+    of the resistance distance of every node pair in G [1]_.
+
+    If weight is not provided, then a weight of 1 is used for all edges.
+
+    The Kirchhoff index of a disconnected graph is infinite.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       A graph
+
+    weight : string or None, optional (default=None)
+       The edge data key used to compute the resistance distance.
+       If None, then each edge has weight 1.
+
+    invert_weight : boolean (default=True)
+        Proper calculation of resistance distance requires building the
+        Laplacian matrix with the reciprocal of the weight. Not required
+        if the weight is already inverted. Weight cannot be zero.
+
+    Returns
+    -------
+    Kf : float
+        The Kirchhoff index of `G`.
+       
+    Raises
+    -------
+    NetworkXError
+        If `G` is a directed graph.
+
+    NetworkXError
+        If `G` does not contain any nodes.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> round(nx.kirchhoff_index(G), 10)
+    10.25
+
+    Notes
+    -----
+    The implementation is based on Theorem 2.2 in [2]_. Self-loops are ignored.
+    Multi-edges are contracted in one edge with weight equal to the sum of the weights.
+
+    References
+    ----------
+    .. [1] Wolfram
+       "Kirchhoff Index."
+       https://mathworld.wolfram.com/KirchhoffIndex.html
+    .. [2] W. Ellens, F. M. Spieksma, P. Van Mieghem, A. Jamakovic, R. E. Kooij.
+        Effective graph resistance.
+        Lin. Alg. Appl. 435:2491-2506, 2011.
+    """
+    import numpy as np
+    import scipy as sp
+
+    if len(G) == 0:
+        msg = "Graph G must contain at least one node."
+        raise nx.NetworkXError(msg)
+    elif nx.is_directed(G):
+        msg = "Graph G must be undirected."
+        raise nx.NetworkXError(msg)
+
+    # Disconnected graphs have infinite Kirchhoff index
+    if not nx.is_connected(G):
+        return np.inf
+
+    # Invert weights
+    G = G.copy()
+    if invert_weight and weight is not None:
+        if G.is_multigraph():
+            for u, v, k, d in G.edges(keys=True, data=True):
+                d[weight] = 1 / d[weight]
+        else:
+            for u, v, d in G.edges(data=True):
+                d[weight] = 1 / d[weight]
+    # Replace with collapsing topology or approximated zero?
+
+    # Compute Kirchhoff based on spectrum of the Laplacian
+    # Self-loops are ignored
+    Kf = 0
+    mu = nx.laplacian_spectrum(G, weight=weight)
+    mu = sorted(mu)
+    for i in range(1, G.number_of_nodes()):
+        Kf += 1/mu[i]
+    return Kf * G.number_of_nodes()

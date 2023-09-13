@@ -13,5 +13,6 @@ Distance Measures
    periphery
    radius
    resistance_distance
+   kirchhoff_index
 
 
