@@ -717,7 +717,6 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
         J. of Math. Chem. 12:81-95, 1993.
     """
     import numpy as np
-    import scipy as sp
 
     if len(G) == 0:
         msg = "Graph G must contain at least one node."
