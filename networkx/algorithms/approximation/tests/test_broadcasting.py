@@ -1,8 +1,6 @@
 """Unit tests for the broadcasting module."""
 import math
 
-import pytest
-
 import networkx as nx
 import networkx.algorithms.approximation as nx_app
 

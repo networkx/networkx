@@ -17,7 +17,7 @@ def update_broadcast_label(G, U, v):
 def tree_broadcast(G):
     """
     This functions implements a linear algorithm for determining the minimum broadcast time
-    on any tree. As a byproduct, it can also find a vertex which acts as the broadcast center,
+    on any tree [1]_. As a byproduct, it can also find a vertex which acts as the broadcast center,
     i.e., the vertex where the broadcast begins.
 
     Parameters
@@ -34,6 +34,11 @@ def tree_broadcast(G):
     ------
     NetworkXNotImplemented
         If the graph is directed or is a multigraph.
+
+    References
+    ----------
+    .. [1] Slater, P.J., Cockayne, E.J., Hedetniemi, S.T,
+       Information dissemination in trees. SIAM J.Comput. 10(4), 692–701 (1981)
     """
     # Remove selfloops if necessary
     loop_nodes = nx.nodes_with_selfloops(G)
@@ -45,6 +50,9 @@ def tree_broadcast(G):
         G = G.copy()
         G.remove_edge(node, node)
         G.remove_edges_from((n, n) for n in loop_nodes)
+
+    # Assert that the graph G has no cycles
+    assert nx.is_tree(G), "The graph G is not a tree"
 
     # step 0
     if G.number_of_nodes() == 2:
@@ -70,7 +78,6 @@ def tree_broadcast(G):
         w = min(W, key=lambda n: G.nodes[n]["value"])
         try:
             v = next(T.neighbors(w))
-            print(f"Adjacent vertex of vertex {w}: {v}")
         except StopIteration:
             print(f"Vertex {v} has no adjacent vertices.")
 
@@ -83,7 +90,6 @@ def tree_broadcast(G):
         if T.degree(v) == 1:
             # update t(v)
             G.nodes[v]["value"] = update_broadcast_label(G, U, v)
-            print(f"Updating broadcast time of vertex {v} to {G.nodes[v]['value']}")
             W.add(v)
 
     # step 7
