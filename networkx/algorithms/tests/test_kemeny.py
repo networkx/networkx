@@ -27,8 +27,8 @@ class TestKemenyConstant:
         w13 = 3
         w23 = 4
         test_data = 3 * (w12 + w13) * (w12 + w23) * (w13 + w23) / ...
-            (2*(w12**2*w13 + w12**2*w23 + w12*w13**2
-                + 3*w12*w13*w23 + w12*w23**2 + w13**2*w23 + w13*w23**2))
+        (2*(w12**2*w13 + w12**2*w23 + w12*w13**2 + ...
+            + 3*w12*w13*w23 + w12*w23**2 + w13**2*w23 + w13*w23**2))
         assert np.isclose(K, test_data)
 
     def test_kemeny_constant_no_weight(self):
@@ -48,8 +48,8 @@ class TestKemenyConstant:
         K = nx.kemeny_constant(G, "weight")
         w12 = w12_1 + w12_2
         test_data = 3 * (w12 + w13) * (w12 + w23) * (w13 + w23) / ...
-            (2*(w12**2*w13 + w12**2*w23 + w12*w13**2
-                + 3*w12*w13*w23 + w12*w23**2 + w13**2*w23 + w13*w23**2))
+        (2*(w12**2*w13 + w12**2*w23 + w12*w13**2 + ...
+            + 3*w12*w13*w23 + w12*w23**2 + w13**2*w23 + w13*w23**2))
         assert np.isclose(K, test_data)
 
     def test_kemeny_constant_weight0(self):
@@ -62,8 +62,8 @@ class TestKemenyConstant:
         G.add_edge(2, 3, weight=w23)
         K = nx.kemeny_constant(G, "weight")
         test_data = 3 * (w12 + w13) * (w12 + w23) * (w13 + w23) / ...
-            (2*(w12**2*w13 + w12**2*w23 + w12*w13**2
-                + 3*w12*w13*w23 + w12*w23**2 + w13**2*w23 + w13*w23**2))
+        (2*(w12**2*w13 + w12**2*w23 + w12*w13**2 + ...
+            + 3*w12*w13*w23 + w12*w23**2 + w13**2*w23 + w13*w23**2))
         assert np.isclose(K, test_data)
 
     def test_kemeny_constant_not_connected(self):
