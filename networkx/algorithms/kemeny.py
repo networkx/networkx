@@ -7,7 +7,8 @@ __all__ = [
     "kemeny_constant",
 ]
 
-@nx._dispatch(edge_attrs="weight")
+
+#@nx._dispatch(edge_attrs="weight")
 def kemeny_constant(G, weight=None):
     """Returns Kemeny's constant of the given graph.
 
@@ -76,7 +77,7 @@ def kemeny_constant(G, weight=None):
     elif not nx.is_connected(G):
         msg = "Graph G must be connected."
         raise nx.NetworkXError(msg)
-    
+
     # Compute matrix H = D^-1/2 A D^-1/2
     A = nx.adjacency_matrix(G, weight=weight)
     n, m = A.shape
@@ -90,10 +91,9 @@ def kemeny_constant(G, weight=None):
     # Compute eigenvalues of H
     eig = sp.linalg.eigvalsh(H.todense())
     eig = sorted(eig)
-    print(eig)
-    
+
     # Compute Kemeny's constant
     K = 0
-    for i in range(n-1):
+    for i in range(n - 1):
         K += 1 / (1 - eig[i])
     return K
