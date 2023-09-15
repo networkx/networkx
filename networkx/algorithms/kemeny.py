@@ -38,7 +38,10 @@ def kemeny_constant(G, weight=None):
         If the graph `G` is directed.
 
     NetworkXError
-        If `G` does not contain any nodes.
+        If the graph `G` is not connected.
+
+    NetworkXError
+        If the graph `G` does not contain any nodes.
 
     Examples
     --------
@@ -61,6 +64,8 @@ def kemeny_constant(G, weight=None):
         Paul Erdös is Eighty, vol. 2, Bolyai Society,
         Mathematical Studies, Keszthely, Hungary (1993), pp. 1-46
     """
+    import numpy as np
+    import scipy as sp
 
     if len(G) == 0:
         msg = "Graph G must contain at least one node."
@@ -68,9 +73,12 @@ def kemeny_constant(G, weight=None):
     elif nx.is_directed(G):
         msg = "Graph G must be undirected."
         raise nx.NetworkXError(msg)
-
+    elif not nx.is_connected(G):
+        msg = "Graph G must be connected."
+        raise nx.NetworkXError(msg)
+    
     # Compute matrix H = D^-1/2 A D^-1/2
-    A = nx.adjacency_matrix(G)
+    A = nx.adjacency_matrix(G, weight=weight)
     n, m = A.shape
     diags = A.sum(axis=1)
     with sp.errstate(divide="ignore"):

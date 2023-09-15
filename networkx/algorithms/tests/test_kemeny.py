@@ -24,13 +24,13 @@ class TestKemenyConstant:
         K = nx.kemeny_constant(self.G, "weight")
         w12 = 2
         w13 = 3
-        w14 = 4
+        w23 = 4
         test_data = 3 * (w12 + w13) * (w12 + w23) * (w13 + w23) / (2*(w12**2*w13 + w12**2*w23 + w12*w13**2 + 3*w12*w13*w23 + w12*w23**2 + w13**2*w23 + w13*w23**2))
         assert np.isclose(K, test_data)
 
     def test_kemeny_constant_no_weight(self):
         K = nx.kemeny_constant(self.G)
-        assert np.isclose(K, 7/3)
+        assert np.isclose(K, 4/3)
 
     def test_kemeny_constant_multigraph(self):
         G = nx.MultiGraph()
@@ -61,12 +61,8 @@ class TestKemenyConstant:
 
     def test_kemeny_constant_not_connected(self):
         self.G.add_node(5)
-        w12 = 2
-        w13 = 3
-        w23 = 4
-        K = nx.kemeny_constant(G, "weight")
-        test_data = 3 * (w12 + w13) * (w12 + w23) * (w13 + w23) / (2*(w12**2*w13 + w12**2*w23 + w12*w13**2 + 3*w12*w13*w23 + w12*w23**2 + w13**2*w23 + w13*w23**2))
-        assert np.isclose(K, test_data)
+        with pytest.raises(nx.NetworkXError):
+            nx.kemeny_constant(self.G)
 
     def test_kemeny_constant_complete_bipartite_graph(self):
         # Theorem 1 in https://www.sciencedirect.com/science/article/pii/S0166218X20302912
