@@ -705,7 +705,7 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
     Notes
     -----
     The implementation is based on Theorem A in [2]_. Self-loops are ignored.
-    Multi-edges are contracted in one edge with weight equal to the sum of the weights.
+    Multi-edges are contracted in one edge with weight equal to the harmonic sum of the weights.
 
     References
     ----------
