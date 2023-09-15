@@ -12,7 +12,7 @@ import networkx as nx
 time_series = [0, 2, 1, 3, 2, 1, 3, 2, 1, 3, 2, 1, 3, 4, 0]
 # or
 # import random
-# time_series = [random.randint(1,10) for i in range(10)]
+# time_series = [random.randint(1, 10) for i in range(10)]
 
 G = nx.visibility_graph(time_series)
 
