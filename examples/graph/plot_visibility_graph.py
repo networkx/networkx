@@ -19,42 +19,33 @@ G = nx.visibility_graph(time_series)
 labels = nx.get_node_attributes(G, "value")
 
 fig, all_axes = plt.subplots(2, 1, num="Visibility Graph", figsize=(8, 12))
-ax = all_axes.flat
+axs = all_axes.flat
 
-ax[0].title.set_text("Line-of-Sight Connectivity")
-ax[0].title.set_size(11)
+layouts_params = {
+    # a layout emphasizing the line-of-sight connectivity
+    "Line-of-Sight Connectivity": {
+        "pos": {x: (x, 0) for x in range(len(time_series))},
+        "connectionstyle": "arc3,rad=-1.57079632679",
+    },
+    # a layout showcasing the time series values
+    "Time Series values with Connectivity": {
+        "pos": {i: (i, v) for i, v in enumerate(time_series)}
+    },
+}
 
-ax[0].set_xlabel("Time", size=10)
+for i, (name, params) in enumerate(layouts_params.items()):
+    axs[i].title.set_text(name)
+    axs[i].title.set_size(11)
+    axs[i].set_xlabel("Time", size=10)
+    axs[i].margins(0.10)
+    nx.draw_networkx_nodes(G, params.get("pos"), ax=axs[i], alpha=0.5)
+    nx.draw_networkx_labels(G, params.get("pos"), ax=axs[i], labels=labels)
+    nx.draw_networkx_edges(
+        G, **params, ax=axs[i], arrows=True, arrowstyle="<->", arrowsize=10
+    )
 
-ax[1].title.set_text(
-    "Time Series values with Connectivity",
-)
-ax[1].title.set_size(11)
-ax[1].set_xlabel("Time", size=10)
-ax[1].set_ylabel("Value", size=10)
+axs[1].set_ylabel("Value", size=10)
 
-# a plot layout emphasizing the line-of-sight connectivity
-pos = {x: (x, 0) for x in range(len(time_series))}
-nx.draw_networkx_nodes(G, pos, ax=ax[0], alpha=0.5)
-nx.draw_networkx_labels(G, pos, ax=ax[0], labels=labels)
-nx.draw_networkx_edges(
-    G,
-    pos,
-    ax=ax[0],
-    arrows=True,
-    arrowstyle="<->",
-    arrowsize=10,
-    connectionstyle="arc3,rad=-1.57079632679",
-)
-
-# a plot layout showcasing the time series values
-pos = {i: (i, v) for i, v in enumerate(time_series)}
-nx.draw_networkx_nodes(G, pos, ax=ax[1], alpha=0.5)
-nx.draw_networkx_labels(G, pos, ax=ax[1], labels=labels)
-nx.draw_networkx_edges(G, pos, ax=ax[1], arrows=True, arrowstyle="<->", arrowsize=10)
-
-for a in ax:
-    a.margins(0.10)
 fig.suptitle("Visibility Graph")
 fig.tight_layout()
 plt.show()
