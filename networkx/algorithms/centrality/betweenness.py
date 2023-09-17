@@ -18,6 +18,17 @@ __all__ = ["betweenness_centrality", "edge_betweenness_centrality"]
 def betweenness_centrality(
     G, k=None, normalized=True, weight=None, endpoints=False, seed=None, parallel=False
 ):
+    if not parallel:
+        return betweenness_centrality(G, k, normalized, weight, endpoints, seed)
+    else:
+        return parallel_betweenness_centrality(
+            G, k, normalized, weight, endpoints, seed
+        )
+
+
+def betweenness_centrality(
+    G, k=None, normalized=True, weight=None, endpoints=False, seed=None
+):
     r"""Compute the shortest-path betweenness centrality for nodes.
 
     Betweenness centrality of a node $v$ is the sum of the
@@ -122,15 +133,23 @@ def betweenness_centrality(
        Sociometry 40: 35–41, 1977
        https://doi.org/10.2307/3033543
     """
+    betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
     if k is None:
         nodes = G
     else:
         nodes = seed.sample(list(G.nodes()), k)
 
-    betweenness_centrality_func = (
-        _parallel_betweenness_centrality if parallel else _betweenness_centrality
-    )
-    betweenness = betweenness_centrality_func(G, nodes, weight, endpoints)
+    for s in nodes:
+        # single source shortest paths
+        if weight is None:  # use BFS
+            S, P, sigma, _ = _single_source_shortest_path_basic(G, s)
+        else:  # use Dijkstra's algorithm
+            S, P, sigma, _ = _single_source_dijkstra_path_basic(G, s, weight)
+        # accumulation
+        if endpoints:
+            betweenness, _ = _accumulate_endpoints(betweenness, S, P, sigma, s)
+        else:
+            betweenness, _ = _accumulate_basic(betweenness, S, P, sigma, s)
 
     # rescaling
     betweenness = _rescale(
@@ -144,23 +163,9 @@ def betweenness_centrality(
     return betweenness
 
 
-def _betweenness_centrality(G, nodes, weight=None, endpoints=False):
-    betweenness = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
-    for s in nodes:
-        # single source shortest paths
-        if weight is None:  # use BFS
-            S, P, sigma, _ = _single_source_shortest_path_basic(G, s)
-        else:  # use Dijkstra's algorithm
-            S, P, sigma, _ = _single_source_dijkstra_path_basic(G, s, weight)
-        # accumulation
-        if endpoints:
-            betweenness, _ = _accumulate_endpoints(betweenness, S, P, sigma, s)
-        else:
-            betweenness, _ = _accumulate_basic(betweenness, S, P, sigma, s)
-    return betweenness
-
-
-def _parallel_betweenness_centrality(G, nodes, weight=None, endpoints=False):
+def parallel_betweenness_centrality(
+    G, k=None, normalized=True, weight=None, endpoints=False, seed=None
+):
     def worker(s):
         betweenness_partial = dict.fromkeys(G, 0.0)
         if weight is None:
@@ -181,6 +186,11 @@ def _parallel_betweenness_centrality(G, nodes, weight=None, endpoints=False):
 
     num_processes = 4
 
+    if k is None:
+        nodes = G
+    else:
+        nodes = seed.sample(list(G.nodes()), k)
+
     betweenness_results = Parallel(n_jobs=num_processes)(
         delayed(worker)(s) for s in nodes
     )
@@ -190,6 +200,15 @@ def _parallel_betweenness_centrality(G, nodes, weight=None, endpoints=False):
         for node, value in result.items():
             betweenness[node] = betweenness.get(node, 0.0) + value
 
+    # rescaling
+    betweenness = _rescale(
+        betweenness,
+        len(G),
+        normalized=normalized,
+        directed=G.is_directed(),
+        k=k,
+        endpoints=endpoints,
+    )
     return betweenness
 
 
