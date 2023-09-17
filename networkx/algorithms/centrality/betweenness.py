@@ -185,7 +185,7 @@ def parallel_betweenness_centrality(
 
         return betweenness_partial
 
-    num_processes = 4
+    num_processes = 4  # should be a env variable
 
     if k is None:
         nodes = G

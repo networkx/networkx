@@ -88,6 +88,7 @@ extra = [
     'pygraphviz>=1.11',
     'pydot>=1.4.2',
     'sympy>=1.10',
+    'joblib>=1.6.1',
 ]
 test = [
     'pytest>=7.2',
