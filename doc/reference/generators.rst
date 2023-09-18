@@ -359,3 +359,11 @@ Sudoku
    :toctree: generated/
 
    sudoku_graph
+
+Time Series
+-----------
+.. automodule:: networkx.generators.time_series
+.. autosummary::
+   :toctree: generated/
+
+   visibility_graph

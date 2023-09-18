@@ -55,7 +55,13 @@ Deprecations
   and will be removed in v3.4.  Use ``neighbors`` to sort the nodes if desired.
 - [`#6785 <https://github.com/networkx/pull/6785>`_]
   Deprecate ``MultiDiGraph_EdgeKey`` subclass used in ``Edmonds`` class.
-  Deprecate ``Edmonds`` class for computing minimum and maximum branchings and arborescences (use ``minimum_branching``, ``minimal_branching``, ``maximum_branching``, ``minimum_arborescence`` and ``maximum_arborescence`` directly).
+  Deprecate ``Edmonds`` class for computing minimum and maximum branchings and
+  arborescences (use ``minimum_branching``, ``minimal_branching``,
+  ``maximum_branching``, ``minimum_arborescence`` and ``maximum_arborescence``
+  directly).
+- [`#6841 <https://github.com/networkx/pull/6841>`_]
+  Deprecate the ``normalized`` keyword of the ``s_metric`` function. Ignore
+  value of ``normalized`` for future compatibility.
 
 Merged PRs
 ----------

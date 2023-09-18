@@ -1821,8 +1821,10 @@ class Graph:
         # if already a subgraph, don't make a chain
         subgraph = nx.subgraph_view
         if hasattr(self, "_NODE_OK"):
-            return subgraph(self._graph, induced_nodes, self._EDGE_OK)
-        return subgraph(self, induced_nodes)
+            return subgraph(
+                self._graph, filter_node=induced_nodes, filter_edge=self._EDGE_OK
+            )
+        return subgraph(self, filter_node=induced_nodes)
 
     def edge_subgraph(self, edges):
         """Returns the subgraph induced by the specified edges.

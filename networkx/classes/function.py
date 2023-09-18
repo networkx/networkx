@@ -388,7 +388,7 @@ def induced_subgraph(G, nbunch):
     [0, 1, 3]
     """
     induced_nodes = nx.filters.show_nodes(G.nbunch_iter(nbunch))
-    return nx.subgraph_view(G, induced_nodes)
+    return nx.subgraph_view(G, filter_node=induced_nodes)
 
 
 def edge_subgraph(G, edges):
@@ -447,7 +447,7 @@ def edge_subgraph(G, edges):
             induced_edges = nxf.show_diedges(edges)
         else:
             induced_edges = nxf.show_edges(edges)
-    return nx.subgraph_view(G, induced_nodes, induced_edges)
+    return nx.subgraph_view(G, filter_node=induced_nodes, filter_edge=induced_edges)
 
 
 def restricted_view(G, nodes, edges):
@@ -503,7 +503,7 @@ def restricted_view(G, nodes, edges):
             hide_edges = nxf.hide_diedges(edges)
         else:
             hide_edges = nxf.hide_edges(edges)
-    return nx.subgraph_view(G, hide_nodes, hide_edges)
+    return nx.subgraph_view(G, filter_node=hide_nodes, filter_edge=hide_edges)
 
 
 def to_directed(graph):
