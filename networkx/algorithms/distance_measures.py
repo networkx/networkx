@@ -776,7 +776,7 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
 def kemeny_constant(G, weight=None):
     """Returns Kemeny's constant of the given graph.
 
-    *Kemeny's constant* of a graph can be computed by regarding the graph
+    *Kemeny's constant* of a graph `G` can be computed by regarding the graph
     as a Markov chain. Kemeny's constant is then the expected number of time steps
     to transition from a starting state i to a random destination state
     sampled from the Markov chain's stationary distribution.
@@ -793,7 +793,7 @@ def kemeny_constant(G, weight=None):
     G : NetworkX graph
 
     weight : string or None, optional (default=None)
-       The edge data key used to compute the resistance distance.
+       The edge data key used to compute Kemeny's constant.
        If None, then each edge has weight 1.
 
     Returns
