@@ -812,6 +812,9 @@ def kemeny_constant(G, weight=None):
     NetworkXError
         If the graph `G` does not contain any nodes.
 
+    NetworkXError
+        If the graph `G` contains edges with negative weights.
+
     Examples
     --------
     >>> G = nx.complete_graph(5)
@@ -820,7 +823,7 @@ def kemeny_constant(G, weight=None):
 
     Notes
     -----
-    The implementation is based on equation (3.3) in [2]_. Self-loops are ignored.
+    The implementation is based on equation (3.3) in [2]_. Self-loops are included.
     Multi-edges are contracted in one edge with weight equal to the sum of the weights.
 
     References
@@ -844,6 +847,9 @@ def kemeny_constant(G, weight=None):
         raise nx.NetworkXError(msg)
     elif not nx.is_connected(G):
         msg = "Graph G must be connected."
+        raise nx.NetworkXError(msg)
+    elif nx.is_negatively_weighted(G, weight="weight"):
+        msg = "The weights of graph G must be nonnegative."
         raise nx.NetworkXError(msg)
 
     # Compute matrix H = D^-1/2 A D^-1/2
