@@ -495,7 +495,12 @@ class TestKemenyConstant:
         w12 = 2
         w13 = 3
         w23 = 4
-        test_data = (3 / 2 * (w12 + w13) * (w12 + w23) * (w13 + w23)
+        test_data = (
+            3
+            / 2
+            * (w12 + w13)
+            * (w12 + w23)
+            * (w13 + w23)
             / (
                 w12**2 * (w13 + w23)
                 + w13**2 * (w12 + w23)
@@ -521,7 +526,12 @@ class TestKemenyConstant:
         G.add_edge(2, 3, weight=w23)
         K = nx.kemeny_constant(G, "weight")
         w12 = w12_1 + w12_2
-        test_data = (3 / 2 * (w12 + w13) * (w12 + w23) * (w13 + w23)
+        test_data = (
+            3
+            / 2
+            * (w12 + w13)
+            * (w12 + w23)
+            * (w13 + w23)
             / (
                 w12**2 * (w13 + w23)
                 + w13**2 * (w12 + w23)
@@ -540,7 +550,12 @@ class TestKemenyConstant:
         G.add_edge(1, 3, weight=w13)
         G.add_edge(2, 3, weight=w23)
         K = nx.kemeny_constant(G, "weight")
-        test_data = (3 / 2 * (w12 + w13) * (w12 + w23) * (w13 + w23)
+        test_data = (
+            3
+            / 2
+            * (w12 + w13)
+            * (w12 + w23)
+            * (w13 + w23)
             / (
                 w12**2 * (w13 + w23)
                 + w13**2 * (w12 + w23)
