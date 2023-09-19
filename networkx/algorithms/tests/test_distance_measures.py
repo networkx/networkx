@@ -484,10 +484,10 @@ class TestKemenyConstant:
         G = nx.Graph()
         w12 = 2
         w13 = 3
-        w14 = 4
+        w23 = 4
         G.add_edge(1, 2, weight=w12)
         G.add_edge(1, 3, weight=w13)
-        G.add_edge(2, 3, weight=w14)
+        G.add_edge(2, 3, weight=w23)
         self.G = G
 
     def test_kemeny_constant(self):
@@ -566,9 +566,15 @@ class TestKemenyConstant:
         assert np.isclose(K, test_data)
 
     def test_kemeny_constant_negative_weight(self):
-        self.G.add_edge(1, 4, weight=-10)
+        G = nx.Graph()
+        w12 = 2
+        w13 = 3
+        w23 = -10
+        G.add_edge(1, 2, weight=w12)
+        G.add_edge(1, 3, weight=w13)
+        G.add_edge(2, 3, weight=w23)
         with pytest.raises(nx.NetworkXError):
-            nx.kemeny_constant(self.G)
+            nx.kemeny_constant(G)
 
     def test_kemeny_constant_selfloop(self):
         G = nx.Graph()
@@ -582,7 +588,7 @@ class TestKemenyConstant:
         G.add_edge(2, 3, weight=w23)
         K = nx.kemeny_constant(G, "weight")
         test_data = (
-            (2*w11 + 3*w12 + 3*w13)
+            (2 * w11 + 3 * w12 + 3 * w13)
             * (w12 + w23)
             * (w13 + w23)
             / (
