@@ -55,9 +55,34 @@ jobs:
         run: |
           pytest --doctest-modules --durations=10 --pyargs networkx
 
-      - name: Test Dispatching
+  backends:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04]
+        python-version: ["3.11"]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Before install (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install graphviz graphviz-dev
+
+      - name: Install packages (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements/default.txt -r requirements/test.txt
+          pip install -r requirements/extra.txt
+          pip install .
+          pip list
+
+      - name: Test Dispatching to Backends
         # Limit this to only a single combination from the matrix
-        if: ${{ (matrix.os == 'ubuntu') && (matrix.python-version == '3.11') }}
         run: |
           NETWORKX_TEST_BACKEND=nx-loopback pytest --doctest-modules --durations=10 --pyargs networkx
 
