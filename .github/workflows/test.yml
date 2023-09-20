@@ -57,8 +57,9 @@ jobs:
 
   dispatch:
     runs-on: ubuntu-latest
-    matrix:
-      python-version: ["3.11"]
+    strategy:
+      matrix:
+        python-version: ["3.11"]
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
