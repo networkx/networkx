@@ -574,7 +574,7 @@ class TestKemenyConstant:
         G.add_edge(1, 3, weight=w13)
         G.add_edge(2, 3, weight=w23)
         with pytest.raises(nx.NetworkXError):
-            nx.kemeny_constant(G)
+            nx.kemeny_constant(G, "weight")
 
     def test_kemeny_constant_selfloop(self):
         G = nx.Graph()

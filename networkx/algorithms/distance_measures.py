@@ -848,7 +848,7 @@ def kemeny_constant(G, weight=None):
     elif not nx.is_connected(G):
         msg = "Graph G must be connected."
         raise nx.NetworkXError(msg)
-    elif nx.is_negatively_weighted(G, weight="weight"):
+    elif nx.is_negatively_weighted(G, weight=weight):
         msg = "The weights of graph G must be nonnegative."
         raise nx.NetworkXError(msg)
 
