@@ -306,7 +306,13 @@ class MultiGraph(Graph):
         """
         return MultiGraph
 
-    def __init__(self, incoming_graph_data=None, multigraph_input=None, **attr):
+    def __init__(
+        self,
+        incoming_graph_data=None,
+        multigraph_input=None,
+        keep_multiple_directed_edges=False,
+        **attr,
+    ):
         """Initialize a graph with edges, name, or graph attributes.
 
         Parameters
@@ -330,6 +336,11 @@ class MultiGraph(Graph):
             keyed by node to neighbors.
             If None, the treatment for True is tried, but if it fails,
             the treatment for False is tried.
+
+        keep_multiple_directed_edges : bool (default False)
+            When True, if `d` represents a digraph and G is a multigraph, each
+            directed edge between two nodes from `d` is treated as a separate edge
+            in the multigraph, regardless of direction
 
         attr : keyword arguments, optional (default= no attributes)
             Attributes to add to graph as key=value pairs.
@@ -367,7 +378,12 @@ class MultiGraph(Graph):
                     )
                 Graph.__init__(self, incoming_graph_data, **attr)
         else:
-            Graph.__init__(self, incoming_graph_data, **attr)
+            Graph.__init__(
+                self,
+                incoming_graph_data,
+                keep_multiple_directed_edges=keep_multiple_directed_edges,
+                **attr,
+            )
 
     @cached_property
     def adj(self):

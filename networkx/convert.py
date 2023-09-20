@@ -31,7 +31,9 @@ __all__ = [
 ]
 
 
-def to_networkx_graph(data, create_using=None, multigraph_input=False):
+def to_networkx_graph(
+    data, create_using=None, multigraph_input=False, keep_multiple_directed_edges=False
+):
     """Make a NetworkX graph from a known data structure.
 
     The preferred way to call this is automatically
@@ -69,6 +71,11 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
         If data and create_using are both multigraphs then create
         a multigraph from a multigraph.
 
+    keep_multiple_directed_edges : bool (default False)
+        When True, if `d` represents a digraph and G is a multigraph, each
+        directed edge between two nodes from `d` is treated as a separate edge
+        in the multigraph, regardless of direction
+
     """
     # NX graph
     if hasattr(data, "adj"):
@@ -77,6 +84,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
                 data.adj,
                 create_using=create_using,
                 multigraph_input=data.is_multigraph(),
+                keep_multiple_directed_edges=keep_multiple_directed_edges,
             )
             # data.graph should be dict-like
             result.graph.update(data.graph)
@@ -363,7 +371,9 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
     return dod
 
 
-def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
+def from_dict_of_dicts(
+    d, create_using=None, multigraph_input=False, keep_multiple_directed_edges=False
+):
     """Returns a graph from a dictionary of dictionaries.
 
     Parameters
@@ -380,6 +390,11 @@ def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
        node to neighbor to edge keys to edge data for multi-edges.
        Otherwise this routine assumes dict-of-dict-of-dict keyed by
        node to neighbor to edge data.
+
+    keep_multiple_directed_edges : bool (default False)
+        When True, if `d` represents a digraph and G is a multigraph, each
+        directed edge between two nodes from `d` is treated as a separate edge
+        in the multigraph, regardless of direction
 
     Examples
     --------
@@ -435,13 +450,23 @@ def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
             # d can have both representations u-v, v-u in dict.  Only add one.
             # We don't need this check for digraphs since we add both directions,
             # or for Graph() since it is done implicitly (parallel edges not allowed)
-            seen = set()
+            if keep_multiple_directed_edges:
+                seen = list()
+            else:
+                seen = set()
             for u, nbrs in d.items():
                 for v, data in nbrs.items():
-                    if (u, v) not in seen:
-                        G.add_edge(u, v, key=0)
+                    if keep_multiple_directed_edges:
+                        # print(seen.count((u,v)))
+                        G.add_edge(u, v, key=seen.count((u, v)))
                         G[u][v][0].update(data)
-                    seen.add((v, u))
+                        seen += [(v, u), (u, v)]
+                    else:
+                        if (u, v) not in seen:
+                            G.add_edge(u, v, key=0)
+                            G[u][v][0].update(data)
+                        seen.add((v, u))
+        # elif G.is_directed() and condense_edges:
         else:
             G.add_edges_from(
                 ((u, v, data) for u, nbrs in d.items() for v, data in nbrs.items())
