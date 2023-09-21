@@ -30,16 +30,7 @@ def test_laplacian_centrality_unconnected_nodes():
 
     G = nx.Graph()
     G.add_nodes_from([0, 1, 2])
-    d = nx.laplacian_centrality(G, normalized=False)
-
-    exact = {
-        0: 0.0,
-        1: 0.0,
-        2: 0.0,
-    }
-
-    for n, dc in d.items():
-        assert exact[n] == pytest.approx(dc, abs=1e-7)
+    assert nx.laplacian_centrality(G, normalized=False) == {0: 0, 1: 0, 2: 0}
 
 
 def test_laplacian_centrality_normalized_edgeless():
