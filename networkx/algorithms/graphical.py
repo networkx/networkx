@@ -107,7 +107,7 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     Examples
     --------
     >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
-    >>> sequence = (v for d, v in G.degree())
+    >>> sequence = (d for _, d in G.degree())
     >>> nx.is_valid_degree_sequence_havel_hakimi(sequence)
     True
 
@@ -187,7 +187,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     Examples
     --------
     >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
-    >>> sequence = (v for d, v in G.degree())
+    >>> sequence = (d for _, d in G.degree())
     >>> nx.is_valid_degree_sequence_erdos_gallai(sequence)
     True
 
@@ -268,8 +268,8 @@ def is_multigraphical(sequence):
 
     Examples
     --------
-    >>> G = nx.MultiGraph ([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
-    >>> sequence = (v for d, v in G.degree())
+    >>> G = nx.MultiGraph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> sequence = (d for _, d in G.degree())
     >>> nx.is_multigraphical(sequence)
     True
 
@@ -316,7 +316,7 @@ def is_pseudographical(sequence):
     Examples
     --------
     >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
-    >>> sequence = (v for d, v in G.degree())
+    >>> sequence = (d for _, d in G.degree())
     >>> nx.is_pseudographical(sequence)
     True
 
