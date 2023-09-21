@@ -841,14 +841,11 @@ def kemeny_constant(G, *, weight=None):
     import scipy as sp
 
     if len(G) == 0:
-        msg = "Graph G must contain at least one node."
-        raise nx.NetworkXError(msg)
+        raise nx.NetworkXError("Graph G must contain at least one node.")
     if not nx.is_connected(G):
-        msg = "Graph G must be connected."
-        raise nx.NetworkXError(msg)
+        raise nx.NetworkXError("Graph G must be connected.")
     if nx.is_negatively_weighted(G, weight=weight):
-        msg = "The weights of graph G must be nonnegative."
-        raise nx.NetworkXError(msg)
+        raise nx.NetworkXError("The weights of graph G must be nonnegative.")
 
     # Compute matrix H = D^-1/2 A D^-1/2
     A = nx.adjacency_matrix(G, weight=weight)
