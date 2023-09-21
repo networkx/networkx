@@ -784,7 +784,7 @@ def kemeny_constant(G, *, weight=None):
     sampled from the Markov chain's stationary distribution.
     The Kemeny constant is independent of the chosen initial state [1]_.
 
-    The Kemeny constant measures the time needed for spreading 
+    The Kemeny constant measures the time needed for spreading
     across a graph. Low values indicate a closely connected graph
     whereas high values indicate a spread-out graph.
 
