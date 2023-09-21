@@ -782,9 +782,9 @@ def kemeny_constant(G, weight=None):
     sampled from the Markov chain's stationary distribution.
     Kemeny's constant is independent of the chosen initial state [1]_.
 
-    Kemeny's constant is used as a measure of connectivity of graphs.
-    Large values indicate a poorly connected graph whereas low values
-    correspond to well-connected graphs.
+    The Kemeny constant measures the time needed for spreading 
+    across a graph. Low values indicate a closely connected graph
+    whereas high values indicate a spread-out graph.
 
     If weight is not provided, then a weight of 1 is used for all edges.
 
