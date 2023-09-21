@@ -772,15 +772,17 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
     return rd
 
 
+@nx.utils.not_implemented_for("directed")
 @nx._dispatch(edge_attrs="weight")
-def kemeny_constant(G, weight=None):
-    """Returns Kemeny's constant of the given graph.
+def kemeny_constant(G, *, weight=None):
+    """Returns the Kemeny constant of the given graph.
 
-    *Kemeny's constant* of a graph `G` can be computed by regarding the graph
-    as a Markov chain. Kemeny's constant is then the expected number of time steps
+    The *Kemeny constant* (or Kemeny's constant) of a graph `G`
+    can be computed by regarding the graph as a Markov chain.
+    The Kemeny constant is then the expected number of time steps
     to transition from a starting state i to a random destination state
     sampled from the Markov chain's stationary distribution.
-    Kemeny's constant is independent of the chosen initial state [1]_.
+    The Kemeny constant is independent of the chosen initial state [1]_.
 
     The Kemeny constant measures the time needed for spreading 
     across a graph. Low values indicate a closely connected graph
@@ -788,32 +790,29 @@ def kemeny_constant(G, weight=None):
 
     If weight is not provided, then a weight of 1 is used for all edges.
 
+    Since `G` represents a Markov chain, the weights must be positive.
+
     Parameters
     ----------
     G : NetworkX graph
 
     weight : string or None, optional (default=None)
-       The edge data key used to compute Kemeny's constant.
+       The edge data key used to compute the Kemeny constant.
        If None, then each edge has weight 1.
 
     Returns
     -------
     K : float
-        Kemeny's constant of the graph `G`.
+        The Kemeny constant of the graph `G`.
 
     Raises
     ------
-    NetworkXError
+    NetworkXNotImplemented
         If the graph `G` is directed.
 
     NetworkXError
-        If the graph `G` is not connected.
-
-    NetworkXError
-        If the graph `G` does not contain any nodes.
-
-    NetworkXError
-        If the graph `G` contains edges with negative weights.
+        If the graph `G` is not connected, or contains no nodes,
+        or has edges with negative weights.
 
     Examples
     --------
@@ -823,8 +822,10 @@ def kemeny_constant(G, weight=None):
 
     Notes
     -----
-    The implementation is based on equation (3.3) in [2]_. Self-loops are included.
-    Multi-edges are contracted in one edge with weight equal to the sum of the weights.
+    The implementation is based on equation (3.3) in [2]_.
+    Self-loops are allowed and indicate a Markov chain where
+    the state can remain the same. Multi-edges are contracted
+    in one edge with weight equal to the sum of the weights.
 
     References
     ----------
@@ -842,13 +843,10 @@ def kemeny_constant(G, weight=None):
     if len(G) == 0:
         msg = "Graph G must contain at least one node."
         raise nx.NetworkXError(msg)
-    elif nx.is_directed(G):
-        msg = "Graph G must be undirected."
-        raise nx.NetworkXError(msg)
-    elif not nx.is_connected(G):
+    if not nx.is_connected(G):
         msg = "Graph G must be connected."
         raise nx.NetworkXError(msg)
-    elif nx.is_negatively_weighted(G, weight=weight):
+    if nx.is_negatively_weighted(G, weight=weight):
         msg = "The weights of graph G must be nonnegative."
         raise nx.NetworkXError(msg)
 
@@ -866,7 +864,7 @@ def kemeny_constant(G, weight=None):
     eig = sp.linalg.eigvalsh(H.todense())
     eig = sorted(eig)
 
-    # Compute Kemeny's constant
+    # Compute the Kemeny constant
     K = 0
     for i in range(n - 1):
         K += 1 / (1 - eig[i])

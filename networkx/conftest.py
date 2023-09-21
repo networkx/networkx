@@ -210,6 +210,7 @@ needs_numpy = [
     "linalg/laplacianmatrix.py",
     "utils/misc.py",
     "algorithms/centrality/laplacian.py",
+    "algorithms/distance_measures/kemeny_constant.py",
 ]
 needs_scipy = [
     "algorithms/approximation/traveling_salesman.py",
@@ -240,6 +241,7 @@ needs_scipy = [
     "linalg/spectrum.py",
     "utils/rcm.py",
     "algorithms/centrality/laplacian.py",
+    "algorithms/distance_measures/kemeny_constant.py",
 ]
 needs_matplotlib = ["drawing/nx_pylab.py"]
 needs_pandas = ["convert_matrix.py"]
