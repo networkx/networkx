@@ -737,7 +737,6 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
         else:
             for u, v, d in G.edges(data=True):
                 d[weight] = 1 / d[weight]
-    # Replace with collapsing topology or approximated zero?
 
     # Compute resistance distance using the Pseudo-inverse of the Laplacian
     # Self-loops are ignored
