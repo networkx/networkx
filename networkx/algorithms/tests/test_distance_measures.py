@@ -422,7 +422,7 @@ class TestBarycenter:
         """
         prng = Random(0xDEADBEEF)
         for i in range(50):
-            RT = nx.random_tree(prng.randint(1, 75), prng)
+            RT = nx.random_labeled_tree(prng.randint(1, 75), seed=prng)
             b = self.barycenter_as_subgraph(RT)
             if len(b) == 2:
                 assert b.size() == 1
