@@ -400,6 +400,11 @@ class TestKirchhoffIndex:
         G.add_edge(2, 3, weight=4)
         self.G = G
 
+    def test_kirchhoff_index_directed_graph(self):
+        G = nx.DiGraph()
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.kirchhoff_index(G)
+
     def test_kirchhoff_index_empty(self):
         G = nx.Graph()
         with pytest.raises(nx.NetworkXError):
