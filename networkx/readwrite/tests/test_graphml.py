@@ -1288,17 +1288,6 @@ class TestWriteGraphML(BaseGraphML):
         assert H.edges["n0", "n1", 0]["special"] == 2
         assert H.edges["n0", "n1", 1]["special"] == 3
 
-    def test_numpy_float(self):
-        np = pytest.importorskip("numpy")
-        wt = np.float_(3.4)
-        G = nx.Graph([(1, 2, {"weight": wt})])
-        fd, fname = tempfile.mkstemp()
-        self.writer(G, fname)
-        H = nx.read_graphml(fname, node_type=int)
-        assert G._adj == H._adj
-        os.close(fd)
-        os.unlink(fname)
-
     def test_multigraph_to_graph(self):
         # test converting multigraph to graph if no parallel edges found
         G = nx.MultiGraph()

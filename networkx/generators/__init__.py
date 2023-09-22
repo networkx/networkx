@@ -9,6 +9,7 @@ from networkx.generators.community import *
 from networkx.generators.degree_seq import *
 from networkx.generators.directed import *
 from networkx.generators.duplication import *
+from networkx.generators.dynamic_networks import *
 from networkx.generators.ego import *
 from networkx.generators.expanders import *
 from networkx.generators.geometric import *
@@ -27,6 +28,6 @@ from networkx.generators.social import *
 from networkx.generators.spectral_graph_forge import *
 from networkx.generators.stochastic import *
 from networkx.generators.sudoku import *
-from networkx.generators.dynamic_networks import *
+from networkx.generators.time_series import *
 from networkx.generators.trees import *
 from networkx.generators.triads import *

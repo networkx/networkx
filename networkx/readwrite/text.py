@@ -154,8 +154,8 @@ def generate_network_text(
     ------
     str : a line of generated text
 
-    Example
-    -------
+    Examples
+    --------
     >>> graph = nx.path_graph(10)
     >>> graph.add_node('A')
     >>> graph.add_node('B')
@@ -471,8 +471,8 @@ def write_network_text(
     vertical_chains : Boolean
         If True, chains of nodes will be drawn vertically when possible.
 
-    Example
-    -------
+    Examples
+    --------
     >>> graph = nx.balanced_tree(r=2, h=2, create_using=nx.DiGraph)
     >>> nx.write_network_text(graph)
     ╙── 0

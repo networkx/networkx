@@ -360,6 +360,14 @@ Sudoku
 
    sudoku_graph
 
+Time Series
+-----------
+.. automodule:: networkx.generators.time_series
+.. autosummary::
+   :toctree: generated/
+
+   visibility_graph
+
 Dynamic Networks
 ____________
 .. automodule:: networkx.generators.dynamic_networks

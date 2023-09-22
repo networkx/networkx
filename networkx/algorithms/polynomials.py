@@ -250,10 +250,10 @@ def chromatic_polynomial(G):
     cases are listed in [2]_.
 
     The chromatic polynomial is a specialization of the Tutte polynomial; in
-    particular, `X_G(x) = `T_G(x, 0)` [6]_.
+    particular, ``X_G(x) = T_G(x, 0)`` [6]_.
 
     The chromatic polynomial may take negative arguments, though evaluations
-    may not have chromatic interpretations. For instance, `X_G(-1)` enumerates
+    may not have chromatic interpretations. For instance, ``X_G(-1)`` enumerates
     the acyclic orientations of `G` [7]_.
 
     References

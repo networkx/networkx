@@ -596,6 +596,20 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         )
         pytest.raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, 1)
 
+    def test_zero_cycle(self):
+        G = nx.cycle_graph(5, create_using=nx.DiGraph())
+        G.add_edge(2, 3, weight=-4)
+        # check that zero cycle doesnt raise
+        nx.goldberg_radzik(G, 1)
+        nx.bellman_ford_predecessor_and_distance(G, 1)
+
+        G.add_edge(2, 3, weight=-4.0001)
+        # check that negative cycle does raise
+        pytest.raises(
+            nx.NetworkXUnbounded, nx.bellman_ford_predecessor_and_distance, G, 1
+        )
+        pytest.raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, 1)
+
     def test_find_negative_cycle_longer_cycle(self):
         G = nx.cycle_graph(5, create_using=nx.DiGraph())
         nx.add_cycle(G, [3, 5, 6, 7, 8, 9])

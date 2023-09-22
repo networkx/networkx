@@ -817,3 +817,19 @@ class _dispatch:
 
 def _restore_dispatch(name):
     return _registered_algorithms[name]
+
+
+if os.environ.get("_NETWORKX_BUILDING_DOCS_"):
+    # When building docs with Sphinx, use the original function with the
+    # dispatched __doc__, b/c Sphinx renders normal Python functions better.
+    # This doesn't show e.g. `*, backend=None, **backend_kwargs` in the
+    # signatures, which is probably okay. It does allow the docstring to be
+    # updated based on the installed backends.
+    _orig_dispatch = _dispatch
+
+    def _dispatch(func=None, **kwargs):  # type: ignore[no-redef]
+        if func is None:
+            return partial(_dispatch, **kwargs)
+        dispatched_func = _orig_dispatch(func, **kwargs)
+        func.__doc__ = dispatched_func.__doc__
+        return func
