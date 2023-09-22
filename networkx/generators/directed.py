@@ -249,6 +249,8 @@ def scale_free_graph(
         return seed.choice(candidates)
 
     if initial_graph is not None and hasattr(initial_graph, "_adj"):
+        if not isinstance(initial_graph, nx.MultiDiGraph):
+            raise nx.NetworkXError("initial_graph must be a MultiDiGraph.")
         G = initial_graph
     else:
         # Start with 3-cycle
