@@ -815,6 +815,7 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
     return rd
 
 
+@not_implemented_for("directed")
 @nx._dispatch(edge_attrs="weight")
 def kirchhoff_index(G, weight=None, invert_weight=True):
     """Returns the Kirchhoff index of G.
@@ -849,7 +850,7 @@ def kirchhoff_index(G, weight=None, invert_weight=True):
 
     Raises
     -------
-    NetworkXError
+    NetworkXNotImplemented
         If `G` is a directed graph.
 
     NetworkXError
@@ -878,11 +879,7 @@ def kirchhoff_index(G, weight=None, invert_weight=True):
     import numpy as np
 
     if len(G) == 0:
-        msg = "Graph G must contain at least one node."
-        raise nx.NetworkXError(msg)
-    elif nx.is_directed(G):
-        msg = "Graph G must be undirected."
-        raise nx.NetworkXError(msg)
+        raise nx.NetworkXError("Graph G must contain at least one node.")
 
     # Disconnected graphs have infinite Kirchhoff index
     if not nx.is_connected(G):
