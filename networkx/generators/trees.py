@@ -1,6 +1,6 @@
 """Functions for generating trees.
 
-The functions sampling trees at random in this modules come
+The functions sampling trees at random in this module come
 in two variants: labeled and unlabeled. The labeled variants
 sample from every possible tree with the given number of nodes
 uniformly at random. The unlabeled variants sample from every
