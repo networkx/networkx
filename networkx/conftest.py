@@ -85,16 +85,6 @@ def pytest_collection_modifyitems(config, items):
 @pytest.fixture(autouse=True)
 def set_warnings():
     warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="literal_stringizer is deprecated",
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="literal_destringizer is deprecated",
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="nx.nx_pydot"
     )
     warnings.filterwarnings(

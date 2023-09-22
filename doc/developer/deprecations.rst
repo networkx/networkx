@@ -44,8 +44,6 @@ Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 Version 3.0
 ~~~~~~~~~~~
 
-* In ``readwrite/gml.py`` remove ``literal_stringizer`` and related tests.
-* In ``readwrite/gml.py`` remove ``literal_destringizer`` and related tests.
 * Remove ``copy`` method in the coreview Filtered-related classes and related tests.
 * In ``algorithms/link_analysis/pagerank_alg.py`` replace ``pagerank`` with ``pagerank_scipy``.
 * In ``algorithms/link_analysis/pagerank_alg.py`` rename ``pagerank_numpy`` as ``_pagerank_numpy``.
