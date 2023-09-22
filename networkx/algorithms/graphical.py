@@ -43,6 +43,12 @@ def is_graphical(sequence, method="eg"):
     >>> nx.is_graphical(sequence)
     True
 
+    To test a non-graphical sequence, make a list from the generator and adjust a degree:
+    >>> sequence_list = list(sequence)
+    >>> sequence_list[-1] += 1
+    >>> nx.is_graphical(sequence_list)
+    False
+
     References
     ----------
     .. [EG1960] Erdős and Gallai, Mat. Lapok 11 264, 1960.
@@ -110,6 +116,12 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     >>> sequence = (d for _, d in G.degree())
     >>> nx.is_valid_degree_sequence_havel_hakimi(sequence)
     True
+
+    To test a non-valid sequence, make a list from the generator and adjust a degree:
+    >>> sequence_list = list(sequence)
+    >>> sequence_list[-1] += 1
+    >>> nx.is_valid_degree_sequence_havel_hakimi(sequence_list)
+    False
 
     Notes
     -----
@@ -190,6 +202,12 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     >>> sequence = (d for _, d in G.degree())
     >>> nx.is_valid_degree_sequence_erdos_gallai(sequence)
     True
+
+    To test a non-valid sequence, make a list from the generator and adjust a degree:
+    >>> sequence_list = list(sequence)
+    >>> sequence_list[-1] += 1
+    >>> nx.is_valid_degree_sequence_erdos_gallai(sequence_list)
+    False
 
     Notes
     -----
@@ -273,6 +291,12 @@ def is_multigraphical(sequence):
     >>> nx.is_multigraphical(sequence)
     True
 
+    To test a non-multigraphical sequence, make a list from the generator and adjust a degree:
+    >>> sequence_list = list(sequence)
+    >>> sequence_list[-1] += 1
+    >>> nx.is_multigraphical(sequence_list)
+    False
+
     Notes
     -----
     The worst-case run time is $O(n)$ where $n$ is the length of the sequence.
@@ -320,6 +344,12 @@ def is_pseudographical(sequence):
     >>> nx.is_pseudographical(sequence)
     True
 
+    To test a non-pseudographical sequence, make a list from the generator and adjust a degree:
+    >>> sequence_list = list(sequence)
+    >>> sequence_list[-1] += 1
+    >>> nx.is_pseudographical(sequence_list)
+    False
+
     Notes
     -----
     The worst-case run time is $O(n)$ where n is the length of the sequence.
@@ -361,6 +391,12 @@ def is_digraphical(in_sequence, out_sequence):
     >>> out_seq = (d for n, d in G.out_degree())
     >>> nx.is_digraphical(in_seq, out_seq)
     True
+
+    To test a non-digraphical scenario, make a list from the in-degree generator and adjust a degree:
+    >>> in_seq_list = list(in_seq)
+    >>> in_seq_list[-1] += 1
+    >>> nx.is_digraphical(in_seq_list, out_seq)
+    False
 
     Notes
     -----
