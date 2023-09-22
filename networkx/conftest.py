@@ -104,11 +104,6 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
-        message="\n\nThe `attrs` keyword argument of node_link",
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
         message="single_target_shortest_path_length will",
     )
     warnings.filterwarnings(
