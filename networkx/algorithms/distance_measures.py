@@ -644,6 +644,7 @@ def _count_lu_permutations(perm_array):
     return perm_cnt
 
 
+@not_implemented_for("directed")
 @nx._dispatch(edge_attrs="weight")
 def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=True):
     """Returns the resistance distance between every pair of nodes on graph G.
@@ -654,7 +655,7 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
 
     If weight is not provided, then a weight of 1 is used for all edges.
 
-    If two nodes are the same, the effective resistance is zero.
+    If two nodes are the same, the resistance distance is zero.
 
     Parameters
     ----------
@@ -683,18 +684,16 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
     rd : float (if `nodeA` and `nodeB` are given)
        Resistance distance between `nodeA` and `nodeB`.
          dictionary (if `nodeA` or `nodeB` is unspecified)
-       Dictionary of nodes with effective resistances as the value.
+       Dictionary of nodes with resistance distances as the value.
 
     Raises
     -------
-    NetworkXError
-        If `G` is disconnected.
-
-    NetworkXError
+    NetworkXNotImplemented
         If `G` is a directed graph.
 
-    NetworkXError:
-        If `nodeA` is not in `G` or `nodeB` is not in `G`.
+    NetworkXError
+        If `G` is not connected, or contains no nodes,
+        or `nodeA` is not in `G` or `nodeB` is not in `G`.
 
     Examples
     --------
@@ -719,20 +718,13 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
     import numpy as np
 
     if len(G) == 0:
-        msg = "Graph G must contain at least one node."
-        raise nx.NetworkXError(msg)
+        raise nx.NetworkXError("Graph G must contain at least one node.")
     if not nx.is_connected(G):
-        msg = "Graph G must be strongly connected."
-        raise nx.NetworkXError(msg)
-    elif nx.is_directed(G):
-        msg = "Graph G must be undirected."
-        raise nx.NetworkXError(msg)
-    elif nodeA is not None and nodeA not in G:
-        msg = "Node A is not in graph G."
-        raise nx.NetworkXError(msg)
-    elif nodeB is not None and nodeB not in G:
-        msg = "Node B is not in graph G."
-        raise nx.NetworkXError(msg)
+        raise nx.NetworkXError("Graph G must be strongly connected.")
+    if nodeA is not None and nodeA not in G:
+        raise nx.NetworkXError("Node A is not in graph G.")
+    if nodeB is not None and nodeB not in G:
+        raise nx.NetworkXError("Node B is not in graph G.")
 
     G = G.copy()
     node_list = list(G)

@@ -333,10 +333,28 @@ class TestResistanceDistance:
         G.add_edge(1, 4, weight=3)
         self.G = G
 
+    def test_resistance_distance_directed_graph(self):
+        G = nx.DiGraph()
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.resistance_distance(G)
+
     def test_resistance_distance_empty(self):
         G = nx.Graph()
         with pytest.raises(nx.NetworkXError):
             nx.resistance_distance(G)
+
+    def test_resistance_distance_not_connected(self):
+        with pytest.raises(nx.NetworkXError):
+            self.G.add_node(5)
+            nx.resistance_distance(self.G, 1, 5)
+
+    def test_resistance_distance_nodeA_not_in_graph(self):
+        with pytest.raises(nx.NetworkXError):
+            nx.resistance_distance(self.G, 9, 1)
+
+    def test_resistance_distance_nodeB_not_in_graph(self):
+        with pytest.raises(nx.NetworkXError):
+            nx.resistance_distance(self.G, 1, 9)
 
     def test_resistance_distance(self):
         rd = nx.resistance_distance(self.G, 1, 3, "weight", True)
@@ -372,21 +390,8 @@ class TestResistanceDistance:
             self.G[1][2]["weight"] = 0
             nx.resistance_distance(self.G, 1, 3, "weight")
 
-    def test_resistance_distance_not_connected(self):
-        with pytest.raises(nx.NetworkXError):
-            self.G.add_node(5)
-            nx.resistance_distance(self.G, 1, 5)
-
     def test_resistance_distance_same_node(self):
         assert nx.resistance_distance(self.G, 1, 1) == 0
-
-    def test_resistance_distance_nodeA_not_in_graph(self):
-        with pytest.raises(nx.NetworkXError):
-            nx.resistance_distance(self.G, 9, 1)
-
-    def test_resistance_distance_nodeB_not_in_graph(self):
-        with pytest.raises(nx.NetworkXError):
-            nx.resistance_distance(self.G, 1, 9)
 
     def test_resistance_distance_all(self):
         rd = nx.resistance_distance(self.G)
