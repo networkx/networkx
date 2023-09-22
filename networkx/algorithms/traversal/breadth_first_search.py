@@ -12,6 +12,7 @@ __all__ = [
     "descendants_at_distance",
     "bfs_layers",
     "bfs_labeled_edges",
+    "generic_bfs_edges",
 ]
 
 
