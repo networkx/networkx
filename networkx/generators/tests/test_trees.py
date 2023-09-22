@@ -125,12 +125,9 @@ def test_random_labeled_tree_n_zero():
 
 
 def test_random_labeled_rooted_forest():
-    raised = False
     for i in range(1, 10):
         t1 = nx.random_labeled_rooted_forest(i, seed=42)
         t2 = nx.random_labeled_rooted_forest(i, seed=42)
-        print(t1.edges(), t1.graph["roots"])
-        print(t2.edges(), t2.graph["roots"])
         assert nx.utils.misc.graphs_equal(t1, t2)
         for c in nx.connected_components(t1):
             assert nx.is_tree(t1.subgraph(c))
@@ -172,12 +169,8 @@ def test_random_unlabeled_tree_n_zero():
 
 
 def test_random_unlabeled_rooted_forest():
-    raised = False
-    try:
+    with pytest.raises(ValueError):
         nx.random_unlabeled_rooted_forest(10, q=0, seed=42)
-    except ValueError:
-        raised = True
-    assert raised
     for i in range(1, 10):
         for q in range(1, i + 1):
             t1 = nx.random_unlabeled_rooted_forest(i, q=q, seed=42)
