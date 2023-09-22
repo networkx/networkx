@@ -454,9 +454,7 @@ def random_labeled_tree(n, *, seed=None):
         raise nx.NetworkXPointlessConcept("the null graph is not a tree")
     if n == 1:
         return nx.empty_graph(1)
-    else:
-        sequence = [seed.choice(range(n)) for i in range(n - 2)]
-        return nx.from_prufer_sequence(sequence)
+    return nx.from_prufer_sequence([seed.choice(range(n)) for i in range(n - 2)])
 
 
 @py_random_state("seed")
