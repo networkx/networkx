@@ -161,3 +161,26 @@ def test_numpy_degree_sequence():
     ds = np.array([1.1, 2, 2, 2, 1], dtype=np.float64)
     pytest.raises(nx.NetworkXException, nx.is_graphical, ds, "eg")
     pytest.raises(nx.NetworkXException, nx.is_graphical, ds, "hh")
+
+
+def test_valid_potentially_connected1():
+    r = 3
+    h = 8
+    G = nx.balanced_tree(r, h)
+    deg = (d for n, d in G.degree())
+    assert nx.is_potentially_connected(deg, "eg")
+    assert nx.is_potentially_connected(deg, "hh")
+
+
+@pytest.mark.parametrize("method", ["eg", "hh"])
+def test_valid_potentially_connected2(method):
+    assert nx.is_potentially_connected([], method)
+    assert nx.is_potentially_connected([1, 1, 2, 2, 2], method)
+
+
+@pytest.mark.parametrize("method", ["eg", "hh"])
+def test_invalid_potentially_connected(method):
+    assert nx.is_potentially_connected([0], method) == False
+    assert nx.is_potentially_connected([1, 2, -1], method) == False
+    assert nx.is_potentially_connected([1, 1, 0], method) == False
+    assert nx.is_potentially_connected([1, 1, 1, 1], method) == False

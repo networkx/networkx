@@ -10,6 +10,7 @@ Graphical degree sequence
    is_digraphical
    is_multigraphical
    is_pseudographical
+   is_potentially_connected
    is_valid_degree_sequence_havel_hakimi
    is_valid_degree_sequence_erdos_gallai
 

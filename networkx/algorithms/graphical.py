@@ -11,6 +11,7 @@ __all__ = [
     "is_digraphical",
     "is_valid_degree_sequence_erdos_gallai",
     "is_valid_degree_sequence_havel_hakimi",
+    "is_potentially_connected",
 ]
 
 
@@ -64,6 +65,49 @@ def is_graphical(sequence, method="eg"):
         msg = "`method` must be 'eg' or 'hh'"
         raise nx.NetworkXException(msg)
     return valid
+
+
+def is_potentially_connected(sequence, method="eg"):
+    """Returns True if sequence is a a potentially connected degree sequence.
+
+    A degree sequence is potentially connected if some connected graph can realize it.
+
+    Parameters
+    ----------
+    sequence : list or iterable container
+        A sequence of integer node degrees
+
+    method : "eg" | "hh"  (default: 'eg')
+        The method internally used to check if the degree sequence is graphical.
+        "eg" corresponds to the Erdős-Gallai algorithm, and
+        "hh" to the Havel-Hakimi algorithm.
+
+    Returns
+    -------
+    valid : bool
+        True if the sequence is a potentially connected degree sequence and False if not.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> sequence = (d for n, d in G.degree())
+    >>> nx.is_potentially_connected(sequence)
+    True
+
+    References
+    ----------
+    Claude Berge, Graphs and Hypergraphs, 117-118
+    """
+    dsum = 0
+    n = 0
+    for deg in sequence:
+        if deg == 0:
+            return False
+        dsum += deg
+        n += 1
+    if dsum >= 2 * (n - 1):
+        return is_graphical(sequence, method=method)
+    return False
 
 
 def _basic_graphical_tests(deg_sequence):

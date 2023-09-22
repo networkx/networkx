@@ -436,7 +436,7 @@ def expected_degree_graph(w, seed=None, selfloops=True):
     return G
 
 
-def havel_hakimi_graph(deg_sequence, create_using=None):
+def havel_hakimi_graph(deg_sequence, create_using=None, force_connected=False):
     """Returns a simple graph with given degree sequence constructed
     using the Havel-Hakimi algorithm.
 
@@ -447,24 +447,28 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.
         Directed graphs are not allowed.
+    force_connected: boll (default=False)
+        If set to True, will build a connected graph.
 
     Raises
     ------
     NetworkXException
-        For a non-graphical degree sequence (i.e. one
-        not realizable by some simple graph).
+        For a non-realizable degree sequence (i.e. one
+        not realizable by some simple graph, or by a connected
+        graph if connected=True).
 
     Notes
     -----
     The Havel-Hakimi algorithm constructs a simple graph by
-    successively connecting the node of highest degree to other nodes
+    successively extracting a node and connecting it to other nodes
     of highest degree, resorting remaining nodes by degree, and
     repeating the process. The resulting graph has a high
     degree-associativity.  Nodes are labeled 1,.., len(deg_sequence),
     corresponding to their position in deg_sequence.
 
     The basic algorithm is from Hakimi [1]_ and was generalized by
-    Kleitman and Wang [2]_.
+    Kleitman and Wang [2]_. A slight modification in the stub selection
+    to create a connected graph was introduced by Horvát and Szabolcs [3]_.
 
     References
     ----------
@@ -474,8 +478,13 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
     .. [2] Kleitman D.J. and Wang D.L.
        Algorithms for Constructing Graphs and Digraphs with Given Valences
        and Factors  Discrete Mathematics, 6(1), pp. 79-88 (1973)
+    .. [3] Horvát, Szabolcs, and Carl D. Modes.
+       Connectedness matters: Construction and exact random
+       sampling of connected graphs (2020).
     """
-    if not nx.is_graphical(deg_sequence):
+    if (
+        force_connected and not nx.is_potentially_connected(deg_sequence)
+    ) or not nx.is_graphical(deg_sequence):
         raise nx.NetworkXError("Invalid degree sequence")
 
     p = len(deg_sequence)
@@ -483,12 +492,12 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
     if G.is_directed():
         raise nx.NetworkXError("Directed graphs are not supported")
     num_degs = [[] for i in range(p)]
-    dmax, dsum, n = 0, 0, 0
+    dmax, dmin, dsum, n = 0, float("inf"), 0, 0
     for d in deg_sequence:
         # Process only the non-zero integers
         if d > 0:
             num_degs[d].append(n)
-            dmax, dsum, n = max(dmax, d), dsum + d, n + 1
+            dmax, dmin, dsum, n = max(dmax, d), min(dmin, d), dsum + d, n + 1
     # Return graph if no edges
     if n == 0:
         return G
@@ -503,14 +512,20 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
         # not graphical
         if dmax > n - 1:
             raise nx.NetworkXError("Non-graphical integer sequence")
-
-        # Remove largest stub in list
-        source = num_degs[dmax].pop()
+        # Remove selected stub in list
+        if force_connected:
+            while len(num_degs[dmin]) == 0:
+                dmin += 1
+            source = num_degs[dmin].pop()
+            dstub = dmin
+        else:
+            source = num_degs[dmax].pop()
+            dstub = dmax
         n -= 1
-        # Reduce the next dmax largest stubs
+        # Reduce the next dstub largest stubs
         mslen = 0
         k = dmax
-        for i in range(dmax):
+        for i in range(dstub):
             while len(num_degs[k]) == 0:
                 k -= 1
             target = num_degs[k].pop()
@@ -522,6 +537,7 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
         # Add back to the list any nonzero stubs that were removed
         for i in range(mslen):
             (stubval, stubtarget) = modstubs[i]
+            dmin = min(stubval, dmin)
             num_degs[stubval].append(stubtarget)
             n += 1
 
