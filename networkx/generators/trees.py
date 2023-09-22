@@ -325,8 +325,10 @@ def prefix_tree_recursive(paths):
 def random_tree(n, seed=None, create_using=None):
     """Returns a uniformly random tree on `n` nodes.
 
-    ``random_tree`` is deprecated and will be removed in NX v3.4
-    Use ``random_labeled_tree`` instead.
+    .. deprecated:: 3.2
+
+       ``random_tree`` is deprecated and will be removed in NX v3.4
+       Use ``random_labeled_tree`` instead.
 
     Parameters
     ----------
