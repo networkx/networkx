@@ -204,7 +204,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     True
 
     To test a non-valid sequence, make a list from the generator and adjust a degree:
-    >>> sequence_list = [d for _, d in G.degree())]
+    >>> sequence_list = [d for _, d in G.degree()]
     >>> sequence_list[-1] += 1
     >>> nx.is_valid_degree_sequence_erdos_gallai(sequence_list)
     False
