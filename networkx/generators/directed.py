@@ -179,7 +179,7 @@ def gnc_graph(n, create_using=None, seed=None):
     return G
 
 
-@py_random_state(7)
+@py_random_state(6)
 def scale_free_graph(
     n,
     alpha=0.41,
@@ -187,7 +187,6 @@ def scale_free_graph(
     gamma=0.05,
     delta_in=0.2,
     delta_out=0,
-    create_using=None,
     seed=None,
     initial_graph=None,
 ):
@@ -212,22 +211,12 @@ def scale_free_graph(
         Bias for choosing nodes from in-degree distribution.
     delta_out : float
         Bias for choosing nodes from out-degree distribution.
-    create_using : NetworkX graph constructor, optional
-        The default is a MultiDiGraph 3-cycle.
-        If a graph instance, use it without clearing first.
-        If a graph constructor, call it to construct an empty graph.
-
-        .. deprecated:: 3.0
-
-           create_using is deprecated, use `initial_graph` instead.
-
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
     initial_graph : MultiDiGraph instance, optional
         Build the scale-free graph starting from this initial MultiDiGraph,
         if provided.
-
 
     Returns
     -------
@@ -259,37 +248,13 @@ def scale_free_graph(
                 return seed.choice(node_list)
         return seed.choice(candidates)
 
-    if create_using is not None:
-        import warnings
-
-        warnings.warn(
-            "The create_using argument is deprecated and will be removed in the future.\n\n"
-            "To create a scale free graph from an existing MultiDiGraph, use\n"
-            "initial_graph instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
-    # TODO: Rm all this complicated logic when deprecation expires and replace
-    # with commented code:
-    #    if initial_graph is not None and hasattr(initial_graph, "_adj"):
-    #        G = initial_graph
-    #    else:
-    #        # Start with 3-cycle
-    #        G = nx.MultiDiGraph([(0, 1), (1, 2), (2, 0)])
-    if create_using is not None and hasattr(create_using, "_adj"):
-        if initial_graph is not None:
-            raise ValueError(
-                "Cannot set both create_using and initial_graph. Set create_using=None."
-            )
-        G = create_using
+    if initial_graph is not None and hasattr(initial_graph, "_adj"):
+        if not isinstance(initial_graph, nx.MultiDiGraph):
+            raise nx.NetworkXError("initial_graph must be a MultiDiGraph.")
+        G = initial_graph
     else:
-        if initial_graph is not None and hasattr(initial_graph, "_adj"):
-            G = initial_graph
-        else:
-            G = nx.MultiDiGraph([(0, 1), (1, 2), (2, 0)])
-    if not (G.is_directed() and G.is_multigraph()):
-        raise nx.NetworkXError("MultiDiGraph required in initial_graph")
+        # Start with 3-cycle
+        G = nx.MultiDiGraph([(0, 1), (1, 2), (2, 0)])
 
     if alpha <= 0:
         raise ValueError("alpha must be > 0.")
