@@ -31,14 +31,14 @@ def join(rooted_trees, label_attribute=None):
     return join_trees(rooted_trees, label_attribute=label_attribute)
 
 
-def join_trees(rooted_trees, label_attribute=None):
+def join_trees(rooted_trees, label_attribute=None, first_label=0):
     """Returns a new rooted tree made by joining `rooted_trees`
 
     Constructs a new tree by joining each tree in `rooted_trees`.
     A new root node is added and connected to each of the roots
     of the input trees. While copying the nodes from the trees,
-    relabeling to integers occurs and the old name stored as an
-    attribute of the new node in the returned graph.
+    relabeling to integers occurs. If the `label_attribute` is provided,
+    the old node labels will be stored in the new tree under this attribute.
 
     Parameters
     ----------
@@ -50,17 +50,20 @@ def join_trees(rooted_trees, label_attribute=None):
 
     label_attribute : str
         If provided, the old node labels will be stored in the new tree
-        under this node attribute. If not provided, the node attribute
-        ``'_old'`` will store the original label of the node in the
-        rooted trees given in the input.
+        under this node attribute. If not provided, the original labels
+        of the nodes in the input trees are not stored.
+
+    first_label : int, optional (default=0)
+        Specifies the label for the new root node. If provided, the root node of the joined tree
+        will have this label. If not provided, the root node will default to a label of 0.
 
     Returns
     -------
     NetworkX graph
-        The rooted tree whose subtrees are the given rooted trees. The
-        new root node is labeled 0. Each non-root node has an attribute,
-        as described under the keyword argument ``label_attribute``,
-        that indicates the label of the original node in the input tree.
+        The rooted tree resulting from joining the provided `rooted_trees`. The new tree has a root node
+        labeled as specified by `first_label` (defaulting to 0 if not provided). Subtrees from the input
+        `rooted_trees` are attached to this new root node. Each non-root node, if the `label_attribute`
+        is provided, has an attribute that indicates the original label of the node in the input tree.
 
     Notes
     -----
@@ -96,14 +99,12 @@ def join_trees(rooted_trees, label_attribute=None):
     # tree.
     R = type(trees[0])()
 
-    # Relabel the nodes so that their union is the integers starting at 1.
-    if label_attribute is None:
-        label_attribute = "_old"
+    # Relabel the nodes so that their union is the integers starting at first_label + 1.
     relabel = partial(
         nx.convert_node_labels_to_integers, label_attribute=label_attribute
     )
     lengths = (len(tree) for tree in trees[:-1])
-    first_labels = chain([0], accumulate(lengths))
+    first_labels = accumulate(lengths, initial=first_label)
     trees = [
         relabel(tree, first_label=first_label + 1)
         for tree, first_label in zip(trees, first_labels)
@@ -111,7 +112,11 @@ def join_trees(rooted_trees, label_attribute=None):
 
     # Get the relabeled roots.
     roots = [
-        next(v for v, d in tree.nodes(data=True) if d.get(label_attribute) == root)
+        next(
+            v
+            for v, d in tree.nodes(data=True)
+            if (label_attribute is None) or d.get(label_attribute) == root
+        )
         for tree, root in zip(trees, roots)
     ]
 
@@ -119,9 +124,9 @@ def join_trees(rooted_trees, label_attribute=None):
     for tree in trees:
         R.update(tree)
 
-    # Finally, join the subtrees at the root. We know 0 is unused by the
+    # Finally, join the subtrees at the root. We know first_label is unused by the
     # way we relabeled the subtrees.
-    R.add_node(0)
-    R.add_edges_from((0, root) for root in roots)
+    R.add_node(first_label)
+    R.add_edges_from((first_label, root) for root in roots)
 
     return R

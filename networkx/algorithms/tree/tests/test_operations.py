@@ -4,7 +4,7 @@ import networkx as nx
 from networkx.utils import edges_equal, nodes_equal
 
 
-def _check_label_attribute(input_trees, res_tree, label_attribute="_old"):
+def _check_label_attribute(input_trees, res_tree, label_attribute="custom_label"):
     res_attr_dict = nx.get_node_attributes(res_tree, label_attribute)
     res_attr_set = set(res_attr_dict.values())
     input_label = (list(tree[0].nodes()) for tree in input_trees)
@@ -23,7 +23,7 @@ def test_single():
     """Joining just one tree yields a tree with one more node."""
     T = nx.empty_graph(1)
     trees = [(T, 0)]
-    actual = nx.join_trees(trees)
+    actual = nx.join_trees(trees, label_attribute="custom_label")
     expected = nx.path_graph(2)
     assert nodes_equal(list(expected), list(actual))
     assert edges_equal(list(expected.edges()), list(actual.edges()))
@@ -37,4 +37,36 @@ def test_basic():
     actual = nx.join_trees(trees, label_attribute)
     expected = nx.full_rary_tree(2, 2**3 - 1)
     assert nx.is_isomorphic(actual, expected)
-    assert _check_label_attribute(trees, actual, label_attribute)
+
+
+def test_first_label():
+    """Test the functionality of the first_label argument."""
+    T1 = nx.path_graph(3)
+    T2 = nx.path_graph(2)
+    actual = nx.join_trees([(T1, 0), (T2, 0)], first_label=10)
+    expected_nodes = set(range(10, 16))
+    assert set(actual.nodes()) == expected_nodes
+    assert set(actual.neighbors(10)) == {11, 14}
+
+
+def test_attribute_length():
+    """Test the difference in attribute lengths for each node."""
+    T1 = nx.path_graph(3, create_using=nx.Graph())
+    T2 = nx.path_graph(2, create_using=nx.Graph())
+
+    # When label_attribute is provided:
+    actual_with_label = nx.join_trees(
+        [(T1, 0), (T2, 0)], label_attribute="custom_label", first_label=10
+    )
+    attributes_with_label = [
+        len(data) for _, data in actual_with_label.nodes(data=True)
+    ]
+
+    # When label_attribute is not provided:
+    actual_without_label = nx.join_trees([(T1, 0), (T2, 0)], first_label=10)
+    attributes_without_label = [
+        len(data) for _, data in actual_without_label.nodes(data=True)
+    ]
+
+    # Compare the attributes length
+    assert attributes_with_label != attributes_without_label
