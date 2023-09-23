@@ -115,6 +115,9 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="\nforest_str is deprecated"
     )
     warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nrandom_tree"
+    )
+    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="Edmonds has been deprecated"
     )
     warnings.filterwarnings(

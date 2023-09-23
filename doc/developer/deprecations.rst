@@ -80,6 +80,8 @@ Version 3.3
 
 Version 3.4
 ~~~~~~~~~~~
+* Remove the ``random_tree`` function from ``generators/trees.py``. Replace
+  existing usages with ``random_labeled_tree``.
 * Remove the ``sort_neighbors`` input parameter from ``generic_bfs_edges``.
 * Remove ``MultiDiGraph_EdgeKey`` class from ``algorithms/tree/branchings.py``. 
 * Remove ``Edmonds`` class from ``algorithms/tree/branchings.py``.
