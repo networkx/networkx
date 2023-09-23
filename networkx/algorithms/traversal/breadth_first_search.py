@@ -12,6 +12,7 @@ __all__ = [
     "descendants_at_distance",
     "bfs_layers",
     "bfs_labeled_edges",
+    "generic_bfs_edges",
 ]
 
 
@@ -43,6 +44,18 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
     depth_limit : int, optional(default=len(G))
         Specify the maximum search depth.
 
+    sort_neighbors : Callable
+
+        .. deprecated:: 3.2
+
+           The sort_neighbors parameter is deprecated and will be removed in
+           version 3.4. A custom (e.g. sorted) ordering of neighbors can be
+           specified with the `neighbors` parameter.
+
+        A function that takes the list of neighbors of a given node as input,
+        and returns an iterator over these neighbors but with a custom
+        ordering.
+
     Yields
     ------
     edge
@@ -73,8 +86,8 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
 
         warnings.warn(
             (
-                "sort_neighbors parameter is deprecated and will be removed "
-                "in NetworkX 3.2, use neighbors parameter instead."
+                "The sort_neighbors parameter is deprecated and will be removed\n"
+                "in NetworkX 3.4, use the neighbors parameter instead."
             ),
             DeprecationWarning,
             stacklevel=2,
