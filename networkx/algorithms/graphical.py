@@ -43,7 +43,7 @@ def is_graphical(sequence, method="eg"):
     >>> nx.is_graphical(sequence)
     True
 
-    To test a non-graphical sequence, make a list from the generator and adjust a degree:
+    To test a non-graphical sequence:
     >>> sequence_list = [d for n, d in G.degree()]
     >>> sequence_list[-1] += 1
     >>> nx.is_graphical(sequence_list)
@@ -117,7 +117,7 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     >>> nx.is_valid_degree_sequence_havel_hakimi(sequence)
     True
 
-    To test a non-valid sequence, make a list from the generator and adjust a degree:
+    To test a non-valid sequence:
     >>> sequence_list = [d for _, d in G.degree()]
     >>> sequence_list[-1] += 1
     >>> nx.is_valid_degree_sequence_havel_hakimi(sequence_list)
@@ -203,7 +203,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     >>> nx.is_valid_degree_sequence_erdos_gallai(sequence)
     True
 
-    To test a non-valid sequence, make a list from the generator and adjust a degree:
+    To test a non-valid sequence:
     >>> sequence_list = [d for _, d in G.degree()]
     >>> sequence_list[-1] += 1
     >>> nx.is_valid_degree_sequence_erdos_gallai(sequence_list)
@@ -291,7 +291,7 @@ def is_multigraphical(sequence):
     >>> nx.is_multigraphical(sequence)
     True
 
-    To test a non-multigraphical sequence, make a list from the generator and adjust a degree:
+    To test a non-multigraphical sequence:
     >>> sequence_list = [d for _, d in G.degree()]
     >>> sequence_list[-1] += 1
     >>> nx.is_multigraphical(sequence_list)
@@ -344,7 +344,7 @@ def is_pseudographical(sequence):
     >>> nx.is_pseudographical(sequence)
     True
 
-    To test a non-pseudographical sequence, make a list from the generator and adjust a degree:
+    To test a non-pseudographical sequence:
     >>> sequence_list = [d for _, d in G.degree()]
     >>> sequence_list[-1] += 1
     >>> nx.is_pseudographical(sequence_list)
@@ -392,7 +392,7 @@ def is_digraphical(in_sequence, out_sequence):
     >>> nx.is_digraphical(in_seq, out_seq)
     True
 
-    To test a non-digraphical scenario, make a list from the in-degree generator and adjust a degree:
+    To test a non-digraphical scenario:
     >>> in_seq_list = [d for n, d in G.in_degree()]
     >>> in_seq_list[-1] += 1
     >>> nx.is_digraphical(in_seq_list, out_seq)
