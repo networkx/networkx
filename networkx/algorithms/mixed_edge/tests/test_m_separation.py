@@ -236,7 +236,7 @@ def test_anterior():
     ungraph.add_edge("C", "B")
     G = nx.MixedEdgeGraph([digraph, ungraph], ["directed", "undirected"])
 
-    result = nx.algorithms.m_separation._anterior(G, {"A"})
+    result = nx.algorithms.mixed_edge.m_separation._anterior(G, {"A"})
 
     assert result == {"A", "B", "C", "D"}
 
