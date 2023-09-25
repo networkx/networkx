@@ -681,10 +681,10 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
 
     Returns
     -------
-    rd : float (if `nodeA` and `nodeB` are given)
-       Resistance distance between `nodeA` and `nodeB`.
-         dictionary (if `nodeA` or `nodeB` is unspecified)
-       Dictionary of nodes with resistance distances as the value.
+    rd : dict or float
+       If `nodeA` and `nodeB` are given, resistance distance between `nodeA`
+       and `nodeB`. If `nodeA` or `nodeB` is unspecified (the default), a
+       dictionary of nodes with resistance distances as the value.
 
     Raises
     -------
