@@ -237,7 +237,7 @@ def strongly_connected_components_recursive(G):
 
     """
 
-   def visit(v, cnt):
+    def visit(v, cnt):
         root[v] = cnt[0]
         visited[v] = cnt[0]
         cnt[0] += 1
