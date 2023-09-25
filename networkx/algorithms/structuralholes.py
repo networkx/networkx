@@ -28,6 +28,7 @@ def mutual_weight(G, u, v, weight=None):
     return a_uv + a_vu
 
 
+@nx._dispatch(edge_attrs="weight")
 def normalized_mutual_weight(G, u, v, norm=sum, weight=None):
     """Returns normalized mutual weight of the edges from `u` to `v`
     with respect to the mutual weights of the neighbors of `u` in `G`.
@@ -48,6 +49,7 @@ def normalized_mutual_weight(G, u, v, norm=sum, weight=None):
     return 0 if scale == 0 else mutual_weight(G, u, v, weight) / scale
 
 
+@nx._dispatch(edge_attrs="weight")
 def effective_size(G, nodes=None, weight=None):
     r"""Returns the effective size of all nodes in the graph ``G``.
 
@@ -158,6 +160,7 @@ def effective_size(G, nodes=None, weight=None):
     return effective_size
 
 
+@nx._dispatch(edge_attrs="weight")
 def constraint(G, nodes=None, weight=None):
     r"""Returns the constraint on all nodes in the graph ``G``.
 
@@ -218,6 +221,7 @@ def constraint(G, nodes=None, weight=None):
     return constraint
 
 
+@nx._dispatch(edge_attrs="weight")
 def local_constraint(G, u, v, weight=None):
     r"""Returns the local constraint on the node ``u`` with respect to
     the node ``v`` in the graph ``G``.
