@@ -59,6 +59,7 @@ from networkx.algorithms.voronoi import *
 from networkx.algorithms.walks import *
 from networkx.algorithms.wiener import *
 from networkx.algorithms.polynomials import *
+from networkx.algorithms.mixed_edge import *
 
 # Make certain subpackages available to the user as direct imports from
 # the `networkx` namespace.

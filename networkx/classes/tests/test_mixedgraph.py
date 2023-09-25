@@ -10,6 +10,14 @@ from networkx.utils import edges_equal, nodes_equal
 class BaseMixedEdgeGraphTester:
     """Tests for data-structure independent graph class features."""
 
+    def test_set_name(self):
+        G = self.K3.copy()
+        prev_name = G.name
+
+        G.name = "new_name"
+        assert G.name != prev_name
+        assert G.name == "new_name"
+
     def test_contains(self):
         G = self.K3
         assert 1 in G
@@ -175,6 +183,14 @@ class BaseMixedEdgeGraphTester:
         G.add_edge(1, 1)
         G.remove_nodes_from([0, 1])
 
+    def test_remove_node_error(self):
+        G = self.K3.copy()
+        with pytest.raises(nx.NetworkXError, match="is not in the graph"):
+            G.remove_node("blah")
+
+        # remove_nodes_from will skip the errors though
+        G.remove_nodes_from(["blah"])
+
     def test_cache_reset(self):
         G = self.K3.copy()
         old_adj = G.adj
@@ -225,6 +241,86 @@ class TestMixedEdgeGraph(BaseMixedEdgeGraphTester):
         # all nodes should match after adding them to the mixed-edge-graph
         for _, graph in G.get_graphs().items():
             assert set(G.nodes) == set(graph.nodes)
+
+    def test_init_errors(self):
+        directed_edges = nx.DiGraph(
+            [
+                ("x8", "x2"),
+                ("x9", "x2"),
+                ("x10", "x1"),
+                ("x2", "x4"),
+                ("x4", "x6"),  # start of cycle
+                ("x6", "x5"),
+                ("x5", "x3"),
+                ("x3", "x4"),  # end of cycle
+                ("x6", "x7"),
+            ]
+        )
+        bidirected_edges = nx.Graph([("x1", "x3")])
+        with pytest.raises(RuntimeError, match="If graphs or edge types are defined"):
+            nx.MixedEdgeGraph([directed_edges, bidirected_edges])
+
+        with pytest.raises(RuntimeError, match="The number of graph objects passed in"):
+            nx.MixedEdgeGraph([directed_edges, bidirected_edges], ["directed"])
+
+        with pytest.raises(
+            RuntimeError, match="All graph object inputs must be one of Networkx"
+        ):
+            nx.MixedEdgeGraph(
+                [directed_edges.edges, bidirected_edges], ["directed", "bidirected"]
+            )
+
+    def test_clear(self):
+        G = self.K3.copy()
+        G.clear()
+        assert G.size() == 0
+        assert len(G.nodes) == 0
+
+        G = self.K3.copy()
+        G.clear_edges()
+        assert len(G.nodes) > 0
+
+        G = self.K3.copy()
+        G.clear_edge_types()
+        assert len(G.nodes) > 0
+
+        G = self.K3.copy()
+        with pytest.raises(ValueError, match="is not present in the graph"):
+            G.clear_edges(edge_type="blah")
+        G.clear_edges(G.edge_types[0])
+        assert len(G.get_graphs(G.edge_types[0]).edges) == 0
+
+    def test_subgraph(self):
+        G = self.K3.copy()
+
+        sub_G = G.subgraph(self.k3nodes)
+        for edge_type, graph in G.get_graphs().items():
+            assert nx.is_isomorphic(graph, sub_G.get_graphs(edge_type))
+
+        sub_G = G.subgraph(self.k3nodes[:-1])
+        for edge_type, graph in G.get_graphs().items():
+            assert not nx.is_isomorphic(graph, sub_G.get_graphs(edge_type))
+
+    def test_add_edge_type(self):
+        # test adding edge type with empty graph
+        G = self.Graph()
+
+        with pytest.raises(
+            RuntimeError,
+            match="must be an instantiated instance of a base networkx graph",
+        ):
+            G.add_edge_type(nx.Graph, edge_type="undirected")
+
+        G.add_edge_type(nx.Graph(), edge_type="undirected")
+
+        with pytest.raises(ValueError, match="is already in the graph"):
+            G.add_edge_type(nx.Graph(), edge_type="undirected")
+
+        # test adding edge type with some nodes already
+        complete_G = nx.complete_graph(5, create_using=nx.DiGraph)
+        G.add_edge_type(complete_G, edge_type="directed")
+        for _, sub_graph in G.get_graphs().items():
+            assert sub_graph.nodes == complete_G.nodes
 
     def test_add_edge(self):
         edge_type = "bidirected"
@@ -390,3 +486,11 @@ class TestMixedEdgeGraph(BaseMixedEdgeGraphTester):
         # No inputs -> exception
         with pytest.raises(nx.NetworkXError):
             nx.Graph().update()
+
+    def test_get_graphs(self):
+        G = self.K3.copy()
+
+        with pytest.raises(
+            ValueError, match="Querying the edge_type of a MixedEdgeGraph"
+        ):
+            G.get_graphs("blah")
