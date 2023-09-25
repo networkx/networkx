@@ -8,7 +8,6 @@ from networkx.exception import NetworkXError
 
 @pytest.fixture
 def fig5_vanderzander():
-
     nodes = ["V_1", "X", "V_2", "Y", "Z_1", "Z_2"]
 
     digraph = nx.DiGraph()
@@ -34,7 +33,6 @@ def fig5_vanderzander():
 
 @pytest.fixture
 def modified_fig5_vanderzander():
-
     nodes = ["V_1", "X", "V_2", "Y", "Z_1", "Z_2"]
 
     digraph = nx.DiGraph()
@@ -244,7 +242,6 @@ def test_anterior():
 
 
 def test_is_minimal_m_separator(fig5_vanderzander):
-
     assert nx.is_minimal_m_separator(fig5_vanderzander, "X", "Y", {"Z_1"})
     assert nx.is_minimal_m_separator(fig5_vanderzander, "X", "Y", {"Z_2"})
     assert nx.is_minimal_m_separator(

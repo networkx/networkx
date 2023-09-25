@@ -94,12 +94,10 @@ class MixedEdgeGraph:
             nodes = set(graphs[0].nodes)
 
             # dictionary of internal graphs
-            self._edge_graphs = {
-                edge_type: graph for edge_type, graph in zip(edge_types, graphs)
-            }
+            self._edge_graphs = dict(zip(edge_types, graphs))
         else:
             nodes = []
-            self._edge_graphs = dict()
+            self._edge_graphs = {}
 
         self.node_dict_factory = self.node_dict_factory
         self.node_attr_dict_factory = self.node_attr_dict_factory
@@ -932,7 +930,7 @@ class MixedEdgeGraph:
             If a single node is requested, returns the degree of the node as an integer.
         """
         # get the DegreeView for each internal graph
-        deg_dicts = dict()
+        deg_dicts = {}
         for _edge_type in self.edge_types:
             deg_view = self._get_internal_graph(_edge_type).degree(
                 nbunch=nbunch, weight=weight
@@ -990,10 +988,10 @@ class MixedEdgeGraph:
         edge_dict : dictionary
             The edge attribute dictionary.
         """
-        edge_dict = dict()
+        edge_dict = {}
         for edge_type_, graph in self.get_graphs().items():
             edge_data = graph.get_edge_data(u, v, default=default)
             if edge_data != default:
-                edge_data = edge_data.get(edge_type_, dict())
+                edge_data = edge_data.get(edge_type_, {})
             edge_dict[edge_type_] = edge_data
         return edge_dict

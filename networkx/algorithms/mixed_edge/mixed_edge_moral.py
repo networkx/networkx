@@ -61,7 +61,6 @@ def mixed_edge_moral_graph(
     G_a = nx.compose(G_a, G_bidirected)
 
     for component in nx.connected_components(G_bidirected):
-
         for u, v in itertools.combinations(component, 2):
             G_a.add_edge(u, v)
         all_parents = {

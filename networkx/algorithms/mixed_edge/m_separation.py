@@ -111,7 +111,6 @@ def m_separated(
         G_bidirected = G.get_graphs(edge_type=bidirected_edge_name)
 
     while forward_deque or backward_deque:
-
         if backward_deque:
             node = backward_deque.popleft()
             backward_visited.add(node)
@@ -152,7 +151,6 @@ def m_separated(
             # Consider if *-> node <-* is opened due to conditioning on collider,
             # or descendant of collider
             if node in an_z:
-
                 if has_directed:
                     # add <- edges to backward deque
                     for x, _ in G_directed.in_edges(nbunch=node):
