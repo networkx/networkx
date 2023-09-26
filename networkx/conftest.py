@@ -117,6 +117,11 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="function `join` is deprecated"
     )
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message="\n\nstrongly_connected_components_recursive",
+    )
 
 
 @pytest.fixture(autouse=True)
