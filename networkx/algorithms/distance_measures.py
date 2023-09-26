@@ -858,11 +858,7 @@ def kemeny_constant(G, *, weight=None):
     H = DH @ (A @ DH)
 
     # Compute eigenvalues of H
-    eig = sp.linalg.eigvalsh(H.todense())
-    eig = sorted(eig)
+    eig = np.sort(sp.linalg.eigvalsh(H.todense()))
 
     # Compute the Kemeny constant
-    K = 0
-    for i in range(n - 1):
-        K += 1 / (1 - eig[i])
-    return K
+    return np.sum(1 / (1 - eig[:-1]))
