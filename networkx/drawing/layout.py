@@ -1247,7 +1247,7 @@ def arc_layout(G: nx.Graph, subset_key="subset", radius=1, rotation=0) -> dict:
     --------
     >>> subset_sizes = [5, 5, 4, 3, 2, 4, 4, 3]
     >>> G = nx.complete_multipartite_graph(*subset_sizes)
-    >>> pos = nx.arf_layout(G, subset_key = "subset")
+    >>> pos = nx.arc_layout(G, subset_key = "subset")
     """
     import numpy as np
 
