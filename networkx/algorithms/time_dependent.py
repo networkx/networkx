@@ -1,7 +1,5 @@
 """Time dependent algorithms."""
 
-from datetime import datetime, timedelta
-
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -11,7 +9,7 @@ __all__ = ["cd_index"]
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
 @nx._dispatch(node_attrs={"time": None, "weight": 1})
-def cd_index(G, node, *, time_delta=timedelta(days=5 * 365), time="time", weight=None):
+def cd_index(G, node, time_delta, *, time="time", weight=None):
     r"""Compute the CD index for `node` within the graph `G`.
 
     Calculates the CD index for the given node of the graph,
@@ -26,12 +24,15 @@ def cd_index(G, node, *, time_delta=timedelta(days=5 * 365), time="time", weight
        `weight` attributes (if a weight is not given, it is considered 1).
     node : node
        The node for which the CD index is calculated.
-    time_delta : timedelta, integer or float (Optional, default is timedelta(days=5*365))
-       Amount of time after the `time` attribute of the `node`.
+    time_delta : numeric or timedelta
+       Amount of time after the `time` attribute of the `node`. The value of
+       `time_delta` must support comparison with the `time` node attribute. For
+       example, if the `time` attribute of the nodes are `datetime.datetime`
+       objects, then `time_delta` should be a `datetime.timedelta` object.
     time : string (Optional, default is "time")
         The name of the node attribute that will be used for the calculations.
     weight : string (Optional, default is None)
-        the name of the node attribute used as weight.
+        The name of the node attribute used as weight.
 
     Returns
     -------
@@ -50,6 +51,7 @@ def cd_index(G, node, *, time_delta=timedelta(days=5 * 365), time="time", weight
 
     Examples
     --------
+    >>> from datetime import datetime, timedelta
     >>> G = nx.DiGraph()
     >>> nodes = {
     ...     1: {"time": datetime(2015, 1, 1)},
@@ -61,7 +63,11 @@ def cd_index(G, node, *, time_delta=timedelta(days=5 * 365), time="time", weight
     >>> G.add_nodes_from([(n, nodes[n]) for n in nodes])
     >>> edges = [(1, 3), (1, 4), (2, 3), (3, 4), (3, 5)]
     >>> G.add_edges_from(edges)
-    >>> cd = nx.cd_index(G, 3, time="time", weight="weight")
+    >>> delta = timedelta(days=5 * 365)
+    >>> nx.cd_index(G, 3, time_delta=delta, time="time")
+    0.5
+    >>> nx.cd_index(G, 3, time_delta=delta, time="time", weight="weight")
+    0.12
 
     Notes
     -----
