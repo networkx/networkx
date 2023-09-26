@@ -393,6 +393,30 @@ class TestResistanceDistance:
     def test_resistance_distance_same_node(self):
         assert nx.resistance_distance(self.G, 1, 1) == 0
 
+    def test_resistance_distance_only_nodeA(self):
+        rd = nx.resistance_distance(self.G, nodeA=1)
+        test_data = {}
+        test_data[1] = 0
+        test_data[2] = 0.75
+        test_data[3] = 1
+        test_data[4] = 0.75
+        assert type(rd) == dict
+        assert sorted(list(rd.keys())) == sorted(list(test_data.keys()))
+        for key in rd:
+            assert np.isclose(rd[key], test_data[key])
+
+    def test_resistance_distance_only_nodeB(self):
+        rd = nx.resistance_distance(self.G, nodeB=1)
+        test_data = {}
+        test_data[1] = 0
+        test_data[2] = 0.75
+        test_data[3] = 1
+        test_data[4] = 0.75
+        assert type(rd) == dict
+        assert sorted(list(rd.keys())) == sorted(list(test_data.keys()))
+        for key in rd:
+            assert np.isclose(rd[key], test_data[key])
+
     def test_resistance_distance_all(self):
         rd = nx.resistance_distance(self.G)
         assert type(rd) == dict
