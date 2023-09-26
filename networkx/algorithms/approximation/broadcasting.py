@@ -1,20 +1,20 @@
 import networkx as nx
+from networkx import NetworkXError
 from networkx.utils import not_implemented_for
 
 __all__ = [
-    "tree_broadcast",
+    "tree_broadcast_time",
 ]
 
 
-def update_broadcast_label(G, U, v):
-    adj = [u for u in G.neighbors(v) if u in U]
-    adj.sort(key=lambda u: G.nodes[u]["value"], reverse=True)
-    return max([G.nodes[u]["value"] + i for i, u in enumerate(adj, start=1)])
+def _get_max_broadcast_value(G, U, v, values):
+    adj = sorted(set(G.neighbors(v)) & U, key=lambda u: values[u], reverse=True)
+    return max(values[u] + i for i, u in enumerate(adj, start=1))
 
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-def tree_broadcast(G):
+def tree_broadcast_time(G):
     """
     This functions implements a linear algorithm for determining the minimum broadcast time
     on any tree [1]_. As a byproduct, it can also find a vertex which acts as the broadcast center,
@@ -52,8 +52,8 @@ def tree_broadcast(G):
         G.remove_edges_from((n, n) for n in loop_nodes)
 
     # Assert that the graph G has no cycles
-    assert nx.is_tree(G), "The graph G is not a tree"
-
+    if not nx.is_tree(G):
+        NetworkXError("Your graph is not a tree")
     # step 0
     if G.number_of_nodes() == 2:
         return 1
@@ -61,25 +61,20 @@ def tree_broadcast(G):
         return 0
 
     # step 1
-    U = {node for node in G.nodes() if G.degree(node) == 1}
-    for u in U:
-        G.nodes[u]["value"] = 0
+    U = {node for node, deg in G.degree if deg == 1}
+    values = {n: 0 for n in U}
     T = G.copy()
     T.remove_nodes_from(U)
 
     # step 2
-    W = {node for node in T.nodes() if T.degree(node) == 1}
-    for w in W:
-        G.nodes[w]["value"] = G.degree[w] - 1
+    W = {node for node, deg in T.degree if deg == 1}
+    values.update({w: G.degree[w] - 1 for w in W})
 
     # step 3
     while T.number_of_nodes() >= 2:
         # step 4
-        w = min(W, key=lambda n: G.nodes[n]["value"])
-        try:
-            v = next(T.neighbors(w))
-        except StopIteration:
-            print(f"Vertex {v} has no adjacent vertices.")
+        w = min(W, key=lambda n: values[n])
+        v = next(T.neighbors(w))
 
         # step 5
         U.add(w)
@@ -89,10 +84,10 @@ def tree_broadcast(G):
         # step 6
         if T.degree(v) == 1:
             # update t(v)
-            G.nodes[v]["value"] = update_broadcast_label(G, U, v)
+            values.update({v: _get_max_broadcast_value(G, U, v, values)})
             W.add(v)
 
     # step 7
     v = list(T.nodes())[0]
-    b_T = update_broadcast_label(G, U, v)
+    b_T = _get_max_broadcast_value(G, U, v, values)
     return b_T
