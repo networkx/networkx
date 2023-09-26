@@ -89,44 +89,38 @@ def join_trees(rooted_trees, label_attribute=None, first_label=0):
         True
 
     """
-    if len(rooted_trees) == 0:
+    if not rooted_trees:
         return nx.empty_graph(1)
 
     # Unzip the zipped list of (tree, root) pairs.
     trees, roots = zip(*rooted_trees)
 
-    # The join of the trees has the same type as the type of the first
-    # tree.
+    # The join of the trees has the same type as the type of the first tree.
     R = type(trees[0])()
 
-    # Relabel the nodes so that their union is the integers starting at first_label + 1.
+    lengths = (len(tree) for tree in trees[:-1])
+    first_labels = list(accumulate(lengths, initial=first_label + 1))
+
+    new_roots = []
+    for tree, root, first_node in zip(trees, roots, first_labels):
+        new_root = first_node + list(tree.nodes()).index(root)
+        new_roots.append(new_root)
+
+    # Relabel the nodes so that their union is the integers starting at first_label.
     relabel = partial(
         nx.convert_node_labels_to_integers, label_attribute=label_attribute
     )
-    lengths = (len(tree) for tree in trees[:-1])
-    first_labels = accumulate(lengths, initial=first_label)
-    trees = [
-        relabel(tree, first_label=first_label + 1)
+    new_trees = [
+        relabel(tree, first_label=first_label)
         for tree, first_label in zip(trees, first_labels)
     ]
 
-    # Get the relabeled roots.
-    roots = [
-        next(
-            v
-            for v, d in tree.nodes(data=True)
-            if (label_attribute is None) or d.get(label_attribute) == root
-        )
-        for tree, root in zip(trees, roots)
-    ]
-
     # Add all sets of nodes and edges, attributes
-    for tree in trees:
+    for tree in new_trees:
         R.update(tree)
 
-    # Finally, join the subtrees at the root. We know first_label is unused by the
-    # way we relabeled the subtrees.
+    # Finally, join the subtrees at the root. We know first_label is unused by the way we relabeled the subtrees.
     R.add_node(first_label)
-    R.add_edges_from((first_label, root) for root in roots)
+    R.add_edges_from((first_label, root) for root in new_roots)
 
     return R
