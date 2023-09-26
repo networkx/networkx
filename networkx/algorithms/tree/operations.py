@@ -31,7 +31,7 @@ def join(rooted_trees, label_attribute=None):
     return join_trees(rooted_trees, label_attribute=label_attribute)
 
 
-def join_trees(rooted_trees, label_attribute=None):
+def join_trees(rooted_trees, *, label_attribute=None):
     """Returns a new rooted tree made by joining `rooted_trees`
 
     Constructs a new tree by joining each tree in `rooted_trees`.
