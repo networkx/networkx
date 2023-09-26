@@ -303,6 +303,15 @@ class TestLayout:
 
         pytest.raises(ValueError, nx.multipartite_layout, G, align="foo")
 
+    def test_arc_layout(self):
+        sizes = (0, 5, 7, 2, 8)
+        G = nx.complete_multipartite_graph(*sizes)
+
+        vpos = nx.arc_layout(G, subset_key="subset")
+        assert len(vpos) == len(G)
+
+        pytest.raises(TypeError, nx.multipartite_layout, G, radius="non-sensible input")
+
     def test_kamada_kawai_costfn_1d(self):
         costfn = nx.drawing.layout._kamada_kawai_costfn
 
@@ -446,6 +455,18 @@ def test_multipartite_layout_nonnumeric_partition_labels():
     G.add_edges_from([(0, 2), (0, 3), (1, 2)])
     pos = nx.multipartite_layout(G)
     assert len(pos) == len(G)
+
+
+def test_arc_layout_nonnumeric_paratition_labels():
+    """see gh-5123."""
+    g = nx.Graph()
+    g.add_node(0, subset="s0")
+    g.add_node(1, subset="s0")
+    g.add_node(2, subset="s1")
+    g.add_node(3, subset="s1")
+    g.add_edges_from([(0, 2), (0, 3), (1, 2)])
+    pos = nx.arc_layout(g, subset_key="subset")
+    assert len(pos) == len(g)
 
 
 def test_multipartite_layout_layer_order():

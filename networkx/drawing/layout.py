@@ -33,6 +33,7 @@ __all__ = [
     "spiral_layout",
     "multipartite_layout",
     "arf_layout",
+    "arc_layout",
 ]
 
 
@@ -1217,6 +1218,50 @@ def arf_layout(
             break
         n_iter += 1
     return dict(zip(G.nodes(), p))
+
+
+def arc_layout(G: nx.Graph, subset_key="subset", radius=1, rotation=0) -> dict:
+    """Arc layout for networkx
+
+    Provides  a   layout  where  a  multipartite   graph  is
+    displayed  on a  unit circle.  This could  provide clear
+    visuals for data that is highly clustered.
+
+    Parameters
+    ----------
+    G : nx.Graph
+        Networkx (Di)Graph
+    subset_key : object
+        Node attribute to cluster the network on
+    radius : float
+        Radius of the unit circle
+    rotation : float
+        Rotation of the axes of the unit circle
+
+    Returns
+    -------
+    pos : dict
+        A dictionary of positions keyed by node.
+
+    Examples
+    --------
+    >>> subset_sizes = [5, 5, 4, 3, 2, 4, 4, 3]
+    >>> G = nx.complete_multipartite_graph(*subset_sizes)
+    >>> pos = nx.arf_layout(G, subset_key = "subset")
+    """
+    import numpy as np
+
+    attrs = nx.get_node_attributes(G, subset_key)
+    categories = set(attrs.values())
+    angles = np.linspace(0, 2 * np.pi, len(categories), 0) + rotation
+    pos = {}
+    for category, angle in zip(categories, angles):
+        # collect nodes
+        subset = [node for node, attr in attrs.items() if attr == category]
+        radii = np.linspace(0, radius, len(subset), 0)
+        for node, rad in zip(subset, radii):
+            pos[node] = rad * np.array([np.cos(angle), np.sin(angle)])
+    return pos
 
 
 def rescale_layout(pos, scale=1):
