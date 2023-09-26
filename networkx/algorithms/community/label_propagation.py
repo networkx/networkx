@@ -15,7 +15,7 @@ __all__ = [
 
 @nx._dispatch(edge_attrs="weight")
 @py_random_state("seed")
-def fast_label_propagation_communities(G, weight=None, seed=None):
+def fast_label_propagation_communities(G, *, weight=None, seed=None):
     """Returns communities in `G` as detected by fast label propagation.
 
     The fast label propagation algorithm is described in [1]_. The algorithm is
