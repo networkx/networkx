@@ -854,7 +854,7 @@ def kirchhoff_index(G, weight=None, invert_weight=True):
 
     # Get Laplacian eigenvalues
     mu = np.sort(nx.laplacian_spectrum(G, weight=weight))
-    
+
     # Compute Kirchhoff index based on spectrum of the Laplacian
     # Self-loops are ignored
     return np.sum(1 / mu[1:]) * G.number_of_nodes()
