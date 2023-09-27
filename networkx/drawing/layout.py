@@ -1220,7 +1220,9 @@ def arf_layout(
     return dict(zip(G.nodes(), p))
 
 
-def arc_layout(G: nx.Graph, subset_key="subset", radius=1, rotation=0) -> dict:
+def arc_layout(
+    G: nx.Graph, subset_key="subset", radius=1, rotation=0, offset=0
+) -> dict:
     """Arc layout for networkx
 
     Provides  a   layout  where  a  multipartite   graph  is
@@ -1237,6 +1239,8 @@ def arc_layout(G: nx.Graph, subset_key="subset", radius=1, rotation=0) -> dict:
         Radius of the unit circle
     rotation : float
         Rotation of the axes of the unit circle
+    offset : float
+        Offset for the first node in the spoke
 
     Returns
     -------
@@ -1258,7 +1262,7 @@ def arc_layout(G: nx.Graph, subset_key="subset", radius=1, rotation=0) -> dict:
     for category, angle in zip(categories, angles):
         # collect nodes
         subset = [node for node, attr in attrs.items() if attr == category]
-        radii = np.linspace(0, radius, len(subset), 0)
+        radii = np.linspace(offset, radius, len(subset), 0)
         for node, rad in zip(subset, radii):
             pos[node] = rad * np.array([np.cos(angle), np.sin(angle)])
     return pos
