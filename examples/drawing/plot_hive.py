@@ -24,4 +24,5 @@ for axi, n in zip(ax.flatten(), range(4, 8)):
     )
     axi.grid(False)
     axi.set_title(f"{n}-group multipartite")
+    [axi.spines[i].set_visible(False) for i in "left right top bottom".split()]
 plt.show(block=1)
