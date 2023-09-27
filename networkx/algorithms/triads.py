@@ -548,7 +548,6 @@ def random_triad(G, seed=None):
     NetworkXError
         If the input Graph has less than 3 nodes.
 
-
     Examples
     --------
     >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 1), (5, 6), (5, 4), (6, 7)])
@@ -559,7 +558,7 @@ def random_triad(G, seed=None):
     """
     if len(G) < 3:
         raise nx.NetworkXError(
-            f"Input graph should have at least 3 nodes to form a random triad, the graph has {len(G)} nodes."
+            f"G needs at least 3 nodes to form a triad; (it has {len(G)} nodes)"
         )
     nodes = seed.sample(list(G.nodes()), 3)
     G2 = G.subgraph(nodes)
