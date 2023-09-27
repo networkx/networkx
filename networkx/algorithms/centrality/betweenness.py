@@ -100,6 +100,11 @@ def betweenness_centrality(
     undirected paths but we are counting them in a directed way.
     To count them as undirected paths, each should count as half a path.
 
+    This algorithm is not guaranteed to be correct if edge weights
+    are floating point numbers. As a workaround you can use integer
+    numbers by multiplying the relevant edge attributes by a convenient
+    constant factor (eg 100) and converting to integers.
+
     References
     ----------
     .. [1] Ulrik Brandes:
