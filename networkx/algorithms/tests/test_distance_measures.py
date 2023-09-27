@@ -416,30 +416,30 @@ class TestKirchhoffIndex:
         assert np.isinf(Kf)
 
     def test_kirchhoff_index(self):
-        rd = nx.kirchhoff_index(self.G, "weight", True)
+        Kf = nx.kirchhoff_index(self.G, "weight", True)
         rd12 = 1 / (1 / (1 + 4) + 1 / 2)
         rd13 = 1 / (1 / (1 + 2) + 1 / 4)
         rd23 = 1 / (1 / (2 + 4) + 1 / 1)
-        assert round(rd, 5) == round(rd12 + rd13 + rd23, 5)
+        assert np.isclose(Kf, rd12 + rd13 + rd23)
 
     def test_kirchhoff_index_noinv(self):
-        rd = nx.kirchhoff_index(self.G, "weight", False)
+        Kf = nx.kirchhoff_index(self.G, "weight", False)
         rd12 = 1 / (1 / (1 / 1 + 1 / 4) + 1 / (1 / 2))
         rd13 = 1 / (1 / (1 / 1 + 1 / 2) + 1 / (1 / 4))
         rd23 = 1 / (1 / (1 / 2 + 1 / 4) + 1 / (1 / 1))
-        assert round(rd, 5) == round(rd12 + rd13 + rd23, 5)
+        assert np.isclose(Kf, rd12 + rd13 + rd23)
 
     def test_kirchhoff_index_no_weight(self):
-        rd = nx.kirchhoff_index(self.G)
-        assert round(rd, 5) == 2
+        Kf = nx.kirchhoff_index(self.G)
+        assert np.isclose(Kf, 2)
 
     def test_kirchhoff_index_neg_weight(self):
         self.G[2][3]["weight"] = -4
-        rd = nx.kirchhoff_index(self.G, "weight", True)
+        Kf = nx.kirchhoff_index(self.G, "weight", True)
         rd12 = 1 / (1 / (1 + -4) + 1 / 2)
         rd13 = 1 / (1 / (1 + 2) + 1 / (-4))
         rd23 = 1 / (1 / (2 + -4) + 1 / 1)
-        assert round(rd, 5) == round(rd12 + rd13 + rd23, 5)
+        assert np.isclose(Kf, rd12 + rd13 + rd23)
 
     def test_kirchhoff_index_multigraph(self):
         G = nx.MultiGraph()
@@ -447,12 +447,12 @@ class TestKirchhoffIndex:
         G.add_edge(1, 3, weight=1)
         G.add_edge(2, 3, weight=1)
         G.add_edge(2, 3, weight=3)
-        rd = nx.kirchhoff_index(G, "weight", True)
+        Kf = nx.kirchhoff_index(G, "weight", True)
         edge23 = 1 / (1 / 1 + 1 / 3)
         rd12 = 1 / (1 / (1 + edge23) + 1 / 2)
         rd13 = 1 / (1 / (1 + 2) + 1 / edge23)
         rd23 = 1 / (1 / (2 + edge23) + 1 / 1)
-        assert round(rd, 5) == round(rd12 + rd13 + rd23, 5)
+        assert np.isclose(Kf, rd12 + rd13 + rd23)
 
     def test_kirchhoff_index_div0(self):
         with pytest.raises(ZeroDivisionError):
@@ -463,13 +463,13 @@ class TestKirchhoffIndex:
         N = 10
         G = nx.complete_graph(N)
         Kf = nx.kirchhoff_index(G)
-        assert round(Kf, 5) == (N - 1)
+        assert np.isclose(Kf, N - 1)
 
     def test_kirchhoff_index_path_graph(self):
         N = 10
         G = nx.path_graph(N)
         Kf = nx.kirchhoff_index(G)
-        assert round(Kf, 5) == (N - 1) * N * (N + 1) // 6
+        assert np.isclose(Kf, (N - 1) * N * (N + 1) // 6)
 
 
 class TestBarycenter:
