@@ -24,6 +24,7 @@ from networkx.algorithms.efficiency_measures import *
 from networkx.algorithms.euler import *
 from networkx.algorithms.graphical import *
 from networkx.algorithms.hierarchy import *
+from networkx.algorithms.hierarchy_coordinates import *
 from networkx.algorithms.hybrid import *
 from networkx.algorithms.link_analysis import *
 from networkx.algorithms.link_prediction import *
