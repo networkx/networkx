@@ -865,19 +865,24 @@ class _dispatch:
                 lines.append(f"{backend} : {info['short_summary']}")
             else:
                 lines.append(backend)
-            if "extra_docstrings" in info and self.name in info["extra_docstrings"]:
+            if "functions" not in info or self.name not in info["functions"]:
+                lines.append("")
+                continue
+
+            func_info = info["functions"][self.name]
+            if "extra_docstring" in func_info:
                 lines.extend(
                     f"  {line}" if line else line
-                    for line in info["extra_docstrings"][self.name].split("\n")
+                    for line in func_info["extra_docstring"].split("\n")
                 )
                 add_gap = True
             else:
                 add_gap = False
-            if "extra_parameters" in info and self.name in info["extra_parameters"]:
+            if "extra_parameters" in func_info:
                 if add_gap:
                     lines.append("")
                 lines.append("  Extra parameters:")
-                extra_parameters = info["extra_parameters"][self.name]
+                extra_parameters = func_info["extra_parameters"]
                 for param in sorted(extra_parameters):
                     lines.append(f"    {param}")
                     if desc := extra_parameters[param]:
@@ -885,6 +890,7 @@ class _dispatch:
                     lines.append("")
             else:
                 lines.append("")
+
         lines.pop()  # Remove last empty line
         to_add = "\n    ".join(lines)
         return f"{self._orig_doc.rstrip()}\n\n    {to_add}"
