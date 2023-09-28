@@ -120,7 +120,7 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
         return G  # done if no edges
 
     # build lists of degree-repeated vertex numbers
-    stubs = [[v] * aseq[v] for v in range(0, lena)]
+    stubs = [[v] * aseq[v] for v in range(lena)]
     astubs = [x for subseq in stubs for x in subseq]
 
     stubs = [[v] * bseq[v - lena] for v in range(lena, lena + lenb)]
@@ -190,7 +190,7 @@ def havel_hakimi_graph(aseq, bseq, create_using=None):
         return G  # done if no edges
 
     # build list of degree-repeated vertex numbers
-    astubs = [[aseq[v], v] for v in range(0, naseq)]
+    astubs = [[aseq[v], v] for v in range(naseq)]
     bstubs = [[bseq[v - naseq], v] for v in range(naseq, naseq + nbseq)]
     astubs.sort()
     while astubs:
@@ -263,7 +263,7 @@ def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
         return G  # done if no edges
 
     # build list of degree-repeated vertex numbers
-    astubs = [[aseq[v], v] for v in range(0, lena)]
+    astubs = [[aseq[v], v] for v in range(lena)]
     bstubs = [[bseq[v - lena], v] for v in range(lena, lena + lenb)]
     astubs.sort()
     bstubs.sort()
@@ -336,7 +336,7 @@ def alternating_havel_hakimi_graph(aseq, bseq, create_using=None):
     if len(aseq) == 0 or max(aseq) == 0:
         return G  # done if no edges
     # build list of degree-repeated vertex numbers
-    astubs = [[aseq[v], v] for v in range(0, naseq)]
+    astubs = [[aseq[v], v] for v in range(naseq)]
     bstubs = [[bseq[v - naseq], v] for v in range(naseq, naseq + nbseq)]
     while astubs:
         astubs.sort()
@@ -409,7 +409,7 @@ def preferential_attachment_graph(aseq, p, create_using=None, seed=None):
 
     naseq = len(aseq)
     G = _add_nodes_with_bipartite_label(G, naseq, 0)
-    vv = [[v] * aseq[v] for v in range(0, naseq)]
+    vv = [[v] * aseq[v] for v in range(naseq)]
     while vv:
         while vv[0]:
             source = vv[0][0]
@@ -588,8 +588,8 @@ def gnmk_random_graph(n, m, k, seed=None, directed=False):
 
 
 def _add_nodes_with_bipartite_label(G, lena, lenb):
-    G.add_nodes_from(range(0, lena + lenb))
-    b = dict(zip(range(0, lena), [0] * lena))
+    G.add_nodes_from(range(lena + lenb))
+    b = dict(zip(range(lena), [0] * lena))
     b.update(dict(zip(range(lena, lena + lenb), [1] * lenb)))
     nx.set_node_attributes(G, b, "bipartite")
     return G

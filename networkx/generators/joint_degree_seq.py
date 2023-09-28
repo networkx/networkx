@@ -325,7 +325,7 @@ def is_valid_directed_joint_degree(in_degrees, out_degrees, nkk):
     if len(in_degrees) != len(out_degrees):
         return False
 
-    for idx in range(0, len(in_degrees)):
+    for idx in range(len(in_degrees)):
         i = in_degrees[idx]
         o = out_degrees[idx]
         V[(i, 0)] = V.get((i, 0), 0) + 1
