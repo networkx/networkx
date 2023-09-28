@@ -115,7 +115,7 @@ class TestSubgraphIsomorphism:
 
         g2 = nx.Graph()
         nx.add_cycle(g2, range(4))
-        g2.add_edges_from([(n, m) for n, m in zip(g2, range(4, 8))])
+        g2.add_edges_from(list(zip(g2, range(4, 8))))
         ismags = iso.ISMAGS(g2, g1)
         assert list(ismags.subgraph_isomorphisms_iter(symmetry=True)) == [
             {n: n for n in g1.nodes}

@@ -27,7 +27,7 @@ def hide_nodes(nodes):
 
 
 def hide_diedges(edges):
-    edges = {(u, v) for u, v in edges}
+    edges = set(edges)
     return lambda u, v: (u, v) not in edges
 
 
@@ -37,7 +37,7 @@ def hide_edges(edges):
 
 
 def hide_multidiedges(edges):
-    edges = {(u, v, k) for u, v, k in edges}
+    edges = set(edges)
     return lambda u, v, k: (u, v, k) not in edges
 
 
@@ -56,7 +56,7 @@ class show_nodes:
 
 
 def show_diedges(edges):
-    edges = {(u, v) for u, v in edges}
+    edges = set(edges)
     return lambda u, v: (u, v) in edges
 
 
@@ -66,7 +66,7 @@ def show_edges(edges):
 
 
 def show_multidiedges(edges):
-    edges = {(u, v, k) for u, v, k in edges}
+    edges = set(edges)
     return lambda u, v, k: (u, v, k) in edges
 
 

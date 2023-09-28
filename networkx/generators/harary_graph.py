@@ -88,14 +88,14 @@ def hnm_harary_graph(n, m, create_using=None):
         if d & 1:
             # in case d is odd; n must be even in this case
             half = n // 2
-            for i in range(0, half):
+            for i in range(half):
                 # add edges diagonally
                 H.add_edge(i, i + half)
         # Get the remainder of 2*m modulo n
         r = 2 * m % n
         if r > 0:
             # add remaining edges at offset+1
-            for i in range(0, r // 2):
+            for i in range(r // 2):
                 H.add_edge(i, i + offset + 1)
     else:
         # Start with a regular graph of (d - 1) degrees
@@ -105,7 +105,7 @@ def hnm_harary_graph(n, m, create_using=None):
                 H.add_edge(i, (i - j) % n)
                 H.add_edge(i, (i + j) % n)
         half = n // 2
-        for i in range(0, m - n * offset):
+        for i in range(m - n * offset):
             # add the remaining m - n*offset edges between i and i+half
             H.add_edge(i, (i + half) % n)
 
@@ -179,7 +179,7 @@ def hkn_harary_graph(k, n, create_using=None):
         if k & 1:
             # odd degree; n must be even in this case
             half = n // 2
-            for i in range(0, half):
+            for i in range(half):
                 # add edges diagonally
                 H.add_edge(i, i + half)
     else:
@@ -190,7 +190,7 @@ def hkn_harary_graph(k, n, create_using=None):
                 H.add_edge(i, (i - j) % n)
                 H.add_edge(i, (i + j) % n)
         half = n // 2
-        for i in range(0, half + 1):
+        for i in range(half + 1):
             # add half+1 edges between i and i+half
             H.add_edge(i, (i + half) % n)
 
