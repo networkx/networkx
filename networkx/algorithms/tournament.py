@@ -379,8 +379,8 @@ def is_strongly_connected(G):
     True
     >>> tournament.is_strongly_connected(G)
     True
-    >>> G.remove_edge(3,0)
-    >>> G.add_edge(0,3)
+    >>> G.remove_edge(3, 0)
+    >>> G.add_edge(0, 3)
     >>> tournament.is_tournament(G)
     True
     >>> tournament.is_strongly_connected(G)
