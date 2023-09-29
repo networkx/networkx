@@ -383,7 +383,7 @@ def power(G, k):
     >>> list(nx.power(G, 3).edges)
     [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)]
 
-    The `k`th power of a cycle graph on *n* nodes is the complete graph
+    The `k`\ th power of a cycle graph on *n* nodes is the complete graph
     on *n* nodes, if `k` is at least ``n // 2``:
 
     >>> G = nx.cycle_graph(5)

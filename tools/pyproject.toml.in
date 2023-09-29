@@ -157,6 +157,7 @@ select = [
 "examples/*.py" = ['I']
 "doc/*.py" = ['I']
 "tools/*.py" = ['I']
+"networkx/classes/filters.py" = ['C416']
 
 [tool.mypy]
 ignore_missing_imports = true

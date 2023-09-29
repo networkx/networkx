@@ -543,6 +543,11 @@ def random_triad(G, seed=None):
     G2 : subgraph
        A randomly selected triad (order-3 NetworkX DiGraph)
 
+    Raises
+    ------
+    NetworkXError
+        If the input Graph has less than 3 nodes.
+
     Examples
     --------
     >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 1), (5, 6), (5, 4), (6, 7)])
@@ -551,6 +556,10 @@ def random_triad(G, seed=None):
     OutEdgeView([(1, 2)])
 
     """
+    if len(G) < 3:
+        raise nx.NetworkXError(
+            f"G needs at least 3 nodes to form a triad; (it has {len(G)} nodes)"
+        )
     nodes = seed.sample(list(G.nodes()), 3)
     G2 = G.subgraph(nodes)
     return G2

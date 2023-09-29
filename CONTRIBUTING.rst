@@ -403,7 +403,7 @@ Then create a baseline image to compare against later::
 
     $ pytest -k test_barbell --mpl-generate-path=networkx/drawing/tests/baseline
 
-.. note: In order to keep the size of the repository from becoming too large, we
+.. note:: In order to keep the size of the repository from becoming too large, we
    prefer to limit the size and number of baseline images we include.
 
 And test::
@@ -413,27 +413,7 @@ And test::
 Documentation
 -------------
 
-Building the documentation locally requires that the additional dependencies
-specified in ``requirements/doc.txt`` be installed in your development
-environment.
-
-The documentation is built with ``sphinx``. To build the documentation locally,
-navigate to the ``doc/`` directory and::
-
-    make html
-
-This will generate both the reference documentation as well as the example
-gallery. If you want to build the documentation *without* building the
-gallery examples use::
-
-    make html-noplot
-
-The build products are stored in ``doc/build/`` and can be viewed directly.
-For example, to view the built html, open ``build/html/index.html``
-in your preferred web browser.
-
-.. note: ``sphinx`` supports many other output formats. Type ``make`` without
-   any arguments to see all the built-in options.
+.. include:: ../README.rst
 
 Adding examples
 ~~~~~~~~~~~~~~~

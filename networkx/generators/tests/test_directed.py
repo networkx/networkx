@@ -31,7 +31,6 @@ class TestGeneratorsDirected:
         pytest.raises(nx.NetworkXError, gn_graph, 100, create_using=Graph())
         pytest.raises(nx.NetworkXError, gnr_graph, 100, 0.5, create_using=Graph())
         pytest.raises(nx.NetworkXError, gnc_graph, 100, create_using=Graph())
-        pytest.raises(nx.NetworkXError, scale_free_graph, 100, create_using=Graph())
         G = gn_graph(100, seed=1)
         MG = gn_graph(100, create_using=MultiDiGraph(), seed=1)
         assert sorted(G.edges()) == sorted(MG.edges())
@@ -70,20 +69,11 @@ class TestGeneratorsDirected:
         assert nx.is_isomorphic(gnr_graph(1, 0.5), G)
 
 
-def test_scale_free_graph_create_using_with_initial_graph():
-    G = nx.MultiGraph()
-    with pytest.raises(
-        ValueError,
-        match="Cannot set both create_using and initial_graph. Set create_using=None.",
-    ):
-        scale_free_graph(10, create_using=nx.Graph, initial_graph=G)
-
-
 def test_scale_free_graph_negative_delta():
     with pytest.raises(ValueError, match="delta_in must be >= 0."):
-        scale_free_graph(10, create_using=None, delta_in=-1)
+        scale_free_graph(10, delta_in=-1)
     with pytest.raises(ValueError, match="delta_out must be >= 0."):
-        scale_free_graph(10, create_using=None, delta_out=-1)
+        scale_free_graph(10, delta_out=-1)
 
 
 def test_non_numeric_ordering():
