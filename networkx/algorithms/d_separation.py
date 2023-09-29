@@ -123,7 +123,44 @@ from collections import deque
 import networkx as nx
 from networkx.utils import UnionFind, not_implemented_for
 
-__all__ = ["d_separated", "minimal_d_separator", "is_minimal_d_separator"]
+__all__ = ["d_separated", "minimal_d_separated", "find_minimal_d_separator"]
+
+
+def ancestors(G, start_nodes):
+    """Computes the ancestors of a set of nodes in a graph with directed edges.
+
+    By definition, the anterior set includes the start nodes.
+
+    Parameters
+    ----------
+    G : nx.DiGraph
+        The graph.
+    start_nodes : set
+        Set of nodes which are always included in the found separating set.
+
+    Returns
+    -------
+    visited : set
+        The anterior set of nodes
+
+    References
+    ----------
+    .. [1] B. van der Zander, M. Liśkiewicz, and J. Textor, “Separators and Adjustment
+       Sets in Causal Graphs: Complete Criteria and an Algorithmic Framework,” Artificial
+       Intelligence, vol. 270, pp. 1–40, May 2019, doi: 10.1016/j.artint.2018.12.006.
+    """
+
+    queue = deque(start_nodes)
+    visited = set()
+
+    while queue:
+        m = queue.popleft()
+        for x, _ in G.in_edges(nbunch=m):
+            if x not in visited:
+                queue.append(x)
+                visited.add(x)
+
+    return visited.union(start_nodes)
 
 
 @not_implemented_for("undirected")
@@ -137,13 +174,13 @@ def d_separated(G, x, y, z):
     G : graph
         A NetworkX DAG.
 
-    x : set
+    x : set | node
         First set of nodes in ``G``.
 
-    y : set
+    y : set | node
         Second set of nodes in ``G``.
 
-    z : set
+    z : set | node
         Set of conditioning nodes in ``G``. Can be empty set.
 
     Returns
@@ -160,8 +197,7 @@ def d_separated(G, x, y, z):
 
     NodeNotFound
         If any of the input nodes are not found in the graph,
-        a :exc:`NodeNotFound` exception is raised.
-
+        a :exc:`NodeNotFound` exception is raised
     Notes
     -----
     A d-separating set in a DAG is a set of nodes that
@@ -173,53 +209,85 @@ def d_separated(G, x, y, z):
     https://en.wikipedia.org/wiki/Bayesian_network#d-separation
     """
 
+    if not isinstance(x, set):
+        x = {x}
+    if x - G.nodes:
+        raise nx.NodeNotFound(f"The node {x} is not found in G.")
+    if not isinstance(y, set):
+        y = {y}
+    if y - G.nodes:
+        raise nx.NodeNotFound(f"The node {y} is not found in G.")
+    if not isinstance(z, set):
+        z = {z}
+    if z - G.nodes:
+        raise nx.NodeNotFound(f"The node {z} is not found in G.")
+
+    set_v = x | y | z
+    if set_v - G.nodes:
+        raise nx.NodeNotFound(f"The node(s) {set_v - G.nodes} are not found in G")
+
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")
 
-    union_xyz = x.union(y).union(z)
+    # contains -> and <-> edges from starting node T
+    forward_deque = deque([])
+    forward_visited = set()
 
-    if any(n not in G.nodes for n in union_xyz):
-        raise nx.NodeNotFound("one or more specified nodes not found in the graph")
+    # contains <- and - edges from starting node T
+    backward_deque = deque(x)
+    backward_visited = set()
 
-    G_copy = G.copy()
+    an_z = ancestors(G, x).union(z)
 
-    # transform the graph by removing leaves that are not in x | y | z
-    # until no more leaves can be removed.
-    leaves = deque([n for n in G_copy.nodes if G_copy.out_degree[n] == 0])
-    while len(leaves) > 0:
-        leaf = leaves.popleft()
-        if leaf not in union_xyz:
-            for p in G_copy.predecessors(leaf):
-                if G_copy.out_degree[p] == 1:
-                    leaves.append(p)
-            G_copy.remove_node(leaf)
+    while forward_deque or backward_deque:
+        if backward_deque:
+            node = backward_deque.popleft()
+            backward_visited.add(node)
+            if node in y:
+                return False
+            if node in z:
+                continue
 
-    # transform the graph by removing outgoing edges from the
-    # conditioning set.
-    edges_to_remove = list(G_copy.out_edges(z))
-    G_copy.remove_edges_from(edges_to_remove)
+            # add <- edges to backward deque
+            for x, _ in G.in_edges(nbunch=node):
+                if x not in backward_visited:
+                    backward_deque.append(x)
 
-    # use disjoint-set data structure to check if any node in `x`
-    # occurs in the same weakly connected component as a node in `y`.
-    disjoint_set = UnionFind(G_copy.nodes())
-    for component in nx.weakly_connected_components(G_copy):
-        disjoint_set.union(*component)
-    disjoint_set.union(*x)
-    disjoint_set.union(*y)
+            # add -> edges to forward deque
+            for _, x in G.out_edges(nbunch=node):
+                if x not in forward_visited:
+                    forward_deque.append(x)
 
-    if x and y and disjoint_set[next(iter(x))] == disjoint_set[next(iter(y))]:
-        return False
-    else:
-        return True
+        if forward_deque:
+            node = forward_deque.popleft()
+            forward_visited.add(node)
+            if node in y:
+                return False
+
+            # Consider if -> node <- is opened due to conditioning on collider,
+            # or descendant of collider
+            if node in an_z:
+                # add <- edges to backward deque
+                for x, _ in G.in_edges(nbunch=node):
+                    if x not in backward_visited:
+                        backward_deque.append(x)
+
+            if node not in z:
+                # add -> edges to forward deque
+                for _, x in G.out_edges(nbunch=node):
+                    if x not in forward_visited:
+                        forward_deque.append(x)
+
+    return True
 
 
 @not_implemented_for("undirected")
 @nx._dispatch
-def minimal_d_separator(G, u, v):
-    """Compute a minimal d-separating set between 'u' and 'v'.
+def find_minimal_d_separator(G, u, v, i=None, r=None):
+    """Returns a minimal d-separating set between 'u' and 'v' if possible
 
     A d-separating set in a DAG is a set of nodes that blocks all paths
-    between the two nodes, 'u' and 'v'. This function
+    between the two sets of nodes, 'u' and 'v'. This function
     constructs a d-separating set that is "minimal", meaning it is the smallest
     d-separating set for 'u' and 'v'. This is not necessarily
     unique. In the case where there are no d-separating sets between 'u' and
@@ -227,18 +295,27 @@ def minimal_d_separator(G, u, v):
 
     For more details, see Notes.
 
+    TODO: need to explain the difference between strongly minimal vs I-minimal
+
+
     Parameters
     ----------
     G : graph
         A networkx DAG.
-    u : node
-        A node in the graph, G.
-    v : node
-        A node in the graph, G.
+    u : set | node
+        A node in the graph, or a set of nodes.
+    v : set | node
+        A node in the graph, or a set of nodes.
+    i : set
+        Set of nodes which are always included in the found separating set,
+        default is None, which is later set to empty set.
+    r : set
+        Largest set of nodes which may be included in the found separating set,
+        default is None, which is later set to all vertices in ``G``.
 
     Returns
     -------
-    Z : bool | None
+    Z : set | None
         The minimal d-separating set, if at least one d-separating set exists,
         otherwise None.
 
@@ -253,68 +330,73 @@ def minimal_d_separator(G, u, v):
 
     References
     ----------
-    .. [1] Tian, J., & Paz, A. (1998). Finding Minimal D-separators.
-
+    .. [1] B. van der Zander, M. Liśkiewicz, and J. Textor, “Separators and Adjustment
+       Sets in Causal Graphs: Complete Criteria and an Algorithmic Framework,” Artificial
+       Intelligence, vol. 270, pp. 1–40, May 2019, doi: 10.1016/j.artint.2018.12.006.
     Notes
     -----
     This function only finds ``a`` minimal d-separator, if at least one
     d-separator exists. It does not guarantee uniqueness, since in a DAG
-    there may be more than one minimal d-separator between two nodes.
-    Moreover, this only checks for minimal separators between two nodes,
-    not two sets. Finding minimal d-separators between two sets of nodes
-    is not supported.
+    there may be more than one minimal d-separator between two sets of nodes.
 
     Uses the algorithm presented in [1]_. The complexity of the algorithm
-    is :math:`O(|E_{An}^m|)`, where :math:`|E_{An}^m|` stands for the
-    number of edges in the moralized graph of the sub-graph consisting
+    is :math:`O(n^2)`, where :math:`n` stands for the
+    number of nodes in the moralized graph of the sub-graph consisting
     of only the ancestors of 'u' and 'v'. For full details, see [1]_.
 
-    The algorithm works by constructing the moral graph consisting of just
-    the ancestors of `u` and `v`. Then it constructs a candidate for
-    a separating set  ``Z'`` from the predecessors of `u` and `v`.
-    Then BFS is run starting from `u` and marking nodes
-    found from ``Z'`` and calling those nodes ``Z''``.
-    Then BFS is run again starting from `v` and marking nodes if they are
-    present in ``Z''``. Those marked nodes are the returned minimal
-    d-separating set.
-
-    https://en.wikipedia.org/wiki/Bayesian_network#d-separation
     """
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")
+    if not isinstance(u, set):
+        u = {u}
+    if u - G.nodes:
+        raise nx.NodeNotFound(f"The node {u} is not found in G.")
 
-    union_uv = {u, v}
+    if not isinstance(v, set):
+        v = {v}
+    if v - G.nodes:
+        raise nx.NodeNotFound(f"The node {v} is not found in G.")
 
-    if any(n not in G.nodes for n in union_uv):
-        raise nx.NodeNotFound("one or more specified nodes not found in the graph")
+    if i is None:
+        i = set()
+    if r is None:
+        r = set(G.nodes())
+    set_v = u | v | i | r
+    if set_v - G.nodes:
+        raise nx.NodeNotFound(f"The node(s) {set_v - G.nodes} are not found in G")
+    if not i <= r:
+        raise nx.NetworkError(
+            f"Minimal set {i} should be no larger than maximal set {r}"
+        )
 
-    # first construct the set of ancestors of X and Y
-    x_anc = nx.ancestors(G, u)
-    y_anc = nx.ancestors(G, v)
-    D_anc_xy = x_anc.union(y_anc)
-    D_anc_xy.update((u, v))
+    G_copy = G.copy()
 
-    # second, construct the moralization of the subgraph of Anc(X,Y)
-    moral_G = nx.moral_graph(G.subgraph(D_anc_xy))
+    nodeset = u.union(v).union(i)
 
-    # find a separating set Z' in moral_G
-    Z_prime = set(G.predecessors(u)).union(set(G.predecessors(v)))
+    ancestor_nodes_G = ancestors(G_copy, nodeset)
+    G_p = G.subgraph(ancestor_nodes_G)
+    aug_G_p = nx.moral_graph(G_p)
+    for node in i:
+        aug_G_p.remove_node(node)
+    for node in i:
+        aug_G_p.remove_node(node)
+    for node in i:
+        G_p.remove_node(node)
 
-    # perform BFS on the graph from 'x' to mark
-    Z_dprime = _bfs_with_marks(moral_G, u, Z_prime)
-    Z = _bfs_with_marks(moral_G, v, Z_dprime)
+    z_prime = r.intersection(ancestors(G_copy, u.union(v))) - u.union(v)
+    z_dprime = _bfs_with_marks(aug_G_p, u, z_prime)
+    z = _bfs_with_marks(aug_G_p, v, z_dprime)
 
-    # check if the set Z actually separates 'u' and 'v'
-    if not d_separated(G.subgraph(D_anc_xy), {u}, {v}, Z):
+    if not d_separated(G_p, u, v, z):
         return None
 
-    return Z
+    return z.union(i)
 
 
 @not_implemented_for("undirected")
 @nx._dispatch
-def is_minimal_d_separator(G, u, v, z):
-    """Determine if a d-separating set is minimal.
+def minimal_d_separated(G, u, v, z, i=None, r=None):
+    """Determine if `z` is a minimal d-separating set for `u` and `v`.
 
     A d-separating set, `z`, in a DAG is a set of nodes that blocks
     all paths between the two nodes, `u` and `v`. This function
@@ -329,14 +411,19 @@ def is_minimal_d_separator(G, u, v, z):
     ----------
     G : nx.DiGraph
         The graph.
-    u : node
-        A node in the graph.
-    v : node
-        A node in the graph.
-    z : Set of nodes
-        The set of nodes to check if it is a minimal d-separating set.
+    u : node | set
+        A node in the graph, or a set of nodes.
+    v : node | set
+        A node in the graph, or a set of nodes.
+    z : node | set
+        The node or set of nodes to check if it is a minimal d-separating set.
         The function :func:`d_separated` is called inside this function
         to verify that `z` is in fact a d-separator.
+    i : set
+        Set of nodes which are always included in the found separating set,
+        default is None, which is later set to empty set.
+    r : set
+        Largest set of nodes which may be included in the found separating set,
 
     Returns
     -------
@@ -347,10 +434,10 @@ def is_minimal_d_separator(G, u, v, z):
     --------
     >>> G = nx.path_graph([0, 1, 2, 3], create_using=nx.DiGraph)
     >>> G.add_node(4)
-    >>> nx.is_minimal_d_separator(G, 0, 2, {1})
+    >>> nx.minimal_d_separated(G, 0, 2, {1})
     True
     >>> # since {1} is the minimal d-separator, {1, 3, 4} is not minimal
-    >>> nx.is_minimal_d_separator(G, 0, 2, {1, 3, 4})
+    >>> nx.minimal_d_separated(G, 0, 2, {1, 3, 4})
     False
     >>> # alternatively, if we only want to check that {1, 3, 4} is a d-separator
     >>> nx.d_separated(G, {0}, {4}, {1, 3, 4})
@@ -367,71 +454,89 @@ def is_minimal_d_separator(G, u, v, z):
 
     References
     ----------
-    .. [1] Tian, J., & Paz, A. (1998). Finding Minimal D-separators.
+    .. [1] B. van der Zander, M. Liśkiewicz, and J. Textor, “Separators and Adjustment
+       Sets in Causal Graphs: Complete Criteria and an Algorithmic Framework,” Artificial
+       Intelligence, vol. 270, pp. 1–40, May 2019, doi: 10.1016/j.artint.2018.12.006.
 
     Notes
     -----
-    This function only works on verifying a d-separating set is minimal
-    between two nodes. To verify that a d-separating set is minimal between
-    two sets of nodes is not supported.
-
-    Uses algorithm 2 presented in [1]_. The complexity of the algorithm
-    is :math:`O(|E_{An}^m|)`, where :math:`|E_{An}^m|` stands for the
-    number of edges in the moralized graph of the sub-graph consisting
-    of only the ancestors of ``u`` and ``v``.
-
-    The algorithm works by constructing the moral graph consisting of just
-    the ancestors of `u` and `v`. First, it performs BFS on the moral graph
-    starting from `u` and marking any nodes it encounters that are part of
-    the separating set, `z`. If a node is marked, then it does not continue
-    along that path. In the second stage, BFS with markings is repeated on the
-    moral graph starting from `v`. If at any stage, any node in `z` is
-    not marked, then `z` is considered not minimal. If the end of the algorithm
-    is reached, then `z` is minimal.
+    This function works on verifying that a set is minimal
+     and d-separating between two nodes.
+    Uses algorithm TESTMINSEP presented in [1]_. The complexity of the algorithm
+    is :math:`O(n^2)`, where :math:`n` stands for the
+    number of nodes.
 
     For full details, see [1]_.
 
-    https://en.wikipedia.org/wiki/Bayesian_network#d-separation
     """
-    if not nx.d_separated(G, {u}, {v}, z):
+    if not nx.is_directed_acyclic_graph(G):
+        raise nx.NetworkXError("graph should be directed acyclic")
+    if not isinstance(u, set):
+        u = {u}
+    if u - G.nodes:
+        raise nx.NodeNotFound(f"The node {u} is not found in G.")
+    if not isinstance(v, set):
+        v = {v}
+    if v - G.nodes:
+        raise nx.NodeNotFound(f"The node {v} is not found in G.")
+    if not isinstance(z, set):
+        z = {z}
+    if z - G.nodes:
+        raise nx.NodeNotFound(f"The node {z} is not found in G.")
+
+    if i is None:
+        i = set()
+    if r is None:
+        r = set(G.nodes())
+
+    set_v = u | v | z | i | r
+    if set_v - G.nodes:
+        raise nx.NodeNotFound(f"The node(s) {set_v - G.nodes} are not found in G")
+
+    if not i <= z:
+        raise nx.NetworkXError(
+            f"Minimal set {i} should be no larger than proposed separating set {z}"
+        )
+    if not z <= r:
+        raise nx.NetworkXError(
+            f"Separating set {z} should be no larger than maximum set {r}"
+        )
+
+    if z - ancestors(G, u.union(v).union(i)) != set() or not z <= r:
+        return False
+    if not d_separated(G, u, v, z):
         return False
 
-    x_anc = nx.ancestors(G, u)
-    y_anc = nx.ancestors(G, v)
-    xy_anc = x_anc.union(y_anc)
+    G_copy = G.copy()
 
-    # if Z contains any node which is not in ancestors of X or Y
-    # then it is definitely not minimal
-    if any(node not in xy_anc for node in z):
+    nodeset = u.union(v).union(i)
+
+    ancestor_nodes_G = ancestors(G_copy, nodeset)
+    aug_G_p = nx.moral_graph(G.subgraph(ancestor_nodes_G))
+    for node in i:
+        aug_G_p.remove_node(node)
+
+    r_u = _bfs_with_marks(aug_G_p, u, z)
+
+    # Note: we check z - i != r_x instead of z != r_x since
+    # all nodes in i are removed from graph and so x will never have a path
+    # to i. Appears to be bug in the original algorithm.
+    if z - i != r_u:
         return False
+    r_v = _bfs_with_marks(aug_G_p, v, z)
 
-    D_anc_xy = x_anc.union(y_anc)
-    D_anc_xy.update((u, v))
-
-    # second, construct the moralization of the subgraph
-    moral_G = nx.moral_graph(G.subgraph(D_anc_xy))
-
-    # start BFS from X
-    marks = _bfs_with_marks(moral_G, u, z)
-
-    # if not all the Z is marked, then the set is not minimal
-    if any(node not in marks for node in z):
-        return False
-
-    # similarly, start BFS from Y and check the marks
-    marks = _bfs_with_marks(moral_G, v, z)
-    # if not all the Z is marked, then the set is not minimal
-    if any(node not in marks for node in z):
+    # Note: we check z - i != r_y for similar reasons as above.
+    if z - i != r_v:
         return False
 
     return True
 
 
 @not_implemented_for("directed")
-def _bfs_with_marks(G, start_node, check_set):
+def _bfs_with_marks(G, start_set, check_set):
     """Breadth-first-search with markings.
 
-    Performs BFS starting from ``start_node`` and whenever a node
+    Performs BFS starting from ``start_set`` and whenever a node
     inside ``check_set`` is met, it is "marked". Once a node is marked,
     BFS does not continue along that path. The resulting marked nodes
     are returned.
@@ -440,8 +545,8 @@ def _bfs_with_marks(G, start_node, check_set):
     ----------
     G : nx.Graph
         An undirected graph.
-    start_node : node
-        The start of the BFS.
+    start_set : set | node
+        The set of starting nodes of the BFS.
     check_set : set
         The set of nodes to check against.
 
@@ -450,12 +555,15 @@ def _bfs_with_marks(G, start_node, check_set):
     marked : set
         A set of nodes that were marked.
     """
+    if start_set in G:
+        start_set = {start_set}
+
     visited = {}
     marked = set()
     queue = []
-
-    visited[start_node] = None
-    queue.append(start_node)
+    for node in start_set:
+        visited[node] = None
+        queue.append(node)
     while queue:
         m = queue.pop(0)
 
