@@ -173,35 +173,52 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
 
     def breath_first_search():
         parents = {}
+        vertex_dist = {}
         queue = deque([s])
+        distance = deque([0])
         while queue:
             if t in parents:
                 break
             u = queue.popleft()
+            dist = distance.popleft()
             for v in R_succ[u]:
                 attr = R_succ[u][v]
-                if v not in parents and attr["capacity"] - attr["flow"] > 0:
-                    parents[v] = u
-                    queue.append(v)
+                if attr["capacity"] - attr["flow"] > 0:
+                    if v in parents:
+                        if vertex_dist[v] == dist + 1:
+                            parents[v].append(u)
+                    else:
+                        parents[v] = [u]
+                        vertex_dist[v] = dist + 1
+                        queue.append(v)
+                        distance.append(dist + 1)
         return parents
 
     def depth_first_search(parents):
         """Build a path using DFS starting from the sink"""
-        path = []
-        u = t
-        flow = INF
-        while u != s:
-            path.append(u)
-            v = parents[u]
-            flow = min(flow, R_pred[u][v]["capacity"] - R_pred[u][v]["flow"])
-            u = v
-        path.append(s)
-        # Augment the flow along the path found
-        if flow > 0:
+        total_flow = 0
+        while True:
+            path = []
+            u = t
+            flow = INF
+            while u != s:
+                path.append(u)
+                for v in parents[u]:
+                    if R_pred[u][v]["capacity"] - R_pred[u][v]["flow"] > 0:
+                        break
+                if R_pred[u][v]["capacity"] - R_pred[u][v]["flow"] == 0:
+                    break
+                flow = min(flow, R_pred[u][v]["capacity"] - R_pred[u][v]["flow"])
+                u = v
+            if u != s:
+                break
+            path.append(s)
+            # Augment the flow along the path found
             for u, v in pairwise(path):
                 R_pred[u][v]["flow"] += flow
                 R_pred[v][u]["flow"] -= flow
-        return flow
+            total_flow += flow
+        return total_flow
 
     flow_value = 0
     while flow_value < cutoff:
