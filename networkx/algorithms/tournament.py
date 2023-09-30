@@ -5,14 +5,16 @@ is a directed graph in which there is exactly one directed edge joining
 each pair of distinct nodes. For each function in this module that
 accepts a graph as input, you must provide a tournament graph. The
 responsibility is on the caller to ensure that the graph is a tournament
-graph.
+graph:
+
+    >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
+    >>> nx.is_tournament(G)
+    True
 
 To access the functions in this module, you must access them through the
-:mod:`networkx.algorithms.tournament` module::
+:mod:`networkx.tournament` module::
 
-    >>> from networkx.algorithms import tournament
-    >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
-    >>> tournament.is_tournament(G)
+    >>> nx.tournament.is_reachable(G, 0, 1)
     True
 
 .. _tournament graph: https://en.wikipedia.org/wiki/Tournament_%28graph_theory%29
@@ -83,9 +85,8 @@ def is_tournament(G):
 
     Examples
     --------
-    >>> from networkx.algorithms import tournament
     >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
-    >>> tournament.is_tournament(G)
+    >>> nx.is_tournament(G)
     True
 
     Notes
@@ -123,9 +124,10 @@ def hamiltonian_path(G):
 
     Examples
     --------
-    >>> from networkx.algorithms import tournament
     >>> G = nx.DiGraph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)])
-    >>> tournament.hamiltonian_path(G)
+    >>> nx.is_tournament(G)
+    True
+    >>> nx.tournament.hamiltonian_path(G)
     [0, 1, 2, 3]
 
     Notes
@@ -202,9 +204,10 @@ def score_sequence(G):
 
     Examples
     --------
-    >>> from networkx.algorithms import tournament
     >>> G = nx.DiGraph([(1, 0), (1, 3), (0, 2), (0, 3), (2, 1), (3, 2)])
-    >>> tournament.score_sequence(G)
+    >>> nx.is_tournament(G)
+    True
+    >>> nx.tournament.score_sequence(G)
     [1, 1, 2, 2]
 
     """
@@ -286,11 +289,12 @@ def is_reachable(G, s, t):
 
     Examples
     --------
-    >>> from networkx.algorithms import tournament
     >>> G = nx.DiGraph([(1, 0), (1, 3), (1, 2), (2, 3), (2, 0), (3, 0)])
-    >>> tournament.is_reachable(G, 1, 3)
+    >>> nx.is_tournament(G)
     True
-    >>> tournament.is_reachable(G, 3, 2)
+    >>> nx.tournament.is_reachable(G, 1, 3)
+    True
+    >>> nx.tournament.is_reachable(G, 3, 2)
     False
 
     Notes
@@ -367,12 +371,16 @@ def is_strongly_connected(G):
 
     Examples
     --------
-    >>> from networkx.algorithms import tournament
-    >>> G = nx.DiGraph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3), (3, 0)])
-    >>> tournament.is_strongly_connected(G)
+    >>> G = nx.DiGraph([(0, 1), (0, 2), (1, 2), (1, 3), (2, 3), (3, 0)])
+    >>> nx.is_tournament(G)
     True
-    >>> G.remove_edge(1, 3)
-    >>> tournament.is_strongly_connected(G)
+    >>> nx.tournament.is_strongly_connected(G)
+    True
+    >>> G.remove_edge(3, 0)
+    >>> G.add_edge(0, 3)
+    >>> nx.is_tournament(G)
+    True
+    >>> nx.tournament.is_strongly_connected(G)
     False
 
     Notes
