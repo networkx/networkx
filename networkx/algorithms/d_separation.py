@@ -126,43 +126,6 @@ from networkx.utils import UnionFind, not_implemented_for
 __all__ = ["d_separated", "minimal_d_separated", "find_minimal_d_separator"]
 
 
-def ancestors(G, start_nodes):
-    """Computes the ancestors of a set of nodes in a graph with directed edges.
-
-    By definition, the anterior set includes the start nodes.
-
-    Parameters
-    ----------
-    G : nx.DiGraph
-        The graph.
-    start_nodes : set
-        Set of nodes which are always included in the found separating set.
-
-    Returns
-    -------
-    visited : set
-        The anterior set of nodes
-
-    References
-    ----------
-    .. [1] B. van der Zander, M. Liśkiewicz, and J. Textor, “Separators and Adjustment
-       Sets in Causal Graphs: Complete Criteria and an Algorithmic Framework,” Artificial
-       Intelligence, vol. 270, pp. 1–40, May 2019, doi: 10.1016/j.artint.2018.12.006.
-    """
-
-    queue = deque(start_nodes)
-    visited = set()
-
-    while queue:
-        m = queue.popleft()
-        for x, _ in G.in_edges(nbunch=m):
-            if x not in visited:
-                queue.append(x)
-                visited.add(x)
-
-    return visited.union(start_nodes)
-
-
 @not_implemented_for("undirected")
 def d_separated(G, x, y, z):
     """
@@ -236,7 +199,7 @@ def d_separated(G, x, y, z):
     backward_deque = deque(x)
     backward_visited = set()
 
-    an_z = ancestors(G, x).union(z)
+    an_z = set().union(*[nx.ancestors(G, node) for node in x]) | z | x
 
     while forward_deque or backward_deque:
         if backward_deque:
@@ -372,7 +335,7 @@ def find_minimal_d_separator(G, u, v, i=None, r=None):
 
     nodeset = u.union(v).union(i)
 
-    ancestor_nodes_G = ancestors(G_copy, nodeset)
+    ancestor_nodes_G = nodeset.union(*[nx.ancestors(G_copy, node) for node in nodeset])
     G_p = G.subgraph(ancestor_nodes_G)
     aug_G_p = nx.moral_graph(G_p)
     for node in i:
@@ -382,7 +345,9 @@ def find_minimal_d_separator(G, u, v, i=None, r=None):
     for node in i:
         G_p.remove_node(node)
 
-    z_prime = r.intersection(ancestors(G_copy, u.union(v))) - u.union(v)
+    uv = u.union(v)
+
+    z_prime = r.intersection(set().union(*[nx.ancestors(G_copy, node) for node in uv]))
     z_dprime = _bfs_with_marks(aug_G_p, u, z_prime)
     z = _bfs_with_marks(aug_G_p, v, z_dprime)
 
@@ -481,7 +446,9 @@ def minimal_d_separated(G, u, v, z, i=None, r=None):
             f"Separating set {z} should be no larger than maximum set {r}"
         )
 
-    if z - ancestors(G, u.union(v).union(i)) != set() or not z <= r:
+    uvi = u | v | i
+
+    if z - uvi.union(*[nx.ancestors(G, node) for node in uvi]) != set() or not z <= r:
         return False
     if not d_separated(G, u, v, z):
         return False
@@ -490,7 +457,7 @@ def minimal_d_separated(G, u, v, z, i=None, r=None):
 
     nodeset = u.union(v).union(i)
 
-    ancestor_nodes_G = ancestors(G_copy, nodeset)
+    ancestor_nodes_G = nodeset.union(*[nx.ancestors(G_copy, node) for node in nodeset])
     aug_G_p = nx.moral_graph(G.subgraph(ancestor_nodes_G))
     for node in i:
         aug_G_p.remove_node(node)
