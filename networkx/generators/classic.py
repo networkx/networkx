@@ -435,6 +435,7 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     ----------
     .. [1] S. N. Dorogovtsev, A. V. Goltsev and J. F. F. Mendes,
         "Pseudofractal scale-free web", Physical Review E 65, 066122, 2002.
+        https://arxiv.org/pdf/cond-mat/0112143.pdf
     """
     G = empty_graph(0, create_using)
     if G.is_directed():
