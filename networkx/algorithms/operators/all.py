@@ -138,6 +138,18 @@ def disjoint_union_all(graphs):
     NetworkXError
         In case of mixed type graphs, like MultiGraph and Graph, or directed and undirected graphs.
 
+    Example
+    -------
+    >>> G1 = nx.Graph()
+    >>> G1.add_edges_from([(1, 2), (2, 3)])
+    >>> G2 = nx.Graph()
+    >>> G2.add_edges_from([(4, 5), (5, 6)])
+    >>> U = disjoint_union_all([G1, G2])
+    >>> list(U.nodes())
+    [0, 1, 2, 3, 4, 5]
+    >>> list(U.edges())
+    [(0, 1), (1, 2), (3, 4), (4, 5)]
+
     Notes
     -----
     For operating on mixed type graphs, they should be converted to the same type.
@@ -181,6 +193,18 @@ def compose_all(graphs):
 
     NetworkXError
         In case of mixed type graphs, like MultiGraph and Graph, or directed and undirected graphs.
+
+    Example
+    -------
+    >>> G1 = nx.Graph()
+    >>> G1.add_edges_from([(1, 2), (2, 3)])
+    >>> G2 = nx.Graph()
+    >>> G2.add_edges_from([(3, 4), (5, 6)])
+    >>> C = compose_all([G1, G2])
+    >>> list(C.nodes())
+    [1, 2, 3, 4, 5, 6]
+    >>> list(C.edges())
+    [(1, 2), (2, 3), (3, 4), (5, 6)]
 
     Notes
     -----
@@ -258,6 +282,18 @@ def intersection_all(graphs):
     >>> nx.set_node_attributes(gh, new_node_attr, 'new_capacity')
     >>> gh.nodes(data=True)
     NodeDataView({0: {'new_capacity': 2}, 1: {'new_capacity': 3}})
+
+    Example
+    -------
+    >>> G1 = nx.Graph()
+    >>> G1.add_edges_from([(1, 2), (2, 3)])
+    >>> G2 = nx.Graph()
+    >>> G2.add_edges_from([(2, 3), (3, 4)])
+    >>> R = intersection_all([G1, G2])
+    >>> list(R.nodes())
+    [2, 3]
+    >>> list(R.edges())
+    [(2, 3)]
 
     """
     R = None
