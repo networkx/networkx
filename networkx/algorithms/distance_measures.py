@@ -3,6 +3,8 @@
 import networkx as nx
 from networkx.utils import not_implemented_for
 
+from itertools import chain
+
 __all__ = [
     "eccentricity",
     "diameter",
@@ -12,8 +14,11 @@ __all__ = [
     "barycenter",
     "resistance_distance",
     "kemeny_constant",
+    "wiener_index",
 ]
 
+#: Rename :func:`chain.from_iterable` function for brevity.
+chaini = chain.from_iterable
 
 def _extrema_bounding(G, compute="diameter", weight=None):
     """Compute requested extreme distance metric of undirected graph G
@@ -904,3 +909,68 @@ def kemeny_constant(G, *, weight=None):
 
     # Compute the Kemeny constant
     return np.sum(1 / (1 - eig[:-1]))
+
+
+@nx._dispatch(edge_attrs="weight")
+def wiener_index(G, weight=None):
+    """Returns the Wiener index of the given graph.
+
+    The *Wiener index* of a graph is the sum of the shortest-path
+    distances between each pair of reachable nodes. For pairs of nodes
+    in undirected graphs, only one orientation of the pair is counted.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    weight : object
+        The edge attribute to use as distance when computing
+        shortest-path distances. This is passed directly to the
+        :func:`networkx.shortest_path_length` function.
+
+    Returns
+    -------
+    float
+        The Wiener index of the graph `G`.
+
+    Raises
+    ------
+    NetworkXError
+        If the graph `G` is not connected.
+
+    Notes
+    -----
+    If a pair of nodes is not reachable, the distance is assumed to be
+    infinity. This means that for graphs that are not
+    strongly-connected, this function returns ``inf``.
+
+    The Wiener index is not usually defined for directed graphs, however
+    this function uses the natural generalization of the Wiener index to
+    directed graphs.
+
+    Examples
+    --------
+    The Wiener index of the (unweighted) complete graph on *n* nodes
+    equals the number of pairs of the *n* nodes, since each pair of
+    nodes is at distance one::
+
+        >>> n = 10
+        >>> G = nx.complete_graph(n)
+        >>> nx.wiener_index(G) == n * (n - 1) / 2
+        True
+
+    Graphs that are not strongly-connected have infinite Wiener index::
+
+        >>> G = nx.empty_graph(2)
+        >>> nx.wiener_index(G)
+        inf
+
+    """
+    is_directed = nx.is_directed(G)
+    if (is_directed and not nx.is_strongly_connected(G)) or (
+        not is_directed and not nx.is_connected(G)
+    ):
+        return float("inf")
+    total = sum(chaini(p.values() for v, p in nx.shortest_path_length(G, weight=weight)))
+    # Need to account for double counting pairs of nodes in undirected graphs.
+    return total if is_directed else total / 2
