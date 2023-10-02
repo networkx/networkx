@@ -249,6 +249,18 @@ class TestNavigableSmallWorldGraph:
         gg = nx.grid_graph([5]).to_directed()
         assert nx.is_isomorphic(G, gg)
 
+    def test_invalid_diameter_value(self):
+        with pytest.raises(nx.NetworkXException, match=".*p must be >= 1"):
+            nx.navigable_small_world_graph(5, p=0, q=0, dim=1)
+
+    def test_invalid_long_range_connections_value(self):
+        with pytest.raises(nx.NetworkXException, match=".*q must be >= 0"):
+            nx.navigable_small_world_graph(5, p=1, q=-1, dim=1)
+
+    def test_invalid_exponent_for_decaying_probability_value(self):
+        with pytest.raises(nx.NetworkXException, match=".*r must be >= 0"):
+            nx.navigable_small_world_graph(5, p=1, q=0, r=-1, dim=1)
+
 
 class TestThresholdedRandomGeometricGraph:
     """Unit tests for :func:`~networkx.thresholded_random_geometric_graph`"""

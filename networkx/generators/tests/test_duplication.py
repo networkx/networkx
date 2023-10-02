@@ -31,6 +31,12 @@ class TestDuplicationDivergenceGraph:
         with pytest.raises(NetworkXError):
             duplication_divergence_graph(3, -1)
 
+    def test_minimum_desired_nodes(self):
+        with pytest.raises(
+            NetworkXError, match=".*n must be greater than or equal to 2"
+        ):
+            duplication_divergence_graph(1, 1)
+
 
 class TestPartialDuplicationGraph:
     """Unit tests for the
