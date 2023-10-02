@@ -309,6 +309,9 @@ def greedy_modularity_communities(
     .. [4] Newman, M. E. J."Analysis of weighted networks"
        Physical Review E 70(5 Pt 2):056131, 2004.
     """
+    if not G.size():
+        return [{n} for n in G]
+
     if (cutoff < 1) or (cutoff > G.number_of_nodes()):
         raise ValueError(f"cutoff must be between 1 and {len(G)}. Got {cutoff}.")
     if best_n is not None:
