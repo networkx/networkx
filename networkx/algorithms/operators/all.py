@@ -55,17 +55,13 @@ def union_all(graphs, rename=()):
     >> # Initializing two graphs
     >> G1 = nx.Graph()
     >> G2 = nx.Graph()
-    >> 
     >> # Adding edges
     >> G1.add_edges_from([(1, 2), (2, 3)])
     >> G2.add_edges_from([(4, 5), (5, 6)])
-    >> 
     >> # Finding union of G1 and G2
     >> result_graph = union_all([G1, G2])
     >> print("Nodes:", result_graph.nodes())
     Nodes: [1, 2, 3, 4, 5, 6]
-    >> print("Edges:", result_graph.edges())
-    Edges: [(1, 2), (2, 3), (4, 5), (5, 6)]
 
     See Also
     --------
