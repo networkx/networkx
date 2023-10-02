@@ -383,6 +383,7 @@ def single_transferable_vote(G, number_of_nodes):
             reduce_voting_ability(winner, win_score)
             selected_nodes.add(winner)
             candidates_left.remove(winner)
+            voting_abilities[winner] = 0
         else:
             candidates_left.remove(loser)
     return selected_nodes
