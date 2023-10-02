@@ -19,7 +19,6 @@ Highlights
 This release is the result of X of work with over X pull requests by
 X contributors. Highlights include:
 
-
 Improvements
 ------------
 
@@ -32,23 +31,43 @@ Improvements
   which, if true, reduces horizontal space by rendering chains of nodes
   vertically.
 
+- [`#6892 <https://github.com/networkx/networkx/pull/6892>`_]
+  The shortest path function `goldberg_radzik` handles a zero-weight-cycle
+  correctly instead of raising an exception as a negative weight cycle.
+
 API Changes
 -----------
 - [`#6651 <https://github.com/networkx/networkx/pull/6651>`_]
   In `is_semiconnected`, the keyword argument `topo_order` has been removed.
   That argument resulted in silently incorrect results more often than not.
 
+- [`#6887 <https://github.com/networkx/networkx/pull/6887>`_]
+  A new ``default`` argument is added to ``get_node_attributes`` and
+  ``get_edge_attributes``. The ``default`` keyword can be used to set
+  a default value if the attribute is missing from a node/edge.
 
+- [`#6908 <https://github.com/networkx/networkx/pull/6908>`_]
+  Rename `join` as `join_trees` in `algorithms.tree.operations.py`.
 
 Deprecations
 ------------
+- [`#6758 <https://github.com/networkx/networkx/pull/6758>`_]
+  Remove `random_tree` and replace with the new `random_labeled_tree`.
+  In the newly named version, the argument `create_using` is no longer
+  available and `seed` is now keyword-only.
 
 - [`#5925 <https://github.com/networkx/networkx/issues/5925>`_]
   The ``sort_neighbors`` input argument of ``nx.generic_bfs_edges`` is deprecated
   and will be removed in v3.4.  Use ``neighbors`` to sort the nodes if desired.
 - [`#6785 <https://github.com/networkx/pull/6785>`_]
   Deprecate ``MultiDiGraph_EdgeKey`` subclass used in ``Edmonds`` class.
-  Deprecate ``Edmonds`` class for computing minimum and maximum branchings and arborescences (use ``minimum_branching``, ``minimal_branching``, ``maximum_branching``, ``minimum_arborescence`` and ``maximum_arborescence`` directly).
+  Deprecate ``Edmonds`` class for computing minimum and maximum branchings and
+  arborescences (use ``minimum_branching``, ``minimal_branching``,
+  ``maximum_branching``, ``minimum_arborescence`` and ``maximum_arborescence``
+  directly).
+- [`#6841 <https://github.com/networkx/pull/6841>`_]
+  Deprecate the ``normalized`` keyword of the ``s_metric`` function. Ignore
+  value of ``normalized`` for future compatibility.
 
 Merged PRs
 ----------

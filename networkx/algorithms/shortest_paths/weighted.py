@@ -1242,8 +1242,15 @@ def bellman_ford_predecessor_and_distance(
     if source not in G:
         raise nx.NodeNotFound(f"Node {source} is not found in the graph")
     weight = _weight_function(G, weight)
-    if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
-        raise nx.NetworkXUnbounded("Negative cycle detected.")
+    if G.is_multigraph():
+        if any(
+            weight(u, v, {k: d}) < 0
+            for u, v, k, d in nx.selfloop_edges(G, keys=True, data=True)
+        ):
+            raise nx.NetworkXUnbounded("Negative cycle detected.")
+    else:
+        if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
+            raise nx.NetworkXUnbounded("Negative cycle detected.")
 
     dist = {source: 0}
     pred = {source: []}
@@ -1973,6 +1980,10 @@ def goldberg_radzik(G, source, weight="weight"):
         negative (di)cycle.  Note: any negative weight edge in an
         undirected graph is a negative cycle.
 
+        As of NetworkX v3.2, a zero weight cycle is no longer
+        incorrectly reported as a negative weight cycle.
+
+
     Examples
     --------
     >>> G = nx.path_graph(5, create_using=nx.DiGraph())
@@ -2005,8 +2016,15 @@ def goldberg_radzik(G, source, weight="weight"):
     if source not in G:
         raise nx.NodeNotFound(f"Node {source} is not found in the graph")
     weight = _weight_function(G, weight)
-    if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
-        raise nx.NetworkXUnbounded("Negative cycle detected.")
+    if G.is_multigraph():
+        if any(
+            weight(u, v, {k: d}) < 0
+            for u, v, k, d in nx.selfloop_edges(G, keys=True, data=True)
+        ):
+            raise nx.NetworkXUnbounded("Negative cycle detected.")
+    else:
+        if any(weight(u, v, d) < 0 for u, v, d in nx.selfloop_edges(G, data=True)):
+            raise nx.NetworkXUnbounded("Negative cycle detected.")
 
     if len(G) == 1:
         return {source: None}, {source: 0}
@@ -2057,7 +2075,7 @@ def goldberg_radzik(G, source, weight="weight"):
                     continue
                 t = d[u] + weight(u, v, e)
                 d_v = d[v]
-                if t <= d_v:
+                if t < d_v:
                     is_neg = t < d_v
                     d[v] = t
                     pred[v] = u

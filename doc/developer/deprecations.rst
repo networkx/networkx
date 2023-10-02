@@ -44,8 +44,6 @@ Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 Version 3.0
 ~~~~~~~~~~~
 
-* In ``readwrite/gml.py`` remove ``literal_stringizer`` and related tests.
-* In ``readwrite/gml.py`` remove ``literal_destringizer`` and related tests.
 * Remove ``copy`` method in the coreview Filtered-related classes and related tests.
 * In ``algorithms/link_analysis/pagerank_alg.py`` replace ``pagerank`` with ``pagerank_scipy``.
 * In ``algorithms/link_analysis/pagerank_alg.py`` rename ``pagerank_numpy`` as ``_pagerank_numpy``.
@@ -63,11 +61,9 @@ Version 3.0
 
 Version 3.2
 ~~~~~~~~~~~
-* In ``generators/directed.py`` remove the ``create_using`` keyword argument
-  for the ``scale_free_graph`` function.
 * Remove pydot functionality ``drawing/nx_pydot.py``, if pydot is still not being maintained. See #5723
-* In ``readwrite/json_graph/node_link.py`` remove the ``attrs` keyword code 
-  and docstring in ``node_link_data`` and ``node_link_graph``. Also the associated tests.
+* Remove renamed function ``join()`` in ``algorithms/tree/operations.py`` and
+  in ``doc/reference/algorithms/trees.rst``
 
 Version 3.3
 ~~~~~~~~~~~
@@ -80,6 +76,9 @@ Version 3.3
 
 Version 3.4
 ~~~~~~~~~~~
+* Remove the ``random_tree`` function from ``generators/trees.py``. Replace
+  existing usages with ``random_labeled_tree``.
 * Remove the ``sort_neighbors`` input parameter from ``generic_bfs_edges``.
 * Remove ``MultiDiGraph_EdgeKey`` class from ``algorithms/tree/branchings.py``. 
 * Remove ``Edmonds`` class from ``algorithms/tree/branchings.py``.
+* Remove ``normalized`` kwarg from ``algorithms.s_metric``

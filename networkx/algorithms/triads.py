@@ -525,8 +525,8 @@ def triad_type(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
 @py_random_state(1)
+@nx._dispatch
 def random_triad(G, seed=None):
     """Returns a random triad from a directed graph.
 
@@ -543,6 +543,11 @@ def random_triad(G, seed=None):
     G2 : subgraph
        A randomly selected triad (order-3 NetworkX DiGraph)
 
+    Raises
+    ------
+    NetworkXError
+        If the input Graph has less than 3 nodes.
+
     Examples
     --------
     >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 1), (5, 6), (5, 4), (6, 7)])
@@ -551,64 +556,10 @@ def random_triad(G, seed=None):
     OutEdgeView([(1, 2)])
 
     """
+    if len(G) < 3:
+        raise nx.NetworkXError(
+            f"G needs at least 3 nodes to form a triad; (it has {len(G)} nodes)"
+        )
     nodes = seed.sample(list(G.nodes()), 3)
     G2 = G.subgraph(nodes)
     return G2
-
-
-"""
-@not_implemented_for('undirected')
-def triadic_closures(G):
-    '''Returns a list of order-3 subgraphs of G that are triadic closures.
-
-    Parameters
-    ----------
-    G : digraph
-       A NetworkX DiGraph
-
-    Returns
-    -------
-    closures : list
-       List of triads of G that are triadic closures
-    '''
-    pass
-
-
-@not_implemented_for('undirected')
-def focal_closures(G, attr_name):
-    '''Returns a list of order-3 subgraphs of G that are focally closed.
-
-    Parameters
-    ----------
-    G : digraph
-       A NetworkX DiGraph
-    attr_name : str
-        An attribute name
-
-
-    Returns
-    -------
-    closures : list
-       List of triads of G that are focally closed on attr_name
-    '''
-    pass
-
-
-@not_implemented_for('undirected')
-def balanced_triads(G, crit_func):
-    '''Returns a list of order-3 subgraphs of G that are stable.
-
-    Parameters
-    ----------
-    G : digraph
-       A NetworkX DiGraph
-    crit_func : function
-       A function that determines if a triad (order-3 digraph) is stable
-
-    Returns
-    -------
-    triads : list
-       List of triads in G that are stable
-    '''
-    pass
-"""

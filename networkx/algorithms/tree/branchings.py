@@ -107,8 +107,8 @@ def branching_weight(G, attr="weight", default=1):
     return sum(edge[2].get(attr, default) for edge in G.edges(data=True))
 
 
-@nx._dispatch(edge_attrs={"attr": "default"})
 @py_random_state(4)
+@nx._dispatch(edge_attrs={"attr": "default"})
 def greedy_branching(G, attr="weight", default=1, kind="max", seed=None):
     """
     Returns a branching obtained through a greedy algorithm.

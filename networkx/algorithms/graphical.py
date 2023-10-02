@@ -43,6 +43,12 @@ def is_graphical(sequence, method="eg"):
     >>> nx.is_graphical(sequence)
     True
 
+    To test a non-graphical sequence:
+    >>> sequence_list = [d for n, d in G.degree()]
+    >>> sequence_list[-1] += 1
+    >>> nx.is_graphical(sequence_list)
+    False
+
     References
     ----------
     .. [EG1960] Erdős and Gallai, Mat. Lapok 11 264, 1960.
@@ -103,6 +109,19 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     -------
     valid : bool
         True if deg_sequence is graphical and False if not.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> sequence = (d for _, d in G.degree())
+    >>> nx.is_valid_degree_sequence_havel_hakimi(sequence)
+    True
+
+    To test a non-valid sequence:
+    >>> sequence_list = [d for _, d in G.degree()]
+    >>> sequence_list[-1] += 1
+    >>> nx.is_valid_degree_sequence_havel_hakimi(sequence_list)
+    False
 
     Notes
     -----
@@ -176,6 +195,19 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     -------
     valid : bool
         True if deg_sequence is graphical and False if not.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> sequence = (d for _, d in G.degree())
+    >>> nx.is_valid_degree_sequence_erdos_gallai(sequence)
+    True
+
+    To test a non-valid sequence:
+    >>> sequence_list = [d for _, d in G.degree()]
+    >>> sequence_list[-1] += 1
+    >>> nx.is_valid_degree_sequence_erdos_gallai(sequence_list)
+    False
 
     Notes
     -----
@@ -252,6 +284,19 @@ def is_multigraphical(sequence):
     valid : bool
         True if deg_sequence is a multigraphic degree sequence and False if not.
 
+    Examples
+    --------
+    >>> G = nx.MultiGraph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> sequence = (d for _, d in G.degree())
+    >>> nx.is_multigraphical(sequence)
+    True
+
+    To test a non-multigraphical sequence:
+    >>> sequence_list = [d for _, d in G.degree()]
+    >>> sequence_list[-1] += 1
+    >>> nx.is_multigraphical(sequence_list)
+    False
+
     Notes
     -----
     The worst-case run time is $O(n)$ where $n$ is the length of the sequence.
@@ -292,6 +337,19 @@ def is_pseudographical(sequence):
     valid : bool
       True if the sequence is a pseudographic degree sequence and False if not.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> sequence = (d for _, d in G.degree())
+    >>> nx.is_pseudographical(sequence)
+    True
+
+    To test a non-pseudographical sequence:
+    >>> sequence_list = [d for _, d in G.degree()]
+    >>> sequence_list[-1] += 1
+    >>> nx.is_pseudographical(sequence_list)
+    False
+
     Notes
     -----
     The worst-case run time is $O(n)$ where n is the length of the sequence.
@@ -325,6 +383,20 @@ def is_digraphical(in_sequence, out_sequence):
     -------
     valid : bool
       True if in and out-sequences are digraphic False if not.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> in_seq = (d for n, d in G.in_degree())
+    >>> out_seq = (d for n, d in G.out_degree())
+    >>> nx.is_digraphical(in_seq, out_seq)
+    True
+
+    To test a non-digraphical scenario:
+    >>> in_seq_list = [d for n, d in G.in_degree()]
+    >>> in_seq_list[-1] += 1
+    >>> nx.is_digraphical(in_seq_list, out_seq)
+    False
 
     Notes
     -----
