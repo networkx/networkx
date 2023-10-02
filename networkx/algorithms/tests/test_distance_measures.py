@@ -728,4 +728,3 @@ class TestWienerIndex:
         expected = 2 * sum(i * (n - i) for i in range(1, (n // 2) + 1))
         actual = nx.wiener_index(G)
         assert expected == actual
-
