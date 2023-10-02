@@ -1,9 +1,9 @@
 """Graph diameter, radius, eccentricity and other properties."""
 
+from itertools import chain
+
 import networkx as nx
 from networkx.utils import not_implemented_for
-
-from itertools import chain
 
 __all__ = [
     "eccentricity",
@@ -19,6 +19,7 @@ __all__ = [
 
 #: Rename :func:`chain.from_iterable` function for brevity.
 chaini = chain.from_iterable
+
 
 def _extrema_bounding(G, compute="diameter", weight=None):
     """Compute requested extreme distance metric of undirected graph G
@@ -971,6 +972,8 @@ def wiener_index(G, weight=None):
         not is_directed and not nx.is_connected(G)
     ):
         return float("inf")
-    total = sum(chaini(p.values() for v, p in nx.shortest_path_length(G, weight=weight)))
+    total = sum(
+        chaini(p.values() for v, p in nx.shortest_path_length(G, weight=weight))
+    )
     # Need to account for double counting pairs of nodes in undirected graphs.
     return total if is_directed else total / 2

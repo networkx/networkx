@@ -14,5 +14,6 @@ Distance Measures
    periphery
    radius
    resistance_distance
+   wiener_index
 
 
