@@ -50,7 +50,8 @@ def union_all(graphs, rename=()):
     If a graph attribute is present in multiple graphs, then the value
     from the last graph in the list with that attribute is used.
 
-    Example: (Note that graphs have to be disjoint)
+    Examples
+    --------
     >> # Initializing two graphs
     >> G1 = nx.Graph()
     >> G2 = nx.Graph()
@@ -62,7 +63,9 @@ def union_all(graphs, rename=()):
     >> # Finding union of G1 and G2
     >> result_graph = union_all([G1, G2])
     >> print("Nodes:", result_graph.nodes())
+    Nodes: [1, 2, 3, 4, 5, 6]
     >> print("Edges:", result_graph.edges())
+    Edges: [(1, 2), (2, 3), (4, 5), (5, 6)]
 
     See Also
     --------
