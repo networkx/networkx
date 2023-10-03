@@ -54,7 +54,7 @@ def union_all(graphs, rename=()):
     --------
     >>> G1 = nx.Graph([(1, 2), (2, 3)])
     >>> G2 = nx.Graph([(4, 5), (5, 6)])
-    >>> result_graph = union_all([G1, G2])
+    >>> result_graph = nx.union_all([G1, G2])
     >>> result_graph.nodes()
     NodeView((1, 2, 3, 4, 5, 6))
     >>> result_graph.edges()
@@ -139,7 +139,7 @@ def disjoint_union_all(graphs):
     -------
     >>> G1 = nx.Graph([(1, 2), (2, 3)])
     >>> G2 = nx.Graph([(4, 5), (5, 6)])
-    >>> U = disjoint_union_all([G1, G2])
+    >>> U = nx.disjoint_union_all([G1, G2])
     >>> list(U.nodes())
     [0, 1, 2, 3, 4, 5]
     >>> list(U.edges())
@@ -193,7 +193,7 @@ def compose_all(graphs):
     -------
     >>> G1 = nx.Graph([(1, 2), (2, 3)])
     >>> G2 = nx.Graph([(3, 4), (5, 6)])
-    >>> C = compose_all([G1, G2])
+    >>> C = nx.compose_all([G1, G2])
     >>> list(C.nodes())
     [1, 2, 3, 4, 5, 6]
     >>> list(C.edges())
@@ -280,7 +280,7 @@ def intersection_all(graphs):
     -------
     >>> G1 = nx.Graph([(1, 2), (2, 3)])
     >>> G2 = nx.Graph([(2, 3), (3, 4)])
-    >>> R = intersection_all([G1, G2])
+    >>> R = nx.intersection_all([G1, G2])
     >>> list(R.nodes())
     [2, 3]
     >>> list(R.edges())
