@@ -449,6 +449,9 @@ def snap_aggregation(
     ----------
     G: graph
         Networkx Graph to be summarized
+    node_attributes: iterable, required
+        An iterable of the node attributes used to group nodes in the summarization process. Nodes
+        with the same values for these attributes will be grouped together in the summary graph.
     edge_attributes: iterable, optional
         An iterable of the edge attributes considered in the summarization process.  If provided, unique
         combinations of the attribute values found in the graph are used to
