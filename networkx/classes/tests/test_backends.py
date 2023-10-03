@@ -22,7 +22,10 @@ def test_pickle():
     assert pickle.loads(pickle.dumps(nx.inverse_line_graph)) is nx.inverse_line_graph
 
 
-@pytest.mark.skipif("'nx-loopback' not in nx.utils.backends.plugins")
+@pytest.mark.skipif(
+    "not nx._dispatch._automatic_backends "
+    "or nx._dispatch._automatic_backends[0] != 'nx-loopback'"
+)
 def test_graph_converter_needs_backend():
     # When testing, `nx.from_scipy_sparse_array` will *always* call the backend
     # implementation if it's implemented. If `backend=` isn't given, then the result
