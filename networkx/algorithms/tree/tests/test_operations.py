@@ -47,7 +47,7 @@ def test_basic():
     """Joining multiple subtrees at a root node."""
     trees = [(nx.full_rary_tree(2, 2**2 - 1), 0) for i in range(2)]
     label_attribute = "old_values"
-    actual = nx.join_trees(trees, label_attribute)
+    actual = nx.join_trees(trees, label_attribute=label_attribute)
     expected = nx.full_rary_tree(2, 2**3 - 1)
     assert nx.is_isomorphic(actual, expected)
 
