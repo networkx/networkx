@@ -68,7 +68,7 @@ def cd_index(G, node, time_delta, *, time="time", weight=None):
     0.5
     >>> nx.cd_index(G, 3, time_delta=delta, time="time", weight="weight")
     0.12
-    
+
     Integers can also be used for the time values:
     >>> node_times = {1: 2015, 2: 2012, 3: 2010, 4: 2008, 5: 2014}
     >>> nx.set_node_attributes(G, node_times, "new_time")
