@@ -56,7 +56,7 @@ def union_all(graphs, rename=()):
     >>> G2 = nx.Graph([(4, 5), (5, 6)])
     >>> result_graph = union_all([G1, G2])
     >>> result_graph.nodes()
-    [1, 2, 3, 4, 5, 6]
+    NodeView((1, 2, 3, 4, 5, 6))
     >>> result_graph.edges()
     EdgeView([(1, 2), (2, 3), (4, 5), (5, 6)])
 
