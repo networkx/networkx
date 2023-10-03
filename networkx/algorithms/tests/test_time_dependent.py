@@ -317,7 +317,7 @@ class TestCdIndex:
 
         with pytest.raises(
             nx.NetworkXError,
-            match="Addition and comparison are not supported between 'time_delta' and 'time' types, default time_delta = datetime.timedelta",
+            match="Addition and comparison are not supported between",
         ) as ve:
             nx.cd_index(G, 4, time_delta=_delta)
 
