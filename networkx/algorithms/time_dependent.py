@@ -105,7 +105,7 @@ def cd_index(G, node, time_delta, *, time="time", weight=None):
     except:
         raise nx.NetworkXError(
             "Addition and comparison are not supported between 'time_delta' "
-            "and 'time' types, default time_delta = datetime.timedelta."
+            "and 'time' types."
         )
 
     # -1 if any edge between node's predecessors and node's successors, else 1
