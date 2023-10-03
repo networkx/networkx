@@ -52,16 +52,13 @@ def union_all(graphs, rename=()):
 
     Examples
     --------
-    >> # Initializing two graphs
-    >> G1 = nx.Graph()
-    >> G2 = nx.Graph()
-    >> # Adding edges
-    >> G1.add_edges_from([(1, 2), (2, 3)])
-    >> G2.add_edges_from([(4, 5), (5, 6)])
-    >> # Finding union of G1 and G2
-    >> result_graph = union_all([G1, G2])
-    >> print("Nodes:", result_graph.nodes())
-    Nodes: [1, 2, 3, 4, 5, 6]
+    >>> G1 = nx.Graph([(1, 2), (2, 3)])
+    >>> G2 = nx.Graph([(4, 5), (5, 6)])
+    >>> result_graph = union_all([G1, G2])
+    >>> result_graph.nodes()
+    [1, 2, 3, 4, 5, 6]
+    >>> result_graph.edges()
+    EdgeView([(1, 2), (2, 3), (4, 5), (5, 6)])
 
     See Also
     --------
@@ -140,10 +137,8 @@ def disjoint_union_all(graphs):
 
     Example
     -------
-    >>> G1 = nx.Graph()
-    >>> G1.add_edges_from([(1, 2), (2, 3)])
-    >>> G2 = nx.Graph()
-    >>> G2.add_edges_from([(4, 5), (5, 6)])
+    >>> G1 = nx.Graph([(1, 2), (2, 3)])
+    >>> G2 = nx.Graph([(4, 5), (5, 6)])
     >>> U = disjoint_union_all([G1, G2])
     >>> list(U.nodes())
     [0, 1, 2, 3, 4, 5]
@@ -196,10 +191,8 @@ def compose_all(graphs):
 
     Example
     -------
-    >>> G1 = nx.Graph()
-    >>> G1.add_edges_from([(1, 2), (2, 3)])
-    >>> G2 = nx.Graph()
-    >>> G2.add_edges_from([(3, 4), (5, 6)])
+    >>> G1 = nx.Graph([(1, 2), (2, 3)])
+    >>> G2 = nx.Graph([(3, 4), (5, 6)])
     >>> C = compose_all([G1, G2])
     >>> list(C.nodes())
     [1, 2, 3, 4, 5, 6]
@@ -285,10 +278,8 @@ def intersection_all(graphs):
 
     Example
     -------
-    >>> G1 = nx.Graph()
-    >>> G1.add_edges_from([(1, 2), (2, 3)])
-    >>> G2 = nx.Graph()
-    >>> G2.add_edges_from([(2, 3), (3, 4)])
+    >>> G1 = nx.Graph([(1, 2), (2, 3)])
+    >>> G2 = nx.Graph([(2, 3), (3, 4)])
     >>> R = intersection_all([G1, G2])
     >>> list(R.nodes())
     [2, 3]
