@@ -5,3 +5,4 @@ numpydoc>=1.6
 pillow>=9.4
 nb2plots>=0.7
 texext>=0.6.7
+nbconvert<7.9
