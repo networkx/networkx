@@ -56,6 +56,7 @@ def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", see
     Parameters
     ----------
     G : graph
+        Graph must be undirected and not multigraph.
 
     partition : tuple
         Pair of iterables containing an initial partition. If not
