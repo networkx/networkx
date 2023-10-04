@@ -50,6 +50,16 @@ def union_all(graphs, rename=()):
     If a graph attribute is present in multiple graphs, then the value
     from the last graph in the list with that attribute is used.
 
+    Examples
+    --------
+    >>> G1 = nx.Graph([(1, 2), (2, 3)])
+    >>> G2 = nx.Graph([(4, 5), (5, 6)])
+    >>> result_graph = nx.union_all([G1, G2])
+    >>> result_graph.nodes()
+    NodeView((1, 2, 3, 4, 5, 6))
+    >>> result_graph.edges()
+    EdgeView([(1, 2), (2, 3), (4, 5), (5, 6)])
+
     See Also
     --------
     union
@@ -125,6 +135,16 @@ def disjoint_union_all(graphs):
     NetworkXError
         In case of mixed type graphs, like MultiGraph and Graph, or directed and undirected graphs.
 
+    Example
+    -------
+    >>> G1 = nx.Graph([(1, 2), (2, 3)])
+    >>> G2 = nx.Graph([(4, 5), (5, 6)])
+    >>> U = nx.disjoint_union_all([G1, G2])
+    >>> list(U.nodes())
+    [0, 1, 2, 3, 4, 5]
+    >>> list(U.edges())
+    [(0, 1), (1, 2), (3, 4), (4, 5)]
+
     Notes
     -----
     For operating on mixed type graphs, they should be converted to the same type.
@@ -168,6 +188,16 @@ def compose_all(graphs):
 
     NetworkXError
         In case of mixed type graphs, like MultiGraph and Graph, or directed and undirected graphs.
+
+    Example
+    -------
+    >>> G1 = nx.Graph([(1, 2), (2, 3)])
+    >>> G2 = nx.Graph([(3, 4), (5, 6)])
+    >>> C = nx.compose_all([G1, G2])
+    >>> list(C.nodes())
+    [1, 2, 3, 4, 5, 6]
+    >>> list(C.edges())
+    [(1, 2), (2, 3), (3, 4), (5, 6)]
 
     Notes
     -----
@@ -245,6 +275,16 @@ def intersection_all(graphs):
     >>> nx.set_node_attributes(gh, new_node_attr, 'new_capacity')
     >>> gh.nodes(data=True)
     NodeDataView({0: {'new_capacity': 2}, 1: {'new_capacity': 3}})
+
+    Example
+    -------
+    >>> G1 = nx.Graph([(1, 2), (2, 3)])
+    >>> G2 = nx.Graph([(2, 3), (3, 4)])
+    >>> R = nx.intersection_all([G1, G2])
+    >>> list(R.nodes())
+    [2, 3]
+    >>> list(R.edges())
+    [(2, 3)]
 
     """
     R = None

@@ -893,7 +893,7 @@ def kemeny_constant(G, *, weight=None):
     A = nx.adjacency_matrix(G, weight=weight)
     n, m = A.shape
     diags = A.sum(axis=1)
-    with sp.errstate(divide="ignore"):
+    with np.errstate(divide="ignore"):
         diags_sqrt = 1.0 / np.sqrt(diags)
     diags_sqrt[np.isinf(diags_sqrt)] = 0
     DH = sp.sparse.csr_array(sp.sparse.spdiags(diags_sqrt, 0, m, n, format="csr"))
