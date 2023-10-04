@@ -94,6 +94,14 @@ def cd_index(G, node, time_delta, *, time="time", weight=None):
     of forward citations in `i` and `w_{it}` is a matrix of weight for patent `i`
     at time `t`.
 
+    The `datetime.timedelta` package can lead to off-by-one issues when converting
+    from years to days. In the example above `timedelta(days=5 * 365)` looks like
+    5 years, but it isn't because of leap year days. So it gives the same result
+    as `timedelta(days=4 * 365)`. But using `timedelta(days=5 * 365 + 1)` gives
+    a 5 year delta **for this choice of years** but may not if the 5 year gap has
+    more than 1 leap year. To avoid these issues, use integers to represent years,
+    or be very careful when you convert units of time.
+
     References
     ----------
     .. [1] Funk, Russell J., and Jason Owen-Smith.
