@@ -143,6 +143,13 @@ html_theme_options = {
     "navbar_end": ["theme-switcher", "navbar-icon-links", "version"],
     "secondary_sidebar_items": ["page-toc", "edit-this-page"],
     "header_links_before_dropdown": 7,
+    "switcher": {
+        "json_url": (
+            "https://networkx.org/documentation/latest/_static/version_switcher.json"
+        ),
+        "version_match": "latest" if "dev" in version else version,
+    },
+    "show_version_warning_banner": True,
 }
 html_sidebars = {
     "**": ["sidebar-nav-bs", "sidebar-ethical-ads"],
