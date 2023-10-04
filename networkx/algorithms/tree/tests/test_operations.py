@@ -4,18 +4,12 @@ import networkx as nx
 from networkx.utils import edges_equal, nodes_equal
 
 
-def _check_custom_label_attribute(
-    input_trees, res_tree, label_attribute="custom_label"
-):
+def _check_custom_label_attribute(input_trees, res_tree, label_attribute):
     res_attr_dict = nx.get_node_attributes(res_tree, label_attribute)
     res_attr_set = set(res_attr_dict.values())
-    input_label = (list(tree[0].nodes()) for tree in input_trees)
+    input_label = (tree for tree, root in input_trees)
     input_label_set = set(chain.from_iterable(input_label))
     return res_attr_set == input_label_set
-
-
-def _check_no_label_attribute(res_tree):
-    return all(not data for _, data in res_tree.nodes(data=True))
 
 
 def test_empty_sequence():
@@ -29,27 +23,24 @@ def test_single():
     """Joining just one tree yields a tree with one more node."""
     T = nx.empty_graph(1)
     trees = [(T, 0)]
-    custom_label_attribute = "custom_label"
-    actual_with_label = nx.join_trees(trees, label_attribute=custom_label_attribute)
-    actual_without_label = nx.join_trees(trees)
+    actual_with_label = nx.join_trees(trees, label_attribute="custom_label")
     expected = nx.path_graph(2)
     assert nodes_equal(list(expected), list(actual_with_label))
-    assert nodes_equal(list(expected), list(actual_without_label))
     assert edges_equal(list(expected.edges()), list(actual_with_label.edges()))
-    assert edges_equal(list(expected.edges()), list(actual_without_label.edges()))
-    assert _check_custom_label_attribute(
-        trees, actual_with_label, custom_label_attribute
-    )
-    assert _check_no_label_attribute(actual_without_label)
 
 
 def test_basic():
     """Joining multiple subtrees at a root node."""
     trees = [(nx.full_rary_tree(2, 2**2 - 1), 0) for i in range(2)]
-    label_attribute = "old_values"
-    actual = nx.join_trees(trees, label_attribute=label_attribute)
     expected = nx.full_rary_tree(2, 2**3 - 1)
+    actual = nx.join_trees(trees, label_attribute="old_labels")
     assert nx.is_isomorphic(actual, expected)
+    assert _check_custom_label_attribute(trees, actual, "old_labels")
+
+    actual_without_label = nx.join_trees(trees)
+    assert nx.is_isomorphic(actual_without_label, expected)
+    # check that no labels were stored
+    assert all(not data for _, data in actual_without_label.nodes(data=True))
 
 
 def test_first_label():
