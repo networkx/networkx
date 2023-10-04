@@ -42,7 +42,7 @@ sphinx_gallery_conf = {
             "../examples/algorithms",
             "../examples/advanced",
             "../examples/external",
-            "../examples/geospatial",
+            # "../examples/geospatial",
             "../examples/subclass",
         ]
     ),
