@@ -31,6 +31,7 @@ extensions = [
 sphinx_gallery_conf = {
     # path to your examples scripts
     "examples_dirs": "../examples",
+    "ignore_pattern": r"fix_plot_delaunay.py",
     "subsection_order": ExplicitOrder(
         [
             "../examples/basic",
