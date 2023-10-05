@@ -44,7 +44,6 @@ Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 Version 3.0
 ~~~~~~~~~~~
 
-* Remove ``copy`` method in the coreview Filtered-related classes and related tests.
 * In ``convert_matrix.py`` remove ``order`` kwarg from ``to_pandas_edgelist`` and docstring
 * In ``algorithms/operators/binary.py`` remove ``name`` kwarg from ``union`` and docstring.
 * In ``algorithms/link_analysis/pagerank_alg.py``, remove the
