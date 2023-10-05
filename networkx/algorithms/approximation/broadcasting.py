@@ -47,18 +47,7 @@ def tree_broadcast_time(G):
     .. [1] Slater, P.J., Cockayne, E.J., Hedetniemi, S.T,
        Information dissemination in trees. SIAM J.Comput. 10(4), 692–701 (1981)
     """
-    # Remove selfloops if necessary
-    loop_nodes = nx.nodes_with_selfloops(G)
-    try:
-        node = next(loop_nodes)
-    except StopIteration:
-        pass
-    else:
-        G = G.copy()
-        G.remove_edge(node, node)
-        G.remove_edges_from((n, n) for n in loop_nodes)
-
-    # Assert that the graph G has no cycles
+    # Assert that the graph G is a tree
     if not nx.is_tree(G):
         NetworkXError("Your graph is not a tree")
     # step 0
@@ -74,7 +63,8 @@ def tree_broadcast_time(G):
     T.remove_nodes_from(U)
 
     # step 2
-    values.update((node, deg -1) for node, deg in T.degree if deg = 1)
+    W = {node for node, deg in T.degree if deg == 1}
+    values.update({w: G.degree[w] - 1 for w in W})
 
     # step 3
     while T.number_of_nodes() >= 2:
