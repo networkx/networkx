@@ -128,6 +128,7 @@ def to_nested_tuple(T, root, canonical_form=False):
     return _make_tuple(T, root, None)
 
 
+@nx._dispatch(graphs=None)
 def from_nested_tuple(sequence, sensible_relabeling=False):
     """Returns the rooted tree corresponding to the given nested tuple.
 
@@ -313,6 +314,7 @@ def to_prufer_sequence(T):
     return result
 
 
+@nx._dispatch(graphs=None)
 def from_prufer_sequence(sequence):
     r"""Returns the tree corresponding to the given Prüfer sequence.
 

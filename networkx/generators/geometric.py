@@ -110,6 +110,7 @@ def _geometric_edges(G, radius, p, pos_name):
 
 
 @py_random_state(5)
+@nx._dispatch(graphs=None)
 def random_geometric_graph(
     n, radius, dim=2, pos=None, p=2, seed=None, *, pos_name="pos"
 ):
@@ -203,6 +204,7 @@ def random_geometric_graph(
 
 
 @py_random_state(6)
+@nx._dispatch(graphs=None)
 def soft_random_geometric_graph(
     n, radius, dim=2, pos=None, p=2, p_dist=None, seed=None, *, pos_name="pos"
 ):
@@ -332,6 +334,7 @@ def soft_random_geometric_graph(
 
 
 @py_random_state(7)
+@nx._dispatch(graphs=None)
 def geographical_threshold_graph(
     n,
     theta,
@@ -498,6 +501,7 @@ def geographical_threshold_graph(
 
 
 @py_random_state(6)
+@nx._dispatch(graphs=None)
 def waxman_graph(
     n,
     beta=0.4,
@@ -630,6 +634,7 @@ def waxman_graph(
 
 
 @py_random_state(5)
+@nx._dispatch(graphs=None)
 def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
     r"""Returns a navigable small-world graph.
 
@@ -702,6 +707,7 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
 
 
 @py_random_state(7)
+@nx._dispatch(graphs=None)
 def thresholded_random_geometric_graph(
     n,
     radius,

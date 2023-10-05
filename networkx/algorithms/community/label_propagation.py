@@ -13,8 +13,8 @@ __all__ = [
 ]
 
 
-@nx._dispatch(edge_attrs="weight")
 @py_random_state("seed")
+@nx._dispatch(edge_attrs="weight")
 def fast_label_propagation_communities(G, *, weight=None, seed=None):
     """Returns communities in `G` as detected by fast label propagation.
 

@@ -68,6 +68,7 @@ def mycielskian(G, iterations=1):
     return M
 
 
+@nx._dispatch(graphs=None)
 def mycielski_graph(n):
     """Generator for the n_th Mycielski Graph.
 

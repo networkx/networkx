@@ -150,6 +150,7 @@ def to_pandas_adjacency(
     return pd.DataFrame(data=M, index=nodelist, columns=nodelist)
 
 
+@nx._dispatch(graphs=None)
 def from_pandas_adjacency(df, create_using=None):
     r"""Returns a graph from Pandas DataFrame.
 
@@ -1002,6 +1003,7 @@ def to_numpy_array(
     return A
 
 
+@nx._dispatch(graphs=None)
 def from_numpy_array(A, parallel_edges=False, create_using=None, edge_attr="weight"):
     """Returns a graph from a 2D NumPy array.
 

@@ -47,6 +47,7 @@ from networkx.exception import NetworkXError
 __all__ = ["sudoku_graph"]
 
 
+@nx._dispatch(graphs=None)
 def sudoku_graph(n=3):
     """Returns the n-Sudoku graph. The default value of n is 3.
 

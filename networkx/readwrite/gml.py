@@ -112,6 +112,7 @@ def literal_destringizer(rep):
 
 
 @open_file(0, mode="rb")
+@nx._dispatch(graphs=None)
 def read_gml(path, label="label", destringizer=None):
     """Read graph in GML format from `path`.
 
@@ -194,6 +195,7 @@ def read_gml(path, label="label", destringizer=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def parse_gml(lines, label="label", destringizer=None):
     """Parse GML graph from a string or iterable.
 
