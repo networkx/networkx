@@ -15,13 +15,16 @@ def _get_max_broadcast_value(G, U, v, values):
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def tree_broadcast_time(G):
-    """Return the optimal Broadcast Time of the tree G.
+    """Return the minimum Broadcast Time of the tree G.
 
     Broadcasting is an information dissemination problem in which one vertex in a graph, called the originator,
     must distribute a message to all other vertices by placing a series of calls along the edges of the graph.
-    Once informed, other vertices aid the originator in distributing the message. This is assumed to take place
-    in discrete time units.
-    The optimal broadcast time of a tree is defined as the minimum amount of time required to complete
+    Once informed, other vertices aid the originator in distributing the message.
+    The broadcasting must be completed as quickly as possible subject to the following constraints:
+    - Each call requires one unit of time.
+    - A vertex can only participate in one call per unit of time.
+    - Each call only involves two adjacent vertices: a sender and a receiver.
+    The minimum broadcast time of a tree is defined as the minimum amount of time required to complete
     broadcasting starting from the originator.
     This function implements a linear algorithm for determining the minimum broadcast
     time on any undirected tree [1]_.
@@ -35,7 +38,7 @@ def tree_broadcast_time(G):
     Returns
     -------
     b_T : int
-        Optimal Broadcast Time of a tree
+        Minimum Broadcast Time of a tree
 
     Raises
     ------
