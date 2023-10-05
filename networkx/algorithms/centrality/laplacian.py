@@ -79,6 +79,8 @@ def laplacian_centrality(
     ------
     NetworkXPointlessConcept
         If the graph `G` is the null graph.
+    ZeroDivisionError
+        If the graph `G` has no edges (is empty) and normalization is requested.
 
     References
     ----------
@@ -98,6 +100,10 @@ def laplacian_centrality(
 
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept("null graph has no centrality defined")
+    if G.size(weight=weight) == 0:
+        if normalized:
+            raise ZeroDivisionError("graph with no edges has zero full energy")
+        return {n: 0 for n in G}
 
     if nodelist is not None:
         nodeset = set(G.nbunch_iter(nodelist))
@@ -113,11 +119,6 @@ def laplacian_centrality(
         lap_matrix = nx.laplacian_matrix(G, nodes, weight).toarray()
 
     full_energy = np.power(sp.linalg.eigh(lap_matrix, eigvals_only=True), 2).sum()
-
-    if full_energy == 0.0 and normalized:
-        raise nx.NetworkXPointlessConcept(
-            "graph without edges has centrality undefined or 0 and can not be be normalized"
-        )
 
     # calculate laplacian centrality
     laplace_centralities_dict = {}
