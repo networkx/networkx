@@ -96,11 +96,14 @@ from ..exception import NetworkXNotImplemented
 __all__ = ["_dispatch"]
 
 
-def _get_plugins():
+def _get_plugins(group, *, load_and_call=False):
     if sys.version_info < (3, 10):
-        items = entry_points()["networkx.plugins"]
+        eps = entry_points()
+        if group not in eps:
+            return {}
+        items = eps[group]
     else:
-        items = entry_points(group="networkx.plugins")
+        items = entry_points(group=group)
     rv = {}
     for ep in items:
         if ep.name in rv:
@@ -109,14 +112,24 @@ def _get_plugins():
                 RuntimeWarning,
                 stacklevel=2,
             )
+        elif load_and_call:
+            try:
+                rv[ep.name] = ep.load()()
+            except Exception as exc:
+                warnings.warn(
+                    f"Error encountered when loading info for plugin {ep.name}: {exc}",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
         else:
             rv[ep.name] = ep
     # nx-loopback plugin is only available when testing (added in conftest.py)
-    del rv["nx-loopback"]
+    rv.pop("nx-loopback", None)
     return rv
 
 
-plugins = _get_plugins()
+plugins = _get_plugins("networkx.plugins")
+plugin_info = _get_plugins("networkx.plugin_info", load_and_call=True)
 _registered_algorithms = {}
 
 
@@ -234,7 +247,7 @@ class _dispatch:
         # standard function-wrapping stuff
         # __annotations__ not used
         self.__name__ = func.__name__
-        self.__doc__ = func.__doc__
+        # self.__doc__ = func.__doc__  # __doc__ handled as cached property
         self.__defaults__ = func.__defaults__
         # We "magically" add `backend=` keyword argument to allow backend to be specified
         if func.__kwdefaults__:
@@ -245,6 +258,10 @@ class _dispatch:
         self.__qualname__ = func.__qualname__
         self.__dict__.update(func.__dict__)
         self.__wrapped__ = func
+
+        # Supplement docstring with backend info; compute and cache when needed
+        self._orig_doc = func.__doc__
+        self._cached_doc = None
 
         self.orig_func = func
         self.name = name
@@ -306,12 +323,34 @@ class _dispatch:
         # Compute and cache the signature on-demand
         self._sig = None
 
+        # Load and cache backends on-demand
+        self._backends = {}
+
+        # Which backends implement this function?
+        self.backends = {
+            backend
+            for backend, info in plugin_info.items()
+            if "functions" in info and name in info["functions"]
+        }
+
         if name in _registered_algorithms:
             raise KeyError(
                 f"Algorithm already exists in dispatch registry: {name}"
             ) from None
         _registered_algorithms[name] = self
         return self
+
+    @property
+    def __doc__(self):
+        if (rv := self._cached_doc) is not None:
+            return rv
+        rv = self._cached_doc = self._make_doc()
+        return rv
+
+    @__doc__.setter
+    def __doc__(self, val):
+        self._orig_doc = val
+        self._cached_doc = None
 
     @property
     def __signature__(self):
@@ -462,7 +501,7 @@ class _dispatch:
                     f"{self.name}() has networkx and {plugin_name} graphs, but NetworkX is not "
                     f"configured to automatically convert graphs from networkx to {plugin_name}."
                 )
-            backend = plugins[plugin_name].load()
+            backend = self._load_backend(plugin_name)
             if hasattr(backend, self.name):
                 if "networkx" in plugin_names:
                     # We need to convert networkx graphs to backend graphs
@@ -494,9 +533,15 @@ class _dispatch:
         # Default: run with networkx on networkx inputs
         return self.orig_func(*args, **kwargs)
 
+    def _load_backend(self, plugin_name):
+        if plugin_name in self._backends:
+            return self._backends[plugin_name]
+        rv = self._backends[plugin_name] = plugins[plugin_name].load()
+        return rv
+
     def _can_backend_run(self, plugin_name, /, *args, **kwargs):
         """Can the specified backend run this algorithms with these arguments?"""
-        backend = plugins[plugin_name].load()
+        backend = self._load_backend(plugin_name)
         return hasattr(backend, self.name) and (
             not hasattr(backend, "can_run") or backend.can_run(self.name, args, kwargs)
         )
@@ -645,7 +690,7 @@ class _dispatch:
 
         # It should be safe to assume that we either have networkx graphs or backend graphs.
         # Future work: allow conversions between backends.
-        backend = plugins[plugin_name].load()
+        backend = self._load_backend(plugin_name)
         for gname in self.graphs:
             if gname in self.list_graphs:
                 bound.arguments[gname] = [
@@ -704,7 +749,7 @@ class _dispatch:
 
     def _convert_and_call(self, plugin_name, args, kwargs, *, fallback_to_nx=False):
         """Call this dispatchable function with a backend, converting graphs if necessary."""
-        backend = plugins[plugin_name].load()
+        backend = self._load_backend(plugin_name)
         if not self._can_backend_run(plugin_name, *args, **kwargs):
             if fallback_to_nx:
                 return self.orig_func(*args, **kwargs)
@@ -729,7 +774,7 @@ class _dispatch:
         self, plugin_name, args, kwargs, *, fallback_to_nx=False
     ):
         """Call this dispatchable function with a backend; for use with testing."""
-        backend = plugins[plugin_name].load()
+        backend = self._load_backend(plugin_name)
         if not self._can_backend_run(plugin_name, *args, **kwargs):
             if fallback_to_nx:
                 return self.orig_func(*args, **kwargs)
@@ -806,6 +851,49 @@ class _dispatch:
                 return G2
 
         return backend.convert_to_nx(result, name=self.name)
+
+    def _make_doc(self):
+        if not self.backends:
+            return self._orig_doc
+        lines = [
+            "Backends",
+            "--------",
+        ]
+        for backend in sorted(self.backends):
+            info = plugin_info[backend]
+            if "short_summary" in info:
+                lines.append(f"{backend} : {info['short_summary']}")
+            else:
+                lines.append(backend)
+            if "functions" not in info or self.name not in info["functions"]:
+                lines.append("")
+                continue
+
+            func_info = info["functions"][self.name]
+            if "extra_docstring" in func_info:
+                lines.extend(
+                    f"  {line}" if line else line
+                    for line in func_info["extra_docstring"].split("\n")
+                )
+                add_gap = True
+            else:
+                add_gap = False
+            if "extra_parameters" in func_info:
+                if add_gap:
+                    lines.append("")
+                lines.append("  Extra parameters:")
+                extra_parameters = func_info["extra_parameters"]
+                for param in sorted(extra_parameters):
+                    lines.append(f"    {param}")
+                    if desc := extra_parameters[param]:
+                        lines.append(f"      {desc}")
+                    lines.append("")
+            else:
+                lines.append("")
+
+        lines.pop()  # Remove last empty line
+        to_add = "\n    ".join(lines)
+        return f"{self._orig_doc.rstrip()}\n\n    {to_add}"
 
     def __reduce__(self):
         """Allow this object to be serialized with pickle.
