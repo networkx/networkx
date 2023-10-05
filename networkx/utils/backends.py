@@ -145,7 +145,7 @@ class _dispatch:
         the name of ``func`` will be used. ``name`` is useful to avoid name
         conflicts, as all dispatched algorithms live in a single namespace.
 
-    graphs : str or dict, default "G"
+    graphs : str or dict or None, default "G"
         If a string, the parameter name of the graph, which must be the first
         argument of the wrapped function. If more than one graph is required
         for the algorithm (or if the graph is not the first argument), provide
@@ -154,6 +154,8 @@ class _dispatch:
         indicates the 0th parameter ``G`` of the function is a required graph,
         and the 4th parameter ``auxiliary`` is an optional graph.
         To indicate an argument is a list of graphs, do e.g. ``"[graphs]"``.
+        Use ``graphs=None`` if *no* arguments are NetworkX graphs such as for
+        graph generators, readers, and conversion functions.
 
     edge_attrs : str or dict, optional
         ``edge_attrs`` holds information about edge attribute arguments
@@ -297,6 +299,8 @@ class _dispatch:
 
         if isinstance(graphs, str):
             graphs = {graphs: 0}
+        elif graphs is None:
+            pass
         elif not isinstance(graphs, dict):
             raise TypeError(
                 f"Bad type for graphs: {type(graphs)}. Expected str or dict."
@@ -307,14 +311,17 @@ class _dispatch:
         # This dict comprehension is complicated for better performance; equivalent shown below.
         self.optional_graphs = set()
         self.list_graphs = set()
-        self.graphs = {
-            self.optional_graphs.add(val := k[:-1]) or val
-            if (last := k[-1]) == "?"
-            else self.list_graphs.add(val := k[1:-1]) or val
-            if last == "]"
-            else k: v
-            for k, v in graphs.items()
-        }
+        if graphs is None:
+            self.graphs = {}
+        else:
+            self.graphs = {
+                self.optional_graphs.add(val := k[:-1]) or val
+                if (last := k[-1]) == "?"
+                else self.list_graphs.add(val := k[1:-1]) or val
+                if last == "]"
+                else k: v
+                for k, v in graphs.items()
+            }
         # The above is equivalent to:
         # self.optional_graphs = {k[:-1] for k in graphs if k[-1] == "?"}
         # self.list_graphs = {k[1:-1] for k in graphs if k[-1] == "]"}
@@ -521,15 +528,17 @@ class _dispatch:
                 backend_name, args, kwargs, fallback_to_nx=False
             )
 
-        # Only networkx graphs; try to convert and run with a backend with automatic conversion
-        for plugin_name in self._automatic_backends:
-            if self._can_backend_run(plugin_name, *args, **kwargs):
-                return self._convert_and_call(
-                    plugin_name,
-                    args,
-                    kwargs,
-                    fallback_to_nx=self._fallback_to_nx,
-                )
+        # Only networkx graphs; try to convert and run with a backend with automatic
+        # conversion, but don't do this by default for graph generators or loaders.
+        if self.graphs:
+            for plugin_name in self._automatic_backends:
+                if self._can_backend_run(plugin_name, *args, **kwargs):
+                    return self._convert_and_call(
+                        plugin_name,
+                        args,
+                        kwargs,
+                        fallback_to_nx=self._fallback_to_nx,
+                    )
         # Default: run with networkx on networkx inputs
         return self.orig_func(*args, **kwargs)
 
@@ -555,6 +564,10 @@ class _dispatch:
         """
         bound = self.__signature__.bind(*args, **kwargs)
         bound.apply_defaults()
+        if not self.graphs:
+            bound_kwargs = bound.kwargs
+            del bound_kwargs["backend"]
+            return bound.args, bound_kwargs
         # Convert graphs into backend graph-like object
         # Include the edge and/or node labels if provided to the algorithm
         preserve_edge_attrs = self.preserve_edge_attrs
@@ -776,7 +789,7 @@ class _dispatch:
         """Call this dispatchable function with a backend; for use with testing."""
         backend = self._load_backend(plugin_name)
         if not self._can_backend_run(plugin_name, *args, **kwargs):
-            if fallback_to_nx:
+            if fallback_to_nx or not self.graphs:
                 return self.orig_func(*args, **kwargs)
 
             import pytest

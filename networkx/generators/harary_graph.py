@@ -21,6 +21,7 @@ from networkx.exception import NetworkXError
 __all__ = ["hnm_harary_graph", "hkn_harary_graph"]
 
 
+@nx._dispatch(graphs=None)
 def hnm_harary_graph(n, m, create_using=None):
     """Returns the Harary graph with given numbers of nodes and edges.
 
@@ -112,6 +113,7 @@ def hnm_harary_graph(n, m, create_using=None):
     return H
 
 
+@nx._dispatch(graphs=None)
 def hkn_harary_graph(k, n, create_using=None):
     """Returns the Harary graph with given node connectivity and node number.
 
