@@ -134,6 +134,18 @@ backend_info = _get_backends("networkx.plugin_info", load_and_call=True)
 
 backends.update(_get_backends("networkx.backends"))
 backend_info.update(_get_backends("networkx.backend_info", load_and_call=True))
+
+# Load and cache backends on-demand
+_loaded_backends = {}
+
+
+def _load_backend(backend_name):
+    if backend_name in _loaded_backends:
+        return _loaded_backends[backend_name]
+    rv = _loaded_backends[backend_name] = backends[backend_name].load()
+    return rv
+
+
 _registered_algorithms = {}
 
 
@@ -334,9 +346,6 @@ class _dispatch:
         # Compute and cache the signature on-demand
         self._sig = None
 
-        # Load and cache backends on-demand
-        self._backends = {}
-
         # Which backends implement this function?
         self.backends = {
             backend
@@ -529,7 +538,7 @@ class _dispatch:
                     f"{self.name}() has networkx and {graph_backend_name} graphs, but NetworkX is not "
                     f"configured to automatically convert graphs from networkx to {graph_backend_name}."
                 )
-            backend = self._load_backend(graph_backend_name)
+            backend = _load_backend(graph_backend_name)
             if hasattr(backend, self.name):
                 if "networkx" in graph_backend_names:
                     # We need to convert networkx graphs to backend graphs
@@ -566,15 +575,9 @@ class _dispatch:
         # Default: run with networkx on networkx inputs
         return self.orig_func(*args, **kwargs)
 
-    def _load_backend(self, backend_name):
-        if backend_name in self._backends:
-            return self._backends[backend_name]
-        rv = self._backends[backend_name] = backends[backend_name].load()
-        return rv
-
     def _can_backend_run(self, backend_name, /, *args, **kwargs):
         """Can the specified backend run this algorithms with these arguments?"""
-        backend = self._load_backend(backend_name)
+        backend = _load_backend(backend_name)
         return hasattr(backend, self.name) and (
             not hasattr(backend, "can_run") or backend.can_run(self.name, args, kwargs)
         )
@@ -727,7 +730,7 @@ class _dispatch:
 
         # It should be safe to assume that we either have networkx graphs or backend graphs.
         # Future work: allow conversions between backends.
-        backend = self._load_backend(backend_name)
+        backend = _load_backend(backend_name)
         for gname in self.graphs:
             if gname in self.list_graphs:
                 bound.arguments[gname] = [
@@ -798,7 +801,7 @@ class _dispatch:
 
     def _convert_and_call(self, backend_name, args, kwargs, *, fallback_to_nx=False):
         """Call this dispatchable function with a backend, converting graphs if necessary."""
-        backend = self._load_backend(backend_name)
+        backend = _load_backend(backend_name)
         if not self._can_backend_run(backend_name, *args, **kwargs):
             if fallback_to_nx:
                 return self.orig_func(*args, **kwargs)
@@ -823,7 +826,7 @@ class _dispatch:
         self, backend_name, args, kwargs, *, fallback_to_nx=False
     ):
         """Call this dispatchable function with a backend; for use with testing."""
-        backend = self._load_backend(backend_name)
+        backend = _load_backend(backend_name)
         if not self._can_backend_run(backend_name, *args, **kwargs):
             if fallback_to_nx or not self.graphs:
                 return self.orig_func(*args, **kwargs)
