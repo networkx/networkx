@@ -688,7 +688,7 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
        dictionary of nodes with resistance distances as the value.
 
     Raises
-    -------
+    ------
     NetworkXNotImplemented
         If `G` is a directed graph.
 

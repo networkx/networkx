@@ -22,9 +22,8 @@ Release Process
 
   7. Add ``release_<major>.<minor>`` to ``doc/release/index.rst``.
 
-- Delete developer banner on docs::
-
-   git rm doc/_templates/layout.html
+- Edit ``doc/_static/version_switcher.json`` in order to add the release, move the
+  key value pair `"preferred": true` to the most recent stable version, and commit.
 
 - Update ``__version__`` in ``networkx/__init__.py``.
 
@@ -87,14 +86,9 @@ Release Process
 
 - Update ``__version__`` in ``networkx/__init__.py``.
 
-- Create ``doc/_templates/layout.html`` with::
-
-    {% extends "!layout.html" %} {% block content %} {% include "dev_banner.html" %}
-    {{ super() }} {% endblock %}
-
  - Commit and push changes::
 
-    git add networkx/__init__.py doc/_templates/layout.html
+    git add networkx/__init__.py 
     git commit -m "Bump release version"
     git push origin main
 
