@@ -50,22 +50,6 @@ Release Process
 
    https://github.com/networkx/networkx/tags
 
-- Pin badges in ``README.rst``::
-
-  - https://github.com/networkx/networkx/workflows/test/badge.svg?tag=networkx-<major>.<minor>
-  - https://github.com/networkx/networkx/actions?query=branch%3Anetworkx-<major>.<minor>
-
-- Publish on PyPi::
-
-   git clean -fxd
-   pip install -r requirements/release.txt
-   python -m build --sdist --wheel
-   twine upload -s dist/*
-
-- Unpin badges in ``README.rst``::
-
-   git restore README.rst 
-
 - Update documentation on the web:
   The documentation is kept in a separate repo: networkx/documentation
 
