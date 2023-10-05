@@ -44,9 +44,6 @@ Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 Version 3.0
 ~~~~~~~~~~~
 
-* In ``algorithms/link_analysis/pagerank_alg.py``, remove the
-  ``np.asmatrix`` wrappers on the return values of ``google_matrix`` and remove
-  the associated FutureWarning.
 * In ``linalg/attrmatrix.py`` remove the FutureWarning, update the
   return type by removing ``np.asmatrix``, and update the docstring to
   reflect that the function returns a ``numpy.ndarray`` instance.
