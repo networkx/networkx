@@ -135,8 +135,8 @@ def disjoint_union_all(graphs):
     NetworkXError
         In case of mixed type graphs, like MultiGraph and Graph, or directed and undirected graphs.
 
-    Example
-    -------
+    Examples
+    --------
     >>> G1 = nx.Graph([(1, 2), (2, 3)])
     >>> G2 = nx.Graph([(4, 5), (5, 6)])
     >>> U = nx.disjoint_union_all([G1, G2])
@@ -189,8 +189,8 @@ def compose_all(graphs):
     NetworkXError
         In case of mixed type graphs, like MultiGraph and Graph, or directed and undirected graphs.
 
-    Example
-    -------
+    Examples
+    --------
     >>> G1 = nx.Graph([(1, 2), (2, 3)])
     >>> G2 = nx.Graph([(3, 4), (5, 6)])
     >>> C = nx.compose_all([G1, G2])
@@ -276,8 +276,8 @@ def intersection_all(graphs):
     >>> gh.nodes(data=True)
     NodeDataView({0: {'new_capacity': 2}, 1: {'new_capacity': 3}})
 
-    Example
-    -------
+    Examples
+    --------
     >>> G1 = nx.Graph([(1, 2), (2, 3)])
     >>> G2 = nx.Graph([(2, 3), (3, 4)])
     >>> R = nx.intersection_all([G1, G2])
