@@ -44,9 +44,6 @@ Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 Version 3.0
 ~~~~~~~~~~~
 
-* In ``linalg/attrmatrix.py`` remove the FutureWarning, update the
-  return type by removing ``np.asmatrix``, and update the docstring to
-  reflect that the function returns a ``numpy.ndarray`` instance.
 * In ``algorithms/distance_measures.py`` remove ``extrema_bounding``.
 * In ``algorithms/matching.py``, remove parameter ``maxcardinality`` from ``min_weight_matching``.
 
