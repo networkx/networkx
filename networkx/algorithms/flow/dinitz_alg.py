@@ -173,9 +173,10 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
 
     def breath_first_search():
         parents = {}
-        vertex_dist = {}
+        vertex_dist = {s: 0}
         queue = deque([s])
         distance = deque([0])
+        # Record all the potential edges of shortest augmenting paths
         while queue:
             if t in parents:
                 break
@@ -188,36 +189,51 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
                         if vertex_dist[v] == dist + 1:
                             parents[v].append(u)
                     else:
-                        parents[v] = [u]
+                        parents[v] = deque([u])
                         vertex_dist[v] = dist + 1
                         queue.append(v)
                         distance.append(dist + 1)
         return parents
 
     def depth_first_search(parents):
+        # DFS to find all the shortest augmenting paths
         """Build a path using DFS starting from the sink"""
         total_flow = 0
+        u = t
+        # path also functions as a stack
+        path = [u]
+        # The loop ends with no augmenting path left in the layered graph
         while True:
-            path = []
-            u = t
-            flow = INF
-            while u != s:
-                path.append(u)
-                for v in parents[u]:
-                    if R_pred[u][v]["capacity"] - R_pred[u][v]["flow"] > 0:
-                        break
-                if R_pred[u][v]["capacity"] - R_pred[u][v]["flow"] == 0:
+            if len(parents[u]) > 0:
+                v = parents[u][0]
+                path.append(v)
+            else:
+                path.pop()
+                if len(path) == 0:
                     break
-                flow = min(flow, R_pred[u][v]["capacity"] - R_pred[u][v]["flow"])
-                u = v
-            if u != s:
-                break
-            path.append(s)
+                v = path[-1]
+                parents[v].popleft()
             # Augment the flow along the path found
-            for u, v in pairwise(path):
-                R_pred[u][v]["flow"] += flow
-                R_pred[v][u]["flow"] -= flow
-            total_flow += flow
+            if v == s:
+                flow = INF
+                for u, v in pairwise(path):
+                    flow = min(flow, R_pred[u][v]["capacity"] - R_pred[u][v]["flow"])
+                u_index = len(path) - 2
+                while u_index >= 0:
+                    u = path[u_index]
+                    v_index = u_index + 1
+                    v = path[v_index]
+                    R_pred[u][v]["flow"] += flow
+                    R_pred[v][u]["flow"] -= flow
+                    # Find the proper node to continue the search
+                    if R_pred[u][v]["capacity"] - R_pred[u][v]["flow"] == 0:
+                        parents[u].popleft()
+                        while path[-1] != u:
+                            path.pop()
+                    u_index -= 1
+                total_flow += flow
+                v = path[-1]
+            u = v
         return total_flow
 
     flow_value = 0
