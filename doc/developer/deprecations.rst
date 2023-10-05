@@ -44,8 +44,6 @@ Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 Version 3.2
 ~~~~~~~~~~~
 * Remove pydot functionality ``drawing/nx_pydot.py``, if pydot is still not being maintained. See #5723
-* Remove renamed function ``join()`` in ``algorithms/tree/operations.py`` and
-  in ``doc/reference/algorithms/trees.rst``
 
 Version 3.3
 ~~~~~~~~~~~
@@ -64,3 +62,5 @@ Version 3.4
 * Remove ``MultiDiGraph_EdgeKey`` class from ``algorithms/tree/branchings.py``. 
 * Remove ``Edmonds`` class from ``algorithms/tree/branchings.py``.
 * Remove ``normalized`` kwarg from ``algorithms.s_metric``
+* Remove renamed function ``join()`` in ``algorithms/tree/operations.py`` and
+  in ``doc/reference/algorithms/trees.rst``
