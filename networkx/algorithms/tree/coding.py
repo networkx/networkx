@@ -195,7 +195,7 @@ def from_nested_tuple(sequence, sensible_relabeling=False):
         # For a nonempty sequence, get the subtrees for each child
         # sequence and join all the subtrees at their roots. After
         # joining the subtrees, the root is node 0.
-        return nx.tree.join([(_make_tree(child), 0) for child in sequence])
+        return nx.tree.join_trees([(_make_tree(child), 0) for child in sequence])
 
     # Make the tree and remove the `is_root` node attribute added by the
     # helper function.

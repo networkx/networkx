@@ -140,9 +140,16 @@ html_theme_options = {
         },
     ],
     "external_links": [{"name": "Guides", "url": "https://networkx.org/nx-guides/"}],
-    "navbar_end": ["theme-switcher", "navbar-icon-links", "version"],
-    "secondary_sidebar_items": ["search-field", "page-toc", "edit-this-page"],
+    "navbar_end": ["theme-switcher", "navbar-icon-links", "version-switcher"],
+    "secondary_sidebar_items": ["page-toc", "edit-this-page"],
     "header_links_before_dropdown": 7,
+    "switcher": {
+        "json_url": (
+            "https://networkx.org/documentation/latest/_static/version_switcher.json"
+        ),
+        "version_match": "latest" if "dev" in version else version,
+    },
+    "show_version_warning_banner": True,
 }
 html_sidebars = {
     "**": ["sidebar-nav-bs", "sidebar-ethical-ads"],
@@ -188,14 +195,6 @@ html_use_opensearch = "https://networkx.org"
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "NetworkX"
-
-html_context = {
-    "versions_dropdown": {
-        "latest": "devel (latest)",
-        "stable": "current (stable)",
-    },
-    "default_mode": "light",
-}
 
 # Options for LaTeX output
 # ------------------------
