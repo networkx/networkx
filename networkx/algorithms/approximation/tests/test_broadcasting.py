@@ -43,3 +43,9 @@ def test_path_broadcast():
     # test base case when the graph has only one node
     H = nx.empty_graph(1)
     assert nx_app.tree_broadcast_time(H) == 0
+
+
+def test_star_broadcast():
+    for i in range(4, 12):
+        G = nx.star_graph(i)
+        assert nx_app.tree_broadcast_time(G) == i
