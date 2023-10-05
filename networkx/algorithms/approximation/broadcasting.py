@@ -64,7 +64,7 @@ def tree_broadcast_time(G):
 
     # step 2
     W = {node for node, deg in T.degree if deg == 1}
-    values.update({w: G.degree[w] - 1 for w in W})
+    values.update((w, G.degree[w] - 1) for w in W)
 
     # step 3
     while T.number_of_nodes() >= 2:
