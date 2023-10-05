@@ -41,12 +41,6 @@ Todo
 
 Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 
-Version 3.0
-~~~~~~~~~~~
-
-* In ``algorithms/matching.py``, remove parameter ``maxcardinality`` from ``min_weight_matching``.
-
-
 Version 3.2
 ~~~~~~~~~~~
 * Remove pydot functionality ``drawing/nx_pydot.py``, if pydot is still not being maintained. See #5723
