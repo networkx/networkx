@@ -74,8 +74,7 @@ def tree_broadcast_time(G):
     T.remove_nodes_from(U)
 
     # step 2
-    W = {node for node, deg in T.degree if deg == 1}
-    values.update({w: G.degree[w] - 1 for w in W})
+    values.update((node, deg -1) for node, deg in T.degree if deg = 1)
 
     # step 3
     while T.number_of_nodes() >= 2:
@@ -95,6 +94,6 @@ def tree_broadcast_time(G):
             W.add(v)
 
     # step 7
-    v = list(T.nodes())[0]
+    v = nx.utils.arbitrary_element(T)
     b_T = _get_max_broadcast_value(G, U, v, values)
     return b_T

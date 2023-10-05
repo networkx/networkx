@@ -9,8 +9,6 @@ def test_example_tree_broadcast():
     """
     Test the BROADCAST algorithm on the example in the paper titled: "Information Dissemination in Trees"
     """
-    G = nx.Graph()
-    G.add_nodes_from(range(21))
     edge_list = [
         (0, 1),
         (1, 2),
@@ -33,7 +31,7 @@ def test_example_tree_broadcast():
         (18, 19),
         (18, 20),
     ]
-    G.add_edges_from(edge_list)
+    G = nx.Graph(edge_list)
     assert nx_app.tree_broadcast_time(G) == 6
 
 
