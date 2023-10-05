@@ -14,12 +14,14 @@ def s_metric(G, **kwargs):
     ----------
     G : graph
         The graph used to compute the s-metric.
+
     normalized : bool (optional)
 
         .. deprecated:: 3.2
 
            The `normalized` keyword argument is deprecated and will be removed
            in the future
+
         Normalize the value.
 
     Returns
