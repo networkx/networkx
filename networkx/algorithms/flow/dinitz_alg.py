@@ -174,14 +174,12 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
     def breath_first_search():
         parents = {}
         vertex_dist = {s: 0}
-        queue = deque([s])
-        distance = deque([0])
+        queue = deque([(s, 0)])
         # Record all the potential edges of shortest augmenting paths
         while queue:
             if t in parents:
                 break
-            u = queue.popleft()
-            dist = distance.popleft()
+            u, dist = queue.popleft()
             for v in R_succ[u]:
                 attr = R_succ[u][v]
                 if attr["capacity"] - attr["flow"] > 0:
@@ -191,8 +189,7 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
                     else:
                         parents[v] = deque([u])
                         vertex_dist[v] = dist + 1
-                        queue.append(v)
-                        distance.append(dist + 1)
+                        queue.append((v, dist + 1))
         return parents
 
     def depth_first_search(parents):
