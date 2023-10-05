@@ -266,7 +266,7 @@ def new_setitem(self, key, val):
         if line and not line.startswith(" "):
             # This line must identify a backend; let's try to add a link
             backend, *rest = line.split(" ")
-            url = networkx.utils.backends.plugin_info.get(backend, {}).get("url")
+            url = networkx.utils.backends.backend_info.get(backend, {}).get("url")
             if url:
                 line = f"`{backend} <{url}>`_ " + " ".join(rest)
         newval.append(f"   {line}")
