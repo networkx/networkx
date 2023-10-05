@@ -44,7 +44,6 @@ Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 Version 3.0
 ~~~~~~~~~~~
 
-* In ``algorithms/distance_measures.py`` remove ``extrema_bounding``.
 * In ``algorithms/matching.py``, remove parameter ``maxcardinality`` from ``min_weight_matching``.
 
 
