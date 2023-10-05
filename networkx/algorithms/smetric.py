@@ -14,7 +14,6 @@ def s_metric(G, **kwargs):
     ----------
     G : graph
         The graph used to compute the s-metric.
-
     normalized : bool (optional)
         Normalize the value.
 
