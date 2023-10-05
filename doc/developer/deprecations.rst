@@ -41,12 +41,9 @@ Todo
 
 Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 
-Version 3.2
-~~~~~~~~~~~
-* Remove pydot functionality ``drawing/nx_pydot.py``, if pydot is still not being maintained. See #5723
-
 Version 3.3
 ~~~~~~~~~~~
+* Remove pydot functionality ``drawing/nx_pydot.py``, if pydot is still not being maintained. See #5723
 * Remove the ``forest_str`` function from ``readwrite/text.py``. Replace
   existing usages with ``write_network_text``.
 * Change ``single_target_shortest_path_length`` in ``algorithms/shortest_path/unweighted.py``
