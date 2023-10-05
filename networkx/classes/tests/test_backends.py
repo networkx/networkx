@@ -52,6 +52,8 @@ def test_graph_converter_needs_backend():
 
     @staticmethod
     def convert_to_nx(obj, *, name=None):
+        if type(obj) is nx.Graph:
+            return obj
         return nx.Graph(obj)
 
     # *This mutates LoopbackDispatcher!*

@@ -31,7 +31,6 @@ __all__ = [
 ]
 
 
-@nx._dispatch(graphs=None)
 def to_networkx_graph(data, create_using=None, multigraph_input=False):
     """Make a NetworkX graph from a known data structure.
 
