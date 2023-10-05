@@ -61,3 +61,5 @@ Version 3.4
 * Remove ``normalized`` kwarg from ``algorithms.s_metric``
 * Remove renamed function ``join()`` in ``algorithms/tree/operations.py`` and
   in ``doc/reference/algorithms/trees.rst``
+* Remove ``strongly_connected_components_recursive`` from
+  ``algorithms/components/strongly_connected.py``

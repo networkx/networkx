@@ -68,6 +68,9 @@ Deprecations
 - [`#6841 <https://github.com/networkx/pull/6841>`_]
   Deprecate the ``normalized`` keyword of the ``s_metric`` function. Ignore
   value of ``normalized`` for future compatibility.
+- [`#6957 <https://github.com/networkx/pull/6957>`_]
+  Deprecate ``strongly_connected_components_recursive`` function in favor of
+  the non-recursive implmentation ``strongly_connected_components``.
 
 Merged PRs
 ----------
