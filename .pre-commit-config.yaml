@@ -24,8 +24,8 @@ repos:
           - --fix
   - repo: local
     hooks:
-      - id: pyproject.toml
-        name: pyproject.toml
+      - id: generate_requirements.py
+        name: generate_requirements.py
         language: system
-        entry: python tools/generate_pyproject.toml.py
-        files: "pyproject.toml|requirements/.*\\.txt|tools/.*pyproject.*"
+        entry: python tools/generate_requirements.py
+        files: "pyproject.toml|requirements/.*\\.txt|tools/generate_requirements.py"
