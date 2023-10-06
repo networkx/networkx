@@ -49,6 +49,56 @@ def test_partition_iterator():
     assert first_copy[0] == first_part[0]
 
 
+def test_undirected_selfloops():
+    G = nx.karate_club_graph()
+    expected_partition = nx.community.louvain_communities(G, seed=2, weight=None)
+    part = [
+        {0, 1, 2, 3, 7, 9, 11, 12, 13, 17, 19, 21},
+        {16, 4, 5, 6, 10},
+        {23, 25, 27, 28, 24, 31},
+        {32, 33, 8, 14, 15, 18, 20, 22, 26, 29, 30},
+    ]
+    assert expected_partition == part
+
+    G.add_weighted_edges_from([(i, i, i * 1000) for i in range(9)])
+    # large self-loop weight impacts partition
+    partition = nx.community.louvain_communities(G, seed=2, weight="weight")
+    assert part != partition
+
+    # small self-loop weights arent enough to impact partition in this graph
+    partition = nx.community.louvain_communities(G, seed=2, weight=None)
+    assert part == partition
+
+
+def test_directed_selfloops():
+    G = nx.DiGraph()
+    G.add_nodes_from(range(11))
+    G_edges = [
+        (0, 2),
+        (0, 1),
+        (1, 0),
+        (2, 1),
+        (2, 0),
+        (3, 4),
+        (4, 3),
+        (7, 8),
+        (8, 7),
+        (9, 10),
+        (10, 9),
+    ]
+    G.add_edges_from(G_edges)
+    G_expected_partition = nx.community.louvain_communities(G, seed=123, weight=None)
+
+    G.add_weighted_edges_from([(i, i, i * 1000) for i in range(3)])
+    # large self-loop weight impacts partition
+    G_partition = nx.community.louvain_communities(G, seed=123, weight="weight")
+    assert G_partition != G_expected_partition
+
+    # small self-loop weights arent enough to impact partition in this graph
+    G_partition = nx.community.louvain_communities(G, seed=123, weight=None)
+    assert G_partition == G_expected_partition
+
+
 def test_directed_partition():
     """
     Test 2 cases that were looping infinitely
