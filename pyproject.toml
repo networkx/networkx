@@ -49,6 +49,7 @@ Homepage = 'https://networkx.org/'
 "Bug Tracker" = 'https://github.com/networkx/networkx/issues'
 Documentation = 'https://networkx.org/documentation/stable/'
 "Source Code" = 'https://github.com/networkx/networkx'
+
 [project.entry-points."networkx.plugins"]
 nx-loopback = 'networkx.classes.tests.dispatch_interface:dispatcher'
 
@@ -84,6 +85,7 @@ test = [
     'pytest>=7.2',
     'pytest-cov>=4.0',
 ]
+
 [tool.setuptools]
 zip-safe = false
 include-package-data = false
@@ -121,6 +123,7 @@ platforms = [
     'Windows',
     'Unix',
 ]
+
 [tool.setuptools.dynamic.version]
 attr = 'networkx.__version__'
 
