@@ -4,24 +4,24 @@ Code to support various backends in a plugin dispatch architecture.
 Create a Dispatcher
 -------------------
 
-To be a valid plugin, a package must register an entry_point
-of `networkx.plugins` with a key pointing to the handler.
+To be a valid backend, a package must register an entry_point
+of `networkx.backends` with a key pointing to the handler.
 
 For example::
 
-    entry_points={'networkx.plugins': 'sparse = networkx_plugin_sparse'}
+    entry_points={'networkx.backends': 'sparse = networkx_backend_sparse'}
 
-The plugin must create a Graph-like object which contains an attribute
-``__networkx_plugin__`` with a value of the entry point name.
+The backend must create a Graph-like object which contains an attribute
+``__networkx_backend__`` with a value of the entry point name.
 
 Continuing the example above::
 
     class WrappedSparse:
-        __networkx_plugin__ = "sparse"
+        __networkx_backend__ = "sparse"
         ...
 
 When a dispatchable NetworkX algorithm encounters a Graph-like object
-with a ``__networkx_plugin__`` attribute, it will look for the associated
+with a ``__networkx_backend__`` attribute, it will look for the associated
 dispatch object in the entry_points, load it, and dispatch the work to it.
 
 
@@ -29,7 +29,7 @@ Testing
 -------
 To assist in validating the backend algorithm implementations, if an
 environment variable ``NETWORKX_TEST_BACKEND`` is set to a registered
-plugin keys, the dispatch machinery will automatically convert regular
+backend key, the dispatch machinery will automatically convert regular
 networkx Graphs and DiGraphs to the backend equivalent by calling
 ``<backend dispatcher>.convert_from_nx(G, edge_attrs=edge_attrs, name=name)``.
 Set ``NETWORKX_FALLBACK_TO_NX`` environment variable to have tests
@@ -96,7 +96,7 @@ from ..exception import NetworkXNotImplemented
 __all__ = ["_dispatch"]
 
 
-def _get_plugins(group, *, load_and_call=False):
+def _get_backends(group, *, load_and_call=False):
     if sys.version_info < (3, 10):
         eps = entry_points()
         if group not in eps:
@@ -108,7 +108,7 @@ def _get_plugins(group, *, load_and_call=False):
     for ep in items:
         if ep.name in rv:
             warnings.warn(
-                f"networkx plugin defined more than once: {ep.name}",
+                f"networkx backend defined more than once: {ep.name}",
                 RuntimeWarning,
                 stacklevel=2,
             )
@@ -117,19 +117,35 @@ def _get_plugins(group, *, load_and_call=False):
                 rv[ep.name] = ep.load()()
             except Exception as exc:
                 warnings.warn(
-                    f"Error encountered when loading info for plugin {ep.name}: {exc}",
+                    f"Error encountered when loading info for backend {ep.name}: {exc}",
                     RuntimeWarning,
                     stacklevel=2,
                 )
         else:
             rv[ep.name] = ep
-    # nx-loopback plugin is only available when testing (added in conftest.py)
+    # nx-loopback backend is only available when testing (added in conftest.py)
     rv.pop("nx-loopback", None)
     return rv
 
 
-plugins = _get_plugins("networkx.plugins")
-plugin_info = _get_plugins("networkx.plugin_info", load_and_call=True)
+# Rename "plugin" to "backend", and give backends a release cycle to update.
+backends = _get_backends("networkx.plugins")
+backend_info = _get_backends("networkx.plugin_info", load_and_call=True)
+
+backends.update(_get_backends("networkx.backends"))
+backend_info.update(_get_backends("networkx.backend_info", load_and_call=True))
+
+# Load and cache backends on-demand
+_loaded_backends = {}  # type: ignore[var-annotated]
+
+
+def _load_backend(backend_name):
+    if backend_name in _loaded_backends:
+        return _loaded_backends[backend_name]
+    rv = _loaded_backends[backend_name] = backends[backend_name].load()
+    return rv
+
+
 _registered_algorithms = {}
 
 
@@ -330,13 +346,10 @@ class _dispatch:
         # Compute and cache the signature on-demand
         self._sig = None
 
-        # Load and cache backends on-demand
-        self._backends = {}
-
         # Which backends implement this function?
         self.backends = {
             backend
-            for backend, info in plugin_info.items()
+            for backend, info in backend_info.items()
             if "functions" in info and name in info["functions"]
         }
 
@@ -394,14 +407,14 @@ class _dispatch:
         return self._sig
 
     def __call__(self, /, *args, backend=None, **kwargs):
-        if not plugins:
+        if not backends:
             # Fast path if no backends are installed
             return self.orig_func(*args, **kwargs)
 
         # Use `backend_name` in this function instead of `backend`
         backend_name = backend
-        if backend_name is not None and backend_name not in plugins:
-            raise ImportError(f"Unable to load plugin: {backend_name}")
+        if backend_name is not None and backend_name not in backends:
+            raise ImportError(f"Unable to load backend: {backend_name}")
 
         graphs_resolved = {}
         for gname, pos in self.graphs.items():
@@ -441,7 +454,7 @@ class _dispatch:
                 fallback_to_nx=self._fallback_to_nx,
             )
 
-        # Check if any graph comes from a plugin
+        # Check if any graph comes from a backend
         if self.list_graphs:
             # Make sure we don't lose values by consuming an iterator
             args = list(args)
@@ -453,73 +466,93 @@ class _dispatch:
                 else:
                     args[self.graphs[gname]] = val
 
-            has_plugins = any(
-                hasattr(g, "__networkx_plugin__")
+            has_backends = any(
+                hasattr(g, "__networkx_backend__") or hasattr(g, "__networkx_plugin__")
                 if gname not in self.list_graphs
-                else any(hasattr(g2, "__networkx_plugin__") for g2 in g)
+                else any(
+                    hasattr(g2, "__networkx_backend__")
+                    or hasattr(g2, "__networkx_plugin__")
+                    for g2 in g
+                )
                 for gname, g in graphs_resolved.items()
             )
-            if has_plugins:
-                plugin_names = {
-                    getattr(g, "__networkx_plugin__", "networkx")
+            if has_backends:
+                graph_backend_names = {
+                    getattr(
+                        g,
+                        "__networkx_backend__",
+                        getattr(g, "__networkx_plugin__", "networkx"),
+                    )
                     for gname, g in graphs_resolved.items()
                     if gname not in self.list_graphs
                 }
                 for gname in self.list_graphs & graphs_resolved.keys():
-                    plugin_names.update(
-                        getattr(g, "__networkx_plugin__", "networkx")
+                    graph_backend_names.update(
+                        getattr(
+                            g,
+                            "__networkx_backend__",
+                            getattr(g, "__networkx_plugin__", "networkx"),
+                        )
                         for g in graphs_resolved[gname]
                     )
         else:
-            has_plugins = any(
-                hasattr(g, "__networkx_plugin__") for g in graphs_resolved.values()
+            has_backends = any(
+                hasattr(g, "__networkx_backend__") or hasattr(g, "__networkx_plugin__")
+                for g in graphs_resolved.values()
             )
-            if has_plugins:
-                plugin_names = {
-                    getattr(g, "__networkx_plugin__", "networkx")
+            if has_backends:
+                graph_backend_names = {
+                    getattr(
+                        g,
+                        "__networkx_backend__",
+                        getattr(g, "__networkx_plugin__", "networkx"),
+                    )
                     for g in graphs_resolved.values()
                 }
-        if has_plugins:
+        if has_backends:
             # Dispatchable graphs found! Dispatch to backend function.
             # We don't handle calls with different backend graphs yet,
             # but we may be able to convert additional networkx graphs.
-            backend_names = plugin_names - {"networkx"}
+            backend_names = graph_backend_names - {"networkx"}
             if len(backend_names) != 1:
-                # Future work: convert between backends and run if multiple plugins found
+                # Future work: convert between backends and run if multiple backends found
                 raise TypeError(
-                    f"{self.name}() graphs must all be from the same plugin, found {backend_names}"
+                    f"{self.name}() graphs must all be from the same backend, found {backend_names}"
                 )
-            [plugin_name] = backend_names
-            if backend_name is not None and backend_name != plugin_name:
+            [graph_backend_name] = backend_names
+            if backend_name is not None and backend_name != graph_backend_name:
                 # Future work: convert between backends to `backend_name` backend
                 raise TypeError(
-                    f"{self.name}() is unable to convert graph from backend {plugin_name!r} "
+                    f"{self.name}() is unable to convert graph from backend {graph_backend_name!r} "
                     f"to the specified backend {backend_name!r}."
                 )
-            if plugin_name not in plugins:
-                raise ImportError(f"Unable to load plugin: {plugin_name}")
+            if graph_backend_name not in backends:
+                raise ImportError(f"Unable to load backend: {graph_backend_name}")
             if (
-                "networkx" in plugin_names
-                and plugin_name not in self._automatic_backends
+                "networkx" in graph_backend_names
+                and graph_backend_name not in self._automatic_backends
             ):
                 # Not configured to convert networkx graphs to this backend
                 raise TypeError(
                     f"Unable to convert inputs and run {self.name}. "
-                    f"{self.name}() has networkx and {plugin_name} graphs, but NetworkX is not "
-                    f"configured to automatically convert graphs from networkx to {plugin_name}."
+                    f"{self.name}() has networkx and {graph_backend_name} graphs, but NetworkX is not "
+                    f"configured to automatically convert graphs from networkx to {graph_backend_name}."
                 )
-            backend = self._load_backend(plugin_name)
+            backend = _load_backend(graph_backend_name)
             if hasattr(backend, self.name):
-                if "networkx" in plugin_names:
+                if "networkx" in graph_backend_names:
                     # We need to convert networkx graphs to backend graphs
                     return self._convert_and_call(
-                        plugin_name, args, kwargs, fallback_to_nx=self._fallback_to_nx
+                        graph_backend_name,
+                        args,
+                        kwargs,
+                        fallback_to_nx=self._fallback_to_nx,
                     )
                 # All graphs are backend graphs--no need to convert!
                 return getattr(backend, self.name)(*args, **kwargs)
             # Future work: try to convert and run with other backends in self._automatic_backends
             raise NetworkXNotImplemented(
-                f"'{self.name}' not implemented by {plugin_name}"
+                f"'{self.name}' not implemented by {graph_backend_name}"
             )
 
         # If backend was explicitly given by the user, so we need to use it no matter what
@@ -531,10 +564,10 @@ class _dispatch:
         # Only networkx graphs; try to convert and run with a backend with automatic
         # conversion, but don't do this by default for graph generators or loaders.
         if self.graphs:
-            for plugin_name in self._automatic_backends:
-                if self._can_backend_run(plugin_name, *args, **kwargs):
+            for backend_name in self._automatic_backends:
+                if self._can_backend_run(backend_name, *args, **kwargs):
                     return self._convert_and_call(
-                        plugin_name,
+                        backend_name,
                         args,
                         kwargs,
                         fallback_to_nx=self._fallback_to_nx,
@@ -542,20 +575,14 @@ class _dispatch:
         # Default: run with networkx on networkx inputs
         return self.orig_func(*args, **kwargs)
 
-    def _load_backend(self, plugin_name):
-        if plugin_name in self._backends:
-            return self._backends[plugin_name]
-        rv = self._backends[plugin_name] = plugins[plugin_name].load()
-        return rv
-
-    def _can_backend_run(self, plugin_name, /, *args, **kwargs):
+    def _can_backend_run(self, backend_name, /, *args, **kwargs):
         """Can the specified backend run this algorithms with these arguments?"""
-        backend = self._load_backend(plugin_name)
+        backend = _load_backend(backend_name)
         return hasattr(backend, self.name) and (
             not hasattr(backend, "can_run") or backend.can_run(self.name, args, kwargs)
         )
 
-    def _convert_arguments(self, plugin_name, args, kwargs):
+    def _convert_arguments(self, backend_name, args, kwargs):
         """Convert graph arguments to the specified backend.
 
         Returns
@@ -703,7 +730,7 @@ class _dispatch:
 
         # It should be safe to assume that we either have networkx graphs or backend graphs.
         # Future work: allow conversions between backends.
-        backend = self._load_backend(plugin_name)
+        backend = _load_backend(backend_name)
         for gname in self.graphs:
             if gname in self.list_graphs:
                 bound.arguments[gname] = [
@@ -717,7 +744,12 @@ class _dispatch:
                         name=self.name,
                         graph_name=gname,
                     )
-                    if getattr(g, "__networkx_plugin__", "networkx") == "networkx"
+                    if getattr(
+                        g,
+                        "__networkx_backend__",
+                        getattr(g, "__networkx_plugin__", "networkx"),
+                    )
+                    == "networkx"
                     else g
                     for g in bound.arguments[gname]
                 ]
@@ -745,7 +777,14 @@ class _dispatch:
                     preserve_graph = gname in preserve_graph_attrs
                 else:
                     preserve_graph = preserve_graph_attrs
-                if getattr(graph, "__networkx_plugin__", "networkx") == "networkx":
+                if (
+                    getattr(
+                        graph,
+                        "__networkx_backend__",
+                        getattr(graph, "__networkx_plugin__", "networkx"),
+                    )
+                    == "networkx"
+                ):
                     bound.arguments[gname] = backend.convert_from_nx(
                         graph,
                         edge_attrs=edges,
@@ -760,20 +799,20 @@ class _dispatch:
         del bound_kwargs["backend"]
         return bound.args, bound_kwargs
 
-    def _convert_and_call(self, plugin_name, args, kwargs, *, fallback_to_nx=False):
+    def _convert_and_call(self, backend_name, args, kwargs, *, fallback_to_nx=False):
         """Call this dispatchable function with a backend, converting graphs if necessary."""
-        backend = self._load_backend(plugin_name)
-        if not self._can_backend_run(plugin_name, *args, **kwargs):
+        backend = _load_backend(backend_name)
+        if not self._can_backend_run(backend_name, *args, **kwargs):
             if fallback_to_nx:
                 return self.orig_func(*args, **kwargs)
-            msg = f"'{self.name}' not implemented by {plugin_name}"
+            msg = f"'{self.name}' not implemented by {backend_name}"
             if hasattr(backend, self.name):
                 msg += " with the given arguments"
             raise RuntimeError(msg)
 
         try:
             converted_args, converted_kwargs = self._convert_arguments(
-                plugin_name, args, kwargs
+                backend_name, args, kwargs
             )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, NetworkXNotImplemented) as exc:
@@ -784,24 +823,24 @@ class _dispatch:
         return result
 
     def _convert_and_call_for_tests(
-        self, plugin_name, args, kwargs, *, fallback_to_nx=False
+        self, backend_name, args, kwargs, *, fallback_to_nx=False
     ):
         """Call this dispatchable function with a backend; for use with testing."""
-        backend = self._load_backend(plugin_name)
-        if not self._can_backend_run(plugin_name, *args, **kwargs):
+        backend = _load_backend(backend_name)
+        if not self._can_backend_run(backend_name, *args, **kwargs):
             if fallback_to_nx or not self.graphs:
                 return self.orig_func(*args, **kwargs)
 
             import pytest
 
-            msg = f"'{self.name}' not implemented by {plugin_name}"
+            msg = f"'{self.name}' not implemented by {backend_name}"
             if hasattr(backend, self.name):
                 msg += " with the given arguments"
             pytest.xfail(msg)
 
         try:
             converted_args, converted_kwargs = self._convert_arguments(
-                plugin_name, args, kwargs
+                backend_name, args, kwargs
             )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, NetworkXNotImplemented) as exc:
@@ -873,7 +912,7 @@ class _dispatch:
             "--------",
         ]
         for backend in sorted(self.backends):
-            info = plugin_info[backend]
+            info = backend_info[backend]
             if "short_summary" in info:
                 lines.append(f"{backend} : {info['short_summary']}")
             else:

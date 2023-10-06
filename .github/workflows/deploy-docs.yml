@@ -33,7 +33,7 @@ jobs:
           pip install -U -r requirements/doc.txt
           pip install .
           # Install trusted backends, but not their dependencies.
-          # We only need to use the "networkx.plugin_info" entry-point.
+          # We only need to use the "networkx.backend_info" entry-point.
           # This is the nightly wheel for nx-cugraph.
           pip install nx-cugraph-cu11 --extra-index-url https://rapidsdev:WeArePyPI@pypi.k8s.rapids.ai/simple --no-deps
           pip list
