@@ -136,7 +136,7 @@ backends.update(_get_backends("networkx.backends"))
 backend_info.update(_get_backends("networkx.backend_info", load_and_call=True))
 
 # Load and cache backends on-demand
-_loaded_backends = {}
+_loaded_backends = {}  # type: ignore[var-annotated]
 
 
 def _load_backend(backend_name):
