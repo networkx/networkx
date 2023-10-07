@@ -223,7 +223,8 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
     accommodate the structure of the original graph. If `cycle` is ``False``,
     the biggest weight edge is removed to make a Hamiltonian path.
     Then each edge on the new complete graph used for that analysis is
-    replaced by the shortest_path between those nodes on the original graph.
+    replaced by the shortest_path between those nodes on the original graph.(Note: If the graph contains any triangle inequalities then it might return a minimal approximate cycle with repeating nodes(other than the starting node).)
+
 
     Parameters
     ----------
