@@ -280,6 +280,11 @@ def greedy_modularity_communities(
     ValueError : If the `cutoff` or `best_n`  value is not in the range
         ``[1, G.number_of_nodes()]``, or if `best_n` < `cutoff`.
 
+    NetworkXPointlessConcept
+        If the graph `G` is the null graph.
+    ZeroDivisionError
+        If the graph `G` has no edges (is empty) and normalization is requested.
+
     Returns
     -------
     communities: list
@@ -320,6 +325,13 @@ def greedy_modularity_communities(
             return [set(G)]
     else:
         best_n = G.number_of_nodes()
+
+    G = nx.Graph()
+    H = nx.empty_graph()
+    if G.size() == 0:
+        print([{n} for n in G])
+    print([{n} for n in H])
+    # nx.community.greedy_modularity_communities(G)
 
     # retrieve generator object to construct output
     community_gen = _greedy_modularity_communities_generator(

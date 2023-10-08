@@ -331,3 +331,17 @@ def test_best_n():
     best_n = 1
     expected = [frozenset(range(13))]
     assert greedy_modularity_communities(G, best_n=best_n) == expected
+
+
+def test_greedy_modularities_communities_no_edges():
+    G = nx.Graph()
+    # G.add_node(3)
+    # # G.add_edge(1,2)
+    H = nx.empty_graph()
+    print([{n} for n in H])
+
+
+def test_greedy_modularities_communities_empty_graph():
+    G = nx.Graph()
+    if G.size() == 0:
+        print([{n} for n in G])
