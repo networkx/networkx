@@ -14,6 +14,14 @@ def bfs_beam_edges(G, source, value, width=None):
     heuristic. In general, a beam search with a small beam width might
     not visit each node in the graph.
 
+    .. note::
+
+       With the default value of ``width=None`` or `width` greater than the
+       maximum degree of the graph, this function is equivalent to a slower
+       version of `~networkx.algorithms.traversal.breadth_first_search.bfs_edges`.
+       In such cases, `value` has no effect - consider using `bfs_edges` directly
+       instead.
+
     Parameters
     ----------
     G : NetworkX graph
