@@ -311,6 +311,13 @@ def is_triad(G):
 def all_triplets(G):
     """Returns a generator of all possible sets of 3 nodes in a DiGraph.
 
+    .. deprecated:: 3.3
+
+       all_triplets is deprecated and will be removed in NetworkX version 3.5.
+       Use `itertools.combinations` instead::
+
+          all_triplets = itertools.combinations(G, 3)
+
     Parameters
     ----------
     G : digraph
@@ -328,6 +335,16 @@ def all_triplets(G):
     [(1, 2, 3), (1, 2, 4), (1, 3, 4), (2, 3, 4)]
 
     """
+    import warnings
+
+    warnings.warn(
+        (
+            "\n\nall_triplets is deprecated and will be rmoved in v3.5.\n"
+            "Use `itertools.combinations(G, 3)` instead."
+        ),
+        category=DeprecationWarning,
+        stacklevel=4,
+    )
     triplets = combinations(G.nodes(), 3)
     return triplets
 
