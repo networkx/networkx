@@ -547,6 +547,13 @@ def triad_type(G):
 def random_triad(G, seed=None):
     """Returns a random triad from a directed graph.
 
+    .. deprecated:: 3.3
+
+       random_triad is deprecated and will be removed in version 3.5.
+       Use random sampling directly instead::
+
+          G.subgraph(random.sample(list(G), 3))
+
     Parameters
     ----------
     G : digraph
@@ -573,6 +580,17 @@ def random_triad(G, seed=None):
     OutEdgeView([(1, 2)])
 
     """
+    import warnings
+
+    warnings.warn(
+        (
+            "\n\nrandom_triad is deprecated and will be removed in NetworkX v3.5.\n"
+            "Use random.sample instead, e.g.::\n\n"
+            "\tG.subgraph(random.sample(list(G), 3))\n"
+        ),
+        category=DeprecationWarning,
+        stacklevel=5,
+    )
     if len(G) < 3:
         raise nx.NetworkXError(
             f"G needs at least 3 nodes to form a triad; (it has {len(G)} nodes)"

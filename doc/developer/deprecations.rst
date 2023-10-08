@@ -67,3 +67,4 @@ Version 3.4
 Version 3.5
 ~~~~~~~~~~~
 * Remove ``all_triplets`` from ``algorithms/triads.py``
+* Remove ``random_triad`` from ``algorithms/triad.py``.
