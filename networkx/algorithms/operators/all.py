@@ -92,10 +92,9 @@ def union_all(graphs, rename=()):
             raise nx.NetworkXError("All graphs must be graphs or multigraphs.")
         elif not seen_nodes.isdisjoint(G_nodes_set):
             raise nx.NetworkXError(
-                "The node sets of the graphs are not disjoint.",
-                "Use appropriate rename"
-                "=(G1prefix,G2prefix,...,GNprefix)"
-                "or use disjoint_union(G1,G2,...,GN).",
+                "The node sets of the graphs are not disjoint.\n"
+                "Use `rename` to specify prefixes for the graphs or use\n"
+                "disjoint_union(G1, G2, ..., GN)."
             )
 
         seen_nodes |= G_nodes_set
