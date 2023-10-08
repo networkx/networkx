@@ -56,28 +56,8 @@ def bfs_beam_edges(G, source, value, width=None):
 
     >>> G = nx.karate_club_graph()
     >>> centrality = nx.eigenvector_centrality(G)
-    >>> source = 0
-    >>> width = 5
-    >>> for u, v in nx.bfs_beam_edges(G, source, centrality.get, width):
-    ...     print((u, v))
-    ...
-    (0, 2)
-    (0, 1)
-    (0, 8)
-    (0, 13)
-    (0, 3)
-    (2, 32)
-    (1, 30)
-    (8, 33)
-    (3, 7)
-    (32, 31)
-    (31, 28)
-    (31, 25)
-    (25, 23)
-    (25, 24)
-    (23, 29)
-    (23, 27)
-    (29, 26)
+    >>> list(nx.bfs_beam_edges(G, source=0, value=centrality.get, width=3))
+    [(0, 2), (0, 1), (0, 8), (2, 32), (1, 13), (8, 33)]
     """
 
     if width is None:
@@ -91,10 +71,6 @@ def bfs_beam_edges(G, source, value, width=None):
         The "best" neighbors are chosen according to the `value`
         function (higher is better). Only the `width` best neighbors of
         `v` are returned.
-
-        The list returned by this function is in decreasing value as
-        measured by the `value` function.
-
         """
         # TODO The Python documentation states that for small values, it
         # is better to use `heapq.nlargest`. We should determine the
