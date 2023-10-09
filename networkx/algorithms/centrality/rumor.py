@@ -40,6 +40,18 @@ def rumor_centrality(G):
             "cannot compute centrality for the null graph"
         )
 
+    if G.is_multigraph():
+        raise NotImplementedError("multigraphs are not supported by this algorithm")
+
+    if G.is_directed():
+        raise NotImplementedError("directed graphs are not supported by this algorithm")
+
+    cycles = list(nx.simple_cycles(G))
+    if len(cycles) > 0:
+        raise nx.NetworkXUnfeasible(
+            "rumor centrality does not work for graphs with cycles"
+        )
+
     # Create copy to be able to use node properties
     H = G.copy()
     set_visited_to_false(H)

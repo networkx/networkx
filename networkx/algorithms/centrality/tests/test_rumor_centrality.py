@@ -73,3 +73,16 @@ class TestRumorCentrality:
         exact = {0: 3, 1: 12, 2: 8, 3: 2, 4: 3}
         for n, rc in d.items():
             assert exact[n] == pytest.approx(rc, abs=1e-7)
+
+    def test_rumor_centrality_7_weighted_graph(self):
+        G = nx.Graph()
+        G.add_nodes_from(range(5))
+        G.add_edge(0, 1, weight=1)
+        G.add_edge(1, 2, weight=2)
+        G.add_edge(2, 3, weight=3)
+        G.add_edge(1, 4, weight=4)
+
+        d = nx.rumor_centrality(self.G)
+        exact = {0: 3, 1: 12, 2: 8, 3: 2, 4: 3}
+        for n, rc in d.items():
+            assert exact[n] == pytest.approx(rc, abs=1e-7)
