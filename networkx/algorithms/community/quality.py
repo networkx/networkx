@@ -8,7 +8,6 @@ from itertools import combinations
 import networkx as nx
 from networkx import NetworkXError
 from networkx.algorithms.community.community_utils import is_partition
-from networkx.utils import not_implemented_for
 from networkx.utils.decorators import argmap
 
 __all__ = ["modularity", "partition_quality"]
