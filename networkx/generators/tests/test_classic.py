@@ -484,7 +484,7 @@ class TestGeneratorClassic:
             m1, m2 = len(first), len(second)
             G = nx.tadpole_graph(first, second)
             assert nx.number_of_nodes(G) == m1 + m2
-            assert nx.number_of_edges(G) == m1 + m2 - (second=="")
+            assert nx.number_of_edges(G) == m1 + m2 - (second == "")
 
     def test_tadpole_graph_exceptions(self):
         # Raise NetworkXError if m<2
