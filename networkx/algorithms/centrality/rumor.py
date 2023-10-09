@@ -25,6 +25,9 @@ def rumor_centrality(G):
     NetworkXPointlessConcept
         If the graph G is the null graph.
 
+    NetworkXUnfeasible
+        If the graph is a multigraph, directed, or contains cycles.
+
     Notes
     -----
     Rumor centrality was introduced by Shah & Zaman [1]_ for rumor source detection.
@@ -41,10 +44,12 @@ def rumor_centrality(G):
         )
 
     if G.is_multigraph():
-        raise NotImplementedError("multigraphs are not supported by this algorithm")
+        raise nx.NetworkXUnfeasible("multigraphs are not supported by this algorithm")
 
     if G.is_directed():
-        raise NotImplementedError("directed graphs are not supported by this algorithm")
+        raise nx.NetworkXUnfeasible(
+            "directed graphs are not supported by this algorithm"
+        )
 
     cycles = list(nx.simple_cycles(G))
     if len(cycles) > 0:
