@@ -7,7 +7,8 @@ __all__ = ["rumor_centrality"]
 
 
 @not_implemented_for("directed")
-def rumor_centrality(G):
+@not_implemented_for("multigraph")
+def rumor_centrality(G: nx.Graph):
     """Compute the rumor centrality for nodes.
 
     Parameters
@@ -25,7 +26,7 @@ def rumor_centrality(G):
     NetworkXPointlessConcept
         If the graph G is the null graph.
 
-    NetworkXUnfeasible
+    NetworkXNotImplemented
         If the graph is a multigraph, directed, or contains cycles.
 
     Notes
@@ -43,17 +44,8 @@ def rumor_centrality(G):
             "cannot compute centrality for the null graph"
         )
 
-    if G.is_multigraph():
-        raise nx.NetworkXUnfeasible("multigraphs are not supported by this algorithm")
-
-    if G.is_directed():
-        raise nx.NetworkXUnfeasible(
-            "directed graphs are not supported by this algorithm"
-        )
-
-    cycles = list(nx.simple_cycles(G))
-    if len(cycles) > 0:
-        raise nx.NetworkXUnfeasible(
+    if not nx.is_tree(G):
+        raise nx.NetworkXNotImplemented(
             "rumor centrality does not work for graphs with cycles"
         )
 

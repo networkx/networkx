@@ -86,3 +86,23 @@ class TestRumorCentrality:
         exact = {0: 3, 1: 12, 2: 8, 3: 2, 4: 3}
         for n, rc in d.items():
             assert exact[n] == pytest.approx(rc, abs=1e-7)
+
+    def test_rumor_centrality_8_multigraph(self):
+        e = [(1, 2), (1, 2), (2, 3), (3, 4)]
+        G = nx.MultiGraph(e)
+
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.rumor_centrality(G)
+
+    def test_rumor_centrality_9_directed(self):
+        e = [(1, 2), (2, 3), (3, 4)]
+        G = nx.DiGraph(e)
+
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.rumor_centrality(G)
+
+    def test_rumor_centrality_10_cycles(self):
+        G = nx.cycle_graph(3)
+
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.rumor_centrality(G)
