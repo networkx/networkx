@@ -9,7 +9,9 @@ __all__ = ["rumor_centrality"]
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def rumor_centrality(G: nx.Graph):
-    """Compute the rumor centrality for nodes.
+    """Compute the rumor centrality for nodes. Rumor centrality is a rumor source detector which uses
+    the network's topology to estimate which (single) vertex is the most likely source of the rumor. In
+    some cases (cf. [1]) it is the maximum likelihood estimator.
 
     Parameters
     ----------
