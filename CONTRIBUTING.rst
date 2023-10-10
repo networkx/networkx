@@ -165,10 +165,10 @@ Development Workflow
       issue number 1480, you could use the phrase "Fixes #1480" in the PR
       description or commit message.
 
-6. Document changes
-
-   If your change introduces any API modifications, please update
-   ``doc/release/release_dev.rst``.
+6. Document deprecations and API changes
+   
+   If your change introduces any API modifications including deprecations,
+   please make sure the PR has the ``type: API`` label.
 
    To set up a function for deprecation:
 
@@ -177,7 +177,7 @@ Development Workflow
          msg = "curly_hair is deprecated and will be removed in v3.0. Use sum() instead."
          warnings.warn(msg, DeprecationWarning)
 
-   - Add a warning to ``networkx/conftest.py``::
+   - Add a warnings filter to ``networkx/conftest.py``::
 
          warnings.filterwarnings(
              "ignore", category=DeprecationWarning, message=<start of message>
@@ -189,14 +189,6 @@ Development Workflow
      .. code-block:: rst
 
         * In ``utils/misc.py`` remove ``generate_unique_node`` and related tests.
-
-   - Add a note (and a link to the PR) to ``doc/release/release_dev.rst``:
-
-     .. code-block:: rst
-
-        [`#4281 <https://github.com/networkx/networkx/pull/4281>`_]
-        Deprecate ``read_yaml`` and ``write_yaml``.
-
 
    .. note::
 
