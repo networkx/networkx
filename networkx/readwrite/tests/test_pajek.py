@@ -178,15 +178,12 @@ class TestPajekCommunities:
         (fd, fname) = tempfile.mkstemp()
         with os.fdopen(fd, "wb") as fh:
             fh.write(self.data.encode("UTF-8"))
-
         partitions = nx.read_pajek_communities(fname)
 
         assert partitions == self.community
-        os.unlink(fname)
 
     def test_write_pajek_communities_simple(self):
         (_, fname) = tempfile.mkstemp()
         nx.write_pajek_communities(self.community, fname)
 
         assert open(fname).read() == self.data
-        os.unlink(fname)
