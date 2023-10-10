@@ -8,19 +8,18 @@ Release Process
       export ORG="networkx"
       export REPO="networkx"
 
+  If this is a prerelease:
+
+      export NOTES="doc/release/release_dev.rst"
+
+  If this is release:
+
+      export NOTES="doc/release/release_${VERSION}.rst"
+      git rm doc/release/release_dev.rst
+
 - Autogenerate release notes:
 
-      changelist ${ORG}/${REPO} networkx-${PREVIOUS} main --version ${VERSION}  --out doc/release/release_dev.rst --format rst
-
-- Update the release notes for final release (skip this step
-  if you are making a pre-release):
-
-  1. Rename to ``doc/release/release_<major>.<minor>.rst``.
-
-  2. Copy ``doc/release/release_template.rst`` to
-     ``doc/release/release_dev.rst`` for the next release.
-
-  3. Add ``release_<major>.<minor>`` to ``doc/release/index.rst``.
+      changelist ${ORG}/${REPO} networkx-${PREVIOUS} main --version ${VERSION}  --out ${NOTES} --format rst
 
 - Edit ``doc/_static/version_switcher.json`` in order to add the release, move the
   key value pair `"preferred": true` to the most recent stable version, and commit.
@@ -29,7 +28,7 @@ Release Process
 
 - Commit changes::
 
-   git add networkx/__init__.py
+   git add networkx/__init__.py ${NOTES} doc/_static/version_switcher.json
    git commit -m "Designate ${VERSION} release"
 
 - Add the version number as a tag in git::
