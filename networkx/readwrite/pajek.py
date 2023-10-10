@@ -298,13 +298,16 @@ def make_qstr(t):
 
 def parse_pajek_communities(lines):
     """Parse Pajek format partition from string or iterable.
+
     Parameters
     ----------
     lines : string or iterable
        Data in Pajek partition format.
+
     Returns
     -------
     communities (list) – List of communities
+
     References
     ----------
     See http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/draweps.htm
@@ -313,6 +316,7 @@ def parse_pajek_communities(lines):
 
     This function assumes successive numbering of nodes starting with zero, as in
     https://networkx.org/documentation/stable/reference/algorithms/community.html
+
     See Also
     --------
     read_pajek_partition()
@@ -341,7 +345,7 @@ def parse_pajek_communities(lines):
                     break
         else:
             break
-    print(nnodes)
+
     if num_vertex != int(nnodes):
         raise ValueError(
             "The number of vertices declared in the CLU file is not the same as the number of vertices found"
@@ -353,20 +357,25 @@ def parse_pajek_communities(lines):
 @open_file(0, mode="rb")
 def read_pajek_communities(path, encoding="UTF-8"):
     """Read communities in Pajek format (.clu) from path.
+
     Parameters
     ----------
     path : file or string
        File or filename to read.
        Filenames ending in .gz or .bz2 will be uncompressed.
+
     Returns
     -------
     communities (list) – List of communities
+
     Examples
     --------
     >>> communities = [[0, 1, 2, 3], [4, 5, 6]]
     >>> nx.write_pajek_communities(communities, "test.clu")
     >>> communities_read = nx.read_pajek_communities("test.clu")
     >>> communities == communities_read # This should be true
+    True
+
     References
     ----------
     See http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/draweps.htm
@@ -383,6 +392,7 @@ def read_pajek_communities(path, encoding="UTF-8"):
 @open_file(1, mode="wb")
 def write_pajek_communities(communities, path, encoding="UTF-8"):
     """Write partition in Pajek format (.clu) to path.
+
     Parameters
     ----------
     communities : list
@@ -390,10 +400,12 @@ def write_pajek_communities(communities, path, encoding="UTF-8"):
     path : file or string
        File or filename to write.
        Filenames ending in .gz or .bz2 will be compressed.
+
     Examples
     --------
     >>> communities = [[0, 1, 2, 3], [4, 5, 6]]
     >>> nx.write_pajek_communities(communities, "test.clu")
+
     Warnings
     --------
     We consider the vertices of the community regardless their precise numbering, only
@@ -410,10 +422,12 @@ def write_pajek_communities(communities, path, encoding="UTF-8"):
 
 def generate_pajek_communities(communities):
     """Generate lines in Pajek communities format (.clu).
+
     Parameters
     ----------
     communities : list
        A communities list
+
     References
     ----------
     See http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/draweps.htm
