@@ -363,8 +363,10 @@ def read_pajek_communities(path, encoding="UTF-8"):
     communities (list) – List of communities
     Examples
     --------
-    >>> G = nx.read_pajek("simple.net")
-    >>> communities = nx.read_pajek_communities("simple.clu")
+    >>> communities = [[0, 1, 2, 3], [4, 5, 6]]
+    >>> nx.write_pajek_communities(communities, "test.clu")
+    >>> communities_read = nx.read_pajek_communities("test.clu")
+    >>> communities == communities_read # This should be true
     References
     ----------
     See http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/draweps.htm
@@ -390,6 +392,7 @@ def write_pajek_communities(communities, path, encoding="UTF-8"):
        Filenames ending in .gz or .bz2 will be compressed.
     Examples
     --------
+    >>> communities = [[0, 1, 2, 3], [4, 5, 6]]
     >>> nx.write_pajek_communities(communities, "test.clu")
     Warnings
     --------
