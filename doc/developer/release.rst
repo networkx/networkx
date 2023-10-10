@@ -1,26 +1,26 @@
 Release Process
 ===============
 
-- Update the release notes:
+- Set release variables:
 
-  1. Review and cleanup ``doc/release/release_dev.rst``,
+      export VERSION=<version number>
+      export PREVIOUS=<previous version number>
+      export ORG="networkx"
+      export REPO="networkx"
 
-  2. Fix code in documentation by running
-     ``cd doc && make doctest``.
+- Autogenerate release notes:
 
-  3. Make a list of merges and contributors by running
-     ``doc/release/contribs.py <tag of previous release>``.
+      changelist ${ORG}/${REPO} networkx-${PREVIOUS} main --version ${VERSION}  --out doc/release/release_dev.rst --format rst
 
-  4. Paste this list at the end of the ``release_dev.rst``. Scan the PR titles
-     for highlights, deprecations, and API changes, and mention these in the
-     relevant sections of the notes.
+- Update the release notes for final release (skip this step
+  if you are making a pre-release):
 
-  5. Rename to ``doc/release/release_<major>.<minor>.rst``.
+  1. Rename to ``doc/release/release_<major>.<minor>.rst``.
 
-  6. Copy ``doc/release/release_template.rst`` to
+  2. Copy ``doc/release/release_template.rst`` to
      ``doc/release/release_dev.rst`` for the next release.
 
-  7. Add ``release_<major>.<minor>`` to ``doc/release/index.rst``.
+  3. Add ``release_<major>.<minor>`` to ``doc/release/index.rst``.
 
 - Edit ``doc/_static/version_switcher.json`` in order to add the release, move the
   key value pair `"preferred": true` to the most recent stable version, and commit.
@@ -30,14 +30,11 @@ Release Process
 - Commit changes::
 
    git add networkx/__init__.py
-   git commit -m "Designate X.X release"
+   git commit -m "Designate ${VERSION} release"
 
 - Add the version number as a tag in git::
 
-   git tag -s [-u <key-id>] networkx-<major>.<minor> -m 'signed <major>.<minor> tag'
-
-  (If you do not have a gpg key, use -m instead; it is important for
-  Debian packaging that the tags are annotated)
+   git tag -s networkx-${VERSION} -m "signed ${VERSION} tag"
 
 - Push the new meta-data to github::
 
