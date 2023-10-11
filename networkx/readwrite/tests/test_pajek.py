@@ -162,28 +162,28 @@ class TestPajekCommunities:
     def teardown_class(cls):
         os.unlink(cls.fname)
 
-    def test_parse_pajek_communities_simple(self):
-        partitions = nx.parse_pajek_communities(self.data)
+    def test_parse_pajek_clu_simple(self):
+        partitions = nx.parse_pajek_clu(self.data)
         assert partitions == self.community
 
-    def test_parse_pajek_communities_error(self):
+    def test_parse_pajek_clu_error(self):
         with pytest.raises(ValueError) as excinfo:
-            nx.parse_pajek_communities(self.dataerror)
+            nx.parse_pajek_clu(self.dataerror)
         assert (
             str(excinfo.value)
             == "The number of vertices declared in the CLU file is not the same as the number of vertices found"
         )
 
-    def test_read_pajek_communities_simple(self):
+    def test_read_pajek_clu_simple(self):
         (fd, fname) = tempfile.mkstemp()
         with os.fdopen(fd, "wb") as fh:
             fh.write(self.data.encode("UTF-8"))
-        partitions = nx.read_pajek_communities(fname)
+        partitions = nx.read_pajek_clu(fname)
 
         assert partitions == self.community
 
-    def test_write_pajek_communities_simple(self):
+    def test_write_pajek_clu_simple(self):
         (_, fname) = tempfile.mkstemp()
-        nx.write_pajek_communities(self.community, fname)
+        nx.write_pajek_clu(self.community, fname)
 
         assert open(fname).read() == self.data

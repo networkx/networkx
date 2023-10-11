@@ -10,7 +10,10 @@ those with self loops and parallel edges.
 Format
 ------
 See http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/draweps.htm
-for format information.
+for NET format information.
+
+Also http://vlado.fmf.uni-lj.si/pub/networks/pajek/howto/FirstSteps.PDF
+(pages 4 and 5) for info on other formats (CLU, VEC, PER).
 
 """
 
@@ -25,10 +28,10 @@ __all__ = [
     "parse_pajek",
     "generate_pajek",
     "write_pajek",
-    "parse_pajek_communities",
-    "read_pajek_communities",
-    "generate_pajek_communities",
-    "write_pajek_communities",
+    "parse_pajek_clu",
+    "read_pajek_clu",
+    "generate_pajek_clu",
+    "write_pajek_clu",
 ]
 
 
@@ -296,7 +299,7 @@ def make_qstr(t):
     return t
 
 
-def parse_pajek_communities(lines):
+def parse_pajek_clu(lines):
     """Parse Pajek format partition from string or iterable.
 
     Parameters
@@ -355,7 +358,7 @@ def parse_pajek_communities(lines):
 
 
 @open_file(0, mode="rb")
-def read_pajek_communities(path, encoding="UTF-8"):
+def read_pajek_clu(path, encoding="UTF-8"):
     """Read communities in Pajek format (.clu) from path.
 
     Parameters
@@ -371,8 +374,8 @@ def read_pajek_communities(path, encoding="UTF-8"):
     Examples
     --------
     >>> communities = [[0, 1, 2, 3], [4, 5, 6]]
-    >>> nx.write_pajek_communities(communities, "test.clu")
-    >>> communities_read = nx.read_pajek_communities("test.clu")
+    >>> nx.write_pajek_clu(communities, "test.clu")
+    >>> communities_read = nx.read_pajek_clu("test.clu")
     >>> communities == communities_read # This should be true
     True
 
@@ -386,11 +389,11 @@ def read_pajek_communities(path, encoding="UTF-8"):
     https://networkx.org/documentation/stable/reference/algorithms/community.html
     """
     lines = (line.decode(encoding) for line in path)
-    return parse_pajek_communities(lines)
+    return parse_pajek_clu(lines)
 
 
 @open_file(1, mode="wb")
-def write_pajek_communities(communities, path, encoding="UTF-8"):
+def write_pajek_clu(communities, path, encoding="UTF-8"):
     """Write partition in Pajek format (.clu) to path.
 
     Parameters
@@ -404,7 +407,7 @@ def write_pajek_communities(communities, path, encoding="UTF-8"):
     Examples
     --------
     >>> communities = [[0, 1, 2, 3], [4, 5, 6]]
-    >>> nx.write_pajek_communities(communities, "test.clu")
+    >>> nx.write_pajek_clu(communities, "test.clu")
 
     Warnings
     --------
@@ -415,12 +418,12 @@ def write_pajek_communities(communities, path, encoding="UTF-8"):
     See http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/draweps.htm
     for format information.
     """
-    for line in generate_pajek_communities(communities):
+    for line in generate_pajek_clu(communities):
         line += "\r\n"
         path.write(line.encode(encoding))
 
 
-def generate_pajek_communities(communities):
+def generate_pajek_clu(communities):
     """Generate lines in Pajek communities format (.clu).
 
     Parameters
