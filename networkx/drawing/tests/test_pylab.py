@@ -706,7 +706,7 @@ def test_edgelist_kwarg_not_ignored():
     plt.delaxes(ax)
 
 
-def test_draw_networkx_edge_label_multiedge_exception():
+def test_draw_networkx_edge_label_multiedge():
     """
     draw_networkx_edge_labels should raise an informative error message when
     the edge label includes keys
@@ -717,8 +717,10 @@ def test_draw_networkx_edge_label_multiedge_exception():
     G.add_edge(0, 1, weight=20)
     edge_labels = nx.get_edge_attributes(G, "weight")  # Includes edge keys
     pos = {n: (n, n) for n in G}
-    with pytest.raises(nx.NetworkXError, match=exception_msg):
-        nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
+    # with pytest.raises(nx.NetworkXError, match=exception_msg):
+    text_items = nx.draw_networkx_edge_labels(
+        G, pos, edge_labels=edge_labels, rad=[0.1, 0.2])
+    assert len(text_items) == 2
 
 
 def test_draw_networkx_edge_label_empty_dict():

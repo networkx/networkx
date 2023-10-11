@@ -1257,7 +1257,7 @@ def draw_networkx_edge_labels(
             zorder=1,
             clip_on=clip_on,
         )
-        text_items[(n1, n2)] = t
+        text_items[edge] = t
 
     ax.tick_params(
         axis="both",
