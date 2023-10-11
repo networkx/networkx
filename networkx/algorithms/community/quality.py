@@ -152,8 +152,8 @@ def modularity(G, communities, weight="weight", resolution=1):
         Q = \frac{1}{2m} \sum_{ij} \left( A_{ij} - \gamma\frac{k_ik_j}{2m}\right)
             \delta(c_i,c_j)
 
-    where $m$ is the sum of the weights of the links in the network (as defined
-    in [5]_), $A$ is the adjacency matrix of `G`, $k_i$ is the degree of $i$,
+    where $m$ is the number of edges (or sum of all edge weights as in [5]_),
+    $A$ is the adjacency matrix of `G`, $k_i$ is the (weighted) degree of $i$,
     $\gamma$ is the resolution parameter, and $\delta(c_i, c_j)$ is 1 if $i$ and
     $j$ are in the same community else 0.
 
