@@ -1133,8 +1133,8 @@ def from_numpy_array(A, parallel_edges=False, create_using=None, edge_attr="weig
             (
                 u,
                 v,
-                {} 
-                if edge_attr in [False, None] 
+                {}
+                if edge_attr in [False, None]
                 else {
                     name: kind_to_python_type[dtype.kind](val)
                     for (_, dtype, name), val in zip(fields, A[u, v])
