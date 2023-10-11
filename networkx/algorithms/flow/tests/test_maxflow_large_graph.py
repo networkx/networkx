@@ -1,16 +1,23 @@
 """Maximum flow algorithms test suite on large graphs.
 """
 
+import bz2
+import importlib.resources
 import os
+import pickle
+
 import pytest
 
 import networkx as nx
-from networkx.algorithms.flow import build_flow_dict, build_residual_network
-from networkx.algorithms.flow import boykov_kolmogorov
-from networkx.algorithms.flow import dinitz
-from networkx.algorithms.flow import edmonds_karp
-from networkx.algorithms.flow import preflow_push
-from networkx.algorithms.flow import shortest_augmenting_path
+from networkx.algorithms.flow import (
+    boykov_kolmogorov,
+    build_flow_dict,
+    build_residual_network,
+    dinitz,
+    edmonds_karp,
+    preflow_push,
+    shortest_augmenting_path,
+)
 
 flow_funcs = [
     boykov_kolmogorov,
@@ -42,9 +49,14 @@ def gen_pyramid(N):
 
 
 def read_graph(name):
-    dirname = os.path.dirname(__file__)
-    path = os.path.join(dirname, name + ".gpickle.bz2")
-    return nx.read_gpickle(path)
+    fname = (
+        importlib.resources.files("networkx.algorithms.flow.tests")
+        / f"{name}.gpickle.bz2"
+    )
+
+    with bz2.BZ2File(fname, "rb") as f:
+        G = pickle.load(f)
+    return G
 
 
 def validate_flows(G, s, t, soln_value, R, flow_func):
@@ -77,7 +89,7 @@ class TestMaxflowLargeGraph:
         G = nx.complete_graph(N)
         nx.set_edge_attributes(G, 5, "capacity")
         R = build_residual_network(G, "capacity")
-        kwargs = dict(residual=R)
+        kwargs = {"residual": R}
 
         for flow_func in flow_funcs:
             kwargs["flow_func"] = flow_func
@@ -90,7 +102,7 @@ class TestMaxflowLargeGraph:
         # N = 100 # this gives a graph with 5051 nodes
         G = gen_pyramid(N)
         R = build_residual_network(G, "capacity")
-        kwargs = dict(residual=R)
+        kwargs = {"residual": R}
 
         for flow_func in flow_funcs:
             kwargs["flow_func"] = flow_func
@@ -103,7 +115,7 @@ class TestMaxflowLargeGraph:
         s = 1
         t = len(G)
         R = build_residual_network(G, "capacity")
-        kwargs = dict(residual=R)
+        kwargs = {"residual": R}
 
         # do one flow_func to save time
         flow_func = flow_funcs[0]
@@ -119,7 +131,7 @@ class TestMaxflowLargeGraph:
         s = 1
         t = len(G)
         R = build_residual_network(G, "capacity")
-        kwargs = dict(residual=R)
+        kwargs = {"residual": R}
 
         for flow_func in flow_funcs:
             validate_flows(G, s, t, 1202018, flow_func(G, s, t, **kwargs), flow_func)
@@ -129,7 +141,7 @@ class TestMaxflowLargeGraph:
         s = 1
         t = len(G)
         R = build_residual_network(G, "capacity")
-        kwargs = dict(residual=R)
+        kwargs = {"residual": R}
 
         # do one flow_func to save time
         flow_func = flow_funcs[0]

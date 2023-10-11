@@ -1,5 +1,6 @@
 """Original NetworkX graph tests"""
 import pytest
+
 import networkx
 import networkx as nx
 
@@ -32,7 +33,7 @@ class TestDiGraphHistorical(HistoricalTests):
         G = self.G()
         G.add_nodes_from("GJK")
         G.add_edges_from([("A", "B"), ("A", "C"), ("B", "D"), ("B", "C"), ("C", "D")])
-        assert sorted([v for k, v in G.in_degree()]) == [0, 0, 0, 0, 1, 2, 2]
+        assert sorted(v for k, v in G.in_degree()) == [0, 0, 0, 0, 1, 2, 2]
         assert dict(G.out_degree()) == {
             "A": 2,
             "C": 1,
@@ -97,9 +98,9 @@ class TestDiGraphHistorical(HistoricalTests):
 
     def test_reverse2(self):
         H = nx.DiGraph()
-        foo = [H.add_edge(u, u + 1) for u in range(0, 5)]
+        foo = [H.add_edge(u, u + 1) for u in range(5)]
         HR = H.reverse()
-        for u in range(0, 5):
+        for u in range(5):
             assert HR.has_edge(u + 1, u)
 
     def test_reverse3(self):

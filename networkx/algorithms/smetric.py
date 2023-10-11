@@ -3,20 +3,24 @@ import networkx as nx
 __all__ = ["s_metric"]
 
 
-def s_metric(G, normalized=True):
-    """Returns the s-metric of graph.
+@nx._dispatch
+def s_metric(G, **kwargs):
+    """Returns the s-metric [1]_ of graph.
 
-    The s-metric is defined as the sum of the products deg(u)*deg(v)
-    for every edge (u,v) in G. If norm is provided construct the
-    s-max graph and compute it's s_metric, and return the normalized
-    s value
+    The s-metric is defined as the sum of the products ``deg(u) * deg(v)``
+    for every edge ``(u, v)`` in `G`.
 
     Parameters
     ----------
-    G    : graph
-           The graph used to compute the s-metric.
+    G : graph
+        The graph used to compute the s-metric.
     normalized : bool (optional)
-           Normalize the value.
+        Normalize the value.
+
+        .. deprecated:: 3.2
+
+           The `normalized` keyword argument is deprecated and will be removed
+           in the future
 
     Returns
     -------
@@ -30,9 +34,27 @@ def s_metric(G, normalized=True):
            Definition, Properties, and  Implications (Extended Version), 2005.
            https://arxiv.org/abs/cond-mat/0501169
     """
-    if normalized:
-        raise nx.NetworkXError("Normalization not implemented")
-    #        Gmax = li_smax_graph(list(G.degree().values()))
-    #        return s_metric(G,normalized=False)/s_metric(Gmax,normalized=False)
-    #    else:
-    return float(sum([G.degree(u) * G.degree(v) for (u, v) in G.edges()]))
+    # NOTE: This entire code block + the **kwargs in the signature can all be
+    # removed when the deprecation expires.
+    # Normalized is always False, since all `normalized=True` did was raise
+    # a NotImplementedError
+    if kwargs:
+        # Warn for `normalize`, raise for any other kwarg
+        if "normalized" in kwargs:
+            import warnings
+
+            warnings.warn(
+                "\n\nThe `normalized` keyword is deprecated and will be removed\n"
+                "in the future. To silence this warning, remove `normalized`\n"
+                "when calling `s_metric`.\n\n"
+                "The value of `normalized` is ignored.",
+                DeprecationWarning,
+                stacklevel=3,
+            )
+        else:
+            # Typical raising behavior for Python when kwarg not recognized
+            raise TypeError(
+                f"s_metric got an unexpected keyword argument '{list(kwargs.keys())[0]}'"
+            )
+
+    return float(sum(G.degree(u) * G.degree(v) for (u, v) in G.edges()))

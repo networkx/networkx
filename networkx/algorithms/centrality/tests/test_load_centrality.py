@@ -1,11 +1,11 @@
 import pytest
+
 import networkx as nx
 
 
 class TestLoadCentrality:
     @classmethod
     def setup_class(cls):
-
         G = nx.Graph()
         G.add_edge(0, 1, weight=3)
         G.add_edge(0, 2, weight=2)
@@ -23,6 +23,7 @@ class TestLoadCentrality:
         cls.P3 = nx.path_graph(3)
         cls.P4 = nx.path_graph(4)
         cls.K5 = nx.complete_graph(5)
+        cls.P2 = nx.path_graph(2)
 
         cls.C4 = nx.cycle_graph(4)
         cls.T = nx.balanced_tree(r=2, h=2)
@@ -39,6 +40,13 @@ class TestLoadCentrality:
         for n in sorted(self.D):
             assert result[n] == pytest.approx(b[n], abs=1e-3)
             assert result[n] == pytest.approx(nx.load_centrality(self.D, n), abs=1e-3)
+
+    def test_P2_normalized_load(self):
+        G = self.P2
+        c = nx.load_centrality(G, normalized=True)
+        d = {0: 0.000, 1: 0.000}
+        for n in sorted(G):
+            assert c[n] == pytest.approx(d[n], abs=1e-3)
 
     def test_weighted_load(self):
         b = nx.load_centrality(self.G, weight="weight", normalized=False)
@@ -265,7 +273,7 @@ class TestLoadCentrality:
         # centrality". https://arxiv.org/pdf/physics/0511084
 
         # Notice that unlike here, their calculation adds to 1 to the
-        # betweennes of every node i for every path from i to every
+        # betweenness of every node i for every path from i to every
         # other node.  This is exactly what it should be, based on
         # Eqn. (1) in their paper: the eqn is B(v) = \sum_{s\neq t,
         # s\neq v}{\frac{\sigma_{st}(v)}{\sigma_{st}}}, therefore,

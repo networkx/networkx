@@ -1,45 +1,105 @@
-"""Unit tests for the :mod:`networkx.generators.random_graphs` module.
-
-"""
-import networkx as nx
+"""Unit tests for the :mod:`networkx.generators.random_graphs` module."""
 import pytest
+
+import networkx as nx
+
+_gnp_generators = [
+    nx.gnp_random_graph,
+    nx.fast_gnp_random_graph,
+    nx.binomial_graph,
+    nx.erdos_renyi_graph,
+]
+
+
+@pytest.mark.parametrize("generator", _gnp_generators)
+@pytest.mark.parametrize("directed", (True, False))
+def test_gnp_generators_negative_edge_probability(generator, directed):
+    """If the edge probability `p` is <=0, the resulting graph should have no edges."""
+    G = generator(10, -1.1, directed=directed)
+    assert len(G) == 10
+    assert G.number_of_edges() == 0
+    assert G.is_directed() == directed
+
+
+@pytest.mark.parametrize("generator", _gnp_generators)
+@pytest.mark.parametrize(
+    ("directed", "expected_num_edges"),
+    [(False, 45), (True, 90)],
+)
+def test_gnp_generators_greater_than_1_edge_probability(
+    generator, directed, expected_num_edges
+):
+    """If the edge probability `p` is >=1, the resulting graph should be complete."""
+    G = generator(10, 1.1, directed=directed)
+    assert len(G) == 10
+    assert G.number_of_edges() == expected_num_edges
+    assert G.is_directed() == directed
+
+
+@pytest.mark.parametrize("generator", _gnp_generators)
+@pytest.mark.parametrize("directed", (True, False))
+def test_gnp_generators_basic(generator, directed):
+    """If the edge probability `p` is >0 and <1, test only the basic properties."""
+    G = generator(10, 0.1, directed=directed)
+    assert len(G) == 10
+    assert G.is_directed() == directed
+
+
+@pytest.mark.parametrize("generator", _gnp_generators)
+def test_gnp_generators_for_p_close_to_1(generator):
+    """If the edge probability `p` is close to 1, the resulting graph should have all edges."""
+    runs = 100
+    edges = sum(
+        generator(10, 0.99999, directed=True).number_of_edges() for _ in range(runs)
+    )
+    assert abs(edges / float(runs) - 90) <= runs * 2.0 / 100
+
+
+@pytest.mark.parametrize("generator", _gnp_generators)
+@pytest.mark.parametrize("p", (0.2, 0.8))
+@pytest.mark.parametrize("directed", (True, False))
+def test_gnp_generators_edge_probability(generator, p, directed):
+    """Test that gnp generators generate edges according to the their probability `p`."""
+    runs = 5000
+    n = 5
+    edge_counts = [[0] * n for _ in range(n)]
+    for i in range(runs):
+        G = generator(n, p, directed=directed)
+        for v, w in G.edges:
+            edge_counts[v][w] += 1
+            if not directed:
+                edge_counts[w][v] += 1
+    for v in range(n):
+        for w in range(n):
+            if v == w:
+                # There should be no loops
+                assert edge_counts[v][w] == 0
+            else:
+                # Each edge should have been generated with probability close to p
+                assert abs(edge_counts[v][w] / float(runs) - p) <= 0.03
+
+
+@pytest.mark.parametrize(
+    "generator", [nx.gnp_random_graph, nx.binomial_graph, nx.erdos_renyi_graph]
+)
+@pytest.mark.parametrize(
+    ("seed", "directed", "expected_num_edges"),
+    [(42, False, 1219), (42, True, 2454), (314, False, 1247), (314, True, 2476)],
+)
+def test_gnp_random_graph_aliases(generator, seed, directed, expected_num_edges):
+    """Test that aliases give the same result with the same seed."""
+    G = generator(100, 0.25, seed=seed, directed=directed)
+    assert len(G) == 100
+    assert G.number_of_edges() == expected_num_edges
+    assert G.is_directed() == directed
 
 
 class TestGeneratorsRandom:
     def test_random_graph(self):
         seed = 42
-        G = nx.gnp_random_graph(100, 0.25, seed)
-        G = nx.gnp_random_graph(100, 0.25, seed, directed=True)
-        G = nx.binomial_graph(100, 0.25, seed)
-        G = nx.erdos_renyi_graph(100, 0.25, seed)
-        G = nx.fast_gnp_random_graph(100, 0.25, seed)
-        G = nx.fast_gnp_random_graph(100, 0.25, seed, directed=True)
         G = nx.gnm_random_graph(100, 20, seed)
         G = nx.gnm_random_graph(100, 20, seed, directed=True)
         G = nx.dense_gnm_random_graph(100, 20, seed)
-
-        G = nx.watts_strogatz_graph(10, 2, 0.25, seed)
-        assert len(G) == 10
-        assert G.number_of_edges() == 10
-
-        G = nx.connected_watts_strogatz_graph(10, 2, 0.1, tries=10, seed=seed)
-        assert len(G) == 10
-        assert G.number_of_edges() == 10
-        pytest.raises(
-            nx.NetworkXError, nx.connected_watts_strogatz_graph, 10, 2, 0.1, tries=0
-        )
-
-        G = nx.watts_strogatz_graph(10, 4, 0.25, seed)
-        assert len(G) == 10
-        assert G.number_of_edges() == 20
-
-        G = nx.newman_watts_strogatz_graph(10, 2, 0.0, seed)
-        assert len(G) == 10
-        assert G.number_of_edges() == 10
-
-        G = nx.newman_watts_strogatz_graph(10, 4, 0.25, seed)
-        assert len(G) == 10
-        assert G.number_of_edges() >= 20
 
         G = nx.barabasi_albert_graph(100, 1, seed)
         G = nx.barabasi_albert_graph(100, 3, seed)
@@ -97,7 +157,7 @@ class TestGeneratorsRandom:
             return is_caterpillar(g.subgraph(non_leafs))
 
         G = nx.random_lobster(10, 0.1, 0.5, seed)
-        assert max([G.degree(n) for n in G.nodes()]) > 3
+        assert max(G.degree(n) for n in G.nodes()) > 3
         assert is_lobster(G)
         pytest.raises(nx.NetworkXError, nx.random_lobster, 10, 0.1, 1, seed)
         pytest.raises(nx.NetworkXError, nx.random_lobster, 10, 1, 1, seed)
@@ -124,7 +184,6 @@ class TestGeneratorsRandom:
         initial_graph = nx.complete_graph(10)
 
         for seed in seeds:
-
             # This should be BA with m = m1
             BA1 = nx.barabasi_albert_graph(100, m1, seed)
             DBA1 = nx.dual_barabasi_albert_graph(100, m1, m2, 1, seed)
@@ -203,70 +262,28 @@ class TestGeneratorsRandom:
         seed = 42
         G = nx.random_regular_graph(0, 10, seed)
         assert len(G) == 10
-        assert sum(1 for _ in G.edges()) == 0
-
-    def test_gnp(self):
-        for generator in [
-            nx.gnp_random_graph,
-            nx.binomial_graph,
-            nx.erdos_renyi_graph,
-            nx.fast_gnp_random_graph,
-        ]:
-            G = generator(10, -1.1)
-            assert len(G) == 10
-            assert sum(1 for _ in G.edges()) == 0
-
-            G = generator(10, 0.1)
-            assert len(G) == 10
-
-            G = generator(10, 0.1, seed=42)
-            assert len(G) == 10
-
-            G = generator(10, 1.1)
-            assert len(G) == 10
-            assert sum(1 for _ in G.edges()) == 45
-
-            G = generator(10, -1.1, directed=True)
-            assert G.is_directed()
-            assert len(G) == 10
-            assert sum(1 for _ in G.edges()) == 0
-
-            G = generator(10, 0.1, directed=True)
-            assert G.is_directed()
-            assert len(G) == 10
-
-            G = generator(10, 1.1, directed=True)
-            assert G.is_directed()
-            assert len(G) == 10
-            assert sum(1 for _ in G.edges()) == 90
-
-            # assert that random graphs generate all edges for p close to 1
-            edges = 0
-            runs = 100
-            for i in range(runs):
-                edges += sum(1 for _ in generator(10, 0.99999, directed=True).edges())
-            assert abs(edges / float(runs) - 90) <= runs * 2.0 / 100
+        assert G.number_of_edges() == 0
 
     def test_gnm(self):
         G = nx.gnm_random_graph(10, 3)
         assert len(G) == 10
-        assert sum(1 for _ in G.edges()) == 3
+        assert G.number_of_edges() == 3
 
         G = nx.gnm_random_graph(10, 3, seed=42)
         assert len(G) == 10
-        assert sum(1 for _ in G.edges()) == 3
+        assert G.number_of_edges() == 3
 
         G = nx.gnm_random_graph(10, 100)
         assert len(G) == 10
-        assert sum(1 for _ in G.edges()) == 45
+        assert G.number_of_edges() == 45
 
         G = nx.gnm_random_graph(10, 100, directed=True)
         assert len(G) == 10
-        assert sum(1 for _ in G.edges()) == 90
+        assert G.number_of_edges() == 90
 
         G = nx.gnm_random_graph(10, -1.1)
         assert len(G) == 10
-        assert sum(1 for _ in G.edges()) == 0
+        assert G.number_of_edges() == 0
 
     def test_watts_strogatz_big_k(self):
         # Test to make sure than n <= k
@@ -293,3 +310,39 @@ class TestGeneratorsRandom:
         graph = nx.random_kernel_graph(1000, integral, root)
         graph = nx.random_kernel_graph(1000, integral, root, seed=42)
         assert len(graph) == 1000
+
+
+@pytest.mark.parametrize(
+    ("k", "expected_num_nodes", "expected_num_edges"),
+    [
+        (2, 10, 10),
+        (4, 10, 20),
+    ],
+)
+def test_watts_strogatz(k, expected_num_nodes, expected_num_edges):
+    G = nx.watts_strogatz_graph(10, k, 0.25, seed=42)
+    assert len(G) == expected_num_nodes
+    assert G.number_of_edges() == expected_num_edges
+
+
+def test_newman_watts_strogatz_zero_probability():
+    G = nx.newman_watts_strogatz_graph(10, 2, 0.0, seed=42)
+    assert len(G) == 10
+    assert G.number_of_edges() == 10
+
+
+def test_newman_watts_strogatz_nonzero_probability():
+    G = nx.newman_watts_strogatz_graph(10, 4, 0.25, seed=42)
+    assert len(G) == 10
+    assert G.number_of_edges() >= 20
+
+
+def test_connected_watts_strogatz():
+    G = nx.connected_watts_strogatz_graph(10, 2, 0.1, tries=10, seed=42)
+    assert len(G) == 10
+    assert G.number_of_edges() == 10
+
+
+def test_connected_watts_strogatz_zero_tries():
+    with pytest.raises(nx.NetworkXError, match="Maximum number of tries exceeded"):
+        nx.connected_watts_strogatz_graph(10, 2, 0.1, tries=0)

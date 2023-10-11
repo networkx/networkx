@@ -50,11 +50,14 @@ from networkx.algorithms.structuralholes import *
 from networkx.algorithms.sparsifiers import *
 from networkx.algorithms.summarization import *
 from networkx.algorithms.swap import *
+from networkx.algorithms.time_dependent import *
 from networkx.algorithms.traversal import *
 from networkx.algorithms.triads import *
 from networkx.algorithms.vitality import *
 from networkx.algorithms.voronoi import *
+from networkx.algorithms.walks import *
 from networkx.algorithms.wiener import *
+from networkx.algorithms.polynomials import *
 
 # Make certain subpackages available to the user as direct imports from
 # the `networkx` namespace.
@@ -84,7 +87,6 @@ from networkx.algorithms import tree
 # to the user as direct imports from the `networkx` namespace.
 from networkx.algorithms.bipartite import complete_bipartite_graph
 from networkx.algorithms.bipartite import is_bipartite
-from networkx.algorithms.bipartite import project
 from networkx.algorithms.bipartite import projected_graph
 from networkx.algorithms.connectivity import all_pairs_node_connectivity
 from networkx.algorithms.connectivity import all_node_cuts
@@ -116,12 +118,15 @@ from networkx.algorithms.isomorphism import could_be_isomorphic
 from networkx.algorithms.isomorphism import fast_could_be_isomorphic
 from networkx.algorithms.isomorphism import faster_could_be_isomorphic
 from networkx.algorithms.isomorphism import is_isomorphic
+from networkx.algorithms.isomorphism.vf2pp import *
 from networkx.algorithms.tree.branchings import maximum_branching
 from networkx.algorithms.tree.branchings import maximum_spanning_arborescence
 from networkx.algorithms.tree.branchings import minimum_branching
 from networkx.algorithms.tree.branchings import minimum_spanning_arborescence
+from networkx.algorithms.tree.branchings import ArborescenceIterator
 from networkx.algorithms.tree.coding import *
 from networkx.algorithms.tree.decomposition import *
 from networkx.algorithms.tree.mst import *
 from networkx.algorithms.tree.operations import *
 from networkx.algorithms.tree.recognition import *
+from networkx.algorithms.tournament import is_tournament

@@ -2,12 +2,14 @@
 Threshold Graphs - Creation, manipulation and identification.
 """
 from math import sqrt
+
 import networkx as nx
 from networkx.utils import py_random_state
 
 __all__ = ["is_threshold_graph", "find_threshold_graph"]
 
 
+@nx._dispatch
 def is_threshold_graph(G):
     """
     Returns `True` if `G` is a threshold graph.
@@ -36,18 +38,18 @@ def is_threshold_graph(G):
     ----------
     .. [1] Threshold graphs: https://en.wikipedia.org/wiki/Threshold_graph
     """
-    return is_threshold_sequence(list(d for n, d in G.degree()))
+    return is_threshold_sequence([d for n, d in G.degree()])
 
 
 def is_threshold_sequence(degree_sequence):
     """
-    Returns True if the sequence is a threshold degree seqeunce.
+    Returns True if the sequence is a threshold degree sequence.
 
     Uses the property that a threshold graph must be constructed by
     adding either dominating or isolated nodes. Thus, it can be
     deconstructed iteratively by removing a node of degree zero or a
     node that connects to the remaining nodes.  If this deconstruction
-    failes then the sequence is not a threshold sequence.
+    fails then the sequence is not a threshold sequence.
     """
     ds = degree_sequence[:]  # get a copy so we don't destroy original
     ds.sort()
@@ -94,7 +96,7 @@ def creation_sequence(degree_sequence, with_labels=False, compact=False):
         raise ValueError("compact sequences cannot be labeled")
 
     # make an indexed copy
-    if isinstance(degree_sequence, dict):  # labeled degree seqeunce
+    if isinstance(degree_sequence, dict):  # labeled degree sequence
         ds = [[degree, label] for (label, degree) in degree_sequence.items()]
     else:
         ds = [[d, i] for i, d in enumerate(degree_sequence)]
@@ -231,7 +233,7 @@ def creation_sequence_to_weights(creation_sequence):
     # Now scale weights
     if prev == "d":
         w += 1
-    wscale = 1.0 / float(w)
+    wscale = 1 / w
     return [ww * wscale for ww in wseq]
     # return wseq
 
@@ -299,6 +301,7 @@ def weights_to_creation_sequence(
 
 
 # Manipulating NetworkX.Graphs in context of threshold graphs
+@nx._dispatch(graphs=None)
 def threshold_graph(creation_sequence, create_using=None):
     """
     Create a threshold graph from the creation sequence or compact
@@ -350,13 +353,14 @@ def threshold_graph(creation_sequence, create_using=None):
     return G
 
 
+@nx._dispatch
 def find_alternating_4_cycle(G):
     """
     Returns False if there aren't any alternating 4 cycles.
     Otherwise returns the cycle as [a,b,c,d] where (a,b)
     and (c,d) are edges and (a,c) and (b,d) are not.
     """
-    for (u, v) in G.edges():
+    for u, v in G.edges():
         for w in G.nodes():
             if not G.has_edge(u, w) and u != w:
                 for x in G.neighbors(w):
@@ -365,6 +369,7 @@ def find_alternating_4_cycle(G):
     return False
 
 
+@nx._dispatch
 def find_threshold_graph(G, create_using=None):
     """
     Returns a threshold subgraph that is close to largest in `G`.
@@ -399,6 +404,7 @@ def find_threshold_graph(G, create_using=None):
     return threshold_graph(find_creation_sequence(G), create_using)
 
 
+@nx._dispatch
 def find_creation_sequence(G):
     """
     Find a threshold subgraph that is close to largest in G.
@@ -492,7 +498,7 @@ def cluster_sequence(creation_sequence):
             cseq.append(0)
             continue
         max_size = (deg * (deg - 1)) // 2
-        cseq.append(float(tri) / float(max_size))
+        cseq.append(tri / max_size)
     return cseq
 
 
@@ -521,7 +527,7 @@ def density(creation_sequence):
     N = len(creation_sequence)
     two_size = sum(degree_sequence(creation_sequence))
     two_possible = N * (N - 1)
-    den = two_size / float(two_possible)
+    den = two_size / two_possible
     return den
 
 
@@ -547,7 +553,7 @@ def degree_correlation(creation_sequence):
         for dj in rdi:
             degj = ds[dj]
             s1 += degj * degi
-            s2 += degi ** 2 + degj ** 2
+            s2 += degi**2 + degj**2
             s3 += degi + degj
             m += 1
     denom = 2 * m * s2 - s3 * s3
@@ -556,7 +562,7 @@ def degree_correlation(creation_sequence):
         if numer == 0:
             return 1
         raise ValueError(f"Zero Denominator but Numerator is {numer}")
-    return numer / float(denom)
+    return numer / denom
 
 
 def shortest_path(creation_sequence, u, v):
@@ -568,7 +574,7 @@ def shortest_path(creation_sequence, u, v):
     u and v must be integers in (0,len(sequence)) referring
     to the position of the desired vertices in the sequence.
 
-    For a labeled creation_sequence, u and v are labels of veritices.
+    For a labeled creation_sequence, u and v are labels of vertices.
 
     Use cs=creation_sequence(degree_sequence,with_labels=True)
     to convert a degree sequence to a creation sequence.
@@ -662,18 +668,18 @@ def betweenness_sequence(creation_sequence, normalized=True):
     """
     Return betweenness for the threshold graph with the given creation
     sequence.  The result is unscaled.  To scale the values
-    to the iterval [0,1] divide by (n-1)*(n-2).
+    to the interval [0,1] divide by (n-1)*(n-2).
     """
     cs = creation_sequence
     seq = []  # betweenness
     lastchar = "d"  # first node is always a 'd'
-    dr = float(cs.count("d"))  # number of d's to the right of curren pos
+    dr = float(cs.count("d"))  # number of d's to the right of current pos
     irun = 0  # number of i's in the last run
     drun = 0  # number of d's in the last run
     dlast = 0.0  # betweenness of last d
     for i, c in enumerate(cs):
         if c == "d":  # cs[i]=="d":
-            # betweennees = amt shared with eariler d's and i's
+            # betweenness = amt shared with earlier d's and i's
             #             + new isolated nodes covered
             #             + new paths to all previous nodes
             b = dlast + (irun - 1) * irun / dr + 2 * irun * (i - drun - irun) / dr
@@ -772,7 +778,7 @@ def spectral_projection(u, eigenpairs):
     coeff = []
     evect = eigenpairs[1]
     for ev in evect:
-        c = sum([evv * uv for (evv, uv) in zip(ev, u)])
+        c = sum(evv * uv for (evv, uv) in zip(ev, u))
         coeff.append(c)
     return coeff
 
@@ -824,7 +830,7 @@ def random_threshold_sequence(n, p, seed=None):
     """
     Create a random threshold sequence of size n.
     A creation sequence is built by randomly choosing d's with
-    probabiliy p and i's with probability 1-p.
+    probability p and i's with probability 1-p.
 
     s=nx.random_threshold_sequence(10,0.5)
 

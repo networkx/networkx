@@ -12,6 +12,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch(graphs={"G1": 0, "G2": 1})
 def could_be_isomorphic(G1, G2):
     """Returns False if graphs are definitely not isomorphic.
     True does NOT guarantee isomorphism.
@@ -24,6 +25,10 @@ def could_be_isomorphic(G1, G2):
     Notes
     -----
     Checks for matching degree, triangle, and number of cliques sequences.
+    The triangle sequence contains the number of triangles each node is part of.
+    The clique sequence contains for each node the number of maximal cliques
+    involving that node.
+
     """
 
     # Check global properties
@@ -33,13 +38,15 @@ def could_be_isomorphic(G1, G2):
     # Check local properties
     d1 = G1.degree()
     t1 = nx.triangles(G1)
-    c1 = nx.number_of_cliques(G1)
+    clqs_1 = list(nx.find_cliques(G1))
+    c1 = {n: sum(1 for c in clqs_1 if n in c) for n in G1}  # number of cliques
     props1 = [[d, t1[v], c1[v]] for v, d in d1]
     props1.sort()
 
     d2 = G2.degree()
     t2 = nx.triangles(G2)
-    c2 = nx.number_of_cliques(G2)
+    clqs_2 = list(nx.find_cliques(G2))
+    c2 = {n: sum(1 for c in clqs_2 if n in c) for n in G2}  # number of cliques
     props2 = [[d, t2[v], c2[v]] for v, d in d2]
     props2.sort()
 
@@ -53,6 +60,7 @@ def could_be_isomorphic(G1, G2):
 graph_could_be_isomorphic = could_be_isomorphic
 
 
+@nx._dispatch(graphs={"G1": 0, "G2": 1})
 def fast_could_be_isomorphic(G1, G2):
     """Returns False if graphs are definitely not isomorphic.
 
@@ -65,7 +73,8 @@ def fast_could_be_isomorphic(G1, G2):
 
     Notes
     -----
-    Checks for matching degree and triangle sequences.
+    Checks for matching degree and triangle sequences. The triangle
+    sequence contains the number of triangles each node is part of.
     """
     # Check global properties
     if G1.order() != G2.order():
@@ -92,6 +101,7 @@ def fast_could_be_isomorphic(G1, G2):
 fast_graph_could_be_isomorphic = fast_could_be_isomorphic
 
 
+@nx._dispatch(graphs={"G1": 0, "G2": 1})
 def faster_could_be_isomorphic(G1, G2):
     """Returns False if graphs are definitely not isomorphic.
 
@@ -124,6 +134,11 @@ def faster_could_be_isomorphic(G1, G2):
 faster_graph_could_be_isomorphic = faster_could_be_isomorphic
 
 
+@nx._dispatch(
+    graphs={"G1": 0, "G2": 1},
+    preserve_edge_attrs="edge_match",
+    preserve_node_attrs="node_match",
+)
 def is_isomorphic(G1, G2, node_match=None, edge_match=None):
     """Returns True if the graphs G1 and G2 are isomorphic and False otherwise.
 
@@ -219,7 +234,7 @@ def is_isomorphic(G1, G2, node_match=None, edge_match=None):
        "An Improved Algorithm for Matching Large Graphs",
        3rd IAPR-TC15 Workshop  on Graph-based Representations in
        Pattern Recognition, Cuen, pp. 149-159, 2001.
-       https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.101.5342
+       https://www.researchgate.net/publication/200034365_An_Improved_Algorithm_for_Matching_Large_Graphs
     """
     if G1.is_directed() and G2.is_directed():
         GM = nx.algorithms.isomorphism.DiGraphMatcher

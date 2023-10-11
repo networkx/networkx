@@ -24,8 +24,8 @@ adjacency list (anything following the # in a line is a comment)::
 
 __all__ = ["generate_adjlist", "write_adjlist", "parse_adjlist", "read_adjlist"]
 
-from networkx.utils import open_file
 import networkx as nx
+from networkx.utils import open_file
 
 
 def generate_adjlist(G, delimiter=" "):
@@ -59,6 +59,14 @@ def generate_adjlist(G, delimiter=" "):
     See Also
     --------
     write_adjlist, read_adjlist
+
+    Notes
+    -----
+    The default `delimiter=" "` will result in unexpected results if node names contain
+    whitespace characters. To avoid this problem, specify an alternate delimiter when spaces are
+    valid in node names.
+
+    NB: This option is not available for data that isn't user-generated.
 
     """
     directed = G.is_directed()
@@ -113,6 +121,11 @@ def write_adjlist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
 
     Notes
     -----
+    The default `delimiter=" "` will result in unexpected results if node names contain
+    whitespace characters. To avoid this problem, specify an alternate delimiter when spaces are
+    valid in node names.
+    NB: This option is not available for data that isn't user-generated.
+
     This format does not store graph, node, or edge data.
 
     See Also
@@ -137,6 +150,7 @@ def write_adjlist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
         path.write(line.encode(encoding))
 
 
+@nx._dispatch(graphs=None)
 def parse_adjlist(
     lines, comments="#", delimiter=None, create_using=None, nodetype=None
 ):
@@ -193,24 +207,24 @@ def parse_adjlist(
         if nodetype is not None:
             try:
                 u = nodetype(u)
-            except BaseException as e:
+            except BaseException as err:
                 raise TypeError(
                     f"Failed to convert node ({u}) to type " f"{nodetype}"
-                ) from e
+                ) from err
         G.add_node(u)
         if nodetype is not None:
             try:
                 vlist = list(map(nodetype, vlist))
-            except BaseException as e:
+            except BaseException as err:
                 raise TypeError(
-                    f"Failed to convert nodes ({','.join(vlist)}) "
-                    f"to type {nodetype}"
-                ) from e
+                    f"Failed to convert nodes ({','.join(vlist)}) to type {nodetype}"
+                ) from err
         G.add_edges_from([(u, v) for v in vlist])
     return G
 
 
 @open_file(0, mode="rb")
+@nx._dispatch(graphs=None)
 def read_adjlist(
     path,
     comments="#",

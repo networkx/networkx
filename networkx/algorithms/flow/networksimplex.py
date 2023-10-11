@@ -6,6 +6,7 @@ __all__ = ["network_simplex"]
 
 from itertools import chain, islice, repeat
 from math import ceil, sqrt
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -14,7 +15,6 @@ class _DataEssentialsAndFunctions:
     def __init__(
         self, G, multigraph, demand="demand", capacity="capacity", weight="weight"
     ):
-
         # Number all nodes and edges and hereafter reference them using ONLY their numbers
         self.node_list = list(G)  # nodes
         self.node_indices = {u: i for i, u in enumerate(self.node_list)}  # node indices
@@ -172,7 +172,7 @@ class _DataEssentialsAndFunctions:
         self.prev_node_dft[next_last_t] = prev_t
         self.next_node_dft[last_t] = t
         self.prev_node_dft[t] = last_t
-        # Update the subtree sizes and last descendants of the (old) acenstors
+        # Update the subtree sizes and last descendants of the (old) ancestors
         # of t.
         while s is not None:
             self.subtree_size[s] -= size_t
@@ -326,6 +326,7 @@ class _DataEssentialsAndFunctions:
 
 
 @not_implemented_for("undirected")
+@nx._dispatch(node_attrs="demand", edge_attrs={"capacity": float("inf"), "weight": 0})
 def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     r"""Find a minimum cost flow satisfying all demands in digraph G.
 
@@ -638,19 +639,12 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
         DEAF.node_list[t] for t in DEAF.edge_targets
     )  # Use original nodes.
     if not multigraph:
-        for e in zip(
-            DEAF.edge_sources,
-            DEAF.edge_targets,
-            DEAF.edge_flow,
-        ):
+        for e in zip(DEAF.edge_sources, DEAF.edge_targets, DEAF.edge_flow):
             add_entry(e)
         edges = G.edges(data=True)
     else:
         for e in zip(
-            DEAF.edge_sources,
-            DEAF.edge_targets,
-            DEAF.edge_keys,
-            DEAF.edge_flow,
+            DEAF.edge_sources, DEAF.edge_targets, DEAF.edge_keys, DEAF.edge_flow
         ):
             add_entry(e)
         edges = G.edges(data=True, keys=True)

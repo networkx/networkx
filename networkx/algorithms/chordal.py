@@ -6,12 +6,10 @@ A graph is chordal if every cycle of length at least 4 has a chord
 https://en.wikipedia.org/wiki/Chordal_graph
 """
 import sys
-import warnings
 
 import networkx as nx
 from networkx.algorithms.components import connected_components
 from networkx.utils import arbitrary_element, not_implemented_for
-
 
 __all__ = [
     "is_chordal",
@@ -30,6 +28,7 @@ class NetworkXTreewidthBoundExceeded(nx.NetworkXException):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def is_chordal(G):
     """Checks whether G is a chordal graph.
 
@@ -75,6 +74,8 @@ def is_chordal(G):
     search. It returns False when it finds that the separator for any node
     is not a clique.  Based on the algorithms in [1]_.
 
+    Self loops are ignored.
+
     References
     ----------
     .. [1] R. E. Tarjan and M. Yannakakis, Simple linear-time algorithms
@@ -82,9 +83,12 @@ def is_chordal(G):
        selectively reduce acyclic hypergraphs, SIAM J. Comput., 13 (1984),
        pp. 566–579.
     """
+    if len(G.nodes) <= 3:
+        return True
     return len(_find_chordality_breaker(G)) == 0
 
 
+@nx._dispatch
 def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
     """Returns the set of induced nodes in the path from s to t.
 
@@ -102,7 +106,7 @@ def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
 
     Returns
     -------
-    Induced_nodes : Set of nodes
+    induced_nodes : Set of nodes
         The set of induced nodes in the path from s to t in G
 
     Raises
@@ -132,6 +136,8 @@ def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
     The algorithm is inspired by Algorithm 4 in [1]_.
     A formal definition of induced node can also be found on that reference.
 
+    Self Loops are ignored
+
     References
     ----------
     .. [1] Learning Bounded Treewidth Bayesian Networks.
@@ -143,27 +149,28 @@ def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
 
     H = nx.Graph(G)
     H.add_edge(s, t)
-    Induced_nodes = set()
+    induced_nodes = set()
     triplet = _find_chordality_breaker(H, s, treewidth_bound)
     while triplet:
         (u, v, w) = triplet
-        Induced_nodes.update(triplet)
+        induced_nodes.update(triplet)
         for n in triplet:
             if n != s:
                 H.add_edge(s, n)
         triplet = _find_chordality_breaker(H, s, treewidth_bound)
-    if Induced_nodes:
+    if induced_nodes:
         # Add t and the second node in the induced path from s to t.
-        Induced_nodes.add(t)
+        induced_nodes.add(t)
         for u in G[s]:
-            if len(Induced_nodes & set(G[u])) == 2:
-                Induced_nodes.add(u)
+            if len(induced_nodes & set(G[u])) == 2:
+                induced_nodes.add(u)
                 break
-    return Induced_nodes
+    return induced_nodes
 
 
+@nx._dispatch
 def chordal_graph_cliques(G):
-    """Returns the set of maximal cliques of a chordal graph.
+    """Returns all maximal cliques of a chordal graph.
 
     The algorithm breaks the graph in connected components and performs a
     maximum cardinality search in each component to get the cliques.
@@ -173,9 +180,11 @@ def chordal_graph_cliques(G):
     G : graph
       A NetworkX graph
 
-    Returns
-    -------
-    cliques : A set containing the maximal cliques in G.
+    Yields
+    ------
+    frozenset of nodes
+        Maximal cliques, each of which is a frozenset of
+        nodes in `G`. The order of cliques is arbitrary.
 
     Raises
     ------
@@ -201,13 +210,38 @@ def chordal_graph_cliques(G):
     ... ]
     >>> G = nx.Graph(e)
     >>> G.add_node(9)
-    >>> setlist = nx.chordal_graph_cliques(G)
+    >>> cliques = [c for c in chordal_graph_cliques(G)]
+    >>> cliques[0]
+    frozenset({1, 2, 3})
     """
-    msg = "This will return a generator in 3.0."
-    warnings.warn(msg, DeprecationWarning)
-    return {c for c in _chordal_graph_cliques(G)}
+    for C in (G.subgraph(c).copy() for c in connected_components(G)):
+        if C.number_of_nodes() == 1:
+            if nx.number_of_selfloops(C) > 0:
+                raise nx.NetworkXError("Input graph is not chordal.")
+            yield frozenset(C.nodes())
+        else:
+            unnumbered = set(C.nodes())
+            v = arbitrary_element(C)
+            unnumbered.remove(v)
+            numbered = {v}
+            clique_wanna_be = {v}
+            while unnumbered:
+                v = _max_cardinality_node(C, unnumbered, numbered)
+                unnumbered.remove(v)
+                numbered.add(v)
+                new_clique_wanna_be = set(C.neighbors(v)) & numbered
+                sg = C.subgraph(clique_wanna_be)
+                if _is_complete_graph(sg):
+                    new_clique_wanna_be.add(v)
+                    if not new_clique_wanna_be >= clique_wanna_be:
+                        yield frozenset(clique_wanna_be)
+                    clique_wanna_be = new_clique_wanna_be
+                else:
+                    raise nx.NetworkXError("Input graph is not chordal.")
+            yield frozenset(clique_wanna_be)
 
 
+@nx._dispatch
 def chordal_graph_treewidth(G):
     """Returns the treewidth of the chordal graph G.
 
@@ -302,9 +336,9 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
 
     If it does find one, it returns (u,v,w) where u,v,w are the three
     nodes that together with s are involved in the cycle.
+
+    It ignores any self loops.
     """
-    if nx.number_of_selfloops(G) > 0:
-        raise nx.NetworkXError("Input graph is not chordal.")
     unnumbered = set(G)
     if s is None:
         s = arbitrary_element(G)
@@ -332,79 +366,8 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
     return ()
 
 
-def _chordal_graph_cliques(G):
-    """Returns all maximal cliques of a chordal graph.
-
-    The algorithm breaks the graph in connected components and performs a
-    maximum cardinality search in each component to get the cliques.
-
-    Parameters
-    ----------
-    G : graph
-      A NetworkX graph
-
-    Returns
-    -------
-    iterator
-        An iterator over maximal cliques, each of which is a frozenset of
-        nodes in `G`. The order of cliques is arbitrary.
-
-    Raises
-    ------
-    NetworkXError
-        The algorithm does not support DiGraph, MultiGraph and MultiDiGraph.
-        The algorithm can only be applied to chordal graphs. If the input
-        graph is found to be non-chordal, a :exc:`NetworkXError` is raised.
-
-    Examples
-    --------
-    >>> e = [
-    ...     (1, 2),
-    ...     (1, 3),
-    ...     (2, 3),
-    ...     (2, 4),
-    ...     (3, 4),
-    ...     (3, 5),
-    ...     (3, 6),
-    ...     (4, 5),
-    ...     (4, 6),
-    ...     (5, 6),
-    ...     (7, 8),
-    ... ]
-    >>> G = nx.Graph(e)
-    >>> G.add_node(9)
-    >>> cliques = [c for c in _chordal_graph_cliques(G)]
-    >>> cliques[0]
-    frozenset({1, 2, 3})
-    """
-    for C in (G.subgraph(c).copy() for c in connected_components(G)):
-        if C.number_of_nodes() == 1:
-            if nx.number_of_selfloops(C) > 0:
-                raise nx.NetworkXError("Input graph is not chordal.")
-            yield frozenset(C.nodes())
-        else:
-            unnumbered = set(C.nodes())
-            v = arbitrary_element(C)
-            unnumbered.remove(v)
-            numbered = {v}
-            clique_wanna_be = {v}
-            while unnumbered:
-                v = _max_cardinality_node(C, unnumbered, numbered)
-                unnumbered.remove(v)
-                numbered.add(v)
-                new_clique_wanna_be = set(C.neighbors(v)) & numbered
-                sg = C.subgraph(clique_wanna_be)
-                if _is_complete_graph(sg):
-                    new_clique_wanna_be.add(v)
-                    if not new_clique_wanna_be >= clique_wanna_be:
-                        yield frozenset(clique_wanna_be)
-                    clique_wanna_be = new_clique_wanna_be
-                else:
-                    raise nx.NetworkXError("Input graph is not chordal.")
-            yield frozenset(clique_wanna_be)
-
-
 @not_implemented_for("directed")
+@nx._dispatch
 def complete_to_chordal_graph(G):
     """Return a copy of G completed to a chordal graph
 

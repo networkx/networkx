@@ -12,7 +12,6 @@ Graph
    degree
    degree_histogram
    density
-   info
    create_empty_copy
    is_directed
    to_directed
@@ -22,10 +21,8 @@ Graph
    add_path
    add_cycle
    subgraph
-   subgraph_view
    induced_subgraph
    restricted_view
-   reverse_view
    edge_subgraph
 
 

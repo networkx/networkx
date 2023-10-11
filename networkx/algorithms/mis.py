@@ -3,14 +3,14 @@ Algorithm to find a maximal (not maximum) independent set.
 
 """
 import networkx as nx
-from networkx.utils import not_implemented_for
-from networkx.utils import py_random_state
+from networkx.utils import not_implemented_for, py_random_state
 
 __all__ = ["maximal_independent_set"]
 
 
-@py_random_state(2)
 @not_implemented_for("directed")
+@py_random_state(2)
+@nx._dispatch
 def maximal_independent_set(G, nodes=None, seed=None):
     """Returns a random maximal independent set guaranteed to contain
     a given set of nodes.

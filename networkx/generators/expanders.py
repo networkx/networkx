@@ -2,6 +2,7 @@
 
 """
 import itertools
+
 import networkx as nx
 
 __all__ = ["margulis_gabber_galil_graph", "chordal_cycle_graph", "paley_graph"]
@@ -39,6 +40,7 @@ __all__ = ["margulis_gabber_galil_graph", "chordal_cycle_graph", "paley_graph"]
 #     (x, (y + (2*x + 1)) % n),
 #     (x, (y + (2*x + 2)) % n),
 #
+@nx._dispatch(graphs=None)
 def margulis_gabber_galil_graph(n, create_using=None):
     r"""Returns the Margulis-Gabber-Galil undirected MultiGraph on `n^2` nodes.
 
@@ -69,8 +71,8 @@ def margulis_gabber_galil_graph(n, create_using=None):
         msg = "`create_using` must be an undirected multigraph."
         raise nx.NetworkXError(msg)
 
-    for (x, y) in itertools.product(range(n), repeat=2):
-        for (u, v) in (
+    for x, y in itertools.product(range(n), repeat=2):
+        for u, v in (
             ((x + 2 * y) % n, y),
             ((x + (2 * y + 1)) % n, y),
             (x, (y + 2 * x) % n),
@@ -81,6 +83,7 @@ def margulis_gabber_galil_graph(n, create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def chordal_cycle_graph(p, create_using=None):
     """Returns the chordal cycle graph on `p` nodes.
 
@@ -144,23 +147,24 @@ def chordal_cycle_graph(p, create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def paley_graph(p, create_using=None):
-    """Returns the Paley (p-1)/2-regular graph on p nodes.
+    r"""Returns the Paley $\frac{(p-1)}{2}$ -regular graph on $p$ nodes.
 
-    The returned graph is a graph on Z/pZ with edges between x and y
-    if and only if x-y is a nonzero square in Z/pZ.
+    The returned graph is a graph on $\mathbb{Z}/p\mathbb{Z}$ with edges between $x$ and $y$
+    if and only if $x-y$ is a nonzero square in $\mathbb{Z}/p\mathbb{Z}$.
 
-    If p = 1 mod 4, -1 is a square in Z/pZ and therefore x-y is a square if and
-    only if y-x is also a square, i.e the edges in the Paley graph are symmetric.
+    If $p \equiv 1  \pmod 4$, $-1$ is a square in $\mathbb{Z}/p\mathbb{Z}$ and therefore $x-y$ is a square if and
+    only if $y-x$ is also a square, i.e the edges in the Paley graph are symmetric.
 
-    If p = 3 mod 4, -1 is not a square in Z/pZ and therefore either x-y or y-x
-    is a square in Z/pZ but not both.
+    If $p \equiv 3 \pmod 4$, $-1$ is not a square in $\mathbb{Z}/p\mathbb{Z}$ and therefore either $x-y$ or $y-x$
+    is a square in $\mathbb{Z}/p\mathbb{Z}$ but not both.
 
     Note that a more general definition of Paley graphs extends this construction
-    to graphs over q=p^n vertices, by using the finite field F_q instead of Z/pZ.
+    to graphs over $q=p^n$ vertices, by using the finite field $F_q$ instead of $\mathbb{Z}/p\mathbb{Z}$.
     This construction requires to compute squares in general finite fields and is
-    not what is implemented here (i.e paley_graph(25) does not return the true
-    Paley graph associated with 5^2).
+    not what is implemented here (i.e `paley_graph(25)` does not return the true
+    Paley graph associated with $5^2$).
 
     Parameters
     ----------
@@ -193,7 +197,7 @@ def paley_graph(p, create_using=None):
     # Compute the squares in Z/pZ.
     # Make it a set to uniquify (there are exactly (p-1)/2 squares in Z/pZ
     # when is prime).
-    square_set = {(x ** 2) % p for x in range(1, p) if (x ** 2) % p != 0}
+    square_set = {(x**2) % p for x in range(1, p) if (x**2) % p != 0}
 
     for x in range(p):
         for x2 in square_set:

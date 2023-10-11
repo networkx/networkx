@@ -1,5 +1,6 @@
 # Test for approximation to k-components algorithm
 import pytest
+
 import networkx as nx
 from networkx.algorithms.approximation import k_components
 from networkx.algorithms.approximation.kcomponents import _AntiGraph, _same
@@ -232,7 +233,7 @@ def test_same():
 class TestAntiGraph:
     @classmethod
     def setup_class(cls):
-        cls.Gnp = nx.gnp_random_graph(20, 0.8)
+        cls.Gnp = nx.gnp_random_graph(20, 0.8, seed=42)
         cls.Anp = _AntiGraph(nx.complement(cls.Gnp))
         cls.Gd = nx.davis_southern_women_graph()
         cls.Ad = _AntiGraph(nx.complement(cls.Gd))
@@ -255,6 +256,8 @@ class TestAntiGraph:
             assert nx.core_number(G) == nx.core_number(A)
 
     def test_connected_components(self):
+        # ccs are same unless isolated nodes or any node has degree=len(G)-1
+        # graphs in self.GA avoid this problem
         for G, A in self.GA:
             gc = [set(c) for c in nx.connected_components(G)]
             ac = [set(c) for c in nx.connected_components(A)]

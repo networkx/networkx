@@ -1,5 +1,7 @@
 from itertools import combinations
+
 import pytest
+
 import networkx as nx
 
 
@@ -130,11 +132,16 @@ def test_undirected_graphs_are_not_supported():
     """
     Test that undirected graphs are not supported.
 
-    d-separation does not apply in the case of undirected graphs.
+    d-separation and its related algorithms do not apply in
+    the case of undirected graphs.
     """
+    g = nx.path_graph(3, nx.Graph)
     with pytest.raises(nx.NetworkXNotImplemented):
-        g = nx.path_graph(3, nx.Graph)
         nx.d_separated(g, {0}, {1}, {2})
+    with pytest.raises(nx.NetworkXNotImplemented):
+        nx.is_minimal_d_separator(g, {0}, {1}, {2})
+    with pytest.raises(nx.NetworkXNotImplemented):
+        nx.minimal_d_separator(g, {0}, {1})
 
 
 def test_cyclic_graphs_raise_error():
@@ -143,9 +150,13 @@ def test_cyclic_graphs_raise_error():
 
     This is because PGMs assume a directed acyclic graph.
     """
+    g = nx.cycle_graph(3, nx.DiGraph)
     with pytest.raises(nx.NetworkXError):
-        g = nx.cycle_graph(3, nx.DiGraph)
         nx.d_separated(g, {0}, {1}, {2})
+    with pytest.raises(nx.NetworkXError):
+        nx.minimal_d_separator(g, 0, 1)
+    with pytest.raises(nx.NetworkXError):
+        nx.is_minimal_d_separator(g, 0, 1, {2})
 
 
 def test_invalid_nodes_raise_error(asia_graph):
@@ -154,3 +165,64 @@ def test_invalid_nodes_raise_error(asia_graph):
     """
     with pytest.raises(nx.NodeNotFound):
         nx.d_separated(asia_graph, {0}, {1}, {2})
+    with pytest.raises(nx.NodeNotFound):
+        nx.is_minimal_d_separator(asia_graph, 0, 1, {2})
+    with pytest.raises(nx.NodeNotFound):
+        nx.minimal_d_separator(asia_graph, 0, 1)
+
+
+def test_minimal_d_separator():
+    # Case 1:
+    # create a graph A -> B <- C
+    # B -> D -> E;
+    # B -> F;
+    # G -> E;
+    edge_list = [("A", "B"), ("C", "B"), ("B", "D"), ("D", "E"), ("B", "F"), ("G", "E")]
+    G = nx.DiGraph(edge_list)
+    assert not nx.d_separated(G, {"B"}, {"E"}, set())
+
+    # minimal set of the corresponding graph
+    # for B and E should be (D,)
+    Zmin = nx.minimal_d_separator(G, "B", "E")
+
+    # the minimal separating set should pass the test for minimality
+    assert nx.is_minimal_d_separator(G, "B", "E", Zmin)
+    assert Zmin == {"D"}
+
+    # Case 2:
+    # create a graph A -> B -> C
+    # B -> D -> C;
+    edge_list = [("A", "B"), ("B", "C"), ("B", "D"), ("D", "C")]
+    G = nx.DiGraph(edge_list)
+    assert not nx.d_separated(G, {"A"}, {"C"}, set())
+    Zmin = nx.minimal_d_separator(G, "A", "C")
+
+    # the minimal separating set should pass the test for minimality
+    assert nx.is_minimal_d_separator(G, "A", "C", Zmin)
+    assert Zmin == {"B"}
+
+    Znotmin = Zmin.union({"D"})
+    assert not nx.is_minimal_d_separator(G, "A", "C", Znotmin)
+
+
+def test_minimal_d_separator_checks_dsep():
+    """Test that is_minimal_d_separator checks for d-separation as well."""
+    g = nx.DiGraph()
+    g.add_edges_from(
+        [
+            ("A", "B"),
+            ("A", "E"),
+            ("B", "C"),
+            ("B", "D"),
+            ("D", "C"),
+            ("D", "F"),
+            ("E", "D"),
+            ("E", "F"),
+        ]
+    )
+
+    assert not nx.d_separated(g, {"C"}, {"F"}, {"D"})
+
+    # since {'D'} and {} are not d-separators, we return false
+    assert not nx.is_minimal_d_separator(g, "C", "F", {"D"})
+    assert not nx.is_minimal_d_separator(g, "C", "F", {})

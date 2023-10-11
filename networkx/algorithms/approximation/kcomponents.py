@@ -3,18 +3,18 @@
 import itertools
 from collections import defaultdict
 from collections.abc import Mapping
+from functools import cached_property
 
 import networkx as nx
+from networkx.algorithms.approximation import local_node_connectivity
 from networkx.exception import NetworkXError
 from networkx.utils import not_implemented_for
-
-from networkx.algorithms.approximation import local_node_connectivity
-
 
 __all__ = ["k_components"]
 
 
 @not_implemented_for("directed")
+@nx._dispatch(name="approximate_k_components")
 def k_components(G, min_density=0.95):
     r"""Returns the approximate k-component structure of a graph G.
 
@@ -199,7 +199,7 @@ class _AntiGraph(nx.Graph):
     Class for complement graphs.
 
     The main goal is to be able to work with big and dense graphs with
-    a low memory foodprint.
+    a low memory footprint.
 
     In this class you add the edges that *do not exist* in the dense graph,
     the report methods of the class return the neighbors, the edges and
@@ -213,7 +213,7 @@ class _AntiGraph(nx.Graph):
     def single_edge_dict(self):
         return self.all_edge_dict
 
-    edge_attr_dict_factory = single_edge_dict
+    edge_attr_dict_factory = single_edge_dict  # type: ignore[assignment]
 
     def __getitem__(self, n):
         """Returns a dict of neighbors of node n in the dense graph.
@@ -240,8 +240,8 @@ class _AntiGraph(nx.Graph):
         """
         try:
             return iter(set(self._adj) - set(self._adj[n]) - {n})
-        except KeyError as e:
-            raise NetworkXError(f"The node {n} is not in the graph.") from e
+        except KeyError as err:
+            raise NetworkXError(f"The node {n} is not in the graph.") from err
 
     class AntiAtlasView(Mapping):
         """An adjacency inner dict for AntiGraph"""
@@ -281,7 +281,7 @@ class _AntiGraph(nx.Graph):
                 raise KeyError(node)
             return self._graph.AntiAtlasView(self._graph, node)
 
-    @property
+    @cached_property
     def adj(self):
         return self.AntiAdjacencyView(self)
 
@@ -312,7 +312,7 @@ class _AntiGraph(nx.Graph):
             # AntiGraph is a ThinGraph so all edges have weight 1
             return len(nbrs) + (n in nbrs)
 
-    @property
+    @cached_property
     def degree(self):
         """Returns an iterator for (node, degree) and degree for single node.
 

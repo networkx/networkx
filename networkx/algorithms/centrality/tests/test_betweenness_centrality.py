@@ -1,4 +1,5 @@
 import pytest
+
 import networkx as nx
 
 
@@ -56,6 +57,7 @@ class TestBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_sample_from_P3(self):
+        """Betweenness centrality: P3 sample"""
         G = nx.path_graph(3)
         b_answer = {0: 0.0, 1: 1.0, 2: 0.0}
         b = nx.betweenness_centrality(G, k=3, weight=None, normalized=False, seed=1)
@@ -513,6 +515,44 @@ class TestWeightedBetweennessCentrality:
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
+    def test_G3(self):
+        """Weighted betweenness centrality: G3"""
+        G = nx.MultiGraph(weighted_G())
+        es = list(G.edges(data=True))[::2]  # duplicate every other edge
+        G.add_edges_from(es)
+        b_answer = {0: 2.0, 1: 0.0, 2: 4.0, 3: 3.0, 4: 4.0, 5: 0.0}
+        b = nx.betweenness_centrality(G, weight="weight", normalized=False)
+        for n in sorted(G):
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
+
+    def test_G4(self):
+        """Weighted betweenness centrality: G4"""
+        G = nx.MultiDiGraph()
+        G.add_weighted_edges_from(
+            [
+                ("s", "u", 10),
+                ("s", "x", 5),
+                ("s", "x", 6),
+                ("u", "v", 1),
+                ("u", "x", 2),
+                ("v", "y", 1),
+                ("v", "y", 1),
+                ("x", "u", 3),
+                ("x", "v", 5),
+                ("x", "y", 2),
+                ("x", "y", 3),
+                ("y", "s", 7),
+                ("y", "v", 6),
+                ("y", "v", 6),
+            ]
+        )
+
+        b_answer = {"y": 5.0, "x": 5.0, "s": 4.0, "u": 2.0, "v": 2.0}
+
+        b = nx.betweenness_centrality(G, weight="weight", normalized=False)
+        for n in sorted(G):
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
+
 
 class TestEdgeBetweennessCentrality:
     def test_K5(self):
@@ -598,6 +638,7 @@ class TestWeightedEdgeBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_weighted_graph(self):
+        """Edge betweenness centrality: weighted"""
         eList = [
             (0, 1, 5),
             (0, 2, 4),
@@ -627,6 +668,7 @@ class TestWeightedEdgeBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_normalized_weighted_graph(self):
+        """Edge betweenness centrality: normalized weighted"""
         eList = [
             (0, 1, 5),
             (0, 2, 4),
@@ -654,4 +696,85 @@ class TestWeightedEdgeBetweennessCentrality:
         }
         norm = len(G) * (len(G) - 1) / 2
         for n in sorted(G.edges()):
+            assert b[n] == pytest.approx(b_answer[n] / norm, abs=1e-7)
+
+    def test_weighted_multigraph(self):
+        """Edge betweenness centrality: weighted multigraph"""
+        eList = [
+            (0, 1, 5),
+            (0, 1, 4),
+            (0, 2, 4),
+            (0, 3, 3),
+            (0, 3, 3),
+            (0, 4, 2),
+            (1, 2, 4),
+            (1, 3, 1),
+            (1, 3, 2),
+            (1, 4, 3),
+            (1, 4, 4),
+            (2, 4, 5),
+            (3, 4, 4),
+            (3, 4, 4),
+        ]
+        G = nx.MultiGraph()
+        G.add_weighted_edges_from(eList)
+        b = nx.edge_betweenness_centrality(G, weight="weight", normalized=False)
+        b_answer = {
+            (0, 1, 0): 0.0,
+            (0, 1, 1): 0.5,
+            (0, 2, 0): 1.0,
+            (0, 3, 0): 0.75,
+            (0, 3, 1): 0.75,
+            (0, 4, 0): 1.0,
+            (1, 2, 0): 2.0,
+            (1, 3, 0): 3.0,
+            (1, 3, 1): 0.0,
+            (1, 4, 0): 1.5,
+            (1, 4, 1): 0.0,
+            (2, 4, 0): 1.0,
+            (3, 4, 0): 0.25,
+            (3, 4, 1): 0.25,
+        }
+        for n in sorted(G.edges(keys=True)):
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
+
+    def test_normalized_weighted_multigraph(self):
+        """Edge betweenness centrality: normalized weighted multigraph"""
+        eList = [
+            (0, 1, 5),
+            (0, 1, 4),
+            (0, 2, 4),
+            (0, 3, 3),
+            (0, 3, 3),
+            (0, 4, 2),
+            (1, 2, 4),
+            (1, 3, 1),
+            (1, 3, 2),
+            (1, 4, 3),
+            (1, 4, 4),
+            (2, 4, 5),
+            (3, 4, 4),
+            (3, 4, 4),
+        ]
+        G = nx.MultiGraph()
+        G.add_weighted_edges_from(eList)
+        b = nx.edge_betweenness_centrality(G, weight="weight", normalized=True)
+        b_answer = {
+            (0, 1, 0): 0.0,
+            (0, 1, 1): 0.5,
+            (0, 2, 0): 1.0,
+            (0, 3, 0): 0.75,
+            (0, 3, 1): 0.75,
+            (0, 4, 0): 1.0,
+            (1, 2, 0): 2.0,
+            (1, 3, 0): 3.0,
+            (1, 3, 1): 0.0,
+            (1, 4, 0): 1.5,
+            (1, 4, 1): 0.0,
+            (2, 4, 0): 1.0,
+            (3, 4, 0): 0.25,
+            (3, 4, 1): 0.25,
+        }
+        norm = len(G) * (len(G) - 1) / 2
+        for n in sorted(G.edges(keys=True)):
             assert b[n] == pytest.approx(b_answer[n] / norm, abs=1e-7)

@@ -1,6 +1,8 @@
 """Betweenness centrality measures for subsets of nodes."""
-import warnings
-
+import networkx as nx
+from networkx.algorithms.centrality.betweenness import (
+    _add_edge_keys,
+)
 from networkx.algorithms.centrality.betweenness import (
     _single_source_dijkstra_path_basic as dijkstra,
 )
@@ -10,11 +12,11 @@ from networkx.algorithms.centrality.betweenness import (
 
 __all__ = [
     "betweenness_centrality_subset",
-    "betweenness_centrality_source",
     "edge_betweenness_centrality_subset",
 ]
 
 
+@nx._dispatch(edge_attrs="weight")
 def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=None):
     r"""Compute betweenness centrality for a subset of nodes.
 
@@ -112,6 +114,7 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
     return b
 
 
+@nx._dispatch(edge_attrs="weight")
 def edge_betweenness_centrality_subset(
     G, sources, targets, normalized=False, weight=None
 ):
@@ -193,17 +196,9 @@ def edge_betweenness_centrality_subset(
     for n in G:  # remove nodes to only return edges
         del b[n]
     b = _rescale_e(b, len(G), normalized=normalized, directed=G.is_directed())
+    if G.is_multigraph():
+        b = _add_edge_keys(G, b, weight=weight)
     return b
-
-
-# obsolete name
-def betweenness_centrality_source(G, normalized=True, weight=None, sources=None):
-    msg = "betweenness_centrality_source --> betweenness_centrality_subset"
-    warnings.warn(msg, DeprecationWarning)
-    if sources is None:
-        sources = G.nodes()
-    targets = list(G)
-    return betweenness_centrality_subset(G, sources, targets, normalized, weight)
 
 
 def _accumulate_subset(betweenness, S, P, sigma, s, targets):

@@ -2,21 +2,21 @@
 Equitable coloring of graphs with bounded degree.
 """
 
-import networkx as nx
 from collections import defaultdict
+
+import networkx as nx
 
 __all__ = ["equitable_color"]
 
 
+@nx._dispatch
 def is_coloring(G, coloring):
     """Determine if the coloring is a valid coloring for the graph G."""
     # Verify that the coloring is valid.
-    for (s, d) in G.edges:
-        if coloring[s] == coloring[d]:
-            return False
-    return True
+    return all(coloring[s] != coloring[d] for s, d in G.edges)
 
 
+@nx._dispatch
 def is_equitable(G, coloring, num_colors=None):
     """Determines if the coloring is valid and equitable for the graph G."""
 
@@ -48,7 +48,7 @@ def is_equitable(G, coloring, num_colors=None):
 
 
 def make_C_from_F(F):
-    C = defaultdict(lambda: [])
+    C = defaultdict(list)
     for node, color in F.items():
         C[color].append(node)
 
@@ -67,9 +67,7 @@ def make_N_from_L_C(L, C):
 
 def make_H_from_C_N(C, N):
     return {
-        (c1, c2): sum(1 for node in C[c1] if N[(node, c2)] == 0)
-        for c1 in C.keys()
-        for c2 in C.keys()
+        (c1, c2): sum(1 for node in C[c1] if N[(node, c2)] == 0) for c1 in C for c2 in C
     }
 
 
@@ -80,7 +78,7 @@ def change_color(u, X, Y, N, H, F, C, L):
     # Change the class of 'u' from X to Y
     F[u] = Y
 
-    for k in C.keys():
+    for k in C:
         # 'u' witnesses an edge from k -> Y instead of from k -> X now.
         if N[u, k] == 0:
             H[(X, k)] -= 1
@@ -109,11 +107,12 @@ def move_witnesses(src_color, dst_color, N, H, F, C, T_cal, L):
     while X != dst_color:
         Y = T_cal[X]
         # Move _any_ witness from X to Y = T_cal[X]
-        w = [x for x in C[X] if N[(x, Y)] == 0][0]
+        w = next(x for x in C[X] if N[(x, Y)] == 0)
         change_color(w, X, Y, N=N, H=H, F=F, C=C, L=L)
         X = Y
 
 
+@nx._dispatch
 def pad_graph(G, num_colors):
     """Add a disconnected complete clique K_p such that the number of nodes in
     the graph becomes a multiple of `num_colors`.
@@ -165,7 +164,7 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
         # using a look-up table instead of testing for membership in a set by a
         # logarithmic factor.
         next_layer = []
-        for k in C.keys():
+        for k in C:
             if (
                 H[(k, pop)] > 0
                 and k not in A_cal
@@ -200,11 +199,10 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
         made_equitable = False
 
         for W_1 in R_cal[::-1]:
-
             for v in C[W_1]:
                 X = None
 
-                for U in C.keys():
+                for U in C:
                     if N[(v, U)] == 0 and U in A_cal and U != W_1:
                         X = U
 
@@ -212,21 +210,22 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
                 if X is None:
                     continue
 
-                for U in C.keys():
+                for U in C:
                     # Note: Departing from the paper here.
                     if N[(v, U)] >= 1 and U not in A_cal:
                         X_prime = U
                         w = v
 
-                        # Finding the solo neighbor of w in X_prime
-                        y_candidates = [
-                            node
-                            for node in L[w]
-                            if F[node] == X_prime and N[(node, W_1)] == 1
-                        ]
-
-                        if len(y_candidates) > 0:
-                            y = y_candidates[0]
+                        try:
+                            # Finding the solo neighbor of w in X_prime
+                            y = next(
+                                node
+                                for node in L[w]
+                                if F[node] == X_prime and N[(node, W_1)] == 1
+                            )
+                        except StopIteration:
+                            pass
+                        else:
                             W = W_1
 
                             # Move w from W to X, now X has one extra node.
@@ -292,7 +291,7 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
                     # they only exclude colors from A_cal
                     next_layer = [
                         k
-                        for k in C.keys()
+                        for k in C
                         if H[(pop, k)] > 0 and k not in B_cal_prime and k not in marked
                     ]
 
@@ -316,7 +315,7 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
 
                     I_set.add(z)
                     I_covered.add(z)
-                    I_covered.update([nbr for nbr in L[z]])
+                    I_covered.update(list(L[z]))
 
                     for w in L[z]:
                         if F[w] in A_cal_0 and N[(z, F[w])] == 1:
@@ -352,20 +351,14 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
                                 change_color(z_1, Z, W, N=N, H=H, F=F, C=C, L=L)
 
                                 # change color of w to some color in B_cal
-                                W_plus = [
-                                    k
-                                    for k in C.keys()
-                                    if N[(w, k)] == 0 and k not in A_cal
-                                ][0]
+                                W_plus = next(
+                                    k for k in C if N[(w, k)] == 0 and k not in A_cal
+                                )
                                 change_color(w, W, W_plus, N=N, H=H, F=F, C=C, L=L)
 
                                 # recurse with G[B \cup W*]
                                 excluded_colors.update(
-                                    [
-                                        k
-                                        for k in C.keys()
-                                        if k != W and k not in B_cal_prime
-                                    ]
+                                    [k for k in C if k != W and k not in B_cal_prime]
                                 )
                                 procedure_P(
                                     V_minus=W,
@@ -393,13 +386,15 @@ def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
                 break
 
 
+@nx._dispatch
 def equitable_color(G, num_colors):
-    """Provides equitable (r + 1)-coloring for nodes of G in O(r * n^2) time
-    if deg(G) <= r. The algorithm is described in [1]_.
+    """Provides an equitable coloring for nodes of `G`.
 
-    Attempts to color a graph using r colors, where no neighbors of a node
-    can have same color as the node itself and the number of nodes with each
-    color differ by at most 1.
+    Attempts to color a graph using `num_colors` colors, where no neighbors of
+    a node can have same color as the node itself and the number of nodes with
+    each color differ by at most 1. `num_colors` must be greater than the
+    maximum degree of `G`. The algorithm is described in [1]_ and has
+    complexity O(num_colors * n**2).
 
     Parameters
     ----------
@@ -418,15 +413,13 @@ def equitable_color(G, num_colors):
     Examples
     --------
     >>> G = nx.cycle_graph(4)
-    >>> d = nx.coloring.equitable_color(G, num_colors=3)
-    >>> nx.algorithms.coloring.equitable_coloring.is_equitable(G, d)
-    True
+    >>> nx.coloring.equitable_color(G, num_colors=3)  # doctest: +SKIP
+    {0: 2, 1: 1, 2: 2, 3: 0}
 
     Raises
     ------
     NetworkXAlgorithmError
-        If the maximum degree of the graph ``G`` is greater than
-        ``num_colors``.
+        If `num_colors` is not at least the maximum degree of the graph `G`
 
     References
     ----------
@@ -447,7 +440,7 @@ def equitable_color(G, num_colors):
 
     # Basic graph statistics and sanity check.
     if len(G.nodes) > 0:
-        r_ = max([G.degree(node) for node in G.nodes])
+        r_ = max(G.degree(node) for node in G.nodes)
     else:
         r_ = 0
 
@@ -480,7 +473,6 @@ def equitable_color(G, num_colors):
 
     for u in sorted(G.nodes):
         for v in sorted(G.neighbors(u)):
-
             # Do not double count edges if (v, u) has already been seen.
             if (v, u) in edges_seen:
                 continue
@@ -503,7 +495,7 @@ def equitable_color(G, num_colors):
 
         if N[(u, F[u])] != 0:
             # Find the first color where 'u' does not have any neighbors.
-            Y = [k for k in C.keys() if N[(u, k)] == 0][0]
+            Y = next(k for k in C if N[(u, k)] == 0)
             X = F[u]
             change_color(u, X, Y, N=N, H=H, F=F, C=C, L=L_)
 

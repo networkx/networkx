@@ -1,8 +1,5 @@
 """Provides functions for computing minors of a graph."""
-from itertools import chain
-from itertools import combinations
-from itertools import permutations
-from itertools import product
+from itertools import chain, combinations, permutations, product
 
 import networkx as nx
 from networkx import density
@@ -51,6 +48,12 @@ def equivalence_classes(iterable, relation):
         Duplicate elements will be ignored so it makes the most sense for
         `iterable` to be a :class:`set`.
 
+    Notes
+    -----
+    This function does not check that `relation` represents an equivalence
+    relation. You can check that your equivalence classes provide a partition
+    using `is_partition`.
+
     Examples
     --------
     Let `X` be the set of integers from `0` to `9`, and consider an equivalence
@@ -91,12 +94,14 @@ def equivalence_classes(iterable, relation):
     return {frozenset(block) for block in blocks}
 
 
+@nx._dispatch(edge_attrs="weight")
 def quotient_graph(
     G,
     partition,
     edge_relation=None,
     node_data=None,
     edge_data=None,
+    weight="weight",
     relabel=False,
     create_using=None,
 ):
@@ -128,27 +133,14 @@ def quotient_graph(
 
     edge_relation : Boolean function with two arguments
         This function must represent an edge relation on the *blocks* of
-        `G` in the partition induced by `node_relation`. It must
-        take two arguments, *B* and *C*, each one a set of nodes, and
-        return True exactly when there should be an edge joining
-        block *B* to block *C* in the returned graph.
+        the `partition` of `G`. It must take two arguments, *B* and *C*,
+        each one a set of nodes, and return True exactly when there should be
+        an edge joining block *B* to block *C* in the returned graph.
 
         If `edge_relation` is not specified, it is assumed to be the
         following relation. Block *B* is related to block *C* if and
         only if some node in *B* is adjacent to some node in *C*,
         according to the edge set of `G`.
-
-    edge_data : function
-        This function takes two arguments, *B* and *C*, each one a set
-        of nodes, and must return a dictionary representing the edge
-        data attributes to set on the edge joining *B* and *C*, should
-        there be an edge joining *B* and *C* in the quotient graph (if
-        no such edge occurs in the quotient graph as determined by
-        `edge_relation`, then the output of this function is ignored).
-
-        If the quotient graph would be a multigraph, this function is
-        not applied, since the edge data from each edge in the graph
-        `G` appears in the edges of the quotient graph.
 
     node_data : function
         This function takes one argument, *B*, a set of nodes in `G`,
@@ -162,6 +154,22 @@ def quotient_graph(
         * 'nedges', the number of edges within this block,
         * 'density', the density of the subgraph of `G` that this
           block represents.
+
+    edge_data : function
+        This function takes two arguments, *B* and *C*, each one a set
+        of nodes, and must return a dictionary representing the edge
+        data attributes to set on the edge joining *B* and *C*, should
+        there be an edge joining *B* and *C* in the quotient graph (if
+        no such edge occurs in the quotient graph as determined by
+        `edge_relation`, then the output of this function is ignored).
+
+        If the quotient graph would be a multigraph, this function is
+        not applied, since the edge data from each edge in the graph
+        `G` appears in the edges of the quotient graph.
+
+    weight : string or None, optional (default="weight")
+        The name of an edge attribute that holds the numerical value
+        used as a weight. If None then each edge has weight 1.
 
     relabel : bool
         If True, relabel the nodes of the quotient graph to be
@@ -269,13 +277,12 @@ def quotient_graph(
     [(0, 1), (1, 2)]
 
     Partitions can be represented in various ways:
-    ::
 
-        (0) a list/tuple/set of block lists/tuples/sets
-        (1) a dict with block labels as keys and blocks lists/tuples/sets as values
-        (2) a dict with block lists/tuples/sets as keys and block labels as values
-        (3) a function from nodes in the original iterable to block labels
-        (4) an equivalence relation function on the target iterable
+    0. a list/tuple/set of block lists/tuples/sets
+    1. a dict with block labels as keys and blocks lists/tuples/sets as values
+    2. a dict with block lists/tuples/sets as keys and block labels as values
+    3. a function from nodes in the original iterable to block labels
+    4. an equivalence relation function on the target iterable
 
     As `quotient_graph` is designed to accept partitions represented as (0), (1) or
     (4) only, the `equivalence_classes` function can be used to get the partitions
@@ -296,14 +303,25 @@ def quotient_graph(
     if callable(partition):
         # equivalence_classes always return partition of whole G.
         partition = equivalence_classes(G, partition)
+        if not nx.community.is_partition(G, partition):
+            raise nx.NetworkXException(
+                "Input `partition` is not an equivalence relation for nodes of G"
+            )
         return _quotient_graph(
-            G, partition, edge_relation, node_data, edge_data, relabel, create_using
+            G,
+            partition,
+            edge_relation,
+            node_data,
+            edge_data,
+            weight,
+            relabel,
+            create_using,
         )
 
     # If the partition is a dict, it is assumed to be one where the keys are
     # user-defined block labels, and values are block lists, tuples or sets.
     if isinstance(partition, dict):
-        partition = [block for block in partition.values()]
+        partition = list(partition.values())
 
     # If the user provided partition as a collection of sets. Then we
     # need to check if partition covers all of G nodes. If the answer
@@ -311,23 +329,25 @@ def quotient_graph(
     partition_nodes = set().union(*partition)
     if len(partition_nodes) != len(G):
         G = G.subgraph(partition_nodes)
+    # Each node in the graph/subgraph must be in exactly one block.
+    if not nx.community.is_partition(G, partition):
+        raise NetworkXException("each node must be in exactly one part of `partition`")
     return _quotient_graph(
-        G, partition, edge_relation, node_data, edge_data, relabel, create_using
+        G,
+        partition,
+        edge_relation,
+        node_data,
+        edge_data,
+        weight,
+        relabel,
+        create_using,
     )
 
 
 def _quotient_graph(
-    G,
-    partition,
-    edge_relation=None,
-    node_data=None,
-    edge_data=None,
-    relabel=False,
-    create_using=None,
+    G, partition, edge_relation, node_data, edge_data, weight, relabel, create_using
 ):
-    # Each node in the graph must be in exactly one block.
-    if any(sum(1 for b in partition if v in b) != 1 for v in G):
-        raise NetworkXException("each node must be in exactly one block")
+    """Construct the quotient graph assuming input has been checked"""
     if create_using is None:
         H = G.__class__()
     else:
@@ -338,9 +358,12 @@ def _quotient_graph(
 
         def node_data(b):
             S = G.subgraph(b)
-            return dict(
-                graph=S, nnodes=len(S), nedges=S.number_of_edges(), density=density(S)
-            )
+            return {
+                "graph": S,
+                "nnodes": len(S),
+                "nedges": S.number_of_edges(),
+                "density": density(S),
+            }
 
     # Each block of the partition becomes a node in the quotient graph.
     partition = [frozenset(b) for b in partition]
@@ -367,7 +390,7 @@ def _quotient_graph(
                 for u, v, d in G.edges(b | c, data=True)
                 if (u in b and v in c) or (u in c and v in b)
             )
-            return {"weight": sum(d.get("weight", 1) for d in edgedata)}
+            return {"weight": sum(d.get(weight, 1) for d in edgedata)}
 
     block_pairs = permutations(H, 2) if H.is_directed() else combinations(H, 2)
     # In a multigraph, add one edge in the quotient graph for each edge
@@ -402,6 +425,7 @@ def _quotient_graph(
     return H
 
 
+@nx._dispatch(preserve_all_attrs=True)
 def contracted_nodes(G, u, v, self_loops=True, copy=True):
     """Returns the graph that results from contracting `u` and `v`.
 
@@ -473,6 +497,18 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
     >>> list(H.edges())
     [(1, 1)]
 
+    In a ``MultiDiGraph`` with a self loop, the in and out edges will
+    be treated separately as edges, so while contracting a node which
+    has a self loop the contraction will add multiple edges:
+
+    >>> G = nx.MultiDiGraph([(1, 2), (2, 2)])
+    >>> H = nx.contracted_nodes(G, 1, 2)
+    >>> list(H.edges())  # edge 1->2, 2->2, 2<-2 from the original Graph G
+    [(1, 1), (1, 1), (1, 1)]
+    >>> H = nx.contracted_nodes(G, 1, 2, self_loops=False)
+    >>> list(H.edges())  # edge 2->2, 2<-2 from the original Graph G
+    [(1, 1), (1, 1)]
+
     See Also
     --------
     contracted_edge
@@ -499,7 +535,7 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
     v_data = H.nodes[v]
     H.remove_node(v)
 
-    for (prev_w, prev_x, d) in edges_to_remap:
+    for prev_w, prev_x, d in edges_to_remap:
         w = prev_w if prev_w != v else u
         x = prev_x if prev_x != v else u
 
@@ -524,7 +560,8 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
 identified_nodes = contracted_nodes
 
 
-def contracted_edge(G, edge, self_loops=True):
+@nx._dispatch(preserve_edge_attrs=True)
+def contracted_edge(G, edge, self_loops=True, copy=True):
     """Returns the graph that results from contracting the specified edge.
 
     Edge contraction identifies the two endpoints of the edge as a single node
@@ -544,6 +581,10 @@ def contracted_edge(G, edge, self_loops=True):
        If this is True, any edges (including `edge`) joining the
        endpoints of `edge` in `G` become self-loops on the new node in the
        returned graph.
+
+    copy : Boolean (default True)
+        If this is True, a the contraction will be performed on a copy of `G`,
+        otherwise the contraction will happen in place.
 
     Returns
     -------
@@ -586,4 +627,4 @@ def contracted_edge(G, edge, self_loops=True):
     u, v = edge[:2]
     if not G.has_edge(u, v):
         raise ValueError(f"Edge {edge} does not exist in graph G; cannot contract it")
-    return contracted_nodes(G, u, v, self_loops=self_loops)
+    return contracted_nodes(G, u, v, self_loops=self_loops, copy=copy)

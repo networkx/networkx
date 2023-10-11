@@ -6,6 +6,7 @@ import networkx as nx
 __all__ = ["load_centrality", "edge_load_centrality"]
 
 
+@nx._dispatch(edge_attrs="weight")
 def newman_betweenness_centrality(G, v=None, cutoff=None, normalized=True, weight=None):
     """Compute load centrality for nodes.
 
@@ -65,7 +66,6 @@ def newman_betweenness_centrality(G, v=None, cutoff=None, normalized=True, weigh
             if order <= 2:
                 return betweenness  # no normalization b=0 for all nodes
             betweenness *= 1.0 / ((order - 1) * (order - 2))
-        return betweenness
     else:
         betweenness = {}.fromkeys(G, 0.0)
         for source in betweenness:
@@ -79,7 +79,7 @@ def newman_betweenness_centrality(G, v=None, cutoff=None, normalized=True, weigh
             scale = 1.0 / ((order - 1) * (order - 2))
             for v in betweenness:
                 betweenness[v] *= scale
-        return betweenness  # all nodes
+    return betweenness  # all nodes
 
 
 def _node_betweenness(G, source, cutoff=False, normalized=True, weight=None):
@@ -118,7 +118,7 @@ def _node_betweenness(G, source, cutoff=False, normalized=True, weight=None):
             for x in pred[v]:  # one shortest path.
                 if x == source:  # stop if hit source because all remaining v
                     break  # also have pred[v]==[source]
-                between[x] += between[v] / float(num_paths)
+                between[x] += between[v] / num_paths
     #  remove source
     for v in between:
         between[v] -= 1
@@ -127,7 +127,7 @@ def _node_betweenness(G, source, cutoff=False, normalized=True, weight=None):
         l = len(between)
         if l > 2:
             # scale by 1/the number of possible paths
-            scale = 1.0 / float((l - 1) * (l - 2))
+            scale = 1 / ((l - 1) * (l - 2))
             for v in between:
                 between[v] *= scale
     return between
@@ -136,6 +136,7 @@ def _node_betweenness(G, source, cutoff=False, normalized=True, weight=None):
 load_centrality = newman_betweenness_centrality
 
 
+@nx._dispatch
 def edge_load_centrality(G, cutoff=False):
     """Compute edge load.
 

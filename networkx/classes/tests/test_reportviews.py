@@ -1,3 +1,6 @@
+import pickle
+from copy import deepcopy
+
 import pytest
 
 import networkx as nx
@@ -202,7 +205,7 @@ class TestNodeViewSetOps:
         cls.nv = cls.G.nodes
 
     def n_its(self, nodes):
-        return {node for node in nodes}
+        return set(nodes)
 
     def test_len(self):
         G = self.G.copy()
@@ -348,26 +351,26 @@ class TestEdgeDataView:
             assert (1, 2) in ev and (2, 1) not in ev
         else:
             assert (1, 2) in ev and (2, 1) in ev
-        assert not (1, 4) in ev
-        assert not (1, 90) in ev
-        assert not (90, 1) in ev
+        assert (1, 4) not in ev
+        assert (1, 90) not in ev
+        assert (90, 1) not in ev
 
     def test_contains_with_nbunch(self):
         evr = self.eview(self.G)
         ev = evr(nbunch=[0, 2])
         if self.G.is_directed():
             assert (0, 1) in ev
-            assert not (1, 2) in ev
+            assert (1, 2) not in ev
             assert (2, 3) in ev
         else:
             assert (0, 1) in ev
             assert (1, 2) in ev
             assert (2, 3) in ev
-        assert not (3, 4) in ev
-        assert not (4, 5) in ev
-        assert not (5, 6) in ev
-        assert not (7, 8) in ev
-        assert not (8, 9) in ev
+        assert (3, 4) not in ev
+        assert (4, 5) not in ev
+        assert (5, 6) not in ev
+        assert (7, 8) not in ev
+        assert (8, 9) not in ev
 
     def test_len(self):
         evr = self.eview(self.G)
@@ -424,13 +427,13 @@ class TestOutEdgeDataView(TestEdgeDataView):
         evr = self.eview(self.G)
         ev = evr(nbunch=[0, 2])
         assert (0, 1) in ev
-        assert not (1, 2) in ev
+        assert (1, 2) not in ev
         assert (2, 3) in ev
-        assert not (3, 4) in ev
-        assert not (4, 5) in ev
-        assert not (5, 6) in ev
-        assert not (7, 8) in ev
-        assert not (8, 9) in ev
+        assert (3, 4) not in ev
+        assert (4, 5) not in ev
+        assert (5, 6) not in ev
+        assert (7, 8) not in ev
+        assert (8, 9) not in ev
 
 
 class TestInEdgeDataView(TestOutEdgeDataView):
@@ -452,14 +455,14 @@ class TestInEdgeDataView(TestOutEdgeDataView):
     def test_contains_with_nbunch(self):
         evr = self.eview(self.G)
         ev = evr(nbunch=[0, 2])
-        assert not (0, 1) in ev
+        assert (0, 1) not in ev
         assert (1, 2) in ev
-        assert not (2, 3) in ev
-        assert not (3, 4) in ev
-        assert not (4, 5) in ev
-        assert not (5, 6) in ev
-        assert not (7, 8) in ev
-        assert not (8, 9) in ev
+        assert (2, 3) not in ev
+        assert (3, 4) not in ev
+        assert (4, 5) not in ev
+        assert (5, 6) not in ev
+        assert (7, 8) not in ev
+        assert (8, 9) not in ev
 
 
 class TestMultiEdgeDataView(TestEdgeDataView):
@@ -487,11 +490,11 @@ class TestMultiEdgeDataView(TestEdgeDataView):
         assert (0, 1) in ev
         assert (1, 2) in ev
         assert (2, 3) in ev
-        assert not (3, 4) in ev
-        assert not (4, 5) in ev
-        assert not (5, 6) in ev
-        assert not (7, 8) in ev
-        assert not (8, 9) in ev
+        assert (3, 4) not in ev
+        assert (4, 5) not in ev
+        assert (5, 6) not in ev
+        assert (7, 8) not in ev
+        assert (8, 9) not in ev
 
 
 class TestOutMultiEdgeDataView(TestOutEdgeDataView):
@@ -517,13 +520,13 @@ class TestOutMultiEdgeDataView(TestOutEdgeDataView):
         evr = self.eview(self.G)
         ev = evr(nbunch=[0, 2])
         assert (0, 1) in ev
-        assert not (1, 2) in ev
+        assert (1, 2) not in ev
         assert (2, 3) in ev
-        assert not (3, 4) in ev
-        assert not (4, 5) in ev
-        assert not (5, 6) in ev
-        assert not (7, 8) in ev
-        assert not (8, 9) in ev
+        assert (3, 4) not in ev
+        assert (4, 5) not in ev
+        assert (5, 6) not in ev
+        assert (7, 8) not in ev
+        assert (8, 9) not in ev
 
 
 class TestInMultiEdgeDataView(TestOutMultiEdgeDataView):
@@ -545,14 +548,14 @@ class TestInMultiEdgeDataView(TestOutMultiEdgeDataView):
     def test_contains_with_nbunch(self):
         evr = self.eview(self.G)
         ev = evr(nbunch=[0, 2])
-        assert not (0, 1) in ev
+        assert (0, 1) not in ev
         assert (1, 2) in ev
-        assert not (2, 3) in ev
-        assert not (3, 4) in ev
-        assert not (4, 5) in ev
-        assert not (5, 6) in ev
-        assert not (7, 8) in ev
-        assert not (8, 9) in ev
+        assert (2, 3) not in ev
+        assert (3, 4) not in ev
+        assert (4, 5) not in ev
+        assert (5, 6) not in ev
+        assert (7, 8) not in ev
+        assert (8, 9) not in ev
 
 
 # Edge Views
@@ -628,13 +631,13 @@ class TestEdgeView:
         else:
             assert (1, 2) in ev and (2, 1) in ev
             assert (1, 2) in edv and (2, 1) in edv
-        assert not (1, 4) in ev
-        assert not (1, 4) in edv
+        assert (1, 4) not in ev
+        assert (1, 4) not in edv
         # edge not in graph
-        assert not (1, 90) in ev
-        assert not (90, 1) in ev
-        assert not (1, 90) in edv
-        assert not (90, 1) in edv
+        assert (1, 90) not in ev
+        assert (90, 1) not in ev
+        assert (1, 90) not in edv
+        assert (90, 1) not in edv
 
     def test_contains_with_nbunch(self):
         ev = self.eview(self.G)
@@ -642,11 +645,11 @@ class TestEdgeView:
         assert (0, 1) in evn
         assert (1, 2) in evn
         assert (2, 3) in evn
-        assert not (3, 4) in evn
-        assert not (4, 5) in evn
-        assert not (5, 6) in evn
-        assert not (7, 8) in evn
-        assert not (8, 9) in evn
+        assert (3, 4) not in evn
+        assert (4, 5) not in evn
+        assert (5, 6) not in evn
+        assert (7, 8) not in evn
+        assert (8, 9) not in evn
 
     def test_len(self):
         ev = self.eview(self.G)
@@ -723,13 +726,13 @@ class TestOutEdgeView(TestEdgeView):
         ev = self.eview(self.G)
         evn = ev(nbunch=[0, 2])
         assert (0, 1) in evn
-        assert not (1, 2) in evn
+        assert (1, 2) not in evn
         assert (2, 3) in evn
-        assert not (3, 4) in evn
-        assert not (4, 5) in evn
-        assert not (5, 6) in evn
-        assert not (7, 8) in evn
-        assert not (8, 9) in evn
+        assert (3, 4) not in evn
+        assert (4, 5) not in evn
+        assert (5, 6) not in evn
+        assert (7, 8) not in evn
+        assert (8, 9) not in evn
 
 
 class TestInEdgeView(TestEdgeView):
@@ -749,14 +752,14 @@ class TestInEdgeView(TestEdgeView):
     def test_contains_with_nbunch(self):
         ev = self.eview(self.G)
         evn = ev(nbunch=[0, 2])
-        assert not (0, 1) in evn
+        assert (0, 1) not in evn
         assert (1, 2) in evn
-        assert not (2, 3) in evn
-        assert not (3, 4) in evn
-        assert not (4, 5) in evn
-        assert not (5, 6) in evn
-        assert not (7, 8) in evn
-        assert not (8, 9) in evn
+        assert (2, 3) not in evn
+        assert (3, 4) not in evn
+        assert (4, 5) not in evn
+        assert (5, 6) not in evn
+        assert (7, 8) not in evn
+        assert (8, 9) not in evn
 
 
 class TestMultiEdgeView(TestEdgeView):
@@ -868,9 +871,13 @@ class TestMultiEdgeView(TestEdgeView):
         for e in ev:
             assert len(e) == 3
         elist = sorted([(i, i + 1, 0) for i in range(8)] + [(1, 2, 3)])
-        assert sorted(list(ev)) == elist
-        # test order of arguments:graph, nbunch, data, keys, default
-        ev = evr((1, 2), "foo", True, 1)
+        assert sorted(ev) == elist
+        # test that the keyword arguments are passed correctly
+        ev = evr((1, 2), "foo", keys=True, default=1)
+        with pytest.raises(TypeError):
+            evr((1, 2), "foo", True, 1)
+        with pytest.raises(TypeError):
+            evr((1, 2), "foo", True, default=1)
         for e in ev:
             if set(e[:2]) == {1, 2}:
                 assert e[2] in {0, 3}
@@ -935,11 +942,11 @@ class TestMultiEdgeView(TestEdgeView):
         assert (0, 1) in evn
         assert (1, 2) in evn
         assert (2, 3) in evn
-        assert not (3, 4) in evn
-        assert not (4, 5) in evn
-        assert not (5, 6) in evn
-        assert not (7, 8) in evn
-        assert not (8, 9) in evn
+        assert (3, 4) not in evn
+        assert (4, 5) not in evn
+        assert (5, 6) not in evn
+        assert (7, 8) not in evn
+        assert (8, 9) not in evn
 
 
 class TestOutMultiEdgeView(TestMultiEdgeView):
@@ -966,13 +973,13 @@ class TestOutMultiEdgeView(TestMultiEdgeView):
         ev = self.eview(self.G)
         evn = ev(nbunch=[0, 2])
         assert (0, 1) in evn
-        assert not (1, 2) in evn
+        assert (1, 2) not in evn
         assert (2, 3) in evn
-        assert not (3, 4) in evn
-        assert not (4, 5) in evn
-        assert not (5, 6) in evn
-        assert not (7, 8) in evn
-        assert not (8, 9) in evn
+        assert (3, 4) not in evn
+        assert (4, 5) not in evn
+        assert (5, 6) not in evn
+        assert (7, 8) not in evn
+        assert (8, 9) not in evn
 
 
 class TestInMultiEdgeView(TestMultiEdgeView):
@@ -998,14 +1005,14 @@ class TestInMultiEdgeView(TestMultiEdgeView):
     def test_contains_with_nbunch(self):
         ev = self.eview(self.G)
         evn = ev(nbunch=[0, 2])
-        assert not (0, 1) in evn
+        assert (0, 1) not in evn
         assert (1, 2) in evn
-        assert not (2, 3) in evn
-        assert not (3, 4) in evn
-        assert not (4, 5) in evn
-        assert not (5, 6) in evn
-        assert not (7, 8) in evn
-        assert not (8, 9) in evn
+        assert (2, 3) not in evn
+        assert (3, 4) not in evn
+        assert (4, 5) not in evn
+        assert (5, 6) not in evn
+        assert (7, 8) not in evn
+        assert (8, 9) not in evn
 
 
 # Degrees
@@ -1388,3 +1395,29 @@ def test_slicing_reportviews(reportview, err_msg_terms):
     errmsg = str(exc.value)
     assert type(view).__name__ in errmsg
     assert err_msg_terms in errmsg
+
+
+@pytest.mark.parametrize(
+    "graph", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+)
+def test_cache_dict_get_set_state(graph):
+    G = nx.path_graph(5, graph())
+    G.nodes, G.edges, G.adj, G.degree
+    if G.is_directed():
+        G.pred, G.succ, G.in_edges, G.out_edges, G.in_degree, G.out_degree
+    cached_dict = G.__dict__
+    assert "nodes" in cached_dict
+    assert "edges" in cached_dict
+    assert "adj" in cached_dict
+    assert "degree" in cached_dict
+    if G.is_directed():
+        assert "pred" in cached_dict
+        assert "succ" in cached_dict
+        assert "in_edges" in cached_dict
+        assert "out_edges" in cached_dict
+        assert "in_degree" in cached_dict
+        assert "out_degree" in cached_dict
+
+    # Raises error if the cached properties and views do not work
+    pickle.loads(pickle.dumps(G, -1))
+    deepcopy(G)

@@ -8,6 +8,7 @@ Clique
 
    enumerate_all_cliques
    find_cliques
+   find_cliques_recursive
    make_max_clique_graph
    make_clique_bipartite
    graph_clique_number

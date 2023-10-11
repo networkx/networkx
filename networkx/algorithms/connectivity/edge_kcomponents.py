@@ -8,12 +8,11 @@ A k-edge-connected subgraph (k-edge-subgraph) is a maximal set of nodes in G,
 such that the subgraph of G defined by the nodes has an edge-connectivity at
 least k.
 """
-import networkx as nx
-from networkx.utils import arbitrary_element
-from networkx.utils import not_implemented_for
-from networkx.algorithms import bridges
-from functools import partial
 import itertools as it
+from functools import partial
+
+import networkx as nx
+from networkx.utils import arbitrary_element, not_implemented_for
 
 __all__ = [
     "k_edge_components",
@@ -24,6 +23,7 @@ __all__ = [
 
 
 @not_implemented_for("multigraph")
+@nx._dispatch
 def k_edge_components(G, k):
     """Generates nodes in each maximal k-edge-connected component in G.
 
@@ -107,6 +107,7 @@ def k_edge_components(G, k):
 
 
 @not_implemented_for("multigraph")
+@nx._dispatch
 def k_edge_subgraphs(G, k):
     """Generates nodes in each maximal k-edge-connected subgraph in G.
 
@@ -127,7 +128,7 @@ def k_edge_subgraphs(G, k):
     --------
     :func:`edge_connectivity`
     :func:`k_edge_components` : similar to this function, but nodes only
-        need to have k-edge-connctivity within the graph G and the subgraphs
+        need to have k-edge-connectivity within the graph G and the subgraphs
         might not be k-edge-connected.
 
     Raises
@@ -195,6 +196,7 @@ def _k_edge_subgraphs_nodes(G, k):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def bridge_components(G):
     """Finds all bridge-connected components G.
 
@@ -232,14 +234,14 @@ def bridge_components(G):
     [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]
     """
     H = G.copy()
-    H.remove_edges_from(bridges(G))
+    H.remove_edges_from(nx.bridges(G))
     yield from nx.connected_components(H)
 
 
 class EdgeComponentAuxGraph:
     r"""A simple algorithm to find all k-edge-connected components in a graph.
 
-    Constructing the AuxillaryGraph (which may take some time) allows for the
+    Constructing the auxiliary graph (which may take some time) allows for the
     k-edge-ccs to be found in linear time for arbitrary k.
 
     Notes
@@ -288,7 +290,7 @@ class EdgeComponentAuxGraph:
     >>> sorted(map(sorted, aux_graph.k_edge_components(k=4)))
     [[0], [1], [2], [3], [4], [5], [6], [7]]
 
-    The auxiliary graph is primarilly used for k-edge-ccs but it
+    The auxiliary graph is primarily used for k-edge-ccs but it
     can also speed up the queries of k-edge-subgraphs by refining the
     search space.
 
@@ -482,7 +484,7 @@ def _high_degree_components(G, k):
     Removes and generates each node with degree less than k.  Then generates
     remaining components where all nodes have degree at least k.
     """
-    # Iteravely remove parts of the graph that are not k-edge-connected
+    # Iteratively remove parts of the graph that are not k-edge-connected
     H = G.copy()
     singletons = set(_low_degree_nodes(H, k))
     while singletons:
@@ -501,6 +503,7 @@ def _high_degree_components(G, k):
         yield from nx.connected_components(H)
 
 
+@nx._dispatch
 def general_k_edge_subgraphs(G, k):
     """General algorithm to find all maximal k-edge-connected subgraphs in G.
 

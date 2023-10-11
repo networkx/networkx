@@ -1,65 +1,50 @@
 Release Process
 ===============
 
-- Update the release notes:
+- Set release variables:
 
-  1. Review and cleanup ``doc/release/release_dev.rst``,
+      export VERSION=<version number>
+      export PREVIOUS=<previous version number>
+      export ORG="networkx"
+      export REPO="networkx"
 
-  2. Fix code in documentation by running
-     ``cd doc && make doctest``.
+  If this is a prerelease:
 
-  3. Make a list of merges and contributors by running
-     ``doc/release/contribs.py <tag of previous release>``.
+      export NOTES="doc/release/release_dev.rst"
 
-  4. Paste this list at the end of the ``release_dev.rst``. Scan the PR titles
-     for highlights, deprecations, and API changes, and mention these in the
-     relevant sections of the notes.
+  If this is release:
 
-  5. Rename to ``doc/release/release_<major>.<minor>.rst``.
+      export NOTES="doc/release/release_${VERSION}.rst"
+      git rm doc/release/release_dev.rst
 
-  6. Copy ``doc/release/release_template.rst`` to
-     ``doc/release/release_dev.rst`` for the next release.
+- Autogenerate release notes:
 
-  7. Update ``doc/news.rst``.
+      changelist ${ORG}/${REPO} networkx-${PREVIOUS} main --version ${VERSION}  --out ${NOTES} --format rst
 
-- Delete the following from ``doc/_templates/layout.html``::
+- Edit ``doc/_static/version_switcher.json`` in order to add the release, move the
+  key value pair `"preferred": true` to the most recent stable version, and commit.
 
-    {% block document %}
-      {% include "dev_banner.html" %}
-      {{ super() }}
-    {% endblock %}
-
-- Toggle ``dev = True`` to ``dev = False`` in ``networkx/release.py``.
+- Update ``__version__`` in ``networkx/__init__.py``.
 
 - Commit changes::
 
-   git add networkx/release.py
-   git commit -m "Designate X.X release"
+   git add networkx/__init__.py ${NOTES} doc/_static/version_switcher.json
+   git commit -m "Designate ${VERSION} release"
 
 - Add the version number as a tag in git::
 
-   git tag -s [-u <key-id>] networkx-<major>.<minor> -m 'signed <major>.<minor> tag'
-
-  (If you do not have a gpg key, use -m instead; it is important for
-  Debian packaging that the tags are annotated)
+   git tag -s networkx-${VERSION} -m "signed ${VERSION} tag"
 
 - Push the new meta-data to github::
 
-   git push --tags upstream main
+   git push --tags origin main
 
-  (where ``upstream`` is the name of the
+  (where ``origin`` is the name of the
    ``github.com:networkx/networkx`` repository.)
 
 - Review the github release page::
 
-   https://github.com/networkx/networkx/releases
-
-- Publish on PyPi::
-
-   git clean -fxd
-   pip install -r requirements/release.txt
-   python setup.py sdist bdist_wheel
-   twine upload -s dist/*
+   https://github.com/networkx/networkx/tags
 
 - Update documentation on the web:
   The documentation is kept in a separate repo: networkx/documentation
@@ -70,33 +55,22 @@ Release Process
     Assuming you are at the top-level of the ``documentation`` repo::
 
       # FIXME - use eol_banner.html
-      cp -a latest networkx-<major>.<minor>
-      ln -sfn networkx-<major>.<minor> stable
+      cp -a latest ../networkx-<major>.<minor>
+      git reset --hard <commit from last release>
+      mv ../networkx-<major>.<minor> .
+      rm -rf stable
+      cp -rf networkx-<major>.<minor> stable
       git add networkx-<major>.<minor> stable
       git commit -m "Add <major>.<minor> docs"
-      # maybe squash all the Deploy GitHub Pages commits
-      # git rebase -i HEAD~XX where XX is the number of commits back
-      # check you didn't break anything
-      # diff -r latest networkx-<major>.<minor>
-      # you will then need to force the push so be careful!
-      git push
+      git push  # force push---be careful!
 
- - Increase the version number
-
-  - Toggle ``dev = False`` to ``dev = True`` in ``networkx/release.py``.
-  - Update ``major`` and ``minor`` in ``networkx/release.py``.
-  - Append the following to ``doc/_templates/layout.html``::
-
-      {% block document %}
-        {% include "dev_banner.html" %}
-        {{ super() }}
-      {% endblock %}
+- Update ``__version__`` in ``networkx/__init__.py``.
 
  - Commit and push changes::
 
-    git add networkx/release.py doc/_templates/layout.html
+    git add networkx/__init__.py 
     git commit -m "Bump release version"
-    git push upstream main
+    git push origin main
 
 - Update the web frontpage:
   The webpage is kept in a separate repo: networkx/website

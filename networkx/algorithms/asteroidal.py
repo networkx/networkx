@@ -18,6 +18,7 @@ __all__ = ["is_at_free", "find_asteroidal_triple"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def find_asteroidal_triple(G):
     r"""Find an asteroidal triple in the given graph.
 
@@ -76,21 +77,21 @@ def find_asteroidal_triple(G):
         v_neighborhood = set(G[v]).union([v])
         union_of_neighborhoods = u_neighborhood.union(v_neighborhood)
         for w in V - union_of_neighborhoods:
-            """Check for each pair of vertices whether they belong to the
-            same connected component when the closed neighborhood of the
-            third is removed."""
+            # Check for each pair of vertices whether they belong to the
+            # same connected component when the closed neighborhood of the
+            # third is removed.
             if (
                 component_structure[u][v] == component_structure[u][w]
                 and component_structure[v][u] == component_structure[v][w]
                 and component_structure[w][u] == component_structure[w][v]
             ):
                 return [u, v, w]
-
     return None
 
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def is_at_free(G):
     """Check if a graph is AT-free.
 
@@ -124,6 +125,7 @@ def is_at_free(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def create_component_structure(G):
     r"""Create component structure for G.
 

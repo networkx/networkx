@@ -1,3 +1,5 @@
+from collections import UserDict
+
 import pytest
 
 import networkx as nx
@@ -122,6 +124,22 @@ class BaseMultiGraphTester(BaseAttrGraphTester):
         assert edges_equal(G.edges[1, 2, 0], {"foo": "bar"})
         assert edges_equal(G.edges[1, 2, "key"], {"foo": "biz"})
 
+    def test_edge_attr(self):
+        G = self.Graph()
+        G.add_edge(1, 2, key="k1", foo="bar")
+        G.add_edge(1, 2, key="k2", foo="baz")
+        assert isinstance(G.get_edge_data(1, 2), G.edge_key_dict_factory)
+        assert all(
+            isinstance(d, G.edge_attr_dict_factory) for u, v, d in G.edges(data=True)
+        )
+        assert edges_equal(
+            G.edges(keys=True, data=True),
+            [(1, 2, "k1", {"foo": "bar"}), (1, 2, "k2", {"foo": "baz"})],
+        )
+        assert edges_equal(
+            G.edges(keys=True, data="foo"), [(1, 2, "k1", "bar"), (1, 2, "k2", "baz")]
+        )
+
     def test_edge_attr4(self):
         G = self.Graph()
         G.add_edge(1, 2, key=0, data=7, spam="bar", bar="foo")
@@ -184,8 +202,8 @@ class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
 
     def test_data_multigraph_input(self):
         # standard case with edge keys and edge data
-        edata0 = dict(w=200, s="foo")
-        edata1 = dict(w=201, s="bar")
+        edata0 = {"w": 200, "s": "foo"}
+        edata1 = {"w": 201, "s": "bar"}
         keydict = {0: edata0, 1: edata1}
         dododod = {"a": {"b": keydict}}
 
@@ -216,11 +234,8 @@ class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
     dodod3 = {"a": {"b": {"traits": etraits, "s": "foo"}}}
     dol = {"a": ["b"]}
 
-    multiple_edge = [
-        ("a", "b", "traits", etraits),
-        ("a", "b", "graphics", egraphics),
-    ]
-    single_edge = [("a", "b", 0, {})]
+    multiple_edge = [("a", "b", "traits", etraits), ("a", "b", "graphics", egraphics)]
+    single_edge = [("a", "b", 0, {})]  # type: ignore[var-annotated]
     single_edge1 = [("a", "b", 0, edata)]
     single_edge2 = [("a", "b", 0, etraits)]
     single_edge3 = [("a", "b", 0, {"traits": etraits, "s": "foo"})]
@@ -257,12 +272,7 @@ class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
     @pytest.mark.parametrize("dod", raise_cases)
     def test_non_multigraph_input_raise(self, dod):
         # cases where NetworkXError is raised
-        pytest.raises(
-            nx.NetworkXError,
-            self.Graph,
-            dod,
-            multigraph_input=True,
-        )
+        pytest.raises(nx.NetworkXError, self.Graph, dod, multigraph_input=True)
         pytest.raises(
             nx.NetworkXError,
             nx.to_networkx_graph,
@@ -293,6 +303,9 @@ class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
         G = self.Graph()
         G.add_edge(*(0, 1))
         assert G.adj == {0: {1: {0: {}}}, 1: {0: {0: {}}}}
+        G = self.Graph()
+        with pytest.raises(ValueError):
+            G.add_edge(None, "anything")
 
     def test_add_edge_conflicting_key(self):
         G = self.Graph()
@@ -336,6 +349,16 @@ class TestMultiGraph(BaseMultiGraphTester, _TestGraph):
         # not a tuple
         with pytest.raises(TypeError):
             G.add_edges_from([0])
+
+    def test_multigraph_add_edges_from_four_tuple_misordered(self):
+        """add_edges_from expects 4-tuples of the format (u, v, key, data_dict).
+
+        Ensure 4-tuples of form (u, v, data_dict, key) raise exception.
+        """
+        G = nx.MultiGraph()
+        with pytest.raises(TypeError):
+            # key/data values flipped in 4-tuple
+            G.add_edges_from([(0, 1, {"color": "red"}, 0)])
 
     def test_remove_edge(self):
         G = self.K3
@@ -464,12 +487,42 @@ class TestEdgeSubgraph:
         assert self.G.graph is self.H.graph
 
 
-def test_multigraph_add_edges_from_four_tuple_misordered():
-    """add_edges_from expects 4-tuples of the format (u, v, key, data_dict).
+class CustomDictClass(UserDict):
+    pass
 
-    Ensure 4-tuples of form (u, v, data_dict, key) raises exception.
-    """
-    G = nx.MultiGraph()
-    with pytest.raises(TypeError):
-        # key/data values flipped in 4-tuple
-        G.add_edges_from([(0, 1, {"color": "red"}, 0)])
+
+class MultiGraphSubClass(nx.MultiGraph):
+    node_dict_factory = CustomDictClass  # type: ignore[assignment]
+    node_attr_dict_factory = CustomDictClass  # type: ignore[assignment]
+    adjlist_outer_dict_factory = CustomDictClass  # type: ignore[assignment]
+    adjlist_inner_dict_factory = CustomDictClass  # type: ignore[assignment]
+    edge_key_dict_factory = CustomDictClass  # type: ignore[assignment]
+    edge_attr_dict_factory = CustomDictClass  # type: ignore[assignment]
+    graph_attr_dict_factory = CustomDictClass  # type: ignore[assignment]
+
+
+class TestMultiGraphSubclass(TestMultiGraph):
+    def setup_method(self):
+        self.Graph = MultiGraphSubClass
+        # build K3
+        self.k3edges = [(0, 1), (0, 2), (1, 2)]
+        self.k3nodes = [0, 1, 2]
+        self.K3 = self.Graph()
+        self.K3._adj = self.K3.adjlist_outer_dict_factory(
+            {
+                0: self.K3.adjlist_inner_dict_factory(),
+                1: self.K3.adjlist_inner_dict_factory(),
+                2: self.K3.adjlist_inner_dict_factory(),
+            }
+        )
+        self.K3._pred = {0: {}, 1: {}, 2: {}}
+        for u in self.k3nodes:
+            for v in self.k3nodes:
+                if u != v:
+                    d = {0: {}}
+                    self.K3._adj[u][v] = d
+                    self.K3._adj[v][u] = d
+        self.K3._node = self.K3.node_dict_factory()
+        self.K3._node[0] = self.K3.node_attr_dict_factory()
+        self.K3._node[1] = self.K3.node_attr_dict_factory()
+        self.K3._node[2] = self.K3.node_attr_dict_factory()

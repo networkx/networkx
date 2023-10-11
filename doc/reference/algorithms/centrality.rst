@@ -45,7 +45,6 @@ Current Flow Closeness
    :toctree: generated/
 
    betweenness_centrality
-   betweenness_centrality_source
    betweenness_centrality_subset
    edge_betweenness_centrality
    edge_betweenness_centrality_subset
@@ -149,3 +148,10 @@ VoteRank
    :toctree: generated/
 
    voterank
+
+Laplacian
+---------
+.. autosummary::
+   :toctree: generated/
+
+   laplacian_centrality

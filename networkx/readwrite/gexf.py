@@ -1,5 +1,10 @@
 """Read and write graphs in GEXF format.
 
+.. warning::
+    This parser uses the standard xml library present in Python, which is
+    insecure - see :external+python:mod:`xml` for additional information.
+    Only parse GEFX files you trust.
+
 GEXF (Graph Exchange XML Format) is a language for describing complex
 network structures, their associated data and dynamics.
 
@@ -8,22 +13,21 @@ undirected edges together).
 
 Format
 ------
-GEXF is an XML format.  See https://gephi.org/gexf/format/schema.html for the
-specification and https://gephi.org/gexf/format/basic.html for examples.
+GEXF is an XML format.  See http://gexf.net/schema.html for the
+specification and http://gexf.net/basic.html for examples.
 """
 import itertools
 import time
-
-import networkx as nx
-from networkx.utils import open_file
-
 from xml.etree.ElementTree import (
     Element,
     ElementTree,
     SubElement,
-    tostring,
     register_namespace,
+    tostring,
 )
+
+import networkx as nx
+from networkx.utils import open_file
 
 __all__ = ["write_gexf", "read_gexf", "relabel_gexf_graph", "generate_gexf"]
 
@@ -75,8 +79,8 @@ def write_gexf(G, path, encoding="utf-8", prettyprint=True, version="1.2draft"):
 
     References
     ----------
-    .. [1] GEXF File Format, https://gephi.org/gexf/format/
-    .. [2] GEXF schema, https://gephi.org/gexf/format/schema.html
+    .. [1] GEXF File Format, http://gexf.net/
+    .. [2] GEXF schema, http://gexf.net/schema.html
     """
     writer = GEXFWriter(encoding=encoding, prettyprint=prettyprint, version=version)
     writer.add_graph(G)
@@ -98,7 +102,7 @@ def generate_gexf(G, encoding="utf-8", prettyprint=True, version="1.2draft"):
     prettyprint : bool (optional, default: True)
     If True use line breaks and indenting in output XML.
     version : string (default: 1.2draft)
-    Version of GEFX File Format (see https://gephi.org/gexf/format/schema.html)
+    Version of GEFX File Format (see http://gexf.net/schema.html)
     Supported values: "1.1draft", "1.2draft"
 
 
@@ -129,6 +133,7 @@ def generate_gexf(G, encoding="utf-8", prettyprint=True, version="1.2draft"):
 
 
 @open_file(0, mode="rb")
+@nx._dispatch(graphs=None)
 def read_gexf(path, node_type=None, relabel=False, version="1.2draft"):
     """Read graph in GEXF format from path.
 
@@ -146,7 +151,7 @@ def read_gexf(path, node_type=None, relabel=False, version="1.2draft"):
        If True relabel the nodes to use the GEXF node "label" attribute
        instead of the node "id" attribute as the NetworkX node label.
     version : string (default: 1.2draft)
-    Version of GEFX File Format (see https://gephi.org/gexf/format/schema.html)
+    Version of GEFX File Format (see http://gexf.net/schema.html)
        Supported values: "1.1draft", "1.2draft"
 
     Returns
@@ -162,7 +167,7 @@ def read_gexf(path, node_type=None, relabel=False, version="1.2draft"):
 
     References
     ----------
-    .. [1] GEXF File Format, https://gephi.org/gexf/format/
+    .. [1] GEXF File Format, http://gexf.net/
     """
     reader = GEXFReader(node_type=node_type, version=version)
     if relabel:
@@ -173,27 +178,32 @@ def read_gexf(path, node_type=None, relabel=False, version="1.2draft"):
 
 
 class GEXF:
-    versions = {}
-    d = {
-        "NS_GEXF": "http://www.gexf.net/1.1draft",
-        "NS_VIZ": "http://www.gexf.net/1.1draft/viz",
-        "NS_XSI": "http://www.w3.org/2001/XMLSchema-instance",
-        "SCHEMALOCATION": " ".join(
-            ["http://www.gexf.net/1.1draft", "http://www.gexf.net/1.1draft/gexf.xsd"]
-        ),
-        "VERSION": "1.1",
+    versions = {
+        "1.1draft": {
+            "NS_GEXF": "http://www.gexf.net/1.1draft",
+            "NS_VIZ": "http://www.gexf.net/1.1draft/viz",
+            "NS_XSI": "http://www.w3.org/2001/XMLSchema-instance",
+            "SCHEMALOCATION": " ".join(
+                [
+                    "http://www.gexf.net/1.1draft",
+                    "http://www.gexf.net/1.1draft/gexf.xsd",
+                ]
+            ),
+            "VERSION": "1.1",
+        },
+        "1.2draft": {
+            "NS_GEXF": "http://www.gexf.net/1.2draft",
+            "NS_VIZ": "http://www.gexf.net/1.2draft/viz",
+            "NS_XSI": "http://www.w3.org/2001/XMLSchema-instance",
+            "SCHEMALOCATION": " ".join(
+                [
+                    "http://www.gexf.net/1.2draft",
+                    "http://www.gexf.net/1.2draft/gexf.xsd",
+                ]
+            ),
+            "VERSION": "1.2",
+        },
     }
-    versions["1.1draft"] = d
-    d = {
-        "NS_GEXF": "http://www.gexf.net/1.2draft",
-        "NS_VIZ": "http://www.gexf.net/1.2draft/viz",
-        "NS_XSI": "http://www.w3.org/2001/XMLSchema-instance",
-        "SCHEMALOCATION": " ".join(
-            ["http://www.gexf.net/1.2draft", "http://www.gexf.net/1.2draft/gexf.xsd"]
-        ),
-        "VERSION": "1.2",
-    }
-    versions["1.2draft"] = d
 
     def construct_types(self):
         types = [
@@ -220,7 +230,6 @@ class GEXF:
                 (np.float64, "float"),
                 (np.float32, "float"),
                 (np.float16, "float"),
-                (np.float_, "float"),
                 (np.int_, "int"),
                 (np.int8, "int"),
                 (np.int16, "int"),
@@ -560,7 +569,7 @@ class GEXFWriter(GEXF):
                         r=str(color.get("r")),
                         g=str(color.get("g")),
                         b=str(color.get("b")),
-                        a=str(color.get("a")),
+                        a=str(color.get("a", 1.0)),
                     )
                 element.append(e)
 
@@ -960,8 +969,8 @@ class GEXFReader(GEXF):
                 key = a.get("for")  # for is required
                 try:  # should be in our gexf_keys dictionary
                     title = gexf_keys[key]["title"]
-                except KeyError as e:
-                    raise nx.NetworkXError(f"No attribute defined for={key}.") from e
+                except KeyError as err:
+                    raise nx.NetworkXError(f"No attribute defined for={key}.") from err
                 atype = gexf_keys[key]["type"]
                 value = a.get("value")
                 if atype == "boolean":
@@ -1031,10 +1040,10 @@ def relabel_gexf_graph(G):
     # build mapping of node labels, do some error checking
     try:
         mapping = [(u, G.nodes[u]["label"]) for u in G]
-    except KeyError as e:
+    except KeyError as err:
         raise nx.NetworkXError(
             "Failed to relabel nodes: missing node labels found. Use relabel=False."
-        ) from e
+        ) from err
     x, y = zip(*mapping)
     if len(set(y)) != len(G):
         raise nx.NetworkXError(

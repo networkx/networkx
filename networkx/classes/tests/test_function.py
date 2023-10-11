@@ -1,7 +1,9 @@
 import random
+
 import pytest
+
 import networkx as nx
-from networkx.utils import nodes_equal, edges_equal
+from networkx.utils import edges_equal, nodes_equal
 
 
 class TestFunction:
@@ -250,6 +252,7 @@ class TestFunction:
         pytest.raises(nx.NetworkXError, G.add_edges_from, [(1, 2)])
         pytest.raises(nx.NetworkXError, G.remove_edge, 1, 2)
         pytest.raises(nx.NetworkXError, G.remove_edges_from, [(1, 2)])
+        pytest.raises(nx.NetworkXError, G.clear_edges)
         pytest.raises(nx.NetworkXError, G.clear)
 
     def test_is_frozen(self):
@@ -258,37 +261,17 @@ class TestFunction:
         assert G.frozen == nx.is_frozen(self.G)
         assert G.frozen
 
-    def test_info(self):
-        G = nx.path_graph(5)
-        G.name = "path_graph(5)"
-        info = nx.info(G)
-        expected_graph_info = "Graph named 'path_graph(5)' with 5 nodes and 4 edges"
-        assert info == expected_graph_info
+    def test_node_attributes_are_still_mutable_on_frozen_graph(self):
+        G = nx.freeze(nx.path_graph(3))
+        node = G.nodes[0]
+        node["node_attribute"] = True
+        assert node["node_attribute"] == True
 
-        info = nx.info(G, n=1)
-        assert type(info) == str
-        expected_node_info = "\n".join(
-            ["Node 1 has the following properties:", "Degree: 2", "Neighbors: 0 2"]
-        )
-        assert info == expected_node_info
-
-        # must raise an error for a non-existent node
-        pytest.raises(nx.NetworkXError, nx.info, G, 1248)
-
-    def test_info_digraph(self):
-        G = nx.DiGraph(name="path_graph(5)")
-        nx.add_path(G, [0, 1, 2, 3, 4])
-        info = nx.info(G)
-        expected_graph_info = "DiGraph named 'path_graph(5)' with 5 nodes and 4 edges"
-        assert info == expected_graph_info
-
-        info = nx.info(G, n=1)
-        expected_node_info = "\n".join(
-            ["Node 1 has the following properties:", "Degree: 2", "Neighbors: 2"]
-        )
-        assert info == expected_node_info
-
-        pytest.raises(nx.NetworkXError, nx.info, G, n=-1)
+    def test_edge_attributes_are_still_mutable_on_frozen_graph(self):
+        G = nx.freeze(nx.path_graph(3))
+        edge = G.edges[(0, 1)]
+        edge["edge_attribute"] = True
+        assert edge["edge_attribute"] == True
 
     def test_neighbors_complete_graph(self):
         graph = nx.complete_graph(100)
@@ -347,13 +330,13 @@ class TestFunction:
         graph = nx.path_graph(4)
         expected = [(0, 2), (0, 3), (1, 3)]
         nedges = list(nx.non_edges(graph))
-        for (u, v) in expected:
+        for u, v in expected:
             assert (u, v) in nedges or (v, u) in nedges
 
         graph = nx.star_graph(4)
         expected = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
         nedges = list(nx.non_edges(graph))
-        for (u, v) in expected:
+        for u, v in expected:
             assert (u, v) in nedges or (v, u) in nedges
 
         # Directed graphs
@@ -640,6 +623,10 @@ def test_get_node_attributes():
         assert attrs[0] == vals
         assert attrs[1] == vals
         assert attrs[2] == vals
+        default_val = 1
+        G.add_node(4)
+        attrs = nx.get_node_attributes(G, attr, default=default_val)
+        assert attrs[4] == default_val
 
 
 def test_get_edge_attributes():
@@ -650,22 +637,18 @@ def test_get_edge_attributes():
         vals = 100
         nx.set_edge_attributes(G, vals, attr)
         attrs = nx.get_edge_attributes(G, attr)
-
         assert len(attrs) == 2
-        if G.is_multigraph():
-            keys = [(0, 1, 0), (1, 2, 0)]
-            for u, v, k in keys:
-                try:
-                    assert attrs[(u, v, k)] == 100
-                except KeyError:
-                    assert attrs[(v, u, k)] == 100
-        else:
-            keys = [(0, 1), (1, 2)]
-            for u, v in keys:
-                try:
-                    assert attrs[(u, v)] == 100
-                except KeyError:
-                    assert attrs[(v, u)] == 100
+
+        for edge in G.edges:
+            assert attrs[edge] == vals
+
+        default_val = vals
+        G.add_edge(4, 5)
+        deafult_attrs = nx.get_edge_attributes(G, attr, default=default_val)
+        assert len(deafult_attrs) == 3
+
+        for edge in G.edges:
+            assert deafult_attrs[edge] == vals
 
 
 def test_is_empty():
@@ -708,8 +691,7 @@ def test_selfloop_edges_multi_with_data_and_keys():
     G.add_edge(0, 0, weight=10)
     G.add_edge(0, 0, weight=100)
     assert edges_equal(
-        nx.selfloop_edges(G, data="weight", keys=True),
-        [(0, 0, 0, 10), (0, 0, 1, 100)],
+        nx.selfloop_edges(G, data="weight", keys=True), [(0, 0, 0, 10), (0, 0, 1, 100)]
     )
 
 
@@ -756,9 +738,9 @@ def test_pathweight():
     invalid_path = [1, 3, 2]
     graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
     edges = [
-        (1, 2, dict(cost=5, dist=6)),
-        (2, 3, dict(cost=3, dist=4)),
-        (1, 2, dict(cost=1, dist=2)),
+        (1, 2, {"cost": 5, "dist": 6}),
+        (2, 3, {"cost": 3, "dist": 4}),
+        (1, 2, {"cost": 1, "dist": 2}),
     ]
     for graph in graphs:
         graph.add_edges_from(edges)
@@ -767,15 +749,17 @@ def test_pathweight():
         pytest.raises(nx.NetworkXNoPath, nx.path_weight, graph, invalid_path, "cost")
 
 
-def test_ispath():
+@pytest.mark.parametrize(
+    "G", (nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph())
+)
+def test_ispath(G):
+    G.add_edges_from([(1, 2), (2, 3), (1, 2), (3, 4)])
     valid_path = [1, 2, 3, 4]
-    invalid_path = [1, 2, 4, 3]
-    graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
-    edges = [(1, 2), (2, 3), (1, 2), (3, 4)]
-    for graph in graphs:
-        graph.add_edges_from(edges)
-        assert nx.is_path(graph, valid_path)
-        assert not nx.is_path(graph, invalid_path)
+    invalid_path = [1, 2, 4, 3]  # wrong node order
+    another_invalid_path = [1, 2, 3, 4, 5]  # contains node not in G
+    assert nx.is_path(G, valid_path)
+    assert not nx.is_path(G, invalid_path)
+    assert not nx.is_path(G, another_invalid_path)
 
 
 @pytest.mark.parametrize("G", (nx.Graph(), nx.DiGraph()))

@@ -1,5 +1,5 @@
 # Original author: D. Eppstein, UC Irvine, August 12, 2003.
-# The original code at http://www.ics.uci.edu/~eppstein/PADS/ is public domain.
+# The original code at https://www.ics.uci.edu/~eppstein/PADS/ is public domain.
 """Functions for reading and writing graphs in the *sparse6* format.
 
 The *sparse6* file format is a space-efficient format for large sparse
@@ -8,13 +8,13 @@ format.
 
 For more information, see the `sparse6`_ homepage.
 
-.. _sparse6: http://users.cecs.anu.edu.au/~bdm/data/formats.html
+.. _sparse6: https://users.cecs.anu.edu.au/~bdm/data/formats.html
 
 """
 import networkx as nx
 from networkx.exception import NetworkXError
-from networkx.utils import open_file, not_implemented_for
 from networkx.readwrite.graph6 import data_to_n, n_to_data
+from networkx.utils import not_implemented_for, open_file
 
 __all__ = ["from_sparse6_bytes", "read_sparse6", "to_sparse6_bytes", "write_sparse6"]
 
@@ -41,7 +41,7 @@ def _generate_sparse6_bytes(G, nodes, header):
 
     """
     n = len(G)
-    if n >= 2 ** 36:
+    if n >= 2**36:
         raise ValueError(
             "sparse6 is only defined if number of nodes is less " "than 2 ** 36"
         )
@@ -62,7 +62,7 @@ def _generate_sparse6_bytes(G, nodes, header):
     edges = sorted((max(u, v), min(u, v)) for u, v in G.edges())
     bits = []
     curv = 0
-    for (v, u) in edges:
+    for v, u in edges:
         if v == curv:  # current vertex edge
             bits.append(0)
             bits.extend(enc(u))
@@ -101,6 +101,7 @@ def _generate_sparse6_bytes(G, nodes, header):
     yield b"\n"
 
 
+@nx._dispatch(graphs=None)
 def from_sparse6_bytes(string):
     """Read an undirected graph in sparse6 format from string.
 
@@ -131,7 +132,7 @@ def from_sparse6_bytes(string):
     References
     ----------
     .. [1] Sparse6 specification
-           <http://users.cecs.anu.edu.au/~bdm/data/formats.html>
+           <https://users.cecs.anu.edu.au/~bdm/data/formats.html>
 
     """
     if string.startswith(b">>sparse6<<"):
@@ -239,7 +240,7 @@ def to_sparse6_bytes(G, nodes=None, header=True):
     References
     ----------
     .. [1] Graph6 specification
-           <http://users.cecs.anu.edu.au/~bdm/data/formats.html>
+           <https://users.cecs.anu.edu.au/~bdm/data/formats.html>
 
     """
     if nodes is not None:
@@ -249,6 +250,7 @@ def to_sparse6_bytes(G, nodes=None, header=True):
 
 
 @open_file(0, mode="rb")
+@nx._dispatch(graphs=None)
 def read_sparse6(path):
     """Read an undirected graph in sparse6 format from path.
 
@@ -272,7 +274,7 @@ def read_sparse6(path):
     You can read a sparse6 file by giving the path to the file::
 
         >>> import tempfile
-        >>> with tempfile.NamedTemporaryFile() as f:
+        >>> with tempfile.NamedTemporaryFile(delete=False) as f:
         ...     _ = f.write(b">>sparse6<<:An\\n")
         ...     _ = f.seek(0)
         ...     G = nx.read_sparse6(f.name)
@@ -296,7 +298,7 @@ def read_sparse6(path):
     References
     ----------
     .. [1] Sparse6 specification
-           <http://users.cecs.anu.edu.au/~bdm/data/formats.html>
+           <https://users.cecs.anu.edu.au/~bdm/data/formats.html>
 
     """
     glist = []
@@ -340,7 +342,7 @@ def write_sparse6(G, path, nodes=None, header=True):
     You can write a sparse6 file by giving the path to the file::
 
         >>> import tempfile
-        >>> with tempfile.NamedTemporaryFile() as f:
+        >>> with tempfile.NamedTemporaryFile(delete=False) as f:
         ...     nx.write_sparse6(nx.path_graph(2), f.name)
         ...     print(f.read())
         b'>>sparse6<<:An\\n'
@@ -364,7 +366,7 @@ def write_sparse6(G, path, nodes=None, header=True):
     References
     ----------
     .. [1] Sparse6 specification
-           <http://users.cecs.anu.edu.au/~bdm/data/formats.html>
+           <https://users.cecs.anu.edu.au/~bdm/data/formats.html>
 
     """
     if nodes is not None:

@@ -6,10 +6,10 @@ from itertools import combinations
 from operator import itemgetter
 
 import networkx as nx
-from networkx.utils import not_implemented_for
 
 # Define the default maximum flow function.
 from networkx.algorithms.flow import edmonds_karp
+from networkx.utils import not_implemented_for
 
 default_flow_func = edmonds_karp
 
@@ -17,6 +17,7 @@ __all__ = ["k_components"]
 
 
 @not_implemented_for("directed")
+@nx._dispatch
 def k_components(G, flow_func=None):
     r"""Returns the k-component structure of a graph G.
 
@@ -104,7 +105,7 @@ def k_components(G, flow_func=None):
     """
     # Dictionary with connectivity level (k) as keys and a list of
     # sets of nodes that form a k-component as values. Note that
-    # k-compoents can overlap (but only k - 1 nodes).
+    # k-components can overlap (but only k - 1 nodes).
     k_components = defaultdict(list)
     # Define default flow function
     if flow_func is None:
@@ -167,7 +168,7 @@ def _consolidate(sets, k):
 
     """
     G = nx.Graph()
-    nodes = {i: s for i, s in enumerate(sets)}
+    nodes = dict(enumerate(sets))
     G.add_nodes_from(nodes)
     G.add_edges_from(
         (u, v) for u, v in combinations(nodes, 2) if len(nodes[u] & nodes[v]) >= k
@@ -178,10 +179,7 @@ def _consolidate(sets, k):
 
 def _generate_partition(G, cuts, k):
     def has_nbrs_in_partition(G, node, partition):
-        for n in G[node]:
-            if n in partition:
-                return True
-        return False
+        return any(n in partition for n in G[node])
 
     components = []
     nodes = {n for n, d in G.degree() if d > k} - {n for cut in cuts for n in cut}
@@ -198,7 +196,7 @@ def _generate_partition(G, cuts, k):
 
 
 def _reconstruct_k_components(k_comps):
-    result = dict()
+    result = {}
     max_k = max(k_comps)
     for k in reversed(range(1, max_k + 1)):
         if k == max_k:

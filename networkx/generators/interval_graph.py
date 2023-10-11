@@ -2,11 +2,13 @@
 Generators for interval graph.
 """
 from collections.abc import Sequence
+
 import networkx as nx
 
 __all__ = ["interval_graph"]
 
 
+@nx._dispatch(graphs=None)
 def interval_graph(intervals):
     """Generates an interval graph for a list of intervals given.
 

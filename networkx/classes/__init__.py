@@ -2,9 +2,9 @@ from .graph import Graph
 from .digraph import DiGraph
 from .multigraph import MultiGraph
 from .multidigraph import MultiDiGraph
-from .ordered import *
 
 from .function import *
+from .graphviews import subgraph_view, reverse_view
 
 from networkx.classes import filters
 

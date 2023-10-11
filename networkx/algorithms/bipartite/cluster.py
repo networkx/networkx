@@ -3,6 +3,7 @@
 """
 
 import itertools
+
 import networkx as nx
 
 __all__ = [
@@ -14,24 +15,25 @@ __all__ = [
 
 
 def cc_dot(nu, nv):
-    return float(len(nu & nv)) / len(nu | nv)
+    return len(nu & nv) / len(nu | nv)
 
 
 def cc_max(nu, nv):
-    return float(len(nu & nv)) / max(len(nu), len(nv))
+    return len(nu & nv) / max(len(nu), len(nv))
 
 
 def cc_min(nu, nv):
-    return float(len(nu & nv)) / min(len(nu), len(nv))
+    return len(nu & nv) / min(len(nu), len(nv))
 
 
 modes = {"dot": cc_dot, "min": cc_min, "max": cc_max}
 
 
+@nx._dispatch
 def latapy_clustering(G, nodes=None, mode="dot"):
     r"""Compute a bipartite clustering coefficient for nodes.
 
-    The bipartie clustering coefficient is a measure of local density
+    The bipartite clustering coefficient is a measure of local density
     of connections defined as [1]_:
 
     .. math::
@@ -73,7 +75,7 @@ def latapy_clustering(G, nodes=None, mode="dot"):
         is all nodes in G.
 
     mode : string
-        The pariwise bipartite clustering method to be used in the computation.
+        The pairwise bipartite clustering method to be used in the computation.
         It must be "dot", "max", or "min".
 
     Returns
@@ -110,10 +112,10 @@ def latapy_clustering(G, nodes=None, mode="dot"):
 
     try:
         cc_func = modes[mode]
-    except KeyError as e:
+    except KeyError as err:
         raise nx.NetworkXError(
             "Mode for bipartite clustering must be: dot, min or max"
-        ) from e
+        ) from err
 
     if nodes is None:
         nodes = G
@@ -132,6 +134,7 @@ def latapy_clustering(G, nodes=None, mode="dot"):
 clustering = latapy_clustering
 
 
+@nx._dispatch(name="bipartite_average_clustering")
 def average_clustering(G, nodes=None, mode="dot"):
     r"""Compute the average bipartite clustering coefficient.
 
@@ -162,7 +165,7 @@ def average_clustering(G, nodes=None, mode="dot"):
         bipartite sets.
 
     mode : string
-        The pariwise bipartite clustering method.
+        The pairwise bipartite clustering method.
         It must be "dot", "max", or "min"
 
     Returns
@@ -205,9 +208,10 @@ def average_clustering(G, nodes=None, mode="dot"):
     if nodes is None:
         nodes = G
     ccs = latapy_clustering(G, nodes=nodes, mode=mode)
-    return float(sum(ccs[v] for v in nodes)) / len(nodes)
+    return sum(ccs[v] for v in nodes) / len(nodes)
 
 
+@nx._dispatch
 def robins_alexander_clustering(G):
     r"""Compute the bipartite clustering of G.
 

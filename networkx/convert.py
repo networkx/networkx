@@ -16,8 +16,9 @@ See Also
 nx_agraph, nx_pydot
 """
 import warnings
-import networkx as nx
 from collections.abc import Collection, Generator, Iterator
+
+import networkx as nx
 
 __all__ = [
     "to_networkx_graph",
@@ -55,9 +56,8 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
          iterator (e.g. itertools.chain) that produces edges
          generator of edges
          Pandas DataFrame (row per edge)
-         numpy matrix
-         numpy ndarray
-         scipy sparse matrix
+         2D numpy array
+         scipy sparse array
          pygraphviz agraph
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
@@ -87,15 +87,15 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
             for n, dd in data.nodes.items():
                 result._node[n].update(dd)
             return result
-        except Exception as e:
-            raise nx.NetworkXError("Input is not a correct NetworkX graph.") from e
+        except Exception as err:
+            raise nx.NetworkXError("Input is not a correct NetworkX graph.") from err
 
     # pygraphviz  agraph
     if hasattr(data, "is_strict"):
         try:
             return nx.nx_agraph.from_agraph(data, create_using=create_using)
-        except Exception as e:
-            raise nx.NetworkXError("Input is not a correct pygraphviz graph.") from e
+        except Exception as err:
+            raise nx.NetworkXError("Input is not a correct pygraphviz graph.") from err
 
     # dict of dicts/lists
     if isinstance(data, dict):
@@ -103,15 +103,15 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
             return from_dict_of_dicts(
                 data, create_using=create_using, multigraph_input=multigraph_input
             )
-        except Exception as e:
+        except Exception as err1:
             if multigraph_input is True:
                 raise nx.NetworkXError(
-                    f"converting multigraph_input raised:\n{type(e)}: {e}"
+                    f"converting multigraph_input raised:\n{type(err1)}: {err1}"
                 )
             try:
                 return from_dict_of_lists(data, create_using=create_using)
-            except Exception as e:
-                raise TypeError("Input is not known type.") from e
+            except Exception as err2:
+                raise TypeError("Input is not known type.") from err2
 
     # Pandas DataFrame
     try:
@@ -121,45 +121,45 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
             if data.shape[0] == data.shape[1]:
                 try:
                     return nx.from_pandas_adjacency(data, create_using=create_using)
-                except Exception as e:
+                except Exception as err:
                     msg = "Input is not a correct Pandas DataFrame adjacency matrix."
-                    raise nx.NetworkXError(msg) from e
+                    raise nx.NetworkXError(msg) from err
             else:
                 try:
                     return nx.from_pandas_edgelist(
                         data, edge_attr=True, create_using=create_using
                     )
-                except Exception as e:
+                except Exception as err:
                     msg = "Input is not a correct Pandas DataFrame edge-list."
-                    raise nx.NetworkXError(msg) from e
+                    raise nx.NetworkXError(msg) from err
     except ImportError:
         warnings.warn("pandas not found, skipping conversion test.", ImportWarning)
 
-    # numpy matrix or ndarray
+    # numpy array
     try:
         import numpy as np
 
-        if isinstance(data, (np.matrix, np.ndarray)):
+        if isinstance(data, np.ndarray):
             try:
-                return nx.from_numpy_matrix(data, create_using=create_using)
-            except Exception as e:
+                return nx.from_numpy_array(data, create_using=create_using)
+            except Exception as err:
                 raise nx.NetworkXError(
-                    "Input is not a correct numpy matrix or array."
-                ) from e
+                    f"Failed to interpret array as an adjacency matrix."
+                ) from err
     except ImportError:
         warnings.warn("numpy not found, skipping conversion test.", ImportWarning)
 
-    # scipy sparse matrix - any format
+    # scipy sparse array - any format
     try:
         import scipy
 
         if hasattr(data, "format"):
             try:
-                return nx.from_scipy_sparse_matrix(data, create_using=create_using)
-            except Exception as e:
+                return nx.from_scipy_sparse_array(data, create_using=create_using)
+            except Exception as err:
                 raise nx.NetworkXError(
-                    "Input is not a correct scipy sparse matrix type."
-                ) from e
+                    "Input is not a correct scipy sparse array type."
+                ) from err
     except ImportError:
         warnings.warn("scipy not found, skipping conversion test.", ImportWarning)
 
@@ -170,12 +170,13 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
     if isinstance(data, (Collection, Generator, Iterator)):
         try:
             return from_edgelist(data, create_using=create_using)
-        except Exception as e:
-            raise nx.NetworkXError("Input is not a valid edge list") from e
+        except Exception as err:
+            raise nx.NetworkXError("Input is not a valid edge list") from err
 
     raise nx.NetworkXError("Input is not a known data type for conversion.")
 
 
+@nx._dispatch
 def to_dict_of_lists(G, nodelist=None):
     """Returns adjacency representation of graph as a dictionary of lists.
 
@@ -201,6 +202,7 @@ def to_dict_of_lists(G, nodelist=None):
     return d
 
 
+@nx._dispatch(graphs=None)
 def from_dict_of_lists(d, create_using=None):
     """Returns a graph from a dictionary of lists.
 
@@ -362,6 +364,7 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
     return dod
 
 
+@nx._dispatch(graphs=None)
 def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
     """Returns a graph from a dictionary of dictionaries.
 
@@ -448,6 +451,7 @@ def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
     return G
 
 
+@nx._dispatch(preserve_edge_attrs=True)
 def to_edgelist(G, nodelist=None):
     """Returns a list of edges in the graph.
 
@@ -465,6 +469,7 @@ def to_edgelist(G, nodelist=None):
     return G.edges(nodelist, data=True)
 
 
+@nx._dispatch(graphs=None)
 def from_edgelist(edgelist, create_using=None):
     """Returns a graph from a list of edges.
 

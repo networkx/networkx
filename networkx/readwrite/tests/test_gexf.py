@@ -1,6 +1,6 @@
 import io
-import sys
 import time
+
 import pytest
 
 import networkx as nx
@@ -274,21 +274,9 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
         assert list(H) == [7]
         assert H.nodes[7]["label"] == "77"
 
-    # FIXME: We should test xml without caring about their order This is causing a
-    # problem b/c of a change in Python 3.8
-    #
-    # "Prior to Python 3.8, the serialisation order of the XML attributes of
-    # elements was artificially made predictable by sorting the attributes by their
-    # name. Based on the now guaranteed ordering of dicts, this arbitrary
-    # reordering was removed in Python 3.8 to preserve the order in which
-    # attributes were originally parsed or created by user code."
-    #
-    # https://docs.python.org/3.8/library/xml.etree.elementtree.html
-    # https://bugs.python.org/issue34160
-
     def test_write_with_node_attributes(self):
         # Addresses #673.
-        G = nx.OrderedGraph()
+        G = nx.Graph()
         G.add_edges_from([(0, 1), (1, 2), (2, 3)])
         for i in range(4):
             G.nodes[i]["id"] = i
@@ -297,30 +285,7 @@ org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/\
             G.nodes[i]["start"] = i
             G.nodes[i]["end"] = i + 1
 
-        if sys.version_info < (3, 8):
-            expected = f"""<gexf version="1.2" xmlns="http://www.gexf.net/1.2\
-draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:\
-schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/\
-gexf.xsd">
-  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
-    <creator>NetworkX {nx.__version__}</creator>
-  </meta>
-  <graph defaultedgetype="undirected" mode="dynamic" name="" timeformat="long">
-    <nodes>
-      <node end="1" id="0" label="0" pid="0" start="0" />
-      <node end="2" id="1" label="1" pid="1" start="1" />
-      <node end="3" id="2" label="2" pid="2" start="2" />
-      <node end="4" id="3" label="3" pid="3" start="3" />
-    </nodes>
-    <edges>
-      <edge id="0" source="0" target="1" />
-      <edge id="1" source="1" target="2" />
-      <edge id="2" source="2" target="3" />
-    </edges>
-  </graph>
-</gexf>"""
-        else:
-            expected = f"""<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi\
+        expected = f"""<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi\
 ="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=\
 "http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/\
 gexf.xsd" version="1.2">
@@ -348,30 +313,7 @@ gexf.xsd" version="1.2">
         G = nx.Graph()
         G.add_edges_from([(0, 1, {"id": 0}), (1, 2, {"id": 2}), (2, 3)])
 
-        if sys.version_info < (3, 8):
-            expected = f"""<gexf version="1.2" xmlns="http://www.gexf.net/\
-1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:\
-schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/\
-gexf.xsd">
-  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
-    <creator>NetworkX {nx.__version__}</creator>
-  </meta>
-  <graph defaultedgetype="undirected" mode="static" name="">
-    <nodes>
-      <node id="0" label="0" />
-      <node id="1" label="1" />
-      <node id="2" label="2" />
-      <node id="3" label="3" />
-    </nodes>
-    <edges>
-      <edge id="0" source="0" target="1" />
-      <edge id="2" source="1" target="2" />
-      <edge id="1" source="2" target="3" />
-    </edges>
-  </graph>
-</gexf>"""
-        else:
-            expected = f"""<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi\
+        expected = f"""<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi\
 ="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.\
 gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
   <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
@@ -401,55 +343,7 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         nx.set_node_attributes(G, {n: n for n in np.arange(4)}, "number")
         G[0][1]["edge-number"] = np.float64(1.1)
 
-        if sys.version_info < (3, 8):
-            expected = f"""<gexf version="1.2" xmlns="http://www.gexf.net/1.2draft"\
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation\
-="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd">
-  <meta lastmodifieddate="{time.strftime('%Y-%m-%d')}">
-    <creator>NetworkX {nx.__version__}</creator>
-  </meta>
-  <graph defaultedgetype="undirected" mode="static" name="">
-    <attributes class="edge" mode="static">
-      <attribute id="1" title="edge-number" type="float" />
-    </attributes>
-    <attributes class="node" mode="static">
-      <attribute id="0" title="number" type="int" />
-    </attributes>
-    <nodes>
-      <node id="0" label="0">
-        <attvalues>
-          <attvalue for="0" value="0" />
-        </attvalues>
-      </node>
-      <node id="1" label="1">
-        <attvalues>
-          <attvalue for="0" value="1" />
-        </attvalues>
-      </node>
-      <node id="2" label="2">
-        <attvalues>
-          <attvalue for="0" value="2" />
-        </attvalues>
-      </node>
-      <node id="3" label="3">
-        <attvalues>
-          <attvalue for="0" value="3" />
-        </attvalues>
-      </node>
-    </nodes>
-    <edges>
-      <edge id="0" source="0" target="1">
-        <attvalues>
-          <attvalue for="1" value="1.1" />
-        </attvalues>
-      </edge>
-      <edge id="1" source="1" target="2" />
-      <edge id="2" source="2" target="3" />
-    </edges>
-  </graph>
-</gexf>"""
-        else:
-            expected = f"""<gexf xmlns="http://www.gexf.net/1.2draft"\
+        expected = f"""<gexf xmlns="http://www.gexf.net/1.2draft"\
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation\
 ="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd"\
  version="1.2">
@@ -568,7 +462,7 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         G = nx.MultiGraph()
         G.add_node(0, label="1", color="green")
         G.add_node(1, label="2", color="green")
-        G.add_edge(0, 1, id="0", wight=3, type="undirected", start=0, end=1)
+        G.add_edge(0, 1, id="0", weight=3, type="undirected", start=0, end=1)
         G.add_edge(0, 1, id="1", label="foo", start=0, end=1)
         G.add_edge(0, 1)
         fh = io.BytesIO()
@@ -596,6 +490,16 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         assert sorted(sorted(e) for e in G.edges()) == sorted(
             sorted(e) for e in H.edges()
         )
+
+        # Test missing alpha value for version >draft1.1 - set default alpha value
+        # to 1.0 instead of `None` when writing for better general compatibility
+        fh = io.BytesIO()
+        # G.nodes[0]["viz"]["color"] does not have an alpha value explicitly defined
+        # so the default is used instead
+        nx.write_gexf(G, fh, version="1.2draft")
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert H.nodes[0]["viz"]["color"]["a"] == 1.0
 
         # Second graph for the other branch
         G = nx.Graph()

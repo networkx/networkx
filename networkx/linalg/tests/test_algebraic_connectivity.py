@@ -46,11 +46,26 @@ def test_fiedler_vector_tracemin_unknown():
         )
 
 
+def test_spectral_bisection():
+    pytest.importorskip("scipy")
+    G = nx.barbell_graph(3, 0)
+    C = nx.spectral_bisection(G)
+    assert C == ({0, 1, 2}, {3, 4, 5})
+
+    mapping = dict(enumerate("badfec"))
+    G = nx.relabel_nodes(G, mapping)
+    C = nx.spectral_bisection(G)
+    assert C == (
+        {mapping[0], mapping[1], mapping[2]},
+        {mapping[3], mapping[4], mapping[5]},
+    )
+
+
 def check_eigenvector(A, l, x):
     nx = np.linalg.norm(x)
     # Check zeroness.
-    assert not nx == pytest.approx(0, abs=1e-7)
-    y = A * x
+    assert nx != pytest.approx(0, abs=1e-07)
+    y = A @ x
     ny = np.linalg.norm(y)
     # Check collinearity.
     assert x @ y == pytest.approx(nx * ny, abs=1e-7)
@@ -284,8 +299,8 @@ class TestAlgebraicConnectivity:
             ) == pytest.approx(sigma, abs=1e-7)
             x = nx.fiedler_vector(G, normalized=normalized, tol=1e-12, method=method)
             check_eigenvector(A, sigma, x)
-        except nx.NetworkXError as e:
-            if e.args not in (
+        except nx.NetworkXError as err:
+            if err.args not in (
                 ("Cholesky solver unavailable.",),
                 ("LU solver unavailable.",),
             ):
@@ -383,13 +398,5 @@ class TestSpectralOrdering:
         nx.add_path(G, path, weight=5)
         G.add_edge(path[-1], path[0], weight=1)
         A = nx.laplacian_matrix(G).todense()
-        try:
-            order = nx.spectral_ordering(G, normalized=normalized, method=method)
-        except nx.NetworkXError as e:
-            if e.args not in (
-                ("Cholesky solver unavailable.",),
-                ("LU solver unavailable.",),
-            ):
-                raise
-        else:
-            assert order in expected_order
+        order = nx.spectral_ordering(G, normalized=normalized, method=method)
+        assert order in expected_order

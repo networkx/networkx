@@ -1,50 +1,8 @@
-import networkx as nx
 import pytest
 
-import networkx.generators.line as line
+import networkx as nx
+from networkx.generators import line
 from networkx.utils import edges_equal
-
-
-def test_node_func():
-    # graph
-    G = nx.Graph()
-    G.add_edge(1, 2)
-    nf = line._node_func(G)
-    assert nf(1, 2) == (1, 2)
-    assert nf(2, 1) == (1, 2)
-
-    # multigraph
-    G = nx.MultiGraph()
-    G.add_edge(1, 2)
-    G.add_edge(1, 2)
-    nf = line._node_func(G)
-    assert nf(1, 2, 0) == (1, 2, 0)
-    assert nf(2, 1, 0) == (1, 2, 0)
-
-
-def test_edge_func():
-    # graph
-    G = nx.Graph()
-    G.add_edge(1, 2)
-    G.add_edge(2, 3)
-    ef = line._edge_func(G)
-    expected = [(1, 2), (2, 3)]
-    assert edges_equal(ef(), expected)
-
-    # digraph
-    G = nx.MultiDiGraph()
-    G.add_edge(1, 2)
-    G.add_edge(2, 3)
-    G.add_edge(2, 3)
-    ef = line._edge_func(G)
-    expected = [(1, 2, 0), (2, 3, 0), (2, 3, 1)]
-    result = sorted(ef())
-    assert expected == result
-
-
-def test_sorted_edge():
-    assert (1, 2) == line._sorted_edge(1, 2)
-    assert (1, 2) == line._sorted_edge(2, 1)
 
 
 class TestGeneratorLine:
@@ -64,27 +22,66 @@ class TestGeneratorLine:
         assert nx.is_isomorphic(L, G)
 
     def test_digraph1(self):
-        G = nx.DiGraph()
-        G.add_edges_from([(0, 1), (0, 2), (0, 3)])
+        G = nx.DiGraph([(0, 1), (0, 2), (0, 3)])
         L = nx.line_graph(G)
         # no edge graph, but with nodes
         assert L.adj == {(0, 1): {}, (0, 2): {}, (0, 3): {}}
 
+    def test_multigraph1(self):
+        G = nx.MultiGraph([(0, 1), (0, 1), (1, 0), (0, 2), (2, 0), (0, 3)])
+        L = nx.line_graph(G)
+        # no edge graph, but with nodes
+        assert edges_equal(
+            L.edges(),
+            [
+                ((0, 3, 0), (0, 1, 0)),
+                ((0, 3, 0), (0, 2, 0)),
+                ((0, 3, 0), (0, 2, 1)),
+                ((0, 3, 0), (0, 1, 1)),
+                ((0, 3, 0), (0, 1, 2)),
+                ((0, 1, 0), (0, 1, 1)),
+                ((0, 1, 0), (0, 2, 0)),
+                ((0, 1, 0), (0, 1, 2)),
+                ((0, 1, 0), (0, 2, 1)),
+                ((0, 1, 1), (0, 1, 2)),
+                ((0, 1, 1), (0, 2, 0)),
+                ((0, 1, 1), (0, 2, 1)),
+                ((0, 1, 2), (0, 2, 0)),
+                ((0, 1, 2), (0, 2, 1)),
+                ((0, 2, 0), (0, 2, 1)),
+            ],
+        )
+
+    def test_multigraph2(self):
+        G = nx.MultiGraph([(1, 2), (2, 1)])
+        L = nx.line_graph(G)
+        assert edges_equal(L.edges(), [((1, 2, 0), (1, 2, 1))])
+
+    def test_multidigraph1(self):
+        G = nx.MultiDiGraph([(1, 2), (2, 1)])
+        L = nx.line_graph(G)
+        assert edges_equal(L.edges(), [((1, 2, 0), (2, 1, 0)), ((2, 1, 0), (1, 2, 0))])
+
+    def test_multidigraph2(self):
+        G = nx.MultiDiGraph([(0, 1), (0, 1), (0, 1), (1, 2)])
+        L = nx.line_graph(G)
+        assert edges_equal(
+            L.edges(),
+            [((0, 1, 0), (1, 2, 0)), ((0, 1, 1), (1, 2, 0)), ((0, 1, 2), (1, 2, 0))],
+        )
+
     def test_digraph2(self):
-        G = nx.DiGraph()
-        G.add_edges_from([(0, 1), (1, 2), (2, 3)])
+        G = nx.DiGraph([(0, 1), (1, 2), (2, 3)])
         L = nx.line_graph(G)
         assert edges_equal(L.edges(), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
 
     def test_create1(self):
-        G = nx.DiGraph()
-        G.add_edges_from([(0, 1), (1, 2), (2, 3)])
+        G = nx.DiGraph([(0, 1), (1, 2), (2, 3)])
         L = nx.line_graph(G, create_using=nx.Graph())
         assert edges_equal(L.edges(), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
 
     def test_create2(self):
-        G = nx.Graph()
-        G.add_edges_from([(0, 1), (1, 2), (2, 3)])
+        G = nx.Graph([(0, 1), (1, 2), (2, 3)])
         L = nx.line_graph(G, create_using=nx.DiGraph())
         assert edges_equal(L.edges(), [((0, 1), (1, 2)), ((1, 2), (2, 3))])
 
@@ -170,55 +167,62 @@ class TestGeneratorInverseLine:
         solution = nx.path_graph(2)
         assert nx.is_isomorphic(H, solution)
 
-    def test_claw(self):
-        # This is the simplest non-line graph
-        G = nx.Graph()
-        G_edges = [[0, 1], [0, 2], [0, 3]]
-        G.add_edges_from(G_edges)
+    def test_edgeless_graph(self):
+        G = nx.empty_graph(5)
+        with pytest.raises(nx.NetworkXError, match="edgeless graph"):
+            nx.inverse_line_graph(G)
+
+    def test_selfloops_error(self):
+        G = nx.cycle_graph(4)
+        G.add_edge(0, 0)
         pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
 
-    def test_non_line_graph(self):
-        # These are other non-line graphs
+    def test_non_line_graphs(self):
+        # Tests several known non-line graphs for impossibility
+        # Adapted from L.W.Beineke, "Characterizations of derived graphs"
+
+        # claw graph
+        claw = nx.star_graph(3)
+        pytest.raises(nx.NetworkXError, nx.inverse_line_graph, claw)
 
         # wheel graph with 6 nodes
-        G = nx.Graph()
-        G_edges = [
-            [0, 1],
-            [0, 2],
-            [0, 3],
-            [0, 4],
-            [0, 5],
-            [1, 2],
-            [2, 3],
-            [3, 4],
-            [4, 5],
-            [5, 1],
-        ]
-        G.add_edges_from(G_edges)
+        wheel = nx.wheel_graph(6)
+        pytest.raises(nx.NetworkXError, nx.inverse_line_graph, wheel)
+
+        # K5 with one edge remove
+        K5m = nx.complete_graph(5)
+        K5m.remove_edge(0, 1)
+        pytest.raises(nx.NetworkXError, nx.inverse_line_graph, K5m)
+
+        # graph without any odd triangles (contains claw as induced subgraph)
+        G = nx.compose(nx.path_graph(2), nx.complete_bipartite_graph(2, 3))
         pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
 
-        #   3---4---5
-        #  / \ / \ /
-        # 0---1---2
-        G = nx.Graph()
-        G_edges = [
-            [0, 1],
-            [1, 2],
-            [3, 4],
-            [4, 5],
-            [0, 3],
-            [1, 3],
-            [1, 4],
-            [2, 4],
-            [2, 5],
-        ]
-        G.add_edges_from(G_edges)
+        ## Variations on a diamond graph
+
+        # Diamond + 2 edges (+ "roof")
+        G = nx.diamond_graph()
+        G.add_edges_from([(4, 0), (5, 3)])
+        pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
+        G.add_edge(4, 5)
         pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
 
-        # K_5 minus an edge
-        K5me = nx.complete_graph(5)
-        K5me.remove_edge(0, 1)
-        pytest.raises(nx.NetworkXError, nx.inverse_line_graph, K5me)
+        # Diamond + 2 connected edges
+        G = nx.diamond_graph()
+        G.add_edges_from([(4, 0), (4, 3)])
+        pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
+
+        # Diamond + K3 + one edge (+ 2*K3)
+        G = nx.diamond_graph()
+        G.add_edges_from([(4, 0), (4, 1), (4, 2), (5, 3)])
+        pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
+        G.add_edges_from([(5, 1), (5, 2)])
+        pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
+
+        # 4 triangles
+        G = nx.diamond_graph()
+        G.add_edges_from([(4, 0), (4, 1), (5, 2), (5, 3)])
+        pytest.raises(nx.NetworkXError, nx.inverse_line_graph, G)
 
     def test_wrong_graph_type(self):
         G = nx.DiGraph()
@@ -272,3 +276,34 @@ class TestGeneratorInverseLine:
         H = nx.line_graph(G)
         J = nx.inverse_line_graph(H)
         assert nx.is_isomorphic(G, J)
+
+    def test_line_different_node_types(self):
+        G = nx.path_graph([1, 2, 3, "a", "b", "c"])
+        H = nx.line_graph(G)
+        J = nx.inverse_line_graph(H)
+        assert nx.is_isomorphic(G, J)
+
+
+class TestGeneratorPrivateFunctions:
+    def test_triangles_error(self):
+        G = nx.diamond_graph()
+        pytest.raises(nx.NetworkXError, line._triangles, G, (4, 0))
+        pytest.raises(nx.NetworkXError, line._triangles, G, (0, 3))
+
+    def test_odd_triangles_error(self):
+        G = nx.diamond_graph()
+        pytest.raises(nx.NetworkXError, line._odd_triangle, G, (0, 1, 4))
+        pytest.raises(nx.NetworkXError, line._odd_triangle, G, (0, 1, 3))
+
+    def test_select_starting_cell_error(self):
+        G = nx.diamond_graph()
+        pytest.raises(nx.NetworkXError, line._select_starting_cell, G, (4, 0))
+        pytest.raises(nx.NetworkXError, line._select_starting_cell, G, (0, 3))
+
+    def test_diamond_graph(self):
+        G = nx.diamond_graph()
+        for edge in G.edges:
+            cell = line._select_starting_cell(G, starting_edge=edge)
+            # Starting cell should always be one of the two triangles
+            assert len(cell) == 3
+            assert all(v in G[u] for u in cell for v in cell if u != v)

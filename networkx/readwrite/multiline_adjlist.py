@@ -32,8 +32,8 @@ __all__ = [
     "read_multiline_adjlist",
 ]
 
-from networkx.utils import open_file
 import networkx as nx
+from networkx.utils import open_file
 
 
 def generate_multiline_adjlist(G, delimiter=" "):
@@ -191,6 +191,7 @@ def write_multiline_adjlist(G, path, delimiter=" ", comments="#", encoding="utf-
         path.write(multiline.encode(encoding))
 
 
+@nx._dispatch(graphs=None)
 def parse_multiline_adjlist(
     lines, comments="#", delimiter=None, create_using=None, nodetype=None, edgetype=None
 ):
@@ -247,23 +248,23 @@ def parse_multiline_adjlist(
         try:
             (u, deg) = line.strip().split(delimiter)
             deg = int(deg)
-        except BaseException as e:
-            raise TypeError(f"Failed to read node and degree on line ({line})") from e
+        except BaseException as err:
+            raise TypeError(f"Failed to read node and degree on line ({line})") from err
         if nodetype is not None:
             try:
                 u = nodetype(u)
-            except BaseException as e:
+            except BaseException as err:
                 raise TypeError(
                     f"Failed to convert node ({u}) to " f"type {nodetype}"
-                ) from e
+                ) from err
         G.add_node(u)
         for i in range(deg):
             while True:
                 try:
                     line = next(lines)
-                except StopIteration as e:
+                except StopIteration as err:
                     msg = f"Failed to find neighbor for node ({u})"
-                    raise TypeError(msg) from e
+                    raise TypeError(msg) from err
                 p = line.find(comments)
                 if p >= 0:
                     line = line[:p]
@@ -278,17 +279,17 @@ def parse_multiline_adjlist(
             if nodetype is not None:
                 try:
                     v = nodetype(v)
-                except BaseException as e:
+                except BaseException as err:
                     raise TypeError(
                         f"Failed to convert node ({v}) " f"to type {nodetype}"
-                    ) from e
+                    ) from err
             if edgetype is not None:
                 try:
                     edgedata = {"weight": edgetype(data)}
-                except BaseException as e:
+                except BaseException as err:
                     raise TypeError(
                         f"Failed to convert edge data ({data}) " f"to type {edgetype}"
-                    ) from e
+                    ) from err
             else:
                 try:  # try to evaluate
                     edgedata = literal_eval(data)
@@ -300,6 +301,7 @@ def parse_multiline_adjlist(
 
 
 @open_file(0, mode="rb")
+@nx._dispatch(graphs=None)
 def read_multiline_adjlist(
     path,
     comments="#",

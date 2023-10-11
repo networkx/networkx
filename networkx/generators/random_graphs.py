@@ -37,6 +37,7 @@ __all__ = [
 
 
 @py_random_state(2)
+@nx._dispatch(graphs=None)
 def fast_gnp_random_graph(n, p, seed=None, directed=False):
     """Returns a $G_{n,p}$ random graph, also known as an Erdős-Rényi graph or
     a binomial graph.
@@ -78,28 +79,12 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
     if p <= 0 or p >= 1:
         return nx.gnp_random_graph(n, p, seed=seed, directed=directed)
 
-    w = -1
     lp = math.log(1.0 - p)
 
     if directed:
         G = nx.DiGraph(G)
-        # Nodes in graph are from 0,n-1 (start with v as the first node index).
-        v = 0
-        while v < n:
-            lr = math.log(1.0 - seed.random())
-            w = w + 1 + int(lr / lp)
-            if v == w:  # avoid self loops
-                w = w + 1
-            while v < n <= w:
-                w = w - n
-                v = v + 1
-                if v == w:  # avoid self loops
-                    w = w + 1
-            if v < n:
-                G.add_edge(v, w)
-    else:
-        # Nodes in graph are from 0,n-1 (start with v as the second node index).
         v = 1
+        w = -1
         while v < n:
             lr = math.log(1.0 - seed.random())
             w = w + 1 + int(lr / lp)
@@ -107,11 +92,24 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False):
                 w = w - v
                 v = v + 1
             if v < n:
-                G.add_edge(v, w)
+                G.add_edge(w, v)
+
+    # Nodes in graph are from 0,n-1 (start with v as the second node index).
+    v = 1
+    w = -1
+    while v < n:
+        lr = math.log(1.0 - seed.random())
+        w = w + 1 + int(lr / lp)
+        while w >= v and v < n:
+            w = w - v
+            v = v + 1
+        if v < n:
+            G.add_edge(v, w)
     return G
 
 
 @py_random_state(2)
+@nx._dispatch(graphs=None)
 def gnp_random_graph(n, p, seed=None, directed=False):
     """Returns a $G_{n,p}$ random graph, also known as an Erdős-Rényi graph
     or a binomial graph.
@@ -176,6 +174,7 @@ erdos_renyi_graph = gnp_random_graph
 
 
 @py_random_state(2)
+@nx._dispatch(graphs=None)
 def dense_gnm_random_graph(n, m, seed=None):
     """Returns a $G_{n,m}$ random graph.
 
@@ -210,7 +209,7 @@ def dense_gnm_random_graph(n, m, seed=None):
     .. [1] Donald E. Knuth, The Art of Computer Programming,
         Volume 2/Seminumerical algorithms, Third Edition, Addison-Wesley, 1997.
     """
-    mmax = n * (n - 1) / 2
+    mmax = n * (n - 1) // 2
     if m >= mmax:
         G = complete_graph(n)
     else:
@@ -237,6 +236,7 @@ def dense_gnm_random_graph(n, m, seed=None):
 
 
 @py_random_state(2)
+@nx._dispatch(graphs=None)
 def gnm_random_graph(n, m, seed=None, directed=False):
     """Returns a $G_{n,m}$ random graph.
 
@@ -292,6 +292,7 @@ def gnm_random_graph(n, m, seed=None, directed=False):
 
 
 @py_random_state(3)
+@nx._dispatch(graphs=None)
 def newman_watts_strogatz_graph(n, k, p, seed=None):
     """Returns a Newman–Watts–Strogatz small-world graph.
 
@@ -347,7 +348,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
     # for each edge u-v, with probability p, randomly select existing
     # node w and add new edge u-w
     e = list(G.edges())
-    for (u, v) in e:
+    for u, v in e:
         if seed.random() < p:
             w = seed.choice(nlist)
             # no self-loops and reject if edge u-w exists
@@ -362,6 +363,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None):
 
 
 @py_random_state(3)
+@nx._dispatch(graphs=None)
 def watts_strogatz_graph(n, k, p, seed=None):
     """Returns a Watts–Strogatz small-world graph.
 
@@ -436,6 +438,7 @@ def watts_strogatz_graph(n, k, p, seed=None):
 
 
 @py_random_state(4)
+@nx._dispatch(graphs=None)
 def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
     """Returns a connected Watts–Strogatz small-world graph.
 
@@ -488,8 +491,11 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None):
 
 
 @py_random_state(2)
+@nx._dispatch(graphs=None)
 def random_regular_graph(d, n, seed=None):
     r"""Returns a random $d$-regular graph on $n$ nodes.
+
+    A regular graph is a graph where each node has the same number of neighbors.
 
     The resulting graph has no self-loops or parallel edges.
 
@@ -522,7 +528,7 @@ def random_regular_graph(d, n, seed=None):
     .. [1] A. Steger and N. Wormald,
        Generating random regular graphs quickly,
        Probability and Computing 8 (1999), 377-396, 1999.
-       http://citeseer.ist.psu.edu/steger99generating.html
+       https://doi.org/10.1017/S0963548399003867
 
     .. [2] Jeong Han Kim and Van H. Vu,
        Generating random regular graphs,
@@ -616,6 +622,7 @@ def _random_subset(seq, m, rng):
 
 
 @py_random_state(2)
+@nx._dispatch(graphs=None)
 def barabasi_albert_graph(n, m, seed=None, initial_graph=None):
     """Returns a random graph using Barabási–Albert preferential attachment
 
@@ -688,6 +695,7 @@ def barabasi_albert_graph(n, m, seed=None, initial_graph=None):
 
 
 @py_random_state(4)
+@nx._dispatch(graphs=None)
 def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial_graph=None):
     """Returns a random graph using dual Barabási–Albert preferential attachment
 
@@ -787,6 +795,7 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial_graph=None):
 
 
 @py_random_state(4)
+@nx._dispatch(graphs=None)
 def extended_barabasi_albert_graph(n, m, p, q, seed=None):
     """Returns an extended Barabási–Albert model graph.
 
@@ -865,10 +874,10 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
         # Adding m new edges, if there is room to add them
         if a_probability < p and G.size() <= clique_size - m:
             # Select the nodes where an edge can be added
-            elligible_nodes = [nd for nd, deg in G.degree() if deg < clique_degree]
+            eligible_nodes = [nd for nd, deg in G.degree() if deg < clique_degree]
             for i in range(m):
-                # Choosing a random source node from elligible_nodes
-                src_node = seed.choice(elligible_nodes)
+                # Choosing a random source node from eligible_nodes
+                src_node = seed.choice(eligible_nodes)
 
                 # Picking a possible node that is not 'src_node' or
                 # neighbor with 'src_node', with preferential attachment
@@ -885,29 +894,26 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
                 attachment_preference.append(src_node)
                 attachment_preference.append(dest_node)
 
-                # Adjusting the elligible nodes. Degree may be saturated.
+                # Adjusting the eligible nodes. Degree may be saturated.
                 if G.degree(src_node) == clique_degree:
-                    elligible_nodes.remove(src_node)
-                if (
-                    G.degree(dest_node) == clique_degree
-                    and dest_node in elligible_nodes
-                ):
-                    elligible_nodes.remove(dest_node)
+                    eligible_nodes.remove(src_node)
+                if G.degree(dest_node) == clique_degree and dest_node in eligible_nodes:
+                    eligible_nodes.remove(dest_node)
 
         # Rewiring m edges, if there are enough edges
         elif p <= a_probability < (p + q) and m <= G.size() < clique_size:
             # Selecting nodes that have at least 1 edge but that are not
             # fully connected to ALL other nodes (center of star).
             # These nodes are the pivot nodes of the edges to rewire
-            elligible_nodes = [nd for nd, deg in G.degree() if 0 < deg < clique_degree]
+            eligible_nodes = [nd for nd, deg in G.degree() if 0 < deg < clique_degree]
             for i in range(m):
                 # Choosing a random source node
-                node = seed.choice(elligible_nodes)
+                node = seed.choice(eligible_nodes)
 
                 # The available nodes do have a neighbor at least.
                 neighbor_nodes = list(G[node])
 
-                # Choosing the other end that will get dettached
+                # Choosing the other end that will get detached
                 src_node = seed.choice(neighbor_nodes)
 
                 # Picking a target node that is not 'node' or
@@ -924,16 +930,16 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
                 attachment_preference.remove(src_node)
                 attachment_preference.append(dest_node)
 
-                # Adjusting the elligible nodes.
+                # Adjusting the eligible nodes.
                 # nodes may be saturated or isolated.
-                if G.degree(src_node) == 0 and src_node in elligible_nodes:
-                    elligible_nodes.remove(src_node)
-                if dest_node in elligible_nodes:
+                if G.degree(src_node) == 0 and src_node in eligible_nodes:
+                    eligible_nodes.remove(src_node)
+                if dest_node in eligible_nodes:
                     if G.degree(dest_node) == clique_degree:
-                        elligible_nodes.remove(dest_node)
+                        eligible_nodes.remove(dest_node)
                 else:
                     if G.degree(dest_node) == 1:
-                        elligible_nodes.append(dest_node)
+                        eligible_nodes.append(dest_node)
 
         # Adding new node with m edges
         else:
@@ -950,6 +956,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
 
 
 @py_random_state(3)
+@nx._dispatch(graphs=None)
 def powerlaw_cluster_graph(n, m, p, seed=None):
     """Holme and Kim algorithm for growing graphs with powerlaw
     degree distribution and approximate average clustering.
@@ -1019,7 +1026,7 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
                 neighborhood = [
                     nbr
                     for nbr in G.neighbors(target)
-                    if not G.has_edge(source, nbr) and not nbr == source
+                    if not G.has_edge(source, nbr) and nbr != source
                 ]
                 if neighborhood:  # if there is a neighbor without a link
                     nbr = seed.choice(neighborhood)
@@ -1039,6 +1046,7 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
 
 
 @py_random_state(3)
+@nx._dispatch(graphs=None)
 def random_lobster(n, p1, p2, seed=None):
     """Returns a random lobster graph.
 
@@ -1069,7 +1077,7 @@ def random_lobster(n, p1, p2, seed=None):
         If `p1` or `p2` parameters are >= 1 because the while loops would never finish.
     """
     p1, p2 = abs(p1), abs(p2)
-    if any([p >= 1 for p in [p1, p2]]):
+    if any(p >= 1 for p in [p1, p2]):
         raise nx.NetworkXError("Probability values for `p1` and `p2` must both be < 1.")
 
     # a necessary ingredient in any self-respecting graph library
@@ -1089,6 +1097,7 @@ def random_lobster(n, p1, p2, seed=None):
 
 
 @py_random_state(1)
+@nx._dispatch(graphs=None)
 def random_shell_graph(constructor, seed=None):
     """Returns a random shell graph for the constructor given.
 
@@ -1118,7 +1127,7 @@ def random_shell_graph(constructor, seed=None):
     intra_edges = []
     nnodes = 0
     # create gnm graphs for each shell
-    for (n, m, d) in constructor:
+    for n, m, d in constructor:
         inter_edges = int(m * d)
         intra_edges.append(m - inter_edges)
         g = nx.convert_node_labels_to_integers(
@@ -1146,6 +1155,7 @@ def random_shell_graph(constructor, seed=None):
 
 
 @py_random_state(2)
+@nx._dispatch(graphs=None)
 def random_powerlaw_tree(n, gamma=3, seed=None, tries=100):
     """Returns a tree with a power law degree distribution.
 
@@ -1182,6 +1192,7 @@ def random_powerlaw_tree(n, gamma=3, seed=None, tries=100):
 
 
 @py_random_state(2)
+@nx._dispatch(graphs=None)
 def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
     """Returns a degree sequence for a tree with a power law distribution.
 
@@ -1214,12 +1225,12 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
     # get trial sequence
     z = nx.utils.powerlaw_sequence(n, exponent=gamma, seed=seed)
     # round to integer values in the range [0,n]
-    zseq = [min(n, max(int(round(s)), 0)) for s in z]
+    zseq = [min(n, max(round(s), 0)) for s in z]
 
     # another sequence to swap values from
     z = nx.utils.powerlaw_sequence(tries, exponent=gamma, seed=seed)
     # round to integer values in the range [0,n]
-    swap = [min(n, max(int(round(s)), 0)) for s in z]
+    swap = [min(n, max(round(s), 0)) for s in z]
 
     for deg in swap:
         # If this degree sequence can be the degree sequence of a tree, return
@@ -1238,6 +1249,7 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
 
 
 @py_random_state(3)
+@nx._dispatch(graphs=None)
 def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
     r"""Returns an random graph based on the specified kernel.
 
@@ -1299,7 +1311,6 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
     """
     if kernel_root is None:
         import scipy as sp
-        import scipy.optimize  # call as sp.optimize
 
         def kernel_root(y, a, r):
             def my_function(b):
@@ -1315,6 +1326,6 @@ def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None):
         if kernel_integral(i / n, j / n, 1) <= r:
             i, j = i + 1, i + 1
         else:
-            j = int(math.ceil(n * kernel_root(i / n, j / n, r)))
+            j = math.ceil(n * kernel_root(i / n, j / n, r))
             graph.add_edge(i - 1, j - 1)
     return graph

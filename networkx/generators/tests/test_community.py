@@ -1,5 +1,6 @@
-import networkx as nx
 import pytest
+
+import networkx as nx
 
 
 def test_random_partition_graph():
@@ -109,6 +110,10 @@ def test_caveman_graph():
     G = nx.caveman_graph(4, 3)
     assert len(G) == 12
 
+    G = nx.caveman_graph(5, 1)
+    E5 = nx.empty_graph(5)
+    assert nx.is_isomorphic(G, E5)
+
     G = nx.caveman_graph(1, 5)
     K5 = nx.complete_graph(5)
     assert nx.is_isomorphic(G, K5)
@@ -132,6 +137,9 @@ def test_gaussian_random_partition_graph():
     pytest.raises(
         nx.NetworkXError, nx.gaussian_random_partition_graph, 100, 101, 10, 1, 0
     )
+    # Test when clusters are likely less than 1
+    G = nx.gaussian_random_partition_graph(10, 0.5, 0.5, 0.5, 0.5, seed=1)
+    assert len(G) == 10
 
 
 def test_ring_of_cliques():
@@ -145,8 +153,14 @@ def test_ring_of_cliques():
                 # the edge that already exists cannot be duplicated
                 expected_num_edges = i * (((j * (j - 1)) // 2) + 1) - 1
             assert G.number_of_edges() == expected_num_edges
-    pytest.raises(nx.NetworkXError, nx.ring_of_cliques, 1, 5)
-    pytest.raises(nx.NetworkXError, nx.ring_of_cliques, 3, 0)
+    with pytest.raises(
+        nx.NetworkXError, match="A ring of cliques must have at least two cliques"
+    ):
+        nx.ring_of_cliques(1, 5)
+    with pytest.raises(
+        nx.NetworkXError, match="The cliques must have at least two nodes"
+    ):
+        nx.ring_of_cliques(3, 0)
 
 
 def test_windmill_graph():
@@ -158,8 +172,14 @@ def test_windmill_graph():
             assert G.degree(0) == G.number_of_nodes() - 1
             for i in range(1, G.number_of_nodes()):
                 assert G.degree(i) == k - 1
-    pytest.raises(nx.NetworkXError, nx.ring_of_cliques, 1, 3)
-    pytest.raises(nx.NetworkXError, nx.ring_of_cliques, 15, 0)
+    with pytest.raises(
+        nx.NetworkXError, match="A windmill graph must have at least two cliques"
+    ):
+        nx.windmill_graph(1, 3)
+    with pytest.raises(
+        nx.NetworkXError, match="The cliques must have at least two nodes"
+    ):
+        nx.windmill_graph(3, 0)
 
 
 def test_stochastic_block_model():
@@ -214,7 +234,7 @@ def test_generator():
 
 
 def test_invalid_tau1():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.NetworkXError, match="tau2 must be greater than one"):
         n = 100
         tau1 = 2
         tau2 = 1
@@ -223,7 +243,7 @@ def test_invalid_tau1():
 
 
 def test_invalid_tau2():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.NetworkXError, match="tau1 must be greater than one"):
         n = 100
         tau1 = 1
         tau2 = 2
@@ -232,7 +252,7 @@ def test_invalid_tau2():
 
 
 def test_mu_too_large():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.NetworkXError, match="mu must be in the interval \\[0, 1\\]"):
         n = 100
         tau1 = 2
         tau2 = 2
@@ -241,7 +261,7 @@ def test_mu_too_large():
 
 
 def test_mu_too_small():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.NetworkXError, match="mu must be in the interval \\[0, 1\\]"):
         n = 100
         tau1 = 2
         tau2 = 2
@@ -250,18 +270,93 @@ def test_mu_too_small():
 
 
 def test_both_degrees_none():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(
+        nx.NetworkXError,
+        match="Must assign exactly one of min_degree and average_degree",
+    ):
         n = 100
         tau1 = 2
         tau2 = 2
-        mu = -1
+        mu = 1
         nx.LFR_benchmark_graph(n, tau1, tau2, mu)
 
 
 def test_neither_degrees_none():
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(
+        nx.NetworkXError,
+        match="Must assign exactly one of min_degree and average_degree",
+    ):
         n = 100
         tau1 = 2
         tau2 = 2
-        mu = -1
+        mu = 1
         nx.LFR_benchmark_graph(n, tau1, tau2, mu, min_degree=2, average_degree=5)
+
+
+def test_max_iters_exceeded():
+    with pytest.raises(
+        nx.ExceededMaxIterations,
+        match="Could not assign communities; try increasing min_community",
+    ):
+        n = 10
+        tau1 = 2
+        tau2 = 2
+        mu = 0.1
+        nx.LFR_benchmark_graph(n, tau1, tau2, mu, min_degree=2, max_iters=10, seed=1)
+
+
+def test_max_deg_out_of_range():
+    with pytest.raises(
+        nx.NetworkXError, match="max_degree must be in the interval \\(0, n\\]"
+    ):
+        n = 10
+        tau1 = 2
+        tau2 = 2
+        mu = 0.1
+        nx.LFR_benchmark_graph(
+            n, tau1, tau2, mu, max_degree=n + 1, max_iters=10, seed=1
+        )
+
+
+def test_max_community():
+    n = 250
+    tau1 = 3
+    tau2 = 1.5
+    mu = 0.1
+    G = nx.LFR_benchmark_graph(
+        n,
+        tau1,
+        tau2,
+        mu,
+        average_degree=5,
+        max_degree=100,
+        min_community=50,
+        max_community=200,
+        seed=10,
+    )
+    assert len(G) == 250
+    C = {frozenset(G.nodes[v]["community"]) for v in G}
+    assert nx.community.is_partition(G.nodes(), C)
+
+
+def test_powerlaw_iterations_exceeded():
+    with pytest.raises(
+        nx.ExceededMaxIterations, match="Could not create power law sequence"
+    ):
+        n = 100
+        tau1 = 2
+        tau2 = 2
+        mu = 1
+        nx.LFR_benchmark_graph(n, tau1, tau2, mu, min_degree=2, max_iters=0)
+
+
+def test_no_scipy_zeta():
+    zeta2 = 1.6449340668482264
+    assert abs(zeta2 - nx.generators.community._hurwitz_zeta(2, 1, 0.0001)) < 0.01
+
+
+def test_generate_min_degree_itr():
+    with pytest.raises(
+        nx.ExceededMaxIterations, match="Could not match average_degree"
+    ):
+        nx.generators.community._generate_min_degree(2, 2, 1, 0.01, 0)

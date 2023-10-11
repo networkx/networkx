@@ -13,12 +13,12 @@ At the same time, I encourage capable people to investigate
 alternative GED algorithms, in order to improve the choices available.
 """
 
-from functools import reduce
-from itertools import product
 import math
-from operator import mul
 import time
 import warnings
+from dataclasses import dataclass
+from itertools import product
+
 import networkx as nx
 
 __all__ = [
@@ -27,7 +27,6 @@ __all__ = [
     "optimize_graph_edit_distance",
     "optimize_edit_paths",
     "simrank_similarity",
-    "simrank_similarity_numpy",
     "panther_similarity",
     "generate_random_paths",
 ]
@@ -37,6 +36,9 @@ def debug_print(*args, **kwargs):
     print(*args, **kwargs)
 
 
+@nx._dispatch(
+    graphs={"G1": 0, "G2": 1}, preserve_edge_attrs=True, preserve_node_attrs=True
+)
 def graph_edit_distance(
     G1,
     G2,
@@ -187,7 +189,7 @@ def graph_edit_distance(
 
     """
     bestcost = None
-    for vertex_path, edge_path, cost in optimize_edit_paths(
+    for _, _, cost in optimize_edit_paths(
         G1,
         G2,
         node_match,
@@ -208,6 +210,7 @@ def graph_edit_distance(
     return bestcost
 
 
+@nx._dispatch(graphs={"G1": 0, "G2": 1})
 def optimal_edit_paths(
     G1,
     G2,
@@ -346,7 +349,7 @@ def optimal_edit_paths(
        https://hal.archives-ouvertes.fr/hal-01168816
 
     """
-    paths = list()
+    paths = []
     bestcost = None
     for vertex_path, edge_path, cost in optimize_edit_paths(
         G1,
@@ -364,12 +367,13 @@ def optimal_edit_paths(
     ):
         # assert bestcost is None or cost <= bestcost
         if bestcost is not None and cost < bestcost:
-            paths = list()
+            paths = []
         paths.append((vertex_path, edge_path))
         bestcost = cost
     return paths, bestcost
 
 
+@nx._dispatch(graphs={"G1": 0, "G2": 1})
 def optimize_graph_edit_distance(
     G1,
     G2,
@@ -503,7 +507,7 @@ def optimize_graph_edit_distance(
        <10.5220/0005209202710278>. <hal-01168816>
        https://hal.archives-ouvertes.fr/hal-01168816
     """
-    for vertex_path, edge_path, cost in optimize_edit_paths(
+    for _, _, cost in optimize_edit_paths(
         G1,
         G2,
         node_match,
@@ -520,6 +524,9 @@ def optimize_graph_edit_distance(
         yield cost
 
 
+@nx._dispatch(
+    graphs={"G1": 0, "G2": 1}, preserve_edge_attrs=True, preserve_node_attrs=True
+)
 def optimize_edit_paths(
     G1,
     G2,
@@ -670,20 +677,13 @@ def optimize_edit_paths(
 
     import numpy as np
     import scipy as sp
-    import scipy.optimize  # call as sp.optimize
 
+    @dataclass
     class CostMatrix:
-        def __init__(self, C, lsa_row_ind, lsa_col_ind, ls):
-            # assert C.shape[0] == len(lsa_row_ind)
-            # assert C.shape[1] == len(lsa_col_ind)
-            # assert len(lsa_row_ind) == len(lsa_col_ind)
-            # assert set(lsa_row_ind) == set(range(len(lsa_row_ind)))
-            # assert set(lsa_col_ind) == set(range(len(lsa_col_ind)))
-            # assert ls == C[lsa_row_ind, lsa_col_ind].sum()
-            self.C = C
-            self.lsa_row_ind = lsa_row_ind
-            self.lsa_col_ind = lsa_col_ind
-            self.ls = ls
+        C: ...
+        lsa_row_ind: ...
+        lsa_col_ind: ...
+        ls: ...
 
     def make_CostMatrix(C, m, n):
         # assert(C.shape == (m + n, m + n))
@@ -694,9 +694,9 @@ def optimize_edit_paths(
         # NOTE: fast reduce of Cv relies on it
         # assert len(lsa_row_ind) == len(lsa_col_ind)
         indexes = zip(range(len(lsa_row_ind)), lsa_row_ind, lsa_col_ind)
-        subst_ind = list(k for k, i, j in indexes if i < m and j < n)
+        subst_ind = [k for k, i, j in indexes if i < m and j < n]
         indexes = zip(range(len(lsa_row_ind)), lsa_row_ind, lsa_col_ind)
-        dummy_ind = list(k for k, i, j in indexes if i >= m and j >= n)
+        dummy_ind = [k for k, i, j in indexes if i >= m and j >= n]
         # assert len(subst_ind) == len(dummy_ind)
         lsa_row_ind[dummy_ind] = lsa_col_ind[subst_ind] + m
         lsa_col_ind[dummy_ind] = lsa_row_ind[subst_ind] + n
@@ -724,7 +724,7 @@ def optimize_edit_paths(
             rind[rind >= k] -= 1
         return rind
 
-    def match_edges(u, v, pending_g, pending_h, Ce, matched_uv=[]):
+    def match_edges(u, v, pending_g, pending_h, Ce, matched_uv=None):
         """
         Parameters:
             u, v: matched vertices, u=None or v=None for
@@ -745,18 +745,30 @@ def optimize_edit_paths(
         N = len(pending_h)
         # assert Ce.C.shape == (M + N, M + N)
 
-        g_ind = [
-            i
-            for i in range(M)
-            if pending_g[i][:2] == (u, u)
-            or any(pending_g[i][:2] in ((p, u), (u, p)) for p, q in matched_uv)
-        ]
-        h_ind = [
-            j
-            for j in range(N)
-            if pending_h[j][:2] == (v, v)
-            or any(pending_h[j][:2] in ((q, v), (v, q)) for p, q in matched_uv)
-        ]
+        # only attempt to match edges after one node match has been made
+        # this will stop self-edges on the first node being automatically deleted
+        # even when a substitution is the better option
+        if matched_uv is None or len(matched_uv) == 0:
+            g_ind = []
+            h_ind = []
+        else:
+            g_ind = [
+                i
+                for i in range(M)
+                if pending_g[i][:2] == (u, u)
+                or any(
+                    pending_g[i][:2] in ((p, u), (u, p), (p, p)) for p, q in matched_uv
+                )
+            ]
+            h_ind = [
+                j
+                for j in range(N)
+                if pending_h[j][:2] == (v, v)
+                or any(
+                    pending_h[j][:2] in ((q, v), (v, q), (q, q)) for p, q in matched_uv
+                )
+            ]
+
         m = len(g_ind)
         n = len(h_ind)
 
@@ -766,9 +778,9 @@ def optimize_edit_paths(
 
             # Forbid structurally invalid matches
             # NOTE: inf remembered from Ce construction
-            for k, i in zip(range(m), g_ind):
+            for k, i in enumerate(g_ind):
                 g = pending_g[i][:2]
-                for l, j in zip(range(n), h_ind):
+                for l, j in enumerate(h_ind):
                     h = pending_h[j][:2]
                     if nx.is_directed(G1) or nx.is_directed(G2):
                         if any(
@@ -782,21 +794,21 @@ def optimize_edit_paths(
                             for p, q in matched_uv
                         ):
                             continue
-                    if g == (u, u):
+                    if g == (u, u) or any(g == (p, p) for p, q in matched_uv):
                         continue
-                    if h == (v, v):
+                    if h == (v, v) or any(h == (q, q) for p, q in matched_uv):
                         continue
                     C[k, l] = inf
 
             localCe = make_CostMatrix(C, m, n)
-            ij = list(
+            ij = [
                 (
                     g_ind[k] if k < m else M + h_ind[l],
                     h_ind[l] if l < n else N + g_ind[k],
                 )
                 for k, l in zip(localCe.lsa_row_ind, localCe.lsa_col_ind)
                 if k < m or l < n
-            )
+            ]
 
         else:
             ij = []
@@ -810,8 +822,7 @@ def optimize_edit_paths(
             m_i = m - sum(1 for t in i if t < m)
             n_j = n - sum(1 for t in j if t < n)
             return make_CostMatrix(reduce_C(Ce.C, i, j, m, n), m_i, n_j)
-        else:
-            return Ce
+        return Ce
 
     def get_edit_ops(
         matched_uv, pending_u, pending_v, Cv, pending_g, pending_h, Ce, matched_cost
@@ -869,7 +880,7 @@ def optimize_edit_paths(
             yield (i, j), Cv_ij, xy, Ce_xy, Cv.C[i, j] + localCe.ls
 
         # 2) other candidates, sorted by lower-bound cost estimate
-        other = list()
+        other = []
         fixed_i, fixed_j = i, j
         if m <= n:
             candidates = (
@@ -970,8 +981,9 @@ def optimize_edit_paths(
             # assert not len(pending_g)
             # assert not len(pending_h)
             # path completed!
-            # assert matched_cost <= maxcost.value
-            maxcost.value = min(maxcost.value, matched_cost)
+            # assert matched_cost <= maxcost_value
+            nonlocal maxcost_value
+            maxcost_value = min(maxcost_value, matched_cost)
             yield matched_uv, matched_gh, matched_cost
 
         else:
@@ -1004,16 +1016,16 @@ def optimize_edit_paths(
                             pending_h[y] if y < len_h else None,
                         )
                     )
-                sortedx = list(sorted(x for x, y in xy))
-                sortedy = list(sorted(y for x, y in xy))
-                G = list(
+                sortedx = sorted(x for x, y in xy)
+                sortedy = sorted(y for x, y in xy)
+                G = [
                     (pending_g.pop(x) if x < len(pending_g) else None)
                     for x in reversed(sortedx)
-                )
-                H = list(
+                ]
+                H = [
                     (pending_h.pop(y) if y < len(pending_h) else None)
                     for y in reversed(sortedy)
-                )
+                ]
 
                 yield from get_edit_paths(
                     matched_uv,
@@ -1039,7 +1051,7 @@ def optimize_edit_paths(
                 for y, h in zip(sortedy, reversed(H)):
                     if h is not None:
                         pending_h.insert(y, h)
-                for t in xy:
+                for _ in xy:
                     matched_gh.pop()
 
     # Initialization
@@ -1155,13 +1167,7 @@ def optimize_edit_paths(
     # debug_print(Ce.C)
     # debug_print()
 
-    class MaxCost:
-        def __init__(self):
-            # initial upper-bound estimate
-            # NOTE: should work for empty graph
-            self.value = Cv.C.sum() + Ce.C.sum() + 1
-
-    maxcost = MaxCost()
+    maxcost_value = Cv.C.sum() + Ce.C.sum() + 1
 
     if timeout is not None:
         if timeout <= 0:
@@ -1175,10 +1181,11 @@ def optimize_edit_paths(
         if upper_bound is not None:
             if cost > upper_bound:
                 return True
-        if cost > maxcost.value:
+        if cost > maxcost_value:
             return True
-        elif strictly_decreasing and cost >= maxcost.value:
+        if strictly_decreasing and cost >= maxcost_value:
             return True
+        return False
 
     # Now go!
 
@@ -1192,10 +1199,11 @@ def optimize_edit_paths(
         # assert sorted(G1.edges) == sorted(g for g, h in edge_path if g is not None)
         # assert sorted(G2.edges) == sorted(h for g, h in edge_path if h is not None)
         # print(vertex_path, edge_path, cost, file = sys.stderr)
-        # assert cost == maxcost.value
+        # assert cost == maxcost_value
         yield list(vertex_path), list(edge_path), cost
 
 
+@nx._dispatch
 def simrank_similarity(
     G,
     source=None,
@@ -1312,9 +1320,9 @@ def simrank_similarity(
 
     if isinstance(x, np.ndarray):
         if x.ndim == 1:
-            return {node: val for node, val in zip(G, x)}
-        else:  # x.ndim == 2:
-            return {u: dict(zip(G, row)) for u, row in zip(G, x)}
+            return dict(zip(G, x))
+        # else x.ndim == 2
+        return {u: dict(zip(G, row)) for u, row in zip(G, x)}
     return x
 
 
@@ -1421,12 +1429,12 @@ def _simrank_similarity_numpy(
 
     Returns
     -------
-    similarity : numpy matrix, numpy array or float
+    similarity : numpy array or float
         If ``source`` and ``target`` are both ``None``, this returns a
-        Matrix containing SimRank scores of the nodes.
+        2D array containing SimRank scores of the nodes.
 
         If ``source`` is not ``None`` but ``target`` is, this returns an
-        Array containing SimRank scores of ``source`` and that
+        1D array containing SimRank scores of ``source`` and that
         node.
 
         If neither ``source`` nor ``target`` is ``None``, this returns
@@ -1487,82 +1495,10 @@ def _simrank_similarity_numpy(
     return newsim
 
 
-def simrank_similarity_numpy(
-    G,
-    source=None,
-    target=None,
-    importance_factor=0.9,
-    max_iterations=100,
-    tolerance=1e-4,
+@nx._dispatch(edge_attrs="weight")
+def panther_similarity(
+    G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None, weight="weight"
 ):
-    """Calculate SimRank of nodes in ``G`` using matrices with ``numpy``.
-
-    .. deprecated:: 2.6
-        simrank_similarity_numpy is deprecated and will be removed in networkx 3.0.
-        Use simrank_similarity
-
-    """
-    warnings.warn(
-        (
-            "networkx.simrank_similarity_numpy is deprecated and will be removed"
-            "in NetworkX 3.0, use networkx.simrank_similarity instead."
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return _simrank_similarity_numpy(
-        G,
-        source,
-        target,
-        importance_factor,
-        max_iterations,
-        tolerance,
-    )
-
-
-# TODO replace w/ math.comb(n, k) for Python 3.8+
-def _n_choose_k(n, k):
-    """Pure Python implementation of the binomial coefficient
-
-    The general equation is n! / (k! * (n - k)!). The below
-    implementation is a more efficient version.
-
-    Note: this will be removed in favor of Python 3.8's ``math.comb(n, k)``.
-
-    Parameters
-    ----------
-    n : int
-        Set of ``n`` elements
-    k : int
-        Unordered chosen subset of length ``k``
-
-    Returns
-    -------
-    binomial_coeff : int
-        The number of ways (disregarding order) that k objects
-        can be chosen from among n objects.
-
-    Examples
-    --------
-    >>> _n_choose_k(5, 2)
-    10
-    >>> _n_choose_k(5, 4)
-    5
-    >>> _n_choose_k(100, 100)
-    1
-
-    """
-    if k > n:
-        return 0
-    if n == k:
-        return 1
-    elif k < n - k:
-        return reduce(mul, range(n - k + 1, n + 1)) // math.factorial(k)
-    else:
-        return reduce(mul, range(k + 1, n + 1)) // math.factorial(n - k)
-
-
-def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None):
     r"""Returns the Panther similarity of nodes in the graph `G` to node ``v``.
 
     Panther is a similarity metric that says "two objects are considered
@@ -1588,6 +1524,9 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
     eps : float or None (default = None)
         The error bound. Per [1]_, a good value is ``sqrt(1/|E|)``. Therefore,
         if no value is provided, the recommended computed value will be used.
+    weight : string or None, optional (default="weight")
+        The name of an edge attribute that holds the numerical value
+        used as a weight. If None then each edge has weight 1.
 
     Returns
     -------
@@ -1628,12 +1567,12 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
 
     # Calculate the sample size ``R`` for how many paths
     # to randomly generate
-    t_choose_2 = _n_choose_k(path_length, 2)
-    sample_size = int((c / eps ** 2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
+    t_choose_2 = math.comb(path_length, 2)
+    sample_size = int((c / eps**2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
     index_map = {}
     _ = list(
         generate_random_paths(
-            G, sample_size, path_length=path_length, index_map=index_map
+            G, sample_size, path_length=path_length, index_map=index_map, weight=weight
         )
     )
     S = np.zeros(num_nodes)
@@ -1659,7 +1598,7 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
     top_k_sorted = top_k_unsorted[np.argsort(S[top_k_unsorted])][::-1]
 
     # Add back the similarity scores
-    top_k_sorted_names = map(lambda n: node_map[n], top_k_sorted)
+    top_k_sorted_names = (node_map[n] for n in top_k_sorted)
     top_k_with_val = dict(zip(top_k_sorted_names, S[top_k_sorted]))
 
     # Remove the self-similarity
@@ -1667,7 +1606,10 @@ def panther_similarity(G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None
     return top_k_with_val
 
 
-def generate_random_paths(G, sample_size, path_length=5, index_map=None):
+@nx._dispatch(edge_attrs="weight")
+def generate_random_paths(
+    G, sample_size, path_length=5, index_map=None, weight="weight"
+):
     """Randomly generate `sample_size` paths of length `path_length`.
 
     Parameters
@@ -1684,6 +1626,9 @@ def generate_random_paths(G, sample_size, path_length=5, index_map=None):
         If provided, this will be populated with the inverted
         index of nodes mapped to the set of generated random path
         indices within ``paths``.
+    weight : string or None, optional (default="weight")
+        The name of an edge attribute that holds the numerical value
+        used as a weight. If None then each edge has weight 1.
 
     Returns
     -------
@@ -1717,7 +1662,7 @@ def generate_random_paths(G, sample_size, path_length=5, index_map=None):
 
     # Calculate transition probabilities between
     # every pair of vertices according to Eq. (3)
-    adj_mat = nx.to_numpy_array(G)
+    adj_mat = nx.to_numpy_array(G, weight=weight)
     inv_row_sums = np.reciprocal(adj_mat.sum(axis=1)).reshape(-1, 1)
     transition_probabilities = adj_mat * inv_row_sums
 

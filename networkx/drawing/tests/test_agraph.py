@@ -1,14 +1,14 @@
 """Unit tests for PyGraphviz interface."""
 import os
 import tempfile
+
 import pytest
 
 pygraphviz = pytest.importorskip("pygraphviz")
 
 
-from networkx.utils import nodes_equal, edges_equal, graphs_equal
-
 import networkx as nx
+from networkx.utils import edges_equal, graphs_equal, nodes_equal
 
 
 class TestAGraph:
@@ -240,3 +240,15 @@ class TestAGraph:
         pos = list(pos.values())
         assert len(pos) == 5
         assert len(pos[0]) == 3
+
+    def test_no_warnings_raised(self):
+        # Test that no warnings are raised when Networkx graph
+        # is converted to Pygraphviz graph and 'pos'
+        # attribute is given
+        G = nx.Graph()
+        G.add_node(0, pos=(0, 0))
+        G.add_node(1, pos=(1, 1))
+        A = nx.nx_agraph.to_agraph(G)
+        with pytest.warns(None) as record:
+            A.layout()
+        assert len(record) == 0

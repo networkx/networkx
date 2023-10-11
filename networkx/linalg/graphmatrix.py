@@ -3,10 +3,13 @@ Adjacency matrix and incidence matrix of graphs.
 """
 import networkx as nx
 
-__all__ = ["incidence_matrix", "adj_matrix", "adjacency_matrix"]
+__all__ = ["incidence_matrix", "adjacency_matrix"]
 
 
-def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=None):
+@nx._dispatch(edge_attrs="weight")
+def incidence_matrix(
+    G, nodelist=None, edgelist=None, oriented=False, weight=None, *, dtype=None
+):
     """Returns incidence matrix of G.
 
     The incidence matrix assigns each row to a node and each column to an edge.
@@ -38,9 +41,15 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
        If None, then each edge has weight 1.  Edge weights, if used,
        should be positive so that the orientation can provide the sign.
 
+    dtype : a NumPy dtype or None (default=None)
+        The dtype of the output sparse array. This type should be a compatible
+        type of the weight argument, eg. if weight would return a float this
+        argument should also be a float.
+        If None, then the default for SciPy is used.
+
     Returns
     -------
-    A : SciPy sparse matrix
+    A : SciPy sparse array
       The incidence matrix of G.
 
     Notes
@@ -57,7 +66,6 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
        http://videolectures.net/mit18085f07_strang_lec03/
     """
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     if nodelist is None:
         nodelist = list(G)
@@ -66,7 +74,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
             edgelist = list(G.edges(keys=True))
         else:
             edgelist = list(G.edges())
-    A = sp.sparse.lil_matrix((len(nodelist), len(edgelist)))
+    A = sp.sparse.lil_array((len(nodelist), len(edgelist)), dtype=dtype)
     node_index = {node: i for i, node in enumerate(nodelist)}
     for ei, e in enumerate(edgelist):
         (u, v) = e[:2]
@@ -75,10 +83,10 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
         try:
             ui = node_index[u]
             vi = node_index[v]
-        except KeyError as e:
+        except KeyError as err:
             raise nx.NetworkXError(
-                f"node {u} or {v} in edgelist " f"but not in nodelist"
-            ) from e
+                f"node {u} or {v} in edgelist but not in nodelist"
+            ) from err
         if weight is None:
             wt = 1
         else:
@@ -96,6 +104,7 @@ def incidence_matrix(G, nodelist=None, edgelist=None, oriented=False, weight=Non
     return A.asformat("csc")
 
 
+@nx._dispatch(edge_attrs="weight")
 def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight"):
     """Returns adjacency matrix of G.
 
@@ -118,7 +127,7 @@ def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight"):
 
     Returns
     -------
-    A : SciPy sparse matrix
+    A : SciPy sparse array
       Adjacency matrix representation of G.
 
     Notes
@@ -137,7 +146,7 @@ def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight"):
     diagonal matrix entry value to the edge weight attribute
     (or the number 1 if the edge has no weight attribute).  If the
     alternate convention of doubling the edge weight is desired the
-    resulting Scipy sparse matrix can be modified as follows:
+    resulting SciPy sparse array can be modified as follows:
 
     >>> G = nx.Graph([(1, 1)])
     >>> A = nx.adjacency_matrix(G)
@@ -150,25 +159,8 @@ def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight"):
     See Also
     --------
     to_numpy_array
-    to_scipy_sparse_matrix
+    to_scipy_sparse_array
     to_dict_of_dicts
     adjacency_spectrum
     """
-    return nx.to_scipy_sparse_matrix(G, nodelist=nodelist, dtype=dtype, weight=weight)
-
-
-def _adj_matrix_warning(G, nodelist=None, dtype=None, weight="weight"):
-    import warnings
-
-    warnings.warn(
-        (
-            "adj_matrix is deprecated and will be removed in version 3.0.\n"
-            "Use `adjacency_matrix` instead\n"
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return adjacency_matrix(G, nodelist, dtype, weight)
-
-
-adj_matrix = _adj_matrix_warning
+    return nx.to_scipy_sparse_array(G, nodelist=nodelist, dtype=dtype, weight=weight)

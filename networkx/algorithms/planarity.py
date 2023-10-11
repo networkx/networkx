@@ -1,9 +1,44 @@
 from collections import defaultdict
+
 import networkx as nx
 
-__all__ = ["check_planarity", "PlanarEmbedding"]
+__all__ = ["check_planarity", "is_planar", "PlanarEmbedding"]
 
 
+@nx._dispatch
+def is_planar(G):
+    """Returns True if and only if `G` is planar.
+
+    A graph is *planar* iff it can be drawn in a plane without
+    any edge intersections.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    Returns
+    -------
+    bool
+       Whether the graph is planar.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 2)])
+    >>> nx.is_planar(G)
+    True
+    >>> nx.is_planar(nx.complete_graph(5))
+    False
+
+    See Also
+    --------
+    check_planarity :
+        Check if graph is planar *and* return a `PlanarEmbedding` instance if True.
+    """
+
+    return check_planarity(G, counterexample=False)[0]
+
+
+@nx._dispatch
 def check_planarity(G, counterexample=False):
     """Check if a graph is planar and return a counterexample or an embedding.
 
@@ -24,6 +59,18 @@ def check_planarity(G, counterexample=False):
         If the graph is planar `certificate` is a PlanarEmbedding
         otherwise it is a Kuratowski subgraph.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 2)])
+    >>> is_planar, P = nx.check_planarity(G)
+    >>> print(is_planar)
+    True
+
+    When `G` is planar, a `PlanarEmbedding` instance is returned:
+
+    >>> P.get_data()
+    {0: [1, 2], 1: [0], 2: [0]}
+
     Notes
     -----
     A (combinatorial) embedding consists of cyclic orderings of the incident
@@ -36,6 +83,11 @@ def check_planarity(G, counterexample=False):
 
     A counterexample is only generated if the corresponding parameter is set,
     because the complexity of the counterexample generation is higher.
+
+    See also
+    --------
+    is_planar :
+        Check for planarity without creating a `PlanarEmbedding` or counterexample.
 
     References
     ----------
@@ -62,6 +114,7 @@ def check_planarity(G, counterexample=False):
         return True, embedding
 
 
+@nx._dispatch
 def check_planarity_recursive(G, counterexample=False):
     """Recursive version of :meth:`check_planarity`."""
     planarity_state = LRPlanarity(G)
@@ -77,6 +130,7 @@ def check_planarity_recursive(G, counterexample=False):
         return True, embedding
 
 
+@nx._dispatch
 def get_counterexample(G):
     """Obtains a Kuratowski subgraph.
 
@@ -115,6 +169,7 @@ def get_counterexample(G):
     return subgraph
 
 
+@nx._dispatch
 def get_counterexample_recursive(G):
     """Recursive version of :meth:`get_counterexample`."""
 
@@ -716,6 +771,8 @@ class PlanarEmbedding(nx.DiGraph):
     The planar embedding is given by a `combinatorial embedding
     <https://en.wikipedia.org/wiki/Graph_embedding#Combinatorial_embedding>`_.
 
+    .. note:: `check_planarity` is the preferred way to check if a graph is planar.
+
     **Neighbor ordering:**
 
     In comparison to a usual graph structure, the embedding also stores the
@@ -760,6 +817,15 @@ class PlanarEmbedding(nx.DiGraph):
     to them, it is possible to assign each half-edge *exactly one* face.
     For a half-edge (u, v) that is orientated such that u is below v then the
     face that belongs to (u, v) is to the right of this half-edge.
+
+    See Also
+    --------
+    is_planar :
+        Preferred way to check if an existing graph is planar.
+
+    check_planarity :
+        A convenient way to create a `PlanarEmbedding`. If not planar,
+        it returns a subgraph that shows this.
 
     Examples
     --------
@@ -806,7 +872,7 @@ class PlanarEmbedding(nx.DiGraph):
         set_data
 
         """
-        embedding = dict()
+        embedding = {}
         for v in self:
             embedding[v] = list(self.neighbors_cw_order(v))
         return embedding
@@ -875,9 +941,9 @@ class PlanarEmbedding(nx.DiGraph):
         for v in self:
             try:
                 sorted_nbrs = set(self.neighbors_cw_order(v))
-            except KeyError as e:
+            except KeyError as err:
                 msg = f"Bad embedding. Missing orientation for a neighbor of {v}"
-                raise nx.NetworkXException(msg) from e
+                raise nx.NetworkXException(msg) from err
 
             unsorted_nbrs = set(self[v])
             if sorted_nbrs != unsorted_nbrs:

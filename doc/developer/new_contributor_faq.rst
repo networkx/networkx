@@ -37,6 +37,16 @@ That said, a few places to check for ideas on where to get started:
 
 .. _Algorithms discussion: https://github.com/networkx/networkx/discussions/categories/algorithms
 
+Q: I've found an issue I'm interested in, can I have it assigned to me?
+-----------------------------------------------------------------------
+
+NetworkX doesn't typically assign issues to contributors. If you find an issue
+or feature request on the issue tracker that you'd like to work on, you should
+first check the issue thread to see if there are any linked pull requests.
+If not, then feel free to open a new PR to address the issue - no need
+to ask for permission - and don't forget to reference the issue number in the PR
+comments so that others know you are now working on it!
+
 Q: How do I contribute an example to the Gallery?
 -------------------------------------------------
 
@@ -100,7 +110,7 @@ For example, let's say you are interested in making a change to the
 where it is defined. In an IPython terminal, you can use ``?`` --- the source file is
 listed in the ``File:`` field:
 
-.. code-block:: ipython
+.. code-block:: ipython3
 
    In [1]: import networkx as nx
    In [2]: nx.kamada_kawai_layout?
@@ -119,3 +129,11 @@ For example, from the NetworkX source directory:
 
    $ grep -r "def kamada_kawai_layout" .
    ./networkx/drawing/layout.py:def kamada_kawai_layout(
+
+Q: What is the policy for deciding whether to include a new algorithm?
+----------------------------------------------------------------------
+
+There is no official policy setting explicit inclusion criteria for new
+algorithms in NetworkX. New algorithms are more likely to be included if they
+have been published and are cited by others. More important than number of
+citations is how well proposed additions fit the project :ref:`mission_and_values`.

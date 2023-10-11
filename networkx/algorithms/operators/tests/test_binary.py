@@ -1,5 +1,9 @@
+import os
+
 import pytest
+
 import networkx as nx
+from networkx.classes.tests import dispatch_interface
 from networkx.utils import edges_equal
 
 
@@ -22,7 +26,7 @@ def test_union_attributes():
         assert gh.nodes[n] == eval(graph).nodes[int(node)]
 
     assert gh.graph["attr"] == "attr"
-    assert gh.graph["name"] == "h"  # h graph attributes take precendent
+    assert gh.graph["name"] == "h"  # h graph attributes take precedent
 
 
 def test_intersection():
@@ -37,6 +41,23 @@ def test_intersection():
     I = nx.intersection(G, H)
     assert set(I.nodes()) == {1, 2, 3, 4}
     assert sorted(I.edges()) == [(2, 3)]
+
+    ##################
+    # Tests for @nx._dispatch mechanism with multiple graph arguments
+    # nx.intersection is called as if it were a re-implementation
+    # from another package.
+    ###################
+    G2 = dispatch_interface.convert(G)
+    H2 = dispatch_interface.convert(H)
+    I2 = nx.intersection(G2, H2)
+    assert set(I2.nodes()) == {1, 2, 3, 4}
+    assert sorted(I2.edges()) == [(2, 3)]
+    # Only test if not performing auto convert testing of backend implementations
+    if not nx.utils.backends._dispatch._automatic_backends:
+        with pytest.raises(TypeError):
+            nx.intersection(G2, H)
+        with pytest.raises(TypeError):
+            nx.intersection(G, H2)
 
 
 def test_intersection_node_sets_different():
