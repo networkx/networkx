@@ -1207,17 +1207,17 @@ def draw_networkx_edge_labels(
         )
 
         # ARC CURVATURE
-        pos_1 = ax.transData.transform(np.array(pos[n1]))
-        pos_2 = ax.transData.transform(np.array(pos[n2]))
-        linear_mid = 0.5 * pos_1 + 0.5 * pos_2
-        d_pos = pos_2 - pos_1
-        rotation_matrix = np.array([(0, 1), (-1, 0)])
-        ctrl_1 = linear_mid + rads[ek] * rotation_matrix.dot(d_pos)
-        ctrl_mid_1 = 0.5 * pos_1 + 0.5 * ctrl_1
-        ctrl_mid_2 = 0.5 * pos_2 + 0.5 * ctrl_1
-        bezier_mid = 0.5 * ctrl_mid_1 + 0.5 * ctrl_mid_2
-        (x, y) = ax.transData.inverted().transform(bezier_mid)
-        # EO ARC CURVATURE
+        if rads[ek]:
+            pos_1 = ax.transData.transform(np.array(pos[n1]))
+            pos_2 = ax.transData.transform(np.array(pos[n2]))
+            linear_mid = 0.5 * pos_1 + 0.5 * pos_2
+            d_pos = pos_2 - pos_1
+            rotation_matrix = np.array([(0, 1), (-1, 0)])
+            ctrl_1 = linear_mid + rads[ek] * rotation_matrix.dot(d_pos)
+            ctrl_mid_1 = 0.5 * pos_1 + 0.5 * ctrl_1
+            ctrl_mid_2 = 0.5 * pos_2 + 0.5 * ctrl_1
+            bezier_mid = 0.5 * ctrl_mid_1 + 0.5 * ctrl_mid_2
+            (x, y) = ax.transData.inverted().transform(bezier_mid)
 
         if rotate:
             # in degrees
