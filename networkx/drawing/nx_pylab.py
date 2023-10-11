@@ -16,6 +16,7 @@ See Also
  - :func:`matplotlib.pyplot.scatter`
  - :obj:`matplotlib.patches.FancyArrowPatch`
 """
+from functools import partial
 from numbers import Number
 
 import networkx as nx
@@ -561,11 +562,12 @@ def draw_networkx_edges(
         width. See `matplotlib.patches.FancyArrowPatch` for attribute
         `mutation_scale` for more info.
 
-    connectionstyle : string (default="arc3")
+    connectionstyle : string, Iterable (default="arc3")
         Pass the connectionstyle parameter to create curved arc of rounding
         radius rad. For example, connectionstyle='arc3,rad=0.2'.
         See `matplotlib.patches.ConnectionStyle` and
         `matplotlib.patches.FancyArrowPatch` for more info.
+        If Iterable, index indicates i'th edge key of MultiDiGraph
 
     node_size : scalar or array (default=300)
         Size of nodes. Though the nodes are not drawn with this function, the
@@ -664,14 +666,22 @@ def draw_networkx_edges(
     # Some kwargs only apply to FancyArrowPatches. Warn users when they use
     # non-default values for these kwargs when LineCollection is being used
     # instead of silently ignoring the specified option
+
+    if isinstance(connectionstyle, str):
+        connectionstyle = [connectionstyle]
+    elif not np.iterable(connectionstyle):
+        connectionstyle = list(connectionstyle)
+        raise nx.NetworkXError(
+            "draw_networkx_edges arg `connectionstyle` must be str or iterable"
+        )
+
     if use_linecollection and any(
         [
             arrowstyle is not None,
             arrowsize != 10,
-            connectionstyle != "arc3",
             min_source_margin != 0,
             min_target_margin != 0,
-        ]
+        ] + [cs != "arc3" for cs in connectionstyle]
     ):
         import warnings
 
@@ -686,7 +696,7 @@ def draw_networkx_edges(
             msg = msg.format("arrowstyle")
         if arrowsize != 10:
             msg = msg.format("arrowsize")
-        if connectionstyle != "arc3":
+        if any([cs != "arc3" for cs in connectionstyle]):
             msg = msg.format("connectionstyle")
         if min_source_margin != 0:
             msg = msg.format("min_source_margin")
@@ -704,7 +714,10 @@ def draw_networkx_edges(
         ax = plt.gca()
 
     if edgelist is None:
-        edgelist = list(G.edges())
+        if isinstance(G, nx.MultiDiGraph):
+            edgelist = list(G.edges(data=False, keys=True))
+        else:
+            edgelist = list(G.edges(data=False))
 
     if len(edgelist) == 0:  # no edges!
         return []
@@ -719,6 +732,12 @@ def draw_networkx_edges(
 
     # set edge positions
     edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
+
+    if len(edgelist[0]) == 3:
+        # MultiDiGraph input
+        edge_keys = [e[2] for e in edgelist]
+    else:
+        edge_keys = [0] * len(edgelist)
 
     # Check if edge_color is an array of floats and map to edge_cmap.
     # This is the only case handled differently from matplotlib
@@ -775,13 +794,16 @@ def draw_networkx_edges(
         else:
             mutation_scale = arrowsize  # scale factor of arrow head
 
-        base_connection_style = mpl.patches.ConnectionStyle(connectionstyle)
-
         # Fallback for self-loop scale. Left outside of _connectionstyle so it is
         # only computed once
         max_nodesize = np.array(node_size).max()
 
-        def _connectionstyle(posA, posB, *args, **kwargs):
+        base_connection_styles = [
+            mpl.patches.ConnectionStyle(cs)
+            for cs in connectionstyle
+        ]
+
+        def _connectionstyle(ek, posA, posB, *args, **kwargs):
             # check if we need to do a self-loop
             if np.all(posA == posB):
                 # Self-loops are scaled by view extent, except in cases the extent
@@ -810,13 +832,13 @@ def draw_networkx_edges(
                 ret = mpl.path.Path(ax.transData.transform(path), [1, 4, 4, 4, 4, 4, 4])
             # if not, fall back to the user specified behavior
             else:
-                ret = base_connection_style(posA, posB, *args, **kwargs)
+                ret = base_connection_styles[ek](posA, posB, *args, **kwargs)
 
             return ret
 
         # FancyArrowPatch doesn't handle color strings
         arrow_colors = mpl.colors.colorConverter.to_rgba_array(edge_color, alpha)
-        for i, (src, dst) in zip(fancy_edges_indices, edge_pos):
+        for i, (src, dst), ek in zip(fancy_edges_indices, edge_pos, edge_keys):
             x1, y1 = src
             x2, y2 = dst
             shrink_source = 0  # space from source to tail
@@ -877,7 +899,7 @@ def draw_networkx_edges(
                 mutation_scale=mutation_scale,
                 color=arrow_color,
                 linewidth=line_width,
-                connectionstyle=_connectionstyle,
+                connectionstyle=partial(_connectionstyle, ek),
                 linestyle=linestyle,
                 zorder=1,
             )  # arrows go behind nodes
@@ -1070,6 +1092,7 @@ def draw_networkx_edge_labels(
     ax=None,
     rotate=True,
     clip_on=True,
+    rad=0,
 ):
     """Draw edge labels.
 
@@ -1124,6 +1147,10 @@ def draw_networkx_edge_labels(
     clip_on : bool (default=True)
         Turn on clipping of edge labels at axis boundaries
 
+    rad : float, Iterable
+        Provide arc radian curvature for DiGraph and MultiDiGraph
+        If Iterable, index indicates i'th edge key of MultiDiGraph
+
     Returns
     -------
     dict
@@ -1151,27 +1178,46 @@ def draw_networkx_edge_labels(
     if ax is None:
         ax = plt.gca()
     if edge_labels is None:
-        labels = {(u, v): d for u, v, d in G.edges(data=True)}
+        kwds = {} if not isinstance(G, nx.MultiDiGraph) else {'keys': True}
+        labels = {tuple(edge): d for *edge, d in G.edges(data=True, **kwds)}
     else:
         labels = edge_labels
-        # Informative exception for multiedges
-        try:
-            (u, v) = next(iter(labels))  # ensures no edge key provided
-        except ValueError as err:
-            raise nx.NetworkXError(
-                "draw_networkx_edge_labels does not support multiedges."
-            ) from err
-        except StopIteration:
-            pass
+
+    if np.iterable(rad):
+        rads = list(rad)
+    elif not isinstance(rad, Number):
+        raise nx.NetworkXError(
+            "draw_networkx_edge_labels arg `rad` must be float or iterable"
+        ) from err
+    else:
+        rads = [float(rad)]
 
     text_items = {}
-    for (n1, n2), label in labels.items():
+    for edge, label in labels.items():
+        if len(edge) == 3:
+            n1, n2, ek = edge
+        else:
+            (n1, n2), ek = edge, 0
+
         (x1, y1) = pos[n1]
         (x2, y2) = pos[n2]
         (x, y) = (
             x1 * label_pos + x2 * (1.0 - label_pos),
             y1 * label_pos + y2 * (1.0 - label_pos),
         )
+
+        # ARC CURVATURE
+        pos_1 = ax.transData.transform(np.array(pos[n1]))
+        pos_2 = ax.transData.transform(np.array(pos[n2]))
+        linear_mid = 0.5*pos_1 + 0.5*pos_2
+        d_pos = pos_2 - pos_1
+        rotation_matrix = np.array([(0, 1), (-1, 0)])
+        ctrl_1 = linear_mid + rads[ek] * rotation_matrix.dot(d_pos)
+        ctrl_mid_1 = 0.5 * pos_1 + 0.5 * ctrl_1
+        ctrl_mid_2 = 0.5 * pos_2 + 0.5 * ctrl_1
+        bezier_mid = 0.5 * ctrl_mid_1 + 0.5 * ctrl_mid_2
+        (x, y) = ax.transData.inverted().transform(bezier_mid)
+        # EO ARC CURVATURE
 
         if rotate:
             # in degrees
