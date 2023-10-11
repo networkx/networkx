@@ -226,7 +226,6 @@ def modularity(G, communities, weight="weight", resolution=1):
     .. [5] Blondel, V.D. et al. "Fast unfolding of communities in large
        networks" J. Stat. Mech 10008, 1-12 (2008).
        https://doi.org/10.1088/1742-5468/2008/10/P10008
-       
     """
     if not isinstance(communities, list):
         communities = list(communities)
