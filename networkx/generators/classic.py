@@ -738,7 +738,7 @@ def tadpole_graph(m, n, create_using=None):
     """
     m, m_nodes = m
     M = len(m_nodes)
-    
+
     n, n_nodes = n
     if isinstance(m, numbers.Integral) and isinstance(n, numbers.Integral):
         n_nodes = list(range(M, M + n))
@@ -750,7 +750,7 @@ def tadpole_graph(m, n, create_using=None):
         raise NetworkXError("Directed Graph not supported")
 
     # the stick
-    if M>0:
+    if M > 0:
         nx.add_path(G, [m_nodes[-1]] + list(n_nodes))
     else:
         nx.add_path(G, list(n_nodes))
