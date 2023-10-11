@@ -712,6 +712,9 @@ def star_graph(n, create_using=None):
 def tadpole_graph(m, n, create_using=None):
     """Returns the Tadpole Graph; `C_m` connected to `P_n`.
 
+    This graph connects a path to a cycle. It looks like a tadpole.
+    It is also called a kite graph, or a dragon graph.
+    
     Parameters
     ----------
     m, n : int or iterable container of nodes (default = 0)
