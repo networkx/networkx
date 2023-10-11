@@ -710,10 +710,11 @@ def star_graph(n, create_using=None):
 @nodes_or_number([0, 1])
 @nx._dispatch(graphs=None)
 def tadpole_graph(m, n, create_using=None):
-    """Returns the Tadpole Graph; `C_m` connected to `P_n`.
+    """Returns the tadpole graph.
 
-    This graph connects a path to a cycle. It looks like a tadpole.
-    It is also called a kite graph, or a dragon graph.
+    This graph connects a cycle of size m to a path of length n.
+    It looks like a tadpole.
+    It is also called a kite graph or a dragon graph.
     
     Parameters
     ----------
@@ -753,9 +754,6 @@ def tadpole_graph(m, n, create_using=None):
     G.add_nodes_from(n_nodes)
     if N > 1:
         G.add_edges_from(pairwise(n_nodes))
-
-    if len(G) != M + N:
-        raise NetworkXError("Nodes must be distinct in containers m and n")
 
     # connect circle to stick
     if M > 0 and N > 0:
