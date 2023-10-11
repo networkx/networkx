@@ -710,19 +710,19 @@ def star_graph(n, create_using=None):
 @nodes_or_number([0, 1])
 @nx._dispatch(graphs=None)
 def tadpole_graph(m, n, create_using=None):
-    """Returns the tadpole graph.
+    """Returns the (m,n)-tadpole graph.
 
-    This graph connects a cycle of size m to a path of length n.
+    This graph on m+n nodes connects a cycle of size m to a path of length n.
     It looks like a tadpole.
     It is also called a kite graph or a dragon graph.
-    
+
     Parameters
     ----------
     m, n : int or iterable container of nodes (default = 0)
         If an integer, nodes are from `range(m)` and `range(m,m+n)`.
         If a container of nodes, those nodes appear in the graph.
         Warning: m and n are not checked for duplicates and if present the
-        resulting graph may not be as desired. Make sure you have no duplicates.
+        resulting graph may not be as desired.
 
         The nodes for m appear in the cycle graph $C_m$ and the nodes
         for n appear in the path $P_n$
@@ -732,14 +732,13 @@ def tadpole_graph(m, n, create_using=None):
     Notes
     -----
     The 2 subgraphs are joined via an edge (m-1, m).
-    If n=0, this is merely a cycle graph.
+    If n=0, this is a cycle graph.
+    If m=0, this is a path graph.
 
     """
     m, m_nodes = m
     M = len(m_nodes)
-    if M < 2:
-        raise NetworkXError("Invalid description: m should indicate at least 2 nodes")
-
+    
     n, n_nodes = n
     if isinstance(m, numbers.Integral) and isinstance(n, numbers.Integral):
         n_nodes = list(range(M, M + n))
@@ -751,13 +750,10 @@ def tadpole_graph(m, n, create_using=None):
         raise NetworkXError("Directed Graph not supported")
 
     # the stick
-    G.add_nodes_from(n_nodes)
-    if N > 1:
-        G.add_edges_from(pairwise(n_nodes))
-
-    # connect circle to stick
-    if M > 0 and N > 0:
-        G.add_edge(m_nodes[-1], n_nodes[0])
+    if M>0:
+        nx.add_path(G, [m_nodes[-1]] + list(n_nodes))
+    else:
+        nx.add_path(G, list(n_nodes))
     return G
 
 
