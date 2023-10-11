@@ -681,7 +681,8 @@ def draw_networkx_edges(
             arrowsize != 10,
             min_source_margin != 0,
             min_target_margin != 0,
-        ] + [cs != "arc3" for cs in connectionstyle]
+        ]
+        + [cs != "arc3" for cs in connectionstyle]
     ):
         import warnings
 
@@ -696,7 +697,7 @@ def draw_networkx_edges(
             msg = msg.format("arrowstyle")
         if arrowsize != 10:
             msg = msg.format("arrowsize")
-        if any([cs != "arc3" for cs in connectionstyle]):
+        if any(cs != "arc3" for cs in connectionstyle):
             msg = msg.format("connectionstyle")
         if min_source_margin != 0:
             msg = msg.format("min_source_margin")
@@ -799,8 +800,7 @@ def draw_networkx_edges(
         max_nodesize = np.array(node_size).max()
 
         base_connection_styles = [
-            mpl.patches.ConnectionStyle(cs)
-            for cs in connectionstyle
+            mpl.patches.ConnectionStyle(cs) for cs in connectionstyle
         ]
 
         def _connectionstyle(ek, posA, posB, *args, **kwargs):
@@ -1178,7 +1178,7 @@ def draw_networkx_edge_labels(
     if ax is None:
         ax = plt.gca()
     if edge_labels is None:
-        kwds = {} if not isinstance(G, nx.MultiDiGraph) else {'keys': True}
+        kwds = {} if not isinstance(G, nx.MultiDiGraph) else {"keys": True}
         labels = {tuple(edge): d for *edge, d in G.edges(data=True, **kwds)}
     else:
         labels = edge_labels
@@ -1209,7 +1209,7 @@ def draw_networkx_edge_labels(
         # ARC CURVATURE
         pos_1 = ax.transData.transform(np.array(pos[n1]))
         pos_2 = ax.transData.transform(np.array(pos[n2]))
-        linear_mid = 0.5*pos_1 + 0.5*pos_2
+        linear_mid = 0.5 * pos_1 + 0.5 * pos_2
         d_pos = pos_2 - pos_1
         rotation_matrix = np.array([(0, 1), (-1, 0)])
         ctrl_1 = linear_mid + rads[ek] * rotation_matrix.dot(d_pos)
