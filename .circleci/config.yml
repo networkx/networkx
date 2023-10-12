@@ -41,7 +41,7 @@ jobs:
             # Install trusted backends, but not their dependencies.
             # We only need to use the "networkx.backend_info" entry-point.
             # This is the nightly wheel for nx-cugraph.
-            pip install nx-cugraph-cu11 --extra-index-url https://rapidsdev:WeArePyPI@pypi.k8s.rapids.ai/simple --no-deps
+            pip install git+https://github.com/rapidsai/cugraph.git#subdirectory=python/nx-cugraph --no-deps
             # Development version of GraphBLAS backend
             pip install git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
             pip list
