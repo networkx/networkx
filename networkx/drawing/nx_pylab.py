@@ -669,8 +669,9 @@ def draw_networkx_edges(
 
     if isinstance(connectionstyle, str):
         connectionstyle = [connectionstyle]
-    elif not np.iterable(connectionstyle):
+    elif np.iterable(connectionstyle):
         connectionstyle = list(connectionstyle)
+    else:
         raise nx.NetworkXError(
             "draw_networkx_edges arg `connectionstyle` must be str or iterable"
         )
