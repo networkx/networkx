@@ -797,11 +797,11 @@ def draw_networkx_edges(
 
         # Fallback for self-loop scale. Left outside of _connectionstyle so it is
         # only computed once
-        max_nodesize = np.array(node_size).max()
-
         base_connection_styles = [
             mpl.patches.ConnectionStyle(cs) for cs in connectionstyle
         ]
+
+        max_nodesize = np.array(node_size).max()
 
         def _connectionstyle(ek, posA, posB, *args, **kwargs):
             # check if we need to do a self-loop
@@ -938,7 +938,6 @@ def draw_networkx_edges(
     corners = (minx - padx, miny - pady), (maxx + padx, maxy + pady)
     ax.update_datalim(corners)
     ax.autoscale_view()
-
     ax.tick_params(
         axis="both",
         which="both",
@@ -1093,6 +1092,7 @@ def draw_networkx_edge_labels(
     rotate=True,
     clip_on=True,
     rad=0,
+    node_size=300,
 ):
     """Draw edge labels.
 
@@ -1151,6 +1151,9 @@ def draw_networkx_edge_labels(
         Provide arc radian curvature for DiGraph and MultiDiGraph
         If Iterable, index indicates i'th edge key of MultiDiGraph
 
+    node_size : scalar or array (default=300)
+        Size of nodes.  If an array it must be the same length as nodelist.
+
     Returns
     -------
     dict
@@ -1183,6 +1186,18 @@ def draw_networkx_edge_labels(
     else:
         labels = edge_labels
 
+    # Used to determine self loop mid-point
+    # Note, that this will not be accurate,
+    #   if not drawing labels for all edges drawn
+
+    max_nodesize = np.array(node_size).max()
+    h = 0
+    if labels:
+        edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in labels])
+        miny = np.amin(np.ravel(edge_pos[:, :, 1]))
+        maxy = np.amax(np.ravel(edge_pos[:, :, 1]))
+        h = maxy - miny
+
     if np.iterable(rad):
         rads = list(rad)
     elif not isinstance(rad, Number):
@@ -1201,13 +1216,16 @@ def draw_networkx_edge_labels(
 
         (x1, y1) = pos[n1]
         (x2, y2) = pos[n2]
-        (x, y) = (
-            x1 * label_pos + x2 * (1.0 - label_pos),
-            y1 * label_pos + y2 * (1.0 - label_pos),
-        )
-
-        # ARC CURVATURE
-        if rads[ek]:
+        if n1 == n2:
+            # Self loops can only place label at midpoint
+            selfloop_ht = 0.005 * max_nodesize if h == 0 else h
+            data_loc = (x1, y1)
+            v_shift = 0.1 * selfloop_ht
+            h_shift = v_shift * 0.5
+            # put the top of the loop first so arrow is not hidden by node
+            (x, y) = data_loc + np.asarray([0, v_shift])
+        elif rads[ek]:
+            # Bezier Curve
             pos_1 = ax.transData.transform(np.array(pos[n1]))
             pos_2 = ax.transData.transform(np.array(pos[n2]))
             linear_mid = 0.5 * pos_1 + 0.5 * pos_2
@@ -1218,8 +1236,13 @@ def draw_networkx_edge_labels(
             ctrl_mid_2 = 0.5 * pos_2 + 0.5 * ctrl_1
             bezier_mid = 0.5 * ctrl_mid_1 + 0.5 * ctrl_mid_2
             (x, y) = ax.transData.inverted().transform(bezier_mid)
+        else:
+            (x, y) = (
+                x1 * label_pos + x2 * (1.0 - label_pos),
+                y1 * label_pos + y2 * (1.0 - label_pos),
+            )
 
-        if rotate:
+        if n1 != n2 and rotate:
             # in degrees
             angle = np.arctan2(y2 - y1, x2 - x1) / (2.0 * np.pi) * 360
             # make label orientation "right-side-up"
