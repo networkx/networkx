@@ -5,7 +5,6 @@ undirected, simple, connected and bipartite and contains at least one perfect ma
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-
 __all__ = ["maximal_extendability"]
 
 
