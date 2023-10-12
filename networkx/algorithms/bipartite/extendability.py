@@ -33,7 +33,6 @@ def maximal_extendability(G):
     ------
 
     NetworkXError
-       If the graph G contains self-loops.
        If the graph G is disconnected.
        If the graph G is not bipartite.
        If the graph G does not contain a perfect matching.
@@ -71,10 +70,6 @@ def maximal_extendability(G):
           https://doi.org/10.1016/0012-365X(80)90037-0
 
     """
-
-    if any(nx.nodes_with_selfloops(G)):
-        raise nx.NetworkXError("Graph G has selfloops")
-
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph G is not connected")
 
