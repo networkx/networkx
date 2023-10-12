@@ -154,9 +154,10 @@ def d_separated(G, x, y, z):
     Raises
     ------
     NetworkXError
-        The *d-separation* test is commonly used with directed
-        graphical models which are acyclic.  Accordingly, the algorithm
-        raises a :exc:`NetworkXError` if the input graph is not a DAG.
+        The *d-separation* test is commonly used on disjoint sets of
+        nodes in acyclic directed graphs.  Accordingly, the algorithm
+        raises a :exc:`NetworkXError` if the node sets are not
+        disjoint or if the input graph is not a DAG.
 
     NodeNotFound
         If any of the input nodes are not found in the graph,
@@ -194,6 +195,9 @@ def d_separated(G, x, y, z):
     set_v = x | y | z
     if set_v - G.nodes:
         raise nx.NodeNotFound(f"The node(s) {set_v - G.nodes} are not found in G")
+
+    if x & y or x & z or y & z:
+        raise nx.NetworkXError("node sets `x`, `y`, and `z` must be disjoint")
 
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")
@@ -291,7 +295,8 @@ def find_minimal_d_separator(G, u, v, i=None, r=None):
     Raises
     ------
     NetworkXError
-        Raises a :exc:`NetworkXError` if the input graph is not a DAG.
+        Raises a :exc:`NetworkXError` if the input graph is not a DAG
+        or if node sets `u`, `v`, and `i` are not disjoint.
 
     NodeNotFound
         If any of the input nodes are not found in the graph,
@@ -337,6 +342,9 @@ def find_minimal_d_separator(G, u, v, i=None, r=None):
         raise nx.NetworkError(
             f"Minimal set {i} should be no larger than maximal set {r}"
         )
+
+    if u & v or u & i or v & i:
+        raise nx.NetworkXError("node sets `u`, `v`, and `i` must be disjoint")
 
     G_copy = G.copy()
 
