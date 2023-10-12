@@ -1,14 +1,42 @@
+import pytest
+
 import networkx as nx
+
+
+def test_selfloops_raises():
+    G = nx.ladder_graph(3)
+    G.add_edge(0, 0)
+    with pytest.raises(nx.NetworkXError, match=".*not bipartite"):
+        nx.bipartite.maximal_extendability(G)
+
+
+def test_disconnected_raises():
+    G = nx.ladder_graph(3)
+    G.add_node("a")
+    with pytest.raises(nx.NetworkXError, match=".*not connected"):
+        nx.bipartite.maximal_extendability(G)
+
+
+def test_not_bipartite_raises():
+    G = nx.complete_graph(5)
+    with pytest.raises(nx.NetworkXError, match=".*not bipartite"):
+        nx.bipartite.maximal_extendability(G)
+
+
+def test_no_perfect_matching_raises():
+    G = nx.Graph([(0, 1), (0, 2)])
+    with pytest.raises(nx.NetworkXError, match=".*not contain a perfect matching"):
+        nx.bipartite.maximal_extendability(G)
 
 
 def test_ladder_graph_is_1():
     G = nx.ladder_graph(3)
-    assert nx.bipartite.extendability.maximal_extendability(G) == 1
+    assert nx.bipartite.maximal_extendability(G) == 1
 
 
 def test_cubical_graph_is_2():
     G = nx.cubical_graph()
-    assert nx.bipartite.extendability.maximal_extendability(G) == 2
+    assert nx.bipartite.maximal_extendability(G) == 2
 
 
 def test_k_is_3():
@@ -36,7 +64,7 @@ def test_k_is_3():
             (5, 10),
         ]
     )
-    assert nx.bipartite.extendability.maximal_extendability(G) == 3
+    assert nx.bipartite.maximal_extendability(G) == 3
 
 
 def test_k_is_4():
@@ -79,7 +107,7 @@ def test_k_is_4():
             (14, 7),
         ]
     )
-    assert nx.bipartite.extendability.maximal_extendability(G) == 4
+    assert nx.bipartite.maximal_extendability(G) == 4
 
 
 def test_k_is_5():
@@ -129,7 +157,7 @@ def test_k_is_5():
             (14, 7),
         ]
     )
-    assert nx.bipartite.extendability.maximal_extendability(G) == 5
+    assert nx.bipartite.maximal_extendability(G) == 5
 
 
 def test_k_is_6():
@@ -193,7 +221,7 @@ def test_k_is_6():
             (16, 8),
         ]
     )
-    assert nx.bipartite.extendability.maximal_extendability(G) == 6
+    assert nx.bipartite.maximal_extendability(G) == 6
 
 
 def test_k_is_7():
@@ -295,4 +323,4 @@ def test_k_is_7():
             (10, 20),
         ]
     )
-    assert nx.bipartite.extendability.maximal_extendability(G) == 7
+    assert nx.bipartite.maximal_extendability(G) == 7
