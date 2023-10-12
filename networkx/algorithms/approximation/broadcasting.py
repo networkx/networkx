@@ -3,6 +3,7 @@ from networkx import NetworkXError
 from networkx.utils import not_implemented_for
 
 __all__ = [
+    "tree_broadcast_center",
     "tree_broadcast_time",
 ]
 
@@ -14,20 +15,11 @@ def _get_max_broadcast_value(G, U, v, values):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-def tree_broadcast_time(G):
-    """Return the minimum Broadcast Time of the tree G.
+def tree_broadcast_center(G):
+    """Return the Broadcast Center of the tree G.
 
-    Broadcasting is an information dissemination problem in which one vertex in a graph, called the originator,
-    must distribute a message to all other vertices by placing a series of calls along the edges of the graph.
-    Once informed, other vertices aid the originator in distributing the message.
-    The broadcasting must be completed as quickly as possible subject to the following constraints:
-    - Each call requires one unit of time.
-    - A vertex can only participate in one call per unit of time.
-    - Each call only involves two adjacent vertices: a sender and a receiver.
-    The minimum broadcast time of a tree is defined as the minimum amount of time required to complete
-    broadcasting starting from the originator.
-    This function implements a linear algorithm for determining the minimum broadcast
-    time on any undirected tree [1]_.
+    The broadcast number of a vertex v in a graph G is the minimum number of time units required to broadcast from v.
+    The broadcast center of a graph G is one of the vertices having minimum broadcast number.
 
     Parameters
     ----------
@@ -37,8 +29,8 @@ def tree_broadcast_time(G):
 
     Returns
     -------
-    b_T : int
-        Minimum Broadcast Time of a tree
+    BC : (int, int) tuple
+        Broadcast time from broadcast center, index of broadcast center of a tree
 
     Raises
     ------
@@ -89,4 +81,45 @@ def tree_broadcast_time(G):
     # step 7
     v = nx.utils.arbitrary_element(T)
     b_T = _get_max_broadcast_value(G, U, v, values)
-    return b_T
+    return b_T, v
+
+
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+def tree_broadcast_time(G):
+    """Return the Broadcast Time of the tree G.
+
+    Broadcasting is an information dissemination problem in which one vertex in a graph, called the originator,
+    must distribute a message to all other vertices by placing a series of calls along the edges of the graph.
+    Once informed, other vertices aid the originator in distributing the message.
+    The broadcasting must be completed as quickly as possible subject to the following constraints:
+    - Each call requires one unit of time.
+    - A vertex can only participate in one call per unit of time.
+    - Each call only involves two adjacent vertices: a sender and a receiver.
+    The minimum broadcast time of a vertex is defined as the minimum amount of time required to complete
+    broadcasting starting from the originator.
+    The broadcast time of a graph is defined as the maximum broadcast time from all its vertices.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Undirected graph
+        The graph should be an undirected tree
+
+    Returns
+    -------
+    BT : int
+        Broadcast Time of a tree
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If the graph is directed or is a multigraph.
+
+    References
+    ----------
+    .. [1] Slater, P.J., Cockayne, E.J., Hedetniemi, S.T,
+       Information dissemination in trees. SIAM J.Comput. 10(4), 692–701 (1981)
+    """
+    b_T, b_C = tree_broadcast_center(G)
+    return b_T + max(nx.eccentricity(G, b_C).values())

@@ -32,20 +32,20 @@ def test_example_tree_broadcast():
         (18, 20),
     ]
     G = nx.Graph(edge_list)
-    assert nx_app.tree_broadcast_time(G) == 6
+    assert nx_app.tree_broadcast_center(G) == 6
 
 
 def test_path_broadcast():
     for i in range(2, 12):
         G = nx.path_graph(i)
-        assert nx_app.tree_broadcast_time(G) == math.ceil(i / 2)
+        assert nx_app.tree_broadcast_center(G) == math.ceil(i / 2)
 
     # test base case when the graph has only one node
     H = nx.empty_graph(1)
-    assert nx_app.tree_broadcast_time(H) == 0
+    assert nx_app.tree_broadcast_center(H) == 0
 
 
 def test_star_broadcast():
     for i in range(4, 12):
         G = nx.star_graph(i)
-        assert nx_app.tree_broadcast_time(G) == i
+        assert nx_app.tree_broadcast_center(G) == i
