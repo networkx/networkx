@@ -58,7 +58,7 @@ set is empty is:
 
 because 'z' is a collider in this path and 'z' is not in the d-separating set. However,
 if 'z' or a descendant of 'z' is included in the d-separating set, then the path through
-the collider at 'z' (... -> z <- ...) is now "open". 
+the collider at 'z' (... -> z <- ...) is now "open".
 
 D-separation is concerned with blocking all paths between u and v. Therefore, a
 d-separating set between ``u`` and ``v`` is one where all paths are blocked.
@@ -101,7 +101,7 @@ References
 
 .. [1] Pearl, J.  (2009).  Causality.  Cambridge: Cambridge University Press.
 
-.. [2] Darwiche, A.  (2009).  Modeling and reasoning with Bayesian networks. 
+.. [2] Darwiche, A.  (2009).  Modeling and reasoning with Bayesian networks.
    Cambridge: Cambridge University Press.
 
 .. [3] Shachter, R.  D.  (1998).
@@ -175,15 +175,21 @@ def d_separated(G, x, y, z):
     if not isinstance(x, set):
         x = {x}
     if x - G.nodes:
-        raise nx.NodeNotFound(f"The node {x} is not found in G.")
+        raise nx.NodeNotFound(f"The node(s) {x} are not found in G.")
     if not isinstance(y, set):
         y = {y}
     if y - G.nodes:
-        raise nx.NodeNotFound(f"The node {y} is not found in G.")
+        raise nx.NodeNotFound(f"The node(s) {y} are not found in G.")
     if not isinstance(z, set):
         z = {z}
     if z - G.nodes:
-        raise nx.NodeNotFound(f"The node {z} is not found in G.")
+        raise nx.NodeNotFound(f"The node(s) {z} are not found in G.")
+
+    intersection = x.intersection(y) or x.intersection(z) or y.intersection(z)
+    if intersection:
+        raise nx.NetworkXError(
+            f"The sets are not disjoint, with intersection {intersection}"
+        )
 
     set_v = x | y | z
     if set_v - G.nodes:
