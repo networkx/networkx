@@ -43,6 +43,8 @@ __all__ = [
 ]
 
 
+G.add_nodes_from((n, dict(d)) for n, d in df.iterrows())
+
 @nx._dispatch(edge_attrs="weight")
 def to_pandas_adjacency(
     G,
