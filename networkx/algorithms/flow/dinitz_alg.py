@@ -180,8 +180,7 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
             if t in parents:
                 break
             u, dist = queue.popleft()
-            for v in R_succ[u]:
-                attr = R_succ[u][v]
+            for v, attr in R_succ[u].items():
                 if attr["capacity"] - attr["flow"] > 0:
                     if v in parents:
                         if vertex_dist[v] == dist + 1:
