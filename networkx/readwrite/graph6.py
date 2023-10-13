@@ -60,6 +60,7 @@ def _generate_graph6_bytes(G, nodes, header):
     yield b"\n"
 
 
+@nx._dispatch(graphs=None)
 def from_graph6_bytes(bytes_in):
     """Read a simple undirected graph in graph6 format from bytes.
 
@@ -183,6 +184,7 @@ def to_graph6_bytes(G, nodes=None, header=True):
 
 
 @open_file(0, mode="rb")
+@nx._dispatch(graphs=None)
 def read_graph6(path):
     """Read simple undirected graphs in graph6 format from path.
 

@@ -54,7 +54,7 @@ def katz_centrality(
     G : graph
       A NetworkX graph.
 
-    alpha : float
+    alpha : float, optional (default=0.1)
       Attenuation factor
 
     beta : scalar or dictionary, optional (default=1.0)

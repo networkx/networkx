@@ -1,0 +1,13 @@
+[
+    {
+        "name": "latest",
+        "version": "latest",
+        "url": "https://networkx.org/documentation/latest/"
+    },
+    {
+        "name": "3.1 (stable)",
+        "version":"3.1",
+        "url": "https://networkx.org/documentation/stable/",
+        "preferred": true
+    }
+]

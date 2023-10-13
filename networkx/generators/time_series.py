@@ -8,6 +8,7 @@ import networkx as nx
 __all__ = ["visibility_graph"]
 
 
+@nx._dispatch(graphs=None)
 def visibility_graph(series):
     """
     Return a Visibility Graph of an input Time Series.
