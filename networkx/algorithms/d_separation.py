@@ -127,6 +127,7 @@ __all__ = ["d_separated", "minimal_d_separator", "is_minimal_d_separator"]
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def d_separated(G, x, y, z):
     """
     Return whether node sets ``x`` and ``y`` are d-separated by ``z``.
@@ -213,6 +214,7 @@ def d_separated(G, x, y, z):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def minimal_d_separator(G, u, v):
     """Compute a minimal d-separating set between 'u' and 'v'.
 
@@ -295,6 +297,7 @@ def minimal_d_separator(G, u, v):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def is_minimal_d_separator(G, u, v, z):
     """Determine if a d-separating set is minimal.
 
@@ -302,6 +305,10 @@ def is_minimal_d_separator(G, u, v, z):
     all paths between the two nodes, `u` and `v`. This function
     verifies that a set is "minimal", meaning there is no smaller
     d-separating set between the two nodes.
+
+    Note: This function checks whether `z` is a d-separator AND is minimal.
+    One can use the function `d_separated` to only check if `z` is a d-separator.
+    See examples below.
 
     Parameters
     ----------
@@ -313,11 +320,26 @@ def is_minimal_d_separator(G, u, v, z):
         A node in the graph.
     z : Set of nodes
         The set of nodes to check if it is a minimal d-separating set.
+        The function :func:`d_separated` is called inside this function
+        to verify that `z` is in fact a d-separator.
 
     Returns
     -------
     bool
-        Whether or not the `z` separating set is minimal.
+        Whether or not the set `z` is a d-separator and is also minimal.
+
+    Examples
+    --------
+    >>> G = nx.path_graph([0, 1, 2, 3], create_using=nx.DiGraph)
+    >>> G.add_node(4)
+    >>> nx.is_minimal_d_separator(G, 0, 2, {1})
+    True
+    >>> # since {1} is the minimal d-separator, {1, 3, 4} is not minimal
+    >>> nx.is_minimal_d_separator(G, 0, 2, {1, 3, 4})
+    False
+    >>> # alternatively, if we only want to check that {1, 3, 4} is a d-separator
+    >>> nx.d_separated(G, {0}, {4}, {1, 3, 4})
+    True
 
     Raises
     ------
@@ -356,14 +378,8 @@ def is_minimal_d_separator(G, u, v, z):
 
     https://en.wikipedia.org/wiki/Bayesian_network#d-separation
     """
-    if not nx.is_directed_acyclic_graph(G):
-        raise nx.NetworkXError("graph should be directed acyclic")
-
-    union_uv = {u, v}
-    union_uv.update(z)
-
-    if any(n not in G.nodes for n in union_uv):
-        raise nx.NodeNotFound("one or more specified nodes not found in the graph")
+    if not nx.d_separated(G, {u}, {v}, z):
+        return False
 
     x_anc = nx.ancestors(G, u)
     y_anc = nx.ancestors(G, v)

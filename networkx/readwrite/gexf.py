@@ -133,6 +133,7 @@ def generate_gexf(G, encoding="utf-8", prettyprint=True, version="1.2draft"):
 
 
 @open_file(0, mode="rb")
+@nx._dispatch(graphs=None)
 def read_gexf(path, node_type=None, relabel=False, version="1.2draft"):
     """Read graph in GEXF format from path.
 
@@ -229,7 +230,6 @@ class GEXF:
                 (np.float64, "float"),
                 (np.float32, "float"),
                 (np.float16, "float"),
-                (np.float_, "float"),
                 (np.int_, "int"),
                 (np.int8, "int"),
                 (np.int16, "int"),

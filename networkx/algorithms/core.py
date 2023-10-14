@@ -43,8 +43,8 @@ __all__ = [
 ]
 
 
-@nx._dispatch
 @not_implemented_for("multigraph")
+@nx._dispatch
 def core_number(G):
     """Returns the core number for each vertex.
 
@@ -142,7 +142,7 @@ def _core_subgraph(G, k_filter, k=None, core=None):
     return G.subgraph(nodes).copy()
 
 
-@nx._dispatch
+@nx._dispatch(preserve_all_attrs=True)
 def k_core(G, k=None, core_number=None):
     """Returns the k-core of G.
 
@@ -195,6 +195,7 @@ def k_core(G, k=None, core_number=None):
     return _core_subgraph(G, k_filter, k, core_number)
 
 
+@nx._dispatch(preserve_all_attrs=True)
 def k_shell(G, k=None, core_number=None):
     """Returns the k-shell of G.
 
@@ -254,6 +255,7 @@ def k_shell(G, k=None, core_number=None):
     return _core_subgraph(G, k_filter, k, core_number)
 
 
+@nx._dispatch(preserve_all_attrs=True)
 def k_crust(G, k=None, core_number=None):
     """Returns the k-crust of G.
 
@@ -313,6 +315,7 @@ def k_crust(G, k=None, core_number=None):
     return G.subgraph(nodes).copy()
 
 
+@nx._dispatch(preserve_all_attrs=True)
 def k_corona(G, k, core_number=None):
     """Returns the k-corona of G.
 
@@ -336,7 +339,7 @@ def k_corona(G, k, core_number=None):
     Raises
     ------
     NetworkXError
-        The k-cornoa is not defined for graphs with self loops or
+        The k-corona is not defined for graphs with self loops or
         parallel edges.
 
     Notes
@@ -367,9 +370,9 @@ def k_corona(G, k, core_number=None):
     return _core_subgraph(G, func, k, core_number)
 
 
-@nx._dispatch
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch(preserve_all_attrs=True)
 def k_truss(G, k):
     """Returns the k-truss of `G`.
 
@@ -446,6 +449,7 @@ def k_truss(G, k):
 
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
+@nx._dispatch
 def onion_layers(G):
     """Returns the layer of each vertex in an onion decomposition of the graph.
 

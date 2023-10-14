@@ -11,6 +11,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch(graphs=None)
 def is_valid_joint_degree(joint_degrees):
     """Checks whether the given joint degree dictionary is realizable.
 
@@ -108,7 +109,7 @@ def _neighbor_switch(G, w, unsat, h_node_residual, avoid_node_id=None):
     """
 
     if (avoid_node_id is None) or (h_node_residual[avoid_node_id] > 1):
-        # select unsatured node w_prime that has the same degree as w
+        # select unsaturated node w_prime that has the same degree as w
         w_prime = next(iter(unsat))
     else:
         # assume that the node pair (v,w) has been selected for connection. if
@@ -141,6 +142,7 @@ def _neighbor_switch(G, w, unsat, h_node_residual, avoid_node_id=None):
 
 
 @py_random_state(1)
+@nx._dispatch(graphs=None)
 def joint_degree_graph(joint_degrees, seed=None):
     """Generates a random simple graph with the given joint degree dictionary.
 
@@ -283,6 +285,7 @@ def joint_degree_graph(joint_degrees, seed=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def is_valid_directed_joint_degree(in_degrees, out_degrees, nkk):
     """Checks whether the given directed joint degree input is realizable
 
@@ -294,7 +297,7 @@ def is_valid_directed_joint_degree(in_degrees, out_degrees, nkk):
         out degree sequence contains the out degrees of nodes.
     nkk  :  dictionary of dictionary of integers
         directed joint degree dictionary. for nodes of out degree k (first
-        level of dict) and nodes of in degree l (seconnd level of dict)
+        level of dict) and nodes of in degree l (second level of dict)
         describes the number of edges.
 
     Returns
@@ -325,7 +328,7 @@ def is_valid_directed_joint_degree(in_degrees, out_degrees, nkk):
     if len(in_degrees) != len(out_degrees):
         return False
 
-    for idx in range(0, len(in_degrees)):
+    for idx in range(len(in_degrees)):
         i = in_degrees[idx]
         o = out_degrees[idx]
         V[(i, 0)] = V.get((i, 0), 0) + 1
@@ -466,6 +469,7 @@ def _directed_neighbor_switch_rev(
 
 
 @py_random_state(3)
+@nx._dispatch(graphs=None)
 def directed_joint_degree_graph(in_degrees, out_degrees, nkk, seed=None):
     """Generates a random simple directed graph with the joint degree.
 

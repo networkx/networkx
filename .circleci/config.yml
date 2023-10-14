@@ -33,11 +33,17 @@ jobs:
           command: |
             python3 -m venv venv
             source venv/bin/activate
-            pip install --upgrade pip wheel setuptools
+            pip install --upgrade pip
             pip install -r requirements/default.txt -r requirements/test.txt
             pip install -r requirements/extra.txt
             pip install -r requirements/example.txt
             pip install -r requirements/doc.txt
+            # Install trusted backends, but not their dependencies.
+            # We only need to use the "networkx.backend_info" entry-point.
+            # This is the nightly wheel for nx-cugraph.
+            pip install git+https://github.com/rapidsai/cugraph.git#subdirectory=python/nx-cugraph --no-deps
+            # Development version of GraphBLAS backend
+            pip install git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
             pip list
 
       - save_cache:
@@ -49,7 +55,7 @@ jobs:
           name: Install
           command: |
             source venv/bin/activate
-            pip install -e .
+            pip install -e . --no-deps
 
       - run:
           name: Build docs
@@ -74,7 +80,7 @@ jobs:
           command: |
             python -m venv venv
             source venv/bin/activate
-            pip install --upgrade pip wheel setuptools
+            pip install --upgrade pip
             pip install -r requirements/default.txt -r requirements/test.txt
             pip install pytest-mpl  # NOTE: specified here to avoid confusing conda
             pip list

@@ -7,8 +7,8 @@ from networkx.utils import not_implemented_for
 __all__ = ["katz_centrality", "katz_centrality_numpy"]
 
 
-@nx._dispatch
 @not_implemented_for("multigraph")
+@nx._dispatch(edge_attrs="weight")
 def katz_centrality(
     G,
     alpha=0.1,
@@ -54,7 +54,7 @@ def katz_centrality(
     G : graph
       A NetworkX graph.
 
-    alpha : float
+    alpha : float, optional (default=0.1)
       Attenuation factor
 
     beta : scalar or dictionary, optional (default=1.0)
@@ -195,6 +195,7 @@ def katz_centrality(
 
 
 @not_implemented_for("multigraph")
+@nx._dispatch(edge_attrs="weight")
 def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     r"""Compute the Katz centrality for the graph G.
 
@@ -312,9 +313,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     try:
         nodelist = beta.keys()
         if set(nodelist) != set(G):
-            raise nx.NetworkXError(
-                "beta dictionary " "must have a value for every node"
-            )
+            raise nx.NetworkXError("beta dictionary must have a value for every node")
         b = np.array(list(beta.values()), dtype=float)
     except AttributeError:
         nodelist = list(G)
@@ -325,10 +324,8 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
 
     A = nx.adjacency_matrix(G, nodelist=nodelist, weight=weight).todense().T
     n = A.shape[0]
-    centrality = np.linalg.solve(np.eye(n, n) - (alpha * A), b)
-    if normalized:
-        norm = np.sign(sum(centrality)) * np.linalg.norm(centrality)
-    else:
-        norm = 1.0
-    centrality = dict(zip(nodelist, map(float, centrality / norm)))
-    return centrality
+    centrality = np.linalg.solve(np.eye(n, n) - (alpha * A), b).squeeze()
+
+    # Normalize: rely on truediv to cast to float
+    norm = np.sign(sum(centrality)) * np.linalg.norm(centrality) if normalized else 1
+    return dict(zip(nodelist, centrality / norm))

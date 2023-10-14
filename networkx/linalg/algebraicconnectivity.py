@@ -310,8 +310,9 @@ def _get_fiedler_func(method):
     return find_fiedler
 
 
-@np_random_state(5)
 @not_implemented_for("directed")
+@np_random_state(5)
+@nx._dispatch(edge_attrs="weight")
 def algebraic_connectivity(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
 ):
@@ -405,8 +406,9 @@ def algebraic_connectivity(
     return sigma
 
 
-@np_random_state(5)
 @not_implemented_for("directed")
+@np_random_state(5)
+@nx._dispatch(edge_attrs="weight")
 def fiedler_vector(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
 ):
@@ -503,6 +505,7 @@ def fiedler_vector(
 
 
 @np_random_state(5)
+@nx._dispatch(edge_attrs="weight")
 def spectral_ordering(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
 ):
@@ -585,6 +588,7 @@ def spectral_ordering(
     return order
 
 
+@nx._dispatch(edge_attrs="weight")
 def spectral_bisection(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
 ):
@@ -628,7 +632,7 @@ def spectral_bisection(
         See :ref:`Randomness<randomness>`.
 
     Returns
-    --------
+    -------
     bisection : tuple of sets
         Sets with the bisection of nodes
 

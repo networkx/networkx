@@ -9,6 +9,7 @@ from networkx.utils import py_random_state
 __all__ = ["is_threshold_graph", "find_threshold_graph"]
 
 
+@nx._dispatch
 def is_threshold_graph(G):
     """
     Returns `True` if `G` is a threshold graph.
@@ -300,6 +301,7 @@ def weights_to_creation_sequence(
 
 
 # Manipulating NetworkX.Graphs in context of threshold graphs
+@nx._dispatch(graphs=None)
 def threshold_graph(creation_sequence, create_using=None):
     """
     Create a threshold graph from the creation sequence or compact
@@ -351,6 +353,7 @@ def threshold_graph(creation_sequence, create_using=None):
     return G
 
 
+@nx._dispatch
 def find_alternating_4_cycle(G):
     """
     Returns False if there aren't any alternating 4 cycles.
@@ -366,6 +369,7 @@ def find_alternating_4_cycle(G):
     return False
 
 
+@nx._dispatch
 def find_threshold_graph(G, create_using=None):
     """
     Returns a threshold subgraph that is close to largest in `G`.
@@ -400,6 +404,7 @@ def find_threshold_graph(G, create_using=None):
     return threshold_graph(find_creation_sequence(G), create_using)
 
 
+@nx._dispatch
 def find_creation_sequence(G):
     """
     Find a threshold subgraph that is close to largest in G.
@@ -569,7 +574,7 @@ def shortest_path(creation_sequence, u, v):
     u and v must be integers in (0,len(sequence)) referring
     to the position of the desired vertices in the sequence.
 
-    For a labeled creation_sequence, u and v are labels of veritices.
+    For a labeled creation_sequence, u and v are labels of vertices.
 
     Use cs=creation_sequence(degree_sequence,with_labels=True)
     to convert a degree sequence to a creation sequence.
@@ -663,7 +668,7 @@ def betweenness_sequence(creation_sequence, normalized=True):
     """
     Return betweenness for the threshold graph with the given creation
     sequence.  The result is unscaled.  To scale the values
-    to the iterval [0,1] divide by (n-1)*(n-2).
+    to the interval [0,1] divide by (n-1)*(n-2).
     """
     cs = creation_sequence
     seq = []  # betweenness
@@ -674,7 +679,7 @@ def betweenness_sequence(creation_sequence, normalized=True):
     dlast = 0.0  # betweenness of last d
     for i, c in enumerate(cs):
         if c == "d":  # cs[i]=="d":
-            # betweennees = amt shared with earlier d's and i's
+            # betweenness = amt shared with earlier d's and i's
             #             + new isolated nodes covered
             #             + new paths to all previous nodes
             b = dlast + (irun - 1) * irun / dr + 2 * irun * (i - drun - irun) / dr

@@ -142,6 +142,11 @@ def test_random_triad():
     for i in range(100):
         assert nx.is_triad(nx.random_triad(G))
 
+    G = nx.DiGraph()
+    msg = "at least 3 nodes to form a triad"
+    with pytest.raises(nx.NetworkXError, match=msg):
+        nx.random_triad(G)
+
 
 def test_triadic_census_short_path_nodelist():
     G = nx.path_graph("abc", create_using=nx.DiGraph)
@@ -243,7 +248,7 @@ def test_triadic_census_nodelist():
 
 
 @pytest.mark.parametrize("N", [5, 10])
-def test_triandic_census_on_random_graph(N):
+def test_triadic_census_on_random_graph(N):
     G = nx.binomial_graph(N, 0.3, directed=True, seed=42)
     tc1 = nx.triadic_census(G)
     tbt = nx.triads_by_type(G)

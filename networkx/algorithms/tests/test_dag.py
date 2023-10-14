@@ -274,13 +274,13 @@ class TestDAG:
             # convert to list to execute generator
             list(nx.all_topological_sorts(G))
 
-        def not_implemted_2():
+        def not_implemented_2():
             G = nx.MultiGraph([(1, 2), (1, 2), (2, 3)])
             list(nx.all_topological_sorts(G))
 
         pytest.raises(nx.NetworkXUnfeasible, unfeasible)
         pytest.raises(nx.NetworkXNotImplemented, not_implemented)
-        pytest.raises(nx.NetworkXNotImplemented, not_implemted_2)
+        pytest.raises(nx.NetworkXNotImplemented, not_implemented_2)
 
     def test_all_topological_sorts_4(self):
         DG = nx.DiGraph()
@@ -746,7 +746,7 @@ class TestDagToBranching:
 
 
 def test_ancestors_descendants_undirected():
-    """Regression test to ensure anscestors and descendants work as expected on
+    """Regression test to ensure ancestors and descendants work as expected on
     undirected graphs."""
     G = nx.path_graph(5)
     nx.ancestors(G, 2) == nx.descendants(G, 2) == {0, 1, 3, 4}

@@ -65,6 +65,7 @@ import networkx as nx
 __all__ = ["dedensify", "snap_aggregation"]
 
 
+@nx._dispatch
 def dedensify(G, threshold, prefix=None, copy=True):
     """Compresses neighborhoods around high-degree nodes
 
@@ -403,6 +404,7 @@ def _snap_split(groups, neighbor_info, group_lookup, group_id):
     return groups
 
 
+@nx._dispatch(node_attrs="[node_attributes]", edge_attrs="[edge_attributes]")
 def snap_aggregation(
     G,
     node_attributes,
@@ -447,6 +449,9 @@ def snap_aggregation(
     ----------
     G: graph
         Networkx Graph to be summarized
+    node_attributes: iterable, required
+        An iterable of the node attributes used to group nodes in the summarization process. Nodes
+        with the same values for these attributes will be grouped together in the summary graph.
     edge_attributes: iterable, optional
         An iterable of the edge attributes considered in the summarization process.  If provided, unique
         combinations of the attribute values found in the graph are used to

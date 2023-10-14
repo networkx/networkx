@@ -8,7 +8,6 @@ from itertools import combinations
 import networkx as nx
 from networkx import NetworkXError
 from networkx.algorithms.community.community_utils import is_partition
-from networkx.utils import not_implemented_for
 from networkx.utils.decorators import argmap
 
 __all__ = ["modularity", "partition_quality"]
@@ -109,6 +108,7 @@ def inter_community_edges(G, partition):
     return nx.quotient_graph(G, partition, create_using=MG).size()
 
 
+@nx._dispatch
 def inter_community_non_edges(G, partition):
     """Returns the number of inter-community non-edges according to the
     given partition of the nodes of `G`.
@@ -141,6 +141,7 @@ def inter_community_non_edges(G, partition):
     return inter_community_edges(nx.complement(G), partition)
 
 
+@nx._dispatch(edge_attrs="weight")
 def modularity(G, communities, weight="weight", resolution=1):
     r"""Returns the modularity of the given partition of the graph.
 
@@ -150,9 +151,10 @@ def modularity(G, communities, weight="weight", resolution=1):
         Q = \frac{1}{2m} \sum_{ij} \left( A_{ij} - \gamma\frac{k_ik_j}{2m}\right)
             \delta(c_i,c_j)
 
-    where $m$ is the number of edges, $A$ is the adjacency matrix of `G`,
-    $k_i$ is the degree of $i$, $\gamma$ is the resolution parameter,
-    and $\delta(c_i, c_j)$ is 1 if $i$ and $j$ are in the same community else 0.
+    where $m$ is the number of edges (or sum of all edge weights as in [5]_),
+    $A$ is the adjacency matrix of `G`, $k_i$ is the (weighted) degree of $i$,
+    $\gamma$ is the resolution parameter, and $\delta(c_i, c_j)$ is 1 if $i$ and
+    $j$ are in the same community else 0.
 
     According to [2]_ (and verified by some algebra) this can be reduced to
 
@@ -220,7 +222,9 @@ def modularity(G, communities, weight="weight", resolution=1):
     .. [4] M. E. J. Newman, "Equivalence between modularity optimization and
        maximum likelihood methods for community detection"
        Phys. Rev. E 94, 052315, 2016. https://doi.org/10.1103/PhysRevE.94.052315
-
+    .. [5] Blondel, V.D. et al. "Fast unfolding of communities in large
+       networks" J. Stat. Mech 10008, 1-12 (2008).
+       https://doi.org/10.1088/1742-5468/2008/10/P10008
     """
     if not isinstance(communities, list):
         communities = list(communities)
@@ -252,6 +256,7 @@ def modularity(G, communities, weight="weight", resolution=1):
 
 
 @require_partition
+@nx._dispatch
 def partition_quality(G, partition):
     """Returns the coverage and performance of a partition of G.
 

@@ -1,3 +1,4 @@
+import os
 from datetime import date
 from sphinx_gallery.sorting import ExplicitOrder, FileNameSortKey
 from warnings import filterwarnings
@@ -81,12 +82,15 @@ exclude_patterns = ["release/release_template.rst"]
 project = "NetworkX"
 copyright = f"2004-{date.today().year}, NetworkX Developers"
 
+# Used in networkx.utils.backends for cleaner rendering of functions.
+# We need to set this before we import networkx.
+os.environ["_NETWORKX_BUILDING_DOCS_"] = "True"
+import networkx
+
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
 #
 # The short X.Y version.
-import networkx
-
 version = networkx.__version__
 # The full version, including dev info
 release = networkx.__version__.replace("_", "")
@@ -113,7 +117,7 @@ add_module_names = False
 # pygments_style = 'friendly'
 pygments_style = "sphinx"
 
-# A list of prefixs that are ignored when creating the module index. (new in Sphinx 0.6)
+# A list of prefixes that are ignored when creating the module index. (new in Sphinx 0.6)
 modindex_common_prefix = ["networkx."]
 
 doctest_global_setup = "import networkx as nx"
@@ -127,7 +131,6 @@ html_theme_options = {
     "collapse_navigation": True,
     "navigation_depth": 2,
     "show_prev_next": False,
-    "announcement": "<p><a href='https://forms.gle/NUGcBxyjx5onbAgc8'> NetworkX User Survey 2023</a> 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!</p>",
     "icon_links": [
         {"name": "Home Page", "url": "https://networkx.org", "icon": "fas fa-home"},
         {
@@ -137,9 +140,16 @@ html_theme_options = {
         },
     ],
     "external_links": [{"name": "Guides", "url": "https://networkx.org/nx-guides/"}],
-    "navbar_end": ["theme-switcher", "navbar-icon-links", "version"],
-    "secondary_sidebar_items": ["search-field", "page-toc", "edit-this-page"],
+    "navbar_end": ["theme-switcher", "navbar-icon-links", "version-switcher"],
+    "secondary_sidebar_items": ["page-toc", "edit-this-page"],
     "header_links_before_dropdown": 7,
+    "switcher": {
+        "json_url": (
+            "https://networkx.org/documentation/latest/_static/version_switcher.json"
+        ),
+        "version_match": "latest" if "dev" in version else version,
+    },
+    "show_version_warning_banner": True,
 }
 html_sidebars = {
     "**": ["sidebar-nav-bs", "sidebar-ethical-ads"],
@@ -185,14 +195,6 @@ html_use_opensearch = "https://networkx.org"
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "NetworkX"
-
-html_context = {
-    "versions_dropdown": {
-        "latest": "devel (latest)",
-        "stable": "current (stable)",
-    },
-    "default_mode": "light",
-}
 
 # Options for LaTeX output
 # ------------------------
@@ -245,3 +247,48 @@ numpydoc_show_class_members = False
 def setup(app):
     app.add_css_file("custom.css")
     app.add_js_file("copybutton.js")
+
+
+# Monkeypatch numpydoc to show "Backends" section
+from numpydoc.docscrape import NumpyDocString
+
+orig_setitem = NumpyDocString.__setitem__
+
+
+def new_setitem(self, key, val):
+    if key != "Backends":
+        orig_setitem(self, key, val)
+        return
+    # Update how we show backend information in the online docs.
+    # Start by creating an "admonition" section to make it stand out.
+    newval = [".. admonition:: Additional backends implement this function", ""]
+    for line in val:
+        if line and not line.startswith(" "):
+            # This line must identify a backend; let's try to add a link
+            backend, *rest = line.split(" ")
+            url = networkx.utils.backends.backend_info.get(backend, {}).get("url")
+            if url:
+                line = f"`{backend} <{url}>`_ " + " ".join(rest)
+        newval.append(f"   {line}")
+    self._parsed_data[key] = newval
+
+
+NumpyDocString.__setitem__ = new_setitem
+
+from numpydoc.docscrape_sphinx import SphinxDocString
+
+orig_str = SphinxDocString.__str__
+
+
+def new_str(self, indent=0, func_role="obj"):
+    rv = orig_str(self, indent=indent, func_role=func_role)
+    if "Backends" in self:
+        lines = self._str_section("Backends")
+        # Remove "Backends" as a section and add a divider instead
+        lines[0] = "----"
+        lines = self._str_indent(lines, indent)
+        rv += "\n".join(lines)
+    return rv
+
+
+SphinxDocString.__str__ = new_str

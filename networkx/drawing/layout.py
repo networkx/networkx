@@ -1124,7 +1124,7 @@ def arf_layout(
     strong forcing between nodes. Second, it utilizes the
     layout space more effectively by preventing large gaps
     that spring layout tends to create. Lastly, the arf
-    layout represents symmmetries in the layout better than
+    layout represents symmetries in the layout better than
     the default spring layout.
 
     Parameters
@@ -1139,7 +1139,7 @@ def arf_layout(
     a : float
         Strength of springs between connected nodes. Should be larger than 1. The greater a, the clearer the separation ofunconnected sub clusters.
     etol : float
-        Graduent sum of spring forces must be larger than `etol` before successful termination.
+        Gradient sum of spring forces must be larger than `etol` before successful termination.
     dt : float
         Time step for force differential equation simulations.
     max_iter : int
@@ -1248,15 +1248,14 @@ def rescale_layout(pos, scale=1):
     --------
     rescale_layout_dict
     """
+    import numpy as np
+
     # Find max length over all dimensions
-    lim = 0  # max coordinate for all axes
-    for i in range(pos.shape[1]):
-        pos[:, i] -= pos[:, i].mean()
-        lim = max(abs(pos[:, i]).max(), lim)
+    pos -= pos.mean(axis=0)
+    lim = np.abs(pos).max()  # max coordinate for all axes
     # rescale to (-scale, scale) in all directions, preserves aspect
     if lim > 0:
-        for i in range(pos.shape[1]):
-            pos[:, i] *= scale / lim
+        pos *= scale / lim
     return pos
 
 

@@ -12,7 +12,7 @@ jobs:
         os: [ubuntu, macos]
         python-version: ["3.9", "3.10", "3.11"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
@@ -20,8 +20,8 @@ jobs:
 
       - name: Install packages
         run: |
-          pip install --upgrade pip wheel setuptools
-          pip install -U --pre --extra-index-url https://pypi.org/simple -i https://pypi.anaconda.org/scipy-wheels-nightly/simple -r requirements/default.txt
+          pip install --upgrade pip
+          pip install -U --pre --extra-index-url https://pypi.org/simple -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple -r requirements/default.txt
           pip install --pre -r requirements/test.txt
           pip install .
           pip list

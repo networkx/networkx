@@ -1,8 +1,9 @@
-# Helpers for current-flow betweenness and current-flow closness
+# Helpers for current-flow betweenness and current-flow closeness
 # Lazy computations for inverse Laplacian and flow-matrix rows.
 import networkx as nx
 
 
+@nx._dispatch(edge_attrs="weight")
 def flow_matrix_row(G, weight=None, dtype=float, solver="lu"):
     # Generate a row of the current-flow matrix
     import numpy as np

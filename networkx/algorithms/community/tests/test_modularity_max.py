@@ -310,7 +310,7 @@ def test_cutoff_parameter():
     assert greedy_modularity_communities(G, cutoff=4) == expected
 
     # Default aggregation case (here, 2 communities emerge)
-    expected = [frozenset(range(0, 4)), frozenset(range(4, 8))]
+    expected = [frozenset(range(4)), frozenset(range(4, 8))]
     assert greedy_modularity_communities(G, cutoff=1) == expected
 
 
@@ -329,5 +329,5 @@ def test_best_n():
 
     # Two additional merging steps:
     best_n = 1
-    expected = [frozenset(range(0, 13))]
+    expected = [frozenset(range(13))]
     assert greedy_modularity_communities(G, best_n=best_n) == expected

@@ -41,39 +41,25 @@ Todo
 
 Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 
-Version 3.0
-~~~~~~~~~~~
-
-* In ``readwrite/gml.py`` remove ``literal_stringizer`` and related tests.
-* In ``readwrite/gml.py`` remove ``literal_destringizer`` and related tests.
-* Remove ``copy`` method in the coreview Filtered-related classes and related tests.
-* In ``algorithms/link_analysis/pagerank_alg.py`` replace ``pagerank`` with ``pagerank_scipy``.
-* In ``algorithms/link_analysis/pagerank_alg.py`` rename ``pagerank_numpy`` as ``_pagerank_numpy``.
-* In ``convert_matrix.py`` remove ``order`` kwarg from ``to_pandas_edgelist`` and docstring
-* In ``algorithms/operators/binary.py`` remove ``name`` kwarg from ``union`` and docstring.
-* In ``algorithms/link_analysis/pagerank_alg.py``, remove the
-  ``np.asmatrix`` wrappers on the return values of ``google_matrix`` and remove
-  the associated FutureWarning.
-* In ``linalg/attrmatrix.py`` remove the FutureWarning, update the
-  return type by removing ``np.asmatrix``, and update the docstring to
-  reflect that the function returns a ``numpy.ndarray`` instance.
-* In ``algorithms/distance_measures.py`` remove ``extrema_bounding``.
-* In ``algorithms/matching.py``, remove parameter ``maxcardinality`` from ``min_weight_matching``.
-
-
-Version 3.2
-~~~~~~~~~~~
-* In ``generators/directed.py`` remove the ``create_using`` keyword argument
-  for the ``scale_free_graph`` function.
-* Remove pydot functionality ``drawing/nx_pydot.py``, if pydot is still not being maintained. See #5723
-* In ``readwrite/json_graph/node_link.py`` remove the ``attrs` keyword code 
-  and docstring in ``node_link_data`` and ``node_link_graph``. Also the associated tests.
-
 Version 3.3
 ~~~~~~~~~~~
+* Remove pydot functionality ``drawing/nx_pydot.py``, if pydot is still not being maintained. See #5723
 * Remove the ``forest_str`` function from ``readwrite/text.py``. Replace
   existing usages with ``write_network_text``.
 * Change ``single_target_shortest_path_length`` in ``algorithms/shortest_path/unweighted.py``
   to return a dict. See #6527
 * Change ``shortest_path`` in ``algorithms/shortest_path/generic.py``
   to return a iterator. See #6527
+
+Version 3.4
+~~~~~~~~~~~
+* Remove the ``random_tree`` function from ``generators/trees.py``. Replace
+  existing usages with ``random_labeled_tree``.
+* Remove the ``sort_neighbors`` input parameter from ``generic_bfs_edges``.
+* Remove ``MultiDiGraph_EdgeKey`` class from ``algorithms/tree/branchings.py``. 
+* Remove ``Edmonds`` class from ``algorithms/tree/branchings.py``.
+* Remove ``normalized`` kwarg from ``algorithms.s_metric``
+* Remove renamed function ``join()`` in ``algorithms/tree/operations.py`` and
+  in ``doc/reference/algorithms/trees.rst``
+* Remove ``strongly_connected_components_recursive`` from
+  ``algorithms/components/strongly_connected.py``

@@ -43,6 +43,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch(edge_attrs="weight")
 def to_pandas_adjacency(
     G,
     nodelist=None,
@@ -149,6 +150,7 @@ def to_pandas_adjacency(
     return pd.DataFrame(data=M, index=nodelist, columns=nodelist)
 
 
+@nx._dispatch(graphs=None)
 def from_pandas_adjacency(df, create_using=None):
     r"""Returns a graph from Pandas DataFrame.
 
@@ -209,6 +211,7 @@ def from_pandas_adjacency(df, create_using=None):
     return G
 
 
+@nx._dispatch(preserve_edge_attrs=True)
 def to_pandas_edgelist(
     G,
     source="source",
@@ -300,6 +303,7 @@ def to_pandas_edgelist(
     return pd.DataFrame(edgelistdict, dtype=dtype)
 
 
+@nx._dispatch(graphs=None)
 def from_pandas_edgelist(
     df,
     source="source",
@@ -463,6 +467,7 @@ def from_pandas_edgelist(
     return g
 
 
+@nx._dispatch(edge_attrs="weight")
 def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format="csr"):
     """Returns the graph adjacency matrix as a SciPy sparse array.
 
@@ -605,7 +610,7 @@ def _csr_gen_triples(A):
     data, indices, indptr = A.data, A.indices, A.indptr
     for i in range(nrows):
         for j in range(indptr[i], indptr[i + 1]):
-            yield i, indices[j], data[j]
+            yield i, int(indices[j]), data[j]
 
 
 def _csc_gen_triples(A):
@@ -617,7 +622,7 @@ def _csc_gen_triples(A):
     data, indices, indptr = A.data, A.indices, A.indptr
     for i in range(ncols):
         for j in range(indptr[i], indptr[i + 1]):
-            yield indices[j], i, data[j]
+            yield int(indices[j]), i, data[j]
 
 
 def _coo_gen_triples(A):
@@ -625,8 +630,7 @@ def _coo_gen_triples(A):
     of weighted edge triples.
 
     """
-    row, col, data = A.row, A.col, A.data
-    return zip(row, col, data)
+    return ((int(i), int(j), d) for i, j, d in zip(A.row, A.col, A.data))
 
 
 def _dok_gen_triples(A):
@@ -655,6 +659,7 @@ def _generate_weighted_edges(A):
     return _coo_gen_triples(A.tocoo())
 
 
+@nx._dispatch(graphs=None)
 def from_scipy_sparse_array(
     A, parallel_edges=False, create_using=None, edge_attribute="weight"
 ):
@@ -759,6 +764,7 @@ def from_scipy_sparse_array(
     return G
 
 
+@nx._dispatch(edge_attrs="weight")  # edge attrs may also be obtained from `dtype`
 def to_numpy_array(
     G,
     nodelist=None,
@@ -784,7 +790,7 @@ def to_numpy_array(
         default is used. The dtype can be structured if `weight=None`, in which
         case the dtype field names are used to look up edge attributes. The
         result is a structured array where each named field in the dtype
-        corresponds to the adjaceny for that edge attribute. See examples for
+        corresponds to the adjacency for that edge attribute. See examples for
         details.
 
     order : {'C', 'F'}, optional
@@ -804,7 +810,7 @@ def to_numpy_array(
         dtype is used.
 
     nonedge : array_like (default = 0.0)
-        The value used to represent non-edges in the adjaceny matrix.
+        The value used to represent non-edges in the adjacency matrix.
         The array values corresponding to nonedges are typically set to zero.
         However, this could be undesirable if there are array values
         corresponding to actual edges that also have the value zero. If so,
@@ -997,7 +1003,8 @@ def to_numpy_array(
     return A
 
 
-def from_numpy_array(A, parallel_edges=False, create_using=None):
+@nx._dispatch(graphs=None)
+def from_numpy_array(A, parallel_edges=False, create_using=None, edge_attr="weight"):
     """Returns a graph from a 2D NumPy array.
 
     The 2D NumPy array is interpreted as an adjacency matrix for the graph.
@@ -1017,6 +1024,10 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
+    edge_attr : String, optional (default="weight")
+        The attribute to which the array values are assigned on each edge. If
+        it is None, edge attributes will not be assigned.
+
     Notes
     -----
     For directed graphs, explicitly mention create_using=nx.DiGraph,
@@ -1030,6 +1041,11 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
     If `create_using` indicates an undirected multigraph, then only the edges
     indicated by the upper triangle of the array `A` will be added to the
     graph.
+
+    If `edge_attr` is Falsy (False or None), edge attributes will not be
+    assigned, and the array data will be treated like a binary mask of
+    edge presence or absence. Otherwise, the attributes will be assigned
+    as follows:
 
     If the NumPy array has a single data type for each array entry it
     will be converted to an appropriate Python data type.
@@ -1124,7 +1140,9 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
                 {
                     name: kind_to_python_type[dtype.kind](val)
                     for (_, dtype, name), val in zip(fields, A[u, v])
-                },
+                }
+                if edge_attr
+                else {},
             )
             for u, v in edges
         )
@@ -1141,11 +1159,17 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
         #         for d in range(A[u, v]):
         #             G.add_edge(u, v, weight=1)
         #
-        triples = chain(
-            ((u, v, {"weight": 1}) for d in range(A[u, v])) for (u, v) in edges
-        )
+        if edge_attr:
+            triples = chain(
+                ((u, v, {edge_attr: 1}) for d in range(A[u, v])) for (u, v) in edges
+            )
+        else:
+            triples = chain(((u, v, {}) for d in range(A[u, v])) for (u, v) in edges)
     else:  # basic data type
-        triples = ((u, v, {"weight": python_type(A[u, v])}) for u, v in edges)
+        if edge_attr:
+            triples = ((u, v, {edge_attr: python_type(A[u, v])}) for u, v in edges)
+        else:
+            triples = ((u, v, {}) for u, v in edges)
     # If we are creating an undirected multigraph, only add the edges from the
     # upper triangle of the matrix. Otherwise, add all the edges. This relies
     # on the fact that the vertices created in the

@@ -191,6 +191,7 @@ def write_multiline_adjlist(G, path, delimiter=" ", comments="#", encoding="utf-
         path.write(multiline.encode(encoding))
 
 
+@nx._dispatch(graphs=None)
 def parse_multiline_adjlist(
     lines, comments="#", delimiter=None, create_using=None, nodetype=None, edgetype=None
 ):
@@ -300,6 +301,7 @@ def parse_multiline_adjlist(
 
 
 @open_file(0, mode="rb")
+@nx._dispatch(graphs=None)
 def read_multiline_adjlist(
     path,
     comments="#",

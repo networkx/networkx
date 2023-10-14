@@ -146,6 +146,7 @@ def generate_edgelist(G, delimiter=" ", data=True):
                 yield delimiter.join(map(str, edge))
 
 
+@nx._dispatch(name="bipartite_parse_edgelist", graphs=None)
 def parse_edgelist(
     lines, comments="#", delimiter=None, create_using=None, nodetype=None, data=True
 ):
@@ -267,6 +268,7 @@ def parse_edgelist(
 
 
 @open_file(0, mode="rb")
+@nx._dispatch(name="bipartite_read_edgelist", graphs=None)
 def read_edgelist(
     path,
     comments="#",

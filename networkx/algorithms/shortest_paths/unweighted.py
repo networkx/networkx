@@ -193,6 +193,7 @@ def all_pairs_shortest_path_length(G, cutoff=None):
         yield (n, length(G, n, cutoff=cutoff))
 
 
+@nx._dispatch
 def bidirectional_shortest_path(G, source, target):
     """Returns a list of nodes in a shortest path between source and target.
 
@@ -275,7 +276,7 @@ def _bidirectional_pred_succ(G, source, target):
         Gpred = G.adj
         Gsucc = G.adj
 
-    # predecesssor and successors in search
+    # predecessor and successors in search
     pred = {source: None}
     succ = {target: None}
 
@@ -468,9 +469,15 @@ def all_pairs_shortest_path(G, cutoff=None):
     >>> print(path[0][4])
     [0, 1, 2, 3, 4]
 
+    Notes
+    -----
+    There may be multiple shortest paths with the same length between
+    two nodes. For each pair, this function returns only one of those paths.
+
     See Also
     --------
     floyd_warshall
+    all_pairs_all_shortest_paths
 
     """
     # TODO This can be trivially parallelized.
@@ -478,6 +485,7 @@ def all_pairs_shortest_path(G, cutoff=None):
         yield (n, single_source_shortest_path(G, n, cutoff=cutoff))
 
 
+@nx._dispatch
 def predecessor(G, source, target=None, cutoff=None, return_seen=None):
     """Returns dict of predecessors for the path from source to all nodes in G.
 

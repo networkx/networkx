@@ -25,6 +25,7 @@ def _split_n_from(n, min_size_of_first_part):
         yield p1, n - p1
 
 
+@nx._dispatch(node_attrs="node_weight", edge_attrs="edge_weight")
 def lukes_partitioning(G, max_size, node_weight=None, edge_weight=None):
     """Optimal partitioning of a weighted tree using the Lukes algorithm.
 
@@ -32,11 +33,11 @@ def lukes_partitioning(G, max_size, node_weight=None, edge_weight=None):
     node weights and float edge weights. The resulting clusters are such
     that the total weight of the nodes in each cluster does not exceed
     max_size and that the weight of the edges that are cut by the partition
-    is minimum. The algorithm is based on LUKES[1].
+    is minimum. The algorithm is based on [1]_.
 
     Parameters
     ----------
-    G : graph
+    G : NetworkX graph
 
     max_size : int
         Maximum weight a partition can have in terms of sum of
@@ -65,7 +66,7 @@ def lukes_partitioning(G, max_size, node_weight=None, edge_weight=None):
 
     References
     ----------
-    .. Lukes, J. A. (1974).
+    .. [1] Lukes, J. A. (1974).
        "Efficient Algorithm for the Partitioning of Trees."
        IBM Journal of Research and Development, 18(3), 217–224.
 
@@ -187,8 +188,8 @@ def lukes_partitioning(G, max_size, node_weight=None, edge_weight=None):
             for j in range(weight_of_x, max_size + 1):
                 for a, b in _split_n_from(j, weight_of_x):
                     if (
-                        a not in t_G.nodes[x_node][PKEY].keys()
-                        or b not in t_G.nodes[i_node][PKEY].keys()
+                        a not in t_G.nodes[x_node][PKEY]
+                        or b not in t_G.nodes[i_node][PKEY]
                     ):
                         # it's not possible to form this particular weight sum
                         continue
@@ -197,7 +198,7 @@ def lukes_partitioning(G, max_size, node_weight=None, edge_weight=None):
                     part2 = t_G.nodes[i_node][PKEY][b]
                     part, value = _concatenate_or_merge(part1, part2, x_node, i_node, j)
 
-                    if j not in bp_buffer.keys() or bp_buffer[j][1] < value:
+                    if j not in bp_buffer or bp_buffer[j][1] < value:
                         # we annotate in the buffer the best partition for j
                         bp_buffer[j] = part, value
 

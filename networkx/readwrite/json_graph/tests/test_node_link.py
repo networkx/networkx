@@ -6,31 +6,6 @@ import networkx as nx
 from networkx.readwrite.json_graph import node_link_data, node_link_graph
 
 
-# TODO: To be removed when signature change complete
-def test_attrs_deprecation(recwarn):
-    G = nx.path_graph(3)
-
-    # No warnings when `attrs` kwarg not used
-    data = node_link_data(G)
-    H = node_link_graph(data)
-    assert len(recwarn) == 0
-
-    # Future warning raised with `attrs` kwarg
-    attrs = {
-        "source": "source",
-        "target": "target",
-        "name": "id",
-        "key": "key",
-        "link": "links",
-    }
-    data = node_link_data(G, attrs=attrs)
-    assert len(recwarn) == 1
-
-    recwarn.clear()
-    H = node_link_graph(data, attrs=attrs)
-    assert len(recwarn) == 1
-
-
 class TestNodeLink:
     # TODO: To be removed when signature change complete
     def test_custom_attrs_dep(self):
@@ -48,9 +23,7 @@ class TestNodeLink:
             "link": "c_links",
         }
 
-        H = node_link_graph(
-            node_link_data(G, attrs=attrs), multigraph=False, attrs=attrs
-        )
+        H = node_link_graph(node_link_data(G, **attrs), multigraph=False, **attrs)
         assert nx.is_isomorphic(G, H)
         assert H.graph["foo"] == "bar"
         assert H.nodes[1]["color"] == "red"
@@ -63,20 +36,16 @@ class TestNodeLink:
             "source": "c_source",
             "target": "c_target",
         }
-        H = node_link_graph(
-            node_link_data(G, attrs=attrs), multigraph=False, attrs=attrs
-        )
+        H = node_link_graph(node_link_data(G, **attrs), multigraph=False, **attrs)
         assert nx.is_isomorphic(G, H)
         assert H.graph["foo"] == "bar"
         assert H.nodes[1]["color"] == "red"
         assert H[1][2]["width"] == 7
 
-    # TODO: To be removed when signature change complete
     def test_exception_dep(self):
         with pytest.raises(nx.NetworkXError):
             G = nx.MultiDiGraph()
-            attrs = {"name": "node", "source": "node", "target": "node", "key": "node"}
-            node_link_data(G, attrs)
+            node_link_data(G, name="node", source="node", target="node", key="node")
 
     def test_graph(self):
         G = nx.path_graph(4)

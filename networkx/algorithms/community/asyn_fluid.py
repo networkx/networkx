@@ -2,6 +2,7 @@
 
 from collections import Counter
 
+import networkx as nx
 from networkx.algorithms.components import is_connected
 from networkx.exception import NetworkXError
 from networkx.utils import groups, not_implemented_for, py_random_state
@@ -9,8 +10,9 @@ from networkx.utils import groups, not_implemented_for, py_random_state
 __all__ = ["asyn_fluidc"]
 
 
-@py_random_state(3)
 @not_implemented_for("directed", "multigraph")
+@py_random_state(3)
+@nx._dispatch
 def asyn_fluidc(G, k, max_iter=100, seed=None):
     """Returns communities in `G` as detected by Fluid Communities algorithm.
 
@@ -36,7 +38,8 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
 
     Parameters
     ----------
-    G : Graph
+    G : NetworkX graph
+        Graph must be simple and undirected.
 
     k : integer
         The number of communities to be found.

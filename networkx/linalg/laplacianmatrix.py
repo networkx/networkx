@@ -13,6 +13,7 @@ __all__ = [
 
 
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight")
 def laplacian_matrix(G, nodelist=None, weight="weight"):
     """Returns the Laplacian matrix of G.
 
@@ -74,6 +75,7 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
 
 
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight")
 def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     r"""Returns the normalized Laplacian matrix of G.
 
@@ -136,7 +138,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     # TODO: rm csr_array wrapper when spdiags can produce arrays
     D = sp.sparse.csr_array(sp.sparse.spdiags(diags, 0, m, n, format="csr"))
     L = D - A
-    with sp.errstate(divide="ignore"):
+    with np.errstate(divide="ignore"):
         diags_sqrt = 1.0 / np.sqrt(diags)
     diags_sqrt[np.isinf(diags_sqrt)] = 0
     # TODO: rm csr_array wrapper when spdiags can produce arrays
@@ -144,6 +146,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     return DH @ (L @ DH)
 
 
+@nx._dispatch(edge_attrs="weight")
 def total_spanning_tree_weight(G, weight=None):
     """
     Returns the total weight of all spanning trees of `G`.
@@ -182,6 +185,7 @@ def total_spanning_tree_weight(G, weight=None):
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch(edge_attrs="weight")
 def directed_laplacian_matrix(
     G, nodelist=None, weight="weight", walk_type=None, alpha=0.95
 ):
@@ -253,7 +257,8 @@ def directed_laplacian_matrix(
     evals, evecs = sp.sparse.linalg.eigs(P.T, k=1)
     v = evecs.flatten().real
     p = v / v.sum()
-    sqrtp = np.sqrt(p)
+    # p>=0 by Perron-Frobenius Thm. Use abs() to fix roundoff across zero gh-6865
+    sqrtp = np.sqrt(np.abs(p))
     Q = (
         # TODO: rm csr_array wrapper when spdiags creates arrays
         sp.sparse.csr_array(sp.sparse.spdiags(sqrtp, 0, n, n))
@@ -269,6 +274,7 @@ def directed_laplacian_matrix(
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch(edge_attrs="weight")
 def directed_combinatorial_laplacian_matrix(
     G, nodelist=None, weight="weight", walk_type=None, alpha=0.95
 ):

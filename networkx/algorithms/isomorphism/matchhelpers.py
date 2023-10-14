@@ -293,7 +293,7 @@ def generic_multiedge_match(attr, default, op):
         to compare.
     default : value | list
         The default value for the edge attribute, or a list of
-        default values for the dgeattributes.
+        default values for the edgeattributes.
     op : callable | list
         The operator to use when comparing attribute values, or a list
         of operators to use when comparing values for each attribute.

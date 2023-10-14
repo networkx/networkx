@@ -28,6 +28,7 @@ class NetworkXTreewidthBoundExceeded(nx.NetworkXException):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def is_chordal(G):
     """Checks whether G is a chordal graph.
 
@@ -87,6 +88,7 @@ def is_chordal(G):
     return len(_find_chordality_breaker(G)) == 0
 
 
+@nx._dispatch
 def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
     """Returns the set of induced nodes in the path from s to t.
 
@@ -166,6 +168,7 @@ def find_induced_nodes(G, s, t, treewidth_bound=sys.maxsize):
     return induced_nodes
 
 
+@nx._dispatch
 def chordal_graph_cliques(G):
     """Returns all maximal cliques of a chordal graph.
 
@@ -238,6 +241,7 @@ def chordal_graph_cliques(G):
             yield frozenset(clique_wanna_be)
 
 
+@nx._dispatch
 def chordal_graph_treewidth(G):
     """Returns the treewidth of the chordal graph G.
 
@@ -363,6 +367,7 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
 
 
 @not_implemented_for("directed")
+@nx._dispatch
 def complete_to_chordal_graph(G):
     """Return a copy of G completed to a chordal graph
 

@@ -10,14 +10,24 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: "3.10"
-      - run: |
+      - name: Install Python requirements
+        run: |
           python -m pip install -r requirements/release.txt
-          python -m build --sdist --wheel
-      - uses: scientific-python/upload-nightly-action@main
+      - name: Build a wheel and a sdist
+        run: |
+          python -m build .
+      - name: Verify the distribution
+        run: twine check --strict dist/*
+      - name: List contents of sdist
+        run: python -m tarfile --list dist/networkx-*.tar.gz
+      - name: List contents of wheel
+        run: python -m zipfile --list dist/networkx-*.whl
+      - name: Upload nighlty wheel
+        uses: scientific-python/upload-nightly-action@5fb764c5bce1ac2297084c0f7161b1919f17c74f # 0.2.0
         with:
           anaconda_nightly_upload_token: ${{ secrets.ANACONDA_NIGHTLY }}
           artifacts_path: dist/

@@ -8,7 +8,7 @@ structure, dynamics, and functions of complex networks.
 See https://networkx.org for complete documentation.
 """
 
-__version__ = "3.2rc0.dev0"
+__version__ = "3.2rc1.dev0"
 
 
 # These are imported in order as listed
@@ -17,11 +17,11 @@ from networkx.lazy_imports import _lazy_import
 from networkx.exception import *
 
 from networkx import utils
+from networkx.utils.backends import _dispatch
 
 from networkx import classes
 from networkx.classes import filters
 from networkx.classes import *
-from networkx.classes import _dispatch
 
 from networkx import convert
 from networkx.convert import *

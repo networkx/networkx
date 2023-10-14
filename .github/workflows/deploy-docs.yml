@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -26,12 +26,18 @@ jobs:
 
       - name: Install packages
         run: |
-          pip install --upgrade pip wheel setuptools
+          pip install --upgrade pip
           pip install -r requirements/default.txt -r requirements/test.txt
           pip install -r requirements/extra.txt
           pip install -r requirements/example.txt
           pip install -U -r requirements/doc.txt
           pip install .
+          # Install trusted backends, but not their dependencies.
+          # We only need to use the "networkx.backend_info" entry-point.
+          # This is the nightly wheel for nx-cugraph.
+          pip install git+https://github.com/rapidsai/cugraph.git#subdirectory=python/nx-cugraph --no-deps
+          # Development version of GraphBLAS backend
+          pip install git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
           pip list
 
       # To set up a cross-repository deploy key:
@@ -45,7 +51,7 @@ jobs:
       #   - Make sure the name is the same as below: CI_DEPLOY_KEY
       - name: Install SSH agent
         if: github.ref == 'refs/heads/main'
-        uses: webfactory/ssh-agent@v0.7.0
+        uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.CI_DEPLOY_KEY }}
 

@@ -233,6 +233,7 @@ def generate_graphml(
 
 
 @open_file(0, mode="rb")
+@nx._dispatch(graphs=None)
 def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False):
     """Read graph in GraphML format from path.
 
@@ -305,6 +306,7 @@ def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False)
     return glist[0]
 
 
+@nx._dispatch(graphs=None)
 def parse_graphml(
     graphml_string, node_type=str, edge_key_type=int, force_multigraph=False
 ):
@@ -413,7 +415,6 @@ class GraphML:
                 (np.float64, "float"),
                 (np.float32, "float"),
                 (np.float16, "float"),
-                (np.float_, "float"),
                 (np.int_, "int"),
                 (np.int8, "int"),
                 (np.int16, "int"),
@@ -997,7 +998,7 @@ class GraphMLReader(GraphML):
                 if node_label is not None:
                     data["label"] = node_label.text
 
-                # check all the different types of edges avaivable in yEd.
+                # check all the different types of edges available in yEd.
                 for edge_type in [
                     "PolyLineEdge",
                     "SplineEdge",
