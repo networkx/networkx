@@ -65,7 +65,6 @@ def test_paley_graph(p):
 
 @pytest.mark.parametrize("d, n", [(2, 7), (4, 10), (4, 16)])
 def test_maybe_regular_expander(d, n):
-    """Test for the :func:`networkx.maybe_regular_expander` function."""
     pytest.importorskip("numpy")
     G = nx.maybe_regular_expander(d, n)
 
@@ -76,7 +75,6 @@ def test_maybe_regular_expander(d, n):
 
 @pytest.mark.parametrize("n", (2, 3, 5, 6, 10))
 def test_is_regular_expander(n):
-    """Test for the :func:`networkx.is_regular_expander` function."""
     pytest.importorskip("numpy")
     G = nx.margulis_gabber_galil_graph(n)
 
@@ -85,7 +83,6 @@ def test_is_regular_expander(n):
 
 @pytest.mark.parametrize("d, n", [(2, 7), (4, 10), (4, 16)])
 def test_random_regular_expander(d, n):
-    """Test for the :func:`networkx.random_regular_expander` function."""
     pytest.importorskip("numpy")
     G = nx.random_regular_expander(d, n)
 
