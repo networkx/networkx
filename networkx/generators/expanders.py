@@ -4,6 +4,7 @@
 import itertools
 
 import networkx as nx
+from networkx.classes import Graph
 from networkx.utils.misc import pairwise
 
 __all__ = [
@@ -211,7 +212,7 @@ def paley_graph(p, create_using=None):
     return G
 
 
-def maybe_regular_expander(d, n):
+def maybe_regular_expander(d, n, create_using=Graph):
     r"""Utility for creating a random regular expander.
 
     Returns a random $d$-regular graph on $n$ nodes which is an expander graph with very good probability.
@@ -222,6 +223,11 @@ def maybe_regular_expander(d, n):
       The degree of each node.
     n : integer
       The number of nodes.
+    create_using : Graph Instance or Constructor
+      Indicator of type of graph to return.
+      If a Graph-type instance, then clear and use it.
+      If a constructor, call it to create an empty graph.
+      Use the Graph constructor by default.
 
     Notes
     -----
@@ -270,8 +276,7 @@ def maybe_regular_expander(d, n):
             f"There is not enough room for {d//2} independent cycles in a graph of size {n}"
         )
 
-    G = nx.Graph()
-    G.add_nodes_from(range(n))
+    G = nx.empty_graph(n, create_using)
 
     # Faster than random.permutation(n) since there are only
     # (n-1)! distinct cycles against n! permutations of size n
