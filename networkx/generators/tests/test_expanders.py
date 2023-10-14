@@ -75,8 +75,7 @@ def test_maybe_regular_expander(d, n):
 
 @pytest.mark.parametrize("n", (2, 3, 5, 6, 10))
 def test_is_regular_expander(n):
-    pytest.importorskip("numpy")
-    G = nx.margulis_gabber_galil_graph(n)
+    G = nx.complete_graph(n)
 
     assert nx.is_regular_expander(G) == True, "Should be a regular expander"
 
