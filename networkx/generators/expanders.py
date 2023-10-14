@@ -278,10 +278,6 @@ def maybe_regular_expander(d, n, create_using=Graph):
 
     G = nx.empty_graph(n, create_using)
 
-    # Faster than random.permutation(n) since there are only
-    # (n-1)! distinct cycles against n! permutations of size n
-    random_cycle = lambda n: np.concatenate((np.random.permutation(n - 1), [n - 1]))
-
     if n < 2:
         return G
 
@@ -292,7 +288,9 @@ def maybe_regular_expander(d, n, create_using=Graph):
     for i in range(d // 2):
         # Make sure the cycles are independent to have a regular graph
         while len(edges) != (i + 1) * n:
-            cycle = random_cycle(n)
+            # Faster than random.permutation(n) since there are only
+            # (n-1)! distinct cycles against n! permutations of size n
+            cycle = np.concatenate((np.random.permutation(n - 1), [n - 1]))
 
             cycle_edges = list(pairwise(cycle, cyclic=True))
             cycle_edges_sorted = [tuple(sorted(x)) for x in cycle_edges]
