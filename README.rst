@@ -51,21 +51,21 @@ Install with all optional dependencies::
 
     $ pip install networkx[all]
 
-For additional details, please see `INSTALL.rst`.
+For additional details, please see `installation <https://github.com/networkx/networkx/blob/main/INSTALL.rst>`_ guide.
 
 Bugs
 ----
 
 Please report any bugs that you find `here <https://github.com/networkx/networkx/issues>`_.
-Or, even better, fork the repository on `GitHub <https://github.com/networkx/networkx>`_
+Or, even better, fork the repository on `gitHub <https://github.com/networkx/networkx>`_
 and create a pull request (PR). We welcome all changes, big or small, and we
 will help you make the PR if you are new to `git` (just ask on the issue and/or
-see [Contributor Guide](https://github.com/networkx/networkx/blob/main/CONTRIBUTING.rst).
+see `contributor <https://github.com/networkx/networkx/blob/main/CONTRIBUTING.rst>`_ guide.
 
 License
 -------
 
-Released under the 3-Clause BSD license (see `LICENSE.txt`)::
+Released under the 3-Clause BSD `license <https://github.com/networkx/networkx/blob/main/LICENSE.txt>`_:
 
    Copyright (C) 2004-2023 NetworkX Developers
    Aric Hagberg <hagberg@lanl.gov>
