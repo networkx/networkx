@@ -292,15 +292,16 @@ def maybe_regular_expander(d, n, create_using=Graph):
             # (n-1)! distinct cycles against n! permutations of size n
             cycle = np.concatenate((np.random.permutation(n - 1), [n - 1]))
 
-            cycle_edges = list(pairwise(cycle, cyclic=True))
-            cycle_edges_sorted = [tuple(sorted(x)) for x in cycle_edges]
-            new_edges = {*edges, *cycle_edges_sorted}
-
+            new_edges = {
+                (u, v)
+                for u, v in pairwise(cycle, cyclic=True)
+                if (u, v) not in edges and (v, u) not in edges
+            }
             # If the new cycle has no edges in common with previous cycles
             # then add it to the list otherwise try again
-            if len(new_edges) == len(edges) + n:
+            if len(new_edges) == n:
                 cycles.append(cycle)
-                edges = new_edges
+                edges.update(new_edges)
 
     G.add_edges_from(list(edges))
 
