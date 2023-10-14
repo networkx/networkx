@@ -303,17 +303,22 @@ def maybe_regular_expander(d, n, create_using=Graph):
                 cycles.append(cycle)
                 edges.update(new_edges)
 
-    G.add_edges_from(list(edges))
+    G.add_edges_from(edges)
 
     return G
 
 
+@nx.not_implemented_for("directed")
+@nx.not_implemented_for("multigraph")
 def is_regular_expander(G: nx.Graph, *, epsilon=0):
     """Determines whether the graph G is a regular expander.
 
-    More precisely, checks whether the graph is a regular $(n, d, \lambda)$-expander with $\lambda$ close to the Alon-Boppana bound and given by $\lambda = 2 \sqrt{d - 1} + \epsilon$. [1]_
+    More precisely, checks whether the graph is a regular $(n, d, \lambda)$-expander
+    with $\lambda$ close to the Alon-Boppana bound and given by
+    $\lambda = 2 \sqrt{d - 1} + \epsilon$. [1]_
 
-    In the case where $\epsilon = 0 $ then if the graph successfully passes the test it is a Ramanujan graph. [2]_
+    In the case where $\epsilon = 0 $ then if the graph successfully passes the test
+    it is a Ramanujan graph. [2]_
 
     Parameters
     ----------
@@ -323,7 +328,8 @@ def is_regular_expander(G: nx.Graph, *, epsilon=0):
     Returns
     -------
     bool
-        Whether the given graph is a regular $(n, d, \lambda)$-expander where $\lambda = 2 \sqrt{d - 1} + \epsilon$.
+        Whether the given graph is a regular $(n, d, \lambda)$-expander
+        where $\lambda = 2 \sqrt{d - 1} + \epsilon$.
 
     Examples
     --------
@@ -381,7 +387,8 @@ def random_regular_expander(d, n, *, epsilon=0):
 
     Notes
     -----
-    This loops over ``maybe_regular_expander`` and can be slow when $n$ is too big or $\epsilon$ too small.
+    This loops over ``maybe_regular_expander`` and can be slow when
+    $n$ is too big or $\epsilon$ too small.
 
     See Also
     --------
