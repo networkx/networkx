@@ -212,7 +212,9 @@ def paley_graph(p, create_using=None):
 
 
 def maybe_regular_expander(d, n):
-    r"""Returns a random $d$-regular graph on $n$ nodes which is an expander graph with very good probability.
+    r"""Utility for creating a random regular expander.
+
+    Returns a random $d$-regular graph on $n$ nodes which is an expander graph with very good probability.
 
     Parameters
     ----------
@@ -232,6 +234,11 @@ def maybe_regular_expander(d, n):
     Examples
     --------
     >>> G = nx.maybe_regular_expander(6, 200)
+
+    Returns
+    -------
+    G : graph
+        The constructed undirected graph.
 
     Raises
     ------
