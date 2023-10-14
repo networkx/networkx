@@ -279,12 +279,12 @@ def find_minimal_d_separator(G, u, v, i=None, r=None):
         A node in the graph, or a set of nodes.
     v : set | node
         A node in the graph, or a set of nodes.
-    i : set
-        Set of nodes which are always included in the found separating set,
+    i : set | node | None
+        A node or set of nodes which must be included in the found separating set,
         default is None, which is later set to empty set.
-    r : set
-        Largest set of nodes which may be included in the found separating set,
-        default is None, which is later set to all vertices in ``G``.
+    r : set | node | None
+        Restricted node or set of nodes to consider. Only these nodes can be in
+        the found separating set, default is None meaning all vertices in ``G``.
 
     Returns
     -------
@@ -333,8 +333,12 @@ def find_minimal_d_separator(G, u, v, i=None, r=None):
 
     if i is None:
         i = set()
+    elif not isinstance(i, set):
+        i = {i}
     if r is None:
-        r = set(G.nodes())
+        r = set(G)
+    elif not isinstance(r, set):
+        r = {r}
     set_v = u | v | i | r
     if set_v - G.nodes:
         raise nx.NodeNotFound(f"The node(s) {set_v - G.nodes} are not found in G")
@@ -419,7 +423,7 @@ def minimal_d_separated(G, u, v, z, i=None, r=None):
     >>> nx.minimal_d_separated(G, 0, 2, {1, 3, 4})
     False
     >>> # alternatively, if we only want to check that {1, 3, 4} is a d-separator
-    >>> nx.d_separated(G, {0}, {4}, {1, 3, 4})
+    >>> nx.d_separated(G, 0, 2, {1, 3, 4})
     True
 
     Raises
