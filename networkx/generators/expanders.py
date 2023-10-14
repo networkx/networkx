@@ -5,6 +5,7 @@ import itertools
 
 import networkx as nx
 from networkx.classes import Graph
+from networkx.utils import not_implemented_for
 from networkx.utils.misc import pairwise
 
 __all__ = [
@@ -311,8 +312,8 @@ def maybe_regular_expander(d, n, create_using=Graph):
     return G
 
 
-@nx.not_implemented_for("directed")
-@nx.not_implemented_for("multigraph")
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def is_regular_expander(G: nx.Graph, *, epsilon=0):
     """Determines whether the graph G is a regular expander.
 
