@@ -43,23 +43,33 @@ __all__ = [
 ]
 
 
-def to_node_dataframe(G, df):
+def from_pandas(df):
     """
-    Update an existing NetworkX graph with node data attributes from a DataFrame.
+    Create a NetworkX graph from a DataFrame.
 
     Parameters:
-    G (nx.Graph): The existing NetworkX graph to be updated.
-    df (pd.DataFrame): The DataFrame containing node data attributes.
+    df (pd.DataFrame): The DataFrame containing node data.
 
     Examples:
     ```python
-    # Assume you have an existing graph G and a DataFrame df
+    import networkx as nx
+    import pandas as pd
+
+    # Create an empty graph
+    G = nx.Graph()
+
+    # Assume you have a DataFrame df with node data
     # Update the graph by adding nodes and their attributes from the DataFrame
     G.add_nodes_from((n, dict(d)) for n, d in df.iterrows())
     ```
-    """
-    G.add_nodes_from((n, dict(d)) for n, d in df.iterrows())
 
+    Returns:
+    G (nx.Graph): A NetworkX graph with nodes and attributes.
+    """
+    G = nx.Graph()
+    for n, d in df.iterrows():
+        G.add_node(n, **d.to_dict())
+    return G
 
 @nx._dispatch(edge_attrs="weight")
 def to_pandas_adjacency(
