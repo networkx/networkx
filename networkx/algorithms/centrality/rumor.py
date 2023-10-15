@@ -55,8 +55,8 @@ def rumor_centrality(G: nx.Graph):
     if not nx.is_tree(G):
         raise nx.NetworkXNotImplemented("graph must be a tree")
 
-    visited = set()
-    node_data = {n: {} for n in G.nodes}
+    visited: set = set()
+    node_data: dict = {n: {} for n in G.nodes}
 
     # Calculate rumor centrality for a single node
     arbitrary_start_node = list(G)[0]
