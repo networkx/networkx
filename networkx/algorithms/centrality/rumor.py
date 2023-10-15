@@ -55,76 +55,77 @@ def rumor_centrality(G: nx.Graph):
     if not nx.is_tree(G):
         raise nx.NetworkXNotImplemented("graph must be a tree")
 
-    # Create copy to be able to use node properties
-    H = G.copy()
-    _set_visited_to_false(H)
+    visited = set()
+    node_data = {n: {} for n in G.nodes}
 
     # Calculate rumor centrality for a single node
-    arbitrary_start_node = list(H)[0]
+    arbitrary_start_node = list(G)[0]
     _calculate_rumor_centrality_for_single_node(
-        H, arbitrary_start_node, arbitrary_start_node
+        G, arbitrary_start_node, arbitrary_start_node, visited, node_data
     )
 
-    # Calculate rumor centrality for remaining vertices
-    _set_visited_to_false(H)
-    H.nodes[arbitrary_start_node]["visited"] = True
-    for neighbor in H.neighbors(arbitrary_start_node):
+    # Calculate rumor centrality for remaining nodes
+    visited = {arbitrary_start_node}
+    for neighbor in G.neighbors(arbitrary_start_node):
         _calculate_for_remaining(
-            H, neighbor, H.nodes[arbitrary_start_node]["rumor_centrality"]
+            G,
+            neighbor,
+            node_data[arbitrary_start_node]["rumor_centrality"],
+            visited,
+            node_data,
         )
 
-    return {v: H.nodes[v]["rumor_centrality"] for v in H.nodes}
+    return {v: node_data[v]["rumor_centrality"] for v in G.nodes}
 
 
-def _calculate_rumor_centrality_for_single_node(G, v, node):
+def _calculate_rumor_centrality_for_single_node(G, v, start_node, visited, node_data):
     # Mark v as visited
-    G.nodes[v]["visited"] = True
+    visited.add(v)
 
     # Collect all unvisited neighbors
     unvisited_neighbors = []
     for neighbor in G.neighbors(v):
-        if not G.nodes[neighbor]["visited"]:
+        if neighbor not in visited:
             unvisited_neighbors.append(neighbor)
 
     # If v does not have unvisited neighbors, initialize v with default values
     if len(unvisited_neighbors) == 0:
-        G.nodes[v]["subtree_size"] = 1
-        G.nodes[v]["cumulative_prod"] = 1
+        node_data[v]["subtree_size"] = 1
+        node_data[v]["cumulative_prod"] = 1
         return 1, 1
 
     # If v has unvisited neighbors, invoke recursive call for each of them
     # and calculate cumulative sum and product
     cum_sum, cum_prod = 0, 1
     for neighbor in unvisited_neighbors:
-        a, b = _calculate_rumor_centrality_for_single_node(G, neighbor, node)
+        a, b = _calculate_rumor_centrality_for_single_node(
+            G, neighbor, start_node, visited, node_data
+        )
         cum_sum += a
         cum_prod *= b
 
     # Calculate rumor centrality for chosen root
-    if v == node:
-        G.nodes[v]["rumor_centrality"] = math.factorial(len(G) - 1) // cum_prod
+    if v == start_node:
+        node_data[v]["rumor_centrality"] = math.factorial(len(G) - 1) // cum_prod
 
     # Calculate v's values
-    G.nodes[v]["subtree_size"] = cum_sum + 1
-    G.nodes[v]["cumulative_prod"] = cum_prod * G.nodes[v]["subtree_size"]
+    node_data[v]["subtree_size"] = cum_sum + 1
+    node_data[v]["cumulative_prod"] = cum_prod * node_data[v]["subtree_size"]
 
     # Return v's values
-    return G.nodes[v]["subtree_size"], G.nodes[v]["cumulative_prod"]
+    return node_data[v]["subtree_size"], node_data[v]["cumulative_prod"]
 
 
-def _set_visited_to_false(G):
-    for node in G.nodes:
-        G.nodes[node]["visited"] = False
-
-
-def _calculate_for_remaining(G, node, parent_rumor_centrality):
-    G.nodes[node]["visited"] = True
-    G.nodes[node]["rumor_centrality"] = int(
+def _calculate_for_remaining(G, node, parent_rumor_centrality, visited, node_data):
+    visited.add(node)
+    node_data[node]["rumor_centrality"] = int(
         parent_rumor_centrality
-        * G.nodes[node]["subtree_size"]
-        / (len(G) - G.nodes[node]["subtree_size"])
+        * node_data[node]["subtree_size"]
+        / (len(G) - node_data[node]["subtree_size"])
     )
 
     for neighbor in G.neighbors(node):
-        if not G.nodes[neighbor]["visited"]:
-            _calculate_for_remaining(G, neighbor, G.nodes[node]["rumor_centrality"])
+        if neighbor not in visited:
+            _calculate_for_remaining(
+                G, neighbor, node_data[node]["rumor_centrality"], visited, node_data
+            )
