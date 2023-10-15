@@ -52,15 +52,8 @@ def rumor_centrality(G: nx.Graph):
     Systems, pp. 199-210. 2012.
     """
 
-    if len(G) == 0:
-        raise nx.NetworkXPointlessConcept(
-            "cannot compute centrality for the null graph"
-        )
-
     if not nx.is_tree(G):
-        raise nx.NetworkXNotImplemented(
-            "rumor centrality does not work for graphs with cycles"
-        )
+        raise nx.NetworkXNotImplemented("graph must be a tree")
 
     # Create copy to be able to use node properties
     H = G.copy()
