@@ -360,8 +360,6 @@ def find_minimal_d_separator(G, x, y, *, included=None, restricted=None):
     for node in included:
         aug_G_p.remove_node(node)
     for node in included:
-        aug_G_p.remove_node(node)
-    for node in included:
         G_p.remove_node(node)
 
     xy = x.union(y)

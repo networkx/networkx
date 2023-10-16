@@ -110,7 +110,7 @@ def large_no_separating_set_graph():
 
 
 @pytest.fixture()
-def collider_fork_path():
+def collider_trek_graph():
     edge_list = [("A", "B"), ("C", "B"), ("C", "D")]
     G = nx.DiGraph(edge_list)
     return G
@@ -228,15 +228,15 @@ def test_nondisjoint_node_sets_raise_error(collider_graph):
     with pytest.raises(nx.NetworkXError):
         nx.find_minimal_d_separator(collider_graph, 0, 0)
     with pytest.raises(nx.NetworkXError):
-        nx.find_minimal_d_separator(collider_graph, 0, 1, 0)
+        nx.find_minimal_d_separator(collider_graph, 0, 1, included=0)
     with pytest.raises(nx.NetworkXError):
-        nx.find_minimal_d_separator(collider_graph, 1, 0, 0)
+        nx.find_minimal_d_separator(collider_graph, 1, 0, included=0)
     with pytest.raises(nx.NetworkXError):
-        nx.minimal_d_separated(collider_graph, 0, 0)
+        nx.minimal_d_separated(collider_graph, 0, 0, set())
     with pytest.raises(nx.NetworkXError):
-        nx.minimal_d_separated(collider_graph, 0, 1, 0)
+        nx.minimal_d_separated(collider_graph, 0, 1, set(), included=0)
     with pytest.raises(nx.NetworkXError):
-        nx.minimal_d_separated(collider_graph, 1, 0, 0)
+        nx.minimal_d_separated(collider_graph, 1, 0, set(), included=0)
 
 
 def test_minimal_d_separated(
@@ -244,7 +244,7 @@ def test_minimal_d_separated(
     chain_and_fork_graph,
     no_separating_set_graph,
     large_no_separating_set_graph,
-    collider_fork_path,
+    collider_trek_graph,
 ):
     # Case 1:
     # create a graph A -> B <- C
@@ -296,12 +296,14 @@ def test_minimal_d_separated(
 
     # Test `included` and `excluded` args
     # create graph A -> B <- C -> D
-    assert nx.find_minimal_d_separator(collider_fork_path, "A", "D", included="B") == {
+    assert nx.find_minimal_d_separator(collider_trek_graph, "A", "D", included="B") == {
         "B",
         "C",
     }
     assert (
-        nx.find_minimal_d_separator(collider_fork_path, "A", "D", restricted="C")
+        nx.find_minimal_d_separator(
+            collider_trek_graph, "A", "D", included="B", restricted="B"
+        )
         is None
     )
 
