@@ -256,7 +256,7 @@ def d_separated(G, x, y, z):
 
 @not_implemented_for("undirected")
 @nx._dispatch
-def find_minimal_d_separator(G, u, v, i=None, r=None):
+def find_minimal_d_separator(G, u, v, *, i=None, r=None):
     """Returns a minimal d-separating set between 'u' and 'v' if possible
 
     A d-separating set in a DAG is a set of nodes that blocks all paths
@@ -378,7 +378,7 @@ def find_minimal_d_separator(G, u, v, i=None, r=None):
 
 @not_implemented_for("undirected")
 @nx._dispatch
-def minimal_d_separated(G, u, v, z, i=None, r=None):
+def minimal_d_separated(G, u, v, z, *, i=None, r=None):
     """Determine if `z` is a minimal d-separating set for `u` and `v`.
 
     A d-separating set, `z`, in a DAG is a set of nodes that blocks
