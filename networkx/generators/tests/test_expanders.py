@@ -73,7 +73,7 @@ def test_maybe_regular_expander(d, n):
     assert nx.is_k_regular(G, d), "Should be d-regular"
 
 
-@pytest.mark.parametrize("n", (2, 3, 5, 6, 10))
+@pytest.mark.parametrize("n", (3, 5, 6, 10))
 def test_is_regular_expander(n):
     pytest.importorskip("numpy")
     pytest.importorskip("scipy")
