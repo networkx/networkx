@@ -3,6 +3,8 @@
 """
 import itertools
 
+from scipy.sparse.linalg import eigsh
+
 import networkx as nx
 from networkx.classes import Graph
 from networkx.utils import not_implemented_for
@@ -359,12 +361,12 @@ def is_regular_expander(G: nx.Graph, *, epsilon=0):
     d = list(G.degree)[0][1]
 
     A = nx.adjacency_matrix(G)
-    eigen_vals, _ = np.linalg.eig(A.toarray())
+    lams = eigsh(A.asfptype(), which="LM", k=2, return_eigenvectors=False)
 
     # lambda2 is the second biggest eigenvalue
-    lambda2 = sorted(eigen_vals, reverse=True)[1]
+    lambda2 = min(lams)
 
-    return lambda2 < 2 ** np.sqrt(d - 1) + epsilon
+    return abs(lambda2) < 2 ** np.sqrt(d - 1) + epsilon
 
 
 def random_regular_expander(d, n, *, epsilon=0):
