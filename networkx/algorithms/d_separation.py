@@ -195,9 +195,6 @@ def d_separated(G, x, y, z):
     if set_v - G.nodes:
         raise nx.NodeNotFound(f"The node(s) {set_v - G.nodes} are not found in G")
 
-    if x & y or x & z or y & z:
-        raise nx.NetworkXError("node sets `x`, `y`, and `z` must be disjoint")
-
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")
 
@@ -345,8 +342,13 @@ def find_minimal_d_separator(G, x, y, *, included=None, restricted=None):
             f"Minimal set {included} should be no larger than maximal set {restricted}"
         )
 
-    if x & y or x & included or y & included:
-        raise nx.NetworkXError("node sets `x`, `y`, and `included` must be disjoint")
+    intersection = (
+        x.intersection(y) or x.intersection(included) or y.intersection(included)
+    )
+    if intersection:
+        raise nx.NetworkXError(
+            f"The sets are not disjoint, with intersection {intersection}"
+        )
 
     G_copy = G.copy()
 
