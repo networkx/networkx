@@ -109,6 +109,13 @@ def large_no_separating_set_graph():
     return G
 
 
+@pytest.fixture()
+def collider_fork_path():
+    edge_list = [("A", "B"), ("C", "B"), ("C", "D")]
+    G = nx.DiGraph(edge_list)
+    return G
+
+
 @pytest.mark.parametrize(
     "graph",
     [path_graph(), fork_graph(), collider_graph(), naive_bayes_graph(), asia_graph()],
@@ -237,6 +244,7 @@ def test_minimal_d_separated(
     chain_and_fork_graph,
     no_separating_set_graph,
     large_no_separating_set_graph,
+    collider_fork_path,
 ):
     # Case 1:
     # create a graph A -> B <- C
@@ -285,6 +293,17 @@ def test_minimal_d_separated(
     # minimal (but invalid) separating set
     assert not nx.d_separated(large_no_separating_set_graph, {"A"}, {"B"}, {"C"})
     assert nx.find_minimal_d_separator(large_no_separating_set_graph, "A", "B") is None
+
+    # Test `included` and `excluded` args
+    # create graph A -> B <- C -> D
+    assert nx.find_minimal_d_separator(collider_fork_path, "A", "D", included="B") == {
+        "B",
+        "C",
+    }
+    assert (
+        nx.find_minimal_d_separator(collider_fork_path, "A", "D", restricted="C")
+        is None
+    )
 
 
 def test_minimal_d_separator_checks_dsep():
