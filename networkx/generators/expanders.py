@@ -3,8 +3,6 @@
 """
 import itertools
 
-from scipy.sparse.linalg import eigsh
-
 import networkx as nx
 from networkx.classes import Graph
 from networkx.utils import not_implemented_for
@@ -351,6 +349,7 @@ def is_regular_expander(G: nx.Graph, *, epsilon=0):
     """
 
     import numpy as np
+    from scipy.sparse.linalg import eigsh
 
     if not (isinstance(epsilon, (int, float)) and epsilon >= 0):
         raise nx.NetworkXError("epsilon must be non negative")
