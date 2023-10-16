@@ -224,6 +224,12 @@ def test_nondisjoint_node_sets_raise_error(collider_graph):
         nx.find_minimal_d_separator(collider_graph, 0, 1, 0)
     with pytest.raises(nx.NetworkXError):
         nx.find_minimal_d_separator(collider_graph, 1, 0, 0)
+    with pytest.raises(nx.NetworkXError):
+        nx.minimal_d_separated(collider_graph, 0, 0)
+    with pytest.raises(nx.NetworkXError):
+        nx.minimal_d_separated(collider_graph, 0, 1, 0)
+    with pytest.raises(nx.NetworkXError):
+        nx.minimal_d_separated(collider_graph, 1, 0, 0)
 
 
 def test_minimal_d_separated(
