@@ -256,15 +256,16 @@ def d_separated(G, x, y, z):
 
 @not_implemented_for("undirected")
 @nx._dispatch
-def find_minimal_d_separator(G, x, y, *, i=None, r=None):
-    """Returns a minimal d-separating set between `x` and `y` if possible
+def find_minimal_d_separator(G, x, y, *, included=None, restricted=None):
+    """
+    Returns a minimal d-separating set between `x` and `y` if possible
 
-    A d-separating set in a DAG is a set of nodes that blocks all paths
-    between the two sets of nodes, `x` and `y`. This function
-    constructs a d-separating set that is "minimal", meaning it is the smallest
-    d-separating set for `x` and `y`. This is not necessarily
-    unique. In the case where there are no d-separating sets between `x` and
-    `y`, the function will return None.
+    A d-separating set in a DAG is a set of nodes that blocks all
+    paths between the two sets of nodes, `x` and `y`. This function
+    constructs a d-separating set that is "minimal", meaning it is the
+    smallest d-separating set for `x` and `y`. This is not necessarily
+    unique. In the case where there are no d-separating sets between `x`
+    and `y`, the function will return None.
 
     For more details, see Notes.
 
@@ -279,10 +280,10 @@ def find_minimal_d_separator(G, x, y, *, i=None, r=None):
         A node in the graph, or a set of nodes.
     y : set | node
         A node in the graph, or a set of nodes.
-    i : set | node | None
+    included : set | node | None
         A node or set of nodes which must be included in the found separating set,
         default is None, which is later set to empty set.
-    r : set | node | None
+    restricted : set | node | None
         Restricted node or set of nodes to consider. Only these nodes can be in
         the found separating set, default is None meaning all vertices in ``G``.
 
@@ -296,7 +297,7 @@ def find_minimal_d_separator(G, x, y, *, i=None, r=None):
     ------
     NetworkXError
         Raises a :exc:`NetworkXError` if the input graph is not a DAG
-        or if node sets `x`, `y`, and `i` are not disjoint.
+        or if node sets `x`, `y`, and `included` are not disjoint.
 
     NodeNotFound
         If any of the input nodes are not found in the graph,
@@ -317,7 +318,6 @@ def find_minimal_d_separator(G, x, y, *, i=None, r=None):
     is :math:`O(n^2)`, where :math:`n` stands for the
     number of nodes in the moralized graph of the sub-graph consisting
     of only the ancestors of `x` and `y`. For full details, see [1]_.
-
     """
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")
@@ -331,54 +331,56 @@ def find_minimal_d_separator(G, x, y, *, i=None, r=None):
     if y - G.nodes:
         raise nx.NodeNotFound(f"The node {y} is not found in G.")
 
-    if i is None:
-        i = set()
-    elif not isinstance(i, set):
-        i = {i}
-    if r is None:
-        r = set(G)
-    elif not isinstance(r, set):
-        r = {r}
-    set_y = x | y | i | r
+    if included is None:
+        included = set()
+    elif not isinstance(included, set):
+        included = {included}
+    if restricted is None:
+        restricted = set(G)
+    elif not isinstance(restricted, set):
+        restricted = {restricted}
+    set_y = x | y | included | restricted
     if set_y - G.nodes:
         raise nx.NodeNotFound(f"The node(s) {set_y - G.nodes} are not found in G")
-    if not i <= r:
+    if not included <= restricted:
         raise nx.NetworkError(
-            f"Minimal set {i} should be no larger than maximal set {r}"
+            f"Minimal set {included} should be no larger than maximal set {restricted}"
         )
 
-    if x & y or x & i or y & i:
-        raise nx.NetworkXError("node sets `x`, `y`, and `i` must be disjoint")
+    if x & y or x & included or y & included:
+        raise nx.NetworkXError("node sets `x`, `y`, and `included` must be disjoint")
 
     G_copy = G.copy()
 
-    nodeset = x.union(y).union(i)
+    nodeset = x.union(y).union(included)
 
     ancestor_nodes_G = nodeset.union(*[nx.ancestors(G_copy, node) for node in nodeset])
     G_p = G.subgraph(ancestor_nodes_G)
     aug_G_p = nx.moral_graph(G_p)
-    for node in i:
+    for node in included:
         aug_G_p.remove_node(node)
-    for node in i:
+    for node in included:
         aug_G_p.remove_node(node)
-    for node in i:
+    for node in included:
         G_p.remove_node(node)
 
     xy = x.union(y)
 
-    z_prime = r.intersection(set().union(*[nx.ancestors(G_copy, node) for node in xy]))
+    z_prime = restricted.intersection(
+        set().union(*[nx.ancestors(G_copy, node) for node in xy])
+    )
     z_dprime = _bfs_with_marks(aug_G_p, x, z_prime)
     z = _bfs_with_marks(aug_G_p, y, z_dprime)
 
     if not d_separated(G_p, x, y, z):
         return None
 
-    return z.union(i)
+    return z.union(included)
 
 
 @not_implemented_for("undirected")
 @nx._dispatch
-def minimal_d_separated(G, x, y, z, *, i=None, r=None):
+def minimal_d_separated(G, x, y, z, *, included=None, restricted=None):
     """
     Determine if `z` is a minimal d-separating set for `x` and `y`.
 
@@ -403,10 +405,10 @@ def minimal_d_separated(G, x, y, z, *, i=None, r=None):
         The node or set of nodes to check if it is a minimal d-separating set.
         The function :func:`d_separated` is called inside this function
         to verify that `z` is in fact a d-separator.
-    i : set
+    included : set
         Set of nodes which are always included in the found separating set,
         default is None, which is later set to empty set.
-    r : set
+    restricted : set
         Largest set of nodes which may be included in the found separating set,
 
     Returns
@@ -466,51 +468,54 @@ def minimal_d_separated(G, x, y, z, *, i=None, r=None):
     if z - G.nodes:
         raise nx.NodeNotFound(f"The node {z} is not found in G.")
 
-    if i is None:
-        i = set()
-    if r is None:
-        r = set(G.nodes())
+    if included is None:
+        included = set()
+    if restricted is None:
+        restricted = set(G.nodes())
 
-    set_y = x | y | z | i | r
+    set_y = x | y | z | included | restricted
     if set_y - G.nodes:
         raise nx.NodeNotFound(f"The node(s) {set_y - G.nodes} are not found in G")
 
-    if not i <= z:
+    if not included <= z:
         raise nx.NetworkXError(
-            f"Minimal set {i} should be no larger than proposed separating set {z}"
+            f"Minimal set {included} should be no larger than proposed separating set {z}"
         )
-    if not z <= r:
+    if not z <= restricted:
         raise nx.NetworkXError(
-            f"Separating set {z} should be no larger than maximum set {r}"
+            f"Separating set {z} should be no larger than maximum set {restricted}"
         )
 
-    xyi = x | y | i
+    xyincluded = x | y | included
 
-    if z - xyi.union(*[nx.ancestors(G, node) for node in xyi]) != set() or not z <= r:
+    if (
+        z - xyincluded.union(*[nx.ancestors(G, node) for node in xyincluded]) != set()
+        or not z <= restricted
+    ):
         return False
     if not d_separated(G, x, y, z):
         return False
 
     G_copy = G.copy()
 
-    nodeset = x.union(y).union(i)
+    nodeset = x.union(y).union(included)
 
     ancestor_nodes_G = nodeset.union(*[nx.ancestors(G_copy, node) for node in nodeset])
     aug_G_p = nx.moral_graph(G.subgraph(ancestor_nodes_G))
-    for node in i:
+    for node in included:
         aug_G_p.remove_node(node)
 
-    r_x = _bfs_with_marks(aug_G_p, x, z)
+    restricted_x = _bfs_with_marks(aug_G_p, x, z)
 
     # Note: we check z - i != r_x instead of z != r_x since
     # all nodes in i are removed from graph and so x will never have a path
     # to i. Appears to be bug in the original algorithm.
-    if z - i != r_x:
+    if z - included != restricted_x:
         return False
-    r_y = _bfs_with_marks(aug_G_p, y, z)
+    restricted_y = _bfs_with_marks(aug_G_p, y, z)
 
     # Note: we check z - i != r_y for similar reasons as above.
-    if z - i != r_y:
+    if z - included != restricted_y:
         return False
 
     return True
