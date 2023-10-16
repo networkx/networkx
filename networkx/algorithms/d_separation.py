@@ -402,11 +402,12 @@ def minimal_d_separated(G, x, y, z, *, included=None, restricted=None):
         The node or set of nodes to check if it is a minimal d-separating set.
         The function :func:`d_separated` is called inside this function
         to verify that `z` is in fact a d-separator.
-    included : set
-        Set of nodes which are always included in the found separating set,
+    included : set | node | None
+        A node or set of nodes which must be included in the found separating set,
         default is None, which is later set to empty set.
-    restricted : set
-        Largest set of nodes which may be included in the found separating set,
+    restricted : set | node | None
+        Restricted node or set of nodes to consider. Only these nodes can be in
+        the found separating set, default is None meaning all vertices in ``G``.
 
     Returns
     -------
@@ -467,8 +468,12 @@ def minimal_d_separated(G, x, y, z, *, included=None, restricted=None):
 
     if included is None:
         included = set()
+    elif not isinstance(included, set):
+        included = {included}
     if restricted is None:
         restricted = set(G.nodes())
+    elif not isinstance(restricted, set):
+        restricted = {restricted}
 
     set_y = x | y | z | included | restricted
     if set_y - G.nodes:
