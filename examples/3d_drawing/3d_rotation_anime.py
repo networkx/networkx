@@ -1,3 +1,11 @@
+"""
+================
+3D Rotating Graph Animation
+================
+
+3D spring plot.
+
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
