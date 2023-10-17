@@ -5,13 +5,14 @@
 
 3D spring plot.
 
+Animation is adapted from
+https://matplotlib.org/gallery/animation/basic_example.html
+https://sphinx-gallery.github.io/stable/auto_examples/plot_8_animations.html
+
 """
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-
-# Adapted from
-# https://matplotlib.org/gallery/animation/basic_example.html
+from matplotlib import animation
 
 
 def _update_line(num):
