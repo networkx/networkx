@@ -149,6 +149,7 @@ VoteRank
 
    voterank
 
+
 Laplacian
 ---------
 .. autosummary::
