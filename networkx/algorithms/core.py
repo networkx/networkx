@@ -69,6 +69,19 @@ def core_number(G):
         The k-core is not implemented for graphs with self loops
         or parallel edges.
 
+    Examples
+    --------
+    >>> complete_graph_5 = nx.complete_graph(5) # 5 core nodes
+    >>> graph_5 = nx.Graph() 
+    >>> graph_5.add_nodes_from(list(range(5,10))) # 5 peripheral nodes
+    >>> G=complete_graph_5.copy()
+    >>> p = 0.3
+    >>> for i in complete_graph_5.nodes():
+    >>>     for j in graph_5.nodes():
+    >>>         if random.random() < p: G.add_edge(i, j)
+    >>> nx.core_number(G)
+    {0: 4, 1: 4, 2: 4, 3: 4, 4: 4, 5: 2, 8: 3, 6: 2, 7: 4, 9: 1}
+    
     Notes
     -----
     Not implemented for graphs with parallel edges or self loops.
@@ -142,6 +155,7 @@ def _core_subgraph(G, k_filter, k=None, core=None):
     return G.subgraph(nodes).copy()
 
 
+@not_implemented_for("multigraph")
 @nx._dispatch(preserve_all_attrs=True)
 def k_core(G, k=None, core_number=None):
     """Returns the k-core of G.
@@ -167,6 +181,18 @@ def k_core(G, k=None, core_number=None):
     NetworkXError
       The k-core is not defined for graphs with self loops or parallel edges.
 
+    Examples
+    --------
+    >>> complete_graph_5 = nx.complete_graph(5) # 5 core nodes
+    >>> graph_5 = nx.Graph() 
+    >>> graph_5.add_nodes_from(list(range(5,10))) # 5 peripheral nodes
+    >>> G=complete_graph_5.copy()
+    >>> p = 0.3
+    >>> for i in complete_graph_5.nodes():
+    >>>     for j in graph_5.nodes():
+    >>>         if random.random() < p: G.add_edge(i, j)
+    >>> nx.k_core(G, k=4)
+    
     Notes
     -----
     The main core is the core with the largest degree.
@@ -195,6 +221,7 @@ def k_core(G, k=None, core_number=None):
     return _core_subgraph(G, k_filter, k, core_number)
 
 
+@not_implemented_for("multigraph")
 @nx._dispatch(preserve_all_attrs=True)
 def k_shell(G, k=None, core_number=None):
     """Returns the k-shell of G.
@@ -255,6 +282,7 @@ def k_shell(G, k=None, core_number=None):
     return _core_subgraph(G, k_filter, k, core_number)
 
 
+@not_implemented_for("multigraph")
 @nx._dispatch(preserve_all_attrs=True)
 def k_crust(G, k=None, core_number=None):
     """Returns the k-crust of G.
@@ -315,6 +343,7 @@ def k_crust(G, k=None, core_number=None):
     return G.subgraph(nodes).copy()
 
 
+@not_implemented_for("multigraph")
 @nx._dispatch(preserve_all_attrs=True)
 def k_corona(G, k, core_number=None):
     """Returns the k-corona of G.
