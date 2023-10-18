@@ -1033,7 +1033,7 @@ def simulated_annealing_tsp(
     Parameters
     ----------
     G : Graph
-        `G` should be a complete weighted undirected graph.
+        `G` should be a complete weighted graph.
         The distance between all pairs of nodes should be included.
 
     init_cycle : list of all nodes or "greedy"
@@ -1249,7 +1249,7 @@ def threshold_accepting_tsp(
     Parameters
     ----------
     G : Graph
-        `G` should be a complete weighted undirected graph.
+        `G` should be a complete weighted graph.
         The distance between all pairs of nodes should be included.
 
     init_cycle : list or "greedy"

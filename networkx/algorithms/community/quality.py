@@ -151,9 +151,10 @@ def modularity(G, communities, weight="weight", resolution=1):
         Q = \frac{1}{2m} \sum_{ij} \left( A_{ij} - \gamma\frac{k_ik_j}{2m}\right)
             \delta(c_i,c_j)
 
-    where $m$ is the number of edges, $A$ is the adjacency matrix of `G`,
-    $k_i$ is the degree of $i$, $\gamma$ is the resolution parameter,
-    and $\delta(c_i, c_j)$ is 1 if $i$ and $j$ are in the same community else 0.
+    where $m$ is the number of edges (or sum of all edge weights as in [5]_),
+    $A$ is the adjacency matrix of `G`, $k_i$ is the (weighted) degree of $i$,
+    $\gamma$ is the resolution parameter, and $\delta(c_i, c_j)$ is 1 if $i$ and
+    $j$ are in the same community else 0.
 
     According to [2]_ (and verified by some algebra) this can be reduced to
 
@@ -221,7 +222,9 @@ def modularity(G, communities, weight="weight", resolution=1):
     .. [4] M. E. J. Newman, "Equivalence between modularity optimization and
        maximum likelihood methods for community detection"
        Phys. Rev. E 94, 052315, 2016. https://doi.org/10.1103/PhysRevE.94.052315
-
+    .. [5] Blondel, V.D. et al. "Fast unfolding of communities in large
+       networks" J. Stat. Mech 10008, 1-12 (2008).
+       https://doi.org/10.1088/1742-5468/2008/10/P10008
     """
     if not isinstance(communities, list):
         communities = list(communities)

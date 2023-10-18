@@ -11,11 +11,14 @@ Highlights
 API Changes
 -----------
 
+- Remove ``topo_order`` kwarg from ``is_semiconnected`` without deprecation (`#6651 <https://github.com/networkx/networkx/pull/6651>`_).
 - deprecate Edmonds class (`#6785 <https://github.com/networkx/networkx/pull/6785>`_).
 - Make weight part of the API for functions which had default assumptions (`#6814 <https://github.com/networkx/networkx/pull/6814>`_).
 - ENH: let users set a default value in get_attr methods (`#6887 <https://github.com/networkx/networkx/pull/6887>`_).
+- Rename function ``join`` as ``join_trees`` (`#6908 <https://github.com/networkx/networkx/pull/6908>`_).
 - API: Add a decorator to deprecate positional args (`#6905 <https://github.com/networkx/networkx/pull/6905>`_).
 - Expire deprecation for ``attrs`` kwarg in node_link module (`#6939 <https://github.com/networkx/networkx/pull/6939>`_).
+- Minor touchup to the sort_neighbors deprecation (`#6942 <https://github.com/networkx/networkx/pull/6942>`_).
 - Rm deprecated ``create_using`` kwarg from scale_free_graph (`#6940 <https://github.com/networkx/networkx/pull/6940>`_).
 - Make position part of the API for geometric_edges (`#6816 <https://github.com/networkx/networkx/pull/6816>`_).
 - Undeprecate literal_(de)stringizer (`#6943 <https://github.com/networkx/networkx/pull/6943>`_).
@@ -87,6 +90,11 @@ Documentation
 - Add missing parameter to snap_aggregation docstring (`#6978 <https://github.com/networkx/networkx/pull/6978>`_).
 - Update developer deprecation todo list (`#6985 <https://github.com/networkx/networkx/pull/6985>`_).
 - Add "networkx.plugin_info" entry point and update docstring (`#6911 <https://github.com/networkx/networkx/pull/6911>`_).
+- document graph type; add links; rm unused import (`#6992 <https://github.com/networkx/networkx/pull/6992>`_).
+- Add GraphBLAS backend to online docs (`#6998 <https://github.com/networkx/networkx/pull/6998>`_).
+- Add 3.2rc0 release notes (`#6997 <https://github.com/networkx/networkx/pull/6997>`_).
+- Update release process for changelist (`#7005 <https://github.com/networkx/networkx/pull/7005>`_).
+- Update contributing guide for changelist workflow (`#7004 <https://github.com/networkx/networkx/pull/7004>`_).
 
 Maintenance
 -----------
@@ -144,6 +152,7 @@ Maintenance
 - Use trusted publisher (`#6988 <https://github.com/networkx/networkx/pull/6988>`_).
 - Prefer "backend" instead of "plugin" (`#6989 <https://github.com/networkx/networkx/pull/6989>`_).
 - CI: Pin scientific-python/upload-nightly-action to 0.2.0 (`#6993 <https://github.com/networkx/networkx/pull/6993>`_).
+- Support Python 3.12 (`#7009 <https://github.com/networkx/networkx/pull/7009>`_).
 
 Other
 -----
@@ -223,7 +232,7 @@ Other
 Contributors
 ------------
 
-63 authors added to this release (alphabetically):
+64 authors added to this release (alphabetically):
 
 - =510 (`@diohabara <https://github.com/diohabara>`_)
 - `@anthonimes <https://github.com/anthonimes>`_
@@ -237,6 +246,7 @@ Contributors
 - Adam Li (`@adam2392 <https://github.com/adam2392>`_)
 - Adam Richardson (`@AdamWRichardson <https://github.com/AdamWRichardson>`_)
 - AKSHAYA MADHURI (`@akshayamadhuri <https://github.com/akshayamadhuri>`_)
+- Alex Markham (`@Alex-Markham <https://github.com/Alex-Markham>`_)
 - Alimi Qudirah (`@Qudirah <https://github.com/Qudirah>`_)
 - Andreas Wilm (`@andreas-wilm <https://github.com/andreas-wilm>`_)
 - Anthony Labarre (`@alabarre <https://github.com/alabarre>`_)
