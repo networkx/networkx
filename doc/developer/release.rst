@@ -55,13 +55,13 @@ Release Process
     Assuming you are at the top-level of the ``documentation`` repo::
 
       # FIXME - use eol_banner.html
-      cp -a latest ../networkx-<major>.<minor>
+      cp -a latest ../networkx-${VERSION}
       git reset --hard <commit from last release>
-      mv ../networkx-<major>.<minor> .
+      mv ../networkx-${VERSION} .
       rm -rf stable
-      cp -rf networkx-<major>.<minor> stable
-      git add networkx-<major>.<minor> stable
-      git commit -m "Add <major>.<minor> docs"
+      cp -rf networkx-${VERSION} stable
+      git add networkx-${VERSION} stable
+      git commit -m "Add ${VERSION} docs"
       git push  # force push---be careful!
 
 - Update ``__version__`` in ``networkx/__init__.py``.
