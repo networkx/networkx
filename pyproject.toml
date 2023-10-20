@@ -170,7 +170,7 @@ networkx = ['tests/*.py']
 
 [tool.ruff]
 line-length = 88
-target-version = 'py39'
+target-version = 'py310'
 select = [
     'I',
     'UP',
