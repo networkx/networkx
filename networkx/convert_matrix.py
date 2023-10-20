@@ -426,7 +426,7 @@ def from_pandas_edgelist(
     attribute_data = []
     if edge_attr is True:
         attr_col_headings = [c for c in df.columns if c not in reserved_columns]
-    elif isinstance(edge_attr, (list, tuple)):
+    elif isinstance(edge_attr, list | tuple):
         attr_col_headings = edge_attr
     else:
         attr_col_headings = [edge_attr]
