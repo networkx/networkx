@@ -43,34 +43,6 @@ __all__ = [
 ]
 
 
-def from_pandas(df):
-    """
-    Create a NetworkX graph from a DataFrame.
-
-    Parameters:
-    df (pd.DataFrame): The DataFrame containing node data.
-
-    Examples:
-    ```python
-    import networkx as nx
-    import pandas as pd
-
-    # Create an empty graph
-    G = nx.Graph()
-
-    # Assume you have a DataFrame df with node data
-    # Update the graph by adding nodes and their attributes from the DataFrame
-    G.add_nodes_from((n, dict(d)) for n, d in df.iterrows())
-    ```
-
-    Returns:
-    G (nx.Graph): A NetworkX graph with nodes and attributes.
-    """
-    G = nx.Graph()
-    for n, d in df.iterrows():
-        G.add_node(n, **d.to_dict())
-    return G
-
 @nx._dispatch(edge_attrs="weight")
 def to_pandas_adjacency(
     G,
@@ -198,6 +170,13 @@ def from_pandas_adjacency(df, create_using=None):
 
     If `df` has a single data type for each entry it will be converted to an
     appropriate Python data type.
+
+    If you have node attributes stored in a separate dataframe `df_nodes`, you can load those attributes to the graph `G` using the following code:
+    
+    ```
+    df_nodes = pd.read_csv('node_attributes.csv')
+    G.add_nodes_from((n, dict(d)) for n, d in df_nodes.iterrows())
+    ```
 
     If `df` has a user-specified compound data type the names
     of the data fields will be used as attribute keys in the resulting
@@ -377,6 +356,13 @@ def from_pandas_edgelist(
         this column are used for the edge keys when adding edges if create_using
         is a multigraph.
 
+   If you have node attributes stored in a separate dataframe `df_nodes`, you can load those attributes to the graph `G` using the following code:
+    
+    ```
+    df_nodes = pd.read_csv('node_attributes.csv')
+    G.add_nodes_from((n, dict(d)) for n, d in df_nodes.iterrows())
+    ``` 
+    
     See Also
     --------
     to_pandas_edgelist
