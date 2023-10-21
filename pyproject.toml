@@ -6,7 +6,7 @@ requires = ['setuptools>=61.2']
 name = 'networkx'
 description = 'Python package for creating and manipulating graphs and networks'
 readme = 'README.rst'
-requires-python = '>=3.9'
+requires-python = '>=3.10'
 dynamic = ['version']
 keywords = [
     'Networks',
@@ -24,7 +24,6 @@ classifiers = [
     'License :: OSI Approved :: BSD License',
     'Operating System :: OS Independent',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
@@ -170,7 +169,7 @@ networkx = ['tests/*.py']
 
 [tool.ruff]
 line-length = 88
-target-version = 'py39'
+target-version = 'py310'
 select = [
     'I',
     'UP',
