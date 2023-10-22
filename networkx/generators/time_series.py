@@ -27,7 +27,7 @@ def visibility_graph(series):
     Parameters
     ----------
     series : Sequence[Number]
-       A Time Series sequence (iterable and slicable) of numeric values
+       A Time Series sequence (iterable and sliceable) of numeric values
        representing times.
 
     Returns

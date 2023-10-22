@@ -671,7 +671,7 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
 
     # Expand the given top-level blossom.
     def expandBlossom(b, endstage):
-        # This is an obnoxiously complicated recusive function for the sake of
+        # This is an obnoxiously complicated recursive function for the sake of
         # a stack-transformation.  So, we hack around the complexity by using
         # a trampoline pattern.  By yielding the arguments to each recursive
         # call, we keep the actual callstack flat.
@@ -787,7 +787,7 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
     # between vertex v and the base vertex. Keep blossom bookkeeping
     # consistent.
     def augmentBlossom(b, v):
-        # This is an obnoxiously complicated recusive function for the sake of
+        # This is an obnoxiously complicated recursive function for the sake of
         # a stack-transformation.  So, we hack around the complexity by using
         # a trampoline pattern.  By yielding the arguments to each recursive
         # call, we keep the actual callstack flat.
