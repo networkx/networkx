@@ -719,7 +719,10 @@ def test_draw_networkx_edge_label_multiedge():
     pos = {n: (n, n) for n in G}
     # with pytest.raises(nx.NetworkXError, match=exception_msg):
     text_items = nx.draw_networkx_edge_labels(
-        G, pos, edge_labels=edge_labels, rad=[0.1, 0.2]
+        G,
+        pos,
+        edge_labels=edge_labels,
+        connectionstyle=["arc3,rad=0.1", "arc3,rad=0.2"],
     )
     assert len(text_items) == 2
 
