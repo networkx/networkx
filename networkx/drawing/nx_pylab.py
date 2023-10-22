@@ -837,7 +837,7 @@ def draw_networkx_edges(
     # for directed graphs.
     # The `arrows` keyword can be used to override the default behavior
     if arrows is None:
-        use_linecollection = not G.is_directed()
+        use_linecollection = not (G.is_directed() or G.is_multigraph())
     else:
         if not isinstance(arrows, bool):
             raise TypeError(f"Argument `arrows` must be of type bool or None")
@@ -913,7 +913,7 @@ def draw_networkx_edges(
             raise nx.NetworkXError(
                 f"{len(connectionstyle)} connectionstyle inputs provided"
                 "are not enough as maximum edges per node pair in MultiGraph"
-                "is {max_multi_edges}"
+                f"is {max_multi_edges}"
             )
     else:
         edge_keys = [0] * len(edgelist)
@@ -1369,7 +1369,7 @@ def draw_networkx_edge_labels(
             raise nx.NetworkXError(
                 f"{len(connectionstyle)} connectionstyle inputs provided"
                 "are not enough as maximum edges per node pair in MultiGraph"
-                "is {max_multi_edges}"
+                f"is {max_multi_edges}"
             )
     else:
         edge_keys = [0] * len(edgelist)
