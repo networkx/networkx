@@ -908,13 +908,14 @@ def draw_networkx_edges(
     if len(edgelist[0]) == 3:
         # MultiGraph input
         edge_keys = [e[2] for e in edgelist]
-        max_multi_edges = max([e[2] for e in G.edges(keys=True)]) + 1
-        if len(connectionstyle) < max_multi_edges:
-            raise nx.NetworkXError(
-                f"{len(connectionstyle)} connectionstyle inputs provided"
-                "are not enough as maximum edges per node pair in MultiGraph"
-                "is {max_multi_edges}"
-            )
+        if len(connectionstyle) > 1:
+            max_multi_edges = max([e[2] for e in G.edges(keys=True)]) + 1
+            if len(connectionstyle) < max_multi_edges:
+                raise nx.NetworkXError(
+                    f"{len(connectionstyle)} connectionstyle inputs provided "
+                    "number of multiedges are not enough as maximum edges per node "
+                    f"pair in MultiGraph is {max_multi_edges}"
+                )
     else:
         edge_keys = [0] * len(edgelist)
 
