@@ -174,7 +174,7 @@ def from_pandas_adjacency(df, create_using=None):
     If you have node attributes stored in a separate dataframe `df_nodes`, you can load those attributes to the graph `G` using the following code:
     
     ```
-    df_nodes = pd.read_csv('node_attributes.csv')
+    df_nodes = pd.DataFrame({"node_id": [1, 2, 3], "attribute1": ["A", "B", "C"]})
     G.add_nodes_from((n, dict(d)) for n, d in df_nodes.iterrows())
     ```
 
@@ -359,7 +359,7 @@ def from_pandas_edgelist(
    If you have node attributes stored in a separate dataframe `df_nodes`, you can load those attributes to the graph `G` using the following code:
     
     ```
-    df_nodes = pd.read_csv('node_attributes.csv')
+    df_nodes = pd.DataFrame({"node_id": [1, 2, 3], "attribute1": ["A", "B", "C"]})
     G.add_nodes_from((n, dict(d)) for n, d in df_nodes.iterrows())
     ``` 
     
