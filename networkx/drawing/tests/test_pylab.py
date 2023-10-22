@@ -720,7 +720,8 @@ def test_draw_networkx_edges_multiedge_connectionstyle(G, n_edges):
     # Raises on insuficient connectionstyle length
     for conn_style in ["arc3,rad=0.1", ["arc3,rad=0.1", "arc3,rad=0.1"]]:
         if len(conn_style) < n_edges:
-            with pytest.raises(nx.NetworkXError, match="not enough as maximum edges"):
+            match = "need to supply at least the same number"
+            with pytest.raises(nx.NetworkXError, match=match):
                 nx.draw_networkx_edges(G, pos, connectionstyle=conn_style)
     conn_style = ["arc3,rad=0.1", "arc3,rad=0.1", "arc3,rad=0.2"]
     arrows = nx.draw_networkx_edges(G, pos, connectionstyle=conn_style)
@@ -744,7 +745,8 @@ def test_draw_networkx_edge_labels_multiedge_connectionstyle(G, n_edges):
     )
     for conn_style in ["arc3,rad=0.1", ["arc3,rad=0.1", "arc3,rad=0.2"]]:
         if len(conn_style) < n_edges:
-            with pytest.raises(nx.NetworkXError, match="not enough as maximum edges"):
+            match = "need to supply at least the same number"
+            with pytest.raises(nx.NetworkXError, match=match):
                 nx.draw_networkx_edge_labels(G, pos, connectionstyle=conn_style)
     conn_style = ["arc3,rad=0.1", "arc3,rad=0.1", "arc3,rad=0.1"]
     text_items = nx.draw_networkx_edge_labels(G, pos, connectionstyle=conn_style)
