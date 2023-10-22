@@ -707,9 +707,10 @@ def test_edgelist_kwarg_not_ignored():
 
 
 @pytest.mark.parametrize(
-    ("G", "n_edges"), ([nx.DiGraph(), 2], [nx.MultiGraph(), 4], [nx.MultiDiGraph(), 4])
+    ("G", "expected_n_edges"),
+    ([nx.DiGraph(), 2], [nx.MultiGraph(), 4], [nx.MultiDiGraph(), 4]),
 )
-def test_draw_networkx_edges_multiedge_connectionstyle(G, n_edges):
+def test_draw_networkx_edges_multiedge_connectionstyle(G, expected_n_edges):
     """Raises error on insuficient connectionstyle length
     Pass on correct length
     Draws edges correctly for 3 types of graphs
@@ -719,19 +720,20 @@ def test_draw_networkx_edges_multiedge_connectionstyle(G, n_edges):
     pos = {n: (n, n) for n in G}
     # Raises on insuficient connectionstyle length
     for conn_style in ["arc3,rad=0.1", ["arc3,rad=0.1", "arc3,rad=0.1"]]:
-        if len(conn_style) < n_edges:
+        if len(conn_style) < expected_n_edges:
             match = "need to supply at least the same number"
             with pytest.raises(nx.NetworkXError, match=match):
                 nx.draw_networkx_edges(G, pos, connectionstyle=conn_style)
     conn_style = ["arc3,rad=0.1", "arc3,rad=0.1", "arc3,rad=0.2"]
     arrows = nx.draw_networkx_edges(G, pos, connectionstyle=conn_style)
-    assert len(arrows) == n_edges
+    assert len(arrows) == expected_n_edges
 
 
 @pytest.mark.parametrize(
-    ("G", "n_edges"), ([nx.DiGraph(), 2], [nx.MultiGraph(), 4], [nx.MultiDiGraph(), 4])
+    ("G", "expected_n_edges"),
+    ([nx.DiGraph(), 2], [nx.MultiGraph(), 4], [nx.MultiDiGraph(), 4]),
 )
-def test_draw_networkx_edge_labels_multiedge_connectionstyle(G, n_edges):
+def test_draw_networkx_edge_labels_multiedge_connectionstyle(G, expected_n_edges):
     """Raises error on insuficient connectionstyle length
     Pass on correct length
     Draws labels correctly for 3 types of graphs
@@ -744,13 +746,13 @@ def test_draw_networkx_edge_labels_multiedge_connectionstyle(G, n_edges):
         G, pos, connectionstyle=["arc3,rad=0.1", "arc3,rad=0.1", "arc3,rad=0.1"]
     )
     for conn_style in ["arc3,rad=0.1", ["arc3,rad=0.1", "arc3,rad=0.2"]]:
-        if len(conn_style) < n_edges:
+        if len(conn_style) < expected_n_edges:
             match = "need to supply at least the same number"
             with pytest.raises(nx.NetworkXError, match=match):
                 nx.draw_networkx_edge_labels(G, pos, connectionstyle=conn_style)
     conn_style = ["arc3,rad=0.1", "arc3,rad=0.1", "arc3,rad=0.1"]
     text_items = nx.draw_networkx_edge_labels(G, pos, connectionstyle=conn_style)
-    assert len(text_items) == n_edges
+    assert len(text_items) == expected_n_edges
     for ti in text_items.values():
         assert ti.__class__.__name__ == "CurvedArrowText"
 
