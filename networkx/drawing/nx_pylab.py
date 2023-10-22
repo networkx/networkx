@@ -1390,7 +1390,7 @@ def draw_networkx_edge_labels(
             posA = ax.transData.transform(pos[n1])
             path = connectionstyle_obj(posA, posA)
             path_inv = ax.transData.inverted().transform_path(path)
-            x, y = path_inv._vertices[0]
+            x, y = path_inv.vertices[0]
             text_items[edge] = ax.text(
                 x,
                 y,
