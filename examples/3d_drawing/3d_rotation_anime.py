@@ -32,6 +32,7 @@ plt.show()
 #
 # Test animation plot for testing doc generation for animation.
 
+
 def _update_line(num):
     line.set_data(data[..., :num])
     return (line,)
