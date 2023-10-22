@@ -482,10 +482,11 @@ class FancyArrowFactory:
             self.base_connection_styles = [
                 mpl.patches.ConnectionStyle(cs) for cs in connectionstyles
             ]
+            self.n = len(self.base_connection_styles)
             self.selfloop_height = selfloop_height
 
         def curved(self, edge_key):
-            return self.base_connection_styles[edge_key]
+            return self.base_connection_styles[edge_key % self.n]
 
         def self_loop(self, edge_key):
             def self_loop_connection(posA, posB, *args, **kwargs):
@@ -911,13 +912,6 @@ def draw_networkx_edges(
     if len(edgelist[0]) == 3:
         # MultiGraph input
         edge_keys = [e[2] for e in edgelist]
-        max_multi_edges = max([e[2] for e in edgelist]) + 1
-        if len(connectionstyle) < max_multi_edges:
-            raise nx.NetworkXError(
-                f"\n\nconnectionstyle inputs provided - {len(connectionstyle)}.\n"
-                f"Maximum edges per node pair - {max_multi_edges}.\n"
-                "While, need to supply at least the same number.\n"
-            )
     else:
         edge_keys = [0] * len(edgelist)
 
@@ -1368,13 +1362,6 @@ def draw_networkx_edge_labels(
     if len(edgelist[0]) == 3:
         # MultiGraph input
         edge_keys = [e[2] for e in edgelist]
-        max_multi_edges = max([e[2] for e in edgelist]) + 1
-        if len(connectionstyle) < max_multi_edges:
-            raise nx.NetworkXError(
-                f"\n\nconnectionstyle inputs provided - {len(connectionstyle)}.\n"
-                f"Maximum edges per node pair - {max_multi_edges}.\n"
-                "While, need to supply at least the same number.\n"
-            )
     else:
         edge_keys = [0] * len(edgelist)
 
