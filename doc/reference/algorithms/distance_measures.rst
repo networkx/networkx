@@ -10,7 +10,7 @@ Distance Measures
    center
    diameter
    eccentricity
-   extrema_bounding
+   kemeny_constant
    periphery
    radius
    resistance_distance

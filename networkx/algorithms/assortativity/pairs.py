@@ -1,7 +1,10 @@
 """Generators of  x-y pairs of node data."""
+import networkx as nx
+
 __all__ = ["node_attribute_xy", "node_degree_xy"]
 
 
+@nx._dispatch(node_attrs="attribute")
 def node_attribute_xy(G, attribute, nodes=None):
     """Returns iterator of node-attribute pairs for all edges in G.
 
@@ -48,14 +51,15 @@ def node_attribute_xy(G, attribute, nodes=None):
         if G.is_multigraph():
             for v, keys in nbrsdict.items():
                 vattr = Gnodes[v].get(attribute, None)
-                for k, d in keys.items():
+                for _ in keys:
                     yield (uattr, vattr)
         else:
-            for v, eattr in nbrsdict.items():
+            for v in nbrsdict:
                 vattr = Gnodes[v].get(attribute, None)
                 yield (uattr, vattr)
 
 
+@nx._dispatch(edge_attrs="weight")
 def node_degree_xy(G, x="out", y="in", weight=None, nodes=None):
     """Generate node degree-degree pairs for edges in G.
 
@@ -99,10 +103,7 @@ def node_degree_xy(G, x="out", y="in", weight=None, nodes=None):
     representation (u, v) and (v, u), with the exception of self-loop edges
     which only appear once.
     """
-    if nodes is None:
-        nodes = set(G)
-    else:
-        nodes = set(nodes)
+    nodes = set(G) if nodes is None else set(nodes)
     if G.is_directed():
         direction = {"out": G.out_degree, "in": G.in_degree}
         xdeg = direction[x]
@@ -113,5 +114,5 @@ def node_degree_xy(G, x="out", y="in", weight=None, nodes=None):
     for u, degu in xdeg(nodes, weight=weight):
         # use G.edges to treat multigraphs correctly
         neighbors = (nbr for _, nbr in G.edges(u) if nbr in nodes)
-        for v, degv in ydeg(neighbors, weight=weight):
+        for _, degv in ydeg(neighbors, weight=weight):
             yield degu, degv

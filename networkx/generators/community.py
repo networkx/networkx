@@ -1,9 +1,9 @@
 """Generators for classes of graphs used in studying social networks."""
 import itertools
 import math
+
 import networkx as nx
 from networkx.utils import py_random_state
-
 
 __all__ = [
     "caveman_graph",
@@ -19,6 +19,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch(graphs=None)
 def caveman_graph(l, k):
     """Returns a caveman graph of `l` cliques of size `k`.
 
@@ -65,6 +66,7 @@ def caveman_graph(l, k):
     return G
 
 
+@nx._dispatch(graphs=None)
 def connected_caveman_graph(l, k):
     """Returns a connected caveman graph of `l` cliques of size `k`.
 
@@ -119,6 +121,7 @@ def connected_caveman_graph(l, k):
 
 
 @py_random_state(3)
+@nx._dispatch(graphs=None)
 def relaxed_caveman_graph(l, k, p, seed=None):
     """Returns a relaxed caveman graph.
 
@@ -132,7 +135,7 @@ def relaxed_caveman_graph(l, k, p, seed=None):
     k : int
       Size of cliques
     p : float
-      Probabilty of rewiring each edge.
+      Probability of rewiring each edge.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
@@ -159,7 +162,7 @@ def relaxed_caveman_graph(l, k, p, seed=None):
     """
     G = nx.caveman_graph(l, k)
     nodes = list(G)
-    for (u, v) in G.edges():
+    for u, v in G.edges():
         if seed.random() < p:  # rewire the edge
             x = seed.choice(nodes)
             if G.has_edge(u, x):
@@ -170,6 +173,7 @@ def relaxed_caveman_graph(l, k, p, seed=None):
 
 
 @py_random_state(3)
+@nx._dispatch(graphs=None)
 def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
     """Returns the random partition graph with a partition of sizes.
 
@@ -248,6 +252,7 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
 
 
 @py_random_state(4)
+@nx._dispatch(graphs=None)
 def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
     """Returns the planted l-partition graph.
 
@@ -303,6 +308,7 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
 
 
 @py_random_state(6)
+@nx._dispatch(graphs=None)
 def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False, seed=None):
     """Generate a Gaussian random partition graph.
 
@@ -320,7 +326,7 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False, seed=N
     v : float
       Shape parameter. The variance of cluster size distribution is s/v.
     p_in : float
-      Probabilty of intra cluster connection.
+      Probability of intra cluster connection.
     p_out : float
       Probability of inter cluster connection.
     directed : boolean, optional default=False
@@ -367,7 +373,7 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False, seed=N
     assigned = 0
     sizes = []
     while True:
-        size = int(seed.gauss(s, float(s) / v + 0.5))
+        size = int(seed.gauss(s, s / v + 0.5))
         if size < 1:  # how to handle 0 or negative sizes?
             continue
         if assigned + size >= n:
@@ -378,6 +384,7 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False, seed=N
     return random_partition_graph(sizes, p_in, p_out, seed=seed, directed=directed)
 
 
+@nx._dispatch(graphs=None)
 def ring_of_cliques(num_cliques, clique_size):
     """Defines a "ring of cliques" graph.
 
@@ -433,6 +440,7 @@ def ring_of_cliques(num_cliques, clique_size):
     return G
 
 
+@nx._dispatch(graphs=None)
 def windmill_graph(n, k):
     """Generate a windmill graph.
     A windmill graph is a graph of `n` cliques each of size `k` that are all
@@ -486,6 +494,7 @@ def windmill_graph(n, k):
 
 
 @py_random_state(3)
+@nx._dispatch(graphs=None)
 def stochastic_block_model(
     sizes, p, nodelist=None, seed=None, directed=False, selfloops=False, sparse=True
 ):
@@ -591,7 +600,7 @@ def stochastic_block_model(
         if len(nodelist) != len(set(nodelist)):
             raise nx.NetworkXException("nodelist contains duplicate.")
     else:
-        nodelist = range(0, sum(sizes))
+        nodelist = range(sum(sizes))
 
     # Setup the graph conditionally to the directed switch.
     block_range = range(len(sizes))
@@ -602,10 +611,10 @@ def stochastic_block_model(
         g = nx.Graph()
         block_iter = itertools.combinations_with_replacement(block_range, 2)
     # Split nodelist in a partition (list of sets).
-    size_cumsum = [sum(sizes[0:x]) for x in range(0, len(sizes) + 1)]
+    size_cumsum = [sum(sizes[0:x]) for x in range(len(sizes) + 1)]
     g.graph["partition"] = [
         set(nodelist[size_cumsum[x] : size_cumsum[x + 1]])
-        for x in range(0, len(size_cumsum) - 1)
+        for x in range(len(size_cumsum) - 1)
     ]
     # Setup nodes and graph name
     for block_id, nodes in enumerate(g.graph["partition"]):
@@ -799,6 +808,7 @@ def _generate_communities(degree_seq, community_sizes, mu, max_iters, seed):
 
 
 @py_random_state(11)
+@nx._dispatch(graphs=None)
 def LFR_benchmark_graph(
     n,
     tau1,
@@ -826,9 +836,9 @@ def LFR_benchmark_graph(
           case a suitable minimum degree will be found.
 
        ``max_degree`` can also be specified, otherwise it will be set to
-       ``n``. Each node *u* will have `\mu \mathrm{deg}(u)` edges
-       joining it to nodes in communities other than its own and `(1 -
-       \mu) \mathrm{deg}(u)` edges joining it to nodes in its own
+       ``n``. Each node *u* will have $\mu \mathrm{deg}(u)$ edges
+       joining it to nodes in communities other than its own and $(1 -
+       \mu) \mathrm{deg}(u)$ edges joining it to nodes in its own
        community.
     2) Generate community sizes according to a power law distribution
        with exponent ``tau2``. If ``min_community`` and
@@ -837,12 +847,12 @@ def LFR_benchmark_graph(
        are generated until the sum of their sizes equals ``n``.
     3) Each node will be randomly assigned a community with the
        condition that the community is large enough for the node's
-       intra-community degree, `(1 - \mu) \mathrm{deg}(u)` as
+       intra-community degree, $(1 - \mu) \mathrm{deg}(u)$ as
        described in step 2. If a community grows too large, a random node
        will be selected for reassignment to a new community, until all
        nodes have been assigned a community.
-    4) Each node *u* then adds `(1 - \mu) \mathrm{deg}(u)`
-       intra-community edges and `\mu \mathrm{deg}(u)` inter-community
+    4) Each node *u* then adds $(1 - \mu) \mathrm{deg}(u)$
+       intra-community edges and $\mu \mathrm{deg}(u)$ inter-community
        edges.
 
     Parameters

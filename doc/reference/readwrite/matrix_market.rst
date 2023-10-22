@@ -22,7 +22,6 @@ Reading and writing graphs using Matrix Market's **array format** for dense
 matrices::
 
     >>> import scipy as sp
-    >>> import scipy.io  # for mmread() and mmwrite()
     >>> import io  # Use BytesIO as a stand-in for a Python file object
     >>> fh = io.BytesIO()
 
@@ -67,12 +66,11 @@ Reading and writing graphs using Matrix Market's **coordinate format** for
 sparse matrices::
 
     >>> import scipy as sp
-    >>> import scipy.io  # for mmread() and mmwrite()
     >>> import io  # Use BytesIO as a stand-in for a Python file object
     >>> fh = io.BytesIO()
 
     >>> G = nx.path_graph(5)
-    >>> m = nx.to_scipy_sparse_matrix(G)
+    >>> m = nx.to_scipy_sparse_array(G)
     >>> print(m)
       (0, 1)        1
       (1, 0)        1
@@ -95,6 +93,6 @@ sparse matrices::
 
     >>> # Read from file
     >>> fh.seek(0)
-    >>> H = nx.from_scipy_sparse_matrix(sp.io.mmread(fh))
+    >>> H = nx.from_scipy_sparse_array(sp.io.mmread(fh))
     >>> H.edges() == G.edges()
     True

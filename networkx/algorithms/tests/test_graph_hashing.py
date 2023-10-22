@@ -1,6 +1,7 @@
-from networkx.generators import directed
 import pytest
+
 import networkx as nx
+from networkx.generators import directed
 
 # Unit tests for the :func:`~networkx.weisfeiler_lehman_graph_hash` function
 
@@ -455,7 +456,7 @@ def test_missing_node_attr_subgraph_hash():
     )
 
 
-def test_isomorphic_edge_attr_and_node_attr():
+def test_isomorphic_edge_attr_and_node_attr_subgraph_hash():
     """
     Isomorphic graphs with differing node attributes should yield different subgraph
     hashes if the 'node_attr' and 'edge_attr' argument is supplied and populated in

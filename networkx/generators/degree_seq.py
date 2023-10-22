@@ -2,14 +2,12 @@
 """
 
 import heapq
-from itertools import chain
-from itertools import combinations
-from itertools import zip_longest
 import math
+from itertools import chain, combinations, zip_longest
 from operator import itemgetter
 
 import networkx as nx
-from networkx.utils import random_weighted_sample, py_random_state
+from networkx.utils import py_random_state, random_weighted_sample
 
 __all__ = [
     "configuration_model",
@@ -126,6 +124,7 @@ def _configuration_model(
 
 
 @py_random_state(2)
+@nx._dispatch(graphs=None)
 def configuration_model(deg_sequence, create_using=None, seed=None):
     """Returns a random graph with the given degree sequence.
 
@@ -228,6 +227,7 @@ def configuration_model(deg_sequence, create_using=None, seed=None):
 
 
 @py_random_state(3)
+@nx._dispatch(graphs=None)
 def directed_configuration_model(
     in_degree_sequence, out_degree_sequence, create_using=None, seed=None
 ):
@@ -330,6 +330,7 @@ def directed_configuration_model(
 
 
 @py_random_state(1)
+@nx._dispatch(graphs=None)
 def expected_degree_graph(w, seed=None, selfloops=True):
     r"""Returns a random graph with given expected degrees.
 
@@ -428,7 +429,7 @@ def expected_degree_graph(w, seed=None, selfloops=True):
         while v < n and p > 0:
             if p != 1:
                 r = seed.random()
-                v += int(math.floor(math.log(r, 1 - p)))
+                v += math.floor(math.log(r, 1 - p))
             if v < n:
                 q = min(seq[v] * factor, 1)
                 if seed.random() < q / p:
@@ -438,6 +439,7 @@ def expected_degree_graph(w, seed=None, selfloops=True):
     return G
 
 
+@nx._dispatch(graphs=None)
 def havel_hakimi_graph(deg_sequence, create_using=None):
     """Returns a simple graph with given degree sequence constructed
     using the Havel-Hakimi algorithm.
@@ -530,6 +532,7 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def directed_havel_hakimi_graph(in_deg_sequence, out_deg_sequence, create_using=None):
     """Returns a directed graph with the given degree sequences.
 
@@ -641,6 +644,7 @@ def directed_havel_hakimi_graph(in_deg_sequence, out_deg_sequence, create_using=
     return G
 
 
+@nx._dispatch(graphs=None)
 def degree_sequence_tree(deg_sequence, create_using=None):
     """Make a tree for the given degree sequence.
 
@@ -687,6 +691,7 @@ def degree_sequence_tree(deg_sequence, create_using=None):
 
 
 @py_random_state(1)
+@nx._dispatch(graphs=None)
 def random_degree_sequence_graph(sequence, seed=None, tries=10):
     r"""Returns a simple random graph with the given degree sequence.
 
@@ -805,7 +810,7 @@ class DegreeSequenceRandomGraph:
 
     def q(self, u, v):
         # remaining degree probability
-        norm = float(max(self.remaining_degree.values())) ** 2
+        norm = max(self.remaining_degree.values()) ** 2
         return self.remaining_degree[u] * self.remaining_degree[v] / norm
 
     def suitable_edge(self):
@@ -820,7 +825,7 @@ class DegreeSequenceRandomGraph:
     def phase1(self):
         # choose node pairs from (degree) weighted distribution
         rem_deg = self.remaining_degree
-        while sum(rem_deg.values()) >= 2 * self.dmax ** 2:
+        while sum(rem_deg.values()) >= 2 * self.dmax**2:
             u, v = sorted(random_weighted_sample(rem_deg, 2, self.rng))
             if self.graph.has_edge(u, v):
                 continue
@@ -834,7 +839,7 @@ class DegreeSequenceRandomGraph:
         rng = self.rng
         while len(remaining_deg) >= 2 * self.dmax:
             while True:
-                u, v = sorted(rng.sample(remaining_deg.keys(), 2))
+                u, v = sorted(rng.sample(list(remaining_deg.keys()), 2))
                 if self.graph.has_edge(u, v):
                     continue
                 if rng.random() < self.q(u, v):

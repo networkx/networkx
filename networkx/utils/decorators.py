@@ -1,24 +1,28 @@
+import bz2
+import collections
+import gzip
+import inspect
+import itertools
+import re
+import warnings
 from collections import defaultdict
-from os.path import splitext
 from contextlib import contextmanager
+from functools import wraps
+from inspect import Parameter, signature
+from os.path import splitext
 from pathlib import Path
 
 import networkx as nx
-from networkx.utils import create_random_state, create_py_random_state
-
-import inspect, itertools, collections
-
-import re, gzip, bz2
+from networkx.utils import create_py_random_state, create_random_state
 
 __all__ = [
     "not_implemented_for",
     "open_file",
     "nodes_or_number",
-    "preserve_random_state",
-    "random_state",
     "np_random_state",
     "py_random_state",
     "argmap",
+    "deprecate_positional_args",
 ]
 
 
@@ -75,8 +79,8 @@ def not_implemented_for(*graph_types):
         )
 
     # 3-way logic: True if "directed" input, False if "undirected" input, else None
-    dval = ("directed" in graph_types) or not ("undirected" in graph_types) and None
-    mval = ("multigraph" in graph_types) or not ("graph" in graph_types) and None
+    dval = ("directed" in graph_types) or "undirected" not in graph_types and None
+    mval = ("multigraph" in graph_types) or "graph" not in graph_types and None
     errmsg = f"not implemented for {' '.join(graph_types)} type"
 
     def _not_implemented_for(g):
@@ -92,10 +96,12 @@ def not_implemented_for(*graph_types):
 
 # To handle new extensions, define a function accepting a `path` and `mode`.
 # Then add the extension to _dispatch_dict.
-_dispatch_dict = defaultdict(lambda: open)
-_dispatch_dict[".gz"] = gzip.open
-_dispatch_dict[".bz2"] = bz2.BZ2File
-_dispatch_dict[".gzip"] = gzip.open
+fopeners = {
+    ".gz": gzip.open,
+    ".gzip": gzip.open,
+    ".bz2": bz2.BZ2File,
+}
+_dispatch_dict = defaultdict(lambda: open, **fopeners)
 
 
 def open_file(path_arg, mode="r"):
@@ -243,8 +249,7 @@ def nodes_or_number(which_args):
             nodes = tuple(n)
         else:
             if n < 0:
-                msg = "Negative number of nodes not valid: {n}"
-                raise nx.NetworkXError(msg)
+                raise nx.NetworkXError(f"Negative number of nodes not valid: {n}")
         return (n, nodes)
 
     try:
@@ -253,62 +258,6 @@ def nodes_or_number(which_args):
         iter_wa = (which_args,)
 
     return argmap(_nodes_or_number, *iter_wa)
-
-
-def preserve_random_state(func):
-    """Decorator to preserve the numpy.random state during a function.
-
-    .. deprecated:: 2.6
-        This is deprecated and will be removed in NetworkX v3.0.
-
-    Parameters
-    ----------
-    func : function
-        function around which to preserve the random state.
-
-    Returns
-    -------
-    wrapper : function
-        Function which wraps the input function by saving the state before
-        calling the function and restoring the function afterward.
-
-    Examples
-    --------
-    Decorate functions like this::
-
-        @preserve_random_state
-        def do_random_stuff(x, y):
-            return x + y * numpy.random.random()
-
-    Notes
-    -----
-    If numpy.random is not importable, the state is not saved or restored.
-    """
-    import warnings
-
-    msg = "preserve_random_state is deprecated and will be removed in 3.0."
-    warnings.warn(msg, DeprecationWarning)
-
-    try:
-        import numpy as np
-
-        @contextmanager
-        def save_random_state():
-            state = np.random.get_state()
-            try:
-                yield
-            finally:
-                np.random.set_state(state)
-
-        def wrapper(*args, **kwargs):
-            with save_random_state():
-                np.random.seed(1234567890)
-                return func(*args, **kwargs)
-
-        wrapper.__name__ = func.__name__
-        return wrapper
-    except ImportError:
-        return func
 
 
 def np_random_state(random_state_argument):
@@ -353,27 +302,6 @@ def np_random_state(random_state_argument):
     py_random_state
     """
     return argmap(create_random_state, random_state_argument)
-
-
-def random_state(random_state_argument):
-    """Decorator to generate a `numpy.random.RandomState` instance.
-
-    .. deprecated:: 2.7
-
-       This function is a deprecated alias for `np_random_state` and will be
-       removed in version 3.0. Use np_random_state instead.
-    """
-    import warnings
-
-    warnings.warn(
-        (
-            "`random_state` is a deprecated alias for `np_random_state`\n"
-            "and will be removed in version 3.0. Use `np_random_state` instead."
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return np_random_state(random_state_argument)
 
 
 def py_random_state(random_state_argument):
@@ -461,6 +389,9 @@ class argmap:
         for the finally block created by `func`. This is used when the map
         function constructs an object (like a file handle) that requires
         post-processing (like closing).
+
+        Note: try_finally decorators cannot be used to decorate generator
+        functions.
 
     Examples
     --------
@@ -603,6 +534,38 @@ class argmap:
         def fancy_reader(file=None):
             # this code doesn't need to worry about closing the file
             print(file.read())
+
+    Decorators with try_finally = True cannot be used with generator functions,
+    because the `finally` block is evaluated before the generator is exhausted::
+
+        @argmap(open_file, "file", try_finally=True)
+        def file_to_lines(file):
+            for line in file.readlines():
+                yield line
+
+    is equivalent to::
+
+        def file_to_lines_wrapped(file):
+            for line in file.readlines():
+                yield line
+
+        def file_to_lines_wrapper(file):
+            try:
+                file = open_file(file)
+                return file_to_lines_wrapped(file)
+            finally:
+                file.close()
+
+    which behaves similarly to::
+
+        def file_to_lines_whoops(file):
+            file = open_file(file)
+            file.close()
+            for line in file.readlines():
+                yield line
+
+    because the `finally` block of `file_to_lines_wrapper` is executed before
+    the caller has a chance to exhaust the iterator.
 
     Notes
     -----
@@ -803,15 +766,8 @@ class argmap:
         argmap._lazy_compile
         """
 
-        if inspect.isgeneratorfunction(f):
-
-            def func(*args, __wrapper=None, **kwargs):
-                yield from argmap._lazy_compile(__wrapper)(*args, **kwargs)
-
-        else:
-
-            def func(*args, __wrapper=None, **kwargs):
-                return argmap._lazy_compile(__wrapper)(*args, **kwargs)
+        def func(*args, __wrapper=None, **kwargs):
+            return argmap._lazy_compile(__wrapper)(*args, **kwargs)
 
         # standard function-wrapping stuff
         func.__name__ = f.__name__
@@ -840,6 +796,14 @@ class argmap:
 
         # this is used to variously call self.assemble and self.compile
         func.__argmap__ = self
+
+        if hasattr(f, "__argmap__"):
+            func.__is_generator = f.__is_generator
+        else:
+            func.__is_generator = inspect.isgeneratorfunction(f)
+
+        if self._finally and func.__is_generator:
+            raise nx.NetworkXError("argmap cannot decorate generators with try_finally")
 
         return func
 
@@ -1160,12 +1124,7 @@ class argmap:
         fname = cls._name(f)
         def_sig = f'def {fname}({", ".join(def_sig)}):'
 
-        if inspect.isgeneratorfunction(f):
-            _return = "yield from"
-        else:
-            _return = "return"
-
-        call_sig = f"{_return} {{}}({', '.join(call_sig)})"
+        call_sig = f"return {{}}({', '.join(call_sig)})"
 
         return cls.Signature(fname, sig, def_sig, call_sig, names, npos, args, kwargs)
 
@@ -1252,3 +1211,60 @@ class argmap:
         for line in argmap._flatten(lines, set()):
             yield f"{argmap._tabs[:depth]}{line}"
             depth += (line[-1:] == ":") - (line[-1:] == "#")
+
+
+# Vendored in from https://github.com/scikit-learn/scikit-learn/blob/8ed0270b99344cee9bb253cbfa1d986561ea6cd7/sklearn/utils/validation.py#L37C1-L90C44
+def deprecate_positional_args(func=None, *, version):
+    """Decorator for methods that issues warnings for positional arguments.
+
+    Using the keyword-only argument syntax in pep 3102, arguments after the
+    * will issue a warning when passed as a positional argument.
+
+    Parameters
+    ----------
+    func : callable, default=None
+        Function to check arguments on.
+    version : callable, default="1.3"
+        The version when positional arguments will result in error.
+    """
+
+    def _inner_deprecate_positional_args(f):
+        sig = signature(f)
+        kwonly_args = []
+        all_args = []
+
+        for name, param in sig.parameters.items():
+            if param.kind == Parameter.POSITIONAL_OR_KEYWORD:
+                all_args.append(name)
+            elif param.kind == Parameter.KEYWORD_ONLY:
+                kwonly_args.append(name)
+
+        @wraps(f)
+        def inner_f(*args, **kwargs):
+            extra_args = len(args) - len(all_args)
+            if extra_args <= 0:
+                return f(*args, **kwargs)
+
+            # extra_args > 0
+            args_msg = [
+                f"{name}={arg}"
+                for name, arg in zip(kwonly_args[:extra_args], args[-extra_args:])
+            ]
+            args_msg = ", ".join(args_msg)
+            warnings.warn(
+                (
+                    f"Pass {args_msg} as keyword args. From NetworkX version "
+                    f"{version} passing these as positional arguments "
+                    "will result in an error"
+                ),
+                FutureWarning,
+            )
+            kwargs.update(zip(sig.parameters, args))
+            return f(**kwargs)
+
+        return inner_f
+
+    if func is not None:
+        return _inner_deprecate_positional_args(func)
+
+    return _inner_deprecate_positional_args

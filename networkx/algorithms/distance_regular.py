@@ -6,6 +6,7 @@ Distance-regular graphs
 
 import networkx as nx
 from networkx.utils import not_implemented_for
+
 from .distance_measures import diameter
 
 __all__ = [
@@ -16,6 +17,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 def is_distance_regular(G):
     """Returns True if the graph is distance regular, False otherwise.
 
@@ -108,6 +110,7 @@ def global_parameters(b, c):
 
 
 @not_implemented_for("directed", "multigraph")
+@nx._dispatch
 def intersection_array(G):
     """Returns the intersection array of a distance-regular graph.
 
@@ -177,6 +180,7 @@ def intersection_array(G):
 
 # TODO There is a definition for directed strongly regular graphs.
 @not_implemented_for("directed", "multigraph")
+@nx._dispatch
 def is_strongly_regular(G):
     """Returns True if and only if the given graph is strongly
     regular.

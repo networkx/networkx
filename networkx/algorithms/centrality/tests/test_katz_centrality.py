@@ -1,6 +1,7 @@
 import math
 
 import pytest
+
 import networkx as nx
 
 
@@ -30,7 +31,7 @@ class TestKatzCentrality:
 
     def test_maxiter(self):
         with pytest.raises(nx.PowerIterationFailedConvergence):
-            b = nx.katz_centrality(nx.path_graph(3), 0.1, max_iter=0)
+            nx.katz_centrality(nx.path_graph(3), 0.1, max_iter=0)
 
     def test_beta_as_scalar(self):
         alpha = 0.1
@@ -92,7 +93,7 @@ class TestKatzCentrality:
 
     def test_multigraph(self):
         with pytest.raises(nx.NetworkXException):
-            e = nx.katz_centrality(nx.MultiGraph(), 0.1)
+            nx.katz_centrality(nx.MultiGraph(), 0.1)
 
     def test_empty(self):
         e = nx.katz_centrality(nx.Graph(), 0.1)
@@ -102,12 +103,12 @@ class TestKatzCentrality:
         with pytest.raises(nx.NetworkXException):
             G = nx.Graph([(0, 1)])
             beta = {0: 77}
-            e = nx.katz_centrality(G, 0.1, beta=beta)
+            nx.katz_centrality(G, 0.1, beta=beta)
 
-    def test_bad_beta_numbe(self):
+    def test_bad_beta_number(self):
         with pytest.raises(nx.NetworkXException):
             G = nx.Graph([(0, 1)])
-            e = nx.katz_centrality(G, 0.1, beta="foo")
+            nx.katz_centrality(G, 0.1, beta="foo")
 
 
 class TestKatzCentralityNumpy:
@@ -126,7 +127,6 @@ class TestKatzCentralityNumpy:
         b_answer = dict.fromkeys(G, v)
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
-        nstart = {n: 1 for n in G}
         b = nx.eigenvector_centrality_numpy(G)
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=1e-3)
@@ -200,7 +200,7 @@ class TestKatzCentralityNumpy:
 
     def test_multigraph(self):
         with pytest.raises(nx.NetworkXException):
-            e = nx.katz_centrality(nx.MultiGraph(), 0.1)
+            nx.katz_centrality(nx.MultiGraph(), 0.1)
 
     def test_empty(self):
         e = nx.katz_centrality(nx.Graph(), 0.1)
@@ -210,12 +210,12 @@ class TestKatzCentralityNumpy:
         with pytest.raises(nx.NetworkXException):
             G = nx.Graph([(0, 1)])
             beta = {0: 77}
-            e = nx.katz_centrality_numpy(G, 0.1, beta=beta)
+            nx.katz_centrality_numpy(G, 0.1, beta=beta)
 
     def test_bad_beta_numbe(self):
         with pytest.raises(nx.NetworkXException):
             G = nx.Graph([(0, 1)])
-            e = nx.katz_centrality_numpy(G, 0.1, beta="foo")
+            nx.katz_centrality_numpy(G, 0.1, beta="foo")
 
     def test_K5_unweighted(self):
         """Katz centrality: K5"""
@@ -226,7 +226,6 @@ class TestKatzCentralityNumpy:
         b_answer = dict.fromkeys(G, v)
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
-        nstart = {n: 1 for n in G}
         b = nx.eigenvector_centrality_numpy(G, weight=None)
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=1e-3)
@@ -296,14 +295,14 @@ class TestKatzCentralityDirected:
         G = self.G
         alpha = self.G.alpha
         p = nx.katz_centrality(G, alpha, weight="weight")
-        for (a, b) in zip(list(p.values()), self.G.evc):
+        for a, b in zip(list(p.values()), self.G.evc):
             assert a == pytest.approx(b, abs=1e-7)
 
     def test_katz_centrality_unweighted(self):
         H = self.H
         alpha = self.H.alpha
         p = nx.katz_centrality(H, alpha, weight="weight")
-        for (a, b) in zip(list(p.values()), self.H.evc):
+        for a, b in zip(list(p.values()), self.H.evc):
             assert a == pytest.approx(b, abs=1e-7)
 
 
@@ -319,14 +318,14 @@ class TestKatzCentralityDirectedNumpy(TestKatzCentralityDirected):
         G = self.G
         alpha = self.G.alpha
         p = nx.katz_centrality_numpy(G, alpha, weight="weight")
-        for (a, b) in zip(list(p.values()), self.G.evc):
+        for a, b in zip(list(p.values()), self.G.evc):
             assert a == pytest.approx(b, abs=1e-7)
 
     def test_katz_centrality_unweighted(self):
         H = self.H
         alpha = self.H.alpha
         p = nx.katz_centrality_numpy(H, alpha, weight="weight")
-        for (a, b) in zip(list(p.values()), self.H.evc):
+        for a, b in zip(list(p.values()), self.H.evc):
             assert a == pytest.approx(b, abs=1e-7)
 
 
@@ -339,7 +338,7 @@ class TestKatzEigenvectorVKatz:
 
     def test_eigenvector_v_katz_random(self):
         G = nx.gnp_random_graph(10, 0.5, seed=1234)
-        l = float(max(np.linalg.eigvals(nx.adjacency_matrix(G).todense())))
+        l = max(np.linalg.eigvals(nx.adjacency_matrix(G).todense()))
         e = nx.eigenvector_centrality_numpy(G)
         k = nx.katz_centrality_numpy(G, 1.0 / l)
         for n in G:

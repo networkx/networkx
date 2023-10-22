@@ -12,16 +12,13 @@ Helper Functions
    :toctree: generated/
 
    arbitrary_element
-   is_string_like
    flatten
-   iterable
    make_list_of_ints
-   make_str
-   generate_unique_node
-   default_opener
+   dict_to_numpy_array
    pairwise
    groups
    create_random_state
+   create_py_random_state
    nodes_equal
    edges_equal
    graphs_equal
@@ -68,3 +65,24 @@ Cuthill-Mckee Ordering
 
    cuthill_mckee_ordering
    reverse_cuthill_mckee_ordering
+
+Mapped Queue
+------------
+.. automodule:: networkx.utils.mapped_queue
+.. autosummary::
+   :toctree: generated/
+
+   MappedQueue
+
+Backends
+--------
+.. note:: This is an experimental feature to dispatch your computations to an alternate
+   backend like `GraphBLAS <https://github.com/python-graphblas/graphblas-algorithms>`_
+   instead of using pure Python dictionaries for computation.
+   Things will change and break in the future!
+
+.. automodule:: networkx.utils.backends
+.. autosummary::
+   :toctree: generated/
+
+   _dispatch

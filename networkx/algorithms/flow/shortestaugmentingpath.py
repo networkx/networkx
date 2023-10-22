@@ -3,9 +3,11 @@ Shortest augmenting path algorithm for maximum flow problems.
 """
 
 from collections import deque
+
 import networkx as nx
-from .utils import build_residual_network, CurrentEdge
+
 from .edmondskarp import edmonds_karp_core
+from .utils import CurrentEdge, build_residual_network
 
 __all__ = ["shortest_augmenting_path"]
 
@@ -102,7 +104,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase, cutoff
     flow_value = 0
     path = [s]
     u = s
-    d = n if not two_phase else int(min(m ** 0.5, 2 * n ** (2.0 / 3)))
+    d = n if not two_phase else int(min(m**0.5, 2 * n ** (2.0 / 3)))
     done = R_nodes[s]["height"] >= d
     while not done:
         height = R_nodes[u]["height"]
@@ -161,6 +163,12 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase, cutoff
     return R
 
 
+@nx._dispatch(
+    graphs={"G": 0, "residual?": 4},
+    edge_attrs={"capacity": float("inf")},
+    preserve_edge_attrs={"residual": {"capacity": float("inf")}},
+    preserve_graph_attrs={"residual"},
+)
 def shortest_augmenting_path(
     G,
     s,

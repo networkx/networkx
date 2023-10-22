@@ -4,12 +4,11 @@
 # Copyright 2011 Diederik van Liere <diederik.vanliere@rotman.utoronto.ca>
 """Functions for analyzing triads of a graph."""
 
-from itertools import combinations, permutations
 from collections import defaultdict
-from random import sample
+from itertools import combinations, permutations
 
 import networkx as nx
-from networkx.utils import not_implemented_for
+from networkx.utils import not_implemented_for, py_random_state
 
 __all__ = [
     "triadic_census",
@@ -130,6 +129,7 @@ def _tricode(G, v, u, w):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def triadic_census(G, nodelist=None):
     """Determines the triadic census of a directed graph.
 
@@ -149,10 +149,40 @@ def triadic_census(G, nodelist=None):
     census : dict
        Dictionary with triad type as keys and number of occurrences as values.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 1), (3, 4), (4, 1), (4, 2)])
+    >>> triadic_census = nx.triadic_census(G)
+    >>> for key, value in triadic_census.items():
+    ...     print(f"{key}: {value}")
+    ...
+    003: 0
+    012: 0
+    102: 0
+    021D: 0
+    021U: 0
+    021C: 0
+    111D: 0
+    111U: 0
+    030T: 2
+    030C: 2
+    201: 0
+    120D: 0
+    120U: 0
+    120C: 0
+    210: 0
+    300: 0
+
     Notes
     -----
     This algorithm has complexity $O(m)$ where $m$ is the number of edges in
     the graph.
+
+    Raises
+    ------
+    ValueError
+        If `nodelist` contains duplicate nodes or nodes not in `G`.
+        If you want to ignore this you can preprocess with `set(nodelist) & G.nodes`
 
     See also
     --------
@@ -166,52 +196,87 @@ def triadic_census(G, nodelist=None):
         http://vlado.fmf.uni-lj.si/pub/networks/doc/triads/triads.pdf
 
     """
+    nodeset = set(G.nbunch_iter(nodelist))
+    if nodelist is not None and len(nodelist) != len(nodeset):
+        raise ValueError("nodelist includes duplicate nodes or nodes not in G")
+
+    N = len(G)
+    Nnot = N - len(nodeset)  # can signal special counting for subset of nodes
+
+    # create an ordering of nodes with nodeset nodes first
+    m = {n: i for i, n in enumerate(nodeset)}
+    if Nnot:
+        # add non-nodeset nodes later in the ordering
+        not_nodeset = G.nodes - nodeset
+        m.update((n, i + N) for i, n in enumerate(not_nodeset))
+
+    # build all_neighbor dicts for easy counting
+    # After Python 3.8 can leave off these keys(). Speedup also using G._pred
+    # nbrs = {n: G._pred[n].keys() | G._succ[n].keys() for n in G}
+    nbrs = {n: G.pred[n].keys() | G.succ[n].keys() for n in G}
+    dbl_nbrs = {n: G.pred[n].keys() & G.succ[n].keys() for n in G}
+
+    if Nnot:
+        sgl_nbrs = {n: G.pred[n].keys() ^ G.succ[n].keys() for n in not_nodeset}
+        # find number of edges not incident to nodes in nodeset
+        sgl = sum(1 for n in not_nodeset for nbr in sgl_nbrs[n] if nbr not in nodeset)
+        sgl_edges_outside = sgl // 2
+        dbl = sum(1 for n in not_nodeset for nbr in dbl_nbrs[n] if nbr not in nodeset)
+        dbl_edges_outside = dbl // 2
+
     # Initialize the count for each triad to be zero.
     census = {name: 0 for name in TRIAD_NAMES}
-    n = len(G)
-    # m = dict(zip(G, range(n)))
-    m = {v: i for i, v in enumerate(G)}
-    if nodelist is None:
-        nodelist = list(G.nodes())
-    for v in nodelist:
-        vnbrs = set(G.pred[v]) | set(G.succ[v])
+    # Main loop over nodes
+    for v in nodeset:
+        vnbrs = nbrs[v]
+        dbl_vnbrs = dbl_nbrs[v]
+        if Nnot:
+            # set up counts of edges attached to v.
+            sgl_unbrs_bdy = sgl_unbrs_out = dbl_unbrs_bdy = dbl_unbrs_out = 0
         for u in vnbrs:
             if m[u] <= m[v]:
                 continue
-            neighbors = (vnbrs | set(G.succ[u]) | set(G.pred[u])) - {u, v}
-            # Calculate dyadic triads instead of counting them.
-            if v in G[u] and u in G[v]:
-                census["102"] += n - len(neighbors) - 2
-            else:
-                census["012"] += n - len(neighbors) - 2
+            unbrs = nbrs[u]
+            neighbors = (vnbrs | unbrs) - {u, v}
             # Count connected triads.
             for w in neighbors:
-                if m[u] < m[w] or (
-                    m[v] < m[w] < m[u] and v not in G.pred[w] and v not in G.succ[w]
-                ):
+                if m[u] < m[w] or (m[v] < m[w] < m[u] and v not in nbrs[w]):
                     code = _tricode(G, v, u, w)
                     census[TRICODE_TO_NAME[code]] += 1
 
-    if len(nodelist) != len(G):
-        census["003"] = 0
-        for v in nodelist:
-            vnbrs = set(G.pred[v]) | set(G.succ[v])
-            not_vnbrs = G.nodes() - vnbrs - set(v)
-            triad_003_count = 0
-            for u in not_vnbrs:
-                unbrs = set(set(G.succ[u]) | set(G.pred[u])) - vnbrs
-                triad_003_count += len(not_vnbrs - unbrs) - 1
-            triad_003_count //= 2
-            census["003"] += triad_003_count
-    else:
-        # null triads = total number of possible triads - all found triads
-        #
-        # Use integer division here, since we know this formula guarantees an
-        # integral value.
-        census["003"] = ((n * (n - 1) * (n - 2)) // 6) - sum(census.values())
+            # Use a formula for dyadic triads with edge incident to v
+            if u in dbl_vnbrs:
+                census["102"] += N - len(neighbors) - 2
+            else:
+                census["012"] += N - len(neighbors) - 2
+
+            # Count edges attached to v. Subtract later to get triads with v isolated
+            # _out are (u,unbr) for unbrs outside boundary of nodeset
+            # _bdy are (u,unbr) for unbrs on boundary of nodeset (get double counted)
+            if Nnot and u not in nodeset:
+                sgl_unbrs = sgl_nbrs[u]
+                sgl_unbrs_bdy += len(sgl_unbrs & vnbrs - nodeset)
+                sgl_unbrs_out += len(sgl_unbrs - vnbrs - nodeset)
+                dbl_unbrs = dbl_nbrs[u]
+                dbl_unbrs_bdy += len(dbl_unbrs & vnbrs - nodeset)
+                dbl_unbrs_out += len(dbl_unbrs - vnbrs - nodeset)
+        # if nodeset == G.nodes, skip this b/c we will find the edge later.
+        if Nnot:
+            # Count edges outside nodeset not connected with v (v isolated triads)
+            census["012"] += sgl_edges_outside - (sgl_unbrs_out + sgl_unbrs_bdy // 2)
+            census["102"] += dbl_edges_outside - (dbl_unbrs_out + dbl_unbrs_bdy // 2)
+
+    # calculate null triads: "003"
+    # null triads = total number of possible triads - all found triads
+    total_triangles = (N * (N - 1) * (N - 2)) // 6
+    triangles_without_nodeset = (Nnot * (Nnot - 1) * (Nnot - 2)) // 6
+    total_census = total_triangles - triangles_without_nodeset
+    census["003"] = total_census - sum(census.values())
+
     return census
 
 
+@nx._dispatch
 def is_triad(G):
     """Returns True if the graph G is a triad, else False.
 
@@ -224,6 +289,15 @@ def is_triad(G):
     -------
     istriad : boolean
        Whether G is a valid triad
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
+    >>> nx.is_triad(G)
+    True
+    >>> G.add_edge(0, 1)
+    >>> nx.is_triad(G)
+    False
     """
     if isinstance(G, nx.Graph):
         if G.order() == 3 and nx.is_directed(G):
@@ -233,6 +307,7 @@ def is_triad(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def all_triplets(G):
     """Returns a generator of all possible sets of 3 nodes in a DiGraph.
 
@@ -245,12 +320,20 @@ def all_triplets(G):
     -------
     triplets : generator of 3-tuples
        Generator of tuples of 3 nodes
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
+    >>> list(nx.all_triplets(G))
+    [(1, 2, 3), (1, 2, 4), (1, 3, 4), (2, 3, 4)]
+
     """
     triplets = combinations(G.nodes(), 3)
     return triplets
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def all_triads(G):
     """A generator of all possible triads in G.
 
@@ -263,6 +346,17 @@ def all_triads(G):
     -------
     all_triads : generator of DiGraphs
        Generator of triads (order-3 DiGraphs)
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 1), (3, 4), (4, 1), (4, 2)])
+    >>> for triad in nx.all_triads(G):
+    ...     print(triad.edges)
+    [(1, 2), (2, 3), (3, 1)]
+    [(1, 2), (4, 1), (4, 2)]
+    [(3, 1), (3, 4), (4, 1)]
+    [(2, 3), (3, 4), (4, 2)]
+
     """
     triplets = combinations(G.nodes(), 3)
     for triplet in triplets:
@@ -270,8 +364,32 @@ def all_triads(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def triads_by_type(G):
     """Returns a list of all triads for each triad type in a directed graph.
+    There are exactly 16 different types of triads possible. Suppose 1, 2, 3 are three
+    nodes, they will be classified as a particular triad type if their connections
+    are as follows:
+
+    - 003: 1, 2, 3
+    - 012: 1 -> 2, 3
+    - 102: 1 <-> 2, 3
+    - 021D: 1 <- 2 -> 3
+    - 021U: 1 -> 2 <- 3
+    - 021C: 1 -> 2 -> 3
+    - 111D: 1 <-> 2 <- 3
+    - 111U: 1 <-> 2 -> 3
+    - 030T: 1 -> 2 -> 3, 1 -> 3
+    - 030C: 1 <- 2 <- 3, 1 -> 3
+    - 201: 1 <-> 2 <-> 3
+    - 120D: 1 <- 2 -> 3, 1 <-> 3
+    - 120U: 1 -> 2 <- 3, 1 <-> 3
+    - 120C: 1 -> 2 -> 3, 1 <-> 3
+    - 210: 1 -> 2 <-> 3, 1 <-> 3
+    - 300: 1 <-> 2 <-> 3, 1 <-> 3
+
+    Refer to the :doc:`example gallery </auto_examples/graph/plot_triad_types>`
+    for visual examples of the triad types.
 
     Parameters
     ----------
@@ -282,6 +400,21 @@ def triads_by_type(G):
     -------
     tri_by_type : dict
        Dictionary with triad types as keys and lists of triads as values.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 1), (5, 6), (5, 4), (6, 7)])
+    >>> dict = nx.triads_by_type(G)
+    >>> dict['120C'][0].edges()
+    OutEdgeView([(1, 2), (1, 3), (2, 3), (3, 1)])
+    >>> dict['012'][0].edges()
+    OutEdgeView([(1, 2)])
+
+    References
+    ----------
+    .. [1] Snijders, T. (2012). "Transitivity and triads." University of
+        Oxford.
+        https://web.archive.org/web/20170830032057/http://www.stats.ox.ac.uk/~snijders/Trans_Triads_ha.pdf
     """
     # num_triads = o * (o - 1) * (o - 2) // 6
     # if num_triads > TRIAD_LIMIT: print(WARNING)
@@ -294,6 +427,7 @@ def triads_by_type(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def triad_type(G):
     """Returns the sociological triad type for a triad.
 
@@ -306,6 +440,15 @@ def triad_type(G):
     -------
     triad_type : str
        A string identifying the triad type
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
+    >>> nx.triad_type(G)
+    '030C'
+    >>> G.add_edge(1, 3)
+    >>> nx.triad_type(G)
+    '120C'
 
     Notes
     -----
@@ -320,7 +463,7 @@ def triad_type(G):
 
     {m}     = number of mutual ties (takes 0, 1, 2, 3); a mutual tie is (0,1)
               AND (1,0)
-    {a}     = number of assymmetric ties (takes 0, 1, 2, 3); an assymmetric tie
+    {a}     = number of asymmetric ties (takes 0, 1, 2, 3); an asymmetric tie
               is (0,1) BUT NOT (1,0) or vice versa
     {n}     = number of null ties (takes 0, 1, 2, 3); a null tie is NEITHER
               (0,1) NOR (1,0)
@@ -352,7 +495,7 @@ def triad_type(G):
         elif e1[1] == e2[0] or e2[1] == e1[0]:
             return "021C"
     elif num_edges == 3:
-        for (e1, e2, e3) in permutations(G.edges(), 3):
+        for e1, e2, e3 in permutations(G.edges(), 3):
             if set(e1) == set(e2):
                 if e3[0] in e1:
                     return "111U"
@@ -364,7 +507,7 @@ def triad_type(G):
                 # e3 == (e1[0], e2[1]) and e2 == (e1[1], e3[1]):
                 return "030T"
     elif num_edges == 4:
-        for (e1, e2, e3, e4) in permutations(G.edges(), 4):
+        for e1, e2, e3, e4 in permutations(G.edges(), 4):
             if set(e1) == set(e2):
                 # identify pair of symmetric edges (which necessarily exists)
                 if set(e3) == set(e4):
@@ -382,77 +525,41 @@ def triad_type(G):
 
 
 @not_implemented_for("undirected")
-def random_triad(G):
+@py_random_state(1)
+@nx._dispatch
+def random_triad(G, seed=None):
     """Returns a random triad from a directed graph.
 
     Parameters
     ----------
     G : digraph
        A NetworkX DiGraph
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
     G2 : subgraph
        A randomly selected triad (order-3 NetworkX DiGraph)
+
+    Raises
+    ------
+    NetworkXError
+        If the input Graph has less than 3 nodes.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 1), (5, 6), (5, 4), (6, 7)])
+    >>> triad = nx.random_triad(G, seed=1)
+    >>> triad.edges
+    OutEdgeView([(1, 2)])
+
     """
-    nodes = sample(list(G.nodes()), 3)
+    if len(G) < 3:
+        raise nx.NetworkXError(
+            f"G needs at least 3 nodes to form a triad; (it has {len(G)} nodes)"
+        )
+    nodes = seed.sample(list(G.nodes()), 3)
     G2 = G.subgraph(nodes)
     return G2
-
-
-"""
-@not_implemented_for('undirected')
-def triadic_closures(G):
-    '''Returns a list of order-3 subgraphs of G that are triadic closures.
-
-    Parameters
-    ----------
-    G : digraph
-       A NetworkX DiGraph
-
-    Returns
-    -------
-    closures : list
-       List of triads of G that are triadic closures
-    '''
-    pass
-
-
-@not_implemented_for('undirected')
-def focal_closures(G, attr_name):
-    '''Returns a list of order-3 subgraphs of G that are focally closed.
-
-    Parameters
-    ----------
-    G : digraph
-       A NetworkX DiGraph
-    attr_name : str
-        An attribute name
-
-
-    Returns
-    -------
-    closures : list
-       List of triads of G that are focally closed on attr_name
-    '''
-    pass
-
-
-@not_implemented_for('undirected')
-def balanced_triads(G, crit_func):
-    '''Returns a list of order-3 subgraphs of G that are stable.
-
-    Parameters
-    ----------
-    G : digraph
-       A NetworkX DiGraph
-    crit_func : function
-       A function that determines if a triad (order-3 digraph) is stable
-
-    Returns
-    -------
-    triads : list
-       List of triads in G that are stable
-    '''
-    pass
-"""

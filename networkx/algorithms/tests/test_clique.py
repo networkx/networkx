@@ -1,4 +1,5 @@
 import pytest
+
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
 
@@ -33,24 +34,41 @@ class TestCliques:
         hcl = list(nx.find_cliques(self.H))
         assert sorted(map(sorted, hcl)) == [[1, 2], [1, 4, 5, 6], [2, 3], [3, 4, 6]]
 
-    def test_clique_number(self):
-        G = self.G
-        assert nx.graph_clique_number(G) == 4
-        assert nx.graph_clique_number(G, cliques=self.cl) == 4
+    def test_find_cliques3(self):
+        # all cliques are [[2, 6, 1, 3], [2, 6, 4], [5, 4, 7], [8, 9], [10, 11]]
 
-    def test_clique_number2(self):
-        G = nx.Graph()
-        G.add_nodes_from([1, 2, 3])
-        assert nx.graph_clique_number(G) == 1
+        cl = list(nx.find_cliques(self.G, [2]))
+        rcl = nx.find_cliques_recursive(self.G, [2])
+        expected = [[2, 6, 1, 3], [2, 6, 4]]
+        assert sorted(map(sorted, rcl)) == sorted(map(sorted, expected))
+        assert sorted(map(sorted, cl)) == sorted(map(sorted, expected))
 
-    def test_clique_number3(self):
-        G = nx.Graph()
-        assert nx.graph_clique_number(G) == 0
+        cl = list(nx.find_cliques(self.G, [2, 3]))
+        rcl = nx.find_cliques_recursive(self.G, [2, 3])
+        expected = [[2, 6, 1, 3]]
+        assert sorted(map(sorted, rcl)) == sorted(map(sorted, expected))
+        assert sorted(map(sorted, cl)) == sorted(map(sorted, expected))
+
+        cl = list(nx.find_cliques(self.G, [2, 6, 4]))
+        rcl = nx.find_cliques_recursive(self.G, [2, 6, 4])
+        expected = [[2, 6, 4]]
+        assert sorted(map(sorted, rcl)) == sorted(map(sorted, expected))
+        assert sorted(map(sorted, cl)) == sorted(map(sorted, expected))
+
+        cl = list(nx.find_cliques(self.G, [2, 6, 4]))
+        rcl = nx.find_cliques_recursive(self.G, [2, 6, 4])
+        expected = [[2, 6, 4]]
+        assert sorted(map(sorted, rcl)) == sorted(map(sorted, expected))
+        assert sorted(map(sorted, cl)) == sorted(map(sorted, expected))
+
+        with pytest.raises(ValueError):
+            list(nx.find_cliques(self.G, [2, 6, 4, 1]))
+
+        with pytest.raises(ValueError):
+            list(nx.find_cliques_recursive(self.G, [2, 6, 4, 1]))
 
     def test_number_of_cliques(self):
         G = self.G
-        assert nx.graph_number_of_cliques(G) == 5
-        assert nx.graph_number_of_cliques(G, cliques=self.cl) == 5
         assert nx.number_of_cliques(G, 1) == 1
         assert list(nx.number_of_cliques(G, [1]).values()) == [1]
         assert list(nx.number_of_cliques(G, [1, 2]).values()) == [1, 2]
@@ -143,36 +161,18 @@ class TestCliques:
             10: 2,
             11: 2,
         }
-
-    def test_cliques_containing_node(self):
-        G = self.G
-        assert nx.cliques_containing_node(G, 1) == [[2, 6, 1, 3]]
-        assert list(nx.cliques_containing_node(G, [1]).values()) == [[[2, 6, 1, 3]]]
-        assert [
-            sorted(c) for c in list(nx.cliques_containing_node(G, [1, 2]).values())
-        ] == [[[2, 6, 1, 3]], [[2, 6, 1, 3], [2, 6, 4]]]
-        result = nx.cliques_containing_node(G, [1, 2])
-        for k, v in result.items():
-            result[k] = sorted(v)
-        assert result == {1: [[2, 6, 1, 3]], 2: [[2, 6, 1, 3], [2, 6, 4]]}
-        assert nx.cliques_containing_node(G, 1) == [[2, 6, 1, 3]]
-        expected = [{2, 6, 1, 3}, {2, 6, 4}]
-        answer = [set(c) for c in nx.cliques_containing_node(G, 2)]
-        assert answer in (expected, list(reversed(expected)))
-
-        answer = [set(c) for c in nx.cliques_containing_node(G, 2, cliques=self.cl)]
-        assert answer in (expected, list(reversed(expected)))
-        assert len(nx.cliques_containing_node(G)) == 11
+        assert nx.node_clique_number(G, [1, 2], cliques=self.cl) == {1: 4, 2: 4}
+        assert nx.node_clique_number(G, 1, cliques=self.cl) == 4
 
     def test_make_clique_bipartite(self):
         G = self.G
         B = nx.make_clique_bipartite(G)
         assert sorted(B) == [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
         # Project onto the nodes of the original graph.
-        H = nx.project(B, range(1, 12))
+        H = nx.projected_graph(B, range(1, 12))
         assert H.adj == G.adj
         # Project onto the nodes representing the cliques.
-        H1 = nx.project(B, range(-5, 0))
+        H1 = nx.projected_graph(B, range(-5, 0))
         # Relabel the negative numbers as positive ones.
         H1 = nx.relabel_nodes(H1, {-v: v for v in range(1, 6)})
         assert sorted(H1) == [1, 2, 3, 4, 5]
@@ -186,7 +186,7 @@ class TestCliques:
         G = self.G
         B = nx.make_clique_bipartite(G)
         # Project onto the nodes representing the cliques.
-        H1 = nx.project(B, range(-5, 0))
+        H1 = nx.projected_graph(B, range(-5, 0))
         # Relabel the negative numbers as nonnegative ones, starting at
         # 0.
         H1 = nx.relabel_nodes(H1, {-v: v - 1 for v in range(1, 6)})
@@ -196,6 +196,17 @@ class TestCliques:
     def test_directed(self):
         with pytest.raises(nx.NetworkXNotImplemented):
             next(nx.find_cliques(nx.DiGraph()))
+
+    def test_find_cliques_trivial(self):
+        G = nx.Graph()
+        assert sorted(nx.find_cliques(G)) == []
+        assert sorted(nx.find_cliques_recursive(G)) == []
+
+    def test_make_max_clique_graph_create_using(self):
+        G = nx.Graph([(1, 2), (3, 1), (4, 1), (5, 6)])
+        E = nx.Graph([(0, 1), (0, 2), (1, 2)])
+        E.add_node(3)
+        assert nx.is_isomorphic(nx.make_max_clique_graph(G, create_using=nx.Graph), E)
 
 
 class TestEnumerateAllCliques:

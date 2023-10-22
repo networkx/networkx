@@ -1,6 +1,6 @@
 """Shortest paths and path lengths using the A* ("A star") algorithm.
 """
-from heapq import heappush, heappop
+from heapq import heappop, heappush
 from itertools import count
 
 import networkx as nx
@@ -9,6 +9,7 @@ from networkx.algorithms.shortest_paths.weighted import _weight_function
 __all__ = ["astar_path", "astar_path_length"]
 
 
+@nx._dispatch(edge_attrs="weight", preserve_node_attrs="heuristic")
 def astar_path(G, source, target, heuristic=None, weight="weight"):
     """Returns a list of nodes in a shortest path between source and target
     using the A* ("A-star") algorithm.
@@ -29,6 +30,12 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
        A function to evaluate the estimate of the distance
        from the a node to the target.  The function takes
        two nodes arguments and must return a number.
+       If the heuristic is inadmissible (if it might
+       overestimate the cost of reaching the goal from a node),
+       the result may not be a shortest path.
+       The algorithm does not support updating heuristic
+       values for the same node due to caching the first
+       heuristic calculation per node.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
@@ -40,7 +47,7 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
        returned by the function. The function must accept exactly three
        positional arguments: the two endpoints of an edge and the
        dictionary of edge attributes for that edge. The function must
-       return a number.
+       return a number or None to indicate a hidden edge.
 
     Raises
     ------
@@ -61,6 +68,14 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
     >>> print(nx.astar_path(G, (0, 0), (2, 2), heuristic=dist, weight="cost"))
     [(0, 0), (0, 1), (0, 2), (1, 2), (2, 2)]
 
+    Notes
+    -----
+    Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
+
+    The weight function can be used to hide edges by returning None.
+    So ``weight = lambda u, v, d: 1 if d['color']=="red" else None``
+    will find the shortest red path.
 
     See Also
     --------
@@ -79,6 +94,8 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
     push = heappush
     pop = heappop
     weight = _weight_function(G, weight)
+
+    G_succ = G._adj  # For speed-up (and works for both directed and undirected graphs)
 
     # The queue stores priority, node, cost to reach, and parent.
     # Uses Python heapq to keep in priority order.
@@ -120,8 +137,11 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
 
         explored[curnode] = parent
 
-        for neighbor, w in G[curnode].items():
-            ncost = dist + weight(curnode, neighbor, w)
+        for neighbor, w in G_succ[curnode].items():
+            cost = weight(curnode, neighbor, w)
+            if cost is None:
+                continue
+            ncost = dist + cost
             if neighbor in enqueued:
                 qcost, h = enqueued[neighbor]
                 # if qcost <= ncost, a less costly path from the
@@ -138,6 +158,7 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
     raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
 
 
+@nx._dispatch(edge_attrs="weight", preserve_node_attrs="heuristic")
 def astar_path_length(G, source, target, heuristic=None, weight="weight"):
     """Returns the length of the shortest path between source and target using
     the A* ("A-star") algorithm.
@@ -156,6 +177,12 @@ def astar_path_length(G, source, target, heuristic=None, weight="weight"):
        A function to evaluate the estimate of the distance
        from the a node to the target.  The function takes
        two nodes arguments and must return a number.
+       If the heuristic is inadmissible (if it might
+       overestimate the cost of reaching the goal from a node),
+       the result may not be a shortest path.
+       The algorithm does not support updating heuristic
+       values for the same node due to caching the first
+       heuristic calculation per node.
 
     weight : string or function
        If this is a string, then edge weights will be accessed via the
@@ -167,7 +194,7 @@ def astar_path_length(G, source, target, heuristic=None, weight="weight"):
        returned by the function. The function must accept exactly three
        positional arguments: the two endpoints of an edge and the
        dictionary of edge attributes for that edge. The function must
-       return a number.
+       return a number or None to indicate a hidden edge.
     Raises
     ------
     NetworkXNoPath

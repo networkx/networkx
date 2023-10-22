@@ -1,10 +1,12 @@
 """Unit tests for matplotlib drawing functions."""
-import os
 import itertools
+import os
+import warnings
 
 import pytest
 
 mpl = pytest.importorskip("matplotlib")
+np = pytest.importorskip("numpy")
 mpl.use("PS")
 plt = pytest.importorskip("matplotlib.pyplot")
 plt.rcParams["text.usetex"] = False
@@ -195,7 +197,7 @@ def test_more_edge_colors_than_num_edges_directed():
         assert mpl.colors.same_color(fap.get_edgecolor(), expected)
 
 
-def test_edge_color_string_with_gloabl_alpha_undirected():
+def test_edge_color_string_with_global_alpha_undirected():
     edge_collection = nx.draw_networkx_edges(
         barbell,
         pos=nx.random_layout(barbell),
@@ -395,6 +397,7 @@ def test_labels_and_colors():
         G,
         pos,
         edgelist=[(4, 5), (5, 6), (6, 7), (7, 4)],
+        arrows=True,
         min_source_margin=0.5,
         min_target_margin=0.75,
         width=8,
@@ -414,6 +417,32 @@ def test_labels_and_colors():
     nx.draw_networkx_edge_labels(G, pos, edge_labels=None, rotate=False)
     nx.draw_networkx_edge_labels(G, pos, edge_labels={(4, 5): "4-5"})
     # plt.show()
+
+
+@pytest.mark.mpl_image_compare
+def test_house_with_colors():
+    G = nx.house_graph()
+    # explicitly set positions
+    fig, ax = plt.subplots()
+    pos = {0: (0, 0), 1: (1, 0), 2: (0, 1), 3: (1, 1), 4: (0.5, 2.0)}
+
+    # Plot nodes with different properties for the "wall" and "roof" nodes
+    nx.draw_networkx_nodes(
+        G,
+        pos,
+        node_size=3000,
+        nodelist=[0, 1, 2, 3],
+        node_color="tab:blue",
+    )
+    nx.draw_networkx_nodes(
+        G, pos, node_size=2000, nodelist=[4], node_color="tab:orange"
+    )
+    nx.draw_networkx_edges(G, pos, alpha=0.5, width=6)
+    # Customize axes
+    ax.margins(0.11)
+    plt.tight_layout()
+    plt.axis("off")
+    return fig
 
 
 def test_axes():
@@ -458,18 +487,19 @@ def test_multigraph_edgelist_tuples():
 
 def test_alpha_iter():
     pos = nx.random_layout(barbell)
+    fig = plt.figure()
     # with fewer alpha elements than nodes
-    plt.subplot(131)
+    fig.add_subplot(131)  # Each test in a new axis object
     nx.draw_networkx_nodes(barbell, pos, alpha=[0.1, 0.2])
     # with equal alpha elements and nodes
     num_nodes = len(barbell.nodes)
     alpha = [x / num_nodes for x in range(num_nodes)]
     colors = range(num_nodes)
-    plt.subplot(132)
+    fig.add_subplot(132)
     nx.draw_networkx_nodes(barbell, pos, node_color=colors, alpha=alpha)
     # with more alpha elements than nodes
     alpha.append(1)
-    plt.subplot(133)
+    fig.add_subplot(133)
     nx.draw_networkx_nodes(barbell, pos, alpha=alpha)
 
 
@@ -502,7 +532,6 @@ def test_draw_edges_arrowsize(arrowsize):
 
 def test_np_edgelist():
     # see issue #4129
-    np = pytest.importorskip("numpy")
     nx.draw_networkx(barbell, edgelist=np.array([(0, 2), (0, 3)]))
 
 
@@ -615,8 +644,8 @@ def test_draw_edges_toggling_with_arrows_kwarg():
       - ``arrows=True`` -> FancyArrowPatches
       - ``arrows=False`` -> LineCollection
     """
-    import matplotlib.patches
     import matplotlib.collections
+    import matplotlib.patches
 
     UG = nx.path_graph(3)
     DG = nx.path_graph(3, create_using=nx.DiGraph)
@@ -674,4 +703,89 @@ def test_edgelist_kwarg_not_ignored():
     fig, ax = plt.subplots()
     nx.draw(G, edgelist=[(0, 1), (1, 2)], ax=ax)  # Exclude self-loop from edgelist
     assert not ax.patches
+    plt.delaxes(ax)
+
+
+def test_draw_networkx_edge_label_multiedge_exception():
+    """
+    draw_networkx_edge_labels should raise an informative error message when
+    the edge label includes keys
+    """
+    exception_msg = "draw_networkx_edge_labels does not support multiedges"
+    G = nx.MultiGraph()
+    G.add_edge(0, 1, weight=10)
+    G.add_edge(0, 1, weight=20)
+    edge_labels = nx.get_edge_attributes(G, "weight")  # Includes edge keys
+    pos = {n: (n, n) for n in G}
+    with pytest.raises(nx.NetworkXError, match=exception_msg):
+        nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
+
+
+def test_draw_networkx_edge_label_empty_dict():
+    """Regression test for draw_networkx_edge_labels with empty dict. See
+    gh-5372."""
+    G = nx.path_graph(3)
+    pos = {n: (n, n) for n in G.nodes}
+    assert nx.draw_networkx_edge_labels(G, pos, edge_labels={}) == {}
+
+
+def test_draw_networkx_edges_undirected_selfloop_colors():
+    """When an edgelist is supplied along with a sequence of colors, check that
+    the self-loops have the correct colors."""
+    fig, ax = plt.subplots()
+    # Edge list and corresponding colors
+    edgelist = [(1, 3), (1, 2), (2, 3), (1, 1), (3, 3), (2, 2)]
+    edge_colors = ["pink", "cyan", "black", "red", "blue", "green"]
+
+    G = nx.Graph(edgelist)
+    pos = {n: (n, n) for n in G.nodes}
+    nx.draw_networkx_edges(G, pos, ax=ax, edgelist=edgelist, edge_color=edge_colors)
+
+    # Verify that there are three fancy arrow patches (1 per self loop)
+    assert len(ax.patches) == 3
+
+    # These are points that should be contained in the self loops. For example,
+    # sl_points[0] will be (1, 1.1), which is inside the "path" of the first
+    # self-loop but outside the others
+    sl_points = np.array(edgelist[-3:]) + np.array([0, 0.1])
+
+    # Check that the mapping between self-loop locations and their colors is
+    # correct
+    for fap, clr, slp in zip(ax.patches, edge_colors[-3:], sl_points):
+        assert fap.get_path().contains_point(slp)
+        assert mpl.colors.same_color(fap.get_edgecolor(), clr)
+    plt.delaxes(ax)
+
+
+@pytest.mark.parametrize(
+    "fap_only_kwarg",  # Non-default values for kwargs that only apply to FAPs
+    (
+        {"arrowstyle": "-"},
+        {"arrowsize": 20},
+        {"connectionstyle": "arc3,rad=0.2"},
+        {"min_source_margin": 10},
+        {"min_target_margin": 10},
+    ),
+)
+def test_user_warnings_for_unused_edge_drawing_kwargs(fap_only_kwarg):
+    """Users should get a warning when they specify a non-default value for
+    one of the kwargs that applies only to edges drawn with FancyArrowPatches,
+    but FancyArrowPatches aren't being used under the hood."""
+    G = nx.path_graph(3)
+    pos = {n: (n, n) for n in G}
+    fig, ax = plt.subplots()
+    # By default, an undirected graph will use LineCollection to represent
+    # the edges
+    kwarg_name = list(fap_only_kwarg.keys())[0]
+    with pytest.warns(
+        UserWarning, match=f"\n\nThe {kwarg_name} keyword argument is not applicable"
+    ):
+        nx.draw_networkx_edges(G, pos, ax=ax, **fap_only_kwarg)
+    # FancyArrowPatches are always used when `arrows=True` is specified.
+    # Check that warnings are *not* raised in this case
+    with warnings.catch_warnings():
+        # Escalate warnings -> errors so tests fail if warnings are raised
+        warnings.simplefilter("error")
+        nx.draw_networkx_edges(G, pos, ax=ax, arrows=True, **fap_only_kwarg)
+
     plt.delaxes(ax)

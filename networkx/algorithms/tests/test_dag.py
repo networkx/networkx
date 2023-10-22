@@ -1,10 +1,11 @@
-from itertools import combinations, permutations
 from collections import deque
+from itertools import combinations, permutations
 
 import pytest
 
 import networkx as nx
 from networkx.utils import edges_equal, pairwise
+
 
 # Recipe from the itertools documentation.
 def _consume(iterator):
@@ -59,6 +60,31 @@ class TestDagLongestPath:
         # this will raise NotImplementedError when nodes need to be ordered
         nx.dag_longest_path(G)
 
+    def test_multigraph_unweighted(self):
+        edges = [(1, 2), (2, 3), (2, 3), (3, 4), (4, 5), (1, 3), (1, 5), (3, 5)]
+        G = nx.MultiDiGraph(edges)
+        assert nx.dag_longest_path(G) == [1, 2, 3, 4, 5]
+
+    def test_multigraph_weighted(self):
+        G = nx.MultiDiGraph()
+        edges = [
+            (1, 2, 2),
+            (2, 3, 2),
+            (1, 3, 1),
+            (1, 3, 5),
+            (1, 3, 2),
+        ]
+        G.add_weighted_edges_from(edges)
+        assert nx.dag_longest_path(G) == [1, 3]
+
+    def test_multigraph_weighted_default_weight(self):
+        G = nx.MultiDiGraph([(1, 2), (2, 3)])  # Unweighted edges
+        G.add_weighted_edges_from([(1, 3, 1), (1, 3, 5), (1, 3, 2)])
+
+        # Default value for default weight is 1
+        assert nx.dag_longest_path(G) == [1, 3]
+        assert nx.dag_longest_path(G, default_weight=3) == [1, 2, 3]
+
 
 class TestDagLongestPathLength:
     """Unit tests for computing the length of a longest path in a
@@ -87,6 +113,23 @@ class TestDagLongestPathLength:
     def test_weighted(self):
         edges = [(1, 2, -5), (2, 3, 1), (3, 4, 1), (4, 5, 0), (3, 5, 4), (1, 6, 2)]
         G = nx.DiGraph()
+        G.add_weighted_edges_from(edges)
+        assert nx.dag_longest_path_length(G) == 5
+
+    def test_multigraph_unweighted(self):
+        edges = [(1, 2), (2, 3), (2, 3), (3, 4), (4, 5), (1, 3), (1, 5), (3, 5)]
+        G = nx.MultiDiGraph(edges)
+        assert nx.dag_longest_path_length(G) == 4
+
+    def test_multigraph_weighted(self):
+        G = nx.MultiDiGraph()
+        edges = [
+            (1, 2, 2),
+            (2, 3, 2),
+            (1, 3, 1),
+            (1, 3, 5),
+            (1, 3, 2),
+        ]
         G.add_weighted_edges_from(edges)
         assert nx.dag_longest_path_length(G) == 5
 
@@ -231,13 +274,13 @@ class TestDAG:
             # convert to list to execute generator
             list(nx.all_topological_sorts(G))
 
-        def not_implemted_2():
+        def not_implemented_2():
             G = nx.MultiGraph([(1, 2), (1, 2), (2, 3)])
             list(nx.all_topological_sorts(G))
 
         pytest.raises(nx.NetworkXUnfeasible, unfeasible)
         pytest.raises(nx.NetworkXNotImplemented, not_implemented)
-        pytest.raises(nx.NetworkXNotImplemented, not_implemted_2)
+        pytest.raises(nx.NetworkXNotImplemented, not_implemented_2)
 
     def test_all_topological_sorts_4(self):
         DG = nx.DiGraph()
@@ -700,3 +743,29 @@ class TestDagToBranching:
     def test_multidigraph(self):
         with pytest.raises(nx.NetworkXNotImplemented):
             nx.dag_to_branching(nx.MultiDiGraph())
+
+
+def test_ancestors_descendants_undirected():
+    """Regression test to ensure ancestors and descendants work as expected on
+    undirected graphs."""
+    G = nx.path_graph(5)
+    nx.ancestors(G, 2) == nx.descendants(G, 2) == {0, 1, 3, 4}
+
+
+def test_compute_v_structures_raise():
+    G = nx.Graph()
+    pytest.raises(nx.NetworkXNotImplemented, nx.compute_v_structures, G)
+
+
+def test_compute_v_structures():
+    edges = [(0, 1), (0, 2), (3, 2)]
+    G = nx.DiGraph(edges)
+
+    v_structs = set(nx.compute_v_structures(G))
+    assert len(v_structs) == 1
+    assert (0, 2, 3) in v_structs
+
+    edges = [("A", "B"), ("C", "B"), ("B", "D"), ("D", "E"), ("G", "E")]
+    G = nx.DiGraph(edges)
+    v_structs = set(nx.compute_v_structures(G))
+    assert len(v_structs) == 2

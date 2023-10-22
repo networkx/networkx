@@ -4,6 +4,7 @@ Generators and functions for bipartite graphs.
 import math
 import numbers
 from functools import reduce
+
 import networkx as nx
 from networkx.utils import nodes_or_number, py_random_state
 
@@ -20,6 +21,7 @@ __all__ = [
 
 
 @nodes_or_number([0, 1])
+@nx._dispatch(graphs=None)
 def complete_bipartite_graph(n1, n2, create_using=None):
     """Returns the complete bipartite graph `K_{n_1,n_2}`.
 
@@ -29,16 +31,17 @@ def complete_bipartite_graph(n1, n2, create_using=None):
 
     Parameters
     ----------
-    n1 : integer
-       Number of nodes for node set A.
-    n2 : integer
-       Number of nodes for node set B.
-    create_using : NetworkX graph instance, optional
+    n1, n2 : integer or iterable container of nodes
+        If integers, nodes are from `range(n1)` and `range(n1, n1 + n2)`.
+        If a container, the elements are the nodes.
+    create_using : NetworkX graph instance, (default: nx.Graph)
        Return graph of this type.
 
     Notes
     -----
-    Node labels are the integers 0 to `n_1 + n_2 - 1`.
+    Nodes are the integers 0 to `n1 + n2 - 1` unless either n1 or n2 are
+    containers of nodes. If only one of n1 or n2 are integers, that
+    integer is replaced by `range` of that integer.
 
     The nodes are assigned the attribute 'bipartite' with the value 0 or 1
     to indicate which bipartite set the node belongs to.
@@ -52,16 +55,19 @@ def complete_bipartite_graph(n1, n2, create_using=None):
 
     n1, top = n1
     n2, bottom = n2
-    if isinstance(n2, numbers.Integral):
+    if isinstance(n1, numbers.Integral) and isinstance(n2, numbers.Integral):
         bottom = [n1 + i for i in bottom]
     G.add_nodes_from(top, bipartite=0)
     G.add_nodes_from(bottom, bipartite=1)
+    if len(G) != len(top) + len(bottom):
+        raise nx.NetworkXError("Inputs n1 and n2 must contain distinct nodes")
     G.add_edges_from((u, v) for u in top for v in bottom)
-    G.graph["name"] = f"complete_bipartite_graph({n1},{n2})"
+    G.graph["name"] = f"complete_bipartite_graph({n1}, {n2})"
     return G
 
 
 @py_random_state(3)
+@nx._dispatch(name="bipartite_configuration_model", graphs=None)
 def configuration_model(aseq, bseq, create_using=None, seed=None):
     """Returns a random bipartite graph from two given degree sequences.
 
@@ -116,7 +122,7 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
         return G  # done if no edges
 
     # build lists of degree-repeated vertex numbers
-    stubs = [[v] * aseq[v] for v in range(0, lena)]
+    stubs = [[v] * aseq[v] for v in range(lena)]
     astubs = [x for subseq in stubs for x in subseq]
 
     stubs = [[v] * bseq[v - lena] for v in range(lena, lena + lenb)]
@@ -132,6 +138,7 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
     return G
 
 
+@nx._dispatch(name="bipartite_havel_hakimi_graph", graphs=None)
 def havel_hakimi_graph(aseq, bseq, create_using=None):
     """Returns a bipartite graph from two given degree sequences using a
     Havel-Hakimi style construction.
@@ -186,7 +193,7 @@ def havel_hakimi_graph(aseq, bseq, create_using=None):
         return G  # done if no edges
 
     # build list of degree-repeated vertex numbers
-    astubs = [[aseq[v], v] for v in range(0, naseq)]
+    astubs = [[aseq[v], v] for v in range(naseq)]
     bstubs = [[bseq[v - naseq], v] for v in range(naseq, naseq + nbseq)]
     astubs.sort()
     while astubs:
@@ -206,6 +213,7 @@ def havel_hakimi_graph(aseq, bseq, create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
     """Returns a bipartite graph from two given degree sequences using a
     Havel-Hakimi style construction.
@@ -259,7 +267,7 @@ def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
         return G  # done if no edges
 
     # build list of degree-repeated vertex numbers
-    astubs = [[aseq[v], v] for v in range(0, lena)]
+    astubs = [[aseq[v], v] for v in range(lena)]
     bstubs = [[bseq[v - lena], v] for v in range(lena, lena + lenb)]
     astubs.sort()
     bstubs.sort()
@@ -279,6 +287,7 @@ def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def alternating_havel_hakimi_graph(aseq, bseq, create_using=None):
     """Returns a bipartite graph from two given degree sequences using
     an alternating Havel-Hakimi style construction.
@@ -332,7 +341,7 @@ def alternating_havel_hakimi_graph(aseq, bseq, create_using=None):
     if len(aseq) == 0 or max(aseq) == 0:
         return G  # done if no edges
     # build list of degree-repeated vertex numbers
-    astubs = [[aseq[v], v] for v in range(0, naseq)]
+    astubs = [[aseq[v], v] for v in range(naseq)]
     bstubs = [[bseq[v - naseq], v] for v in range(naseq, naseq + nbseq)]
     while astubs:
         astubs.sort()
@@ -357,6 +366,7 @@ def alternating_havel_hakimi_graph(aseq, bseq, create_using=None):
 
 
 @py_random_state(3)
+@nx._dispatch(graphs=None)
 def preferential_attachment_graph(aseq, p, create_using=None, seed=None):
     """Create a bipartite graph with a preferential attachment model from
     a given single degree sequence.
@@ -405,7 +415,7 @@ def preferential_attachment_graph(aseq, p, create_using=None, seed=None):
 
     naseq = len(aseq)
     G = _add_nodes_with_bipartite_label(G, naseq, 0)
-    vv = [[v] * aseq[v] for v in range(0, naseq)]
+    vv = [[v] * aseq[v] for v in range(naseq)]
     while vv:
         while vv[0]:
             source = vv[0][0]
@@ -428,6 +438,7 @@ def preferential_attachment_graph(aseq, p, create_using=None, seed=None):
 
 
 @py_random_state(3)
+@nx._dispatch(graphs=None)
 def random_graph(n, m, p, seed=None, directed=False):
     """Returns a bipartite random graph.
 
@@ -514,6 +525,7 @@ def random_graph(n, m, p, seed=None, directed=False):
 
 
 @py_random_state(3)
+@nx._dispatch(graphs=None)
 def gnmk_random_graph(n, m, k, seed=None, directed=False):
     """Returns a random bipartite graph G_{n,m,k}.
 
@@ -584,8 +596,8 @@ def gnmk_random_graph(n, m, k, seed=None, directed=False):
 
 
 def _add_nodes_with_bipartite_label(G, lena, lenb):
-    G.add_nodes_from(range(0, lena + lenb))
-    b = dict(zip(range(0, lena), [0] * lena))
+    G.add_nodes_from(range(lena + lenb))
+    b = dict(zip(range(lena), [0] * lena))
     b.update(dict(zip(range(lena, lena + lenb), [1] * lenb)))
     nx.set_node_attributes(G, b, "bipartite")
     return G

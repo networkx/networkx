@@ -1,6 +1,7 @@
 """Test sequences for graphiness.
 """
 import heapq
+
 import networkx as nx
 
 __all__ = [
@@ -13,6 +14,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch(graphs=None)
 def is_graphical(sequence, method="eg"):
     """Returns True if sequence is a valid degree sequence.
 
@@ -41,6 +43,12 @@ def is_graphical(sequence, method="eg"):
     >>> sequence = (d for n, d in G.degree())
     >>> nx.is_graphical(sequence)
     True
+
+    To test a non-graphical sequence:
+    >>> sequence_list = [d for n, d in G.degree()]
+    >>> sequence_list[-1] += 1
+    >>> nx.is_graphical(sequence_list)
+    False
 
     References
     ----------
@@ -85,6 +93,7 @@ def _basic_graphical_tests(deg_sequence):
     return dmax, dmin, dsum, n, num_degs
 
 
+@nx._dispatch(graphs=None)
 def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     r"""Returns True if deg_sequence can be realized by a simple graph.
 
@@ -102,6 +111,19 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     -------
     valid : bool
         True if deg_sequence is graphical and False if not.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> sequence = (d for _, d in G.degree())
+    >>> nx.is_valid_degree_sequence_havel_hakimi(sequence)
+    True
+
+    To test a non-valid sequence:
+    >>> sequence_list = [d for _, d in G.degree()]
+    >>> sequence_list[-1] += 1
+    >>> nx.is_valid_degree_sequence_havel_hakimi(sequence_list)
+    False
 
     Notes
     -----
@@ -161,6 +183,7 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     return True
 
 
+@nx._dispatch(graphs=None)
 def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     r"""Returns True if deg_sequence can be realized by a simple graph.
 
@@ -175,6 +198,19 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     -------
     valid : bool
         True if deg_sequence is graphical and False if not.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> sequence = (d for _, d in G.degree())
+    >>> nx.is_valid_degree_sequence_erdos_gallai(sequence)
+    True
+
+    To test a non-valid sequence:
+    >>> sequence_list = [d for _, d in G.degree()]
+    >>> sequence_list[-1] += 1
+    >>> nx.is_valid_degree_sequence_erdos_gallai(sequence_list)
+    False
 
     Notes
     -----
@@ -238,6 +274,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     return True
 
 
+@nx._dispatch(graphs=None)
 def is_multigraphical(sequence):
     """Returns True if some multigraph can realize the sequence.
 
@@ -250,6 +287,19 @@ def is_multigraphical(sequence):
     -------
     valid : bool
         True if deg_sequence is a multigraphic degree sequence and False if not.
+
+    Examples
+    --------
+    >>> G = nx.MultiGraph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> sequence = (d for _, d in G.degree())
+    >>> nx.is_multigraphical(sequence)
+    True
+
+    To test a non-multigraphical sequence:
+    >>> sequence_list = [d for _, d in G.degree()]
+    >>> sequence_list[-1] += 1
+    >>> nx.is_multigraphical(sequence_list)
+    False
 
     Notes
     -----
@@ -275,6 +325,7 @@ def is_multigraphical(sequence):
     return True
 
 
+@nx._dispatch(graphs=None)
 def is_pseudographical(sequence):
     """Returns True if some pseudograph can realize the sequence.
 
@@ -290,6 +341,19 @@ def is_pseudographical(sequence):
     -------
     valid : bool
       True if the sequence is a pseudographic degree sequence and False if not.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> sequence = (d for _, d in G.degree())
+    >>> nx.is_pseudographical(sequence)
+    True
+
+    To test a non-pseudographical sequence:
+    >>> sequence_list = [d for _, d in G.degree()]
+    >>> sequence_list[-1] += 1
+    >>> nx.is_pseudographical(sequence_list)
+    False
 
     Notes
     -----
@@ -308,6 +372,7 @@ def is_pseudographical(sequence):
     return sum(deg_sequence) % 2 == 0 and min(deg_sequence) >= 0
 
 
+@nx._dispatch(graphs=None)
 def is_digraphical(in_sequence, out_sequence):
     r"""Returns True if some directed graph can realize the in- and out-degree
     sequences.
@@ -324,6 +389,20 @@ def is_digraphical(in_sequence, out_sequence):
     -------
     valid : bool
       True if in and out-sequences are digraphic False if not.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> in_seq = (d for n, d in G.in_degree())
+    >>> out_seq = (d for n, d in G.out_degree())
+    >>> nx.is_digraphical(in_seq, out_seq)
+    True
+
+    To test a non-digraphical scenario:
+    >>> in_seq_list = [d for n, d in G.in_degree()]
+    >>> in_seq_list[-1] += 1
+    >>> nx.is_digraphical(in_seq_list, out_seq)
+    False
 
     Notes
     -----

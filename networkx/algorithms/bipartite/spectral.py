@@ -6,6 +6,7 @@ import networkx as nx
 __all__ = ["spectral_bipartivity"]
 
 
+@nx._dispatch(edge_attrs="weight")
 def spectral_bipartivity(G, nodes=None, weight="weight"):
     """Returns the spectral bipartivity.
 
@@ -48,7 +49,6 @@ def spectral_bipartivity(G, nodes=None, weight="weight"):
        bipartivity in complex networks", PhysRev E 72, 046105 (2005)
     """
     import scipy as sp
-    import scipy.linalg  # call as sp.linalg
 
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist, weight=weight)

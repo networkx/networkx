@@ -39,9 +39,9 @@ edges included in the matching is minimal.
 import collections
 import itertools
 
-from networkx.algorithms.bipartite.matrix import biadjacency_matrix
-from networkx.algorithms.bipartite import sets as bipartite_sets
 import networkx as nx
+from networkx.algorithms.bipartite import sets as bipartite_sets
+from networkx.algorithms.bipartite.matrix import biadjacency_matrix
 
 __all__ = [
     "maximum_matching",
@@ -54,6 +54,7 @@ __all__ = [
 INFINITY = float("inf")
 
 
+@nx._dispatch
 def hopcroft_karp_matching(G, top_nodes=None):
     """Returns the maximum cardinality matching of the bipartite graph `G`.
 
@@ -115,6 +116,7 @@ def hopcroft_karp_matching(G, top_nodes=None):
        2.4 (1973), pp. 225--231. <https://doi.org/10.1137/0202019>.
 
     """
+
     # First we define some auxiliary search functions.
     #
     # If you are a human reading these auxiliary search functions, the "global"
@@ -179,6 +181,7 @@ def hopcroft_karp_matching(G, top_nodes=None):
     return dict(itertools.chain(leftmatches.items(), rightmatches.items()))
 
 
+@nx._dispatch
 def eppstein_matching(G, top_nodes=None):
     """Returns the maximum cardinality matching of the bipartite graph `G`.
 
@@ -269,12 +272,17 @@ def eppstein_matching(G, top_nodes=None):
 
         # did we finish layering without finding any alternating paths?
         if not unmatched:
-            unlayered = {}
-            for u in G:
-                # TODO Why is extra inner loop necessary?
-                for v in G[u]:
-                    if v not in preds:
-                        unlayered[v] = None
+            # TODO - The lines between --- were unused and were thus commented
+            # out. This whole commented chunk should be reviewed to determine
+            # whether it should be built upon or completely removed.
+            # ---
+            # unlayered = {}
+            # for u in G:
+            #     # TODO Why is extra inner loop necessary?
+            #     for v in G[u]:
+            #         if v not in preds:
+            #             unlayered[v] = None
+            # ---
             # TODO Originally, this function returned a three-tuple:
             #
             #     return (matching, list(pred), list(unlayered))
@@ -412,6 +420,7 @@ def _connected_by_alternating_paths(G, matching, targets):
     }
 
 
+@nx._dispatch
 def to_vertex_cover(G, matching, top_nodes=None):
     """Returns the minimum vertex cover corresponding to the given maximum
     matching of the bipartite graph `G`.
@@ -492,6 +501,7 @@ def to_vertex_cover(G, matching, top_nodes=None):
 maximum_matching = hopcroft_karp_matching
 
 
+@nx._dispatch(edge_attrs="weight")
 def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     r"""Returns a minimum weight full matching of the bipartite graph `G`.
 
@@ -525,6 +535,7 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     weight : string, optional (default='weight')
 
        The edge data key used to provide each value in the matrix.
+       If None, then each edge has weight 1.
 
     Returns
     -------
@@ -558,12 +569,11 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     """
     import numpy as np
     import scipy as sp
-    import scipy.optimize  # call as sp.optimize
 
     left, right = nx.bipartite.sets(G, top_nodes)
     U = list(left)
     V = list(right)
-    # We explicitly create the biadjancency matrix having infinities
+    # We explicitly create the biadjacency matrix having infinities
     # where edges are missing (as opposed to zeros, which is what one would
     # get by using toarray on the sparse matrix).
     weights_sparse = biadjacency_matrix(

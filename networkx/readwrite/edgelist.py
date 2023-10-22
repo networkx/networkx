@@ -36,8 +36,8 @@ __all__ = [
     "write_weighted_edgelist",
 ]
 
-from networkx.utils import open_file
 import networkx as nx
+from networkx.utils import open_file
 
 
 def generate_edgelist(G, delimiter=" ", data=True):
@@ -173,6 +173,7 @@ def write_edgelist(G, path, comments="#", delimiter=" ", data=True, encoding="ut
         path.write(line.encode(encoding))
 
 
+@nx._dispatch(graphs=None)
 def parse_edgelist(
     lines, comments="#", delimiter=None, create_using=None, nodetype=None, data=True
 ):
@@ -297,6 +298,7 @@ def parse_edgelist(
 
 
 @open_file(0, mode="rb")
+@nx._dispatch(graphs=None)
 def read_edgelist(
     path,
     comments="#",
@@ -423,6 +425,7 @@ def write_weighted_edgelist(G, path, comments="#", delimiter=" ", encoding="utf-
     )
 
 
+@nx._dispatch(graphs=None)
 def read_weighted_edgelist(
     path,
     comments="#",

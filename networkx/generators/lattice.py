@@ -13,16 +13,15 @@ be found about `Triangular Tiling`_, and `Square, Hex and Triangle Grids`_
 
 """
 
+from itertools import repeat
 from math import sqrt
 
+import networkx as nx
 from networkx.classes import set_node_attributes
 from networkx.exception import NetworkXError
+from networkx.generators.classic import cycle_graph, empty_graph, path_graph
 from networkx.relabel import relabel_nodes
 from networkx.utils import flatten, nodes_or_number, pairwise
-from networkx.generators.classic import cycle_graph
-from networkx.generators.classic import empty_graph
-from networkx.generators.classic import path_graph
-from itertools import repeat
 
 __all__ = [
     "grid_2d_graph",
@@ -34,6 +33,7 @@ __all__ = [
 
 
 @nodes_or_number([0, 1])
+@nx._dispatch(graphs=None)
 def grid_2d_graph(m, n, periodic=False, create_using=None):
     """Returns the two-dimensional grid graph.
 
@@ -86,6 +86,7 @@ def grid_2d_graph(m, n, periodic=False, create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def grid_graph(dim, periodic=False):
     """Returns the *n*-dimensional grid graph.
 
@@ -142,6 +143,7 @@ def grid_graph(dim, periodic=False):
     return H
 
 
+@nx._dispatch(graphs=None)
 def hypercube_graph(n):
     """Returns the *n*-dimensional hypercube graph.
 
@@ -168,6 +170,7 @@ def hypercube_graph(n):
     return G
 
 
+@nx._dispatch(graphs=None)
 def triangular_lattice_graph(
     m, n, periodic=False, with_positions=True, create_using=None
 ):
@@ -268,6 +271,7 @@ def triangular_lattice_graph(
     return H
 
 
+@nx._dispatch(graphs=None)
 def hexagonal_lattice_graph(
     m, n, periodic=False, with_positions=True, create_using=None
 ):
@@ -297,7 +301,7 @@ def hexagonal_lattice_graph(
 
     periodic : bool
         Whether to make a periodic grid by joining the boundary vertices.
-        For this to work `n` must be odd and both `n > 1` and `m > 1`.
+        For this to work `n` must be even and both `n > 1` and `m > 1`.
         The periodic connections create another row and column of hexagons
         so these graphs have fewer nodes as boundary nodes are identified.
 

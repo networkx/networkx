@@ -1,10 +1,11 @@
 """Unit tests for the :mod:`networkx.generators.lattice` module."""
 
+from itertools import product
+
 import pytest
 
 import networkx as nx
 from networkx.utils import edges_equal
-from itertools import product
 
 
 class TestGrid2DGraph:
@@ -67,6 +68,12 @@ class TestGrid2DGraph:
         G = nx.grid_2d_graph(4, 2, periodic=True)
         H = nx.grid_2d_graph(4, 2, periodic=True, create_using=nx.MultiGraph())
         assert list(G.edges()) == list(H.edges())
+
+    def test_exceptions(self):
+        pytest.raises(nx.NetworkXError, nx.grid_2d_graph, -3, 2)
+        pytest.raises(nx.NetworkXError, nx.grid_2d_graph, 3, -2)
+        pytest.raises(TypeError, nx.grid_2d_graph, 3.3, 2)
+        pytest.raises(TypeError, nx.grid_2d_graph, 3, 2.2)
 
     def test_node_input(self):
         G = nx.grid_2d_graph(4, 2, periodic=True)
@@ -139,7 +146,7 @@ class TestHypercubeGraph:
     def test_degree_distribution(self):
         for n in range(1, 10):
             G = nx.hypercube_graph(n)
-            expected_histogram = [0] * n + [2 ** n]
+            expected_histogram = [0] * n + [2**n]
             assert nx.degree_histogram(G) == expected_histogram
 
 
@@ -152,7 +159,7 @@ class TestTriangularLatticeGraph:
             G = nx.triangular_lattice_graph(m, n)
             N = (n + 1) // 2
             assert len(G) == (m + 1) * (1 + N) - (n % 2) * ((m + 1) // 2)
-        for (i, j) in G.nodes():
+        for i, j in G.nodes():
             nbrs = G[(i, j)]
             if i < N:
                 assert (i + 1, j) in nbrs

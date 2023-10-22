@@ -18,6 +18,7 @@ __all__ = ["random_cograph"]
 
 
 @py_random_state(1)
+@nx._dispatch(graphs=None)
 def random_cograph(n, seed=None):
     r"""Returns a random cograph with $2 ^ n$ nodes.
 
@@ -25,14 +26,14 @@ def random_cograph(n, seed=None):
     Cographs or $P_4$-free graphs can be obtained from a single vertex
     by disjoint union and complementation operations.
 
-    This generator starts off from a single vertex and performes disjoint
+    This generator starts off from a single vertex and performs disjoint
     union and full join operations on itself.
     The decision on which operation will take place is random.
 
     Parameters
     ----------
     n : int
-            The order of the cograph.
+        The order of the cograph.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.

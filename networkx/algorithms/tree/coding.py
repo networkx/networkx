@@ -32,6 +32,7 @@ class NotATree(nx.NetworkXException):
 
 
 @not_implemented_for("directed")
+@nx._dispatch(graphs="T")
 def to_nested_tuple(T, root, canonical_form=False):
     """Returns a nested tuple representation of the given tree.
 
@@ -127,6 +128,7 @@ def to_nested_tuple(T, root, canonical_form=False):
     return _make_tuple(T, root, None)
 
 
+@nx._dispatch(graphs=None)
 def from_nested_tuple(sequence, sensible_relabeling=False):
     """Returns the rooted tree corresponding to the given nested tuple.
 
@@ -194,7 +196,7 @@ def from_nested_tuple(sequence, sensible_relabeling=False):
         # For a nonempty sequence, get the subtrees for each child
         # sequence and join all the subtrees at their roots. After
         # joining the subtrees, the root is node 0.
-        return nx.tree.join([(_make_tree(child), 0) for child in sequence])
+        return nx.tree.join_trees([(_make_tree(child), 0) for child in sequence])
 
     # Make the tree and remove the `is_root` node attribute added by the
     # helper function.
@@ -211,6 +213,7 @@ def from_nested_tuple(sequence, sensible_relabeling=False):
 
 
 @not_implemented_for("directed")
+@nx._dispatch(graphs="T")
 def to_prufer_sequence(T):
     r"""Returns the Prüfer sequence of the given tree.
 
@@ -311,6 +314,7 @@ def to_prufer_sequence(T):
     return result
 
 
+@nx._dispatch(graphs=None)
 def from_prufer_sequence(sequence):
     r"""Returns the tree corresponding to the given Prüfer sequence.
 
@@ -330,6 +334,11 @@ def from_prufer_sequence(sequence):
     -------
     NetworkX graph
         The tree corresponding to the given Prüfer sequence.
+
+    Raises
+    ------
+    NetworkXError
+        If the Prüfer sequence is not valid.
 
     Notes
     -----
@@ -384,6 +393,11 @@ def from_prufer_sequence(sequence):
     not_orphaned = set()
     index = u = next(k for k in range(n) if degree[k] == 1)
     for v in sequence:
+        # check the validity of the prufer sequence
+        if v < 0 or v > n - 1:
+            raise nx.NetworkXError(
+                f"Invalid Prufer sequence: Values must be between 0 and {n-1}, got {v}"
+            )
         T.add_edge(u, v)
         not_orphaned.add(u)
         degree[v] -= 1

@@ -41,58 +41,25 @@ Todo
 
 Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 
-Version 3.0
+Version 3.3
 ~~~~~~~~~~~
+* Remove pydot functionality ``drawing/nx_pydot.py``, if pydot is still not being maintained. See #5723
+* Remove the ``forest_str`` function from ``readwrite/text.py``. Replace
+  existing usages with ``write_network_text``.
+* Change ``single_target_shortest_path_length`` in ``algorithms/shortest_path/unweighted.py``
+  to return a dict. See #6527
+* Change ``shortest_path`` in ``algorithms/shortest_path/generic.py``
+  to return a iterator. See #6527
 
-* In ``readwrite/gml.py`` remove ``literal_stringizer`` and related tests.
-* In ``readwrite/gml.py`` remove ``literal_destringizer`` and related tests.
-* In ``utils/misc.py`` remove ``is_string_like`` and related tests.
-* In ``utils/misc.py`` remove ``make_str`` and related tests.
-* In ``utils/misc.py`` remove ``is_iterator``.
-* In ``utils/misc.py`` remove ``iterable``.
-* In ``utils/misc.py`` remove ``is_list_of_ints``.
-* In ``utils/misc.py`` remove ``consume``.
-* In ``utils/misc.py`` remove ``default_opener``.
-* In ``utils/misc.py`` remove ``empty_generator``.
-* Remove ``utils/contextmanagers.py`` and related tests.
-* In ``drawing/nx_agraph.py`` remove ``display_pygraphviz`` and related tests.
-* In ``algorithms/chordal.py`` replace ``chordal_graph_cliques`` with ``_chordal_graph_cliques``.
-* In ``algorithms/centrality/betweenness_centrality_subset.py`` remove ``betweenness_centrality_source``.
-* In ``algorithms/centrality/betweenness.py`` remove ``edge_betweeness``.
-* In ``algorithms/community_modularity_max.py`` remove old name ``_naive_greedy_modularity_communities``.
-* In ``linalg/algebraicconnectivity.py`` remove ``_CholeskySolver`` and related code.
-* In ``convert_matrix.py`` remove ``to_numpy_matrix`` and ``from_numpy_matrix``.
-* In ``readwrite/json_graph/cytoscape.py``, change function signature for
-  ``cytoscape_graph`` and ``cytoscape_data`` to replace the ``attrs`` keyword.
-  argument with explicit ``name`` and ``ident`` keyword args.
-* In ``readwrite/json_graph/tree.py``, remove ``attrs`` kwarg from ``tree_graph``
-  and ``tree_data``.
-* Undo changes related to the removal of ``pyyaml``. Remove the
-  ``__getattr__`` definitions from ``networkx/__init__.py``,
-  ``networkx/readwrite/__init__.py`` and ``networkx/readwrite/nx_yaml.py`` and
-  remove ``networkx/readwrite/tests/test_getattr_nxyaml_removal.py``
-* Remove ``readwrite/gpickle.py`` and related tests.
-* Remove ``readwrite/nx_shp.py`` and related tests (add info in alternatives).
-* Remove ``copy`` method in the coreview Filtered-related classes and related tests.
-* In ``algorithms/link_analysis/pagerank_alg.py`` replace ``pagerank`` with ``pagerank_scipy``.
-* In ``algorithms/link_analysis/pagerank_alg.py`` rename ``pagerank_numpy`` as ``_pagerank_numpy``.
-* In ``convert_matrix.py`` remove ``order`` kwarg from ``to_pandas_edgelist`` and docstring
-* Remove ``readwrite/json_graph/jit.py`` and related tests.
-* In ``utils/misc.py`` remove ``generate_unique_node`` and related tests.
-* In ``algorithms/link_analysis/hits_alg.py`` remove ``hub_matrix`` and ``authority_matrix``
-* In ``algorithms/link_analysis/hits_alg.py``, remove ``hits_numpy`` and ``hist_scipy``.
-* In ``networkx.classes`` remove the ``ordered`` module and the four ``Ordered``
-  classes defined therein.
-* In ``utils/decorators.py`` remove ``preserve_random_state``.
-* In ``algorithms/community/quality.py`` remove ``coverage`` and ``performance``.
-* Remove ``testing``.
-* In ``linalg/graphmatrix.py`` remove ``adj_matrix``.
-* In ``algorithms/similarity.py`` replace ``simrank_similarity`` with ``simrank_similarity_numpy``.
-* In ``algorithms/assortativity/mixing.py`` remove ``numeric_mixing_matrix``.
-* In ``algorithms/assortativity/connectivity.py`` remove ``k_nearest_neighbors``.
-* In ``utils/decorators.py`` remove ``random_state``.
-* In ``algorithms/operators/binary.py`` remove ``name`` kwarg from ``union`` and docstring.
-* In ``networkx/generators/geometric.py`` remove ``euclidean`` and tests.
-* In ``networkx/algorithms/node_classification/`` remove ``hmn.py``, ``lgc.py``,
-  and ``utils.py`` after moving the functions defined therein into the newly created
-  ``node_classification.py`` module, which will replace the current package.
+Version 3.4
+~~~~~~~~~~~
+* Remove the ``random_tree`` function from ``generators/trees.py``. Replace
+  existing usages with ``random_labeled_tree``.
+* Remove the ``sort_neighbors`` input parameter from ``generic_bfs_edges``.
+* Remove ``MultiDiGraph_EdgeKey`` class from ``algorithms/tree/branchings.py``. 
+* Remove ``Edmonds`` class from ``algorithms/tree/branchings.py``.
+* Remove ``normalized`` kwarg from ``algorithms.s_metric``
+* Remove renamed function ``join()`` in ``algorithms/tree/operations.py`` and
+  in ``doc/reference/algorithms/trees.rst``
+* Remove ``strongly_connected_components_recursive`` from
+  ``algorithms/components/strongly_connected.py``

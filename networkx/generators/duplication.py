@@ -6,13 +6,14 @@ generally inspired by biological networks.
 
 """
 import networkx as nx
-from networkx.utils import py_random_state
 from networkx.exception import NetworkXError
+from networkx.utils import py_random_state
 
 __all__ = ["partial_duplication_graph", "duplication_divergence_graph"]
 
 
 @py_random_state(4)
+@nx._dispatch(graphs=None)
 def partial_duplication_graph(N, n, p, q, seed=None):
     """Returns a random graph using the partial duplication model.
 
@@ -87,6 +88,7 @@ def partial_duplication_graph(N, n, p, q, seed=None):
 
 
 @py_random_state(2)
+@nx._dispatch(graphs=None)
 def duplication_divergence_graph(n, p, seed=None):
     """Returns an undirected graph using the duplication-divergence model.
 

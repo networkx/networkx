@@ -1,16 +1,18 @@
-import random
-import networkx as nx
 import itertools as it
-from networkx.utils import pairwise
+import random
+
 import pytest
+
+import networkx as nx
 from networkx.algorithms.connectivity import k_edge_augmentation
 from networkx.algorithms.connectivity.edge_augmentation import (
+    _unpack_available_edges,
     collapse,
     complement_edges,
-    is_locally_k_edge_connected,
     is_k_edge_connected,
-    _unpack_available_edges,
+    is_locally_k_edge_connected,
 )
+from networkx.utils import pairwise
 
 # This should be set to the largest k for which an efficient algorithm is
 # explicitly defined.
@@ -72,6 +74,11 @@ def test_is_k_edge_connected():
     assert is_k_edge_connected(G, k=2)
     assert is_k_edge_connected(G, k=3)
     assert is_k_edge_connected(G, k=4)
+
+    G = nx.compose(nx.complete_graph([0, 1, 2]), nx.complete_graph([3, 4, 5]))
+    assert not is_k_edge_connected(G, k=1)
+    assert not is_k_edge_connected(G, k=2)
+    assert not is_k_edge_connected(G, k=3)
 
 
 def test_is_k_edge_connected_exceptions():
@@ -488,7 +495,7 @@ def _check_unconstrained_bridge_property(G, info1):
     p = len([n for n, d in C.degree() if d == 1])  # leafs
     q = len([n for n, d in C.degree() if d == 0])  # isolated
     if p + q > 1:
-        size_target = int(math.ceil(p / 2.0)) + q
+        size_target = math.ceil(p / 2) + q
         size_aug = info1["num_edges"]
         assert (
             size_aug == size_target

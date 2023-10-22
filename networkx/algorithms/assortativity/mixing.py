@@ -1,19 +1,20 @@
 """
 Mixing matrices for node attributes and degree.
 """
+import networkx as nx
+from networkx.algorithms.assortativity.pairs import node_attribute_xy, node_degree_xy
 from networkx.utils import dict_to_numpy_array
-from networkx.algorithms.assortativity.pairs import node_degree_xy, node_attribute_xy
 
 __all__ = [
     "attribute_mixing_matrix",
     "attribute_mixing_dict",
     "degree_mixing_matrix",
     "degree_mixing_dict",
-    "numeric_mixing_matrix",
     "mixing_dict",
 ]
 
 
+@nx._dispatch(node_attrs="attribute")
 def attribute_mixing_dict(G, attribute, nodes=None, normalized=False):
     """Returns dictionary representation of mixing matrix for attribute.
 
@@ -52,6 +53,7 @@ def attribute_mixing_dict(G, attribute, nodes=None, normalized=False):
     return mixing_dict(xy_iter, normalized=normalized)
 
 
+@nx._dispatch(node_attrs="attribute")
 def attribute_mixing_matrix(G, attribute, nodes=None, mapping=None, normalized=True):
     """Returns mixing matrix for attribute.
 
@@ -111,6 +113,7 @@ def attribute_mixing_matrix(G, attribute, nodes=None, mapping=None, normalized=T
     return a
 
 
+@nx._dispatch(edge_attrs="weight")
 def degree_mixing_dict(G, x="out", y="in", weight=None, nodes=None, normalized=False):
     """Returns dictionary representation of mixing matrix for degree.
 
@@ -142,6 +145,7 @@ def degree_mixing_dict(G, x="out", y="in", weight=None, nodes=None, normalized=F
     return mixing_dict(xy_iter, normalized=normalized)
 
 
+@nx._dispatch(edge_attrs="weight")
 def degree_mixing_matrix(
     G, x="out", y="in", weight=None, nodes=None, normalized=True, mapping=None
 ):
@@ -209,58 +213,6 @@ def degree_mixing_matrix(
     return a
 
 
-def numeric_mixing_matrix(G, attribute, nodes=None, normalized=True, mapping=None):
-    """Returns numeric mixing matrix for attribute.
-
-    .. deprecated:: 2.6
-
-       numeric_mixing_matrix is deprecated and will be removed in 3.0.
-       Use `attribute_mixing_matrix` instead.
-
-    Parameters
-    ----------
-    G : graph
-       NetworkX graph object.
-
-    attribute : string
-       Node attribute key.
-
-    nodes: list or iterable (optional)
-        Build the matrix only with nodes in container. The default is all nodes.
-
-    normalized : bool (default=True)
-       Return counts if False or probabilities if True.
-
-    mapping : dictionary, optional
-       Mapping from node attribute to integer index in matrix.
-       If not specified, an arbitrary ordering will be used.
-
-    Notes
-    -----
-    If each node has a unique attribute value, the unnormalized mixing matrix
-    will be equal to the adjacency matrix. To get a denser mixing matrix,
-    the rounding can be performed to form groups of nodes with equal values.
-    For example, the exact height of persons in cm (180.79155222, 163.9080892,
-    163.30095355, 167.99016217, 168.21590163, ...) can be rounded to (180, 163,
-    163, 168, 168, ...).
-
-    Returns
-    -------
-    m: numpy array
-       Counts, or joint, probability of occurrence of node attribute pairs.
-    """
-    import warnings
-
-    msg = (
-        "numeric_mixing_matrix is deprecated and will be removed in v3.0.\n"
-        "Use `attribute_mixing_matrix` instead."
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-    return attribute_mixing_matrix(
-        G, attribute, nodes=nodes, normalized=normalized, mapping=mapping
-    )
-
-
 def mixing_dict(xy, normalized=False):
     """Returns a dictionary representation of mixing matrix.
 
@@ -292,7 +244,7 @@ def mixing_dict(xy, normalized=False):
         psum += 1
 
     if normalized:
-        for k, jdict in d.items():
+        for _, jdict in d.items():
             for j in jdict:
                 jdict[j] /= psum
     return d

@@ -1,4 +1,5 @@
 import pytest
+
 import networkx as nx
 from networkx import NetworkXNotImplemented
 
@@ -62,7 +63,8 @@ class TestStronglyConnected:
     def test_tarjan_recursive(self):
         scc = nx.strongly_connected_components_recursive
         for G, C in self.gc:
-            assert {frozenset(g) for g in scc(G)} == C
+            with pytest.deprecated_call():
+                assert {frozenset(g) for g in scc(G)} == C
 
     def test_kosaraju(self):
         scc = nx.kosaraju_strongly_connected_components
@@ -167,7 +169,8 @@ class TestStronglyConnected:
         G = nx.DiGraph()
         assert list(nx.strongly_connected_components(G)) == []
         assert list(nx.kosaraju_strongly_connected_components(G)) == []
-        assert list(nx.strongly_connected_components_recursive(G)) == []
+        with pytest.deprecated_call():
+            assert list(nx.strongly_connected_components_recursive(G)) == []
         assert len(nx.condensation(G)) == 0
         pytest.raises(
             nx.NetworkXPointlessConcept, nx.is_strongly_connected, nx.DiGraph()
@@ -180,7 +183,8 @@ class TestStronglyConnected:
         with pytest.raises(NetworkXNotImplemented):
             next(nx.kosaraju_strongly_connected_components(G))
         with pytest.raises(NetworkXNotImplemented):
-            next(nx.strongly_connected_components_recursive(G))
+            with pytest.deprecated_call():
+                next(nx.strongly_connected_components_recursive(G))
         pytest.raises(NetworkXNotImplemented, nx.is_strongly_connected, G)
         pytest.raises(
             nx.NetworkXPointlessConcept, nx.is_strongly_connected, nx.DiGraph()
@@ -190,7 +194,6 @@ class TestStronglyConnected:
     strong_cc_methods = (
         nx.strongly_connected_components,
         nx.kosaraju_strongly_connected_components,
-        nx.strongly_connected_components_recursive,
     )
 
     @pytest.mark.parametrize("get_components", strong_cc_methods)

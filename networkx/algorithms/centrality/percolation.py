@@ -1,7 +1,6 @@
 """Percolation centrality measures."""
 
 import networkx as nx
-
 from networkx.algorithms.centrality.betweenness import (
     _single_source_dijkstra_path_basic as dijkstra,
 )
@@ -12,6 +11,7 @@ from networkx.algorithms.centrality.betweenness import (
 __all__ = ["percolation_centrality"]
 
 
+@nx._dispatch(node_attrs="attribute", edge_attrs="weight")
 def percolation_centrality(G, attribute="percolation", states=None, weight=None):
     r"""Compute the percolation centrality for nodes.
 
@@ -38,7 +38,10 @@ def percolation_centrality(G, attribute="percolation", states=None, weight=None)
 
     attribute : None or string, optional (default='percolation')
       Name of the node attribute to use for percolation state, used
-      if `states` is None.
+      if `states` is None. If a node does not set the attribute the
+      state of that node will be set to the default value of 1.
+      If all nodes do not have the attribute all nodes will be set to
+      1 and the centrality measure will be equivalent to betweenness centrality.
 
     states : None or dict, optional (default=None)
       Specify percolation states for the nodes, nodes as keys states
@@ -63,7 +66,7 @@ def percolation_centrality(G, attribute="percolation", states=None, weight=None)
     -----
     The algorithm is from Mahendra Piraveenan, Mikhail Prokopenko, and
     Liaquat Hossain [1]_
-    Pair dependecies are calculated and accumulated using [2]_
+    Pair dependencies are calculated and accumulated using [2]_
 
     For weighted graphs the edge weights must be greater than zero.
     Zero edge weights can produce an infinite number of equal length
@@ -85,7 +88,7 @@ def percolation_centrality(G, attribute="percolation", states=None, weight=None)
     nodes = G
 
     if states is None:
-        states = nx.get_node_attributes(nodes, attribute)
+        states = nx.get_node_attributes(nodes, attribute, default=1)
 
     # sum of all percolation states
     p_sigma_x_t = 0.0
@@ -100,7 +103,7 @@ def percolation_centrality(G, attribute="percolation", states=None, weight=None)
             S, P, sigma, _ = dijkstra(G, s, weight)
         # accumulation
         percolation = _accumulate_percolation(
-            percolation, G, S, P, sigma, s, states, p_sigma_x_t
+            percolation, S, P, sigma, s, states, p_sigma_x_t
         )
 
     n = len(G)
@@ -111,7 +114,7 @@ def percolation_centrality(G, attribute="percolation", states=None, weight=None)
     return percolation
 
 
-def _accumulate_percolation(percolation, G, S, P, sigma, s, states, p_sigma_x_t):
+def _accumulate_percolation(percolation, S, P, sigma, s, states, p_sigma_x_t):
     delta = dict.fromkeys(S, 0)
     while S:
         w = S.pop()

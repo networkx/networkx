@@ -12,8 +12,9 @@ __all__ = ["nonisomorphic_trees", "number_of_nonisomorphic_trees"]
 import networkx as nx
 
 
+@nx._dispatch(graphs=None)
 def nonisomorphic_trees(order, create="graph"):
-    """Returns a list of nonisomporphic trees
+    """Returns a list of nonisomorphic trees
 
     Parameters
     ----------
@@ -22,7 +23,7 @@ def nonisomorphic_trees(order, create="graph"):
 
     create : graph or matrix (default="Graph)
       If graph is selected a list of trees will be returned,
-      if matrix is selected a list of adjancency matrix will
+      if matrix is selected a list of adjacency matrix will
       be returned
 
     Returns
@@ -51,6 +52,7 @@ def nonisomorphic_trees(order, create="graph"):
             layout = _next_rooted_tree(layout)
 
 
+@nx._dispatch(graphs=None)
 def number_of_nonisomorphic_trees(order):
     """Returns the number of nonisomorphic trees
 
@@ -174,7 +176,6 @@ def _layout_to_matrix(layout):
 def _layout_to_graph(layout):
     """Create a NetworkX Graph for the tree specified by the
     given layout(level sequence)"""
-    result = [[0] * len(layout) for i in range(len(layout))]
     G = nx.Graph()
     stack = []
     for i in range(len(layout)):

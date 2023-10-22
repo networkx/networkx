@@ -2,12 +2,30 @@
 # pre-commit install
 
 repos:
--   repo: https://github.com/psf/black
-    rev: 21.9b0
+  - repo: https://github.com/psf/black
+    rev: 23.9.1
     hooks:
-    - id: black
--   repo: https://github.com/asottile/pyupgrade
-    rev: v2.29.0
+      - id: black
+  - repo: https://github.com/adamchainz/blacken-docs
+    rev: 1.16.0
     hooks:
-    -   id: pyupgrade
-        args: [--py38-plus]
+      - id: blacken-docs
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.0.3
+    hooks:
+      - id: prettier
+        files: \.(html|md|toml|yml|yaml)
+        args: [--prose-wrap=preserve]
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.0.291
+    hooks:
+      - id: ruff
+        args:
+          - --fix
+  - repo: local
+    hooks:
+      - id: generate_requirements.py
+        name: generate_requirements.py
+        language: system
+        entry: python tools/generate_requirements.py
+        files: "pyproject.toml|requirements/.*\\.txt|tools/generate_requirements.py"
