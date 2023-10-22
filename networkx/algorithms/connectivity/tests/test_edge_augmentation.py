@@ -75,6 +75,11 @@ def test_is_k_edge_connected():
     assert is_k_edge_connected(G, k=3)
     assert is_k_edge_connected(G, k=4)
 
+    G = nx.compose(nx.complete_graph([0, 1, 2]), nx.complete_graph([3, 4, 5]))
+    assert not is_k_edge_connected(G, k=1)
+    assert not is_k_edge_connected(G, k=2)
+    assert not is_k_edge_connected(G, k=3)
+
 
 def test_is_k_edge_connected_exceptions():
     pytest.raises(

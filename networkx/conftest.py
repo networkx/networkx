@@ -52,12 +52,7 @@ def pytest_configure(config):
             fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
         networkx.utils.backends._dispatch._fallback_to_nx = bool(fallback_to_nx)
     # nx-loopback backend is only available when testing
-    if sys.version_info < (3, 10):
-        backends = (
-            ep for ep in entry_points()["networkx.backends"] if ep.name == "nx-loopback"
-        )
-    else:
-        backends = entry_points(name="nx-loopback", group="networkx.backends")
+    backends = entry_points(name="nx-loopback", group="networkx.backends")
     networkx.utils.backends.backends["nx-loopback"] = next(iter(backends))
 
 
