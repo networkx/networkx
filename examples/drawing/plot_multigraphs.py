@@ -53,12 +53,8 @@ def draw_labeled_multigraph(G, attr_name, ax=None):
 
 
 nodes = "ABC"
-pair_dict = {
-    "Combinations": list(it.combinations(nodes, 2)),
-    "Permutations": list(it.permutations(nodes, 2)),
-    "Product": list(it.product(nodes, repeat=2)),
-}
-pair_dict["Product x 2"] = pair_dict["Product"] * 2
+prod = list(it.product(nodes, repeat=2))
+pair_dict = {f"Product x {i}": prod * i for i in range(1, 5)}
 
 
 fig, axes = plt.subplots(2, 2)
