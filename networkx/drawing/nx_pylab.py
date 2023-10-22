@@ -1282,14 +1282,18 @@ def draw_networkx_edge_labels(
             self.ax.add_artist(self)
 
         def _update_text_pos_angle(self, arrow):
-            # Start and end point of arrow in data coordinates
-            posA, posB = arrow._posA_posB
-
-            # Get start and end in display coordinates
-            x1, y1 = self.ax.transData.transform(posA)
-            x2, y2 = self.ax.transData.transform(posB)
-            rad = arrow.get_connectionstyle().rad
+            # Fractional label position
             t = self.label_pos
+
+            # Get vertices of bezier curve in data coordinates
+            path_data = arrow.get_path()
+            (x1, y1), (cx, _), (x2, y2) = path_data.vertices
+            # Infer radians from vertices
+            rad = (cx - (x1 + x2) / 2.0) / (y2 - y1)
+
+            # Get edge vertices in display coordinates
+            path_disp = self.ax.transData.transform_path(path_data)
+            (x1, y1), _, (x2, y2) = path_disp.vertices
 
             # calculate the quadratic bezier curve control point
             # https://github.com/networkx/networkx/issues/3813
@@ -1300,16 +1304,17 @@ def draw_networkx_edge_labels(
 
             # Text position at a proportion t along the line in display coords
             # default is 0.5 so text appears at the halfway point
-            x = (1 - t) * ((1 - t) * x1 + t * cx) + t * ((1 - t) * cx + t * x2)
-            y = (1 - t) * ((1 - t) * y1 + t * cy) + t * ((1 - t) * cy + t * y2)
+            tt = 1 - t
+            x = tt**2 * x1 + 2 * t * tt * cx + t**2 * x2
+            y = tt**2 * y1 + 2 * t * tt * cy + t**2 * y2
             x, y = self.ax.transData.inverted().transform((x, y))
             if self.labels_horizontal:
                 # Horizontal text labels
                 angle = 0
             else:
                 # Labels parallel to curve
-                change_x = 2 * (1 - t) * (cx - x1) + 2 * t * (x2 - cx)
-                change_y = 2 * (1 - t) * (cy - y1) + 2 * t * (y2 - cy)
+                change_x = 2 * tt * (cx - x1) + 2 * t * (x2 - cx)
+                change_y = 2 * tt * (cy - y1) + 2 * t * (y2 - cy)
                 angle = (np.arctan2(change_y, change_x) / (2 * np.pi)) * 360
                 # Text is "right way up"
                 if angle > 90:
@@ -1395,9 +1400,9 @@ def draw_networkx_edge_labels(
         if n1 == n2:
             connectionstyle_obj = arrow.get_connectionstyle()
             posA = ax.transData.transform(pos[n1])
-            path = connectionstyle_obj(posA, posA)
-            path_inv = ax.transData.inverted().transform_path(path)
-            x, y = path_inv.vertices[0]
+            path_disp = connectionstyle_obj(posA, posA)
+            path_data = ax.transData.inverted().transform_path(path_disp)
+            x, y = path_data.vertices[0]
             text_items[edge] = ax.text(
                 x,
                 y,
