@@ -487,7 +487,7 @@ class FancyArrowFactory:
         def curved(self, edge_key):
             return self.base_connection_styles[edge_key]
 
-        def self_loop(self):
+        def self_loop(self, edge_key):
             def self_loop_connection(posA, posB, *args, **kwargs):
                 if not self.np.all(posA == posB):
                     raise nx.NetworkXError(
@@ -500,20 +500,29 @@ class FancyArrowFactory:
                 v_shift = 0.1 * self.selfloop_height
                 h_shift = v_shift * 0.5
                 # put the top of the loop first so arrow is not hidden by node
-                path = [
-                    # 1
-                    data_loc + self.np.asarray([0, v_shift]),
-                    # 4 4 4
-                    data_loc + self.np.asarray([h_shift, v_shift]),
-                    data_loc + self.np.asarray([h_shift, 0]),
-                    data_loc,
-                    # 4 4 4
-                    data_loc + self.np.asarray([-h_shift, 0]),
-                    data_loc + self.np.asarray([-h_shift, v_shift]),
-                    data_loc + self.np.asarray([0, v_shift]),
-                ]
+                path = self.np.asarray(
+                    [
+                        # 1
+                        [0, v_shift],
+                        # 4 4 4
+                        [h_shift, v_shift],
+                        [h_shift, 0],
+                        [0, 0],
+                        # 4 4 4
+                        [-h_shift, 0],
+                        [-h_shift, v_shift],
+                        [0, v_shift],
+                    ]
+                )
+                # Rotate self loop 90 deg. if more than 1
+                # This will allow for maximum of 4 visible self loops
+                if edge_key % 4:
+                    x, y = path.T
+                    for i in range(edge_key % 4):
+                        x, y = y, -x
+                    path = self.np.array([x, y]).T
                 return self.mpl.path.Path(
-                    self.ax.transData.transform(path), [1, 4, 4, 4, 4, 4, 4]
+                    self.ax.transData.transform(data_loc + path), [1, 4, 4, 4, 4, 4, 4]
                 )
 
             return self_loop_connection
@@ -615,7 +624,7 @@ class FancyArrowFactory:
             linestyle = self.style
 
         if x1 == x2 and y1 == y2:
-            connectionstyle = self.connectionstyle_factory.self_loop()
+            connectionstyle = self.connectionstyle_factory.self_loop(self.edge_keys[i])
         else:
             connectionstyle = self.connectionstyle_factory.curved(self.edge_keys[i])
         return self.mpl.patches.FancyArrowPatch(
