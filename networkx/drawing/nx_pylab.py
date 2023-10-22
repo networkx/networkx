@@ -16,7 +16,6 @@ See Also
  - :func:`matplotlib.pyplot.scatter`
  - :obj:`matplotlib.patches.FancyArrowPatch`
 """
-from functools import partial
 from numbers import Number
 
 import networkx as nx
@@ -533,7 +532,7 @@ class FancyArrowFactory:
         arrowsize=10,
         edge_color="k",
         alpha=None,
-        width=1.0,
+        linewidth=1.0,
         style="solid",
         min_source_margin=0,
         min_target_margin=0,
@@ -563,7 +562,7 @@ class FancyArrowFactory:
         self.arrowstyle = arrowstyle
         self.arrowsize = arrowsize
         self.arrow_colors = mpl.colors.colorConverter.to_rgba_array(edge_color, alpha)
-        self.width = width
+        self.linewidth = linewidth
         self.style = style
         if isinstance(arrowsize, list) and len(arrowsize) != len(edge_pos):
             raise ValueError("arrowsize should have the same length as edgelist")
@@ -597,13 +596,13 @@ class FancyArrowFactory:
         else:  # Cycle through colors
             arrow_color = self.arrow_colors[i % len(self.arrow_colors)]
 
-        if self.np.iterable(self.width):
-            if len(self.width) > i:
-                line_width = self.width[i]
+        if self.np.iterable(self.linewidth):
+            if len(self.linewidth) > i:
+                linewidth = self.linewidth[i]
             else:
-                line_width = self.width[i % len(self.width)]
+                linewidth = self.linewidth[i % len(self.linewidth)]
         else:
-            line_width = self.width
+            linewidth = self.linewidth
 
         if (
             self.np.iterable(self.style)
@@ -629,7 +628,7 @@ class FancyArrowFactory:
             shrinkB=shrink_target,
             mutation_scale=mutation_scale,
             color=arrow_color,
-            linewidth=line_width,
+            linewidth=linewidth,
             connectionstyle=connectionstyle,
             linestyle=linestyle,
             zorder=1,  # arrows go behind nodes
