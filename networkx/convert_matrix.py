@@ -363,7 +363,7 @@ def from_pandas_edgelist(
     ```
     df_nodes = pd.DataFrame({"node_id": [1, 2, 3], "attribute1": ["A", "B", "C"]})
     G.add_nodes_from((n, dict(d)) for n, d in df_nodes.iterrows())
-    ``` 
+    ```
 
     See Also
     --------
