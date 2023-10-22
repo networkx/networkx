@@ -29,7 +29,7 @@ plt.show()
 
 ###############################################################################
 # Create an example 3D dataset "The Rings".
-# ---------------------------------
+# -----------------------------------------
 # The dataset is made of two entangled noisy rings in 3D.
 np.random.seed(0)
 n_samples = 128
@@ -54,7 +54,7 @@ for i in np.arange(X.shape[1]):
 
 ###############################################################################
 # Generate the graph and determine the two clusters.
-# ---------------------------------
+# --------------------------------------------------
 # The graph is constructed using the "nearest_neighbors" and the two clusters
 # are determined by spectral clustering/graph partitioning.
 num_clusters = 2
@@ -77,15 +77,15 @@ G.remove_edges_from(nx.selfloop_edges(G))
 cluser_member = []
 for u in G.nodes:
     cluser_member.append(pred_labels[u])
+
 ###############################################################################
 # Generate the plots of the data.
 # -------------------------------
 # The data points are marked according to the original labels and via clustering.
 # get affinity matrix from spectral clustering
-def split_list(a_list):
-    i_half = len(a_list) // 2
-    return (a_list[:i_half], a_list[i_half:])
-list_of_markers = split_list(Line2D.filled_markers)
+
+# select the second half of the list of markers
+list_of_markers = Line2D.filled_markers[len(a_list) // 2 :]
 
 # plot two subplots, one for predicted sample labels, one for predicted sample graph
 # Create 1x2 sub plots
@@ -95,7 +95,7 @@ fig.suptitle("Spectral Clustering as Graph Partitioning Illustrated", fontsize=2
 
 ax = plt.subplot(gs[0, 0], projection="3d")
 ax.set_title("Original labeled RGB data")
-array_of_markers = np.array(list_of_markers[1])[Y.astype(int)]
+array_of_markers = np.array(list_of_markers)[Y.astype(int)]
 # `marker` parameter does not support list or array format, needs a loop
 for i in range(len(array_of_markers)):
     ax.scatter(
@@ -115,7 +115,7 @@ ax.view_init(elev=6.0, azim=-22.0)
 
 ax = plt.subplot(gs[0, 1], projection="3d")
 ax.set_title("Data marked by clustering")
-array_of_markers = np.array(list_of_markers[1])[pred_labels.astype(int)]
+array_of_markers = np.array(list_of_markers)[pred_labels.astype(int)]
 for i in range(len(array_of_markers)):
     ax.scatter(
         X[i, 0],
