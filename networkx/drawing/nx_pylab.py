@@ -493,7 +493,11 @@ class FancyArrowFactory:
 
         def self_loop(self):
             def connectionstyle(posA, posB, *args, **kwargs):
-                assert self.np.all(posA == posB)
+                if not self.np.all(posA == posB):
+                    raise nx.NetworkXError(
+                        "`self_loop` connection style method"
+                        "is only to be used for self-loops"
+                    )
                 # this is called with _screen space_ values
                 # so convert back to data space
                 data_loc = self.ax.transData.inverted().transform(posA)
@@ -735,7 +739,7 @@ def draw_networkx_edges(
         width. See `matplotlib.patches.FancyArrowPatch` for attribute
         `mutation_scale` for more info.
 
-    connectionstyle : string, Iterable (default="arc3")
+    connectionstyle : string or iterable of strings (default="arc3")
         Pass the connectionstyle parameter to create curved arc of rounding
         radius rad. For example, connectionstyle='arc3,rad=0.2'.
         See `matplotlib.patches.ConnectionStyle` and
@@ -904,6 +908,13 @@ def draw_networkx_edges(
     if len(edgelist[0]) == 3:
         # MultiGraph input
         edge_keys = [e[2] for e in edgelist]
+        max_multi_edges = max([e[2] for e in G.edges(keys=True)]) + 1
+        if len(connectionstyle) < max_multi_edges:
+            raise nx.NetworkXError(
+                f"{len(connectionstyle)} connectionstyle inputs provided"
+                "are not enough as maximum edges per node pair in MultiGraph"
+                "is {max_multi_edges}"
+            )
     else:
         edge_keys = [0] * len(edgelist)
 
@@ -936,8 +947,7 @@ def draw_networkx_edges(
     # Self-loops are scaled by view extent, except in cases the extent
     # is 0, e.g. for a single node. In this case, fall back to scaling
     # by the maximum node size
-    max_nodesize = np.array(node_size).max()
-    selfloop_height = 0.005 * max_nodesize if h == 0 else h
+    selfloop_height = h if h != 0 else 0.005 * np.array(node_size).max()
     fancy_arrow_factory = FancyArrowFactory(
         edge_pos,
         edgelist,
@@ -1213,7 +1223,7 @@ def draw_networkx_edge_labels(
     nodelist : list, optional (default=G.nodes())
        This provides the node order for the `node_size` array (if it is an array).
 
-    connectionstyle : string, Iterable (default="arc3")
+    connectionstyle : string or iterable of strings (default="arc3")
         Pass the connectionstyle parameter to create curved arc of rounding
         radius rad. For example, connectionstyle='arc3,rad=0.2'.
         See `matplotlib.patches.ConnectionStyle` and
@@ -1327,8 +1337,10 @@ def draw_networkx_edge_labels(
     elif np.iterable(connectionstyle):
         connectionstyle = list(connectionstyle)
     else:
-        msg = "draw_networkx_edges arg `connectionstyle` must be str or iterable"
-        raise nx.NetworkXError(msg)
+        raise nx.NetworkXError(
+            "draw_networkx_edges arg `connectionstyle` must be"
+            "string or iterable of strings"
+        )
 
     if ax is None:
         ax = plt.gca()
@@ -1352,6 +1364,13 @@ def draw_networkx_edge_labels(
     if len(edgelist[0]) == 3:
         # MultiGraph input
         edge_keys = [e[2] for e in edgelist]
+        max_multi_edges = max([e[2] for e in G.edges(keys=True)]) + 1
+        if len(connectionstyle) < max_multi_edges:
+            raise nx.NetworkXError(
+                f"{len(connectionstyle)} connectionstyle inputs provided"
+                "are not enough as maximum edges per node pair in MultiGraph"
+                "is {max_multi_edges}"
+            )
     else:
         edge_keys = [0] * len(edgelist)
 
@@ -1363,8 +1382,7 @@ def draw_networkx_edge_labels(
         miny = np.amin(np.ravel(edge_pos[:, :, 1]))
         maxy = np.amax(np.ravel(edge_pos[:, :, 1]))
         h = maxy - miny
-    max_nodesize = np.array(node_size).max()
-    selfloop_height = 0.005 * max_nodesize if h == 0 else h
+    selfloop_height = h if h != 0 else 0.005 * np.array(node_size).max()
     fancy_arrow_factory = FancyArrowFactory(
         edge_pos,
         edgelist,
@@ -1376,12 +1394,10 @@ def draw_networkx_edge_labels(
     )
 
     text_items = {}
-    for i in range(len(edgelist)):
-        label = labels[i]
+    for i, (edge, label) in enumerate(zip(edgelist, labels)):
         if not isinstance(label, str):
             label = str(label)  # this makes "1" and 1 labeled the same
 
-        edge = edgelist[i]
         n1, n2 = edge[:2]
         arrow = fancy_arrow_factory(i)
         if n1 == n2:

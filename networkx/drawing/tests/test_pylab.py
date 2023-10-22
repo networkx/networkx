@@ -707,10 +707,6 @@ def test_edgelist_kwarg_not_ignored():
 
 
 def test_draw_networkx_edge_label_multiedge():
-    """
-    draw_networkx_edge_labels should raise an informative error message when
-    the edge label includes keys
-    """
     exception_msg = "draw_networkx_edge_labels does not support multiedges"
     G = nx.MultiGraph()
     G.add_edge(0, 1, weight=10)
