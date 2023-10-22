@@ -171,8 +171,9 @@ def from_pandas_adjacency(df, create_using=None):
     If `df` has a single data type for each entry it will be converted to an
     appropriate Python data type.
 
-    If you have node attributes stored in a separate dataframe `df_nodes`, you can load those attributes to the graph `G` using the following code:
-    
+    If you have node attributes stored in a separate dataframe `df_nodes`,
+    you can load those attributes to the graph `G` using the following code:
+
     ```
     df_nodes = pd.DataFrame({"node_id": [1, 2, 3], "attribute1": ["A", "B", "C"]})
     G.add_nodes_from((n, dict(d)) for n, d in df_nodes.iterrows())
@@ -356,13 +357,14 @@ def from_pandas_edgelist(
         this column are used for the edge keys when adding edges if create_using
         is a multigraph.
 
-   If you have node attributes stored in a separate dataframe `df_nodes`, you can load those attributes to the graph `G` using the following code:
-    
+    If you have node attributes stored in a separate dataframe `df_nodes`,
+    you can load those attributes to the graph `G` using the following code:
+
     ```
     df_nodes = pd.DataFrame({"node_id": [1, 2, 3], "attribute1": ["A", "B", "C"]})
     G.add_nodes_from((n, dict(d)) for n, d in df_nodes.iterrows())
     ``` 
-    
+
     See Also
     --------
     to_pandas_edgelist
