@@ -1,7 +1,7 @@
 """
-================
+===========================
 3D Rotating Graph Animation
-================
+===========================
 
 3D spring plot.
 
@@ -14,6 +14,23 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import animation
 
+###############################################################################
+# Create a sample plot.
+# ---------------------
+#
+# Temp plot for testing doc generation from
+# https://github.com/networkx/networkx/blob/main/examples/drawing/plot_simple_path.py
+
+G = nx.path_graph(8)
+pos = nx.spring_layout(G, seed=47)  # Seed layout for reproducibility
+nx.draw(G, pos=pos)
+plt.show()
+
+###############################################################################
+# Create a sample animation.
+# --------------------------
+#
+# Test animation plot for testing doc generation for animation.
 
 def _update_line(num):
     line.set_data(data[..., :num])
