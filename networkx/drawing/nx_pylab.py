@@ -474,15 +474,11 @@ class FancyArrowFactory:
         def __init__(self, connectionstyles, selfloop_height, ax=None):
             import matplotlib as mpl
             import matplotlib.path  # call as mpl.path
-            import matplotlib.pyplot as plt
             import numpy as np
 
-            if ax is None:
-                ax = plt.gca()
             self.ax = ax
             self.mpl = mpl
             self.np = np
-            self.connectionstyles = connectionstyles
             self.base_connection_styles = [
                 mpl.patches.ConnectionStyle(cs) for cs in connectionstyles
             ]
@@ -492,7 +488,7 @@ class FancyArrowFactory:
             return self.base_connection_styles[edge_key]
 
         def self_loop(self):
-            def connectionstyle(posA, posB, *args, **kwargs):
+            def self_loop_connection(posA, posB, *args, **kwargs):
                 if not self.np.all(posA == posB):
                     raise nx.NetworkXError(
                         "`self_loop` connection style method"
@@ -520,7 +516,7 @@ class FancyArrowFactory:
                     self.ax.transData.transform(path), [1, 4, 4, 4, 4, 4, 4]
                 )
 
-            return connectionstyle
+            return self_loop_connection
 
     def __init__(
         self,
@@ -547,8 +543,6 @@ class FancyArrowFactory:
         import matplotlib.pyplot as plt
         import numpy as np
 
-        if ax is None:
-            ax = plt.gca()
         self.ax = ax
         self.mpl = mpl
         self.np = np
@@ -908,12 +902,12 @@ def draw_networkx_edges(
     if len(edgelist[0]) == 3:
         # MultiGraph input
         edge_keys = [e[2] for e in edgelist]
-        max_multi_edges = max([e[2] for e in G.edges(keys=True)]) + 1
+        max_multi_edges = max([e[2] for e in edgelist]) + 1
         if len(connectionstyle) < max_multi_edges:
             raise nx.NetworkXError(
-                f"connectionstyle inputs provided - {len(connectionstyle)}"
-                f"Maximum edges per node pair - {max_multi_edges}"
-                "need to supply at least the same number"
+                f"\n\nconnectionstyle inputs provided - {len(connectionstyle)}.\n"
+                f"Maximum edges per node pair - {max_multi_edges}.\n"
+                "While, need to supply at least the same number.\n"
             )
     else:
         edge_keys = [0] * len(edgelist)
@@ -965,6 +959,7 @@ def draw_networkx_edges(
         style,
         min_source_margin,
         min_target_margin,
+        ax=ax,
     )
 
     # Draw the edges
@@ -1322,7 +1317,7 @@ def draw_networkx_edge_labels(
 
         def draw(self, renderer):
             # recalculate the text position and angle
-            self._update_text_pos_angle(self.arrow)
+            self.x, self.y, self.angle = self._update_text_pos_angle(self.arrow)
             self.set_position((self.x, self.y))
             self.set_rotation(self.angle)
             # redraw text
@@ -1364,12 +1359,12 @@ def draw_networkx_edge_labels(
     if len(edgelist[0]) == 3:
         # MultiGraph input
         edge_keys = [e[2] for e in edgelist]
-        max_multi_edges = max([e[2] for e in G.edges(keys=True)]) + 1
+        max_multi_edges = max([e[2] for e in edgelist]) + 1
         if len(connectionstyle) < max_multi_edges:
             raise nx.NetworkXError(
-                f"connectionstyle inputs provided - {len(connectionstyle)}"
-                f"Maximum edges per node pair - {max_multi_edges}"
-                "need to supply at least the same number"
+                f"\n\nconnectionstyle inputs provided - {len(connectionstyle)}.\n"
+                f"Maximum edges per node pair - {max_multi_edges}.\n"
+                "While, need to supply at least the same number.\n"
             )
     else:
         edge_keys = [0] * len(edgelist)
@@ -1391,6 +1386,7 @@ def draw_networkx_edge_labels(
         node_size,
         selfloop_height,
         connectionstyle,
+        ax=ax,
     )
 
     text_items = {}
@@ -1406,6 +1402,7 @@ def draw_networkx_edge_labels(
             path = connectionstyle_obj(posA, posA)
             path_inv = ax.transData.inverted().transform_path(path)
             x, y = path_inv.vertices[0]
+            expected = pos[n1] + np.array([0, selfloop_height * 0.1])
             text_items[edge] = ax.text(
                 x,
                 y,
