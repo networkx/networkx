@@ -1,7 +1,7 @@
 """
-=========
+=====================================================
 Image Segmentation via Spectral Graph Partitionioning
-=========
+=====================================================
 Example of partitioning a undirected graph obtained by `k-neighbors`
 from an RGB image into a two subgraphs using spectral clusering
 illustrated by 3D plots of the original labeled data points in RGB 3D space
@@ -16,18 +16,30 @@ from sklearn.cluster import SpectralClustering
 from matplotlib.lines import Line2D
 
 ###############################################################################
+# Create a sample plot.
+# ---------------------
+#
+# Temp plot for testing doc generation from
+# https://github.com/networkx/networkx/blob/main/examples/drawing/plot_simple_path.py
+
+G = nx.path_graph(8)
+pos = nx.spring_layout(G, seed=47)  # Seed layout for reproducibility
+nx.draw(G, pos=pos)
+plt.show()
+
+###############################################################################
 # Create an example 3D dataset "The Rings".
 # ---------------------------------
 # The dataset is made of two entangled noisy rings in 3D.
 np.random.seed(0)
 n_samples = 128
 X = np.random.random((n_samples, 3)) * 5e-1
-m = int(np.round(n_samples/2))
-theta = np.linspace(0, 2*np.pi, m)
+m = int(np.round(n_samples / 2))
+theta = np.linspace(0, 2 * np.pi, m)
 X[0:m, 0] += 2 * np.cos(theta)
 X[0:m, 1] += 3 * np.sin(theta) + 1
 X[0:m, 2] += np.sin(theta) + 0.5
-X[m:, 0] += 2* np.sin(theta)
+X[m:, 0] += 2 * np.sin(theta)
 X[m:, 1] += 2 * np.cos(theta) - 1
 X[m:, 2] += 3 * np.sin(theta)
 Y = np.zeros(n_samples, dtype=np.int8)
@@ -67,8 +79,8 @@ for u in G.nodes:
     cluser_member.append(pred_labels[u])
 ###############################################################################
 # Generate the plots of the data.
-# ---------------------------------
-# The data points are marked according to the original labels and via clustering. 
+# -------------------------------
+# The data points are marked according to the original labels and via clustering.
 # get affinity matrix from spectral clustering
 def split_list(a_list):
     i_half = len(a_list) // 2
@@ -84,9 +96,17 @@ fig.suptitle("Spectral Clustering as Graph Partitioning Illustrated", fontsize=2
 ax = plt.subplot(gs[0, 0], projection="3d")
 ax.set_title("Original labeled RGB data")
 array_of_markers = np.array(list_of_markers[1])[Y.astype(int)]
+# `marker` parameter does not support list or array format, needs a loop
 for i in range(len(array_of_markers)):
-    ax.scatter(X[i, 0], X[i, 1], X[i, 2], s=26, marker=array_of_markers[i],
-               alpha=0.8, color=X[i]/255)
+    ax.scatter(
+        X[i, 0],
+        X[i, 1],
+        X[i, 2],
+        s=26,
+        marker=array_of_markers[i],
+        alpha=0.8,
+        color=X[i] / 255,
+    )
 ax.set_xlabel("Red")
 ax.set_ylabel("Green")
 ax.set_zlabel("Blue")
@@ -97,8 +117,15 @@ ax = plt.subplot(gs[0, 1], projection="3d")
 ax.set_title("Data marked by clustering")
 array_of_markers = np.array(list_of_markers[1])[pred_labels.astype(int)]
 for i in range(len(array_of_markers)):
-    ax.scatter(X[i, 0], X[i, 1], X[i, 2], s=26, marker=array_of_markers[i],
-               alpha=0.8, color=X[i]/255)
+    ax.scatter(
+        X[i, 0],
+        X[i, 1],
+        X[i, 2],
+        s=26,
+        marker=array_of_markers[i],
+        alpha=0.8,
+        color=X[i] / 255,
+    )
 ax.set_xlabel("Red")
 ax.set_ylabel("Green")
 ax.set_zlabel("Blue")
@@ -112,7 +139,7 @@ plt.show()
 # The nodes of the graph are marked according to clustering.
 
 # get affinity matrix from spectral clustering
-weights = [d['weight'] for u, v, d in G.edges(data=True)]
+weights = [d["weight"] for u, v, d in G.edges(data=True)]
 
 gs = gridspec.GridSpec(1, 2)
 fig = plt.figure(figsize=(10, 5))
@@ -131,7 +158,7 @@ nx.draw_networkx(
     node_size=50,
     with_labels=False,
     ax=ax,
-    node_color=X/255,
+    node_color=X / 255,
     edge_color=weights,
     edge_cmap=plt.cm.Greys,
 )
@@ -139,8 +166,6 @@ plt.box(False)
 ax.grid(False)
 ax.set_axis_off()
 
-#fig = plt.figure(figsize=(10, 10))
-#ax = fig.add_subplot(1, 1, 1, projection="3d")
 ax = fig.add_subplot(gs[0, 1], projection="3d")
 ax.set_title("Partitioned graph by spectral clustering")
 pos = nx.spring_layout(
@@ -154,8 +179,13 @@ nodes = np.array([pos[v] for v in G])
 edges = np.array([(pos[u], pos[v]) for u, v in G.edges()])
 point_size = int(800 / np.sqrt(len(nodes)))
 for i in range(len(array_of_markers)):
-    ax.scatter(*nodes[i].T, s=point_size, color=X[i]/255,
-               marker=array_of_markers[i], alpha=0.5)
+    ax.scatter(
+        *nodes[i].T,
+        s=point_size,
+        color=X[i] / 255,
+        marker=array_of_markers[i],
+        alpha=0.5,
+    )
 for vizedge, weight in zip(edges, weights):
     ax.plot(*vizedge.T, color="tab:gray", linewidth=weight, alpha=weight)
 ax.view_init(elev=130.0, azim=-6.0)
