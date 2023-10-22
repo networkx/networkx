@@ -840,7 +840,7 @@ def draw_networkx_edges(
         use_linecollection = not arrows
 
     if arrowstyle is None:
-        arrowstyle = {True: "-|>", False: "-"}[G.is_directed()]
+        arrowstyle = "-|>" if G.is_directed() else "-"
 
     if isinstance(connectionstyle, str):
         connectionstyle = [connectionstyle]
