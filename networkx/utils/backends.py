@@ -97,13 +97,7 @@ __all__ = ["_dispatch"]
 
 
 def _get_backends(group, *, load_and_call=False):
-    if sys.version_info < (3, 10):
-        eps = entry_points()
-        if group not in eps:
-            return {}
-        items = eps[group]
-    else:
-        items = entry_points(group=group)
+    items = entry_points(group=group)
     rv = {}
     for ep in items:
         if ep.name in rv:
@@ -289,25 +283,25 @@ class _dispatch:
         self.preserve_node_attrs = preserve_node_attrs or preserve_all_attrs
         self.preserve_graph_attrs = preserve_graph_attrs or preserve_all_attrs
 
-        if edge_attrs is not None and not isinstance(edge_attrs, (str, dict)):
+        if edge_attrs is not None and not isinstance(edge_attrs, str | dict):
             raise TypeError(
                 f"Bad type for edge_attrs: {type(edge_attrs)}. Expected str or dict."
             ) from None
-        if node_attrs is not None and not isinstance(node_attrs, (str, dict)):
+        if node_attrs is not None and not isinstance(node_attrs, str | dict):
             raise TypeError(
                 f"Bad type for node_attrs: {type(node_attrs)}. Expected str or dict."
             ) from None
-        if not isinstance(self.preserve_edge_attrs, (bool, str, dict)):
+        if not isinstance(self.preserve_edge_attrs, bool | str | dict):
             raise TypeError(
                 f"Bad type for preserve_edge_attrs: {type(self.preserve_edge_attrs)}."
                 " Expected bool, str, or dict."
             ) from None
-        if not isinstance(self.preserve_node_attrs, (bool, str, dict)):
+        if not isinstance(self.preserve_node_attrs, bool | str | dict):
             raise TypeError(
                 f"Bad type for preserve_node_attrs: {type(self.preserve_node_attrs)}."
                 " Expected bool, str, or dict."
             ) from None
-        if not isinstance(self.preserve_graph_attrs, (bool, set)):
+        if not isinstance(self.preserve_graph_attrs, bool | set):
             raise TypeError(
                 f"Bad type for preserve_graph_attrs: {type(self.preserve_graph_attrs)}."
                 " Expected bool or set."

@@ -94,7 +94,7 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
 
 
 def _hits_python(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
-    if isinstance(G, (nx.MultiGraph, nx.MultiDiGraph)):
+    if isinstance(G, nx.MultiGraph | nx.MultiDiGraph):
         raise Exception("hits() not defined for graphs with multiedges.")
     if len(G) == 0:
         return {}, {}
