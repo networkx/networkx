@@ -493,7 +493,6 @@ class TestGeneratorClassic:
         # Raise NetworkXError if n<0
         pytest.raises(nx.NetworkXError, nx.tadpole_graph, 5, -2)
 
-        # raise NetworkXError if create_using is directed
         with pytest.raises(nx.NetworkXError):
             nx.tadpole_graph(2, 20, create_using=nx.DiGraph)
         with pytest.raises(nx.NetworkXError):
