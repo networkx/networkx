@@ -371,6 +371,7 @@ def naive_greedy_modularity_communities(G, resolution=1, weight=None):
     Parameters
     ----------
     G : NetworkX graph
+        Graph must be simple and undirected.
 
     resolution : float (default=1)
         If resolution is less than 1, modularity favors larger communities.
