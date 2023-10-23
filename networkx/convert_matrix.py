@@ -1137,12 +1137,12 @@ def from_numpy_array(A, parallel_edges=False, create_using=None, edge_attr="weig
             (
                 u,
                 v,
-                {
+                {}
+                if edge_attr in [False, None]
+                else {
                     name: kind_to_python_type[dtype.kind](val)
                     for (_, dtype, name), val in zip(fields, A[u, v])
-                }
-                if edge_attr
-                else {},
+                },
             )
             for u, v in edges
         )
@@ -1159,17 +1159,17 @@ def from_numpy_array(A, parallel_edges=False, create_using=None, edge_attr="weig
         #         for d in range(A[u, v]):
         #             G.add_edge(u, v, weight=1)
         #
-        if edge_attr:
+        if edge_attr in [False, None]:
+            triples = chain(((u, v, {}) for d in range(A[u, v])) for (u, v) in edges)
+        else:
             triples = chain(
                 ((u, v, {edge_attr: 1}) for d in range(A[u, v])) for (u, v) in edges
             )
-        else:
-            triples = chain(((u, v, {}) for d in range(A[u, v])) for (u, v) in edges)
     else:  # basic data type
-        if edge_attr:
-            triples = ((u, v, {edge_attr: python_type(A[u, v])}) for u, v in edges)
-        else:
+        if edge_attr in [False, None]:
             triples = ((u, v, {}) for u, v in edges)
+        else:
+            triples = ((u, v, {edge_attr: python_type(A[u, v])}) for u, v in edges)
     # If we are creating an undirected multigraph, only add the edges from the
     # upper triangle of the matrix. Otherwise, add all the edges. This relies
     # on the fact that the vertices created in the
