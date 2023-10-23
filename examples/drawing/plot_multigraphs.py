@@ -27,7 +27,9 @@ def draw_labeled_multigraph(G, attr_name, ax=None):
     between pair of nodes. This number is maximum one-sided connections
     for directed graph and maximum total connections for undirected graph.
     """
+    # Works with arc3 and angle3 connectionstyles
     connectionstyle = [f"arc3,rad={r}" for r in it.accumulate([0.15] * 4)]
+    # connectionstyle = [f"angle3,angleA={r}" for r in it.accumulate([30] * 4)]
 
     pos = nx.shell_layout(G)
     nx.draw_networkx_nodes(G, pos, ax=ax)
