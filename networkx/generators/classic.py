@@ -758,7 +758,7 @@ def tadpole_graph(m, n, create_using=None):
 
     # the stick
     nx.add_path(G, [m_nodes[-1]] + list(n_nodes))
-    
+
     return G
 
 
