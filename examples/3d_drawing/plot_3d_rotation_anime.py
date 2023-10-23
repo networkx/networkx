@@ -59,7 +59,7 @@ for vizedge in edges:
 ax.grid(False)
 ax.set_axis_off()
 plt.tight_layout()
-ani = animation.FuncAnimation(fig, _frame_update, interval=20, cache_frame_data=False)
+ani = animation.FuncAnimation(fig, _frame_update, interval=20, frames=60, cache_frame_data=False)
 # plt.show()
 
 ###############################################################################
@@ -90,5 +90,5 @@ plt.box(False)
 ax.grid(False)
 ax.set_axis_off()
 plt.tight_layout()
-ani = animation.FuncAnimation(fig, _frame_update, interval=20, cache_frame_data=False)
+ani = animation.FuncAnimation(fig, _frame_update, interval=20, frames=60, cache_frame_data=False)
 # plt.show()
