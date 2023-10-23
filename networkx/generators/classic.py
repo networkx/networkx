@@ -733,7 +733,8 @@ def tadpole_graph(m, n, create_using=None):
     -----
     The 2 subgraphs are joined via an edge (m-1, m).
     If n=0, this is a cycle graph.
-    If m=0, this is a path graph.
+    If m=0 or 2, this is a path graph. (m=1 gives a path with a self-loop at one end)
+    m and/or n can be a container of nodes instead of an integer.
 
     """
     m, m_nodes = m
