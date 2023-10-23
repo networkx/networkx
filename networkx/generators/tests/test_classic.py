@@ -482,9 +482,7 @@ class TestGeneratorClassic:
             assert nx.number_of_edges(G) == m1 + m2 - (m1 == 2)
         for first, second in [("ab", ""), ("ab", "c"), ("abc", "defg")]:
             m1, m2 = len(first), len(second)
-            print(first, second)
             G = nx.tadpole_graph(first, second)
-            print(G.edges())
             assert nx.number_of_nodes(G) == m1 + m2
             assert nx.number_of_edges(G) == m1 + m2 - (m1 == 2)
 
