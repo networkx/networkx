@@ -710,7 +710,7 @@ def star_graph(n, create_using=None):
 @nodes_or_number([0, 1])
 @nx._dispatch(graphs=None)
 def tadpole_graph(m, n, create_using=None):
-    """Returns the (m,n)-tadpole graph.
+    """Returns the (m,n)-tadpole graph; `C_m` connected to `P_n`.
 
     This graph on m+n nodes connects a cycle of size m to a path of length n.
     It looks like a tadpole.
