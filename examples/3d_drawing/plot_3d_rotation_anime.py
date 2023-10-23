@@ -59,7 +59,8 @@ for vizedge in edges:
 ax.grid(False)
 ax.set_axis_off()
 plt.tight_layout()
-ani = animation.FuncAnimation(fig, _frame_update, interval=20, frames=60, cache_frame_data=False)
+ani = animation.FuncAnimation(fig, _frame_update, interval=20, frames=60,
+                              cache_frame_data=False)
 # plt.show()
 
 ###############################################################################
@@ -78,7 +79,6 @@ def _frame_update(index):
     node = random.choice(nodes)
     ax.scatter(*node, alpha=1, marker="s", color="red", s=100)
     ax.view_init(index * 0.2, index * 0.5)
-    plt.box(False)
     ax.grid(False)
     ax.set_axis_off()
     return
@@ -86,9 +86,9 @@ def _frame_update(index):
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection="3d")
-plt.box(False)
 ax.grid(False)
 ax.set_axis_off()
 plt.tight_layout()
-ani = animation.FuncAnimation(fig, _frame_update, interval=20, frames=60, cache_frame_data=False)
+ani = animation.FuncAnimation(fig, _frame_update, interval=20, frames=60,
+                              cache_frame_data=False)
 # plt.show()
