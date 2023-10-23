@@ -12,18 +12,6 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 
 ###############################################################################
-# Create a sample plot.
-# ---------------------
-#
-# Temp plot for testing doc generation from
-# https://github.com/networkx/networkx/blob/main/examples/drawing/plot_simple_path.py
-
-G = nx.path_graph(8)
-pos = nx.spring_layout(G, seed=47)  # Seed layout for reproducibility
-nx.draw(G, pos=pos)
-plt.show()
-
-###############################################################################
 # Create a sample animation.
 # --------------------------
 #
@@ -68,7 +56,6 @@ edges = np.array([(pos[u], pos[v]) for u, v in G.edges()])
 ax.scatter(*nodes.T, alpha=0.5, s=100)
 for vizedge in edges:
     ax.plot(*vizedge.T, color="tab:gray")
-plt.box(False)
 ax.grid(False)
 ax.set_axis_off()
 plt.tight_layout()
