@@ -753,7 +753,6 @@ def tadpole_graph(m, n, create_using=None):
     n, n_nodes = n
     if isinstance(m, numbers.Integral) and isinstance(n, numbers.Integral):
         n_nodes = list(range(M, M + n))
-    N = len(n_nodes)
 
     # the circle
     G = cycle_graph(m_nodes, create_using)
