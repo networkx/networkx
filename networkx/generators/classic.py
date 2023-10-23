@@ -725,20 +725,26 @@ def tadpole_graph(m, n, create_using=None):
         resulting graph may not be as desired.
 
         The nodes for m appear in the cycle graph $C_m$ and the nodes
-        for n appear in the path $P_n$
+        for n appear in the path $P_n$.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
+
+    Raises
+    -------
+    NetworkXError
+        If `m < 2`. The tadpole graph is undefined for `m<2`.
 
     Notes
     -----
     The 2 subgraphs are joined via an edge (m-1, m).
     If n=0, this is a cycle graph.
-    If m=0 or 2, this is a path graph. (m=1 gives a path with a self-loop at one end)
     m and/or n can be a container of nodes instead of an integer.
 
     """
     m, m_nodes = m
     M = len(m_nodes)
+    if M < 2:
+        raise NetworkXError("Invalid description: m should indicate at least 2 nodes")
 
     n, n_nodes = n
     if isinstance(m, numbers.Integral) and isinstance(n, numbers.Integral):
@@ -751,10 +757,8 @@ def tadpole_graph(m, n, create_using=None):
         raise NetworkXError("Directed Graph not supported")
 
     # the stick
-    if M > 0:
-        nx.add_path(G, [m_nodes[-1]] + list(n_nodes))
-    else:
-        nx.add_path(G, list(n_nodes))
+    nx.add_path(G, [m_nodes[-1]] + list(n_nodes))
+    
     return G
 
 

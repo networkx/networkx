@@ -476,23 +476,28 @@ class TestGeneratorClassic:
     def test_tadpole_graph_right_sizes(self):
         # number of nodes = m1 + m2
         # number of edges = m1 + m2 - (m1 == 0 or m1 == 2)
-        for m1, m2 in [(0, 3), (1, 3), (3, 0), (3, 5), (4, 10), (3, 20)]:
+        for m1, m2 in [(3, 0), (3, 5), (4, 10), (3, 20)]:
             G = nx.tadpole_graph(m1, m2)
             assert nx.number_of_nodes(G) == m1 + m2
             assert nx.number_of_edges(G) == m1 + m2 - (m1 == 0 or m1 == 2)
-        for first, second in [("ab", ""), ("r", "a"), ("abc", "defg")]:
+        for first, second in [("ab", ""), ("ab", "c"), ("abc", "defg")]:
             m1, m2 = len(first), len(second)
+            print(first, second)
             G = nx.tadpole_graph(first, second)
+            print(G.edges())
             assert nx.number_of_nodes(G) == m1 + m2
             assert nx.number_of_edges(G) == m1 + m2 - (m1 == 0 or m1 == 2)
 
     def test_tadpole_graph_exceptions(self):
-        # Raise NetworkXError if m<0
-        pytest.raises(nx.NetworkXError, nx.tadpole_graph, -1, 2)
+        # Raise NetworkXError if m<2
+        pytest.raises(nx.NetworkXError, nx.tadpole_graph, -1, 3)
+        pytest.raises(nx.NetworkXError, nx.tadpole_graph, 0, 3)
+        pytest.raises(nx.NetworkXError, nx.tadpole_graph, 1, 3)
 
         # Raise NetworkXError if n<0
         pytest.raises(nx.NetworkXError, nx.tadpole_graph, 5, -2)
 
+        # Raise NetworkXError for digraphs
         with pytest.raises(nx.NetworkXError):
             nx.tadpole_graph(2, 20, create_using=nx.DiGraph)
         with pytest.raises(nx.NetworkXError):
