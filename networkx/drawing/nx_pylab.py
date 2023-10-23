@@ -1272,7 +1272,7 @@ def draw_networkx_edge_labels(
             if ax is None:
                 ax = plt.gca()
             self.ax = ax
-            self.x, self.y, self.angle = self._update_text_pos_angle()
+            self.x, self.y, self.angle = self._update_text_pos_angle(arrow)
 
             # Create text object
             mpl.text.Text.__init__(
@@ -1281,7 +1281,7 @@ def draw_networkx_edge_labels(
             # Bind to axis
             self.ax.add_artist(self)
 
-        def _get_arrow_path_disp(self):
+        def _get_arrow_path_disp(self, arrow):
             """
             This is part of FancyArrowPatch._get_path_in_displaycoord
             The transform is taken from ax, not the object
@@ -1289,24 +1289,24 @@ def draw_networkx_edge_labels(
             It omitts the second part of the method before path is converted
             To polygon based on width
             """
-            dpi_cor = self.arrow._dpi_cor
-            posA = self.arrow._convert_xy_units(self.arrow._posA_posB[0])
-            posB = self.arrow._convert_xy_units(self.arrow._posA_posB[1])
-            # (posA, posB) = self.arrow.get_transform().transform((posA, posB))
+            dpi_cor = arrow._dpi_cor
+            posA = arrow._convert_xy_units(arrow._posA_posB[0])
+            posB = arrow._convert_xy_units(arrow._posA_posB[1])
+            # (posA, posB) = arrow.get_transform().transform((posA, posB))
             (posA, posB) = self.ax.transData.transform((posA, posB))
             # Return in display coordinates
-            return self.arrow.get_connectionstyle()(
+            return arrow.get_connectionstyle()(
                 posA,
                 posB,
-                patchA=self.arrow.patchA,
-                patchB=self.arrow.patchB,
-                shrinkA=self.arrow.shrinkA * dpi_cor,
-                shrinkB=self.arrow.shrinkB * dpi_cor,
+                patchA=arrow.patchA,
+                patchB=arrow.patchB,
+                shrinkA=arrow.shrinkA * dpi_cor,
+                shrinkB=arrow.shrinkB * dpi_cor,
             )
 
-        def _update_text_pos_angle(self):
+        def _update_text_pos_angle(self, arrow):
             # Fractional label position
-            path_disp = self._get_arrow_path_disp()
+            path_disp = self._get_arrow_path_disp(arrow)
             (x1, y1), (cx, cy), (x2, y2) = path_disp.vertices
             # Text position at a proportion t along the line in display coords
             # default is 0.5 so text appears at the halfway point
@@ -1314,7 +1314,6 @@ def draw_networkx_edge_labels(
             tt = 1 - t
             x = tt**2 * x1 + 2 * t * tt * cx + t**2 * x2
             y = tt**2 * y1 + 2 * t * tt * cy + t**2 * y2
-            (x, y) = self.ax.transData.inverted().transform((x, y))
             if self.labels_horizontal:
                 # Horizontal text labels
                 angle = 0
@@ -1328,11 +1327,12 @@ def draw_networkx_edge_labels(
                     angle -= 180
                 if angle < -90:
                     angle += 180
+            (x, y) = self.ax.transData.inverted().transform((x, y))
             return x, y, angle
 
         def draw(self, renderer):
             # recalculate the text position and angle
-            self.x, self.y, self.angle = self._update_text_pos_angle()
+            self.x, self.y, self.angle = self._update_text_pos_angle(self.arrow)
             self.set_position((self.x, self.y))
             self.set_rotation(self.angle)
             # redraw text
