@@ -473,18 +473,17 @@ class TestGeneratorClassic:
         assert len(G) == 4
         assert G.size() == 3
 
-    def test_tadpole_graph_right_sizes(self):
-        # number of nodes = m1 + m2
-        # number of edges = m1 + m2 - (m1 == 2)
-        for m1, m2 in [(3, 0), (3, 5), (4, 10), (3, 20)]:
-            G = nx.tadpole_graph(m1, m2)
-            assert nx.number_of_nodes(G) == m1 + m2
-            assert nx.number_of_edges(G) == m1 + m2 - (m1 == 2)
-        for first, second in [("ab", ""), ("ab", "c"), ("abc", "defg")]:
-            m1, m2 = len(first), len(second)
-            G = nx.tadpole_graph(first, second)
-            assert nx.number_of_nodes(G) == m1 + m2
-            assert nx.number_of_edges(G) == m1 + m2 - (m1 == 2)
+    @pytest.mark.parametrize(("m", "n"), [(3, 0), (3, 5), (4, 10), (3, 20)])
+    def test_tadpole_graph_right_sizes(self, m, n):
+        G = nx.tadpole_graph(m, n)
+        assert nx.number_of_nodes(G) == m + n
+        assert nx.number_of_edges(G) == m + n - (m == 2)
+
+    @pytest.mark.parametrize(("m", "n"), [("ab", ""), ("ab", "c"), ("abc", "defg")])
+    def test_tadpole_graph_size_node_sequences(self, m, n):
+        G = nx.tadpole_graph(m, n)
+        assert nx.number_of_nodes(G) == len(m) + len(n)
+        assert nx.number_of_edges(G) == len(m) + len(n) - (len(m) == 2)
 
     def test_tadpole_graph_exceptions(self):
         # Raise NetworkXError if m<2
@@ -501,36 +500,36 @@ class TestGeneratorClassic:
         with pytest.raises(nx.NetworkXError):
             nx.tadpole_graph(2, 20, create_using=nx.MultiDiGraph)
 
-    def test_tadpole_graph_same_as_path_when_m1_is_2_or_0(self):
-        # tadpole_graph(2,m) = path_graph(m+2)
-        for m1, m2 in [(2, 0), (2, 5), (2, 10), ("ab", 20)]:
-            G = nx.tadpole_graph(m1, m2)
-            assert is_isomorphic(G, nx.path_graph(m2 + 2))
+    @pytest.mark.parametrize(("m", "n"), [(2, 0), (2, 5), (2, 10), ("ab", 20)])
+    def test_tadpole_graph_same_as_path_when_m_is_2(self, m, n):
+        G = nx.tadpole_graph(m, n)
+        assert is_isomorphic(G, nx.path_graph(n + 2))
 
-    def test_tadpole_graph_same_as_cycle_when_m2_is_0(self):
-        # tadpole_graph(m,0) = cycle_(m)
-        for m1, m2 in [(4, 0), (7, 0)]:
-            G = nx.tadpole_graph(m1, m2)
-            assert is_isomorphic(G, nx.cycle_graph(m1))
+    @pytest.mark.parametrize("m", [4, 7])
+    def test_tadpole_graph_same_as_cycle_when_m2_is_0(self, m):
+        G = nx.tadpole_graph(m, 0)
+        assert is_isomorphic(G, nx.cycle_graph(m))
 
     def test_tadpole_graph_for_multigraph(self):
         G = nx.tadpole_graph(5, 20)
         MG = nx.tadpole_graph(5, 20, create_using=nx.MultiGraph)
         assert edges_equal(MG.edges(), G.edges())
 
-    def test_tadpole_graph_mixing_input_types(self):
-        cases = [(4, "abc"), ("abcd", 3), ([1, 2, 3, 4], "abc"), ("abcd", [1, 2, 3])]
-        for m1, m2 in cases:
-            G = nx.tadpole_graph(m1, m2)
-            assert len(G) == 7
-            assert G.size() == 7
+    @pytest.mark.parametrize(
+        ("m", "n"),
+        [(4, "abc"), ("abcd", 3), ([1, 2, 3, 4], "abc"), ("abcd", [1, 2, 3])],
+    )
+    def test_tadpole_graph_mixing_input_types(self, m, n):
+        expected = nx.compose(nx.cycle_graph(4), nx.path_graph(range(100, 103)))
+        expected.add_edge(0, 100)  # Connect cycle and path
+        assert is_isomorphic(nx.tadpole_graph(m, n), expected)
 
-    def test_tadpole_graph_not_int_integer_inputs(self):
-        # test non-int integers
+    def test_tadpole_graph_non_builtin_integers(self):
         np = pytest.importorskip("numpy")
         G = nx.tadpole_graph(np.int32(4), np.int64(3))
-        assert len(G) == 7
-        assert G.size() == 7
+        expected = nx.compose(nx.cycle_graph(4), nx.path_graph(range(100, 103)))
+        expected.add_edge(0, 100)  # Connect cycle and path
+        assert is_isomorphic(G, expected)
 
     def test_trivial_graph(self):
         assert nx.number_of_nodes(nx.trivial_graph()) == 1
