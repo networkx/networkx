@@ -16,18 +16,6 @@ from sklearn.cluster import SpectralClustering
 from matplotlib.lines import Line2D
 
 ###############################################################################
-# Create a sample plot.
-# ---------------------
-#
-# Temp plot for testing doc generation from
-# https://github.com/networkx/networkx/blob/main/examples/drawing/plot_simple_path.py
-
-G = nx.path_graph(8)
-pos = nx.spring_layout(G, seed=47)  # Seed layout for reproducibility
-nx.draw(G, pos=pos)
-plt.show()
-
-###############################################################################
 # Create an example 3D dataset "The Rings".
 # -----------------------------------------
 # The dataset is made of two entangled noisy rings in 3D.
@@ -85,7 +73,7 @@ for u in G.nodes:
 # get affinity matrix from spectral clustering
 
 # select the second half of the list of markers
-list_of_markers = Line2D.filled_markers[len(a_list) // 2 :]
+list_of_markers = Line2D.filled_markers[len(Line2D.filled_markers) // 2 :]
 
 # plot two subplots, one for predicted sample labels, one for predicted sample graph
 # Create 1x2 sub plots
@@ -116,13 +104,13 @@ ax.view_init(elev=6.0, azim=-22.0)
 ax = plt.subplot(gs[0, 1], projection="3d")
 ax.set_title("Data marked by clustering")
 array_of_markers = np.array(list_of_markers)[pred_labels.astype(int)]
-for i in range(len(array_of_markers)):
+for i, marker in enumerate(array_of_markers):
     ax.scatter(
         X[i, 0],
         X[i, 1],
         X[i, 2],
         s=26,
-        marker=array_of_markers[i],
+        marker=marker,
         alpha=0.8,
         color=X[i] / 255,
     )
@@ -178,12 +166,12 @@ pos = nx.spring_layout(
 nodes = np.array([pos[v] for v in G])
 edges = np.array([(pos[u], pos[v]) for u, v in G.edges()])
 point_size = int(800 / np.sqrt(len(nodes)))
-for i in range(len(array_of_markers)):
+for i, marker in enumerate(array_of_markers):
     ax.scatter(
         *nodes[i].T,
         s=point_size,
         color=X[i] / 255,
-        marker=array_of_markers[i],
+        marker=marker,
         alpha=0.5,
     )
 for vizedge, weight in zip(edges, weights):
