@@ -16,7 +16,7 @@ from matplotlib import animation
 # ----------------------------
 #
 # In this example, the frame update performs only a rotation of a 3D plot
-# of a given graph.
+# of a given graph.The commented out line with 'plt.show()' needs to be commented back in.
 
 
 def _frame_update(index):
