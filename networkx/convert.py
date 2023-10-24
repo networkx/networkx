@@ -167,7 +167,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
     # Includes containers (e.g. list, set, dict, etc.), generators, and
     # iterators (e.g. itertools.chain) of edges
 
-    if isinstance(data, (Collection, Generator, Iterator)):
+    if isinstance(data, Collection | Generator | Iterator):
         try:
             return from_edgelist(data, create_using=create_using)
         except Exception as err:
@@ -202,6 +202,7 @@ def to_dict_of_lists(G, nodelist=None):
     return d
 
 
+@nx._dispatch(graphs=None)
 def from_dict_of_lists(d, create_using=None):
     """Returns a graph from a dictionary of lists.
 
@@ -363,6 +364,7 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
     return dod
 
 
+@nx._dispatch(graphs=None)
 def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
     """Returns a graph from a dictionary of dictionaries.
 
@@ -467,6 +469,7 @@ def to_edgelist(G, nodelist=None):
     return G.edges(nodelist, data=True)
 
 
+@nx._dispatch(graphs=None)
 def from_edgelist(edgelist, create_using=None):
     """Returns a graph from a list of edges.
 

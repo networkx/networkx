@@ -59,6 +59,7 @@ def _raise_on_directed(func):
     return wrapper
 
 
+@nx._dispatch(graphs=None)
 def LCF_graph(n, shift_list, repeats, create_using=None):
     """
     Return the cubic graph specified in LCF notation.
@@ -125,6 +126,7 @@ def LCF_graph(n, shift_list, repeats, create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatch(graphs=None)
 def bull_graph(create_using=None):
     """
     Returns the Bull Graph
@@ -158,6 +160,7 @@ def bull_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatch(graphs=None)
 def chvatal_graph(create_using=None):
     """
     Returns the Chvátal Graph
@@ -202,6 +205,7 @@ def chvatal_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatch(graphs=None)
 def cubical_graph(create_using=None):
     """
     Returns the 3-regular Platonic Cubical Graph
@@ -244,6 +248,7 @@ def cubical_graph(create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def desargues_graph(create_using=None):
     """
     Returns the Desargues Graph
@@ -274,6 +279,7 @@ def desargues_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatch(graphs=None)
 def diamond_graph(create_using=None):
     """
     Returns the Diamond graph
@@ -302,6 +308,7 @@ def diamond_graph(create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def dodecahedral_graph(create_using=None):
     """
     Returns the Platonic Dodecahedral graph.
@@ -332,6 +339,7 @@ def dodecahedral_graph(create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def frucht_graph(create_using=None):
     """
     Returns the Frucht Graph.
@@ -378,6 +386,7 @@ def frucht_graph(create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def heawood_graph(create_using=None):
     """
     Returns the Heawood Graph, a (3,6) cage.
@@ -411,6 +420,7 @@ def heawood_graph(create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def hoffman_singleton_graph():
     """
     Returns the Hoffman-Singleton Graph.
@@ -454,6 +464,7 @@ def hoffman_singleton_graph():
 
 
 @_raise_on_directed
+@nx._dispatch(graphs=None)
 def house_graph(create_using=None):
     """
     Returns the House graph (square with triangle on top)
@@ -484,6 +495,7 @@ def house_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatch(graphs=None)
 def house_x_graph(create_using=None):
     """
     Returns the House graph with a cross inside the house square.
@@ -513,6 +525,7 @@ def house_x_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatch(graphs=None)
 def icosahedral_graph(create_using=None):
     """
     Returns the Platonic Icosahedral graph.
@@ -555,6 +568,7 @@ def icosahedral_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatch(graphs=None)
 def krackhardt_kite_graph(create_using=None):
     """
     Returns the Krackhardt Kite Social Network.
@@ -604,6 +618,7 @@ def krackhardt_kite_graph(create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def moebius_kantor_graph(create_using=None):
     """
     Returns the Moebius-Kantor graph.
@@ -633,6 +648,7 @@ def moebius_kantor_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatch(graphs=None)
 def octahedral_graph(create_using=None):
     """
     Returns the Platonic Octahedral graph.
@@ -667,6 +683,7 @@ def octahedral_graph(create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def pappus_graph():
     """
     Returns the Pappus graph.
@@ -690,6 +707,7 @@ def pappus_graph():
 
 
 @_raise_on_directed
+@nx._dispatch(graphs=None)
 def petersen_graph(create_using=None):
     """
     Returns the Petersen graph.
@@ -733,6 +751,7 @@ def petersen_graph(create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def sedgewick_maze_graph(create_using=None):
     """
     Return a small maze with a cycle.
@@ -765,6 +784,7 @@ def sedgewick_maze_graph(create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def tetrahedral_graph(create_using=None):
     """
     Returns the 3-regular Platonic Tetrahedral graph.
@@ -794,6 +814,7 @@ def tetrahedral_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatch(graphs=None)
 def truncated_cube_graph(create_using=None):
     """
     Returns the skeleton of the truncated cube.
@@ -851,6 +872,7 @@ def truncated_cube_graph(create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def truncated_tetrahedron_graph(create_using=None):
     """
     Returns the skeleton of the truncated Platonic tetrahedron.
@@ -881,6 +903,7 @@ def truncated_tetrahedron_graph(create_using=None):
 
 
 @_raise_on_directed
+@nx._dispatch(graphs=None)
 def tutte_graph(create_using=None):
     """
     Returns the Tutte graph.

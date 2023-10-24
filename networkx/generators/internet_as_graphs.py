@@ -397,6 +397,7 @@ class AS_graph_generator:
 
 
 @py_random_state(1)
+@nx._dispatch(graphs=None)
 def random_internet_as_graph(n, seed=None):
     """Generates a random undirected graph resembling the Internet AS network
 

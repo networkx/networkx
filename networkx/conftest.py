@@ -29,13 +29,13 @@ def pytest_addoption(parser):
         "--backend",
         action="store",
         default=None,
-        help="Run tests with a plugin by auto-converting nx graphs to backend graphs",
+        help="Run tests with a backend by auto-converting nx graphs to backend graphs",
     )
     parser.addoption(
         "--fallback-to-nx",
         action="store_true",
         default=False,
-        help="Run nx function if a plugin doesn't implement a dispatchable function"
+        help="Run nx function if a backend doesn't implement a dispatchable function"
         " (use with --backend)",
     )
 
@@ -51,14 +51,9 @@ def pytest_configure(config):
         if not fallback_to_nx:
             fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
         networkx.utils.backends._dispatch._fallback_to_nx = bool(fallback_to_nx)
-    # nx-loopback plugin is only available when testing
-    if sys.version_info < (3, 10):
-        plugins = (
-            ep for ep in entry_points()["networkx.plugins"] if ep.name == "nx-loopback"
-        )
-    else:
-        plugins = entry_points(name="nx-loopback", group="networkx.plugins")
-    networkx.utils.backends.plugins["nx-loopback"] = next(iter(plugins))
+    # nx-loopback backend is only available when testing
+    backends = entry_points(name="nx-loopback", group="networkx.backends")
+    networkx.utils.backends.backends["nx-loopback"] = next(iter(backends))
 
 
 def pytest_collection_modifyitems(config, items):
@@ -68,7 +63,7 @@ def pytest_collection_modifyitems(config, items):
     if automatic_backends := networkx.utils.backends._dispatch._automatic_backends:
         # Allow pluggable backends to add markers to tests (such as skip or xfail)
         # when running in auto-conversion test mode
-        backend = networkx.utils.backends.plugins[automatic_backends[0]].load()
+        backend = networkx.utils.backends.backends[automatic_backends[0]].load()
         if hasattr(backend, "on_start_tests"):
             getattr(backend, "on_start_tests")(items)
 
@@ -85,26 +80,7 @@ def pytest_collection_modifyitems(config, items):
 @pytest.fixture(autouse=True)
 def set_warnings():
     warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="literal_stringizer is deprecated",
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="literal_destringizer is deprecated",
-    )
-    # create_using for scale_free_graph
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="The create_using argument"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="nx.nx_pydot"
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="\n\nThe `attrs` keyword argument of node_link",
     )
     warnings.filterwarnings(
         "ignore",
@@ -120,6 +96,9 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="\nforest_str is deprecated"
     )
     warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nrandom_tree"
+    )
+    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="Edmonds has been deprecated"
     )
     warnings.filterwarnings(
@@ -129,6 +108,14 @@ def set_warnings():
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nThe `normalized`"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="function `join` is deprecated"
+    )
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message="\n\nstrongly_connected_components_recursive",
     )
 
 

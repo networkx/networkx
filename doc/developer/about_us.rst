@@ -147,6 +147,10 @@ to add your name to the bottom of the list.
 - Andrew Knyazev, GitHub: `lobpcg <https://github.com/lobpcg>`_, LinkedIn: `andrew-knyazev <https://www.linkedin.com/in/andrew-knyazev>`_
 - Luca Cappelletti, GitHub: `LucaCappelletti94 <https://github.com/LucaCappelletti94>`_
 - Sultan Orazbayev, GitHub: `SultanOrazbayev <https://github.com/SultanOrazbayev>`_, LinkedIn: `Sultan Orazbayev <https://www.linkedin.com/in/sultan-orazbayev/>`_
+- Paolo Boldi, Github: `https://github.com/boldip`
+- Davide D'Ascenzo, Github: `https://github.com/kidara`
+- Flavio Furia, Github: `https://github.com/flaviofuria`
+- Sebastiano Vigna, Github: `https://github.com/vigna`
 
 A supplementary (but still incomplete) list of contributors is given by the
 list of names that have commits in ``networkx``'s
