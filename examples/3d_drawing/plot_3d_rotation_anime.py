@@ -43,24 +43,26 @@ ani = animation.FuncAnimation(
 # plt.show()
 
 ###############################################################################
-# Random jumping on rotating 3D graph animation.
-# ----------------------------------------------
+# Random walk on rotating 3D graph animation.
+# -------------------------------------------
 #
 # The frame update can also draw a new plot in every frame giving the ultimate
 # flexibility at the cost of performance loss.
 
 
-def _frame_update(index):
     ax.clear()
     ax.scatter(*nodes.T, alpha=0.5, s=100)
     for vizedge in edges:
         ax.plot(*vizedge.T, color="tab:gray")
+    neighbors = list(G.neighbors(node[0]))
     if index % 5 == 0:
-        node = random.choice(nodes)
-    ax.scatter(*node, alpha=1, marker="s", color="red", s=100)
+        node[0] = random.choice(neighbors)
+    node0 = nodes[node[0]]
+    ax.scatter(*node0, alpha=1, marker="s", color="red", s=100)
     ax.view_init(index * 0.2, index * 0.5)
     ax.grid(False)
     ax.set_axis_off()
+    plt.tight_layout()
     return
 
 
@@ -69,6 +71,7 @@ ax = fig.add_subplot(111, projection="3d")
 ax.grid(False)
 ax.set_axis_off()
 plt.tight_layout()
+node = [0]
 ani = animation.FuncAnimation(
     fig, _frame_update, interval=20, cache_frame_data=False, frames=60,
 )
