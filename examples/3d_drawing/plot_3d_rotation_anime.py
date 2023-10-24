@@ -1,9 +1,16 @@
 """
-===========================
-3D Rotating Graph Animation
-===========================
+=========================================
+Animations of 3D rotation and random walk.
+=========================================
+Examples of 3D plots of a graph in the 3D spectral layout with animation. 
+Folloing 
+https://sphinx-gallery.github.io/stable/auto_examples/plot_8_animations.html
+using frame rotation of an initial plot of a graph as in 
+https://matplotlib.org/stable/api/animation_api.html
+or complete frame redraw to plot a random walk on the graph.
 
-3D animations illustrated.
+The commented out line with 'plt.show()' needs to be commented back in
+in both examples when running locally.
 """
 import numpy as np
 import networkx as nx
@@ -12,11 +19,32 @@ import matplotlib.pyplot as plt
 from matplotlib import animation
 
 ###############################################################################
+# Define a graph to plot.
+# -----------------------
+#
+# Pick up a graph to look good in 3D.
+
+G = nx.dodecahedral_graph()
+pos = nx.spectral_layout(G, dim=3)
+nodes = np.array([pos[v] for v in G])
+edges = np.array([(pos[u], pos[v]) for u, v in G.edges()])
+
+###############################################################################
 # Rotating 3D graph animation.
 # ----------------------------
 #
-# In this example, the frame update performs only a rotation of a 3D plot
-# of a given graph.The commented out line with 'plt.show()' needs to be commented back in.
+# In this example, a frame update is only a rotation of a 3D plot
+# of a given graph and animation uses `blit=True` for performance.
+
+
+def init():
+    ax.scatter(*nodes.T, alpha=0.5, s=100)
+    for vizedge in edges:
+        ax.plot(*vizedge.T, color="tab:gray")
+    ax.grid(False)
+    ax.set_axis_off()
+    plt.tight_layout()
+    return
 
 
 def _frame_update(index):
@@ -24,25 +52,17 @@ def _frame_update(index):
     return
 
 
-G = nx.dodecahedral_graph()
-pos = nx.spectral_layout(G, dim=3)
 fig = plt.figure()
 ax = fig.add_subplot(111, projection="3d")
-pos = nx.spectral_layout(G, dim=3)
-nodes = np.array([pos[v] for v in G])
-edges = np.array([(pos[u], pos[v]) for u, v in G.edges()])
-ax.scatter(*nodes.T, alpha=0.5, s=100)
-for vizedge in edges:
-    ax.plot(*vizedge.T, color="tab:gray")
-ax.grid(False)
-ax.set_axis_off()
-plt.tight_layout()
+
 ani = animation.FuncAnimation(
     fig,
+    init_func=init,
     _frame_update,
     interval=20,
     cache_frame_data=False,
     frames=60,
+    blit=True,
 )
 # plt.show()
 
