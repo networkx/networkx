@@ -3,7 +3,7 @@
 Image Segmentation via Spectral Graph Partitionioning
 =====================================================
 Example of partitioning a undirected graph obtained by `k-neighbors`
-from an RGB image into a two subgraphs using spectral clusering
+from an RGB image into two subgraphs using spectral clusering
 illustrated by 3D plots of the original labeled data points in RGB 3D space
 vs the bi-partition marking performed by graph partitioning via spectral clustering.
 Includes 3D plots of the graph in the spring and spectral layouts.
