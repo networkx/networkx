@@ -38,7 +38,7 @@ ax.grid(False)
 ax.set_axis_off()
 plt.tight_layout()
 ani = animation.FuncAnimation(
-    fig, _frame_update, interval=20, cache_frame_data=False
+    fig, _frame_update, interval=20, cache_frame_data=False, frames=60,
 )
 # plt.show()
 
@@ -70,6 +70,6 @@ ax.grid(False)
 ax.set_axis_off()
 plt.tight_layout()
 ani = animation.FuncAnimation(
-    fig, _frame_update, interval=20, cache_frame_data=False
+    fig, _frame_update, interval=20, cache_frame_data=False, frames=60,
 )
 # plt.show()
