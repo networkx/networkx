@@ -85,13 +85,13 @@ ax = plt.subplot(gs[0, 0], projection="3d")
 ax.set_title("Original labeled RGB data")
 array_of_markers = np.array(list_of_markers)[Y.astype(int)]
 # `marker` parameter does not support list or array format, needs a loop
-for i in range(len(array_of_markers)):
+for i, marker in enumerate(array_of_markers):
     ax.scatter(
         X[i, 0],
         X[i, 1],
         X[i, 2],
         s=26,
-        marker=array_of_markers[i],
+        marker=marker,
         alpha=0.8,
         color=X[i] / 255,
     )
