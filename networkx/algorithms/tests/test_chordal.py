@@ -1,8 +1,6 @@
 import pytest
 
 import networkx as nx
-from networkx.algorithms.chordal import generate_peo
-
 
 class TestMCS:
     @classmethod
