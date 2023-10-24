@@ -58,7 +58,7 @@ for i in np.arange(X.shape[1]):
 # The graph is constructed using the "nearest_neighbors" and the two clusters
 # are determined by spectral clustering/graph partitioning.
 num_clusters = 2
-spectralClustering = SpectralClustering(
+sc = SpectralClustering(
     n_clusters=num_clusters,
     affinity="nearest_neighbors",
     random_state=4242,
