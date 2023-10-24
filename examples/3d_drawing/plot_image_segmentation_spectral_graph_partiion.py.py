@@ -93,7 +93,7 @@ for i, marker in enumerate(array_of_markers):
         s=26,
         marker=marker,
         alpha=0.8,
-        color=X[i] / 255,
+        color=tuple(X[i] / 255),
     )
 ax.set_xlabel("Red")
 ax.set_ylabel("Green")
@@ -112,7 +112,7 @@ for i, marker in enumerate(array_of_markers):
         s=26,
         marker=marker,
         alpha=0.8,
-        color=X[i] / 255,
+        ccolor=tuple(X[i] / 255),
     )
 ax.set_xlabel("Red")
 ax.set_ylabel("Green")
@@ -170,7 +170,7 @@ for i, marker in enumerate(array_of_markers):
     ax.scatter(
         *nodes[i].T,
         s=point_size,
-        color=X[i] / 255,
+        color=tuple(X[i] / 255),
         marker=marker,
         alpha=0.5,
     )
