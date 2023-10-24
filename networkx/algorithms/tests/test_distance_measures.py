@@ -423,7 +423,7 @@ class TestResistanceDistance:
         assert round(rd[1][3], 5) == 1
 
 
-class TestKirchhoffIndex:
+class TestEffectiveGraphResistance:
     @classmethod
     def setup_class(cls):
         global np
@@ -436,76 +436,76 @@ class TestKirchhoffIndex:
         G.add_edge(2, 3, weight=4)
         self.G = G
 
-    def test_kirchhoff_index_directed_graph(self):
+    def test_effective_graph_resistance_directed_graph(self):
         G = nx.DiGraph()
         with pytest.raises(nx.NetworkXNotImplemented):
-            nx.kirchhoff_index(G)
+            nx.effective_graph_resistance(G)
 
-    def test_kirchhoff_index_empty(self):
+    def test_effective_graph_resistance_empty(self):
         G = nx.Graph()
         with pytest.raises(nx.NetworkXError):
-            nx.kirchhoff_index(G)
+            nx.effective_graph_resistance(G)
 
-    def test_kirchhoff_index_not_connected(self):
+    def test_effective_graph_resistance_not_connected(self):
         G = nx.Graph([(1, 2), (3, 4)])
-        Kf = nx.kirchhoff_index(G)
-        assert np.isinf(Kf)
+        RG = nx.effective_graph_resistance(G)
+        assert np.isinf(RG)
 
-    def test_kirchhoff_index(self):
-        Kf = nx.kirchhoff_index(self.G, "weight", True)
+    def test_effective_graph_resistance(self):
+        RG = nx.effective_graph_resistance(self.G, "weight", True)
         rd12 = 1 / (1 / (1 + 4) + 1 / 2)
         rd13 = 1 / (1 / (1 + 2) + 1 / 4)
         rd23 = 1 / (1 / (2 + 4) + 1 / 1)
-        assert np.isclose(Kf, rd12 + rd13 + rd23)
+        assert np.isclose(RG, rd12 + rd13 + rd23)
 
-    def test_kirchhoff_index_noinv(self):
-        Kf = nx.kirchhoff_index(self.G, "weight", False)
+    def test_effective_graph_resistance_noinv(self):
+        RG = nx.effective_graph_resistance(self.G, "weight", False)
         rd12 = 1 / (1 / (1 / 1 + 1 / 4) + 1 / (1 / 2))
         rd13 = 1 / (1 / (1 / 1 + 1 / 2) + 1 / (1 / 4))
         rd23 = 1 / (1 / (1 / 2 + 1 / 4) + 1 / (1 / 1))
-        assert np.isclose(Kf, rd12 + rd13 + rd23)
+        assert np.isclose(RG, rd12 + rd13 + rd23)
 
-    def test_kirchhoff_index_no_weight(self):
-        Kf = nx.kirchhoff_index(self.G)
-        assert np.isclose(Kf, 2)
+    def test_effective_graph_resistance_no_weight(self):
+        RG = nx.effective_graph_resistance(self.G)
+        assert np.isclose(RG, 2)
 
-    def test_kirchhoff_index_neg_weight(self):
+    def test_effective_graph_resistance_neg_weight(self):
         self.G[2][3]["weight"] = -4
-        Kf = nx.kirchhoff_index(self.G, "weight", True)
+        RG = nx.effective_graph_resistance(self.G, "weight", True)
         rd12 = 1 / (1 / (1 + -4) + 1 / 2)
         rd13 = 1 / (1 / (1 + 2) + 1 / (-4))
         rd23 = 1 / (1 / (2 + -4) + 1 / 1)
-        assert np.isclose(Kf, rd12 + rd13 + rd23)
+        assert np.isclose(RG, rd12 + rd13 + rd23)
 
-    def test_kirchhoff_index_multigraph(self):
+    def test_effective_graph_resistance_multigraph(self):
         G = nx.MultiGraph()
         G.add_edge(1, 2, weight=2)
         G.add_edge(1, 3, weight=1)
         G.add_edge(2, 3, weight=1)
         G.add_edge(2, 3, weight=3)
-        Kf = nx.kirchhoff_index(G, "weight", True)
+        RG = nx.effective_graph_resistance(G, "weight", True)
         edge23 = 1 / (1 / 1 + 1 / 3)
         rd12 = 1 / (1 / (1 + edge23) + 1 / 2)
         rd13 = 1 / (1 / (1 + 2) + 1 / edge23)
         rd23 = 1 / (1 / (2 + edge23) + 1 / 1)
-        assert np.isclose(Kf, rd12 + rd13 + rd23)
+        assert np.isclose(RG, rd12 + rd13 + rd23)
 
-    def test_kirchhoff_index_div0(self):
+    def test_effective_graph_resistance_div0(self):
         with pytest.raises(ZeroDivisionError):
             self.G[1][2]["weight"] = 0
-            nx.kirchhoff_index(self.G, "weight")
+            nx.effective_graph_resistance(self.G, "weight")
 
-    def test_kirchhoff_index_complete_graph(self):
+    def test_effective_graph_resistance_complete_graph(self):
         N = 10
         G = nx.complete_graph(N)
-        Kf = nx.kirchhoff_index(G)
-        assert np.isclose(Kf, N - 1)
+        RG = nx.effective_graph_resistance(G)
+        assert np.isclose(RG, N - 1)
 
-    def test_kirchhoff_index_path_graph(self):
+    def test_effective_graph_resistance_path_graph(self):
         N = 10
         G = nx.path_graph(N)
-        Kf = nx.kirchhoff_index(G)
-        assert np.isclose(Kf, (N - 1) * N * (N + 1) // 6)
+        RG = nx.effective_graph_resistance(G)
+        assert np.isclose(RG, (N - 1) * N * (N + 1) // 6)
 
 
 class TestBarycenter:

@@ -11,8 +11,8 @@ __all__ = [
     "center",
     "barycenter",
     "resistance_distance",
-    "kirchhoff_index",
     "kemeny_constant",
+    "effective_graph_resistance",
 ]
 
 
@@ -817,17 +817,17 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
 
 @not_implemented_for("directed")
 @nx._dispatch(edge_attrs="weight")
-def kirchhoff_index(G, weight=None, invert_weight=True):
-    """Returns the Kirchhoff index of G.
+def effective_graph_resistance(G, weight=None, invert_weight=True):
+    """Returns the Effective graph resistance of G.
 
-    Also known as the Effective graph resistance.
+    Also known as the Kirchhoff index.
 
-    The Kirchhoff index is defined as the sum
+    The effective graph resistance is defined as the sum
     of the resistance distance of every node pair in G [1]_.
 
     If weight is not provided, then a weight of 1 is used for all edges.
 
-    The Kirchhoff index of a disconnected graph is infinite.
+    The effective graph resistance of a disconnected graph is infinite.
 
     Parameters
     ----------
@@ -835,7 +835,7 @@ def kirchhoff_index(G, weight=None, invert_weight=True):
        A graph
 
     weight : string or None, optional (default=None)
-       The edge data key used to compute the resistance distance.
+       The edge data key used to compute the effective graph resistance.
        If None, then each edge has weight 1.
 
     invert_weight : boolean (default=True)
@@ -845,8 +845,8 @@ def kirchhoff_index(G, weight=None, invert_weight=True):
 
     Returns
     -------
-    Kf : float
-        The Kirchhoff index of `G`.
+    RG : float
+        The effective graph resistance of `G`.
 
     Raises
     -------
@@ -859,7 +859,7 @@ def kirchhoff_index(G, weight=None, invert_weight=True):
     Examples
     --------
     >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
-    >>> round(nx.kirchhoff_index(G), 10)
+    >>> round(nx.effective_graph_resistance(G), 10)
     10.25
 
     Notes
@@ -881,7 +881,7 @@ def kirchhoff_index(G, weight=None, invert_weight=True):
     if len(G) == 0:
         raise nx.NetworkXError("Graph G must contain at least one node.")
 
-    # Disconnected graphs have infinite Kirchhoff index
+    # Disconnected graphs have infinite Effective graph resistance
     if not nx.is_connected(G):
         return np.inf
 
@@ -898,7 +898,7 @@ def kirchhoff_index(G, weight=None, invert_weight=True):
     # Get Laplacian eigenvalues
     mu = np.sort(nx.laplacian_spectrum(G, weight=weight))
 
-    # Compute Kirchhoff index based on spectrum of the Laplacian
+    # Compute Effective graph resistance based on spectrum of the Laplacian
     # Self-loops are ignored
     return np.sum(1 / mu[1:]) * G.number_of_nodes()
 
