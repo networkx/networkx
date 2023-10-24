@@ -4,4 +4,3 @@ contextily>=1.2
 seaborn>=0.12
 cairocffi>=1.4
 igraph>=0.10
-sklearn>=1.3
