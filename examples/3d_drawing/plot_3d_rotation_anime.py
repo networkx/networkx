@@ -33,14 +33,13 @@ edges = np.array([(pos[u], pos[v]) for u, v in G.edges()])
 # Rotating 3D graph animation.
 # ----------------------------
 #
-# In this example, a frame update is only a rotation of a 3D plot
-# of a given graph and animation uses `blit=True` for performance.
+# In this example, a frame update is only a rotation of a given 3D graph.
 
 
 def init():
-    ax.scatter(*nodes.T, alpha=0.5, s=100)
+    ax.scatter(*nodes.T, alpha=0.2, s=100, color="blue")
     for vizedge in edges:
-        ax.plot(*vizedge.T, color="tab:gray")
+        ax.plot(*vizedge.T, color="gray")
     ax.grid(False)
     ax.set_axis_off()
     plt.tight_layout()
@@ -57,12 +56,10 @@ ax = fig.add_subplot(111, projection="3d")
 
 ani = animation.FuncAnimation(
     fig,
-    init_func=init,
     _frame_update,
-    interval=20,
+    init_func=init,
+    interval=50,
     cache_frame_data=False,
-    frames=60,
-    blit=True,
 )
 # plt.show()
 
@@ -76,9 +73,9 @@ ani = animation.FuncAnimation(
 
 def _frame_update(index):
     ax.clear()
-    ax.scatter(*nodes.T, alpha=0.5, s=100)
+    ax.scatter(*nodes.T, alpha=0.2, s=100, color="blue")
     for vizedge in edges:
-        ax.plot(*vizedge.T, color="tab:gray")
+        ax.plot(*vizedge.T, color="gray")
     neighbors = list(G.neighbors(node[0]))
     if index % 5 == 0:
         node[0] = random.choice(neighbors)
@@ -100,8 +97,8 @@ node = [0]
 ani = animation.FuncAnimation(
     fig,
     _frame_update,
-    interval=20,
+    interval=50,
     cache_frame_data=False,
-    frames=60,
+    frames=100,
 )
 # plt.show()
