@@ -584,27 +584,32 @@ def ladder_graph(n, create_using=None):
 @nodes_or_number([0, 1])
 @nx._dispatch(graphs=None)
 def lollipop_graph(m, n, create_using=None):
-    """Returns the Lollipop Graph; `K_m` connected to `P_n`.
+    """Returns the Lollipop Graph; ``K_m`` connected to ``P_n``.
 
     This is the Barbell Graph without the right barbell.
 
     Parameters
     ----------
-    m, n : int or iterable container of nodes (default = 0)
-        If an integer, nodes are from `range(m)` and `range(m,m+n)`.
+    m, n : int or iterable container of nodes
+        If an integer, nodes are from ``range(m)`` and ``range(m, m+n)``.
         If a container of nodes, those nodes appear in the graph.
-        Warning: m and n are not checked for duplicates and if present the
+        Warning: `m` and `n` are not checked for duplicates and if present the
         resulting graph may not be as desired. Make sure you have no duplicates.
 
-        The nodes for m appear in the complete graph $K_m$ and the nodes
-        for n appear in the path $P_n$
+        The nodes for `m` appear in the complete graph $K_m$ and the nodes
+        for `n` appear in the path $P_n$
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
+    Returns
+    -------
+    Networkx graph
+       A complete graph with `m` nodes connected to a path of length `n`.
+
     Notes
     -----
-    The 2 subgraphs are joined via an edge (m-1, m).
-    If n=0, this is merely a complete graph.
+    The 2 subgraphs are joined via an edge ``(m-1, m)``.
+    If ``n=0``, this is merely a complete graph.
 
     (This graph is an extremal example in David Aldous and Jim
     Fill's etext on Random Walks on Graphs.)
