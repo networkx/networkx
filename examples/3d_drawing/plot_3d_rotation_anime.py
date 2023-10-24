@@ -50,6 +50,7 @@ ani = animation.FuncAnimation(
 # flexibility at the cost of performance loss.
 
 
+def _frame_update(index):
     ax.clear()
     ax.scatter(*nodes.T, alpha=0.5, s=100)
     for vizedge in edges:
