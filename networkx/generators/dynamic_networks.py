@@ -43,7 +43,7 @@ def gradient_network(
     scalar_field_distance: str Callable[[], int | float]. Default: 'distance'.
         The attribute name for the source of the scalar field distance.
     ascending: bool
-        Choose ascending or descending gradient graph. Default: True.
+        Choose an ascending (True) or descending (False) gradient graph. Default: True.
 
     Returns
     -------
