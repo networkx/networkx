@@ -41,6 +41,20 @@ for i in np.arange(X.shape[1]):
     X[:, i] = np.round(255 * (x - min_x) / (max_x - min_x))
 
 ###############################################################################
+# Plot the RGB dataset as an image.
+# ---------------------------------
+# Each of the 128 3D data points can be treated as RGB values of a pixel.
+# We illustrate the dataset plotting it as an image with 8x16 pixels,
+# with the pixels randomly placed in the 8x16 grid.
+# The fine structure in the data is not visually detectable in the image.
+
+perm = np.random.permutation(X.shape[0])
+rgb_array = X[perm, :].reshape(8, 16, 3).astype(int)
+fig, ax = plt.subplots()
+ax.matshow(rgb_array)
+plt.show()
+
+###############################################################################
 # Generate the graph and determine the two clusters.
 # --------------------------------------------------
 # The graph is constructed using the "nearest_neighbors" and the two clusters
