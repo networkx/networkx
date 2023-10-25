@@ -903,6 +903,9 @@ def complete_multipartite_graph(*subset_sizes):
         subsets = [range(start, end) for start, end in extents]
     except TypeError:
         subsets = subset_sizes
+    else:
+        if any(size < 0 for size in subset_sizes):
+            raise NetworkXError(f"Negative number of nodes not valid: {subset_sizes}")
 
     # add nodes with subset attribute
     # while checking that ints are not mixed with iterables
