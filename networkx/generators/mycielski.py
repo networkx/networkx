@@ -101,7 +101,7 @@ def mycielski_graph(n):
     """
 
     if n < 1:
-        raise nx.NetworkXError("must satisfy n >= 0")
+        raise nx.NetworkXError("must satisfy n >= 1")
 
     if n == 1:
         return nx.empty_graph(1)
