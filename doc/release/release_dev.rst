@@ -46,9 +46,15 @@ API Changes
   ``get_edge_attributes``. The ``default`` keyword can be used to set
   a default value if the attribute is missing from a node/edge.
 
+- [`#6908 <https://github.com/networkx/networkx/pull/6908>`_]
+  Rename `join` as `join_trees` in `algorithms.tree.operations.py`.
 
 Deprecations
 ------------
+- [`#6758 <https://github.com/networkx/networkx/pull/6758>`_]
+  Remove `random_tree` and replace with the new `random_labeled_tree`.
+  In the newly named version, the argument `create_using` is no longer
+  available and `seed` is now keyword-only.
 
 - [`#5925 <https://github.com/networkx/networkx/issues/5925>`_]
   The ``sort_neighbors`` input argument of ``nx.generic_bfs_edges`` is deprecated

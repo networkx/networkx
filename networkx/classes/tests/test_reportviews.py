@@ -872,8 +872,12 @@ class TestMultiEdgeView(TestEdgeView):
             assert len(e) == 3
         elist = sorted([(i, i + 1, 0) for i in range(8)] + [(1, 2, 3)])
         assert sorted(ev) == elist
-        # test order of arguments:graph, nbunch, data, keys, default
-        ev = evr((1, 2), "foo", True, 1)
+        # test that the keyword arguments are passed correctly
+        ev = evr((1, 2), "foo", keys=True, default=1)
+        with pytest.raises(TypeError):
+            evr((1, 2), "foo", True, 1)
+        with pytest.raises(TypeError):
+            evr((1, 2), "foo", True, default=1)
         for e in ev:
             if set(e[:2]) == {1, 2}:
                 assert e[2] in {0, 3}

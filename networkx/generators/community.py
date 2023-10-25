@@ -591,7 +591,7 @@ def stochastic_block_model(
         if len(nodelist) != len(set(nodelist)):
             raise nx.NetworkXException("nodelist contains duplicate.")
     else:
-        nodelist = range(0, sum(sizes))
+        nodelist = range(sum(sizes))
 
     # Setup the graph conditionally to the directed switch.
     block_range = range(len(sizes))
@@ -602,10 +602,10 @@ def stochastic_block_model(
         g = nx.Graph()
         block_iter = itertools.combinations_with_replacement(block_range, 2)
     # Split nodelist in a partition (list of sets).
-    size_cumsum = [sum(sizes[0:x]) for x in range(0, len(sizes) + 1)]
+    size_cumsum = [sum(sizes[0:x]) for x in range(len(sizes) + 1)]
     g.graph["partition"] = [
         set(nodelist[size_cumsum[x] : size_cumsum[x + 1]])
-        for x in range(0, len(size_cumsum) - 1)
+        for x in range(len(size_cumsum) - 1)
     ]
     # Setup nodes and graph name
     for block_id, nodes in enumerate(g.graph["partition"]):

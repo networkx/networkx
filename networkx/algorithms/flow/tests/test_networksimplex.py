@@ -1,4 +1,5 @@
 import bz2
+import importlib.resources
 import os
 import pickle
 
@@ -141,7 +142,11 @@ def test_google_or_tools_example2():
 
 
 def test_large():
-    fname = os.path.join(os.path.dirname(__file__), "netgen-2.gpickle.bz2")
+    fname = (
+        importlib.resources.files("networkx.algorithms.flow.tests")
+        / "netgen-2.gpickle.bz2"
+    )
+
     with bz2.BZ2File(fname, "rb") as f:
         G = pickle.load(f)
     flowCost, flowDict = nx.network_simplex(G)

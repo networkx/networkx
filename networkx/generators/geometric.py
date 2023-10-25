@@ -19,8 +19,8 @@ __all__ = [
 ]
 
 
-@nx._dispatch(preserve_node_attrs={"G": {"pos": None}})
-def geometric_edges(G, radius, p=2):
+@nx._dispatch(node_attrs="pos_name")
+def geometric_edges(G, radius, p=2, *, pos_name="pos"):
     """Returns edge list of node pairs within `radius` of each other.
 
     Parameters
@@ -32,6 +32,9 @@ def geometric_edges(G, radius, p=2):
     radius : scalar
         The distance threshold. Edges are included in the edge list if the
         distance between the two nodes is less than `radius`.
+    pos_name : string, default="pos"
+        The name of the node attribute which represents the position of each
+        node in 2D coordinates. Every node in the Graph must have this attribute.
     p : scalar, default=2
         The `Minkowski distance metric
         <https://en.wikipedia.org/wiki/Minkowski_distance>`_ used to compute
@@ -68,25 +71,25 @@ def geometric_edges(G, radius, p=2):
     [(0, 1), (0, 2), (1, 2)]
     """
     # Input validation - every node must have a "pos" attribute
-    for n, pos in G.nodes(data="pos"):
+    for n, pos in G.nodes(data=pos_name):
         if pos is None:
             raise nx.NetworkXError(
-                f"All nodes in `G` must have a 'pos' attribute. Check node {n}"
+                f"Node {n} (and all nodes) must have a '{pos_name}' attribute."
             )
 
     # NOTE: See _geometric_edges for the actual implementation. The reason this
     # is split into two functions is to avoid the overhead of input validation
     # every time the function is called internally in one of the other
     # geometric generators
-    return _geometric_edges(G, radius, p)
+    return _geometric_edges(G, radius, p, pos_name)
 
 
-def _geometric_edges(G, radius, p=2):
+def _geometric_edges(G, radius, p, pos_name):
     """
     Implements `geometric_edges` without input validation. See `geometric_edges`
     for complete docstring.
     """
-    nodes_pos = G.nodes(data="pos")
+    nodes_pos = G.nodes(data=pos_name)
     try:
         import scipy as sp
     except ImportError:
@@ -107,7 +110,9 @@ def _geometric_edges(G, radius, p=2):
 
 
 @py_random_state(5)
-def random_geometric_graph(n, radius, dim=2, pos=None, p=2, seed=None):
+def random_geometric_graph(
+    n, radius, dim=2, pos=None, p=2, seed=None, *, pos_name="pos"
+):
     """Returns a random geometric graph in the unit cube of dimensions `dim`.
 
     The random geometric graph model places `n` nodes uniformly at
@@ -138,6 +143,9 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2, seed=None):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    pos_name : string, default="pos"
+        The name of the node attribute which represents the position
+        in 2D coordinates of the node in the returned graph.
 
     Returns
     -------
@@ -188,15 +196,15 @@ def random_geometric_graph(n, radius, dim=2, pos=None, p=2, seed=None):
     # Euclidean space of the specified dimension.
     if pos is None:
         pos = {v: [seed.random() for i in range(dim)] for v in G}
-    nx.set_node_attributes(G, pos, "pos")
+    nx.set_node_attributes(G, pos, pos_name)
 
-    G.add_edges_from(_geometric_edges(G, radius, p))
+    G.add_edges_from(_geometric_edges(G, radius, p, pos_name))
     return G
 
 
 @py_random_state(6)
 def soft_random_geometric_graph(
-    n, radius, dim=2, pos=None, p=2, p_dist=None, seed=None
+    n, radius, dim=2, pos=None, p=2, p_dist=None, seed=None, *, pos_name="pos"
 ):
     r"""Returns a soft random geometric graph in the unit cube.
 
@@ -243,6 +251,9 @@ def soft_random_geometric_graph(
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    pos_name : string, default="pos"
+        The name of the node attribute which represents the position
+        in 2D coordinates of the node in the returned graph.
 
     Returns
     -------
@@ -302,7 +313,7 @@ def soft_random_geometric_graph(
     # Euclidean space of the specified dimension.
     if pos is None:
         pos = {v: [seed.random() for i in range(dim)] for v in G}
-    nx.set_node_attributes(G, pos, "pos")
+    nx.set_node_attributes(G, pos, pos_name)
 
     # if p_dist function not supplied the default function is an exponential
     # distribution with rate parameter :math:`\lambda=1`.
@@ -316,13 +327,23 @@ def soft_random_geometric_graph(
         dist = (sum(abs(a - b) ** p for a, b in zip(pos[u], pos[v]))) ** (1 / p)
         return seed.random() < p_dist(dist)
 
-    G.add_edges_from(filter(should_join, _geometric_edges(G, radius, p)))
+    G.add_edges_from(filter(should_join, _geometric_edges(G, radius, p, pos_name)))
     return G
 
 
 @py_random_state(7)
 def geographical_threshold_graph(
-    n, theta, dim=2, pos=None, weight=None, metric=None, p_dist=None, seed=None
+    n,
+    theta,
+    dim=2,
+    pos=None,
+    weight=None,
+    metric=None,
+    p_dist=None,
+    seed=None,
+    *,
+    pos_name="pos",
+    weight_name="weight",
 ):
     r"""Returns a geographical threshold graph.
 
@@ -384,6 +405,12 @@ def geographical_threshold_graph(
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    pos_name : string, default="pos"
+        The name of the node attribute which represents the position
+        in 2D coordinates of the node in the returned graph.
+    weight_name : string, default="weight"
+        The name of the node attribute which represents the weight
+        of the node in the returned graph.
 
     Returns
     -------
@@ -448,8 +475,8 @@ def geographical_threshold_graph(
     # If no distance metric is provided, use Euclidean distance.
     if metric is None:
         metric = math.dist
-    nx.set_node_attributes(G, weight, "weight")
-    nx.set_node_attributes(G, pos, "pos")
+    nx.set_node_attributes(G, weight, weight_name)
+    nx.set_node_attributes(G, pos, pos_name)
 
     # if p_dist is not supplied, use default r^-2
     if p_dist is None:
@@ -472,7 +499,15 @@ def geographical_threshold_graph(
 
 @py_random_state(6)
 def waxman_graph(
-    n, beta=0.4, alpha=0.1, L=None, domain=(0, 0, 1, 1), metric=None, seed=None
+    n,
+    beta=0.4,
+    alpha=0.1,
+    L=None,
+    domain=(0, 0, 1, 1),
+    metric=None,
+    seed=None,
+    *,
+    pos_name="pos",
 ):
     r"""Returns a Waxman random graph.
 
@@ -526,6 +561,9 @@ def waxman_graph(
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    pos_name : string, default="pos"
+        The name of the node attribute which represents the position
+        in 2D coordinates of the node in the returned graph.
 
     Returns
     -------
@@ -562,7 +600,7 @@ def waxman_graph(
     (xmin, ymin, xmax, ymax) = domain
     # Each node gets a uniformly random position in the given rectangle.
     pos = {v: (seed.uniform(xmin, xmax), seed.uniform(ymin, ymax)) for v in G}
-    nx.set_node_attributes(G, pos, "pos")
+    nx.set_node_attributes(G, pos, pos_name)
     # If no distance metric is provided, use Euclidean distance.
     if metric is None:
         metric = math.dist
@@ -665,7 +703,17 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
 
 @py_random_state(7)
 def thresholded_random_geometric_graph(
-    n, radius, theta, dim=2, pos=None, weight=None, p=2, seed=None
+    n,
+    radius,
+    theta,
+    dim=2,
+    pos=None,
+    weight=None,
+    p=2,
+    seed=None,
+    *,
+    pos_name="pos",
+    weight_name="weight",
 ):
     r"""Returns a thresholded random geometric graph in the unit cube.
 
@@ -707,6 +755,12 @@ def thresholded_random_geometric_graph(
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    pos_name : string, default="pos"
+        The name of the node attribute which represents the position
+        in 2D coordinates of the node in the returned graph.
+    weight_name : string, default="weight"
+        The name of the node attribute which represents the weight
+        of the node in the returned graph.
 
     Returns
     -------
@@ -774,12 +828,12 @@ def thresholded_random_geometric_graph(
     if pos is None:
         pos = {v: [seed.random() for i in range(dim)] for v in G}
     # If no distance metric is provided, use Euclidean distance.
-    nx.set_node_attributes(G, weight, "weight")
-    nx.set_node_attributes(G, pos, "pos")
+    nx.set_node_attributes(G, weight, weight_name)
+    nx.set_node_attributes(G, pos, pos_name)
 
     edges = (
         (u, v)
-        for u, v in _geometric_edges(G, radius, p)
+        for u, v in _geometric_edges(G, radius, p, pos_name)
         if weight[u] + weight[v] >= theta
     )
     G.add_edges_from(edges)
