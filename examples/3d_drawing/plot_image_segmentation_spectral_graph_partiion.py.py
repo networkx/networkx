@@ -11,7 +11,6 @@ All 3D plots use the 3D spectral layout.
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
-from matplotlib import gridspec
 from matplotlib.lines import Line2D
 from sklearn.cluster import SpectralClustering
 
@@ -83,22 +82,20 @@ for u in G.nodes:
 ###############################################################################
 # Generate the plots of the data.
 # -------------------------------
-# The data points are marked according to the original labels and via clustering.
-# get affinity matrix from spectral clustering
+# The data points are marked according to the original labels (left panel)
+# and via clustering (right panel).
 
-# select the second half of the list of markers
+# select the second half of the list of markers for better visibility
 list_of_markers = Line2D.filled_markers[len(Line2D.filled_markers) // 2 :]
 
-gs = gridspec.GridSpec(1, 2)
 fig = plt.figure(figsize=(10, 5))
 fig.suptitle("Spectral Clustering as Graph Partitioning Illustrated", fontsize=20)
-
-ax = plt.subplot(gs[0, 0], projection="3d")
-ax.set_title("Original labeled RGB data")
+ax0 = fig.add_subplot(1, 2, 1, projection='3d')
+ax0.set_title("Original labeled RGB data")
 array_of_markers = np.array(list_of_markers)[Y.astype(int)]
 # `marker` parameter does not support list or array format, needs a loop
 for i, marker in enumerate(array_of_markers):
-    ax.scatter(
+    ax0.scatter(
         X[i, 0],
         X[i, 1],
         X[i, 2],
@@ -107,17 +104,17 @@ for i, marker in enumerate(array_of_markers):
         alpha=0.8,
         color=tuple(X[i] / 255),
     )
-ax.set_xlabel("Red")
-ax.set_ylabel("Green")
-ax.set_zlabel("Blue")
-ax.grid(False)
-ax.view_init(elev=6.0, azim=-22.0)
+ax0.set_xlabel("Red")
+ax0.set_ylabel("Green")
+ax0.set_zlabel("Blue")
+ax0.grid(False)
+ax0.view_init(elev=6.0, azim=-22.0)
 
-ax = plt.subplot(gs[0, 1], projection="3d")
-ax.set_title("Data marked by clustering")
+ax1 = fig.add_subplot(1, 2, 2, projection='3d')
+ax1.set_title("Data marked by clustering")
 array_of_markers = np.array(list_of_markers)[pred_labels.astype(int)]
 for i, marker in enumerate(array_of_markers):
-    ax.scatter(
+    ax1.scatter(
         X[i, 0],
         X[i, 1],
         X[i, 2],
@@ -126,25 +123,24 @@ for i, marker in enumerate(array_of_markers):
         alpha=0.8,
         color=tuple(X[i] / 255),
     )
-ax.set_xlabel("Red")
-ax.set_ylabel("Green")
-ax.set_zlabel("Blue")
-ax.grid(False)
-ax.view_init(elev=6.0, azim=-22.0)
+ax1.set_xlabel("Red")
+ax1.set_ylabel("Green")
+ax1.set_zlabel("Blue")
+ax1.grid(False)
+ax1.view_init(elev=6.0, azim=-22.0)
 plt.show()
 
 ###############################################################################
 # Generate the plots of the graph.
-# ---------------------------------
+# --------------------------------
 # The nodes of the graph are marked according to clustering.
 
 # get affinity matrix from spectral clustering
 weights = [d["weight"] for u, v, d in G.edges(data=True)]
 
-gs = gridspec.GridSpec(1, 2)
 fig = plt.figure(figsize=(10, 5))
-ax = plt.subplot(gs[0, 0])
-ax.set_title("Graph of Affinity Matrix by k-neighbors in spectral layout")
+ax0 = fig.add_subplot(1, 2, 1)
+ax0.set_title("Graph of Affinity Matrix by k-neighbors in spectral layout")
 pos = nx.spectral_layout(G)
 nx.draw_networkx(
     G,
@@ -152,23 +148,22 @@ nx.draw_networkx(
     alpha=0.5,
     node_size=50,
     with_labels=False,
-    ax=ax,
+    ax=ax0,
     node_color=X / 255,
-    edge_color=weights,
-    edge_cmap=plt.cm.Greys,
+    edge_color="Grey",
 )
 plt.box(False)
-ax.grid(False)
-ax.set_axis_off()
+ax0.grid(False)
+ax0.set_axis_off()
 
-ax = fig.add_subplot(gs[0, 1], projection="3d")
-ax.set_title("Partitioned graph by spectral clustering")
+ax1 = fig.add_subplot(1, 2, 2, projection='3d')
+ax1.set_title("Partitioned graph by spectral clustering")
 pos = nx.spectral_layout(G, dim=3)
 nodes = np.array([pos[v] for v in G])
 edges = np.array([(pos[u], pos[v]) for u, v in G.edges()])
 point_size = int(800 / np.sqrt(len(nodes)))
 for i, marker in enumerate(array_of_markers):
-    ax.scatter(
+    ax1.scatter(
         *nodes[i].T,
         s=point_size,
         color=tuple(X[i] / 255),
@@ -176,9 +171,9 @@ for i, marker in enumerate(array_of_markers):
         alpha=0.5,
     )
 for vizedge, weight in zip(edges, weights):
-    ax.plot(*vizedge.T, color="tab:gray", linewidth=weight, alpha=weight)
-ax.view_init(elev=130.0, azim=-6.0)
-ax.grid(False)
-ax.set_axis_off()
+    ax1.plot(*vizedge.T, color="tab:gray", linewidth=weight, alpha=weight)
+ax1.view_init(elev=100.0, azim=-100.0)
+ax1.grid(False)
+ax1.set_axis_off()
 plt.tight_layout()
 plt.show()
