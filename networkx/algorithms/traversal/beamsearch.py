@@ -17,7 +17,7 @@ def bfs_beam_edges(G, source, value, width=None):
     .. note::
 
        With the default value of ``width=None`` or `width` greater than the
-       maximum degree of the graph, this function is equates to a slower
+       maximum degree of the graph, this function equates to a slower
        version of `~networkx.algorithms.traversal.breadth_first_search.bfs_edges`.
        All nodes will be visited, though the order of the reported edges may
        vary. In such cases, `value` has no effect - consider using `bfs_edges`
