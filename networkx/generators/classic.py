@@ -739,7 +739,7 @@ def tadpole_graph(m, n, create_using=None):
        A cycle of size `m` connected to a path of length `n`.
 
     Raises
-    -------
+    ------
     NetworkXError
         If ``m < 2``. The tadpole graph is undefined for ``m<2``.
 
