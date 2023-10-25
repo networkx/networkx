@@ -5,15 +5,17 @@ import itertools
 import operator
 
 import networkx as nx
-from networkx.exception import NetworkXError
+from networkx.utils import not_implemented_for
 
-__all__ = ["gradient_network"]
+__all__ = ("gradient_network",)
 
 
 def _value_getter(value):
     return value() if callable(value) else value
 
 
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 def gradient_network(
     G, scalar_field_value="value", scalar_field_distance="distance", ascending=True
 ):
@@ -71,13 +73,6 @@ def gradient_network(
            https://doi.org/10.48550/arXiv.cond-mat/0603861
            https://journals.aps.org/pre/abstract/10.1103/PhysRevE.74.046114
     """
-    if G.is_multigraph():
-        raise NetworkXError("Multigraph not is supported as a substrate network graph.")
-
-    if G.is_directed():
-        raise NetworkXError(
-            "Directed Graph is not supported as substrate network graph."
-        )
 
     H = nx.DiGraph()
 

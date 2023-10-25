@@ -6,7 +6,7 @@ import pytest
 
 import networkx as nx
 
-NODES = range(0, 100)
+NODES = range(100)
 EDGES = list(itertools.combinations(NODES, 2))
 STATIC_SCALAR_FIELD_VALUES = {k: random.uniform(5, 25) for k in NODES}
 DYNAMIC_SCALAR_FIELD_VALUES = {
@@ -56,5 +56,5 @@ def test_gradient_network_raises_error(graph_class):
     nx.set_node_attributes(substrate_network, STATIC_SCALAR_FIELD_VALUES, "value")
 
     # act + assert
-    with pytest.raises(nx.NetworkXError):
+    with pytest.raises(nx.NetworkXNotImplemented):
         _ = nx.gradient_network(substrate_network)
