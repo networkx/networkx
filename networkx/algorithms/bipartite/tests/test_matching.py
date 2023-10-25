@@ -464,7 +464,7 @@ def test_empty_envy_free_matching():
             assert max_size_envy_free_matching(G=graph) == {}
 
 
-def test_envy_free_perfect_matching():
+def test_envy_free_perfect_matching_min_weight():
     G = nx.Graph()
     weights = [
         (0, 3, 250),
@@ -487,7 +487,7 @@ def test_envy_free_perfect_matching():
     }
 
 
-def test_non_empty_envy_free_matching():
+def test_non_empty_envy_free_matching_min_weight():
     G = nx.Graph()
     G.add_weighted_edges_from(
         [(0, 4, 5), (1, 4, 1), (2, 5, 3), (2, 7, 9), (3, 6, 3), (3, 7, 7)]
