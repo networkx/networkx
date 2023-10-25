@@ -37,7 +37,7 @@ edges included in the matching is minimal.
 
 """
 import collections
-import itertools
+from itertools import chain
 
 import networkx as nx
 from networkx.algorithms.bipartite import sets as bipartite_sets
@@ -52,6 +52,7 @@ __all__ = [
     "minimum_weight_full_matching",
     "max_size_envy_free_matching",
     "min_weight_max_size_envy_free_matching",
+    "envy_free_matching_partition",
 ]
 
 INFINITY = float("inf")
@@ -167,9 +168,8 @@ def hopcroft_karp_matching(G, top_nodes=None):
     num_matched_pairs = 0
     while breadth_first_search():
         for v in left:
-            if leftmatches[v] is None:
-                if depth_first_search(v):
-                    num_matched_pairs += 1
+            if leftmatches[v] is None and depth_first_search(v):
+                num_matched_pairs += 1
 
     # Strip the entries matched to `None`.
     leftmatches = {k: v for k, v in leftmatches.items() if v is not None}
@@ -181,7 +181,7 @@ def hopcroft_karp_matching(G, top_nodes=None):
     #     leftmatches == {v, k for k, v in rightmatches.items()}
     #
     # Finally, we combine both the left matches and right matches.
-    return dict(itertools.chain(leftmatches.items(), rightmatches.items()))
+    return dict(chain(leftmatches.items(), rightmatches.items()))
 
 
 @nx._dispatch
@@ -228,7 +228,6 @@ def eppstein_matching(G, top_nodes=None):
 
     See Also
     --------
-
     hopcroft_karp_matching
 
     """
@@ -381,7 +380,8 @@ def _is_connected_by_alternating_path(G, v, matched_edges, unmatched_edges, targ
     # check for alternating paths starting with edges not in the
     # matching.
     return _alternating_dfs(v, along_matched=True) or _alternating_dfs(
-        v, along_matched=False
+        v,
+        along_matched=False,
     )
 
 
@@ -418,7 +418,11 @@ def _connected_by_alternating_paths(G, matching, targets):
         for v in G
         if v in targets
         or _is_connected_by_alternating_path(
-            G, v, matched_edges, unmatched_edges, targets
+            G,
+            v,
+            matched_edges,
+            unmatched_edges,
+            targets,
         )
     }
 
@@ -567,8 +571,7 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     .. [1] Richard Manning Karp:
        An algorithm to Solve the m x n Assignment Problem in Expected Time
        O(mn log n).
-       Networks, 10(2):143–152, 1980.
-
+       Networks, 10(2):143-152, 1980.
     """
     import numpy as np
     import scipy as sp
@@ -580,7 +583,11 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     # where edges are missing (as opposed to zeros, which is what one would
     # get by using toarray on the sparse matrix).
     weights_sparse = biadjacency_matrix(
-        G, row_order=U, column_order=V, weight=weight, format="coo"
+        G,
+        row_order=U,
+        column_order=V,
+        weight=weight,
+        format="coo",
     )
     weights = np.full(weights_sparse.shape, np.inf)
     weights[weights_sparse.row, weights_sparse.col] = weights_sparse.data
@@ -593,20 +600,12 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
 
 
 def _neighbours_of_set(G, node_set):
-    r"""Returns a set of the neighbours of a given set of nodes `node_set` in the bipartite graph `G`.
-
-    >>> G = nx.complete_bipartite_graph(3,3)
-    >>> _neighbours_of_set(G, {})
-    set()
-    >>> _neighbours_of_set(G, {1, 2})
-    {3, 4, 5}
-    """
-    neighbors_iter = itertools.chain.from_iterable(G.neighbors(n) for n in node_set)
-    return set(neighbors_iter)
+    return set(chain.from_iterable(G.neighbors(n) for n in node_set))
 
 
 def _M_alternating_sequence(G, M, *, top_nodes=None):
-    r"""Generates a M-alternating-sequence of a bipartite graph `G` with regard to a matching M.
+    r"""Generate a M-alternating-sequence of a bipartite graph `G` with
+    regard to a matching M.
 
     Two sets are calculated with the following recursive definition:
 
@@ -616,11 +615,13 @@ def _M_alternating_sequence(G, M, *, top_nodes=None):
             Y_i = N_{G\M}(X_{i-1})
             X_i = N_M(Y_i)
         English:
-            Y_i -> neighbours of X_{i-1} that were not matched by M group-subtracting all the previous Y_k's we've seen
+            Y_i -> neighbours of X_{i-1} that were not matched by M
+                   group-subtracting all the previous Y_k's we've seen
             X_i -> neighbours of Y_i that were matched by M
 
-    The iterative pattern stops when either Y_k or X_k are an empty set for a certain k, forever staying an empty set from k onward
-    the alternating sequece is proven to always stop in the article.
+    The iterative pattern stops when either Y_k or X_k are an empty set for a
+    certain k, forever staying an empty set from k onward the alternating sequece
+    is proven to always stop in the article.
 
     >>> G = nx.complete_bipartite_graph(3,3)
     >>> M = nx.bipartite.hopcroft_karp_matching(G)
@@ -650,7 +651,7 @@ def _M_alternating_sequence(G, M, *, top_nodes=None):
     """
     X, Y = nx.bipartite.sets(G, top_nodes=top_nodes)
     X_0 = set(X) - set(M.keys())
-    if X_0 == set():
+    if len(X_0) == 0:
         return (), ()
 
     X_subsets = [X_0]
@@ -658,7 +659,7 @@ def _M_alternating_sequence(G, M, *, top_nodes=None):
 
     Y_subgroups_accumulate = set()
 
-    while len(X_subsets) == 1 or X_subsets[-1] != set() and Y_subsets[-1] != set():
+    while len(X_subsets) == 1 or len(X_subsets[-1]) != 0 and len(Y_subsets[-1]) != 0:
         GMinusM = nx.subgraph_view(
             G,
             filter_edge=lambda u, v: (u, v) not in M.items()
@@ -667,13 +668,15 @@ def _M_alternating_sequence(G, M, *, top_nodes=None):
         Y_current = (
             _neighbours_of_set(GMinusM, X_subsets[-1])
         ) - Y_subgroups_accumulate
-        if Y_current == set():
+
+        if len(Y_current) == 0:
             break
         G_M = nx.subgraph_view(
-            G, filter_edge=lambda u, v: (u, v) in M.items() and (v, u) in M.items()
+            G,
+            filter_edge=lambda u, v: (u, v) in M.items() and (v, u) in M.items(),
         )
         X_current = _neighbours_of_set(G_M, Y_current)
-        if X_current == set():
+        if len(X_current) == 0:
             break
 
         Y_subsets.append(Y_current)
@@ -684,106 +687,102 @@ def _M_alternating_sequence(G, M, *, top_nodes=None):
     return tuple(X_subsets), tuple(Y_subsets)
 
 
-def _EFM_partition(G, *, M=None, top_nodes=None):
-    r"""Returns the unique EFM partition of bipartite graph `G`.
+def envy_free_matching_partition(G, *, M=None, top_nodes=None):
+    r"""Return a unique EFM partition of bipartite graph `G`.
 
-    A matching in a bipartite graph with parts X and Y is called envy-free, if no unmatched
-    vertex in X is adjacent to a matched vertex in Y.
-    Every bipartite graph has a unique partition such that all envy-free matchings are
-    contained in one of the partition set.
+    A matching in a bipartite graph with parts X and Y is called envy-free,
+    if no unmatched vertex in X is adjacent to a matched vertex in Y.
+    Every bipartite graph has a unique partition such that all envy-free
+    matchings are contained in one of the partition set.
 
     Parameters
     ----------
     G:  NetworkX graph
-
       Undirected bipartite graph
 
     M: dict
-
       dictionary that represents a maximum matching in `G`.
       If M is none, the function will calculate a maximum matching.
 
     top_nodes: list
-
-      if graph is not all connected top_nodes is the set of the top nodes in the bipartite graph `G`.
+      if graph is not all connected top_nodes is the set of the top nodes in
+      the bipartite graph `G`.
 
     Returns
     -------
     EFM: tuple of sets
-
       The partition returns as a tuple of 4 sets of vertices:
       X_L,X_S,Y_L,Y_S where X_L,Y_L are the "good vertices" of G and
-      X_S,Y_S are the "bad vertices" of G where no envy-free matching exists according to THM 1.3 in the article.
+      X_S,Y_S are the "bad vertices" of G where no envy-free matching
+      exists according to THM 1.3 in the article.
 
     References
     ----------
-    .. [1] "Envy-free Matchings in Bipartite Graphs and their Applications to Fair Division",
-    by Elad Aigner-Horev and Erel Segal-Halevi (2022), https://arxiv.org/abs/1901.09527
+    .. [1] "Envy-free Matchings in Bipartite Graphs and their Applications
+    to Fair Division", by Elad Aigner-Horev and Erel Segal-Halevi (2022),
+    https://arxiv.org/abs/1901.09527
     Algorithm 1: Finding the EFM partition of a bipartite graph.
 
     Examples
     --------
-        Example 1: Perfect matching
-        >>> G=nx.complete_bipartite_graph(3,3)
-        >>> M=nx.bipartite.hopcroft_karp_matching(G)
-        >>> _EFM_partition(G, M=M)
-        ({0, 1, 2}, set(), {3, 4, 5}, set())
+    Example 1: Perfect matching
+    >>> G = nx.complete_bipartite_graph(3, 3)
+    >>> M = nx.bipartite.hopcroft_karp_matching(G)
+    >>> nx.bipartite.envy_free_matching_partition(G, M=M)
+    ({0, 1, 2}, set(), {3, 4, 5}, set())
 
-        Where there exists a perfect matching the maximum envy free matching is the perfect matching.
+    Where there exists a perfect matching the maximum envy free matching is
+    the perfect matching.
 
-        Example 2: Non-empty envy-free matching
-        >>> G=nx.Graph([(0,3),(0,4),(1,4),(2,4)])
-        >>> M={0:3,3:0,1:4,4:1}
-        >>> _EFM_partition(G, M=M)
-        ({0}, {1, 2}, {3}, {4})
+    Example 2: Non-empty envy-free matching
+    >>> G = nx.Graph([(0, 3), (0, 4), (1, 4), (2, 4)])
+    >>> M = {0: 3, 3: 0, 1: 4, 4: 1}
+    >>> nx.bipartite.envy_free_matching_partition(G, M=M)
+    ({0}, {1, 2}, {3}, {4})
 
-        Here the graph contains non-empty envy-free matching so X_L,Y_L are not empty.
+    Here the graph contains non-empty envy-free matching so X_L,Y_L are not empty.
 
-        Example 3: Odd path
-        >>> G=nx.Graph([(0,3),(1,3),(1,4),(2,4)])
-        >>> M={0:3,3:0,4:1,1:4}
-        >>> _EFM_partition(G, M=M)
-        (set(), {0, 1, 2}, set(), {3, 4})
+    Example 3: Odd path
+    >>> G = nx.Graph([(0, 3), (1, 3), (1, 4), (2, 4)])
+    >>> M = {0: 3, 3: 0, 4: 1, 1: 4}
+    >>> nx.bipartite.envy_free_matching_partition(G, M=M)
+    (set(), {0, 1, 2}, set(), {3, 4})
 
-        Like presented in the article, odd path contains an empty envy-free matching so X_L and Y_L are empty in the partition.
+    Like presented in the article, odd path contains an empty envy-free matching
+    so X_L and Y_L are empty in the partition.
 
-        Example 4: Y-path-saturated graph
-        >>> G=nx.Graph([(0,6),(1,6),(1,7),(2,6),(2,8),(3,9),(3,6),(4,8),(4,7),(5,9)])
-        >>> M={0:6,6:0,1:7,7:1,2:8,8:2,3:9,9:3}
-        >>> _EFM_partition(G, M=M)
-        (set(), {0, 1, 2, 3, 4, 5}, set(), {8, 9, 6, 7})
+    Example 4: Y-path-saturated graph
+    >>> G = nx.Graph(
+    ...     [(0, 6), (1, 6), (1, 7), (2, 6), (2, 8), (3, 9), (3, 6), (4, 8), (4, 7), (5, 9)]
+    ... )
+    >>> M = {0: 6, 6: 0, 1: 7, 7: 1, 2: 8, 8: 2, 3: 9, 9: 3}
+    >>> nx.bipartite.envy_free_matching_partition(G, M=M)
+    (set(), {0, 1, 2, 3, 4, 5}, set(), {8, 9, 6, 7})
 
-        Like presented in the article, Y-path-saturated graph contains an empty envy-free matching so X_L and Y_L are empty in the partition.
-
+    Like presented in the article, Y-path-saturated graph contains an empty
+    envy-free matching so X_L and Y_L are empty in the partition.
     """
     if M is None:
-        M = nx.bipartite.maximum_matching(G, top_nodes=top_nodes)
+        M = maximum_matching(G, top_nodes=top_nodes)
     X, Y = nx.bipartite.sets(G, top_nodes=top_nodes)
     X_subsets, Y_subsets = _M_alternating_sequence(G, M, top_nodes=top_nodes)
-    X_S = set()
-    for subset in X_subsets:
-        X_S.update(subset)
-
-    Y_S = set()
-    for subset in Y_subsets:
-        Y_S.update(subset)
-
+    X_S = set(chain.from_iterable(X_subsets))
+    Y_S = set(chain.from_iterable(Y_subsets))
     return set(X) - X_S, X_S, set(Y) - Y_S, Y_S
 
 
 @not_implemented_for("directed", "multigraph")
 def max_size_envy_free_matching(G, *, top_nodes=None):
-    r"""Returns an envy-free matching of maximum cardinality in the bipartite graph `G`.
+    """Return an envy-free matching of maximum cardinality in a bipartite graph.
 
     Parameters
     ----------
     G : NetworkX graph
-
       Undirected bipartite graph
 
     top_nodes : container
-
-      if graph is not all connected top_nodes is the set of the top nodes in the bipartite graph `G`.
+      If graph is not connected top_nodes is the set of the top nodes in
+      the bipartite graph `G`.
 
     Returns
     -------
@@ -792,86 +791,107 @@ def max_size_envy_free_matching(G, *, top_nodes=None):
 
     References
     ----------
-    .. [1] "Envy-free Matchings in Bipartite Graphs and their Applications to Fair Division",
-    by Elad Aigner-Horev and Erel Segal-Halevi (2022), https://arxiv.org/abs/1901.09527
-    Algorithm 2: Finding an envy-free matching of maximum cardinality.
+    .. [1] "Envy-free Matchings in Bipartite Graphs and their Applications
+    to Fair Division", by Elad Aigner-Horev and Erel Segal-Halevi (2022),
+    https://arxiv.org/abs/1901.09527
+    Algorithm 1: Finding the EFM partition of a bipartite graph.
 
     Examples
     --------
-        Example 1: Perfect matching
-        >>> G=nx.complete_bipartite_graph(3,3)
-        >>> max_size_envy_free_matching(G)
-        {0: 3, 1: 4, 2: 5, 3: 0, 4: 1, 5: 2}
+    Example 1: Perfect matching
+    >>> G = nx.complete_bipartite_graph(3, 3)
+    >>> nx.bipartite.max_size_envy_free_matching(G)
+    {0: 3, 1: 4, 2: 5, 3: 0, 4: 1, 5: 2}
 
-        Where there exists a perfect matching the maximum envy free matching is the perfect matching.
-        Example 2: Non-empty envy-free matching
-        >>> G=nx.Graph([(0,3),(0,4),(1,4),(2,4)])
-        >>> max_size_envy_free_matching(G)
-        {0: 3, 3: 0}
+    Where there exists a perfect matching the maximum envy free matching is
+    the perfect matching.
+    Example 2: Non-empty envy-free matching
+    >>> G = nx.Graph([(0, 3), (0, 4), (1, 4), (2, 4)])
+    >>> nx.bipartite.max_size_envy_free_matching(G)
+    {0: 3, 3: 0}
 
-        Example 3: Odd path
-        >>> G=nx.Graph([(0,3),(1,3),(1,4),(2,4)])
-        >>> max_size_envy_free_matching(G)
-        {}
+    Example 3: Odd path
+    >>> G = nx.Graph([(0, 3), (1, 3), (1, 4), (2, 4)])
+    >>> nx.bipartite.max_size_envy_free_matching(G)
+    {}
 
-        Like presented in the article, odd path contains an empty envy-free matching so the returned matching is empty.
-        Example 4: Y-path-saturated graph
-        >>> G=nx.Graph([(0,6),(1,6),(1,7),(2,6),(2,8),(3,9),(3,6),(4,8),(4,7),(5,9)])
-        >>> max_size_envy_free_matching(G)
-        {}
+    Like presented in the article, odd path contains an empty envy-free matching
+    so the returned matching is empty.
+    Example 4: Y-path-saturated graph
+    >>> G = nx.Graph(
+    ...     [(0, 6), (1, 6), (1, 7), (2, 6), (2, 8), (3, 9), (3, 6), (4, 8), (4, 7), (5, 9)]
+    ... )
+    >>> nx.bipartite.max_size_envy_free_matching(G)
+    {}
 
-        Like presented in the article, Y-path-saturated graph contains an empty envy-free matching so X_L and Y_L are empty in the partition.
+    Like presented in the article, Y-path-saturated graph contains an empty
+    envy-free matching so X_L and Y_L are empty in the partition.
     """
-    M = nx.bipartite.maximum_matching(G, top_nodes=top_nodes)
-    EFM_PARTITION = _EFM_partition(G, M=M, top_nodes=top_nodes)
-    un = EFM_PARTITION[1].union(EFM_PARTITION[3])
-    M = {node: M[node] for node in M if node not in un and M[node] not in un}
-    return M
+    M = maximum_matching(G, top_nodes=top_nodes)
+    partition = envy_free_matching_partition(G, M=M, top_nodes=top_nodes)
+    un = partition[1].union(partition[3])
+    return {node: M[node] for node in M if node not in un and M[node] not in un}
 
 
 @not_implemented_for("directed", "multigraph")
 def min_weight_max_size_envy_free_matching(G, *, top_nodes=None):
-    r"""Returns a minimum-cost maximum-cardinality envy-free matching in the bipartite graph `G`.
+    """Return a min-cost max-cardinality envy-free matching in a bipartite graph.
+
+    A matching in a bipartite graph with parts X and Y is called envy-free,
+    if no unmatched vertex in X is adjacent to a matched vertex in Y.
+    Every bipartite graph has a unique partition such that all envy-free
+    matchings are contained in one of the partition set.
 
     Parameters
     ----------
     G : NetworkX graph
-
-      Undirected bipartite graph
+      Undirected bipartite graph.
 
     top_nodes : container
-
-      if graph is not all connected top_nodes is the set of the top nodes in the bipartite graph `G`.
+      If graph is not connected `top_nodes` is the set of the top nodes
+      in the bipartite graph `G`.
 
     Returns
     -------
     Matching: dictionary
       The minimum cost maximum cardinallity matching is returned as a dictionary.
 
-    References
-    ----------
-    .. [1] "Envy-free Matchings in Bipartite Graphs and their Applications to Fair Division",
-    by Elad Aigner-Horev and Erel Segal-Halevi (2022), https://arxiv.org/abs/1901.09527
-    Algorithm 3: Finding a minimum-cost maximum-cardinality envy-free matching.
-
     Examples
     --------
-        Example 1: K 3,3 with weights
-        >>> G = nx.Graph()
-        >>> weights = [(0,3,250), (0,4,148), (0,5,122), (1,3,175), (1,4,135), (1,5,150), (2,3,150), (2,4,125)]
-        >>> G.add_weighted_edges_from(weights)
-        >>> min_weight_max_size_envy_free_matching(G)
-        {0: 5, 1: 4, 2: 3, 5: 0, 4: 1, 3: 2}
+    Example 1: K 3,3 with weights
+    >>> G = nx.Graph()
+    >>> edges = [
+    ...     (0, 3, 250),
+    ...     (0, 4, 148),
+    ...     (0, 5, 122),
+    ...     (1, 3, 175),
+    ...     (1, 4, 135),
+    ...     (1, 5, 150),
+    ...     (2, 3, 150),
+    ...     (2, 4, 125),
+    ... ]
+    >>> G.add_weighted_edges_from(edges)
+    >>> nx.bipartite.min_weight_max_size_envy_free_matching(G)
+    {0: 5, 1: 4, 2: 3, 5: 0, 4: 1, 3: 2}
 
-        Where there exists a perfect matching the maximum envy free matching is the perfect matching this is the least cost perfect matching.
-        Example 2: Non-empty envy-free matching
-        >>> Graph=nx.Graph()
-        >>> Graph.add_weighted_edges_from([(0, 4, 5), (1, 4, 1), (2, 5, 3), (2, 7, 9), (3, 6, 3), (3, 7, 7)])
-        >>> min_weight_max_size_envy_free_matching(Graph,top_nodes=[0,1,2,3])
-        {2: 5, 3: 6, 5: 2, 6: 3}
+    Where there exists a perfect matching the maximum envy free matching is the
+    perfect matching this is the least cost perfect matching.
+
+    Example 2: Non-empty envy-free matching
+    >>> G = nx.Graph()
+    >>> edges = [(0, 4, 5), (1, 4, 1), (2, 5, 3), (2, 7, 9), (3, 6, 3), (3, 7, 7)]
+    >>> G.add_weighted_edges_from(edges)
+    >>> nx.bipartite.min_weight_max_size_envy_free_matching(G, top_nodes=[0, 1, 2, 3])
+    {2: 5, 3: 6, 5: 2, 6: 3}
+
+    References
+    ----------
+    .. [1] "Envy-free Matchings in Bipartite Graphs and their Applications
+    to Fair Division", by Elad Aigner-Horev and Erel Segal-Halevi (2022),
+    https://arxiv.org/abs/1901.09527
+    Algorithm 1: Finding the EFM partition of a bipartite graph.
     """
-    M = nx.bipartite.maximum_matching(G, top_nodes=top_nodes)
-    EFM_PARTITION = _EFM_partition(G, M=M, top_nodes=top_nodes)
-    Union = EFM_PARTITION[0].union(EFM_PARTITION[2])
-    M = nx.bipartite.minimum_weight_full_matching(G.subgraph(Union))
-    return M
+    M = maximum_matching(G, top_nodes=top_nodes)
+    partition = envy_free_matching_partition(G, M=M, top_nodes=top_nodes)
+    union_partition = partition[0].union(partition[2])
+    return minimum_weight_full_matching(G.subgraph(union_partition))
