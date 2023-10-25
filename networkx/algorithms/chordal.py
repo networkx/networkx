@@ -474,7 +474,8 @@ def generate_peo(G):
 
     while remaining_nodes:
         node = min(
-            remaining_nodes, key=lambda n: len(set(G.neighbors(n)) & remaining_nodes))
+            remaining_nodes, key=lambda n: len(set(G.neighbors(n)) & remaining_nodes)
+        )
         peo.append(node)
         remaining_nodes.remove(node)
 
