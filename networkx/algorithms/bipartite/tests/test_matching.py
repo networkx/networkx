@@ -374,7 +374,7 @@ def test_envy_free_perfect_matching():
             assert matching == expected
 
 
-def test_non_empty_envy_free_matching(self):
+def test_non_empty_envy_free_matching():
     A = nx.Graph([(0, 3), (3, 0), (0, 4), (4, 0), (1, 4), (4, 1), (2, 4), (4, 2)])
     matching = max_size_envy_free_matching(A)
     assert matching == {0: 3, 3: 0}
