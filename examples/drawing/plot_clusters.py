@@ -25,11 +25,12 @@ superpos = nx.spring_layout(G, scale=50, seed=429)
 centers = list(superpos.values())
 pos = {}
 for center, comm in zip(centers, communities):
-    pos.update(nx.spring_layout(nx.subgraph(G, comm), center=center))
+    pos.update(nx.spring_layout(nx.subgraph(G, comm), center=center, seed=1430))
 
 # Nodes colored by cluster
 for nodes, clr in zip(communities, ("tab:blue", "tab:orange", "tab:green")):
-    nx.draw_networkx_nodes(G, pos=pos, nodelist=nodes, node_color=clr)
+    nx.draw_networkx_nodes(G, pos=pos, nodelist=nodes, node_color=clr, node_size=100)
 nx.draw_networkx_edges(G, pos=pos)
 
+plt.tight_layout()
 plt.show()
