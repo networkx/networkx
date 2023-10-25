@@ -618,3 +618,5 @@ class TestGeneratorClassic:
             for u, v in itertools.product(block1, block2):
                 assert v in G[u]
                 assert G.nodes[u] != G.nodes[v]
+        with pytest.raises(nx.NetworkXError, match="Negative number of nodes"):
+            nx.complete_multipartite_graph(2, -3, 4)
