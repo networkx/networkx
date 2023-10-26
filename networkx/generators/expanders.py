@@ -256,6 +256,11 @@ def maybe_regular_expander(d, n, create_using=Graph):
         If $d % 2 != 0$ as the degree must be even.
         If $n - 1$ is less than $ 2d $ as the graph is complete at most.
 
+    See Also
+    --------
+    is_regular_expander
+    random_regular_expander_graph
+
     References
     ----------
     .. [1] Joel Friedman,
@@ -315,14 +320,20 @@ def maybe_regular_expander(d, n, create_using=Graph):
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def is_regular_expander(G: nx.Graph, *, epsilon=0):
-    """Determines whether the graph G is a regular expander.
+    """Determines whether the graph G is a regular expander. [1]_
 
-    More precisely, checks whether the graph is a regular $(n, d, \lambda)$-expander
-    with $\lambda$ close to the Alon-Boppana bound and given by
-    $\lambda = 2 \sqrt{d - 1} + \epsilon$. [1]_
+    An expander graph is a sparse graph with strong connectivity properties.
+
+    More precisely, this helper checks whether the graph is a
+    regular $(n, d, \lambda)$-expander with $\lambda$ close to
+    the Alon-Boppana bound and given by
+    $\lambda = 2 \sqrt{d - 1} + \epsilon$. [2]_
 
     In the case where $\epsilon = 0 $ then if the graph successfully passes the test
-    it is a Ramanujan graph. [2]_
+    it is a Ramanujan graph. [3]_
+
+    A Ramanujan graph has spectral gap almost as large as possible, which makes them
+    excellent expanders.
 
     Parameters
     ----------
@@ -341,10 +352,16 @@ def is_regular_expander(G: nx.Graph, *, epsilon=0):
     >>> nx.is_regular_expander(G)
     True
 
+    See Also
+    --------
+    maybe_regular_expander
+    random_regular_expander_graph
+
     References
     ----------
-    .. [1] Alon-Boppana bound, https://en.wikipedia.org/wiki/Alon%E2%80%93Boppana_bound
-    .. [2] Ramanujan graphs, https://en.wikipedia.org/wiki/Ramanujan_graph
+    .. [1] Expander graph, https://en.wikipedia.org/wiki/Expander_graph
+    .. [2] Alon-Boppana bound, https://en.wikipedia.org/wiki/Alon%E2%80%93Boppana_bound
+    .. [3] Ramanujan graphs, https://en.wikipedia.org/wiki/Ramanujan_graph
 
     """
 
@@ -371,10 +388,14 @@ def is_regular_expander(G: nx.Graph, *, epsilon=0):
 def random_regular_expander_graph(d, n, *, epsilon=0):
     r"""Returns a random regular expander graph on $n$ nodes with degree $d$.
 
-    The returned graph is a $(n, d, \lambda)$-expander with
-    $\lambda = 2 \sqrt{d - 1} + \epsilon$, close to the Alon-Boppana bound.
+    An expander graph is a sparse graph with strong connectivity properties. [1]_
+
+    More precisely the returned graph is a $(n, d, \lambda)$-expander with
+    $\lambda = 2 \sqrt{d - 1} + \epsilon$, close to the Alon-Boppana bound. [2]_
 
     In the case where $\epsilon = 0 $ it returns a Ramanujan graph.
+    A Ramanujan graph has spectral gap almost as large as possible,
+    which makes them excellent expanders. [3]_
 
     Parameters
     ----------
@@ -399,6 +420,12 @@ def random_regular_expander_graph(d, n, *, epsilon=0):
     --------
     maybe_regular_expander
     is_regular_expander
+
+    References
+    ----------
+    .. [1] Expander graph, https://en.wikipedia.org/wiki/Expander_graph
+    .. [2] Alon-Boppana bound, https://en.wikipedia.org/wiki/Alon%E2%80%93Boppana_bound
+    .. [3] Ramanujan graphs, https://en.wikipedia.org/wiki/Ramanujan_graph
 
     """
     G = maybe_regular_expander(d, n)
