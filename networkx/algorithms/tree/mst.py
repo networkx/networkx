@@ -1134,7 +1134,6 @@ class SpanningTreeIterator:
                 del d[self.partition_key]
 
 
-#@nx.utils.not_implemented_for("directed")
 def number_of_spanning_trees(G, root=None):
     """Returns the number of spanning trees in `G`.
 
@@ -1168,7 +1167,7 @@ def number_of_spanning_trees(G, root=None):
     Examples
     --------
     >>> G = nx.complete_graph(5)
-    >>> nx.number_of_spanning_trees(G)
+    >>> round(nx.number_of_spanning_trees(G), 10)
     125
 
     Notes
@@ -1208,7 +1207,7 @@ def number_of_spanning_trees(G, root=None):
         L = nx.laplacian_matrix(G, weight=None)
     else:
         A = nx.adjacency_matrix(G, weight=None)
-        out_deg = list(d for a, d in G.out_degree())
+        out_deg = [d for a, d in G.out_degree()]
         n, m = A.shape
         # TODO: rm csr_array wrapper when spdiags can produce arrays
         D = sp.sparse.csr_array(sp.sparse.spdiags(out_deg, 0, m, n, format="csr"))
