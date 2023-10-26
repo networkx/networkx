@@ -125,40 +125,40 @@ def test_markov_condition(graph):
     for node in graph.nodes:
         parents = set(graph.predecessors(node))
         non_descendants = graph.nodes - nx.descendants(graph, node) - {node} - parents
-        assert nx.d_separated(graph, {node}, non_descendants, parents)
+        assert nx.is_d_separator(graph, {node}, non_descendants, parents)
 
 
 def test_path_graph_dsep(path_graph):
     """Example-based test of d-separation for path_graph."""
-    assert nx.d_separated(path_graph, {0}, {2}, {1})
-    assert not nx.d_separated(path_graph, {0}, {2}, set())
+    assert nx.is_d_separator(path_graph, {0}, {2}, {1})
+    assert not nx.is_d_separator(path_graph, {0}, {2}, set())
 
 
 def test_fork_graph_dsep(fork_graph):
     """Example-based test of d-separation for fork_graph."""
-    assert nx.d_separated(fork_graph, {1}, {2}, {0})
-    assert not nx.d_separated(fork_graph, {1}, {2}, set())
+    assert nx.is_d_separator(fork_graph, {1}, {2}, {0})
+    assert not nx.is_d_separator(fork_graph, {1}, {2}, set())
 
 
 def test_collider_graph_dsep(collider_graph):
     """Example-based test of d-separation for collider_graph."""
-    assert nx.d_separated(collider_graph, {0}, {1}, set())
-    assert not nx.d_separated(collider_graph, {0}, {1}, {2})
+    assert nx.is_d_separator(collider_graph, {0}, {1}, set())
+    assert not nx.is_d_separator(collider_graph, {0}, {1}, {2})
 
 
 def test_naive_bayes_dsep(naive_bayes_graph):
     """Example-based test of d-separation for naive_bayes_graph."""
     for u, v in combinations(range(1, 5), 2):
-        assert nx.d_separated(naive_bayes_graph, {u}, {v}, {0})
-        assert not nx.d_separated(naive_bayes_graph, {u}, {v}, set())
+        assert nx.is_d_separator(naive_bayes_graph, {u}, {v}, {0})
+        assert not nx.is_d_separator(naive_bayes_graph, {u}, {v}, set())
 
 
 def test_asia_graph_dsep(asia_graph):
     """Example-based test of d-separation for asia_graph."""
-    assert nx.d_separated(
+    assert nx.is_d_separator(
         asia_graph, {"asia", "smoking"}, {"dyspnea", "xray"}, {"bronchitis", "either"}
     )
-    assert nx.d_separated(
+    assert nx.is_d_separator(
         asia_graph, {"tuberculosis", "cancer"}, {"bronchitis"}, {"smoking", "xray"}
     )
 
@@ -172,9 +172,9 @@ def test_undirected_graphs_are_not_supported():
     """
     g = nx.path_graph(3, nx.Graph)
     with pytest.raises(nx.NetworkXNotImplemented):
-        nx.d_separated(g, {0}, {1}, {2})
+        nx.is_d_separator(g, {0}, {1}, {2})
     with pytest.raises(nx.NetworkXNotImplemented):
-        nx.minimal_d_separated(g, {0}, {1}, {2})
+        nx.is_minimal_d_separator(g, {0}, {1}, {2})
     with pytest.raises(nx.NetworkXNotImplemented):
         nx.find_minimal_d_separator(g, {0}, {1})
 
@@ -187,11 +187,11 @@ def test_cyclic_graphs_raise_error():
     """
     g = nx.cycle_graph(3, nx.DiGraph)
     with pytest.raises(nx.NetworkXError):
-        nx.d_separated(g, {0}, {1}, {2})
+        nx.is_d_separator(g, {0}, {1}, {2})
     with pytest.raises(nx.NetworkXError):
         nx.find_minimal_d_separator(g, {0}, {1})
     with pytest.raises(nx.NetworkXError):
-        nx.minimal_d_separated(g, {0}, {1}, {2})
+        nx.is_minimal_d_separator(g, {0}, {1}, {2})
 
 
 def test_invalid_nodes_raise_error(asia_graph):
@@ -200,13 +200,13 @@ def test_invalid_nodes_raise_error(asia_graph):
     """
     # Check both set and node arguments
     with pytest.raises(nx.NodeNotFound):
-        nx.d_separated(asia_graph, {0}, {1}, {2})
+        nx.is_d_separator(asia_graph, {0}, {1}, {2})
     with pytest.raises(nx.NodeNotFound):
-        nx.d_separated(asia_graph, 0, 1, 2)
+        nx.is_d_separator(asia_graph, 0, 1, 2)
     with pytest.raises(nx.NodeNotFound):
-        nx.minimal_d_separated(asia_graph, {0}, {1}, {2})
+        nx.is_minimal_d_separator(asia_graph, {0}, {1}, {2})
     with pytest.raises(nx.NodeNotFound):
-        nx.minimal_d_separated(asia_graph, 0, 1, 2)
+        nx.is_minimal_d_separator(asia_graph, 0, 1, 2)
     with pytest.raises(nx.NodeNotFound):
         nx.find_minimal_d_separator(asia_graph, {0}, {1})
     with pytest.raises(nx.NodeNotFound):
@@ -218,13 +218,13 @@ def test_nondisjoint_node_sets_raise_error(collider_graph):
     Test that error is raised when node sets aren't disjoint.
     """
     with pytest.raises(nx.NetworkXError):
-        nx.d_separated(collider_graph, 0, 1, 0)
+        nx.is_d_separator(collider_graph, 0, 1, 0)
     with pytest.raises(nx.NetworkXError):
-        nx.d_separated(collider_graph, 0, 2, 0)
+        nx.is_d_separator(collider_graph, 0, 2, 0)
     with pytest.raises(nx.NetworkXError):
-        nx.d_separated(collider_graph, 0, 0, 1)
+        nx.is_d_separator(collider_graph, 0, 0, 1)
     with pytest.raises(nx.NetworkXError):
-        nx.d_separated(collider_graph, 1, 0, 0)
+        nx.is_d_separator(collider_graph, 1, 0, 0)
     with pytest.raises(nx.NetworkXError):
         nx.find_minimal_d_separator(collider_graph, 0, 0)
     with pytest.raises(nx.NetworkXError):
@@ -232,14 +232,14 @@ def test_nondisjoint_node_sets_raise_error(collider_graph):
     with pytest.raises(nx.NetworkXError):
         nx.find_minimal_d_separator(collider_graph, 1, 0, included=0)
     with pytest.raises(nx.NetworkXError):
-        nx.minimal_d_separated(collider_graph, 0, 0, set())
+        nx.is_minimal_d_separator(collider_graph, 0, 0, set())
     with pytest.raises(nx.NetworkXError):
-        nx.minimal_d_separated(collider_graph, 0, 1, set(), included=0)
+        nx.is_minimal_d_separator(collider_graph, 0, 1, set(), included=0)
     with pytest.raises(nx.NetworkXError):
-        nx.minimal_d_separated(collider_graph, 1, 0, set(), included=0)
+        nx.is_minimal_d_separator(collider_graph, 1, 0, set(), included=0)
 
 
-def test_minimal_d_separated(
+def test_is_minimal_d_separator(
     large_collider_graph,
     chain_and_fork_graph,
     no_separating_set_graph,
@@ -251,37 +251,37 @@ def test_minimal_d_separated(
     # B -> D -> E;
     # B -> F;
     # G -> E;
-    assert not nx.d_separated(large_collider_graph, {"B"}, {"E"}, set())
+    assert not nx.is_d_separator(large_collider_graph, {"B"}, {"E"}, set())
 
     # minimal set of the corresponding graph
     # for B and E should be (D,)
     Zmin = nx.find_minimal_d_separator(large_collider_graph, "B", "E")
     # check that the minimal d-separator is a d-separating set
-    assert nx.d_separated(large_collider_graph, "B", "E", Zmin)
+    assert nx.is_d_separator(large_collider_graph, "B", "E", Zmin)
     # the minimal separating set should also pass the test for minimality
-    assert nx.minimal_d_separated(large_collider_graph, "B", "E", Zmin)
+    assert nx.is_minimal_d_separator(large_collider_graph, "B", "E", Zmin)
     # function should also work with set arguments
-    assert nx.minimal_d_separated(large_collider_graph, {"A", "B"}, {"G", "E"}, Zmin)
+    assert nx.is_minimal_d_separator(large_collider_graph, {"A", "B"}, {"G", "E"}, Zmin)
     assert Zmin == {"D"}
 
     # Case 2:
     # create a graph A -> B -> C
     # B -> D -> C;
-    assert not nx.d_separated(chain_and_fork_graph, {"A"}, {"C"}, set())
+    assert not nx.is_d_separator(chain_and_fork_graph, {"A"}, {"C"}, set())
     Zmin = nx.find_minimal_d_separator(chain_and_fork_graph, "A", "C")
 
     # the minimal separating set should pass the test for minimality
-    assert nx.minimal_d_separated(chain_and_fork_graph, "A", "C", Zmin)
+    assert nx.is_minimal_d_separator(chain_and_fork_graph, "A", "C", Zmin)
     assert Zmin == {"B"}
     Znotmin = Zmin.union({"D"})
-    assert not nx.minimal_d_separated(chain_and_fork_graph, "A", "C", Znotmin)
+    assert not nx.is_minimal_d_separator(chain_and_fork_graph, "A", "C", Znotmin)
 
     # Case 3:
     # create a graph A -> B
 
     # there is no m-separating set between A and B at all, so
     # no minimal m-separating set can exist
-    assert not nx.d_separated(no_separating_set_graph, {"A"}, {"B"}, set())
+    assert not nx.is_d_separator(no_separating_set_graph, {"A"}, {"B"}, set())
     assert nx.find_minimal_d_separator(no_separating_set_graph, "A", "B") is None
 
     # Case 4:
@@ -291,7 +291,7 @@ def test_minimal_d_separated(
     # no minimal m-separating set can exist
     # however, the algorithm will initially propose C as a
     # minimal (but invalid) separating set
-    assert not nx.d_separated(large_no_separating_set_graph, {"A"}, {"B"}, {"C"})
+    assert not nx.is_d_separator(large_no_separating_set_graph, {"A"}, {"B"}, {"C"})
     assert nx.find_minimal_d_separator(large_no_separating_set_graph, "A", "B") is None
 
     # Test `included` and `excluded` args
@@ -308,8 +308,8 @@ def test_minimal_d_separated(
     )
 
 
-def test_minimal_d_separator_checks_dsep():
-    """Test that minimal_d_separated checks for d-separation as well."""
+def test_is_minimal_d_separator_checks_dsep():
+    """Test that is_minimal_d_separator checks for d-separation as well."""
     g = nx.DiGraph()
     g.add_edges_from(
         [
@@ -324,8 +324,8 @@ def test_minimal_d_separator_checks_dsep():
         ]
     )
 
-    assert not nx.d_separated(g, {"C"}, {"F"}, {"D"})
+    assert not nx.is_d_separator(g, {"C"}, {"F"}, {"D"})
 
     # since {'D'} and {} are not d-separators, we return false
-    assert not nx.minimal_d_separated(g, "C", "F", {"D"})
-    assert not nx.minimal_d_separated(g, "C", "F", set())
+    assert not nx.is_minimal_d_separator(g, "C", "F", {"D"})
+    assert not nx.is_minimal_d_separator(g, "C", "F", set())

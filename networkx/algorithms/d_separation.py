@@ -123,12 +123,12 @@ from collections import deque
 import networkx as nx
 from networkx.utils import UnionFind, not_implemented_for
 
-__all__ = ["d_separated", "minimal_d_separated", "find_minimal_d_separator"]
+__all__ = ["is_d_separator", "is_minimal_d_separator", "find_minimal_d_separator"]
 
 
 @not_implemented_for("undirected")
 @nx._dispatch
-def d_separated(G, x, y, z):
+def is_d_separator(G, x, y, z):
     """Return whether node sets ``x`` and ``y`` are d-separated by ``z``.
 
     Parameters
@@ -284,7 +284,7 @@ def find_minimal_d_separator(G, x, y, *, included=None, restricted=None):
 
     Returns
     -------
-    Z : set | None
+    z : set | None
         The minimal d-separating set, if at least one d-separating set exists,
         otherwise None.
 
@@ -370,7 +370,7 @@ def find_minimal_d_separator(G, x, y, *, included=None, restricted=None):
     z_dprime = _bfs_with_marks(aug_G_p, x, z_prime)
     z = _bfs_with_marks(aug_G_p, y, z_dprime)
 
-    if not d_separated(G_p, x, y, z):
+    if not is_d_separator(G_p, x, y, z):
         return None
 
     return z.union(included)
@@ -378,7 +378,7 @@ def find_minimal_d_separator(G, x, y, *, included=None, restricted=None):
 
 @not_implemented_for("undirected")
 @nx._dispatch
-def minimal_d_separated(G, x, y, z, *, included=None, restricted=None):
+def is_minimal_d_separator(G, x, y, z, *, included=None, restricted=None):
     """Determine if `z` is a minimal d-separating set for `x` and `y`.
 
     A d-separating set, `z`, in a DAG is a set of nodes that blocks
@@ -495,7 +495,7 @@ def minimal_d_separated(G, x, y, z, *, included=None, restricted=None):
         or not z <= restricted
     ):
         return False
-    if not d_separated(G, x, y, z):
+    if not is_d_separator(G, x, y, z):
         return False
 
     G_copy = G.copy()
