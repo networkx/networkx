@@ -1162,7 +1162,7 @@ def number_of_spanning_trees(G, root=None):
     ------
     NetworkXError
         If the graph `G` is not (weakly) connected, or contains no nodes
-        or if `G` is directed and the root node is not specified.
+        or if `G` is directed and the root node is not specified or not in G.
 
     Examples
     --------
@@ -1199,6 +1199,8 @@ def number_of_spanning_trees(G, root=None):
         raise nx.NetworkXError("Graph G must be connected.")
     if graph_is_directed and root == None:
         raise nx.NetworkXError("Spanning trees in directed graphs require a root node.")
+    if graph_is_directed and root not in G:
+        raise nx.NetworkXError("The node root is not in the graph G.")
     if graph_is_directed and not nx.is_weakly_connected(G):
         raise nx.NetworkXError("Graph G must be weakly connected.")
 

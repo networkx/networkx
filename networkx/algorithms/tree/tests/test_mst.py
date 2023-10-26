@@ -776,6 +776,11 @@ class TestNumberOfSpanningTrees:
         with pytest.raises(nx.NetworkXError):
             nx.number_of_spanning_trees(G)
 
+    def test_nst_directed_root_not_exist(self):
+        G = nx.MultiDiGraph()
+        with pytest.raises(nx.NetworkXError):
+            nx.number_of_spanning_trees(G, 0)
+
     def test_nst_directed_not_weak_connected(self):
         G = nx.MultiDiGraph()
         G.add_edge(1, 2)
