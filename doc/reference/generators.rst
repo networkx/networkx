@@ -53,6 +53,9 @@ Expanders
    margulis_gabber_galil_graph
    chordal_cycle_graph
    paley_graph
+   maybe_regular_expander
+   is_regular_expander
+   random_regular_expander_graph
 
 Lattice
 -------
