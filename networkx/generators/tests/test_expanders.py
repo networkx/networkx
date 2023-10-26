@@ -94,7 +94,7 @@ def test_random_regular_expander(d, n):
     assert nx.is_regular_expander(G) == True, "Should be a regular expander"
 
 
-def test_random_regular_expander():
+def test_random_regular_expander_explicit_construction():
     pytest.importorskip("numpy")
     pytest.importorskip("scipy")
     G = nx.random_regular_expander_graph(2, 5)
