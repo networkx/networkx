@@ -14,7 +14,7 @@ __all__ = [
     "paley_graph",
     "maybe_regular_expander",
     "is_regular_expander",
-    "random_regular_expander",
+    "random_regular_expander_graph",
 ]
 
 
@@ -368,7 +368,7 @@ def is_regular_expander(G: nx.Graph, *, epsilon=0):
     return abs(lambda2) < 2 ** np.sqrt(d - 1) + epsilon
 
 
-def random_regular_expander(d, n, *, epsilon=0):
+def random_regular_expander_graph(d, n, *, epsilon=0):
     r"""Returns a random regular expander graph on $n$ nodes with degree $d$.
 
     The returned graph is a $(n, d, \lambda)$-expander with
