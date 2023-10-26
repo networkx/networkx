@@ -94,6 +94,14 @@ def test_random_regular_expander(d, n):
     assert nx.is_regular_expander(G) == True, "Should be a regular expander"
 
 
+def test_random_regular_expander():
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
+    G = nx.random_regular_expander_graph(2, 5)
+
+    assert len(G) == 5 and len(G.edges) == 10, "Should be a complete graph"
+
+
 @pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph, nx.MultiDiGraph))
 def test_margulis_gabber_galil_graph_badinput(graph_type):
     with pytest.raises(
