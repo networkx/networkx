@@ -1167,7 +1167,7 @@ def number_of_spanning_trees(G, root=None):
     Examples
     --------
     >>> G = nx.complete_graph(5)
-    >>> round(nx.number_of_spanning_trees(G), 10)
+    >>> round(nx.number_of_spanning_trees(G))
     125
 
     Notes

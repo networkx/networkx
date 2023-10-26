@@ -754,7 +754,7 @@ class TestNumberOfSpanningTrees:
         N = 5
         G = nx.complete_graph(N)
         Nst = nx.number_of_spanning_trees(G)
-        test_data = N ** (N-2)
+        test_data = N ** (N - 2)
         assert np.isclose(Nst, test_data)
 
     def test_nst_path_graph(self):
