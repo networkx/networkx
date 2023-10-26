@@ -91,6 +91,8 @@ import warnings
 from functools import partial
 from importlib.metadata import entry_points
 
+import networkx as nx
+
 from ..exception import NetworkXNotImplemented
 
 __all__ = ["_dispatch"]
@@ -896,7 +898,22 @@ class _dispatch:
                     G2._succ.update(G1._succ)
                 return G2
 
-        return backend.convert_to_nx(result, name=self.name)
+        converted_result = backend.convert_to_nx(result)
+        if isinstance(converted_result, nx.Graph):
+            # For graph return types (e.g. generators), we compare that results are
+            # the same between the backend and networkx, then return the original
+            # networkx result so the iteration order will be consistent in tests.
+            G = self.orig_func(*args, **kwargs)
+            if not nx.utils.graphs_equal(G, converted_result):
+                assert type(G) is type(converted_result)
+                assert G.number_of_nodes() == converted_result.number_of_nodes()
+                assert G.number_of_edges() == converted_result.number_of_edges()
+                assert G.graph == converted_result.graph
+                assert G.node == converted_result.node
+                assert G.adj == converted_result.adj
+                raise AssertionError("Graphs are not equal")
+            return G
+        return converted_result
 
     def _make_doc(self):
         if not self.backends:
