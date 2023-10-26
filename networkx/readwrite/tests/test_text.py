@@ -1071,7 +1071,8 @@ def test_write_network_text_circular_ladder_graph():
     nx.write_network_text(graph, path=write, end="")
     text = "\n".join(lines)
     print(text)
-    target = dedent(
+    # Be forgiving of iteration order
+    target1 = dedent(
         """
         ╙── 0
             ├── 1
@@ -1087,7 +1088,23 @@ def test_write_network_text_circular_ladder_graph():
             └──  ...
         """
     ).strip()
-    assert target == text
+    target2 = dedent(
+        """
+        ╙── 0
+            ├── 1
+            │   ├── 2
+            │   │   ├── 3 ─ 0
+            │   │   │   └── 7
+            │   │   │       ├── 4 ─ 0
+            │   │   │       │   └── 5 ─ 1
+            │   │   │       │       └── 6 ─ 2, 7
+            │   │   │       └──  ...
+            │   │   └──  ...
+            │   └──  ...
+            └──  ...
+        """
+    ).strip()
+    assert text in (target1, target2)
 
 
 def test_write_network_text_dorogovtsev_goltsev_mendes_graph():
