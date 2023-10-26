@@ -92,7 +92,7 @@ Examples
 ... )
 >>>
 >>> # states/obs before 'S3' are d-separated from states/obs after 'S3'
-... nx.d_separated(g, {"S1", "S2", "O1", "O2"}, {"S4", "S5", "O4", "O5"}, {"S3"})
+... nx.is_d_separator(g, {"S1", "S2", "O1", "O2"}, {"S4", "S5", "O4", "O5"}, {"S3"})
 True
 
 
@@ -300,9 +300,10 @@ def find_minimal_d_separator(G, x, y, *, included=None, restricted=None):
 
     References
     ----------
-    .. [1] B. van der Zander, M. Liśkiewicz, and J. Textor, “Separators and Adjustment
-       Sets in Causal Graphs: Complete Criteria and an Algorithmic Framework,” Artificial
-       Intelligence, vol. 270, pp. 1–40, May 2019, doi: 10.1016/j.artint.2018.12.006.
+    .. [1] van der Zander, Benito, and Maciej Liśkiewicz. "Finding
+        minimal d-separators in linear time and applications." In
+        Uncertainty in Artificial Intelligence, pp. 637-647. PMLR, 2020.
+
     Notes
     -----
     This function only finds ``a`` minimal d-separator, if at least one
@@ -386,9 +387,9 @@ def is_minimal_d_separator(G, x, y, z, *, included=None, restricted=None):
     verifies that a set is "minimal", meaning there is no smaller
     d-separating set between the two nodes.
 
-    Note: This function checks whether `z` is a d-separator AND is minimal.
-    One can use the function `d_separated` to only check if `z` is a d-separator.
-    See examples below.
+    Note: This function checks whether `z` is a d-separator AND is
+    minimal. One can use the function `is_d_separator` to only check if
+    `z` is a d-separator. See examples below.
 
     Parameters
     ----------
@@ -400,7 +401,7 @@ def is_minimal_d_separator(G, x, y, z, *, included=None, restricted=None):
         A node in the graph, or a set of nodes.
     z : node | set
         The node or set of nodes to check if it is a minimal d-separating set.
-        The function :func:`d_separated` is called inside this function
+        The function :func:`is_d_separator` is called inside this function
         to verify that `z` is in fact a d-separator.
     included : set | node | None
         A node or set of nodes which must be included in the found separating set,
@@ -418,13 +419,13 @@ def is_minimal_d_separator(G, x, y, z, *, included=None, restricted=None):
     --------
     >>> G = nx.path_graph([0, 1, 2, 3], create_using=nx.DiGraph)
     >>> G.add_node(4)
-    >>> nx.minimal_d_separated(G, 0, 2, {1})
+    >>> nx.is_minimal_d_separator(G, 0, 2, {1})
     True
     >>> # since {1} is the minimal d-separator, {1, 3, 4} is not minimal
-    >>> nx.minimal_d_separated(G, 0, 2, {1, 3, 4})
+    >>> nx.is_minimal_d_separator(G, 0, 2, {1, 3, 4})
     False
     >>> # alternatively, if we only want to check that {1, 3, 4} is a d-separator
-    >>> nx.d_separated(G, 0, 2, {1, 3, 4})
+    >>> nx.is_d_separator(G, 0, 2, {1, 3, 4})
     True
 
     Raises
@@ -438,9 +439,9 @@ def is_minimal_d_separator(G, x, y, z, *, included=None, restricted=None):
 
     References
     ----------
-    .. [1] B. van der Zander, M. Liśkiewicz, and J. Textor, “Separators and Adjustment
-       Sets in Causal Graphs: Complete Criteria and an Algorithmic Framework,” Artificial
-       Intelligence, vol. 270, pp. 1–40, May 2019, doi: 10.1016/j.artint.2018.12.006.
+    .. [1] van der Zander, Benito, and Maciej Liśkiewicz. "Finding
+        minimal d-separators in linear time and applications." In
+        Uncertainty in Artificial Intelligence, pp. 637-647. PMLR, 2020.
 
     Notes
     -----
