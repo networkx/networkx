@@ -22,6 +22,7 @@ __all__ = [
     "partition_spanning_tree",
     "EdgePartition",
     "SpanningTreeIterator",
+    "number_of_spanning_trees",
 ]
 
 
@@ -1131,3 +1132,96 @@ class SpanningTreeIterator:
         for u, v, d in G.edges(data=True):
             if self.partition_key in d:
                 del d[self.partition_key]
+
+
+#@nx.utils.not_implemented_for("directed")
+def number_of_spanning_trees(G, root=None):
+    """Returns the number of spanning trees in `G`.
+
+    The number of spanning trees is also known as Kirchhoff's theorem [1]_
+    and the Matrix-Tree theorem [2]_.
+
+    For directed graphs, the number of spanning trees is computed
+    with root node `root`.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    root : node (only required for directed graphs)
+       A node in the directed graph `G`.
+
+    Returns
+    -------
+    t : float
+        Undirected graphs:
+            The number of spanning trees of the graph `G`.
+        Directed graphs:
+            The number of spanning trees of `G` rooted at node `root`.
+
+    Raises
+    ------
+    NetworkXError
+        If the graph `G` is not (weakly) connected, or contains no nodes
+        or if `G` is directed and the root node is not specified.
+
+    Examples
+    --------
+    >>> G = nx.complete_graph(5)
+    >>> nx.number_of_spanning_trees(G)
+    125
+
+    Notes
+    -----
+    Self-loops are excluded. Multi-edges are considered
+    independent edges. Weights are ignored.
+
+    References
+    ----------
+    .. [1] Wikipedia
+       "Kirchhoff's theorem."
+       https://en.wikipedia.org/wiki/Kirchhoff%27s_theorem
+    .. [2] Kirchhoff, G. R.
+        Über die Auflösung der Gleichungen, auf welche man
+        bei der Untersuchung der linearen Vertheilung
+        Galvanischer Ströme geführt wird
+        Annalen der Physik und Chemie, vol. 72, pp. 497-508, 1847.
+    .. [3] Margoliash, J.
+        "Matrix-Tree Theorem for Directed Graphs"
+        https://www.math.uchicago.edu/~may/VIGRE/VIGRE2010/REUPapers/Margoliash.pdf
+    """
+    import numpy as np
+    import scipy as sp
+
+    graph_is_directed = nx.is_directed(G)
+    if len(G) == 0:
+        raise nx.NetworkXError("Graph G must contain at least one node.")
+    if graph_is_directed == False and not nx.is_connected(G):
+        raise nx.NetworkXError("Graph G must be connected.")
+    if graph_is_directed and root == None:
+        raise nx.NetworkXError("Spanning trees in directed graphs require a root node.")
+    if graph_is_directed and not nx.is_weakly_connected(G):
+        raise nx.NetworkXError("Graph G must be weakly connected.")
+
+    # Compute directed Laplacian matrix
+    if graph_is_directed == False:
+        L = nx.laplacian_matrix(G, weight=None)
+    else:
+        A = nx.adjacency_matrix(G, weight=None)
+        out_deg = list(d for a, d in G.out_degree())
+        n, m = A.shape
+        # TODO: rm csr_array wrapper when spdiags can produce arrays
+        D = sp.sparse.csr_array(sp.sparse.spdiags(out_deg, 0, m, n, format="csr"))
+        L = D - A
+
+    # Remove one row/column corresponding to node `root`
+    if graph_is_directed == False:
+        i = 0
+    else:
+        i = list(G).index(root)
+    L = L.todense()
+    L = np.delete(L, i, 0)
+    L = np.delete(L, i, 1)
+
+    # Compute number of spanning trees
+    return np.linalg.det(L)

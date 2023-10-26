@@ -64,6 +64,7 @@ Spanning Trees
    minimum_spanning_edges
    maximum_spanning_edges
    SpanningTreeIterator
+   number_of_spanning_trees
 
 Decomposition
 -------------

@@ -706,3 +706,117 @@ def test_random_spanning_tree_additive_large():
     # Assert that p is greater than the significance level so that we do not
     # reject the null hypothesis
     assert not p < 0.05
+
+
+class TestNumberOfSpanningTrees:
+    @classmethod
+    def setup_class(cls):
+        global np
+        np = pytest.importorskip("numpy")
+
+    def test_nst_disconnected(self):
+        G = nx.empty_graph(2)
+        with pytest.raises(nx.NetworkXError):
+            nx.number_of_spanning_trees(G)
+
+    def test_nst_no_nodes(self):
+        G = nx.Graph()
+        with pytest.raises(nx.NetworkXError):
+            nx.number_of_spanning_trees(G)
+
+    def test_nst_weight(self):
+        # weights are ignored
+        G = nx.Graph()
+        G.add_edge(1, 2, weight=2)
+        G.add_edge(1, 3, weight=3)
+        G.add_edge(2, 3, weight=-10)
+        assert np.isclose(nx.number_of_spanning_trees(G), 3)
+
+    def test_nst_selfloop(self):
+        # self-loops are ignored
+        G = nx.complete_graph(3)
+        G.add_edge(1, 1)
+        Nst = nx.number_of_spanning_trees(G)
+        test_data = 3
+        assert np.isclose(Nst, test_data)
+
+    def test_nst_multigraph(self):
+        G = nx.MultiGraph()
+        G.add_edge(1, 2)
+        G.add_edge(1, 2)
+        G.add_edge(1, 3)
+        G.add_edge(2, 3)
+        Nst = nx.number_of_spanning_trees(G)
+        test_data = 5
+        assert np.isclose(Nst, test_data)
+
+    def test_nst_complete_graph(self):
+        N = 5
+        G = nx.complete_graph(N)
+        Nst = nx.number_of_spanning_trees(G)
+        test_data = N**(N-2)
+        assert np.isclose(Nst, test_data)
+
+    def test_nst_path_graph(self):
+        N = 5
+        G = nx.path_graph(N)
+        Nst = nx.number_of_spanning_trees(G)
+        test_data = 1
+        assert np.isclose(Nst, test_data)
+
+    def test_nst_cycle_graph(self):
+        N = 5
+        G = nx.cycle_graph(N)
+        Nst = nx.number_of_spanning_trees(G)
+        test_data = N
+        assert np.isclose(Nst, test_data)
+
+    def test_nst_directed_noroot(self):
+        G = nx.MultiDiGraph()
+        with pytest.raises(nx.NetworkXError):
+            nx.number_of_spanning_trees(G)
+
+    def test_nst_directed_not_weak_connected(self):
+        G = nx.MultiDiGraph()
+        G.add_edge(1, 2)
+        G.add_edge(3, 4)
+        with pytest.raises(nx.NetworkXError):
+            nx.number_of_spanning_trees(G)
+
+    def test_nst_directed_cycle_graph(self):
+        G = nx.DiGraph()
+        G = nx.cycle_graph(7, G)
+        Nst = nx.number_of_spanning_trees(G, 0)
+        test_data = 1
+        assert np.isclose(Nst, test_data)
+
+    def test_nst_directed_complete_graph(self):
+        G = nx.DiGraph()
+        G = nx.complete_graph(7, G)
+        Nst = nx.number_of_spanning_trees(G, 0)
+        test_data = 7**5
+        assert np.isclose(Nst, test_data)
+
+    def test_nst_directed_multi(self):
+        G = nx.MultiDiGraph()
+        G = nx.cycle_graph(3, G)
+        G.add_edge(1, 2)
+        Nst = nx.number_of_spanning_trees(G, 0)
+        test_data = 2
+        assert np.isclose(Nst, test_data)
+
+    def test_nst_directed_selfloop(self):
+        G = nx.MultiDiGraph()
+        G = nx.cycle_graph(3, G)
+        G.add_edge(1, 1)
+        Nst = nx.number_of_spanning_trees(G, 0)
+        test_data = 1
+        assert np.isclose(Nst, test_data)
+
+    def test_nst_directed_weak_connected(self):
+        G = nx.MultiDiGraph()
+        G = nx.cycle_graph(3, G)
+        G.remove_edge(1, 2)
+        Nst = nx.number_of_spanning_trees(G, 0)
+        test_data = 0
+        assert np.isclose(Nst, test_data)
