@@ -62,8 +62,7 @@ def pytest_configure(config):
             "        The test object nx-loopback is not configured correctly.\n"
             "        You should not be seeing this message.\n"
             "        Try `pip install -e .`, or change your PYTHONPATH\n"
-            "        Make sure you are testing a repo that mirrors entry_points\n"
-            "        of the networkx library found by python.\n\n"
+            "        Make sure python finds the networkx repo you are testing\n\n"
         )
 
 
