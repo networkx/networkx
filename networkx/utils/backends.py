@@ -840,6 +840,9 @@ class _dispatch:
         from itertools import tee
         from random import Random
 
+        # We sometimes compare the backend result to the original result,
+        # so we need two sets of arguments. We tee iterators and copy
+        # random state so that they may be used twice.
         if not args:
             args1 = args2 = args
         else:
