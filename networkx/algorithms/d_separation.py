@@ -133,7 +133,7 @@ def is_d_separator(G, x, y, z):
 
     Parameters
     ----------
-    G : graph
+    G : nx.DiGraph
         A NetworkX DAG.
 
     x : set | node
@@ -317,11 +317,11 @@ def find_minimal_d_separator(G, x, y, *, included=None, restricted=None):
     """
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")
+
     if not isinstance(x, set):
         x = {x}
     if x - G.nodes:
         raise nx.NodeNotFound(f"The node {x} is not found in G.")
-
     if not isinstance(y, set):
         y = {y}
     if y - G.nodes:
@@ -335,11 +335,12 @@ def find_minimal_d_separator(G, x, y, *, included=None, restricted=None):
         restricted = set(G)
     elif not isinstance(restricted, set):
         restricted = {restricted}
+
     set_y = x | y | included | restricted
     if set_y - G.nodes:
         raise nx.NodeNotFound(f"The node(s) {set_y - G.nodes} are not found in G")
     if not included <= restricted:
-        raise nx.NetworkError(
+        raise nx.NetworkXError(
             f"Minimal set {included} should be no larger than maximal set {restricted}"
         )
 
@@ -351,30 +352,18 @@ def find_minimal_d_separator(G, x, y, *, included=None, restricted=None):
             f"The sets are not disjoint, with intersection {intersection}"
         )
 
-    G_copy = G.copy()
-
     nodeset = x.union(y).union(included)
+    ancestors_x_y_included = nodeset.union(*[nx.ancestors(G, node) for node in nodeset])
 
-    ancestor_nodes_G = nodeset.union(*[nx.ancestors(G_copy, node) for node in nodeset])
-    G_p = G.subgraph(ancestor_nodes_G)
-    aug_G_p = nx.moral_graph(G_p)
-    for node in included:
-        aug_G_p.remove_node(node)
-    for node in included:
-        G_p.remove_node(node)
+    z_init = restricted.intersection(ancestors_x_y_included.difference(x.union(y)))
 
-    xy = x.union(y)
+    x_closure = _reachable(G, x, ancestors_x_y_included, z_init)
+    z_updated = z_init.intersection(x_closure).union(included)
 
-    z_prime = restricted.intersection(
-        set().union(*[nx.ancestors(G_copy, node) for node in xy])
-    )
-    z_dprime = _bfs_with_marks(aug_G_p, x, z_prime)
-    z = _bfs_with_marks(aug_G_p, y, z_dprime)
-
-    if not is_d_separator(G_p, x, y, z):
+    y_closure = _reachable(G, y, ancestors_x_y_included, z_updated)
+    if x_closure.intersection(y):
         return None
-
-    return z.union(included)
+    return z_updated.intersection(y_closure).union(included)
 
 
 @not_implemented_for("undirected")
@@ -394,7 +383,7 @@ def is_minimal_d_separator(G, x, y, z, *, included=None, restricted=None):
     Parameters
     ----------
     G : nx.DiGraph
-        The graph.
+        A NetworkX DAG.
     x : node | set
         A node in the graph, or a set of nodes.
     y : node | set
@@ -570,3 +559,48 @@ def _bfs_with_marks(G, start_set, check_set):
                 else:
                     queue.append(nbr)
     return marked
+
+
+@not_implemented_for("undirected")
+def _reachable(G, x, a, z):
+    """Modified Bayes-Ball algorithm for finding d-connected nodes.
+
+    Find all nodes in `a` that are d-connected to those in `x` by
+    those in `z`. This is an implementation of the function
+    `REACHABLE` in [1]_ (which is itself a modification of the
+    Bayes-Ball algorithm [2]_) when restricted to DAGs.
+
+    Parameters
+    ----------
+    G : nx.DiGraph
+        A NetworkX DAG.
+    x : node | set
+        A node in the DAG, or a set of nodes.
+    a : node | set
+        A (set of) node(s) in the DAG containing the ancestors of `x`.
+    z : node | set
+        The node or set of nodes conditioned on when checking d-connectedness.
+
+    Returns
+    -------
+    w : node | set
+        The closure of `x` in `a` with respect to d-connectedness
+        given `z`.
+
+    References
+    ----------
+    .. [1] van der Zander, Benito, and Maciej Liśkiewicz. "Finding
+        minimal d-separators in linear time and applications." In
+        Uncertainty in Artificial Intelligence, pp. 637-647. PMLR, 2020.
+
+    .. [2] Shachter, Ross D. "Bayes-all: The rational pastime
+       (for determining irrelevance and requisite information in
+       belief networks and influence diagrams)." In Proceedings of the
+       Fourteenth Conference on Uncertainty in Artificial Intelligence
+       (UAI), (pp. 480–487). 1998.
+    """
+    return W
+
+
+def _pass(e, v, f, n):
+    return b
