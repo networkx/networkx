@@ -53,7 +53,17 @@ def pytest_configure(config):
         networkx.utils.backends._dispatch._fallback_to_nx = bool(fallback_to_nx)
     # nx-loopback backend is only available when testing
     backends = entry_points(name="nx-loopback", group="networkx.backends")
-    networkx.utils.backends.backends["nx-loopback"] = next(iter(backends))
+    if backends:
+        networkx.utils.backends.backends["nx-loopback"] = next(iter(backends))
+    else:
+        warnings.warn(
+            "\n\n             WARNING: Mixed NetworkX configuration! \n\n"
+            "        This environment has mixed configuration for networkx.\n"
+            "        The test object nx-loopback is not configured correctly.\n"
+            "        You should not be seeing this message.\n"
+            "        Try `pip install -e .`, or change your PYTHONPATH\n"
+            "        Make sure python finds the networkx repo you are testing\n\n"
+        )
 
 
 def pytest_collection_modifyitems(config, items):
