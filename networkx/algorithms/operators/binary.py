@@ -170,7 +170,7 @@ def intersection(G, H):
     return nx.intersection_all([G, H])
 
 
-@nx._dispatch(graphs=_G_H)
+@nx._dispatch(graphs=_G_H, preserve_node_attrs=True, preserve_graph_attrs={"G"})
 def difference(G, H):
     """Returns a new graph that contains the edges that exist in G but not in H.
 
