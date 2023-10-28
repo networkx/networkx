@@ -1,4 +1,4 @@
-networkx 3.2.1
+NetworkX 3.2.1
 ==============
 
 We're happy to announce the release of networkx 3.2.1!
