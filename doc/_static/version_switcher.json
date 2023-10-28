@@ -5,9 +5,14 @@
         "url": "https://networkx.org/documentation/latest/"
     },
     {
-        "name": "3.2 (stable)",
-        "version":"3.2",
+        "name": "3.2.1 (stable)",
+        "version":"3.2.1",
         "url": "https://networkx.org/documentation/stable/",
         "preferred": true
+    },
+    {
+        "name": "3.2",
+        "version":"3.2",
+        "url": "https://networkx.org/documentation/3.2/",
     }
 ]
