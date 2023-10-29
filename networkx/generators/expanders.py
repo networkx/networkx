@@ -327,7 +327,7 @@ def maybe_regular_expander(*, n, d, create_using=Graph, max_tries=100):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-def is_regular_expander(G: nx.Graph, *, epsilon=0):
+def is_regular_expander(G, *, epsilon=0):
     """Determines whether the graph G is a regular expander. [1]_
 
     An expander graph is a sparse graph with strong connectivity properties.
