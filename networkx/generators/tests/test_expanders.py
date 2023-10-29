@@ -66,7 +66,7 @@ def test_paley_graph(p):
 @pytest.mark.parametrize("d, n", [(2, 7), (4, 10), (4, 16)])
 def test_maybe_regular_expander(d, n):
     pytest.importorskip("numpy")
-    G = nx.maybe_regular_expander(d, n)
+    G = nx.maybe_regular_expander(n=n, d=d)
 
     assert len(G) == n, "Should have n nodes"
     assert len(G.edges) == n * d / 2, "Should have n*d/2 edges"
@@ -86,7 +86,7 @@ def test_is_regular_expander(n):
 def test_random_regular_expander(d, n):
     pytest.importorskip("numpy")
     pytest.importorskip("scipy")
-    G = nx.random_regular_expander_graph(d, n)
+    G = nx.random_regular_expander_graph(n=n, d=d)
 
     assert len(G) == n, "Should have n nodes"
     assert len(G.edges) == n * d / 2, "Should have n*d/2 edges"
@@ -130,13 +130,13 @@ def test_maybe_regular_expander_badinput():
     pytest.importorskip("scipy")
 
     with pytest.raises(nx.NetworkXError, match="n must be a positive integer"):
-        nx.maybe_regular_expander(2, -1)
+        nx.maybe_regular_expander(n=-1, d=2)
 
     with pytest.raises(nx.NetworkXError, match="d must be greater than or equal to 2"):
-        nx.maybe_regular_expander(0, 10)
+        nx.maybe_regular_expander(n=10, d=0)
 
     with pytest.raises(nx.NetworkXError, match="There is not enough room"):
-        nx.maybe_regular_expander(6, 5)
+        nx.maybe_regular_expander(n=5, d=6)
 
 
 def test_is_regular_expander_badinput():
@@ -152,13 +152,13 @@ def test_random_regular_expander_badinput():
     pytest.importorskip("scipy")
 
     with pytest.raises(nx.NetworkXError, match="n must be a positive integer"):
-        nx.random_regular_expander_graph(2, -1)
+        nx.random_regular_expander_graph(n=-1, d=2)
 
     with pytest.raises(nx.NetworkXError, match="d must be greater than or equal to 2"):
-        nx.random_regular_expander_graph(0, 10)
+        nx.random_regular_expander_graph(n=10, d=0)
 
     with pytest.raises(nx.NetworkXError, match="There is not enough room"):
-        nx.random_regular_expander_graph(6, 5)
+        nx.random_regular_expander_graph(n=5, d=6)
 
     with pytest.raises(nx.NetworkXError, match="epsilon must be non negative"):
-        nx.random_regular_expander_graph(2, 4, epsilon=-1)
+        nx.random_regular_expander_graph(n=4, d=2, epsilon=-1)

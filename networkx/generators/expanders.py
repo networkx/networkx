@@ -216,17 +216,17 @@ def paley_graph(p, create_using=None):
     return G
 
 
-def maybe_regular_expander(d, n, create_using=Graph, max_tries=100):
+def maybe_regular_expander(*, n, d, create_using=Graph, max_tries=100):
     r"""Utility for creating a random regular expander.
 
     Returns a random $d$-regular graph on $n$ nodes which is an expander graph with very good probability.
 
     Parameters
     ----------
-    d : int
-      The degree of each node.
     n : int
       The number of nodes.
+    d : int
+      The degree of each node.
     create_using : Graph Instance or Constructor
       Indicator of type of graph to return.
       If a Graph-type instance, then clear and use it.
@@ -245,7 +245,7 @@ def maybe_regular_expander(d, n, create_using=Graph, max_tries=100):
 
     Examples
     --------
-    >>> G = nx.maybe_regular_expander(6, 200)
+    >>> G = nx.maybe_regular_expander(n=200, d=6)
 
     Returns
     -------
@@ -356,7 +356,7 @@ def is_regular_expander(G: nx.Graph, *, epsilon=0):
 
     Examples
     --------
-    >>> G = nx.random_regular_expander(4, 20)
+    >>> G = nx.random_regular_expander(n=20, d=4)
     >>> nx.is_regular_expander(G)
     True
 
@@ -393,7 +393,7 @@ def is_regular_expander(G: nx.Graph, *, epsilon=0):
     return abs(lambda2) < 2 ** np.sqrt(d - 1) + epsilon
 
 
-def random_regular_expander_graph(d, n, *, epsilon=0, max_tries=100):
+def random_regular_expander_graph(*, n, d, epsilon=0, max_tries=100):
     r"""Returns a random regular expander graph on $n$ nodes with degree $d$.
 
     An expander graph is a sparse graph with strong connectivity properties. [1]_
@@ -407,10 +407,10 @@ def random_regular_expander_graph(d, n, *, epsilon=0, max_tries=100):
 
     Parameters
     ----------
-    d : int
-      The degree of each node.
     n : int
       The number of nodes.
+    d : int
+      The degree of each node.
     epsilon : int, float, default=0
     max_tries : int
       The number of allowed loops, also used in the maybe_regular_expander utility, default=100
@@ -422,7 +422,7 @@ def random_regular_expander_graph(d, n, *, epsilon=0, max_tries=100):
 
     Examples
     --------
-    >>> G = nx.random_regular_expander(4, 20)
+    >>> G = nx.random_regular_expander(n=20, d=4)
     >>> nx.is_regular_expander(G)
     True
 
@@ -443,12 +443,12 @@ def random_regular_expander_graph(d, n, *, epsilon=0, max_tries=100):
     .. [3] Ramanujan graphs, https://en.wikipedia.org/wiki/Ramanujan_graph
 
     """
-    G = maybe_regular_expander(d, n, max_tries=max_tries)
+    G = maybe_regular_expander(n=n, d=d, max_tries=max_tries)
     iterations = max_tries
 
     while (not is_regular_expander(G, epsilon=epsilon)) and iterations > 0:
         iterations -= 1
-        G = maybe_regular_expander(d, n, max_tries=max_tries)
+        G = maybe_regular_expander(n=n, d=d, max_tries=max_tries)
     else:
         if iterations == 0:
             raise nx.NetworkXError(
