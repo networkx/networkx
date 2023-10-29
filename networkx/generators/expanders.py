@@ -213,7 +213,7 @@ def paley_graph(p, create_using=None):
     return G
 
 
-def maybe_regular_expander(*, n, d, create_using=nx.Graph, max_tries=100):
+def maybe_regular_expander(*, n, d, create_using=None, max_tries=100):
     r"""Utility for creating a random regular expander.
 
     Returns a random $d$-regular graph on $n$ nodes which is an expander graph with very good probability.
@@ -390,7 +390,7 @@ def is_regular_expander(G, *, epsilon=0):
     return abs(lambda2) < 2 ** np.sqrt(d - 1) + epsilon
 
 
-def random_regular_expander_graph(*, n, d, epsilon=0, max_tries=100):
+def random_regular_expander_graph(*, n, d, epsilon=0, create_using=None, max_tries=100):
     r"""Returns a random regular expander graph on $n$ nodes with degree $d$.
 
     An expander graph is a sparse graph with strong connectivity properties. [1]_
@@ -440,12 +440,14 @@ def random_regular_expander_graph(*, n, d, epsilon=0, max_tries=100):
     .. [3] Ramanujan graphs, https://en.wikipedia.org/wiki/Ramanujan_graph
 
     """
-    G = maybe_regular_expander(n=n, d=d, max_tries=max_tries)
+    G = maybe_regular_expander(n=n, d=d, create_using=create_using, max_tries=max_tries)
     iterations = max_tries
 
     while (not is_regular_expander(G, epsilon=epsilon)) and iterations > 0:
         iterations -= 1
-        G = maybe_regular_expander(n=n, d=d, max_tries=max_tries)
+        G = maybe_regular_expander(
+            n=n, d=d, create_using=create_using, max_tries=max_tries
+        )
     else:
         if iterations == 0:
             raise nx.NetworkXError(
