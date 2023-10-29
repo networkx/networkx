@@ -4,9 +4,6 @@
 import itertools
 
 import networkx as nx
-from networkx.classes import Graph
-from networkx.utils import not_implemented_for
-from networkx.utils.misc import pairwise
 
 __all__ = [
     "margulis_gabber_galil_graph",
@@ -216,7 +213,7 @@ def paley_graph(p, create_using=None):
     return G
 
 
-def maybe_regular_expander(*, n, d, create_using=Graph, max_tries=100):
+def maybe_regular_expander(*, n, d, create_using=nx.Graph, max_tries=100):
     r"""Utility for creating a random regular expander.
 
     Returns a random $d$-regular graph on $n$ nodes which is an expander graph with very good probability.
@@ -308,7 +305,7 @@ def maybe_regular_expander(*, n, d, create_using=Graph, max_tries=100):
 
             new_edges = {
                 (u, v)
-                for u, v in pairwise(cycle, cyclic=True)
+                for u, v in nx.utils.pairwise(cycle, cyclic=True)
                 if (u, v) not in edges and (v, u) not in edges
             }
             # If the new cycle has no edges in common with previous cycles
@@ -325,8 +322,8 @@ def maybe_regular_expander(*, n, d, create_using=Graph, max_tries=100):
     return G
 
 
-@not_implemented_for("directed")
-@not_implemented_for("multigraph")
+@nx.utils.not_implemented_for("directed")
+@nx.utils.not_implemented_for("multigraph")
 def is_regular_expander(G, *, epsilon=0):
     """Determines whether the graph G is a regular expander. [1]_
 
