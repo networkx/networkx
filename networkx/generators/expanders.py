@@ -353,7 +353,7 @@ def is_regular_expander(G, *, epsilon=0):
 
     Examples
     --------
-    >>> G = nx.random_regular_expander(n=20, d=4)
+    >>> G = nx.random_regular_expander_graph(n=20, d=4)
     >>> nx.is_regular_expander(G)
     True
 
@@ -419,7 +419,7 @@ def random_regular_expander_graph(*, n, d, epsilon=0, max_tries=100):
 
     Examples
     --------
-    >>> G = nx.random_regular_expander(n=20, d=4)
+    >>> G = nx.random_regular_expander_graph(n=20, d=4)
     >>> nx.is_regular_expander(G)
     True
 
