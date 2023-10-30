@@ -13,11 +13,19 @@ def _get_max_broadcast_value(G, U, v, values):
     return max(values[u] + i for i, u in enumerate(adj, start=1))
 
 
+def _get_broadcast_centers(G, v, values, target):
+    adj = sorted(set(G.neighbors(v)), key=lambda u: values[u], reverse=True)
+    j = min(i for i, u in enumerate(adj, start=1) if values[u] + i == target)
+    return set([v] + adj[:j])
+
+
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def tree_broadcast_center(G):
     """Return the Broadcast Center of the tree G.
 
+    This is a linear algorithm for determining the broadcast center of any tree with N vertices,
+    as a by-product it can also determine the broadcast number of any vertex in the tree.
     The broadcast number of a vertex v in a graph G is the minimum number of time units required to broadcast from v.
     The broadcast center of a graph G is one of the vertices having minimum broadcast number.
 
@@ -29,8 +37,8 @@ def tree_broadcast_center(G):
 
     Returns
     -------
-    BC : (int, int) tuple
-        Broadcast time from broadcast center, index of broadcast center of a tree
+    BC : (int, set) tuple
+        minimum broadcast number of the tree, set of broadcast centers
 
     Raises
     ------
@@ -47,9 +55,9 @@ def tree_broadcast_center(G):
         NetworkXError("Your graph is not a tree")
     # step 0
     if G.number_of_nodes() == 2:
-        return 1
+        return 1, set(G.nodes())
     elif G.number_of_nodes() == 1:
-        return 0
+        return 0, set(G.nodes())
 
     # step 1
     U = {node for node, deg in G.degree if deg == 1}
@@ -81,12 +89,12 @@ def tree_broadcast_center(G):
     # step 7
     v = nx.utils.arbitrary_element(T)
     b_T = _get_max_broadcast_value(G, U, v, values)
-    return b_T, v
+    return b_T, _get_broadcast_centers(G, v, values, b_T)
 
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-def tree_broadcast_time(G):
+def tree_broadcast_time(G, node=None):
     """Return the Broadcast Time of the tree G.
 
     Broadcasting is an information dissemination problem in which one vertex in a graph, called the originator,
@@ -105,11 +113,14 @@ def tree_broadcast_time(G):
     G : NetworkX graph
         Undirected graph
         The graph should be an undirected tree
-
+    node: int
+        index of starting vertex. If none,
+        the algorithm returns the broadcast
+        time of the tree.
     Returns
     -------
     BT : int
-        Broadcast Time of a tree
+        Broadcast Time of a vertex in a tree
 
     Raises
     ------
@@ -122,4 +133,8 @@ def tree_broadcast_time(G):
        Information dissemination in trees. SIAM J.Comput. 10(4), 692–701 (1981)
     """
     b_T, b_C = tree_broadcast_center(G)
-    return b_T + max(nx.eccentricity(G, b_C).values())
+    if node is None:
+        return b_T + max(nx.eccentricity(G, b_C).values())
+    else:
+        b_T, b_C = tree_broadcast_center(G)
+        return b_T + max(nx.eccentricity(G, b_C).values())
