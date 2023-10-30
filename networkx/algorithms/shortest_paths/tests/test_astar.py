@@ -182,7 +182,6 @@ class TestAStar:
             nx.astar_path(self.XG, "s", "v", cutoff=8.0)
 
     def test_astar_cutoff2(self):
-        # optimal path_length in XG is 9
         assert nx.astar_path(self.XG, "s", "v", cutoff=10.0) == ["s", "x", "u", "v"]
         assert nx.astar_path_length(self.XG, "s", "v") == 9
 
