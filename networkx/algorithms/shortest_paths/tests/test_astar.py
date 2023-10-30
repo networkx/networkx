@@ -176,6 +176,16 @@ class TestAStar:
         with pytest.raises(nx.NodeNotFound):
             nx.astar_path(self.XG, "s", "moon")
 
+    def test_astar_cutoff(self):
+        with pytest.raises(nx.NetworkXNoPath):
+            # optimal path_length in XG is 9
+            nx.astar_path(self.XG, "s", "v", cutoff=8.0)
+
+    def test_astar_cutoff2(self):
+        # optimal path_length in XG is 9
+        assert nx.astar_path(self.XG, "s", "v", cutoff=10.0) == ["s", "x", "u", "v"]
+        assert nx.astar_path_length(self.XG, "s", "v") == 9
+
     def test_cycle(self):
         C = nx.cycle_graph(7)
         assert nx.astar_path(C, 0, 3) == [0, 1, 2, 3]
