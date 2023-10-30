@@ -2,6 +2,7 @@
 """
 from heapq import heappop, heappush
 from itertools import count
+from typing import Any
 
 import networkx as nx
 from networkx.algorithms.shortest_paths.weighted import _weight_function
@@ -119,9 +120,9 @@ def astar_path(
     # Maps enqueued nodes to distance of discovered paths and the
     # computed heuristics to target. We avoid computing the heuristics
     # more than once and inserting the node into the queue too many times.
-    enqueued = {}
+    enqueued: dict[Any, Any] = {}
     # Maps explored nodes to parent closest to the source.
-    explored = {}
+    explored: dict[Any, Any] = {}
 
     while queue:
         # Pop the smallest item from queue.
