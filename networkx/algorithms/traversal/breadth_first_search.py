@@ -76,10 +76,7 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
     neighbor to return *odd* nodes first:
 
     >>> def odd_first(n):
-    ...     nbrs = set(G.neighbors(n))
-    ...     evens = {n for n in nbrs if n % 2 == 0}
-    ...     odds = nbrs - evens
-    ...     return list(odds) + list(evens)
+    ...     return sorted(G.neighbors(n), key=lambda x: x % 2, reverse=True)
 
     >>> G = nx.star_graph(5)
     >>> list(nx.generic_bfs_edges(G, source=0))  # Default neighbor ordering
