@@ -332,8 +332,8 @@ def test_is_minimal_d_separator_checks_dsep():
 
 
 def test__reachable(large_collider_graph):
-    g = large_collider_graph()
     reachable = nx.algorithms.d_separation._reachable
+    g = large_collider_graph
     x = {"F", "D"}
     ancestors = {"A", "B", "C", "D", "F"}
     assert reachable(g, x, ancestors, {"B"}) == {"B", "F", "D"}
