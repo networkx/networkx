@@ -104,12 +104,10 @@ References
 .. [2] Darwiche, A.  (2009).  Modeling and reasoning with Bayesian networks.
    Cambridge: Cambridge University Press.
 
-.. [3] Shachter, R.  D.  (1998).
-   Bayes-ball: rational pastime (for determining irrelevance and requisite
-   information in belief networks and influence diagrams).
-   In , Proceedings of the Fourteenth Conference on Uncertainty in Artificial
-   Intelligence (pp.  480–487).
-   San Francisco, CA, USA: Morgan Kaufmann Publishers Inc.
+.. [3] Shachter, Ross D. "Bayes-ball: The rational pastime (for
+   determining irrelevance and requisite information in belief networks
+   and influence diagrams)." In Proceedings of the Fourteenth Conference
+   on Uncertainty in Artificial Intelligence (UAI), (pp. 480–487). 1998.
 
 .. [4] Koller, D., & Friedman, N. (2009).
    Probabilistic graphical models: principles and techniques. The MIT Press.
@@ -162,6 +160,7 @@ def is_d_separator(G, x, y, z):
     NodeNotFound
         If any of the input nodes are not found in the graph,
         a :exc:`NodeNotFound` exception is raised
+
     Notes
     -----
     A d-separating set in a DAG is a set of nodes that
@@ -370,9 +369,9 @@ def is_minimal_d_separator(G, x, y, z, *, included=None, restricted=None):
     """Determine if `z` is a minimal d-separating set for `x` and `y`.
 
     A d-separating set, `z`, in a DAG is a set of nodes that blocks
-    all paths between the two nodes, `x` and `y`. This function
-    verifies that a set is "minimal", meaning there is no smaller
-    d-separating set between the two nodes.
+    all paths between the sets `x` and `y`. This function verifies
+    that a set is "minimal", meaning there is no smaller d-separating
+    set between the two nodes.
 
     Note: This function checks whether `z` is a d-separator AND is
     minimal. One can use the function `is_d_separator` to only check if
@@ -433,9 +432,10 @@ def is_minimal_d_separator(G, x, y, z, *, included=None, restricted=None):
     Notes
     -----
     This function works on verifying that a set is minimal and
-    d-separating between two nodes. Uses algorithm TESTMINSEP presented in
-    [1]_. The complexity of the algorithm is :math:`O(n^2)`, where
-    :math:`n` stands for the number of nodes.
+    d-separating between two nodes. Uses criterion (a), (b), (c) on
+    page 4 of [1]_. The complexity is :math:`O(m)`, where :math:`m`
+    stands for the number of edges in the subgraph of G consisting of
+    only the ancestors of `x` and `y`.
 
     For full details, see [1]_.
     """
@@ -476,87 +476,27 @@ def is_minimal_d_separator(G, x, y, z, *, included=None, restricted=None):
             f"Separating set {z} should be no larger than maximum set {restricted}"
         )
 
-    xyincluded = x | y | included
-
-    if (
-        z - xyincluded.union(*[nx.ancestors(G, node) for node in xyincluded]) != set()
-        or not z <= restricted
-    ):
-        return False
-    if not is_d_separator(G, x, y, z):
-        return False
-
-    G_copy = G.copy()
+    intersection = x.intersection(y) or x.intersection(z) or y.intersection(z)
+    if intersection:
+        raise nx.NetworkXError(
+            f"The sets are not disjoint, with intersection {intersection}"
+        )
 
     nodeset = x.union(y).union(included)
+    ancestors_x_y_included = nodeset.union(*[nx.ancestors(G, node) for node in nodeset])
 
-    ancestor_nodes_G = nodeset.union(*[nx.ancestors(G_copy, node) for node in nodeset])
-    aug_G_p = nx.moral_graph(G.subgraph(ancestor_nodes_G))
-    for node in included:
-        aug_G_p.remove_node(node)
+    # criterion (a) -- check that z is actually a separator
+    x_closure = _reachable(G, x, ancestors_x_y_included, z)
+    crit_a = not any(x_closure.intersection(y))
 
-    restricted_x = _bfs_with_marks(aug_G_p, x, z)
+    # criterion (b) -- basic constraint; included and restricted already checked above
+    crit_b = z <= ancestors_x_y_included
 
-    # Note: we check z - i != r_x instead of z != r_x since
-    # all nodes in i are removed from graph and so x will never have a path
-    # to i. Appears to be bug in the original algorithm.
-    if z - included != restricted_x:
-        return False
-    restricted_y = _bfs_with_marks(aug_G_p, y, z)
+    # criterion (c) -- check that z is minimal
+    y_closure = _reachable(G, y, ancestors_x_y_included, z)
+    crit_c = z.difference(included) <= x_closure.intersection(y_closure)
 
-    # Note: we check z - i != r_y for similar reasons as above.
-    if z - included != restricted_y:
-        return False
-
-    return True
-
-
-@not_implemented_for("directed")
-def _bfs_with_marks(G, start_set, check_set):
-    """Breadth-first-search with markings.
-
-    Performs BFS starting from ``start_set`` and whenever a node
-    inside ``check_set`` is met, it is "marked". Once a node is marked,
-    BFS does not continue along that path. The resulting marked nodes
-    are returned.
-
-    Parameters
-    ----------
-    G : nx.Graph
-        An undirected graph.
-    start_set : set | node
-        The set of starting nodes of the BFS.
-    check_set : set
-        The set of nodes to check against.
-
-    Returns
-    -------
-    marked : set
-        A set of nodes that were marked.
-    """
-    if start_set in G:
-        start_set = {start_set}
-
-    visited = {}
-    marked = set()
-    queue = []
-    for node in start_set:
-        visited[node] = None
-        queue.append(node)
-    while queue:
-        m = queue.pop(0)
-
-        for nbr in G.neighbors(m):
-            if nbr not in visited:
-                # memoize where we visited so far
-                visited[nbr] = None
-
-                # mark the node in Z' and do not continue along that path
-                if nbr in check_set:
-                    marked.add(nbr)
-                else:
-                    queue.append(nbr)
-    return marked
+    return crit_a and crit_b and crit_c
 
 
 @not_implemented_for("undirected")
@@ -591,7 +531,7 @@ def _reachable(G, x, a, z):
         minimal d-separators in linear time and applications." In
         Uncertainty in Artificial Intelligence, pp. 637-647. PMLR, 2020.
 
-    .. [2] Shachter, Ross D. "Bayes-all: The rational pastime
+    .. [2] Shachter, Ross D. "Bayes-ball: The rational pastime
        (for determining irrelevance and requisite information in
        belief networks and influence diagrams)." In Proceedings of the
        Fourteenth Conference on Uncertainty in Artificial Intelligence
@@ -632,9 +572,9 @@ def _reachable(G, x, a, z):
 
     queue = deque([])
     for node in x:
-        if any(G.pred[node]):
+        if bool(G.pred[node]):
             queue.append((True, node))
-        if any(G.succ[node]):
+        if bool(G.succ[node]):
             queue.append((False, node))
     processed = queue.copy()
 
