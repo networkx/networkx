@@ -264,6 +264,21 @@ class UnionMultiAdjacency(UnionAdjacency):
 
 
 class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
+     """FilterAtlas is a Read-only Mapping of Mappings with filtering criteria for nodes.
+
+    It is a view into a dict-of-dict data structure, and it selects only nodes that meet the criteria defined by NODE_OK.
+
+    Parameters:
+        d (dict): The input dict-of-dict data structure.
+        NODE_OK: A filtering criterion for nodes.
+
+    See Also
+    ========
+    FilterAdjacency: View into dict-of-dict-of-dict with filtering criteria for nodes and edges.
+    FilterMultiInner: View into dict-of-dict-of-dict-of-dict with filtering criteria for nodes and edges.
+    FilterMultiAdjacency: View into dict-of-dict-of-dict-of-dict with filtering criteria for nodes and edges.
+    """
+    
     def __init__(self, d, NODE_OK):
         self._atlas = d
         self.NODE_OK = NODE_OK
@@ -293,6 +308,22 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
 
 
 class FilterAdjacency(Mapping):  # edgedict
+    """FilterAdjacency is a Read-only Mapping of Mappings with filtering criteria for nodes and edges.
+
+    It is a view into a dict-of-dict-of-dict data structure, and it selects nodes and edges that satisfy specific criteria defined by NODE_OK and EDGE_OK, respectively.
+
+    Parameters:
+        d (dict): The input dict-of-dict-of-dict data structure.
+        NODE_OK: A filtering criterion for nodes.
+        EDGE_OK: A filtering criterion for edges.
+
+    See Also
+    ========
+    FilterAtlas: View into dict-of-dict with filtering criteria for nodes.
+    FilterMultiInner: View into dict-of-dict-of-dict-of-dict with filtering criteria for nodes and edges.
+    FilterMultiAdjacency: View into dict-of-dict-of-dict-of-dict with filtering criteria for nodes and edges.
+    """
+   
     def __init__(self, d, NODE_OK, EDGE_OK):
         self._atlas = d
         self.NODE_OK = NODE_OK
@@ -328,6 +359,22 @@ class FilterAdjacency(Mapping):  # edgedict
 
 
 class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
+    """FilterMultiInner is a Read-only Mapping of Mappings with filtering criteria for nodes and edges.
+
+    It is a view into a dict-of-dict-of-dict-of-dict data structure, and it selects nodes and edges that meet specific criteria defined by NODE_OK and EDGE_OK.
+
+    Parameters:
+        d (dict): The input dict-of-dict-of-dict-of-dict data structure.
+        NODE_OK: A filtering criterion for nodes.
+        EDGE_OK: A filtering criterion for edges.
+
+    See Also
+    ========
+    FilterAtlas: View into dict-of-dict with filtering criteria for nodes.
+    FilterAdjacency: View into dict-of-dict-of-dict with filtering criteria for nodes and edges.
+    FilterMultiAdjacency: View into dict-of-dict-of-dict-of-dict with filtering criteria for nodes and edges.
+    """
+   
     def __iter__(self):
         try:  # check that NODE_OK has attr 'nodes'
             node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
@@ -357,6 +404,22 @@ class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
 
 
 class FilterMultiAdjacency(FilterAdjacency):  # multiedgedict
+    """FilterMultiAdjacency is a Read-only Mapping of Mappings with filtering criteria for nodes and edges.
+
+    It is a view into a dict-of-dict-of-dict-of-dict data structure, and it selects nodes and edges that satisfy specific criteria defined by NODE_OK and EDGE_OK, respectively.
+
+    Parameters:
+        d (dict): The input dict-of-dict-of-dict-of-dict data structure.
+        NODE_OK: A filtering criterion for nodes.
+        EDGE_OK: A filtering criterion for edges.
+
+    See Also
+    ========
+    FilterAtlas: View into dict-of-dict with filtering criteria for nodes.
+    FilterAdjacency: View into dict-of-dict-of-dict with filtering criteria for nodes and edges.
+    FilterMultiInner: View into dict-of-dict-of-dict-of-dict with filtering criteria for nodes and edges.
+    """
+    
     def __getitem__(self, node):
         if node in self._atlas and self.NODE_OK(node):
 
