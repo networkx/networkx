@@ -35,6 +35,7 @@ __all__ = [
     "null_graph",
     "path_graph",
     "star_graph",
+    "tadpole_graph",
     "trivial_graph",
     "turan_graph",
     "wheel_graph",
@@ -64,6 +65,7 @@ def _tree_edges(n, r):
                 break
 
 
+@nx._dispatch(graphs=None)
 def full_rary_tree(r, n, create_using=None):
     """Creates a full r-ary tree of `n` nodes.
 
@@ -97,6 +99,7 @@ def full_rary_tree(r, n, create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def balanced_tree(r, h, create_using=None):
     """Returns the perfectly balanced `r`-ary tree of height `h`.
 
@@ -142,6 +145,7 @@ def balanced_tree(r, h, create_using=None):
     return full_rary_tree(r, n, create_using=create_using)
 
 
+@nx._dispatch(graphs=None)
 def barbell_graph(m1, m2, create_using=None):
     """Returns the Barbell Graph: two complete graphs connected by a path.
 
@@ -210,6 +214,7 @@ def barbell_graph(m1, m2, create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def binomial_tree(n, create_using=None):
     """Returns the Binomial Tree of order n.
 
@@ -244,6 +249,7 @@ def binomial_tree(n, create_using=None):
 
 
 @nodes_or_number(0)
+@nx._dispatch(graphs=None)
 def complete_graph(n, create_using=None):
     """Return the complete graph `K_n` with n nodes.
 
@@ -286,6 +292,7 @@ def complete_graph(n, create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def circular_ladder_graph(n, create_using=None):
     """Returns the circular ladder graph $CL_n$ of length n.
 
@@ -301,6 +308,7 @@ def circular_ladder_graph(n, create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def circulant_graph(n, offsets, create_using=None):
     r"""Returns the circulant graph $Ci_n(x_1, x_2, ..., x_m)$ with $n$ nodes.
 
@@ -374,6 +382,7 @@ def circulant_graph(n, offsets, create_using=None):
 
 
 @nodes_or_number(0)
+@nx._dispatch(graphs=None)
 def cycle_graph(n, create_using=None):
     """Returns the cycle graph $C_n$ of cyclically connected nodes.
 
@@ -400,6 +409,7 @@ def cycle_graph(n, create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     """Returns the hierarchically constructed Dorogovtsev-Goltsev-Mendes graph.
 
@@ -433,8 +443,9 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
 
     References
     ----------
-    .. [1] Dorogotsev S.N., Goltsev A.V., and Mendes J.F.F "Pseudofractal
-       Scale-free Web". arXiv:cond-mat/0112143
+    .. [1] S. N. Dorogovtsev, A. V. Goltsev and J. F. F. Mendes,
+        "Pseudofractal scale-free web", Physical Review E 65, 066122, 2002.
+        https://arxiv.org/pdf/cond-mat/0112143.pdf
     """
     G = empty_graph(0, create_using)
     if G.is_directed():
@@ -449,7 +460,7 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     for i in range(1, n + 1):  # iterate over number of generations.
         last_generation_edges = list(G.edges())
         number_of_edges_in_last_generation = len(last_generation_edges)
-        for j in range(0, number_of_edges_in_last_generation):
+        for j in range(number_of_edges_in_last_generation):
             G.add_edge(new_node, last_generation_edges[j][0])
             G.add_edge(new_node, last_generation_edges[j][1])
             new_node += 1
@@ -457,6 +468,7 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
 
 
 @nodes_or_number(0)
+@nx._dispatch(graphs=None)
 def empty_graph(n=0, create_using=None, default=Graph):
     """Returns the empty graph with n nodes and zero edges.
 
@@ -550,6 +562,7 @@ def empty_graph(n=0, create_using=None, default=Graph):
     return G
 
 
+@nx._dispatch(graphs=None)
 def ladder_graph(n, create_using=None):
     """Returns the Ladder graph of length n.
 
@@ -569,6 +582,7 @@ def ladder_graph(n, create_using=None):
 
 
 @nodes_or_number([0, 1])
+@nx._dispatch(graphs=None)
 def lollipop_graph(m, n, create_using=None):
     """Returns the Lollipop Graph; `K_m` connected to `P_n`.
 
@@ -625,6 +639,7 @@ def lollipop_graph(m, n, create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def null_graph(create_using=None):
     """Returns the Null graph with no nodes or edges.
 
@@ -636,6 +651,7 @@ def null_graph(create_using=None):
 
 
 @nodes_or_number(0)
+@nx._dispatch(graphs=None)
 def path_graph(n, create_using=None):
     """Returns the Path graph `P_n` of linearly connected nodes.
 
@@ -657,6 +673,7 @@ def path_graph(n, create_using=None):
 
 
 @nodes_or_number(0)
+@nx._dispatch(graphs=None)
 def star_graph(n, create_using=None):
     """Return the star graph
 
@@ -690,12 +707,69 @@ def star_graph(n, create_using=None):
     return G
 
 
+@nodes_or_number([0, 1])
+@nx._dispatch(graphs=None)
+def tadpole_graph(m, n, create_using=None):
+    """Returns the (m,n)-tadpole graph; `C_m` connected to `P_n`.
+
+    This graph on m+n nodes connects a cycle of size m to a path of length n.
+    It looks like a tadpole.
+    It is also called a kite graph or a dragon graph.
+
+    Parameters
+    ----------
+    m, n : int or iterable container of nodes (default = 0)
+        If an integer, nodes are from `range(m)` and `range(m,m+n)`.
+        If a container of nodes, those nodes appear in the graph.
+        Warning: m and n are not checked for duplicates and if present the
+        resulting graph may not be as desired.
+
+        The nodes for m appear in the cycle graph $C_m$ and the nodes
+        for n appear in the path $P_n$.
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Raises
+    -------
+    NetworkXError
+        If `m < 2`. The tadpole graph is undefined for `m<2`.
+
+    Notes
+    -----
+    The 2 subgraphs are joined via an edge (m-1, m).
+    If n=0, this is a cycle graph.
+    m and/or n can be a container of nodes instead of an integer.
+
+    """
+    m, m_nodes = m
+    M = len(m_nodes)
+    if M < 2:
+        raise NetworkXError("Invalid description: m should indicate at least 2 nodes")
+
+    n, n_nodes = n
+    if isinstance(m, numbers.Integral) and isinstance(n, numbers.Integral):
+        n_nodes = list(range(M, M + n))
+    N = len(n_nodes)
+
+    # the circle
+    G = cycle_graph(m_nodes, create_using)
+    if G.is_directed():
+        raise NetworkXError("Directed Graph not supported")
+
+    # the stick
+    nx.add_path(G, [m_nodes[-1]] + list(n_nodes))
+
+    return G
+
+
+@nx._dispatch(graphs=None)
 def trivial_graph(create_using=None):
     """Return the Trivial graph with one node (with label 0) and no edges."""
     G = empty_graph(1, create_using)
     return G
 
 
+@nx._dispatch(graphs=None)
 def turan_graph(n, r):
     r"""Return the Turan Graph
 
@@ -730,6 +804,7 @@ def turan_graph(n, r):
 
 
 @nodes_or_number(0)
+@nx._dispatch(graphs=None)
 def wheel_graph(n, create_using=None):
     """Return the wheel graph
 
@@ -760,6 +835,7 @@ def wheel_graph(n, create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def complete_multipartite_graph(*subset_sizes):
     """Returns the complete multipartite graph with the specified subset sizes.
 
@@ -827,6 +903,9 @@ def complete_multipartite_graph(*subset_sizes):
         subsets = [range(start, end) for start, end in extents]
     except TypeError:
         subsets = subset_sizes
+    else:
+        if any(size < 0 for size in subset_sizes):
+            raise NetworkXError(f"Negative number of nodes not valid: {subset_sizes}")
 
     # add nodes with subset attribute
     # while checking that ints are not mixed with iterables

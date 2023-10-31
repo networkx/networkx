@@ -110,6 +110,7 @@ def biadjacency_matrix(
         raise nx.NetworkXError(f"Unknown sparse array format: {format}") from err
 
 
+@nx._dispatch(graphs=None)
 def from_biadjacency_matrix(A, create_using=None, edge_attribute="weight"):
     r"""Creates a new bipartite graph from a biadjacency matrix given as a
     SciPy sparse array.

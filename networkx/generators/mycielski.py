@@ -68,6 +68,7 @@ def mycielskian(G, iterations=1):
     return M
 
 
+@nx._dispatch(graphs=None)
 def mycielski_graph(n):
     """Generator for the n_th Mycielski Graph.
 
@@ -100,7 +101,7 @@ def mycielski_graph(n):
     """
 
     if n < 1:
-        raise nx.NetworkXError("must satisfy n >= 0")
+        raise nx.NetworkXError("must satisfy n >= 1")
 
     if n == 1:
         return nx.empty_graph(1)
