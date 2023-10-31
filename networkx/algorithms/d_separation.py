@@ -265,9 +265,6 @@ def find_minimal_d_separator(G, x, y, *, included=None, restricted=None):
 
     For more details, see Notes.
 
-    TODO: need to explain the difference between strongly minimal vs I-minimal
-
-
     Parameters
     ----------
     G : graph
@@ -312,9 +309,9 @@ def find_minimal_d_separator(G, x, y, *, included=None, restricted=None):
     there may be more than one minimal d-separator between two sets of nodes.
 
     Uses the algorithm presented in [1]_. The complexity of the algorithm
-    is :math:`O(n^2)`, where :math:`n` stands for the
-    number of nodes in the moralized graph of the sub-graph consisting
-    of only the ancestors of `x` and `y`. For full details, see [1]_.
+    is :math:`O(m)`, where :math:`m` stands for the number of edges in
+    the subgraph of G consisting of only the ancestors of `x` and `y`.
+    For full details, see [1]_.
     """
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")
