@@ -336,12 +336,12 @@ def test_geometric_edges_raises_no_pos():
 
 
 def test_number_of_nodes_S1():
-    G = nx.S1_graph(1.5, n=100, gamma=2.7, mean_degree=10)
+    G = nx.S1_model(1.5, n=100, gamma=2.7, mean_degree=10)
     assert len(G) == 100
 
 
 def test_set_attributes_S1():
-    G = nx.S1_graph(1.5, n=100, gamma=2.7, mean_degree=10)
+    G = nx.S1_model(1.5, n=100, gamma=2.7, mean_degree=10)
     kappas = list(nx.get_node_attributes(G, "kappa").values())
     assert len(kappas) == 100
     thetas = list(nx.get_node_attributes(G, "theta").values())
@@ -349,15 +349,15 @@ def test_set_attributes_S1():
 
 
 def test_mean_kappas_S1():
-    G = nx.S1_graph(2.5, n=5000, gamma=2.7, mean_degree=10)
+    G = nx.S1_model(2.5, n=5000, gamma=2.7, mean_degree=10)
     kappas = list(nx.get_node_attributes(G, "kappa").values())
     mean_kappas = sum(kappas) / len(kappas)
     assert math.fabs(mean_kappas - 10) < 0.5
 
 
-def test_list_kappas_S1():
-    kappas = [10] * 1000
-    G = nx.S1_graph(1, kappas=kappas)
+def test_dict_kappas_S1():
+    kappas = {i: 10 for i in range(1000)}
+    G = nx.S1_model(1, kappas=kappas)
     assert len(G) == 1000
     kappas = list(nx.get_node_attributes(G, "kappa").values())
     mean_kappas = sum(kappas) / len(kappas)
@@ -365,34 +365,38 @@ def test_list_kappas_S1():
 
 
 def test_beta_clustering_S1():
-    G1 = nx.S1_graph(1.5, n=100, gamma=3.5, mean_degree=10)
-    G2 = nx.S1_graph(3.0, n=100, gamma=3.5, mean_degree=10)
+    G1 = nx.S1_model(1.5, n=100, gamma=3.5, mean_degree=10)
+    G2 = nx.S1_model(3.0, n=100, gamma=3.5, mean_degree=10)
     assert nx.average_clustering(G1) < nx.average_clustering(G2)
 
 
 def test_wrong_parameters_S1():
-    try:
-        G = nx.S1_graph(1.5, gamma=3.5, mean_degree=10)
-    except nx.NetworkXError:
-        pass
-    try:
-        kappas = [10] * 100
-        G = nx.S1_graph(1.5, kappas=kappas, gamma=2.3)
-    except nx.NetworkXError:
-        pass
-    try:
-        G = nx.S1_graph(1.5)
-    except nx.NetworkXError:
-        pass
+    with pytest.raises(
+        nx.NetworkXError,
+        match="Please provide all parameters: n, gamma and mean_degree.",
+    ):
+        G = nx.S1_model(1.5, gamma=3.5, mean_degree=10)
+
+    with pytest.raises(
+        nx.NetworkXError, match="When kappas is set other parameters should be empty."
+    ):
+        kappas = {i: 10 for i in range(1000)}
+        G = nx.S1_model(1.5, kappas=kappas, gamma=2.3)
+
+    with pytest.raises(
+        nx.NetworkXError,
+        match="Please provide all parameters: n, gamma and mean_degree.",
+    ):
+        G = nx.S1_model(1.5)
 
 
 def test_negative_beta_S1():
-    try:
-        G = nx.S1_graph(-1, n=100, gamma=2.3, mean_degree=10)
-    except nx.NetworkXError:
-        pass
+    with pytest.raises(
+        nx.NetworkXError, match="The parameter beta cannot be smaller than 0."
+    ):
+        G = nx.S1_model(-1, n=100, gamma=2.3, mean_degree=10)
 
 
 def test_non_zero_clustering_beta_lower_one_S1():
-    G = nx.S1_graph(0.5, n=100, gamma=3.5, mean_degree=10)
+    G = nx.S1_model(0.5, n=100, gamma=3.5, mean_degree=10)
     assert nx.average_clustering(G) > 0

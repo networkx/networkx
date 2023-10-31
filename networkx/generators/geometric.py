@@ -16,7 +16,7 @@ __all__ = [
     "soft_random_geometric_graph",
     "thresholded_random_geometric_graph",
     "waxman_graph",
-    "S1_graph",
+    "S1_model",
 ]
 
 
@@ -848,33 +848,47 @@ def thresholded_random_geometric_graph(
 
 
 @py_random_state(5)
-def S1_graph(beta, *, n=None, gamma=None, mean_degree=None, kappas=None, seed=None):
+def S1_model(beta, *, n=None, gamma=None, mean_degree=None, kappas=None, seed=None):
     r"""Returns a $\mathbb{S}^1$ model.
 
-    The $\mathbb{S}^1$ model is the simplest among the class of geometric models [1]_.
-    The similarity space is a one dimensional sphere—a circle of radius R—where N nodes are
-    distributed with a fixed density, set to one without loss of generality, so that $N = 2\pi R$.
-    Each node is also given a hidden variable ``kappa`` proportional to its expected degree.
-    The connection probability between a node i and a node j takes the form of a gravity law
+    The $\mathbb{S}^1$ model [1]_ is the geometric soft configuration model which is able to
+    explain many fundamental features of real networks such as small-world property,
+    heteregenous degree distributions, high level of clustering, or self-similarity.
+
+    In the one-dimensional $\mathbb{S}^1$ model, a node i is assigned two hidden variables: a hidden
+    degree $\kappa_i$, quantifying its popularity, influance, or importance, and an angular position $\theta_i$
+    in a one-dimensional sphere (or circle) abstracting the similarity space, where angular distances between nodes
+    are a proxy for their similarity. The radius of the circle is adjusted to $R = N/2\pi$,
+    where N is the number of nodes, so that the density is set to 1 without loss of generality.
+
+    The connection probability between any pair of nodes takes the form of a gravity law,
+    whose magnitude increases with the product of the hidden degrees (i.e., their combined popularities),
+    and decreases with the angular distance between the two nodes. Specifically, nodes i and j are connected with probability
 
     $p_{ij} = \frac{1}{1 + \frac{d_{ij}^\beta}{\left(\mu \kappa_i \kappa_j\right)^{\max(1, \beta)}}}$
 
-    where $d_{ij} = R\Delta\theta_{ij}$ is the arc length of the circle between
-    nodes i and j separated by an angular distance $\Delta\theta_{ij}$. Parameters $\mu$ and $\beta$
+    where $d_{ij} = R\Delta\theta_{ij}$ is the arc length of the circle between nodes i and j separated
+    by an angular distance $\Delta\theta_{ij}$. Parameters $\mu$ and $\beta$ (also called inverse temperature)
     control the average degree and the clustering coefficient, respectively.
+
+    It can be shown [2]_ that the model undergoes a structural phase transition at $\beta=1$ so that for $\beta<1$
+    networks are unclustered in the thermodynamic limit (when $N\to \infty$) whereas for $\beta>1$ the ensemble
+    generates networks with finite clustering.
 
     Parameters
     ----------
+    Either n, gamma, mean_degree are provided or kappas. The values of n, gamma, mean_degree (if provided) are used to construct kappas.
+
     beta: float
-        Inverse temperature
+        Inverse temperature, controlling the clustering coefficient.
     n: int, optional
-        Size of the network
+        Size of the network (number of nodes).
     gamma: float, optional
-        Exponent of powerlaw distribution of the hidden degrees
+        Exponent of the power-law distribution for hidden degrees.
     mean_degree: float, optional
         The mean degree in the network
-    kappas: list, optional
-        Values of hidden degrees for each node
+    kappas: dict, optional
+        A dictionary specifying the hidden degrees for each node.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
@@ -888,37 +902,34 @@ def S1_graph(beta, *, n=None, gamma=None, mean_degree=None, kappas=None, seed=No
 
     Examples
     --------
-    Default Graph:
+    Generate a network with specified parameters:
 
-    >>> G = nx.S1_graph(1.5, n=100, gamma=2.7, mean_degree=5)
+    >>> G = nx.S1_model(1.5, n=100, gamma=2.7, mean_degree=5)
 
     Create a $\mathbb{S}^1$ model with 100 nodes. The $\beta$ parameter is set to 1.5
     and the exponent of the powerlaw distribution of the hidden degrees is 2.7
     with mean value of 5.
 
+    Generate a network with predefined hidden degrees
 
-    Custom Graph:
-
-    >>> kappas = [10] * 100
-    >>> G = nx.S1_graph(2.5, kappas=kappas)
+    >>> kappas = {i: 10 for i in range(100)}
+    >>> G = nx.S1_model(2.5, kappas=kappas)
 
     Create a $\mathbb{S}^1$ model with 100 nodes. The $\beta$ parameter is set to 2.5
-    and every node has the same $\kappa=10$ value.
-
-
-    Notes
-    -----
-    If the ``kappas`` parameter is provided then parameters ``n``, ``gamma``
-    and ``mean_degree`` are ignored.
+    and all nodes woth hidden degree $\kappa=10$.
 
 
     References
     ----------
-    .. [1] Serrano, M. Angeles, Dmitri, Krioukov, and Marián, Boguñá. "Self-Similarity
+    .. [1] Serrano, M. Ángeles, Dmitri, Krioukov, and Marián, Boguñá. "Self-Similarity
     of Complex Networks and Hidden Metric Spaces". Phys. Rev. Lett. 100 (2008): 078701.
+
+    .. [2] van der Kolk, Jasper, M. Ángeles Serrano, and Marián Boguñá. "An anomalous
+    topological phase transition in spatial random graphs." Communications Physics 5.1 (2022): 245.
+
     """
     if beta < 0:
-        raise nx.NetworkXError("The inverse temperature cannot be smaller than 0.")
+        raise nx.NetworkXError("The parameter beta cannot be smaller than 0.")
 
     if kappas is not None:
         if not all((n is None, gamma is None, mean_degree is None)):
@@ -945,15 +956,13 @@ def S1_graph(beta, *, n=None, gamma=None, mean_degree=None, kappas=None, seed=No
         )
         kappa_c = kappa_0 * n ** (1 / (gamma - 1))
 
-        kappas = []
-        for _ in range(n):
-            kappas.append(
-                kappa_0
-                * (1 - seed.uniform(0, 1) * (1 - (kappa_c / kappa_0) ** (1 - gamma)))
-                ** (1 / (1 - gamma))
-            )
+        kappas = {}
+        for i in range(n):
+            kappas[i] = kappa_0 * (
+                1 - seed.uniform(0, 1) * (1 - (kappa_c / kappa_0) ** (1 - gamma))
+            ) ** (1 / (1 - gamma))
 
-    G = nx.empty_graph(n)
+    G = nx.empty_graph(kappas.keys())
     R = n / (2 * math.pi)
 
     # Approximate values for mu in the thermodynamic limit (when n -> infinity)
@@ -965,19 +974,21 @@ def S1_graph(beta, *, n=None, gamma=None, mean_degree=None, kappas=None, seed=No
         mu = (1 - beta) / (2**beta * mean_degree * n ** (1 - beta))
 
     # Generate random positions on a circle
-    thetas = [seed.uniform(0, 2 * math.pi) for _ in range(n)]
+    thetas = {k: seed.uniform(0, 2 * math.pi) for k in kappas}
+    mapping = dict(zip(range(n), kappas.keys()))
 
     for i in range(n):
         for j in range(i):
-            angle = math.pi - math.fabs(math.pi - math.fabs(thetas[i] - thetas[j]))
+            k, l = mapping[i], mapping[j]
+            angle = math.pi - math.fabs(math.pi - math.fabs(thetas[k] - thetas[l]))
             dij = math.pow(R * angle, beta)
-            mu_kappas = math.pow(mu * kappas[i] * kappas[j], max(1, beta))
+            mu_kappas = math.pow(mu * kappas[k] * kappas[l], max(1, beta))
             p_ij = 1 / (1 + dij / mu_kappas)
 
             # Create an edge with a certain connection probability
             if seed.random() < p_ij:
-                G.add_edge(i, j)
+                G.add_edge(k, l)
 
-    nx.set_node_attributes(G, dict(zip(range(n), thetas)), "theta")
-    nx.set_node_attributes(G, dict(zip(range(n), kappas)), "kappa")
+    nx.set_node_attributes(G, thetas, "theta")
+    nx.set_node_attributes(G, kappas, "kappa")
     return G
