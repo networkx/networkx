@@ -264,7 +264,7 @@ class UnionMultiAdjacency(UnionAdjacency):
 
 
 class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
-     """A Read-only Mapping of Mappings with filtering criteria for nodes.
+    """A Read-only Mapping of Mappings with filtering criteria for nodes.
 
     It is a view into a dict-of-dict data structure, and it selects only nodes that meet 
     the criteria defined by NODE_OK.
