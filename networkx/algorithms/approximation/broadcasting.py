@@ -133,8 +133,7 @@ def tree_broadcast_time(G, node=None):
        Information dissemination in trees. SIAM J.Comput. 10(4), 692–701 (1981)
     """
     b_T, b_C = tree_broadcast_center(G)
-    if node is None:
-        return b_T + max(nx.eccentricity(G, b_C).values())
+    if node is not None:
+        return b_T + min(nx.shortest_path_length(G, node, u) for u in b_C)
     else:
-        b_T, b_C = tree_broadcast_center(G)
-        return b_T + max(nx.eccentricity(G, b_C).values())
+        return b_T + max(min(nx.shortest_path_length(G, v, u) for u in b_C) for v in G)

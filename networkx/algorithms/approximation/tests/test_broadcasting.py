@@ -35,6 +35,11 @@ def test_example_tree_broadcast():
     b_T, b_C = nx_app.tree_broadcast_center(G)
     assert b_T == 6
     assert b_C == {13, 9}
+    # test broadcast time from specific vertex
+    assert nx_app.tree_broadcast_time(G, 17) == 8
+    assert nx_app.tree_broadcast_time(G, 3) == 9
+    # test broadcast time of entire tree
+    assert nx_app.tree_broadcast_time(G) == 10
 
 
 def test_path_broadcast():
@@ -48,6 +53,7 @@ def test_path_broadcast():
             math.ceil(i / 2 - 1),
             math.floor(i / 2 - 1),
         }
+        assert nx_app.tree_broadcast_time(G) == i - 1
 
 
 def test_empty_graph_broadcast():
@@ -55,6 +61,7 @@ def test_empty_graph_broadcast():
     b_T, b_C = nx_app.tree_broadcast_center(H)
     assert b_T == 0
     assert b_C == {0}
+    assert nx_app.tree_broadcast_time(H) == 0
 
 
 def test_star_broadcast():
@@ -63,3 +70,13 @@ def test_star_broadcast():
         b_T, b_C = nx_app.tree_broadcast_center(G)
         assert b_T == i
         assert b_C == set(G.nodes())
+        assert nx_app.tree_broadcast_time(G) == b_T
+
+
+def test_binomial_tree_broadcast():
+    for i in range(2, 8):
+        G = nx.binomial_tree(i)
+        b_T, b_C = nx_app.tree_broadcast_center(G)
+        assert b_T == i
+        assert b_C == {0, 2 ** (i - 1)}
+        assert nx_app.tree_broadcast_time(G) == 2 * i - 1
