@@ -189,7 +189,7 @@ Geometric
    soft_random_geometric_graph
    thresholded_random_geometric_graph
    waxman_graph
-   S1_graph
+   soft_random_S1_H2_geometric_graph
 
 Line Graph
 ----------
