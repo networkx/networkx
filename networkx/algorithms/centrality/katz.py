@@ -162,7 +162,7 @@ def katz_centrality(
         b = beta
         if set(beta) != set(G):
             raise nx.NetworkXError(
-                "beta dictionary " "must have a value for every node"
+                "beta dictionary must have a value for every node"
             ) from err
 
     # make up to max_iter iterations
