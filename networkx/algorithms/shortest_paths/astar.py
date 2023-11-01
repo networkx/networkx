@@ -11,9 +11,7 @@ __all__ = ["astar_path", "astar_path_length"]
 
 
 @nx._dispatch(edge_attrs="weight", preserve_node_attrs="heuristic")
-def astar_path(
-    G, source, target, heuristic=None, weight="weight", cutoff: float | None = None
-):
+def astar_path(G, source, target, heuristic=None, weight="weight", *, cutoff=None):
     """Returns a list of nodes in a shortest path between source and target
     using the A* ("A-star") algorithm.
 
@@ -120,9 +118,9 @@ def astar_path(
     # Maps enqueued nodes to distance of discovered paths and the
     # computed heuristics to target. We avoid computing the heuristics
     # more than once and inserting the node into the queue too many times.
-    enqueued: dict[Any, Any] = {}
+    enqueued = {}
     # Maps explored nodes to parent closest to the source.
-    explored: dict[Any, Any] = {}
+    explored = {}
 
     while queue:
         # Pop the smallest item from queue.
@@ -176,7 +174,7 @@ def astar_path(
 
 @nx._dispatch(edge_attrs="weight", preserve_node_attrs="heuristic")
 def astar_path_length(
-    G, source, target, heuristic=None, weight="weight", cutoff: float | None = None
+    G, source, target, heuristic=None, weight="weight", *, cutoff=None
 ):
     """Returns the length of the shortest path between source and target using
     the A* ("A-star") algorithm.
@@ -238,5 +236,5 @@ def astar_path_length(
         raise nx.NodeNotFound(msg)
 
     weight = _weight_function(G, weight)
-    path = astar_path(G, source, target, heuristic, weight, cutoff)
+    path = astar_path(G, source, target, heuristic, weight, cutoff=cutoff)
     return sum(weight(u, v, G[u][v]) for u, v in zip(path[:-1], path[1:]))
