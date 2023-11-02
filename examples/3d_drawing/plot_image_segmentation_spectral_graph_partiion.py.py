@@ -90,7 +90,7 @@ list_of_markers = Line2D.filled_markers[len(Line2D.filled_markers) // 2 :]
 
 fig = plt.figure(figsize=(10, 5))
 fig.suptitle("Spectral Clustering as Graph Partitioning Illustrated", fontsize=20)
-ax0 = fig.add_subplot(1, 2, 1, projection='3d')
+ax0 = fig.add_subplot(1, 2, 1, projection="3d")
 ax0.set_title("Original labeled RGB data")
 array_of_markers = np.array(list_of_markers)[Y.astype(int)]
 # `marker` parameter does not support list or array format, needs a loop
@@ -110,7 +110,7 @@ ax0.set_zlabel("Blue")
 ax0.grid(False)
 ax0.view_init(elev=6.0, azim=-22.0)
 
-ax1 = fig.add_subplot(1, 2, 2, projection='3d')
+ax1 = fig.add_subplot(1, 2, 2, projection="3d")
 ax1.set_title("Data marked by clustering")
 array_of_markers = np.array(list_of_markers)[pred_labels.astype(int)]
 for i, marker in enumerate(array_of_markers):
@@ -156,7 +156,7 @@ plt.box(False)
 ax0.grid(False)
 ax0.set_axis_off()
 
-ax1 = fig.add_subplot(1, 2, 2, projection='3d')
+ax1 = fig.add_subplot(1, 2, 2, projection="3d")
 ax1.set_title("Partitioned graph by spectral clustering")
 pos = nx.spectral_layout(G, dim=3)
 nodes = np.array([pos[v] for v in G])
