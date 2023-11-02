@@ -229,8 +229,8 @@ def maybe_regular_expander(*, n, d, create_using=None, max_tries=100):
       If a Graph-type instance, then clear and use it.
       If a constructor, call it to create an empty graph.
       Use the Graph constructor by default.
-    max_tries : int
-      The number of allowed loops when generating each independent cycles, default=100
+    max_tries : int. (default: 100)
+      The number of allowed loops when generating each independent cycle
 
     Notes
     -----
