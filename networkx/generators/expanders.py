@@ -409,8 +409,8 @@ def random_regular_expander_graph(*, n, d, epsilon=0, create_using=None, max_tri
     d : int
       The degree of each node.
     epsilon : int, float, default=0
-    max_tries : int
-      The number of allowed loops, also used in the maybe_regular_expander utility, default=100
+    max_tries : int, (default: 100)
+      The number of allowed loops, also used in the maybe_regular_expander utility
 
     Raises
     ------
