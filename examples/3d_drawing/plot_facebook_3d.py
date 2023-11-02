@@ -21,7 +21,7 @@ facebook = pd.read_csv(
     names=["start_node", "end_node"],
 )
 # Generate graph from CSV data
-graph = nx.from_pandas_edgelist(facebook, "start_node", "end_node")
+graph = nx.from_pandas_edgelist(facebook[:5000], "start_node", "end_node")
 
 # Generate layout of the graph using spring_layout in 3D
 pos = nx.spring_layout(
