@@ -53,9 +53,7 @@ def interval_graph(intervals):
                 "collections.abc.Sequence such as tuple or list."
             )
         if interval[0] > interval[1]:
-            raise ValueError(
-                f"Interval must have lower value first. " f"Got {interval}"
-            )
+            raise ValueError(f"Interval must have lower value first. Got {interval}")
 
     graph = nx.Graph()
 
