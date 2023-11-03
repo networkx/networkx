@@ -393,15 +393,17 @@ class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
 
 
 class FilterMultiAdjacency(FilterAdjacency):  # multiedgedict
-    """A read-only Mapping of Mappings with filtering criteria for nodes and edges.
+    """A read-only Mapping of Mappings with filtering criteria 
+    for nodes and edges.
 
-    It is a view into a dict-of-dict-of-dict-of-dict data structure, and it selects nodes 
-    and edges that satisfy specific criteria defined by NODE_OK and EDGE_OK, respectively.
+    It is a view into a dict-of-dict-of-dict-of-dict data structure, 
+    and it selects nodes and edges that satisfy specific criteria
+    defined by NODE_OK and EDGE_OK, respectively.
 
     See Also
     ========
     FilterAtlas: View into dict-of-dict with filtering criteria for nodes.
-    FilterAdjacency: View into dict-of-dict-of-dict with filtering criteria for nodes and edges.
+    FilterAdjacency: View into dict-of-dict-of-dict with filtering criteriafor nodes and edges.
     FilterMultiInner: View into dict-of-dict-of-dict-of-dict with filtering criteria for nodes and edges.
     """
     
