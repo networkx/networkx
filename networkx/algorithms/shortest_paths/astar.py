@@ -2,7 +2,6 @@
 """
 from heapq import heappop, heappush
 from itertools import count
-from typing import Any
 
 import networkx as nx
 from networkx.algorithms.shortest_paths.weighted import _weight_function
