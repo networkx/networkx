@@ -264,7 +264,7 @@ class UnionMultiAdjacency(UnionAdjacency):
 
 
 class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
-    """A Read-only Mapping of Mappings with filtering criteria for nodes.
+    """A read-only Mapping of Mappings with filtering criteria for nodes.
 
     It is a view into a dict-of-dict data structure, and it selects only nodes that meet 
     the criteria defined by NODE_OK.
@@ -305,7 +305,7 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
 
 
 class FilterAdjacency(Mapping):  # edgedict
-    """A Read-only Mapping of Mappings with filtering criteria for nodes and edges.
+    """A read-only Mapping of Mappings with filtering criteria for nodes and edges.
 
     It is a view into a dict-of-dict-of-dict data structure, and it selects nodes and edges that 
     satisfy specific criteria defined by NODE_OK and EDGE_OK, respectively.
@@ -352,7 +352,7 @@ class FilterAdjacency(Mapping):  # edgedict
 
 
 class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
-    """A Read-only Mapping of Mappings with filtering criteria for nodes and edges.
+    """A read-only Mapping of Mappings with filtering criteria for nodes and edges.
 
     It is a view into a dict-of-dict-of-dict-of-dict data structure, and it selects nodes 
     and edges that meet specific criteria defined by NODE_OK and EDGE_OK.
@@ -393,7 +393,7 @@ class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
 
 
 class FilterMultiAdjacency(FilterAdjacency):  # multiedgedict
-    """A Read-only Mapping of Mappings with filtering criteria for nodes and edges.
+    """A read-only Mapping of Mappings with filtering criteria for nodes and edges.
 
     It is a view into a dict-of-dict-of-dict-of-dict data structure, and it selects nodes 
     and edges that satisfy specific criteria defined by NODE_OK and EDGE_OK, respectively.
