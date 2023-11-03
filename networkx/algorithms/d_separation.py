@@ -11,88 +11,181 @@ The implementation is based on the conceptually simple linear time
 algorithm presented in [2]_.  Refer to [3]_, [4]_ for a couple of
 alternative algorithms.
 
+The functional interface in NetworkX consists of three functions:
+
+- `find_minimal_d_separator` returns a minimal d-separator set ``z``.
+  That is, removing any node or nodes from it makes it no longer a d-separator.
+- `is_d_separator` checks if a given set is a d-separator.
+- `is_minimal_d_separator` checks if a given set is a minimal d-separator.
+
+D-separators
+------------
+
 Here, we provide a brief overview of d-separation and related concepts that
 are relevant for understanding it:
 
-Blocking paths
---------------
+The ideas of d-separation and d-connection relate to paths being open or blocked.
 
-Before we overview, we introduce the following terminology to describe paths:
+- A "path" is a sequence of nodes connected in order by edges. Unlike for most
+  graph theory analysis, the direction of the edges is ignored. Thus the path
+  can be thought of as a traditional path on the undirected version of the graph.
+- A "candidate d-separating set" ``z`` is a set of nodes being considered as
+  possibly blocking all paths between two prescribed sets ``x`` and ``y`` of nodes.
+  We refer to each node in the candidate d-separating set as "known".
+- A "collider" node on a path is a node that is a successor of its two neighbor
+  nodes on the path. That is, ``c`` is a collider if the edge directions
+  along the path look like ``... u -> c <- v ...``.
+- If a collider node or any of its descendants are "known", the collider
+  is called an "open collider". Otherwise it is a "blocking collider".
+- Any path can be "blocked" in two ways. If the path contains a "known" node
+  that is not a collider, the path is blocked. Also, if the path contains a
+  collider that is not a "known" node, the path is blocked.
+- A path is "open" if it is not blocked. That is, it is open if every node is
+  either an open collider or not a "known". Said another way, every
+  "known" in the path is a collider and every collider is open (has a
+  "known" as a inclusive descendant). The concept of "open path" is meant to
+  demonstrate a probabilistic conditional dependence between two nodes given
+  prescribed knowledge ("known" nodes).
+- Two sets ``x`` and ``y`` of nodes are "d-separated" by a set of nodes ``z``
+  if all paths between nodes in ``x`` and nodes in ``y`` are blocked. That is,
+  if there are no open paths from any node in ``x`` to any node in ``y``.
+  Such a set ``z`` is a "d-separator" of ``x`` and ``y``.
 
-- "open" path: A path between two nodes that can be traversed
-- "blocked" path: A path between two nodes that cannot be traversed
-
-A **collider** is a triplet of nodes along a path that is like the following:
-``... u -> c <- v ...``), where 'c' is a common successor of ``u`` and ``v``. A path
-through a collider is considered "blocked". When
-a node that is a collider, or a descendant of a collider is included in
-the d-separating set, then the path through that collider node is "open". If the
-path through the collider node is open, then we will call this node an open collider.
-
-The d-separation set blocks the paths between ``u`` and ``v``. If you include colliders,
-or their descendant nodes in the d-separation set, then those colliders will open up,
-enabling a path to be traversed if it is not blocked some other way.
+The d-separator blocks some paths between ``x`` and ``y`` but opens others.
+Nodes in the d-separator block paths if the nodes are not colliders.
+But if a collider or its descendant nodes are in the d-separation set, the
+colliders are open, allowing a path through that collider.
 
 Illustration of D-separation with examples
 ------------------------------------------
 
-For a pair of two nodes, ``u`` and ``v``, all paths are considered open if
-there is a path between ``u`` and ``v`` that is not blocked. That means, there is an open
-path between ``u`` and ``v`` that does not encounter a collider, or a variable in the
-d-separating set.
+A pair of two nodes, ``u`` and ``v``, are d-connected if there is a path
+from ``u`` to ``v`` that is not blocked. That means, there is an open
+path from ``u`` to ``v``.
 
 For example, if the d-separating set is the empty set, then the following paths are
-unblocked between ``u`` and ``v``:
+open between ``u`` and ``v``:
 
-- u <- z -> v
-- u -> w -> ... -> z -> v
+- u <- n -> v
+- u -> w -> ... -> n -> v
 
-If for example, 'z' is in the d-separating set, then 'z' blocks those paths
-between ``u`` and ``v``.
+If  on the other hand, ``n`` is in the d-separating set, then ``n`` blocks
+those paths between ``u`` and ``v``.
 
-Colliders block a path by default if they and their descendants are not included
-in the d-separating set. An example of a path that is blocked when the d-separating
-set is empty is:
+Colliders block a path if they and their descendants are not included
+in the d-separating set. An example of a path that is blocked when the
+d-separating set is empty is:
 
-- u -> w -> ... -> z <- v
+- u -> w -> ... -> n <- v
 
-because 'z' is a collider in this path and 'z' is not in the d-separating set. However,
-if 'z' or a descendant of 'z' is included in the d-separating set, then the path through
-the collider at 'z' (... -> z <- ...) is now "open".
+The node ``n`` is a collider in this path and is not in the d-separating set.
+So ``n`` blocks this path. However, if ``n`` or a descendant of ``n`` is
+included in the d-separating set, then the path through the collider
+at ``n`` (... -> n <- ...) is "open".
 
-D-separation is concerned with blocking all paths between u and v. Therefore, a
-d-separating set between ``u`` and ``v`` is one where all paths are blocked.
+D-separation is concerned with blocking all paths between nodes from ``x`` to ``y``.
+A d-separating set between ``x`` and ``y`` is one where all paths are blocked.
 
 D-separation and its applications in probability
 ------------------------------------------------
 
-D-separation is commonly used in probabilistic graphical models. D-separation
+D-separation is commonly used in probabilistic causal-graph models. D-separation
 connects the idea of probabilistic "dependence" with separation in a graph. If
-one assumes the causal Markov condition [5]_, then d-separation implies conditional
-independence in probability distributions.
+one assumes the causal Markov condition [5]_, (every node is conditionally
+independent of its non-descendants, given its parents) then d-separation implies
+conditional independence in probability distributions.
+Symmetrically, d-connection implies dependence.
+
+The intuition is as follows. The edges on a causal graph indicate which nodes
+influence the outcome of other nodes directly. An edge from u to v
+implies that the outcome of event ``u`` influences the probabilities for
+the outcome of event ``v``. Certainly knowing ``u`` changes predictions for ``v``.
+But also knowing ``v`` changes predictions for ``u``. The outcomes are dependent.
+Furthermore, an edge from ``v`` to ``w`` would mean that ``w`` and ``v`` are dependent
+and thus that ``u`` could indirectly influence ``w``.
+
+Without any knowledge about the system (candidate d-separating set is empty)
+a causal graph ``u -> v -> w`` allows all three nodes to be dependent. But
+if we know the outcome of ``v``, the conditional probabilities of outcomes for
+``u`` and ``w`` are independent of each other. That is, once we know the outcome
+for ```v`, the probabilities for ``w`` do not depend on the outcome for ``u``.
+This is the idea behind ``v`` blocking the path if it is "known" (in the candidate
+d-separating set).
+
+The same argument works whether the direction of the edges are both
+left-going and when both arrows head out from the middle. Having a "known"
+node on a path blocks the collider-free path because those relationships
+make the conditional probabilities independent.
+
+The direction of the causal edges does impact dependence precisely in the
+case of a collider e.g. ``u -> v <- w``. In that situation, both ``u`` and ``w``
+influence ``v```. But they do not directly influence each other. So without any
+knowledge of any outcomes, ``u`` and ``w`` are independent. That is the idea behind
+colliders blocking the path. But, if ``v`` is known, the conditional probabilities
+of ``u`` and ``w`` can be dependent. This is the heart of Berkson's Paradox [6]_.
+For example, suppose ``u`` and ``w`` are boolean events (they either happen or do not)
+and ``v`` represents the outcome "at least one of ``u`` and ``w`` occur". Then knowing
+``v`` is true makes the conditional probabilities of ``u`` and ``w`` dependent.
+Essentially, knowing that at least one of them is true raises the probability of
+each. But further knowledge that ``w`` is true (or false) change the conditional
+probability of ``u`` to either the original value or 1. So the conditional
+probability of ``u`` depends on the outcome of ``w`` even though there is no
+causal relationship between them. When a collider is known, dependence can
+occur across paths through that collider. This is the reason open colliders
+do not block paths.
+
+Furthermore, even if ``v`` is not "known", if one of its descendants is "known"
+we can use that information to know more about ``v`` which again makes
+``u`` and ``w`` potentially dependent. Suppose the chance of ``n`` occurring
+is much higher when ``v`` occurs ("at least one of ``u`` and ``w`` occur").
+Then if we know ``n`` occurred, it is more likely that ``v`` occurred and that
+makes the chance of ``u`` and ``w`` dependent. This is the idea behind why
+a collider does no block a path if any descendant of the collider is "known".
+
+When two sets of nodes ``x`` and ``y`` are d-separated by a set ``z``,
+it means that given the outcomes of the nodes in ``z``, the probabilities
+of outcomes of the nodes in ``x`` are independent of the outcomes of the
+nodes in ``y`` and vice versa.
 
 Examples
 --------
+A Hidden Markov Model with 5 observed states and 5 hidden states
+where the hidden states have causal relationships resulting in
+a path results in the following causal network. We check that
+early states along the path are separated from late state in
+the path by the d-separator of the middle hidden state.
+Thus if we condition on the middle hidden state, the early
+state probabilities are independent of the late state outcomes.
 
->>>
->>> # HMM graph with five states and observation nodes
-... g = nx.DiGraph()
+>>> g = nx.DiGraph()
 >>> g.add_edges_from(
 ...     [
-...         ("S1", "S2"),
-...         ("S2", "S3"),
-...         ("S3", "S4"),
-...         ("S4", "S5"),
-...         ("S1", "O1"),
-...         ("S2", "O2"),
-...         ("S3", "O3"),
-...         ("S4", "O4"),
-...         ("S5", "O5"),
+...         ("H1", "H2"),
+...         ("H2", "H3"),
+...         ("H3", "H4"),
+...         ("H4", "H5"),
+...         ("H1", "O1"),
+...         ("H2", "O2"),
+...         ("H3", "O3"),
+...         ("H4", "O4"),
+...         ("H5", "O5"),
 ...     ]
 ... )
->>>
->>> # states/obs before 'S3' are d-separated from states/obs after 'S3'
-... nx.is_d_separator(g, {"S1", "S2", "O1", "O2"}, {"S4", "S5", "O4", "O5"}, {"S3"})
+>>> x, y, z = ({"H1", "O1"}, {"H5", "O5"}, {"H3"})
+>>> nx.is_d_separator(g, x, y, z)
+True
+>>> nx.is_minimal_d_separator(g, x, y, z)
+True
+>>> nx.is_minimal_d_separator(g, x, y, z | {"O3"})
+False
+>>> z = nx.find_minimal_d_separator(g, x | y, {"O2", "O3", "O4"})
+>>> z == {"H2", "H4"}
+True
+
+If no minimal_d_separator exists, `None` is returned
+
+>>> other_z = nx.find_minimal_d_separator(g, x | y, {"H2", "H3"})
+>>> other_z is None
 True
 
 
@@ -114,6 +207,8 @@ References
 
 .. [5] https://en.wikipedia.org/wiki/Causal_Markov_condition
 
+.. [6] https://en.wikipedia.org/wiki/Berkson%27s_paradox
+
 """
 
 from collections import deque
@@ -128,7 +223,7 @@ __all__ = ["is_d_separator", "is_minimal_d_separator", "find_minimal_d_separator
 @not_implemented_for("undirected")
 @nx._dispatch
 def is_d_separator(G, x, y, z):
-    """Return whether node sets ``x`` and ``y`` are d-separated by ``z``.
+    """Return whether node sets `x` and `y` are d-separated by `z`.
 
     Parameters
     ----------
@@ -136,18 +231,18 @@ def is_d_separator(G, x, y, z):
         A NetworkX DAG.
 
     x : set | node
-        First set of nodes in ``G``.
+        First set of nodes in `G`.
 
     y : set | node
-        Second set of nodes in ``G``.
+        Second set of nodes in `G`.
 
     z : set | node
-        Set of conditioning nodes in ``G``. Can be empty set.
+        Set of conditioning nodes in `G`. Can be empty set.
 
     Returns
     -------
     b : bool
-        A boolean that is true if ``x`` is d-separated from ``y`` given ``z`` in ``G``.
+        A boolean that is true if `x` is d-separated from `y` given `z` in `G`.
 
     Raises
     ------
@@ -166,7 +261,8 @@ def is_d_separator(G, x, y, z):
     A d-separating set in a DAG is a set of nodes that
     blocks all paths between the two sets. Nodes in `z`
     block a path if they are part of the path and are not a collider,
-    or a descendant of a collider. A collider structure along a path
+    or a descendant of a collider. Also colliders that are not in `z`
+    block a path. A collider structure along a path
     is ``... -> c <- ...`` where ``c`` is the collider node.
 
     https://en.wikipedia.org/wiki/Bayesian_network#d-separation
@@ -257,12 +353,18 @@ def find_minimal_d_separator(G, x, y, *, included=None, restricted=None):
 
     A d-separating set in a DAG is a set of nodes that blocks all
     paths between the two sets of nodes, `x` and `y`. This function
-    constructs a d-separating set that is "minimal", meaning it is the
-    smallest d-separating set for `x` and `y`. This is not necessarily
-    unique. In the case where there are no d-separating sets between `x`
-    and `y`, the function will return None.
+    constructs a d-separating set that is "minimal", meaning no nodes can
+    be removed without it losing the d-separating property for `x` and `y`.
+    If no d-separating sets exist for `x` and `y`, this returns `None`.
 
-    For more details, see Notes.
+    In a DAG there may be more than one minimal d-separator between two
+    sets of nodes. Minimal d-separators are not always unique. This function
+    returns one minimal d-separator, or `None` if no d-separator exists.
+
+    Uses the algorithm presented in [1]_. The complexity of the algorithm
+    is :math:`O(m)`, where :math:`m` stands for the number of edges in
+    the subgraph of G consisting of only the ancestors of `x` and `y`.
+    For full details, see [1]_.
 
     Parameters
     ----------
@@ -300,17 +402,6 @@ def find_minimal_d_separator(G, x, y, *, included=None, restricted=None):
     .. [1] van der Zander, Benito, and Maciej Liśkiewicz. "Finding
         minimal d-separators in linear time and applications." In
         Uncertainty in Artificial Intelligence, pp. 637-647. PMLR, 2020.
-
-    Notes
-    -----
-    This function only finds ``a`` minimal d-separator, if at least one
-    d-separator exists. It does not guarantee uniqueness, since in a DAG
-    there may be more than one minimal d-separator between two sets of nodes.
-
-    Uses the algorithm presented in [1]_. The complexity of the algorithm
-    is :math:`O(m)`, where :math:`m` stands for the number of edges in
-    the subgraph of G consisting of only the ancestors of `x` and `y`.
-    For full details, see [1]_.
     """
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")
@@ -366,12 +457,12 @@ def find_minimal_d_separator(G, x, y, *, included=None, restricted=None):
 @not_implemented_for("undirected")
 @nx._dispatch
 def is_minimal_d_separator(G, x, y, z, *, included=None, restricted=None):
-    """Determine if `z` is a minimal d-separating set for `x` and `y`.
+    """Determine if `z` is a minimal d-separator for `x` and `y`.
 
-    A d-separating set, `z`, in a DAG is a set of nodes that blocks
-    all paths between the sets `x` and `y`. This function verifies
-    that a set is "minimal", meaning there is no smaller d-separating
-    set between the two nodes.
+    A d-separator, `z`, in a DAG is a set of nodes that blocks
+    all paths from nodes in set `x` to nodes in set `y`. This function
+    A minimal d-separator is a set `z` such that removing any subset of
+    nodes makes it no longer a d-separator.
 
     Note: This function checks whether `z` is a d-separator AND is
     minimal. One can use the function `is_d_separator` to only check if
@@ -391,15 +482,15 @@ def is_minimal_d_separator(G, x, y, z, *, included=None, restricted=None):
         to verify that `z` is in fact a d-separator.
     included : set | node | None
         A node or set of nodes which must be included in the found separating set,
-        default is None, which is later set to empty set.
+        default is ``None``, which is later set to empty set.
     restricted : set | node | None
         Restricted node or set of nodes to consider. Only these nodes can be in
-        the found separating set, default is None meaning all vertices in ``G``.
+        the found separating set, default is ``None`` meaning all vertices in ``G``.
 
     Returns
     -------
     bool
-        Whether or not the set `z` is a d-separator and is also minimal.
+        Whether or not the set `z` is a minimal d-separator.
 
     Examples
     --------
