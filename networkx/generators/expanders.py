@@ -376,7 +376,7 @@ def is_regular_expander(G, *, epsilon=0):
     import numpy as np
     from scipy.sparse.linalg import eigsh
 
-    if not (isinstance(epsilon, (int, float)) and epsilon >= 0):
+    if not (isinstance(epsilon, int | float) and epsilon >= 0):
         raise nx.NetworkXError("epsilon must be non negative")
 
     if not nx.is_regular(G):
