@@ -3,7 +3,7 @@
 Animations of 3D rotation and random walk.
 =========================================
 Examples of 3D plots of a graph in the 3D spectral layout with animation. 
-Folloing 
+Following 
 https://sphinx-gallery.github.io/stable/auto_examples/plot_8_animations.html
 using frame rotation of an initial plot of a graph as in 
 https://matplotlib.org/stable/api/animation_api.html
