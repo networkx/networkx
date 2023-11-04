@@ -34,12 +34,7 @@ nodes = np.array([pos[v] for v in G])
 edges = np.array([(pos[u], pos[v]) for u, v in G.edges()])
 point_size = int(1000 / np.sqrt(len(nodes)))
 
-###############################################################################
 # Rotating 3D graph animation.
-# ----------------------------
-#
-# In this example, a frame update is only a rotation of a given 3D graph.
-
 
 def init():
     ax.scatter(*nodes.T, alpha=0.2, s=point_size, ec="w")
@@ -66,6 +61,6 @@ ani = animation.FuncAnimation(
     init_func=init,
     interval=50,
     cache_frame_data=False,
-    frames=100,
+    frames=2,
 )
 plt.show()
