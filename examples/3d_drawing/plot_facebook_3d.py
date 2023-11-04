@@ -7,8 +7,6 @@ The plots is shown rotating. One can see a slightly better clustering than the c
 """
 import numpy as np
 import networkx as nx
-#import matplotlib
-#matplotlib.use('TkAgg')  # Use the TkAgg backend for interactivity
 import matplotlib.pyplot as plt
 from matplotlib import animation
 import pandas as pd
@@ -71,4 +69,3 @@ ani = animation.FuncAnimation(
     frames=100,
 )
 plt.show()
-
