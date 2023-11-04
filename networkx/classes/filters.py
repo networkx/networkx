@@ -18,12 +18,12 @@ __all__ = [
 
 
 def no_filter(*items):
-   """Returns a filter function that always evaluates to True."""
+    """Returns a filter function that always evaluates to True."""
     return True
 
 
 def hide_nodes(nodes):
-   """Returns a filter function that hides specific nodes."""
+    """Returns a filter function that hides specific nodes."""
     nodes = set(nodes)
     return lambda node: node not in nodes
 
