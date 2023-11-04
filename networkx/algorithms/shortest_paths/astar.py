@@ -49,7 +49,7 @@ def astar_path(G, source, target, heuristic=None, weight="weight", *, cutoff=Non
        dictionary of edge attributes for that edge. The function must
        return a number or None to indicate a hidden edge.
 
-    cutoff : optional float
+    cutoff : float, optional
        If this is provided, the search will be bounded to this value. I.e. if
        the evaluation function surpasses this value for a node n, the node will not
        be expanded further and will be ignored. More formally, let h'(n) be the
@@ -211,7 +211,7 @@ def astar_path_length(
        dictionary of edge attributes for that edge. The function must
        return a number or None to indicate a hidden edge.
 
-    cutoff : optional float
+    cutoff : float, optional
        If this is provided, the search will be bounded to this value. I.e. if
        the evaluation function surpasses this value for a node n, the node will not
        be expanded further and will be ignored. More formally, let h'(n) be the
