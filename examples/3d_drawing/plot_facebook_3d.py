@@ -36,6 +36,7 @@ point_size = int(1000 / np.sqrt(len(nodes)))
 
 # Rotating 3D graph animation.
 
+
 def init():
     ax.scatter(*nodes.T, alpha=0.2, s=point_size, ec="w")
     for vizedge in edges:
