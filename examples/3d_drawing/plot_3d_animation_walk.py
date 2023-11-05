@@ -29,36 +29,41 @@ edges = np.array([(pos[u], pos[v]) for u, v in G.edges()])
 # Random walk on rotating 3D graph animation.
 # -------------------------------------------
 #
-# The frame update can also draw a new plot in every frame giving the ultimate
-# flexibility at the cost of performance loss.
+# Modify the plot itself along with the view, showing a wandering node that
+# travels to a new neighbor every 5 frames
 
 
-def _frame_update(index):
+def init():
     ax.clear()
     ax.scatter(*nodes.T, alpha=0.2, s=100, color="blue")
     for vizedge in edges:
         ax.plot(*vizedge.T, color="gray")
+    # Intialize the "walking" node
+    ax.plot(*nodes[0], alpha=1, marker="s", color="red")
+    ax.grid(False)
+    ax.set_axis_off()
+    plt.tight_layout()
+
+
+def _frame_update(index):
+    # Update "current" node every 5 frames
     neighbors = list(G.neighbors(node[0]))
     if index % 5 == 0:
         node[0] = random.choice(neighbors)
     node0 = nodes[node[0]]
-    ax.scatter(*node0, alpha=1, marker="s", color="red", s=100)
+    # Update the last line object, which corresponds to the walking node
+    pt = ax.lines[-1].set_data_3d(node0[:, np.newaxis])
+    # Update view
     ax.view_init(index * 0.2, index * 0.5)
-    ax.grid(False)
-    ax.set_axis_off()
-    plt.tight_layout()
-    return
 
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection="3d")
-ax.grid(False)
-ax.set_axis_off()
-plt.tight_layout()
 node = [0]
 ani = animation.FuncAnimation(
     fig,
     _frame_update,
+    init_func=init,
     interval=50,
     cache_frame_data=False,
     frames=100,
