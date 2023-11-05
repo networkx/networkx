@@ -46,20 +46,21 @@ def init():
 
 
 def _frame_update(index):
+    global node
     # Update "current" node every 5 frames
-    neighbors = list(G.neighbors(node[0]))
+    neighbors = list(G.neighbors(node))
     if index % 5 == 0:
-        node[0] = random.choice(neighbors)
-        node0 = nodes[node[0]]
+        # Update node
+        node = random.choice(neighbors)
         # Update the last line object, which corresponds to the walking node
-        pt = ax.lines[-1].set_data_3d(node0[:, np.newaxis])
+        pt = ax.lines[-1].set_data_3d(nodes[node][:, np.newaxis])
     # Update view
     ax.view_init(index * 0.2, index * 0.5)
 
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection="3d")
-node = [0]
+node = 0  # Initialize the walking node
 ani = animation.FuncAnimation(
     fig,
     _frame_update,
