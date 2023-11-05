@@ -1,7 +1,7 @@
 """
-=========================================
-Animation of 3D rotation and random walk.
-=========================================
+========================================
+Animation of 3D rotation and random walk
+========================================
 
 Another animation example, illustrating a walk along the nodes as the view
 rotates.
