@@ -1,4 +1,3 @@
-import numpy as np
 import pytest
 
 import networkx as nx
@@ -230,6 +229,8 @@ class TestPowerCentrality:
         assert e == {}
 
     def test_singular_matrix(self):
+        import numpy as np
+
         with pytest.raises(np.linalg.LinAlgError):
             edges = [
                 (0, 1, {"weight": -1}),

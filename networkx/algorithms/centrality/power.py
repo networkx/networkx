@@ -1,7 +1,5 @@
 """Bonacich power centrality."""
 
-import numpy as np
-
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -110,6 +108,8 @@ def power_centrality(G, beta=0.1, normalized=False, weight=None):
        Journal of Social Structure 12.1 (2011): 1-23.
        https://intapi.sciendo.com/pdf/10.21307/joss-2019-032
     """
+    import numpy as np
+
     if len(G) == 0:
         return {}
 
