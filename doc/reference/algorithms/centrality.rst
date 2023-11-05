@@ -22,6 +22,7 @@ Eigenvector
    eigenvector_centrality_numpy
    katz_centrality
    katz_centrality_numpy
+   power_centrality
 
 Closeness
 ---------
