@@ -166,6 +166,12 @@ class TestCore:
         k_truss_subgraph = nx.k_truss(self.G, 5)
         assert sorted(k_truss_subgraph.nodes()) == []
 
+    def test_k_truss_self_loop(self):
+        G = nx.cycle_graph(3)
+        G.add_edge(0, 0)
+        with pytest.raises(nx.NetworkXError, match="Input graph has self loops"):
+            nx.k_truss(G)
+
     def test_onion_layers(self):
         layers = nx.onion_layers(self.G)
         nodes_by_layer = [
