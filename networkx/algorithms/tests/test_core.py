@@ -170,7 +170,7 @@ class TestCore:
         G = nx.cycle_graph(3)
         G.add_edge(0, 0)
         with pytest.raises(nx.NetworkXError, match="Input graph has self loops"):
-            nx.k_truss(G)
+            nx.k_truss(G, k=1)
 
     def test_onion_layers(self):
         layers = nx.onion_layers(self.G)
