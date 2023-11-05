@@ -50,9 +50,9 @@ def _frame_update(index):
     neighbors = list(G.neighbors(node[0]))
     if index % 5 == 0:
         node[0] = random.choice(neighbors)
-    node0 = nodes[node[0]]
-    # Update the last line object, which corresponds to the walking node
-    pt = ax.lines[-1].set_data_3d(node0[:, np.newaxis])
+        node0 = nodes[node[0]]
+        # Update the last line object, which corresponds to the walking node
+        pt = ax.lines[-1].set_data_3d(node0[:, np.newaxis])
     # Update view
     ax.view_init(index * 0.2, index * 0.5)
 
