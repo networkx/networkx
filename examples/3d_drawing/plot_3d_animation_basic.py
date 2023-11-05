@@ -1,10 +1,11 @@
 """
-=====================================
-Animations for 3D graph visualization
-=====================================
+===============
+Basic Animation
+===============
 
 NetworkX supports several 3D layout functions for visualization.
-These layouts can be combined with :doc:`animation_api` for 3D graph visualization.
+These layouts can be combined with :external+matplotlib:doc:`api/animation_api`
+for 3D graph visualization.
 
 This example shows a basic animation incrementing the camera view.
 """
@@ -20,7 +21,7 @@ from matplotlib import animation
 # Pick a graph for visualization in 3D, such as one of the Platonic solids
 
 G = nx.dodecahedral_graph()
-pos = nx.spring_layout(G, dim=3)
+pos = nx.spring_layout(G, dim=3, seed=2734)
 nodes = np.array([pos[v] for v in G])
 edges = np.array([(pos[u], pos[v]) for u, v in G.edges()])
 

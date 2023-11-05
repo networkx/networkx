@@ -1,7 +1,7 @@
 """
-========================================
-Animation of 3D rotation and random walk
-========================================
+====================
+Animation: Node Walk
+====================
 
 Another animation example, illustrating a walk along the nodes as the view
 rotates.
@@ -21,7 +21,7 @@ from matplotlib import animation
 # Pick a graph for visualization in 3D, such as one of the Platonic solids
 
 G = nx.dodecahedral_graph()
-pos = nx.spring_layout(G, dim=3)
+pos = nx.spring_layout(G, dim=3, seed=2734)
 nodes = np.array([pos[v] for v in G])
 edges = np.array([(pos[u], pos[v]) for u, v in G.edges()])
 
