@@ -55,6 +55,7 @@ def hide_multiedges(edges):
 # write show_nodes as a class to make SubGraph pickleable
 class show_nodes:
     """Filter class to show specific nodes."""
+
     def __init__(self, nodes):
         self.nodes = set(nodes)
 
@@ -63,24 +64,24 @@ class show_nodes:
 
 
 def show_diedges(edges):
-    """ Returns a filter function that shows specific directed edges."""
+    """Returns a filter function that shows specific directed edges."""
     edges = {(u, v) for u, v in edges}
     return lambda u, v: (u, v) in edges
 
 
 def show_edges(edges):
-    """ Returns a filter function that shows specific undirected edges."""
+    """Returns a filter function that shows specific undirected edges."""
     alledges = set(edges) | {(v, u) for (u, v) in edges}
     return lambda u, v: (u, v) in alledges
 
 
 def show_multidiedges(edges):
-    """  Returns a filter function that shows specific multi-directed edges."""
+    """Returns a filter function that shows specific multi-directed edges."""
     edges = {(u, v, k) for u, v, k in edges}
     return lambda u, v, k: (u, v, k) in edges
 
 
 def show_multiedges(edges):
-    """ Returns a filter function that shows specific multi-undirected edges."""
+    """Returns a filter function that shows specific multi-undirected edges."""
     alledges = set(edges) | {(v, u, k) for (u, v, k) in edges}
     return lambda u, v, k: (u, v, k) in alledges
