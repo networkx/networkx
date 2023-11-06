@@ -76,6 +76,7 @@ plt.show()
 #
 # Rotation of the 3D graph.
 
+
 def _frame_update(index):
     ax.view_init(index * 0.2, index * 0.5)
 
