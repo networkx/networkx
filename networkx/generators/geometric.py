@@ -875,7 +875,7 @@ def soft_random_S1_H2_geometric_graph(
     $p_{ij} = \frac{1}{1 + \frac{d_{ij}^\beta}{\left(\mu \kappa_i \kappa_j\right)^{\max(1, \beta)}}}$
 
     where $d_{ij} = R\Delta\theta_{ij}$ is the arc length of the circle between
-    nodes i and j separated by an angular distance $\Delta\theta_{ij}$.
+    nodes $i$ and $j$ separated by an angular distance $\Delta\theta_{ij}$.
     Parameters $\mu$ and $\beta$ (also called inverse temperature) control the
     average degree and the clustering coefficient, respectively.
 
@@ -888,19 +888,24 @@ def soft_random_S1_H2_geometric_graph(
     $\mathbb{H}^2$ in the hyperbolic plane [3]_ by mapping the hidden degree of
     each node into a radial coordinate as
 
-    $r_i = \hat{R} - 2 \ln \frac{\kappa_i}{\kappa_0}$
+    $r_i = \hat{R} - \frac{2 \max(1, \beta)}{\beta \zeta} \ln \left(\frac{\kappa_i}{\kappa_0}\right)$
 
-    with $\hat{R} = 2 \ln \frac{N}{\mu\pi \kappa_0^2}$, the connection
-    probability when $\beta>1$, i.e., in the geometric regime, reads
+    where $\hat{R}$ is the radius of the hyperbolic disk and $\zeta$ is the curvature,
 
-    $p_{ij} = \frac{1}{1 + \exp^{\frac{\beta}{2} (x_{ij} - \hat{R})}}$
+    $\hat{R} = \frac{2}{\zeta} \ln \left(\frac{N}{\pi}\right)
+    - \frac{2\max(1, \beta)}{\beta \zeta} \ln (\mu \kappa_0^2)$
+
+    The connection probability then reads
+
+    $p_{ij} = \frac{1}{1 + \exp\left({\frac{\beta\zeta}{2} (x_{ij} - \hat{R})}\right)}$
 
     where
 
-    $x_{ij} = r_i + r_j + 2\ln \frac{\Delta\theta_{ij}}{2}$
+    $x_{ij} = r_i + r_j + \frac{2}{\zeta} \ln \frac{\Delta\theta_{ij}}{2}$
 
     is a good approximation of the hyperbolic distance between two nodes separated
     by an angular distance $\Delta\theta_{ij}$ with radial coordinates $r_i$ and $r_j$.
+    For $\beta > 1$, the curvature $\zeta = 1$, for $\beta < 1$, $\zeta = \beta^{-1}$.
 
 
     Parameters
@@ -964,8 +969,8 @@ def soft_random_S1_H2_geometric_graph(
     Physical Review E 82, no. 3 (2010): 036106.
 
     """
-    if beta < 0:
-        raise nx.NetworkXError("The parameter beta cannot be smaller than 0.")
+    if beta <= 0:
+        raise nx.NetworkXError("The parameter beta cannot be smaller or equal to 0.")
 
     if kappas is not None:
         if not all((n is None, gamma is None, mean_degree is None)):
@@ -1030,10 +1035,16 @@ def soft_random_S1_H2_geometric_graph(
 
     # Map hidden degrees into the radial coordiantes
     radii = {}
+    zeta = 1 if beta > 1 else 1 / beta
     kappa_0 = min(list(kappas.values()))
-    R_hat = n / (mu * math.pi * kappa_0 * kappa_0)
+    R_hat = (2 / zeta) * math.log(n / math.pi) - (2 * max(1, beta)) / (
+        beta * zeta
+    ) * math.log(mu * kappa_0**2)
+
     for k, kappa in kappas.items():
-        radii[k] = R_hat - 2 * math.log(kappa / kappa_0)
+        radii[k] = R_hat - (2 * max(1, beta)) / (beta * zeta) * math.log(
+            kappa / kappa_0
+        )
     nx.set_node_attributes(G, radii, "radial_coordinate")
 
     return G
