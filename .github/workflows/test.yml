@@ -51,6 +51,9 @@ jobs:
           python -m pip install .
           python -m pip list
 
+      - name: Test for warnings at import time
+        run: python -Werror -c "import networkx"
+
       - name: Test NetworkX
         run: |
           pytest --doctest-modules --durations=10 --pyargs networkx

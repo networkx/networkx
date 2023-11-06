@@ -72,7 +72,7 @@ class TestHITS:
             _hits_scipy(G, max_iter=0)
         with pytest.raises(nx.PowerIterationFailedConvergence):
             _hits_python(G, max_iter=0)
-        with pytest.raises(ValueError):
+        with pytest.raises(nx.PowerIterationFailedConvergence):
             nx.hits(G, max_iter=0)
-        with pytest.raises(sp.sparse.linalg.ArpackNoConvergence):
+        with pytest.raises(nx.PowerIterationFailedConvergence):
             nx.hits(G, max_iter=1)
