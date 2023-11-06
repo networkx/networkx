@@ -147,9 +147,6 @@ def _core_subgraph(G, k_filter, k=None, core=None):
     """
     if core is None:
         core = core_number(G)
-    # ?
-    # if core != core_number(G):
-    #    raise nx.NetworkXError("Given core_number dictionary is not correct.")
     if k is None:
         k = max(core.values())
     nodes = (v for v in core if k_filter(v, k, core))
@@ -180,6 +177,12 @@ def k_core(G, k=None, core_number=None):
     ------
     NetworkXError
       The k-core is not defined for graphs with self loops.
+    NetworkXNotImplemented
+        A `MultiGraph` object with no multi-edges or self-loops will work
+        only when the optional parameter `core_number` is given. If it's not
+        given, then `nx.core_number(G)` will be used internally to compute
+        the core numbers and that would raise an exception because
+        `nx.core_number(G)` doesn't take `MultiGraph` objects.
 
     Notes
     -----
@@ -243,6 +246,12 @@ def k_shell(G, k=None, core_number=None):
     ------
     NetworkXError
         The k-shell is not implemented for graphs with self loops.
+    NetworkXNotImplemented
+        A `MultiGraph` object with no multi-edges or self-loops will work
+        only when the optional parameter `core_number` is given. If it's not
+        given, then `nx.core_number(G)` will be used internally to compute
+        the core numbers and that would raise an exception because
+        `nx.core_number(G)` doesn't take `MultiGraph` objects.
 
     Notes
     -----
@@ -309,6 +318,12 @@ def k_crust(G, k=None, core_number=None):
     ------
     NetworkXError
         The k-crust is not implemented for graphs with self loops.
+    NetworkXNotImplemented
+        A `MultiGraph` object with no multi-edges or self-loops will work
+        only when the optional parameter `core_number` is given. If it's not
+        given, then `nx.core_number(G)` will be used internally to compute
+        the core numbers and that would raise an exception because
+        `nx.core_number(G)` doesn't take `MultiGraph` objects.
 
     Notes
     -----
@@ -376,6 +391,12 @@ def k_corona(G, k, core_number=None):
     ------
     NetworkXError
         The k-corona is not defined for graphs with self loops.
+    NetworkXNotImplemented
+        A `MultiGraph` object with no multi-edges or self-loops will work
+        only when the optional parameter `core_number` is given. If it's not
+        given, then `nx.core_number(G)` will be used internally to compute
+        the core numbers and that would raise an exception because
+        `nx.core_number(G)` doesn't take `MultiGraph` objects.
 
     Notes
     -----
@@ -511,7 +532,7 @@ def onion_layers(G):
     Parameters
     ----------
     G : NetworkX graph
-        A simple graph without self loops or parallel edges
+        An undirected graph without self loops.
 
     Returns
     -------
@@ -522,8 +543,7 @@ def onion_layers(G):
     Raises
     ------
     NetworkXError
-        The onion decomposition is not implemented for graphs with self loops
-        or parallel edges.
+        The onion decomposition is not implemented for graphs with self loops.
     NetworkXNotImplemented
         If `G` is a Multigraph or Directed graph.
 
