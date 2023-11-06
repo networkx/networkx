@@ -60,8 +60,9 @@ def init():
             *pos[p],
             labels[p],
             size=14,
-            horizontalalignment='center',
-            verticalalignment='center')
+            horizontalalignment="center",
+            verticalalignment="center",
+        )
 
 
 fig = plt.figure(layout="tight")
