@@ -74,6 +74,11 @@ class TestPowerCentrality:
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=1e-4)
 
+    def test_normalized(self):
+        G = nx.complete_graph(5)
+        b = nx.power_centrality(G, normalized=True)
+        assert pytest.approx(sum(b.values()), abs=1e-4) == 1
+
     def test_cook_1c(self):
         """Fig. 2 network 1c in Bonacich (1987). Results identical to Tab. 3"""
         G = nx.Graph([(0, 1), (0, 2), (1, 3), (2, 4)])
