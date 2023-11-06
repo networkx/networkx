@@ -107,6 +107,7 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
     return results
 
 
+@nx._dispatch
 def recursive_dispersion(G, u=None, v=None, iterations=3):
     r"""Calculate recursive dispersion between `u` and `v` in `G`.
 
