@@ -71,3 +71,12 @@ class TestDispersion:
         for u in disp:
             for v in disp[u]:
                 assert disp[u][v] >= 0
+
+    def test_recursion_result(self):
+        G = small_ego_G()
+        disp = nx.recursive_dispersion(G)
+        disp_Gu = nx.recursive_dispersion(G, "u")
+        disp_uv = nx.recursive_dispersion(G, "u", "h")
+        assert len(disp) == len(G)
+        assert len(disp_Gu) == len(G) - 1
+        assert isinstance(disp_uv, float)
