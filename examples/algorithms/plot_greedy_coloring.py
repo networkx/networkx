@@ -43,7 +43,7 @@ plt.show()
 # The same graph plotted in 3D.
 
 pos = nx.spectral_layout(G, dim=3)
-labels = [v for v in G]
+labels = list(G)
 nodes = np.array([pos[v] for v in G])
 edges = np.array([(pos[u], pos[v]) for u, v in G.edges()])
 
@@ -56,12 +56,15 @@ def init():
     ax.grid(False)
     ax.set_axis_off()
     for p in pos:
-        ax.text(*pos[p], labels[p], size=14,
-                horizontalalignment='center',
-                verticalalignment='center')
+        ax.text(
+            *pos[p],
+            labels[p],
+            size=14,
+            horizontalalignment='center',
+            verticalalignment='center')
 
 
-fig = plt.figure(layout='tight')
+fig = plt.figure(layout="tight")
 ax = fig.add_subplot(111, projection="3d")
 init()
 plt.show()
@@ -76,7 +79,7 @@ def _frame_update(index):
     ax.view_init(index * 0.2, index * 0.5)
 
 
-fig = plt.figure(layout='tight')
+fig = plt.figure(layout="tight")
 ax = fig.add_subplot(111, projection="3d")
 
 ani = animation.FuncAnimation(
