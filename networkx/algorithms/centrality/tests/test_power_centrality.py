@@ -4,6 +4,11 @@ import networkx as nx
 
 
 class TestPowerCentrality:
+    @classmethod
+    def setup_class(cls):
+        global np
+        np = pytest.importorskip("numpy")
+
     def test_K5(self):
         G = nx.complete_graph(5)
         b = nx.power_centrality(G)
@@ -229,8 +234,6 @@ class TestPowerCentrality:
         assert e == {}
 
     def test_singular_matrix(self):
-        import numpy as np
-
         with pytest.raises(np.linalg.LinAlgError):
             edges = [
                 (0, 1, {"weight": -1}),
