@@ -261,20 +261,12 @@ class TestNavigableSmallWorldGraph:
         with pytest.raises(nx.NetworkXException, match=".*r must be >= 0"):
             nx.navigable_small_world_graph(5, p=1, q=0, r=-1, dim=1)
 
-    def test_non_extreme_value_for_exponent_of_decaying_probability(self):
+    def test_r_between_0_and_1(self):
+        """Smoke test for radius in range [0, 1]"""
+        # q=0 means no long-range connections
         G = nx.navigable_small_world_graph(3, p=1, q=0, r=0.5, dim=2, seed=42)
-        assert len(G) == 9
-        assert list(G.degree()) == [
-            ((0, 0), 4),
-            ((0, 1), 6),
-            ((1, 0), 6),
-            ((0, 2), 4),
-            ((1, 1), 8),
-            ((1, 2), 6),
-            ((2, 0), 4),
-            ((2, 1), 6),
-            ((2, 2), 4),
-        ]
+        expected = nx.grid_2d_graph(3, 3, create_using=nx.DiGraph)
+        assert nx.utils.graphs_equal(G, expected)
 
 
 class TestThresholdedRandomGeometricGraph:
