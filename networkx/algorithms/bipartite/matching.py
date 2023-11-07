@@ -716,16 +716,10 @@ def envy_free_matching_partition(G, *, M=None, top_nodes=None):
       X_S,Y_S are the "bad vertices" of G where no envy-free matching
       exists according to THM 1.3 in the article.
 
-    References
-    ----------
-    .. [1] "Envy-free Matchings in Bipartite Graphs and their Applications
-    to Fair Division", by Elad Aigner-Horev and Erel Segal-Halevi (2022),
-    https://arxiv.org/abs/1901.09527
-    Algorithm 1: Finding the EFM partition of a bipartite graph.
-
     Examples
     --------
     Example 1: Perfect matching
+
     >>> G = nx.complete_bipartite_graph(3, 3)
     >>> M = nx.bipartite.hopcroft_karp_matching(G)
     >>> nx.bipartite.envy_free_matching_partition(G, M=M)
@@ -735,6 +729,7 @@ def envy_free_matching_partition(G, *, M=None, top_nodes=None):
     the perfect matching.
 
     Example 2: Non-empty envy-free matching
+
     >>> G = nx.Graph([(0, 3), (0, 4), (1, 4), (2, 4)])
     >>> M = {0: 3, 3: 0, 1: 4, 4: 1}
     >>> nx.bipartite.envy_free_matching_partition(G, M=M)
@@ -743,6 +738,7 @@ def envy_free_matching_partition(G, *, M=None, top_nodes=None):
     Here the graph contains non-empty envy-free matching so X_L,Y_L are not empty.
 
     Example 3: Odd path
+
     >>> G = nx.Graph([(0, 3), (1, 3), (1, 4), (2, 4)])
     >>> M = {0: 3, 3: 0, 4: 1, 1: 4}
     >>> nx.bipartite.envy_free_matching_partition(G, M=M)
@@ -752,6 +748,7 @@ def envy_free_matching_partition(G, *, M=None, top_nodes=None):
     so X_L and Y_L are empty in the partition.
 
     Example 4: Y-path-saturated graph
+
     >>> G = nx.Graph(
     ...     [(0, 6), (1, 6), (1, 7), (2, 6), (2, 8), (3, 9), (3, 6), (4, 8), (4, 7), (5, 9)]
     ... )
@@ -759,8 +756,15 @@ def envy_free_matching_partition(G, *, M=None, top_nodes=None):
     >>> nx.bipartite.envy_free_matching_partition(G, M=M)
     (set(), {0, 1, 2, 3, 4, 5}, set(), {8, 9, 6, 7})
 
-    Like presented in the article, Y-path-saturated graph contains an empty
+    Like presented in the article [1]_, Y-path-saturated graph contains an empty
     envy-free matching so X_L and Y_L are empty in the partition.
+
+    References
+    ----------
+    .. [1] "Envy-free Matchings in Bipartite Graphs and their Applications
+    to Fair Division", by Elad Aigner-Horev and Erel Segal-Halevi (2022),
+    https://arxiv.org/abs/1901.09527
+    Algorithm 1: Finding the EFM partition of a bipartite graph.
     """
     if M is None:
         M = maximum_matching(G, top_nodes=top_nodes)
@@ -781,7 +785,7 @@ def max_size_envy_free_matching(G, *, top_nodes=None):
       Undirected bipartite graph
 
     top_nodes : container
-      If graph is not connected top_nodes is the set of the top nodes in
+      If graph is not connected `top_nodes` is the set of the top nodes in
       the bipartite graph `G`.
 
     Returns
@@ -789,28 +793,25 @@ def max_size_envy_free_matching(G, *, top_nodes=None):
     Matching: dictionary
         The Maximum cardinallity envy-free matching is returned as a dictionary.
 
-    References
-    ----------
-    .. [1] "Envy-free Matchings in Bipartite Graphs and their Applications
-    to Fair Division", by Elad Aigner-Horev and Erel Segal-Halevi (2022),
-    https://arxiv.org/abs/1901.09527
-    Algorithm 1: Finding the EFM partition of a bipartite graph.
-
     Examples
     --------
     Example 1: Perfect matching
+
     >>> G = nx.complete_bipartite_graph(3, 3)
     >>> nx.bipartite.max_size_envy_free_matching(G)
     {0: 3, 1: 4, 2: 5, 3: 0, 4: 1, 5: 2}
 
     Where there exists a perfect matching the maximum envy free matching is
     the perfect matching.
+
     Example 2: Non-empty envy-free matching
+
     >>> G = nx.Graph([(0, 3), (0, 4), (1, 4), (2, 4)])
     >>> nx.bipartite.max_size_envy_free_matching(G)
     {0: 3, 3: 0}
 
     Example 3: Odd path
+
     >>> G = nx.Graph([(0, 3), (1, 3), (1, 4), (2, 4)])
     >>> nx.bipartite.max_size_envy_free_matching(G)
     {}
@@ -818,14 +819,22 @@ def max_size_envy_free_matching(G, *, top_nodes=None):
     Like presented in the article, odd path contains an empty envy-free matching
     so the returned matching is empty.
     Example 4: Y-path-saturated graph
+
     >>> G = nx.Graph(
     ...     [(0, 6), (1, 6), (1, 7), (2, 6), (2, 8), (3, 9), (3, 6), (4, 8), (4, 7), (5, 9)]
     ... )
     >>> nx.bipartite.max_size_envy_free_matching(G)
     {}
 
-    Like presented in the article, Y-path-saturated graph contains an empty
+    Like presented in the article [1]_, Y-path-saturated graph contains an empty
     envy-free matching so X_L and Y_L are empty in the partition.
+
+    References
+    ----------
+    .. [1] "Envy-free Matchings in Bipartite Graphs and their Applications
+    to Fair Division", by Elad Aigner-Horev and Erel Segal-Halevi (2022),
+    https://arxiv.org/abs/1901.09527
+    Algorithm 1: Finding the EFM partition of a bipartite graph.
     """
     M = maximum_matching(G, top_nodes=top_nodes)
     partition = envy_free_matching_partition(G, M=M, top_nodes=top_nodes)
@@ -859,6 +868,7 @@ def min_weight_max_size_envy_free_matching(G, *, top_nodes=None):
     Examples
     --------
     Example 1: K 3,3 with weights
+
     >>> G = nx.Graph()
     >>> edges = [
     ...     (0, 3, 250),
@@ -878,6 +888,7 @@ def min_weight_max_size_envy_free_matching(G, *, top_nodes=None):
     perfect matching this is the least cost perfect matching.
 
     Example 2: Non-empty envy-free matching
+
     >>> G = nx.Graph()
     >>> edges = [(0, 4, 5), (1, 4, 1), (2, 5, 3), (2, 7, 9), (3, 6, 3), (3, 7, 7)]
     >>> G.add_weighted_edges_from(edges)
