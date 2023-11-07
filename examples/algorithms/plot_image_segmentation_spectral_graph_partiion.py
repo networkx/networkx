@@ -196,18 +196,50 @@ pos = nx.spectral_layout(G, dim=3)
 nodes = np.array([pos[v] for v in G])
 edges = np.array([(pos[u], pos[v]) for u, v in G.edges()])
 point_size = int(800 / np.sqrt(len(nodes)))
-for i, marker in enumerate(array_of_markers):
-    ax1.scatter(
-        *nodes[i].T,
-        s=point_size,
-        color=tuple(X[i] / 255),
-        marker=marker,
-        alpha=0.5,
-    )
-for vizedge, weight in zip(edges, weights):
-    ax1.plot(*vizedge.T, color="tab:gray", linewidth=weight, alpha=weight)
-ax1.view_init(elev=100.0, azim=-100.0)
-ax1.grid(False)
-ax1.set_axis_off()
+
+
+def _3d_graph_plot(ax):
+    for i, marker in enumerate(array_of_markers):
+        ax.scatter(
+            *nodes[i].T,
+            s=point_size,
+            color=tuple(X[i] / 255),
+            marker=marker,
+            alpha=0.5,
+        )
+    for vizedge, weight in zip(edges, weights):
+        ax.plot(*vizedge.T, color="tab:gray", linewidth=weight, alpha=weight)
+    ax.view_init(elev=100.0, azim=-100.0)
+    ax.grid(False)
+    ax.set_axis_off()
+
+
+_3d_graph_plot(ax1)
 plt.tight_layout()
+plt.show()
+
+###############################################################################
+# Generate the rotating 3D animation of the graph.
+# ------------------------------------------------
+# The nodes of the graph are marked according to clustering.
+# The graph is rotated in the 3D animation.
+
+
+def _frame_update(index):
+    ax.view_init(100.0 + index * 0.7, -100.0 + index * 0.5)
+
+
+fig = plt.figure(layout="tight")
+ax = fig.add_subplot(111, projection="3d")
+ax.grid(False)
+ax.set_axis_off()
+_3d_graph_plot(ax)
+ani = animation.FuncAnimation(
+    fig,
+    _frame_update,
+    interval=50,
+    cache_frame_data=False,
+    frames=100,
+)
+
 plt.show()
