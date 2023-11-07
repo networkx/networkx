@@ -63,3 +63,7 @@ Version 3.4
   in ``doc/reference/algorithms/trees.rst``
 * Remove ``strongly_connected_components_recursive`` from
   ``algorithms/components/strongly_connected.py``
+
+Version 3.5
+~~~~~~~~~~~
+* Remove ``all_triplets`` from ``algorithms/triads.py``

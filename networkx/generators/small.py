@@ -244,7 +244,7 @@ def cubical_graph(create_using=None):
         },
         create_using=create_using,
     )
-    G.name = ("Platonic Cubical Graph",)
+    G.name = "Platonic Cubical Graph"
     return G
 
 
@@ -809,7 +809,7 @@ def tetrahedral_graph(create_using=None):
 
     """
     G = complete_graph(4, create_using)
-    G.name = "Platonic Tetrahedral graph"
+    G.name = "Platonic Tetrahedral Graph"
     return G
 
 

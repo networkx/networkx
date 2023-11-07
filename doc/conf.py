@@ -51,6 +51,7 @@ sphinx_gallery_conf = {
     "gallery_dirs": "auto_examples",
     "backreferences_dir": "modules/generated",
     "image_scrapers": ("matplotlib",),
+    "matplotlib_animations": True,
     "plot_gallery": "True",
 }
 # Add pygraphviz png scraper, if available
@@ -159,6 +160,7 @@ html_sidebars = {
     "auto_examples/index": [],
 }
 html_logo = "_static/networkx_banner.svg"
+html_favicon = "_static/favicon.ico"
 
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
