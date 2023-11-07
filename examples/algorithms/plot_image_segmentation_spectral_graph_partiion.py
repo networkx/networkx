@@ -6,11 +6,12 @@ Example of partitioning a undirected graph obtained by `k-neighbors`
 from an RGB image into two subgraphs using spectral clustering
 illustrated by 3D plots of the original labeled data points in RGB 3D space
 vs the bi-partition marking performed by graph partitioning via spectral clustering.
-All 3D plots use the 3D spectral layout.
+All 3D plots and animations use the 3D spectral layout.
 """
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
+from matplotlib import animation
 from matplotlib.lines import Line2D
 from sklearn.cluster import SpectralClustering
 
@@ -87,50 +88,76 @@ for u in G.nodes:
 # The data points are marked according to the original labels (left panel)
 # and via clustering (right panel).
 
+
+def _scatter_plot(ax, X, array_of_markers, axis_plot=True):
+# `marker` parameter does not support list or array format, needs a loop
+    for i, marker in enumerate(array_of_markers):
+        ax.scatter(
+            X[i, 0],
+            X[i, 1],
+            X[i, 2],
+            s=26,
+            marker=marker,
+            alpha=0.8,
+            color=tuple(X[i] / 255),
+        )
+    if axis_plot == True:
+        ax.set_xlabel("Red")
+        ax.set_ylabel("Green")
+        ax.set_zlabel("Blue")
+    else:
+        ax.set_axis_off()
+    ax.grid(False)
+    ax.view_init(elev=6.0, azim=-22.0)
+
+
 # select the second half of the list of markers for better visibility
 list_of_markers = Line2D.filled_markers[len(Line2D.filled_markers) // 2 :]
 
 fig = plt.figure(figsize=(10, 5))
 fig.suptitle("Spectral Clustering as Graph Partitioning Illustrated", fontsize=20)
+
 ax0 = fig.add_subplot(1, 2, 1, projection="3d")
 ax0.set_title("Original labeled RGB data")
 array_of_markers = np.array(list_of_markers)[Y.astype(int)]
-# `marker` parameter does not support list or array format, needs a loop
-for i, marker in enumerate(array_of_markers):
-    ax0.scatter(
-        X[i, 0],
-        X[i, 1],
-        X[i, 2],
-        s=26,
-        marker=marker,
-        alpha=0.8,
-        color=tuple(X[i] / 255),
-    )
-ax0.set_xlabel("Red")
-ax0.set_ylabel("Green")
-ax0.set_zlabel("Blue")
-ax0.grid(False)
-ax0.view_init(elev=6.0, azim=-22.0)
+_scatter_plot(ax0, X, array_of_markers)
 
 ax1 = fig.add_subplot(1, 2, 2, projection="3d")
 ax1.set_title("Data marked by clustering")
 array_of_markers = np.array(list_of_markers)[pred_labels.astype(int)]
-for i, marker in enumerate(array_of_markers):
-    ax1.scatter(
-        X[i, 0],
-        X[i, 1],
-        X[i, 2],
-        s=26,
-        marker=marker,
-        alpha=0.8,
-        color=tuple(X[i] / 255),
-    )
-ax1.set_xlabel("Red")
-ax1.set_ylabel("Green")
-ax1.set_zlabel("Blue")
-ax1.grid(False)
-ax1.view_init(elev=6.0, azim=-22.0)
+_scatter_plot(ax1, X, array_of_markers)
+
 plt.show()
+
+###############################################################################
+# Generate the rotating animation of the clustered data.
+# ------------------------------------------------------
+# The data points are marked according to clustering and rotated
+# in the 3D animation.
+
+
+def init():
+    ax.clear()
+    _scatter_plot(ax, X, array_of_markers, axis_plot=False)
+
+
+def _frame_update(index):
+    ax.view_init(6.0 + index * 0.2, -22.0 + index * 0.5)
+
+
+fig = plt.figure(layout="tight")
+ax = fig.add_subplot(111, projection="3d")
+ani = animation.FuncAnimation(
+    fig,
+    _frame_update,
+    init_func=init,
+    interval=50,
+    cache_frame_data=False,
+    frames=100,
+)
+
+plt.show()
+
 
 ###############################################################################
 # Generate the plots of the graph.
