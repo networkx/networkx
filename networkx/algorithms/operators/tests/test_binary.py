@@ -199,6 +199,8 @@ def test_difference_attributes():
     assert set(gh.nodes()) == set(g.nodes())
     assert set(gh.nodes()) == set(h.nodes())
     assert sorted(gh.edges()) == []
+    # node data should not be copied over
+    assert gh.nodes.data() != g.nodes.data()
 
 
 def test_difference_multigraph_attributes():
