@@ -83,7 +83,8 @@ def _frame_update(index):
 
 fig = plt.figure(layout="tight")
 ax = fig.add_subplot(111, projection="3d")
-
+ax.grid(False)
+ax.set_axis_off()
 ani = animation.FuncAnimation(
     fig,
     _frame_update,
