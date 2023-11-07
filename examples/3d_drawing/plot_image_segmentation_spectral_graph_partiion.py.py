@@ -14,6 +14,8 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from sklearn.cluster import SpectralClustering
 
+# sphinx_gallery_thumbnail_number = 3
+
 ###############################################################################
 # Create an example 3D dataset "The Rings".
 # -----------------------------------------
