@@ -15,7 +15,7 @@ from matplotlib import animation
 from matplotlib.lines import Line2D
 from sklearn.cluster import SpectralClustering
 
-# sphinx_gallery_thumbnail_number = 3
+# sphinx_gallery_thumbnail_number = 4
 
 ###############################################################################
 # Create an example 3D dataset "The Rings".
@@ -90,7 +90,7 @@ for u in G.nodes:
 
 
 def _scatter_plot(ax, X, array_of_markers, axis_plot=True):
-# `marker` parameter does not support list or array format, needs a loop
+    # `marker` parameter does not support list or array format, needs a loop
     for i, marker in enumerate(array_of_markers):
         ax.scatter(
             X[i, 0],
@@ -136,9 +136,12 @@ plt.show()
 # in the 3D animation.
 
 
-def init():
+def _init():
     ax.clear()
-    _scatter_plot(ax, X, array_of_markers, axis_plot=False)
+    _scatter_plot(ax, X, array_of_markers)
+    ax.grid(False)
+    ax.set_axis_off()
+    ax.view_init(elev=6.0, azim=-22.0)
 
 
 def _frame_update(index):
@@ -147,10 +150,12 @@ def _frame_update(index):
 
 fig = plt.figure(layout="tight")
 ax = fig.add_subplot(111, projection="3d")
+ax.grid(False)
+ax.set_axis_off()
 ani = animation.FuncAnimation(
     fig,
     _frame_update,
-    init_func=init,
+    init_func=_init,
     interval=50,
     cache_frame_data=False,
     frames=100,
