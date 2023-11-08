@@ -686,7 +686,7 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
     if q < 0:
         raise nx.NetworkXException("q must be >= 0")
     if r < 0:
-        raise nx.NetworkXException("r must be >= 1")
+        raise nx.NetworkXException("r must be >= 0")
 
     G = nx.DiGraph()
     nodes = list(product(range(n), repeat=dim))
