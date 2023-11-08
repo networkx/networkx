@@ -147,36 +147,115 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
 
 
 @nx._dispatch(edge_attrs="weight")
-def total_spanning_tree_weight(G, weight=None):
+def total_spanning_tree_weight(G, weight=None, root=None):
     """
     Returns the total weight of all spanning trees of `G`.
 
-    Kirchoff's Tree Matrix Theorem states that the determinant of any cofactor of the
-    Laplacian matrix of a graph is the number of spanning trees in the graph. For a
-    weighted Laplacian matrix, it is the sum across all spanning trees of the
-    multiplicative weight of each tree. That is, the weight of each tree is the
-    product of its edge weights.
+    The weight of a spanning tree is the multiplication of its edge weights.
+    The function returns the sum over all weighted spanning trees.
+    The total weight is computed based on Kirchhoff's Matrix Tree Theorem [1]_, [2]_.
+
+    For unweighted graphs, the total weight equals the number of spanning trees in `G`.
+
+    For directed graphs, the total weight is computed for a specific root node `root`.
+    We use the convention [3]_ that all weighted spanning trees end in `root`, so the node is a sink.
 
     Parameters
     ----------
     G : NetworkX Graph
-        The graph to use Kirchhoff's theorem on.
 
-    weight : string or None
-        The key for the edge attribute holding the edge weight. If `None`, then
-        each edge is assumed to have a weight of 1 and this function returns the
-        total number of spanning trees in `G`.
+    weight : string or None, optional (default=None)
+        The key for the edge attribute holding the edge weight.
+        If None, then each edge has weight 1.
+
+    root : node (only required for directed graphs)
+       A node in the directed graph `G`.
 
     Returns
     -------
-    float
-        The sum of the total multiplicative weights for all spanning trees in `G`
+    t : float
+        Undirected graphs:
+            The sum of the total multiplicative weights for all spanning trees in `G`.
+        Directed graphs:
+            The sum of the total multiplicative weights for all spanning trees of `G`,
+            rooted at node `root`.
+
+    Raises
+    ------
+    NetworkXPointlessConcept
+        If `G` does not contain any nodes.
+
+    NetworkXError
+        If the graph `G` is not (weakly) connected,
+        or if `G` is directed and the root node is not specified or not in G.
+
+    Examples
+    --------
+    >>> G = nx.complete_graph(5)
+    >>> round(nx.total_spanning_tree_weight(G))
+    125
+
+    >>> G = nx.Graph()
+    >>> G.add_edge(1, 2, "weight"=2)
+    >>> G.add_edge(1, 3, "weight"=1)
+    >>> G.add_edge(2, 3, "weight"=1)
+    >>> round(nx.total_spanning_tree_weight(G, "weight"))
+    5
+
+    Notes
+    -----
+    Self-loops are excluded. Multi-edges are contracted in one edge
+    equal to the sum of the weights.
+
+    References
+    ----------
+    .. [1] Wikipedia
+       "Kirchhoff's theorem."
+       https://en.wikipedia.org/wiki/Kirchhoff%27s_theorem
+    .. [2] Kirchhoff, G. R.
+        Über die Auflösung der Gleichungen, auf welche man
+        bei der Untersuchung der linearen Vertheilung
+        Galvanischer Ströme geführt wird
+        Annalen der Physik und Chemie, vol. 72, pp. 497-508, 1847.
+    .. [3] Margoliash, J.
+        "Matrix-Tree Theorem for Directed Graphs"
+        https://www.math.uchicago.edu/~may/VIGRE/VIGRE2010/REUPapers/Margoliash.pdf
     """
     import numpy as np
+    import scipy as sp
 
-    G_laplacian = nx.laplacian_matrix(G, weight=weight).toarray()
-    # Determinant ignoring first row and column
-    return abs(np.linalg.det(G_laplacian[1:, 1:]))
+    graph_is_directed = nx.is_directed(G)
+    if graph_is_directed == False and not nx.is_connected(G):
+        raise nx.NetworkXError("Graph G must be connected.")
+    if graph_is_directed and root == None:
+        raise nx.NetworkXError("Spanning trees in directed graphs require a root node.")
+    if graph_is_directed and root not in G:
+        raise nx.NetworkXError("The node root is not in the graph G.")
+    if graph_is_directed and not nx.is_weakly_connected(G):
+        raise nx.NetworkXError("Graph G must be weakly connected.")
+
+    # Compute directed Laplacian matrix
+    if graph_is_directed == False:
+        L = nx.laplacian_matrix(G, weight=weight)
+    else:
+        A = nx.adjacency_matrix(G, weight=weight)
+        out_deg = [d for a, d in G.out_degree(weight=weight)]
+        n, m = A.shape
+        # TODO: rm csr_array wrapper when spdiags can produce arrays
+        D = sp.sparse.csr_array(sp.sparse.spdiags(out_deg, 0, m, n, format="csr"))
+        L = D - A
+
+    # Remove one row/column corresponding to node `root`
+    if graph_is_directed == False:
+        i = 0
+    else:
+        i = list(G).index(root)
+    L = L.todense()
+    L = np.delete(L, i, 0)
+    L = np.delete(L, i, 1)
+
+    # Compute sum of weight of all spanning trees
+    return np.linalg.det(L)
 
 
 ###############################################################################

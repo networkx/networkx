@@ -240,3 +240,142 @@ def test_directed_combinatorial_laplacian():
         nx.directed_combinatorial_laplacian_matrix(G, walk_type="pagerank", alpha=100)
     with pytest.raises(nx.NetworkXError):
         nx.directed_combinatorial_laplacian_matrix(G, walk_type="silly")
+
+
+class TestTotalSpanningTreeWeight:
+    @classmethod
+    def setup_class(cls):
+        global np
+        np = pytest.importorskip("numpy")
+
+    def test_tstw_disconnected(self):
+        G = nx.empty_graph(2)
+        with pytest.raises(nx.NetworkXError):
+            nx.total_spanning_tree_weight(G)
+
+    def test_tstw_no_nodes(self):
+        G = nx.Graph()
+        with pytest.raises(nx.NetworkXPointlessConcept):
+            nx.total_spanning_tree_weight(G)
+
+    def test_tstw_weight(self):
+        # weights are ignored
+        G = nx.Graph()
+        G.add_edge(1, 2, weight=1)
+        G.add_edge(1, 3, weight=1)
+        G.add_edge(2, 3, weight=2)
+        assert np.isclose(nx.total_spanning_tree_weight(G, "weight"), 5)
+
+    def test_tstw_negative_weight(self):
+        # weights are ignored
+        G = nx.Graph()
+        G.add_edge(1, 2, weight=1)
+        G.add_edge(1, 3, weight=-1)
+        G.add_edge(2, 3, weight=-2)
+        assert np.isclose(nx.total_spanning_tree_weight(G, "weight"), -1)
+
+    def test_tstw_selfloop(self):
+        # self-loops are ignored
+        G = nx.complete_graph(3)
+        G.add_edge(1, 1)
+        Nst = nx.total_spanning_tree_weight(G)
+        test_data = 3
+        assert np.isclose(Nst, test_data)
+
+    def test_tstw_multigraph(self):
+        G = nx.MultiGraph()
+        G.add_edge(1, 2)
+        G.add_edge(1, 2)
+        G.add_edge(1, 3)
+        G.add_edge(2, 3)
+        Nst = nx.total_spanning_tree_weight(G)
+        test_data = 5
+        assert np.isclose(Nst, test_data)
+
+    def test_tstw_complete_graph(self):
+        N = 5
+        G = nx.complete_graph(N)
+        Nst = nx.total_spanning_tree_weight(G)
+        test_data = N ** (N - 2)
+        assert np.isclose(Nst, test_data)
+
+    def test_tstw_path_graph(self):
+        N = 5
+        G = nx.path_graph(N)
+        Nst = nx.total_spanning_tree_weight(G)
+        test_data = 1
+        assert np.isclose(Nst, test_data)
+
+    def test_tstw_cycle_graph(self):
+        N = 5
+        G = nx.cycle_graph(N)
+        Nst = nx.total_spanning_tree_weight(G)
+        test_data = N
+        assert np.isclose(Nst, test_data)
+
+    def test_tstw_directed_noroot(self):
+        G = nx.MultiDiGraph()
+        with pytest.raises(nx.NetworkXError):
+            nx.total_spanning_tree_weight(G)
+
+    def test_tstw_directed_root_not_exist(self):
+        G = nx.MultiDiGraph()
+        with pytest.raises(nx.NetworkXError):
+            nx.total_spanning_tree_weight(G, root=0)
+
+    def test_tstw_directed_not_weak_connected(self):
+        G = nx.MultiDiGraph()
+        G.add_edge(1, 2)
+        G.add_edge(3, 4)
+        with pytest.raises(nx.NetworkXError):
+            nx.total_spanning_tree_weight(G, root=0)
+
+    def test_tstw_directed_cycle_graph(self):
+        G = nx.DiGraph()
+        G = nx.cycle_graph(7, G)
+        Nst = nx.total_spanning_tree_weight(G, root=0)
+        test_data = 1
+        assert np.isclose(Nst, test_data)
+
+    def test_tstw_directed_complete_graph(self):
+        G = nx.DiGraph()
+        G = nx.complete_graph(7, G)
+        Nst = nx.total_spanning_tree_weight(G, root=0)
+        test_data = 7**5
+        assert np.isclose(Nst, test_data)
+
+    def test_tstw_directed_multi(self):
+        G = nx.MultiDiGraph()
+        G = nx.cycle_graph(3, G)
+        G.add_edge(1, 2)
+        Nst = nx.total_spanning_tree_weight(G, root=0)
+        test_data = 2
+        assert np.isclose(Nst, test_data)
+
+    def test_tstw_directed_selfloop(self):
+        G = nx.MultiDiGraph()
+        G = nx.cycle_graph(3, G)
+        G.add_edge(1, 1)
+        Nst = nx.total_spanning_tree_weight(G, root=0)
+        test_data = 1
+        assert np.isclose(Nst, test_data)
+
+    def test_tstw_directed_weak_connected(self):
+        G = nx.MultiDiGraph()
+        G = nx.cycle_graph(3, G)
+        G.remove_edge(1, 2)
+        Nst = nx.total_spanning_tree_weight(G, root=0)
+        test_data = 0
+        assert np.isclose(Nst, test_data)
+
+    def test_tstw_directed_weighted(self):
+        G = nx.DiGraph()
+        G.add_edge(1, 2, weight=1)
+        G.add_edge(1, 3, weight=2)
+        G.add_edge(2, 3, weight=3)
+        Nst = nx.total_spanning_tree_weight(G, root=1, weight="weight")
+        assert np.isclose(Nst, 0)
+        Nst = nx.total_spanning_tree_weight(G, root=2, weight="weight")
+        assert np.isclose(Nst, 0)
+        Nst = nx.total_spanning_tree_weight(G, root=3, weight="weight")
+        assert np.isclose(Nst, 9)
