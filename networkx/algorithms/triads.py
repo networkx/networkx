@@ -311,6 +311,13 @@ def is_triad(G):
 def all_triplets(G):
     """Returns a generator of all possible sets of 3 nodes in a DiGraph.
 
+    .. deprecated:: 3.3
+
+       all_triplets is deprecated and will be removed in NetworkX version 3.5.
+       Use `itertools.combinations` instead::
+
+          all_triplets = itertools.combinations(G, 3)
+
     Parameters
     ----------
     G : digraph
@@ -328,6 +335,16 @@ def all_triplets(G):
     [(1, 2, 3), (1, 2, 4), (1, 3, 4), (2, 3, 4)]
 
     """
+    import warnings
+
+    warnings.warn(
+        (
+            "\n\nall_triplets is deprecated and will be rmoved in v3.5.\n"
+            "Use `itertools.combinations(G, 3)` instead."
+        ),
+        category=DeprecationWarning,
+        stacklevel=4,
+    )
     triplets = combinations(G.nodes(), 3)
     return triplets
 
@@ -543,6 +560,11 @@ def random_triad(G, seed=None):
     G2 : subgraph
        A randomly selected triad (order-3 NetworkX DiGraph)
 
+    Raises
+    ------
+    NetworkXError
+        If the input Graph has less than 3 nodes.
+
     Examples
     --------
     >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 1), (5, 6), (5, 4), (6, 7)])
@@ -551,64 +573,10 @@ def random_triad(G, seed=None):
     OutEdgeView([(1, 2)])
 
     """
+    if len(G) < 3:
+        raise nx.NetworkXError(
+            f"G needs at least 3 nodes to form a triad; (it has {len(G)} nodes)"
+        )
     nodes = seed.sample(list(G.nodes()), 3)
     G2 = G.subgraph(nodes)
     return G2
-
-
-"""
-@not_implemented_for('undirected')
-def triadic_closures(G):
-    '''Returns a list of order-3 subgraphs of G that are triadic closures.
-
-    Parameters
-    ----------
-    G : digraph
-       A NetworkX DiGraph
-
-    Returns
-    -------
-    closures : list
-       List of triads of G that are triadic closures
-    '''
-    pass
-
-
-@not_implemented_for('undirected')
-def focal_closures(G, attr_name):
-    '''Returns a list of order-3 subgraphs of G that are focally closed.
-
-    Parameters
-    ----------
-    G : digraph
-       A NetworkX DiGraph
-    attr_name : str
-        An attribute name
-
-
-    Returns
-    -------
-    closures : list
-       List of triads of G that are focally closed on attr_name
-    '''
-    pass
-
-
-@not_implemented_for('undirected')
-def balanced_triads(G, crit_func):
-    '''Returns a list of order-3 subgraphs of G that are stable.
-
-    Parameters
-    ----------
-    G : digraph
-       A NetworkX DiGraph
-    crit_func : function
-       A function that determines if a triad (order-3 digraph) is stable
-
-    Returns
-    -------
-    triads : list
-       List of triads in G that are stable
-    '''
-    pass
-"""

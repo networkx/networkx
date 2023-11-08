@@ -16,23 +16,23 @@ from networkx.classes.reportviews import NodeView
 
 
 class LoopbackGraph(Graph):
-    __networkx_plugin__ = "nx-loopback"
+    __networkx_backend__ = "nx-loopback"
 
 
 class LoopbackDiGraph(DiGraph):
-    __networkx_plugin__ = "nx-loopback"
+    __networkx_backend__ = "nx-loopback"
 
 
 class LoopbackMultiGraph(MultiGraph):
-    __networkx_plugin__ = "nx-loopback"
+    __networkx_backend__ = "nx-loopback"
 
 
 class LoopbackMultiDiGraph(MultiDiGraph):
-    __networkx_plugin__ = "nx-loopback"
+    __networkx_backend__ = "nx-loopback"
 
 
 class LoopbackPlanarEmbedding(PlanarEmbedding):
-    __networkx_plugin__ = "nx-loopback"
+    __networkx_backend__ = "nx-loopback"
 
 
 def convert(graph):

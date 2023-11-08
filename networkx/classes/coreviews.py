@@ -264,6 +264,18 @@ class UnionMultiAdjacency(UnionAdjacency):
 
 
 class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
+    """A read-only Mapping of Mappings with filtering criteria for nodes.
+
+    It is a view into a dict-of-dict data structure, and it selects only
+    nodes that meet the criteria defined by ``NODE_OK``.
+
+    See Also
+    ========
+    FilterAdjacency
+    FilterMultiInner
+    FilterMultiAdjacency
+    """
+
     def __init__(self, d, NODE_OK):
         self._atlas = d
         self.NODE_OK = NODE_OK
@@ -293,6 +305,19 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
 
 
 class FilterAdjacency(Mapping):  # edgedict
+    """A read-only Mapping of Mappings with filtering criteria for nodes and edges.
+
+    It is a view into a dict-of-dict-of-dict data structure, and it selects nodes
+    and edges that satisfy specific criteria defined by ``NODE_OK`` and ``EDGE_OK``,
+    respectively.
+
+    See Also
+    ========
+    FilterAtlas
+    FilterMultiInner
+    FilterMultiAdjacency
+    """
+
     def __init__(self, d, NODE_OK, EDGE_OK):
         self._atlas = d
         self.NODE_OK = NODE_OK
@@ -328,6 +353,18 @@ class FilterAdjacency(Mapping):  # edgedict
 
 
 class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
+    """A read-only Mapping of Mappings with filtering criteria for nodes and edges.
+
+    It is a view into a dict-of-dict-of-dict-of-dict data structure, and it selects nodes
+    and edges that meet specific criteria defined by ``NODE_OK`` and ``EDGE_OK``.
+
+    See Also
+    ========
+    FilterAtlas
+    FilterAdjacency
+    FilterMultiAdjacency
+    """
+
     def __iter__(self):
         try:  # check that NODE_OK has attr 'nodes'
             node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
@@ -357,6 +394,20 @@ class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
 
 
 class FilterMultiAdjacency(FilterAdjacency):  # multiedgedict
+    """A read-only Mapping of Mappings with filtering criteria
+    for nodes and edges.
+
+    It is a view into a dict-of-dict-of-dict-of-dict data structure,
+    and it selects nodes and edges that satisfy specific criteria
+    defined by ``NODE_OK`` and ``EDGE_OK``, respectively.
+
+    See Also
+    ========
+    FilterAtlas
+    FilterAdjacency
+    FilterMultiInner
+    """
+
     def __getitem__(self, node):
         if node in self._atlas and self.NODE_OK(node):
 

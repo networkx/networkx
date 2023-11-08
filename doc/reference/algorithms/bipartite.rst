@@ -132,4 +132,11 @@ Covering
    min_edge_cover
 
 
+Extendability
+-------------
+.. automodule:: networkx.algorithms.bipartite.extendability
+.. autosummary::
+   :toctree: generated/
+
+   maximal_extendability
 

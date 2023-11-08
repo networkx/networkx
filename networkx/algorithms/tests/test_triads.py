@@ -9,6 +9,12 @@ import pytest
 import networkx as nx
 
 
+def test_all_triplets_deprecated():
+    G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
+    with pytest.deprecated_call():
+        nx.all_triplets(G)
+
+
 def test_triadic_census():
     """Tests the triadic_census function."""
     G = nx.DiGraph()
@@ -141,6 +147,11 @@ def test_random_triad():
     G = G.to_directed()
     for i in range(100):
         assert nx.is_triad(nx.random_triad(G))
+
+    G = nx.DiGraph()
+    msg = "at least 3 nodes to form a triad"
+    with pytest.raises(nx.NetworkXError, match=msg):
+        nx.random_triad(G)
 
 
 def test_triadic_census_short_path_nodelist():

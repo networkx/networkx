@@ -124,6 +124,7 @@ def _configuration_model(
 
 
 @py_random_state(2)
+@nx._dispatch(graphs=None)
 def configuration_model(deg_sequence, create_using=None, seed=None):
     """Returns a random graph with the given degree sequence.
 
@@ -226,6 +227,7 @@ def configuration_model(deg_sequence, create_using=None, seed=None):
 
 
 @py_random_state(3)
+@nx._dispatch(graphs=None)
 def directed_configuration_model(
     in_degree_sequence, out_degree_sequence, create_using=None, seed=None
 ):
@@ -328,6 +330,7 @@ def directed_configuration_model(
 
 
 @py_random_state(1)
+@nx._dispatch(graphs=None)
 def expected_degree_graph(w, seed=None, selfloops=True):
     r"""Returns a random graph with given expected degrees.
 
@@ -436,6 +439,7 @@ def expected_degree_graph(w, seed=None, selfloops=True):
     return G
 
 
+@nx._dispatch(graphs=None)
 def havel_hakimi_graph(deg_sequence, create_using=None):
     """Returns a simple graph with given degree sequence constructed
     using the Havel-Hakimi algorithm.
@@ -528,6 +532,7 @@ def havel_hakimi_graph(deg_sequence, create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def directed_havel_hakimi_graph(in_deg_sequence, out_deg_sequence, create_using=None):
     """Returns a directed graph with the given degree sequences.
 
@@ -639,6 +644,7 @@ def directed_havel_hakimi_graph(in_deg_sequence, out_deg_sequence, create_using=
     return G
 
 
+@nx._dispatch(graphs=None)
 def degree_sequence_tree(deg_sequence, create_using=None):
     """Make a tree for the given degree sequence.
 
@@ -685,6 +691,7 @@ def degree_sequence_tree(deg_sequence, create_using=None):
 
 
 @py_random_state(1)
+@nx._dispatch(graphs=None)
 def random_degree_sequence_graph(sequence, seed=None, tries=10):
     r"""Returns a simple random graph with the given degree sequence.
 
