@@ -1,0 +1,10 @@
+#/opt/homebrew/bin/pytest --doctest-modules networkx
+# GMT Wed Nov  1 18:13:41 2023
+# 
+0 1
+1 {}
+1 1
+2 {}
+2 1
+3 {}
+3 0
