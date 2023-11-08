@@ -130,6 +130,9 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nall_triplets"
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nrandom_triad"
+    )
 
 
 @pytest.fixture(autouse=True)
