@@ -255,7 +255,7 @@ def parse_multiline_adjlist(
                 u = nodetype(u)
             except BaseException as err:
                 raise TypeError(
-                    f"Failed to convert node ({u}) to " f"type {nodetype}"
+                    f"Failed to convert node ({u}) to type {nodetype}"
                 ) from err
         G.add_node(u)
         for i in range(deg):
@@ -281,14 +281,14 @@ def parse_multiline_adjlist(
                     v = nodetype(v)
                 except BaseException as err:
                     raise TypeError(
-                        f"Failed to convert node ({v}) " f"to type {nodetype}"
+                        f"Failed to convert node ({v}) to type {nodetype}"
                     ) from err
             if edgetype is not None:
                 try:
                     edgedata = {"weight": edgetype(data)}
                 except BaseException as err:
                     raise TypeError(
-                        f"Failed to convert edge data ({data}) " f"to type {edgetype}"
+                        f"Failed to convert edge data ({data}) to type {edgetype}"
                     ) from err
             else:
                 try:  # try to evaluate

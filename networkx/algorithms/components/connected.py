@@ -68,6 +68,7 @@ def connected_components(G):
             yield c
 
 
+@not_implemented_for("directed")
 @nx._dispatch
 def number_connected_components(G):
     """Returns the number of connected components.
@@ -143,7 +144,7 @@ def is_connected(G):
     """
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
-            "Connectivity is undefined ", "for the null graph."
+            "Connectivity is undefined for the null graph."
         )
     return sum(1 for node in _plain_bfs(G, arbitrary_element(G))) == len(G)
 
