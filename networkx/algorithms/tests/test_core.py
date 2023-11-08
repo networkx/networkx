@@ -72,7 +72,9 @@ class TestCore:
     def test_core_number_self_loop(self):
         G = nx.cycle_graph(3)
         G.add_edge(0, 0)
-        with pytest.raises(nx.NetworkXError, match="Input graph has self loops"):
+        with pytest.raises(
+            nx.NetworkXNotImplemented, match="Input graph has self loops"
+        ):
             nx.core_number(G)
 
     def test_directed_core_number(self):
@@ -169,7 +171,9 @@ class TestCore:
     def test_k_truss_self_loop(self):
         G = nx.cycle_graph(3)
         G.add_edge(0, 0)
-        with pytest.raises(nx.NetworkXError, match="Input graph has self loops"):
+        with pytest.raises(
+            nx.NetworkXNotImplemented, match="Input graph has self loops"
+        ):
             nx.k_truss(G, k=1)
 
     def test_onion_layers(self):
@@ -187,5 +191,7 @@ class TestCore:
     def test_onion_self_loop(self):
         G = nx.cycle_graph(3)
         G.add_edge(0, 0)
-        with pytest.raises(nx.NetworkXError, match="Input graph contains self loops"):
+        with pytest.raises(
+            nx.NetworkXNotImplemented, match="Input graph contains self loops"
+        ):
             nx.onion_layers(G)

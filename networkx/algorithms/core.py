@@ -29,7 +29,7 @@ http://doi.org/10.1038/srep31708
 
 """
 import networkx as nx
-from networkx.exception import NetworkXError
+from networkx.exception import NetworkXNotImplemented
 from networkx.utils import not_implemented_for
 
 __all__ = [
@@ -61,11 +61,11 @@ def core_number(G):
     Returns
     -------
     core_number : dictionary
-       A dictionary keyed by node and the core number as the key value.
+       A dictionary keyed by node to the core number.
 
     Raises
     ------
-    NetworkXError
+    NetworkXNotImplemented
         The k-core is not implemented for graphs with self loops.
     NetworkXNotImplemented
         If `G` is a Multigraph.
@@ -77,7 +77,6 @@ def core_number(G):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> degrees = [0, 1, 2, 2, 2, 2, 3]
     >>> H = nx.havel_hakimi_graph(degrees)
     >>> nx.core_number(H)
@@ -98,7 +97,7 @@ def core_number(G):
             "Input graph has self loops which is not permitted; "
             "Consider using G.remove_edges_from(nx.selfloop_edges(G))."
         )
-        raise NetworkXError(msg)
+        raise NetworkXNotImplemented(msg)
     degrees = dict(G.degree())
     # Sort nodes by degree.
     nodes = sorted(degrees, key=degrees.get)
@@ -175,14 +174,9 @@ def k_core(G, k=None, core_number=None):
 
     Raises
     ------
-    NetworkXError
-      The k-core is not defined for graphs with self loops.
     NetworkXNotImplemented
-        A `MultiGraph` object with no multi-edges or self-loops will work
-        only when the optional parameter `core_number` is given. If it's not
-        given, then `nx.core_number(G)` will be used internally to compute
-        the core numbers and that would raise an exception because
-        `nx.core_number(G)` doesn't take `MultiGraph` objects.
+      The k-core is not defined for graphs with self loops
+      or parallel edges.
 
     Notes
     -----
@@ -195,7 +189,6 @@ def k_core(G, k=None, core_number=None):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> degrees = [0, 1, 2, 2, 2, 2, 3]
     >>> H = nx.havel_hakimi_graph(degrees)
     >>> H.degree
@@ -244,14 +237,9 @@ def k_shell(G, k=None, core_number=None):
 
     Raises
     ------
-    NetworkXError
-        The k-shell is not implemented for graphs with self loops.
     NetworkXNotImplemented
-        A `MultiGraph` object with no multi-edges or self-loops will work
-        only when the optional parameter `core_number` is given. If it's not
-        given, then `nx.core_number(G)` will be used internally to compute
-        the core numbers and that would raise an exception because
-        `nx.core_number(G)` doesn't take `MultiGraph` objects.
+        The k-shell is not implemented for graphs with self loops
+        or parallel edges.
 
     Notes
     -----
@@ -265,7 +253,6 @@ def k_shell(G, k=None, core_number=None):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> degrees = [0, 1, 2, 2, 2, 2, 3]
     >>> H = nx.havel_hakimi_graph(degrees)
     >>> H.degree
@@ -316,14 +303,9 @@ def k_crust(G, k=None, core_number=None):
 
     Raises
     ------
-    NetworkXError
-        The k-crust is not implemented for graphs with self loops.
     NetworkXNotImplemented
-        A `MultiGraph` object with no multi-edges or self-loops will work
-        only when the optional parameter `core_number` is given. If it's not
-        given, then `nx.core_number(G)` will be used internally to compute
-        the core numbers and that would raise an exception because
-        `nx.core_number(G)` doesn't take `MultiGraph` objects.
+        The k-crust is not implemented for graphs with self loops
+        or parallel edges.
 
     Notes
     -----
@@ -337,7 +319,6 @@ def k_crust(G, k=None, core_number=None):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> degrees = [0, 1, 2, 2, 2, 2, 3]
     >>> H = nx.havel_hakimi_graph(degrees)
     >>> H.degree
@@ -389,14 +370,9 @@ def k_corona(G, k, core_number=None):
 
     Raises
     ------
-    NetworkXError
-        The k-corona is not defined for graphs with self loops.
     NetworkXNotImplemented
-        A `MultiGraph` object with no multi-edges or self-loops will work
-        only when the optional parameter `core_number` is given. If it's not
-        given, then `nx.core_number(G)` will be used internally to compute
-        the core numbers and that would raise an exception because
-        `nx.core_number(G)` doesn't take `MultiGraph` objects.
+        The k-corona is not defined for graphs with self loops
+        or parallel edges.
 
     Notes
     -----
@@ -407,7 +383,6 @@ def k_corona(G, k, core_number=None):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> degrees = [0, 1, 2, 2, 2, 2, 3]
     >>> H = nx.havel_hakimi_graph(degrees)
     >>> H.degree
@@ -457,7 +432,7 @@ def k_truss(G, k):
 
     Raises
     ------
-    NetworkXError
+    NetworkXNotImplemented
       The k-truss is not defined for graphs with self loops.
     NetworkXNotImplemented
         If `G` is a Multigraph or Directed graph.
@@ -476,7 +451,6 @@ def k_truss(G, k):
 
     Examples
     --------
-    >>> import networkx as nx
     >>> degrees = [0, 1, 2, 2, 2, 2, 3]
     >>> H = nx.havel_hakimi_graph(degrees)
     >>> H.degree
@@ -496,7 +470,7 @@ def k_truss(G, k):
             "Input graph has self loops which is not permitted; "
             "Consider using G.remove_edges_from(nx.selfloop_edges(G))."
         )
-        raise NetworkXError(msg)
+        raise NetworkXNotImplemented(msg)
 
     H = G.copy()
 
@@ -542,14 +516,13 @@ def onion_layers(G):
 
     Raises
     ------
-    NetworkXError
+    NetworkXNotImplemented
         The onion decomposition is not implemented for graphs with self loops.
     NetworkXNotImplemented
         If `G` is a Multigraph or Directed graph.
 
     Examples
     --------
-    >>> import networkx as nx
     >>> degrees = [0, 1, 2, 2, 2, 2, 3]
     >>> H = nx.havel_hakimi_graph(degrees)
     >>> H.degree
@@ -578,7 +551,7 @@ def onion_layers(G):
             "Input graph contains self loops which is not permitted; "
             "Consider using G.remove_edges_from(nx.selfloop_edges(G))."
         )
-        raise NetworkXError(msg)
+        raise NetworkXNotImplemented(msg)
     # Dictionaries to register the k-core/onion decompositions.
     od_layers = {}
     # Adjacency list
