@@ -947,7 +947,6 @@ class _dispatch:
             "quotient_graph",
             "shortest_augmenting_path",
             "spectral_graph_forge",
-            "star_graph",  # Mutates input list (appends n)
             # We don't handle tempfile.NamedTemporaryFile arguments
             "read_gml",
             "read_graph6",
