@@ -224,6 +224,10 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
     the biggest weight edge is removed to make a Hamiltonian path.
     Then each edge on the new complete graph used for that analysis is
     replaced by the shortest_path between those nodes on the original graph.
+    If the input graph `G` includes edges with weights that do not adhere to
+    the triangle inequality, such as when `G` is not a complete graph(i.e
+    length of non-existent edges is infinity), then the returned path may
+    contain some repeating nodes(other than the starting node).
 
     Parameters
     ----------
@@ -270,12 +274,6 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
     NetworkXError
         If `G` is a directed graph it has to be strongly connected or the
         complete version cannot be generated.
-
-    Notes
-    -----
-    If the input graph `G` contains edges whose weights do not satisfy the
-    triangle inequality, then the returned path may contain repeating nodes
-    (other than the starting node).
 
     Examples
     --------
