@@ -357,5 +357,5 @@ def all_lowest_common_ancestors(G, node1, node2):
 
     # in the subgraph whose nodes had outdegree 0 are the lowest common ancestors of node1 and node 2
     for node, out_deg in sub_graph.out_degree:
-    if out_deg == 0:
-        yield node  # Yield the lowest common ancestor
+        if out_deg == 0:
+            yield node  # Yield the lowest common ancestor
