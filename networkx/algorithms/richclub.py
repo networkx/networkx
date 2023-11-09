@@ -72,7 +72,7 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
     """
     if nx.number_of_selfloops(G) > 0:
         raise Exception(
-            "rich_club_coefficient is not implemented for " "graphs with self loops."
+            "rich_club_coefficient is not implemented for graphs with self loops."
         )
     rc = _compute_rc(G)
     if normalized:

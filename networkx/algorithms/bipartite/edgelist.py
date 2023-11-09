@@ -231,7 +231,7 @@ def parse_edgelist(
                 v = nodetype(v)
             except BaseException as err:
                 raise TypeError(
-                    f"Failed to convert nodes {u},{v} " f"to type {nodetype}."
+                    f"Failed to convert nodes {u},{v} to type {nodetype}."
                 ) from err
 
         if len(d) == 0 or data is False:
@@ -243,7 +243,7 @@ def parse_edgelist(
                 edgedata = dict(literal_eval(" ".join(d)))
             except BaseException as err:
                 raise TypeError(
-                    f"Failed to convert edge data ({d})" f"to dictionary."
+                    f"Failed to convert edge data ({d}) to dictionary."
                 ) from err
         else:
             # convert edge data to dictionary with specified keys and type

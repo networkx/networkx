@@ -110,7 +110,7 @@ def connected_caveman_graph(l, k):
     """
     if k < 2:
         raise nx.NetworkXError(
-            "The size of cliques in a connected caveman graph " "must be at least 2."
+            "The size of cliques in a connected caveman graph must be at least 2."
         )
 
     G = nx.caveman_graph(l, k)
@@ -424,7 +424,7 @@ def ring_of_cliques(num_cliques, clique_size):
     simply adds the link without removing any link from the cliques.
     """
     if num_cliques < 2:
-        raise nx.NetworkXError("A ring of cliques must have at least " "two cliques")
+        raise nx.NetworkXError("A ring of cliques must have at least two cliques")
     if clique_size < 2:
         raise nx.NetworkXError("The cliques must have at least two nodes")
 
@@ -1006,7 +1006,7 @@ def LFR_benchmark_graph(
         raise nx.NetworkXError("max_degree must be in the interval (0, n]")
     if not ((min_degree is None) ^ (average_degree is None)):
         raise nx.NetworkXError(
-            "Must assign exactly one of min_degree and" " average_degree"
+            "Must assign exactly one of min_degree and average_degree"
         )
     if min_degree is None:
         min_degree = _generate_min_degree(
