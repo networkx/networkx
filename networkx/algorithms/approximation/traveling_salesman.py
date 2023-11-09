@@ -225,9 +225,9 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
     Then each edge on the new complete graph used for that analysis is
     replaced by the shortest_path between those nodes on the original graph.
     If the input graph `G` includes edges with weights that do not adhere to
-    the triangle inequality, such as when `G` is not a complete graph(i.e
+    the triangle inequality, such as when `G` is not a complete graph (i.e
     length of non-existent edges is infinity), then the returned path may
-    contain some repeating nodes(other than the starting node).
+    contain some repeating nodes (other than the starting node).
 
     Parameters
     ----------
