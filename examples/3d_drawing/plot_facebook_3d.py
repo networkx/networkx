@@ -22,10 +22,11 @@ facebook = pd.read_csv(
 
 # random sampling from graph
 n = 2000 # n_max=5000
+assert n <= 5000, "number of nodes should not be larger than 5000"
 random.seed(n)
 random_indices = [random.randint(0, 5000) for _ in range(n)]
-# Generate graph from CSV data
-print(facebook)
+
+# Generate randomly sampled graph from CSV data
 facebook_random = facebook.loc[random_indices]
 
 G = nx.from_pandas_edgelist(facebook_random, "start_node", "end_node")
@@ -43,14 +44,19 @@ nodes = np.array([pos[v] for v in G])
 edges = np.array([(pos[u], pos[v]) for u, v in G.edges()])
 point_size = int(1000 / np.sqrt(len(nodes)))
 
-#camera drive parameters
-frames = 60
+# Parameters defining the animation
 
-azimuthal_min = 0
-azimuthal_max = 100
+# Ensure that the number of frames is even
+frames = 61
+frames = frames + (frames % 2)
 
-elevation_min = 0
-elevation_max = 40
+# Define the minimum and maximum azimuthal angles for camera movement.
+azimuthal_min = 0   # Minimum azimuthal angle (in degrees)
+azimuthal_max = 100 # Maximum azimuthal angle (in degrees)
+
+# Define the minimum and maximum elevation angles for camera movement.
+elevation_min = 0   # Minimum elevation angle (in degrees)
+elevation_max = 40  # Maximum elevation angle (in degrees)
 
 # Calculate the step size of camera angles for the first half
 step_size_azimuthal = (azimuthal_max - azimuthal_min) / (frames // 2 - 1)
@@ -70,6 +76,7 @@ elevation_angles = elevation_angles_first_half + elevation_angles_second_half
 
 
 def init():
+    # Initialize the 3D scatter plot with nodes, edges, and formatting.
     ax.scatter(*nodes.T, alpha=0.2, s=point_size, ec="w")
     for vizedge in edges:
         ax.plot(*vizedge.T, color="tab:gray")
@@ -79,16 +86,12 @@ def init():
     plt.tight_layout()
     return
 
-
 def _frame_update(index):
+    # Update the view of the 3D plot with specified azimuthal and elevation angles.
     ax.view_init(elevation_angles[index], azimuthal_angles[index])
-    print('index')
-    print(index)
-    print(elevation_angles[index])
-    print(azimuthal_angles[index])
     return
 
-
+# Create a 3D plot, set up animation, and display the plot.
 fig = plt.figure()
 ax = fig.add_subplot(111, projection="3d")
 
@@ -101,3 +104,4 @@ ani = animation.FuncAnimation(
     frames=frames,
 )
 plt.show()
+
