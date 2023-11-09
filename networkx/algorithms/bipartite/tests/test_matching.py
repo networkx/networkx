@@ -405,8 +405,9 @@ def test_empty_envy_free_matching():
         generate_odd_path
 
         input: positive odd(!!) number
-        output: bipartite graph with one set of cardinality = size and one set of cardinality = size - 1
-        with the shape of an odd path.
+        output: bipartite graph with one set of cardinality = size
+                and one set of cardinality = size - 1
+                with the shape of an odd path.
 
         >>> generate_odd_path(3).edges
         [(0, 3), (1, 3), (1, 4), (2, 4), (3, 0), (3, 1), (4, 1), (4, 2)]
