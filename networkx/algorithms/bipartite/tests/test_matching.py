@@ -7,9 +7,9 @@ import networkx as nx
 from networkx.algorithms.bipartite.matching import (
     eppstein_matching,
     hopcroft_karp_matching,
-    max_size_envy_free_matching,
+    maximum_envy_free_matching,
     maximum_matching,
-    min_weight_max_size_envy_free_matching,
+    minimum_weight_envy_free_matching,
     minimum_weight_full_matching,
     to_vertex_cover,
 )
@@ -342,7 +342,7 @@ def test_envy_free_perfect_matching():
         return nx.Graph([(i, i + size) for i in range(size)])
 
     A = nx.complete_bipartite_graph(3, 3)
-    matching = max_size_envy_free_matching(A)
+    matching = maximum_envy_free_matching(A)
     assert matching == {0: 3, 3: 0, 1: 4, 4: 1, 2: 5, 5: 2}
 
     B = nx.Graph(
@@ -359,7 +359,7 @@ def test_envy_free_perfect_matching():
             (5, 2),
         ]
     )
-    matching = max_size_envy_free_matching(B)
+    matching = maximum_envy_free_matching(B)
     assert matching == {0: 3, 3: 0, 1: 4, 4: 1, 2: 5, 5: 2}
 
     # Check our algorithm with big inputs, array can be expanded to contain more values for which to generate graphs
@@ -367,7 +367,7 @@ def test_envy_free_perfect_matching():
     for size in sizes:
         G = _generate_marriable_bipartite_graph(size)
         if nx.is_connected(G):
-            matching = max_size_envy_free_matching(G)
+            matching = maximum_envy_free_matching(G)
             expected1 = {i: i + size for i in range(size)}
             expected2 = {i + size: i for i in range(size)}
             expected = {**expected1, **expected2}
@@ -376,7 +376,7 @@ def test_envy_free_perfect_matching():
 
 def test_non_empty_envy_free_matching():
     A = nx.Graph([(0, 3), (3, 0), (0, 4), (4, 0), (1, 4), (4, 1), (2, 4), (4, 2)])
-    matching = max_size_envy_free_matching(A)
+    matching = maximum_envy_free_matching(A)
     assert matching == {0: 3, 3: 0}
 
     B = nx.Graph(
@@ -395,7 +395,7 @@ def test_non_empty_envy_free_matching():
             (7, 3),
         ]
     )
-    matching = max_size_envy_free_matching(B, top_nodes=[0, 1, 2, 3])
+    matching = maximum_envy_free_matching(B, top_nodes=[0, 1, 2, 3])
     assert matching == {0: 4, 4: 0, 1: 6, 6: 1}
 
 
@@ -462,7 +462,7 @@ def test_empty_envy_free_matching():
     graphs = {A, B, C, D}
     for graph in graphs:
         if nx.is_connected(graph):
-            assert max_size_envy_free_matching(G=graph) == {}
+            assert maximum_envy_free_matching(G=graph) == {}
 
 
 def test_envy_free_perfect_matching_min_weight():
@@ -478,7 +478,7 @@ def test_envy_free_perfect_matching_min_weight():
         (2, 4, 125),
     ]
     G.add_weighted_edges_from(weights)
-    assert min_weight_max_size_envy_free_matching(G) == {
+    assert minimum_weight_envy_free_matching(G) == {
         0: 5,
         1: 4,
         2: 3,
@@ -493,7 +493,7 @@ def test_non_empty_envy_free_matching_min_weight():
     G.add_weighted_edges_from(
         [(0, 4, 5), (1, 4, 1), (2, 5, 3), (2, 7, 9), (3, 6, 3), (3, 7, 7)]
     )
-    matching = min_weight_max_size_envy_free_matching(G, top_nodes=[0, 1, 2, 3])
+    matching = minimum_weight_envy_free_matching(G, top_nodes=[0, 1, 2, 3])
     assert matching == {
         2: 5,
         3: 6,

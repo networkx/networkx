@@ -49,8 +49,8 @@ __all__ = [
     "eppstein_matching",
     "to_vertex_cover",
     "minimum_weight_full_matching",
-    "max_size_envy_free_matching",
-    "min_weight_max_size_envy_free_matching",
+    "maximum_envy_free_matching",
+    "minimum_weight_envy_free_matching",
     "envy_free_matching_partition",
 ]
 
@@ -772,7 +772,7 @@ def envy_free_matching_partition(G, *, M=None, top_nodes=None):
 
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
-def max_size_envy_free_matching(G, *, top_nodes=None):
+def maximum_envy_free_matching(G, *, top_nodes=None):
     """Return an envy-free matching of maximum cardinality in a bipartite graph.
 
     Parameters
@@ -794,7 +794,7 @@ def max_size_envy_free_matching(G, *, top_nodes=None):
     Example 1: Perfect matching
 
     >>> G = nx.complete_bipartite_graph(3, 3)
-    >>> nx.bipartite.max_size_envy_free_matching(G)
+    >>> nx.bipartite.maximum_envy_free_matching(G)
     {0: 3, 1: 4, 2: 5, 3: 0, 4: 1, 5: 2}
 
     Where there exists a perfect matching the maximum envy free matching is
@@ -803,13 +803,13 @@ def max_size_envy_free_matching(G, *, top_nodes=None):
     Example 2: Non-empty envy-free matching
 
     >>> G = nx.Graph([(0, 3), (0, 4), (1, 4), (2, 4)])
-    >>> nx.bipartite.max_size_envy_free_matching(G)
+    >>> nx.bipartite.maximum_envy_free_matching(G)
     {0: 3, 3: 0}
 
     Example 3: Odd path
 
     >>> G = nx.Graph([(0, 3), (1, 3), (1, 4), (2, 4)])
-    >>> nx.bipartite.max_size_envy_free_matching(G)
+    >>> nx.bipartite.maximum_envy_free_matching(G)
     {}
 
     Like presented in the article, an odd path contains an empty envy-free matching
@@ -820,7 +820,7 @@ def max_size_envy_free_matching(G, *, top_nodes=None):
     >>> G = nx.Graph(
     ...     [(0, 6), (1, 6), (1, 7), (2, 6), (2, 8), (3, 9), (3, 6), (4, 8), (4, 7), (5, 9)]
     ... )
-    >>> nx.bipartite.max_size_envy_free_matching(G)
+    >>> nx.bipartite.maximum_envy_free_matching(G)
     {}
 
     Like presented in the article [1]_, Y-path-saturated graph contains an empty
@@ -841,8 +841,8 @@ def max_size_envy_free_matching(G, *, top_nodes=None):
 
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
-def min_weight_max_size_envy_free_matching(G, *, top_nodes=None):
-    """Return a min-cost max-cardinality envy-free matching in a bipartite graph.
+def minimum_weight_envy_free_matching(G, *, top_nodes=None):
+    """Returns a minimum weight maximum cardinality envy-free matching of the bipartite graph `G`
 
     A matching in a bipartite graph with parts X and Y is called envy-free,
     if no unmatched node in X is adjacent to a matched node in Y.
@@ -861,7 +861,7 @@ def min_weight_max_size_envy_free_matching(G, *, top_nodes=None):
     Returns
     -------
     Matching: dictionary
-      The minimum cost maximum cardinality matching is returned as a dictionary.
+      The minimum weight maximum cardinality matching is returned as a dictionary.
 
     Examples
     --------
@@ -879,18 +879,18 @@ def min_weight_max_size_envy_free_matching(G, *, top_nodes=None):
     ...     (2, 4, 125),
     ... ]
     >>> G.add_weighted_edges_from(edges)
-    >>> nx.bipartite.min_weight_max_size_envy_free_matching(G)
+    >>> nx.bipartite.minimum_weight_envy_free_matching(G)
     {0: 5, 1: 4, 2: 3, 5: 0, 4: 1, 3: 2}
 
     Where there exists a perfect matching the maximum envy free matching is a
-    perfect matching and this is the least cost perfect matching.
+    perfect matching and this is the minimum weight perfect matching.
 
     Example 2: Non-empty envy-free matching
 
     >>> G = nx.Graph()
     >>> edges = [(0, 4, 5), (1, 4, 1), (2, 5, 3), (2, 7, 9), (3, 6, 3), (3, 7, 7)]
     >>> G.add_weighted_edges_from(edges)
-    >>> nx.bipartite.min_weight_max_size_envy_free_matching(G, top_nodes=[0, 1, 2, 3])
+    >>> nx.bipartite.minimum_weight_envy_free_matching(G, top_nodes=[0, 1, 2, 3])
     {2: 5, 3: 6, 5: 2, 6: 3}
 
     References
