@@ -29,8 +29,6 @@ http://doi.org/10.1038/srep31708
 
 """
 import networkx as nx
-from networkx.exception import NetworkXNotImplemented
-from networkx.utils import not_implemented_for
 
 __all__ = [
     "core_number",
@@ -43,7 +41,7 @@ __all__ = [
 ]
 
 
-@not_implemented_for("multigraph")
+@nx.utils.not_implemented_for("multigraph")
 @nx._dispatch
 def core_number(G):
     """Returns the core number for each node.
@@ -56,7 +54,7 @@ def core_number(G):
     Parameters
     ----------
     G : NetworkX graph
-       A graph or directed graph
+       An undirected or directed graph
 
     Returns
     -------
@@ -66,9 +64,7 @@ def core_number(G):
     Raises
     ------
     NetworkXNotImplemented
-        The k-core is not implemented for graphs with self loops.
-    NetworkXNotImplemented
-        If `G` is a Multigraph.
+        If `G` is a multigraph or contains self loops.
 
     Notes
     -----
@@ -97,7 +93,7 @@ def core_number(G):
             "Input graph has self loops which is not permitted; "
             "Consider using G.remove_edges_from(nx.selfloop_edges(G))."
         )
-        raise NetworkXNotImplemented(msg)
+        raise nx.NetworkXNotImplemented(msg)
     degrees = dict(G.degree())
     # Sort nodes by degree.
     nodes = sorted(degrees, key=degrees.get)
@@ -409,8 +405,8 @@ def k_corona(G, k, core_number=None):
     return _core_subgraph(G, func, k, core_number)
 
 
-@not_implemented_for("directed")
-@not_implemented_for("multigraph")
+@nx.utils.not_implemented_for("directed")
+@nx.utils.not_implemented_for("multigraph")
 @nx._dispatch(preserve_all_attrs=True)
 def k_truss(G, k):
     """Returns the k-truss of `G`.
@@ -433,9 +429,7 @@ def k_truss(G, k):
     Raises
     ------
     NetworkXNotImplemented
-      The k-truss is not defined for graphs with self loops.
-    NetworkXNotImplemented
-        If `G` is a Multigraph or Directed graph.
+      If `G` is a multigraph or directed graph or if it contains self loops.
 
     Notes
     -----
@@ -470,7 +464,7 @@ def k_truss(G, k):
             "Input graph has self loops which is not permitted; "
             "Consider using G.remove_edges_from(nx.selfloop_edges(G))."
         )
-        raise NetworkXNotImplemented(msg)
+        raise nx.NetworkXNotImplemented(msg)
 
     H = G.copy()
 
@@ -493,8 +487,8 @@ def k_truss(G, k):
     return H
 
 
-@not_implemented_for("multigraph")
-@not_implemented_for("directed")
+@nx.utils.not_implemented_for("multigraph")
+@nx.utils.not_implemented_for("directed")
 @nx._dispatch
 def onion_layers(G):
     """Returns the layer of each vertex in an onion decomposition of the graph.
@@ -517,9 +511,7 @@ def onion_layers(G):
     Raises
     ------
     NetworkXNotImplemented
-        The onion decomposition is not implemented for graphs with self loops.
-    NetworkXNotImplemented
-        If `G` is a Multigraph or Directed graph.
+        If `G` is a multigraph or directed graph or if it contains self loops.
 
     Examples
     --------
@@ -551,7 +543,7 @@ def onion_layers(G):
             "Input graph contains self loops which is not permitted; "
             "Consider using G.remove_edges_from(nx.selfloop_edges(G))."
         )
-        raise NetworkXNotImplemented(msg)
+        raise nx.NetworkXNotImplemented(msg)
     # Dictionaries to register the k-core/onion decompositions.
     od_layers = {}
     # Adjacency list
