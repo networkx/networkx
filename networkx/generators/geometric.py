@@ -16,7 +16,7 @@ __all__ = [
     "soft_random_geometric_graph",
     "thresholded_random_geometric_graph",
     "waxman_graph",
-    "soft_random_S1_H2_geometric_graph",
+    "geometric_soft_configuration_graph",
 ]
 
 
@@ -848,8 +848,8 @@ def thresholded_random_geometric_graph(
 
 
 @py_random_state(5)
-def soft_random_S1_H2_geometric_graph(
-    beta, *, n=None, gamma=None, mean_degree=None, kappas=None, seed=None
+def geometric_soft_configuration_graph(
+    *, beta, n=None, gamma=None, mean_degree=None, kappas=None, seed=None
 ):
     r"""Returns a $\mathbb{S}^1/\mathbb{H}^2$ model.
 
@@ -863,14 +863,13 @@ def soft_random_S1_H2_geometric_graph(
     or importance, and an angular position $\theta_i$ in a one-dimensional
     sphere (or circle) abstracting the similarity space, where angular distances
     between nodes are a proxy for their similarity. The radius of the circle is
-    adjusted to $R = N/2\pi$,  where $N$ is the number of nodes, so that the density
+    adjusted to $R = N/2\pi$, where $N$ is the number of nodes, so that the density
     is set to 1 without loss of generality.
 
-    The connection probability between any pair of nodes takes the form
-    of a gravity law, whose magnitude increases with the product of the
-    hidden degrees (i.e., their combined popularities), and decreases with
-    the angular distance between the two nodes.
-    Specifically, nodes $i$ and $j$ are connected with probability
+    The connection probability between any pair of nodes increases with
+    the product of their hidden degrees (i.e., their combined popularities),
+    and decreases with the angular distance between the two nodes.
+    Specifically, nodes $i$ and $j$ are connected with the probability
 
     $p_{ij} = \frac{1}{1 + \frac{d_{ij}^\beta}{\left(\mu \kappa_i \kappa_j\right)^{\max(1, \beta)}}}$
 
@@ -914,17 +913,17 @@ def soft_random_S1_H2_geometric_graph(
     n, gamma, mean_degree (if provided) are used to construct random kappas
     sampled from the power-law distribution.
 
-    beta: float
+    beta : positive number
         Inverse temperature, controlling the clustering coefficient.
-    n: int, optional
+    n : int (default: None)
         Size of the network (number of nodes).
-    gamma: float, optional
+    gamma : float (default: None)
         Exponent of the power-law distribution for hidden degrees.
-    mean_degree: float, optional
+    mean_degree : float (default: None)
         The mean degree in the network
-    kappas: dict, optional
+    kappas : dict (default: None)
         A dictionary specifying the hidden degrees for each node.
-    seed : integer, random_state, or None (default)
+    seed : int, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
 
@@ -934,13 +933,13 @@ def soft_random_S1_H2_geometric_graph(
         A random geometric graph generated via the $\mathbb{S}^1$ model (undirected and
         without self-loops). Each node has two attributes: ``kappa`` that
         represents the hidden degree and ``theta`` the position in the similarity space.
-        Additionaly, the ``radial_coordiante`` variable is computed for each node.
+        Additionaly, the ``radial_coordinate`` variable is computed for each node.
 
     Examples
     --------
     Generate a network with specified parameters:
 
-    >>> G = nx.soft_random_S1_H2_geometric_graph(1.5, n=100, gamma=2.7, mean_degree=5)
+    >>> G = nx.geometric_soft_configuration_graph(beta=1.5, n=100, gamma=2.7, mean_degree=5)
 
     Create a $\mathbb{S}^1$ model with 100 nodes. The $\beta$ parameter is set to 1.5
     and the exponent of the powerlaw distribution of the hidden degrees is 2.7
@@ -949,7 +948,7 @@ def soft_random_S1_H2_geometric_graph(
     Generate a network with predefined hidden degrees:
 
     >>> kappas = {i: 10 for i in range(100)}
-    >>> G = nx.soft_random_S1_H2_geometric_graph(2.5, kappas=kappas)
+    >>> G = nx.geometric_soft_configuration_graph(beta=2.5, kappas=kappas)
 
     Create a $\mathbb{S}^1$ model with 100 nodes. The $\beta$ parameter is set to 2.5
     and all nodes with hidden degree $\kappa=10$.

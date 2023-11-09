@@ -336,15 +336,15 @@ def test_geometric_edges_raises_no_pos():
 
 
 def test_number_of_nodes_S1():
-    G = nx.soft_random_S1_H2_geometric_graph(
-        1.5, n=100, gamma=2.7, mean_degree=10, seed=42
+    G = nx.geometric_soft_configuration_graph(
+        beta=1.5, n=100, gamma=2.7, mean_degree=10, seed=42
     )
     assert len(G) == 100
 
 
 def test_set_attributes_S1():
-    G = nx.soft_random_S1_H2_geometric_graph(
-        1.5, n=100, gamma=2.7, mean_degree=10, seed=42
+    G = nx.geometric_soft_configuration_graph(
+        beta=1.5, n=100, gamma=2.7, mean_degree=10, seed=42
     )
     kappas = list(nx.get_node_attributes(G, "kappa").values())
     assert len(kappas) == 100
@@ -353,8 +353,8 @@ def test_set_attributes_S1():
 
 
 def test_mean_kappas_S1():
-    G = nx.soft_random_S1_H2_geometric_graph(
-        2.5, n=5000, gamma=2.7, mean_degree=10, seed=42
+    G = nx.geometric_soft_configuration_graph(
+        beta=2.5, n=5000, gamma=2.7, mean_degree=10, seed=42
     )
     kappas = list(nx.get_node_attributes(G, "kappa").values())
     mean_kappas = sum(kappas) / len(kappas)
@@ -363,7 +363,7 @@ def test_mean_kappas_S1():
 
 def test_dict_kappas_S1():
     kappas = {i: 10 for i in range(1000)}
-    G = nx.soft_random_S1_H2_geometric_graph(1, kappas=kappas)
+    G = nx.geometric_soft_configuration_graph(beta=1, kappas=kappas)
     assert len(G) == 1000
     kappas = list(nx.get_node_attributes(G, "kappa").values())
     mean_kappas = sum(kappas) / len(kappas)
@@ -371,11 +371,11 @@ def test_dict_kappas_S1():
 
 
 def test_beta_clustering_S1():
-    G1 = nx.soft_random_S1_H2_geometric_graph(
-        1.5, n=100, gamma=3.5, mean_degree=10, seed=42
+    G1 = nx.geometric_soft_configuration_graph(
+        beta=1.5, n=100, gamma=3.5, mean_degree=10, seed=42
     )
-    G2 = nx.soft_random_S1_H2_geometric_graph(
-        3.0, n=100, gamma=3.5, mean_degree=10, seed=42
+    G2 = nx.geometric_soft_configuration_graph(
+        beta=3.0, n=100, gamma=3.5, mean_degree=10, seed=42
     )
     assert nx.average_clustering(G1) < nx.average_clustering(G2)
 
@@ -385,8 +385,8 @@ def test_wrong_parameters_S1():
         nx.NetworkXError,
         match="Please provide either kappas, or all 3 parameters: n, gamma and mean_degree.",
     ):
-        G = nx.soft_random_S1_H2_geometric_graph(
-            1.5, gamma=3.5, mean_degree=10, seed=42
+        G = nx.geometric_soft_configuration_graph(
+            beta=1.5, gamma=3.5, mean_degree=10, seed=42
         )
 
     with pytest.raises(
@@ -394,26 +394,28 @@ def test_wrong_parameters_S1():
         match="When kappas is input, n, gamma and mean_degree must not be.",
     ):
         kappas = {i: 10 for i in range(1000)}
-        G = nx.soft_random_S1_H2_geometric_graph(1.5, kappas=kappas, gamma=2.3, seed=42)
+        G = nx.geometric_soft_configuration_graph(
+            beta=1.5, kappas=kappas, gamma=2.3, seed=42
+        )
 
     with pytest.raises(
         nx.NetworkXError,
         match="Please provide either kappas, or all 3 parameters: n, gamma and mean_degree.",
     ):
-        G = nx.soft_random_S1_H2_geometric_graph(1.5, seed=42)
+        G = nx.geometric_soft_configuration_graph(beta=1.5, seed=42)
 
 
 def test_negative_beta_S1():
     with pytest.raises(
         nx.NetworkXError, match="The parameter beta cannot be smaller or equal to 0."
     ):
-        G = nx.soft_random_S1_H2_geometric_graph(
-            -1, n=100, gamma=2.3, mean_degree=10, seed=42
+        G = nx.geometric_soft_configuration_graph(
+            beta=-1, n=100, gamma=2.3, mean_degree=10, seed=42
         )
 
 
 def test_non_zero_clustering_beta_lower_one_S1():
-    G = nx.soft_random_S1_H2_geometric_graph(
-        0.5, n=100, gamma=3.5, mean_degree=10, seed=42
+    G = nx.geometric_soft_configuration_graph(
+        beta=0.5, n=100, gamma=3.5, mean_degree=10, seed=42
     )
     assert nx.average_clustering(G) > 0
