@@ -2,11 +2,10 @@ import pytest
 
 np = pytest.importorskip("numpy")
 sp = pytest.importorskip("scipy")
-import scipy.sparse  # call as sp.sparse
 
 import networkx as nx
-from networkx.utils import graphs_equal
 from networkx.generators.classic import barbell_graph, cycle_graph, path_graph
+from networkx.utils import graphs_equal
 
 
 class TestConvertScipy:
@@ -108,7 +107,7 @@ class TestConvertScipy:
 
     def test_weight_keyword(self):
         WP4 = nx.Graph()
-        WP4.add_edges_from((n, n + 1, dict(weight=0.5, other=0.3)) for n in range(3))
+        WP4.add_edges_from((n, n + 1, {"weight": 0.5, "other": 0.3}) for n in range(3))
         P4 = path_graph(4)
         A = nx.to_scipy_sparse_array(P4)
         np.testing.assert_equal(
@@ -123,7 +122,7 @@ class TestConvertScipy:
 
     def test_format_keyword(self):
         WP4 = nx.Graph()
-        WP4.add_edges_from((n, n + 1, dict(weight=0.5, other=0.3)) for n in range(3))
+        WP4.add_edges_from((n, n + 1, {"weight": 0.5, "other": 0.3}) for n in range(3))
         P4 = path_graph(4)
         A = nx.to_scipy_sparse_array(P4, format="csr")
         np.testing.assert_equal(
@@ -164,7 +163,7 @@ class TestConvertScipy:
         with pytest.raises(nx.NetworkXError):
             WP4 = nx.Graph()
             WP4.add_edges_from(
-                (n, n + 1, dict(weight=0.5, other=0.3)) for n in range(3)
+                (n, n + 1, {"weight": 0.5, "other": 0.3}) for n in range(3)
             )
             P4 = path_graph(4)
             nx.to_scipy_sparse_array(P4, format="any_other")
@@ -281,13 +280,3 @@ def test_from_scipy_sparse_array_formats(sparse_format):
     )
     A = sp.sparse.coo_array([[0, 3, 2], [3, 0, 1], [2, 1, 0]]).asformat(sparse_format)
     assert graphs_equal(expected, nx.from_scipy_sparse_array(A))
-
-
-# NOTE: remove when to/from_sparse_matrix deprecations expire
-def test_scipy_sparse_matrix_deprecations():
-    G = nx.path_graph(3)
-    msg = "\n\nThe scipy.sparse array containers will be used instead of matrices"
-    with pytest.warns(DeprecationWarning, match=msg):
-        M = nx.to_scipy_sparse_matrix(G)
-    with pytest.warns(DeprecationWarning, match=msg):
-        H = nx.from_scipy_sparse_matrix(M)

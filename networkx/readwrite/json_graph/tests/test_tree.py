@@ -1,5 +1,7 @@
 import json
+
 import pytest
+
 import networkx as nx
 from networkx.readwrite.json_graph import tree_data, tree_graph
 
@@ -11,7 +13,7 @@ def test_graph():
     G.add_edge(1, 3, foo=10)
     G.add_edge(3, 4, foo=10)
     H = tree_graph(tree_data(G, 1))
-    nx.is_isomorphic(G, H)
+    assert nx.is_isomorphic(G, H)
 
 
 def test_graph_attributes():
@@ -44,20 +46,3 @@ def test_exceptions():
         G = nx.MultiDiGraph()
         G.add_node(0)
         tree_data(G, 0, ident="node", children="node")
-
-
-# NOTE: To be removed when deprecation expires in 3.0
-def test_attrs_deprecation(recwarn):
-    G = nx.path_graph(3, create_using=nx.DiGraph)
-
-    # No warnings when `attrs` kwarg not used
-    data = tree_data(G, 0)
-    H = tree_graph(data)
-    assert len(recwarn) == 0
-
-    # DeprecationWarning issued when `attrs` is used
-    attrs = {"id": "foo", "children": "bar"}
-    with pytest.warns(DeprecationWarning):
-        data = tree_data(G, 0, attrs=attrs)
-    with pytest.warns(DeprecationWarning):
-        H = tree_graph(data, attrs=attrs)

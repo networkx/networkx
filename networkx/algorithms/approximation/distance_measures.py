@@ -7,6 +7,7 @@ __all__ = ["diameter"]
 
 
 @py_random_state(1)
+@nx._dispatch(name="approximate_diameter")
 def diameter(G, seed=None):
     """Returns a lower bound on the diameter of the graph G.
 

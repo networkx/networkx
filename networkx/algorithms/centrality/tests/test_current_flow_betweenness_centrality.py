@@ -1,9 +1,8 @@
 import pytest
 
 import networkx as nx
-from networkx import edge_current_flow_betweenness_centrality as edge_current_flow
 from networkx import approximate_current_flow_betweenness_centrality as approximate_cfbc
-
+from networkx import edge_current_flow_betweenness_centrality as edge_current_flow
 
 np = pytest.importorskip("numpy")
 pytest.importorskip("scipy")
@@ -135,6 +134,11 @@ class TestApproximateFlowBetweennessCentrality:
             for n in sorted(G):
                 np.testing.assert_allclose(b[n], b_answer[n], atol=epsilon)
 
+    def test_lower_kmax(self):
+        G = nx.complete_graph(4)
+        with pytest.raises(nx.NetworkXError, match="Increase kmax or epsilon"):
+            nx.approximate_current_flow_betweenness_centrality(G, kmax=4)
+
 
 class TestWeightedFlowBetweennessCentrality:
     pass
@@ -176,3 +180,18 @@ class TestEdgeFlowBetweennessCentrality:
         for (s, t), v1 in b_answer.items():
             v2 = b.get((s, t), b.get((t, s)))
             assert v1 == pytest.approx(v2, abs=1e-7)
+
+
+@pytest.mark.parametrize(
+    "centrality_func",
+    (
+        nx.current_flow_betweenness_centrality,
+        nx.edge_current_flow_betweenness_centrality,
+        nx.approximate_current_flow_betweenness_centrality,
+    ),
+)
+def test_unconnected_graphs_betweenness_centrality(centrality_func):
+    G = nx.Graph([(1, 2), (3, 4)])
+    G.add_node(5)
+    with pytest.raises(nx.NetworkXError, match="Graph not connected"):
+        centrality_func(G)

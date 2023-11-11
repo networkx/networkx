@@ -1,5 +1,6 @@
 import pytest
-from networkx.utils.mapped_queue import _HeapElement, MappedQueue
+
+from networkx.utils.mapped_queue import MappedQueue, _HeapElement
 
 
 def test_HeapElement_gtlt():
@@ -9,6 +10,13 @@ def test_HeapElement_gtlt():
     assert bar > foo
     assert foo < 1.1
     assert 1 < bar
+
+
+def test_HeapElement_gtlt_tied_priority():
+    bar = _HeapElement(1, "a")
+    foo = _HeapElement(1, "b")
+    assert foo > bar
+    assert bar < foo
 
 
 def test_HeapElement_eq():
@@ -39,7 +47,7 @@ def test_HeapElement_getitem():
 
 
 class TestMappedQueue:
-    def setup(self):
+    def setup_method(self):
         pass
 
     def _check_map(self, q):
@@ -61,6 +69,10 @@ class TestMappedQueue:
         h = [5, 4, 3, 2, 1, 0]
         q = MappedQueue(h)
         self._check_map(q)
+
+    def test_incomparable(self):
+        h = [5, 4, "a", 2, 1, 0]
+        pytest.raises(TypeError, MappedQueue, h)
 
     def test_len(self):
         h = [5, 4, 3, 2, 1, 0]
@@ -195,6 +207,30 @@ class TestMappedDict(TestMappedQueue):
     def _make_mapped_queue(self, h):
         priority_dict = {elt: elt for elt in h}
         return MappedQueue(priority_dict)
+
+    def test_init(self):
+        d = {5: 0, 4: 1, "a": 2, 2: 3, 1: 4}
+        q = MappedQueue(d)
+        assert q.position == d
+
+    def test_ties(self):
+        d = {5: 0, 4: 1, 3: 2, 2: 3, 1: 4}
+        q = MappedQueue(d)
+        assert q.position == {elt: pos for pos, elt in enumerate(q.heap)}
+
+    def test_pop(self):
+        d = {5: 0, 4: 1, 3: 2, 2: 3, 1: 4}
+        q = MappedQueue(d)
+        assert q.pop() == _HeapElement(0, 5)
+        assert q.position == {elt: pos for pos, elt in enumerate(q.heap)}
+
+    def test_empty_pop(self):
+        q = MappedQueue()
+        pytest.raises(IndexError, q.pop)
+
+    def test_incomparable_ties(self):
+        d = {5: 0, 4: 0, "a": 0, 2: 0, 1: 0}
+        pytest.raises(TypeError, MappedQueue, d)
 
     def test_push(self):
         to_push = [6, 1, 4, 3, 2, 5, 0]

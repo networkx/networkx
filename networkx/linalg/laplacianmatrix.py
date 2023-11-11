@@ -6,12 +6,14 @@ from networkx.utils import not_implemented_for
 __all__ = [
     "laplacian_matrix",
     "normalized_laplacian_matrix",
+    "total_spanning_tree_weight",
     "directed_laplacian_matrix",
     "directed_combinatorial_laplacian_matrix",
 ]
 
 
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight")
 def laplacian_matrix(G, nodelist=None, weight="weight"):
     """Returns the Laplacian matrix of G.
 
@@ -33,21 +35,35 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
 
     Returns
     -------
-    L : SciPy sparse matrix
+    L : SciPy sparse array
       The Laplacian matrix of G.
 
     Notes
     -----
-    For MultiGraph/MultiDiGraph, the edges weights are summed.
+    For MultiGraph, the edges weights are summed.
 
     See Also
     --------
-    to_numpy_array
+    :func:`~networkx.convert_matrix.to_numpy_array`
     normalized_laplacian_matrix
-    laplacian_spectrum
+    :func:`~networkx.linalg.spectrum.laplacian_spectrum`
+
+    Examples
+    --------
+    For graphs with multiple connected components, L is permutation-similar
+    to a block diagonal matrix where each block is the respective Laplacian
+    matrix for each component.
+
+    >>> G = nx.Graph([(1, 2), (2, 3), (4, 5)])
+    >>> print(nx.laplacian_matrix(G).toarray())
+    [[ 1 -1  0  0  0]
+     [-1  2 -1  0  0]
+     [ 0 -1  1  0  0]
+     [ 0  0  0  1 -1]
+     [ 0  0  0 -1  1]]
+
     """
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     if nodelist is None:
         nodelist = list(G)
@@ -55,18 +71,11 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     n, m = A.shape
     # TODO: rm csr_array wrapper when spdiags can produce arrays
     D = sp.sparse.csr_array(sp.sparse.spdiags(A.sum(axis=1), 0, m, n, format="csr"))
-    import warnings
-
-    warnings.warn(
-        "laplacian_matrix will return a scipy.sparse array instead of a matrix in Networkx 3.0.",
-        FutureWarning,
-        stacklevel=2,
-    )
-    # TODO: rm sp.sparse.csr_matrix in version 3.0
-    return sp.sparse.csr_matrix(D - A)
+    return D - A
 
 
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight")
 def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     r"""Returns the normalized Laplacian matrix of G.
 
@@ -77,7 +86,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
         N = D^{-1/2} L D^{-1/2}
 
     where `L` is the graph Laplacian and `D` is the diagonal matrix of
-    node degrees.
+    node degrees [1]_.
 
     Parameters
     ----------
@@ -94,15 +103,15 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
 
     Returns
     -------
-    N : Scipy sparse matrix
+    N : SciPy sparse array
       The normalized Laplacian matrix of G.
 
     Notes
     -----
-    For MultiGraph/MultiDiGraph, the edges weights are summed.
-    See to_numpy_array for other options.
+    For MultiGraph, the edges weights are summed.
+    See :func:`to_numpy_array` for other options.
 
-    If the Graph contains selfloops, D is defined as diag(sum(A,1)), where A is
+    If the Graph contains selfloops, D is defined as ``diag(sum(A, 1))``, where A is
     the adjacency matrix [2]_.
 
     See Also
@@ -120,7 +129,6 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     if nodelist is None:
         nodelist = list(G)
@@ -130,29 +138,54 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     # TODO: rm csr_array wrapper when spdiags can produce arrays
     D = sp.sparse.csr_array(sp.sparse.spdiags(diags, 0, m, n, format="csr"))
     L = D - A
-    with sp.errstate(divide="ignore"):
+    with np.errstate(divide="ignore"):
         diags_sqrt = 1.0 / np.sqrt(diags)
     diags_sqrt[np.isinf(diags_sqrt)] = 0
     # TODO: rm csr_array wrapper when spdiags can produce arrays
     DH = sp.sparse.csr_array(sp.sparse.spdiags(diags_sqrt, 0, m, n, format="csr"))
-    import warnings
+    return DH @ (L @ DH)
 
-    warnings.warn(
-        "normalized_laplacian_matrix will return a scipy.sparse array instead of a matrix in Networkx 3.0.",
-        FutureWarning,
-        stacklevel=2,
-    )
-    # TODO: rm csr_matrix wrapper for NX 3.0
-    return sp.sparse.csr_matrix(DH @ (L @ DH))
+
+@nx._dispatch(edge_attrs="weight")
+def total_spanning_tree_weight(G, weight=None):
+    """
+    Returns the total weight of all spanning trees of `G`.
+
+    Kirchoff's Tree Matrix Theorem states that the determinant of any cofactor of the
+    Laplacian matrix of a graph is the number of spanning trees in the graph. For a
+    weighted Laplacian matrix, it is the sum across all spanning trees of the
+    multiplicative weight of each tree. That is, the weight of each tree is the
+    product of its edge weights.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+        The graph to use Kirchhoff's theorem on.
+
+    weight : string or None
+        The key for the edge attribute holding the edge weight. If `None`, then
+        each edge is assumed to have a weight of 1 and this function returns the
+        total number of spanning trees in `G`.
+
+    Returns
+    -------
+    float
+        The sum of the total multiplicative weights for all spanning trees in `G`
+    """
+    import numpy as np
+
+    G_laplacian = nx.laplacian_matrix(G, weight=weight).toarray()
+    # Determinant ignoring first row and column
+    return abs(np.linalg.det(G_laplacian[1:, 1:]))
 
 
 ###############################################################################
-# Code based on
-# https://bitbucket.org/bedwards/networkx-community/src/370bd69fc02f/networkx/algorithms/community/
+# Code based on work from https://github.com/bjedwards
 
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch(edge_attrs="weight")
 def directed_laplacian_matrix(
     G, nodelist=None, weight="weight", walk_type=None, alpha=0.95
 ):
@@ -166,7 +199,7 @@ def directed_laplacian_matrix(
 
     where `I` is the identity matrix, `P` is the transition matrix of the
     graph, and `\Phi` a matrix with the Perron vector of `P` in the diagonal and
-    zeros elsewhere.
+    zeros elsewhere [1]_.
 
     Depending on the value of walk_type, `P` can be the transition matrix
     induced by a random walk, a lazy random walk, or a random walk with
@@ -213,8 +246,6 @@ def directed_laplacian_matrix(
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
-    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     # NOTE: P has type ndarray if walk_type=="pagerank", else csr_array
     P = _transition_matrix(
@@ -226,7 +257,8 @@ def directed_laplacian_matrix(
     evals, evecs = sp.sparse.linalg.eigs(P.T, k=1)
     v = evecs.flatten().real
     p = v / v.sum()
-    sqrtp = np.sqrt(p)
+    # p>=0 by Perron-Frobenius Thm. Use abs() to fix roundoff across zero gh-6865
+    sqrtp = np.sqrt(np.abs(p))
     Q = (
         # TODO: rm csr_array wrapper when spdiags creates arrays
         sp.sparse.csr_array(sp.sparse.spdiags(sqrtp, 0, n, n))
@@ -237,19 +269,12 @@ def directed_laplacian_matrix(
     # NOTE: This could be sparsified for the non-pagerank cases
     I = np.identity(len(G))
 
-    import warnings
-
-    warnings.warn(
-        "directed_laplacian_matrix will return a numpy array instead of a matrix in NetworkX 3.0",
-        FutureWarning,
-        stacklevel=2,
-    )
-    # TODO: rm np.asmatrix for networkx 3.0
-    return np.asmatrix(I - (Q + Q.T) / 2.0)
+    return I - (Q + Q.T) / 2.0
 
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch(edge_attrs="weight")
 def directed_combinatorial_laplacian_matrix(
     G, nodelist=None, weight="weight", walk_type=None, alpha=0.95
 ):
@@ -262,7 +287,7 @@ def directed_combinatorial_laplacian_matrix(
         L = \Phi - (\Phi P + P^T \Phi) / 2
 
     where `P` is the transition matrix of the graph and `\Phi` a matrix
-    with the Perron vector of `P` in the diagonal and zeros elsewhere.
+    with the Perron vector of `P` in the diagonal and zeros elsewhere [1]_.
 
     Depending on the value of walk_type, `P` can be the transition matrix
     induced by a random walk, a lazy random walk, or a random walk with
@@ -308,8 +333,6 @@ def directed_combinatorial_laplacian_matrix(
        Annals of Combinatorics, 9(1), 2005
     """
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
-    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     P = _transition_matrix(
         G, nodelist=nodelist, weight=weight, walk_type=walk_type, alpha=alpha
@@ -324,17 +347,7 @@ def directed_combinatorial_laplacian_matrix(
     # TODO: Rm csr_array wrapper when spdiags array creation becomes available
     Phi = sp.sparse.csr_array(sp.sparse.spdiags(p, 0, n, n)).toarray()
 
-    import warnings
-
-    warnings.warn(
-        "directed_combinatorial_laplacian_matrix will return a numpy array instead of a matrix in NetworkX 3.0",
-        FutureWarning,
-        stacklevel=2,
-    )
-    # TODO: Rm np.asmatrix for networkx 3.0
-    import numpy as np
-
-    return np.asmatrix(Phi - (Phi @ P + P.T @ Phi) / 2.0)
+    return Phi - (Phi @ P + P.T @ Phi) / 2.0
 
 
 def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=0.95):
@@ -377,7 +390,6 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     if walk_type is None:
         if nx.is_strongly_connected(G):

@@ -1,6 +1,6 @@
-osmnx>=1.1
+osmnx>=1.2
 momepy>=0.5
 contextily>=1.2
-seaborn>=0.11
-cairocffi>=1.3
-igraph>=0.9.8
+seaborn>=0.12
+cairocffi>=1.4
+igraph>=0.10

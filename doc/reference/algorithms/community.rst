@@ -71,10 +71,8 @@ Measuring partitions
 .. autosummary::
    :toctree: generated/
 
-   coverage
    modularity
    partition_quality
-   performance
 
 Partitions via centrality measures
 ----------------------------------

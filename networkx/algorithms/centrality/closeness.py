@@ -2,6 +2,7 @@
 Closeness centrality measures.
 """
 import functools
+
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils.decorators import not_implemented_for
@@ -9,6 +10,7 @@ from networkx.utils.decorators import not_implemented_for
 __all__ = ["closeness_centrality", "incremental_closeness_centrality"]
 
 
+@nx._dispatch(edge_attrs="distance")
 def closeness_centrality(G, u=None, distance=None, wf_improved=True):
     r"""Compute closeness centrality for nodes.
 
@@ -20,7 +22,7 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
         C(u) = \frac{n - 1}{\sum_{v=1}^{n-1} d(v, u)},
 
     where `d(v, u)` is the shortest-path distance between `v` and `u`,
-    and `n` is the number of nodes that can reach `u`. Notice that the
+    and `n-1` is the number of nodes reachable from `u`. Notice that the
     closeness distance function computes the incoming distance to `u`
     for directed graphs. To use outward distance, act on `G.reverse()`.
 
@@ -48,7 +50,9 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
 
     distance : edge attribute key, optional (default=None)
       Use the specified edge attribute as the edge distance in shortest
-      path calculations
+      path calculations.  If `None` (the default) all edges have a distance of 1.
+      Absent edge attributes are assigned a distance of 1. Note that no check
+      is performed to ensure that edges have the provided attribute.
 
     wf_improved : bool, optional (default=True)
       If True, scale by the fraction of nodes reachable. This gives the
@@ -59,6 +63,12 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
     -------
     nodes : dictionary
       Dictionary of nodes with closeness centrality as the value.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)])
+    >>> nx.closeness_centrality(G)
+    {0: 1.0, 1: 1.0, 2: 0.75, 3: 0.75}
 
     See Also
     --------
@@ -108,7 +118,7 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
         nodes = G.nodes
     else:
         nodes = [u]
-    closeness_centrality = {}
+    closeness_dict = {}
     for n in nodes:
         sp = path_length(G, n)
         totsp = sum(sp.values())
@@ -120,14 +130,14 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
             if wf_improved:
                 s = (len(sp) - 1.0) / (len_G - 1)
                 _closeness_centrality *= s
-        closeness_centrality[n] = _closeness_centrality
+        closeness_dict[n] = _closeness_centrality
     if u is not None:
-        return closeness_centrality[u]
-    else:
-        return closeness_centrality
+        return closeness_dict[u]
+    return closeness_dict
 
 
 @not_implemented_for("directed")
+@nx._dispatch
 def incremental_closeness_centrality(
     G, edge, prev_cc=None, insertion=True, wf_improved=True
 ):
@@ -245,10 +255,10 @@ def incremental_closeness_centrality(
         return nx.closeness_centrality(G)
 
     nodes = G.nodes()
-    closeness_centrality = {}
+    closeness_dict = {}
     for n in nodes:
         if n in du and n in dv and abs(du[n] - dv[n]) <= 1:
-            closeness_centrality[n] = prev_cc[n]
+            closeness_dict[n] = prev_cc[n]
         else:
             sp = path_length(G, n)
             totsp = sum(sp.values())
@@ -260,7 +270,7 @@ def incremental_closeness_centrality(
                 if wf_improved:
                     s = (len(sp) - 1.0) / (len_G - 1)
                     _closeness_centrality *= s
-            closeness_centrality[n] = _closeness_centrality
+            closeness_dict[n] = _closeness_centrality
 
     # Leave the graph as we found it
     if insertion:
@@ -268,4 +278,4 @@ def incremental_closeness_centrality(
     else:
         G.add_edge(u, v)
 
-    return closeness_centrality
+    return closeness_dict

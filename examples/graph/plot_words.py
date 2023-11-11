@@ -65,7 +65,7 @@ print("Two words are connected if they differ in one letter.")
 print(G)
 print(f"{nx.number_connected_components(G)} connected components")
 
-for (source, target) in [("chaos", "order"), ("nodes", "graph"), ("pound", "marks")]:
+for source, target in [("chaos", "order"), ("nodes", "graph"), ("pound", "marks")]:
     print(f"Shortest path between {source} and {target} is")
     try:
         shortest_path = nx.shortest_path(G, source, target)

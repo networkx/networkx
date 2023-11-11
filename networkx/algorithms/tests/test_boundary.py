@@ -1,10 +1,12 @@
 """Unit tests for the :mod:`networkx.algorithms.boundary` module."""
 
 from itertools import combinations
+
 import pytest
+
 import networkx as nx
-from networkx.utils import edges_equal
 from networkx import convert_node_labels_to_integers as cnlti
+from networkx.utils import edges_equal
 
 
 class TestNodeBoundary:
@@ -74,7 +76,7 @@ class TestNodeBoundary:
         assert boundary == expected
 
     def test_multidigraph(self):
-        """Tests the edge boundary of a multdiigraph."""
+        """Tests the edge boundary of a multidigraph."""
         edges = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 0)]
         G = nx.MultiDiGraph(edges * 2)
         S = {0, 1}
@@ -143,7 +145,7 @@ class TestEdgeBoundary:
         assert boundary == expected
 
     def test_multidigraph(self):
-        """Tests the edge boundary of a multdiigraph."""
+        """Tests the edge boundary of a multidigraph."""
         edges = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 0)]
         G = nx.MultiDiGraph(edges * 2)
         S = {0, 1}

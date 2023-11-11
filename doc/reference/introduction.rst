@@ -157,7 +157,7 @@ Graph Creation
 NetworkX graph objects can be created in one of three ways:
 
 - Graph generators---standard algorithms to create network topologies.
-- Importing data from pre-existing (usually file) sources.
+- Importing data from preexisting (usually file) sources.
 - Adding edges and nodes explicitly.
 
 Explicit addition and removal of nodes/edges is the easiest to describe.
@@ -244,7 +244,7 @@ many that we have not developed yet too.  If you implement a
 graph algorithm that might be useful for others please let
 us know through the
 `NetworkX Google group <http://groups.google.com/group/networkx-discuss>`_
-or the Github `Developer Zone <https://github.com/networkx/networkx>`_.
+or the GitHub `Developer Zone <https://github.com/networkx/networkx>`_.
 
 As an example here is code to use Dijkstra's algorithm to
 find the shortest weighted path:

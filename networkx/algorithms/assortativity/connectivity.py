@@ -2,9 +2,10 @@ from collections import defaultdict
 
 import networkx as nx
 
-__all__ = ["average_degree_connectivity", "k_nearest_neighbors"]
+__all__ = ["average_degree_connectivity"]
 
 
+@nx._dispatch(edge_attrs="weight")
 def average_degree_connectivity(
     G, source="in+out", target="in+out", nodes=None, weight=None
 ):
@@ -119,21 +120,3 @@ def average_degree_connectivity(
 
     # normalize
     return {k: avg if dnorm[k] == 0 else avg / dnorm[k] for k, avg in dsum.items()}
-
-
-def k_nearest_neighbors(G, source="in+out", target="in+out", nodes=None, weight=None):
-    """Compute the average degree connectivity of graph.
-
-    .. deprecated 2.6
-
-      k_nearest_neighbors function is deprecated and will be removed in v3.0.
-      Use `average_degree_connectivity` instead.
-    """
-    import warnings
-
-    msg = (
-        "k_nearest_neighbors function is deprecated and will be removed in v3.0.\n"
-        "Use `average_degree_connectivity` instead."
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-    return average_degree_connectivity(G, source, target, nodes, weight)

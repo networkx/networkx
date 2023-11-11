@@ -1,10 +1,11 @@
-import networkx as nx
 import itertools as it
-import pytest
-from networkx.utils import pairwise
-from networkx.algorithms.connectivity import bridge_components, EdgeComponentAuxGraph
-from networkx.algorithms.connectivity.edge_kcomponents import general_k_edge_subgraphs
 
+import pytest
+
+import networkx as nx
+from networkx.algorithms.connectivity import EdgeComponentAuxGraph, bridge_components
+from networkx.algorithms.connectivity.edge_kcomponents import general_k_edge_subgraphs
+from networkx.utils import pairwise
 
 # ----------------
 # Helper functions
@@ -88,7 +89,7 @@ def _check_edge_connectivity(G):
         ccs_local = fset(aux_graph.k_edge_components(k))
         ccs_subgraph = fset(aux_graph.k_edge_subgraphs(k))
 
-        # Check connectivity properties that should be garuenteed by the
+        # Check connectivity properties that should be guaranteed by the
         # algorithms.
         _assert_local_cc_edge_connectivity(G, ccs_local, k, memo)
         _assert_subgraph_edge_connectivity(G, ccs_subgraph, k)

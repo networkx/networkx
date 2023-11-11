@@ -1,6 +1,7 @@
 # Jordi Torrents
 # Test for k-cutsets
 import itertools
+
 import pytest
 
 import networkx as nx
@@ -185,7 +186,7 @@ def test_articulation_points():
     Ggen = _generate_no_biconnected()
     for i in range(1):  # change 1 to 3 or more for more realizations.
         G = next(Ggen)
-        articulation_points = list({a} for a in nx.articulation_points(G))
+        articulation_points = [{a} for a in nx.articulation_points(G)]
         for cut in nx.all_node_cuts(G):
             assert cut in articulation_points
 
@@ -240,7 +241,6 @@ def test_non_repeated_cuts():
     solution = [{32, 33}, {2, 33}, {0, 3}, {0, 1}, {29, 33}]
     cuts = list(nx.all_node_cuts(G))
     if len(solution) != len(cuts):
-        print(nx.info(G))
         print(f"Solution: {solution}")
         print(f"Result: {cuts}")
     assert len(solution) == len(cuts)

@@ -3,12 +3,12 @@
 """
 
 import pytest
+
 import networkx as nx
 
 
 class TestDegreeCentrality:
     def setup_method(self):
-
         self.K = nx.krackhardt_kite_graph()
         self.P3 = nx.path_graph(3)
         self.K5 = nx.complete_graph(5)

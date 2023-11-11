@@ -42,6 +42,7 @@ def _apply_prediction(G, func, ebunch=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def resource_allocation_index(G, ebunch=None):
     r"""Compute the resource allocation index of all node pairs in ebunch.
 
@@ -62,7 +63,7 @@ def resource_allocation_index(G, ebunch=None):
         Resource allocation index will be computed for each pair of
         nodes given in the iterable. The pairs must be given as
         2-tuples (u, v) where u and v are nodes in the graph. If ebunch
-        is None then all non-existent edges in the graph will be used.
+        is None then all nonexistent edges in the graph will be used.
         Default value: None.
 
     Returns
@@ -96,6 +97,7 @@ def resource_allocation_index(G, ebunch=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def jaccard_coefficient(G, ebunch=None):
     r"""Compute the Jaccard coefficient of all node pairs in ebunch.
 
@@ -116,7 +118,7 @@ def jaccard_coefficient(G, ebunch=None):
         Jaccard coefficient will be computed for each pair of nodes
         given in the iterable. The pairs must be given as 2-tuples
         (u, v) where u and v are nodes in the graph. If ebunch is None
-        then all non-existent edges in the graph will be used.
+        then all nonexistent edges in the graph will be used.
         Default value: None.
 
     Returns
@@ -152,6 +154,7 @@ def jaccard_coefficient(G, ebunch=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def adamic_adar_index(G, ebunch=None):
     r"""Compute the Adamic-Adar index of all node pairs in ebunch.
 
@@ -174,7 +177,7 @@ def adamic_adar_index(G, ebunch=None):
         Adamic-Adar index will be computed for each pair of nodes given
         in the iterable. The pairs must be given as 2-tuples (u, v)
         where u and v are nodes in the graph. If ebunch is None then all
-        non-existent edges in the graph will be used.
+        nonexistent edges in the graph will be used.
         Default value: None.
 
     Returns
@@ -207,6 +210,7 @@ def adamic_adar_index(G, ebunch=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
     r"""Return the CCPA score for each pair of nodes.
 
@@ -242,7 +246,7 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
         Preferential attachment score will be computed for each pair of
         nodes given in the iterable. The pairs must be given as
         2-tuples (u, v) where u and v are nodes in the graph. If ebunch
-        is None then all non-existent edges in the graph will be used.
+        is None then all nonexistent edges in the graph will be used.
         Default value: None.
 
     alpha : Parameter defined for participation of Common Neighbor
@@ -304,6 +308,7 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def preferential_attachment(G, ebunch=None):
     r"""Compute the preferential attachment score of all node pairs in ebunch.
 
@@ -324,7 +329,7 @@ def preferential_attachment(G, ebunch=None):
         Preferential attachment score will be computed for each pair of
         nodes given in the iterable. The pairs must be given as
         2-tuples (u, v) where u and v are nodes in the graph. If ebunch
-        is None then all non-existent edges in the graph will be used.
+        is None then all nonexistent edges in the graph will be used.
         Default value: None.
 
     Returns
@@ -357,6 +362,7 @@ def preferential_attachment(G, ebunch=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch(node_attrs="community")
 def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
     r"""Count the number of common neighbors of all node pairs in ebunch
         using community information.
@@ -382,7 +388,7 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
         The score will be computed for each pair of nodes given in the
         iterable. The pairs must be given as 2-tuples (u, v) where u
         and v are nodes in the graph. If ebunch is None then all
-        non-existent edges in the graph will be used.
+        nonexistent edges in the graph will be used.
         Default value: None.
 
     community : string, optional (default = 'community')
@@ -431,6 +437,7 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch(node_attrs="community")
 def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
     r"""Compute the resource allocation index of all node pairs in
     ebunch using community information.
@@ -456,7 +463,7 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
         The score will be computed for each pair of nodes given in the
         iterable. The pairs must be given as 2-tuples (u, v) where u
         and v are nodes in the graph. If ebunch is None then all
-        non-existent edges in the graph will be used.
+        nonexistent edges in the graph will be used.
         Default value: None.
 
     community : string, optional (default = 'community')
@@ -506,6 +513,7 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch(node_attrs="community")
 def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
     """Compute the ratio of within- and inter-cluster common neighbors
     of all node pairs in ebunch.
@@ -526,7 +534,7 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
         The WIC measure will be computed for each pair of nodes given in
         the iterable. The pairs must be given as 2-tuples (u, v) where
         u and v are nodes in the graph. If ebunch is None then all
-        non-existent edges in the graph will be used.
+        nonexistent edges in the graph will be used.
         Default value: None.
 
     delta : float, optional (default = 0.001)

@@ -119,6 +119,6 @@ Bibliography
    install
    tutorial
    reference/index
-   release/index
-   developer/index
    auto_examples/index
+   developer/index
+   release/index

@@ -130,6 +130,7 @@ def write_pajek(G, path, encoding="UTF-8"):
 
 
 @open_file(0, mode="rb")
+@nx._dispatch(graphs=None)
 def read_pajek(path, encoding="UTF-8"):
     """Read graph in Pajek format from path.
 
@@ -162,6 +163,7 @@ def read_pajek(path, encoding="UTF-8"):
     return parse_pajek(lines)
 
 
+@nx._dispatch(graphs=None)
 def parse_pajek(lines):
     """Parse Pajek format graph from string or iterable.
 

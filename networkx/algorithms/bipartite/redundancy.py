@@ -1,11 +1,13 @@
 """Node redundancy for bipartite graphs."""
 from itertools import combinations
 
+import networkx as nx
 from networkx import NetworkXError
 
 __all__ = ["node_redundancy"]
 
 
+@nx._dispatch
 def node_redundancy(G, nodes=None):
     r"""Computes the node redundancy coefficients for the nodes in the bipartite
     graph `G`.
@@ -103,8 +105,6 @@ def _node_redundancy(G, v):
 
     """
     n = len(G[v])
-    # TODO On Python 3, we could just use `G[u].keys() & G[w].keys()` instead
-    # of instantiating the entire sets.
     overlap = sum(
         1 for (u, w) in combinations(G[v], 2) if (set(G[u]) & set(G[w])) - {v}
     )

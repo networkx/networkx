@@ -6,9 +6,9 @@ pytest.importorskip("scipy")
 
 from networkx import is_isomorphic
 from networkx.exception import NetworkXError
-from networkx.utils import nodes_equal
-from networkx.generators.spectral_graph_forge import spectral_graph_forge
 from networkx.generators import karate_club_graph
+from networkx.generators.spectral_graph_forge import spectral_graph_forge
+from networkx.utils import nodes_equal
 
 
 def test_spectral_graph_forge():

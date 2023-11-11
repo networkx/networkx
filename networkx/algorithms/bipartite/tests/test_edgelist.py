@@ -1,14 +1,15 @@
 """
     Unit tests for bipartite edgelists.
 """
-import pytest
 import io
-import tempfile
 import os
+import tempfile
+
+import pytest
 
 import networkx as nx
-from networkx.utils import nodes_equal, edges_equal, graphs_equal
 from networkx.algorithms import bipartite
+from networkx.utils import edges_equal, graphs_equal, nodes_equal
 
 
 class TestEdgelist:
@@ -189,3 +190,40 @@ class TestEdgelist:
             G = nx.path_graph(4)
             bytesIO = io.BytesIO()
             bipartite.write_edgelist(G, bytesIO)
+
+    def test_parse_edgelist(self):
+        """Tests for conditions specific to
+        parse_edge_list method"""
+
+        # ignore strings of length less than 2
+        lines = ["1 2", "2 3", "3 1", "4", " "]
+        G = bipartite.parse_edgelist(lines, nodetype=int)
+        assert list(G.nodes) == [1, 2, 3]
+
+        # Exception raised when node is not convertible
+        # to specified data type
+        with pytest.raises(TypeError, match=".*Failed to convert nodes"):
+            lines = ["a b", "b c", "c a"]
+            G = bipartite.parse_edgelist(lines, nodetype=int)
+
+        # Exception raised when format of data is not
+        # convertible to dictionary object
+        with pytest.raises(TypeError, match=".*Failed to convert edge data"):
+            lines = ["1 2 3", "2 3 4", "3 1 2"]
+            G = bipartite.parse_edgelist(lines, nodetype=int)
+
+        # Exception raised when edge data and data
+        # keys are not of same length
+        with pytest.raises(IndexError):
+            lines = ["1 2 3 4", "2 3 4"]
+            G = bipartite.parse_edgelist(
+                lines, nodetype=int, data=[("weight", int), ("key", int)]
+            )
+
+        # Exception raised when edge data is not
+        # convertible to specified data type
+        with pytest.raises(TypeError, match=".*Failed to convert key data"):
+            lines = ["1 2 3 a", "2 3 4 b"]
+            G = bipartite.parse_edgelist(
+                lines, nodetype=int, data=[("weight", int), ("key", int)]
+            )

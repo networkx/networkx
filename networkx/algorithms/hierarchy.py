@@ -6,6 +6,7 @@ import networkx as nx
 __all__ = ["flow_hierarchy"]
 
 
+@nx._dispatch(edge_attrs="weight")
 def flow_hierarchy(G, weight=None):
     """Returns the flow hierarchy of a directed network.
 
@@ -17,8 +18,8 @@ def flow_hierarchy(G, weight=None):
     G : DiGraph or MultiDiGraph
        A directed graph
 
-    weight : key,optional (default=None)
-       Attribute to use for node weights. If None the weight defaults to 1.
+    weight : string, optional (default=None)
+       Attribute to use for edge weights. If None the weight defaults to 1.
 
     Returns
     -------
@@ -44,4 +45,4 @@ def flow_hierarchy(G, weight=None):
     if not G.is_directed():
         raise nx.NetworkXError("G must be a digraph in flow_hierarchy")
     scc = nx.strongly_connected_components(G)
-    return 1.0 - sum(G.subgraph(c).size(weight) for c in scc) / float(G.size(weight))
+    return 1 - sum(G.subgraph(c).size(weight) for c in scc) / G.size(weight)

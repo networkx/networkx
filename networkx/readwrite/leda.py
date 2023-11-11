@@ -19,6 +19,7 @@ from networkx.utils import open_file
 
 
 @open_file(0, mode="rb")
+@nx._dispatch(graphs=None)
 def read_leda(path, encoding="UTF-8"):
     """Read graph in LEDA format from path.
 
@@ -45,6 +46,7 @@ def read_leda(path, encoding="UTF-8"):
     return G
 
 
+@nx._dispatch(graphs=None)
 def parse_leda(lines):
     """Read graph in LEDA format from string or iterable.
 
@@ -71,7 +73,7 @@ def parse_leda(lines):
         [
             line.rstrip("\n")
             for line in lines
-            if not (line.startswith("#") or line.startswith("\n") or line == "")
+            if not (line.startswith(("#", "\n")) or line == "")
         ]
     )
     for i in range(3):

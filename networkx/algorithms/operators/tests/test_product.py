@@ -1,4 +1,5 @@
 import pytest
+
 import networkx as nx
 from networkx.utils import edges_equal
 
@@ -89,8 +90,8 @@ def test_tensor_product_random():
     H = nx.erdos_renyi_graph(10, 2 / 10.0)
     GH = nx.tensor_product(G, H)
 
-    for (u_G, u_H) in GH.nodes():
-        for (v_G, v_H) in GH.nodes():
+    for u_G, u_H in GH.nodes():
+        for v_G, v_H in GH.nodes():
             if H.has_edge(u_H, v_H) and G.has_edge(u_G, v_G):
                 assert GH.has_edge((u_G, u_H), (v_G, v_H))
             else:
@@ -195,8 +196,8 @@ def test_cartesian_product_random():
     H = nx.erdos_renyi_graph(10, 2 / 10.0)
     GH = nx.cartesian_product(G, H)
 
-    for (u_G, u_H) in GH.nodes():
-        for (v_G, v_H) in GH.nodes():
+    for u_G, u_H in GH.nodes():
+        for v_G, v_H in GH.nodes():
             if (u_G == v_G and H.has_edge(u_H, v_H)) or (
                 u_H == v_H and G.has_edge(u_G, v_G)
             ):
@@ -273,8 +274,8 @@ def test_lexicographic_product_random():
     H = nx.erdos_renyi_graph(10, 2 / 10.0)
     GH = nx.lexicographic_product(G, H)
 
-    for (u_G, u_H) in GH.nodes():
-        for (v_G, v_H) in GH.nodes():
+    for u_G, u_H in GH.nodes():
+        for v_G, v_H in GH.nodes():
             if G.has_edge(u_G, v_G) or (u_G == v_G and H.has_edge(u_H, v_H)):
                 assert GH.has_edge((u_G, u_H), (v_G, v_H))
             else:
@@ -349,8 +350,8 @@ def test_strong_product_random():
     H = nx.erdos_renyi_graph(10, 2 / 10.0)
     GH = nx.strong_product(G, H)
 
-    for (u_G, u_H) in GH.nodes():
-        for (v_G, v_H) in GH.nodes():
+    for u_G, u_H in GH.nodes():
+        for v_G, v_H in GH.nodes():
             if (
                 (u_G == v_G and H.has_edge(u_H, v_H))
                 or (u_H == v_H and G.has_edge(u_G, v_G))
@@ -424,3 +425,11 @@ def test_rooted_product():
     R = nx.rooted_product(G, H, "a")
     assert len(R) == len(G) * len(H)
     assert R.size() == G.size() + len(G) * H.size()
+
+
+def test_corona_product():
+    G = nx.cycle_graph(3)
+    H = nx.path_graph(2)
+    C = nx.corona_product(G, H)
+    assert len(C) == (len(G) * len(H)) + len(G)
+    assert C.size() == G.size() + len(G) * H.size() + len(G) * len(H)

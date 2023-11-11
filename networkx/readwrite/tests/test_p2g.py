@@ -1,5 +1,6 @@
-import networkx as nx
 import io
+
+import networkx as nx
 from networkx.readwrite.p2g import read_p2g, write_p2g
 from networkx.utils import edges_equal
 
@@ -42,7 +43,7 @@ c
 
 """
         fh = io.BytesIO()
-        G = nx.OrderedDiGraph()
+        G = nx.DiGraph()
         G.name = "foo"
         G.add_edges_from([(1, 2), (2, 3)])
         write_p2g(G, fh)

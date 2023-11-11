@@ -7,3 +7,4 @@ Graph Polynomials
    :toctree: generated/
 
    tutte_polynomial
+   chromatic_polynomial

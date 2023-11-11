@@ -8,6 +8,7 @@ __all__ = ["bridges", "has_bridges", "local_bridges"]
 
 
 @not_implemented_for("directed")
+@nx._dispatch
 def bridges(G, root=None):
     """Generate all bridges in a graph.
 
@@ -34,6 +35,9 @@ def bridges(G, root=None):
     ------
     NodeNotFound
        If `root` is not in the graph `G`.
+
+    NetworkXNotImplemented
+        If `G` is a directed graph.
 
     Examples
     --------
@@ -66,6 +70,9 @@ def bridges(G, root=None):
     H = nx.Graph(G) if multigraph else G
     chains = nx.chain_decomposition(H, root=root)
     chain_edges = set(chain.from_iterable(chains))
+    H_copy = H.copy()
+    if root is not None:
+        H = H.subgraph(nx.node_connected_component(H, root)).copy()
     for u, v in H.edges():
         if (u, v) not in chain_edges and (v, u) not in chain_edges:
             if multigraph and len(G[u][v]) > 1:
@@ -74,6 +81,7 @@ def bridges(G, root=None):
 
 
 @not_implemented_for("directed")
+@nx._dispatch
 def has_bridges(G, root=None):
     """Decide whether a graph has any bridges.
 
@@ -99,6 +107,9 @@ def has_bridges(G, root=None):
     NodeNotFound
        If `root` is not in the graph `G`.
 
+    NetworkXNotImplemented
+        If `G` is a directed graph.
+
     Examples
     --------
     The barbell graph with parameter zero has a single bridge::
@@ -122,7 +133,7 @@ def has_bridges(G, root=None):
 
     """
     try:
-        next(bridges(G))
+        next(bridges(G, root=root))
     except StopIteration:
         return False
     else:
@@ -131,6 +142,7 @@ def has_bridges(G, root=None):
 
 @not_implemented_for("multigraph")
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight")
 def local_bridges(G, with_span=True, weight=None):
     """Iterate over local bridges of `G` optionally computing the span
 
@@ -157,6 +169,11 @@ def local_bridges(G, with_span=True, weight=None):
     e : edge
         The local bridges as an edge 2-tuple of nodes `(u, v)` or
         as a 3-tuple `(u, v, span)` when `with_span is True`.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is a directed graph or multigraph.
 
     Examples
     --------

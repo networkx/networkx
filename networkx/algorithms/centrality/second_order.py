@@ -34,13 +34,13 @@ import networkx as nx
 from networkx.utils import not_implemented_for
 
 # Authors: Erwan Le Merrer (erwan.lemerrer@technicolor.com)
-""" Second order centrality measure."""
 
 __all__ = ["second_order_centrality"]
 
 
 @not_implemented_for("directed")
-def second_order_centrality(G):
+@nx._dispatch(edge_attrs="weight")
+def second_order_centrality(G, weight="weight"):
     """Compute the second order centrality for nodes of G.
 
     The second order centrality of a given node is the standard deviation of
@@ -50,6 +50,10 @@ def second_order_centrality(G):
     ----------
     G : graph
       A NetworkX connected and undirected graph.
+
+    weight : string or None, optional (default="weight")
+        The name of an edge attribute that holds the numerical value
+        used as a weight. If None then each edge has weight 1.
 
     Returns
     -------
@@ -103,12 +107,12 @@ def second_order_centrality(G):
         raise nx.NetworkXException("Empty graph.")
     if not nx.is_connected(G):
         raise nx.NetworkXException("Non connected graph.")
-    if any(d.get("weight", 0) < 0 for u, v, d in G.edges(data=True)):
+    if any(d.get(weight, 0) < 0 for u, v, d in G.edges(data=True)):
         raise nx.NetworkXException("Graph has negative edge weights.")
 
     # balancing G for Metropolis-Hastings random walks
     G = nx.DiGraph(G)
-    in_deg = dict(G.in_degree(weight="weight"))
+    in_deg = dict(G.in_degree(weight=weight))
     d_max = max(in_deg.values())
     for i, deg in in_deg.items():
         if deg < d_max:

@@ -4,6 +4,7 @@ Min-heaps.
 
 from heapq import heappop, heappush
 from itertools import count
+
 import networkx as nx
 
 __all__ = ["MinHeap", "PairingHeap", "BinaryHeap"]
@@ -141,7 +142,7 @@ class PairingHeap(MinHeap):
         __slots__ = ("left", "next", "prev", "parent")
 
         def __init__(self, key, value):
-            super(PairingHeap._Node, self).__init__(key, value)
+            super().__init__(key, value)
             # The leftmost child.
             self.left = None
             # The next sibling.

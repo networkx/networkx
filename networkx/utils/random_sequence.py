@@ -6,7 +6,6 @@ random selections.
 import networkx as nx
 from networkx.utils import py_random_state
 
-
 __all__ = [
     "powerlaw_sequence",
     "zipf_rv",
@@ -99,8 +98,8 @@ def cumulative_distribution(distribution):
     """Returns normalized cumulative distribution from discrete distribution."""
 
     cdf = [0.0]
-    psum = float(sum(distribution))
-    for i in range(0, len(distribution)):
+    psum = sum(distribution)
+    for i in range(len(distribution)):
         cdf.append(cdf[i] + distribution[i] / psum)
     return cdf
 

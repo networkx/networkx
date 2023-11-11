@@ -6,11 +6,13 @@ Generators - Classic
 Unit tests for various classic graph generators in generators/classic.py
 """
 import itertools
+import typing
 
 import pytest
+
 import networkx as nx
 from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
-from networkx.utils import nodes_equal, edges_equal
+from networkx.utils import edges_equal, nodes_equal
 
 is_isomorphic = graph_could_be_isomorphic
 
@@ -139,7 +141,7 @@ class TestGeneratorClassic:
     def test_binomial_tree(self):
         graphs = (None, nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph)
         for create_using in graphs:
-            for n in range(0, 4):
+            for n in range(4):
                 b = nx.binomial_tree(n, create_using)
                 assert nx.number_of_nodes(b) == 2**n
                 assert nx.number_of_edges(b) == (2**n - 1)
@@ -158,6 +160,15 @@ class TestGeneratorClassic:
         g = nx.complete_graph("abc")
         assert nodes_equal(g.nodes(), ["a", "b", "c"])
         assert g.size() == 3
+
+        # creates a self-loop... should it? <backward compatible says yes>
+        g = nx.complete_graph("abcb")
+        assert nodes_equal(g.nodes(), ["a", "b", "c"])
+        assert g.size() == 4
+
+        g = nx.complete_graph("abcb", create_using=nx.MultiGraph)
+        assert nodes_equal(g.nodes(), ["a", "b", "c"])
+        assert g.size() == 6
 
     def test_complete_digraph(self):
         # complete_graph(m) is a connected graph with
@@ -209,10 +220,16 @@ class TestGeneratorClassic:
         G = nx.cycle_graph("abc")
         assert len(G) == 3
         assert G.size() == 3
+        G = nx.cycle_graph("abcb")
+        assert len(G) == 3
+        assert G.size() == 2
         g = nx.cycle_graph("abc", nx.DiGraph)
         assert len(g) == 3
         assert g.size() == 3
         assert g.is_directed()
+        g = nx.cycle_graph("abcb", nx.DiGraph)
+        assert len(g) == 3
+        assert g.size() == 4
 
     def test_dorogovtsev_goltsev_mendes_graph(self):
         G = nx.dorogovtsev_goltsev_mendes_graph(0)
@@ -272,6 +289,15 @@ class TestGeneratorClassic:
         assert not H.is_directed()
         assert G is not H
 
+        # test for subclasses that also use typing.Protocol. See gh-6243
+        class Mixin(typing.Protocol):
+            pass
+
+        class MyGraph(Mixin, nx.DiGraph):
+            pass
+
+        G = nx.empty_graph(create_using=MyGraph)
+
     def test_empty_graph(self):
         G = nx.empty_graph()
         assert nx.number_of_nodes(G) == 0
@@ -317,35 +343,59 @@ class TestGeneratorClassic:
         mg = nx.ladder_graph(2, create_using=nx.MultiGraph)
         assert edges_equal(mg.edges(), g.edges())
 
-    def test_lollipop_graph(self):
-        # number of nodes = m1 + m2
-        # number of edges = nx.number_of_edges(nx.complete_graph(m1)) + m2
-        for m1, m2 in [(3, 5), (4, 10), (3, 20)]:
-            b = nx.lollipop_graph(m1, m2)
-            assert nx.number_of_nodes(b) == m1 + m2
-            assert nx.number_of_edges(b) == m1 * (m1 - 1) / 2 + m2
+    @pytest.mark.parametrize(("m", "n"), [(3, 5), (4, 10), (3, 20)])
+    def test_lollipop_graph_right_sizes(self, m, n):
+        G = nx.lollipop_graph(m, n)
+        assert nx.number_of_nodes(G) == m + n
+        assert nx.number_of_edges(G) == m * (m - 1) / 2 + n
 
+    @pytest.mark.parametrize(("m", "n"), [("ab", ""), ("abc", "defg")])
+    def test_lollipop_graph_size_node_sequence(self, m, n):
+        G = nx.lollipop_graph(m, n)
+        assert nx.number_of_nodes(G) == len(m) + len(n)
+        assert nx.number_of_edges(G) == len(m) * (len(m) - 1) / 2 + len(n)
+
+    def test_lollipop_graph_exceptions(self):
         # Raise NetworkXError if m<2
+        pytest.raises(nx.NetworkXError, nx.lollipop_graph, -1, 2)
         pytest.raises(nx.NetworkXError, nx.lollipop_graph, 1, 20)
+        pytest.raises(nx.NetworkXError, nx.lollipop_graph, "", 20)
+        pytest.raises(nx.NetworkXError, nx.lollipop_graph, "a", 20)
 
         # Raise NetworkXError if n<0
         pytest.raises(nx.NetworkXError, nx.lollipop_graph, 5, -2)
 
-        # lollipop_graph(2,m) = path_graph(m+2)
-        for m1, m2 in [(2, 5), (2, 10), (2, 20)]:
-            b = nx.lollipop_graph(m1, m2)
-            assert is_isomorphic(b, nx.path_graph(m2 + 2))
+        # raise NetworkXError if create_using is directed
+        with pytest.raises(nx.NetworkXError):
+            nx.lollipop_graph(2, 20, create_using=nx.DiGraph)
+        with pytest.raises(nx.NetworkXError):
+            nx.lollipop_graph(2, 20, create_using=nx.MultiDiGraph)
 
-        pytest.raises(
-            nx.NetworkXError, nx.lollipop_graph, m1, m2, create_using=nx.DiGraph
-        )
+    @pytest.mark.parametrize(("m", "n"), [(2, 0), (2, 5), (2, 10), ("ab", 20)])
+    def test_lollipop_graph_same_as_path_when_m1_is_2(self, m, n):
+        G = nx.lollipop_graph(m, n)
+        assert is_isomorphic(G, nx.path_graph(n + 2))
 
-        mb = nx.lollipop_graph(m1, m2, create_using=nx.MultiGraph)
-        assert edges_equal(mb.edges(), b.edges())
+    def test_lollipop_graph_for_multigraph(self):
+        G = nx.lollipop_graph(5, 20)
+        MG = nx.lollipop_graph(5, 20, create_using=nx.MultiGraph)
+        assert edges_equal(MG.edges(), G.edges())
 
-        g = nx.lollipop_graph([1, 2, 3, 4], "abc")
-        assert len(g) == 7
-        assert g.size() == 9
+    @pytest.mark.parametrize(
+        ("m", "n"),
+        [(4, "abc"), ("abcd", 3), ([1, 2, 3, 4], "abc"), ("abcd", [1, 2, 3])],
+    )
+    def test_lollipop_graph_mixing_input_types(self, m, n):
+        expected = nx.compose(nx.complete_graph(4), nx.path_graph(range(100, 103)))
+        expected.add_edge(0, 100)  # Connect complete graph and path graph
+        assert is_isomorphic(nx.lollipop_graph(m, n), expected)
+
+    def test_lollipop_graph_non_builtin_ints(self):
+        np = pytest.importorskip("numpy")
+        G = nx.lollipop_graph(np.int32(4), np.int64(3))
+        expected = nx.compose(nx.complete_graph(4), nx.path_graph(range(100, 103)))
+        expected.add_edge(0, 100)  # Connect complete graph and path graph
+        assert is_isomorphic(G, expected)
 
     def test_null_graph(self):
         assert nx.number_of_nodes(nx.null_graph()) == 0
@@ -372,29 +422,114 @@ class TestGeneratorClassic:
         G = nx.path_graph("abc")
         assert len(G) == 3
         assert G.size() == 2
+        G = nx.path_graph("abcb")
+        assert len(G) == 3
+        assert G.size() == 2
         g = nx.path_graph("abc", nx.DiGraph)
         assert len(g) == 3
         assert g.size() == 2
         assert g.is_directed()
+        g = nx.path_graph("abcb", nx.DiGraph)
+        assert len(g) == 3
+        assert g.size() == 3
+
+        G = nx.path_graph((1, 2, 3, 2, 4))
+        assert G.has_edge(2, 4)
 
     def test_star_graph(self):
-        star_graph = nx.star_graph
-        assert is_isomorphic(star_graph(0), nx.empty_graph(1))
-        assert is_isomorphic(star_graph(1), nx.path_graph(2))
-        assert is_isomorphic(star_graph(2), nx.path_graph(3))
-        assert is_isomorphic(star_graph(5), nx.complete_bipartite_graph(1, 5))
+        assert is_isomorphic(nx.star_graph(""), nx.empty_graph(0))
+        assert is_isomorphic(nx.star_graph([]), nx.empty_graph(0))
+        assert is_isomorphic(nx.star_graph(0), nx.empty_graph(1))
+        assert is_isomorphic(nx.star_graph(1), nx.path_graph(2))
+        assert is_isomorphic(nx.star_graph(2), nx.path_graph(3))
+        assert is_isomorphic(nx.star_graph(5), nx.complete_bipartite_graph(1, 5))
 
-        s = star_graph(10)
+        s = nx.star_graph(10)
         assert sorted(d for n, d in s.degree()) == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10]
 
-        pytest.raises(nx.NetworkXError, star_graph, 10, create_using=nx.DiGraph)
+        pytest.raises(nx.NetworkXError, nx.star_graph, 10, create_using=nx.DiGraph)
 
-        ms = star_graph(10, create_using=nx.MultiGraph)
+        ms = nx.star_graph(10, create_using=nx.MultiGraph)
         assert edges_equal(ms.edges(), s.edges())
 
-        G = star_graph("abcdefg")
+        G = nx.star_graph("abc")
+        assert len(G) == 3
+        assert G.size() == 2
+
+        G = nx.star_graph("abcb")
+        assert len(G) == 3
+        assert G.size() == 2
+        G = nx.star_graph("abcb", create_using=nx.MultiGraph)
+        assert len(G) == 3
+        assert G.size() == 3
+
+        G = nx.star_graph("abcdefg")
         assert len(G) == 7
         assert G.size() == 6
+
+    def test_non_int_integers_for_star_graph(self):
+        np = pytest.importorskip("numpy")
+        G = nx.star_graph(np.int32(3))
+        assert len(G) == 4
+        assert G.size() == 3
+
+    @pytest.mark.parametrize(("m", "n"), [(3, 0), (3, 5), (4, 10), (3, 20)])
+    def test_tadpole_graph_right_sizes(self, m, n):
+        G = nx.tadpole_graph(m, n)
+        assert nx.number_of_nodes(G) == m + n
+        assert nx.number_of_edges(G) == m + n - (m == 2)
+
+    @pytest.mark.parametrize(("m", "n"), [("ab", ""), ("ab", "c"), ("abc", "defg")])
+    def test_tadpole_graph_size_node_sequences(self, m, n):
+        G = nx.tadpole_graph(m, n)
+        assert nx.number_of_nodes(G) == len(m) + len(n)
+        assert nx.number_of_edges(G) == len(m) + len(n) - (len(m) == 2)
+
+    def test_tadpole_graph_exceptions(self):
+        # Raise NetworkXError if m<2
+        pytest.raises(nx.NetworkXError, nx.tadpole_graph, -1, 3)
+        pytest.raises(nx.NetworkXError, nx.tadpole_graph, 0, 3)
+        pytest.raises(nx.NetworkXError, nx.tadpole_graph, 1, 3)
+
+        # Raise NetworkXError if n<0
+        pytest.raises(nx.NetworkXError, nx.tadpole_graph, 5, -2)
+
+        # Raise NetworkXError for digraphs
+        with pytest.raises(nx.NetworkXError):
+            nx.tadpole_graph(2, 20, create_using=nx.DiGraph)
+        with pytest.raises(nx.NetworkXError):
+            nx.tadpole_graph(2, 20, create_using=nx.MultiDiGraph)
+
+    @pytest.mark.parametrize(("m", "n"), [(2, 0), (2, 5), (2, 10), ("ab", 20)])
+    def test_tadpole_graph_same_as_path_when_m_is_2(self, m, n):
+        G = nx.tadpole_graph(m, n)
+        assert is_isomorphic(G, nx.path_graph(n + 2))
+
+    @pytest.mark.parametrize("m", [4, 7])
+    def test_tadpole_graph_same_as_cycle_when_m2_is_0(self, m):
+        G = nx.tadpole_graph(m, 0)
+        assert is_isomorphic(G, nx.cycle_graph(m))
+
+    def test_tadpole_graph_for_multigraph(self):
+        G = nx.tadpole_graph(5, 20)
+        MG = nx.tadpole_graph(5, 20, create_using=nx.MultiGraph)
+        assert edges_equal(MG.edges(), G.edges())
+
+    @pytest.mark.parametrize(
+        ("m", "n"),
+        [(4, "abc"), ("abcd", 3), ([1, 2, 3, 4], "abc"), ("abcd", [1, 2, 3])],
+    )
+    def test_tadpole_graph_mixing_input_types(self, m, n):
+        expected = nx.compose(nx.cycle_graph(4), nx.path_graph(range(100, 103)))
+        expected.add_edge(0, 100)  # Connect cycle and path
+        assert is_isomorphic(nx.tadpole_graph(m, n), expected)
+
+    def test_tadpole_graph_non_builtin_integers(self):
+        np = pytest.importorskip("numpy")
+        G = nx.tadpole_graph(np.int32(4), np.int64(3))
+        expected = nx.compose(nx.cycle_graph(4), nx.path_graph(range(100, 103)))
+        expected.add_edge(0, 100)  # Connect cycle and path
+        assert is_isomorphic(G, expected)
 
     def test_trivial_graph(self):
         assert nx.number_of_nodes(nx.trivial_graph()) == 1
@@ -407,6 +542,7 @@ class TestGeneratorClassic:
 
     def test_wheel_graph(self):
         for n, G in [
+            ("", nx.null_graph()),
             (0, nx.null_graph()),
             (1, nx.empty_graph(1)),
             (2, nx.path_graph(2)),
@@ -425,6 +561,19 @@ class TestGeneratorClassic:
         assert edges_equal(mg.edges(), g.edges())
 
         G = nx.wheel_graph("abc")
+        assert len(G) == 3
+        assert G.size() == 3
+
+        G = nx.wheel_graph("abcb")
+        assert len(G) == 3
+        assert G.size() == 4
+        G = nx.wheel_graph("abcb", nx.MultiGraph)
+        assert len(G) == 3
+        assert G.size() == 6
+
+    def test_non_int_integers_for_wheel_graph(self):
+        np = pytest.importorskip("numpy")
+        G = nx.wheel_graph(np.int32(3))
         assert len(G) == 3
         assert G.size() == 3
 
@@ -462,7 +611,9 @@ class TestGeneratorClassic:
                 assert v not in G[u]
                 assert G.nodes[u] == G.nodes[v]
         # Across blocks, all vertices should be adjacent.
-        for (block1, block2) in itertools.combinations(blocks, 2):
+        for block1, block2 in itertools.combinations(blocks, 2):
             for u, v in itertools.product(block1, block2):
                 assert v in G[u]
                 assert G.nodes[u] != G.nodes[v]
+        with pytest.raises(nx.NetworkXError, match="Negative number of nodes"):
+            nx.complete_multipartite_graph(2, -3, 4)

@@ -8,6 +8,7 @@ __all__ = ["chain_decomposition"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def chain_decomposition(G, root=None):
     """Returns the chain decomposition of a graph.
 
@@ -43,6 +44,12 @@ def chain_decomposition(G, root=None):
     ------
     NodeNotFound
        If `root` is not in the graph `G`.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> list(nx.chain_decomposition(G))
+    [[(4, 5), (5, 3), (3, 4)]]
 
     Notes
     -----
@@ -134,6 +141,10 @@ def chain_decomposition(G, root=None):
             visited.add(v)
             u, v = v, G.nodes[v]["parent"]
         yield u, v
+
+    # Check if the root is in the graph G. If not, raise NodeNotFound
+    if root is not None and root not in G:
+        raise nx.NodeNotFound(f"Root node {root} is not in graph")
 
     # Create a directed version of H that has the DFS edges directed
     # toward the root and the nontree edges directed away from the root

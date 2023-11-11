@@ -1,13 +1,13 @@
 import pytest
 
 import networkx as nx
-from networkx.utils import nodes_equal, edges_equal
+from networkx.utils import edges_equal, nodes_equal
 
 # Note: SubGraph views are not tested here. They have their own testing file
 
 
 class TestReverseView:
-    def setup(self):
+    def setup_method(self):
         self.G = nx.path_graph(9, create_using=nx.DiGraph())
         self.rv = nx.reverse_view(self.G)
 
@@ -31,9 +31,8 @@ class TestReverseView:
         assert sorted(self.rv.edges) == expected
 
     def test_exceptions(self):
-        nxg = nx.graphviews
         G = nx.Graph()
-        pytest.raises(nx.NetworkXNotImplemented, nxg.reverse_view, G)
+        pytest.raises(nx.NetworkXNotImplemented, nx.reverse_view, G)
 
     def test_subclass(self):
         class MyGraph(nx.DiGraph):
@@ -55,7 +54,7 @@ class TestReverseView:
 
 
 class TestMultiReverseView:
-    def setup(self):
+    def setup_method(self):
         self.G = nx.path_graph(9, create_using=nx.MultiDiGraph())
         self.G.add_edge(4, 5)
         self.rv = nx.reverse_view(self.G)
@@ -82,9 +81,8 @@ class TestMultiReverseView:
         assert sorted(self.rv.edges) == expected
 
     def test_exceptions(self):
-        nxg = nx.graphviews
         MG = nx.MultiGraph(self.G)
-        pytest.raises(nx.NetworkXNotImplemented, nxg.reverse_view, MG)
+        pytest.raises(nx.NetworkXNotImplemented, nx.reverse_view, MG)
 
 
 def test_generic_multitype():
@@ -98,7 +96,7 @@ def test_generic_multitype():
 
 
 class TestToDirected:
-    def setup(self):
+    def setup_method(self):
         self.G = nx.path_graph(9)
         self.dv = nx.to_directed(self.G)
         self.MG = nx.path_graph(9, create_using=nx.MultiGraph())
@@ -137,7 +135,7 @@ class TestToDirected:
 
 
 class TestToUndirected:
-    def setup(self):
+    def setup_method(self):
         self.DG = nx.path_graph(9, create_using=nx.DiGraph())
         self.uv = nx.to_undirected(self.DG)
         self.MDG = nx.path_graph(9, create_using=nx.MultiDiGraph())
@@ -255,7 +253,7 @@ class TestChainsOfViews:
 
     def test_subgraph_copy(self):
         for origG in self.graphs:
-            G = nx.OrderedGraph(origG)
+            G = nx.Graph(origG)
             SG = G.subgraph([4, 5, 6])
             H = SG.copy()
             assert type(G) == type(H)
@@ -330,10 +328,10 @@ class TestChainsOfViews:
         assert not hasattr(DCSG, "_graph")  # not a view
 
     def test_copy_of_view(self):
-        G = nx.OrderedMultiGraph(self.MGv)
-        assert G.__class__.__name__ == "OrderedMultiGraph"
+        G = nx.MultiGraph(self.MGv)
+        assert G.__class__.__name__ == "MultiGraph"
         G = G.copy(as_view=True)
-        assert G.__class__.__name__ == "OrderedMultiGraph"
+        assert G.__class__.__name__ == "MultiGraph"
 
     def test_subclass(self):
         class MyGraph(nx.DiGraph):
@@ -349,4 +347,4 @@ class TestChainsOfViews:
             H = SG.copy()
             assert SG.my_method() == "me"
             assert H.my_method() == "me"
-            assert not 3 in H or 3 in SG
+            assert 3 not in H or 3 in SG
