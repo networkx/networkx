@@ -213,7 +213,7 @@ def paley_graph(p, create_using=None):
     return G
 
 
-@nx.utils.random_state("seed")
+@nx.utils.decorators.np_random_state("seed")
 def maybe_regular_expander(n, d, *, create_using=None, max_tries=100, seed=None):
     r"""Utility for creating a random regular expander.
 
