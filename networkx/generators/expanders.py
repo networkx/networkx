@@ -393,7 +393,7 @@ def is_regular_expander(G, *, epsilon=0):
     return abs(lambda2) < 2 ** np.sqrt(d - 1) + epsilon
 
 
-def random_regular_expander_graph(*, n, d, epsilon=0, create_using=None, max_tries=100):
+def random_regular_expander_graph(n, d, *, epsilon=0, create_using=None, max_tries=100):
     r"""Returns a random regular expander graph on $n$ nodes with degree $d$.
 
     An expander graph is a sparse graph with strong connectivity properties. [1]_
