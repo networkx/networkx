@@ -382,7 +382,7 @@ def is_regular_expander(G, *, epsilon=0):
     if not nx.is_regular(G):
         return False
 
-    d = list(G.degree)[0][1]
+    _, d = nx.utils.arbitrary_element(G.degree)
 
     A = nx.adjacency_matrix(G)
     lams = eigsh(A.asfptype(), which="LM", k=2, return_eigenvectors=False)
