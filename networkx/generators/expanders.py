@@ -274,7 +274,7 @@ def maybe_regular_expander(n, d, *, create_using=None, max_tries=100):
 
     import numpy as np
 
-    if not (isinstance(n, int) and n > 0):
+    if n < 1:
         raise nx.NetworkXError("n must be a positive integer")
 
     if not (d >= 2):
