@@ -280,7 +280,7 @@ def maybe_regular_expander(n, d, *, create_using=None, max_tries=100):
     if not (d >= 2):
         raise nx.NetworkXError("d must be greater than or equal to 2")
 
-    if not (isinstance(d, int) and d % 2 == 0):
+    if not (d % 2 == 0):
         raise nx.NetworkXError("d must be even")
 
     if not (n - 1 >= d):
