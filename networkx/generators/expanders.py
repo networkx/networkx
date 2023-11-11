@@ -213,7 +213,7 @@ def paley_graph(p, create_using=None):
     return G
 
 
-def maybe_regular_expander(*, n, d, create_using=None, max_tries=100):
+def maybe_regular_expander(n, d, *, create_using=None, max_tries=100):
     r"""Utility for creating a random regular expander.
 
     Returns a random $d$-regular graph on $n$ nodes which is an expander
