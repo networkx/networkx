@@ -300,7 +300,7 @@ def maybe_regular_expander(n, d, *, create_using=None, max_tries=100):
     for i in range(d // 2):
         iterations = max_tries
         # Make sure the cycles are independent to have a regular graph
-        while len(edges) != (i + 1) * n and iterations > 0:
+        while len(edges) != (i + 1) * n:
             iterations -= 1
             # Faster than random.permutation(n) since there are only
             # (n-1)! distinct cycles against n! permutations of size n
@@ -316,7 +316,7 @@ def maybe_regular_expander(n, d, *, create_using=None, max_tries=100):
             if len(new_edges) == n:
                 cycles.append(cycle)
                 edges.update(new_edges)
-        else:
+
             if iterations == 0:
                 raise nx.NetworkXError("Too many iterations in maybe_regular_expander")
 
@@ -446,12 +446,12 @@ def random_regular_expander_graph(n, d, *, epsilon=0, create_using=None, max_tri
     G = maybe_regular_expander(n, d, create_using=create_using, max_tries=max_tries)
     iterations = max_tries
 
-    while (not is_regular_expander(G, epsilon=epsilon)) and iterations > 0:
+    while not is_regular_expander(G, epsilon=epsilon):
         iterations -= 1
         G = maybe_regular_expander(
             n=n, d=d, create_using=create_using, max_tries=max_tries
         )
-    else:
+
         if iterations == 0:
             raise nx.NetworkXError(
                 "Too many iterations in random_regular_expander_graph"
