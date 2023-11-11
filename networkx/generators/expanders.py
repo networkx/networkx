@@ -213,7 +213,8 @@ def paley_graph(p, create_using=None):
     return G
 
 
-def maybe_regular_expander(n, d, *, create_using=None, max_tries=100):
+@nx.utils.random_state("seed")
+def maybe_regular_expander(n, d, *, create_using=None, max_tries=100, seed=None):
     r"""Utility for creating a random regular expander.
 
     Returns a random $d$-regular graph on $n$ nodes which is an expander
@@ -232,6 +233,8 @@ def maybe_regular_expander(n, d, *, create_using=None, max_tries=100):
       Use the Graph constructor by default.
     max_tries : int. (default: 100)
       The number of allowed loops when generating each independent cycle
+    seed : (default: None)
+      The `numpy.random.RandomState` instance used by `numpy.random`.
 
     Notes
     -----
@@ -304,7 +307,7 @@ def maybe_regular_expander(n, d, *, create_using=None, max_tries=100):
             iterations -= 1
             # Faster than random.permutation(n) since there are only
             # (n-1)! distinct cycles against n! permutations of size n
-            cycle = np.concatenate((np.random.permutation(n - 1), [n - 1]))
+            cycle = np.concatenate((seed.permutation(n - 1), [n - 1]))
 
             new_edges = {
                 (u, v)
