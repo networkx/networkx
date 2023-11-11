@@ -443,7 +443,7 @@ def random_regular_expander_graph(n, d, *, epsilon=0, create_using=None, max_tri
     .. [3] Ramanujan graphs, https://en.wikipedia.org/wiki/Ramanujan_graph
 
     """
-    G = maybe_regular_expander(n=n, d=d, create_using=create_using, max_tries=max_tries)
+    G = maybe_regular_expander(n, d, create_using=create_using, max_tries=max_tries)
     iterations = max_tries
 
     while (not is_regular_expander(G, epsilon=epsilon)) and iterations > 0:
