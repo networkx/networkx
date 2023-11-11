@@ -14,7 +14,7 @@ __all__ = [
 
 @not_implemented_for("undirected")
 def strongly_connected_components(G):
-    """Generate nodes in strongly connected components of directed graph.
+    """Generate nodes in strongly connected components of graph.
 
     Parameters
     ----------
@@ -112,7 +112,7 @@ def strongly_connected_components(G):
 
 @not_implemented_for("undirected")
 def kosaraju_strongly_connected_components(G, source=None):
-    """Generate nodes in strongly connected components of directed graph.
+    """Generate nodes in strongly connected components of graph.
 
     Parameters
     ----------
@@ -173,7 +173,7 @@ def kosaraju_strongly_connected_components(G, source=None):
 
 @not_implemented_for("undirected")
 def strongly_connected_components_recursive(G):
-    """Generate nodes in strongly connected components of directed graph.
+    """Generate nodes in strongly connected components of graph.
 
     Recursive version of algorithm.
 
@@ -266,7 +266,7 @@ def strongly_connected_components_recursive(G):
 
 @not_implemented_for("undirected")
 def number_strongly_connected_components(G):
-    """Returns number of strongly connected components in directed graph.
+    """Returns number of strongly connected components in graph.
 
     Parameters
     ----------
@@ -340,7 +340,7 @@ def is_strongly_connected(G):
 
 @not_implemented_for("undirected")
 def condensation(G, scc=None):
-    """Returns the condensation of directed graph.
+    """Returns the condensation of G.
 
     The condensation of G is the graph with each of the strongly connected
     components contracted into a single node.

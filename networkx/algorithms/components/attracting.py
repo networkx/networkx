@@ -11,7 +11,7 @@ __all__ = [
 
 @not_implemented_for("undirected")
 def attracting_components(G):
-    """Generates the attracting components in directed graph.
+    """Generates the attracting components in `G`.
 
     An attracting component in a directed graph `G` is a strongly connected
     component with the property that a random walker on the graph will never
@@ -54,7 +54,7 @@ def attracting_components(G):
 
 @not_implemented_for("undirected")
 def number_attracting_components(G):
-    """Returns the number of attracting components in directed graph.
+    """Returns the number of attracting components in `G`.
 
     Parameters
     ----------
@@ -82,7 +82,7 @@ def number_attracting_components(G):
 
 @not_implemented_for("undirected")
 def is_attracting_component(G):
-    """Returns True if directed graph consists of a single attracting component.
+    """Returns True if `G` consists of a single attracting component.
 
     Parameters
     ----------

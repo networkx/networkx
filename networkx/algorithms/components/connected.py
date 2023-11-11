@@ -67,7 +67,7 @@ def connected_components(G):
 
 
 def number_connected_components(G):
-    """Returns the number of connected components of undirected graph.
+    """Returns the number of connected components.
 
     Parameters
     ----------
@@ -100,7 +100,7 @@ def number_connected_components(G):
 
 @not_implemented_for("directed")
 def is_connected(G):
-    """Returns True if the undirected graph is connected, False otherwise.
+    """Returns True if the graph is connected, False otherwise.
 
     Parameters
     ----------
@@ -145,7 +145,7 @@ def is_connected(G):
 
 @not_implemented_for("directed")
 def node_connected_component(G, n):
-    """Returns the set of nodes in the component of undirected graph containing node n.
+    """Returns the set of nodes in the component of graph containing node n.
 
     Parameters
     ----------

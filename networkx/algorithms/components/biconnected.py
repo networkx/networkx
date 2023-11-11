@@ -12,7 +12,7 @@ __all__ = [
 
 @not_implemented_for("directed")
 def is_biconnected(G):
-    """Returns True if the undirected graph is biconnected, False otherwise.
+    """Returns True if the graph is biconnected, False otherwise.
 
     A graph is biconnected if, and only if, it cannot be disconnected by
     removing only one node (and all edges incident on that node).  If
@@ -88,7 +88,7 @@ def is_biconnected(G):
 @not_implemented_for("directed")
 def biconnected_component_edges(G):
     """Returns a generator of lists of edges, one list for each biconnected
-    component of the input undirected graph.
+    component of the input graph.
 
     Biconnected components are maximal subgraphs such that the removal of a
     node (and all edges incident on that node) will not disconnect the
@@ -160,7 +160,7 @@ def biconnected_component_edges(G):
 @not_implemented_for("directed")
 def biconnected_components(G):
     """Returns a generator of sets of nodes, one set for each biconnected
-    component of the undirected graph
+    component of the graph
 
     Biconnected components are maximal subgraphs such that the removal of a
     node (and all edges incident on that node) will not disconnect the
@@ -251,7 +251,7 @@ def biconnected_components(G):
 
 @not_implemented_for("directed")
 def articulation_points(G):
-    """Yield the articulation points, or cut vertices, of an undirected graph.
+    """Yield the articulation points, or cut vertices, of a graph.
 
     An articulation point or cut vertex is any node whose removal (along with
     all its incident edges) increases the number of connected components of

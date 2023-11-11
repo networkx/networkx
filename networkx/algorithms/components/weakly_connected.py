@@ -11,7 +11,7 @@ __all__ = [
 
 @not_implemented_for("undirected")
 def weakly_connected_components(G):
-    """Generate weakly connected components of directed graph.
+    """Generate weakly connected components of G.
 
     Parameters
     ----------
@@ -66,7 +66,7 @@ def weakly_connected_components(G):
 
 @not_implemented_for("undirected")
 def number_weakly_connected_components(G):
-    """Returns the number of weakly connected components in directed graph.
+    """Returns the number of weakly connected components in G.
 
     Parameters
     ----------
