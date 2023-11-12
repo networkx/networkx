@@ -1311,8 +1311,21 @@ def simrank_similarity(
     import numpy as np
 
     nodelist = list(G)
-    s_indx = None if source is None else nodelist.index(source)
-    t_indx = None if target is None else nodelist.index(target)
+    if source is not None:
+        if source not in nodelist:
+            raise nx.NodeNotFound(f"Source node {source} not in G")
+        else:
+            s_indx = nodelist.index(source)
+    else:
+        s_indx = None
+
+    if target is not None:
+        if target not in nodelist:
+            raise nx.NodeNotFound(f"Target node {target} not in G")
+        else:
+            t_indx = nodelist.index(target)
+    else:
+        t_indx = None
 
     x = _simrank_similarity_numpy(
         G, s_indx, t_indx, importance_factor, max_iterations, tolerance
