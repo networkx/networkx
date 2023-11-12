@@ -189,7 +189,7 @@ def k_core(G, k=None, core_number=None):
     >>> H = nx.havel_hakimi_graph(degrees)
     >>> H.degree
     DegreeView({0: 1, 1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 0})
-    >>> nx.k_core(H).nodes()
+    >>> nx.k_core(H).nodes
     NodeView((1, 2, 3, 5))
 
     See Also
@@ -253,7 +253,7 @@ def k_shell(G, k=None, core_number=None):
     >>> H = nx.havel_hakimi_graph(degrees)
     >>> H.degree
     DegreeView({0: 1, 1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 0})
-    >>> nx.k_shell(H, k=1).nodes()
+    >>> nx.k_shell(H, k=1).nodes
     NodeView((0, 4))
 
     See Also
@@ -319,7 +319,7 @@ def k_crust(G, k=None, core_number=None):
     >>> H = nx.havel_hakimi_graph(degrees)
     >>> H.degree
     DegreeView({0: 1, 1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 0})
-    >>> nx.k_crust(H, k=1).nodes()
+    >>> nx.k_crust(H, k=1).nodes
     NodeView((0, 4, 6))
 
     See Also
@@ -383,7 +383,7 @@ def k_corona(G, k, core_number=None):
     >>> H = nx.havel_hakimi_graph(degrees)
     >>> H.degree
     DegreeView({0: 1, 1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 0})
-    >>> nx.k_corona(H, k=2).nodes()
+    >>> nx.k_corona(H, k=2).nodes
     NodeView((1, 2, 3, 5))
 
     See Also
@@ -449,7 +449,7 @@ def k_truss(G, k):
     >>> H = nx.havel_hakimi_graph(degrees)
     >>> H.degree
     DegreeView({0: 1, 1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 0})
-    >>> nx.k_truss(H, k=2).nodes()
+    >>> nx.k_truss(H, k=2).nodes
     NodeView((0, 1, 2, 3, 4, 5))
 
     References
