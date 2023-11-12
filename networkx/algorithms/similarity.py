@@ -1535,6 +1535,10 @@ def panther_similarity(
         the self-similarity (i.e., ``v``) will not be included in
         the returned dictionary.
 
+    Notes
+    -------
+        The isolated nodes in `G` are ignored.
+
     Examples
     --------
     >>> G = nx.star_graph(10)
@@ -1549,6 +1553,10 @@ def panther_similarity(
            Association for Computing Machinery. https://doi.org/10.1145/2783258.2783267.
     """
     import numpy as np
+
+    G = G.subgraph(
+        [node for node in G.nodes if node not in list(nx.isolates(G))]
+    ).copy()
 
     num_nodes = G.number_of_nodes()
     if num_nodes < k:
