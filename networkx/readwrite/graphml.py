@@ -455,7 +455,7 @@ class GraphML:
             return self.xml_type[key]
         except KeyError as err:
             raise TypeError(
-                f"GraphML does not support type {type(key)} as data values."
+                f"GraphML does not support type {key} as data values."
             ) from err
 
 
