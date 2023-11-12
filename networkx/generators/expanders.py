@@ -244,7 +244,7 @@ def maybe_regular_expander(n, d, *, create_using=None, max_tries=100, seed=None)
 
     Joel Friedman proved that in this model the resulting
     graph is an expander with probability
-    $1 - O(n^{-\tau})$ where $\tau = \lceil (\sqrt{d - 1}) / 2 \rceil - 1$. [1]_
+    $1 - O(n^{-\\tau})$ where $\\tau = \lceil (\sqrt{d - 1}) / 2 \\rceil - 1$. [1]_
 
     Examples
     --------
