@@ -401,10 +401,10 @@ def random_regular_expander_graph(n, d, *, epsilon=0, create_using=None, max_tri
 
     An expander graph is a sparse graph with strong connectivity properties. [1]_
 
-    More precisely the returned graph is a $(n, d, \lambda)$-expander with
-    $\lambda = 2 \sqrt{d - 1} + \epsilon$, close to the Alon-Boppana bound. [2]_
+    More precisely the returned graph is a $(n, d, \\lambda)$-expander with
+    $\\lambda = 2 \\sqrt{d - 1} + \\epsilon$, close to the Alon-Boppana bound. [2]_
 
-    In the case where $\epsilon = 0 $ it returns a Ramanujan graph.
+    In the case where $\\epsilon = 0 $ it returns a Ramanujan graph.
     A Ramanujan graph has spectral gap almost as large as possible,
     which makes them excellent expanders. [3]_
 
@@ -432,7 +432,7 @@ def random_regular_expander_graph(n, d, *, epsilon=0, create_using=None, max_tri
     Notes
     -----
     This loops over ``maybe_regular_expander`` and can be slow when
-    $n$ is too big or $\epsilon$ too small.
+    $n$ is too big or $\\epsilon$ too small.
 
     See Also
     --------
