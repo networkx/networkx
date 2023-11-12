@@ -40,9 +40,9 @@ def _apply_prediction(G, func, ebunch=None):
     else:
         for u, v in ebunch:
             if u not in G:
-                nx.NodeNotFound(f"Node {u} not in G.")
+                raise nx.NodeNotFound(f"Node {u} not in G.")
             if v not in G:
-                nx.NodeNotFound(f"Node {v} not in G.")
+                raise nx.NodeNotFound(f"Node {v} not in G.")
     return ((u, v, func(u, v)) for u, v in ebunch)
 
 
