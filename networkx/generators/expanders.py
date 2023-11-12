@@ -215,7 +215,7 @@ def paley_graph(p, create_using=None):
 
 @nx.utils.decorators.np_random_state("seed")
 def maybe_regular_expander(n, d, *, create_using=None, max_tries=100, seed=None):
-    """Utility for creating a random regular expander.
+    r"""Utility for creating a random regular expander.
 
     Returns a random $d$-regular graph on $n$ nodes which is an expander
     graph with very good probability.
@@ -397,7 +397,7 @@ def is_regular_expander(G, *, epsilon=0):
 
 
 def random_regular_expander_graph(n, d, *, epsilon=0, create_using=None, max_tries=100):
-    """Returns a random regular expander graph on $n$ nodes with degree $d$.
+    r"""Returns a random regular expander graph on $n$ nodes with degree $d$.
 
     An expander graph is a sparse graph with strong connectivity properties. [1]_
 
