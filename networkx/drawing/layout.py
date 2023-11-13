@@ -1129,38 +1129,47 @@ def forceatlas2_layout(
 ):
     """Forceatlas2 layout for networkx
 
-    See [1]_ for more info on the parameters
+    The ForceAtlas2 layout is a force-directed that improves upon ForceAtlas by simplifying the parameters [1].
+    It offers a good compromise between clustering and spatially separating parts of the network.
+    The layout was originally designed and used by Gephi to visualize graphs in a continuous and interactive manner.
 
-    .. [1] https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0098679&type=printable
+    The layout is based on the balance between an attractive force, and a repulsion force.
+    The attraction force is defined by the distance between nodes. Nodes close
+    eachother (in a graphical sense) are attracted more than more spatially distant
+    away nodes.
+
+    The repulsion force is dependent on the degree. Visual cluttering is reduced
+    by providing larger forcing on nodes with higher degree. This prevents
+    a "bunching" affect present in most powerlaw graphs.
 
     Parameters
     ----------
     G : nx.Graph
-       Netwrorkx graph
+       Networkx graph
     pos: dict or None
        Optional starting positions
-    n_iter: int
+    n_iter: number (default: 100)
         Simulation steps
-    jitter_tolerance : float
-        Jitter  tolerance  for  adjusting  speed  of  layout
-        generation
-    scaling_ratio : float
+    jitter_tolerance : number (default: 1.0)
+        Jitter  tolerance  for  adjusting  speed  of  layout convergence; lower values are slower but yield more accuracy. It controls how much swinging is allowed. Values above 1 are discouraged.
+    scaling_ratio : number (default: 2.0)
         Controls  force scaling  constants k_attraction  and
         k_repulsion
-    distributed_action : bool
-    strong_gravity : bool
+    distributed_action : bool (default: false)
+        Normalizes the attraction forces according to the degree of the nodes
+    strong_gravity : bool (default: false)
         Controls the  "pull" to  the center  of mass  of the
         plot (0,0)
-    adjust_sizes: bool
+    adjust_sizes: bool (default: false)
         Prevent node overlapping in the layout
-    dissuade_hubs : bool
+    dissuade_hubs : bool (default: false)
         Prevent hub clustering
-    edge_weight_influence : bool
+    edge_weight_influence : bool (default: false)
         Generate layout with or without considering the edge
         weights
-    linlog : bool
+    linlog : bool (default: false)
         Use log attraction rather than linear attraction
-    dim: int,
+    dim: number (default: 2)
        Sets the dimensions of the layout. This parameter is ignored if pos is given.
 
     Examples
