@@ -365,7 +365,6 @@ class TestLayout:
         self.check_kamada_kawai_costfn(pos, invdist, meanwt, 3)
 
     def test_spiral_layout(self):
-
         G = self.Gs
 
         # a lower value of resolution should result in a more compact layout
@@ -400,7 +399,7 @@ class TestLayout:
         # check whether partial pos input still returns a full proper position
         G = self.Gs
         pos = nx.random_layout(G)
-        del pos[list(G.nodes())[0]]
+        del pos[nx.utils.arbitrary_element(G)]
         pos = nx.forceatlas2_layout(G, pos=pos)
         assert len(pos) == len(G)
 
