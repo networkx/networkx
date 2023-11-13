@@ -54,7 +54,7 @@ def test_lazy_import_nonbuiltins():
     np = lazy._lazy_import("numpy")
     if isinstance(sp, lazy.DelayedImportErrorModule):
         try:
-            sp.pi
+            sp.special.erf
             assert False
         except ModuleNotFoundError:
             pass
@@ -65,7 +65,7 @@ def test_lazy_import_nonbuiltins():
         except ModuleNotFoundError:
             pass
     else:
-        assert np.sin(sp.pi) == pytest.approx(0, 1e-6)
+        assert sp.special.erf(np.pi) == pytest.approx(1, 1e-4)
 
 
 def test_lazy_attach():

@@ -15,6 +15,13 @@ class TestDegreeMixingCorrelation(BaseTestDegreeMixing):
         r = nx.degree_assortativity_coefficient(self.P4)
         np.testing.assert_almost_equal(r, -1.0 / 2, decimal=4)
 
+    def test_degree_assortativity_node_kwargs(self):
+        G = nx.Graph()
+        edges = [(0, 1), (0, 3), (1, 2), (1, 3), (1, 4), (5, 9), (9, 0)]
+        G.add_edges_from(edges)
+        r = nx.degree_assortativity_coefficient(G, nodes=[1, 2, 4])
+        np.testing.assert_almost_equal(r, -1.0, decimal=4)
+
     def test_degree_assortativity_directed(self):
         r = nx.degree_assortativity_coefficient(self.D)
         np.testing.assert_almost_equal(r, -0.57735, decimal=4)
@@ -98,6 +105,14 @@ class TestAttributeMixingCorrelation(BaseTestAttributeMixing):
     def test_attribute_assortativity_negative(self):
         r = nx.numeric_assortativity_coefficient(self.N, "margin")
         np.testing.assert_almost_equal(r, -0.2903, decimal=4)
+
+    def test_assortativity_node_kwargs(self):
+        G = nx.Graph()
+        G.add_nodes_from([0, 1], size=2)
+        G.add_nodes_from([2, 3], size=3)
+        G.add_edges_from([(0, 1), (2, 3)])
+        r = nx.numeric_assortativity_coefficient(G, "size", nodes=[0, 3])
+        np.testing.assert_almost_equal(r, 1.0, decimal=4)
 
     def test_attribute_assortativity_float(self):
         r = nx.numeric_assortativity_coefficient(self.F, "margin")

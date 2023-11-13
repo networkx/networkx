@@ -6,6 +6,7 @@ Generators - Classic
 Unit tests for various classic graph generators in generators/classic.py
 """
 import itertools
+import typing
 
 import pytest
 
@@ -288,6 +289,15 @@ class TestGeneratorClassic:
         assert not H.is_directed()
         assert G is not H
 
+        # test for subclasses that also use typing.Protocol. See gh-6243
+        class Mixin(typing.Protocol):
+            pass
+
+        class MyGraph(Mixin, nx.DiGraph):
+            pass
+
+        G = nx.empty_graph(create_using=MyGraph)
+
     def test_empty_graph(self):
         G = nx.empty_graph()
         assert nx.number_of_nodes(G) == 0
@@ -543,7 +553,7 @@ class TestGeneratorClassic:
                 assert v not in G[u]
                 assert G.nodes[u] == G.nodes[v]
         # Across blocks, all vertices should be adjacent.
-        for (block1, block2) in itertools.combinations(blocks, 2):
+        for block1, block2 in itertools.combinations(blocks, 2):
             for u, v in itertools.product(block1, block2):
                 assert v in G[u]
                 assert G.nodes[u] != G.nodes[v]

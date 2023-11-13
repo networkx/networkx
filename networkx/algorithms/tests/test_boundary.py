@@ -76,7 +76,7 @@ class TestNodeBoundary:
         assert boundary == expected
 
     def test_multidigraph(self):
-        """Tests the edge boundary of a multdiigraph."""
+        """Tests the edge boundary of a multidigraph."""
         edges = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 0)]
         G = nx.MultiDiGraph(edges * 2)
         S = {0, 1}
@@ -145,7 +145,7 @@ class TestEdgeBoundary:
         assert boundary == expected
 
     def test_multidigraph(self):
-        """Tests the edge boundary of a multdiigraph."""
+        """Tests the edge boundary of a multidigraph."""
         edges = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 0)]
         G = nx.MultiDiGraph(edges * 2)
         S = {0, 1}

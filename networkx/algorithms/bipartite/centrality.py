@@ -3,6 +3,7 @@ import networkx as nx
 __all__ = ["degree_centrality", "betweenness_centrality", "closeness_centrality"]
 
 
+@nx._dispatch(name="bipartite_degree_centrality")
 def degree_centrality(G, nodes):
     r"""Compute the degree centrality for nodes in a bipartite network.
 
@@ -21,6 +22,13 @@ def degree_centrality(G, nodes):
     -------
     centrality : dictionary
        Dictionary keyed by node with bipartite degree centrality as the value.
+
+    Examples
+    --------
+    >>> G = nx.wheel_graph(5)
+    >>> top_nodes = {0, 1, 2}
+    >>> nx.bipartite.degree_centrality(G, nodes=top_nodes)
+    {0: 2.0, 1: 1.5, 2: 1.5, 3: 1.0, 4: 1.0}
 
     See Also
     --------
@@ -70,6 +78,7 @@ def degree_centrality(G, nodes):
     return centrality
 
 
+@nx._dispatch(name="bipartite_betweenness_centrality")
 def betweenness_centrality(G, nodes):
     r"""Compute betweenness centrality for nodes in a bipartite network.
 
@@ -120,6 +129,13 @@ def betweenness_centrality(G, nodes):
         Dictionary keyed by node with bipartite betweenness centrality
         as the value.
 
+    Examples
+    --------
+    >>> G = nx.cycle_graph(4)
+    >>> top_nodes = {1, 2}
+    >>> nx.bipartite.betweenness_centrality(G, nodes=top_nodes)
+    {0: 0.25, 1: 0.25, 2: 0.25, 3: 0.25}
+
     See Also
     --------
     degree_centrality
@@ -166,6 +182,7 @@ def betweenness_centrality(G, nodes):
     return betweenness
 
 
+@nx._dispatch(name="bipartite_closeness_centrality")
 def closeness_centrality(G, nodes, normalized=True):
     r"""Compute the closeness centrality for nodes in a bipartite network.
 
@@ -189,6 +206,13 @@ def closeness_centrality(G, nodes, normalized=True):
     closeness : dictionary
         Dictionary keyed by node with bipartite closeness centrality
         as the value.
+
+    Examples
+    --------
+    >>> G = nx.wheel_graph(5)
+    >>> top_nodes = {0, 1, 2}
+    >>> nx.bipartite.closeness_centrality(G, nodes=top_nodes)
+    {0: 1.5, 1: 1.2, 2: 1.2, 3: 1.0, 4: 1.0}
 
     See Also
     --------

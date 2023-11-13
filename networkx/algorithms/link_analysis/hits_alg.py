@@ -5,6 +5,7 @@ import networkx as nx
 __all__ = ["hits"]
 
 
+@nx._dispatch
 def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
     """Returns HITS hubs and authorities values for nodes.
 
@@ -71,7 +72,6 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     if len(G) == 0:
         return {}, {}
@@ -172,7 +172,7 @@ def _hits_numpy(G, normalized=True):
     The `hubs` and `authorities` are given by the eigenvectors corresponding to the
     maximum eigenvalues of the hubs_matrix and the authority_matrix, respectively.
 
-    The ``hubs`` and ``authority`` matrices are computed from the adjancency
+    The ``hubs`` and ``authority`` matrices are computed from the adjacency
     matrix:
 
     >>> adj_ary = nx.to_numpy_array(G)

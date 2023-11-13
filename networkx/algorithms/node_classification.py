@@ -28,6 +28,7 @@ __all__ = ["harmonic_function", "local_and_global_consistency"]
 
 
 @nx.utils.not_implemented_for("directed")
+@nx._dispatch(node_attrs="label_name")
 def harmonic_function(G, max_iter=30, label_name="label"):
     """Node classification by Harmonic function
 
@@ -73,7 +74,6 @@ def harmonic_function(G, max_iter=30, label_name="label"):
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     X = nx.to_scipy_sparse_array(G)  # adjacency matrix
     labels, label_dict = _get_label_info(G, label_name)
@@ -105,6 +105,7 @@ def harmonic_function(G, max_iter=30, label_name="label"):
 
 
 @nx.utils.not_implemented_for("directed")
+@nx._dispatch(node_attrs="label_name")
 def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label"):
     """Node classification by Local and Global Consistency
 
@@ -152,7 +153,6 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
     """
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     X = nx.to_scipy_sparse_array(G)  # adjacency matrix
     labels, label_dict = _get_label_info(G, label_name)
@@ -192,7 +192,7 @@ def _get_label_info(G, label_name):
         Name of the target label
 
     Returns
-    ----------
+    -------
     labels : numpy array, shape = [n_labeled_samples, 2]
         Array of pairs of labeled node ID and label ID
     label_dict : numpy array, shape = [n_classes]

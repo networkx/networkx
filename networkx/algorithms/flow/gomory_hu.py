@@ -13,6 +13,7 @@ __all__ = ["gomory_hu_tree"]
 
 
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs={"capacity": float("inf")})
 def gomory_hu_tree(G, capacity="capacity", flow_func=None):
     r"""Returns the Gomory-Hu tree of an undirected graph G.
 
@@ -83,7 +84,7 @@ def gomory_hu_tree(G, capacity="capacity", flow_func=None):
     10
     >>> nx.minimum_cut_value(G, u, v)
     10
-    >>> # The Comory-Hu tree also has the property that removing the
+    >>> # The Gomory-Hu tree also has the property that removing the
     ... # edge with the minimum weight in the shortest path between
     ... # any two nodes leaves two connected components that form
     ... # a partition of the nodes in G that defines the minimum s-t
@@ -115,7 +116,7 @@ def gomory_hu_tree(G, capacity="capacity", flow_func=None):
     Notes
     -----
     This implementation is based on Gusfield approach [1]_ to compute
-    Comory-Hu trees, which does not require node contractions and has
+    Gomory-Hu trees, which does not require node contractions and has
     the same computational complexity than the original method.
 
     See also

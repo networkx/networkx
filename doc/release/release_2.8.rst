@@ -78,7 +78,7 @@ Merged PRs
 - Bump release version
 - Fix missing backticks (#5381)
 - Add Generator support to create_py_random_state. (#5380)
-- modulartiy_max: introduce enforce_n_communities parameter (#5227)
+- modularity_max: introduce enforce_n_communities parameter (#5227)
 - First draft. (#5359)
 - Updated MultiDiGraph documentation to include more examples of actually (#5387)
 - Multigraph docs update (#5389)

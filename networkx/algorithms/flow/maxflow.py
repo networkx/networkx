@@ -12,18 +12,11 @@ from .utils import build_flow_dict
 
 # Define the default flow function for computing maximum flow.
 default_flow_func = preflow_push
-# Functions that don't support cutoff for minimum cut computations.
-flow_funcs = [
-    boykov_kolmogorov,
-    dinitz,
-    edmonds_karp,
-    preflow_push,
-    shortest_augmenting_path,
-]
 
 __all__ = ["maximum_flow", "maximum_flow_value", "minimum_cut", "minimum_cut_value"]
 
 
+@nx._dispatch(graphs="flowG", edge_attrs={"capacity": float("inf")})
 def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """Find a maximum single-commodity flow.
 
@@ -170,6 +163,7 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     return (R.graph["flow_value"], flow_dict)
 
 
+@nx._dispatch(graphs="flowG", edge_attrs={"capacity": float("inf")})
 def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """Find the value of maximum single-commodity flow.
 
@@ -309,6 +303,7 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
     return R.graph["flow_value"]
 
 
+@nx._dispatch(graphs="flowG", edge_attrs={"capacity": float("inf")})
 def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """Compute the value and the node partition of a minimum (s, t)-cut.
 
@@ -452,7 +447,7 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     if not callable(flow_func):
         raise nx.NetworkXError("flow_func has to be callable.")
 
-    if kwargs.get("cutoff") is not None and flow_func in flow_funcs:
+    if kwargs.get("cutoff") is not None and flow_func is preflow_push:
         raise nx.NetworkXError("cutoff should not be specified.")
 
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)
@@ -472,6 +467,7 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     return (R.graph["flow_value"], partition)
 
 
+@nx._dispatch(graphs="flowG", edge_attrs={"capacity": float("inf")})
 def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """Compute the value of a minimum (s, t)-cut.
 
@@ -603,7 +599,7 @@ def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwar
     if not callable(flow_func):
         raise nx.NetworkXError("flow_func has to be callable.")
 
-    if kwargs.get("cutoff") is not None and flow_func in flow_funcs:
+    if kwargs.get("cutoff") is not None and flow_func is preflow_push:
         raise nx.NetworkXError("cutoff should not be specified.")
 
     R = flow_func(flowG, _s, _t, capacity=capacity, value_only=True, **kwargs)

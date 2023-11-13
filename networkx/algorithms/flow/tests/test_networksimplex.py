@@ -1,4 +1,5 @@
 import bz2
+import importlib.resources
 import os
 import pickle
 
@@ -38,8 +39,8 @@ def simple_no_flow_graph():
 def get_flowcost_from_flowdict(G, flowDict):
     """Returns flow cost calculated from flow dictionary"""
     flowCost = 0
-    for u in flowDict.keys():
-        for v in flowDict[u].keys():
+    for u in flowDict:
+        for v in flowDict[u]:
             flowCost += flowDict[u][v] * G[u][v]["weight"]
     return flowCost
 
@@ -141,7 +142,11 @@ def test_google_or_tools_example2():
 
 
 def test_large():
-    fname = os.path.join(os.path.dirname(__file__), "netgen-2.gpickle.bz2")
+    fname = (
+        importlib.resources.files("networkx.algorithms.flow.tests")
+        / "netgen-2.gpickle.bz2"
+    )
+
     with bz2.BZ2File(fname, "rb") as f:
         G = pickle.load(f)
     flowCost, flowDict = nx.network_simplex(G)

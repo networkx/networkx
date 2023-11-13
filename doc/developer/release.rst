@@ -79,7 +79,8 @@ Release Process
       cp -a latest ../networkx-<major>.<minor>
       git reset --hard <commit from last release>
       mv ../networkx-<major>.<minor> .
-      ln -sfn networkx-<major>.<minor> stable
+      rm -rf stable
+      cp -rf networkx-<major>.<minor> stable
       git add networkx-<major>.<minor> stable
       git commit -m "Add <major>.<minor> docs"
       git push  # force push---be careful!
@@ -88,12 +89,8 @@ Release Process
 
 - Create ``doc/_templates/layout.html`` with::
 
-    {% extends "!layout.html" %}
-
-    {% block content %}
-      {% include "dev_banner.html" %}
-      {{ super() }}
-    {% endblock %}
+    {% extends "!layout.html" %} {% block content %} {% include "dev_banner.html" %}
+    {{ super() }} {% endblock %}
 
  - Commit and push changes::
 

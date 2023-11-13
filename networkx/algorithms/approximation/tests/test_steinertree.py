@@ -136,7 +136,7 @@ class TestSteinerTree:
                 ],
                 [
                     (0, 5, {"weight": 6}),
-                    (4, 2, {"weight": 2}),
+                    (4, 2, {"weight": 4}),
                     (4, 5, {"weight": 1}),
                     (3, 5, {"weight": 5}),
                 ],

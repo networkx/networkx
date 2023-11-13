@@ -71,7 +71,7 @@ def parse_leda(lines):
         [
             line.rstrip("\n")
             for line in lines
-            if not (line.startswith("#") or line.startswith("\n") or line == "")
+            if not (line.startswith(("#", "\n")) or line == "")
         ]
     )
     for i in range(3):

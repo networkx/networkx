@@ -7,3 +7,5 @@ D-Separation
    :toctree: generated/
 
    d_separated
+   is_minimal_d_separator
+   minimal_d_separator

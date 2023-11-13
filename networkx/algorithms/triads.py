@@ -129,6 +129,7 @@ def _tricode(G, v, u, w):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def triadic_census(G, nodelist=None):
     """Determines the triadic census of a directed graph.
 
@@ -275,6 +276,7 @@ def triadic_census(G, nodelist=None):
     return census
 
 
+@nx._dispatch
 def is_triad(G):
     """Returns True if the graph G is a triad, else False.
 
@@ -305,6 +307,7 @@ def is_triad(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def all_triplets(G):
     """Returns a generator of all possible sets of 3 nodes in a DiGraph.
 
@@ -330,6 +333,7 @@ def all_triplets(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def all_triads(G):
     """A generator of all possible triads in G.
 
@@ -360,6 +364,7 @@ def all_triads(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def triads_by_type(G):
     """Returns a list of all triads for each triad type in a directed graph.
     There are exactly 16 different types of triads possible. Suppose 1, 2, 3 are three
@@ -383,7 +388,7 @@ def triads_by_type(G):
     - 210: 1 -> 2 <-> 3, 1 <-> 3
     - 300: 1 <-> 2 <-> 3, 1 <-> 3
 
-    Refer to the :doc:`example gallery <auto_examples/graph/plot_triad_types>`
+    Refer to the :doc:`example gallery </auto_examples/graph/plot_triad_types>`
     for visual examples of the triad types.
 
     Parameters
@@ -422,6 +427,7 @@ def triads_by_type(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def triad_type(G):
     """Returns the sociological triad type for a triad.
 
@@ -457,7 +463,7 @@ def triad_type(G):
 
     {m}     = number of mutual ties (takes 0, 1, 2, 3); a mutual tie is (0,1)
               AND (1,0)
-    {a}     = number of assymmetric ties (takes 0, 1, 2, 3); an assymmetric tie
+    {a}     = number of asymmetric ties (takes 0, 1, 2, 3); an asymmetric tie
               is (0,1) BUT NOT (1,0) or vice versa
     {n}     = number of null ties (takes 0, 1, 2, 3); a null tie is NEITHER
               (0,1) NOR (1,0)
@@ -489,7 +495,7 @@ def triad_type(G):
         elif e1[1] == e2[0] or e2[1] == e1[0]:
             return "021C"
     elif num_edges == 3:
-        for (e1, e2, e3) in permutations(G.edges(), 3):
+        for e1, e2, e3 in permutations(G.edges(), 3):
             if set(e1) == set(e2):
                 if e3[0] in e1:
                     return "111U"
@@ -501,7 +507,7 @@ def triad_type(G):
                 # e3 == (e1[0], e2[1]) and e2 == (e1[1], e3[1]):
                 return "030T"
     elif num_edges == 4:
-        for (e1, e2, e3, e4) in permutations(G.edges(), 4):
+        for e1, e2, e3, e4 in permutations(G.edges(), 4):
             if set(e1) == set(e2):
                 # identify pair of symmetric edges (which necessarily exists)
                 if set(e3) == set(e4):
@@ -520,6 +526,7 @@ def triad_type(G):
 
 @not_implemented_for("undirected")
 @py_random_state(1)
+@nx._dispatch
 def random_triad(G, seed=None):
     """Returns a random triad from a directed graph.
 

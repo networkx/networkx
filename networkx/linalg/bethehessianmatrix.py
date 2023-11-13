@@ -7,6 +7,7 @@ __all__ = ["bethe_hessian_matrix"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def bethe_hessian_matrix(G, r=None, nodelist=None):
     r"""Returns the Bethe Hessian matrix of G.
 
@@ -32,7 +33,7 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
 
     Returns
     -------
-    H : scipy.sparse.csr_matrix
+    H : scipy.sparse.csr_array
       The Bethe Hessian matrix of `G`, with parameter `r`.
 
     Examples
@@ -63,7 +64,6 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
        arXiv:1507.00827, 2015.
     """
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     if nodelist is None:
         nodelist = list(G)
@@ -75,12 +75,4 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
     D = sp.sparse.csr_array(sp.sparse.spdiags(A.sum(axis=1), 0, m, n, format="csr"))
     # TODO: Rm csr_array wrapper when eye array creation becomes available
     I = sp.sparse.csr_array(sp.sparse.eye(m, n, format="csr"))
-    import warnings
-
-    warnings.warn(
-        "bethe_hessian_matrix will return a scipy.sparse array instead of a matrix in Networkx 3.0",
-        FutureWarning,
-        stacklevel=2,
-    )
-    # TODO: Remove the csr_matrix wrapper in NetworkX 3.0
-    return sp.sparse.csr_matrix((r**2 - 1) * I - r * A + D)
+    return (r**2 - 1) * I - r * A + D

@@ -4,7 +4,6 @@ from networkx.exception import NetworkXAlgorithmError
 from networkx.utils import not_implemented_for
 
 __all__ = [
-    "project",
     "projected_graph",
     "weighted_projected_graph",
     "collaboration_weighted_projected_graph",
@@ -13,6 +12,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch(graphs="B", preserve_node_attrs=True, preserve_graph_attrs=True)
 def projected_graph(B, nodes, multigraph=False):
     r"""Returns the projection of B onto one of its node sets.
 
@@ -117,6 +117,7 @@ def projected_graph(B, nodes, multigraph=False):
 
 
 @not_implemented_for("multigraph")
+@nx._dispatch(graphs="B")
 def weighted_projected_graph(B, nodes, ratio=False):
     r"""Returns a weighted projection of B onto one of its node sets.
 
@@ -217,6 +218,7 @@ def weighted_projected_graph(B, nodes, ratio=False):
 
 
 @not_implemented_for("multigraph")
+@nx._dispatch(graphs="B")
 def collaboration_weighted_projected_graph(B, nodes):
     r"""Newman's weighted projection of B onto one of its node sets.
 
@@ -311,6 +313,7 @@ def collaboration_weighted_projected_graph(B, nodes):
 
 
 @not_implemented_for("multigraph")
+@nx._dispatch(graphs="B")
 def overlap_weighted_projected_graph(B, nodes, jaccard=True):
     r"""Overlap weighted projection of B onto one of its node sets.
 
@@ -410,6 +413,7 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
 
 
 @not_implemented_for("multigraph")
+@nx._dispatch(graphs="B", preserve_all_attrs=True)
 def generic_weighted_projected_graph(B, nodes, weight_function=None):
     r"""Weighted projection of B with a user-specified weight function.
 
@@ -522,17 +526,3 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
             weight = weight_function(B, u, v)
             G.add_edge(u, v, weight=weight)
     return G
-
-
-def project(B, nodes, create_using=None):
-    import warnings
-
-    warnings.warn(
-        (
-            "networkx.project is deprecated and will be removed"
-            "in NetworkX 3.0, use networkx.projected_graph instead."
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return projected_graph(B, nodes)

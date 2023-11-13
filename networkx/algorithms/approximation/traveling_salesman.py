@@ -124,6 +124,7 @@ def move_one_node(soln, seed):
 
 
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight")
 def christofides(G, weight="weight", tree=None):
     """Approximate a solution of the traveling salesman problem
 
@@ -178,7 +179,7 @@ def christofides(G, weight="weight", tree=None):
     L.remove_nodes_from([v for v, degree in tree.degree if not (degree % 2)])
     MG = nx.MultiGraph()
     MG.add_edges_from(tree.edges)
-    edges = nx.min_weight_matching(L, maxcardinality=True, weight=weight)
+    edges = nx.min_weight_matching(L, weight=weight)
     MG.add_edges_from(edges)
     return _shortcutting(nx.eulerian_circuit(MG))
 
@@ -196,6 +197,7 @@ def _shortcutting(circuit):
     return nodes
 
 
+@nx._dispatch(edge_attrs="weight")
 def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, method=None):
     """Find the shortest path in `G` connecting specified nodes
 
@@ -335,6 +337,7 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
 
 @not_implemented_for("undirected")
 @py_random_state(2)
+@nx._dispatch(edge_attrs="weight")
 def asadpour_atsp(G, weight="weight", seed=None, source=None):
     """
     Returns an approximate solution to the traveling salesman problem.
@@ -427,7 +430,7 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     # a dict
     if not isinstance(z_star, dict):
         # Here we are using the shortcutting method to go from the list of edges
-        # returned from eularian_circuit to a list of nodes
+        # returned from eulerian_circuit to a list of nodes
         return _shortcutting(nx.eulerian_circuit(z_star, source=source))
 
     # Create the undirected support of z_star
@@ -484,6 +487,7 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     return _shortcutting(circuit)
 
 
+@nx._dispatch(edge_attrs="weight")
 def held_karp_ascent(G, weight="weight"):
     """
     Minimizes the Held-Karp relaxation of the TSP for `G`
@@ -530,7 +534,7 @@ def held_karp_ascent(G, weight="weight"):
            pp.1138-1162
     """
     import numpy as np
-    import scipy.optimize as optimize
+    from scipy import optimize
 
     def k_pi():
         """
@@ -639,7 +643,7 @@ def held_karp_ascent(G, weight="weight"):
         for n in G:
             d[n] = 0
         del n
-        # 2. Find a 1-Aborescence T^k such that k is in K(pi, d).
+        # 2. Find a 1-Arborescence T^k such that k is in K(pi, d).
         minimum_1_arborescences = k_pi()
         while True:
             # Reduce K(pi) to K(pi, d)
@@ -785,7 +789,7 @@ def held_karp_ascent(G, weight="weight"):
     # reference [1]
     z_star = {}
     scale_factor = (G.order() - 1) / G.order()
-    for u, v in x_star.keys():
+    for u, v in x_star:
         frequency = x_star[(u, v)] + x_star[(v, u)]
         if frequency > 0:
             z_star[(u, v)] = scale_factor * frequency
@@ -794,6 +798,7 @@ def held_karp_ascent(G, weight="weight"):
     return next(k_max.__iter__()).size(weight), z_star
 
 
+@nx._dispatch
 def spanning_tree_distribution(G, z):
     """
     Find the asadpour exponential distribution of spanning trees.
@@ -904,6 +909,7 @@ def spanning_tree_distribution(G, z):
     return gamma
 
 
+@nx._dispatch(edge_attrs="weight")
 def greedy_tsp(G, weight="weight", source=None):
     """Return a low cost cycle starting at `source` and its cost.
 
@@ -996,6 +1002,7 @@ def greedy_tsp(G, weight="weight", source=None):
 
 
 @py_random_state(9)
+@nx._dispatch(edge_attrs="weight")
 def simulated_annealing_tsp(
     G,
     init_cycle,
@@ -1214,6 +1221,7 @@ def simulated_annealing_tsp(
 
 
 @py_random_state(9)
+@nx._dispatch(edge_attrs="weight")
 def threshold_accepting_tsp(
     G,
     init_cycle,

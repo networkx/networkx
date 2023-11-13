@@ -63,6 +63,7 @@ def index_satisfying(iterable, condition):
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def is_tournament(G):
     """Returns True if and only if `G` is a tournament.
 
@@ -102,6 +103,7 @@ def is_tournament(G):
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def hamiltonian_path(G):
     """Returns a Hamiltonian path in the given tournament graph.
 
@@ -181,6 +183,7 @@ def random_tournament(n, seed=None):
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def score_sequence(G):
     """Returns the score sequence for the given tournament graph.
 
@@ -210,6 +213,7 @@ def score_sequence(G):
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def tournament_matrix(G):
     r"""Returns the tournament matrix for the given tournament graph.
 
@@ -237,7 +241,7 @@ def tournament_matrix(G):
 
     Returns
     -------
-    SciPy sparse matrix
+    SciPy sparse array
         The tournament matrix of the tournament graph `G`.
 
     Raises
@@ -252,6 +256,7 @@ def tournament_matrix(G):
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def is_reachable(G, s, t):
     """Decides whether there is a path from `s` to `t` in the
     tournament.
@@ -339,6 +344,7 @@ def is_reachable(G, s, t):
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch(name="tournament_is_strongly_connected")
 def is_strongly_connected(G):
     """Decides whether the given tournament is strongly connected.
 

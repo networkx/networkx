@@ -47,6 +47,10 @@ class TestAverageNeighbor:
         assert nd == {0: 0, 1: 1, 2: 1, 3: 1}
         nd = nx.average_neighbor_degree(D, "out", "in", weight="weight")
         assert nd == {0: 1, 1: 1, 2: 1, 3: 0}
+        nd = nx.average_neighbor_degree(D, source="in+out", weight="weight")
+        assert nd == {0: 1.0, 1: 1.0, 2: 0.8, 3: 1.0}
+        nd = nx.average_neighbor_degree(D, target="in+out", weight="weight")
+        assert nd == {0: 2.0, 1: 2.0, 2: 1.0, 3: 0.0}
 
         D = G.to_directed()
         nd = nx.average_neighbor_degree(D, weight="weight")

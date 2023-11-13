@@ -149,6 +149,7 @@ def _build_flow_dict(G, R, capacity, weight):
     return flow_dict
 
 
+@nx._dispatch(node_attrs="demand", edge_attrs={"capacity": float("inf"), "weight": 0})
 def capacity_scaling(
     G, demand="demand", capacity="capacity", weight="weight", heap=BinaryHeap
 ):
@@ -290,7 +291,7 @@ def capacity_scaling(
         for u, v, e in nx.selfloop_edges(G, data=True)
     )
 
-    # Determine the maxmimum edge capacity.
+    # Determine the maximum edge capacity.
     wmax = max(chain([-inf], (e["capacity"] for u, v, e in R.edges(data=True))))
     if wmax == -inf:
         # Residual network has no edges.

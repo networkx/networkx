@@ -95,4 +95,14 @@ Graph Layout
    spectral_layout
    spiral_layout
    multipartite_layout
-   
+
+
+LaTeX Code
+==========
+.. automodule:: networkx.drawing.nx_latex
+.. autosummary::
+   :toctree: generated/
+
+   to_latex_raw
+   to_latex
+   write_latex

@@ -44,6 +44,25 @@ class TestAStar:
         assert nx.astar_path(self.XG, "s", "v") == ["s", "x", "u", "v"]
         assert nx.astar_path_length(self.XG, "s", "v") == 9
 
+    def test_astar_directed_weight_function(self):
+        w1 = lambda u, v, d: d["weight"]
+        assert nx.astar_path(self.XG, "x", "u", weight=w1) == ["x", "u"]
+        assert nx.astar_path_length(self.XG, "x", "u", weight=w1) == 3
+        assert nx.astar_path(self.XG, "s", "v", weight=w1) == ["s", "x", "u", "v"]
+        assert nx.astar_path_length(self.XG, "s", "v", weight=w1) == 9
+
+        w2 = lambda u, v, d: None if (u, v) == ("x", "u") else d["weight"]
+        assert nx.astar_path(self.XG, "x", "u", weight=w2) == ["x", "y", "s", "u"]
+        assert nx.astar_path_length(self.XG, "x", "u", weight=w2) == 19
+        assert nx.astar_path(self.XG, "s", "v", weight=w2) == ["s", "x", "v"]
+        assert nx.astar_path_length(self.XG, "s", "v", weight=w2) == 10
+
+        w3 = lambda u, v, d: d["weight"] + 10
+        assert nx.astar_path(self.XG, "x", "u", weight=w3) == ["x", "u"]
+        assert nx.astar_path_length(self.XG, "x", "u", weight=w3) == 13
+        assert nx.astar_path(self.XG, "s", "v", weight=w3) == ["s", "x", "v"]
+        assert nx.astar_path_length(self.XG, "s", "v", weight=w3) == 30
+
     def test_astar_multigraph(self):
         G = nx.MultiDiGraph(self.XG)
         G.add_weighted_edges_from((u, v, 1000) for (u, v) in list(G.edges()))
@@ -175,3 +194,17 @@ class TestAStar:
         G.add_edges_from(pairwise(nodes, cyclic=True))
         path = nx.astar_path(G, nodes[0], nodes[2])
         assert len(path) == 3
+
+    def test_astar_NetworkXNoPath(self):
+        """Tests that exception is raised when there exists no
+        path between source and target"""
+        G = nx.gnp_random_graph(10, 0.2, seed=10)
+        with pytest.raises(nx.NetworkXNoPath):
+            nx.astar_path(G, 4, 9)
+
+    def test_astar_NodeNotFound(self):
+        """Tests that exception is raised when either
+        source or target is not in graph"""
+        G = nx.gnp_random_graph(10, 0.2, seed=10)
+        with pytest.raises(nx.NodeNotFound):
+            nx.astar_path_length(G, 11, 9)

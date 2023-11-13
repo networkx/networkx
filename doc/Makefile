@@ -15,17 +15,18 @@ ALLSPHINXOPTS   = -d build/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
-	@echo "  html      to make standalone HTML files"
-	@echo "  dirhtml   to make HTML files named index.html in directories"
-	@echo "  pickle    to make pickle files"
-	@echo "  epub       to make an epub"
-	@echo "  json      to make JSON files"
-	@echo "  htmlhelp  to make HTML files and a HTML help project"
-	@echo "  qthelp    to make HTML files and a qthelp project"
-	@echo "  latex     to make LaTeX files, you can set PAPER=a4 or PAPER=letter"
-	@echo "  changes   to make an overview of all changed/added/deprecated items"
-	@echo "  linkcheck to check all external links for integrity"
-	@echo "  doctest   to run all doctests embedded in the documentation (if enabled)"
+	@echo "  html         to make standalone HTML files"
+	@echo "  html-noplot  to make standalone HTML files without building the examples"
+	@echo "  dirhtml      to make HTML files named index.html in directories"
+	@echo "  pickle       to make pickle files"
+	@echo "  epub         to make an epub"
+	@echo "  json         to make JSON files"
+	@echo "  htmlhelp     to make HTML files and a HTML help project"
+	@echo "  qthelp       to make HTML files and a qthelp project"
+	@echo "  latex        to make LaTeX files, you can set PAPER=a4 or PAPER=letter"
+	@echo "  changes      to make an overview of all changed/added/deprecated items"
+	@echo "  linkcheck    to check all external links for integrity"
+	@echo "  doctest      to run all doctests embedded in the documentation (if enabled)"
 
 
 clean:
@@ -45,6 +46,11 @@ html:
 	mkdir -p auto_examples/geospatial/
 	cp ../examples/geospatial/extended_description.rst auto_examples/geospatial/
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) build/html
+	@echo
+	@echo "Build finished. The HTML pages are in build/html."
+
+html-noplot:
+	$(SPHINXBUILD) -D plot_gallery="False" -b html $(ALLSPHINXOPTS) build/html
 	@echo
 	@echo "Build finished. The HTML pages are in build/html."
 

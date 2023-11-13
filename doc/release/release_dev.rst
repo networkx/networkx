@@ -1,9 +1,9 @@
-NetworkX 3.0 (unreleased)
-=========================
+3.2 (unreleased)
+================
 
 Release date: TBD
 
-Supports Python ...
+Supports Python 3.9, 3.10, and 3.11.
 
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
@@ -19,52 +19,55 @@ Highlights
 This release is the result of X of work with over X pull requests by
 X contributors. Highlights include:
 
-- Better syncing between G._succ and G._adj for directed G.
-  And slightly better speed from all the core adjacency data structures.
-  G.adj is now a cached_property while still having the cache reset when
-  G._adj is set to a new dict (which doesn't happen very often).
-  Note: We have always assumed that G._succ and G._adj point to the same
-  object. But we did not enforce it well. If you have somehow worked
-  around our attempts and are relying on these private attributes being
-  allowed to be different from each other due to loopholes in our previous
-  code, you will have to look for other loopholes in our new code
-  (or subclass DiGraph to explicitly allow this).
-- If your code sets G._succ or G._adj to new dictionary-like objects, you no longer
-  have to set them both. Setting either will ensure the other is set as well.
-  And the cached_properties G.adj and G.succ will be rest accordingly too.
-- If you use the presence of the attribute `_adj` as a criteria for the object
-  being a Graph instance, that code may need updating. The graph classes
-  themselves now have an attribute `_adj`. So, it is possible that whatever you
-  are checking might be a class rather than an instance. We suggest you check
-  for attribute `_adj` to verify it is like a NetworkX graph object or type and
-  then `type(obj) is type` to check if it is a class.
-
 Improvements
 ------------
-- [`#5663 <https://github.com/networkx/networkx/pull/5663>`_]
-  Implements edge swapping for directed graphs.
-- [`#5883 <https://github.com/networkx/networkx/pull/5883>`_]
-  Replace the implementation of ``lowest_common_ancestor`` and
-  ``all_pairs_lowest_common_ancestor`` with a "naive" algorithm to fix
-  several bugs and improve performance.
-- [`#5912 <https://github.com/networkx/networkx/pull/5912>`_]
-  The ``mapping`` argument of the ``relabel_nodes`` function can be either a
-  mapping or a function that creates a mapping. ``relabel_nodes`` first checks
-  whether the ``mapping`` is callable - if so, then it is used as a function.
-  This fixes a bug related for ``mapping=str`` and may change the behavior for
-  other ``mapping`` arguments that implement both ``__getitem__`` and
-  ``__call__``.
-- [`#5898 <https://github.com/networkx/networkx/pull/5898>`_]
-  Implements computing and checking for minimal d-separators between two nodes.
-  Also adds functionality to DAGs for computing v-structures.
+
+- [`#6654 <https://github.com/networkx/networkx/pull/6654>`_]
+  Function ``cycle_basis`` switched from using Python sets to dicts so the
+  results are now deterministic (not dependent on order reported by a set).
+
+- [`#6759 <https://github.com/networkx/networkx/pull/6759>`_]
+  Function ``write_network_text`` has new argument ``vertical_chains``
+  which, if true, reduces horizontal space by rendering chains of nodes
+  vertically.
+
+- [`#6892 <https://github.com/networkx/networkx/pull/6892>`_]
+  The shortest path function `goldberg_radzik` handles a zero-weight-cycle
+  correctly instead of raising an exception as a negative weight cycle.
 
 API Changes
 -----------
+- [`#6651 <https://github.com/networkx/networkx/pull/6651>`_]
+  In `is_semiconnected`, the keyword argument `topo_order` has been removed.
+  That argument resulted in silently incorrect results more often than not.
 
+- [`#6887 <https://github.com/networkx/networkx/pull/6887>`_]
+  A new ``default`` argument is added to ``get_node_attributes`` and
+  ``get_edge_attributes``. The ``default`` keyword can be used to set
+  a default value if the attribute is missing from a node/edge.
+
+- [`#6908 <https://github.com/networkx/networkx/pull/6908>`_]
+  Rename `join` as `join_trees` in `algorithms.tree.operations.py`.
 
 Deprecations
 ------------
+- [`#6758 <https://github.com/networkx/networkx/pull/6758>`_]
+  Remove `random_tree` and replace with the new `random_labeled_tree`.
+  In the newly named version, the argument `create_using` is no longer
+  available and `seed` is now keyword-only.
 
+- [`#5925 <https://github.com/networkx/networkx/issues/5925>`_]
+  The ``sort_neighbors`` input argument of ``nx.generic_bfs_edges`` is deprecated
+  and will be removed in v3.4.  Use ``neighbors`` to sort the nodes if desired.
+- [`#6785 <https://github.com/networkx/pull/6785>`_]
+  Deprecate ``MultiDiGraph_EdgeKey`` subclass used in ``Edmonds`` class.
+  Deprecate ``Edmonds`` class for computing minimum and maximum branchings and
+  arborescences (use ``minimum_branching``, ``minimal_branching``,
+  ``maximum_branching``, ``minimum_arborescence`` and ``maximum_arborescence``
+  directly).
+- [`#6841 <https://github.com/networkx/pull/6841>`_]
+  Deprecate the ``normalized`` keyword of the ``s_metric`` function. Ignore
+  value of ``normalized`` for future compatibility.
 
 Merged PRs
 ----------

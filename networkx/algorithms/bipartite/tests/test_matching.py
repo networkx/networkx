@@ -16,7 +16,7 @@ from networkx.algorithms.bipartite.matching import (
 class TestMatching:
     """Tests for bipartite matching algorithms."""
 
-    def setup(self):
+    def setup_method(self):
         """Creates a bipartite graph for use in testing matching algorithms.
 
         The bipartite graph has a maximum cardinality matching that leaves
@@ -104,7 +104,7 @@ class TestMatching:
         # the number of vertices in a minimum vertex cover.
         assert len(vertices) == 5
         # Assert that the set is truly a vertex cover.
-        for (u, v) in self.graph.edges():
+        for u, v in self.graph.edges():
             assert u in vertices or v in vertices
         # TODO Assert that the vertices are the correct ones.
 

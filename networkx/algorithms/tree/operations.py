@@ -4,12 +4,41 @@ from itertools import accumulate, chain
 
 import networkx as nx
 
-__all__ = ["join"]
+__all__ = ["join", "join_trees"]
 
 
 def join(rooted_trees, label_attribute=None):
-    """Returns a new rooted tree with a root node joined with the roots
+    """A deprecated name for `join_trees`
+
+    Returns a new rooted tree with a root node joined with the roots
     of each of the given rooted trees.
+
+    .. deprecated:: 3.2
+
+       `join` is deprecated in NetworkX v3.2 and will be removed in v3.4.
+       It has been renamed join_trees with the same syntax/interface.
+
+    """
+    import warnings
+
+    warnings.warn(
+        "The function `join` is deprecated and is renamed `join_trees`.\n"
+        "The ``join`` function itself will be removed in v3.4",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
+    return join_trees(rooted_trees, label_attribute=label_attribute)
+
+
+def join_trees(rooted_trees, label_attribute=None):
+    """Returns a new rooted tree made by joining `rooted_trees`
+
+    Constructs a new tree by joining each tree in `rooted_trees`.
+    A new root node is added and connected to each of the roots
+    of the input trees. While copying the nodes from the trees,
+    relabeling to integers occurs and the old name stored as an
+    attribute of the new node in the returned graph.
 
     Parameters
     ----------
@@ -35,6 +64,10 @@ def join(rooted_trees, label_attribute=None):
 
     Notes
     -----
+    Trees are stored in NetworkX as NetworkX Graphs. There is no specific
+    enforcement of the fact that these are trees. Testing for each tree
+    can be done using :func:`networkx.is_tree`.
+
     Graph, edge, and node attributes are propagated from the given
     rooted trees to the created tree. If there are any overlapping graph
     attributes, those from later trees will overwrite those from earlier
@@ -78,25 +111,13 @@ def join(rooted_trees, label_attribute=None):
 
     # Get the relabeled roots.
     roots = [
-        next(v for v, d in tree.nodes(data=True) if d.get("_old") == root)
+        next(v for v, d in tree.nodes(data=True) if d.get(label_attribute) == root)
         for tree, root in zip(trees, roots)
     ]
 
-    # Remove the old node labels.
+    # Add all sets of nodes and edges, attributes
     for tree in trees:
-        for v in tree:
-            tree.nodes[v].pop("_old")
-
-    # Add all sets of nodes and edges, with data.
-    nodes = (tree.nodes(data=True) for tree in trees)
-    edges = (tree.edges(data=True) for tree in trees)
-    R.add_nodes_from(chain.from_iterable(nodes))
-    R.add_edges_from(chain.from_iterable(edges))
-
-    # Add graph attributes; later attributes take precedent over earlier
-    # attributes.
-    for tree in trees:
-        R.graph.update(tree.graph)
+        R.update(tree)
 
     # Finally, join the subtrees at the root. We know 0 is unused by the
     # way we relabeled the subtrees.

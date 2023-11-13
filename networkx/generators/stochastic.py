@@ -3,6 +3,7 @@ graph.
 
 """
 
+import networkx as nx
 from networkx.classes import DiGraph, MultiDiGraph
 from networkx.utils import not_implemented_for
 
@@ -10,6 +11,7 @@ __all__ = ["stochastic_graph"]
 
 
 @not_implemented_for("undirected")
+@nx._dispatch(edge_attrs="weight")
 def stochastic_graph(G, copy=True, weight="weight"):
     """Returns a right-stochastic representation of directed graph `G`.
 

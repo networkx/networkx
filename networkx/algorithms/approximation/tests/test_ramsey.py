@@ -11,7 +11,7 @@ def test_ramsey():
     idens = nx.density(graph.subgraph(i))
     assert idens == 0.0, "i-set not correctly found by ramsey!"
 
-    # this trival graph has no cliques. should just find i-sets
+    # this trivial graph has no cliques. should just find i-sets
     graph = nx.trivial_graph()
     c, i = apxa.ramsey_R2(graph)
     assert c == {0}, "clique not correctly found by ramsey!"

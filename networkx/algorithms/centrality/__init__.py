@@ -17,3 +17,4 @@ from .second_order import *
 from .subgraph_alg import *
 from .trophic import *
 from .voterank_alg import *
+from .laplacian import *

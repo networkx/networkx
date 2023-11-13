@@ -1,4 +1,5 @@
 """Basic algorithms for breadth-first searching the nodes of a graph."""
+import math
 from collections import deque
 
 import networkx as nx
@@ -10,9 +11,12 @@ __all__ = [
     "bfs_successors",
     "descendants_at_distance",
     "bfs_layers",
+    "bfs_labeled_edges",
+    "generic_bfs_edges",
 ]
 
 
+@nx._dispatch
 def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbors=None):
     """Iterate over edges in a breadth-first search.
 
@@ -32,17 +36,25 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
     neighbors : function
         A function that takes a newly visited node of the graph as input
         and returns an *iterator* (not just a list) of nodes that are
-        neighbors of that node. If not specified, this is just the
-        ``G.neighbors`` method, but in general it can be any function
+        neighbors of that node with custom ordering. If not specified, this is
+        just the``G.neighbors`` method, but in general it can be any function
         that returns an iterator over some or all of the neighbors of a
         given node, in any order.
 
     depth_limit : int, optional(default=len(G))
-        Specify the maximum search depth
+        Specify the maximum search depth.
 
-    sort_neighbors : function
-        A function that takes the list of neighbors of given node as input, and
-        returns an *iterator* over these neighbors but with custom ordering.
+    sort_neighbors : Callable
+
+        .. deprecated:: 3.2
+
+           The sort_neighbors parameter is deprecated and will be removed in
+           version 3.4. A custom (e.g. sorted) ordering of neighbors can be
+           specified with the `neighbors` parameter.
+
+        A function that takes the list of neighbors of a given node as input,
+        and returns an iterator over these neighbors but with a custom
+        ordering.
 
     Yields
     ------
@@ -52,9 +64,9 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
     Examples
     --------
     >>> G = nx.path_graph(3)
-    >>> print(list(nx.bfs_edges(G, 0)))
+    >>> list(nx.bfs_edges(G, 0))
     [(0, 1), (1, 2)]
-    >>> print(list(nx.bfs_edges(G, source=0, depth_limit=1)))
+    >>> list(nx.bfs_edges(G, source=0, depth_limit=1))
     [(0, 1)]
 
     Notes
@@ -67,27 +79,43 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
     .. _PADS: http://www.ics.uci.edu/~eppstein/PADS/BFS.py
     .. _Depth-limited-search: https://en.wikipedia.org/wiki/Depth-limited_search
     """
-    if callable(sort_neighbors):
+    if neighbors is None:
+        neighbors = G.neighbors
+    if sort_neighbors is not None:
+        import warnings
+
+        warnings.warn(
+            (
+                "The sort_neighbors parameter is deprecated and will be removed\n"
+                "in NetworkX 3.4, use the neighbors parameter instead."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
         _neighbors = neighbors
         neighbors = lambda node: iter(sort_neighbors(_neighbors(node)))
-
-    visited = {source}
     if depth_limit is None:
         depth_limit = len(G)
-    queue = deque([(source, depth_limit, neighbors(source))])
-    while queue:
-        parent, depth_now, children = queue[0]
-        try:
-            child = next(children)
-            if child not in visited:
-                yield parent, child
-                visited.add(child)
-                if depth_now > 1:
-                    queue.append((child, depth_now - 1, neighbors(child)))
-        except StopIteration:
-            queue.popleft()
+
+    seen = {source}
+    n = len(G)
+    depth = 0
+    next_parents_children = [(source, neighbors(source))]
+    while next_parents_children and depth < depth_limit:
+        this_parents_children = next_parents_children
+        next_parents_children = []
+        for parent, children in this_parents_children:
+            for child in children:
+                if child not in seen:
+                    seen.add(child)
+                    next_parents_children.append((child, neighbors(child)))
+                    yield parent, child
+            if len(seen) == n:
+                return
+        depth += 1
 
 
+@nx._dispatch
 def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     """Iterate over edges in a breadth-first-search starting at source.
 
@@ -166,9 +194,16 @@ def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
         successors = G.predecessors
     else:
         successors = G.neighbors
-    yield from generic_bfs_edges(G, source, successors, depth_limit, sort_neighbors)
+
+    if callable(sort_neighbors):
+        yield from generic_bfs_edges(
+            G, source, lambda node: iter(sort_neighbors(successors(node))), depth_limit
+        )
+    else:
+        yield from generic_bfs_edges(G, source, successors, depth_limit)
 
 
+@nx._dispatch
 def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     """Returns an oriented tree constructed from of a breadth-first-search
     starting at source.
@@ -198,12 +233,12 @@ def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     Examples
     --------
     >>> G = nx.path_graph(3)
-    >>> print(list(nx.bfs_tree(G, 1).edges()))
+    >>> list(nx.bfs_tree(G, 1).edges())
     [(1, 0), (1, 2)]
     >>> H = nx.Graph()
     >>> nx.add_path(H, [0, 1, 2, 3, 4, 5, 6])
     >>> nx.add_path(H, [2, 7, 8, 9, 10])
-    >>> print(sorted(list(nx.bfs_tree(H, source=3, depth_limit=3).edges())))
+    >>> sorted(list(nx.bfs_tree(H, source=3, depth_limit=3).edges()))
     [(1, 0), (2, 1), (2, 7), (3, 2), (3, 4), (4, 5), (5, 6), (7, 8)]
 
 
@@ -235,6 +270,7 @@ def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     return T
 
 
+@nx._dispatch
 def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
     """Returns an iterator of predecessors in breadth-first-search from source.
 
@@ -261,21 +297,21 @@ def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
     Examples
     --------
     >>> G = nx.path_graph(3)
-    >>> print(dict(nx.bfs_predecessors(G, 0)))
+    >>> dict(nx.bfs_predecessors(G, 0))
     {1: 0, 2: 1}
     >>> H = nx.Graph()
     >>> H.add_edges_from([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)])
-    >>> print(dict(nx.bfs_predecessors(H, 0)))
+    >>> dict(nx.bfs_predecessors(H, 0))
     {1: 0, 2: 0, 3: 1, 4: 1, 5: 2, 6: 2}
     >>> M = nx.Graph()
     >>> nx.add_path(M, [0, 1, 2, 3, 4, 5, 6])
     >>> nx.add_path(M, [2, 7, 8, 9, 10])
-    >>> print(sorted(nx.bfs_predecessors(M, source=1, depth_limit=3)))
+    >>> sorted(nx.bfs_predecessors(M, source=1, depth_limit=3))
     [(0, 1), (2, 1), (3, 2), (4, 3), (7, 2), (8, 7)]
     >>> N = nx.DiGraph()
     >>> nx.add_path(N, [0, 1, 2, 3, 4, 7])
     >>> nx.add_path(N, [3, 5, 6, 7])
-    >>> print(sorted(nx.bfs_predecessors(N, source=2)))
+    >>> sorted(nx.bfs_predecessors(N, source=2))
     [(3, 2), (4, 3), (5, 3), (6, 5), (7, 4)]
 
     Notes
@@ -299,6 +335,7 @@ def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
         yield (t, s)
 
 
+@nx._dispatch
 def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
     """Returns an iterator of successors in breadth-first-search from source.
 
@@ -326,20 +363,20 @@ def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
     Examples
     --------
     >>> G = nx.path_graph(3)
-    >>> print(dict(nx.bfs_successors(G, 0)))
+    >>> dict(nx.bfs_successors(G, 0))
     {0: [1], 1: [2]}
     >>> H = nx.Graph()
     >>> H.add_edges_from([(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)])
-    >>> print(dict(nx.bfs_successors(H, 0)))
+    >>> dict(nx.bfs_successors(H, 0))
     {0: [1, 2], 1: [3, 4], 2: [5, 6]}
     >>> G = nx.Graph()
     >>> nx.add_path(G, [0, 1, 2, 3, 4, 5, 6])
     >>> nx.add_path(G, [2, 7, 8, 9, 10])
-    >>> print(dict(nx.bfs_successors(G, source=1, depth_limit=3)))
+    >>> dict(nx.bfs_successors(G, source=1, depth_limit=3))
     {1: [0, 2], 2: [3, 7], 3: [4], 7: [8]}
     >>> G = nx.DiGraph()
     >>> nx.add_path(G, [0, 1, 2, 3, 4, 5])
-    >>> print(dict(nx.bfs_successors(G, source=3)))
+    >>> dict(nx.bfs_successors(G, source=3))
     {3: [4], 4: [5]}
 
     Notes
@@ -371,6 +408,7 @@ def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
     yield (parent, children)
 
 
+@nx._dispatch
 def bfs_layers(G, sources):
     """Returns an iterator of all the layers in breadth-first search traversal.
 
@@ -413,7 +451,7 @@ def bfs_layers(G, sources):
     # same distance from sources at each iteration
     while current_layer:
         yield current_layer
-        next_layer = list()
+        next_layer = []
         for node in current_layer:
             for child in G[node]:
                 if child not in visited:
@@ -422,6 +460,88 @@ def bfs_layers(G, sources):
         current_layer = next_layer
 
 
+REVERSE_EDGE = "reverse"
+TREE_EDGE = "tree"
+FORWARD_EDGE = "forward"
+LEVEL_EDGE = "level"
+
+
+@nx._dispatch
+def bfs_labeled_edges(G, sources):
+    """Iterate over edges in a breadth-first search (BFS) labeled by type.
+
+    We generate triple of the form (*u*, *v*, *d*), where (*u*, *v*) is the
+    edge being explored in the breadth-first search and *d* is one of the
+    strings 'tree', 'forward', 'level', or 'reverse'.  A 'tree' edge is one in
+    which *v* is first discovered and placed into the layer below *u*.  A
+    'forward' edge is one in which *u* is on the layer above *v* and *v* has
+    already been discovered.  A 'level' edge is one in which both *u* and *v*
+    occur on the same layer.  A 'reverse' edge is one in which *u* is on a layer
+    below *v*.
+
+    We emit each edge exactly once.  In an undirected graph, 'reverse' edges do
+    not occur, because each is discovered either as a 'tree' or 'forward' edge.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A graph over which to find the layers using breadth-first search.
+
+    sources : node in `G` or list of nodes in `G`
+        Starting nodes for single source or multiple sources breadth-first search
+
+    Yields
+    ------
+    edges: generator
+       A generator of triples (*u*, *v*, *d*) where (*u*, *v*) is the edge being
+       explored and *d* is described above.
+
+    Examples
+    --------
+    >>> G = nx.cycle_graph(4, create_using = nx.DiGraph)
+    >>> list(nx.bfs_labeled_edges(G, 0))
+    [(0, 1, 'tree'), (1, 2, 'tree'), (2, 3, 'tree'), (3, 0, 'reverse')]
+    >>> G = nx.complete_graph(3)
+    >>> list(nx.bfs_labeled_edges(G, 0))
+    [(0, 1, 'tree'), (0, 2, 'tree'), (1, 2, 'level')]
+    >>> list(nx.bfs_labeled_edges(G, [0, 1]))
+    [(0, 1, 'level'), (0, 2, 'tree'), (1, 2, 'forward')]
+    """
+    if sources in G:
+        sources = [sources]
+
+    neighbors = G._adj
+    directed = G.is_directed()
+    visited = set()
+    visit = visited.discard if directed else visited.add
+    # We use visited in a negative sense, so the visited set stays empty for the
+    # directed case and level edges are reported on their first occurrence in
+    # the undirected case.  Note our use of visited.discard -- this is built-in
+    # thus somewhat faster than a python-defined def nop(x): pass
+    depth = {s: 0 for s in sources}
+    queue = deque(depth.items())
+    push = queue.append
+    pop = queue.popleft
+    while queue:
+        u, du = pop()
+        for v in neighbors[u]:
+            if v not in depth:
+                depth[v] = dv = du + 1
+                push((v, dv))
+                yield u, v, TREE_EDGE
+            else:
+                dv = depth[v]
+                if du == dv:
+                    if v not in visited:
+                        yield u, v, LEVEL_EDGE
+                elif du < dv:
+                    yield u, v, FORWARD_EDGE
+                elif directed:
+                    yield u, v, REVERSE_EDGE
+        visit(u)
+
+
+@nx._dispatch
 def descendants_at_distance(G, source, distance):
     """Returns all nodes at a fixed `distance` from `source` in `G`.
 

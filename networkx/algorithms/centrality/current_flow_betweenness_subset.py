@@ -10,6 +10,7 @@ __all__ = [
 
 
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight")
 def current_flow_betweenness_centrality_subset(
     G, sources, targets, normalized=True, weight=None, dtype=float, solver="lu"
 ):
@@ -119,6 +120,7 @@ def current_flow_betweenness_centrality_subset(
 
 
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight")
 def edge_current_flow_betweenness_centrality_subset(
     G, sources, targets, normalized=True, weight=None, dtype=float, solver="lu"
 ):

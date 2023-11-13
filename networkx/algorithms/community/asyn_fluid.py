@@ -2,6 +2,7 @@
 
 from collections import Counter
 
+import networkx as nx
 from networkx.algorithms.components import is_connected
 from networkx.exception import NetworkXError
 from networkx.utils import groups, not_implemented_for, py_random_state
@@ -9,8 +10,9 @@ from networkx.utils import groups, not_implemented_for, py_random_state
 __all__ = ["asyn_fluidc"]
 
 
-@py_random_state(3)
 @not_implemented_for("directed", "multigraph")
+@py_random_state(3)
+@nx._dispatch
 def asyn_fluidc(G, k, max_iter=100, seed=None):
     """Returns communities in `G` as detected by Fluid Communities algorithm.
 
@@ -79,7 +81,7 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
     communities = {n: i for i, n in enumerate(vertices[:k])}
     density = {}
     com_to_numvertices = {}
-    for vertex in communities.keys():
+    for vertex in communities:
         com_to_numvertices[communities[vertex]] = 1
         density[communities[vertex]] = max_density
     # Set up control variables and start iterating

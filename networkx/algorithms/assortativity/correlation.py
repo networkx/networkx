@@ -1,5 +1,6 @@
 """Node assortativity coefficients and correlation measures.
 """
+import networkx as nx
 from networkx.algorithms.assortativity.mixing import (
     attribute_mixing_matrix,
     degree_mixing_matrix,
@@ -14,6 +15,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch(edge_attrs="weight")
 def degree_assortativity_coefficient(G, x="out", y="in", weight=None, nodes=None):
     """Compute degree assortativity of graph.
 
@@ -98,6 +100,7 @@ def degree_assortativity_coefficient(G, x="out", y="in", weight=None, nodes=None
     return _numeric_ac(M, mapping=mapping)
 
 
+@nx._dispatch(edge_attrs="weight")
 def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, nodes=None):
     """Compute degree assortativity of graph.
 
@@ -150,13 +153,13 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
        Edge direction and the structure of networks, PNAS 107, 10815-20 (2010).
     """
     import scipy as sp
-    import scipy.stats  # call as sp.stats
 
     xy = node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
     x, y = zip(*xy)
     return sp.stats.pearsonr(x, y)[0]
 
 
+@nx._dispatch(node_attrs="attribute")
 def attribute_assortativity_coefficient(G, attribute, nodes=None):
     """Compute assortativity for node attributes.
 
@@ -203,6 +206,7 @@ def attribute_assortativity_coefficient(G, attribute, nodes=None):
     return attribute_ac(M)
 
 
+@nx._dispatch(node_attrs="attribute")
 def numeric_assortativity_coefficient(G, attribute, nodes=None):
     """Compute assortativity for numerical node attributes.
 

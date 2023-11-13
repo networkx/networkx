@@ -80,6 +80,17 @@ def test_rich_club_exception2():
         nx.rich_club_coefficient(G)
 
 
+def test_rich_club_selfloop():
+    G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
+    G.add_edge(1, 1)  # self loop
+    G.add_edge(1, 2)
+    with pytest.raises(
+        Exception,
+        match="rich_club_coefficient is not implemented for " "graphs with self loops.",
+    ):
+        nx.rich_club_coefficient(G)
+
+
 # def test_richclub2_normalized():
 #    T = nx.balanced_tree(2,10)
 #    rcNorm = nx.richclub.rich_club_coefficient(T,Q=2)

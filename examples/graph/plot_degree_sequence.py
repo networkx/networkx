@@ -15,7 +15,9 @@ z = [5, 3, 3, 3, 3, 2, 2, 2, 1, 1, 1]
 print(nx.is_graphical(z))
 
 print("Configuration model")
-G = nx.configuration_model(z, seed=seed)  # configuration model, seed for reproduciblity
+G = nx.configuration_model(
+    z, seed=seed
+)  # configuration model, seed for reproducibility
 degree_sequence = [d for n, d in G.degree()]  # degree sequence
 print(f"Degree sequence {degree_sequence}")
 print("Degree histogram")

@@ -154,9 +154,9 @@ def test_cyclic_graphs_raise_error():
     with pytest.raises(nx.NetworkXError):
         nx.d_separated(g, {0}, {1}, {2})
     with pytest.raises(nx.NetworkXError):
-        nx.minimal_d_separator(g, {0}, {1})
+        nx.minimal_d_separator(g, 0, 1)
     with pytest.raises(nx.NetworkXError):
-        nx.is_minimal_d_separator(g, {0}, {1}, {2})
+        nx.is_minimal_d_separator(g, 0, 1, {2})
 
 
 def test_invalid_nodes_raise_error(asia_graph):
@@ -200,3 +200,29 @@ def test_minimal_d_separator():
     # the minimal separating set should pass the test for minimality
     assert nx.is_minimal_d_separator(G, "A", "C", Zmin)
     assert Zmin == {"B"}
+
+    Znotmin = Zmin.union({"D"})
+    assert not nx.is_minimal_d_separator(G, "A", "C", Znotmin)
+
+
+def test_minimal_d_separator_checks_dsep():
+    """Test that is_minimal_d_separator checks for d-separation as well."""
+    g = nx.DiGraph()
+    g.add_edges_from(
+        [
+            ("A", "B"),
+            ("A", "E"),
+            ("B", "C"),
+            ("B", "D"),
+            ("D", "C"),
+            ("D", "F"),
+            ("E", "D"),
+            ("E", "F"),
+        ]
+    )
+
+    assert not nx.d_separated(g, {"C"}, {"F"}, {"D"})
+
+    # since {'D'} and {} are not d-separators, we return false
+    assert not nx.is_minimal_d_separator(g, "C", "F", {"D"})
+    assert not nx.is_minimal_d_separator(g, "C", "F", {})

@@ -14,7 +14,7 @@ The graph is bipartite (clubs, women).
 """
 import matplotlib.pyplot as plt
 import networkx as nx
-import networkx.algorithms.bipartite as bipartite
+from networkx.algorithms import bipartite
 
 G = nx.davis_southern_women_graph()
 women = G.graph["top"]
@@ -30,7 +30,7 @@ print("#Friends, Member")
 for w in women:
     print(f"{W.degree(w)} {w}")
 
-# project bipartite graph onto women nodes keeping number of co-occurence
+# project bipartite graph onto women nodes keeping number of co-occurrence
 # the degree computed is weighted and counts the total number of shared contacts
 W = bipartite.weighted_projected_graph(G, women)
 print()

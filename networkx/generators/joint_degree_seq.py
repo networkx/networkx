@@ -108,7 +108,7 @@ def _neighbor_switch(G, w, unsat, h_node_residual, avoid_node_id=None):
     """
 
     if (avoid_node_id is None) or (h_node_residual[avoid_node_id] > 1):
-        # select unsatured node w_prime that has the same degree as w
+        # select unsaturated node w_prime that has the same degree as w
         w_prime = next(iter(unsat))
     else:
         # assume that the node pair (v,w) has been selected for connection. if
@@ -227,13 +227,11 @@ def joint_degree_graph(joint_degrees, seed=None):
     # for each pair
     for k in joint_degrees:
         for l in joint_degrees[k]:
-
             # n_edges_add is the number of edges to add for the
             # degree pair (k,l)
             n_edges_add = joint_degrees[k][l]
 
             if (n_edges_add > 0) and (k >= l):
-
                 # number of nodes with degree k and l
                 k_size = degree_count[k]
                 l_size = degree_count[l]
@@ -253,14 +251,12 @@ def joint_degree_graph(joint_degrees, seed=None):
                     n_edges_add = joint_degrees[k][l] // 2
 
                 while n_edges_add > 0:
-
                     # randomly pick nodes v and w that have degrees k and l
                     v = k_nodes[seed.randrange(k_size)]
                     w = l_nodes[seed.randrange(l_size)]
 
                     # if nodes v and w are disconnected then attempt to connect
                     if not G.has_edge(v, w) and (v != w):
-
                         # if node v has no free stubs then do neighbor switch
                         if h_node_residual[v] == 0:
                             _neighbor_switch(G, v, k_unsat, h_node_residual)
@@ -298,7 +294,7 @@ def is_valid_directed_joint_degree(in_degrees, out_degrees, nkk):
         out degree sequence contains the out degrees of nodes.
     nkk  :  dictionary of dictionary of integers
         directed joint degree dictionary. for nodes of out degree k (first
-        level of dict) and nodes of in degree l (seconnd level of dict)
+        level of dict) and nodes of in degree l (second level of dict)
         describes the number of edges.
 
     Returns
@@ -351,13 +347,7 @@ def is_valid_directed_joint_degree(in_degrees, out_degrees, nkk):
                 if val + forbidden.get((k, l), 0) > V[(k, 1)] * V[(l, 0)]:
                     return False
 
-    for s in S:
-        if not S[s] / s[0] == V[s]:  # condition 2
-            return False
-
-    # if all conditions abive have been satisfied then the input nkk is
-    # realizable as a simple graph.
-    return True
+    return all(S[s] / s[0] == V[s] for s in S)
 
 
 def _directed_neighbor_switch(

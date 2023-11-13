@@ -104,6 +104,13 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     valid : bool
         True if deg_sequence is graphical and False if not.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> sequence = (d for _, d in G.degree())
+    >>> nx.is_valid_degree_sequence_havel_hakimi(sequence)
+    True
+
     Notes
     -----
     The ZZ condition says that for the sequence d if
@@ -176,6 +183,13 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     -------
     valid : bool
         True if deg_sequence is graphical and False if not.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> sequence = (d for _, d in G.degree())
+    >>> nx.is_valid_degree_sequence_erdos_gallai(sequence)
+    True
 
     Notes
     -----
@@ -252,6 +266,13 @@ def is_multigraphical(sequence):
     valid : bool
         True if deg_sequence is a multigraphic degree sequence and False if not.
 
+    Examples
+    --------
+    >>> G = nx.MultiGraph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> sequence = (d for _, d in G.degree())
+    >>> nx.is_multigraphical(sequence)
+    True
+
     Notes
     -----
     The worst-case run time is $O(n)$ where $n$ is the length of the sequence.
@@ -292,6 +313,13 @@ def is_pseudographical(sequence):
     valid : bool
       True if the sequence is a pseudographic degree sequence and False if not.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> sequence = (d for _, d in G.degree())
+    >>> nx.is_pseudographical(sequence)
+    True
+
     Notes
     -----
     The worst-case run time is $O(n)$ where n is the length of the sequence.
@@ -325,6 +353,14 @@ def is_digraphical(in_sequence, out_sequence):
     -------
     valid : bool
       True if in and out-sequences are digraphic False if not.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> in_seq = (d for n, d in G.in_degree())
+    >>> out_seq = (d for n, d in G.out_degree())
+    >>> nx.is_digraphical(in_seq, out_seq)
+    True
 
     Notes
     -----

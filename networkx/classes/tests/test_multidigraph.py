@@ -285,6 +285,8 @@ class TestMultiDiGraph(BaseMultiDiGraphTester, _TestMultiGraph):
         assert G._adj == {0: {1: {0: {}}}, 1: {}}
         assert G._succ == {0: {1: {0: {}}}, 1: {}}
         assert G._pred == {0: {}, 1: {0: {0: {}}}}
+        with pytest.raises(ValueError, match="None cannot be a node"):
+            G.add_edge(None, 3)
 
     def test_add_edges_from(self):
         G = self.Graph()
@@ -321,6 +323,8 @@ class TestMultiDiGraph(BaseMultiDiGraphTester, _TestMultiGraph):
         pytest.raises(nx.NetworkXError, G.add_edges_from, [(0, 1, 2, 3, 4)])
         # not a tuple
         pytest.raises(TypeError, G.add_edges_from, [0])
+        with pytest.raises(ValueError, match="None cannot be a node"):
+            G.add_edges_from([(None, 3), (3, 2)])
 
     def test_remove_edge(self):
         G = self.K3
@@ -417,13 +421,13 @@ class CustomDictClass(UserDict):
 
 
 class MultiDiGraphSubClass(nx.MultiDiGraph):
-    node_dict_factory = CustomDictClass  # type: ignore
-    node_attr_dict_factory = CustomDictClass  # type: ignore
-    adjlist_outer_dict_factory = CustomDictClass  # type: ignore
-    adjlist_inner_dict_factory = CustomDictClass  # type: ignore
-    edge_key_dict_factory = CustomDictClass  # type: ignore
-    edge_attr_dict_factory = CustomDictClass  # type: ignore
-    graph_attr_dict_factory = CustomDictClass  # type: ignore
+    node_dict_factory = CustomDictClass  # type: ignore[assignment]
+    node_attr_dict_factory = CustomDictClass  # type: ignore[assignment]
+    adjlist_outer_dict_factory = CustomDictClass  # type: ignore[assignment]
+    adjlist_inner_dict_factory = CustomDictClass  # type: ignore[assignment]
+    edge_key_dict_factory = CustomDictClass  # type: ignore[assignment]
+    edge_attr_dict_factory = CustomDictClass  # type: ignore[assignment]
+    graph_attr_dict_factory = CustomDictClass  # type: ignore[assignment]
 
 
 class TestMultiDiGraphSubclass(TestMultiDiGraph):

@@ -41,6 +41,7 @@ class EdgePartition(Enum):
 
 
 @not_implemented_for("multigraph")
+@nx._dispatch(edge_attrs="weight", preserve_edge_attrs="data")
 def boruvka_mst_edges(
     G, minimum=True, weight="weight", keys=False, data=True, ignore_nan=False
 ):
@@ -137,6 +138,9 @@ def boruvka_mst_edges(
                 forest.union(u, v)
 
 
+@nx._dispatch(
+    edge_attrs={"weight": None, "partition": None}, preserve_edge_attrs="data"
+)
 def kruskal_mst_edges(
     G, minimum, weight="weight", keys=True, data=True, ignore_nan=False, partition=None
 ):
@@ -247,6 +251,7 @@ def kruskal_mst_edges(
                 subtrees.union(u, v)
 
 
+@nx._dispatch(edge_attrs="weight", preserve_edge_attrs="data")
 def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan=False):
     """Iterate over edges of Prim's algorithm min/max spanning tree.
 
@@ -334,12 +339,22 @@ def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan
                         continue
                     for k2, d2 in keydict.items():
                         new_weight = d2.get(weight, 1) * sign
+                        if isnan(new_weight):
+                            if ignore_nan:
+                                continue
+                            msg = f"NaN found as an edge weight. Edge {(v, w, k2, d2)}"
+                            raise ValueError(msg)
                         push(frontier, (new_weight, next(c), v, w, k2, d2))
             else:
                 for w, d2 in G.adj[v].items():
                     if w in visited:
                         continue
                     new_weight = d2.get(weight, 1) * sign
+                    if isnan(new_weight):
+                        if ignore_nan:
+                            continue
+                        msg = f"NaN found as an edge weight. Edge {(v, w, d2)}"
+                        raise ValueError(msg)
                     push(frontier, (new_weight, next(c), v, w, d2))
 
 
@@ -352,6 +367,7 @@ ALGORITHMS = {
 
 
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight", preserve_edge_attrs="data")
 def minimum_spanning_edges(
     G, algorithm="kruskal", weight="weight", keys=True, data=True, ignore_nan=False
 ):
@@ -446,6 +462,7 @@ def minimum_spanning_edges(
 
 
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight", preserve_edge_attrs="data")
 def maximum_spanning_edges(
     G, algorithm="kruskal", weight="weight", keys=True, data=True, ignore_nan=False
 ):
@@ -538,6 +555,7 @@ def maximum_spanning_edges(
     )
 
 
+@nx._dispatch(preserve_all_attrs=True)
 def minimum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=False):
     """Returns a minimum spanning tree or forest on an undirected graph `G`.
 
@@ -597,13 +615,14 @@ def minimum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
     return T
 
 
+@nx._dispatch(preserve_all_attrs=True)
 def partition_spanning_tree(
     G, minimum=True, weight="weight", partition="partition", ignore_nan=False
 ):
     """
     Find a spanning tree while respecting a partition of edges.
 
-    Edges can be flagged as either `INLCUDED` which are required to be in the
+    Edges can be flagged as either `INCLUDED` which are required to be in the
     returned tree, `EXCLUDED`, which cannot be in the returned tree and `OPEN`.
 
     This is used in the SpanningTreeIterator to create new partitions following
@@ -660,6 +679,7 @@ def partition_spanning_tree(
     return T
 
 
+@nx._dispatch(preserve_all_attrs=True)
 def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=False):
     """Returns a maximum spanning tree or forest on an undirected graph `G`.
 
@@ -723,6 +743,7 @@ def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
 
 
 @py_random_state(3)
+@nx._dispatch(preserve_edge_attrs=True)
 def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
     """
     Sample a random spanning tree using the edges weights of `G`.
@@ -732,7 +753,7 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
     is based on the product of edge weights, and if ``multiplicative=False``
     it is based on the sum of the edge weight. However, since it is
     easier to determine the total weight of all spanning trees for the
-    multiplicative verison, that is significantly faster and should be used if
+    multiplicative version, that is significantly faster and should be used if
     possible. Additionally, setting `weight` to `None` will cause a spanning tree
     to be selected with uniform probability.
 
@@ -845,12 +866,12 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
     def spanning_tree_total_weight(G, weight):
         """
         Find the sum of weights of the spanning trees of `G` using the
-        approioate `method`.
+        appropriate `method`.
 
-        This is easy if the choosen method is 'multiplicative', since we can
+        This is easy if the chosen method is 'multiplicative', since we can
         use Kirchhoff's Tree Matrix Theorem directly. However, with the
         'additive' method, this process is slightly more complex and less
-        computatiionally efficent as we have to find the number of spanning
+        computationally efficient as we have to find the number of spanning
         trees which contain each possible edge in the graph.
 
         Parameters
@@ -882,7 +903,7 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
             #    the number of spanning trees which have to include that edge. This
             #    can be accomplished by contracting the edge and finding the
             #    multiplicative total spanning tree weight if the weight of each edge
-            #    is assumed to be 1, which is conviently built into networkx already,
+            #    is assumed to be 1, which is conveniently built into networkx already,
             #    by calling total_spanning_tree_weight with weight=None
             else:
                 total = 0
@@ -1022,7 +1043,7 @@ class SpanningTreeIterator:
         ).size(weight=self.weight)
 
         self.partition_queue.put(
-            self.Partition(mst_weight if self.minimum else -mst_weight, dict())
+            self.Partition(mst_weight if self.minimum else -mst_weight, {})
         )
 
         return self

@@ -6,6 +6,7 @@ import networkx as nx
 __all__ = ["harmonic_centrality"]
 
 
+@nx._dispatch(edge_attrs="distance")
 def harmonic_centrality(G, nbunch=None, distance=None, sources=None):
     r"""Compute harmonic centrality for nodes.
 

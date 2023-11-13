@@ -43,7 +43,12 @@ class _HeapElement:
             return self.priority < other
         # assume comparing to another _HeapElement
         if self.priority == other_priority:
-            return self.element < other.element
+            try:
+                return self.element < other.element
+            except TypeError as err:
+                raise TypeError(
+                    "Consider using a tuple, with a priority value that can be compared."
+                )
         return self.priority < other_priority
 
     def __gt__(self, other):
@@ -53,7 +58,12 @@ class _HeapElement:
             return self.priority > other
         # assume comparing to another _HeapElement
         if self.priority == other_priority:
-            return self.element < other.element
+            try:
+                return self.element > other.element
+            except TypeError as err:
+                raise TypeError(
+                    "Consider using a tuple, with a priority value that can be compared."
+                )
         return self.priority > other_priority
 
     def __eq__(self, other):
@@ -93,26 +103,45 @@ class MappedQueue:
     library. While MappedQueue is designed for maximum compatibility with
     heapq, it adds element removal, lookup, and priority update.
 
+    Parameters
+    ----------
+    data : dict or iterable
+
     Examples
     --------
 
-    A `MappedQueue` can be created empty or optionally given an array of
-    initial elements. Calling `push()` will add an element and calling `pop()`
-    will remove and return the smallest element.
+    A `MappedQueue` can be created empty, or optionally, given a dictionary
+    of initial elements and priorities.  The methods `push`, `pop`,
+    `remove`, and `update` operate on the queue.
 
-    >>> q = MappedQueue([916, 50, 4609, 493, 237])
-    >>> q.push(1310)
+    >>> colors_nm = {'red':665, 'blue': 470, 'green': 550}
+    >>> q = MappedQueue(colors_nm)
+    >>> q.remove('red')
+    >>> q.update('green', 'violet', 400)
+    >>> q.push('indigo', 425)
     True
-    >>> [q.pop() for i in range(len(q.heap))]
-    [50, 237, 493, 916, 1310, 4609]
+    >>> [q.pop().element for i in range(len(q.heap))]
+    ['violet', 'indigo', 'blue']
 
-    Elements can also be updated or removed from anywhere in the queue.
+    A `MappedQueue` can also be initialized with a list or other iterable. The priority is assumed
+    to be the sort order of the items in the list.
 
     >>> q = MappedQueue([916, 50, 4609, 493, 237])
     >>> q.remove(493)
     >>> q.update(237, 1117)
     >>> [q.pop() for i in range(len(q.heap))]
     [50, 916, 1117, 4609]
+
+    An exception is raised if the elements are not comparable.
+
+    >>> q = MappedQueue([100, 'a'])
+    Traceback (most recent call last):
+    ...
+    TypeError: '<' not supported between instances of 'int' and 'str'
+
+    To avoid the exception, use a dictionary to assign priorities to the elements.
+
+    >>> q = MappedQueue({100: 0, 'a': 1 })
 
     References
     ----------
@@ -122,13 +151,15 @@ class MappedQueue:
        Pearson Education.
     """
 
-    def __init__(self, data=[]):
+    def __init__(self, data=None):
         """Priority queue class with updatable priorities."""
-        if isinstance(data, dict):
+        if data is None:
+            self.heap = []
+        elif isinstance(data, dict):
             self.heap = [_HeapElement(v, k) for k, v in data.items()]
         else:
             self.heap = list(data)
-        self.position = dict()
+        self.position = {}
         self._heapify()
 
     def _heapify(self):

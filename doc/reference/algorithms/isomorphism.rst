@@ -4,9 +4,6 @@
 Isomorphism
 ***********
 
-.. toctree::
-   :maxdepth: 2
-
 .. automodule:: networkx.algorithms.isomorphism
 .. autosummary::
    :toctree: generated/
@@ -16,6 +13,15 @@ Isomorphism
    fast_could_be_isomorphic
    faster_could_be_isomorphic
 
+VF2++
+-----
+.. automodule:: networkx.algorithms.isomorphism.vf2pp
+.. autosummary::
+   :toctree: generated/
+
+   vf2pp_is_isomorphic
+   vf2pp_all_isomorphisms
+   vf2pp_isomorphism
 
 Tree Isomorphism
 -----------------

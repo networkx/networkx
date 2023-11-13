@@ -223,6 +223,7 @@ def _greedy_modularity_communities_generator(G, weight=None, resolution=1):
         yield communities.values()
 
 
+@nx._dispatch(edge_attrs="weight")
 def greedy_modularity_communities(
     G,
     weight=None,
@@ -237,7 +238,7 @@ def greedy_modularity_communities(
 
     Greedy modularity maximization begins with each node in its own community
     and repeatedly joins the pair of communities that lead to the largest
-    modularity until no futher increase in modularity is possible (a maximum).
+    modularity until no further increase in modularity is possible (a maximum).
     Two keyword arguments adjust the stopping condition. `cutoff` is a lower
     limit on the number of communities so you can stop the process before
     reaching a maximum (used to save computation time). `best_n` is an upper
@@ -287,9 +288,8 @@ def greedy_modularity_communities(
 
     Examples
     --------
-    >>> from networkx.algorithms.community import greedy_modularity_communities
     >>> G = nx.karate_club_graph()
-    >>> c = greedy_modularity_communities(G)
+    >>> c = nx.community.greedy_modularity_communities(G)
     >>> sorted(c[0])
     [8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
 
@@ -353,6 +353,7 @@ def greedy_modularity_communities(
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch(edge_attrs="weight")
 def naive_greedy_modularity_communities(G, resolution=1, weight=None):
     r"""Find communities in G using greedy modularity maximization.
 
@@ -388,10 +389,8 @@ def naive_greedy_modularity_communities(G, resolution=1, weight=None):
 
     Examples
     --------
-    >>> from networkx.algorithms.community import \
-    ... naive_greedy_modularity_communities
     >>> G = nx.karate_club_graph()
-    >>> c = naive_greedy_modularity_communities(G)
+    >>> c = nx.community.naive_greedy_modularity_communities(G)
     >>> sorted(c[0])
     [8, 14, 15, 18, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
 
@@ -401,7 +400,7 @@ def naive_greedy_modularity_communities(G, resolution=1, weight=None):
     modularity
     """
     # First create one community for each node
-    communities = list(frozenset([u]) for u in G.nodes())
+    communities = [frozenset([u]) for u in G.nodes()]
     # Track merges
     merges = []
     # Greedily merge communities until no improvement is possible

@@ -13,7 +13,6 @@ for n, f in funcs:
     # print(result)
 
     old_names = (
-        "find_cores",
         "test",
         "write_graphml_lxml",
         "write_graphml_xml",

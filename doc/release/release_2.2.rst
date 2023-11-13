@@ -38,7 +38,7 @@ default RNG. You can also create your own RNG and pass it into the `seed`
 argument. Finally, you can use an integer to indicate the state to set for
 the RNG. In this case a local RNG is created leaving the global RNG untouched.
 Some functions use `random` and some use `numpy.random`, but we have written
-a translater so that all functions CAN take a `numpy.random.RandomState`
+a translator so that all functions CAN take a `numpy.random.RandomState`
 object. So a single RNG can be used for the entire package.
 
 Cyclic references between graph classes and views have been removed to ease
@@ -60,7 +60,7 @@ reading them back in will not make the numpy values.
 
 A generator following the Stochastic Block Model is now available.
 
-New function `all_topolgical_sort` to generate all possible top_sorts.
+New function `all_topological_sort` to generate all possible top_sorts.
 
 New functions for tree width and tree decompositions.
 
@@ -91,7 +91,7 @@ H.update(e), and H.update(nodes=n) are also allowed.
 First argument is a graph if it has `edges` and `nodes` attributes.
 Otherwise the first argument is treated as a list of edges.
 
-The bellman_ford predecessor dicts had sentinal value `[None]` for
+The bellman_ford predecessor dicts had sentinel value `[None]` for
 source nodes. That has been changed so source nodes have pred value '[]'
 
 
@@ -104,7 +104,7 @@ interface. Specifically, `ReverseView` and `ReverseMultiView` are
 replaced by `reverse_view`. `SubGraph`, `SubDiGraph`, `SubMultiGraph`
 and `SubMultiDiGraph` are replaced by `subgraph_view`.
 And `GraphView`, `DiGraphView`, `MultiGraphView`, `MultiDiGraphView`
-are derecated in favor of `generic_graph_view(graph, create_using)`.
+are deprecated in favor of `generic_graph_view(graph, create_using)`.
 
 
 Contributors

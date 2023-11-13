@@ -1,3 +1,4 @@
+import os
 from datetime import date
 from sphinx_gallery.sorting import ExplicitOrder, FileNameSortKey
 from warnings import filterwarnings
@@ -50,6 +51,7 @@ sphinx_gallery_conf = {
     "gallery_dirs": "auto_examples",
     "backreferences_dir": "modules/generated",
     "image_scrapers": ("matplotlib",),
+    "plot_gallery": "True",
 }
 # Add pygraphviz png scraper, if available
 try:
@@ -80,12 +82,15 @@ exclude_patterns = ["release/release_template.rst"]
 project = "NetworkX"
 copyright = f"2004-{date.today().year}, NetworkX Developers"
 
+# Used in networkx.utils.backends for cleaner rendering of functions.
+# We need to set this before we import networkx.
+os.environ["_NETWORKX_BUILDING_DOCS_"] = "True"
+import networkx
+
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
 #
 # The short X.Y version.
-import networkx
-
 version = networkx.__version__
 # The full version, including dev info
 release = networkx.__version__.replace("_", "")
@@ -112,7 +117,7 @@ add_module_names = False
 # pygments_style = 'friendly'
 pygments_style = "sphinx"
 
-# A list of prefixs that are ignored when creating the module index. (new in Sphinx 0.6)
+# A list of prefixes that are ignored when creating the module index. (new in Sphinx 0.6)
 modindex_common_prefix = ["networkx."]
 
 doctest_global_setup = "import networkx as nx"
@@ -136,7 +141,8 @@ html_theme_options = {
     ],
     "external_links": [{"name": "Guides", "url": "https://networkx.org/nx-guides/"}],
     "navbar_end": ["theme-switcher", "navbar-icon-links", "version"],
-    "page_sidebar_items": ["search-field", "page-toc", "edit-this-page"],
+    "secondary_sidebar_items": ["search-field", "page-toc", "edit-this-page"],
+    "header_links_before_dropdown": 7,
 }
 html_sidebars = {
     "**": ["sidebar-nav-bs", "sidebar-ethical-ads"],
@@ -221,11 +227,11 @@ latex_appendices = ["tutorial"]
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
-    "neps": ("https://numpy.org/neps", None),
-    "matplotlib": ("https://matplotlib.org/stable", None),
-    "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
-    "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
-    "geopandas": ("https://geopandas.org/", None),
+    "neps": ("https://numpy.org/neps/", None),
+    "matplotlib": ("https://matplotlib.org/stable/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
+    "geopandas": ("https://geopandas.org/en/stable/", None),
     "pygraphviz": ("https://pygraphviz.github.io/documentation/stable/", None),
     "sphinx-gallery": ("https://sphinx-gallery.github.io/stable/", None),
     "nx-guides": ("https://networkx.org/nx-guides/", None),

@@ -41,6 +41,7 @@ __all__ = ["treewidth_min_degree", "treewidth_min_fill_in"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def treewidth_min_degree(G):
     """Returns a treewidth decomposition using the Minimum Degree heuristic.
 
@@ -64,6 +65,7 @@ def treewidth_min_degree(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def treewidth_min_fill_in(G):
     """Returns a treewidth decomposition using the Minimum Fill-in heuristic.
 
@@ -175,6 +177,7 @@ def min_fill_in_heuristic(graph):
     return min_fill_in_node
 
 
+@nx._dispatch
 def treewidth_decomp(G, heuristic=min_fill_in_heuristic):
     """Returns a treewidth decomposition using the passed heuristic.
 

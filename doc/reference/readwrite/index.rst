@@ -18,3 +18,4 @@ Reading and writing graphs
    sparsegraph6
    pajek
    matrix_market
+   text

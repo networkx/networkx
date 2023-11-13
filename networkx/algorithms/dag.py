@@ -36,6 +36,7 @@ __all__ = [
 chaini = chain.from_iterable
 
 
+@nx._dispatch
 def descendants(G, source):
     """Returns all nodes reachable from `source` in `G`.
 
@@ -72,6 +73,7 @@ def descendants(G, source):
     return {child for parent, child in nx.bfs_edges(G, source)}
 
 
+@nx._dispatch
 def ancestors(G, source):
     """Returns all nodes having a path to `source` in `G`.
 
@@ -108,6 +110,7 @@ def ancestors(G, source):
     return {child for parent, child in nx.bfs_edges(G, source, reverse=True)}
 
 
+@nx._dispatch
 def has_cycle(G):
     """Decides whether the directed graph has a cycle."""
     try:
@@ -119,6 +122,7 @@ def has_cycle(G):
         return False
 
 
+@nx._dispatch
 def is_directed_acyclic_graph(G):
     """Returns True if the graph `G` is a directed acyclic graph (DAG) or
     False if not.
@@ -159,6 +163,7 @@ def is_directed_acyclic_graph(G):
     return G.is_directed() and not has_cycle(G)
 
 
+@nx._dispatch
 def topological_generations(G):
     """Stratifies a DAG into generations.
 
@@ -236,6 +241,7 @@ def topological_generations(G):
         )
 
 
+@nx._dispatch
 def topological_sort(G):
     """Returns a generator of nodes in topologically sorted order.
 
@@ -304,6 +310,7 @@ def topological_sort(G):
         yield from generation
 
 
+@nx._dispatch
 def lexicographical_topological_sort(G, key=None):
     """Generate the nodes in the unique lexicographical topological sort order.
 
@@ -446,6 +453,7 @@ def lexicographical_topological_sort(G, key=None):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def all_topological_sorts(G):
     """Returns a generator of _all_ topological sorts of the directed graph G.
 
@@ -505,7 +513,7 @@ def all_topological_sorts(G):
 
     # do-while construct
     while True:
-        assert all([count[v] == 0 for v in D])
+        assert all(count[v] == 0 for v in D)
 
         if len(current_sort) == len(G):
             yield list(current_sort)
@@ -564,6 +572,7 @@ def all_topological_sorts(G):
             break
 
 
+@nx._dispatch
 def is_aperiodic(G):
     """Returns True if `G` is aperiodic.
 
@@ -655,6 +664,7 @@ def is_aperiodic(G):
         return g == 1 and nx.is_aperiodic(G.subgraph(set(G) - set(levels)))
 
 
+@nx._dispatch(preserve_all_attrs=True)
 def transitive_closure(G, reflexive=False):
     """Returns transitive closure of a graph
 
@@ -702,7 +712,7 @@ def transitive_closure(G, reflexive=False):
         >>> TC.edges()
         OutEdgeView([(1, 2), (1, 3), (2, 3)])
 
-    However, nontrivial (i.e. length greater then 0) cycles create self-loops
+    However, nontrivial (i.e. length greater than 0) cycles create self-loops
     when ``reflexive=False`` (the default)::
 
         >>> DG = nx.DiGraph([(1, 2), (2, 3), (3, 1)])
@@ -747,6 +757,7 @@ def transitive_closure(G, reflexive=False):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch(preserve_all_attrs=True)
 def transitive_closure_dag(G, topo_order=None):
     """Returns the transitive closure of a directed acyclic graph.
 
@@ -803,6 +814,7 @@ def transitive_closure_dag(G, topo_order=None):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def transitive_reduction(G):
     """Returns transitive reduction of a directed graph
 
@@ -875,6 +887,7 @@ def transitive_reduction(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def antichains(G, topo_order=None):
     """Generates antichains from a directed acyclic graph (DAG).
 
@@ -941,6 +954,7 @@ def antichains(G, topo_order=None):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch(edge_attrs={"weight": "default_weight"})
 def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
     """Returns the longest path in a directed acyclic graph (DAG).
 
@@ -1006,7 +1020,15 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
     dist = {}  # stores {v : (length, u)}
     for v in topo_order:
         us = [
-            (dist[u][0] + data.get(weight, default_weight), u)
+            (
+                dist[u][0]
+                + (
+                    max(data.values(), key=lambda x: x.get(weight, default_weight))
+                    if G.is_multigraph()
+                    else data
+                ).get(weight, default_weight),
+                u,
+            )
             for u, data in G.pred[v].items()
         ]
 
@@ -1028,6 +1050,7 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch(edge_attrs={"weight": "default_weight"})
 def dag_longest_path_length(G, weight="weight", default_weight=1):
     """Returns the longest path length in a DAG
 
@@ -1068,12 +1091,18 @@ def dag_longest_path_length(G, weight="weight", default_weight=1):
     """
     path = nx.dag_longest_path(G, weight, default_weight)
     path_length = 0
-    for (u, v) in pairwise(path):
-        path_length += G[u][v].get(weight, default_weight)
+    if G.is_multigraph():
+        for u, v in pairwise(path):
+            i = max(G[u][v], key=lambda x: G[u][v][x].get(weight, default_weight))
+            path_length += G[u][v][i].get(weight, default_weight)
+    else:
+        for u, v in pairwise(path):
+            path_length += G[u][v].get(weight, default_weight)
 
     return path_length
 
 
+@nx._dispatch
 def root_to_leaf_paths(G):
     """Yields root-to-leaf paths in a directed acyclic graph.
 
@@ -1094,6 +1123,7 @@ def root_to_leaf_paths(G):
 
 @not_implemented_for("multigraph")
 @not_implemented_for("undirected")
+@nx._dispatch
 def dag_to_branching(G):
     """Returns a branching representing all (overlapping) paths from
     root nodes to leaf nodes in the given directed acyclic graph.
@@ -1191,6 +1221,7 @@ def dag_to_branching(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def compute_v_structures(G):
     """Iterate through the graph to compute all v-structures.
 
@@ -1208,6 +1239,13 @@ def compute_v_structures(G):
     vstructs : iterator of tuples
         The v structures within the graph. Each v structure is a 3-tuple with the
         parent, collider, and other parent.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph()
+    >>> G.add_edges_from([(1, 2), (0, 5), (3, 1), (2, 4), (3, 1), (4, 5), (1, 5)])
+    >>> sorted(nx.compute_v_structures(G))
+    [(0, 5, 1), (0, 5, 4), (1, 5, 4)]
 
     Notes
     -----

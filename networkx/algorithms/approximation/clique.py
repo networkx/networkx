@@ -13,6 +13,7 @@ __all__ = [
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def maximum_independent_set(G):
     """Returns an approximate maximum independent set.
 
@@ -40,6 +41,12 @@ def maximum_independent_set(G):
     iset : Set
         The apx-maximum independent set
 
+    Examples
+    --------
+    >>> G = nx.path_graph(10)
+    >>> nx.approximation.maximum_independent_set(G)
+    {0, 2, 4, 6, 9}
+
     Raises
     ------
     NetworkXNotImplemented
@@ -63,6 +70,7 @@ def maximum_independent_set(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def max_clique(G):
     r"""Find the Maximum Clique
 
@@ -78,6 +86,12 @@ def max_clique(G):
     -------
     clique : set
         The apx-maximum clique of the graph
+
+    Examples
+    --------
+    >>> G = nx.path_graph(10)
+    >>> nx.approximation.max_clique(G)
+    {8, 9}
 
     Raises
     ------
@@ -106,9 +120,6 @@ def max_clique(G):
         BIT Numerical Mathematics, 32(2), 180–196. Springer.
         doi:10.1007/BF01994876
     """
-    if G is None:
-        raise ValueError("Expected NetworkX graph!")
-
     # finding the maximum clique in a graph is equivalent to finding
     # the independent set in the complementary graph
     cgraph = nx.complement(G)
@@ -118,6 +129,7 @@ def max_clique(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def clique_removal(G):
     r"""Repeatedly remove cliques from the graph.
 
@@ -134,6 +146,12 @@ def clique_removal(G):
     -------
     max_ind_cliques : (set, list) tuple
         2-tuple of Maximal Independent Set and list of maximal cliques (sets).
+
+    Examples
+    --------
+    >>> G = nx.path_graph(10)
+    >>> nx.approximation.clique_removal(G)
+    ({0, 2, 4, 6, 9}, [{0, 1}, {2, 3}, {4, 5}, {6, 7}, {8, 9}])
 
     Raises
     ------
@@ -164,6 +182,7 @@ def clique_removal(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def large_clique_size(G):
     """Find the size of a large clique in a graph.
 
@@ -179,6 +198,12 @@ def large_clique_size(G):
     -------
     k: integer
        The size of a large clique in the graph.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(10)
+    >>> nx.approximation.large_clique_size(G)
+    2
 
     Raises
     ------

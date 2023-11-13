@@ -23,7 +23,7 @@ API changes
 
 * [`#1750 <https://github.com/networkx/networkx/pull/1750>`_]
   Arguments center and scale are now available for all layout functions.
-  The defaul values revert to the v1.9 values (center is the origin
+  The default values revert to the v1.9 values (center is the origin
   for circular layouts and domain is [0, scale) for others.
 
 * [`#1924 <https://github.com/networkx/networkx/pull/1924>`_]
@@ -37,7 +37,7 @@ Miscellaneous changes
 
 * [`#1763 <https://github.com/networkx/networkx/pull/1763>`_]
   Set up appveyor to automatically test installation on Windows machines.
-  Remove symbolic links in examples to help such istallation.
+  Remove symbolic links in examples to help such installation.
 
 Change many doc_string typos to allow sphinx
 to build the docs without errors or warnings.

@@ -28,7 +28,7 @@ def test_exceptions():
     pytest.raises(
         nx.NetworkXUnfeasible, nx.maximal_independent_set, G, ["Salviati", "Pazzi"]
     )
-    # MaximalIndependantSet is not implemented for directed graphs
+    # MaximalIndependentSet is not implemented for directed graphs
     pytest.raises(nx.NetworkXNotImplemented, nx.maximal_independent_set, nx.DiGraph(G))
 
 

@@ -1,7 +1,6 @@
 """
-****************
 ISMAGS Algorithm
-****************
+================
 
 Provides a Python implementation of the ISMAGS algorithm. [1]_
 
@@ -90,21 +89,21 @@ True
 
 Notes
 -----
- - The current implementation works for undirected graphs only. The algorithm
-   in general should work for directed graphs as well though.
- - Node keys for both provided graphs need to be fully orderable as well as
-   hashable.
- - Node and edge equality is assumed to be transitive: if A is equal to B, and
-   B is equal to C, then A is equal to C.
+- The current implementation works for undirected graphs only. The algorithm
+  in general should work for directed graphs as well though.
+- Node keys for both provided graphs need to be fully orderable as well as
+  hashable.
+- Node and edge equality is assumed to be transitive: if A is equal to B, and
+  B is equal to C, then A is equal to C.
 
 References
 ----------
-    .. [1] M. Houbraken, S. Demeyer, T. Michoel, P. Audenaert, D. Colle,
-       M. Pickavet, "The Index-Based Subgraph Matching Algorithm with General
-       Symmetries (ISMAGS): Exploiting Symmetry for Faster Subgraph
-       Enumeration", PLoS One 9(5): e97896, 2014.
-       https://doi.org/10.1371/journal.pone.0097896
-    .. [2] https://en.wikipedia.org/wiki/Maximum_common_induced_subgraph
+.. [1] M. Houbraken, S. Demeyer, T. Michoel, P. Audenaert, D. Colle,
+   M. Pickavet, "The Index-Based Subgraph Matching Algorithm with General
+   Symmetries (ISMAGS): Exploiting Symmetry for Faster Subgraph
+   Enumeration", PLoS One 9(5): e97896, 2014.
+   https://doi.org/10.1371/journal.pone.0097896
+.. [2] https://en.wikipedia.org/wiki/Maximum_common_induced_subgraph
 """
 
 __all__ = ["ISMAGS"]
@@ -136,7 +135,7 @@ def are_all_equal(iterable):
         pass
     else:
         if len(shape) > 1:
-            message = "The function does not works on multidimension arrays."
+            message = "The function does not works on multidimensional arrays."
             raise NotImplementedError(message) from None
 
     iterator = iter(iterable)
@@ -184,8 +183,8 @@ def make_partitions(items, test):
 
 def partition_to_color(partitions):
     """
-    Creates a dictionary with for every item in partition for every partition
-    in partitions the index of partition in partitions.
+    Creates a dictionary that maps each item in each partition to the index of
+    the partition to which it belongs.
 
     Parameters
     ----------
@@ -196,7 +195,7 @@ def partition_to_color(partitions):
     -------
     dict
     """
-    colors = dict()
+    colors = {}
     for color, keys in enumerate(partitions):
         for key in keys:
             colors[key] = color
@@ -226,7 +225,7 @@ def intersect(collection_of_sets):
 
 class ISMAGS:
     """
-    Implements the ISMAGS subgraph matching algorith. [1]_ ISMAGS stands for
+    Implements the ISMAGS subgraph matching algorithm. [1]_ ISMAGS stands for
     "Index-based Subgraph Matching Algorithm with General Symmetries". As the
     name implies, it is symmetry aware and will only generate non-symmetric
     isomorphisms.
@@ -587,7 +586,7 @@ class ISMAGS:
         graph : networkx.Graph
             The graph whose symmetry should be analyzed.
         node_partitions : list of sets
-            A list of sets containining node keys. Node keys in the same set
+            A list of sets containing node keys. Node keys in the same set
             are considered equivalent. Every node key in `graph` should be in
             exactly one of the sets. If all nodes are equivalent, this should
             be ``[set(graph.nodes)]``.
@@ -720,7 +719,7 @@ class ISMAGS:
             counts[node1][ecolor, node_colors[node2]] += 1
             counts[node2][ecolor, node_colors[node1]] += 1
 
-        node_edge_colors = dict()
+        node_edge_colors = {}
         for node in graph.nodes:
             node_edge_colors[node] = node_colors[node], set(counts[node].items())
 
@@ -910,7 +909,7 @@ class ISMAGS:
         # "part of" the subgraph in to_be_mapped, and we make it a little
         # smaller every iteration.
 
-        # pylint disable becuase it's guarded against by default value
+        # pylint disable because it's guarded against by default value
         current_size = len(
             next(iter(to_be_mapped), [])
         )  # pylint: disable=stop-iteration-return

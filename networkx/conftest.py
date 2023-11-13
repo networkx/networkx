@@ -11,8 +11,10 @@ General guidelines for writing good tests:
   and add the module to the relevant entries below.
 
 """
+import os
 import sys
 import warnings
+from importlib.metadata import entry_points
 
 import pytest
 
@@ -23,13 +25,53 @@ def pytest_addoption(parser):
     parser.addoption(
         "--runslow", action="store_true", default=False, help="run slow tests"
     )
+    parser.addoption(
+        "--backend",
+        action="store",
+        default=None,
+        help="Run tests with a plugin by auto-converting nx graphs to backend graphs",
+    )
+    parser.addoption(
+        "--fallback-to-nx",
+        action="store_true",
+        default=False,
+        help="Run nx function if a plugin doesn't implement a dispatchable function"
+        " (use with --backend)",
+    )
 
 
 def pytest_configure(config):
     config.addinivalue_line("markers", "slow: mark test as slow to run")
+    backend = config.getoption("--backend")
+    if backend is None:
+        backend = os.environ.get("NETWORKX_TEST_BACKEND")
+    if backend:
+        networkx.utils.backends._dispatch._automatic_backends = [backend]
+        fallback_to_nx = config.getoption("--fallback-to-nx")
+        if not fallback_to_nx:
+            fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
+        networkx.utils.backends._dispatch._fallback_to_nx = bool(fallback_to_nx)
+    # nx-loopback plugin is only available when testing
+    if sys.version_info < (3, 10):
+        plugins = (
+            ep for ep in entry_points()["networkx.plugins"] if ep.name == "nx-loopback"
+        )
+    else:
+        plugins = entry_points(name="nx-loopback", group="networkx.plugins")
+    networkx.utils.backends.plugins["nx-loopback"] = next(iter(plugins))
 
 
 def pytest_collection_modifyitems(config, items):
+    # Setting this to True here allows tests to be set up before dispatching
+    # any function call to a backend.
+    networkx.utils.backends._dispatch._is_testing = True
+    if automatic_backends := networkx.utils.backends._dispatch._automatic_backends:
+        # Allow pluggable backends to add markers to tests (such as skip or xfail)
+        # when running in auto-conversion test mode
+        backend = networkx.utils.backends.plugins[automatic_backends[0]].load()
+        if hasattr(backend, "on_start_tests"):
+            getattr(backend, "on_start_tests")(items)
+
     if config.getoption("--runslow"):
         # --runslow given in cli: do not skip slow tests
         return
@@ -43,115 +85,50 @@ def pytest_collection_modifyitems(config, items):
 @pytest.fixture(autouse=True)
 def set_warnings():
     warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="literal_stringizer is deprecated",
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="literal_destringizer is deprecated",
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="context manager reversed is deprecated",
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="This will return a generator in 3.0*",
-    )
-    warnings.filterwarnings(
-        "ignore", category=PendingDeprecationWarning, message="the matrix subclass"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="edges_from_line"
-    )
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="consume")
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="iterable is deprecated"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="`almost_equal`"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="`assert_nodes_equal`"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="`assert_edges_equal`"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="`assert_graphs_equal`"
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=FutureWarning,
-        message="google_matrix will return an np.ndarray instead of a np.matrix",
-    )
-    ### Future warnings from scipy.sparse array transition
-    warnings.filterwarnings(
-        "ignore", category=FutureWarning, message="biadjacency_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore", category=FutureWarning, message="bethe_hessian_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore", category=FutureWarning, message="incidence_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore", category=FutureWarning, message="laplacian_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore", category=FutureWarning, message="normalized_laplacian_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore", category=FutureWarning, message="directed_laplacian_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=FutureWarning,
-        message="directed_combinatorial_laplacian_matrix",
-    )
-    warnings.filterwarnings(
-        "ignore", category=FutureWarning, message="modularity_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore", category=FutureWarning, message="directed_modularity_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore", category=FutureWarning, message="adjacency_matrix"
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="\n\nThe scipy.sparse array containers",
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="networkx.project"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\nfind_cores"
-    )
-    warnings.filterwarnings("ignore", category=FutureWarning, message="attr_matrix")
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="info")
-    # create_using for scale_free_graph
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="The create_using argument"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="nx.nx_pydot"
     )
     warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
-        message="\n\nThe `attrs` keyword argument of node_link",
+        message="single_target_shortest_path_length will",
+    )
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message="shortest_path for all_pairs",
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\nforest_str is deprecated"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nrandom_tree"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="Edmonds has been deprecated"
+    )
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message="MultiDiGraph_EdgeKey has been deprecated",
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nThe `normalized`"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="function `join` is deprecated"
     )
 
 
 @pytest.fixture(autouse=True)
 def add_nx(doctest_namespace):
     doctest_namespace["nx"] = networkx
+    # TODO: remove the try-except block when we require numpy >= 2
+    try:
+        import numpy as np
+
+        np.set_printoptions(legacy="1.21")
+    except ImportError:
+        pass
 
 
 # What dependencies are installed?
@@ -219,6 +196,7 @@ needs_numpy = [
     "linalg/bethehessianmatrix.py",
     "linalg/laplacianmatrix.py",
     "utils/misc.py",
+    "algorithms/centrality/laplacian.py",
 ]
 needs_scipy = [
     "algorithms/approximation/traveling_salesman.py",
@@ -248,6 +226,7 @@ needs_scipy = [
     "linalg/modularitymatrix.py",
     "linalg/spectrum.py",
     "utils/rcm.py",
+    "algorithms/centrality/laplacian.py",
 ]
 needs_matplotlib = ["drawing/nx_pylab.py"]
 needs_pandas = ["convert_matrix.py"]

@@ -13,6 +13,7 @@ import networkx as nx
 __all__ = ["min_maximal_matching"]
 
 
+@nx._dispatch
 def min_maximal_matching(G):
     r"""Returns the minimum maximal matching of G. That is, out of all maximal
     matchings of the graph G, the smallest is returned.
@@ -31,7 +32,7 @@ def min_maximal_matching(G):
 
     Notes
     -----
-    The algorithm computes an approximate solution fo the minimum maximal
+    The algorithm computes an approximate solution for the minimum maximal
     cardinality matching problem. The solution is no more than 2 * OPT in size.
     Runtime is $O(|E|)$.
 

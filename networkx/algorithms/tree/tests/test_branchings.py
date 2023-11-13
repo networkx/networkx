@@ -1,4 +1,5 @@
 import math
+from operator import itemgetter
 
 import pytest
 
@@ -27,6 +28,10 @@ G_array = np.array([
     [0, 0, 0, 0, 0, 0, 0, 18, 0],  # 8
 ], dtype=int)
 
+# Two copies of the graph from the original paper as disconnected components
+G_big_array = np.zeros(np.array(G_array.shape) * 2, dtype=int)
+G_big_array[:G_array.shape[0], :G_array.shape[1]] = G_array
+G_big_array[G_array.shape[0]:, G_array.shape[1]:] = G_array
 
 # fmt: on
 
@@ -122,10 +127,12 @@ greedy_subopt_branching_1b = [
 ]
 
 
-def build_branching(edges):
+def build_branching(edges, double=False):
     G = nx.DiGraph()
     for u, v, weight in edges:
         G.add_edge(u, v, weight=weight)
+        if double:
+            G.add_edge(u + 9, v + 9, weight=weight)
     return G
 
 
@@ -197,6 +204,26 @@ def test_greedy_max1():
     # that it should equal the second suboptimal branching: 1b.
     B_ = build_branching(greedy_subopt_branching_1b)
     assert_equal_branchings(B, B_)
+
+
+def test_greedy_branching_kwarg_kind():
+    G = G1()
+    with pytest.raises(nx.NetworkXException, match="Unknown value for `kind`."):
+        B = branchings.greedy_branching(G, kind="lol")
+
+
+def test_greedy_branching_for_unsortable_nodes():
+    G = nx.DiGraph()
+    G.add_weighted_edges_from([((2, 3), 5, 1), (3, "a", 1), (2, 4, 5)])
+    edges = [(u, v, data.get("weight", 1)) for (u, v, data) in G.edges(data=True)]
+    with pytest.raises(TypeError):
+        edges.sort(key=itemgetter(2, 0, 1), reverse=True)
+    B = branchings.greedy_branching(G, kind="max").edges(data=True)
+    assert list(B) == [
+        ((2, 3), 5, {"weight": 1}),
+        (3, "a", {"weight": 1}),
+        (2, 4, {"weight": 5}),
+    ]
 
 
 def test_greedy_max2():
@@ -272,6 +299,24 @@ def test_edmonds1_maxarbor():
     x = branchings.maximum_spanning_arborescence(G)
     x_ = build_branching(optimal_arborescence_1)
     assert_equal_branchings(x, x_)
+
+
+def test_edmonds1_minimal_branching():
+    # graph will have something like a minimum arborescence but no spanning one
+    G = nx.from_numpy_array(G_big_array, create_using=nx.DiGraph)
+    B = branchings.minimal_branching(G)
+    edges = [
+        (3, 0, 5),
+        (0, 2, 12),
+        (0, 4, 12),
+        (2, 5, 12),
+        (4, 7, 12),
+        (5, 8, 12),
+        (5, 6, 14),
+        (2, 1, 17),
+    ]
+    B_ = build_branching(edges, double=True)
+    assert_equal_branchings(B, B_)
 
 
 def test_edmonds2_maxbranch():
@@ -401,8 +446,7 @@ def test_edge_attribute_preservation_normal_graph():
     ]
     G.add_edges_from(edgelist)
 
-    ed = branchings.Edmonds(G)
-    B = ed.find_optimum("weight", preserve_attrs=True, seed=1)
+    B = branchings.maximum_branching(G, preserve_attrs=True)
 
     assert B[0][1]["otherattr"] == 1
     assert B[0][1]["otherattr2"] == 3
@@ -420,11 +464,44 @@ def test_edge_attribute_preservation_multigraph():
     ]
     G.add_edges_from(edgelist * 2)  # Make sure we have duplicate edge paths
 
-    ed = branchings.Edmonds(G)
-    B = ed.find_optimum("weight", preserve_attrs=True)
+    B = branchings.maximum_branching(G, preserve_attrs=True)
 
     assert B[0][1][0]["otherattr"] == 1
     assert B[0][1][0]["otherattr2"] == 3
+
+
+# TODO remove with Edmonds
+def test_Edmond_kind():
+    G = nx.MultiGraph()
+
+    edgelist = [
+        (0, 1, [("weight", 5), ("otherattr", 1), ("otherattr2", 3)]),
+        (0, 2, [("weight", 5), ("otherattr", 2), ("otherattr2", 2)]),
+        (1, 2, [("weight", 6), ("otherattr", 3), ("otherattr2", 1)]),
+    ]
+    G.add_edges_from(edgelist * 2)  # Make sure we have duplicate edge paths
+    ed = branchings.Edmonds(G)
+    with pytest.raises(nx.NetworkXException, match="Unknown value for `kind`."):
+        ed.find_optimum(kind="lol", preserve_attrs=True)
+
+
+# TODO remove with MultiDiGraph_EdgeKey
+def test_MultiDiGraph_EdgeKey():
+    # test if more than one edges has the same key
+    G = branchings.MultiDiGraph_EdgeKey()
+    G.add_edge(1, 2, "A")
+    with pytest.raises(Exception, match="Key 'A' is already in use."):
+        G.add_edge(3, 4, "A")
+    # test if invalid edge key was specified
+    with pytest.raises(KeyError, match="Invalid edge key 'B'"):
+        G.remove_edge_with_key("B")
+    # test remove_edge_with_key works
+    if G.remove_edge_with_key("A"):
+        assert list(G.edges(data=True)) == []
+    # test that remove_edges_from doesn't work
+    G.add_edge(1, 3, "A")
+    with pytest.raises(NotImplementedError):
+        G.remove_edges_from([(1, 3)])
 
 
 def test_edge_attribute_discard():
@@ -438,8 +515,7 @@ def test_edge_attribute_discard():
     ]
     G.add_edges_from(edgelist)
 
-    ed = branchings.Edmonds(G)
-    B = ed.find_optimum("weight", preserve_attrs=False)
+    B = branchings.maximum_branching(G, preserve_attrs=False)
 
     edge_dict = B[0][1]
     with pytest.raises(KeyError):
@@ -477,11 +553,11 @@ def test_arborescence_iterator_min():
     """
     Tests the arborescence iterator.
 
-    A brute force method found 680 arboresecences in this graph.
+    A brute force method found 680 arborescences in this graph.
     This test will not verify all of them individually, but will check two
     things
 
-    * The iterator returns 680 arboresecences
+    * The iterator returns 680 arborescences
     * The weight of the arborescences is non-strictly increasing
 
     for more information please visit
@@ -504,11 +580,11 @@ def test_arborescence_iterator_max():
     """
     Tests the arborescence iterator.
 
-    A brute force method found 680 arboresecences in this graph.
+    A brute force method found 680 arborescences in this graph.
     This test will not verify all of them individually, but will check two
     things
 
-    * The iterator returns 680 arboresecences
+    * The iterator returns 680 arborescences
     * The weight of the arborescences is non-strictly decreasing
 
     for more information please visit
