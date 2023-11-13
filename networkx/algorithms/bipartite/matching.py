@@ -599,24 +599,30 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
 
 
 def _M_alternating_sequence(G, M, *, top_nodes=None):
-    r"""Generate a M-alternating-sequence of a bipartite graph `G` with
-    regard to a matching M.
+    r"""Return an M-alternating-sequence of a bipartite graph `G` with
+    regard to a matching `M`.
+
+    An *M-alternating-sequence* is a sequence of pairwise disjoint subsets of nodes X_0 - Y_1 - X_1 - Y_2 - X_2 - ...
+    When `M` is a maximum matching, the M-alternating-sequence calculated using it has some useful properties for
+    finding envy free bipartite matching, this is proved in the article.
 
     Two sets are calculated with the following recursive definition:
 
     X_0 = nodes in G unmatched by M.
     for i>=1:
         Latex:
-            Y_i = N_{G\M}(X_{i-1})
-            X_i = N_M(Y_i)
+            Y_i = :math:`N_{G\M}(X_{i-1})\\`
+            X_i = :math:`N_M(Y_i)`
         English:
             Y_i -> neighbors of X_{i-1} that were not matched by M
                    group-subtracting all the previous Y_k's we've seen
             X_i -> neighbors of Y_i that were matched by M
 
     The iterative pattern stops when either Y_k or X_k are an empty set for a
-    certain k, forever staying an empty set from k onward the alternating sequence
+    certain k, forever staying an empty set. From k onward the alternating sequence
     is proven to always stop in the article.
+
+    Two tuples containing sets of nodes are returned - tuple(X_subsets), tuple(Y_subsets).
 
     >>> G = nx.complete_bipartite_graph(3,3)
     >>> M = nx.bipartite.hopcroft_karp_matching(G)
@@ -683,12 +689,7 @@ def _M_alternating_sequence(G, M, *, top_nodes=None):
 
 
 def envy_free_matching_partition(G, *, M=None, top_nodes=None):
-    r"""Return a unique EFM partition of bipartite graph `G`.
-
-    A matching in a bipartite graph with parts X and Y is called envy-free,
-    if no unmatched node in X is adjacent to a matched node in Y.
-    Every bipartite graph has a unique partition such that all envy-free
-    matchings are contained in one of the partition set.
+    r"""Return a unique EFM (Envy Free Matching) partition of bipartite graph `G`.
 
     Parameters
     ----------
@@ -751,7 +752,7 @@ def envy_free_matching_partition(G, *, M=None, top_nodes=None):
     >>> nx.bipartite.envy_free_matching_partition(G, M=M)
     (set(), {0, 1, 2, 3, 4, 5}, set(), {8, 9, 6, 7})
 
-    Like presented in the article [1]_, Y-path-saturated graph contains an empty
+    Like presented in the article [1], Y-path-saturated graph contains an empty
     envy-free matching so X_L and Y_L are empty in the partition.
 
     References
@@ -773,7 +774,31 @@ def envy_free_matching_partition(G, *, M=None, top_nodes=None):
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
 def maximum_envy_free_matching(G, *, top_nodes=None):
-    """Return an envy-free matching of maximum cardinality in a bipartite graph.
+    """Return an envy-free matching of maximum cardinality of the bipartite graph `G`
+
+    A matching in a bipartite graph with bipartite sets X and Y is called envy-free,
+    if no unmatched node in X is adjacent to a matched node in Y.
+
+    An envy-free bipartite matching has *maximum cardinality* if it is the largest (has the most edges) possible matching
+    that is still envy-free.
+    There can be multiple different envy-free matching of maximum cardinality, this function returns *one* of them.
+
+    There are graphs which don't have any possible envy-free matching or synonmously,
+    their largest envy-free bipartite matching is empty.
+
+    Envy-Free bipartite matches can be used for matching between people to "things" in a fair way.
+    For example, they can be used for House Allocation Problems.
+
+    Illustration: A real estate agent has a group of buyers seeking to purchase a house and a group of houses for sale,
+    each buyer indicated houses they are interested in. The real estate agent wants to maximize the amount of people
+    that get a house and avoid making customers that didn't get a house jealous by giving other customers houses they
+    were interested in.
+
+    this problem can be modeled to a bipartite graph with the buyers set (X), houses set(Y) and edges
+    between X and Y indicating a buyer being interested in a house (binary "yes" or "no"). Using networkx, you can construct a bipartite graph
+    as described, and call "maximum_envy_free_matching" on it to receive a matching of buyers to houses, guarenteed to
+    be fair (This can produce an empty matching - meaning fairness can't be achieved in this case).
+
 
     Parameters
     ----------
@@ -787,7 +812,7 @@ def maximum_envy_free_matching(G, *, top_nodes=None):
     Returns
     -------
     Matching: dictionary
-        The Maximum cardinality envy-free matching is returned as a dictionary.
+        A Maximum cardinality envy-free matching is returned as a dictionary.
 
     Examples
     --------
@@ -844,10 +869,28 @@ def maximum_envy_free_matching(G, *, top_nodes=None):
 def minimum_weight_envy_free_matching(G, *, top_nodes=None):
     """Returns a minimum weight maximum cardinality envy-free matching of the bipartite graph `G`
 
-    A matching in a bipartite graph with parts X and Y is called envy-free,
+    A matching in a bipartite graph with bipartite sets X and Y is called envy-free,
     if no unmatched node in X is adjacent to a matched node in Y.
-    Every bipartite graph has a unique partition such that all envy-free
-    matchings are contained in one of the partition set.
+
+    An envy-free bipartite matching has *maximum cardinality* if it is the largest (has the most edges) possible matching
+    that is still envy-free.
+    This function returns an envy-free bipartite matching with the least cost (sum of edge weights) out of the maximum cardinality matchings.
+
+    There can be multiple different envy-free matching of maximum cardinality and minimum weight, this function returns *one* of them.
+
+    Weighted Envy-Free bipartite matches can be used for matching between people to "things" in a fair way considering cardinal preferences.
+    For example, they can be used for the Rental harmony problem.
+
+    Illustration: A group of people that want to rent an apartament as roomates want to find a pairing of roomate to room and minimize cost for each one.
+    Each roomate assign an amount he's willing to pay for a certain room.
+
+    this problem can be modeled to a bipartite graph with the roomates set (X), rooms set(Y) and edges
+    between X and Y indicating a roomate interested in a room and the edge weight meaning the amount of money he's willing to pay.
+    Using networkx, you can construct a bipartite graph
+    as described, and call "minimum_weight_envy_free_matching" on it to receive a matching of roomates to rooms, guarenteed to
+    be fair (This can produce an empty matching - meaning fairness can't be achieved in this case).
+
+
 
     Parameters
     ----------
@@ -861,7 +904,7 @@ def minimum_weight_envy_free_matching(G, *, top_nodes=None):
     Returns
     -------
     Matching: dictionary
-      The minimum weight maximum cardinality matching is returned as a dictionary.
+      A minimum weight maximum cardinality matching is returned as a dictionary.
 
     Examples
     --------
