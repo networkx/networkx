@@ -1244,7 +1244,7 @@ def forceatlas2_layout(
         mass[idx] = G.nodes[node].get("mass", G.degree(node) + 1)
         size[idx] = G.nodes[node].get("size", 1)
 
-    n = len(G)
+    n = G.number_of_nodes()
     gravities = np.zeros((n, dim))
     attraction = np.zeros((n, dim))
     repulsion = np.zeros((n, dim))
