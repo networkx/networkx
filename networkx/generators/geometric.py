@@ -851,7 +851,7 @@ def thresholded_random_geometric_graph(
 def geometric_soft_configuration_graph(
     *, beta, n=None, gamma=None, mean_degree=None, kappas=None, seed=None
 ):
-    r"""Returns a $\mathbb{S}^1/\mathbb{H}^2$ model.
+    r"""Returns a random graph from the geometric soft configuration model.
 
     The $\mathbb{S}^1$ model [1]_ is the geometric soft configuration model
     which is able to explain many fundamental features of real networks such as
@@ -909,20 +909,25 @@ def geometric_soft_configuration_graph(
 
     Parameters
     ----------
-    Either n, gamma, mean_degree are provided or kappas. The values of
-    n, gamma, mean_degree (if provided) are used to construct random kappas
-    sampled from the power-law distribution.
+    Either `n`, `gamma`, `mean_degree` are provided or `kappas`. The values of
+    `n`, `gamma`, `mean_degree` (if provided) are used to construct a random
+    kappa-dict keyed by node with values sampled from a power-law distribution.
 
     beta : positive number
         Inverse temperature, controlling the clustering coefficient.
     n : int (default: None)
         Size of the network (number of nodes).
+        If not provided, `kappas` must be provided and holds the nodes.
     gamma : float (default: None)
-        Exponent of the power-law distribution for hidden degrees.
+        Exponent of the power-law distribution for hidden degrees `kappas`.
+        If not provided, `kappas` must be provided directly.
     mean_degree : float (default: None)
-        The mean degree in the network
+        The mean degree in the network.
+        If not provided, `kappas` must be provided directly.
     kappas : dict (default: None)
-        A dictionary specifying the hidden degrees for each node.
+        A dict keyed by node to its hidden degree value.
+        If not provided, random values are computed based on a power-law
+        distribution using `n`, `gamma` and `mean_degree`.
     seed : int, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
@@ -930,10 +935,17 @@ def geometric_soft_configuration_graph(
     Returns
     -------
     Graph
-        A random geometric graph generated via the $\mathbb{S}^1$ model (undirected and
-        without self-loops). Each node has two attributes: ``kappa`` that
-        represents the hidden degree and ``theta`` the position in the similarity space.
-        Additionaly, the ``radial_coordinate`` variable is computed for each node.
+        A random geometric soft configuration graph (undirected with no self-loops).
+        Each node has three node-attributes:
+
+        - ``kappa`` that represents the hidden degree.
+
+        - ``theta`` the position in the similarity space ($\mathbb{S}^1$) which is
+          also the angular position in the hyperbolic plane.
+
+        - ``radius`` the radial position in the hyperbolic plane
+          (based on the hidden degree).
+
 
     Examples
     --------
@@ -941,17 +953,17 @@ def geometric_soft_configuration_graph(
 
     >>> G = nx.geometric_soft_configuration_graph(beta=1.5, n=100, gamma=2.7, mean_degree=5)
 
-    Create a $\mathbb{S}^1$ model with 100 nodes. The $\beta$ parameter is set to 1.5
-    and the exponent of the powerlaw distribution of the hidden degrees is 2.7
-    with mean value of 5.
+    Create a geometric soft configuration graph with 100 nodes. The $\beta$ parameter
+    is set to 1.5 and the exponent of the powerlaw distribution of the hidden
+    degrees is 2.7 with mean value of 5.
 
     Generate a network with predefined hidden degrees:
 
     >>> kappas = {i: 10 for i in range(100)}
     >>> G = nx.geometric_soft_configuration_graph(beta=2.5, kappas=kappas)
 
-    Create a $\mathbb{S}^1$ model with 100 nodes. The $\beta$ parameter is set to 2.5
-    and all nodes with hidden degree $\kappa=10$.
+    Create a geometric soft configuration graph with 100 nodes. The $\beta$ parameter
+    is set to 2.5 and all nodes with hidden degree $\kappa=10$.
 
 
     References
@@ -982,11 +994,11 @@ def geometric_soft_configuration_graph(
     else:
         if any((n is None, gamma is None, mean_degree is None)):
             raise nx.NetworkXError(
-                "Please provide either kappas, or all 3 parameters: n, gamma and mean_degree."
+                "Please provide either kappas, or all 3 of: n, gamma and mean_degree."
             )
 
-        # Generate hidden degrees from the powerlaw distribution with given exponent `gamma`
-        #  and mean value `mean_degree`
+        # Generate `n` hidden degrees from a powerlaw distribution
+        # with given exponent `gamma` and mean value `mean_degree`
         kappa_0 = (
             (1 - 1 / n)
             / (1 - n ** ((2 - gamma) / (gamma - 1)))
@@ -994,15 +1006,11 @@ def geometric_soft_configuration_graph(
             / (gamma - 1)
             * mean_degree
         )
-        kappa_c = kappa_0 * n ** (1 / (gamma - 1))
+        base = 1 - 1 / n
+        power = 1 / (1 - gamma)
+        kappas = {i: kappa_0 * (1 - seed.random() * base) ** power for i in range(n)}
 
-        kappas = {}
-        for i in range(n):
-            kappas[i] = kappa_0 * (
-                1 - seed.uniform(0, 1) * (1 - (kappa_c / kappa_0) ** (1 - gamma))
-            ) ** (1 / (1 - gamma))
-
-    G = nx.empty_graph(kappas.keys())
+    G = nx.Graph()
     R = n / (2 * math.pi)
 
     # Approximate values for mu in the thermodynamic limit (when n -> infinity)
@@ -1015,35 +1023,30 @@ def geometric_soft_configuration_graph(
 
     # Generate random positions on a circle
     thetas = {k: seed.uniform(0, 2 * math.pi) for k in kappas}
-    mapping = dict(zip(range(n), kappas.keys()))
 
-    for i in range(n):
-        for j in range(i):
-            k, l = mapping[i], mapping[j]
-            angle = math.pi - math.fabs(math.pi - math.fabs(thetas[k] - thetas[l]))
+    for u in kappas:
+        for v in list(G):
+            angle = math.pi - math.fabs(math.pi - math.fabs(thetas[u] - thetas[v]))
             dij = math.pow(R * angle, beta)
-            mu_kappas = math.pow(mu * kappas[k] * kappas[l], max(1, beta))
+            mu_kappas = math.pow(mu * kappas[u] * kappas[v], max(1, beta))
             p_ij = 1 / (1 + dij / mu_kappas)
 
             # Create an edge with a certain connection probability
             if seed.random() < p_ij:
-                G.add_edge(k, l)
+                G.add_edge(u, v)
+        G.add_node(u)
 
     nx.set_node_attributes(G, thetas, "theta")
     nx.set_node_attributes(G, kappas, "kappa")
 
     # Map hidden degrees into the radial coordiantes
-    radii = {}
     zeta = 1 if beta > 1 else 1 / beta
     kappa_0 = min(list(kappas.values()))
-    R_hat = (2 / zeta) * math.log(n / math.pi) - (2 * max(1, beta)) / (
-        beta * zeta
-    ) * math.log(mu * kappa_0**2)
-
-    for k, kappa in kappas.items():
-        radii[k] = R_hat - (2 * max(1, beta)) / (beta * zeta) * math.log(
-            kappa / kappa_0
-        )
-    nx.set_node_attributes(G, radii, "radial_coordinate")
+    R_c = 2 * max(1, beta) / (beta * zeta)
+    R_hat = (2 / zeta) * math.log(n / math.pi) - R_c * math.log(mu * kappa_0**2)
+    radii = {
+        node: R_hat - R_c * math.log(kappa / kappa_0) for node, kappa in kappas.items()
+    }
+    nx.set_node_attributes(G, radii, "radius")
 
     return G
