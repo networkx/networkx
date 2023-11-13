@@ -1177,6 +1177,8 @@ def forceatlas2_layout(
     >>> import networkx as nx
     >>> G = nx.florentine_families_graph()
     >>> nx.draw(G, pos = nx.forceatlas2_layout(G))
+
+    [1] https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0098679&type=printable
     """
     import numpy as np
 
