@@ -1187,7 +1187,6 @@ def forceatlas2_layout(
         ForceAtlas2 helper function
         Computes scaling factor for force
         """
-        import numpy as np
 
         # estimate jitter
         opt_jitter = 0.05 * np.sqrt(n)
@@ -1329,7 +1328,6 @@ def forceatlas2_layout(
 
         pos_arr += update * factor[:, None]
         if abs((update * factor[:, None]).sum()) < 1e-10:
-            print(f"Breaking after {idx}")
             break
 
     return {node: pos_arr[idx] for idx, node in enumerate(G.nodes())}
