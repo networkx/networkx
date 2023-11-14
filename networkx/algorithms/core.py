@@ -152,7 +152,7 @@ def _core_subgraph(G, k_filter, k=None, core=None):
 def k_core(G, k=None, core_number=None):
     """Returns the k-core of G.
 
-    A k-core is a maximal subgraph that contains nodes of degree k or more.
+    A k-core is a maximal subgraph that contains nodes of degree `k` or more.
 
     Parameters
     ----------
@@ -171,8 +171,7 @@ def k_core(G, k=None, core_number=None):
     Raises
     ------
     NetworkXNotImplemented
-      The k-core is not defined for graphs with self loops
-      or parallel edges.
+      The k-core is not defined for multigraphs or graphs with self loops.
 
     Notes
     -----
@@ -234,8 +233,7 @@ def k_shell(G, k=None, core_number=None):
     Raises
     ------
     NetworkXNotImplemented
-        The k-shell is not implemented for graphs with self loops
-        or parallel edges.
+        The k-shell is not implemented for multigraphs or graphs with self loops.
 
     Notes
     -----
@@ -300,8 +298,7 @@ def k_crust(G, k=None, core_number=None):
     Raises
     ------
     NetworkXNotImplemented
-        The k-crust is not implemented for graphs with self loops
-        or parallel edges.
+        The k-crust is not implemented for multigraphs or graphs with self loops.
 
     Notes
     -----
@@ -367,8 +364,7 @@ def k_corona(G, k, core_number=None):
     Raises
     ------
     NetworkXNotImplemented
-        The k-corona is not defined for graphs with self loops
-        or parallel edges.
+        The k-corona is not defined for multigraphs or graphs with self loops.
 
     Notes
     -----
