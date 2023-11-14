@@ -2,8 +2,8 @@
 ====================
 3D Facebook Network
 ====================
-3D spring plot for the (reduced to 5000 nodes) Facebook graph investigated at https://networkx.org/nx-guides/content/exploratory_notebooks/facebook_notebook.html.
-The plots is shown rotating. One can see a slightly better clustering than the coreesponding spring layout in 2D.
+3D spring plot for the (reduced to maximally 5000 nodes) Facebook graph investigated at https://networkx.org/nx-guides/content/exploratory_notebooks/facebook_notebook.html.
+The plots is animated along a sequence of azimuthal and elevatory angles. One can see a slightly better clustering than the corresponding spring layout in 2D.
 """
 import numpy as np
 import networkx as nx
@@ -20,11 +20,24 @@ facebook = pd.read_csv(
     names=["start_node", "end_node"],
 )
 
+#
+## parameters to play around with
+#
+
+parameters = {
+    "node_number": 2000,  # randomly sampled nodes from facebook graph (max 5000)
+    "frames_number": 10,  # number of frames in animation
+    "azimuthal_min": 0,  # initial azimuthal angle of camera drive
+    "azimuthal_max": 100,  # maxmimal azimuthal angle of camera drive
+    "elevation_min": 0,  # initial elevation angle of camera drive
+    "elevation_max": 10,  # maximal elevation angle of camera drive
+}
+
 # random sampling from graph
-n = 2000  # n_max=5000
+n = parameters["node_number"]  # n_max=5000
 assert n <= 5000, "number of nodes should not be larger than 5000"
 random.seed(n)
-random_indices = [random.randint(0, 5000) for _ in range(n)]
+random_indices = [random.randint(0, 4999) for _ in range(n)]
 
 # Generate randomly sampled graph from CSV data
 facebook_random = facebook.loc[random_indices]
@@ -39,6 +52,7 @@ pos = nx.spring_layout(
     seed=1721,
 )
 
+
 # Getting nodes and edges into the right format for matplotlib
 nodes = np.array([pos[v] for v in G])
 edges = np.array([(pos[u], pos[v]) for u, v in G.edges()])
@@ -47,16 +61,16 @@ point_size = int(1000 / np.sqrt(len(nodes)))
 # Parameters defining the animation, feel free to play around
 
 # Ensure that the number of frames is even
-frames = 10
+frames = parameters["frames_number"]
 frames = frames + (frames % 2)
 
 # Define the minimum and maximum azimuthal angles for camera movement.
-azimuthal_min = 0  # Minimum azimuthal angle (in degrees)
-azimuthal_max = 100  # Maximum azimuthal angle (in degrees)
+azimuthal_min = parameters["azimuthal_min"]
+azimuthal_max = parameters["azimuthal_max"]
 
 # Define the minimum and maximum elevation angles for camera movement.
-elevation_min = 0  # Minimum elevation angle (in degrees)
-elevation_max = 40  # Maximum elevation angle (in degrees)
+elevation_min = parameters["elevation_min"]
+elevation_max = parameters["elevation_max"]
 
 # Calculate the step size and create the angles for the first half
 step_size_azimuthal = (azimuthal_max - azimuthal_min) / (frames // 2 - 1)
@@ -71,6 +85,18 @@ elevation_angles_first_half = [
 # Combine the first half with its reverse to create the complete angles
 azimuthal_angles = azimuthal_angles_first_half + azimuthal_angles_first_half[::-1]
 elevation_angles = elevation_angles_first_half + elevation_angles_first_half[::-1]
+# generating the plot
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection="3d")
+ax.scatter(*nodes.T, alpha=0.2, s=point_size, ec="w")
+for vizedge in edges:
+    ax.plot(*vizedge.T, color="tab:gray")
+ax.grid(False)
+ax.set_axis_off()
+plt.tight_layout()
+
+plt.show()  # uncomment, if you want to see the animation
 
 
 def init():
@@ -92,8 +118,7 @@ def _frame_update(index):
 
 
 # Create a 3D plot, set up animation, and display the plot.
-fig = plt.figure()
-ax = fig.add_subplot(111, projection="3d")
+
 
 ani = animation.FuncAnimation(
     fig,
