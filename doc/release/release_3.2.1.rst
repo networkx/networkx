@@ -1,4 +1,4 @@
-networkx 3.2.1
+NetworkX 3.2.1
 ==============
 
 Release date: 28 October 2023
