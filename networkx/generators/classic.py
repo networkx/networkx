@@ -258,7 +258,6 @@ def complete_graph(n, create_using=None):
 
     .. plot::
 
-        >>> import networkx as nx
         >>> nx.draw(nx.complete_graph(5))
 
     Parameters
