@@ -19,9 +19,6 @@ def _is_proper_edge_coloring(coloring):
             vertex_colors[u] = set()
 
         if color in vertex_colors[u]:
-            print(vertex_colors[u])
-            print(vertex_colors[v])
-            print(u, v, color)
             return False
 
         vertex_colors[u].add(color)
