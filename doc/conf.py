@@ -246,6 +246,10 @@ default_role = "obj"
 
 numpydoc_show_class_members = False
 
+plot_pre_code = """
+import networkx as nx
+"""
+
 plot_formats = [("png", 100), "pdf"]
 
 
