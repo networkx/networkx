@@ -10,7 +10,12 @@ def bipartite_edge_coloring(graph, top_nodes=[], strategy=""):
     """
     Returns a valid edge coloring of the bipartite graph `G`.
 
-    An edge coloring is an assignment of colors to the edges of a graph such that no two adjacent edges share the same color. In the case of bipartite graphs, the coloring ensures that no two edges incident on the same node have the same color.
+    An edge coloring is an assignment of colors to the edges of a graph such
+    that no two adjacent edges share the same color. In the case of bipartite
+    graphs, the coloring ensures that no two edges incident on the same node
+    have the same color.
+
+    Two strategies-----
 
 
     Parameters:
@@ -19,12 +24,15 @@ def bipartite_edge_coloring(graph, top_nodes=[], strategy=""):
 
     Optional Parameter:
     ------------------
-    top_nodes : set with all nodes that belong to one node set
-    strategy :
+    top_nodes : list, optional
+        List of nodes that belong to one node set.
+    strategy : str, optional
+        The strategy to use for edge coloring. Currently, only the default
+        strategy ("") is supported.
 
     Returns :
     --------
-    edge_colors : dictionary
+    edge_colors : dict
         The edge coloring is returned as a dictionary, `edge_colors`, such that
         `edge_colors[e]` is the color assigned to edge `e`. Colors are represented
         as integers.
@@ -37,6 +45,12 @@ def bipartite_edge_coloring(graph, top_nodes=[], strategy=""):
     ------
     NetworkXError
         Raised if the input graph is not bipartite.
+
+    AmbiguousSolution
+      Raised if the input bipartite graph is disconnected and no container
+      with all nodes in one bipartite set is provided. When determining
+      the nodes in each bipartite set more than one valid solution is
+      possible if the input graph is disconnected.
     """
     graph = graph.copy()
     if not nx.is_bipartite(graph):
@@ -49,11 +63,36 @@ def bipartite_edge_coloring(graph, top_nodes=[], strategy=""):
     if top_nodes == []:
         top_nodes, b = nx.bipartite.sets(graph)
 
-    # Dictionary to store the coloring
-    coloring = {}
-
     if strategy == "vizing":
         raise NotImplementedError
+    else:
+        coloring = simple_edge_coloring(graph, top_nodes)
+
+    return coloring
+
+
+def simple_edge_coloring(graph, top_nodes):
+    """
+    Returns the minimum edge coloring of the bipartite graph `graph`.
+
+    This function uses the ? algorithm to color the edges of the bipartite
+    graph such that no two adjacent edges have the same color.
+
+    Parameters:
+    -----------
+    graph : NetworkX graph
+        The input bipartite graph.
+    top_nodes : list
+        List of nodes that belong to one node set.
+
+    Returns:
+    --------
+    coloring : dict
+        The edge coloring represented as a dictionary, where `coloring[e]`
+        is the color assigned to edge `e`. Colors are represented as integers.
+    """
+    # Dictionary to store the coloring
+    coloring = {}
 
     # Start coloring with i = 0 color
     i = 0
@@ -66,7 +105,29 @@ def bipartite_edge_coloring(graph, top_nodes=[], strategy=""):
     return coloring
 
 
+def _color_matching_edges(graph, matching, color, coloring):
+    """
+    function used to color the edges of the matching with `color`
+    """
+    for u, v in list(matching.items()):
+        edge = (u, v) if u != v else (v, u)  # Ensure consistent order for edge
+        coloring[edge] = color
+
+
 def _find_max_degree_vertices(graph):
+    """
+    Returns the vertices with the maximum degree in the graph.
+
+    Parameters:
+    -----------
+    graph : NetworkX graph
+        The input graph.
+
+    Returns:
+    --------
+    max_degree_nodes : list
+        List of nodes with the maximum degree in the graph.
+    """
     # Get a dictionary of node degrees
     degrees = dict(graph.degree())
 
@@ -82,6 +143,21 @@ def _find_max_degree_vertices(graph):
 
 
 def _matching_saturating_max_degree(graph, top_nodes=[]):
+    """
+    Returns a maximum-degree saturating matching in the bipartite graph `graph`.
+
+    Parameters:
+    -----------
+    graph : NetworkX graph
+        The input bipartite graph.
+    top_nodes : list, optional
+        List of nodes that belong to the top node set.
+
+    Returns:
+    --------
+    matching : dict
+        A dictionary representing the maximum-degree saturating matching.
+    """
     max_degree_vertices = _find_max_degree_vertices(graph)
 
     # two parts of the bipartite graph
@@ -104,36 +180,25 @@ def _matching_saturating_max_degree(graph, top_nodes=[]):
 
 def _combine_matchings(M1, M2, A, B):
     """
-    Combines two Matching M1,M2 using dictionary data structure
+    Combines two matchings `M1` and `M2` in the bipartite graph.
+
+    Parameters:
+    -----------
+    M1 : dict
+        Dictionary representing the first matching.
+    M2 : dict
+        Dictionary representing the second matching.
+    A : set
+        Set of nodes in the first part of the bipartite graph.
+    B : set
+        Set of nodes in the second part of the bipartite graph.
+
+    Returns:
+    --------
+    final_matching : dict
+        A dictionary representing the combined matching.
     """
     final_matching = {}
-
-    components = _find_components(M1, M2)
-
-    for cycle in components["cycles"]:
-        for i in range(0, len(cycle), 2):
-            u, v = cycle[i]
-            final_matching[u] = v
-            final_matching[v] = u
-
-    for path in components["paths"]:
-        u, v = path[0]
-        if (len(path) % 2 == 1) or (
-            (u in M1 and M1[u] == v and u in A) or (u in M2 and M2[u] == v and u in B)
-        ):
-            k = 0
-        else:
-            k = 1
-
-        for u1, v1 in path[k::2]:
-            final_matching[u1] = v1
-            final_matching[v1] = u1
-
-    return final_matching
-
-
-def _find_components(M1, M2):
-    components = {"cycles": [], "paths": []}
     visited = set()
 
     # while
@@ -142,43 +207,47 @@ def _find_components(M1, M2):
             continue
         u1 = u
         edges = [(u, v)]
-        visited.add((u, v))
-        visited.add((v, u))
+        visited.update([(u, v), (v, u)])
         M = M2
 
         while v in M and v != u1:
             u = v
             v = M[v]
             edges.append((u, v))
-            visited.add((u, v))
-            visited.add((v, u))
+            visited.update([(u, v), (v, u)])
             M = M1 if M is M2 else M2
 
         if v not in M:
             u, v = v, u
             edges = [(u, v)]
-            visited.add((u, v))
-            visited.add((v, u))
+            visited.update([(u, v), (v, u)])
 
             while v in M:
                 u = v
                 v = M[v]
                 edges.append((u, v))
-                visited.add((u, v))
-                visited.add((v, u))
+                visited.update([(u, v), (v, u)])
                 M = M1 if M is M2 else M2
 
-            components["paths"].append(edges)
+            u, v = edges[0]
+            if (len(edges) % 2 == 1) or (
+                (u in M1 and M1[u] == v and u in A)
+                or (u in M2 and M2[u] == v and u in B)
+            ):
+                k = 0
+            else:
+                k = 1
+
+            for u1, v1 in edges[k::2]:
+                final_matching[u1] = v1
+                final_matching[v1] = u1
         elif v == u1:
-            components["cycles"].append(edges)
+            for i in range(0, len(edges), 2):
+                u, v = edges[i]
+                final_matching[u] = v
+                final_matching[v] = u
+
         else:
             raise ValueError("Bleh")
 
-    return components
-
-
-def _color_matching_edges(graph, matching, color, coloring):
-    for u, v in list(matching.items()):
-        edge = (u, v) if u != v else (v, u)  # Ensure consistent order for edge
-        coloring[edge] = color
-        graph[u][v]["color"] = color
+    return final_matching
