@@ -65,7 +65,7 @@ def bipartite_edge_coloring(graph, top_nodes=[], strategy="iterated_matching"):
     if top_nodes == []:
         top_nodes, b = nx.bipartite.sets(graph)
 
-    if strategy == "kepme_chain":
+    if strategy == "kempe_chain":
         coloring = kempe_chain_bipartite_edge_coloring(graph, top_nodes)
     else:
         coloring = iterated_matching_edge_coloring(graph, top_nodes)
