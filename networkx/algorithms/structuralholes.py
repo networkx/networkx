@@ -281,3 +281,66 @@ def local_constraint(G, u, v, weight=None):
         for w in set(nx.all_neighbors(G, u))
     )
     return (direct + indirect) ** 2
+
+
+@nx._dispatch(edge_attrs="weight")
+def hierarchy(G, nodes=None, weight=None):
+    r"""Returns the hierarchy of all nodes in the graph ``G``.
+
+    The *hierarchy* of a node measures the extent to which a minority of
+    contacts stands above the others in terms of being more the source
+    of closure [1]_.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        The graph containing ``v``. Directed graphs are treated like
+        undirected graphs when computing neighbors of ``v``.
+
+    nodes : container, optional
+        Container of nodes in the graph ``G`` to compute the hierarchy.
+        If None, the hierarchy of every node is computed.
+
+    weight : None or string, optional
+      If None, all edge weights are considered equal.
+      Otherwise holds the name of the edge attribute used as weight.
+
+    Returns
+    -------
+    dict
+        Dictionary with nodes as keys and the hierarchy of the node as values.
+
+    Notes
+    -----
+    The hierarchy of a node is calculated based on the concept of
+    closure, and the specific formula can be adjusted based on the
+    requirements and specifics of the hierarchy metric.
+
+    References
+    ----------
+    .. [1] Burt, Ronald S.
+           "The Network Structure of Social Capital."
+           Research in Organizational Behavior, 2000.
+           http://faculty.chicagobooth.edu/ronald.burt/research/files/NSSC.pdf
+
+    """
+    def hierarchy_calculation(G, u, v, weight=None):
+        nmw = normalized_mutual_weight
+        hierarchy_value = sum(
+            nmw(G, u, w, weight=weight) * nmw(G, v, w, norm=max, weight=weight)
+            for w in set(nx.all_neighbors(G, u))
+        )
+        return hierarchy_value
+
+    hierarchy_values = {}
+    if nodes is None:
+        nodes = G
+    for v in nodes:
+        # Hierarchy is not defined for isolated nodes
+        if len(G[v]) == 0:
+            hierarchy_values[v] = float("nan")
+            continue
+        hierarchy_values[v] = sum(
+            hierarchy_calculation(G, v, u, weight) for u in set(nx.all_neighbors(G, v))
+        )
+    return hierarchy_values
