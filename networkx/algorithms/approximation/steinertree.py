@@ -107,17 +107,18 @@ def _kou_steiner_tree(G, terminal_nodes, weight):
 
     # Leaf nodes that are not terminal might still remain; remove them here
     T_H = G.edge_subgraph(T_S).copy()
-    _remove_nonterminal_leaves(T_H, terminal_nodes)
+    _remove_nonterminal_leaves_iteratively(T_H, terminal_nodes)
 
     return T_H.edges()
 
 
-def _remove_nonterminal_leaves(G, terminals):
+def _remove_nonterminal_leaves_iteratively(G, terminals):
     terminals_set = set(terminals)
-    for n in list(G.nodes):
-        if n not in terminals_set and G.degree(n) == 1:
-            G.remove_node(n)
-
+    while True:
+        non_terminal_leaves = [n for n in G.nodes if n not in terminals_set and G.degree(n) == 1]
+        if not non_terminal_leaves:
+            break
+        G.remove_nodes_from(non_terminal_leaves)
 
 ALGORITHMS = {
     "kou": _kou_steiner_tree,
