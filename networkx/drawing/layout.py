@@ -1125,18 +1125,24 @@ def forceatlas2_layout(
 ):
     """Forceatlas2 layout for networkx
 
-    The ForceAtlas2 layout is a force-directed that improves upon ForceAtlas by simplifying the parameters [1].
-    It offers a good compromise between clustering and spatially separating parts of the network.
-    The layout was originally designed and used by Gephi to visualize graphs in a continuous and interactive manner.
+    The ForceAtlas2  layout is  a force-directed  approach that
+    improves upon ForceAtlas by  simplifying the parameters [1].
+    It offers a good compromise between clustering and spatially
+    separating parts  of the network. The  layout was originally
+    designed  and  used  by  Gephi  to  visualize  graphs  in  a
+    continuous and interactive manner.
 
-    The layout is based on the balance between an attractive force, and a repulsion force.
-    The attraction force is defined by the distance between nodes. Nodes close
-    eachother (in a graphical sense) are attracted more than more spatially distant
-    away nodes.
+    The layout  is based  on the  balance between  an attractive
+    force and a repulsion force. The attraction force is defined
+    by the distance between nodes. Nodes close to each other (in
+    a graphical  sense) are  attracted more than  more spatially
+    distant nodes.
 
-    The repulsion force is dependent on the degree. Visual cluttering is reduced
-    by providing larger forcing on nodes with higher degree. This prevents
-    a "bunching" affect present in most powerlaw graphs.
+    The  repulsion  force is  dependent  on  the degree.  Visual
+    cluttering is  reduced by  applying larger forcing  on nodes
+    with  a higher  degree.  This prevents  a "bunching"  effect
+    present in most power-law graphs.
+
 
     Parameters
     ----------
@@ -1175,6 +1181,7 @@ def forceatlas2_layout(
     >>> nx.draw(G, pos = nx.forceatlas2_layout(G))
 
     [1] https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0098679&type=printable
+
     """
     import numpy as np
 
