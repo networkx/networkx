@@ -631,20 +631,6 @@ def barycenter(G, weight=None, attr=None, sp=None):
     return barycenter_vertices
 
 
-def _count_lu_permutations(perm_array):
-    """Counts the number of permutations in SuperLU perm_c or perm_r"""
-    perm_cnt = 0
-    arr = perm_array.tolist()
-    for i in range(len(arr)):
-        if i != arr[i]:
-            perm_cnt += 1
-            n = arr.index(i)
-            arr[n] = arr[i]
-            arr[i] = i
-
-    return perm_cnt
-
-
 @not_implemented_for("directed")
 @nx._dispatch(edge_attrs="weight")
 def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=True):
@@ -775,43 +761,6 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
                 j = node_list.index(n2)
                 d[n][n2] = Linv[i, i] + Linv[j, j] - Linv[i, j] - Linv[j, i]
         return d
-    # Replace with collapsing topology or approximated zero?
-
-    # Using determinants to compute the effective resistance is more memory
-    # efficient than directly calculating the pseudo-inverse
-    L = nx.laplacian_matrix(G, node_list, weight=weight).asformat("csc")
-    indices = list(range(L.shape[0]))
-    # w/ nodeA removed
-    indices.remove(node_list.index(nodeA))
-    L_a = L[indices, :][:, indices]
-    # Both nodeA and nodeB removed
-    indices.remove(node_list.index(nodeB))
-    L_ab = L[indices, :][:, indices]
-
-    # Factorize Laplacian submatrixes and extract diagonals
-    # Order the diagonals to minimize the likelihood over overflows
-    # during computing the determinant
-    lu_a = sp.sparse.linalg.splu(L_a, options={"SymmetricMode": True})
-    LdiagA = lu_a.U.diagonal()
-    LdiagA_s = np.prod(np.sign(LdiagA)) * np.prod(lu_a.L.diagonal())
-    LdiagA_s *= (-1) ** _count_lu_permutations(lu_a.perm_r)
-    LdiagA_s *= (-1) ** _count_lu_permutations(lu_a.perm_c)
-    LdiagA = np.absolute(LdiagA)
-    LdiagA = np.sort(LdiagA)
-
-    lu_ab = sp.sparse.linalg.splu(L_ab, options={"SymmetricMode": True})
-    LdiagAB = lu_ab.U.diagonal()
-    LdiagAB_s = np.prod(np.sign(LdiagAB)) * np.prod(lu_ab.L.diagonal())
-    LdiagAB_s *= (-1) ** _count_lu_permutations(lu_ab.perm_r)
-    LdiagAB_s *= (-1) ** _count_lu_permutations(lu_ab.perm_c)
-    LdiagAB = np.absolute(LdiagAB)
-    LdiagAB = np.sort(LdiagAB)
-
-    # Calculate the ratio of determinant, rd = det(L_ab)/det(L_a)
-    Ldet = np.prod(np.divide(np.append(LdiagAB, [1]), LdiagA))
-    rd = Ldet * LdiagAB_s / LdiagA_s
-
-    return rd
 
 
 @nx.utils.not_implemented_for("directed")

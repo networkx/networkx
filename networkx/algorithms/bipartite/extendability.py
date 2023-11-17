@@ -43,7 +43,7 @@ def maximal_extendability(G):
     is the graph obtained from G by directing the edges of M from V to U and the
     edges that do not belong to M from U to V.
 
-    Lemma([1]_):
+    Lemma [1]_ :
     Let M be a perfect matching of `G`. `G` is $k$-extendable if and only if its residual
     graph $G_M$ is strongly connected and there are $k$ vertex-disjoint directed
     paths between every vertex of U and every vertex of V.
@@ -59,9 +59,9 @@ def maximal_extendability(G):
 
     References
     ----------
-    ..[1] "A polynomial algorithm for the extendability problem in bipartite graphs",
+    .. [1] "A polynomial algorithm for the extendability problem in bipartite graphs",
           J. Lakhal, L. Litzler, Information Processing Letters, 1998.
-    ..[2] "On n-extendible graphs", M. D. Plummer, Discrete Mathematics, 31:201–210, 1980
+    .. [2] "On n-extendible graphs", M. D. Plummer, Discrete Mathematics, 31:201–210, 1980
           https://doi.org/10.1016/0012-365X(80)90037-0
 
     """
