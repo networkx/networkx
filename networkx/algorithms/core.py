@@ -207,7 +207,7 @@ def k_core(G, k=None, core_number=None):
 
     import warnings
 
-    if nx.is_multigraph(G):
+    if G.is_multigraph():
         warnings.warn(
             (
                 "\n\n`k_core` will not accept `MultiGraph` objects in version 3.5.\n"
@@ -289,7 +289,7 @@ def k_shell(G, k=None, core_number=None):
 
     import warnings
 
-    if nx.is_multigraph(G):
+    if G.is_multigraph():
         warnings.warn(
             (
                 "\n\n`k_shell` will not accept `MultiGraph` objects in version 3.5.\n"
@@ -368,7 +368,7 @@ def k_crust(G, k=None, core_number=None):
 
     import warnings
 
-    if nx.is_multigraph(G):
+    if G.is_multigraph():
         warnings.warn(
             (
                 "\n\n`k_crust` will not accept `MultiGraph` objects in version 3.5.\n"
@@ -449,7 +449,7 @@ def k_corona(G, k, core_number=None):
 
     import warnings
 
-    if nx.is_multigraph(G):
+    if G.is_multigraph():
         warnings.warn(
             (
                 "\n\n`k_corona` will not accept `MultiGraph` objects in version 3.5.\n"
