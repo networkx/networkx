@@ -133,6 +133,16 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nrandom_triad"
     )
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="\n\nk_core")
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nk_shell"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nk_crust"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nk_corona"
+    )
 
 
 @pytest.fixture(autouse=True)
