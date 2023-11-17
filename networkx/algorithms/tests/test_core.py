@@ -69,6 +69,15 @@ class TestCore:
         assert nodes_equal(nodes_by_core[1], [1, 3])
         assert nodes_equal(nodes_by_core[2], [2, 4, 5, 6])
 
+    def test_core_number_multigraph(self):
+        G = nx.complete_graph(3)
+        G = nx.MultiGraph(G)
+        G.add_edge(1, 2)
+        with pytest.raises(
+            nx.NetworkXNotImplemented, match="not implemented for multigraph type"
+        ):
+            nx.core_number(G)
+
     def test_core_number_self_loop(self):
         G = nx.cycle_graph(3)
         G.add_edge(0, 0)
@@ -192,6 +201,24 @@ class TestCore:
         k_truss_subgraph = nx.k_truss(self.G, 5)
         assert sorted(k_truss_subgraph.nodes()) == []
 
+    def test_k_truss_digraph(self):
+        G = nx.complete_graph(3)
+        G = nx.DiGraph(G)
+        G.add_edge(2, 1)
+        with pytest.raises(
+            nx.NetworkXNotImplemented, match="not implemented for directed type"
+        ):
+            nx.k_truss(G, k=1)
+
+    def test_k_truss_multigraph(self):
+        G = nx.complete_graph(3)
+        G = nx.MultiGraph(G)
+        G.add_edge(1, 2)
+        with pytest.raises(
+            nx.NetworkXNotImplemented, match="not implemented for multigraph type"
+        ):
+            nx.k_truss(G, k=1)
+
     def test_k_truss_self_loop(self):
         G = nx.cycle_graph(3)
         G.add_edge(0, 0)
@@ -211,6 +238,24 @@ class TestCore:
         assert nodes_equal(nodes_by_layer[3], [9, 11])
         assert nodes_equal(nodes_by_layer[4], [1, 2, 4, 5, 6, 8])
         assert nodes_equal(nodes_by_layer[5], [3, 7])
+
+    def test_onion_digraph(self):
+        G = nx.complete_graph(3)
+        G = nx.DiGraph(G)
+        G.add_edge(2, 1)
+        with pytest.raises(
+            nx.NetworkXNotImplemented, match="not implemented for directed type"
+        ):
+            nx.onion_layers(G)
+
+    def test_onion_multigraph(self):
+        G = nx.complete_graph(3)
+        G = nx.MultiGraph(G)
+        G.add_edge(1, 2)
+        with pytest.raises(
+            nx.NetworkXNotImplemented, match="not implemented for multigraph type"
+        ):
+            nx.onion_layers(G)
 
     def test_onion_self_loop(self):
         G = nx.cycle_graph(3)
