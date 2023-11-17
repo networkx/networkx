@@ -6,7 +6,7 @@ from networkx.generators.classic import null_graph
 
 # @not_implemented_for("multigraph")
 @nx._dispatch(name="bipartite_edge_coloring")
-def bipartite_edge_coloring(graph, top_nodes=[], strategy=""):
+def bipartite_edge_coloring(graph, top_nodes=[], strategy="iterated_matching"):
     """
     Returns a valid edge coloring of the bipartite graph `G`.
 
@@ -15,8 +15,10 @@ def bipartite_edge_coloring(graph, top_nodes=[], strategy=""):
     graphs, the coloring ensures that no two edges incident on the same node
     have the same color.
 
-    Two strategies-----
-
+    Two strategies:
+    --------------
+    iterated_matching
+    kempe_chain
 
     Parameters:
     -----------
@@ -63,10 +65,90 @@ def bipartite_edge_coloring(graph, top_nodes=[], strategy=""):
     if top_nodes == []:
         top_nodes, b = nx.bipartite.sets(graph)
 
-    if strategy == "vizing":
-        raise NotImplementedError
+    if strategy == "kepme_chain":
+        coloring = kempe_chain_bipartite_edge_coloring(graph, top_nodes)
     else:
         coloring = iterated_matching_edge_coloring(graph, top_nodes)
+
+    return coloring
+
+
+def kempe_chain_bipartite_edge_coloring(graph, top_nodes):
+    """
+    Returns the minimum edge coloring of the bipartite graph `graph`.
+
+    This function uses the ? algorithm to color the edges of the bipartite
+    graph such that no two adjacent edges have the same color.
+
+    Parameters:
+    -----------
+    graph : NetworkX graph
+        The input bipartite graph.
+    top_nodes : list
+        List of nodes that belong to one node set.
+
+    Returns:
+    --------
+    coloring : dict
+        The edge coloring represented as a dictionary, where `coloring[e]`
+        is the color assigned to edge `e`. Colors are represented as integers.
+    """
+    # Get a dictionary of node degrees
+    degrees = dict(graph.degree())
+
+    # Find the maximum degree in the graph
+    delta = max(degrees.values())
+
+    colors = set(range(delta))
+    coloring = {}
+
+    # Initialize color dictionary for each vertex
+    used_colors = {node: {} for node in graph.nodes}
+
+    for edge in graph.edges:
+        u, v = edge
+
+        # Get the colors of edges ending at u and v
+        u_colors = set(used_colors[u].keys())
+        v_colors = set(used_colors[v].keys())
+
+        # Take the union and subtract from available colors
+        available_colors = colors - (u_colors | v_colors)
+
+        if available_colors:
+            # Color the edge with the lowest available color
+            color = min(available_colors)
+            used_colors[u][color] = v
+            used_colors[v][color] = u
+            coloring[(u, v)] = color
+            coloring[(v, u)] = color
+        else:
+            print("kempe")
+            for i in colors:
+                if i not in used_colors[u]:
+                    u_color = i
+                    break
+            for j in colors:
+                if j not in used_colors[v]:
+                    v_color = j
+                    break
+            u1 = u
+            v1 = v
+            color = v_color
+            # Find a Kempe chain and swap colors
+            while True:
+                prev_color = coloring.get((u1, v1), coloring.get((v1, u1), None))
+                coloring[(u1, v1)] = color
+                coloring[(v1, u1)] = color
+                if color not in used_colors[u1]:
+                    used_colors[u1][color] = v1
+                    used_colors[v1][color] = u1
+                    v2 = used_colors[u1].pop(color, None)
+                    used_colors[v2].pop(color)
+                    break
+                v1 = u1
+                u1 = used_colors[u1][color]
+                color = v_color if color == u_color else u_color
 
     return coloring
 
