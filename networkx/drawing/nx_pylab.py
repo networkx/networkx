@@ -16,7 +16,6 @@ See Also
  - :func:`matplotlib.pyplot.scatter`
  - :obj:`matplotlib.patches.FancyArrowPatch`
 """
-import warnings
 from numbers import Number
 
 import networkx as nx
