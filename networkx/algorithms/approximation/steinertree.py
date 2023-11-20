@@ -121,19 +121,6 @@ def _remove_nonterminal_leaves_iteratively(G, terminals):
         if not non_terminal_leaves:
             break
         G.remove_nodes_from(non_terminal_leaves)
-        
-# Test the function with a sample graph
-G = nx.Graph()
-G.add_edges_from([(1, 2), (2, 3), (3, 4), (4, 5)], weight=1)
-
-print("Original Graph Nodes:", G.nodes)
-print("Original Graph Edges:", G.edges)
-
-# Call the _remove_nonterminal_leaves_iteratively function
-_remove_nonterminal_leaves_iteratively(G, [1, 2])
-
-print("Graph Nodes After Removal:", G.nodes)
-print("Graph Edges After Removal:", G.edges)
 
 ALGORITHMS = {
     "kou": _kou_steiner_tree,
