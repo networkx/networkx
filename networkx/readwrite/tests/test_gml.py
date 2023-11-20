@@ -212,12 +212,13 @@ graph
         fh.seek(0)
         pytest.raises(nx.NetworkXError, nx.read_gml, fh, label="label")
 
-    def test_tuplelabels(self):
+    @pytest.mark.parametrize("stringizer", (None, literal_stringizer))
+    def test_tuplelabels(self, stringizer):
         # https://github.com/networkx/networkx/pull/1048
         # Writing tuple labels to GML failed.
         G = nx.Graph()
         G.add_edge((0, 1), (1, 0))
-        data = "\n".join(nx.generate_gml(G, stringizer=literal_stringizer))
+        data = "\n".join(nx.generate_gml(G, stringizer=stringizer))
         answer = """graph [
   node [
     id 0

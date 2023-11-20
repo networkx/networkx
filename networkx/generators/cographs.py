@@ -18,6 +18,7 @@ __all__ = ["random_cograph"]
 
 
 @py_random_state(1)
+@nx._dispatch(graphs=None)
 def random_cograph(n, seed=None):
     r"""Returns a random cograph with $2 ^ n$ nodes.
 
@@ -32,7 +33,7 @@ def random_cograph(n, seed=None):
     Parameters
     ----------
     n : int
-            The order of the cograph.
+        The order of the cograph.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.

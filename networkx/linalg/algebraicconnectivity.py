@@ -632,7 +632,7 @@ def spectral_bisection(
         See :ref:`Randomness<randomness>`.
 
     Returns
-    --------
+    -------
     bisection : tuple of sets
         Sets with the bisection of nodes
 

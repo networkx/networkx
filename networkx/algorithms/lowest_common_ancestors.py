@@ -216,7 +216,7 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
     if pairs is not None:
         pair_dict = defaultdict(set)
         # See note on all_pairs_lowest_common_ancestor.
-        if not isinstance(pairs, (Mapping, Set)):
+        if not isinstance(pairs, Mapping | Set):
             pairs = set(pairs)
         for u, v in pairs:
             for n in (u, v):

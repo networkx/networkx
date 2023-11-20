@@ -76,7 +76,7 @@ def min_edge_cover(G, matching_algorithm=None):
     if nx.number_of_isolates(G) > 0:
         # ``min_cover`` does not exist as there is an isolated node
         raise nx.NetworkXException(
-            "Graph has a node with no edge incident on it, " "so no edge cover exists."
+            "Graph has a node with no edge incident on it, so no edge cover exists."
         )
     if matching_algorithm is None:
         matching_algorithm = partial(nx.max_weight_matching, maxcardinality=True)

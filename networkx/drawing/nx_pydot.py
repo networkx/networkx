@@ -54,6 +54,7 @@ def write_dot(G, path):
 
 
 @open_file(0, mode="r")
+@nx._dispatch(name="pydot_read_dot", graphs=None)
 def read_dot(path):
     """Returns a NetworkX :class:`MultiGraph` or :class:`MultiDiGraph` from the
     dot file with the passed path.
@@ -95,6 +96,7 @@ def read_dot(path):
     return from_pydot(P_list[0])
 
 
+@nx._dispatch(graphs=None)
 def from_pydot(P):
     """Returns a NetworkX graph from a Pydot graph.
 

@@ -167,6 +167,7 @@ def floyd_warshall_predecessor_and_distance(G, weight="weight"):
     return dict(pred), dict(dist)
 
 
+@nx._dispatch(graphs=None)
 def reconstruct_path(source, target, predecessors):
     """Reconstruct a path from source to target using the predecessors
     dict as returned by floyd_warshall_predecessor_and_distance

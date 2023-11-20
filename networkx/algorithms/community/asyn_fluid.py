@@ -38,7 +38,8 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
 
     Parameters
     ----------
-    G : Graph
+    G : NetworkX graph
+        Graph must be simple and undirected.
 
     k : integer
         The number of communities to be found.
