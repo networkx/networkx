@@ -32,12 +32,8 @@ import networkx as nx
 # %%
 # Construct a MixedEdgeGraph
 # --------------------------
-# Using the ``MixedEdgeGraph``, we can represent a causal graph
-# with two different kinds of edges. To create the graph, we
-# use networkx ``nx.DiGraph`` class to represent directed edges,
-# and ``nx.Graph`` class to represent edges without directions (i.e.
-# bidirected edges). The edge types are then specified, so the mixed edge
-# graph object knows which graphs are associated with which types of edges.
+# Here we demonstrate how to construct a mixed edge graph
+# by composing networkx graphs.
 
 directed_G = nx.DiGraph(
     [
@@ -58,7 +54,6 @@ G = nx.MixedEdgeGraph(
     name="IV Graph",
 )
 
-# Compute the multipartite_layout using the "layer" node attribute
 pos = nx.spring_layout(G)
 
 # we can then visualize the mixed-edge graph

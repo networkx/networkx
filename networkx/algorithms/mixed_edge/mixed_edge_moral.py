@@ -11,7 +11,15 @@ def mixed_edge_moral_graph(
     undirected_edge_name="undirected",
     bidirected_edge_name="bidirected",
 ):
-    """Return the moral graph from an ancestral graph  in :math:`O(|V|^2)`.
+    """Return the moral graph from an ancestral graph.
+
+    A moral graph is a graph where all edges are undirected and an edge
+    between two nodes, ``u`` and ``v``, exists if there is a v-structure
+    ``u -> w <- v``, where ``u`` and ``v`` are not adjacent. An ancestral
+    graph is a mixed edge graph with directed, bidirected, and undirected
+    edges.
+
+    The algorithm runs in :math:`O(|V|^2)`.
 
     Parameters
     ----------
