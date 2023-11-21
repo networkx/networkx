@@ -13,13 +13,19 @@ def mixed_edge_moral_graph(
 ):
     """Return the moral graph from an ancestral graph.
 
-    A moral graph is a graph where all edges are undirected and an edge
-    between two nodes, ``u`` and ``v``, exists if there is a v-structure
-    ``u -> w <- v``, where ``u`` and ``v`` are not adjacent. An ancestral
-    graph is a mixed edge graph with directed, bidirected, and undirected
-    edges.
+    An ancestral graph is a mixed edge graph with possiblye directed,
+    bidirected, and undirected edges that results when marginalizing one
+    or more vertices from a directed acyclic graph. It is commonly used in
+    statistical and Markov modeling.
 
-    The algorithm runs in :math:`O(|V|^2)`.
+    The moral graph is the undirected graph that results from converting
+    all existing edges to undirected edges and adding an undirected edge
+    between all nodes that have a common child. For example, if we have
+    two nodes, ``u`` and ``v`` and there exists a v-structure
+    ``u -> w <- v``, where ``u`` and ``v`` are not adjacent, then ``u -- v``
+    edge is added to the moral graph. See [2]_ for more details.
+
+    The algorithm runs in :math:`O(|V|^2)` [1]_.
 
     Parameters
     ----------
@@ -42,6 +48,7 @@ def mixed_edge_moral_graph(
     .. [1] B. van der Zander, M. Liśkiewicz, and J. Textor, “Separators and Adjustment
        Sets in Causal Graphs: Complete Criteria and an Algorithmic Framework,” Artificial
        Intelligence, vol. 270, pp. 1–40, May 2019, doi: 10.1016/j.artint.2018.12.006.
+    .. [2] https://en.wikipedia.org/wiki/Moral_graph
     """
 
     has_undirected = undirected_edge_name in G.edge_types
