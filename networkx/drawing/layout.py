@@ -1125,24 +1125,22 @@ def forceatlas2_layout(
 ):
     """Forceatlas2 layout for networkx
 
-    The ForceAtlas2  layout is  a force-directed  approach that
-    improves upon ForceAtlas by  simplifying the parameters [1].
-    It offers a good compromise between clustering and spatially
-    separating parts  of the network. The  layout was originally
-    designed  and  used  by  Gephi  to  visualize  graphs  in  a
-    continuous and interactive manner.
+    The ForceAtlas2 layout is a force-directed approach that
+    improves upon  ForceAtlas by simplifying  the parameters
+    [1]. It offers a  good compromise between clustering and
+    spatially separating  parts of  the network.  The layout
+    was originally  designed and used by  Gephi to visualize
+    graphs in a continuous and interactive manner.
 
-    The layout  is based  on the  balance between  an attractive
-    force and a repulsion force. The attraction force is defined
-    by the distance between nodes. Nodes close to each other (in
-    a graphical  sense) are  attracted more than  more spatially
-    distant nodes.
+    In  the  layout,  nodes  repulse  each other  similar  to
+    oppositely charged  particles, while edges  attract like
+    to  springs.  The  balance between  the  attractive  and
+    repulsive  forces  produce   visualy  pleasing  layouts,
+    particularly for large graphs.
 
-    The  repulsion  force is  dependent  on  the degree.  Visual
-    cluttering is  reduced by  applying larger forcing  on nodes
-    with  a higher  degree.  This prevents  a "bunching"  effect
-    present in most power-law graphs.
-
+    The  algorithm  includes parameters  for  customization,
+    such as gravity (pull towards the center), scaling (size
+    of the layout) and jitter (random perturbations).
 
     Parameters
     ----------
