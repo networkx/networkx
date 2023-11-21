@@ -1363,7 +1363,7 @@ def _simrank_similarity_python(
 
     for its in range(max_iterations):
         oldsim = newsim
-        newsim = {u: {v: sim(u, v) if u is not v else 1 for v in G} for u in G}
+        newsim = {u: {v: sim(u, v) if u != v else 1 for v in G} for u in G}
         is_close = all(
             all(
                 abs(newsim[u][v] - old) <= tolerance * (1 + abs(old))

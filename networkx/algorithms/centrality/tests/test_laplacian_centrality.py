@@ -6,6 +6,38 @@ np = pytest.importorskip("numpy")
 sp = pytest.importorskip("scipy")
 
 
+def test_laplacian_centrality_null_graph():
+    G = nx.Graph()
+    with pytest.raises(nx.NetworkXPointlessConcept):
+        d = nx.laplacian_centrality(G, normalized=False)
+
+
+def test_laplacian_centrality_single_node():
+    """See gh-6571"""
+    G = nx.empty_graph(1)
+    assert nx.laplacian_centrality(G, normalized=False) == {0: 0}
+    with pytest.raises(ZeroDivisionError):
+        nx.laplacian_centrality(G, normalized=True)
+
+
+def test_laplacian_centrality_unconnected_nodes():
+    """laplacian_centrality on a unconnected node graph should return 0
+
+    For graphs without edges, the Laplacian energy is 0 and is unchanged with
+    node removal, so::
+
+        LC(v) = LE(G) - LE(G - v) = 0 - 0 = 0
+    """
+    G = nx.empty_graph(3)
+    assert nx.laplacian_centrality(G, normalized=False) == {0: 0, 1: 0, 2: 0}
+
+
+def test_laplacian_centrality_empty_graph():
+    G = nx.empty_graph(3)
+    with pytest.raises(ZeroDivisionError):
+        d = nx.laplacian_centrality(G, normalized=True)
+
+
 def test_laplacian_centrality_E():
     E = nx.Graph()
     E.add_weighted_edges_from(

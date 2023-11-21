@@ -210,7 +210,7 @@ def difference(G, H):
     # create new graph
     if not G.is_multigraph() == H.is_multigraph():
         raise nx.NetworkXError("G and H must both be graphs or multigraphs.")
-    R = nx.create_empty_copy(G)
+    R = nx.create_empty_copy(G, with_data=False)
 
     if set(G) != set(H):
         raise nx.NetworkXError("Node sets of graphs not equal")
@@ -258,7 +258,7 @@ def symmetric_difference(G, H):
     # create new graph
     if not G.is_multigraph() == H.is_multigraph():
         raise nx.NetworkXError("G and H must both be graphs or multigraphs.")
-    R = nx.create_empty_copy(G)
+    R = nx.create_empty_copy(G, with_data=False)
 
     if set(G) != set(H):
         raise nx.NetworkXError("Node sets of graphs not equal")

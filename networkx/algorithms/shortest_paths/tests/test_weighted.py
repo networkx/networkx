@@ -341,6 +341,9 @@ class TestWeightedPath(WeightedTestBase):
         pytest.raises(ValueError, nx.dijkstra_predecessor_and_distance, G, 8)
         G.add_edge(9, 10)
         pytest.raises(ValueError, nx.bidirectional_dijkstra, G, 8, 10)
+        G = nx.MultiDiGraph()
+        G.add_edge(2, 2, weight=-1)
+        assert nx.negative_edge_cycle(G)
 
     def test_negative_edge_cycle_empty(self):
         G = nx.DiGraph()
@@ -595,11 +598,21 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
             nx.NetworkXUnbounded, nx.bellman_ford_predecessor_and_distance, G, 1
         )
         pytest.raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, 1)
+        G = nx.MultiDiGraph([(1, 1, {"weight": -1})])
+        pytest.raises(nx.NetworkXUnbounded, nx.single_source_bellman_ford_path, G, 1)
+        pytest.raises(
+            nx.NetworkXUnbounded, nx.single_source_bellman_ford_path_length, G, 1
+        )
+        pytest.raises(nx.NetworkXUnbounded, nx.single_source_bellman_ford, G, 1)
+        pytest.raises(
+            nx.NetworkXUnbounded, nx.bellman_ford_predecessor_and_distance, G, 1
+        )
+        pytest.raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, 1)
 
     def test_zero_cycle(self):
         G = nx.cycle_graph(5, create_using=nx.DiGraph())
         G.add_edge(2, 3, weight=-4)
-        # check that zero cycle doesnt raise
+        # check that zero cycle doesn't raise
         nx.goldberg_radzik(G, 1)
         nx.bellman_ford_predecessor_and_distance(G, 1)
 

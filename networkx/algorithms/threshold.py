@@ -301,6 +301,7 @@ def weights_to_creation_sequence(
 
 
 # Manipulating NetworkX.Graphs in context of threshold graphs
+@nx._dispatch(graphs=None)
 def threshold_graph(creation_sequence, create_using=None):
     """
     Create a threshold graph from the creation sequence or compact

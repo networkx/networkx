@@ -768,7 +768,7 @@ def _parse_network_text(lines):
     class ParseStackFrame(NamedTuple):
         node: Any
         indent: int
-        has_vertical_child: Union[int, None]
+        has_vertical_child: int | None
 
     initial_line_iter = iter(lines)
 

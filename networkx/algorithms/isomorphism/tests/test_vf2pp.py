@@ -1486,7 +1486,7 @@ class TestMultiGraphISOVF2pp:
         assert not m
 
         # Compensate in G2
-        G2.add_edges_from([(i, i) for i in range(0, 3)] * 3)
+        G2.add_edges_from([(i, i) for i in range(3)] * 3)
         m = vf2pp_isomorphism(G1, G2, node_label="label")
         assert m
 
@@ -1524,7 +1524,7 @@ class TestMultiGraphISOVF2pp:
         assert not m
 
         # Add self-loops to non mapped nodes in G2 as well
-        G2.add_edges_from([(mapped[i], mapped[i]) for i in range(0, 3)] * 7)
+        G2.add_edges_from([(mapped[i], mapped[i]) for i in range(3)] * 7)
         m = vf2pp_isomorphism(G1, G2, node_label="label")
         assert not m
 
@@ -1534,7 +1534,7 @@ class TestMultiGraphISOVF2pp:
         assert not m
 
         # Add self-loops to G1 so that they are even in both graphs
-        G1.add_edges_from([(i, i) for i in range(0, 3)] * 7)
+        G1.add_edges_from([(i, i) for i in range(3)] * 7)
         m = vf2pp_isomorphism(G1, G2, node_label="label")
         assert m
 

@@ -118,7 +118,7 @@ class TestHararyGraph:
             eSet2 = set(G2.edges)
             eSet3 = set()
             half = n // 2
-            for i in range(0, half + 1):
+            for i in range(half + 1):
                 # add half+1 edges between i and i+half
                 eSet3.add((i, (i + half) % n))
             assert eSet1 == eSet2 | eSet3

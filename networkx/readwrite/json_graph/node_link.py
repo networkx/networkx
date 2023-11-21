@@ -26,7 +26,7 @@ def _to_tuple(x):
     >>> _to_tuple([1, 2, [3, 4]])
     (1, 2, (3, 4))
     """
-    if not isinstance(x, (tuple, list)):
+    if not isinstance(x, tuple | list):
         return x
     return tuple(map(_to_tuple, x))
 
@@ -132,6 +132,7 @@ def node_link_data(
     return data
 
 
+@nx._dispatch(graphs=None)
 def node_link_graph(
     data,
     directed=False,

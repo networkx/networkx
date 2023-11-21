@@ -88,6 +88,7 @@ def _generate_graphs():
             yield G
 
 
+@nx._dispatch(graphs=None)
 def graph_atlas(i):
     """Returns graph number `i` from the Graph Atlas.
 
@@ -126,6 +127,7 @@ def graph_atlas(i):
     return next(islice(_generate_graphs(), i, None))
 
 
+@nx._dispatch(graphs=None)
 def graph_atlas_g():
     """Returns the list of all graphs with up to seven nodes named in the
     Graph Atlas.

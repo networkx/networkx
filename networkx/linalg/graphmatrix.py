@@ -8,7 +8,7 @@ __all__ = ["incidence_matrix", "adjacency_matrix"]
 
 @nx._dispatch(edge_attrs="weight")
 def incidence_matrix(
-    G, nodelist=None, edgelist=None, oriented=False, weight=None, dtype=None
+    G, nodelist=None, edgelist=None, oriented=False, weight=None, *, dtype=None
 ):
     """Returns incidence matrix of G.
 

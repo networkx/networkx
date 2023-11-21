@@ -43,6 +43,7 @@ Algebraic Connectivity
    algebraic_connectivity
    fiedler_vector
    spectral_ordering
+   spectral_bisection
 
 Attribute Matrices
 ------------------

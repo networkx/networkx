@@ -217,7 +217,7 @@ class TestRandomState:
 
     @py_random_state(1)
     def instantiate_py_random_state(self, random_state):
-        assert isinstance(random_state, (random.Random, PythonRandomInterface))
+        assert isinstance(random_state, random.Random | PythonRandomInterface)
         return random_state.random()
 
     def test_random_state_None(self):

@@ -137,3 +137,18 @@ There is no official policy setting explicit inclusion criteria for new
 algorithms in NetworkX. New algorithms are more likely to be included if they
 have been published and are cited by others. More important than number of
 citations is how well proposed additions fit the project :ref:`mission_and_values`.
+
+Testing is also an important factor in determining whether algorithms
+should be included. Proposals that include thorough tests which illustrate
+expected behavior are much easier to review, and therefore likely to progress more rapidly.
+
+.. note::
+   *Thorough* does not mean *exhaustive*. The quality of unit tests is much
+   more important than quantity. Thorough tests should address questions like:
+
+   - Does the algorithm support different graph types (undirected, directed,
+     multigraphs)?
+   - How does the algorithm behave with disconnected inputs and graphs which
+     contain self-loops?
+   - Are there explicit test cases outlined in the literature which can be
+     incorporated in the test suite?

@@ -84,3 +84,4 @@ from networkx.algorithms.bipartite.projection import *
 from networkx.algorithms.bipartite.redundancy import *
 from networkx.algorithms.bipartite.spectral import *
 from networkx.algorithms.bipartite.generators import *
+from networkx.algorithms.bipartite.extendability import *

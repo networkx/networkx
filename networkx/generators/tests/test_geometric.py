@@ -249,6 +249,39 @@ class TestNavigableSmallWorldGraph:
         gg = nx.grid_graph([5]).to_directed()
         assert nx.is_isomorphic(G, gg)
 
+    def test_invalid_diameter_value(self):
+        with pytest.raises(nx.NetworkXException, match=".*p must be >= 1"):
+            nx.navigable_small_world_graph(5, p=0, q=0, dim=1)
+
+    def test_invalid_long_range_connections_value(self):
+        with pytest.raises(nx.NetworkXException, match=".*q must be >= 0"):
+            nx.navigable_small_world_graph(5, p=1, q=-1, dim=1)
+
+    def test_invalid_exponent_for_decaying_probability_value(self):
+        with pytest.raises(nx.NetworkXException, match=".*r must be >= 0"):
+            nx.navigable_small_world_graph(5, p=1, q=0, r=-1, dim=1)
+
+    def test_r_between_0_and_1(self):
+        """Smoke test for radius in range [0, 1]"""
+        # q=0 means no long-range connections
+        G = nx.navigable_small_world_graph(3, p=1, q=0, r=0.5, dim=2, seed=42)
+        expected = nx.grid_2d_graph(3, 3, create_using=nx.DiGraph)
+        assert nx.utils.graphs_equal(G, expected)
+
+    @pytest.mark.parametrize("seed", range(2478, 2578, 10))
+    def test_r_general_scaling(self, seed):
+        """The probability of adding a long-range edge scales with `1 / dist**r`,
+        so a navigable_small_world graph created with r < 1 should generally
+        result in more edges than a navigable_small_world graph with r >= 1
+        (for 0 < q << n).
+
+        N.B. this is probabilistic, so this test may not hold for all seeds."""
+        G1 = nx.navigable_small_world_graph(7, q=3, r=0.5, seed=seed)
+        G2 = nx.navigable_small_world_graph(7, q=3, r=1, seed=seed)
+        G3 = nx.navigable_small_world_graph(7, q=3, r=2, seed=seed)
+        assert G1.number_of_edges() > G2.number_of_edges()
+        assert G2.number_of_edges() > G3.number_of_edges()
+
 
 class TestThresholdedRandomGeometricGraph:
     """Unit tests for :func:`~networkx.thresholded_random_geometric_graph`"""

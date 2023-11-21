@@ -69,7 +69,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
     -------
     nodes : dictionary
        Dictionary of nodes with eigenvector centrality as the value. The
-       associated vector has unit Euclidian norm and the values are
+       associated vector has unit Euclidean norm and the values are
        nonegative.
 
     Examples
@@ -248,7 +248,7 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     -------
     nodes : dictionary
        Dictionary of nodes with eigenvector centrality as the value. The
-       associated vector has unit Euclidian norm and the values are
+       associated vector has unit Euclidean norm and the values are
        nonegative.
 
     Examples

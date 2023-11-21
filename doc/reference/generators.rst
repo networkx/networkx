@@ -39,6 +39,7 @@ Classic
    null_graph
    path_graph
    star_graph
+   tadpole_graph
    trivial_graph
    turan_graph
    wheel_graph

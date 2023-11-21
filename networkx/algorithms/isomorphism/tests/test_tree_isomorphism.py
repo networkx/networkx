@@ -177,7 +177,7 @@ def positive_single_tree(t1):
 
     # this is one isomorphism, however they may be multiple
     # so we don't necessarily get this one back
-    someisomorphism = [(u, v) for (u, v) in zip(nodes1, nodes2)]
+    someisomorphism = list(zip(nodes1, nodes2))
 
     # map from old to new
     map1to2 = dict(someisomorphism)

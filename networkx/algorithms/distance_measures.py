@@ -11,6 +11,7 @@ __all__ = [
     "center",
     "barycenter",
     "resistance_distance",
+    "kemeny_constant",
 ]
 
 
@@ -630,41 +631,31 @@ def barycenter(G, weight=None, attr=None, sp=None):
     return barycenter_vertices
 
 
-def _count_lu_permutations(perm_array):
-    """Counts the number of permutations in SuperLU perm_c or perm_r"""
-    perm_cnt = 0
-    arr = perm_array.tolist()
-    for i in range(len(arr)):
-        if i != arr[i]:
-            perm_cnt += 1
-            n = arr.index(i)
-            arr[n] = arr[i]
-            arr[i] = i
-
-    return perm_cnt
-
-
 @not_implemented_for("directed")
 @nx._dispatch(edge_attrs="weight")
-def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
-    """Returns the resistance distance between node A and node B on graph G.
+def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=True):
+    """Returns the resistance distance between every pair of nodes on graph G.
 
     The resistance distance between two nodes of a graph is akin to treating
-    the graph as a grid of resistorses with a resistance equal to the provided
-    weight.
+    the graph as a grid of resistors with a resistance equal to the provided
+    weight [1]_, [2]_.
 
     If weight is not provided, then a weight of 1 is used for all edges.
+
+    If two nodes are the same, the resistance distance is zero.
 
     Parameters
     ----------
     G : NetworkX graph
        A graph
 
-    nodeA : node
+    nodeA : node or None, optional (default=None)
       A node within graph G.
+      If None, compute resistance distance using all nodes as source nodes.
 
-    nodeB : node
-      A node within graph G, exclusive of Node A.
+    nodeB : node or None, optional (default=None)
+      A node within graph G.
+      If None, compute resistance distance using all nodes as target nodes.
 
     weight : string or None, optional (default=None)
        The edge data key used to compute the resistance distance.
@@ -677,54 +668,55 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
 
     Returns
     -------
-    rd : float
-       Value of effective resistance distance
+    rd : dict or float
+       If `nodeA` and `nodeB` are given, resistance distance between `nodeA`
+       and `nodeB`. If `nodeA` or `nodeB` is unspecified (the default), a
+       dictionary of nodes with resistance distances as the value.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is a directed graph.
+
+    NetworkXError
+        If `G` is not connected, or contains no nodes,
+        or `nodeA` is not in `G` or `nodeB` is not in `G`.
 
     Examples
     --------
     >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
-    >>> nx.resistance_distance(G, 1, 3)
+    >>> round(nx.resistance_distance(G, 1, 3), 10)
     0.625
 
     Notes
     -----
-    Overviews are provided in [1]_ and [2]_. Additional details on computational
-    methods, proofs of properties, and corresponding MATLAB codes are provided
-    in [3]_.
+    The implementation is based on Theorem A in [2]_. Self-loops are ignored.
+    Multi-edges are contracted in one edge with weight equal to the harmonic sum of the weights.
 
     References
     ----------
     .. [1] Wikipedia
        "Resistance distance."
        https://en.wikipedia.org/wiki/Resistance_distance
-    .. [2] E. W. Weisstein
-       "Resistance Distance."
-       MathWorld--A Wolfram Web Resource
-       https://mathworld.wolfram.com/ResistanceDistance.html
-    .. [3] V. S. S. Vos,
-       "Methods for determining the effective resistance."
-       Mestrado, Mathematisch Instituut Universiteit Leiden, 2016
-       https://www.universiteitleiden.nl/binaries/content/assets/science/mi/scripties/master/vos_vaya_master.pdf
+    .. [2] D. J. Klein and M. Randic.
+        Resistance distance.
+        J. of Math. Chem. 12:81-95, 1993.
     """
     import numpy as np
-    import scipy as sp
 
+    if len(G) == 0:
+        raise nx.NetworkXError("Graph G must contain at least one node.")
     if not nx.is_connected(G):
-        msg = "Graph G must be strongly connected."
-        raise nx.NetworkXError(msg)
-    elif nodeA not in G:
-        msg = "Node A is not in graph G."
-        raise nx.NetworkXError(msg)
-    elif nodeB not in G:
-        msg = "Node B is not in graph G."
-        raise nx.NetworkXError(msg)
-    elif nodeA == nodeB:
-        msg = "Node A and Node B cannot be the same."
-        raise nx.NetworkXError(msg)
+        raise nx.NetworkXError("Graph G must be strongly connected.")
+    if nodeA is not None and nodeA not in G:
+        raise nx.NetworkXError("Node A is not in graph G.")
+    if nodeB is not None and nodeB not in G:
+        raise nx.NetworkXError("Node B is not in graph G.")
 
     G = G.copy()
     node_list = list(G)
 
+    # Invert weights
     if invert_weight and weight is not None:
         if G.is_multigraph():
             for u, v, k, d in G.edges(keys=True, data=True):
@@ -732,40 +724,132 @@ def resistance_distance(G, nodeA, nodeB, weight=None, invert_weight=True):
         else:
             for u, v, d in G.edges(data=True):
                 d[weight] = 1 / d[weight]
-    # Replace with collapsing topology or approximated zero?
 
-    # Using determinants to compute the effective resistance is more memory
-    # efficient than directly calculating the pseudo-inverse
-    L = nx.laplacian_matrix(G, node_list, weight=weight).asformat("csc")
-    indices = list(range(L.shape[0]))
-    # w/ nodeA removed
-    indices.remove(node_list.index(nodeA))
-    L_a = L[indices, :][:, indices]
-    # Both nodeA and nodeB removed
-    indices.remove(node_list.index(nodeB))
-    L_ab = L[indices, :][:, indices]
+    # Compute resistance distance using the Pseudo-inverse of the Laplacian
+    # Self-loops are ignored
+    L = nx.laplacian_matrix(G, weight=weight).todense()
+    Linv = np.linalg.pinv(L, hermitian=True)
 
-    # Factorize Laplacian submatrixes and extract diagonals
-    # Order the diagonals to minimize the likelihood over overflows
-    # during computing the determinant
-    lu_a = sp.sparse.linalg.splu(L_a, options={"SymmetricMode": True})
-    LdiagA = lu_a.U.diagonal()
-    LdiagA_s = np.prod(np.sign(LdiagA)) * np.prod(lu_a.L.diagonal())
-    LdiagA_s *= (-1) ** _count_lu_permutations(lu_a.perm_r)
-    LdiagA_s *= (-1) ** _count_lu_permutations(lu_a.perm_c)
-    LdiagA = np.absolute(LdiagA)
-    LdiagA = np.sort(LdiagA)
+    # Return relevant distances
+    if nodeA is not None and nodeB is not None:
+        i = node_list.index(nodeA)
+        j = node_list.index(nodeB)
+        return Linv[i, i] + Linv[j, j] - Linv[i, j] - Linv[j, i]
 
-    lu_ab = sp.sparse.linalg.splu(L_ab, options={"SymmetricMode": True})
-    LdiagAB = lu_ab.U.diagonal()
-    LdiagAB_s = np.prod(np.sign(LdiagAB)) * np.prod(lu_ab.L.diagonal())
-    LdiagAB_s *= (-1) ** _count_lu_permutations(lu_ab.perm_r)
-    LdiagAB_s *= (-1) ** _count_lu_permutations(lu_ab.perm_c)
-    LdiagAB = np.absolute(LdiagAB)
-    LdiagAB = np.sort(LdiagAB)
+    elif nodeA is not None:
+        i = node_list.index(nodeA)
+        d = {}
+        for n in G:
+            j = node_list.index(n)
+            d[n] = Linv[i, i] + Linv[j, j] - Linv[i, j] - Linv[j, i]
+        return d
 
-    # Calculate the ratio of determinant, rd = det(L_ab)/det(L_a)
-    Ldet = np.prod(np.divide(np.append(LdiagAB, [1]), LdiagA))
-    rd = Ldet * LdiagAB_s / LdiagA_s
+    elif nodeB is not None:
+        j = node_list.index(nodeB)
+        d = {}
+        for n in G:
+            i = node_list.index(n)
+            d[n] = Linv[i, i] + Linv[j, j] - Linv[i, j] - Linv[j, i]
+        return d
 
-    return rd
+    else:
+        d = {}
+        for n in G:
+            i = node_list.index(n)
+            d[n] = {}
+            for n2 in G:
+                j = node_list.index(n2)
+                d[n][n2] = Linv[i, i] + Linv[j, j] - Linv[i, j] - Linv[j, i]
+        return d
+
+
+@nx.utils.not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight")
+def kemeny_constant(G, *, weight=None):
+    """Returns the Kemeny constant of the given graph.
+
+    The *Kemeny constant* (or Kemeny's constant) of a graph `G`
+    can be computed by regarding the graph as a Markov chain.
+    The Kemeny constant is then the expected number of time steps
+    to transition from a starting state i to a random destination state
+    sampled from the Markov chain's stationary distribution.
+    The Kemeny constant is independent of the chosen initial state [1]_.
+
+    The Kemeny constant measures the time needed for spreading
+    across a graph. Low values indicate a closely connected graph
+    whereas high values indicate a spread-out graph.
+
+    If weight is not provided, then a weight of 1 is used for all edges.
+
+    Since `G` represents a Markov chain, the weights must be positive.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    weight : string or None, optional (default=None)
+       The edge data key used to compute the Kemeny constant.
+       If None, then each edge has weight 1.
+
+    Returns
+    -------
+    K : float
+        The Kemeny constant of the graph `G`.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If the graph `G` is directed.
+
+    NetworkXError
+        If the graph `G` is not connected, or contains no nodes,
+        or has edges with negative weights.
+
+    Examples
+    --------
+    >>> G = nx.complete_graph(5)
+    >>> round(nx.kemeny_constant(G), 10)
+    3.2
+
+    Notes
+    -----
+    The implementation is based on equation (3.3) in [2]_.
+    Self-loops are allowed and indicate a Markov chain where
+    the state can remain the same. Multi-edges are contracted
+    in one edge with weight equal to the sum of the weights.
+
+    References
+    ----------
+    .. [1] Wikipedia
+       "Kemeny's constant."
+       https://en.wikipedia.org/wiki/Kemeny%27s_constant
+    .. [2] Lovász L.
+        Random walks on graphs: A survey.
+        Paul Erdös is Eighty, vol. 2, Bolyai Society,
+        Mathematical Studies, Keszthely, Hungary (1993), pp. 1-46
+    """
+    import numpy as np
+    import scipy as sp
+
+    if len(G) == 0:
+        raise nx.NetworkXError("Graph G must contain at least one node.")
+    if not nx.is_connected(G):
+        raise nx.NetworkXError("Graph G must be connected.")
+    if nx.is_negatively_weighted(G, weight=weight):
+        raise nx.NetworkXError("The weights of graph G must be nonnegative.")
+
+    # Compute matrix H = D^-1/2 A D^-1/2
+    A = nx.adjacency_matrix(G, weight=weight)
+    n, m = A.shape
+    diags = A.sum(axis=1)
+    with np.errstate(divide="ignore"):
+        diags_sqrt = 1.0 / np.sqrt(diags)
+    diags_sqrt[np.isinf(diags_sqrt)] = 0
+    DH = sp.sparse.csr_array(sp.sparse.spdiags(diags_sqrt, 0, m, n, format="csr"))
+    H = DH @ (A @ DH)
+
+    # Compute eigenvalues of H
+    eig = np.sort(sp.linalg.eigvalsh(H.todense()))
+
+    # Compute the Kemeny constant
+    return np.sum(1 / (1 - eig[:-1]))

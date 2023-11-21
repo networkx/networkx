@@ -7,6 +7,7 @@ __all__ = ["random_clustered_graph"]
 
 
 @py_random_state(2)
+@nx._dispatch(graphs=None)
 def random_clustered_graph(joint_degree_sequence, create_using=None, seed=None):
     r"""Generate a random graph with the given joint independent edge degree and
     triangle degree sequence.

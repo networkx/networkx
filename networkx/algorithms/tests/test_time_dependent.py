@@ -1,10 +1,12 @@
 """Unit testing for time dependent algorithms."""
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pytest
 
 import networkx as nx
+
+_delta = timedelta(days=5 * 365)
 
 
 class TestCdIndex:
@@ -43,7 +45,7 @@ class TestCdIndex:
 
         nx.set_node_attributes(G, node_attrs)
 
-        assert nx.cd_index(G, 4) == 0.17
+        assert nx.cd_index(G, 4, time_delta=_delta) == 0.17
 
     def test_common_graph_with_given_attributes(self):
         G = nx.DiGraph()
@@ -78,7 +80,7 @@ class TestCdIndex:
 
         nx.set_node_attributes(G, node_attrs)
 
-        assert nx.cd_index(G, 4, time="date") == 0.17
+        assert nx.cd_index(G, 4, time_delta=_delta, time="date") == 0.17
 
     def test_common_graph_with_int_attributes(self):
         G = nx.DiGraph()
@@ -182,7 +184,7 @@ class TestCdIndex:
         }
 
         nx.set_node_attributes(G, node_attrs)
-        assert nx.cd_index(G, 4, weight="weight") == 0.04
+        assert nx.cd_index(G, 4, time_delta=_delta, weight="weight") == 0.04
 
     def test_node_with_no_predecessors(self):
         G = nx.DiGraph()
@@ -215,7 +217,7 @@ class TestCdIndex:
         }
 
         nx.set_node_attributes(G, node_attrs)
-        assert nx.cd_index(G, 4) == 0.0
+        assert nx.cd_index(G, 4, time_delta=_delta) == 0.0
 
     def test_node_with_no_successors(self):
         G = nx.DiGraph()
@@ -248,7 +250,7 @@ class TestCdIndex:
         }
 
         nx.set_node_attributes(G, node_attrs)
-        assert nx.cd_index(G, 4) == 1.0
+        assert nx.cd_index(G, 4, time_delta=_delta) == 1.0
 
     def test_n_equals_zero(self):
         G = nx.DiGraph()
@@ -282,7 +284,7 @@ class TestCdIndex:
         with pytest.raises(
             nx.NetworkXError, match="The cd index cannot be defined."
         ) as ve:
-            nx.cd_index(G, 4)
+            nx.cd_index(G, 4, time_delta=_delta)
 
     def test_time_timedelta_compatibility(self):
         G = nx.DiGraph()
@@ -315,9 +317,9 @@ class TestCdIndex:
 
         with pytest.raises(
             nx.NetworkXError,
-            match="Addition and comparison are not supported between 'time_delta' and 'time' types, default time_delta = datetime.timedelta",
+            match="Addition and comparison are not supported between",
         ) as ve:
-            nx.cd_index(G, 4)
+            nx.cd_index(G, 4, time_delta=_delta)
 
     def test_node_with_no_time(self):
         G = nx.DiGraph()
@@ -353,7 +355,7 @@ class TestCdIndex:
         with pytest.raises(
             nx.NetworkXError, match="Not all nodes have a 'time' attribute."
         ) as ve:
-            nx.cd_index(G, 4)
+            nx.cd_index(G, 4, time_delta=_delta)
 
     def test_maximally_consolidating(self):
         G = nx.DiGraph()
@@ -393,7 +395,7 @@ class TestCdIndex:
 
         nx.set_node_attributes(G, node_attrs)
 
-        assert nx.cd_index(G, 5) == -1
+        assert nx.cd_index(G, 5, time_delta=_delta) == -1
 
     def test_maximally_destabilizing(self):
         G = nx.DiGraph()
@@ -426,4 +428,4 @@ class TestCdIndex:
 
         nx.set_node_attributes(G, node_attrs)
 
-        assert nx.cd_index(G, 5) == 1
+        assert nx.cd_index(G, 5, time_delta=_delta) == 1

@@ -72,7 +72,7 @@ def triangles(G, nodes=None):
     # iterate over the nodes in a graph
     for node, neighbors in G.adjacency():
         later_neighbors[node] = {
-            n for n in neighbors if n not in later_neighbors and n is not node
+            n for n in neighbors if n not in later_neighbors and n != node
         }
 
     # instantiate Counter for each node to include isolated nodes
