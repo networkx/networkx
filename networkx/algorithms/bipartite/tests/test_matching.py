@@ -327,7 +327,7 @@ class TestMinimumWeightFullMatching:
         matching = minimum_weight_full_matching(G, weight="mass")
         assert matching == {0: 3, 1: 2, 2: 1, 3: 0}
 
-def test_envy_free_partition():
+def test_envy_free_matching_partition():
     # Perfect matching
     G = nx.complete_bipartite_graph(3, 3)
     M = nx.bipartite.hopcroft_karp_matching(G)
