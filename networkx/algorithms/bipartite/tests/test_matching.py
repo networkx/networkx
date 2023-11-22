@@ -327,6 +327,34 @@ class TestMinimumWeightFullMatching:
         matching = minimum_weight_full_matching(G, weight="mass")
         assert matching == {0: 3, 1: 2, 2: 1, 3: 0}
 
+def test_envy_free_partition():
+    # Perfect matching
+    G = nx.complete_bipartite_graph(3, 3)
+    M = nx.bipartite.hopcroft_karp_matching(G)
+    tup = nx.bipartite.envy_free_matching_partition(G, M=M)
+
+    assert tup == ({0, 1, 2}, set(), {3, 4, 5}, set())
+
+    # Non-empty EFM partition
+    G = nx.Graph([(0, 3), (0, 4), (1, 4), (2, 4)])
+    M = {0: 3, 3: 0, 1: 4, 4: 1}
+    tup = nx.bipartite.envy_free_matching_partition(G, M=M)
+
+    assert tup == ({0}, {1, 2}, {3}, {4})
+
+    # Odd path - X_L and Y_L should be empty
+    G = nx.Graph([(0, 3), (1, 3), (1, 4), (2, 4)])
+    M = {0: 3, 3: 0, 4: 1, 1: 4}
+    tup = nx.bipartite.envy_free_matching_partition(G, M=M)
+    assert tup == (set(), {0, 1, 2}, set(), {3, 4})
+
+    # Y-path-saturated graph
+    G = nx.Graph(
+         [(0, 6), (1, 6), (1, 7), (2, 6), (2, 8), (3, 9), (3, 6), (4, 8), (4, 7), (5, 9)]
+     )
+    M = {0: 6, 6: 0, 1: 7, 7: 1, 2: 8, 8: 2, 3: 9, 9: 3}
+    tup = nx.bipartite.envy_free_matching_partition(G, M=M)
+    assert tup == (set(), {0, 1, 2, 3, 4, 5}, set(), {8, 9, 6, 7})
 
 def test_envy_free_perfect_matching():
     def _generate_marriable_bipartite_graph(size: int):
