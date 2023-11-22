@@ -691,6 +691,15 @@ def _M_alternating_sequence(G, M, *, top_nodes=None):
 def envy_free_matching_partition(G, *, M=None, top_nodes=None):
     r"""Return a unique EFM (Envy Free Matching) partition of bipartite graph `G`.
 
+    An EFM partition of a bipartite graph with bipartite sets X,Y is a unique partition of X - X_L, X_S and Y - X_L, X_S.
+    This unique partition is proven to have the following properties:
+    1. Every matching that matches all the nodes in X_L and is contained in G[X_L,Y_L] (all edges are between X_L and Y_L)
+    is an envy-free matching.
+    2. Every envy-free matching in `G` is contained in G[X_L,Y_L].
+
+    Due to these properties we can say that X_L and Y_L are the "*good*" nodes and X_S and Y_S are the "*bad*" nodes,
+    because - in the context of finding envy-free matchings, we will only find them in X_L and Y_L.
+
     Parameters
     ----------
     G:  NetworkX graph
@@ -774,7 +783,7 @@ def envy_free_matching_partition(G, *, M=None, top_nodes=None):
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
 def maximum_envy_free_matching(G, *, top_nodes=None):
-    """Return an envy-free matching of maximum cardinality of the bipartite graph `G`
+    r"""Return an envy-free matching of maximum cardinality of the bipartite graph `G`
 
     A matching in a bipartite graph with bipartite sets X and Y is called envy-free,
     if no unmatched node in X is adjacent to a matched node in Y.
@@ -867,7 +876,7 @@ def maximum_envy_free_matching(G, *, top_nodes=None):
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
 def minimum_weight_envy_free_matching(G, *, top_nodes=None):
-    """Returns a minimum weight maximum cardinality envy-free matching of the bipartite graph `G`
+    r"""Returns a minimum weight maximum cardinality envy-free matching of the bipartite graph `G`
 
     A matching in a bipartite graph with bipartite sets X and Y is called envy-free,
     if no unmatched node in X is adjacent to a matched node in Y.
