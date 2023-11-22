@@ -327,6 +327,7 @@ class TestMinimumWeightFullMatching:
         matching = minimum_weight_full_matching(G, weight="mass")
         assert matching == {0: 3, 1: 2, 2: 1, 3: 0}
 
+
 def test_envy_free_matching_partition():
     # Perfect matching
     G = nx.complete_bipartite_graph(3, 3)
@@ -349,12 +350,11 @@ def test_envy_free_matching_partition():
     assert tup == (set(), {0, 1, 2}, set(), {3, 4})
 
     # Y-path-saturated graph
-    G = nx.Graph(
-         [(0, 6), (1, 6), (1, 7), (2, 6), (2, 8), (3, 9), (3, 6), (4, 8), (4, 7), (5, 9)]
-     )
+    G = nx.Graph([(0, 6), (1, 6), (1, 7), (2, 6), (2, 8), (3, 9), (3, 6), (4, 8), (4, 7), (5, 9)])
     M = {0: 6, 6: 0, 1: 7, 7: 1, 2: 8, 8: 2, 3: 9, 9: 3}
     tup = nx.bipartite.envy_free_matching_partition(G, M=M)
     assert tup == (set(), {0, 1, 2, 3, 4, 5}, set(), {8, 9, 6, 7})
+
 
 def test_envy_free_perfect_matching():
     def _generate_marriable_bipartite_graph(size: int):
