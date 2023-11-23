@@ -753,7 +753,7 @@ def test_pathweight():
     "G", (nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph())
 )
 def test_ispath(G):
-    G.add_edges_from([(1, 2), (2, 3), (1, 2), (3, 4), (3, 6)])
+    G.add_edges_from([(1, 2), (2, 3), (1, 2), (3, 4)])
     valid_path = [1, 2, 3, 4]
     invalid_path = [1, 2, 4, 3]  # wrong node order
     another_invalid_path = [1, 2, 3, 4, 5]  # contains node not in G
