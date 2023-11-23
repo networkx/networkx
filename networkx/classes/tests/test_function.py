@@ -757,7 +757,7 @@ def test_ispath(G):
     valid_path = [1, 2, 3, 4]
     invalid_path = [1, 2, 4, 3]  # wrong node order
     another_invalid_path = [1, 2, 3, 4, 5]  # contains node not in G
-    yet_another_invalid_path = [2] # a single node is not a path
+    yet_another_invalid_path = [2]  # a single node is not a path
     assert nx.is_path(G, valid_path)
     assert not nx.is_path(G, invalid_path)
     assert not nx.is_path(G, another_invalid_path)
