@@ -1271,8 +1271,9 @@ def number_of_selfloops(G):
 def is_path(G, path):
     """Returns whether or not the specified path exists.
 
-    For it to return True, every node on the path must exist and
-    each consecutive pair must be connected via one or more edges.
+    For it to return True, every node on the path must exist,
+    each consecutive pair must be connected via one or more edges,
+    and at least two nodes must be specified.
 
     Parameters
     ----------
@@ -1288,7 +1289,7 @@ def is_path(G, path):
         True if `path` is a valid path in `G`
 
     """
-    return all((node in G and nbr in G[node]) for node, nbr in nx.utils.pairwise(path))
+    return all((node in G and nbr in G[node]) for node, nbr in nx.utils.pairwise(path)) if len(path) >= 2 else False
 
 
 def path_weight(G, path, weight):
