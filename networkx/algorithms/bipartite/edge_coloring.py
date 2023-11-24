@@ -6,7 +6,7 @@ from networkx.generators.classic import null_graph
 
 # @not_implemented_for("multigraph")
 @nx._dispatch(name="bipartite_edge_coloring")
-def bipartite_edge_coloring(graph, top_nodes=[], strategy="iterated_matching"):
+def bipartite_edge_coloring(graph, top_nodes=[], strategy="kempe-chain"):
     """
     Returns a valid edge coloring of the bipartite graph `G`.
 
@@ -29,8 +29,10 @@ def bipartite_edge_coloring(graph, top_nodes=[], strategy="iterated_matching"):
     top_nodes : list, optional
         List of nodes that belong to one node set.
     strategy : str, optional
-        The strategy to use for edge coloring. Currently, only the default
-        strategy ("") is supported.
+        The strategy to use for edge coloring. Currently, the following strategies are supported :
+        "iterated-matching" :
+        "kempe-chain" :
+        The default strategy is "kempe-chain".
 
     Returns :
     --------
@@ -65,10 +67,10 @@ def bipartite_edge_coloring(graph, top_nodes=[], strategy="iterated_matching"):
     if top_nodes == []:
         top_nodes, b = nx.bipartite.sets(graph)
 
-    if strategy == "kempe_chain":
-        coloring = kempe_chain_bipartite_edge_coloring(graph, top_nodes)
-    else:
+    if strategy == "iterated-matching":
         coloring = iterated_matching_edge_coloring(graph, top_nodes)
+    else:
+        coloring = kempe_chain_bipartite_edge_coloring(graph, top_nodes)
 
     return coloring
 
@@ -107,12 +109,11 @@ def kempe_chain_bipartite_edge_coloring(graph, top_nodes):
 
     for edge in graph.edges:
         u, v = edge
-
         # Get the colors of edges ending at u and v
         u_colors = set(used_colors[u].keys())
         v_colors = set(used_colors[v].keys())
 
-        # Take the union and subtract from available colors
+        # Take the union and subtract from the color pallete
         available_colors = colors - (u_colors | v_colors)
 
         if available_colors:
@@ -123,31 +124,27 @@ def kempe_chain_bipartite_edge_coloring(graph, top_nodes):
             coloring[(u, v)] = color
             coloring[(v, u)] = color
         else:
-            print("kempe")
-            for i in colors:
-                if i not in used_colors[u]:
-                    u_color = i
-                    break
-            for j in colors:
-                if j not in used_colors[v]:
-                    v_color = j
-                    break
+            u_color = next(iter(colors - set(used_colors[u])))
+            v_color = next(iter(colors - set(used_colors[v])))
             u1 = u
             v1 = v
             color = v_color
+
             # Find a Kempe chain and swap colors
             while True:
-                prev_color = coloring.get((u1, v1), coloring.get((v1, u1), None))
+                used_colors[v1][color] = u1
                 coloring[(u1, v1)] = color
                 coloring[(v1, u1)] = color
+                # used_colors[u1][color] = v1
                 if color not in used_colors[u1]:
                     used_colors[u1][color] = v1
-                    used_colors[v1][color] = u1
-                    v2 = used_colors[u1].pop(color, None)
-                    used_colors[v2].pop(color)
+                    color = v_color if color == u_color else u_color
+                    used_colors[u1].pop(color)
                     break
+                u_new = used_colors[u1][color]
+                used_colors[u1][color] = v1
                 v1 = u1
-                u1 = used_colors[u1][color]
+                u1 = u_new
                 color = v_color if color == u_color else u_color
 
     return coloring
