@@ -882,7 +882,7 @@ def _dijkstra_multisource(
 
 
 @nx._dispatch(edge_attrs="weight")
-def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight="weight"):
+def dijkstra_predecessor_and_distance(G, source, target=None, cutoff=None, weight="weight"):
     """Compute weighted shortest path length and predecessors.
 
     Uses Dijkstra's Method to obtain the shortest weighted paths
@@ -895,6 +895,9 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight="weight"):
 
     source : node label
         Starting node for path
+
+    target: node label, optional
+        Ending node for path
 
     cutoff : integer or float, optional
         Length (sum of edge weights) at which the search is stopped.
@@ -951,7 +954,7 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight="weight"):
         raise nx.NodeNotFound(f"Node {source} is not found in the graph")
     weight = _weight_function(G, weight)
     pred = {source: []}  # dictionary of predecessors
-    return (pred, _dijkstra(G, source, weight, pred=pred, cutoff=cutoff))
+    return (pred, _dijkstra(G, source, weight, pred=pred, cutoff=cutoff, target=target))
 
 
 @nx._dispatch(edge_attrs="weight")
