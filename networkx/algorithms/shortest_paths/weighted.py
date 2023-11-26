@@ -882,7 +882,7 @@ def _dijkstra_multisource(
 
 
 @nx._dispatch(edge_attrs="weight")
-def dijkstra_predecessor_and_distance(G, source, target=None, cutoff=None, weight="weight"):
+def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight="weight", target=None):
     """Compute weighted shortest path length and predecessors.
 
     Uses Dijkstra's Method to obtain the shortest weighted paths

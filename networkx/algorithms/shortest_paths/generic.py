@@ -506,7 +506,7 @@ def all_shortest_paths(G, source, target, weight=None, method="dijkstra"):
     """
     method = "unweighted" if weight is None else method
     if method == "unweighted":
-        pred = nx.predecessor(G, source, target=target)
+        pred = nx.predecessor(G, source)
     elif method == "dijkstra":
         pred, dist = nx.dijkstra_predecessor_and_distance(G, source, target=target, weight=weight)
     elif method == "bellman-ford":
