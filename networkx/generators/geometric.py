@@ -860,7 +860,7 @@ def geometric_soft_configuration_graph(
     clustering, and self-similarity.
 
     In the geometric soft configuration model, a node $i$ is assigned two hidden
-    variables: a hidden degree $\kappa_i$, quantifying its popularity, influance,
+    variables: a hidden degree $\kappa_i$, quantifying its popularity, influence,
     or importance, and an angular position $\theta_i$ in a circle abstracting the
     similarity space, where angular distances between nodes are a proxy for their
     similarity. Focusing on the angular position, this model is often called
