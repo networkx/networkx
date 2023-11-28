@@ -848,6 +848,7 @@ def thresholded_random_geometric_graph(
 
 
 @py_random_state(5)
+@nx._dispatch(graphs=None)
 def geometric_soft_configuration_graph(
     *, beta, n=None, gamma=None, mean_degree=None, kappas=None, seed=None
 ):
