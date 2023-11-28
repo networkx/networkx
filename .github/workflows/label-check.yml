@@ -13,7 +13,7 @@ env:
 
 jobs:
   check-type-label:
-    name: revr gave label?
+    name: reviewer label?
     runs-on: ubuntu-latest
     steps:
       - if: "contains( env.LABELS, 'type: ' ) == false"
