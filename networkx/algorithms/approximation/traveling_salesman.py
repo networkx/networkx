@@ -45,8 +45,8 @@ __all__ = [
     "asadpour_atsp",
     "greedy_tsp",
     "greedy_tsp_minimum_insertions",
-    "nearest_insertion",
-    "farthest_insertion",
+    "greedy_tsp_nearest_insertion",
+    "greedy_tsp_farthest_insertion",
     "simulated_annealing_tsp",
     "threshold_accepting_tsp",
 ]
@@ -1007,6 +1007,7 @@ def greedy_tsp(G, weight="weight", source=None):
     return cycle
 
 
+@nx._dispatch(edge_attrs="weight")
 def greedy_tsp_minimum_insertions(G, weight="weight", source=None):
     """Return a low cost cycle starting at 'source' and its cost.
 
@@ -1119,7 +1120,8 @@ def greedy_tsp_minimum_insertions(G, weight="weight", source=None):
     return cycle
 
 
-def nearest_insertion(G, weight="weight", source=None):
+@nx._dispatch(edge_attrs="weight")
+def greedy_tsp_nearest_insertion(G, weight="weight", source=None):
     """Return a low cost route starting at `source`.
 
     This function implements the nearest insertion greedy criterion for
@@ -1163,7 +1165,7 @@ def nearest_insertion(G, weight="weight", source=None):
     ...     ("E", "A", 5), ("A", "E", 7), ("E", "D", 9), ("D", "E", 12),
     ...     ("E", "C", 10), ("C", "E", 19), ("E", "B", 7), ("B", "E", 3)
     ... })
-    >>> route = approx.nearest_insertion(G, source="A")
+    >>> route = approx.greedy_tsp_nearest_insertion(G, source="A")
     >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(route))
     >>> route
     ['A', 'D', 'C', 'E', 'B', 'A']
@@ -1180,30 +1182,30 @@ def nearest_insertion(G, weight="weight", source=None):
     if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
         raise nx.NetworkXError("G must be a complete graph.")
 
-    points = list(G)
+    nodes = list(G)
     if source is None:
-        source = points[0]
+        source = nodes[0]
     route = [source, source]
-    points.remove(source)
+    nodes.remove(source)
 
-    while points:
-        farthest_point = None
+    while nodes:
+        nearest_node = None
 
         # Find the nearest point to the current cycle
         for current in route:
-            for point in points:
-                d = G[current][point].get(weight, 1)
-                if farthest_point is None or d < farthest_point[1]:
-                    farthest_point = (point, d)
-        farthest_point = farthest_point[0]
+            for node in nodes:
+                d = G[current][node].get(weight, 1)
+                if nearest_node is None or d < nearest_node[1]:
+                    nearest_node = (node, d)
+        nearest_node = nearest_node[0]
 
         # Find the closest edge of the cycle to the nearest city
         last = None
         best = None
         for current in route:
             if last is not None:
-                d1 = G[last][farthest_point].get(weight, 1)
-                d2 = G[current][farthest_point].get(weight, 1)
+                d1 = G[last][nearest_node].get(weight, 1)
+                d2 = G[current][nearest_node].get(weight, 1)
                 d3 = G[last][current].get(weight, 1) if last != current else 0
                 d = d1 + d2 - d3
 
@@ -1214,27 +1216,28 @@ def nearest_insertion(G, weight="weight", source=None):
         if last is None:
             last = route[0]
 
-        d1 = G[last][farthest_point].get(weight, 1)
-        d2 = G[route[0]][farthest_point].get(weight, 1)
+        d1 = G[last][nearest_node].get(weight, 1)
+        d2 = G[route[0]][nearest_node].get(weight, 1)
         d3 = G[last][route[0]].get(weight, 1) if last != current else 0
         d = d1 + d2 - d3
         if best is None or d < best[2]:
             best = (last, route[0], d)
 
-        # Connect the farthest city to the cycle
-        route.insert(route.index(best[0]) + 1, farthest_point)
-        points.remove(farthest_point)
+        # Connect the nearest city to the cycle
+        route.insert(route.index(best[0]) + 1, nearest_node)
+        nodes.remove(nearest_node)
 
     return route
 
 
-def farthest_insertion(G, weight="weight", source=None):
+@nx._dispatch(edge_attrs="weight")
+def greedy_tsp_farthest_insertion(G, weight="weight", source=None):
     """Return a low cost route starting at `source`.
 
     This function implements the farthest insertion greedy criterion for
     creating a tsp route. At each iteration, it finds the most remote node
     from any of the nodes of the current route and then calculates the best
-    point to locate it inside the route, until all nodes have been added to
+    node to locate it inside the route, until all nodes have been added to
     the solution.
 
     Parameters
@@ -1272,7 +1275,7 @@ def farthest_insertion(G, weight="weight", source=None):
     ...     ("E", "A", 5), ("A", "E", 7), ("E", "D", 9), ("D", "E", 12),
     ...     ("E", "C", 10), ("C", "E", 19), ("E", "B", 7), ("B", "E", 3)
     ... })
-    >>> route = approx.farthest_insertion(G, source="A")
+    >>> route = approx.greedy_tsp_farthest_insertion(G, source="A")
     >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(route))
     >>> route
     ['A', 'E', 'D', 'C', 'B', 'A']
@@ -1289,30 +1292,30 @@ def farthest_insertion(G, weight="weight", source=None):
     if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
         raise nx.NetworkXError("G must be a complete graph.")
 
-    points = list(G)
+    nodes = list(G)
     if source is None:
         source = next(iter(G))
     route = [source, source]
-    points.remove(source)
+    nodes.remove(source)
 
-    while points:
-        farthest_point = None
+    while nodes:
+        farthest_node = None
 
-        # Find the farthest point to the current cycle
+        # Find the farthest node to the current cycle
         for current in route:
-            for point in points:
-                d = G[current][point].get(weight, 1)
-                if farthest_point is None or d > farthest_point[1]:
-                    farthest_point = (point, d)
-        farthest_point = farthest_point[0]
+            for node in nodes:
+                d = G[current][node].get(weight, 1)
+                if farthest_node is None or d > farthest_node[1]:
+                    farthest_node = (node, d)
+        farthest_node = farthest_node[0]
 
         # Find the closest edge of the cycle to the farthest city
         last = None
         best = None
         for current in route:
             if last is not None:
-                d1 = G[last][farthest_point].get(weight, 1)
-                d2 = G[current][farthest_point].get(weight, 1)
+                d1 = G[last][farthest_node].get(weight, 1)
+                d2 = G[current][farthest_node].get(weight, 1)
                 d3 = G[last][current].get(weight, 1) if last != current else 0
                 d = d1 + d2 - d3
 
@@ -1323,16 +1326,16 @@ def farthest_insertion(G, weight="weight", source=None):
         if last is None:
             last = route[0]
 
-        d1 = G[last][farthest_point].get(weight, 1)
-        d2 = G[route[0]][farthest_point].get(weight, 1)
+        d1 = G[last][farthest_node].get(weight, 1)
+        d2 = G[route[0]][farthest_node].get(weight, 1)
         d3 = G[last][route[0]].get(weight, 1) if last != current else 0
         d = d1 + d2 - d3
         if best is None or d < best[2]:
             best = (last, route[0], d)
 
         # Connect the farthest city to the cycle
-        route.insert(route.index(best[0]) + 1, farthest_point)
-        points.remove(farthest_point)
+        route.insert(route.index(best[0]) + 1, farthest_node)
+        nodes.remove(farthest_node)
 
     return route
 
