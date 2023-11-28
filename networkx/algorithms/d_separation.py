@@ -29,9 +29,9 @@ The ideas of d-separation and d-connection relate to paths being open or blocked
 - A "path" is a sequence of nodes connected in order by edges. Unlike for most
   graph theory analysis, the direction of the edges is ignored. Thus the path
   can be thought of as a traditional path on the undirected version of the graph.
-- A "candidate d-separating set" ``z`` is a set of nodes being considered as
+- A "candidate d-separator" ``z`` is a set of nodes being considered as
   possibly blocking all paths between two prescribed sets ``x`` and ``y`` of nodes.
-  We refer to each node in the candidate d-separating set as "known".
+  We refer to each node in the candidate d-separator as "known".
 - A "collider" node on a path is a node that is a successor of its two neighbor
   nodes on the path. That is, ``c`` is a collider if the edge directions
   along the path look like ``... u -> c <- v ...``.
@@ -50,6 +50,8 @@ The ideas of d-separation and d-connection relate to paths being open or blocked
   if all paths between nodes in ``x`` and nodes in ``y`` are blocked. That is,
   if there are no open paths from any node in ``x`` to any node in ``y``.
   Such a set ``z`` is a "d-separator" of ``x`` and ``y``.
+- A "minimal d-separator" is a d-separator ``z`` for which no node or subset
+  of nodes can be removed with it still being a d-separator.
 
 The d-separator blocks some paths between ``x`` and ``y`` but opens others.
 Nodes in the d-separator block paths if the nodes are not colliders.
@@ -157,8 +159,8 @@ the path by the d-separator of the middle hidden state.
 Thus if we condition on the middle hidden state, the early
 state probabilities are independent of the late state outcomes.
 
->>> g = nx.DiGraph()
->>> g.add_edges_from(
+>>> G = nx.DiGraph()
+>>> G.add_edges_from(
 ...     [
 ...         ("H1", "H2"),
 ...         ("H2", "H3"),
@@ -172,19 +174,19 @@ state probabilities are independent of the late state outcomes.
 ...     ]
 ... )
 >>> x, y, z = ({"H1", "O1"}, {"H5", "O5"}, {"H3"})
->>> nx.is_d_separator(g, x, y, z)
+>>> nx.is_d_separator(G, x, y, z)
 True
->>> nx.is_minimal_d_separator(g, x, y, z)
+>>> nx.is_minimal_d_separator(G, x, y, z)
 True
->>> nx.is_minimal_d_separator(g, x, y, z | {"O3"})
+>>> nx.is_minimal_d_separator(G, x, y, z | {"O3"})
 False
->>> z = nx.find_minimal_d_separator(g, x | y, {"O2", "O3", "O4"})
+>>> z = nx.find_minimal_d_separator(G, x | y, {"O2", "O3", "O4"})
 >>> z == {"H2", "H4"}
 True
 
 If no minimal_d_separator exists, `None` is returned
 
->>> other_z = nx.find_minimal_d_separator(g, x | y, {"H2", "H3"})
+>>> other_z = nx.find_minimal_d_separator(G, x | y, {"H2", "H3"})
 >>> other_z is None
 True
 
@@ -230,14 +232,14 @@ def is_d_separator(G, x, y, z):
     G : nx.DiGraph
         A NetworkX DAG.
 
-    x : set | node
-        First set of nodes in `G`.
+    x : node or set of nodes
+        First node or set of nodes in `G`.
 
-    y : set | node
-        Second set of nodes in `G`.
+    y : node or set of nodes
+        Second node or set of nodes in `G`.
 
-    z : set | node
-        Set of conditioning nodes in `G`. Can be empty set.
+    z : node or set of nodes
+        Potential separator (set of conditioning nodes in `G`). Can be empty set.
 
     Returns
     -------
@@ -267,29 +269,22 @@ def is_d_separator(G, x, y, z):
 
     https://en.wikipedia.org/wiki/Bayesian_network#d-separation
     """
+    try:
+        x = {x} if x in G else x
+        y = {y} if y in G else y
+        z = {z} if z in G else z
 
-    if not isinstance(x, set):
-        x = {x}
-    if x - G.nodes:
-        raise nx.NodeNotFound(f"The node(s) {x} are not found in G.")
-    if not isinstance(y, set):
-        y = {y}
-    if y - G.nodes:
-        raise nx.NodeNotFound(f"The node(s) {y} are not found in G.")
-    if not isinstance(z, set):
-        z = {z}
-    if z - G.nodes:
-        raise nx.NodeNotFound(f"The node(s) {z} are not found in G.")
+        intersection = x & y or x & z or y & z
+        if intersection:
+            raise nx.NetworkXError(
+                f"The sets are not disjoint, with intersection {intersection}"
+            )
 
-    intersection = x.intersection(y) or x.intersection(z) or y.intersection(z)
-    if intersection:
-        raise nx.NetworkXError(
-            f"The sets are not disjoint, with intersection {intersection}"
-        )
-
-    set_v = x | y | z
-    if set_v - G.nodes:
-        raise nx.NodeNotFound(f"The node(s) {set_v - G.nodes} are not found in G")
+        set_v = x | y | z
+        if set_v - G.nodes:
+            raise nx.NodeNotFound(f"The node(s) {set_v - G.nodes} are not found in G")
+    except TypeError:
+        raise nx.NodeNotFound("One of x, y, or z is not a node or a set of nodes in G")
 
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")
@@ -302,7 +297,7 @@ def is_d_separator(G, x, y, z):
     backward_deque = deque(x)
     backward_visited = set()
 
-    an_z = set().union(*[nx.ancestors(G, node) for node in x]) | z | x
+    ancestors_or_z = set().union(*[nx.ancestors(G, node) for node in x]) | z | x
 
     while forward_deque or backward_deque:
         if backward_deque:
@@ -314,14 +309,9 @@ def is_d_separator(G, x, y, z):
                 continue
 
             # add <- edges to backward deque
-            for x, _ in G.in_edges(nbunch=node):
-                if x not in backward_visited:
-                    backward_deque.append(x)
-
+            backward_deque.extend(G.pred[node].keys() - backward_visited)
             # add -> edges to forward deque
-            for _, x in G.out_edges(nbunch=node):
-                if x not in forward_visited:
-                    forward_deque.append(x)
+            forward_deque.extend(G.succ[node].keys() - forward_visited)
 
         if forward_deque:
             node = forward_deque.popleft()
@@ -329,19 +319,13 @@ def is_d_separator(G, x, y, z):
             if node in y:
                 return False
 
-            # Consider if -> node <- is opened due to conditioning on collider,
-            # or descendant of collider
-            if node in an_z:
+            # Consider if -> node <- is opened due to ancestor of node in z
+            if node in ancestors_or_z:
                 # add <- edges to backward deque
-                for x, _ in G.in_edges(nbunch=node):
-                    if x not in backward_visited:
-                        backward_deque.append(x)
-
+                backward_deque.extend(G.pred[node].keys() - backward_visited)
             if node not in z:
                 # add -> edges to forward deque
-                for _, x in G.out_edges(nbunch=node):
-                    if x not in forward_visited:
-                        forward_deque.append(x)
+                forward_deque.extend(G.succ[node].keys() - forward_visited)
 
     return True
 
@@ -371,15 +355,15 @@ def find_minimal_d_separator(G, x, y, *, included=None, restricted=None):
     G : graph
         A networkx DAG.
     x : set | node
-        A node in the graph, or a set of nodes.
+        A node or set of nodes in the graph.
     y : set | node
-        A node in the graph, or a set of nodes.
+        A node or set of nodes in the graph.
     included : set | node | None
         A node or set of nodes which must be included in the found separating set,
-        default is None, which is later set to empty set.
+        default is None, which means the empty set.
     restricted : set | node | None
         Restricted node or set of nodes to consider. Only these nodes can be in
-        the found separating set, default is None meaning all vertices in ``G``.
+        the found separating set, default is None meaning all nodes in ``G``.
 
     Returns
     -------
@@ -406,52 +390,51 @@ def find_minimal_d_separator(G, x, y, *, included=None, restricted=None):
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")
 
-    if not isinstance(x, set):
-        x = {x}
-    if x - G.nodes:
-        raise nx.NodeNotFound(f"The node {x} is not found in G.")
-    if not isinstance(y, set):
-        y = {y}
-    if y - G.nodes:
-        raise nx.NodeNotFound(f"The node {y} is not found in G.")
+    try:
+        x = {x} if x in G else x
+        y = {y} if y in G else y
 
-    if included is None:
-        included = set()
-    elif not isinstance(included, set):
-        included = {included}
-    if restricted is None:
-        restricted = set(G)
-    elif not isinstance(restricted, set):
-        restricted = {restricted}
+        if included is None:
+            included = set()
+        elif included in G:
+            included = {included}
 
-    set_y = x | y | included | restricted
-    if set_y - G.nodes:
-        raise nx.NodeNotFound(f"The node(s) {set_y - G.nodes} are not found in G")
+        if restricted is None:
+            restricted = set(G)
+        elif restricted in G:
+            restricted = {restricted}
+
+        set_y = x | y | included | restricted
+        if set_y - G.nodes:
+            raise nx.NodeNotFound(f"The node(s) {set_y - G.nodes} are not found in G")
+    except TypeError:
+        raise nx.NodeNotFound(
+            "One of x, y, included or restricted is not a node or set of nodes in G"
+        )
+
     if not included <= restricted:
         raise nx.NetworkXError(
-            f"Minimal set {included} should be no larger than maximal set {restricted}"
+            f"Included nodes {included} must be in restricted nodes {restricted}"
         )
 
-    intersection = (
-        x.intersection(y) or x.intersection(included) or y.intersection(included)
-    )
+    intersection = x & y or x & included or y & included
     if intersection:
         raise nx.NetworkXError(
-            f"The sets are not disjoint, with intersection {intersection}"
+            f"The sets x, y, included are not disjoint. Overlap: {intersection}"
         )
 
-    nodeset = x.union(y).union(included)
+    nodeset = x | y | included
     ancestors_x_y_included = nodeset.union(*[nx.ancestors(G, node) for node in nodeset])
 
-    z_init = restricted.intersection(ancestors_x_y_included.difference(x.union(y)))
+    z_init = restricted & (ancestors_x_y_included - (x | y))
 
     x_closure = _reachable(G, x, ancestors_x_y_included, z_init)
-    z_updated = z_init.intersection(x_closure).union(included)
-
-    y_closure = _reachable(G, y, ancestors_x_y_included, z_updated)
-    if x_closure.intersection(y):
+    if x_closure & y:
         return None
-    return z_updated.intersection(y_closure).union(included)
+
+    z_updated = z_init & (x_closure | included)
+    y_closure = _reachable(G, y, ancestors_x_y_included, z_updated)
+    return z_updated & (y_closure | included)
 
 
 @not_implemented_for("undirected")
@@ -460,9 +443,9 @@ def is_minimal_d_separator(G, x, y, z, *, included=None, restricted=None):
     """Determine if `z` is a minimal d-separator for `x` and `y`.
 
     A d-separator, `z`, in a DAG is a set of nodes that blocks
-    all paths from nodes in set `x` to nodes in set `y`. This function
-    A minimal d-separator is a set `z` such that removing any subset of
-    nodes makes it no longer a d-separator.
+    all paths from nodes in set `x` to nodes in set `y`.
+    A minimal d-separator is a d-separator `z` such that removing
+    any subset of nodes makes it no longer a d-separator.
 
     Note: This function checks whether `z` is a d-separator AND is
     minimal. One can use the function `is_d_separator` to only check if
@@ -473,24 +456,25 @@ def is_minimal_d_separator(G, x, y, z, *, included=None, restricted=None):
     G : nx.DiGraph
         A NetworkX DAG.
     x : node | set
-        A node in the graph, or a set of nodes.
+        A node or set of nodes in the graph.
     y : node | set
-        A node in the graph, or a set of nodes.
+        A node or set of nodes in the graph.
     z : node | set
         The node or set of nodes to check if it is a minimal d-separating set.
         The function :func:`is_d_separator` is called inside this function
         to verify that `z` is in fact a d-separator.
     included : set | node | None
         A node or set of nodes which must be included in the found separating set,
-        default is ``None``, which is later set to empty set.
+        default is ``None``, which means the empty set.
     restricted : set | node | None
         Restricted node or set of nodes to consider. Only these nodes can be in
-        the found separating set, default is ``None`` meaning all vertices in ``G``.
+        the found separating set, default is ``None`` meaning all nodes in ``G``.
 
     Returns
     -------
     bool
-        Whether or not the set `z` is a minimal d-separator.
+        Whether or not the set `z` is a minimal d-separator subject to
+        `restricted` nodes and `included` node constraints.
 
     Examples
     --------
@@ -524,47 +508,52 @@ def is_minimal_d_separator(G, x, y, z, *, included=None, restricted=None):
     -----
     This function works on verifying that a set is minimal and
     d-separating between two nodes. Uses criterion (a), (b), (c) on
-    page 4 of [1]_. The complexity is :math:`O(m)`, where :math:`m`
-    stands for the number of edges in the subgraph of G consisting of
-    only the ancestors of `x` and `y`.
+    page 4 of [1]_. a) closure(`x`) and `y` are disjoint. b) `z` contains
+    all nodes from `included` and is contained in the `restricted`
+    nodes and in the union of ancestors of `x`, `y`, and `included`.
+    c) the nodes in `z` not in `included` are contained in both
+    closure(x) and closure(y). The closure of a set is the set of nodes
+    connected to the set by a directed path in G.
+
+    The complexity is :math:`O(m)`, where :math:`m` stands for the
+    number of edges in the subgraph of G consisting of only the
+    ancestors of `x` and `y`.
 
     For full details, see [1]_.
     """
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("graph should be directed acyclic")
-    if not isinstance(x, set):
-        x = {x}
-    if x - G.nodes:
-        raise nx.NodeNotFound(f"The node {x} is not found in G.")
-    if not isinstance(y, set):
-        y = {y}
-    if y - G.nodes:
-        raise nx.NodeNotFound(f"The node {y} is not found in G.")
-    if not isinstance(z, set):
-        z = {z}
-    if z - G.nodes:
-        raise nx.NodeNotFound(f"The node {z} is not found in G.")
 
-    if included is None:
-        included = set()
-    elif not isinstance(included, set):
-        included = {included}
-    if restricted is None:
-        restricted = set(G.nodes())
-    elif not isinstance(restricted, set):
-        restricted = {restricted}
+    try:
+        x = {x} if x in G else x
+        y = {y} if y in G else y
+        z = {z} if z in G else z
 
-    set_y = x | y | z | included | restricted
-    if set_y - G.nodes:
-        raise nx.NodeNotFound(f"The node(s) {set_y - G.nodes} are not found in G")
+        if included is None:
+            included = set()
+        elif included in G:
+            included = {included}
+
+        if restricted is None:
+            restricted = set(G)
+        elif restricted in G:
+            restricted = {restricted}
+
+        set_y = x | y | included | restricted
+        if set_y - G.nodes:
+            raise nx.NodeNotFound(f"The node(s) {set_y - G.nodes} are not found in G")
+    except TypeError:
+        raise nx.NodeNotFound(
+            "One of x, y, z, included or restricted is not a node or set of nodes in G"
+        )
 
     if not included <= z:
         raise nx.NetworkXError(
-            f"Minimal set {included} should be no larger than proposed separating set {z}"
+            f"Included nodes {included} must be in proposed separating set z {x}"
         )
     if not z <= restricted:
         raise nx.NetworkXError(
-            f"Separating set {z} should be no larger than maximum set {restricted}"
+            f"Separating set {z} must be contained in restricted set {restricted}"
         )
 
     intersection = x.intersection(y) or x.intersection(z) or y.intersection(z)
@@ -573,21 +562,23 @@ def is_minimal_d_separator(G, x, y, z, *, included=None, restricted=None):
             f"The sets are not disjoint, with intersection {intersection}"
         )
 
-    nodeset = x.union(y).union(included)
-    ancestors_x_y_included = nodeset.union(*[nx.ancestors(G, node) for node in nodeset])
+    nodeset = x | y | included
+    ancestors_x_y_included = nodeset.union(*[nx.ancestors(G, n) for n in nodeset])
 
     # criterion (a) -- check that z is actually a separator
     x_closure = _reachable(G, x, ancestors_x_y_included, z)
-    crit_a = not any(x_closure.intersection(y))
+    if x_closure & y:
+        return False
 
     # criterion (b) -- basic constraint; included and restricted already checked above
-    crit_b = z <= ancestors_x_y_included
+    if not (z <= ancestors_x_y_included):
+        return False
 
     # criterion (c) -- check that z is minimal
     y_closure = _reachable(G, y, ancestors_x_y_included, z)
-    crit_c = z.difference(included) <= x_closure.intersection(y_closure)
-
-    return crit_a and crit_b and crit_c
+    if not ((z - included) <= (x_closure & y_closure)):
+        return False
+    return True
 
 
 @not_implemented_for("undirected")
