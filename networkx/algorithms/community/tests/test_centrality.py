@@ -4,9 +4,7 @@ module.
 """
 from operator import itemgetter
 
-
 import networkx as nx
-from networkx.algorithms.community import girvan_newman
 
 
 def set_of_sets(iterable):
@@ -30,14 +28,14 @@ class TestGirvanNewman:
 
     def test_no_edges(self):
         G = nx.empty_graph(3)
-        communities = list(girvan_newman(G))
+        communities = list(nx.community.girvan_newman(G))
         assert len(communities) == 1
         validate_communities(communities[0], [{0}, {1}, {2}])
 
     def test_undirected(self):
         # Start with the graph .-.-.-.
         G = nx.path_graph(4)
-        communities = list(girvan_newman(G))
+        communities = list(nx.community.girvan_newman(G))
         assert len(communities) == 3
         # After one removal, we get the graph .-. .-.
         validate_communities(communities[0], [{0, 1}, {2, 3}])
@@ -51,7 +49,7 @@ class TestGirvanNewman:
 
     def test_directed(self):
         G = nx.DiGraph(nx.path_graph(4))
-        communities = list(girvan_newman(G))
+        communities = list(nx.community.girvan_newman(G))
         assert len(communities) == 3
         validate_communities(communities[0], [{0, 1}, {2, 3}])
         validate_possible_communities(
@@ -63,7 +61,7 @@ class TestGirvanNewman:
         G = nx.path_graph(4)
         G.add_edge(0, 0)
         G.add_edge(2, 2)
-        communities = list(girvan_newman(G))
+        communities = list(nx.community.girvan_newman(G))
         assert len(communities) == 3
         validate_communities(communities[0], [{0, 1}, {2, 3}])
         validate_possible_communities(
@@ -79,7 +77,7 @@ class TestGirvanNewman:
         def heaviest(G):
             return max(G.edges(data="weight"), key=itemgetter(2))[:2]
 
-        communities = list(girvan_newman(G, heaviest))
+        communities = list(nx.community.girvan_newman(G, heaviest))
         assert len(communities) == 3
         validate_communities(communities[0], [{0}, {1, 2, 3}])
         validate_communities(communities[1], [{0}, {1}, {2, 3}])

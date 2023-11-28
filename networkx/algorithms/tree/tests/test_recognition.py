@@ -1,15 +1,14 @@
 import pytest
+
 import networkx as nx
 
 
 class TestTreeRecognition:
-
     graph = nx.Graph
     multigraph = nx.MultiGraph
 
     @classmethod
     def setup_class(cls):
-
         cls.T1 = cls.graph()
 
         cls.T2 = cls.graph()

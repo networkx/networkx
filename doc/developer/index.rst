@@ -1,11 +1,17 @@
 .. _developer:
 
-Developer Guide
-***************
+Developer
+*********
+
+.. only:: html
+
+    :Release: |version|
+    :Date: |today|
 
 .. toctree::
    :maxdepth: 2
 
+   about_us
    code_of_conduct
    values
    contribute

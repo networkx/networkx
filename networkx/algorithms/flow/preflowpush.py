@@ -4,13 +4,17 @@ Highest-label preflow-push algorithm for maximum flow problems.
 
 from collections import deque
 from itertools import islice
+
 import networkx as nx
+
 from ...utils import arbitrary_element
-from .utils import build_residual_network
-from .utils import CurrentEdge
-from .utils import detect_unboundedness
-from .utils import GlobalRelabelThreshold
-from .utils import Level
+from .utils import (
+    CurrentEdge,
+    GlobalRelabelThreshold,
+    Level,
+    build_residual_network,
+    detect_unboundedness,
+)
 
 __all__ = ["preflow_push"]
 
@@ -284,6 +288,12 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq, value_on
     return R
 
 
+@nx._dispatch(
+    graphs={"G": 0, "residual?": 4},
+    edge_attrs={"capacity": float("inf")},
+    preserve_edge_attrs={"residual": {"capacity": float("inf")}},
+    preserve_graph_attrs={"residual"},
+)
 def preflow_push(
     G, s, t, capacity="capacity", residual=None, global_relabel_freq=1, value_only=False
 ):

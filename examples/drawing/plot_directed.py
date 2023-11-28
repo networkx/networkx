@@ -39,8 +39,8 @@ for i in range(M):
 
 pc = mpl.collections.PatchCollection(edges, cmap=cmap)
 pc.set_array(edge_colors)
-plt.colorbar(pc)
 
 ax = plt.gca()
 ax.set_axis_off()
+plt.colorbar(pc, ax=ax)
 plt.show()

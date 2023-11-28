@@ -10,6 +10,7 @@ __all__ = [
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def weakly_connected_components(G):
     """Generate weakly connected components of G.
 
@@ -65,6 +66,7 @@ def weakly_connected_components(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def number_weakly_connected_components(G):
     """Returns the number of weakly connected components in G.
 
@@ -83,6 +85,12 @@ def number_weakly_connected_components(G):
     NetworkXNotImplemented
         If G is undirected.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (2, 1), (3, 4)])
+    >>> nx.number_weakly_connected_components(G)
+    2
+
     See Also
     --------
     weakly_connected_components
@@ -98,6 +106,7 @@ def number_weakly_connected_components(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def is_weakly_connected(G):
     """Test directed graph for weak connectivity.
 
@@ -123,6 +132,16 @@ def is_weakly_connected(G):
     NetworkXNotImplemented
         If G is undirected.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (2, 1)])
+    >>> G.add_node(3)
+    >>> nx.is_weakly_connected(G)  # node 3 is not connected to the graph
+    False
+    >>> G.add_edge(2, 3)
+    >>> nx.is_weakly_connected(G)
+    True
+
     See Also
     --------
     is_strongly_connected
@@ -141,7 +160,7 @@ def is_weakly_connected(G):
             """Connectivity is undefined for the null graph."""
         )
 
-    return len(list(weakly_connected_components(G))[0]) == len(G)
+    return len(next(weakly_connected_components(G))) == len(G)
 
 
 def _plain_bfs(G, source):
@@ -152,17 +171,26 @@ def _plain_bfs(G, source):
     For directed graphs only.
 
     """
-    Gsucc = G.succ
-    Gpred = G.pred
+    n = len(G)
+    Gsucc = G._succ
+    Gpred = G._pred
+    seen = {source}
+    nextlevel = [source]
 
-    seen = set()
-    nextlevel = {source}
+    yield source
     while nextlevel:
         thislevel = nextlevel
-        nextlevel = set()
+        nextlevel = []
         for v in thislevel:
-            if v not in seen:
-                seen.add(v)
-                nextlevel.update(Gsucc[v])
-                nextlevel.update(Gpred[v])
-                yield v
+            for w in Gsucc[v]:
+                if w not in seen:
+                    seen.add(w)
+                    nextlevel.append(w)
+                    yield w
+            for w in Gpred[v]:
+                if w not in seen:
+                    seen.add(w)
+                    nextlevel.append(w)
+                    yield w
+            if len(seen) == n:
+                return

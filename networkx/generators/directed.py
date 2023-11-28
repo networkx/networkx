@@ -21,6 +21,7 @@ __all__ = [
 
 
 @py_random_state(3)
+@nx._dispatch(graphs=None)
 def gn_graph(n, kernel=None, create_using=None, seed=None):
     """Returns the growing network (GN) digraph with `n` nodes.
 
@@ -88,13 +89,14 @@ def gn_graph(n, kernel=None, create_using=None, seed=None):
 
 
 @py_random_state(3)
+@nx._dispatch(graphs=None)
 def gnr_graph(n, p, create_using=None, seed=None):
     """Returns the growing network with redirection (GNR) digraph with `n`
     nodes and redirection probability `p`.
 
     The GNR graph is built by adding nodes one at a time with a link to one
     previously added node.  The previous target node is chosen uniformly at
-    random.  With probabiliy `p` the link is instead "redirected" to the
+    random.  With probability `p` the link is instead "redirected" to the
     successor node of the target.
 
     The graph is always a (directed) tree.
@@ -141,6 +143,7 @@ def gnr_graph(n, p, create_using=None, seed=None):
 
 
 @py_random_state(2)
+@nx._dispatch(graphs=None)
 def gnc_graph(n, create_using=None, seed=None):
     """Returns the growing network with copying (GNC) digraph with `n` nodes.
 
@@ -179,7 +182,8 @@ def gnc_graph(n, create_using=None, seed=None):
     return G
 
 
-@py_random_state(7)
+@py_random_state(6)
+@nx._dispatch(graphs=None)
 def scale_free_graph(
     n,
     alpha=0.41,
@@ -187,8 +191,8 @@ def scale_free_graph(
     gamma=0.05,
     delta_in=0.2,
     delta_out=0,
-    create_using=None,
     seed=None,
+    initial_graph=None,
 ):
     """Returns a scale-free directed graph.
 
@@ -211,13 +215,16 @@ def scale_free_graph(
         Bias for choosing nodes from in-degree distribution.
     delta_out : float
         Bias for choosing nodes from out-degree distribution.
-    create_using : NetworkX graph constructor, optional
-        The default is a MultiDiGraph 3-cycle.
-        If a graph instance, use it without clearing first.
-        If a graph constructor, call it to construct an empty graph.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
+    initial_graph : MultiDiGraph instance, optional
+        Build the scale-free graph starting from this initial MultiDiGraph,
+        if provided.
+
+    Returns
+    -------
+    MultiDiGraph
 
     Examples
     --------
@@ -245,14 +252,13 @@ def scale_free_graph(
                 return seed.choice(node_list)
         return seed.choice(candidates)
 
-    if create_using is None or not hasattr(create_using, "_adj"):
-        # start with 3-cycle
-        G = nx.empty_graph(3, create_using, default=nx.MultiDiGraph)
-        G.add_edges_from([(0, 1), (1, 2), (2, 0)])
+    if initial_graph is not None and hasattr(initial_graph, "_adj"):
+        if not isinstance(initial_graph, nx.MultiDiGraph):
+            raise nx.NetworkXError("initial_graph must be a MultiDiGraph.")
+        G = initial_graph
     else:
-        G = create_using
-    if not (G.is_directed() and G.is_multigraph()):
-        raise nx.NetworkXError("MultiDiGraph required in create_using")
+        # Start with 3-cycle
+        G = nx.MultiDiGraph([(0, 1), (1, 2), (2, 0)])
 
     if alpha <= 0:
         raise ValueError("alpha must be > 0.")
@@ -271,8 +277,8 @@ def scale_free_graph(
         raise ValueError("delta_out must be >= 0.")
 
     # pre-populate degree states
-    vs = sum([count * [idx] for idx, count in G.out_degree()], [])
-    ws = sum([count * [idx] for idx, count in G.in_degree()], [])
+    vs = sum((count * [idx] for idx, count in G.out_degree()), [])
+    ws = sum((count * [idx] for idx, count in G.in_degree()), [])
 
     # pre-populate node state
     node_list = list(G.nodes())
@@ -281,7 +287,7 @@ def scale_free_graph(
     numeric_nodes = [n for n in node_list if isinstance(n, numbers.Number)]
     if len(numeric_nodes) > 0:
         # set cursor for new nodes appropriately
-        cursor = max([int(n.real) for n in numeric_nodes]) + 1
+        cursor = max(int(n.real) for n in numeric_nodes) + 1
     else:
         # or start at zero
         cursor = 0
@@ -328,6 +334,7 @@ def scale_free_graph(
 
 
 @py_random_state(4)
+@nx._dispatch(graphs=None)
 def random_uniform_k_out_graph(n, k, self_loops=True, with_replacement=True, seed=None):
     """Returns a random `k`-out graph with uniform attachment.
 
@@ -408,6 +415,7 @@ def random_uniform_k_out_graph(n, k, self_loops=True, with_replacement=True, see
 
 
 @py_random_state(4)
+@nx._dispatch(graphs=None)
 def random_k_out_graph(n, k, alpha, self_loops=True, seed=None):
     """Returns a random `k`-out graph with preferential attachment.
 

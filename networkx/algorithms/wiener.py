@@ -2,8 +2,9 @@
 
 from itertools import chain
 
-from .components import is_connected
-from .components import is_strongly_connected
+import networkx as nx
+
+from .components import is_connected, is_strongly_connected
 from .shortest_paths import shortest_path_length as spl
 
 __all__ = ["wiener_index"]
@@ -13,6 +14,7 @@ __all__ = ["wiener_index"]
 chaini = chain.from_iterable
 
 
+@nx._dispatch(edge_attrs="weight")
 def wiener_index(G, weight=None):
     """Returns the Wiener index of the given graph.
 

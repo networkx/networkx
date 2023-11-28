@@ -105,6 +105,7 @@ Traveling Salesman
    farthest_insertion
    simulated_annealing_tsp
    threshold_accepting_tsp
+   asadpour_atsp
 
 
 Treewidth

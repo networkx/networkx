@@ -2,9 +2,15 @@ from random import Random
 
 import pytest
 
-
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
+from networkx.algorithms.distance_measures import _extrema_bounding
+
+
+def test__extrema_bounding_invalid_compute_kwarg():
+    G = nx.path_graph(3)
+    with pytest.raises(ValueError, match="compute must be one of"):
+        _extrema_bounding(G, compute="spam")
 
 
 class TestDistance:
@@ -91,13 +97,233 @@ class TestDistance:
             nx.eccentricity(DG)
 
 
+class TestWeightedDistance:
+    def setup_method(self):
+        G = nx.Graph()
+        G.add_edge(0, 1, weight=0.6, cost=0.6, high_cost=6)
+        G.add_edge(0, 2, weight=0.2, cost=0.2, high_cost=2)
+        G.add_edge(2, 3, weight=0.1, cost=0.1, high_cost=1)
+        G.add_edge(2, 4, weight=0.7, cost=0.7, high_cost=7)
+        G.add_edge(2, 5, weight=0.9, cost=0.9, high_cost=9)
+        G.add_edge(1, 5, weight=0.3, cost=0.3, high_cost=3)
+        self.G = G
+        self.weight_fn = lambda v, u, e: 2
+
+    def test_eccentricity_weight_None(self):
+        assert nx.eccentricity(self.G, 1, weight=None) == 3
+        e = nx.eccentricity(self.G, weight=None)
+        assert e[1] == 3
+
+        e = nx.eccentricity(self.G, v=1, weight=None)
+        assert e == 3
+
+        # This behavior changed in version 1.8 (ticket #739)
+        e = nx.eccentricity(self.G, v=[1, 1], weight=None)
+        assert e[1] == 3
+        e = nx.eccentricity(self.G, v=[1, 2], weight=None)
+        assert e[1] == 3
+
+    def test_eccentricity_weight_attr(self):
+        assert nx.eccentricity(self.G, 1, weight="weight") == 1.5
+        e = nx.eccentricity(self.G, weight="weight")
+        assert (
+            e
+            == nx.eccentricity(self.G, weight="cost")
+            != nx.eccentricity(self.G, weight="high_cost")
+        )
+        assert e[1] == 1.5
+
+        e = nx.eccentricity(self.G, v=1, weight="weight")
+        assert e == 1.5
+
+        # This behavior changed in version 1.8 (ticket #739)
+        e = nx.eccentricity(self.G, v=[1, 1], weight="weight")
+        assert e[1] == 1.5
+        e = nx.eccentricity(self.G, v=[1, 2], weight="weight")
+        assert e[1] == 1.5
+
+    def test_eccentricity_weight_fn(self):
+        assert nx.eccentricity(self.G, 1, weight=self.weight_fn) == 6
+        e = nx.eccentricity(self.G, weight=self.weight_fn)
+        assert e[1] == 6
+
+        e = nx.eccentricity(self.G, v=1, weight=self.weight_fn)
+        assert e == 6
+
+        # This behavior changed in version 1.8 (ticket #739)
+        e = nx.eccentricity(self.G, v=[1, 1], weight=self.weight_fn)
+        assert e[1] == 6
+        e = nx.eccentricity(self.G, v=[1, 2], weight=self.weight_fn)
+        assert e[1] == 6
+
+    def test_diameter_weight_None(self):
+        assert nx.diameter(self.G, weight=None) == 3
+
+    def test_diameter_weight_attr(self):
+        assert (
+            nx.diameter(self.G, weight="weight")
+            == nx.diameter(self.G, weight="cost")
+            == 1.6
+            != nx.diameter(self.G, weight="high_cost")
+        )
+
+    def test_diameter_weight_fn(self):
+        assert nx.diameter(self.G, weight=self.weight_fn) == 6
+
+    def test_radius_weight_None(self):
+        assert pytest.approx(nx.radius(self.G, weight=None)) == 2
+
+    def test_radius_weight_attr(self):
+        assert (
+            pytest.approx(nx.radius(self.G, weight="weight"))
+            == pytest.approx(nx.radius(self.G, weight="cost"))
+            == 0.9
+            != nx.radius(self.G, weight="high_cost")
+        )
+
+    def test_radius_weight_fn(self):
+        assert nx.radius(self.G, weight=self.weight_fn) == 4
+
+    def test_periphery_weight_None(self):
+        for v in set(nx.periphery(self.G, weight=None)):
+            assert nx.eccentricity(self.G, v, weight=None) == nx.diameter(
+                self.G, weight=None
+            )
+
+    def test_periphery_weight_attr(self):
+        periphery = set(nx.periphery(self.G, weight="weight"))
+        assert (
+            periphery
+            == set(nx.periphery(self.G, weight="cost"))
+            == set(nx.periphery(self.G, weight="high_cost"))
+        )
+        for v in periphery:
+            assert (
+                nx.eccentricity(self.G, v, weight="high_cost")
+                != nx.eccentricity(self.G, v, weight="weight")
+                == nx.eccentricity(self.G, v, weight="cost")
+                == nx.diameter(self.G, weight="weight")
+                == nx.diameter(self.G, weight="cost")
+                != nx.diameter(self.G, weight="high_cost")
+            )
+            assert nx.eccentricity(self.G, v, weight="high_cost") == nx.diameter(
+                self.G, weight="high_cost"
+            )
+
+    def test_periphery_weight_fn(self):
+        for v in set(nx.periphery(self.G, weight=self.weight_fn)):
+            assert nx.eccentricity(self.G, v, weight=self.weight_fn) == nx.diameter(
+                self.G, weight=self.weight_fn
+            )
+
+    def test_center_weight_None(self):
+        for v in set(nx.center(self.G, weight=None)):
+            assert pytest.approx(nx.eccentricity(self.G, v, weight=None)) == nx.radius(
+                self.G, weight=None
+            )
+
+    def test_center_weight_attr(self):
+        center = set(nx.center(self.G, weight="weight"))
+        assert (
+            center
+            == set(nx.center(self.G, weight="cost"))
+            != set(nx.center(self.G, weight="high_cost"))
+        )
+        for v in center:
+            assert (
+                nx.eccentricity(self.G, v, weight="high_cost")
+                != pytest.approx(nx.eccentricity(self.G, v, weight="weight"))
+                == pytest.approx(nx.eccentricity(self.G, v, weight="cost"))
+                == nx.radius(self.G, weight="weight")
+                == nx.radius(self.G, weight="cost")
+                != nx.radius(self.G, weight="high_cost")
+            )
+            assert nx.eccentricity(self.G, v, weight="high_cost") == nx.radius(
+                self.G, weight="high_cost"
+            )
+
+    def test_center_weight_fn(self):
+        for v in set(nx.center(self.G, weight=self.weight_fn)):
+            assert nx.eccentricity(self.G, v, weight=self.weight_fn) == nx.radius(
+                self.G, weight=self.weight_fn
+            )
+
+    def test_bound_diameter_weight_None(self):
+        assert nx.diameter(self.G, usebounds=True, weight=None) == 3
+
+    def test_bound_diameter_weight_attr(self):
+        assert (
+            nx.diameter(self.G, usebounds=True, weight="high_cost")
+            != nx.diameter(self.G, usebounds=True, weight="weight")
+            == nx.diameter(self.G, usebounds=True, weight="cost")
+            == 1.6
+            != nx.diameter(self.G, usebounds=True, weight="high_cost")
+        )
+        assert nx.diameter(self.G, usebounds=True, weight="high_cost") == nx.diameter(
+            self.G, usebounds=True, weight="high_cost"
+        )
+
+    def test_bound_diameter_weight_fn(self):
+        assert nx.diameter(self.G, usebounds=True, weight=self.weight_fn) == 6
+
+    def test_bound_radius_weight_None(self):
+        assert pytest.approx(nx.radius(self.G, usebounds=True, weight=None)) == 2
+
+    def test_bound_radius_weight_attr(self):
+        assert (
+            nx.radius(self.G, usebounds=True, weight="high_cost")
+            != pytest.approx(nx.radius(self.G, usebounds=True, weight="weight"))
+            == pytest.approx(nx.radius(self.G, usebounds=True, weight="cost"))
+            == 0.9
+            != nx.radius(self.G, usebounds=True, weight="high_cost")
+        )
+        assert nx.radius(self.G, usebounds=True, weight="high_cost") == nx.radius(
+            self.G, usebounds=True, weight="high_cost"
+        )
+
+    def test_bound_radius_weight_fn(self):
+        assert nx.radius(self.G, usebounds=True, weight=self.weight_fn) == 4
+
+    def test_bound_periphery_weight_None(self):
+        result = {1, 3, 4}
+        assert set(nx.periphery(self.G, usebounds=True, weight=None)) == result
+
+    def test_bound_periphery_weight_attr(self):
+        result = {4, 5}
+        assert (
+            set(nx.periphery(self.G, usebounds=True, weight="weight"))
+            == set(nx.periphery(self.G, usebounds=True, weight="cost"))
+            == result
+        )
+
+    def test_bound_periphery_weight_fn(self):
+        result = {1, 3, 4}
+        assert (
+            set(nx.periphery(self.G, usebounds=True, weight=self.weight_fn)) == result
+        )
+
+    def test_bound_center_weight_None(self):
+        result = {0, 2, 5}
+        assert set(nx.center(self.G, usebounds=True, weight=None)) == result
+
+    def test_bound_center_weight_attr(self):
+        result = {0}
+        assert (
+            set(nx.center(self.G, usebounds=True, weight="weight"))
+            == set(nx.center(self.G, usebounds=True, weight="cost"))
+            == result
+        )
+
+    def test_bound_center_weight_fn(self):
+        result = {0, 2, 5}
+        assert set(nx.center(self.G, usebounds=True, weight=self.weight_fn)) == result
+
+
 class TestResistanceDistance:
     @classmethod
     def setup_class(cls):
         global np
-        global sp
         np = pytest.importorskip("numpy")
-        sp = pytest.importorskip("scipy")
 
     def setup_method(self):
         G = nx.Graph()
@@ -107,30 +333,28 @@ class TestResistanceDistance:
         G.add_edge(1, 4, weight=3)
         self.G = G
 
-    def test_laplacian_submatrix(self):
-        from networkx.algorithms.distance_measures import _laplacian_submatrix
+    def test_resistance_distance_directed_graph(self):
+        G = nx.DiGraph()
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.resistance_distance(G)
 
-        M = sp.sparse.csr_matrix([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=np.float32)
-        N = sp.sparse.csr_matrix([[5, 6], [8, 9]], dtype=np.float32)
-        Mn, Mn_nodelist = _laplacian_submatrix(1, M, [1, 2, 3])
-        assert Mn_nodelist == [2, 3]
-        assert np.allclose(Mn.toarray(), N.toarray())
-
-    def test_laplacian_submatrix_square(self):
+    def test_resistance_distance_empty(self):
+        G = nx.Graph()
         with pytest.raises(nx.NetworkXError):
-            from networkx.algorithms.distance_measures import _laplacian_submatrix
+            nx.resistance_distance(G)
 
-            M = sp.sparse.csr_matrix([[1, 2], [4, 5], [7, 8]], dtype=np.float32)
-            _laplacian_submatrix(1, M, [1, 2, 3])
-
-    def test_laplacian_submatrix_matrix_node_dim(self):
+    def test_resistance_distance_not_connected(self):
         with pytest.raises(nx.NetworkXError):
-            from networkx.algorithms.distance_measures import _laplacian_submatrix
+            self.G.add_node(5)
+            nx.resistance_distance(self.G, 1, 5)
 
-            M = sp.sparse.csr_matrix(
-                [[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=np.float32
-            )
-            _laplacian_submatrix(1, M, [1, 2, 3, 4])
+    def test_resistance_distance_nodeA_not_in_graph(self):
+        with pytest.raises(nx.NetworkXError):
+            nx.resistance_distance(self.G, 9, 1)
+
+    def test_resistance_distance_nodeB_not_in_graph(self):
+        with pytest.raises(nx.NetworkXError):
+            nx.resistance_distance(self.G, 1, 9)
 
     def test_resistance_distance(self):
         rd = nx.resistance_distance(self.G, 1, 3, "weight", True)
@@ -166,22 +390,37 @@ class TestResistanceDistance:
             self.G[1][2]["weight"] = 0
             nx.resistance_distance(self.G, 1, 3, "weight")
 
-    def test_resistance_distance_not_connected(self):
-        with pytest.raises(nx.NetworkXError):
-            self.G.add_node(5)
-            nx.resistance_distance(self.G, 1, 5)
-
     def test_resistance_distance_same_node(self):
-        with pytest.raises(nx.NetworkXError):
-            nx.resistance_distance(self.G, 1, 1)
+        assert nx.resistance_distance(self.G, 1, 1) == 0
 
-    def test_resistance_distance_nodeA_not_in_graph(self):
-        with pytest.raises(nx.NetworkXError):
-            nx.resistance_distance(self.G, 9, 1)
+    def test_resistance_distance_only_nodeA(self):
+        rd = nx.resistance_distance(self.G, nodeA=1)
+        test_data = {}
+        test_data[1] = 0
+        test_data[2] = 0.75
+        test_data[3] = 1
+        test_data[4] = 0.75
+        assert type(rd) == dict
+        assert sorted(rd.keys()) == sorted(test_data.keys())
+        for key in rd:
+            assert np.isclose(rd[key], test_data[key])
 
-    def test_resistance_distance_nodeB_not_in_graph(self):
-        with pytest.raises(nx.NetworkXError):
-            nx.resistance_distance(self.G, 1, 9)
+    def test_resistance_distance_only_nodeB(self):
+        rd = nx.resistance_distance(self.G, nodeB=1)
+        test_data = {}
+        test_data[1] = 0
+        test_data[2] = 0.75
+        test_data[3] = 1
+        test_data[4] = 0.75
+        assert type(rd) == dict
+        assert sorted(rd.keys()) == sorted(test_data.keys())
+        for key in rd:
+            assert np.isclose(rd[key], test_data[key])
+
+    def test_resistance_distance_all(self):
+        rd = nx.resistance_distance(self.G)
+        assert type(rd) == dict
+        assert round(rd[1][3], 5) == 1
 
 
 class TestBarycenter:
@@ -219,7 +458,7 @@ class TestBarycenter:
         """
         prng = Random(0xDEADBEEF)
         for i in range(50):
-            RT = nx.random_tree(prng.randint(1, 75), prng)
+            RT = nx.random_labeled_tree(prng.randint(1, 75), seed=prng)
             b = self.barycenter_as_subgraph(RT)
             if len(b) == 2:
                 assert b.size() == 1
@@ -269,3 +508,161 @@ class TestBarycenter:
         assert not b.edges
         for node, barycentricity in expected_barycentricity.items():
             assert g.nodes[node]["barycentricity2"] == barycentricity * 2
+
+
+class TestKemenyConstant:
+    @classmethod
+    def setup_class(cls):
+        global np
+        np = pytest.importorskip("numpy")
+
+    def setup_method(self):
+        G = nx.Graph()
+        w12 = 2
+        w13 = 3
+        w23 = 4
+        G.add_edge(1, 2, weight=w12)
+        G.add_edge(1, 3, weight=w13)
+        G.add_edge(2, 3, weight=w23)
+        self.G = G
+
+    def test_kemeny_constant_directed(self):
+        G = nx.DiGraph()
+        G.add_edge(1, 2)
+        G.add_edge(1, 3)
+        G.add_edge(2, 3)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.kemeny_constant(G)
+
+    def test_kemeny_constant_not_connected(self):
+        self.G.add_node(5)
+        with pytest.raises(nx.NetworkXError):
+            nx.kemeny_constant(self.G)
+
+    def test_kemeny_constant_no_nodes(self):
+        G = nx.Graph()
+        with pytest.raises(nx.NetworkXError):
+            nx.kemeny_constant(G)
+
+    def test_kemeny_constant_negative_weight(self):
+        G = nx.Graph()
+        w12 = 2
+        w13 = 3
+        w23 = -10
+        G.add_edge(1, 2, weight=w12)
+        G.add_edge(1, 3, weight=w13)
+        G.add_edge(2, 3, weight=w23)
+        with pytest.raises(nx.NetworkXError):
+            nx.kemeny_constant(G, weight="weight")
+
+    def test_kemeny_constant(self):
+        K = nx.kemeny_constant(self.G, weight="weight")
+        w12 = 2
+        w13 = 3
+        w23 = 4
+        test_data = (
+            3
+            / 2
+            * (w12 + w13)
+            * (w12 + w23)
+            * (w13 + w23)
+            / (
+                w12**2 * (w13 + w23)
+                + w13**2 * (w12 + w23)
+                + w23**2 * (w12 + w13)
+                + 3 * w12 * w13 * w23
+            )
+        )
+        assert np.isclose(K, test_data)
+
+    def test_kemeny_constant_no_weight(self):
+        K = nx.kemeny_constant(self.G)
+        assert np.isclose(K, 4 / 3)
+
+    def test_kemeny_constant_multigraph(self):
+        G = nx.MultiGraph()
+        w12_1 = 2
+        w12_2 = 1
+        w13 = 3
+        w23 = 4
+        G.add_edge(1, 2, weight=w12_1)
+        G.add_edge(1, 2, weight=w12_2)
+        G.add_edge(1, 3, weight=w13)
+        G.add_edge(2, 3, weight=w23)
+        K = nx.kemeny_constant(G, weight="weight")
+        w12 = w12_1 + w12_2
+        test_data = (
+            3
+            / 2
+            * (w12 + w13)
+            * (w12 + w23)
+            * (w13 + w23)
+            / (
+                w12**2 * (w13 + w23)
+                + w13**2 * (w12 + w23)
+                + w23**2 * (w12 + w13)
+                + 3 * w12 * w13 * w23
+            )
+        )
+        assert np.isclose(K, test_data)
+
+    def test_kemeny_constant_weight0(self):
+        G = nx.Graph()
+        w12 = 0
+        w13 = 3
+        w23 = 4
+        G.add_edge(1, 2, weight=w12)
+        G.add_edge(1, 3, weight=w13)
+        G.add_edge(2, 3, weight=w23)
+        K = nx.kemeny_constant(G, weight="weight")
+        test_data = (
+            3
+            / 2
+            * (w12 + w13)
+            * (w12 + w23)
+            * (w13 + w23)
+            / (
+                w12**2 * (w13 + w23)
+                + w13**2 * (w12 + w23)
+                + w23**2 * (w12 + w13)
+                + 3 * w12 * w13 * w23
+            )
+        )
+        assert np.isclose(K, test_data)
+
+    def test_kemeny_constant_selfloop(self):
+        G = nx.Graph()
+        w11 = 1
+        w12 = 2
+        w13 = 3
+        w23 = 4
+        G.add_edge(1, 1, weight=w11)
+        G.add_edge(1, 2, weight=w12)
+        G.add_edge(1, 3, weight=w13)
+        G.add_edge(2, 3, weight=w23)
+        K = nx.kemeny_constant(G, weight="weight")
+        test_data = (
+            (2 * w11 + 3 * w12 + 3 * w13)
+            * (w12 + w23)
+            * (w13 + w23)
+            / (
+                (w12 * w13 + w12 * w23 + w13 * w23)
+                * (w11 + 2 * w12 + 2 * w13 + 2 * w23)
+            )
+        )
+        assert np.isclose(K, test_data)
+
+    def test_kemeny_constant_complete_bipartite_graph(self):
+        # Theorem 1 in https://www.sciencedirect.com/science/article/pii/S0166218X20302912
+        n1 = 5
+        n2 = 4
+        G = nx.complete_bipartite_graph(n1, n2)
+        K = nx.kemeny_constant(G)
+        assert np.isclose(K, n1 + n2 - 3 / 2)
+
+    def test_kemeny_constant_path_graph(self):
+        # Theorem 2 in https://www.sciencedirect.com/science/article/pii/S0166218X20302912
+        n = 10
+        G = nx.path_graph(n)
+        K = nx.kemeny_constant(G)
+        assert np.isclose(K, n**2 / 3 - 2 * n / 3 + 1 / 2)

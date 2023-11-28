@@ -1,7 +1,9 @@
 import pytest
+
 import networkx as nx
-from networkx import convert_node_labels_to_integers as cnlti
 from networkx import NetworkXNotImplemented
+from networkx import convert_node_labels_to_integers as cnlti
+from networkx.classes.tests import dispatch_interface
 
 
 class TestConnected:
@@ -59,9 +61,12 @@ class TestConnected:
         C = []
         cls.gc.append((G, C))
 
-    def test_connected_components(self):
+    # This additionally tests the @nx._dispatch mechanism, treating
+    # nx.connected_components as if it were a re-implementation from another package
+    @pytest.mark.parametrize("wrapper", [lambda x: x, dispatch_interface.convert])
+    def test_connected_components(self, wrapper):
         cc = nx.connected_components
-        G = self.G
+        G = wrapper(self.G)
         C = {
             frozenset([0, 1, 2, 3]),
             frozenset([4, 5, 6, 7, 8, 9]),
@@ -96,7 +101,8 @@ class TestConnected:
         assert not nx.is_connected(G)
 
     def test_connected_raise(self):
-        pytest.raises(NetworkXNotImplemented, nx.connected_components, self.DG)
+        with pytest.raises(NetworkXNotImplemented):
+            next(nx.connected_components(self.DG))
         pytest.raises(NetworkXNotImplemented, nx.number_connected_components, self.DG)
         pytest.raises(NetworkXNotImplemented, nx.node_connected_component, self.DG, 1)
         pytest.raises(NetworkXNotImplemented, nx.is_connected, self.DG)

@@ -19,9 +19,11 @@ See Also
  - Graphviz:      https://www.graphviz.org
  - DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
+import warnings
 from locale import getpreferredencoding
-from networkx.utils import open_file
+
 import networkx as nx
+from networkx.utils import open_file
 
 __all__ = [
     "write_dot",
@@ -39,12 +41,20 @@ def write_dot(G, path):
 
     Path can be a string or a file handle.
     """
+    msg = (
+        "nx.nx_pydot.write_dot depends on the pydot package, which has "
+        "known issues and is not actively maintained. Consider using "
+        "nx.nx_agraph.write_dot instead.\n\n"
+        "See https://github.com/networkx/networkx/issues/5723"
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     P = to_pydot(G)
     path.write(P.to_string())
     return
 
 
 @open_file(0, mode="r")
+@nx._dispatch(name="pydot_read_dot", graphs=None)
 def read_dot(path):
     """Returns a NetworkX :class:`MultiGraph` or :class:`MultiDiGraph` from the
     dot file with the passed path.
@@ -64,10 +74,18 @@ def read_dot(path):
 
     Notes
     -----
-    Use `G = nx.Graph(read_dot(path))` to return a :class:`Graph` instead of a
+    Use `G = nx.Graph(nx.nx_pydot.read_dot(path))` to return a :class:`Graph` instead of a
     :class:`MultiGraph`.
     """
     import pydot
+
+    msg = (
+        "nx.nx_pydot.read_dot depends on the pydot package, which has "
+        "known issues and is not actively maintained. Consider using "
+        "nx.nx_agraph.read_dot instead.\n\n"
+        "See https://github.com/networkx/networkx/issues/5723"
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
 
     data = path.read()
 
@@ -78,6 +96,7 @@ def read_dot(path):
     return from_pydot(P_list[0])
 
 
+@nx._dispatch(graphs=None)
 def from_pydot(P):
     """Returns a NetworkX graph from a Pydot graph.
 
@@ -101,6 +120,13 @@ def from_pydot(P):
     >>> G = nx.Graph(nx.nx_pydot.from_pydot(A))
 
     """
+    msg = (
+        "nx.nx_pydot.from_pydot depends on the pydot package, which has "
+        "known issues and is not actively maintained.\n\n"
+        "See https://github.com/networkx/networkx/issues/5723"
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
+
     if P.get_strict(None):  # pydot bug: get_strict() shouldn't take argument
         multiedges = False
     else:
@@ -168,6 +194,13 @@ def from_pydot(P):
     return N
 
 
+def _check_colon_quotes(s):
+    # A quick helper function to check if a string has a colon in it
+    # and if it is quoted properly with double quotes.
+    # refer https://github.com/pydot/pydot/issues/258
+    return ":" in s and (s[0] != '"' or s[-1] != '"')
+
+
 def to_pydot(N):
     """Returns a pydot graph from a NetworkX graph N.
 
@@ -186,6 +219,13 @@ def to_pydot(N):
 
     """
     import pydot
+
+    msg = (
+        "nx.nx_pydot.to_pydot depends on the pydot package, which has "
+        "known issues and is not actively maintained.\n\n"
+        "See https://github.com/networkx/networkx/issues/5723"
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
 
     # set Graphviz graph type
     if N.is_directed():
@@ -212,20 +252,68 @@ def to_pydot(N):
         pass
 
     for n, nodedata in N.nodes(data=True):
-        str_nodedata = {k: str(v) for k, v in nodedata.items()}
-        p = pydot.Node(str(n), **str_nodedata)
+        str_nodedata = {str(k): str(v) for k, v in nodedata.items()}
+        # Explicitly catch nodes with ":" in node names or nodedata.
+        n = str(n)
+        raise_error = _check_colon_quotes(n) or (
+            any(
+                (_check_colon_quotes(k) or _check_colon_quotes(v))
+                for k, v in str_nodedata.items()
+            )
+        )
+        if raise_error:
+            raise ValueError(
+                f'Node names and attributes should not contain ":" unless they are quoted with "".\
+                For example the string \'attribute:data1\' should be written as \'"attribute:data1"\'.\
+                Please refer https://github.com/pydot/pydot/issues/258'
+            )
+        p = pydot.Node(n, **str_nodedata)
         P.add_node(p)
 
     if N.is_multigraph():
         for u, v, key, edgedata in N.edges(data=True, keys=True):
-            str_edgedata = {k: str(v) for k, v in edgedata.items() if k != "key"}
-            edge = pydot.Edge(str(u), str(v), key=str(key), **str_edgedata)
+            str_edgedata = {str(k): str(v) for k, v in edgedata.items() if k != "key"}
+            u, v = str(u), str(v)
+            raise_error = (
+                _check_colon_quotes(u)
+                or _check_colon_quotes(v)
+                or (
+                    any(
+                        (_check_colon_quotes(k) or _check_colon_quotes(val))
+                        for k, val in str_edgedata.items()
+                    )
+                )
+            )
+            if raise_error:
+                raise ValueError(
+                    f'Node names and attributes should not contain ":" unless they are quoted with "".\
+                    For example the string \'attribute:data1\' should be written as \'"attribute:data1"\'.\
+                    Please refer https://github.com/pydot/pydot/issues/258'
+                )
+            edge = pydot.Edge(u, v, key=str(key), **str_edgedata)
             P.add_edge(edge)
 
     else:
         for u, v, edgedata in N.edges(data=True):
-            str_edgedata = {k: str(v) for k, v in edgedata.items()}
-            edge = pydot.Edge(str(u), str(v), **str_edgedata)
+            str_edgedata = {str(k): str(v) for k, v in edgedata.items()}
+            u, v = str(u), str(v)
+            raise_error = (
+                _check_colon_quotes(u)
+                or _check_colon_quotes(v)
+                or (
+                    any(
+                        (_check_colon_quotes(k) or _check_colon_quotes(val))
+                        for k, val in str_edgedata.items()
+                    )
+                )
+            )
+            if raise_error:
+                raise ValueError(
+                    f'Node names and attributes should not contain ":" unless they are quoted with "".\
+                    For example the string \'attribute:data1\' should be written as \'"attribute:data1"\'.\
+                    Please refer https://github.com/pydot/pydot/issues/258'
+                )
+            edge = pydot.Edge(u, v, **str_edgedata)
             P.add_edge(edge)
     return P
 
@@ -260,6 +348,14 @@ def graphviz_layout(G, prog="neato", root=None):
     -----
     This is a wrapper for pydot_layout.
     """
+    msg = (
+        "nx.nx_pydot.graphviz_layout depends on the pydot package, which has "
+        "known issues and is not actively maintained. Consider using "
+        "nx.nx_agraph.graphviz_layout instead.\n\n"
+        "See https://github.com/networkx/networkx/issues/5723"
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
+
     return pydot_layout(G=G, prog=prog, root=root)
 
 
@@ -303,6 +399,12 @@ def pydot_layout(G, prog="neato", root=None):
     """
     import pydot
 
+    msg = (
+        "nx.nx_pydot.pydot_layout depends on the pydot package, which has "
+        "known issues and is not actively maintained.\n\n"
+        "See https://github.com/networkx/networkx/issues/5723"
+    )
+    warnings.warn(msg, DeprecationWarning, stacklevel=2)
     P = to_pydot(G)
     if root is not None:
         P.set("root", str(root))
@@ -332,7 +434,15 @@ def pydot_layout(G, prog="neato", root=None):
 
     node_pos = {}
     for n in G.nodes():
-        pydot_node = pydot.Node(str(n)).get_name()
+        str_n = str(n)
+        # Explicitly catch nodes with ":" in node names or nodedata.
+        if _check_colon_quotes(str_n):
+            raise ValueError(
+                f'Node names and node attributes should not contain ":" unless they are quoted with "".\
+                For example the string \'attribute:data1\' should be written as \'"attribute:data1"\'.\
+                Please refer https://github.com/pydot/pydot/issues/258'
+            )
+        pydot_node = pydot.Node(str_n).get_name()
         node = Q.get_node(pydot_node)
 
         if isinstance(node, list):

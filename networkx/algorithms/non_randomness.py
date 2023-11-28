@@ -2,6 +2,7 @@ r""" Computation of graph non-randomness
 """
 
 import math
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -10,7 +11,8 @@ __all__ = ["non_randomness"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-def non_randomness(G, k=None):
+@nx._dispatch(edge_attrs="weight")
+def non_randomness(G, k=None, weight="weight"):
     """Compute the non-randomness of graph G.
 
     The first returned value nr is the sum of non-randomness values of all
@@ -26,12 +28,17 @@ def non_randomness(G, k=None):
     Parameters
     ----------
     G : NetworkX graph
-        Graph must be binary, symmetric, connected, and without self-loops.
+        Graph must be symmetric, connected, and without self-loops.
 
     k : int
         The number of communities in G.
         If k is not set, the function will use a default community
         detection algorithm to set it.
+
+    weight : string or None, optional (default=None)
+        The name of an edge attribute that holds the numerical value used
+        as a weight. If None, then each edge has weight 1, i.e., the graph is
+        binary.
 
     Returns
     -------
@@ -50,10 +57,14 @@ def non_randomness(G, k=None):
     --------
     >>> G = nx.karate_club_graph()
     >>> nr, nr_rd = nx.non_randomness(G, 2)
+    >>> nr, nr_rd = nx.non_randomness(G, 2, 'weight')
 
     Notes
     -----
     This computes Eq. (4.4) and (4.5) in Ref. [1]_.
+
+    If a weight field is passed, this algorithm will use the eigenvalues
+    of the weighted adjacency matrix to compute Eq. (4.4) and (4.5).
 
     References
     ----------
@@ -72,7 +83,8 @@ def non_randomness(G, k=None):
         k = len(tuple(nx.community.label_propagation_communities(G)))
 
     # eq. 4.4
-    nr = np.real(np.sum(np.linalg.eigvals(nx.to_numpy_array(G))[:k]))
+    eigenvalues = np.linalg.eigvals(nx.to_numpy_array(G, weight=weight))
+    nr = np.real(np.sum(eigenvalues[:k]))
 
     n = G.number_of_nodes()
     m = G.number_of_edges()

@@ -10,6 +10,12 @@ from networkx.utils import pairwise
 __all__ = ["dinitz"]
 
 
+@nx._dispatch(
+    graphs={"G": 0, "residual?": 4},
+    edge_attrs={"capacity": float("inf")},
+    preserve_edge_attrs={"residual": {"capacity": float("inf")}},
+    preserve_graph_attrs={"residual"},
+)
 def dinitz(G, s, t, capacity="capacity", residual=None, value_only=False, cutoff=None):
     """Find a maximum single-commodity flow using Dinitz' algorithm.
 
@@ -129,7 +135,7 @@ def dinitz(G, s, t, capacity="capacity", residual=None, value_only=False, cutoff
     .. [1] Dinitz' Algorithm: The Original Version and Even's Version.
            2006. Yefim Dinitz. In Theoretical Computer Science. Lecture
            Notes in Computer Science. Volume 3895. pp 218-240.
-           http://www.cs.bgu.ac.il/~dinitz/Papers/Dinitz_alg.pdf
+           https://doi.org/10.1007/11685654_10
 
     """
     R = dinitz_impl(G, s, t, capacity, residual, cutoff)

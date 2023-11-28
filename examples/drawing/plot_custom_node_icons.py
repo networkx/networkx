@@ -4,24 +4,23 @@ Custom node icons
 =================
 
 Example of using custom icons to represent nodes with matplotlib.
+
+Images for node icons courtesy of www.materialui.co
 """
 
 import matplotlib.pyplot as plt
 import networkx as nx
 import PIL
-import urllib.request
 
 # Image URLs for graph nodes
-icon_urls = {
-    "router": "https://www.materialui.co/materialIcons/hardware/router_black_144x144.png",
-    "switch": "https://www.materialui.co/materialIcons/action/dns_black_144x144.png",
-    "PC": "https://www.materialui.co/materialIcons/hardware/computer_black_144x144.png",
+icons = {
+    "router": "icons/router_black_144x144.png",
+    "switch": "icons/switch_black_144x144.png",
+    "PC": "icons/computer_black_144x144.png",
 }
 
-# Load images from web
-images = {
-    k: PIL.Image.open(urllib.request.urlopen(url)) for k, url in icon_urls.items()
-}
+# Load images
+images = {k: PIL.Image.open(fname) for k, fname in icons.items()}
 
 # Generate the computer network graph
 G = nx.Graph()
@@ -39,10 +38,22 @@ for u in range(1, 4):
     for v in range(1, 4):
         G.add_edge("switch_" + str(u), "PC_" + str(u) + "_" + str(v))
 
-# get layout and draw edges
-pos = nx.spring_layout(G)
+# Get a reproducible layout and create figure
+pos = nx.spring_layout(G, seed=1734289230)
 fig, ax = plt.subplots()
-nx.draw_networkx_edges(G, pos=pos, ax=ax, min_source_margin=15, min_target_margin=15)
+
+# Note: the min_source/target_margin kwargs only work with FancyArrowPatch objects.
+# Force the use of FancyArrowPatch for edge drawing by setting `arrows=True`,
+# but suppress arrowheads with `arrowstyle="-"`
+nx.draw_networkx_edges(
+    G,
+    pos=pos,
+    ax=ax,
+    arrows=True,
+    arrowstyle="-",
+    min_source_margin=15,
+    min_target_margin=15,
+)
 
 # Transform from data coordinates (scaled between xlim and ylim) to display coordinates
 tr_figure = ax.transData.transform

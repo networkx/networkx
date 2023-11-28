@@ -5,13 +5,14 @@ from networkx.utils import groups
 __all__ = ["voronoi_cells"]
 
 
+@nx._dispatch(edge_attrs="weight")
 def voronoi_cells(G, center_nodes, weight="weight"):
     """Returns the Voronoi cells centered at `center_nodes` with respect
     to the shortest-path distance metric.
 
-    If *C* is a set of nodes in the graph and *c* is an element of *C*,
-    the *Voronoi cell* centered at a node *c* is the set of all nodes
-    *v* that are closer to *c* than to any other center node in *C* with
+    If $C$ is a set of nodes in the graph and $c$ is an element of $C$,
+    the *Voronoi cell* centered at a node $c$ is the set of all nodes
+    $v$ that are closer to $c$ than to any other center node in $C$ with
     respect to the shortest-path distance metric. [1]_
 
     For directed graphs, this will compute the "outward" Voronoi cells,
@@ -62,10 +63,9 @@ def voronoi_cells(G, center_nodes, weight="weight"):
 
     References
     ----------
-    .. [1] Erwig, Martin. (2000),
-           "The graph Voronoi diagram with applications."
-           *Networks*, 36: 156--163.
-           <dx.doi.org/10.1002/1097-0037(200010)36:3<156::AID-NET2>3.0.CO;2-L>
+    .. [1] Erwig, Martin. (2000),"The graph Voronoi diagram with applications."
+        *Networks*, 36: 156--163.
+        https://doi.org/10.1002/1097-0037(200010)36:3<156::AID-NET2>3.0.CO;2-L
 
     """
     # Determine the shortest paths from any one of the center nodes to

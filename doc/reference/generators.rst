@@ -39,6 +39,7 @@ Classic
    null_graph
    path_graph
    star_graph
+   tadpole_graph
    trivial_graph
    turan_graph
    wheel_graph
@@ -73,7 +74,6 @@ Small
 .. autosummary::
    :toctree: generated/
 
-   make_small_graph
    LCF_graph
    bull_graph
    chvatal_graph
@@ -182,12 +182,13 @@ Geometric
 .. autosummary::
    :toctree: generated/
 
+   geometric_edges
+   geographical_threshold_graph
+   navigable_small_world_graph
    random_geometric_graph
    soft_random_geometric_graph
-   geographical_threshold_graph
-   waxman_graph
-   navigable_small_world_graph
    thresholded_random_geometric_graph
+   waxman_graph
 
 Line Graph
 ----------
@@ -282,8 +283,13 @@ Trees
 .. autosummary::
    :toctree: generated/
 
-   random_tree
    prefix_tree
+   random_labeled_tree
+   random_labeled_rooted_tree
+   random_labeled_rooted_forest
+   random_unlabeled_tree
+   random_unlabeled_rooted_tree
+   random_unlabeled_rooted_forest
 
 
 Non Isomorphic Trees
@@ -359,3 +365,11 @@ Sudoku
    :toctree: generated/
 
    sudoku_graph
+
+Time Series
+-----------
+.. automodule:: networkx.generators.time_series
+.. autosummary::
+   :toctree: generated/
+
+   visibility_graph

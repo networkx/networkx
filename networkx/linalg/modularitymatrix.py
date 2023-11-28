@@ -8,6 +8,7 @@ __all__ = ["modularity_matrix", "directed_modularity_matrix"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch(edge_attrs="weight")
 def modularity_matrix(G, nodelist=None, weight=None):
     r"""Returns the modularity matrix of G.
 
@@ -39,7 +40,7 @@ def modularity_matrix(G, nodelist=None, weight=None):
 
     Returns
     -------
-    B : Numpy matrix
+    B : Numpy array
       The modularity matrix of G.
 
     Examples
@@ -61,18 +62,22 @@ def modularity_matrix(G, nodelist=None, weight=None):
     .. [1] M. E. J. Newman, "Modularity and community structure in networks",
            Proc. Natl. Acad. Sci. USA, vol. 103, pp. 8577-8582, 2006.
     """
+    import numpy as np
+
     if nodelist is None:
         nodelist = list(G)
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
+    A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, format="csr")
     k = A.sum(axis=1)
     m = k.sum() * 0.5
     # Expected adjacency matrix
-    X = k * k.transpose() / (2 * m)
+    X = np.outer(k, k) / (2 * m)
+
     return A - X
 
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch(edge_attrs="weight")
 def directed_modularity_matrix(G, nodelist=None, weight=None):
     """Returns the directed modularity matrix of G.
 
@@ -105,7 +110,7 @@ def directed_modularity_matrix(G, nodelist=None, weight=None):
 
     Returns
     -------
-    B : Numpy matrix
+    B : Numpy array
       The modularity matrix of G.
 
     Examples
@@ -147,12 +152,15 @@ def directed_modularity_matrix(G, nodelist=None, weight=None):
         "Community structure in directed networks",
         Phys. Rev Lett., vol. 100, no. 11, p. 118703, 2008.
     """
+    import numpy as np
+
     if nodelist is None:
         nodelist = list(G)
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight, format="csr")
+    A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, format="csr")
     k_in = A.sum(axis=0)
     k_out = A.sum(axis=1)
     m = k_in.sum()
     # Expected adjacency matrix
-    X = k_out * k_in / m
+    X = np.outer(k_out, k_in) / m
+
     return A - X

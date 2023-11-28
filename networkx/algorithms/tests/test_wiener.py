@@ -1,11 +1,7 @@
 """Unit tests for the :mod:`networkx.algorithms.wiener` module."""
 
 
-from networkx import complete_graph
-from networkx import DiGraph
-from networkx import empty_graph
-from networkx import path_graph
-from networkx import wiener_index
+from networkx import DiGraph, complete_graph, empty_graph, path_graph, wiener_index
 
 
 class TestWienerIndex:

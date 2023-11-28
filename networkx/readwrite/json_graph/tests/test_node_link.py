@@ -1,10 +1,52 @@
 import json
+
 import pytest
+
 import networkx as nx
 from networkx.readwrite.json_graph import node_link_data, node_link_graph
 
 
 class TestNodeLink:
+    # TODO: To be removed when signature change complete
+    def test_custom_attrs_dep(self):
+        G = nx.path_graph(4)
+        G.add_node(1, color="red")
+        G.add_edge(1, 2, width=7)
+        G.graph[1] = "one"
+        G.graph["foo"] = "bar"
+
+        attrs = {
+            "source": "c_source",
+            "target": "c_target",
+            "name": "c_id",
+            "key": "c_key",
+            "link": "c_links",
+        }
+
+        H = node_link_graph(node_link_data(G, **attrs), multigraph=False, **attrs)
+        assert nx.is_isomorphic(G, H)
+        assert H.graph["foo"] == "bar"
+        assert H.nodes[1]["color"] == "red"
+        assert H[1][2]["width"] == 7
+
+        # provide only a partial dictionary of keywords.
+        # This is similar to an example in the doc string
+        attrs = {
+            "link": "c_links",
+            "source": "c_source",
+            "target": "c_target",
+        }
+        H = node_link_graph(node_link_data(G, **attrs), multigraph=False, **attrs)
+        assert nx.is_isomorphic(G, H)
+        assert H.graph["foo"] == "bar"
+        assert H.nodes[1]["color"] == "red"
+        assert H[1][2]["width"] == 7
+
+    def test_exception_dep(self):
+        with pytest.raises(nx.NetworkXError):
+            G = nx.MultiDiGraph()
+            node_link_data(G, name="node", source="node", target="node", key="node")
+
     def test_graph(self):
         G = nx.path_graph(4)
         H = node_link_graph(node_link_data(G))
@@ -39,7 +81,7 @@ class TestNodeLink:
         G.add_edge(1, 2, key="first")
         G.add_edge(1, 2, key="second", color="blue")
         H = node_link_graph(node_link_data(G))
-        nx.is_isomorphic(G, H)
+        assert nx.is_isomorphic(G, H)
         assert H[1][2]["second"]["color"] == "blue"
 
     def test_graph_with_tuple_nodes(self):
@@ -65,8 +107,8 @@ class TestNodeLink:
     def test_exception(self):
         with pytest.raises(nx.NetworkXError):
             G = nx.MultiDiGraph()
-            attrs = dict(name="node", source="node", target="node", key="node")
-            node_link_data(G, attrs)
+            attrs = {"name": "node", "source": "node", "target": "node", "key": "node"}
+            node_link_data(G, **attrs)
 
     def test_string_ids(self):
         q = "qualité"
@@ -87,17 +129,15 @@ class TestNodeLink:
         G.graph[1] = "one"
         G.graph["foo"] = "bar"
 
-        attrs = dict(
-            source="c_source",
-            target="c_target",
-            name="c_id",
-            key="c_key",
-            link="c_links",
-        )
+        attrs = {
+            "source": "c_source",
+            "target": "c_target",
+            "name": "c_id",
+            "key": "c_key",
+            "link": "c_links",
+        }
 
-        H = node_link_graph(
-            node_link_data(G, attrs=attrs), multigraph=False, attrs=attrs
-        )
+        H = node_link_graph(node_link_data(G, **attrs), multigraph=False, **attrs)
         assert nx.is_isomorphic(G, H)
         assert H.graph["foo"] == "bar"
         assert H.nodes[1]["color"] == "red"

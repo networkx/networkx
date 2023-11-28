@@ -66,7 +66,8 @@ Handles directed and undirected graphs and graphs with parallel edges.
 """
 
 import networkx as nx
-from .isomorphvf2 import GraphMatcher, DiGraphMatcher
+
+from .isomorphvf2 import DiGraphMatcher, GraphMatcher
 
 __all__ = ["TimeRespectingGraphMatcher", "TimeRespectingDiGraphMatcher"]
 
@@ -209,7 +210,7 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
 
     def two_hop_pred(self, Gx, Gx_node, core_x, pred):
         """
-        The predeccessors of the ego node.
+        The predecessors of the ego node.
         """
         return all(
             self.one_hop(

@@ -1,6 +1,7 @@
 """Connected components."""
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
+
 from ...utils import arbitrary_element
 
 __all__ = [
@@ -12,6 +13,7 @@ __all__ = [
 
 
 @not_implemented_for("directed")
+@nx._dispatch
 def connected_components(G):
     """Generate connected components.
 
@@ -66,6 +68,8 @@ def connected_components(G):
             yield c
 
 
+@not_implemented_for("directed")
+@nx._dispatch
 def number_connected_components(G):
     """Returns the number of connected components.
 
@@ -78,6 +82,17 @@ def number_connected_components(G):
     -------
     n : integer
        Number of connected components
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If G is directed.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (1, 2), (5, 6), (3, 4)])
+    >>> nx.number_connected_components(G)
+    3
 
     See Also
     --------
@@ -94,6 +109,7 @@ def number_connected_components(G):
 
 
 @not_implemented_for("directed")
+@nx._dispatch
 def is_connected(G):
     """Returns True if the graph is connected, False otherwise.
 
@@ -133,12 +149,13 @@ def is_connected(G):
     """
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
-            "Connectivity is undefined ", "for the null graph."
+            "Connectivity is undefined for the null graph."
         )
     return sum(1 for node in _plain_bfs(G, arbitrary_element(G))) == len(G)
 
 
 @not_implemented_for("directed")
+@nx._dispatch
 def node_connected_component(G, n):
     """Returns the set of nodes in the component of graph containing node n.
 
@@ -160,6 +177,12 @@ def node_connected_component(G, n):
     NetworkXNotImplemented
         If G is directed.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (1, 2), (5, 6), (3, 4)])
+    >>> nx.node_connected_component(G, 0)  # nodes of component that contains node 0
+    {0, 1, 2}
+
     See Also
     --------
     connected_components
@@ -174,14 +197,18 @@ def node_connected_component(G, n):
 
 def _plain_bfs(G, source):
     """A fast BFS node generator"""
-    G_adj = G.adj
-    seen = set()
-    nextlevel = {source}
+    adj = G._adj
+    n = len(adj)
+    seen = {source}
+    nextlevel = [source]
     while nextlevel:
         thislevel = nextlevel
-        nextlevel = set()
+        nextlevel = []
         for v in thislevel:
-            if v not in seen:
-                seen.add(v)
-                nextlevel.update(G_adj[v])
+            for w in adj[v]:
+                if w not in seen:
+                    seen.add(w)
+                    nextlevel.append(w)
+            if len(seen) == n:
+                return seen
     return seen

@@ -1,7 +1,12 @@
-Announcement: NetworkX 2.0
-==========================
+NetworkX 2.0
+============
 
-We're happy to announce the release of NetworkX 2.0!
+Release date: 20 September 2017
+
+Support for Python 3.6 added, drop support for Python 3.3.
+
+See :doc:`migration_guide_from_1.x_to_2.0`.
+
 NetworkX is a Python package for the creation, manipulation, and study of the
 structure, dynamics, and functions of complex networks.
 
@@ -200,7 +205,7 @@ API Changes
   Removed ``draw_nx``, please use ``draw`` or ``draw_networkx``.
 
 * [`#1662 <https://github.com/networkx/networkx/pull/1662>`_]
-  Rewrote ``topolgical_sort`` as a generator.  It no longer accepts
+  Rewrote ``topological_sort`` as a generator.  It no longer accepts
   ``reverse`` or ``nbunch`` arguments and is slightly faster.
   Added ``lexicographical_topological_sort``, which accepts a key.
 
@@ -216,8 +221,8 @@ The following deprecated functions will be removed in 2.1.
   deprecated in favor of ``to_pandas_adjacency``, ``from_pandas_adjacency``,
   ``to_pandas_edgelist``, and ``from_pandas_edgelist``.
 
-Contributors to this release
-----------------------------
+Contributors
+------------
 
 - Niels van Adrichem
 - Kevin Arvai
@@ -307,8 +312,8 @@ Contributors to this release
 - yash14123
 - Neil Girdhar
 
-Pull requests merged in this release
-------------------------------------
+Merged PRs
+----------
 
 - Gml read fix. (#1962)
 - Small changes leftover from #1847 (#1966)
@@ -422,7 +427,7 @@ Pull requests merged in this release
 - Fix code escaping. (#2214)
 - Add adjlist_outer_dict_factory. (#2222)
 - Typo in scale free network generator documentation (#2225)
-- Add link to nx.drawing.layout instead of mentionning nx.layout. (#2224)
+- Add link to nx.drawing.layout instead of mentioning nx.layout. (#2224)
 - Example not working in tutorial (#2230)
 - don't assume nodes are sortable when running dag_longest_path (#2228)
 - Correct typo (#2236)
@@ -446,12 +451,12 @@ Pull requests merged in this release
 - Fix broken link to the description of the P2G format. (#2211)
 - Test ordering (#2209)
 - add example of node weights (#2250)
-- added paramether nbunch (#2253)
+- added parameter nbunch (#2253)
 - Adds unit tests for using dtype with to_numpy_matrix (#2257)
 - Adds chain decomposition algorithm. (#2284)
 - add the Hoffman-Singleton graph (#2275)
 - Allow grid_graph generator to accept tuple dim argument (#2320)
-- psuedo -> pseudo (fixing typo) (#2322)
+- pseudo -> pseudo (fixing typo) (#2322)
 - Corrects navigable small world graph param docs (#2321)
 - Fix bug in find_cycle. (#2324)
 - flip source target (#2309)
@@ -503,4 +508,4 @@ Pull requests merged in this release
 - Prep beta release (#2624)
 - Refactor travis tests and deploy docs with travis (#2647)
 - matplotlib 2.1 deprecated is_string_like (#2659)
-- topolgical_sort, lexicographical_topological_sort (#1662)
+- topological_sort, lexicographical_topological_sort (#1662)

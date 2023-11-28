@@ -10,6 +10,7 @@ __all__ = [
 
 
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight")
 def current_flow_betweenness_centrality_subset(
     G, sources, targets, normalized=True, weight=None, dtype=float, solver="lu"
 ):
@@ -84,13 +85,14 @@ def current_flow_betweenness_centrality_subset(
        Ulrik Brandes and Daniel Fleischer,
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
+       https://doi.org/10.1007/978-3-540-31856-9_44
 
     .. [2] A measure of betweenness centrality based on random walks,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).
     """
-    from networkx.utils import reverse_cuthill_mckee_ordering
     import numpy as np
+
+    from networkx.utils import reverse_cuthill_mckee_ordering
 
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
@@ -118,6 +120,7 @@ def current_flow_betweenness_centrality_subset(
 
 
 @not_implemented_for("directed")
+@nx._dispatch(edge_attrs="weight")
 def edge_current_flow_betweenness_centrality_subset(
     G, sources, targets, normalized=True, weight=None, dtype=float, solver="lu"
 ):
@@ -192,7 +195,7 @@ def edge_current_flow_betweenness_centrality_subset(
        Ulrik Brandes and Daniel Fleischer,
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
        LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
-       http://algo.uni-konstanz.de/publications/bf-cmbcf-05.pdf
+       https://doi.org/10.1007/978-3-540-31856-9_44
 
     .. [2] A measure of betweenness centrality based on random walks,
        M. E. J. Newman, Social Networks 27, 39-54 (2005).

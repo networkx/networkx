@@ -1,9 +1,9 @@
 """Algorithms to characterize the number of triangles in a graph."""
 
-from itertools import chain
-from itertools import combinations
 from collections import Counter
+from itertools import chain, combinations
 
+import networkx as nx
 from networkx.utils import not_implemented_for
 
 __all__ = [
@@ -17,6 +17,7 @@ __all__ = [
 
 
 @not_implemented_for("directed")
+@nx._dispatch
 def triangles(G, nodes=None):
     """Compute the number of triangles.
 
@@ -26,13 +27,17 @@ def triangles(G, nodes=None):
     ----------
     G : graph
        A networkx graph
-    nodes : container of nodes, optional (default= all nodes in G)
-       Compute triangles for nodes in this container.
+
+    nodes : node, iterable of nodes, or None (default=None)
+        If a singleton node, return the number of triangles for that node.
+        If an iterable, compute the number of triangles for each of those nodes.
+        If `None` (the default) compute the number of triangles for all nodes in `G`.
 
     Returns
     -------
-    out : dictionary
-       Number of triangles keyed by node label.
+    out : dict or int
+       If `nodes` is a container of nodes, returns number of triangles keyed by node (dict).
+       If `nodes` is a specific node, returns number of triangles for the node (int).
 
     Examples
     --------
@@ -41,22 +46,47 @@ def triangles(G, nodes=None):
     6
     >>> print(nx.triangles(G))
     {0: 6, 1: 6, 2: 6, 3: 6, 4: 6}
-    >>> print(list(nx.triangles(G, (0, 1)).values()))
+    >>> print(list(nx.triangles(G, [0, 1]).values()))
     [6, 6]
 
     Notes
     -----
-    When computing triangles for the entire graph each triangle is counted
-    three times, once at each node.  Self loops are ignored.
+    Self loops are ignored.
 
     """
-    # If `nodes` represents a single node in the graph, return only its number
-    # of triangles.
-    if nodes in G:
-        return next(_triangles_and_degree_iter(G, nodes))[2] // 2
-    # Otherwise, `nodes` represents an iterable of nodes, so return a
-    # dictionary mapping node to number of triangles.
-    return {v: t // 2 for v, d, t, _ in _triangles_and_degree_iter(G, nodes)}
+    if nodes is not None:
+        # If `nodes` represents a single node, return only its number of triangles
+        if nodes in G:
+            return next(_triangles_and_degree_iter(G, nodes))[2] // 2
+
+        # if `nodes` is a container of nodes, then return a
+        # dictionary mapping node to number of triangles.
+        return {v: t // 2 for v, d, t, _ in _triangles_and_degree_iter(G, nodes)}
+
+    # if nodes is None, then compute triangles for the complete graph
+
+    # dict used to avoid visiting the same nodes twice
+    # this allows calculating/counting each triangle only once
+    later_neighbors = {}
+
+    # iterate over the nodes in a graph
+    for node, neighbors in G.adjacency():
+        later_neighbors[node] = {
+            n for n in neighbors if n not in later_neighbors and n != node
+        }
+
+    # instantiate Counter for each node to include isolated nodes
+    # add 1 to the count if a nodes neighbor's neighbor is also a neighbor
+    triangle_counts = Counter(dict.fromkeys(G, 0))
+    for node1, neighbors in later_neighbors.items():
+        for node2 in neighbors:
+            third_nodes = neighbors & later_neighbors[node2]
+            m = len(third_nodes)
+            triangle_counts[node1] += m
+            triangle_counts[node2] += m
+            triangle_counts.update(third_nodes)
+
+    return dict(triangle_counts)
 
 
 @not_implemented_for("multigraph")
@@ -219,6 +249,7 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
         yield (i, dtotal, dbidirectional, directed_triangles)
 
 
+@nx._dispatch(edge_attrs="weight")
 def average_clustering(G, nodes=None, weight=None, count_zeros=True):
     r"""Compute the average clustering coefficient for the graph G.
 
@@ -278,6 +309,7 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
     return sum(c) / len(c)
 
 
+@nx._dispatch(edge_attrs="weight")
 def clustering(G, nodes=None, weight=None):
     r"""Compute the clustering coefficient for nodes.
 
@@ -313,8 +345,7 @@ def clustering(G, nodes=None, weight=None):
 
     .. math::
 
-       c_u = \frac{2}{deg^{tot}(u)(deg^{tot}(u)-1) - 2deg^{\leftrightarrow}(u)}
-             T(u),
+       c_u = \frac{T(u)}{2(deg^{tot}(u)(deg^{tot}(u)-1) - 2deg^{\leftrightarrow}(u))},
 
     where :math:`T(u)` is the number of directed triangles through node
     :math:`u`, :math:`deg^{tot}(u)` is the sum of in degree and out degree of
@@ -326,8 +357,10 @@ def clustering(G, nodes=None, weight=None):
     ----------
     G : graph
 
-    nodes : container of nodes, optional (default=all nodes in G)
-       Compute clustering for nodes in this container.
+    nodes : node, iterable of nodes, or None (default=None)
+        If a singleton node, return the number of triangles for that node.
+        If an iterable, compute the number of triangles for each of those nodes.
+        If `None` (the default) compute the number of triangles for all nodes in `G`.
 
     weight : string or None, optional (default=None)
        The edge attribute that holds the numerical value used as a weight.
@@ -391,6 +424,7 @@ def clustering(G, nodes=None, weight=None):
     return clusterc
 
 
+@nx._dispatch
 def transitivity(G):
     r"""Compute graph transitivity, the fraction of all possible triangles
     present in G.
@@ -429,6 +463,7 @@ def transitivity(G):
     return 0 if triangles == 0 else triangles / contri
 
 
+@nx._dispatch
 def square_clustering(G, nodes=None):
     r"""Compute the squares clustering coefficient for nodes.
 
@@ -507,6 +542,7 @@ def square_clustering(G, nodes=None):
 
 
 @not_implemented_for("directed")
+@nx._dispatch
 def generalized_degree(G, nodes=None):
     r"""Compute the generalized degree for nodes.
 
@@ -547,7 +583,7 @@ def generalized_degree(G, nodes=None):
 
     Notes
     -----
-    In a network of N nodes, the highest triangle multiplicty an edge can have
+    In a network of N nodes, the highest triangle multiplicity an edge can have
     is N-2.
 
     The return value does not include a `zero` entry if no edges of a

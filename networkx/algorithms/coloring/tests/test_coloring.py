@@ -2,9 +2,11 @@
 
 """
 
-import networkx as nx
+import itertools
+
 import pytest
 
+import networkx as nx
 
 is_coloring = nx.algorithms.coloring.equitable_coloring.is_coloring
 is_equitable = nx.algorithms.coloring.equitable_coloring.is_equitable
@@ -429,6 +431,76 @@ class TestColoring:
         )
         check_state(**params)
 
+    def test_strategy_saturation_largest_first(self):
+        def color_remaining_nodes(
+            G,
+            colored_nodes,
+            full_color_assignment=None,
+            nodes_to_add_between_calls=1,
+        ):
+            color_assignments = []
+            aux_colored_nodes = colored_nodes.copy()
+
+            node_iterator = nx.algorithms.coloring.greedy_coloring.strategy_saturation_largest_first(
+                G, aux_colored_nodes
+            )
+
+            for u in node_iterator:
+                # Set to keep track of colors of neighbours
+                neighbour_colors = {
+                    aux_colored_nodes[v] for v in G[u] if v in aux_colored_nodes
+                }
+                # Find the first unused color.
+                for color in itertools.count():
+                    if color not in neighbour_colors:
+                        break
+                aux_colored_nodes[u] = color
+                color_assignments.append((u, color))
+
+                # Color nodes between iterations
+                for i in range(nodes_to_add_between_calls - 1):
+                    if not len(color_assignments) + len(colored_nodes) >= len(
+                        full_color_assignment
+                    ):
+                        full_color_assignment_node, color = full_color_assignment[
+                            len(color_assignments) + len(colored_nodes)
+                        ]
+
+                        # Assign the new color to the current node.
+                        aux_colored_nodes[full_color_assignment_node] = color
+                        color_assignments.append((full_color_assignment_node, color))
+
+            return color_assignments, aux_colored_nodes
+
+        for G, _, _ in SPECIAL_TEST_CASES["saturation_largest_first"]:
+            G = G()
+
+            # Check that function still works when nodes are colored between iterations
+            for nodes_to_add_between_calls in range(1, 5):
+                # Get a full color assignment, (including the order in which nodes were colored)
+                colored_nodes = {}
+                full_color_assignment, full_colored_nodes = color_remaining_nodes(
+                    G, colored_nodes
+                )
+
+                # For each node in the color assignment, add it to colored_nodes and re-run the function
+                for ind, (node, color) in enumerate(full_color_assignment):
+                    colored_nodes[node] = color
+
+                    (
+                        partial_color_assignment,
+                        partial_colored_nodes,
+                    ) = color_remaining_nodes(
+                        G,
+                        colored_nodes,
+                        full_color_assignment=full_color_assignment,
+                        nodes_to_add_between_calls=nodes_to_add_between_calls,
+                    )
+
+                    # Check that the color assignment and order of remaining nodes are the same
+                    assert full_color_assignment[ind + 1 :] == partial_color_assignment
+                    assert full_colored_nodes == partial_colored_nodes
+
 
 #  ############################  Utility functions ############################
 def verify_coloring(graph, coloring):
@@ -456,7 +528,7 @@ def dict_to_sets(colors):
     k = max(colors.values()) + 1
     sets = [set() for _ in range(k)]
 
-    for (node, color) in colors.items():
+    for node, color in colors.items():
         sets[color].add(node)
 
     return sets
@@ -765,24 +837,24 @@ def check_state(L, N, H, F, C):
     s = len(C[0])
     num_colors = len(C.keys())
 
-    assert all(u in L[v] for u in L.keys() for v in L[u])
-    assert all(F[u] != F[v] for u in L.keys() for v in L[u])
-    assert all(len(L[u]) < num_colors for u in L.keys())
+    assert all(u in L[v] for u in L for v in L[u])
+    assert all(F[u] != F[v] for u in L for v in L[u])
+    assert all(len(L[u]) < num_colors for u in L)
     assert all(len(C[x]) == s for x in C)
-    assert all(H[(c1, c2)] >= 0 for c1 in C.keys() for c2 in C.keys())
-    assert all(N[(u, F[u])] == 0 for u in F.keys())
+    assert all(H[(c1, c2)] >= 0 for c1 in C for c2 in C)
+    assert all(N[(u, F[u])] == 0 for u in F)
 
 
 def max_degree(G):
     """Get the maximum degree of any node in G."""
-    return max([G.degree(node) for node in G.nodes]) if len(G.nodes) > 0 else 0
+    return max(G.degree(node) for node in G.nodes) if len(G.nodes) > 0 else 0
 
 
 def make_params_from_graph(G, F):
     """Returns {N, L, H, C} from the given graph."""
     num_nodes = len(G)
     L = {u: [] for u in range(num_nodes)}
-    for (u, v) in G.edges:
+    for u, v in G.edges:
         L[u].append(v)
         L[v].append(u)
 

@@ -1,8 +1,9 @@
-# Helpers for current-flow betweenness and current-flow closness
+# Helpers for current-flow betweenness and current-flow closeness
 # Lazy computations for inverse Laplacian and flow-matrix rows.
 import networkx as nx
 
 
+@nx._dispatch(edge_attrs="weight")
 def flow_matrix_row(G, weight=None, dtype=float, solver="lu"):
     # Generate a row of the current-flow matrix
     import numpy as np
@@ -13,9 +14,8 @@ def flow_matrix_row(G, weight=None, dtype=float, solver="lu"):
         "cg": CGInverseLaplacian,
     }
     n = G.number_of_nodes()
-    L = laplacian_sparse_matrix(
-        G, nodelist=range(n), weight=weight, dtype=dtype, format="csc"
-    )
+    L = nx.laplacian_matrix(G, nodelist=range(n), weight=weight).asformat("csc")
+    L = L.astype(dtype)
     C = solvername[solver](L, dtype=dtype)  # initialize solver
     w = C.w  # w is the Laplacian matrix width
     # row-by-row flow matrix
@@ -96,7 +96,6 @@ class FullInverseLaplacian(InverseLaplacian):
 class SuperLUInverseLaplacian(InverseLaplacian):
     def init_solver(self, L):
         import scipy as sp
-        import scipy.sparse.linalg  # call as sp.sparse.linalg
 
         self.lusolve = sp.sparse.linalg.factorized(self.L1.tocsc())
 
@@ -115,7 +114,6 @@ class CGInverseLaplacian(InverseLaplacian):
     def init_solver(self, L):
         global sp
         import scipy as sp
-        import scipy.sparse.linalg  # call as sp.sparse.linalg
 
         ilu = sp.sparse.linalg.spilu(self.L1.tocsc())
         n = self.n - 1
@@ -130,18 +128,3 @@ class CGInverseLaplacian(InverseLaplacian):
         rhs = np.zeros(self.n, self.dtype)
         rhs[r] = 1
         return sp.sparse.linalg.cg(self.L1, rhs[1:], M=self.M, atol=0)[0]
-
-
-# graph laplacian, sparse version, will move to linalg/laplacianmatrix.py
-def laplacian_sparse_matrix(G, nodelist=None, weight=None, dtype=None, format="csr"):
-    import numpy as np
-    import scipy as sp
-    import scipy.sparse  # call as sp.sparse
-
-    A = nx.to_scipy_sparse_matrix(
-        G, nodelist=nodelist, weight=weight, dtype=dtype, format=format
-    )
-    (n, n) = A.shape
-    data = np.asarray(A.sum(axis=1).T)
-    D = sp.sparse.spdiags(data, 0, n, n, format=format)
-    return D - A
