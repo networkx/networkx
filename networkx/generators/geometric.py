@@ -858,11 +858,12 @@ def geometric_soft_configuration_graph(
     small-world property, heteregenous degree distributions, high level of
     clustering, and self-similarity.
 
-    In the one-dimensional $\mathbb{S}^1$ model, a node $i$ is assigned two hidden
+    In the geometric soft configuration model, a node $i$ is assigned two hidden
     variables: a hidden degree $\kappa_i$, quantifying its popularity, influance,
-    or importance, and an angular position $\theta_i$ in a one-dimensional
-    sphere (or circle) abstracting the similarity space, where angular distances
-    between nodes are a proxy for their similarity. The radius of the circle is
+    or importance, and an angular position $\theta_i$ in a circle abstracting the
+    similarity space, where angular distances between nodes are a proxy for their
+    similarity. Focusing on the angular position, this model is often called
+    the $\mathbb{S}^1$ model (a one-dimensional sphere). The circle's radius is
     adjusted to $R = N/2\pi$, where $N$ is the number of nodes, so that the density
     is set to 1 without loss of generality.
 
@@ -968,16 +969,14 @@ def geometric_soft_configuration_graph(
 
     References
     ----------
-    .. [1] Serrano, M. Ángeles, Dmitri, Krioukov, and Marián, Boguñá. "Self-Similarity
-    of Complex Networks and Hidden Metric Spaces". Phys. Rev. Lett. 100 (2008): 078701.
+    .. [1] Serrano, M. Á., Krioukov, D., & Boguñá, M. (2008). Self-similarity
+       of complex networks and hidden metric spaces. Physical review letters, 100(7), 078701.
 
-    .. [2] van der Kolk, Jasper, M. Ángeles Serrano, and Marián Boguñá. "An anomalous
-    topological phase transition in spatial random graphs."
-    Communications Physics 5.1 (2022): 245.
+    .. [2] van der Kolk, J., Serrano, M. Á., & Boguñá, M. (2022). An anomalous
+       topological phase transition in spatial random graphs. Communications Physics, 5(1), 245.
 
-    .. [3] Krioukov, Dmitri, Fragkiskos Papadopoulos, Maksim Kitsak, Amin Vahdat,
-    and Marián Boguná. "Hyperbolic geometry of complex networks."
-    Physical Review E 82, no. 3 (2010): 036106.
+    .. [3] Krioukov, D., Papadopoulos, F., Kitsak, M., Vahdat, A., & Boguná, M. (2010).
+       Hyperbolic geometry of complex networks. Physical Review E, 82(3), 036106.
 
     """
     if beta <= 0:
@@ -999,13 +998,8 @@ def geometric_soft_configuration_graph(
 
         # Generate `n` hidden degrees from a powerlaw distribution
         # with given exponent `gamma` and mean value `mean_degree`
-        kappa_0 = (
-            (1 - 1 / n)
-            / (1 - n ** ((2 - gamma) / (gamma - 1)))
-            * (gamma - 2)
-            / (gamma - 1)
-            * mean_degree
-        )
+        gam_ratio = (gamma - 2) / (gamma - 1)
+        kappa_0 = mean_degree * gam_ratio * (1 - 1 / n) / (1 - 1 / n**gam_ratio)
         base = 1 - 1 / n
         power = 1 / (1 - gamma)
         kappas = {i: kappa_0 * (1 - seed.random() * base) ** power for i in range(n)}
@@ -1041,12 +1035,10 @@ def geometric_soft_configuration_graph(
 
     # Map hidden degrees into the radial coordiantes
     zeta = 1 if beta > 1 else 1 / beta
-    kappa_0 = min(list(kappas.values()))
+    kappa_min = min(list(kappas.values()))
     R_c = 2 * max(1, beta) / (beta * zeta)
-    R_hat = (2 / zeta) * math.log(n / math.pi) - R_c * math.log(mu * kappa_0**2)
-    radii = {
-        node: R_hat - R_c * math.log(kappa / kappa_0) for node, kappa in kappas.items()
-    }
+    R_hat = (2 / zeta) * math.log(n / math.pi) - R_c * math.log(mu * kappa_min)
+    radii = {node: R_hat - R_c * math.log(kappa) for node, kappa in kappas.items()}
     nx.set_node_attributes(G, radii, "radius")
 
     return G
