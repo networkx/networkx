@@ -256,6 +256,10 @@ def complete_graph(n, create_using=None):
     A complete graph on `n` nodes means that all pairs
     of distinct nodes have an edge connecting them.
 
+    .. plot::
+
+        >>> nx.draw(nx.complete_graph(5))
+
     Parameters
     ----------
     n : int or iterable container of nodes

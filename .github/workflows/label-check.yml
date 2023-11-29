@@ -6,13 +6,14 @@ on:
       - opened
       - labeled
       - unlabeled
+  push:
 
 env:
   LABELS: ${{ join( github.event.pull_request.labels.*.name, ' ' ) }}
 
 jobs:
   check-type-label:
-    name: ensure type label
+    name: reviewer label?
     runs-on: ubuntu-latest
     steps:
       - if: "contains( env.LABELS, 'type: ' ) == false"
