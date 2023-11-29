@@ -214,19 +214,14 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
                 flow = INF
                 for u, v in pairwise(path):
                     flow = min(flow, R_pred[u][v]["capacity"] - R_pred[u][v]["flow"])
-                u_index = len(path) - 2
-                while u_index >= 0:
-                    u = path[u_index]
-                    v_index = u_index + 1
-                    v = path[v_index]
-                    R_pred[u][v]["flow"] += flow
-                    R_pred[v][u]["flow"] -= flow
+                for u, v in pairwise(reversed(path)):
+                    R_pred[v][u]["flow"] += flow
+                    R_pred[u][v]["flow"] -= flow
                     # Find the proper node to continue the search
-                    if R_pred[u][v]["capacity"] - R_pred[u][v]["flow"] == 0:
-                        parents[u].popleft()
-                        while path[-1] != u:
+                    if R_pred[v][u]["capacity"] - R_pred[v][u]["flow"] == 0:
+                        parents[v].popleft()
+                        while path[-1] != v:
                             path.pop()
-                    u_index -= 1
                 total_flow += flow
                 v = path[-1]
             u = v
