@@ -154,6 +154,9 @@ def k_core(G, k=None, core_number=None):
 
     A k-core is a maximal subgraph that contains nodes of degree `k` or more.
 
+    .. deprecated:: 3.3
+       `k_core` will not accept `MultiGraph` objects in version 3.5.
+
     Parameters
     ----------
     G : NetworkX graph
@@ -202,6 +205,19 @@ def k_core(G, k=None, core_number=None):
        https://arxiv.org/abs/cs.DS/0310049
     """
 
+    import warnings
+
+    if G.is_multigraph():
+        warnings.warn(
+            (
+                "\n\n`k_core` will not accept `MultiGraph` objects in version 3.5.\n"
+                "Convert it to an undirected graph instead, using::\n\n"
+                "\tG = nx.Graph(G)\n"
+            ),
+            category=DeprecationWarning,
+            stacklevel=5,
+        )
+
     def k_filter(v, k, c):
         return c[v] >= k
 
@@ -214,6 +230,9 @@ def k_shell(G, k=None, core_number=None):
 
     The k-shell is the subgraph induced by nodes with core number k.
     That is, nodes in the k-core that are not in the (k+1)-core.
+
+    .. deprecated:: 3.3
+       `k_shell` will not accept `MultiGraph` objects in version 3.5.
 
     Parameters
     ----------
@@ -268,6 +287,19 @@ def k_shell(G, k=None, core_number=None):
        http://www.pnas.org/content/104/27/11150.full
     """
 
+    import warnings
+
+    if G.is_multigraph():
+        warnings.warn(
+            (
+                "\n\n`k_shell` will not accept `MultiGraph` objects in version 3.5.\n"
+                "Convert it to an undirected graph instead, using::\n\n"
+                "\tG = nx.Graph(G)\n"
+            ),
+            category=DeprecationWarning,
+            stacklevel=5,
+        )
+
     def k_filter(v, k, c):
         return c[v] == k
 
@@ -280,6 +312,9 @@ def k_crust(G, k=None, core_number=None):
 
     The k-crust is the graph G with the edges of the k-core removed
     and isolated nodes found after the removal of edges are also removed.
+
+    .. deprecated:: 3.3
+       `k_crust` will not accept `MultiGraph` objects in version 3.5.
 
     Parameters
     ----------
@@ -330,6 +365,20 @@ def k_crust(G, k=None, core_number=None):
        and Eran Shir, PNAS  July 3, 2007   vol. 104  no. 27  11150-11154
        http://www.pnas.org/content/104/27/11150.full
     """
+
+    import warnings
+
+    if G.is_multigraph():
+        warnings.warn(
+            (
+                "\n\n`k_crust` will not accept `MultiGraph` objects in version 3.5.\n"
+                "Convert it to an undirected graph instead, using::\n\n"
+                "\tG = nx.Graph(G)\n"
+            ),
+            category=DeprecationWarning,
+            stacklevel=5,
+        )
+
     # Default for k is one less than in _core_subgraph, so just inline.
     #    Filter is c[v] <= k
     if core_number is None:
@@ -346,6 +395,9 @@ def k_corona(G, k, core_number=None):
 
     The k-corona is the subgraph of nodes in the k-core which have
     exactly k neighbours in the k-core.
+
+    .. deprecated:: 3.3
+       `k_corona` will not accept `MultiGraph` objects in version 3.5.
 
     Parameters
     ----------
@@ -394,6 +446,19 @@ def k_corona(G, k, core_number=None):
        Phys. Rev. E 73, 056101 (2006)
        http://link.aps.org/doi/10.1103/PhysRevE.73.056101
     """
+
+    import warnings
+
+    if G.is_multigraph():
+        warnings.warn(
+            (
+                "\n\n`k_corona` will not accept `MultiGraph` objects in version 3.5.\n"
+                "Convert it to an undirected graph instead, using::\n\n"
+                "\tG = nx.Graph(G)\n"
+            ),
+            category=DeprecationWarning,
+            stacklevel=5,
+        )
 
     def func(v, k, c):
         return c[v] == k and k == sum(1 for w in G[v] if c[w] >= k)
