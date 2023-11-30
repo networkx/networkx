@@ -19,5 +19,5 @@ jobs:
     steps:
       - if: "contains( env.LABELS, 'type: ' ) == false"
         run: |
-          echo "This PR needs a reviewer to label it with a 'type:' label"
+          echo "This PR needs a reviewer to label the PR with a 'type:' label"
           exit 1
