@@ -195,6 +195,7 @@ select = [
 "doc/*.py" = ['I']
 "tools/*.py" = ['I']
 "networkx/classes/filters.py" = ['C416']
+"networkx/readwrite/tests/test_p2g.py" = ['W291']
 
 [tool.mypy]
 ignore_missing_imports = true
