@@ -59,7 +59,7 @@ def katz_centrality(
 
     beta : scalar or dictionary, optional (default=1.0)
       Weight attributed to the immediate neighborhood. If not a scalar, the
-      dictionary must have an value for every node.
+      dictionary must have a value for every node.
 
     max_iter : integer, optional (default=1000)
       Maximum number of iterations in power method.
@@ -128,11 +128,11 @@ def katz_centrality(
     The iteration will stop after ``max_iter`` iterations or an error tolerance of
     ``number_of_nodes(G) * tol`` has been reached.
 
-    When $\alpha = 1/\lambda_{\max}$ and $\beta=0$, Katz centrality is the same
-    as eigenvector centrality.
+    For strongly connected graphs, as $\alpha \to 1/\lambda_{\max}$, and $\beta > 0$,
+    Katz centrality approaches the results for eigenvector centrality.
 
     For directed graphs this finds "left" eigenvectors which corresponds
-    to the in-edges in the graph. For out-edges Katz centrality
+    to the in-edges in the graph. For out-edges Katz centrality,
     first reverse the graph with ``G.reverse()``.
 
     References
@@ -162,7 +162,7 @@ def katz_centrality(
         b = beta
         if set(beta) != set(G):
             raise nx.NetworkXError(
-                "beta dictionary " "must have a value for every node"
+                "beta dictionary must have a value for every node"
             ) from err
 
     # make up to max_iter iterations
@@ -183,7 +183,6 @@ def katz_centrality(
                 # normalize vector
                 try:
                     s = 1.0 / math.hypot(*x.values())
-                # this should never be zero?
                 except ZeroDivisionError:
                     s = 1.0
             else:
@@ -289,11 +288,11 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     You can use ``max(nx.adjacency_spectrum(G))`` to get $\lambda_{\max}$ the largest
     eigenvalue of the adjacency matrix.
 
-    When $\alpha = 1/\lambda_{\max}$ and $\beta=0$, Katz centrality is the same
-    as eigenvector centrality.
+    For strongly connected graphs, as $\alpha \to 1/\lambda_{\max}$, and $\beta > 0$,
+    Katz centrality approaches the results for eigenvector centrality.
 
     For directed graphs this finds "left" eigenvectors which corresponds
-    to the in-edges in the graph. For out-edges Katz centrality
+    to the in-edges in the graph. For out-edges Katz centrality,
     first reverse the graph with ``G.reverse()``.
 
     References
