@@ -11,9 +11,8 @@ incident to an endpoint of at least one edge in *F*.
 
 """
 import networkx as nx
-
-from ...utils import not_implemented_for
-from ..matching import maximal_matching
+from networkx.algorithms.matching import maximal_matching
+from networkx.utils import not_implemented_for
 
 __all__ = ["min_weighted_dominating_set", "min_edge_dominating_set"]
 

@@ -400,7 +400,7 @@ class TestResistanceDistance:
         test_data[2] = 0.75
         test_data[3] = 1
         test_data[4] = 0.75
-        assert type(rd) == dict
+        assert isinstance(rd, dict)
         assert sorted(rd.keys()) == sorted(test_data.keys())
         for key in rd:
             assert np.isclose(rd[key], test_data[key])
@@ -412,14 +412,14 @@ class TestResistanceDistance:
         test_data[2] = 0.75
         test_data[3] = 1
         test_data[4] = 0.75
-        assert type(rd) == dict
+        isinstance(rd, dict)
         assert sorted(rd.keys()) == sorted(test_data.keys())
         for key in rd:
             assert np.isclose(rd[key], test_data[key])
 
     def test_resistance_distance_all(self):
         rd = nx.resistance_distance(self.G)
-        assert type(rd) == dict
+        isinstance(rd, dict)
         assert round(rd[1][3], 5) == 1
 
 

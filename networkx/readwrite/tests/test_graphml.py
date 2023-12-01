@@ -1425,8 +1425,8 @@ class TestWriteGraphML(BaseGraphML):
         wtG = G[1][2]["weight"]
         wtH = H[1][2]["weight"]
         assert wtG == pytest.approx(wtH, abs=1e-6)
-        assert type(wtG) == np.float64
-        assert type(wtH) == float
+        assert isinstance(wtG, np.float64)
+        assert isinstance(wtH, float)
         os.close(fd)
         os.unlink(fname)
 
@@ -1441,8 +1441,8 @@ class TestWriteGraphML(BaseGraphML):
         wtG = G[1][2]["weight"]
         wtH = H[1][2]["weight"]
         assert wtG == pytest.approx(wtH, abs=1e-6)
-        assert type(wtG) == np.float32
-        assert type(wtH) == float
+        assert isinstance(wtG, np.float32)
+        assert isinstance(wtH, float)
         os.close(fd)
         os.unlink(fname)
 

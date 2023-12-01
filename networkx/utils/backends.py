@@ -91,7 +91,7 @@ import warnings
 from functools import partial
 from importlib.metadata import entry_points
 
-from ..exception import NetworkXNotImplemented
+from networkx.exception import NetworkXNotImplemented
 
 __all__ = ["_dispatch"]
 

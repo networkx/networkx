@@ -5,9 +5,9 @@ Delaunay graphs from geographic points
 
 This example shows how to build a delaunay graph (plus its dual,
 the set of Voronoi polygons) from a set of points.
-For this, we will use the set of cholera cases at the Broad Street Pump, 
-recorded by John Snow in 1853. The methods shown here can also work 
-directly with polygonal data using their centroids as representative points. 
+For this, we will use the set of cholera cases at the Broad Street Pump,
+recorded by John Snow in 1853. The methods shown here can also work
+directly with polygonal data using their centroids as representative points.
 """
 
 from libpysal import weights, examples

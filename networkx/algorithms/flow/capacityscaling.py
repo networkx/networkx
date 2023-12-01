@@ -8,8 +8,7 @@ from itertools import chain
 from math import log
 
 import networkx as nx
-
-from ...utils import BinaryHeap, arbitrary_element, not_implemented_for
+from networkx.utils import BinaryHeap, arbitrary_element, not_implemented_for
 
 
 def _detect_unboundedness(R):

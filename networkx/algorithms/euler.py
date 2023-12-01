@@ -4,8 +4,7 @@ Eulerian circuits and graphs.
 from itertools import combinations
 
 import networkx as nx
-
-from ..utils import arbitrary_element, not_implemented_for
+from networkx.utils import arbitrary_element, not_implemented_for
 
 __all__ = [
     "is_eulerian",

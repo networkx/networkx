@@ -608,9 +608,9 @@ graph
             G2 = nx.read_gml(fname)
             for attr, value in G2.nodes["Node"].items():
                 if attr == "toosmall" or attr == "toobig":
-                    assert type(value) == str
+                    assert isinstance(value, str)
                 else:
-                    assert type(value) == int
+                    assert isinstance(value, int)
         finally:
             os.close(fd)
             os.unlink(fname)

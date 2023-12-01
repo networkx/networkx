@@ -58,7 +58,7 @@ set is empty is:
 
 because 'z' is a collider in this path and 'z' is not in the d-separating set. However,
 if 'z' or a descendant of 'z' is included in the d-separating set, then the path through
-the collider at 'z' (... -> z <- ...) is now "open". 
+the collider at 'z' (... -> z <- ...) is now "open".
 
 D-separation is concerned with blocking all paths between u and v. Therefore, a
 d-separating set between ``u`` and ``v`` is one where all paths are blocked.
@@ -101,7 +101,7 @@ References
 
 .. [1] Pearl, J.  (2009).  Causality.  Cambridge: Cambridge University Press.
 
-.. [2] Darwiche, A.  (2009).  Modeling and reasoning with Bayesian networks. 
+.. [2] Darwiche, A.  (2009).  Modeling and reasoning with Bayesian networks.
    Cambridge: Cambridge University Press.
 
 .. [3] Shachter, R.  D.  (1998).
@@ -207,10 +207,7 @@ def d_separated(G, x, y, z):
     disjoint_set.union(*x)
     disjoint_set.union(*y)
 
-    if x and y and disjoint_set[next(iter(x))] == disjoint_set[next(iter(y))]:
-        return False
-    else:
-        return True
+    return not (x and y and disjoint_set[next(iter(x))] == disjoint_set[next(iter(y))])
 
 
 @not_implemented_for("undirected")

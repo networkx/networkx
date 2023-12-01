@@ -1,8 +1,7 @@
 """Algorithms to calculate reciprocity in a directed graph."""
 import networkx as nx
 from networkx import NetworkXError
-
-from ..utils import not_implemented_for
+from networkx.utils import not_implemented_for
 
 __all__ = ["reciprocity", "overall_reciprocity"]
 

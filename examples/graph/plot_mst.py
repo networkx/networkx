@@ -3,8 +3,8 @@
 Minimum Spanning Tree
 =====================
 
-A minimum spanning tree (MST) is a subset of edges in a weighted, 
-connected graph that connects all vertices together with the 
+A minimum spanning tree (MST) is a subset of edges in a weighted,
+connected graph that connects all vertices together with the
 minimum possible total edge weight. The `minimum_spanning_tree`
 function is used to compare the original graph with its MST.
 

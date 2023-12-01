@@ -1365,8 +1365,8 @@ maximum_branching.__doc__ = docstring_branching.format(
 minimum_branching.__doc__ = (
     docstring_branching.format(kind="minimum", style="branching")
     + """
-See Also 
--------- 
+See Also
+--------
     minimal_branching
 """
 )

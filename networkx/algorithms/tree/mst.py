@@ -191,7 +191,7 @@ def kruskal_mst_edges(
         edges = G.edges(data=True)
 
     """
-    Sort the edges of the graph with respect to the partition data. 
+    Sort the edges of the graph with respect to the partition data.
     Edges are returned in the following order:
 
     * Included edges

@@ -3,8 +3,7 @@ import numbers
 import pytest
 
 import networkx as nx
-
-from ..generators import (
+from networkx.algorithms.bipartite.generators import (
     alternating_havel_hakimi_graph,
     complete_bipartite_graph,
     configuration_model,

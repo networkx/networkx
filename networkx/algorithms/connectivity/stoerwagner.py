@@ -4,8 +4,7 @@ Stoer-Wagner minimum cut algorithm.
 from itertools import islice
 
 import networkx as nx
-
-from ...utils import BinaryHeap, arbitrary_element, not_implemented_for
+from networkx.utils import BinaryHeap, arbitrary_element, not_implemented_for
 
 __all__ = ["stoer_wagner"]
 

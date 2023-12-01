@@ -6,8 +6,8 @@ from collections import deque
 from itertools import islice
 
 import networkx as nx
+from networkx.utils import arbitrary_element
 
-from ...utils import arbitrary_element
 from .utils import (
     CurrentEdge,
     GlobalRelabelThreshold,

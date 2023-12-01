@@ -174,15 +174,19 @@ select = [
     'UP',
     'C4',
     'E713',
+    "E721",    # use 'isinstance' to compare types
+    "F541",    # f-string with no placeholders
     'PIE',
     'PGH003',
     'PLR0402',
     'SIM101',
+    "SIM103",  # return comparisons directly
     'SIM109',
     'SIM110',
-    'SIM111',
     'SIM118',
     'SIM2',
+    "TID252",  # ban relative imports
+    "W",       # flake8 warnings
 ]
 
 [tool.ruff.per-file-ignores]

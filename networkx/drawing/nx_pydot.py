@@ -263,7 +263,7 @@ def to_pydot(N):
         )
         if raise_error:
             raise ValueError(
-                f'Node names and attributes should not contain ":" unless they are quoted with "".\
+                'Node names and attributes should not contain ":" unless they are quoted with "".\
                 For example the string \'attribute:data1\' should be written as \'"attribute:data1"\'.\
                 Please refer https://github.com/pydot/pydot/issues/258'
             )
@@ -286,7 +286,7 @@ def to_pydot(N):
             )
             if raise_error:
                 raise ValueError(
-                    f'Node names and attributes should not contain ":" unless they are quoted with "".\
+                    'Node names and attributes should not contain ":" unless they are quoted with "".\
                     For example the string \'attribute:data1\' should be written as \'"attribute:data1"\'.\
                     Please refer https://github.com/pydot/pydot/issues/258'
                 )
@@ -309,7 +309,7 @@ def to_pydot(N):
             )
             if raise_error:
                 raise ValueError(
-                    f'Node names and attributes should not contain ":" unless they are quoted with "".\
+                    'Node names and attributes should not contain ":" unless they are quoted with "".\
                     For example the string \'attribute:data1\' should be written as \'"attribute:data1"\'.\
                     Please refer https://github.com/pydot/pydot/issues/258'
                 )
@@ -438,7 +438,7 @@ def pydot_layout(G, prog="neato", root=None):
         # Explicitly catch nodes with ":" in node names or nodedata.
         if _check_colon_quotes(str_n):
             raise ValueError(
-                f'Node names and node attributes should not contain ":" unless they are quoted with "".\
+                'Node names and node attributes should not contain ":" unless they are quoted with "".\
                 For example the string \'attribute:data1\' should be written as \'"attribute:data1"\'.\
                 Please refer https://github.com/pydot/pydot/issues/258'
             )
