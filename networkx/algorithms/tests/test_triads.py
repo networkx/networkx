@@ -9,6 +9,18 @@ import pytest
 import networkx as nx
 
 
+def test_all_triplets_deprecated():
+    G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
+    with pytest.deprecated_call():
+        nx.all_triplets(G)
+
+
+def test_random_triad_deprecated():
+    G = nx.path_graph(3, create_using=nx.DiGraph)
+    with pytest.deprecated_call():
+        nx.random_triad(G)
+
+
 def test_triadic_census():
     """Tests the triadic_census function."""
     G = nx.DiGraph()

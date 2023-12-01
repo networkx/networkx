@@ -102,7 +102,7 @@ class TestEdgeColoring_IteratedMatching:
         used_colors = set(coloring.values())
         assert len(used_colors) == max_degree
 
-    def test_complete_graph(self):
+    def test_complete_graph_1(self):
         G = nx.complete_bipartite_graph(4, 6)
         coloring = bipartite_edge_coloring(G, strategy="iterated-matching")
 
@@ -203,7 +203,7 @@ class TestEdgeColoring_KempeChain:
         used_colors = set(coloring.values())
         assert len(used_colors) == max_degree
 
-    def test_complete_graph(self):
+    def test_complete_graph_1(self):
         G = nx.complete_bipartite_graph(4, 6)
         coloring = bipartite_edge_coloring(G, strategy="kempe-chain")
 

@@ -25,6 +25,7 @@ extensions = [
     "nb2plots",
     "texext",
     "numpydoc",
+    "matplotlib.sphinxext.plot_directive",
 ]
 
 # https://github.com/sphinx-gallery/sphinx-gallery
@@ -51,6 +52,7 @@ sphinx_gallery_conf = {
     "gallery_dirs": "auto_examples",
     "backreferences_dir": "modules/generated",
     "image_scrapers": ("matplotlib",),
+    "matplotlib_animations": True,
     "plot_gallery": "True",
 }
 # Add pygraphviz png scraper, if available
@@ -243,6 +245,12 @@ intersphinx_mapping = {
 default_role = "obj"
 
 numpydoc_show_class_members = False
+
+plot_pre_code = """
+import networkx as nx
+"""
+
+plot_formats = [("png", 100), "pdf"]
 
 
 def setup(app):
