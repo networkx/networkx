@@ -622,12 +622,12 @@ graph
 [
     node
     [
-	    id 0
-	    label "multiline node"
-	    label2 "multiline1
+        id 0
+        label "multiline node"
+        label2 "multiline1
     multiline2
     multiline3"
-	    alt_name "id 0"
+        alt_name "id 0"
     ]
 ]
 """

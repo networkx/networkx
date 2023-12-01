@@ -108,7 +108,10 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
             stacklevel=2,
         )
         _neighbors = neighbors
-        neighbors = lambda node: iter(sort_neighbors(_neighbors(node)))
+
+        def neighbors(node):
+            return iter(sort_neighbors(_neighbors(node)))
+
     if depth_limit is None:
         depth_limit = len(G)
 

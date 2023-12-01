@@ -694,7 +694,7 @@ def draw_networkx_edges(
             msg = msg.format("min_target_margin")
         warnings.warn(msg, category=UserWarning, stacklevel=2)
 
-    if arrowstyle == None:
+    if arrowstyle is None:
         if G.is_directed():
             arrowstyle = "-|>"
         else:
