@@ -11,6 +11,7 @@ __all__ = [
 ]
 
 
+@not_implemented_for("directed")
 @not_implemented_for("multigraph")
 @nx._dispatch(name="bipartite_edge_coloring")
 def bipartite_edge_coloring(graph, top_nodes=[], strategy="kempe-chain"):
@@ -82,11 +83,14 @@ def bipartite_edge_coloring(graph, top_nodes=[], strategy="kempe-chain"):
     return coloring
 
 
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+@nx._dispatch(name="kempe_chain_bipartite_edge_coloring")
 def kempe_chain_bipartite_edge_coloring(graph, top_nodes):
     """
     Returns the minimum edge coloring of the bipartite graph `graph`.
 
-    This function uses the Kempe-Chain algorithm to color the edges of the bipartite
+    This function uses the procedure augment to color the edges of the bipartite
     graph such that no two adjacent edges have the same color.
 
     Parameters:
@@ -102,6 +106,12 @@ def kempe_chain_bipartite_edge_coloring(graph, top_nodes):
         The edge coloring represented as a dictionary, where `coloring[e]`
         is the color assigned to edge `e`. Colors are represented as integers.
     """
+
+    # The dictionary represents connections between vertices using colors.
+    # Each vertex (key) has color-keyed edges pointing to other vertices.
+    # For example, v1 has edges (c1: u1), (c2: u2), etc., indicating connections
+    # to u1, u2, etc., with respective colors c1, c2, etc.
+
     # Get a dictionary of node degrees
     degrees = dict(graph.degree())
 
@@ -157,6 +167,9 @@ def kempe_chain_bipartite_edge_coloring(graph, top_nodes):
     return coloring
 
 
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+@nx._dispatch(name="iterated_matching_edge_coloring")
 def iterated_matching_edge_coloring(graph, top_nodes):
     """
     Returns the minimum edge coloring of the bipartite graph `graph`.
