@@ -2,9 +2,16 @@
 
 import networkx as nx
 from networkx.generators.classic import null_graph
+from networkx.utils import not_implemented_for
+
+__all__ = [
+    "bipartite_edge_coloring",
+    "kempe_chain_bipartite_edge_coloring",
+    "iterated_matching_edge_coloring",
+]
 
 
-# @not_implemented_for("multigraph")
+@not_implemented_for("multigraph")
 @nx._dispatch(name="bipartite_edge_coloring")
 def bipartite_edge_coloring(graph, top_nodes=[], strategy="kempe-chain"):
     """
@@ -79,7 +86,7 @@ def kempe_chain_bipartite_edge_coloring(graph, top_nodes):
     """
     Returns the minimum edge coloring of the bipartite graph `graph`.
 
-    This function uses the ? algorithm to color the edges of the bipartite
+    This function uses the Kempe-Chain algorithm to color the edges of the bipartite
     graph such that no two adjacent edges have the same color.
 
     Parameters:
@@ -105,6 +112,7 @@ def kempe_chain_bipartite_edge_coloring(graph, top_nodes):
     coloring = {}
 
     # Initialize color dictionary for each vertex
+    # dictionary of dictionary
     used_colors = {node: {} for node in graph.nodes}
 
     for edge in graph.edges:
@@ -135,7 +143,6 @@ def kempe_chain_bipartite_edge_coloring(graph, top_nodes):
                 used_colors[v1][color] = u1
                 coloring[(u1, v1)] = color
                 coloring[(v1, u1)] = color
-                # used_colors[u1][color] = v1
                 if color not in used_colors[u1]:
                     used_colors[u1][color] = v1
                     color = v_color if color == u_color else u_color
