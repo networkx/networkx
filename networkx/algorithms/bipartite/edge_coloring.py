@@ -79,7 +79,7 @@ def kempe_chain_bipartite_edge_coloring(graph, top_nodes):
     """
     Returns the minimum edge coloring of the bipartite graph `graph`.
 
-    This function uses the ? algorithm to color the edges of the bipartite
+    This function uses the procedure augment of paperto color the edges of the bipartite
     graph such that no two adjacent edges have the same color.
 
     Parameters:
@@ -154,7 +154,7 @@ def iterated_matching_edge_coloring(graph, top_nodes):
     """
     Returns the minimum edge coloring of the bipartite graph `graph`.
 
-    This function uses the iterative matching algorithm to color the edges of the bipartite
+    This function uses the procedure one-color to color the edges of the bipartite
     graph such that no two adjacent edges have the same color.
 
     Parameters:
