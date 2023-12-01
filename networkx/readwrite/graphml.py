@@ -455,7 +455,7 @@ class GraphML:
             return self.xml_type[key]
         except KeyError as err:
             raise TypeError(
-                f"GraphML does not support type {type(key)} as data values."
+                f"GraphML does not support type {key} as data values."
             ) from err
 
 
@@ -826,7 +826,7 @@ class GraphMLWriterLxml(GraphMLWriter):
     def __str__(self):
         return object.__str__(self)
 
-    def dump(self):
+    def dump(self, stream=None):
         self._graphml.__exit__(None, None, None)
         self._xml_base.__exit__(None, None, None)
 

@@ -83,6 +83,11 @@ def number_connected_components(G):
     n : integer
        Number of connected components
 
+    Raises
+    ------
+    NetworkXNotImplemented
+        If G is directed.
+
     Examples
     --------
     >>> G = nx.Graph([(0, 1), (1, 2), (5, 6), (3, 4)])
