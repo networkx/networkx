@@ -9,13 +9,13 @@ __all__ = [
 
 
 def _get_max_broadcast_value(G, U, v, values):
-    adj = sorted(set(G.neighbors(v)) & U, key=lambda u: values[u], reverse=True)
+    adj = sorted(set(G.neighbors(v)) & U, key=values.get, reverse=True)
     return max(values[u] + i for i, u in enumerate(adj, start=1))
 
 
 def _get_broadcast_centers(G, v, values, target):
-    adj = sorted(set(G.neighbors(v)), key=lambda u: values[u], reverse=True)
-    j = min(i for i, u in enumerate(adj, start=1) if values[u] + i == target)
+    adj = sorted(G.neighbors(v), key=values.get, reverse=True)
+    j = next(i for i, u in enumerate(adj, start=1) if values[u] + i == target)
     return set([v] + adj[:j])
 
 
@@ -25,9 +25,9 @@ def tree_broadcast_center(G):
     """Return the Broadcast Center of the tree G.
 
     This is a linear algorithm for determining the broadcast center of any tree with N vertices,
-    as a by-product it can also determine the broadcast number of any vertex in the tree.
-    The broadcast number of a vertex v in a graph G is the minimum number of time units required to broadcast from v.
-    The broadcast center of a graph G is one of the vertices having minimum broadcast number.
+    as a by-product it can also determine the broadcast time of any vertex in the tree.
+    The broadcast time of a vertex v in a graph G is the minimum number of time units required to broadcast from v.
+    The broadcast center of a graph G is one of the vertices having minimum broadcast time.
 
     Parameters
     ----------
