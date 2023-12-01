@@ -4,6 +4,7 @@ Compute the shortest paths and path lengths between nodes in the graph.
 These algorithms work with undirected and directed graphs.
 
 """
+import contextlib
 import warnings
 
 import networkx as nx
@@ -587,10 +588,8 @@ def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
     else:
         raise ValueError(f"method not supported: {method}")
     for n in G:
-        try:
+        with contextlib.suppress(nx.NetworkXNoPath):
             yield n, list(_build_paths_from_predecessors({source}, n, pred))
-        except nx.NetworkXNoPath:
-            pass
 
 
 @nx._dispatch(edge_attrs="weight")

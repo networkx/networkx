@@ -1,6 +1,7 @@
 """Functional interface to graph methods and assorted utilities.
 """
 
+import contextlib
 from collections import Counter
 from itertools import chain
 
@@ -650,19 +651,15 @@ def set_node_attributes(G, values, name=None):
     if name is not None:  # `values` must not be a dict of dict
         try:  # `values` is a dict
             for n, v in values.items():
-                try:
+                with contextlib.suppress(KeyError):
                     G.nodes[n][name] = values[n]
-                except KeyError:
-                    pass
         except AttributeError:  # `values` is a constant
             for n in G:
                 G.nodes[n][name] = values
     else:  # `values` must be dict of dict
         for n, d in values.items():
-            try:
+            with contextlib.suppress(KeyError):
                 G.nodes[n].update(d)
-            except KeyError:
-                pass
 
 
 def get_node_attributes(G, name, default=None):
@@ -808,16 +805,12 @@ def set_edge_attributes(G, values, name=None):
             # if `values` is a dict using `.items()` => {edge: value}
             if G.is_multigraph():
                 for (u, v, key), value in values.items():
-                    try:
+                    with contextlib.suppress(KeyError):
                         G[u][v][key][name] = value
-                    except KeyError:
-                        pass
             else:
                 for (u, v), value in values.items():
-                    try:
+                    with contextlib.suppress(KeyError):
                         G[u][v][name] = value
-                    except KeyError:
-                        pass
         except AttributeError:
             # treat `values` as a constant
             for u, v, data in G.edges(data=True):
@@ -826,16 +819,12 @@ def set_edge_attributes(G, values, name=None):
         # `values` consists of doct-of-dict {edge: {attr: value}} shape
         if G.is_multigraph():
             for (u, v, key), d in values.items():
-                try:
+                with contextlib.suppress(KeyError):
                     G[u][v][key].update(d)
-                except KeyError:
-                    pass
         else:
             for (u, v), d in values.items():
-                try:
+                with contextlib.suppress(KeyError):
                     G[u][v].update(d)
-                except KeyError:
-                    pass
 
 
 def get_edge_attributes(G, name, default=None):

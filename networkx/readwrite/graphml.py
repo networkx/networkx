@@ -40,6 +40,7 @@ http://graphml.graphdrawing.org/specification.html for the specification and
 http://graphml.graphdrawing.org/primer/graphml-primer.html
 for examples.
 """
+import contextlib
 import warnings
 from collections import defaultdict
 
@@ -942,10 +943,8 @@ class GraphMLReader(GraphML):
         if edge_id:
             # self.edge_ids is used by `make_graph` method for non-multigraphs
             self.edge_ids[source, target] = edge_id
-            try:
+            with contextlib.suppress(ValueError):  # Could not convert.
                 edge_id = self.edge_key_type(edge_id)
-            except ValueError:  # Could not convert.
-                pass
         else:
             edge_id = data.get("key")
 

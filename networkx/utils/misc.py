@@ -11,6 +11,7 @@ can be accessed, for example, as
 1
 """
 
+import contextlib
 import sys
 import uuid
 import warnings
@@ -118,10 +119,8 @@ def _dict_to_numpy_array2(d, mapping=None):
     a = np.zeros((n, n))
     for k1, i in mapping.items():
         for k2, j in mapping.items():
-            try:
+            with contextlib.suppress(KeyError):
                 a[i, j] = d[k1][k2]
-            except KeyError:
-                pass
     return a
 
 

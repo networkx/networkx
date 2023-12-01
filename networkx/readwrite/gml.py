@@ -27,6 +27,7 @@ For additional documentation on the GML file format, please see the
 Several example graphs in GML format may be found on Mark Newman's
 `Network data page <http://www-personal.umich.edu/~mejn/netdata/>`_.
 """
+import contextlib
 import html.entities as htmlentitydefs
 import re
 import warnings
@@ -384,10 +385,8 @@ def parse_gml_lines(lines, label, destringizer):
             elif category == Pattern.STRINGS:
                 value = unescape(curr_token.value[1:-1])
                 if destringizer:
-                    try:
+                    with contextlib.suppress(ValueError):
                         value = destringizer(value)
-                    except ValueError:
-                        pass
                 # Special handling for empty lists and tuples
                 if value == "()":
                     value = ()
@@ -403,10 +402,8 @@ def parse_gml_lines(lines, label, destringizer):
                         # String convert the token value
                         value = unescape(str(curr_token.value))
                         if destringizer:
-                            try:
+                            with contextlib.suppress(ValueError):
                                 value = destringizer(value)
-                            except ValueError:
-                                pass
                         curr_token = next(tokens)
                     except Exception:
                         msg = (

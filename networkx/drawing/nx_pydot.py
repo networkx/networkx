@@ -19,6 +19,7 @@ See Also
  - Graphviz:      https://www.graphviz.org
  - DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
+import contextlib
 import warnings
 from locale import getpreferredencoding
 
@@ -183,14 +184,10 @@ def from_pydot(P):
     pattr = P.get_attributes()
     if pattr:
         N.graph["graph"] = pattr
-    try:
+    with contextlib.suppress(IndexError, TypeError):  # N.graph['node']={}
         N.graph["node"] = P.get_node_defaults()[0]
-    except (IndexError, TypeError):
-        pass  # N.graph['node']={}
-    try:
+    with contextlib.suppress(IndexError, TypeError):  # N.graph['edge']={}
         N.graph["edge"] = P.get_edge_defaults()[0]
-    except (IndexError, TypeError):
-        pass  # N.graph['edge']={}
     return N
 
 
@@ -242,14 +239,10 @@ def to_pydot(N):
         P = pydot.Dot(
             f'"{name}"', graph_type=graph_type, strict=strict, **graph_defaults
         )
-    try:
+    with contextlib.suppress(KeyError):
         P.set_node_defaults(**N.graph["node"])
-    except KeyError:
-        pass
-    try:
+    with contextlib.suppress(KeyError):
         P.set_edge_defaults(**N.graph["edge"])
-    except KeyError:
-        pass
 
     for n, nodedata in N.nodes(data=True):
         str_nodedata = {str(k): str(v) for k, v in nodedata.items()}

@@ -180,7 +180,8 @@ select = [
     'PGH003',
     'PLR0402',
     'SIM101',
-    "SIM103",  # return comparisons directly
+    'SIM103',  # return comparisons directly
+    'SIM105',  # use contextlib.suppress
     'SIM109',
     'SIM110',
     'SIM118',

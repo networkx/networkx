@@ -12,6 +12,8 @@ plt = pytest.importorskip("matplotlib.pyplot")
 plt.rcParams["text.usetex"] = False
 
 
+import contextlib
+
 import networkx as nx
 
 barbell = nx.barbell_graph(4, 6)
@@ -34,10 +36,8 @@ def test_draw():
             plt.savefig("test.ps")
 
     finally:
-        try:
+        with contextlib.suppress(OSError):
             os.unlink("test.ps")
-        except OSError:
-            pass
 
 
 def test_draw_shell_nlist():
@@ -46,10 +46,8 @@ def test_draw_shell_nlist():
         nx.draw_shell(barbell, nlist=nlist)
         plt.savefig("test.ps")
     finally:
-        try:
+        with contextlib.suppress(OSError):
             os.unlink("test.ps")
-        except OSError:
-            pass
 
 
 def test_edge_colormap():
