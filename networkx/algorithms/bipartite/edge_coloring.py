@@ -14,7 +14,7 @@ __all__ = [
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 @nx._dispatch(name="bipartite_edge_coloring")
-def bipartite_edge_coloring(graph, top_nodes=[], strategy="kempe-chain"):
+def bipartite_edge_coloring(G, top_nodes=[], strategy="kempe-chain"):
     """
     Returns a valid edge coloring of the bipartite graph `G`.
 
@@ -64,21 +64,21 @@ def bipartite_edge_coloring(graph, top_nodes=[], strategy="kempe-chain"):
       the nodes in each bipartite set more than one valid solution is
       possible if the input graph is disconnected.
     """
-    graph = graph.copy()
-    if not nx.is_bipartite(graph):
+    G = G.copy()
+    if not nx.is_bipartite(G):
         raise ValueError("Not a Bipartite Graph")
 
     # Handle the disconnected Graph case
-    if not nx.is_connected(graph) and top_nodes == []:
+    if not nx.is_connected(G) and top_nodes == []:
         raise ValueError("Disconnected graph : ambiguous solution ")
 
     if top_nodes == []:
-        top_nodes, b = nx.bipartite.sets(graph)
+        top_nodes, b = nx.bipartite.sets(G)
 
     if strategy == "iterated-matching":
-        coloring = iterated_matching_edge_coloring(graph, top_nodes)
+        coloring = iterated_matching_edge_coloring(G, top_nodes)
     else:
-        coloring = kempe_chain_bipartite_edge_coloring(graph, top_nodes)
+        coloring = kempe_chain_bipartite_edge_coloring(G, top_nodes)
 
     return coloring
 
@@ -86,7 +86,7 @@ def bipartite_edge_coloring(graph, top_nodes=[], strategy="kempe-chain"):
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 @nx._dispatch(name="kempe_chain_bipartite_edge_coloring")
-def kempe_chain_bipartite_edge_coloring(graph, top_nodes):
+def kempe_chain_bipartite_edge_coloring(G, top_nodes):
     """
     Returns the minimum edge coloring of the bipartite graph `graph`.
 
@@ -95,7 +95,7 @@ def kempe_chain_bipartite_edge_coloring(graph, top_nodes):
 
     Parameters:
     -----------
-    graph : NetworkX graph
+    G : NetworkX graph
         The input bipartite graph.
     top_nodes : list
         List of nodes that belong to one node set.
@@ -113,7 +113,7 @@ def kempe_chain_bipartite_edge_coloring(graph, top_nodes):
     # to u1, u2, etc., with respective colors c1, c2, etc.
 
     # Get a dictionary of node degrees
-    degrees = dict(graph.degree())
+    degrees = dict(G.degree())
 
     # Find the maximum degree in the graph
     delta = max(degrees.values())
@@ -123,9 +123,9 @@ def kempe_chain_bipartite_edge_coloring(graph, top_nodes):
 
     # Initialize color dictionary for each vertex
     # dictionary of dictionary
-    used_colors = {node: {} for node in graph.nodes}
+    used_colors = {node: {} for node in G.nodes}
 
-    for edge in graph.edges:
+    for edge in G.edges:
         u, v = edge
         # Get the colors of edges ending at u and v
         u_colors = set(used_colors[u].keys())
@@ -170,7 +170,7 @@ def kempe_chain_bipartite_edge_coloring(graph, top_nodes):
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 @nx._dispatch(name="iterated_matching_edge_coloring")
-def iterated_matching_edge_coloring(graph, top_nodes):
+def iterated_matching_edge_coloring(G, top_nodes):
     """
     Returns the minimum edge coloring of the bipartite graph `graph`.
 
@@ -196,15 +196,15 @@ def iterated_matching_edge_coloring(graph, top_nodes):
     # Start coloring with i = 0 color
     i = 0
 
-    while graph.edges:
-        matching = _matching_saturating_max_degree(graph.copy(), top_nodes)
-        _color_matching_edges(graph, matching, i, coloring)
-        graph.remove_edges_from(list(matching.items()))
+    while G.edges:
+        matching = _matching_saturating_max_degree(G.copy(), top_nodes)
+        _color_matching_edges(G, matching, i, coloring)
+        G.remove_edges_from(list(matching.items()))
         i += 1
     return coloring
 
 
-def _color_matching_edges(graph, matching, color, coloring):
+def _color_matching_edges(G, matching, color, coloring):
     """
     function used to color the edges of the matching with `color`
     """
@@ -213,13 +213,13 @@ def _color_matching_edges(graph, matching, color, coloring):
         coloring[edge] = color
 
 
-def _find_max_degree_vertices(graph):
+def _find_max_degree_vertices(G):
     """
     Returns the vertices with the maximum degree in the graph.
 
     Parameters:
     -----------
-    graph : NetworkX graph
+    G : NetworkX graph
         The input graph.
 
     Returns:
@@ -228,7 +228,7 @@ def _find_max_degree_vertices(graph):
         List of nodes with the maximum degree in the graph.
     """
     # Get a dictionary of node degrees
-    degrees = dict(graph.degree())
+    degrees = dict(G.degree())
 
     # Find the maximum degree in the graph
     max_degree = max(degrees.values())
@@ -241,13 +241,13 @@ def _find_max_degree_vertices(graph):
     return max_degree_nodes
 
 
-def _matching_saturating_max_degree(graph, top_nodes=[]):
+def _matching_saturating_max_degree(G, top_nodes=[]):
     """
     Returns a maximum-degree saturating matching in the bipartite graph `graph`.
 
     Parameters:
     -----------
-    graph : NetworkX graph
+    G : NetworkX graph
         The input bipartite graph.
     top_nodes : list, optional
         List of nodes that belong to the top node set.
@@ -257,17 +257,17 @@ def _matching_saturating_max_degree(graph, top_nodes=[]):
     matching : dict
         A dictionary representing the maximum-degree saturating matching.
     """
-    max_degree_vertices = _find_max_degree_vertices(graph)
+    max_degree_vertices = _find_max_degree_vertices(G)
 
     # two parts of the bipartite graph
-    part_a, part_b = nx.bipartite.sets(graph, top_nodes)
+    part_a, part_b = nx.bipartite.sets(G, top_nodes)
 
     # make two different graphs A_major and B_major
     A_major_nodes = (part_a & set(max_degree_vertices)) | part_b
     B_major_nodes = (part_b & set(max_degree_vertices)) | part_a
 
-    A_major = graph.subgraph(A_major_nodes)
-    B_major = graph.subgraph(B_major_nodes)
+    A_major = G.subgraph(A_major_nodes)
+    B_major = G.subgraph(B_major_nodes)
 
     top_nodes_A = list(set(top_nodes) & set(A_major.nodes()))
     top_nodes_B = list(set(top_nodes) & set(B_major.nodes()))
