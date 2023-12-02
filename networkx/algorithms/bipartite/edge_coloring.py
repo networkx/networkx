@@ -68,17 +68,16 @@ def bipartite_edge_coloring(G, top_nodes=[], strategy="kempe-chain"):
     if not nx.is_bipartite(G):
         raise ValueError("Not a Bipartite Graph")
 
-    # Handle the disconnected Graph case
-    if not nx.is_connected(G) and top_nodes == []:
-        raise ValueError("Disconnected graph : ambiguous solution ")
-
-    if top_nodes == []:
-        top_nodes, b = nx.bipartite.sets(G)
-
     if strategy == "iterated-matching":
+        # Handle the disconnected Graph case
+        if not nx.is_connected(G) and top_nodes == []:
+            raise ValueError("Disconnected graph : ambiguous solution ")
+
+        if top_nodes == []:
+            top_nodes, _ = nx.bipartite.sets(G)
         coloring = iterated_matching_edge_coloring(G, top_nodes)
     else:
-        coloring = kempe_chain_bipartite_edge_coloring(G, top_nodes)
+        coloring = kempe_chain_bipartite_edge_coloring(G)
 
     return coloring
 
@@ -86,7 +85,7 @@ def bipartite_edge_coloring(G, top_nodes=[], strategy="kempe-chain"):
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 @nx._dispatch(name="kempe_chain_bipartite_edge_coloring")
-def kempe_chain_bipartite_edge_coloring(G, top_nodes):
+def kempe_chain_bipartite_edge_coloring(G):
     """
     Returns the minimum edge coloring of the bipartite graph `graph`.
 

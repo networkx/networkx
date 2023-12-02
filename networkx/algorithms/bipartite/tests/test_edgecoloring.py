@@ -87,11 +87,11 @@ class TestEdgeColoring_IteratedMatching:
 
     # def test_odd_cycle(self):
 
-    def test_disconnected_graph_iterated_matching(self):
-        edges = [(1, 2), (2, 3), (3, 4), (4, 1)]
+    def test_disconnected_graph(self):
+        edges = [(1, 2), (1, 3), (3, 4), (3, 5), (5, 6), (7, 9), (8, 9)]
         G = nx.Graph()
         G.add_edges_from(edges)
-        top_nodes = [1, 3]
+        top_nodes = [1, 4, 5, 9]
         coloring = bipartite_edge_coloring(G, top_nodes, strategy="iterated-matching")
 
         # Check that no vertex has two edges with the same color
@@ -188,12 +188,11 @@ class TestEdgeColoring_KempeChain:
 
     # def test_odd_cycle(self):
 
-    def test_disconnected_graph_iterated_matching(self):
-        edges = [(1, 2), (2, 3), (3, 4), (4, 1)]
+    def test_disconnected_graph(self):
+        edges = [(1, 2), (1, 3), (3, 4), (3, 5), (5, 6), (7, 9), (8, 9)]
         G = nx.Graph()
         G.add_edges_from(edges)
-        top_nodes = [1, 3]
-        coloring = bipartite_edge_coloring(G, top_nodes, strategy="kempe-chain")
+        coloring = bipartite_edge_coloring(G, strategy="kempe-chain")
 
         # Check that no vertex has two edges with the same color
         assert _is_proper_edge_coloring(coloring)
