@@ -1,0 +1,9 @@
+*vertices 4
+1 0 0.0 0.0 ellipse
+2 1 0.0 0.0 ellipse
+3 2 0.0 0.0 ellipse
+4 3 0.0 0.0 ellipse
+*edges
+1 2 1.0
+2 3 1.0
+3 4 1.0

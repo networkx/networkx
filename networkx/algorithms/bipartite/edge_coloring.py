@@ -1,8 +1,6 @@
 """ Functions related to Edge Coloring"""
 
 import networkx as nx
-from networkx.generators.classic import null_graph
-from networkx.utils import not_implemented_for
 
 __all__ = [
     "bipartite_edge_coloring",
@@ -11,12 +9,11 @@ __all__ = [
 ]
 
 
-@not_implemented_for("directed")
-@not_implemented_for("multigraph")
+@nx.utils.not_implemented_for("directed")
+@nx.utils.not_implemented_for("multigraph")
 @nx._dispatch(name="bipartite_edge_coloring")
 def bipartite_edge_coloring(G, top_nodes=[], strategy="kempe-chain"):
-    """
-    Returns a valid edge coloring of the bipartite graph `G`.
+    """Returns a valid edge coloring of the bipartite graph `G`.
 
     An edge coloring is an assignment of colors to the edges of a graph such
     that no two adjacent edges share the same color. In the case of bipartite
@@ -51,8 +48,10 @@ def bipartite_edge_coloring(G, top_nodes=[], strategy="kempe-chain"):
 
     References:
     -----------
-    Harold N.Gabow and Oded Kariv , “Algorithms for edge coloring bipartite graphs”
-
+    H. N. Gabow and O. Kariv, “Algorithms for edge coloring bipartite
+    graphs,” in Proc. 10th Ann. ACM Symp. Theory of computing. ACM,
+    1978, pp. 184–192
+    https://dl.acm.org/doi/pdf/10.1145/800133.804346
     Raises
     ------
     NetworkXError
@@ -82,12 +81,11 @@ def bipartite_edge_coloring(G, top_nodes=[], strategy="kempe-chain"):
     return coloring
 
 
-@not_implemented_for("directed")
-@not_implemented_for("multigraph")
+@nx.utils.not_implemented_for("directed")
+@nx.utils.not_implemented_for("multigraph")
 @nx._dispatch(name="kempe_chain_bipartite_edge_coloring")
 def kempe_chain_bipartite_edge_coloring(G):
-    """
-    Returns the minimum edge coloring of the bipartite graph `graph`.
+    """Returns the minimum edge coloring of the bipartite graph `graph`.
 
     This function uses the procedure augment to color the edges of the bipartite
     graph such that no two adjacent edges have the same color.
@@ -166,12 +164,11 @@ def kempe_chain_bipartite_edge_coloring(G):
     return coloring
 
 
-@not_implemented_for("directed")
-@not_implemented_for("multigraph")
+@nx.utils.not_implemented_for("directed")
+@nx.utils.not_implemented_for("multigraph")
 @nx._dispatch(name="iterated_matching_edge_coloring")
 def iterated_matching_edge_coloring(G, top_nodes):
-    """
-    Returns the minimum edge coloring of the bipartite graph `graph`.
+    """Returns the minimum edge coloring of the bipartite graph `graph`.
 
     This function uses the procedure one-color to color the edges of the bipartite
     graph such that no two adjacent edges have the same color.
@@ -213,8 +210,7 @@ def _color_matching_edges(G, matching, color, coloring):
 
 
 def _find_max_degree_vertices(G):
-    """
-    Returns the vertices with the maximum degree in the graph.
+    """Returns the vertices with the maximum degree in the graph.
 
     Parameters:
     -----------
@@ -241,8 +237,7 @@ def _find_max_degree_vertices(G):
 
 
 def _matching_saturating_max_degree(G, top_nodes=[]):
-    """
-    Returns a maximum-degree saturating matching in the bipartite graph `graph`.
+    """Returns a maximum-degree saturating matching in the bipartite graph `graph`.
 
     Parameters:
     -----------
@@ -277,8 +272,7 @@ def _matching_saturating_max_degree(G, top_nodes=[]):
 
 
 def _combine_matchings(M1, M2, A, B):
-    """
-    Combines two matchings `M1` and `M2` in the bipartite graph.
+    """Combines two matchings `M1` and `M2` in the bipartite graph.
 
     Parameters:
     -----------
