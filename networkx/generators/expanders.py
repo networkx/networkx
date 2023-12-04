@@ -234,7 +234,7 @@ def maybe_regular_expander(n, d, *, create_using=None, max_tries=100, seed=None)
     max_tries : int. (default: 100)
       The number of allowed loops when generating each independent cycle
     seed : (default: None)
-      The `numpy.random.RandomState` instance used by `numpy.random`.
+      Seed used to set random number generation state. See :ref`Randomness<randomness>`.
 
     Notes
     -----
@@ -359,7 +359,7 @@ def is_regular_expander(G, *, epsilon=0):
 
     Examples
     --------
-    >>> G = nx.random_regular_expander_graph(n=20, d=4)
+    >>> G = nx.random_regular_expander_graph(20, 4)
     >>> nx.is_regular_expander(G)
     True
 
@@ -425,13 +425,13 @@ def random_regular_expander_graph(n, d, *, epsilon=0, create_using=None, max_tri
 
     Examples
     --------
-    >>> G = nx.random_regular_expander_graph(n=20, d=4)
+    >>> G = nx.random_regular_expander_graph(20, 4)
     >>> nx.is_regular_expander(G)
     True
 
     Notes
     -----
-    This loops over ``maybe_regular_expander`` and can be slow when
+    This loops over `maybe_regular_expander` and can be slow when
     $n$ is too big or $\epsilon$ too small.
 
     See Also
