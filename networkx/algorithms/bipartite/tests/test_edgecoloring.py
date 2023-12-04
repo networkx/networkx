@@ -6,7 +6,8 @@ from networkx.algorithms.bipartite.edge_coloring import bipartite_edge_coloring
 
 
 def _is_proper_edge_coloring(coloring):
-    """Checks through each vertex and saves the colors at each vertex to find out
+    """
+    Checks through each vertex and saves the colors at each vertex to find out
     if there is any conflict
     """
     vertex_colors = {}  # Dictionary to track colors of incident edges for each vertex
@@ -184,6 +185,8 @@ class TestEdgeColoring_KempeChain:
         max_degree = max(G.degree(), key=lambda x: x[1])[1]
         used_colors = set(coloring.values())
         assert len(used_colors) == max_degree
+
+    # def test_odd_cycle(self):
 
     def test_disconnected_graph(self):
         edges = [(1, 2), (1, 3), (3, 4), (3, 5), (5, 6), (7, 9), (8, 9)]
