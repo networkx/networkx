@@ -209,7 +209,7 @@ def parse_adjlist(
                 u = nodetype(u)
             except BaseException as err:
                 raise TypeError(
-                    f"Failed to convert node ({u}) to type " f"{nodetype}"
+                    f"Failed to convert node ({u}) to type {nodetype}"
                 ) from err
         G.add_node(u)
         if nodetype is not None:

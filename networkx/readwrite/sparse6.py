@@ -43,7 +43,7 @@ def _generate_sparse6_bytes(G, nodes, header):
     n = len(G)
     if n >= 2**36:
         raise ValueError(
-            "sparse6 is only defined if number of nodes is less " "than 2 ** 36"
+            "sparse6 is only defined if number of nodes is less than 2 ** 36"
         )
     if header:
         yield b">>sparse6<<"

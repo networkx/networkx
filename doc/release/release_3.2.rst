@@ -1,7 +1,17 @@
-NetworkX 3.2rc0
-===============
+NetworkX 3.2
+============
 
-We're happy to announce the release of networkx 3.2rc0!
+Release date: 18 October 2023
+
+Supports Python 3.9, 3.10, 3.11, and 3.12.
+
+NetworkX is a Python package for the creation, manipulation, and study of the
+structure, dynamics, and functions of complex networks.
+
+For more information, please visit our `website <https://networkx.org/>`_
+and our :ref:`gallery of examples <examples_gallery>`.
+Please send comments and questions to the `networkx-discuss mailing list
+<http://groups.google.com/group/networkx-discuss>`_.
 
 Highlights
 ----------
@@ -26,6 +36,7 @@ API Changes
 - Make weight and seed for ``fast_label_propagation_communities`` kwarg only (`#6955 <https://github.com/networkx/networkx/pull/6955>`_).
 - API: Rm default value from time_delta for cd_index (`#6953 <https://github.com/networkx/networkx/pull/6953>`_).
 - Deprecate strongly_connected_components_recursive (`#6957 <https://github.com/networkx/networkx/pull/6957>`_).
+- Rm deprecated clique helper functions (`#6941 <https://github.com/networkx/networkx/pull/6941>`_).
 
 Enhancements
 ------------
@@ -42,6 +53,7 @@ Enhancements
 - Add Kemeny's constant (`#6929 <https://github.com/networkx/networkx/pull/6929>`_).
 - Speedup resistance_distance (`#6925 <https://github.com/networkx/networkx/pull/6925>`_).
 - Allow graph generators and conversion functions to be dispatched (`#6876 <https://github.com/networkx/networkx/pull/6876>`_).
+- adding extendability problem (2nd try) (`#4890 <https://github.com/networkx/networkx/pull/4890>`_).
 
 Bug Fixes
 ---------
@@ -61,6 +73,7 @@ Bug Fixes
 - FIX: MultiDiGraphs keys got lost in weighted shortest paths (`#6963 <https://github.com/networkx/networkx/pull/6963>`_).
 - Handle edge cases in Laplacian centrality (`#6938 <https://github.com/networkx/networkx/pull/6938>`_).
 - adding a formula that ignores self-loops at the each level of directed louvain algorithm (`#6630 <https://github.com/networkx/networkx/pull/6630>`_).
+- Fix ``````is_k_edge_connected`````` for case of k=2 (`#7024 <https://github.com/networkx/networkx/pull/7024>`_).
 
 Documentation
 -------------
@@ -95,6 +108,9 @@ Documentation
 - Add 3.2rc0 release notes (`#6997 <https://github.com/networkx/networkx/pull/6997>`_).
 - Update release process for changelist (`#7005 <https://github.com/networkx/networkx/pull/7005>`_).
 - Update contributing guide for changelist workflow (`#7004 <https://github.com/networkx/networkx/pull/7004>`_).
+- Fix definition of $m$ parameter in docstring of ``modularity`` function (`#6990 <https://github.com/networkx/networkx/pull/6990>`_).
+- updated docs of SA_tsp and TA_tsp (`#7013 <https://github.com/networkx/networkx/pull/7013>`_).
+- Update katz_centrality missing default alpha value (`#7015 <https://github.com/networkx/networkx/pull/7015>`_).
 
 Maintenance
 -----------
@@ -153,6 +169,8 @@ Maintenance
 - Prefer "backend" instead of "plugin" (`#6989 <https://github.com/networkx/networkx/pull/6989>`_).
 - CI: Pin scientific-python/upload-nightly-action to 0.2.0 (`#6993 <https://github.com/networkx/networkx/pull/6993>`_).
 - Support Python 3.12 (`#7009 <https://github.com/networkx/networkx/pull/7009>`_).
+- pip install nx-cugraph from git, not nightly wheels, for docs (`#7011 <https://github.com/networkx/networkx/pull/7011>`_).
+- Fix typos (`#7012 <https://github.com/networkx/networkx/pull/7012>`_).
 
 Other
 -----
@@ -232,24 +250,28 @@ Other
 Contributors
 ------------
 
-64 authors added to this release (alphabetically):
+70 authors added to this release (alphabetically):
 
 - =510 (`@diohabara <https://github.com/diohabara>`_)
+- `@achluma <https://github.com/achluma>`_
 - `@anthonimes <https://github.com/anthonimes>`_
 - `@axtavt <https://github.com/axtavt>`_
 - `@cnfionawu <https://github.com/cnfionawu>`_
 - `@dependabot[bot] <https://github.com/apps/dependabot>`_
 - `@DiamondJoseph <https://github.com/DiamondJoseph>`_
+- `@gsemer <https://github.com/gsemer>`_
 - `@IbrH <https://github.com/IbrH>`_
 - `@peijenburg <https://github.com/peijenburg>`_
 - `@Tortar <https://github.com/Tortar>`_
 - Adam Li (`@adam2392 <https://github.com/adam2392>`_)
 - Adam Richardson (`@AdamWRichardson <https://github.com/AdamWRichardson>`_)
+- Aditi Juneja (`@Schefflera-Arboricola <https://github.com/Schefflera-Arboricola>`_)
 - AKSHAYA MADHURI (`@akshayamadhuri <https://github.com/akshayamadhuri>`_)
 - Alex Markham (`@Alex-Markham <https://github.com/Alex-Markham>`_)
 - Alimi Qudirah (`@Qudirah <https://github.com/Qudirah>`_)
 - Andreas Wilm (`@andreas-wilm <https://github.com/andreas-wilm>`_)
 - Anthony Labarre (`@alabarre <https://github.com/alabarre>`_)
+- Arturo (`@ArturoSbr <https://github.com/ArturoSbr>`_)
 - Dan Schult (`@dschult <https://github.com/dschult>`_)
 - Davide Bonin (`@davidbonin92 <https://github.com/davidbonin92>`_)
 - Davide D'Ascenzo (`@Kidara <https://github.com/Kidara>`_)
@@ -273,6 +295,8 @@ Contributors
 - Josh Soref (`@jsoref <https://github.com/jsoref>`_)
 - Juanita Gomez (`@juanis2112 <https://github.com/juanis2112>`_)
 - Kelly Boothby (`@boothby <https://github.com/boothby>`_)
+- Kian-Meng Ang (`@kianmeng <https://github.com/kianmeng>`_)
+- Koen van Walstijn (`@kbvw <https://github.com/kbvw>`_)
 - Lovro Šubelj (`@lovre <https://github.com/lovre>`_)
 - Lukong Anne (`@Lukong123 <https://github.com/Lukong123>`_)
 - Matt Schwennesen (`@mjschwenne <https://github.com/mjschwenne>`_)
@@ -299,8 +323,9 @@ Contributors
 - Yaroslav Halchenko (`@yarikoptic <https://github.com/yarikoptic>`_)
 - Zhaoyuan Deng (`@dzy49 <https://github.com/dzy49>`_)
 
-40 reviewers added to this release (alphabetically):
+41 reviewers added to this release (alphabetically):
 
+- `@gsemer <https://github.com/gsemer>`_
 - `@IbrH <https://github.com/IbrH>`_
 - `@peijenburg <https://github.com/peijenburg>`_
 - `@Tortar <https://github.com/Tortar>`_
@@ -344,3 +369,4 @@ Contributors
 
 _These lists are automatically generated, and may not be complete or may contain
 duplicates._
+

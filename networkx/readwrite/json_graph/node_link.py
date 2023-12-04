@@ -26,7 +26,7 @@ def _to_tuple(x):
     >>> _to_tuple([1, 2, [3, 4]])
     (1, 2, (3, 4))
     """
-    if not isinstance(x, (tuple, list)):
+    if not isinstance(x, tuple | list):
         return x
     return tuple(map(_to_tuple, x))
 

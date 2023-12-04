@@ -547,7 +547,7 @@ def literal_stringizer(value):
     """
 
     def stringize(value):
-        if isinstance(value, (int, bool)) or value is None:
+        if isinstance(value, int | bool) or value is None:
             if value is True:  # GML uses 1/0 for boolean values.
                 buf.write(str(1))
             elif value is False:
@@ -562,7 +562,7 @@ def literal_stringizer(value):
                 except UnicodeEncodeError:
                     text = "u" + text
             buf.write(text)
-        elif isinstance(value, (float, complex, str, bytes)):
+        elif isinstance(value, float | complex | str | bytes):
             buf.write(repr(value))
         elif isinstance(value, list):
             buf.write("[")
@@ -715,7 +715,7 @@ def generate_gml(G, stringizer=None):
         if not isinstance(key, str):
             key = str(key)
         if key not in ignored_keys:
-            if isinstance(value, (int, bool)):
+            if isinstance(value, int | bool):
                 if key == "label":
                     yield indent + key + ' "' + str(value) + '"'
                 elif value is True:
@@ -753,7 +753,7 @@ def generate_gml(G, stringizer=None):
                 yield indent + "]"
             elif isinstance(value, tuple) and key == "label":
                 yield indent + key + f" \"({','.join(repr(v) for v in value)})\""
-            elif isinstance(value, (list, tuple)) and key != "label" and not in_list:
+            elif isinstance(value, list | tuple) and key != "label" and not in_list:
                 if len(value) == 0:
                     yield indent + key + " " + f'"{value!r}"'
                 if len(value) == 1:

@@ -65,7 +65,7 @@ def test_undirected_selfloops():
     partition = nx.community.louvain_communities(G, seed=2, weight="weight")
     assert part != partition
 
-    # small self-loop weights arent enough to impact partition in this graph
+    # small self-loop weights aren't enough to impact partition in this graph
     partition = nx.community.louvain_communities(G, seed=2, weight=None)
     assert part == partition
 
@@ -94,7 +94,7 @@ def test_directed_selfloops():
     G_partition = nx.community.louvain_communities(G, seed=123, weight="weight")
     assert G_partition != G_expected_partition
 
-    # small self-loop weights arent enough to impact partition in this graph
+    # small self-loop weights aren't enough to impact partition in this graph
     G_partition = nx.community.louvain_communities(G, seed=123, weight=None)
     assert G_partition == G_expected_partition
 

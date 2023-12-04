@@ -167,7 +167,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
     # Includes containers (e.g. list, set, dict, etc.), generators, and
     # iterators (e.g. itertools.chain) of edges
 
-    if isinstance(data, (Collection, Generator, Iterator)):
+    if isinstance(data, Collection | Generator | Iterator):
         try:
             return from_edgelist(data, create_using=create_using)
         except Exception as err:

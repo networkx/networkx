@@ -52,13 +52,18 @@ def pytest_configure(config):
             fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
         networkx.utils.backends._dispatch._fallback_to_nx = bool(fallback_to_nx)
     # nx-loopback backend is only available when testing
-    if sys.version_info < (3, 10):
-        backends = (
-            ep for ep in entry_points()["networkx.backends"] if ep.name == "nx-loopback"
-        )
+    backends = entry_points(name="nx-loopback", group="networkx.backends")
+    if backends:
+        networkx.utils.backends.backends["nx-loopback"] = next(iter(backends))
     else:
-        backends = entry_points(name="nx-loopback", group="networkx.backends")
-    networkx.utils.backends.backends["nx-loopback"] = next(iter(backends))
+        warnings.warn(
+            "\n\n             WARNING: Mixed NetworkX configuration! \n\n"
+            "        This environment has mixed configuration for networkx.\n"
+            "        The test object nx-loopback is not configured correctly.\n"
+            "        You should not be seeing this message.\n"
+            "        Try `pip install -e .`, or change your PYTHONPATH\n"
+            "        Make sure python finds the networkx repo you are testing\n\n"
+        )
 
 
 def pytest_collection_modifyitems(config, items):
@@ -121,6 +126,22 @@ def set_warnings():
         "ignore",
         category=DeprecationWarning,
         message="\n\nstrongly_connected_components_recursive",
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nall_triplets"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nrandom_triad"
+    )
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="\n\nk_core")
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nk_shell"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nk_crust"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nk_corona"
     )
 
 
@@ -198,6 +219,7 @@ needs_numpy = [
     "algorithms/node_classification.py",
     "algorithms/non_randomness.py",
     "algorithms/shortest_paths/dense.py",
+    "generators/expanders.py",
     "linalg/bethehessianmatrix.py",
     "linalg/laplacianmatrix.py",
     "utils/misc.py",
@@ -224,6 +246,7 @@ needs_scipy = [
     "convert_matrix.py",
     "drawing/layout.py",
     "generators/spectral_graph_forge.py",
+    "generators/expanders.py",
     "linalg/algebraicconnectivity.py",
     "linalg/attrmatrix.py",
     "linalg/bethehessianmatrix.py",

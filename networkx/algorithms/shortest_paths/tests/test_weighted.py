@@ -612,7 +612,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
     def test_zero_cycle(self):
         G = nx.cycle_graph(5, create_using=nx.DiGraph())
         G.add_edge(2, 3, weight=-4)
-        # check that zero cycle doesnt raise
+        # check that zero cycle doesn't raise
         nx.goldberg_radzik(G, 1)
         nx.bellman_ford_predecessor_and_distance(G, 1)
 
