@@ -1036,7 +1036,7 @@ def geometric_soft_configuration_graph(
 
     # Map hidden degrees into the radial coordiantes
     zeta = 1 if beta > 1 else 1 / beta
-    kappa_min = min(list(kappas.values()))
+    kappa_min = min(kappas.values())
     R_c = 2 * max(1, beta) / (beta * zeta)
     R_hat = (2 / zeta) * math.log(n / math.pi) - R_c * math.log(mu * kappa_min)
     radii = {node: R_hat - R_c * math.log(kappa) for node, kappa in kappas.items()}
