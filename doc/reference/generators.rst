@@ -189,6 +189,7 @@ Geometric
    soft_random_geometric_graph
    thresholded_random_geometric_graph
    waxman_graph
+   geometric_soft_configuration_graph
 
 Line Graph
 ----------
