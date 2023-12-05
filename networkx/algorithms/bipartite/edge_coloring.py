@@ -171,7 +171,7 @@ def kempe_chain_bipartite_edge_coloring(G):
 @nx.utils.not_implemented_for("multigraph")
 @nx._dispatch(name="iterated_matching_edge_coloring")
 def iterated_matching_edge_coloring(G, top_nodes):
-    """ Returns the minimum edge coloring of the bipartite graph `graph`.
+    """Returns the minimum edge coloring of the bipartite graph `graph`.
 
     This function uses the procedure one-color to color the edges of the bipartite
     graph such that no two adjacent edges have the same color.
