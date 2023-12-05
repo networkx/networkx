@@ -12,8 +12,9 @@ __all__ = [
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
 @nx._dispatch(name="bipartite_edge_coloring")
-def bipartite_edge_coloring(G, top_nodes=[], strategy="kempe-chain"):
-    """Returns a valid edge coloring of the bipartite graph `G`.
+def bipartite_edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
+    """
+    Returns a valid edge coloring of the bipartite graph `G`.
 
     An edge coloring is an assignment of colors to the edges of a graph such
     that no two adjacent edges share the same color. In the case of bipartite
@@ -65,14 +66,16 @@ def bipartite_edge_coloring(G, top_nodes=[], strategy="kempe-chain"):
     """
     G = G.copy()
     if not nx.is_bipartite(G):
-        raise ValueError("Not a Bipartite Graph")
+        raise nx.NetworkXError("Not a Bipartite Graph")
 
     if strategy == "iterated-matching":
         # Handle the disconnected Graph case
-        if not nx.is_connected(G) and top_nodes == []:
-            raise ValueError("Disconnected graph : ambiguous solution ")
+        if not nx.is_connected(G) and top_nodes is None:
+            raise nx.AmbiguousSolution(
+                "Disconnected graph: Ambiguous solution for bipartite sets."
+            )
 
-        if top_nodes == []:
+        if top_nodes is None:
             top_nodes, _ = nx.bipartite.sets(G)
         coloring = iterated_matching_edge_coloring(G, top_nodes)
     else:
