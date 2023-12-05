@@ -20,8 +20,8 @@ Basic functions
 
 Edge Coloring
 -------------
-..automodule:: networkx.algorithms.bipartite.edge_coloring
-..autosummary::
+.. automodule:: networkx.algorithms.bipartite.edge_coloring
+.. autosummary::
    :toctree: generated/
 
    bipartite_edge_coloring

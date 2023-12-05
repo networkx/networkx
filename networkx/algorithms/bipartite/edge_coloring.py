@@ -209,33 +209,6 @@ def _color_matching_edges(G, matching, color, coloring):
         coloring[edge] = color
 
 
-def _find_max_degree_vertices(G):
-    """Returns the vertices with the maximum degree in the graph.
-
-    Parameters:
-    -----------
-    G : NetworkX graph
-        The input graph.
-
-    Returns:
-    --------
-    max_degree_nodes : list
-        List of nodes with the maximum degree in the graph.
-    """
-    # Get a dictionary of node degrees
-    degrees = dict(G.degree())
-
-    # Find the maximum degree in the graph
-    max_degree = max(degrees.values())
-
-    # Find nodes with the maximum degree
-    max_degree_nodes = [
-        node for node, degree in degrees.items() if degree == max_degree
-    ]
-
-    return max_degree_nodes
-
-
 def _matching_saturating_max_degree(G, top_nodes=[]):
     """Returns a maximum-degree saturating matching in the bipartite graph `graph`.
 
@@ -251,20 +224,23 @@ def _matching_saturating_max_degree(G, top_nodes=[]):
     matching : dict
         A dictionary representing the maximum-degree saturating matching.
     """
-    max_degree_vertices = _find_max_degree_vertices(G)
+    degrees = dict(G.degree())
+    max_degree = max(degrees.values())
+    max_degree_vertices = {node for node, deg in degrees.items() if deg == max_degree}
 
     # two parts of the bipartite graph
     part_a, part_b = nx.bipartite.sets(G, top_nodes)
 
     # make two different graphs A_major and B_major
-    A_major_nodes = (part_a & set(max_degree_vertices)) | part_b
-    B_major_nodes = (part_b & set(max_degree_vertices)) | part_a
+    A_major_nodes = (part_a & max_degree_vertices) | part_b
+    B_major_nodes = (part_b & max_degree_vertices) | part_a
 
     A_major = G.subgraph(A_major_nodes)
     B_major = G.subgraph(B_major_nodes)
 
-    top_nodes_A = list(set(top_nodes) & set(A_major.nodes()))
-    top_nodes_B = list(set(top_nodes) & set(B_major.nodes()))
+    top_nodes_A = set(top_nodes) & A_major_nodes
+    top_nodes_B = set(top_nodes) & B_major_nodes
+
     M1 = nx.bipartite.maximum_matching(A_major, top_nodes_A)
     M2 = nx.bipartite.maximum_matching(B_major, top_nodes_B)
 
