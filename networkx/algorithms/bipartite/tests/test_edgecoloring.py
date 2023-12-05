@@ -1,4 +1,6 @@
 """Unit tests for the :mod:`networkx.algorithms.bipartite.edge_coloring` module."""
+from collections import defaultdict
+
 import pytest
 
 import networkx as nx
@@ -9,13 +11,10 @@ def _is_proper_edge_coloring(coloring):
     """Checks through each vertex and saves the colors at each vertex to find out
     if there is any conflict
     """
-    vertex_colors = {}  # Dictionary to track colors of incident edges for each vertex
+    vertex_colors = defaultdict(set)
 
     for edge, color in coloring.items():
-        u, v = edge  # Assuming the edges are represented as pairs (u, v)
-
-        if u not in vertex_colors:
-            vertex_colors[u] = set()
+        u, _ = edge  # Assuming the edges are represented as pairs (u, v)
 
         if color in vertex_colors[u]:
             return False
@@ -90,7 +89,7 @@ class TestEdgeColoring_IteratedMatching:
         edges = [(1, 2), (1, 3), (3, 4), (3, 5), (5, 6), (7, 9), (8, 9)]
         G = nx.Graph()
         G.add_edges_from(edges)
-        top_nodes = [1, 4, 5, 9]
+        top_nodes = {1, 4, 5, 9}
         coloring = bipartite_edge_coloring(G, top_nodes, strategy="iterated-matching")
 
         # Check that no vertex has two edges with the same color
