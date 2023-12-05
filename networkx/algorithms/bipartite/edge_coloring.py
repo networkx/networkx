@@ -64,7 +64,7 @@ def bipartite_edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
       the nodes in each bipartite set more than one valid solution is
       possible if the input graph is disconnected.
     """
-    G = G.copy()
+
     if not nx.is_bipartite(G):
         raise nx.NetworkXError("Not a Bipartite Graph")
 
@@ -195,22 +195,22 @@ def iterated_matching_edge_coloring(G, top_nodes):
     # Start coloring with i = 0 color
     i = 0
 
-    while G.edges:
-        matching = _matching_saturating_max_degree(G.copy(), top_nodes)
-        _color_matching_edges(G, matching, i, coloring)
-        G.remove_edges_from(list(matching.items()))
+    G1 = G.copy()
+    while G1.edges:
+        matching = _matching_saturating_max_degree(G1, top_nodes)
+
+        # Inline _color_matching_edges function
+        for u, v in list(matching.items()):
+            edge = (u, v) if u != v else (v, u)  # Ensure consistent order for edge
+            coloring[edge] = i
+
+        G1.remove_edges_from(list(matching.items()))
         i += 1
+
     return coloring
 
 
-def _color_matching_edges(G, matching, color, coloring):
-    """function used to color the edges of the matching with `color`"""
-    for u, v in list(matching.items()):
-        edge = (u, v) if u != v else (v, u)  # Ensure consistent order for edge
-        coloring[edge] = color
-
-
-def _matching_saturating_max_degree(G, top_nodes=[]):
+def _matching_saturating_max_degree(G, top_nodes=None):
     """Returns a maximum-degree saturating matching in the bipartite graph `graph`.
 
     Parameters
@@ -239,8 +239,8 @@ def _matching_saturating_max_degree(G, top_nodes=[]):
     A_major = G.subgraph(A_major_nodes)
     B_major = G.subgraph(B_major_nodes)
 
-    top_nodes_A = set(top_nodes) & A_major_nodes
-    top_nodes_B = set(top_nodes) & B_major_nodes
+    top_nodes_A = top_nodes & A_major_nodes
+    top_nodes_B = top_nodes & B_major_nodes
 
     M1 = nx.bipartite.maximum_matching(A_major, top_nodes_A)
     M2 = nx.bipartite.maximum_matching(B_major, top_nodes_B)
