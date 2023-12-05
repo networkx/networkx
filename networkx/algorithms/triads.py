@@ -180,7 +180,7 @@ def triadic_census(G, nodelist=None):
 
     For undirected graphs, the triadic census can be computed by first converting
     the graph into a directed graph using the ``G.to_directed()`` method.
-    After this conversion, only the triad types 003, 102, 201 and 300 will be 
+    After this conversion, only the triad types 003, 102, 201 and 300 will be
     present in the undirected scenario.
 
     Raises
