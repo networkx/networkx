@@ -13,7 +13,7 @@ __all__ = [
 @nx.utils.not_implemented_for("multigraph")
 @nx._dispatch(name="bipartite_edge_coloring")
 def bipartite_edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
-    """Returns a valid edge coloring of the bipartite graph `G`.
+    """Returns a minimum edge coloring of the bipartite graph `G`.
 
     An edge coloring is an assignment of colors to the edges of a graph such
     that no two adjacent edges share the same color. In the case of bipartite
