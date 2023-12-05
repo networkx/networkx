@@ -20,16 +20,16 @@ def bipartite_edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
     graphs, the coloring ensures that no two edges incident on the same node
     have the same color.
 
-    Two strategies:
+    Two strategies
     --------------
     iterated_matching
     kempe_chain
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     G : NetworkX graph
 
-    Optional Parameter:
+    Optional Parameter
     ------------------
     top_nodes : list, optional
         List of nodes that belong to one node set.
@@ -39,19 +39,20 @@ def bipartite_edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
         "kempe-chain" :
         The default strategy is "kempe-chain".
 
-    Returns :
+    Returns
     --------
     edge_colors : dict
         The edge coloring is returned as a dictionary, `edge_colors`, such that
         `edge_colors[e]` is the color assigned to edge `e`. Colors are represented
         as integers.
 
-    References:
+    References
     -----------
     H. N. Gabow and O. Kariv, “Algorithms for edge coloring bipartite
     graphs,” in Proc. 10th Ann. ACM Symp. Theory of computing. ACM,
     1978, pp. 184–192
     https://dl.acm.org/doi/pdf/10.1145/800133.804346
+
     Raises
     ------
     NetworkXError
@@ -92,15 +93,15 @@ def kempe_chain_bipartite_edge_coloring(G):
     This function uses the procedure augment to color the edges of the bipartite
     graph such that no two adjacent edges have the same color.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     G : NetworkX graph
         The input bipartite graph.
     top_nodes : list
         List of nodes that belong to one node set.
 
-    Returns:
-    --------
+    Returns
+    -------
     coloring : dict
         The edge coloring represented as a dictionary, where `coloring[e]`
         is the color assigned to edge `e`. Colors are represented as integers.
@@ -170,20 +171,20 @@ def kempe_chain_bipartite_edge_coloring(G):
 @nx.utils.not_implemented_for("multigraph")
 @nx._dispatch(name="iterated_matching_edge_coloring")
 def iterated_matching_edge_coloring(G, top_nodes):
-    """Returns the minimum edge coloring of the bipartite graph `graph`.
+    """ Returns the minimum edge coloring of the bipartite graph `graph`.
 
     This function uses the procedure one-color to color the edges of the bipartite
     graph such that no two adjacent edges have the same color.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     graph : NetworkX graph
         The input bipartite graph.
     top_nodes : list
         List of nodes that belong to one node set.
 
-    Returns:
-    --------
+    Returns
+    -------
     coloring : dict
         The edge coloring represented as a dictionary, where `coloring[e]`
         is the color assigned to edge `e`. Colors are represented as integers.
@@ -212,15 +213,15 @@ def _color_matching_edges(G, matching, color, coloring):
 def _matching_saturating_max_degree(G, top_nodes=[]):
     """Returns a maximum-degree saturating matching in the bipartite graph `graph`.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     G : NetworkX graph
         The input bipartite graph.
     top_nodes : list, optional
         List of nodes that belong to the top node set.
 
-    Returns:
-    --------
+    Returns
+    -------
     matching : dict
         A dictionary representing the maximum-degree saturating matching.
     """
@@ -250,8 +251,8 @@ def _matching_saturating_max_degree(G, top_nodes=[]):
 def _combine_matchings(M1, M2, A, B):
     """Combines two matchings `M1` and `M2` in the bipartite graph.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     M1 : dict
         Dictionary representing the first matching.
     M2 : dict
@@ -261,8 +262,8 @@ def _combine_matchings(M1, M2, A, B):
     B : set
         Set of nodes in the second part of the bipartite graph.
 
-    Returns:
-    --------
+    Returns
+    -------
     final_matching : dict
         A dictionary representing the combined matching.
     """
