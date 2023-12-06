@@ -10,8 +10,10 @@ import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.colors as mpl
+import matplotlib.image as mpimg
 from matplotlib import animation
-from matplotlib.animation import FuncAnimation, PillowWriter 
+from matplotlib.animation import FuncAnimation, PillowWriter
+from sphinxcontrib.images import Image
 
 G = nx.dodecahedral_graph()
 
@@ -126,4 +128,8 @@ fig = plt.gcf()
 ani = FuncAnimation(fig, update, interval=50, frames=range(size), blit=True)
 ani.save('crap.gif', writer='imagemagick',  savefig_kwargs={'facecolor':'white'}, fps=1)
 
-.. image:: crap.*
+image = Image('crap.gif', width=200, height=100, scale=50, alt='alternate text', align='right')
+
+img = mpimg.imread('crap.gif')
+plt.imshow(img)
+plt.show()
