@@ -171,7 +171,7 @@ StandaloneHTMLBuilder.supported_image_types = [
     "image/svg+xml",
     "image/gif",
     "image/png",
-    "image/jpeg"
+    "image/jpeg",
 ]
 
 # The style sheet to use for HTML and HTML Help pages. A file of that name
