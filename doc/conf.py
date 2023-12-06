@@ -1,6 +1,7 @@
 import os
 from datetime import date
 from sphinx_gallery.sorting import ExplicitOrder, FileNameSortKey
+from sphinx.builders.html import StandaloneHTMLBuilder
 from warnings import filterwarnings
 
 filterwarnings(
@@ -162,6 +163,16 @@ html_sidebars = {
 }
 html_logo = "_static/networkx_banner.svg"
 html_favicon = "_static/favicon.ico"
+
+# By default, the HTML builder will always prefer the png image.
+# Override the StandaloneHTMLBuilder class with the supported_image_types order
+# to pick up, e.g., an animated gif rather then a png if both are available.
+StandaloneHTMLBuilder.supported_image_types = [
+    'image/svg+xml',
+    'image/gif',
+    'image/png',
+    'image/jpeg'
+]
 
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
