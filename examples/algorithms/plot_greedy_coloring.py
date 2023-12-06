@@ -94,4 +94,21 @@ ani = animation.FuncAnimation(
     frames=100,
 )
 
+## To save the animation to a local file, comment in the following for GIF:
+# ani.save(
+#     "greedy_coloring.gif",
+#     writer="imagemagick",
+#     savefig_kwargs={"facecolor": "white"},
+#     fps=20,
+# )
+## Or/end the following for MP4 in AV1 coding:
+# Writer = animation.writers["ffmpeg"]
+# writer = Writer(
+#     fps=20,
+#     metadata=dict(artist="NetworkX"),
+#     bitrate=1800,
+#     extra_args=["-vcodec", "av1", "-strict", "experimental"],
+# )
+# ani.save("greedy_coloring.mp4", writer=writer)
+
 plt.show()
