@@ -11,6 +11,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.colors as mpl
 from matplotlib import animation
+from matplotlib.animation import FuncAnimation, PillowWriter 
 
 G = nx.dodecahedral_graph()
 
@@ -95,3 +96,34 @@ ani = animation.FuncAnimation(
 )
 
 plt.show()
+
+###############################################################################
+# Rotating 3D graph animated 'gif'.
+# ---------------------------------
+#
+# Rotation of the 3D graph saved to an animated 'gif' file.
+
+# number of nodes
+size = 10
+
+# generate graph
+G=nx.complete_graph(size)
+
+frame = np.random.randint(0, 5, (size, size))
+
+pos = nx.spring_layout(G)
+nodes = nx.draw_networkx_nodes(G, pos)
+edges = nx.draw_networkx_edges(G, pos)
+plt.axis('off')
+
+def update(i):
+    nc = frame[i]
+    nodes.set_array(nc)
+    return nodes,
+
+# output animation; its important I save it
+fig = plt.gcf()
+ani = FuncAnimation(fig, update, interval=50, frames=range(size), blit=True)
+ani.save('crap.gif', writer='imagemagick',  savefig_kwargs={'facecolor':'white'}, fps=1)
+
+.. image:: crap.*
