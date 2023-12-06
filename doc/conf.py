@@ -168,10 +168,10 @@ html_favicon = "_static/favicon.ico"
 # Override the StandaloneHTMLBuilder class with the supported_image_types order
 # to pick up, e.g., an animated gif rather then a png if both are available.
 StandaloneHTMLBuilder.supported_image_types = [
-    'image/svg+xml',
-    'image/gif',
-    'image/png',
-    'image/jpeg'
+    "image/svg+xml",
+    "image/gif",
+    "image/png",
+    "image/jpeg"
 ]
 
 # The style sheet to use for HTML and HTML Help pages. A file of that name
