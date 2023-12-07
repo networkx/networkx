@@ -548,7 +548,7 @@ def triad_type(G):
 
 @not_implemented_for("undirected")
 @py_random_state(1)
-@nx._dispatch
+@nx._dispatch(preserve_all_attrs=True)
 def random_triad(G, seed=None):
     """Returns a random triad from a directed graph.
 

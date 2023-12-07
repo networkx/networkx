@@ -248,8 +248,8 @@ def binomial_tree(n, create_using=None):
     return G
 
 
-@nodes_or_number(0)
 @nx._dispatch(graphs=None)
+@nodes_or_number(0)
 def complete_graph(n, create_using=None):
     """Return the complete graph `K_n` with n nodes.
 
@@ -385,8 +385,8 @@ def circulant_graph(n, offsets, create_using=None):
     return G
 
 
-@nodes_or_number(0)
 @nx._dispatch(graphs=None)
+@nodes_or_number(0)
 def cycle_graph(n, create_using=None):
     """Returns the cycle graph $C_n$ of cyclically connected nodes.
 
@@ -471,8 +471,8 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     return G
 
 
-@nodes_or_number(0)
 @nx._dispatch(graphs=None)
+@nodes_or_number(0)
 def empty_graph(n=0, create_using=None, default=Graph):
     """Returns the empty graph with n nodes and zero edges.
 
@@ -585,8 +585,8 @@ def ladder_graph(n, create_using=None):
     return G
 
 
-@nodes_or_number([0, 1])
 @nx._dispatch(graphs=None)
+@nodes_or_number([0, 1])
 def lollipop_graph(m, n, create_using=None):
     """Returns the Lollipop Graph; ``K_m`` connected to ``P_n``.
 
@@ -659,8 +659,8 @@ def null_graph(create_using=None):
     return G
 
 
-@nodes_or_number(0)
 @nx._dispatch(graphs=None)
+@nodes_or_number(0)
 def path_graph(n, create_using=None):
     """Returns the Path graph `P_n` of linearly connected nodes.
 
@@ -681,8 +681,8 @@ def path_graph(n, create_using=None):
     return G
 
 
-@nodes_or_number(0)
 @nx._dispatch(graphs=None)
+@nodes_or_number(0)
 def star_graph(n, create_using=None):
     """Return the star graph
 
@@ -716,8 +716,8 @@ def star_graph(n, create_using=None):
     return G
 
 
-@nodes_or_number([0, 1])
 @nx._dispatch(graphs=None)
+@nodes_or_number([0, 1])
 def tadpole_graph(m, n, create_using=None):
     """Returns the (m,n)-tadpole graph; ``C_m`` connected to ``P_n``.
 
@@ -815,8 +815,8 @@ def turan_graph(n, r):
     return G
 
 
-@nodes_or_number(0)
 @nx._dispatch(graphs=None)
+@nodes_or_number(0)
 def wheel_graph(n, create_using=None):
     """Return the wheel graph
 
