@@ -151,14 +151,16 @@ def total_spanning_tree_weight(G, weight=None, root=None):
     """
     Returns the total weight of all spanning trees of `G`.
 
-    The weight of a spanning tree is the multiplication of its edge weights.
-    The function returns the sum over all weighted spanning trees.
-    The total weight is computed based on Kirchhoff's Matrix Tree Theorem [1]_, [2]_.
+    Kirchoff's Tree Matrix Theorem [1]_, [2]_ states that the determinant of any cofactor of the
+    Laplacian matrix of a graph is the number of spanning trees in the graph. For a
+    weighted Laplacian matrix, it is the sum across all spanning trees of the
+    multiplicative weight of each tree. That is, the weight of each tree is the
+    product of its edge weights.
 
     For unweighted graphs, the total weight equals the number of spanning trees in `G`.
 
-    For directed graphs, the total weight is computed for a specific root node `root`.
-    We use the convention [3]_ that all weighted spanning trees end in `root`, so the node is a sink.
+    For directed graphs, the total weight follows by summing over all directed spanning trees in `G`
+    that end in the node `root` [3]_.
 
     Parameters
     ----------
@@ -173,7 +175,7 @@ def total_spanning_tree_weight(G, weight=None, root=None):
 
     Returns
     -------
-    t : float
+    total_weight : float
         Undirected graphs:
             The sum of the total multiplicative weights for all spanning trees in `G`.
         Directed graphs:
@@ -225,9 +227,9 @@ def total_spanning_tree_weight(G, weight=None, root=None):
     import scipy as sp
 
     graph_is_directed = nx.is_directed(G)
-    if graph_is_directed == False and not nx.is_connected(G):
+    if not graph_is_directed and not nx.is_connected(G):
         raise nx.NetworkXError("Graph G must be connected.")
-    if graph_is_directed and root == None:
+    if graph_is_directed and root is None:
         raise nx.NetworkXError("Spanning trees in directed graphs require a root node.")
     if graph_is_directed and root not in G:
         raise nx.NetworkXError("The node root is not in the graph G.")
@@ -246,13 +248,13 @@ def total_spanning_tree_weight(G, weight=None, root=None):
         L = D - A
 
     # Remove one row/column corresponding to node `root`
-    if graph_is_directed == False:
-        i = 0
-    else:
+    if graph_is_directed:
         i = list(G).index(root)
+    else:
+        i = 0
     L = L.todense()
-    L = np.delete(L, i, 0)
-    L = np.delete(L, i, 1)
+    L = np.delete(L, i, axis=0)
+    L = np.delete(L, i, axis=1)
 
     # Compute sum of weight of all spanning trees
     return np.linalg.det(L)

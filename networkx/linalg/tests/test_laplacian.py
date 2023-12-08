@@ -259,19 +259,23 @@ class TestTotalSpanningTreeWeight:
             nx.total_spanning_tree_weight(G)
 
     def test_tstw_weight(self):
-        # weights are ignored
         G = nx.Graph()
         G.add_edge(1, 2, weight=1)
         G.add_edge(1, 3, weight=1)
         G.add_edge(2, 3, weight=2)
+        # weights are ignored
+        assert np.isclose(nx.total_spanning_tree_weight(G), 3)
+        # including weight
         assert np.isclose(nx.total_spanning_tree_weight(G, "weight"), 5)
 
     def test_tstw_negative_weight(self):
-        # weights are ignored
         G = nx.Graph()
         G.add_edge(1, 2, weight=1)
         G.add_edge(1, 3, weight=-1)
         G.add_edge(2, 3, weight=-2)
+        # weights are ignored
+        assert np.isclose(nx.total_spanning_tree_weight(G), 3)
+        # including weight
         assert np.isclose(nx.total_spanning_tree_weight(G, "weight"), -1)
 
     def test_tstw_selfloop(self):
