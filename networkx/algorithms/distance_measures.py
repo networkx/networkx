@@ -933,7 +933,7 @@ def kemeny_constant(G, *, weight=None):
 
     Returns
     -------
-    K : float
+    float
         The Kemeny constant of the graph `G`.
 
     Raises
