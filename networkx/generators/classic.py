@@ -674,27 +674,23 @@ def kneser_graph(n, k):
     as the Kneser Graph with parameters `5,2`.
     """
     if n <= 0:
-        raise ValueError("Parameter n should be a strictly positive integer")
+        raise NetworkXError("n should be greater than zero")
     if k <= 0 or k > n:
-        raise ValueError(
-            "Parameter k should be a strictly positive integer inferior to n"
-        )
+        raise NetworkXError("k should be greater than zero and smaller than n")
 
-    G = nx.Graph(name=f"Kneser graph with parameters {n},{k}")
-
+    G = nx.Graph()
     # Create all k-subsets of [0, 1, ..., n-1]
     subsets = list(itertools.combinations(range(n), k))
 
     if 2 * k > n:
         G.add_nodes_from(subsets)
 
-    set_universe = set(range(n))
+    universe = set(range(n))
 
     for s in subsets:
-        complement = set_universe - set(s)
+        complement = universe - set(s)
         for t in itertools.combinations(complement, k):
             G.add_edge(s, tuple(t))
-
     return G
 
 
