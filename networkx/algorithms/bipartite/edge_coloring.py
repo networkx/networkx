@@ -178,7 +178,7 @@ def iterated_matching_edge_coloring(G, top_nodes):
 
     Parameters
     ----------
-    graph : NetworkX graph
+    G : NetworkX graph
         The input bipartite graph.
     top_nodes : list
         List of nodes that belong to one node set.
