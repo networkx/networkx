@@ -30,6 +30,7 @@ __all__ = [
     "dorogovtsev_goltsev_mendes_graph",
     "empty_graph",
     "full_rary_tree",
+    "kneser_graph",
     "ladder_graph",
     "lollipop_graph",
     "null_graph",
@@ -63,40 +64,6 @@ def _tree_edges(n, r):
                 yield source, target
             except StopIteration:
                 break
-
-
-@nx._dispatch(graphs=None)
-def full_rary_tree(r, n, create_using=None):
-    """Creates a full r-ary tree of `n` nodes.
-
-    Sometimes called a k-ary, n-ary, or m-ary tree.
-    "... all non-leaf nodes have exactly r children and all levels
-    are full except for some rightmost position of the bottom level
-    (if a leaf at the bottom level is missing, then so are all of the
-    leaves to its right." [1]_
-
-    Parameters
-    ----------
-    r : int
-        branching factor of the tree
-    n : int
-        Number of nodes in the tree
-    create_using : NetworkX graph constructor, optional (default=nx.Graph)
-       Graph type to create. If graph instance, then cleared before populated.
-
-    Returns
-    -------
-    G : networkx Graph
-        An r-ary tree with n nodes
-
-    References
-    ----------
-    .. [1] An introduction to data structures and algorithms,
-           James Andrew Storer,  Birkhauser Boston 2001, (page 225).
-    """
-    G = empty_graph(n, create_using)
-    G.add_edges_from(_tree_edges(n, r))
-    return G
 
 
 @nx._dispatch(graphs=None)
@@ -293,6 +260,93 @@ def complete_graph(n, create_using=None):
         else:
             edges = itertools.combinations(nodes, 2)
         G.add_edges_from(edges)
+    return G
+
+
+@nx._dispatch(graphs=None)
+def complete_multipartite_graph(*subset_sizes):
+    """Returns the complete multipartite graph with the specified subset sizes.
+
+    Parameters
+    ----------
+    subset_sizes : tuple of integers or tuple of node iterables
+       The arguments can either all be integer number of nodes or they
+       can all be iterables of nodes. If integers, they represent the
+       number of nodes in each subset of the multipartite graph.
+       If iterables, each is used to create the nodes for that subset.
+       The length of subset_sizes is the number of subsets.
+
+    Returns
+    -------
+    G : NetworkX Graph
+       Returns the complete multipartite graph with the specified subsets.
+
+       For each node, the node attribute 'subset' is an integer
+       indicating which subset contains the node.
+
+    Examples
+    --------
+    Creating a complete tripartite graph, with subsets of one, two, and three
+    nodes, respectively.
+
+        >>> G = nx.complete_multipartite_graph(1, 2, 3)
+        >>> [G.nodes[u]["subset"] for u in G]
+        [0, 1, 1, 2, 2, 2]
+        >>> list(G.edges(0))
+        [(0, 1), (0, 2), (0, 3), (0, 4), (0, 5)]
+        >>> list(G.edges(2))
+        [(2, 0), (2, 3), (2, 4), (2, 5)]
+        >>> list(G.edges(4))
+        [(4, 0), (4, 1), (4, 2)]
+
+        >>> G = nx.complete_multipartite_graph("a", "bc", "def")
+        >>> [G.nodes[u]["subset"] for u in sorted(G)]
+        [0, 1, 1, 2, 2, 2]
+
+    Notes
+    -----
+    This function generalizes several other graph builder functions.
+
+    - If no subset sizes are given, this returns the null graph.
+    - If a single subset size `n` is given, this returns the empty graph on
+      `n` nodes.
+    - If two subset sizes `m` and `n` are given, this returns the complete
+      bipartite graph on `m + n` nodes.
+    - If subset sizes `1` and `n` are given, this returns the star graph on
+      `n + 1` nodes.
+
+    See also
+    --------
+    complete_bipartite_graph
+    """
+    # The complete multipartite graph is an undirected simple graph.
+    G = Graph()
+
+    if len(subset_sizes) == 0:
+        return G
+
+    # set up subsets of nodes
+    try:
+        extents = pairwise(itertools.accumulate((0,) + subset_sizes))
+        subsets = [range(start, end) for start, end in extents]
+    except TypeError:
+        subsets = subset_sizes
+    else:
+        if any(size < 0 for size in subset_sizes):
+            raise NetworkXError(f"Negative number of nodes not valid: {subset_sizes}")
+
+    # add nodes with subset attribute
+    # while checking that ints are not mixed with iterables
+    try:
+        for i, subset in enumerate(subsets):
+            G.add_nodes_from(subset, subset=i)
+    except TypeError as err:
+        raise NetworkXError("Arguments must be all ints or all iterables") from err
+
+    # Across subsets, all nodes should be adjacent.
+    # We can use itertools.combinations() because undirected.
+    for subset1, subset2 in itertools.combinations(subsets, 2):
+        G.add_edges_from(itertools.product(subset1, subset2))
     return G
 
 
@@ -563,6 +617,84 @@ def empty_graph(n=0, create_using=None, default=Graph):
 
     _, nodes = n
     G.add_nodes_from(nodes)
+    return G
+
+
+@nx._dispatch(graphs=None)
+def full_rary_tree(r, n, create_using=None):
+    """Creates a full r-ary tree of `n` nodes.
+
+    Sometimes called a k-ary, n-ary, or m-ary tree.
+    "... all non-leaf nodes have exactly r children and all levels
+    are full except for some rightmost position of the bottom level
+    (if a leaf at the bottom level is missing, then so are all of the
+    leaves to its right." [1]_
+
+    Parameters
+    ----------
+    r : int
+        branching factor of the tree
+    n : int
+        Number of nodes in the tree
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
+
+    Returns
+    -------
+    G : networkx Graph
+        An r-ary tree with n nodes
+
+    References
+    ----------
+    .. [1] An introduction to data structures and algorithms,
+           James Andrew Storer,  Birkhauser Boston 2001, (page 225).
+    """
+    G = empty_graph(n, create_using)
+    G.add_edges_from(_tree_edges(n, r))
+    return G
+
+
+def kneser_graph(n, k):
+    """
+    Returns the Kneser Graph with parameters `n, k`.
+
+    The Kneser Graph with parameters `n,k` is the graph
+    whose vertices are the `k`-subsets of `[0,1,\dots,n-1]`, and such
+    that two vertices are adjacent if their corresponding sets
+    are disjoint.
+
+    Parameters:
+        n (int): Total number of elements.
+        k (int): Size of the subsets.
+
+    Returns:
+        networkx.Graph: The Kneser Graph.
+
+    For example, the Petersen Graph can be defined
+    as the Kneser Graph with parameters `5,2`.
+    """
+    if n <= 0:
+        raise ValueError("Parameter n should be a strictly positive integer")
+    if k <= 0 or k > n:
+        raise ValueError(
+            "Parameter k should be a strictly positive integer inferior to n"
+        )
+
+    G = nx.Graph(name=f"Kneser graph with parameters {n},{k}")
+
+    # Create all k-subsets of [0, 1, ..., n-1]
+    subsets = list(itertools.combinations(range(n), k))
+
+    if 2 * k > n:
+        G.add_nodes_from(subsets)
+
+    set_universe = set(range(n))
+
+    for s in subsets:
+        complement = set_universe - set(s)
+        for t in itertools.combinations(complement, k):
+            G.add_edge(s, tuple(t))
+
     return G
 
 
@@ -844,91 +976,4 @@ def wheel_graph(n, create_using=None):
         G.add_edges_from((hub, node) for node in rim)
         if len(rim) > 1:
             G.add_edges_from(pairwise(rim, cyclic=True))
-    return G
-
-
-@nx._dispatch(graphs=None)
-def complete_multipartite_graph(*subset_sizes):
-    """Returns the complete multipartite graph with the specified subset sizes.
-
-    Parameters
-    ----------
-    subset_sizes : tuple of integers or tuple of node iterables
-       The arguments can either all be integer number of nodes or they
-       can all be iterables of nodes. If integers, they represent the
-       number of nodes in each subset of the multipartite graph.
-       If iterables, each is used to create the nodes for that subset.
-       The length of subset_sizes is the number of subsets.
-
-    Returns
-    -------
-    G : NetworkX Graph
-       Returns the complete multipartite graph with the specified subsets.
-
-       For each node, the node attribute 'subset' is an integer
-       indicating which subset contains the node.
-
-    Examples
-    --------
-    Creating a complete tripartite graph, with subsets of one, two, and three
-    nodes, respectively.
-
-        >>> G = nx.complete_multipartite_graph(1, 2, 3)
-        >>> [G.nodes[u]["subset"] for u in G]
-        [0, 1, 1, 2, 2, 2]
-        >>> list(G.edges(0))
-        [(0, 1), (0, 2), (0, 3), (0, 4), (0, 5)]
-        >>> list(G.edges(2))
-        [(2, 0), (2, 3), (2, 4), (2, 5)]
-        >>> list(G.edges(4))
-        [(4, 0), (4, 1), (4, 2)]
-
-        >>> G = nx.complete_multipartite_graph("a", "bc", "def")
-        >>> [G.nodes[u]["subset"] for u in sorted(G)]
-        [0, 1, 1, 2, 2, 2]
-
-    Notes
-    -----
-    This function generalizes several other graph builder functions.
-
-    - If no subset sizes are given, this returns the null graph.
-    - If a single subset size `n` is given, this returns the empty graph on
-      `n` nodes.
-    - If two subset sizes `m` and `n` are given, this returns the complete
-      bipartite graph on `m + n` nodes.
-    - If subset sizes `1` and `n` are given, this returns the star graph on
-      `n + 1` nodes.
-
-    See also
-    --------
-    complete_bipartite_graph
-    """
-    # The complete multipartite graph is an undirected simple graph.
-    G = Graph()
-
-    if len(subset_sizes) == 0:
-        return G
-
-    # set up subsets of nodes
-    try:
-        extents = pairwise(itertools.accumulate((0,) + subset_sizes))
-        subsets = [range(start, end) for start, end in extents]
-    except TypeError:
-        subsets = subset_sizes
-    else:
-        if any(size < 0 for size in subset_sizes):
-            raise NetworkXError(f"Negative number of nodes not valid: {subset_sizes}")
-
-    # add nodes with subset attribute
-    # while checking that ints are not mixed with iterables
-    try:
-        for i, subset in enumerate(subsets):
-            G.add_nodes_from(subset, subset=i)
-    except TypeError as err:
-        raise NetworkXError("Arguments must be all ints or all iterables") from err
-
-    # Across subsets, all nodes should be adjacent.
-    # We can use itertools.combinations() because undirected.
-    for subset1, subset2 in itertools.combinations(subsets, 2):
-        G.add_edges_from(itertools.product(subset1, subset2))
     return G
