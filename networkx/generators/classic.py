@@ -655,23 +655,34 @@ def full_rary_tree(r, n, create_using=None):
 
 
 def kneser_graph(n, k):
-    """
-    Returns the Kneser Graph with parameters `n, k`.
+    """Returns the Kneser Graph with parameters $n$ and $k$.
 
-    The Kneser Graph with parameters `n,k` is the graph
-    whose vertices are the `k`-subsets of `[0,1,\dots,n-1]`, and such
-    that two vertices are adjacent if their corresponding sets
+    The Kneser Graph is the graph whose vertices are the $k$-subsets of
+    range($n$), such that two vertices are adjacent if their corresponding sets
     are disjoint.
 
-    Parameters:
-        n (int): Total number of elements.
-        k (int): Size of the subsets.
+    Parameters
+    ----------
+        n: int
+        Total number of elements.
 
-    Returns:
-        networkx.Graph: The Kneser Graph.
+        k: int
+        Size of the subsets.
 
-    For example, the Petersen Graph can be defined
-    as the Kneser Graph with parameters `5,2`.
+    Returns
+    -------
+    G : NetworkX Graph
+
+    Examples
+    --------
+    >>> G = nx.kneser_graph(5, 2)
+    >>> G.number_of_nodes()
+    10
+    >>> G.number_of_edges()
+    15
+    >>> nx.is_isomorphic(G, nx.petersen_graph())
+    True
+
     """
     if n <= 0:
         raise NetworkXError("n should be greater than zero")
