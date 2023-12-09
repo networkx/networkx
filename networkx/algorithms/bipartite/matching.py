@@ -379,7 +379,8 @@ def _is_connected_by_alternating_path(G, v, matched_edges, unmatched_edges, targ
     # check for alternating paths starting with edges not in the
     # matching.
     return _alternating_dfs(v, along_matched=True) or _alternating_dfs(
-        v, along_matched=False
+        v,
+        along_matched=False,
     )
 
 
@@ -416,7 +417,11 @@ def _connected_by_alternating_paths(G, matching, targets):
         for v in G
         if v in targets
         or _is_connected_by_alternating_path(
-            G, v, matched_edges, unmatched_edges, targets
+            G,
+            v,
+            matched_edges,
+            unmatched_edges,
+            targets,
         )
     }
 
@@ -577,7 +582,11 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     # where edges are missing (as opposed to zeros, which is what one would
     # get by using toarray on the sparse matrix).
     weights_sparse = biadjacency_matrix(
-        G, row_order=U, column_order=V, weight=weight, format="coo"
+        G,
+        row_order=U,
+        column_order=V,
+        weight=weight,
+        format="coo",
     )
     weights = np.full(weights_sparse.shape, np.inf)
     weights[weights_sparse.row, weights_sparse.col] = weights_sparse.data
