@@ -20,10 +20,6 @@ def bipartite_edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
     graphs, the coloring ensures that no two edges incident on the same node
     have the same color.
 
-    Two strategies
-    --------------
-    iterated_matching
-    kempe_chain
 
     Parameters
     ----------
