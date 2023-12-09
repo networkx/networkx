@@ -125,8 +125,7 @@ def kempe_chain_bipartite_edge_coloring(G):
     # dictionary of dictionary
     used_colors = {node: {} for node in G.nodes}
 
-    for edge in G.edges:
-        u, v = edge
+    for u, v in G.edges:
         # Get the colors of edges ending at u and v
         u_colors = set(used_colors[u].keys())
         v_colors = set(used_colors[v].keys())
