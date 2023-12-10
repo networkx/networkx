@@ -24,10 +24,9 @@ def _get_broadcast_centers(G, v, values, target):
 def tree_broadcast_center(G):
     """Return the Broadcast Center of the tree G.
 
-    This is a linear algorithm for determining the broadcast center of any tree with N vertices,
-    as a by-product it can also determine the broadcast time of any vertex in the tree.
-    The broadcast time of a vertex v in a graph G is the minimum number of time units required to broadcast from v.
-    The broadcast center of a graph G is one of the vertices having minimum broadcast time.
+    The broadcast center of a graph G denotes the set of vertices having minimum broadcast time [1]_.
+    This is a linear algorithm for determining the broadcast center of a tree with N vertices,
+    as a by-product it can also determine the broadcast time from the broadcast center.
 
     Parameters
     ----------
@@ -106,7 +105,7 @@ def tree_broadcast_time(G, node=None):
     - Each call only involves two adjacent vertices: a sender and a receiver.
     The minimum broadcast time of a vertex is defined as the minimum amount of time required to complete
     broadcasting starting from the originator.
-    The broadcast time of a graph is defined as the maximum broadcast time from all its vertices.
+    The broadcast time of a graph is the maximum time required to broadcast from any vertex in the graph [1]_.
 
     Parameters
     ----------
@@ -129,11 +128,17 @@ def tree_broadcast_time(G, node=None):
 
     References
     ----------
-    .. [1] Slater, P.J., Cockayne, E.J., Hedetniemi, S.T,
-       Information dissemination in trees. SIAM J.Comput. 10(4), 692–701 (1981)
+    .. [1] Harutyunyan, H. A. and Li, Z. "A Simple Construction of Broadcast Graphs."
+    In Computing and Combinatorics. COCOON 2019 (Ed. D. Z. Du and C. Tian.) Cham,
+    Switzerland: Springer, pp. 240-253, 2019.
     """
     b_T, b_C = tree_broadcast_center(G)
     if node is not None:
         return b_T + min(nx.shortest_path_length(G, node, u) for u in b_C)
     else:
-        return b_T + max(min(nx.shortest_path_length(G, v, u) for u in b_C) for v in G)
+        dist_from_center = dict.fromkeys(G, len(G))
+        for u in b_C:
+            for v, dist in nx.shortest_path_length(G, u).items():
+                if dist < dist_from_center[v]:
+                    dist_from_center[v] = dist
+        return b_T + max(dist_from_center.values())
