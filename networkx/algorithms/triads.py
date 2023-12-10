@@ -178,6 +178,11 @@ def triadic_census(G, nodelist=None):
     This algorithm has complexity $O(m)$ where $m$ is the number of edges in
     the graph.
 
+    For undirected graphs, the triadic census can be computed by first converting
+    the graph into a directed graph using the ``G.to_directed()`` method.
+    After this conversion, only the triad types 003, 102, 201 and 300 will be
+    present in the undirected scenario.
+
     Raises
     ------
     ValueError
@@ -543,9 +548,16 @@ def triad_type(G):
 
 @not_implemented_for("undirected")
 @py_random_state(1)
-@nx._dispatch
+@nx._dispatch(preserve_all_attrs=True)
 def random_triad(G, seed=None):
     """Returns a random triad from a directed graph.
+
+    .. deprecated:: 3.3
+
+       random_triad is deprecated and will be removed in version 3.5.
+       Use random sampling directly instead::
+
+          G.subgraph(random.sample(list(G), 3))
 
     Parameters
     ----------
@@ -573,6 +585,17 @@ def random_triad(G, seed=None):
     OutEdgeView([(1, 2)])
 
     """
+    import warnings
+
+    warnings.warn(
+        (
+            "\n\nrandom_triad is deprecated and will be removed in NetworkX v3.5.\n"
+            "Use random.sample instead, e.g.::\n\n"
+            "\tG.subgraph(random.sample(list(G), 3))\n"
+        ),
+        category=DeprecationWarning,
+        stacklevel=5,
+    )
     if len(G) < 3:
         raise nx.NetworkXError(
             f"G needs at least 3 nodes to form a triad; (it has {len(G)} nodes)"

@@ -285,7 +285,7 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
     Raises
     ------
     NetworkXError
-      If p_in,p_out are not in [0,1] or
+      If `p_in`, `p_out` are not in `[0, 1]`
 
     Examples
     --------

@@ -69,7 +69,7 @@ def is_k_regular(G, k):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch(edge_attrs="matching_weight")
+@nx._dispatch(preserve_edge_attrs=True)
 def k_factor(G, k, matching_weight="weight"):
     """Compute a k-factor of G
 

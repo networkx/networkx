@@ -91,6 +91,8 @@ import warnings
 from functools import partial
 from importlib.metadata import entry_points
 
+import networkx as nx
+
 from ..exception import NetworkXNotImplemented
 
 __all__ = ["_dispatch"]
@@ -832,14 +834,51 @@ class _dispatch:
                 msg += " with the given arguments"
             pytest.xfail(msg)
 
+        from collections.abc import Iterator
+        from copy import copy
+        from io import BufferedReader, BytesIO
+        from itertools import tee
+        from random import Random
+
+        # We sometimes compare the backend result to the original result,
+        # so we need two sets of arguments. We tee iterators and copy
+        # random state so that they may be used twice.
+        if not args:
+            args1 = args2 = args
+        else:
+            args1, args2 = zip(
+                *(
+                    (arg, copy(arg))
+                    if isinstance(arg, Random | BytesIO)
+                    else tee(arg)
+                    if isinstance(arg, Iterator) and not isinstance(arg, BufferedReader)
+                    else (arg, arg)
+                    for arg in args
+                )
+            )
+        if not kwargs:
+            kwargs1 = kwargs2 = kwargs
+        else:
+            kwargs1, kwargs2 = zip(
+                *(
+                    ((k, v), (k, copy(v)))
+                    if isinstance(v, Random | BytesIO)
+                    else ((k, (teed := tee(v))[0]), (k, teed[1]))
+                    if isinstance(v, Iterator) and not isinstance(v, BufferedReader)
+                    else ((k, v), (k, v))
+                    for k, v in kwargs.items()
+                )
+            )
+            kwargs1 = dict(kwargs1)
+            kwargs2 = dict(kwargs2)
         try:
             converted_args, converted_kwargs = self._convert_arguments(
-                backend_name, args, kwargs
+                backend_name, args1, kwargs1
             )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, NetworkXNotImplemented) as exc:
             if fallback_to_nx:
-                return self.orig_func(*args, **kwargs)
+                return self.orig_func(*args2, **kwargs2)
             import pytest
 
             pytest.xfail(
@@ -849,6 +888,7 @@ class _dispatch:
         if self.name in {
             "edmonds_karp_core",
             "barycenter",
+            "contracted_edge",
             "contracted_nodes",
             "stochastic_graph",
             "relabel_nodes",
@@ -856,7 +896,7 @@ class _dispatch:
             # Special-case algorithms that mutate input graphs
             bound = self.__signature__.bind(*converted_args, **converted_kwargs)
             bound.apply_defaults()
-            bound2 = self.__signature__.bind(*args, **kwargs)
+            bound2 = self.__signature__.bind(*args2, **kwargs2)
             bound2.apply_defaults()
             if self.name == "edmonds_karp_core":
                 R1 = backend.convert_to_nx(bound.arguments["R"])
@@ -869,7 +909,10 @@ class _dispatch:
                 attr = bound.arguments["attr"]
                 for k, v in G1.nodes.items():
                     G2.nodes[k][attr] = v[attr]
-            elif self.name == "contracted_nodes" and not bound.arguments["copy"]:
+            elif (
+                self.name in {"contracted_nodes", "contracted_edge"}
+                and not bound.arguments["copy"]
+            ):
                 # Edges and nodes changed; node "contraction" and edge "weight" attrs
                 G1 = backend.convert_to_nx(bound.arguments["G"])
                 G2 = bound2.arguments["G"]
@@ -895,8 +938,43 @@ class _dispatch:
                     G2._succ.clear()
                     G2._succ.update(G1._succ)
                 return G2
+            return backend.convert_to_nx(result)
 
-        return backend.convert_to_nx(result, name=self.name)
+        converted_result = backend.convert_to_nx(result)
+        if isinstance(converted_result, nx.Graph) and self.name not in {
+            "boykov_kolmogorov",
+            "preflow_push",
+            "quotient_graph",
+            "shortest_augmenting_path",
+            "spectral_graph_forge",
+            # We don't handle tempfile.NamedTemporaryFile arguments
+            "read_gml",
+            "read_graph6",
+            "read_sparse6",
+            # We don't handle io.BufferedReader arguments
+            "bipartite_read_edgelist",
+            "read_adjlist",
+            "read_edgelist",
+            "read_graphml",
+            "read_multiline_adjlist",
+            "read_pajek",
+            # graph comparison fails b/c of nan values
+            "read_gexf",
+        }:
+            # For graph return types (e.g. generators), we compare that results are
+            # the same between the backend and networkx, then return the original
+            # networkx result so the iteration order will be consistent in tests.
+            G = self.orig_func(*args2, **kwargs2)
+            if not nx.utils.graphs_equal(G, converted_result):
+                assert G.number_of_nodes() == converted_result.number_of_nodes()
+                assert G.number_of_edges() == converted_result.number_of_edges()
+                assert G.graph == converted_result.graph
+                assert G.nodes == converted_result.nodes
+                assert G.adj == converted_result.adj
+                assert type(G) is type(converted_result)
+                raise AssertionError("Graphs are not equal")
+            return G
+        return converted_result
 
     def _make_doc(self):
         if not self.backends:
