@@ -36,7 +36,8 @@ def power_centrality(G, beta=0.1, normalized=False, weight=None):
     $\beta > 0$, a node becomes more powerful as its neighbors becomes more powerful
     (as occurs in cooperative relations). When $\beta < 0$, a node becomes powerful
     only when their neighbors become weaker (as occurs in competitive or antagonistic
-    relations).
+    relations). When $\beta = 1 / \kappa$ ($\kappa$ is the largest eigenvalue of
+    $\mathbf{A}$), this measure is equivalent to eigenvector centrality [3]_.
 
     Parameters
     ----------
