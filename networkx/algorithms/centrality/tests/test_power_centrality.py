@@ -8,19 +8,20 @@ class TestPowerCentrality:
     def setup_class(cls):
         global np
         np = pytest.importorskip("numpy")
+        pytest.importorskip("scipy")
 
     def test_K5(self):
         G = nx.complete_graph(5)
         b = nx.power_centrality(G)
         for n in sorted(G):
-            assert b[n] == pytest.approx(1, abs=1e-4)
+            assert b[n] == pytest.approx(1, abs=1e-7)
 
     def test_P3(self):
         G = nx.path_graph(3)
         b = nx.power_centrality(G)
         b_answer = {0: 0.7480544714310444, 1: 1.3714331976235816, 2: 0.7480544714310444}
         for n in sorted(G):
-            assert b[n] == pytest.approx(b_answer[n], abs=1e-4)
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_S3(self):
         G = nx.star_graph(3)
@@ -32,27 +33,27 @@ class TestPowerCentrality:
             3: 0.6508140266182866,
         }
         for n in sorted(G):
-            assert b[n] == pytest.approx(b_answer[n], abs=1e-4)
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_directed_P3(self):
         G = nx.path_graph(3, nx.DiGraph)
         b = nx.power_centrality(G)
         b_answer = {0: 1.2816138016780187, 1: 1.1651034560709261, 2: 0.0}
         for n in sorted(G):
-            assert b[n] == pytest.approx(b_answer[n], abs=1e-4)
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_directed_S3(self):
         G = nx.DiGraph([(0, 1), (0, 2), (0, 3)])
         b = nx.power_centrality(G)
         b_answer = {0: 2, 1: 0, 2: 0, 3: 0}
         for n in sorted(G):
-            assert b[n] == pytest.approx(b_answer[n], abs=1e-4)
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_directed_C3(self):
         G = nx.cycle_graph(3, nx.DiGraph)
         b = nx.power_centrality(G)
         for n in sorted(G):
-            assert b[n] == pytest.approx(1, abs=1e-4)
+            assert b[n] == pytest.approx(1, abs=1e-7)
 
     def test_weighted(self):
         edges = [
@@ -72,12 +73,12 @@ class TestPowerCentrality:
             3: 0.9512559689556005,
         }
         for n in sorted(G):
-            assert b[n] == pytest.approx(b_answer[n], abs=1e-4)
+            assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_normalized(self):
         G = nx.complete_graph(5)
         b = nx.power_centrality(G, normalized=True)
-        assert pytest.approx(sum(b.values()), abs=1e-4) == 1
+        assert pytest.approx(sum(b.values()), abs=1e-7) == 1
 
     def test_cook_1c(self):
         """Fig. 2 network 1c in Bonacich (1987). Results identical to Tab. 3"""
@@ -136,7 +137,7 @@ class TestPowerCentrality:
         for beta, b_answer in b_answers.items():
             b = nx.power_centrality(G, beta=beta)
             for n in sorted(G):
-                assert b[n] == pytest.approx(b_answer[n], abs=1e-4)
+                assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_cook_1d(self):
         """Fig. 2 network 1d in Bonacich (1987). Results identical to Tab. 3"""
@@ -153,7 +154,7 @@ class TestPowerCentrality:
         for beta in [-0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3]:
             b = nx.power_centrality(G, beta=beta)
             for n in sorted(G):
-                assert b[n] == pytest.approx(b_answer[n], abs=1e-4)
+                assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_cook_1d_directed(self):
         """Fig. 2 network 1d in Bonacich (1987). Results identical to Tab. 4"""
@@ -228,7 +229,7 @@ class TestPowerCentrality:
         for beta, b_answer in b_answers.items():
             b = nx.power_centrality(G, beta=beta)
             for n in sorted(G):
-                assert b[n] == pytest.approx(b_answer[n], abs=1e-4)
+                assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_multigraph(self):
         with pytest.raises(nx.NetworkXException):
