@@ -227,14 +227,14 @@ def total_spanning_tree_weight(G, weight=None, root=None):
     import scipy as sp
 
     graph_is_directed = nx.is_directed(G)
-    if not graph_is_directed and not nx.is_connected(G):
-        raise nx.NetworkXError("Graph G must be connected.")
     if graph_is_directed and root is None:
         raise nx.NetworkXError("Spanning trees in directed graphs require a root node.")
     if graph_is_directed and root not in G:
         raise nx.NetworkXError("The node root is not in the graph G.")
     if graph_is_directed and not nx.is_weakly_connected(G):
-        raise nx.NetworkXError("Graph G must be weakly connected.")
+        return 0
+    if not graph_is_directed and not nx.is_connected(G):
+        return 0
 
     # Compute directed Laplacian matrix
     if graph_is_directed == False:

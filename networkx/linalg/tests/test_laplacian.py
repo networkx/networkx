@@ -250,8 +250,7 @@ class TestTotalSpanningTreeWeight:
 
     def test_tstw_disconnected(self):
         G = nx.empty_graph(2)
-        with pytest.raises(nx.NetworkXError):
-            nx.total_spanning_tree_weight(G)
+        assert np.isclose(nx.total_spanning_tree_weight(G), 0)
 
     def test_tstw_no_nodes(self):
         G = nx.Graph()
@@ -282,9 +281,7 @@ class TestTotalSpanningTreeWeight:
         # self-loops are ignored
         G = nx.complete_graph(3)
         G.add_edge(1, 1)
-        Nst = nx.total_spanning_tree_weight(G)
-        test_data = 3
-        assert np.isclose(Nst, test_data)
+        assert np.isclose(nx.total_spanning_tree_weight(G), 3)
 
     def test_tstw_multigraph(self):
         G = nx.MultiGraph()
@@ -292,30 +289,21 @@ class TestTotalSpanningTreeWeight:
         G.add_edge(1, 2)
         G.add_edge(1, 3)
         G.add_edge(2, 3)
-        Nst = nx.total_spanning_tree_weight(G)
-        test_data = 5
-        assert np.isclose(Nst, test_data)
+        assert np.isclose(nx.total_spanning_tree_weight(G), 5)
 
     def test_tstw_complete_graph(self):
+        # this is known as Cayley's formula
         N = 5
         G = nx.complete_graph(N)
-        Nst = nx.total_spanning_tree_weight(G)
-        test_data = N ** (N - 2)
-        assert np.isclose(Nst, test_data)
+        assert np.isclose(nx.total_spanning_tree_weight(G), N ** (N - 2))
 
     def test_tstw_path_graph(self):
-        N = 5
-        G = nx.path_graph(N)
-        Nst = nx.total_spanning_tree_weight(G)
-        test_data = 1
-        assert np.isclose(Nst, test_data)
+        G = nx.path_graph(5)
+        assert np.isclose(nx.total_spanning_tree_weight(G), 1)
 
     def test_tstw_cycle_graph(self):
-        N = 5
-        G = nx.cycle_graph(N)
-        Nst = nx.total_spanning_tree_weight(G)
-        test_data = N
-        assert np.isclose(Nst, test_data)
+        G = nx.cycle_graph(5)
+        assert np.isclose(nx.total_spanning_tree_weight(G), 5)
 
     def test_tstw_directed_noroot(self):
         G = nx.MultiDiGraph()
@@ -331,46 +319,35 @@ class TestTotalSpanningTreeWeight:
         G = nx.MultiDiGraph()
         G.add_edge(1, 2)
         G.add_edge(3, 4)
-        with pytest.raises(nx.NetworkXError):
-            nx.total_spanning_tree_weight(G, root=0)
+        assert np.isclose(nx.total_spanning_tree_weight(G, root=1), 0)
 
     def test_tstw_directed_cycle_graph(self):
         G = nx.DiGraph()
         G = nx.cycle_graph(7, G)
-        Nst = nx.total_spanning_tree_weight(G, root=0)
-        test_data = 1
-        assert np.isclose(Nst, test_data)
+        assert np.isclose(nx.total_spanning_tree_weight(G, root=0), 1)
 
     def test_tstw_directed_complete_graph(self):
         G = nx.DiGraph()
         G = nx.complete_graph(7, G)
-        Nst = nx.total_spanning_tree_weight(G, root=0)
-        test_data = 7**5
-        assert np.isclose(Nst, test_data)
+        assert np.isclose(nx.total_spanning_tree_weight(G, root=0), 7**5)
 
     def test_tstw_directed_multi(self):
         G = nx.MultiDiGraph()
         G = nx.cycle_graph(3, G)
         G.add_edge(1, 2)
-        Nst = nx.total_spanning_tree_weight(G, root=0)
-        test_data = 2
-        assert np.isclose(Nst, test_data)
+        assert np.isclose(nx.total_spanning_tree_weight(G, root=0), 2)
 
     def test_tstw_directed_selfloop(self):
         G = nx.MultiDiGraph()
         G = nx.cycle_graph(3, G)
         G.add_edge(1, 1)
-        Nst = nx.total_spanning_tree_weight(G, root=0)
-        test_data = 1
-        assert np.isclose(Nst, test_data)
+        assert np.isclose(nx.total_spanning_tree_weight(G, root=0), 1)
 
     def test_tstw_directed_weak_connected(self):
         G = nx.MultiDiGraph()
         G = nx.cycle_graph(3, G)
         G.remove_edge(1, 2)
-        Nst = nx.total_spanning_tree_weight(G, root=0)
-        test_data = 0
-        assert np.isclose(Nst, test_data)
+        assert np.isclose(nx.total_spanning_tree_weight(G, root=0), 0)
 
     def test_tstw_directed_weighted(self):
         G = nx.DiGraph()
