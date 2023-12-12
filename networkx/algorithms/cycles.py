@@ -1202,7 +1202,7 @@ def girth(G):
 
     References
     ----------
-    .. [1] https://en.wikipedia.org/wiki/Girth_(graph_theory)
+    .. [1] `Wikipedia: Girth <https://en.wikipedia.org/wiki/Girth_(graph_theory)>`_
 
     """
     girth = depth_limit = inf
