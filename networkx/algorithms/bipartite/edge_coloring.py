@@ -2,17 +2,13 @@
 
 import networkx as nx
 
-__all__ = [
-    "bipartite_edge_coloring",
-    "kempe_chain_bipartite_edge_coloring",
-    "iterated_matching_edge_coloring",
-]
+__all__ = ["edge_coloring"]
 
 
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
 @nx._dispatch(name="bipartite_edge_coloring")
-def bipartite_edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
+def edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
     """Returns a minimum edge coloring of the bipartite graph `G`.
 
     An edge coloring is an assignment of colors to the edges of a graph such
@@ -24,9 +20,6 @@ def bipartite_edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
     Parameters
     ----------
     G : NetworkX graph
-
-    Optional Parameter
-    ------------------
     top_nodes : list, optional
         List of nodes that belong to one node set.
     strategy : str, optional
@@ -73,17 +66,14 @@ def bipartite_edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
 
         if top_nodes is None:
             top_nodes, _ = nx.bipartite.sets(G)
-        coloring = iterated_matching_edge_coloring(G, top_nodes)
+        coloring = _iterated_matching_edge_coloring(G, top_nodes)
     else:
-        coloring = kempe_chain_bipartite_edge_coloring(G)
+        coloring = _kempe_chain_bipartite_edge_coloring(G)
 
     return coloring
 
 
-@nx.utils.not_implemented_for("directed")
-@nx.utils.not_implemented_for("multigraph")
-@nx._dispatch(name="kempe_chain_bipartite_edge_coloring")
-def kempe_chain_bipartite_edge_coloring(G):
+def _kempe_chain_bipartite_edge_coloring(G):
     """Returns the minimum edge coloring of the bipartite graph `graph`.
 
     This function uses the procedure augment to color the edges of the bipartite
@@ -162,10 +152,7 @@ def kempe_chain_bipartite_edge_coloring(G):
     return coloring
 
 
-@nx.utils.not_implemented_for("directed")
-@nx.utils.not_implemented_for("multigraph")
-@nx._dispatch(name="iterated_matching_edge_coloring")
-def iterated_matching_edge_coloring(G, top_nodes):
+def _iterated_matching_edge_coloring(G, top_nodes):
     """Returns the minimum edge coloring of the bipartite graph `G`.
 
     This function uses the procedure one-color to color the edges of the bipartite

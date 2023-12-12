@@ -4,7 +4,7 @@ from collections import defaultdict
 import pytest
 
 import networkx as nx
-from networkx.algorithms.bipartite.edge_coloring import bipartite_edge_coloring
+from networkx.algorithms.bipartite.edge_coloring import edge_coloring
 
 
 def _is_proper_edge_coloring(coloring):
@@ -30,7 +30,7 @@ class TestEdgeColoring_IteratedMatching:
     def test_complete_graph(self):
         # Create a simple bipartite graph
         G = nx.complete_bipartite_graph(2, 3)
-        coloring = bipartite_edge_coloring(G, strategy="iterated-matching")
+        coloring = edge_coloring(G, strategy="iterated-matching")
 
         # Check that no vertex has two edges with the same color
         assert _is_proper_edge_coloring(coloring)
@@ -58,7 +58,7 @@ class TestEdgeColoring_IteratedMatching:
         ]
         G = nx.Graph()
         G.add_edges_from(edge_list)
-        coloring = bipartite_edge_coloring(G, strategy="iterated-matching")
+        coloring = edge_coloring(G, strategy="iterated-matching")
 
         # Check that no vertex has two edges with the same color
         assert _is_proper_edge_coloring(coloring)
@@ -73,7 +73,7 @@ class TestEdgeColoring_IteratedMatching:
         edge_list = [(1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 1)]
         G = nx.Graph()
         G.add_edges_from(edge_list)
-        coloring = bipartite_edge_coloring(G, strategy="iterated-matching")
+        coloring = edge_coloring(G, strategy="iterated-matching")
 
         # Check that no vertex has two edges with the same color
         assert _is_proper_edge_coloring(coloring)
@@ -90,7 +90,7 @@ class TestEdgeColoring_IteratedMatching:
         G = nx.Graph()
         G.add_edges_from(edges)
         top_nodes = {1, 4, 5, 9}
-        coloring = bipartite_edge_coloring(G, top_nodes, strategy="iterated-matching")
+        coloring = edge_coloring(G, top_nodes, strategy="iterated-matching")
 
         # Check that no vertex has two edges with the same color
         assert _is_proper_edge_coloring(coloring)
@@ -102,7 +102,7 @@ class TestEdgeColoring_IteratedMatching:
 
     def test_complete_graph_1(self):
         G = nx.complete_bipartite_graph(4, 6)
-        coloring = bipartite_edge_coloring(G, strategy="iterated-matching")
+        coloring = edge_coloring(G, strategy="iterated-matching")
 
         # Check that no vertex has two edges with the same color
         assert _is_proper_edge_coloring(coloring)
@@ -114,7 +114,7 @@ class TestEdgeColoring_IteratedMatching:
 
     def test_complete_balanced_graph(self):
         G = nx.complete_bipartite_graph(5, 5)
-        coloring = bipartite_edge_coloring(G, strategy="iterated-matching")
+        coloring = edge_coloring(G, strategy="iterated-matching")
 
         # Check that no vertex has two edges with the same color
         assert _is_proper_edge_coloring(coloring)
@@ -131,7 +131,7 @@ class TestEdgeColoring_KempeChain:
     def test_complete_graph(self):
         # Create a simple bipartite graph
         G = nx.complete_bipartite_graph(2, 3)
-        coloring = bipartite_edge_coloring(G, strategy="kempe-chain")
+        coloring = edge_coloring(G, strategy="kempe-chain")
 
         # Check that no vertex has two edges with the same color
         assert _is_proper_edge_coloring(coloring)
@@ -159,7 +159,7 @@ class TestEdgeColoring_KempeChain:
         ]
         G = nx.Graph()
         G.add_edges_from(edge_list)
-        coloring = bipartite_edge_coloring(G, strategy="kempe-chain")
+        coloring = edge_coloring(G, strategy="kempe-chain")
 
         # Check that no vertex has two edges with the same color
         assert _is_proper_edge_coloring(coloring)
@@ -174,7 +174,7 @@ class TestEdgeColoring_KempeChain:
         edge_list = [(1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 1)]
         G = nx.Graph()
         G.add_edges_from(edge_list)
-        coloring = bipartite_edge_coloring(G, strategy="kempe-chain")
+        coloring = edge_coloring(G, strategy="kempe-chain")
 
         # Check that no vertex has two edges with the same color
         assert _is_proper_edge_coloring(coloring)
@@ -190,7 +190,7 @@ class TestEdgeColoring_KempeChain:
         edges = [(1, 2), (1, 3), (3, 4), (3, 5), (5, 6), (7, 9), (8, 9)]
         G = nx.Graph()
         G.add_edges_from(edges)
-        coloring = bipartite_edge_coloring(G, strategy="kempe-chain")
+        coloring = edge_coloring(G, strategy="kempe-chain")
 
         # Check that no vertex has two edges with the same color
         assert _is_proper_edge_coloring(coloring)
@@ -202,7 +202,7 @@ class TestEdgeColoring_KempeChain:
 
     def test_complete_graph_1(self):
         G = nx.complete_bipartite_graph(4, 6)
-        coloring = bipartite_edge_coloring(G, strategy="kempe-chain")
+        coloring = edge_coloring(G, strategy="kempe-chain")
 
         # Check that no vertex has two edges with the same color
         assert _is_proper_edge_coloring(coloring)
@@ -214,7 +214,7 @@ class TestEdgeColoring_KempeChain:
 
     def test_complete_balanced_graph(self):
         G = nx.complete_bipartite_graph(5, 5)
-        coloring = bipartite_edge_coloring(G, strategy="kempe-chain")
+        coloring = edge_coloring(G, strategy="kempe-chain")
 
         # Check that no vertex has two edges with the same color
         assert _is_proper_edge_coloring(coloring)
