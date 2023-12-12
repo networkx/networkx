@@ -44,18 +44,12 @@ def edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
 
     Raises
     ------
-    NetworkXError
-        Raised if the input graph is not bipartite.
-
     AmbiguousSolution
       Raised if the input bipartite graph is disconnected and no container
       with all nodes in one bipartite set is provided. When determining
       the nodes in each bipartite set more than one valid solution is
       possible if the input graph is disconnected.
     """
-
-    if not nx.is_bipartite(G):
-        raise nx.NetworkXError("Not a Bipartite Graph")
 
     if strategy == "iterated-matching":
         # Handle the disconnected Graph case
@@ -178,15 +172,21 @@ def _iterated_matching_edge_coloring(G, top_nodes):
     i = 0
 
     G1 = G.copy()
+
+    # Continue the loop until there are no more edges in G1
     while G1.edges:
+        # Find a saturating matching with maximum degree using a custom function
         matching = _matching_saturating_max_degree(G1, top_nodes)
 
-        # Inline _color_matching_edges function
+        # Assign colors to the edges in the matching
         for u, v in list(matching.items()):
-            edge = (u, v) if u != v else (v, u)  # Ensure consistent order for edge
+            edge = (u, v)
             coloring[edge] = i
 
+        # Remove the edges in the matching from G1
         G1.remove_edges_from(list(matching.items()))
+
+        # Increment the color counter
         i += 1
 
     return coloring
