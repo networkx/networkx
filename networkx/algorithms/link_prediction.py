@@ -81,7 +81,7 @@ def resource_allocation_index(G, ebunch=None):
     Raises
     ------
     NetworkXNotImplemented
-        If `G` is a `DiGraph` or a `Multigraph`.
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
 
     NodeNotFound
         If `ebunch` has a node that is not in `G`.
@@ -144,7 +144,7 @@ def jaccard_coefficient(G, ebunch=None):
     Raises
     ------
     NetworkXNotImplemented
-        If `G` is a `DiGraph` or a `Multigraph`.
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
 
     NodeNotFound
         If `ebunch` has a node that is not in `G`.
@@ -211,7 +211,7 @@ def adamic_adar_index(G, ebunch=None):
     Raises
     ------
     NetworkXNotImplemented
-        If `G` is a `DiGraph` or a `Multigraph`.
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
 
     NodeNotFound
         If `ebunch` has a node that is not in `G`.
@@ -297,7 +297,7 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
     Raises
     ------
     NetworkXNotImplemented
-        If `G` is a `DiGraph` or a `Multigraph`.
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
     
     NetworkXAlgorithmError
         If self loops exsists in `ebunch` or in `G` (if `ebunch` is `None`).
@@ -382,7 +382,7 @@ def preferential_attachment(G, ebunch=None):
     Raises
     ------
     NetworkXNotImplemented
-        If `G` is a `DiGraph` or a `Multigraph`.
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
 
     NodeNotFound
         If `ebunch` has a node that is not in `G`.
@@ -454,7 +454,7 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
     Raises
     ------
     NetworkXNotImplemented
-        If `G` is a `DiGraph` or a `Multigraph`.
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
 
     NetworkXAlgorithmError
         If no community information is available for a node in `ebunch` or 
@@ -541,7 +541,7 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
     Raises
     ------
     NetworkXNotImplemented
-        If `G` is a `DiGraph` or a `Multigraph`.
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
 
     NetworkXAlgorithmError
         If no community information is available for a node in `ebunch` or 
@@ -629,7 +629,7 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
     Raises
     ------
     NetworkXNotImplemented
-        If `G` is a `DiGraph` or a `Multigraph`.
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
 
     NetworkXAlgorithmError
         - If `delta` is less than or equal to zero.
