@@ -9,7 +9,7 @@ import heapq
 from collections import deque
 from functools import partial
 from itertools import chain, combinations, product, starmap
-from math import gcd
+from math import gcd,log2
 
 import networkx as nx
 from networkx.utils import arbitrary_element, not_implemented_for, pairwise
@@ -1256,3 +1256,92 @@ def compute_v_structures(G):
             # ensure that the colliders are the same
             common_parents = sorted(common_parents)
             yield (common_parents[0], collider, common_parents[1])
+
+
+@not_implemented_for("undirected")
+@nx._dispatch
+def kqi(G):
+    """Iterate through the graph and compute the knowledge quantification index (KQI) for each node
+
+    To quantify the knowledge from the perspective of information structurization,
+    KQI is an index that leverages the extent of disorder difference caused by
+    hierarchical structure in the citation network to represent knowledge production
+    in the literature.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A directed acyclic graph.
+
+
+    Returns
+    -------
+    KQI_list : list
+        A list consisting of all node KQI values
+    KQI_G: float
+        We use the sum of all node KQI values as KQI of graph
+
+    Examples
+    --------
+    >>> G = nx.DiGraph()
+    >>> G.add_nodes_from([1,2, 3, 4, 5, 6])
+    >>> G.add_edges_from([(1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 3), (2, 4), (2, 5), (2, 6), (3, 4), (3, 5), (3, 6), (4, 6), (5, 4),(5, 6)])
+    >>> KQI_list,KQI_G=kqi(G)
+
+
+    Notes
+    -----
+    article doi:
+    https://doi.org/10.1371/journal.pone.0279314
+    """
+    KQI_list=[]
+    roots = [node for node in G.nodes() if G.in_degree(node) == 0]
+    W = len(roots)+sum(G.out_degree(node) for node in G.nodes())
+    fi = {}
+    nodes = list(G.nodes)
+    stack = []
+    #Calculate the volume of nodes
+    for node in nodes:
+        stack.append(node)
+    while stack:
+        node = stack[-1]
+        out_degree = G.out_degree(node)
+        if out_degree == 0:
+            fi[node] = 0
+            stack.pop()
+        else:
+            if all(child in fi for child in G.successors(node)):
+
+                fi[node] = out_degree + sum(fi[child] / G.in_degree(child) for child in G.successors(node))
+                stack.pop()
+            else:
+                for child in G.successors(node):
+                    if child not in fi:
+                        stack.append(child)
+    #calculate KQI of nodes
+    for node in nodes:
+        parent_nodes = list(G.predecessors(node))
+        KQI = 0
+        if G.out_degree(node) == 0:
+            KQI_list.append(KQI)
+        else:
+            if parent_nodes == []:
+                dvin = 1
+                sum_parent = W
+                node_son = fi[node]
+                A = (node_son / dvin) / W
+                B = (node_son / dvin)
+                KQI = KQI - A * log2(B / sum_parent)
+                KQI_list.append(KQI)
+            else:
+                for parent in parent_nodes:
+                    dvin = G.in_degree(node)
+                    node_son = fi[node]
+                    sum_parent = fi[parent]
+                    A = (node_son / dvin) / W
+                    B = (node_son / dvin)
+                    KQI = KQI - A * log2(B / sum_parent)
+                KQI_list.append(KQI)
+    #calculate KQI of graph
+    KQI_G=sum(KQI_list)
+    return KQI_list,KQI_G
