@@ -699,21 +699,15 @@ class TestSimilarity:
         G = nx.cycle_graph(5)
         pytest.raises(nx.ExceededMaxIterations, alg, G, max_iterations=10)
 
-    @pytest.mark.parametrize("simrank_similarity", simrank_algs)
-    def test_simrank_source_not_found(self, simrank_similarity):
-        G = nx.Graph(5)
-        with pytest.raises(
-            nx.NodeNotFound, match="Source node 10 not in G"
-        ):
-            simrank_similarity(G, source = 10)
-    
-    @pytest.mark.parametrize("simrank_similarity", simrank_algs)
+    def test_simrank_source_not_found(self):
+        G = nx.cycle_graph(5)
+        with pytest.raises(nx.NodeNotFound, match="Source node 10 not in G"):
+            nx.simrank_similarity(G, source=10)
+
     def test_simrank_target_not_found(self, simrank_similarity):
-        G = nx.Graph(5)
-        with pytest.raises(
-            nx.NodeNotFound, match="Target node 10 not in G"
-        ):
-            simrank_similarity(G, target = 10)
+        G = nx.cycle_graph(5)
+        with pytest.raises(nx.NodeNotFound, match="Target node 10 not in G"):
+            simrank_similarity(G, target=10)
 
     def test_simrank_between_versions(self):
         G = nx.cycle_graph(5)
