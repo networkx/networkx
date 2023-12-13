@@ -830,7 +830,8 @@ class TestSimilarity:
         assert sim == expected
 
     def test_panther_similarity_isolated(self):
-        G = nx.Graph(5)
+        G = nx.Graph()
+        G.add_nodes_from(range(5))
         with pytest.raises(
             nx.NetworkXUnfeasible,
             match="Panther similarity is not defined for the isolated source node 10.",
