@@ -298,7 +298,7 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
     ------
     NetworkXNotImplemented
         If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
-    
+
     NetworkXAlgorithmError
         If self loops exsists in `ebunch` or in `G` (if `ebunch` is `None`).
 
@@ -457,8 +457,7 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
         If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
 
     NetworkXAlgorithmError
-        If no community information is available for a node in `ebunch` or 
-        in `G` (if `ebunch` is `None`).
+        If no community information is available for a node in `ebunch` or in `G` (if `ebunch` is `None`).
 
     NodeNotFound
         If `ebunch` has a node that is not in `G`.
@@ -544,8 +543,7 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
         If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
 
     NetworkXAlgorithmError
-        If no community information is available for a node in `ebunch` or 
-        in `G` (if `ebunch` is `None`).
+        If no community information is available for a node in `ebunch` or in `G` (if `ebunch` is `None`).
 
     NodeNotFound
         If `ebunch` has a node that is not in `G`.
@@ -633,8 +631,7 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
 
     NetworkXAlgorithmError
         - If `delta` is less than or equal to zero.
-        - If no community information is available for a node in `ebunch` or 
-        in `G` (if `ebunch` is `None`).
+        - If no community information is available for a node in `ebunch` or in `G` (if `ebunch` is `None`).
 
     NodeNotFound
         If `ebunch` has a node that is not in `G`.
