@@ -1275,6 +1275,11 @@ def simrank_similarity(
         If neither ``source`` nor ``target`` is ``None``, this returns
         the similarity value for the given pair of nodes.
 
+    Raises
+    -------
+    NodeNotFound
+        If either ``source`` or ``target`` is not in `G`.
+
     Examples
     --------
     >>> G = nx.cycle_graph(2)
@@ -1589,7 +1594,7 @@ def panther_similarity(
     # Calculate the sample size ``R`` for how many paths
     # to randomly generate
     t_choose_2 = math.comb(path_length, 2)
-    sample_size = int((c / eps**2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
+    sample_size = int((c / eps ** 2) * (np.log2(t_choose_2) + 1 + np.log(1 / delta)))
     index_map = {}
     _ = list(
         generate_random_paths(
