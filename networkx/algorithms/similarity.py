@@ -1560,6 +1560,9 @@ def panther_similarity(
     -------
     NetworkXUnfeasible
         If `source` is an isolated node.
+    
+    NodeNotFound
+        If `source` is not in `G`.
 
     Notes
     -------
@@ -1580,6 +1583,9 @@ def panther_similarity(
     """
     import numpy as np
 
+    if source not in G:
+        raise nx.NodeNotFound(f"Source node {source} not in G")
+    
     isolates = list(nx.isolates(G))
 
     if source in isolates:
