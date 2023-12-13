@@ -133,6 +133,16 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nrandom_triad"
     )
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="\n\nk_core")
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nk_shell"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nk_crust"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nk_corona"
+    )
 
 
 @pytest.fixture(autouse=True)
@@ -209,6 +219,7 @@ needs_numpy = [
     "algorithms/node_classification.py",
     "algorithms/non_randomness.py",
     "algorithms/shortest_paths/dense.py",
+    "generators/expanders.py",
     "linalg/bethehessianmatrix.py",
     "linalg/laplacianmatrix.py",
     "utils/misc.py",
@@ -235,6 +246,7 @@ needs_scipy = [
     "convert_matrix.py",
     "drawing/layout.py",
     "generators/spectral_graph_forge.py",
+    "generators/expanders.py",
     "linalg/algebraicconnectivity.py",
     "linalg/attrmatrix.py",
     "linalg/bethehessianmatrix.py",

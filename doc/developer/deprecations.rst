@@ -68,3 +68,4 @@ Version 3.5
 ~~~~~~~~~~~
 * Remove ``all_triplets`` from ``algorithms/triads.py``
 * Remove ``random_triad`` from ``algorithms/triad.py``.
+* Add `not_implemented_for("multigraph”)` decorator to ``k_core``, ``k_shell``, ``k_crust`` and ``k_corona`` functions.

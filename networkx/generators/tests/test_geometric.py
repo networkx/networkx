@@ -366,3 +366,127 @@ def test_geometric_edges_raises_no_pos():
     msg = "all nodes. must have a '"
     with pytest.raises(nx.NetworkXError, match=msg):
         nx.geometric_edges(G, radius=1)
+
+
+def test_number_of_nodes_S1():
+    G = nx.geometric_soft_configuration_graph(
+        beta=1.5, n=100, gamma=2.7, mean_degree=10, seed=42
+    )
+    assert len(G) == 100
+
+
+def test_set_attributes_S1():
+    G = nx.geometric_soft_configuration_graph(
+        beta=1.5, n=100, gamma=2.7, mean_degree=10, seed=42
+    )
+    kappas = nx.get_node_attributes(G, "kappa")
+    assert len(kappas) == 100
+    thetas = nx.get_node_attributes(G, "theta")
+    assert len(thetas) == 100
+    radii = nx.get_node_attributes(G, "radius")
+    assert len(radii) == 100
+
+
+def test_mean_kappas_S1():
+    G = nx.geometric_soft_configuration_graph(
+        beta=2.5, n=5000, gamma=2.7, mean_degree=10, seed=42
+    )
+    kappas = nx.get_node_attributes(G, "kappa")
+    mean_kappas = sum(kappas.values()) / len(kappas)
+    assert math.fabs(mean_kappas - 10) < 0.5
+
+
+def test_mean_degree_S1():
+    G = nx.geometric_soft_configuration_graph(
+        beta=2.5, n=5000, gamma=2.7, mean_degree=10, seed=42
+    )
+    degrees = dict(G.degree())
+    mean_degree = sum(degrees.values()) / len(degrees)
+    assert math.fabs(mean_degree - 10) < 1
+
+
+def test_dict_kappas_S1():
+    kappas = {i: 10 for i in range(1000)}
+    G = nx.geometric_soft_configuration_graph(beta=1, kappas=kappas)
+    assert len(G) == 1000
+    kappas = nx.get_node_attributes(G, "kappa")
+    assert all(kappa == 10 for kappa in kappas.values())
+
+
+def test_beta_clustering_S1():
+    G1 = nx.geometric_soft_configuration_graph(
+        beta=1.5, n=100, gamma=3.5, mean_degree=10, seed=42
+    )
+    G2 = nx.geometric_soft_configuration_graph(
+        beta=3.0, n=100, gamma=3.5, mean_degree=10, seed=42
+    )
+    assert nx.average_clustering(G1) < nx.average_clustering(G2)
+
+
+def test_wrong_parameters_S1():
+    with pytest.raises(
+        nx.NetworkXError,
+        match="Please provide either kappas, or all 3 of: n, gamma and mean_degree.",
+    ):
+        G = nx.geometric_soft_configuration_graph(
+            beta=1.5, gamma=3.5, mean_degree=10, seed=42
+        )
+
+    with pytest.raises(
+        nx.NetworkXError,
+        match="When kappas is input, n, gamma and mean_degree must not be.",
+    ):
+        kappas = {i: 10 for i in range(1000)}
+        G = nx.geometric_soft_configuration_graph(
+            beta=1.5, kappas=kappas, gamma=2.3, seed=42
+        )
+
+    with pytest.raises(
+        nx.NetworkXError,
+        match="Please provide either kappas, or all 3 of: n, gamma and mean_degree.",
+    ):
+        G = nx.geometric_soft_configuration_graph(beta=1.5, seed=42)
+
+
+def test_negative_beta_S1():
+    with pytest.raises(
+        nx.NetworkXError, match="The parameter beta cannot be smaller or equal to 0."
+    ):
+        G = nx.geometric_soft_configuration_graph(
+            beta=-1, n=100, gamma=2.3, mean_degree=10, seed=42
+        )
+
+
+def test_non_zero_clustering_beta_lower_one_S1():
+    G = nx.geometric_soft_configuration_graph(
+        beta=0.5, n=100, gamma=3.5, mean_degree=10, seed=42
+    )
+    assert nx.average_clustering(G) > 0
+
+
+def test_mean_degree_influence_on_connectivity_S1():
+    low_mean_degree = 2
+    high_mean_degree = 20
+    G_low = nx.geometric_soft_configuration_graph(
+        beta=1.2, n=100, gamma=2.7, mean_degree=low_mean_degree, seed=42
+    )
+    G_high = nx.geometric_soft_configuration_graph(
+        beta=1.2, n=100, gamma=2.7, mean_degree=high_mean_degree, seed=42
+    )
+    assert nx.number_connected_components(G_low) > nx.number_connected_components(
+        G_high
+    )
+
+
+def test_compare_mean_kappas_different_gammas_S1():
+    G1 = nx.geometric_soft_configuration_graph(
+        beta=1.5, n=2000, gamma=2.7, mean_degree=20, seed=42
+    )
+    G2 = nx.geometric_soft_configuration_graph(
+        beta=1.5, n=2000, gamma=3.5, mean_degree=20, seed=42
+    )
+    kappas1 = nx.get_node_attributes(G1, "kappa")
+    mean_kappas1 = sum(kappas1.values()) / len(kappas1)
+    kappas2 = nx.get_node_attributes(G2, "kappa")
+    mean_kappas2 = sum(kappas2.values()) / len(kappas2)
+    assert math.fabs(mean_kappas1 - mean_kappas2) < 1

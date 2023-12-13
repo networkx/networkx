@@ -278,6 +278,10 @@ class TestGenericPath:
         assert nx.has_path(G, 0, 2)
         assert not nx.has_path(G, 0, 4)
 
+    def test_has_path_singleton(self):
+        G = nx.empty_graph(1)
+        assert nx.has_path(G, 0, 0)
+
     def test_all_shortest_paths(self):
         G = nx.Graph()
         nx.add_path(G, [0, 1, 2, 3])

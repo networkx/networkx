@@ -20,8 +20,8 @@ __all__ = [
 ]
 
 
-@nodes_or_number([0, 1])
 @nx._dispatch(graphs=None)
+@nodes_or_number([0, 1])
 def complete_bipartite_graph(n1, n2, create_using=None):
     """Returns the complete bipartite graph `K_{n_1,n_2}`.
 
