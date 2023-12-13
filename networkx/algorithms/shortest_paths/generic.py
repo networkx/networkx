@@ -4,8 +4,6 @@ Compute the shortest paths and path lengths between nodes in the graph.
 These algorithms work with undirected and directed graphs.
 
 """
-import warnings
-
 import networkx as nx
 
 __all__ = [
@@ -75,7 +73,7 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
 
     Returns
     -------
-    path: list or dictionary
+    path: list or dictionary or iterator
         All returned paths include both the source and target in the path.
 
         If the source and target are both specified, return a single list
@@ -89,8 +87,9 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
         sources with a list of nodes in a shortest path from one of the
         sources to the target.
 
-        If neither the source nor target are specified return a dictionary
-        of dictionaries with path[source][target]=[list of nodes in path].
+        If neither the source nor target are specified return
+        (source, dictionary) iterator with dictionary keyed by target and
+        shortest path as the key value.
 
     Raises
     ------
@@ -135,9 +134,6 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     method = "unweighted" if weight is None else method
     if source is None:
         if target is None:
-            msg = "shortest_path for all_pairs will return an iterator in v3.3"
-            warnings.warn(msg, DeprecationWarning)
-
             # Find paths between all pairs.
             if method == "unweighted":
                 paths = nx.all_pairs_shortest_path(G)
