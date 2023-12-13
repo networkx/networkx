@@ -463,46 +463,29 @@ class _dispatch:
                     args[self.graphs[gname]] = val
 
             has_backends = any(
-                hasattr(g, "__networkx_backend__") or hasattr(g, "__networkx_plugin__")
+                hasattr(g, "__networkx_backend__")
                 if gname not in self.list_graphs
-                else any(
-                    hasattr(g2, "__networkx_backend__")
-                    or hasattr(g2, "__networkx_plugin__")
-                    for g2 in g
-                )
+                else any(hasattr(g2, "__networkx_backend__") for g2 in g)
                 for gname, g in graphs_resolved.items()
             )
             if has_backends:
                 graph_backend_names = {
-                    getattr(
-                        g,
-                        "__networkx_backend__",
-                        getattr(g, "__networkx_plugin__", "networkx"),
-                    )
+                    getattr(g, "__networkx_backend__", "networkx")
                     for gname, g in graphs_resolved.items()
                     if gname not in self.list_graphs
                 }
                 for gname in self.list_graphs & graphs_resolved.keys():
                     graph_backend_names.update(
-                        getattr(
-                            g,
-                            "__networkx_backend__",
-                            getattr(g, "__networkx_plugin__", "networkx"),
-                        )
+                        getattr(g, "__networkx_backend__", "networkx")
                         for g in graphs_resolved[gname]
                     )
         else:
             has_backends = any(
-                hasattr(g, "__networkx_backend__") or hasattr(g, "__networkx_plugin__")
-                for g in graphs_resolved.values()
+                hasattr(g, "__networkx_backend__") for g in graphs_resolved.values()
             )
             if has_backends:
                 graph_backend_names = {
-                    getattr(
-                        g,
-                        "__networkx_backend__",
-                        getattr(g, "__networkx_plugin__", "networkx"),
-                    )
+                    getattr(g, "__networkx_backend__", "networkx")
                     for g in graphs_resolved.values()
                 }
         if has_backends:
@@ -740,12 +723,7 @@ class _dispatch:
                         name=self.name,
                         graph_name=gname,
                     )
-                    if getattr(
-                        g,
-                        "__networkx_backend__",
-                        getattr(g, "__networkx_plugin__", "networkx"),
-                    )
-                    == "networkx"
+                    if getattr(g, "__networkx_backend__", "networkx") == "networkx"
                     else g
                     for g in bound.arguments[gname]
                 ]
@@ -773,14 +751,7 @@ class _dispatch:
                     preserve_graph = gname in preserve_graph_attrs
                 else:
                     preserve_graph = preserve_graph_attrs
-                if (
-                    getattr(
-                        graph,
-                        "__networkx_backend__",
-                        getattr(graph, "__networkx_plugin__", "networkx"),
-                    )
-                    == "networkx"
-                ):
+                if getattr(graph, "__networkx_backend__", "networkx") == "networkx":
                     bound.arguments[gname] = backend.convert_from_nx(
                         graph,
                         edge_attrs=edges,
