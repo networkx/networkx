@@ -1556,6 +1556,11 @@ def panther_similarity(
         the self-similarity (i.e., ``v``) will not be included in
         the returned dictionary.
 
+    Raises
+    -------
+    NetworkXUnfeasible
+        If `source` is an isolated node.
+
     Notes
     -------
         The isolated nodes in `G` are ignored.
@@ -1575,9 +1580,14 @@ def panther_similarity(
     """
     import numpy as np
 
-    G = G.subgraph(
-        [node for node in G.nodes if node not in list(nx.isolates(G))]
-    ).copy()
+    isolates = list(nx.isolates(G))
+
+    if source in isolates:
+        raise nx.NetworkXUnfeasible(
+            f"Panther similarity is not defined for the isolated source node {source}."
+        )
+
+    G = G.subgraph([node for node in G.nodes if node not in isolates]).copy()
 
     num_nodes = G.number_of_nodes()
     if num_nodes < k:

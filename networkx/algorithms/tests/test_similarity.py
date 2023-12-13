@@ -829,6 +829,14 @@ class TestSimilarity:
         sim = nx.panther_similarity(G, "v1", path_length=2, weight="w")
         assert sim == expected
 
+    def test_panther_similarity_isolated(self):
+        G = nx.Graph(5)
+        with pytest.raises(
+            nx.NetworkXUnfeasible,
+            match="Panther similarity is not defined for the isolated source node 10.",
+        ):
+            nx.panther_similarity(G, source=10)
+
     def test_generate_random_paths_unweighted(self):
         np.random.seed(42)
 
