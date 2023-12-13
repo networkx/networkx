@@ -1277,6 +1277,9 @@ def simrank_similarity(
 
     Raises
     -------
+    ExceededMaxIterations
+        If the algorithm does not converge within ``max_iterations``.
+
     NodeNotFound
         If either ``source`` or ``target`` is not in `G`.
 
