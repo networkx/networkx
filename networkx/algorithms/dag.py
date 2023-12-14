@@ -642,7 +642,7 @@ def is_aperiodic(G):
     if not G.is_directed():
         raise nx.NetworkXError("is_aperiodic not defined for undirected graphs")
     if len(G) == 0:
-        raise nx.NetworkXError("Graph has no nodes.")
+        raise nx.NetworkXPointlessConcept("Graph has no nodes.")
     s = arbitrary_element(G)
     levels = {s: 0}
     this_level = [s]
