@@ -135,8 +135,17 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     method = "unweighted" if weight is None else method
     if source is None:
         if target is None:
-            msg = "shortest_path for all_pairs will return an iterator in v3.3"
-            warnings.warn(msg, DeprecationWarning)
+            warnings.warn(
+                (
+                    "\n\nshortest_path will return an iterator that yields\n"
+                    "(node, path) pairs instead of a dictionary when source\n"
+                    "and target are unspecified beginning in version 3.5\n\n"
+                    "To keep the current behavior, use:\n\n"
+                    "\tdict(nx.shortest_path(G))"
+                ),
+                FutureWarning,
+                stacklevel=3,
+            )
 
             # Find paths between all pairs.
             if method == "unweighted":
