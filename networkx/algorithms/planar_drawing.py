@@ -78,18 +78,18 @@ def combinatorial_embedding_to_pos(embedding, fully_triangulate=False):
     left_t_child[v3] = None
 
     for k in range(3, len(node_list)):
-        vk, contour_neighbors = node_list[k]
-        wp = contour_neighbors[0]
-        wp1 = contour_neighbors[1]
-        wq = contour_neighbors[-1]
-        wq1 = contour_neighbors[-2]
-        adds_mult_tri = len(contour_neighbors) > 2
+        vk, contour_nbrs = node_list[k]
+        wp = contour_nbrs[0]
+        wp1 = contour_nbrs[1]
+        wq = contour_nbrs[-1]
+        wq1 = contour_nbrs[-2]
+        adds_mult_tri = len(contour_nbrs) > 2
 
         # Stretch gaps:
         delta_x[wp1] += 1
         delta_x[wq] += 1
 
-        delta_x_wp_wq = sum(delta_x[x] for x in contour_neighbors[1:])
+        delta_x_wp_wq = sum(delta_x[x] for x in contour_nbrs[1:])
 
         # Adjust offsets
         delta_x[vk] = (-y_coordinate[wp] + delta_x_wp_wq + y_coordinate[wq]) // 2

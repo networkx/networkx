@@ -180,12 +180,12 @@ def dedensify(G, threshold, prefix=None, copy=True):
 
     auxiliary = {}
     for node in G:
-        high_degree_neighbors = frozenset(high_degree_nodes & set(G[node]))
-        if high_degree_neighbors:
-            if high_degree_neighbors in auxiliary:
-                auxiliary[high_degree_neighbors].add(node)
+        high_degree_nbrs = frozenset(high_degree_nodes & set(G[node]))
+        if high_degree_nbrs:
+            if high_degree_nbrs in auxiliary:
+                auxiliary[high_degree_nbrs].add(node)
             else:
-                auxiliary[high_degree_neighbors] = {node}
+                auxiliary[high_degree_nbrs] = {node}
 
     if copy:
         G = G.copy()
