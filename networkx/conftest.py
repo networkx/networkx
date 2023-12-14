@@ -94,13 +94,13 @@ def set_warnings():
     )
     warnings.filterwarnings(
         "ignore",
-        category=DeprecationWarning,
-        message="single_target_shortest_path_length will",
+        category=FutureWarning,
+        message="\n\nsingle_target_shortest_path_length",
     )
     warnings.filterwarnings(
         "ignore",
-        category=DeprecationWarning,
-        message="shortest_path for all_pairs",
+        category=FutureWarning,
+        message="\n\nshortest_path",
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\nforest_str is deprecated"
