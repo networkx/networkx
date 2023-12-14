@@ -687,9 +687,8 @@ class argmap:
     open_file
     nodes_or_number
     random_state
-    py_random_state
-    networkx.community.quality.require_partition
-    require_partition
+    :func:`nx.utils.py_random_state`
+    :func:`nx.algorithms.community.quality.require_partition`
 
     """
 
