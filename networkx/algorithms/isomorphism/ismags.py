@@ -883,9 +883,7 @@ class ISMAGS:
             # The next node is the one that is unmapped and has fewest
             # candidates
             # Pylint disables because it's a one-shot function.
-            next_sgn = min(
-                left_to_map, key=lambda n: min(new_candidates[n], key=len)
-            )  # pylint: disable=cell-var-from-loop
+            next_sgn = min(left_to_map, key=lambda n: min(new_candidates[n], key=len))  # pylint: disable=cell-var-from-loop
             yield from self._map_nodes(
                 next_sgn,
                 new_candidates,
@@ -910,9 +908,7 @@ class ISMAGS:
         # smaller every iteration.
 
         # pylint disable because it's guarded against by default value
-        current_size = len(
-            next(iter(to_be_mapped), [])
-        )  # pylint: disable=stop-iteration-return
+        current_size = len(next(iter(to_be_mapped), []))  # pylint: disable=stop-iteration-return
 
         found_iso = False
         if current_size <= len(self.graph):

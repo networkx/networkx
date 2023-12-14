@@ -647,8 +647,9 @@ def all_pairs_all_shortest_paths(G, weight=None, method="dijkstra"):
     single_source_all_shortest_paths
     """
     for n in G:
-        yield n, dict(
-            single_source_all_shortest_paths(G, n, weight=weight, method=method)
+        yield (
+            n,
+            dict(single_source_all_shortest_paths(G, n, weight=weight, method=method)),
         )
 
 
