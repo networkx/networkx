@@ -58,7 +58,6 @@ from networkx.algorithms.vitality import *
 from networkx.algorithms.voronoi import *
 from networkx.algorithms.walks import *
 from networkx.algorithms.wiener import *
-from networkx.algorithms.schultz import *
 
 # Make certain subpackages available to the user as direct imports from
 # the `networkx` namespace.
