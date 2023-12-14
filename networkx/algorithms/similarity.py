@@ -1689,22 +1689,22 @@ def generate_random_paths(
         for _ in range(path_length):
             # Randomly sample a neighbor (v_j) according
             # to transition probabilities from ``node`` (v) to its neighbors
-            neighbor_index = np.random.choice(
+            nbr_index = np.random.choice(
                 num_nodes, p=transition_probabilities[starting_index]
             )
 
             # Set current vertex (v = v_j)
-            starting_index = neighbor_index
+            starting_index = nbr_index
 
             # Add v into p_r
-            neighbor_node = node_map[neighbor_index]
-            path.append(neighbor_node)
+            nbr_node = node_map[nbr_index]
+            path.append(nbr_node)
 
             # Add p_r into P_v
             if index_map is not None:
-                if neighbor_node in index_map:
-                    index_map[neighbor_node].add(path_index)
+                if nbr_node in index_map:
+                    index_map[nbr_node].add(path_index)
                 else:
-                    index_map[neighbor_node] = {path_index}
+                    index_map[nbr_node] = {path_index}
 
         yield path
