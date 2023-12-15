@@ -133,48 +133,50 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
         # so we don't need to check in each branch later
         raise ValueError(f"method not supported: {method}")
     method = "unweighted" if weight is None else method
-    if source is None:
-        if target is None:
+    match (source, target):
+        case (None, None):
             msg = "shortest_path for all_pairs will return an iterator in v3.3"
             warnings.warn(msg, DeprecationWarning)
-
             # Find paths between all pairs.
-            if method == "unweighted":
-                paths = nx.all_pairs_shortest_path(G)
-            elif method == "dijkstra":
-                paths = nx.all_pairs_dijkstra_path(G, weight=weight)
-            else:  # method == 'bellman-ford':
-                paths = nx.all_pairs_bellman_ford_path(G, weight=weight)
-        else:
+            match method:
+                case "unweighted":
+                    paths = nx.all_pairs_shortest_path(G)
+                case "dijkstra":
+                    paths = nx.all_pairs_dijkstra_path(G, weight=weight)
+                case "bellman-ford":
+                    paths = nx.all_pairs_bellman_ford_path(G, weight=weight)
+        case (None, _):
             # Find paths from all nodes co-accessible to the target.
             if G.is_directed():
                 G = G.reverse(copy=False)
-            if method == "unweighted":
-                paths = nx.single_source_shortest_path(G, target)
-            elif method == "dijkstra":
-                paths = nx.single_source_dijkstra_path(G, target, weight=weight)
-            else:  # method == 'bellman-ford':
-                paths = nx.single_source_bellman_ford_path(G, target, weight=weight)
+            match method:
+                case "unweighted":
+                    paths = nx.single_source_shortest_path(G, target)
+                case "dijkstra":
+                    paths = nx.single_source_dijkstra_path(G, target, weight=weight)
+                case "bellman-ford":
+                    paths = nx.single_source_bellman_ford_path(G, target, weight=weight)
             # Now flip the paths so they go from a source to the target.
             for target in paths:
                 paths[target] = list(reversed(paths[target]))
-    else:
-        if target is None:
+        case (_, None):
             # Find paths to all nodes accessible from the source.
-            if method == "unweighted":
-                paths = nx.single_source_shortest_path(G, source)
-            elif method == "dijkstra":
-                paths = nx.single_source_dijkstra_path(G, source, weight=weight)
-            else:  # method == 'bellman-ford':
-                paths = nx.single_source_bellman_ford_path(G, source, weight=weight)
-        else:
+            match method:
+                case "unweighted":
+                    paths = nx.single_source_shortest_path(G, source)
+                case "dijkstra":
+                    paths = nx.single_source_dijkstra_path(G, source, weight=weight)
+                case "bellman-ford":
+                    paths = nx.single_source_bellman_ford_path(G, source, weight=weight)
+        case (_, _):
             # Find shortest source-target path.
-            if method == "unweighted":
-                paths = nx.bidirectional_shortest_path(G, source, target)
-            elif method == "dijkstra":
-                _, paths = nx.bidirectional_dijkstra(G, source, target, weight)
-            else:  # method == 'bellman-ford':
-                paths = nx.bellman_ford_path(G, source, target, weight)
+            match method:
+                case "unweighted":
+                    paths = nx.bidirectional_shortest_path(G, source, target)
+                case "dijkstra":
+                    _, paths = nx.bidirectional_dijkstra(G, source, target, weight)
+                case "bellman-ford":
+                    paths = nx.bellman_ford_path(G, source, target, weight)
     return paths
 
 
