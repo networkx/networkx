@@ -47,6 +47,7 @@ Label propagation
 
    asyn_lpa_communities
    label_propagation_communities
+   fast_label_propagation_communities
 
 Louvain Community Detection
 ---------------------------
