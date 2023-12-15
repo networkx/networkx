@@ -316,7 +316,7 @@ def _most_frequent_labels(node, labeling, G):
         # accordingly, hence the immediate if statement.
         return {labeling[node]}
 
-    # Compute the frequencies of all neighbours of node
+    # Compute the frequencies of all neighbors of node
     freqs = Counter(labeling[q] for q in G[node])
     max_freq = max(freqs.values())
     return {label for label, freq in freqs.items() if freq == max_freq}

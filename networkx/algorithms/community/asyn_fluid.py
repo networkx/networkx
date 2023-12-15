@@ -24,7 +24,7 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
     The algorithm proceeds as follows. First each of the initial k communities
     is initialized in a random vertex in the graph. Then the algorithm iterates
     over all vertices in a random order, updating the community of each vertex
-    based on its own community and the communities of its neighbours. This
+    based on its own community and the communities of its neighbors. This
     process is performed several times until convergence.
     At all times, each community has a total density of 1, which is equally
     distributed among the vertices it contains. If a vertex changes of
@@ -102,7 +102,7 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
                 com_counter.update({communities[vertex]: density[communities[vertex]]})
             except KeyError:
                 pass
-            # Gather neighbour vertex communities
+            # Gather neighbor vertex communities
             for v in G[vertex]:
                 try:
                     com_counter.update({communities[v]: density[communities[v]]})

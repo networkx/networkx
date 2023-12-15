@@ -55,13 +55,13 @@ def dominating_set(G, start_with=None):
     while remaining_nodes:
         # Choose an arbitrary node and determine its undominated neighbors.
         v = remaining_nodes.pop()
-        undominated_neighbors = set(G[v]) - dominating_set
+        undominated_nbrs = set(G[v]) - dominating_set
         # Add the node to the dominating set and the neighbors to the
         # dominated set. Finally, remove all of those nodes from the set
         # of remaining nodes.
         dominating_set.add(v)
-        dominated_nodes |= undominated_neighbors
-        remaining_nodes -= undominated_neighbors
+        dominated_nodes |= undominated_nbrs
+        remaining_nodes -= undominated_nbrs
     return dominating_set
 
 

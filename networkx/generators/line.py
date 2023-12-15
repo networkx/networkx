@@ -355,12 +355,12 @@ def _odd_triangle(G, T):
         if e[0] not in G[e[1]]:
             raise nx.NetworkXError(f"Edge ({e[0]}, {e[1]}) not in graph")
 
-    T_neighbors = defaultdict(int)
+    T_nbrs = defaultdict(int)
     for t in T:
         for v in G[t]:
             if v not in T:
-                T_neighbors[v] += 1
-    return any(T_neighbors[v] in [1, 3] for v in T_neighbors)
+                T_nbrs[v] += 1
+    return any(T_nbrs[v] in [1, 3] for v in T_nbrs)
 
 
 def _find_partition(G, starting_cell):

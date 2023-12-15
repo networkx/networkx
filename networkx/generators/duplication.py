@@ -76,10 +76,10 @@ def partial_duplication_graph(N, n, p, q, seed=None):
         G.add_node(new_node)
 
         # For each neighbor of u...
-        for neighbor_node in list(nx.all_neighbors(G, src_node)):
+        for nbr_node in list(nx.all_neighbors(G, src_node)):
             # Add the neighbor to v with probability p.
             if seed.random() < p:
-                G.add_edge(new_node, neighbor_node)
+                G.add_edge(new_node, nbr_node)
 
         # Join v and u with probability q.
         if seed.random() < q:

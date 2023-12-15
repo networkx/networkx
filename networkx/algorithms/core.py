@@ -394,7 +394,7 @@ def k_corona(G, k, core_number=None):
     """Returns the k-corona of G.
 
     The k-corona is the subgraph of nodes in the k-core which have
-    exactly k neighbours in the k-core.
+    exactly k neighbors in the k-core.
 
     .. deprecated:: 3.3
        `k_corona` will not accept `MultiGraph` objects in version 3.5.

@@ -848,11 +848,11 @@ class ISMAGS:
             left_to_map = to_be_mapped - set(mapping.keys())
 
             new_candidates = candidates.copy()
-            sgn_neighbours = set(self.subgraph[sgn])
-            not_gn_neighbours = set(self.graph.nodes) - set(self.graph[gn])
+            sgn_nbrs = set(self.subgraph[sgn])
+            not_gn_nbrs = set(self.graph.nodes) - set(self.graph[gn])
             for sgn2 in left_to_map:
-                if sgn2 not in sgn_neighbours:
-                    gn2_options = not_gn_neighbours
+                if sgn2 not in sgn_nbrs:
+                    gn2_options = not_gn_nbrs
                 else:
                     # Get all edges to gn of the right color:
                     g_edges = self._edges_of_same_color(sgn, sgn2)

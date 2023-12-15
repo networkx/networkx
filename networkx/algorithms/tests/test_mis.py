@@ -58,5 +58,5 @@ def test_random_graphs():
         G = nx.erdos_renyi_graph(i * 10 + 1, random.random())
         IS = nx.maximal_independent_set(G)
         assert G.subgraph(IS).number_of_edges() == 0
-        neighbors_of_MIS = set.union(*(set(G.neighbors(v)) for v in IS))
-        assert all(v in neighbors_of_MIS for v in set(G.nodes()).difference(IS))
+        nbrs_of_MIS = set.union(*(set(G.neighbors(v)) for v in IS))
+        assert all(v in nbrs_of_MIS for v in set(G.nodes()).difference(IS))
