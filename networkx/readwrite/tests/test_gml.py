@@ -554,8 +554,8 @@ graph
             "directed 1 multigraph 1 ]"
         )
         assert_parse_error(
-            "graph [edge [ source u'\u4200' target u'\u4200' ] "
-            + "node [ id u'\u4200' label b ] ]"
+            "graph [edge [ source '\u4200' target '\u4200' ] "
+            + "node [ id '\u4200' label b ] ]"
         )
 
         def assert_generate_error(*args, **kwargs):
