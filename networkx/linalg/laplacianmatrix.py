@@ -219,8 +219,13 @@ def directed_laplacian_matrix(
        If None, then each edge has weight 1.
 
     walk_type : string or None, optional (default=None)
-       If None, `P` is selected depending on the properties of the
-       graph. Otherwise is one of 'random', 'lazy', or 'pagerank'
+       If None, the value of walk_type is set based on the following conditions:
+        If nx.is_strongly_connected(G) and nx.is_aperiodic(G) are truthy:
+            walk_type is set to the string 'random'
+        If nx.is_strongly_connected(G) evaluates is truthy but nx.is_aperiodic(G) is falsy:
+            walk_type is set to the string 'lazy'
+        Otherwise (nx.is_strongly_connected(g) is falsy):
+            walk_type is set to the string 'pagerank'
 
     alpha : real
        (1 - alpha) is the teleportation probability used with pagerank
