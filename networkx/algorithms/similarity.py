@@ -1586,7 +1586,7 @@ def panther_similarity(
     if source not in G:
         raise nx.NodeNotFound(f"Source node {source} not in G")
 
-    isolates = list(nx.isolates(G))
+    isolates = set(nx.isolates(G))
 
     if source in isolates:
         raise nx.NetworkXUnfeasible(
