@@ -123,7 +123,7 @@ def _init_product_graph(G, H):
     return GH
 
 
-@nx._dispatch(graphs=_G_H)
+@nx._dispatch(graphs=_G_H, preserve_node_attrs=True)
 def tensor_product(G, H):
     r"""Returns the tensor product of G and H.
 
@@ -179,7 +179,7 @@ def tensor_product(G, H):
     return GH
 
 
-@nx._dispatch(graphs=_G_H)
+@nx._dispatch(graphs=_G_H, preserve_node_attrs=True)
 def cartesian_product(G, H):
     r"""Returns the Cartesian product of G and H.
 
@@ -231,7 +231,7 @@ def cartesian_product(G, H):
     return GH
 
 
-@nx._dispatch(graphs=_G_H)
+@nx._dispatch(graphs=_G_H, preserve_node_attrs=True)
 def lexicographic_product(G, H):
     r"""Returns the lexicographic product of G and H.
 
@@ -284,7 +284,7 @@ def lexicographic_product(G, H):
     return GH
 
 
-@nx._dispatch(graphs=_G_H)
+@nx._dispatch(graphs=_G_H, preserve_node_attrs=True)
 def strong_product(G, H):
     r"""Returns the strong product of G and H.
 

@@ -911,16 +911,16 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None):
                 node = seed.choice(eligible_nodes)
 
                 # The available nodes do have a neighbor at least.
-                neighbor_nodes = list(G[node])
+                nbr_nodes = list(G[node])
 
                 # Choosing the other end that will get detached
-                src_node = seed.choice(neighbor_nodes)
+                src_node = seed.choice(nbr_nodes)
 
                 # Picking a target node that is not 'node' or
                 # neighbor with 'node', with preferential attachment
-                neighbor_nodes.append(node)
+                nbr_nodes.append(node)
                 dest_node = seed.choice(
-                    [nd for nd in attachment_preference if nd not in neighbor_nodes]
+                    [nd for nd in attachment_preference if nd not in nbr_nodes]
                 )
                 # Rewire
                 G.remove_edge(node, src_node)

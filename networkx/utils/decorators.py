@@ -686,10 +686,8 @@ class argmap:
     not_implemented_for
     open_file
     nodes_or_number
-    random_state
     py_random_state
-    networkx.community.quality.require_partition
-    require_partition
+    networkx.algorithms.community.quality.require_partition
 
     """
 

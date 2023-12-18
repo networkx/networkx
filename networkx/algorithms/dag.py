@@ -1249,7 +1249,7 @@ def compute_v_structures(G):
 
     Notes
     -----
-    https://en.wikipedia.org/wiki/Collider_(statistics)
+    `Wikipedia: Collider in causal graphs <https://en.wikipedia.org/wiki/Collider_(statistics)>`_
     """
     for collider, preds in G.pred.items():
         for common_parents in combinations(preds, r=2):

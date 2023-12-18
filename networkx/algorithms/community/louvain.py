@@ -240,7 +240,7 @@ def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
         out_degrees = dict(G.out_degree(weight="weight"))
         Stot_in = list(in_degrees.values())
         Stot_out = list(out_degrees.values())
-        # Calculate weights for both in and out neighbours without considering self-loops
+        # Calculate weights for both in and out neighbors without considering self-loops
         nbrs = {}
         for u in G:
             nbrs[u] = defaultdict(float)
@@ -327,7 +327,7 @@ def _neighbor_weights(nbrs, node2com):
     Parameters
     ----------
     nbrs : dictionary
-           Dictionary with nodes' neighbours as keys and their edge weight as value.
+           Dictionary with nodes' neighbors as keys and their edge weight as value.
     node2com : dictionary
            Dictionary with all graph's nodes as keys and their community index as value.
 

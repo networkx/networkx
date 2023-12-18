@@ -111,7 +111,7 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     >>> p = nx.shortest_path(G, target=4)  # source not specified
     >>> p[1] # shortest path from source=1 to target=4
     [1, 2, 3, 4]
-    >>> p = nx.shortest_path(G)  # source, target not specified
+    >>> p = dict(nx.shortest_path(G))  # source, target not specified
     >>> p[2][4] # shortest path from source=2 to target=4
     [2, 3, 4]
 
@@ -135,16 +135,25 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     method = "unweighted" if weight is None else method
     if source is None:
         if target is None:
-            msg = "shortest_path for all_pairs will return an iterator in v3.3"
-            warnings.warn(msg, DeprecationWarning)
+            warnings.warn(
+                (
+                    "\n\nshortest_path will return an iterator that yields\n"
+                    "(node, path) pairs instead of a dictionary when source\n"
+                    "and target are unspecified beginning in version 3.5\n\n"
+                    "To keep the current behavior, use:\n\n"
+                    "\tdict(nx.shortest_path(G))"
+                ),
+                FutureWarning,
+                stacklevel=3,
+            )
 
             # Find paths between all pairs.
             if method == "unweighted":
-                paths = dict(nx.all_pairs_shortest_path(G))
+                paths = nx.all_pairs_shortest_path(G)
             elif method == "dijkstra":
-                paths = dict(nx.all_pairs_dijkstra_path(G, weight=weight))
+                paths = nx.all_pairs_dijkstra_path(G, weight=weight)
             else:  # method == 'bellman-ford':
-                paths = dict(nx.all_pairs_bellman_ford_path(G, weight=weight))
+                paths = nx.all_pairs_bellman_ford_path(G, weight=weight)
         else:
             # Find paths from all nodes co-accessible to the target.
             if G.is_directed():
@@ -647,8 +656,9 @@ def all_pairs_all_shortest_paths(G, weight=None, method="dijkstra"):
     single_source_all_shortest_paths
     """
     for n in G:
-        yield n, dict(
-            single_source_all_shortest_paths(G, n, weight=weight, method=method)
+        yield (
+            n,
+            dict(single_source_all_shortest_paths(G, n, weight=weight, method=method)),
         )
 
 

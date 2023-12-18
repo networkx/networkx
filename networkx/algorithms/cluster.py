@@ -67,20 +67,18 @@ def triangles(G, nodes=None):
 
     # dict used to avoid visiting the same nodes twice
     # this allows calculating/counting each triangle only once
-    later_neighbors = {}
+    later_nbrs = {}
 
     # iterate over the nodes in a graph
     for node, neighbors in G.adjacency():
-        later_neighbors[node] = {
-            n for n in neighbors if n not in later_neighbors and n != node
-        }
+        later_nbrs[node] = {n for n in neighbors if n not in later_nbrs and n != node}
 
     # instantiate Counter for each node to include isolated nodes
     # add 1 to the count if a nodes neighbor's neighbor is also a neighbor
     triangle_counts = Counter(dict.fromkeys(G, 0))
-    for node1, neighbors in later_neighbors.items():
+    for node1, neighbors in later_nbrs.items():
         for node2 in neighbors:
-            third_nodes = neighbors & later_neighbors[node2]
+            third_nodes = neighbors & later_nbrs[node2]
             m = len(third_nodes)
             triangle_counts[node1] += m
             triangle_counts[node2] += m

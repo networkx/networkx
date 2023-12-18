@@ -410,7 +410,7 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
         # and w is a vertex in b.childs[wrap(i+1)].
 
         # If b is a top-level S-blossom,
-        # b.mybestedges is a list of least-slack edges to neighbouring
+        # b.mybestedges is a list of least-slack edges to neighboring
         # S-blossoms, or None if no such list has been computed yet.
         # This is used for efficient computation of delta3.
 
@@ -738,12 +738,12 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
                 j += jstep
                 while b.childs[j] != entrychild:
                     # Examine the vertices of the sub-blossom to see whether
-                    # it is reachable from a neighbouring S-vertex outside the
+                    # it is reachable from a neighboring S-vertex outside the
                     # expanding blossom.
                     bv = b.childs[j]
                     if label.get(bv) == 1:
                         # This sub-blossom just got label S through one of its
-                        # neighbours; leave it be.
+                        # neighbors; leave it be.
                         j += jstep
                         continue
                     if isinstance(bv, Blossom):
@@ -972,11 +972,11 @@ def max_weight_matching(G, maxcardinality=False, weight="weight"):
                 v = queue.pop()
                 assert label[inblossom[v]] == 1
 
-                # Scan its neighbours:
+                # Scan its neighbors:
                 for w in G.neighbors(v):
                     if w == v:
                         continue  # ignore self-loops
-                    # w is a neighbour to v
+                    # w is a neighbor to v
                     bv = inblossom[v]
                     bw = inblossom[w]
                     if bv == bw:
