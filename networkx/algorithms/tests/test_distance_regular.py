@@ -1,3 +1,5 @@
+import pytest
+
 import networkx as nx
 from networkx import is_strongly_regular
 
@@ -39,6 +41,13 @@ class TestDistanceRegular:
         b, c = nx.intersection_array(nx.icosahedral_graph())
         assert b == [5, 2, 1]
         assert c == [1, 2, 5]
+
+
+@pytest.mark.parametrize("f", (nx.is_distance_regular, nx.is_strongly_regular))
+def test_empty_graph_raises(f):
+    G = nx.Graph()
+    with pytest.raises(nx.NetworkXPointlessConcept, match="Graph has no nodes"):
+        f(G)
 
 
 class TestStronglyRegular:

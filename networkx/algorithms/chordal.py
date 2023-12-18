@@ -339,6 +339,8 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
 
     It ignores any self loops.
     """
+    if len(G) == 0:
+        raise nx.NetworkXPointlessConcept("Graph has no nodes.")
     unnumbered = set(G)
     if s is None:
         s = arbitrary_element(G)

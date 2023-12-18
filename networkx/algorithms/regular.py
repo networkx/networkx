@@ -29,6 +29,8 @@ def is_regular(G):
     True
 
     """
+    if len(G) == 0:
+        raise nx.NetworkXPointlessConcept("Graph has no nodes.")
     n1 = nx.utils.arbitrary_element(G)
     if not G.is_directed():
         d1 = G.degree(n1)

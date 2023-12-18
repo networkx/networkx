@@ -147,6 +147,8 @@ def intersection_array(G):
     global_parameters
     """
     # test for regular graph (all degrees must be equal)
+    if len(G) == 0:
+        raise nx.NetworkXPointlessConcept("Graph has no nodes.")
     degree = iter(G.degree())
     (_, k) = next(degree)
     for _, knext in degree:
