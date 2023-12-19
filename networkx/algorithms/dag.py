@@ -9,7 +9,7 @@ import heapq
 from collections import deque
 from functools import partial
 from itertools import chain, combinations, product, starmap
-from math import gcd
+from math import gcd,log2
 
 import networkx as nx
 from networkx.utils import arbitrary_element, not_implemented_for, pairwise
@@ -1257,3 +1257,58 @@ def compute_v_structures(G):
             # ensure that the colliders are the same
             common_parents = sorted(common_parents)
             yield (common_parents[0], collider, common_parents[1])
+
+def kqi(G):
+    """ Calculates the knowledge quantification index (KQI) in the directed acyclic graph (DAG).
+
+    KQI is a measure of knowledge in a DAG believed to contain knowledge. Philosophically,
+    knowledge is treated as structure. Generally, KQI can also measure how strongly structured a DAG is.
+    KQI is based on entropy in information theory and is measured in bits.
+
+    Parameters
+    ----------
+    G : NetworkX digraph
+        A directed acyclic graph (DAG)
+
+    Yields
+    ------
+    kqi
+        Yields the KQI of each node in G.
+
+    Raises
+    ------
+    NetworkXError
+        KQI is defined for directed acyclic graphs only. If the graph `G`
+        is undirected or contains a cycle, a :exc:`NetworkXError` is raised.
+
+    Examples
+    --------
+    >>> DG = nx.DiGraph([(1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 3), (2, 4), (2, 5), (2, 6), (3, 4), (3, 5), (3, 6), (4, 6), (5, 4),(5, 6)])
+    >>> nx.kqi(DG)
+    {1: 0.08729006661701388, 2: 0.481046857178525, 3: 0.5892806897082654, 4: 0.27944016436106933, 5: 0.4668449069766869, 6: 0}
+
+    References
+    ----------
+    .. [1] Xinbing Wang, Huquan Kang, Luoyi Fu, et al. (2023).
+       Quantifying knowledge from the perspective of information structurization
+    """
+
+    if not G.is_directed():
+        raise nx.NetworkXError("KQI not defined on undirected graphs.")
+    if not nx.is_directed_acyclic_graph(G):
+        raise nx.NetworkXError("Graph contains a cycle.")
+
+    W = len([v for v in G.nodes() if G.out_degree(v) == 0]) + sum(G.out_degree(v) for v in G.nodes())
+    vol = {v: 0 for v in G.nodes()}
+    node_kqi={}
+    for v in reversed(list(nx.topological_sort(G))):
+        vol[v] = G.out_degree(v) + sum(vol[child] / G.in_degree(child) for child in G.successors(v))
+    f = lambda va, vb, din, w: -va / din / w * log2(va / din / vb)
+    for v in G.nodes():
+        if G.out_degree(v) == 0:
+            node_kqi[v] = 0
+        elif G.in_degree(v) == 0:
+            node_kqi[v] = f(vol[v], W, 1, W)
+        else:
+            node_kqi[v] = sum(f(vol[v], vol[parent], G.in_degree(v), W) for parent in G.predecessors(v))
+    return node_kqi
