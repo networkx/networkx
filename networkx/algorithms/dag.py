@@ -9,7 +9,7 @@ import heapq
 from collections import deque
 from functools import partial
 from itertools import chain, combinations, product, starmap
-from math import gcd,log2
+from math import gcd, log2
 
 import networkx as nx
 from networkx.utils import arbitrary_element, not_implemented_for, pairwise
@@ -1259,7 +1259,7 @@ def compute_v_structures(G):
             yield (common_parents[0], collider, common_parents[1])
 
 def kqi(G):
-    """ Calculates the knowledge quantification index (KQI) in the directed acyclic graph (DAG).
+    """Calculates the knowledge quantification index (KQI) in the directed acyclic graph (DAG).
 
     KQI is a measure of knowledge in a DAG believed to contain knowledge. Philosophically,
     knowledge is treated as structure. Generally, KQI can also measure how strongly structured a DAG is.
@@ -1298,11 +1298,15 @@ def kqi(G):
     if not nx.is_directed_acyclic_graph(G):
         raise nx.NetworkXError("Graph contains a cycle.")
 
-    W = len([v for v in G.nodes() if G.out_degree(v) == 0]) + sum(G.out_degree(v) for v in G.nodes())
+    W = len([v for v in G.nodes() if G.out_degree(v) == 0]) + sum(
+               G.out_degree(v) for v in G.nodes()
+        )
     vol = {v: 0 for v in G.nodes()}
-    node_kqi={}
+    node_kqi = {}
     for v in reversed(list(nx.topological_sort(G))):
-        vol[v] = G.out_degree(v) + sum(vol[child] / G.in_degree(child) for child in G.successors(v))
+        vol[v] = G.out_degree(v) + sum(
+            vol[child] / G.in_degree(child) for child in G.successors(v)
+        )
     f = lambda va, vb, din, w: -va / din / w * log2(va / din / vb)
     for v in G.nodes():
         if G.out_degree(v) == 0:
@@ -1310,5 +1314,8 @@ def kqi(G):
         elif G.in_degree(v) == 0:
             node_kqi[v] = f(vol[v], W, 1, W)
         else:
-            node_kqi[v] = sum(f(vol[v], vol[parent], G.in_degree(v), W) for parent in G.predecessors(v))
+            node_kqi[v] = sum(
+                f(vol[v], vol[parent], G.in_degree(v), W)
+                for parent in G.predecessors(v)
+            )
     return node_kqi
