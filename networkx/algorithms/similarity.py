@@ -1554,7 +1554,7 @@ def panther_similarity(
     similarity : dictionary
         Dictionary of nodes to similarity scores (as floats). Note:
         the self-similarity (i.e., ``v``) will not be included in
-        the returned dictionary. So, for ``k = 5``, a dictionary of 
+        the returned dictionary. So, for ``k = 5``, a dictionary of
         top 4 nodes and their similarity scores will be returned.
 
     Raises
