@@ -1572,7 +1572,7 @@ def panther_similarity(
     Examples
     --------
     >>> G = nx.star_graph(10)
-    >>> nx.panther_similarity(G, 0)
+    >>> sim = nx.panther_similarity(G, 0)
 
     References
     ----------
