@@ -585,7 +585,7 @@ def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format=
         if nlen < len(G):
             G = G.subgraph(nodelist)
 
-    index = dict(zip(nodelist, range(nlen)))
+    index = {i : i for i in nodelist}
     coefficients = zip(
         *((index[u], index[v], wt) for u, v, wt in G.edges(data=weight, default=1))
     )
