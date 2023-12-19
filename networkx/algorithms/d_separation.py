@@ -695,7 +695,7 @@ def d_separated(G, x, y, z):
         "d_separated is deprecated and will be removed in NetworkX v3.5."
         "Please use `is_d_separator(G, x, y, z)`.",
         category=DeprecationWarning,
-        stacklevel=4,
+        stacklevel=2,
     )
     return nx.is_d_separator(G, x, y, z)
 
@@ -717,6 +717,6 @@ def minimal_d_separator(G, u, v):
             "Please use `is_d_separator(G, x, y)`."
         ),
         category=DeprecationWarning,
-        stacklevel=4,
+        stacklevel=2,
     )
     return nx.find_minimal_d_separator(G, u, v)
