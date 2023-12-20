@@ -178,8 +178,8 @@ def intersection_array(G):
         # compute needed shortest path lengths
         if u not in path_length or v not in path_length[u]:
             path_length[u].update(nx.single_source_shortest_path_length(G, u))
-            for v, distance in path_length[u].items():
-                path_length[v][u] = distance
+            for x, distance in path_length[u].items():
+                path_length[x][u] = distance
 
         i = path_length[u][v]
         diam = max(diam, i)
@@ -192,8 +192,8 @@ def intersection_array(G):
         for n in G[v]:
             if n not in path_length or u not in path_length[n]:
                 path_length[n].update(nx.single_source_shortest_path_length(G, n))
-                for v, distance in path_length[n].items():
-                    path_length[v][n] = distance
+                for x, distance in path_length[n].items():
+                    path_length[x][n] = distance
 
         # number of neighbors of v at a distance of i-1 from u
         c = sum(1 for n in G[v] if path_length[n][u] == i - 1)
