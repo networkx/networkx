@@ -254,6 +254,7 @@ np.random.seed(42)
 
 plot_formats = [("png", 100)]
 
+
 def setup(app):
     app.add_css_file("custom.css")
     app.add_js_file("copybutton.js")
