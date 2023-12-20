@@ -71,10 +71,10 @@ def is_distance_regular(G):
 def global_parameters(b, c):
     """Returns global parameters for a given intersection array.
 
-    Given a distance-regular graph G with integers b_i, c_i,i = 0,....,d
-    such that for any 2 vertices x,y in G at a distance i=d(x,y), there
-    are exactly c_i neighbors of y at a distance of i-1 from x and b_i
-    neighbors of y at a distance of i+1 from x.
+    Given a distance-regular graph G with diameter d and integers b_i,
+    c_i,i = 0,....,d such that for any 2 vertices x,y in G at a distance
+    i=d(x,y), there are exactly c_i neighbors of y at a distance of i-1 from x
+    and b_i neighbors of y at a distance of i+1 from x.
 
     Thus, a distance regular graph has the global parameters,
     [[c_0,a_0,b_0],[c_1,a_1,b_1],......,[c_d,a_d,b_d]] for the
