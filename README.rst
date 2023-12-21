@@ -65,7 +65,7 @@ see `CONTRIBUTING.rst <https://github.com/networkx/networkx/blob/main/CONTRIBUTI
 License
 -------
 
-Released under the 3-Clause BSD license (see `LICENSE.txt`)::
+Released under the 3-Clause BSD license (see `LICENSE.txt <<https://github.com/networkx/networkx/blob/main/LICENSE.txt>`)::
 
    Copyright (C) 2004-2023 NetworkX Developers
    Aric Hagberg <hagberg@lanl.gov>
