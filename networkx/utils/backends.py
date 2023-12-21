@@ -90,6 +90,7 @@ import sys
 import warnings
 from functools import partial
 from importlib.metadata import entry_points
+from typing import TYPE_CHECKING
 
 import networkx as nx
 
@@ -1016,3 +1017,30 @@ if os.environ.get("_NETWORKX_BUILDING_DOCS_"):
         dispatched_func = _orig_dispatch(func, **kwargs)
         func.__doc__ = dispatched_func.__doc__
         return func
+
+elif TYPE_CHECKING:
+    # For type-checking, have dispatched functions show up as normal Python functions.
+    # These do have `backend=None` and `**backend_kwargs` added to the signature!
+    _orig_dispatch = _dispatch
+
+    def _dispatch(func=None, **kwargs):  # type: ignore[no-redef]
+        if func is None:
+            return partial(_dispatch, **kwargs)
+
+        dispatched_func = _orig_dispatch(func, **kwargs)
+
+        def func_for_type_checking(*args, **kwargs):
+            return dispatched_func(*args, **kwargs)
+
+        func_for_type_checking.__name__ = dispatched_func.__name__
+        func_for_type_checking.__doc__ = dispatched_func.__doc__
+        func_for_type_checking.__defaults__ = dispatched_func.__defaults__
+        func_for_type_checking.__kwdefaults__ = dispatched_func.__kwdefaults__
+        func_for_type_checking.__module__ = dispatched_func.__module__
+        func_for_type_checking.__qualname__ = dispatched_func.__qualname__
+        func_for_type_checking.__dict__.update(dispatched_func.__dict__)
+        func_for_type_checking.__wrapped__ = func
+        func_for_type_checking.__signature__ = dispatched_func.__signature__
+        return func_for_type_checking
+
+    _dispatch.__dict__.update(_orig_dispatch.__dict__)
