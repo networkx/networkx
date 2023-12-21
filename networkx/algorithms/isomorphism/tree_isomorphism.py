@@ -209,7 +209,8 @@ def rooted_tree_isomorphism(t1, root1, t2, root2):
     return isomorphism
 
 
-@not_implemented_for("directed", "multigraph")
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 @nx._dispatch(graphs={"t1": 0, "t2": 1})
 def tree_isomorphism(t1, t2):
     """
