@@ -1,7 +1,6 @@
 from collections import defaultdict
 
 import networkx as nx
-from networkx.exception import NetworkXError
 
 __all__ = ["check_planarity", "is_planar", "PlanarEmbedding"]
 
@@ -856,6 +855,23 @@ class PlanarEmbedding(nx.DiGraph):
 
     """
 
+    def __init__(self, incoming_graph_data=None, **attr):
+        super().__init__(incoming_graph_data=incoming_graph_data, **attr)
+        self.add_edge = self.__forbidden
+        self.add_edges_from = self.__forbidden
+        self.add_weighted_edges_from = self.__forbidden
+
+    def __forbidden(self, *args, **kwargs):
+        """Forbidden operation
+
+        Any edge additions to a PlanarEmbedding should be done using
+        methods `add_half_edge_first`, `add_half_edge_cw` or
+        `add_half_edge_ccw`.
+        """
+        raise nx.NetworkXError(
+            "Use `add_half_edge_*` methods to add edges to a PlanarEmbedding."
+        )
+
     def get_data(self):
         """Converts the adjacency structure into a better readable structure.
 
@@ -939,7 +955,7 @@ class PlanarEmbedding(nx.DiGraph):
             del self._succ[n]
             del self._pred[n]
         except KeyError as err:  # NetworkXError if n not in self
-            raise NetworkXError(
+            raise nx.NetworkXError(
                 f"The node {n} is not in the planar embedding."
             ) from err
 
@@ -1227,7 +1243,7 @@ class PlanarEmbedding(nx.DiGraph):
             else:
                 del self._node[v]["first_nbr"]
         except KeyError as err:
-            raise NetworkXError(
+            raise nx.NetworkXError(
                 f"The edge {u}-{v} not in the planar embedding."
             ) from err
 
