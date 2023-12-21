@@ -1021,7 +1021,7 @@ if os.environ.get("_NETWORKX_BUILDING_DOCS_"):
 elif TYPE_CHECKING:
     # For type-checking, have dispatched functions show up as normal Python functions.
     # These do have `backend=None` and `**backend_kwargs` added to the signature!
-    _orig_dispatch = _dispatch
+    _orig_dispatch = _dispatch  # type: ignore[no-redef]
 
     def _dispatch(func=None, **kwargs):  # type: ignore[no-redef]
         if func is None:
@@ -1043,4 +1043,6 @@ elif TYPE_CHECKING:
         func_for_type_checking.__signature__ = dispatched_func.__signature__
         return func_for_type_checking
 
-    _dispatch.__dict__.update(_orig_dispatch.__dict__)
+    for key, val in _orig_dispatch.__dict__.items():
+        if not key.startswith("__"):
+            setattr(_dispatch, key, val)
