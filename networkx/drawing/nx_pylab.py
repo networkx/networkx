@@ -1019,6 +1019,9 @@ def draw_networkx_labels(
 
     if labels is None:
         labels = {n: n for n in G.nodes()}
+        for n in G.nodes:
+            if 'label' in G.nodes[n]:
+                labels[n] = G.nodes[n]['label']
 
     text_items = {}  # there is no text collection so we'll fake one
     for n, label in labels.items():
