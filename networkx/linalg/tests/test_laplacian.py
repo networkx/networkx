@@ -306,14 +306,14 @@ class TestTotalSpanningTreeWeight:
         assert np.isclose(nx.total_spanning_tree_weight(G), 5)
 
     def test_tstw_directed_noroot(self):
-        G = nx.MultiDiGraph()
+        G = nx.empty_graph(3, create_using=nx.MultiDiGraph)
         with pytest.raises(nx.NetworkXError):
             nx.total_spanning_tree_weight(G)
 
     def test_tstw_directed_root_not_exist(self):
-        G = nx.MultiDiGraph()
+        G = nx.empty_graph(3, create_using=nx.MultiDiGraph)
         with pytest.raises(nx.NetworkXError):
-            nx.total_spanning_tree_weight(G, root=0)
+            nx.total_spanning_tree_weight(G, root=42)
 
     def test_tstw_directed_not_weak_connected(self):
         G = nx.MultiDiGraph()
