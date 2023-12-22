@@ -314,8 +314,11 @@ def directed_laplacian_matrix(
        If None, then each edge has weight 1.
 
     walk_type : string or None, optional (default=None)
-       If None, `P` is selected depending on the properties of the
-       graph. Otherwise is one of 'random', 'lazy', or 'pagerank'
+       One of ``"random"``, ``"lazy"``, or ``"pagerank"``. If ``walk_type=None``
+       (the default), then a value is selected according to the properties of `G`:
+       - ``walk_type="random"`` if `G` is strongly connected and aperiodic
+       - ``walk_type="lazy"`` if `G` is strongly connected but not aperiodic
+       - ``walk_type="pagerank"`` for all other cases.
 
     alpha : real
        (1 - alpha) is the teleportation probability used with pagerank
@@ -402,8 +405,11 @@ def directed_combinatorial_laplacian_matrix(
        If None, then each edge has weight 1.
 
     walk_type : string or None, optional (default=None)
-       If None, `P` is selected depending on the properties of the
-       graph. Otherwise is one of 'random', 'lazy', or 'pagerank'
+        One of ``"random"``, ``"lazy"``, or ``"pagerank"``. If ``walk_type=None``
+        (the default), then a value is selected according to the properties of `G`:
+        - ``walk_type="random"`` if `G` is strongly connected and aperiodic
+        - ``walk_type="lazy"`` if `G` is strongly connected but not aperiodic
+        - ``walk_type="pagerank"`` for all other cases.
 
     alpha : real
        (1 - alpha) is the teleportation probability used with pagerank
@@ -467,8 +473,11 @@ def _transition_matrix(G, nodelist=None, weight="weight", walk_type=None, alpha=
        If None, then each edge has weight 1.
 
     walk_type : string or None, optional (default=None)
-       If None, `P` is selected depending on the properties of the
-       graph. Otherwise is one of 'random', 'lazy', or 'pagerank'
+       One of ``"random"``, ``"lazy"``, or ``"pagerank"``. If ``walk_type=None``
+       (the default), then a value is selected according to the properties of `G`:
+        - ``walk_type="random"`` if `G` is strongly connected and aperiodic
+        - ``walk_type="lazy"`` if `G` is strongly connected but not aperiodic
+        - ``walk_type="pagerank"`` for all other cases.
 
     alpha : real
        (1 - alpha) is the teleportation probability used with pagerank

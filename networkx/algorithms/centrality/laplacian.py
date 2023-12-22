@@ -50,8 +50,11 @@ def laplacian_centrality(
     walk_type : string or None, optional (default=None)
         Optional parameter `walk_type` used when calling
         :func:`directed_laplacian_matrix <networkx.directed_laplacian_matrix>`.
-        If None, the transition matrix is selected depending on the properties
-        of the graph. Otherwise can be `random`, `lazy`, or `pagerank`.
+        One of ``"random"``, ``"lazy"``, or ``"pagerank"``. If ``walk_type=None``
+        (the default), then a value is selected according to the properties of `G`:
+        - ``walk_type="random"`` if `G` is strongly connected and aperiodic
+        - ``walk_type="lazy"`` if `G` is strongly connected but not aperiodic
+        - ``walk_type="pagerank"`` for all other cases.
 
     alpha : real (default = 0.95)
         Optional parameter `alpha` used when calling

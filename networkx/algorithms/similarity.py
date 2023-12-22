@@ -1275,6 +1275,14 @@ def simrank_similarity(
         If neither ``source`` nor ``target`` is ``None``, this returns
         the similarity value for the given pair of nodes.
 
+    Raises
+    -------
+    ExceededMaxIterations
+        If the algorithm does not converge within ``max_iterations``.
+
+    NodeNotFound
+        If either ``source`` or ``target`` is not in `G`.
+
     Examples
     --------
     >>> G = nx.cycle_graph(2)
@@ -1311,8 +1319,21 @@ def simrank_similarity(
     import numpy as np
 
     nodelist = list(G)
-    s_indx = None if source is None else nodelist.index(source)
-    t_indx = None if target is None else nodelist.index(target)
+    if source is not None:
+        if source not in nodelist:
+            raise nx.NodeNotFound(f"Source node {source} not in G")
+        else:
+            s_indx = nodelist.index(source)
+    else:
+        s_indx = None
+
+    if target is not None:
+        if target not in nodelist:
+            raise nx.NodeNotFound(f"Target node {target} not in G")
+        else:
+            t_indx = nodelist.index(target)
+    else:
+        t_indx = None
 
     x = _simrank_similarity_numpy(
         G, s_indx, t_indx, importance_factor, max_iterations, tolerance
@@ -1535,6 +1556,18 @@ def panther_similarity(
         the self-similarity (i.e., ``v``) will not be included in
         the returned dictionary.
 
+    Raises
+    -------
+    NetworkXUnfeasible
+        If `source` is an isolated node.
+
+    NodeNotFound
+        If `source` is not in `G`.
+
+    Notes
+    -------
+        The isolated nodes in `G` are ignored.
+
     Examples
     --------
     >>> G = nx.star_graph(10)
@@ -1549,6 +1582,18 @@ def panther_similarity(
            Association for Computing Machinery. https://doi.org/10.1145/2783258.2783267.
     """
     import numpy as np
+
+    if source not in G:
+        raise nx.NodeNotFound(f"Source node {source} not in G")
+
+    isolates = set(nx.isolates(G))
+
+    if source in isolates:
+        raise nx.NetworkXUnfeasible(
+            f"Panther similarity is not defined for the isolated source node {source}."
+        )
+
+    G = G.subgraph([node for node in G.nodes if node not in isolates]).copy()
 
     num_nodes = G.number_of_nodes()
     if num_nodes < k:
@@ -1689,22 +1734,22 @@ def generate_random_paths(
         for _ in range(path_length):
             # Randomly sample a neighbor (v_j) according
             # to transition probabilities from ``node`` (v) to its neighbors
-            neighbor_index = np.random.choice(
+            nbr_index = np.random.choice(
                 num_nodes, p=transition_probabilities[starting_index]
             )
 
             # Set current vertex (v = v_j)
-            starting_index = neighbor_index
+            starting_index = nbr_index
 
             # Add v into p_r
-            neighbor_node = node_map[neighbor_index]
-            path.append(neighbor_node)
+            nbr_node = node_map[nbr_index]
+            path.append(nbr_node)
 
             # Add p_r into P_v
             if index_map is not None:
-                if neighbor_node in index_map:
-                    index_map[neighbor_node].add(path_index)
+                if nbr_node in index_map:
+                    index_map[nbr_node].add(path_index)
                 else:
-                    index_map[neighbor_node] = {path_index}
+                    index_map[nbr_node] = {path_index}
 
         yield path

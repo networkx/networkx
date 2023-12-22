@@ -29,6 +29,8 @@ def is_regular(G):
     True
 
     """
+    if len(G) == 0:
+        raise nx.NetworkXPointlessConcept("Graph has no nodes.")
     n1 = nx.utils.arbitrary_element(G)
     if not G.is_directed():
         d1 = G.degree(n1)
@@ -69,7 +71,7 @@ def is_k_regular(G, k):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch(edge_attrs="matching_weight")
+@nx._dispatch(preserve_edge_attrs=True)
 def k_factor(G, k, matching_weight="weight"):
     """Compute a k-factor of G
 

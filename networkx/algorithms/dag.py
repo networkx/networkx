@@ -641,7 +641,8 @@ def is_aperiodic(G):
     """
     if not G.is_directed():
         raise nx.NetworkXError("is_aperiodic not defined for undirected graphs")
-
+    if len(G) == 0:
+        raise nx.NetworkXPointlessConcept("Graph has no nodes.")
     s = arbitrary_element(G)
     levels = {s: 0}
     this_level = [s]
@@ -1249,7 +1250,7 @@ def compute_v_structures(G):
 
     Notes
     -----
-    https://en.wikipedia.org/wiki/Collider_(statistics)
+    `Wikipedia: Collider in causal graphs <https://en.wikipedia.org/wiki/Collider_(statistics)>`_
     """
     for collider, preds in G.pred.items():
         for common_parents in combinations(preds, r=2):

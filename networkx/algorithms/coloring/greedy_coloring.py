@@ -274,7 +274,7 @@ def greedy_color(G, strategy="largest_first", interchange=False):
     """Color a graph using various strategies of greedy graph coloring.
 
     Attempts to color a graph using as few colors as possible, where no
-    neighbours of a node can have same color as the node itself. The
+    neighbors of a node can have same color as the node itself. The
     given strategy determines the order in which nodes are colored.
 
     The strategies are described in [1]_, and smallest-last is based on
@@ -371,11 +371,11 @@ def greedy_color(G, strategy="largest_first", interchange=False):
     if interchange:
         return _greedy_coloring_with_interchange(G, nodes)
     for u in nodes:
-        # Set to keep track of colors of neighbours
-        neighbour_colors = {colors[v] for v in G[u] if v in colors}
+        # Set to keep track of colors of neighbors
+        nbr_colors = {colors[v] for v in G[u] if v in colors}
         # Find the first unused color.
         for color in itertools.count():
-            if color not in neighbour_colors:
+            if color not in nbr_colors:
                 break
         # Assign the new color to the current node.
         colors[u] = color

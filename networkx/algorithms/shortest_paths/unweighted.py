@@ -117,7 +117,7 @@ def single_target_shortest_path_length(G, target, cutoff=None):
     Examples
     --------
     >>> G = nx.path_graph(5, create_using=nx.DiGraph())
-    >>> length = dict(nx.single_target_shortest_path_length(G, 4))
+    >>> length = nx.single_target_shortest_path_length(G, 4)
     >>> length[0]
     4
     >>> for node in range(5):
@@ -135,8 +135,14 @@ def single_target_shortest_path_length(G, target, cutoff=None):
     if target not in G:
         raise nx.NodeNotFound(f"Target {target} is not in G")
 
-    msg = "single_target_shortest_path_length will return a dict starting in v3.3"
-    warnings.warn(msg, DeprecationWarning)
+    warnings.warn(
+        (
+            "\n\nsingle_target_shortest_path_length will return a dict instead of"
+            "\nan iterator in version 3.5"
+        ),
+        FutureWarning,
+        stacklevel=3,
+    )
 
     if cutoff is None:
         cutoff = float("inf")
@@ -145,7 +151,7 @@ def single_target_shortest_path_length(G, target, cutoff=None):
     nextlevel = [target]
     # for version 3.3 we will return a dict like this:
     # return dict(_single_shortest_path_length(adj, nextlevel, cutoff))
-    return _single_shortest_path_length(adj, nextlevel, cutoff)
+    return dict(_single_shortest_path_length(adj, nextlevel, cutoff))
 
 
 @nx._dispatch

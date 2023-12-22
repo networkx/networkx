@@ -94,13 +94,13 @@ def set_warnings():
     )
     warnings.filterwarnings(
         "ignore",
-        category=DeprecationWarning,
-        message="single_target_shortest_path_length will",
+        category=FutureWarning,
+        message="\n\nsingle_target_shortest_path_length",
     )
     warnings.filterwarnings(
         "ignore",
-        category=DeprecationWarning,
-        message="shortest_path for all_pairs",
+        category=FutureWarning,
+        message="\n\nshortest_path",
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\nforest_str is deprecated"
@@ -129,6 +129,25 @@ def set_warnings():
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nall_triplets"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nrandom_triad"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="minimal_d_separator"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="d_separated"
+    )
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="\n\nk_core")
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nk_shell"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nk_crust"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nk_corona"
     )
 
 
@@ -207,6 +226,7 @@ needs_numpy = [
     "algorithms/non_randomness.py",
     "algorithms/shortest_paths/dense.py",
     "algorithms/tree/mst.py",
+    "generators/expanders.py",
     "linalg/bethehessianmatrix.py",
     "linalg/laplacianmatrix.py",
     "utils/misc.py",
@@ -233,6 +253,7 @@ needs_scipy = [
     "convert_matrix.py",
     "drawing/layout.py",
     "generators/spectral_graph_forge.py",
+    "generators/expanders.py",
     "linalg/algebraicconnectivity.py",
     "linalg/attrmatrix.py",
     "linalg/bethehessianmatrix.py",
