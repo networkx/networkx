@@ -425,7 +425,7 @@ def _quotient_graph(
     return H
 
 
-@nx._dispatch(preserve_all_attrs=True)
+@nx._dispatch(preserve_all_attrs=True, mutates_input={"not copy": 4})
 def contracted_nodes(G, u, v, self_loops=True, copy=True):
     """Returns the graph that results from contracting `u` and `v`.
 
@@ -560,7 +560,7 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
 identified_nodes = contracted_nodes
 
 
-@nx._dispatch(preserve_edge_attrs=True)
+@nx._dispatch(preserve_edge_attrs=True, mutates_input={"not copy": 3})
 def contracted_edge(G, edge, self_loops=True, copy=True):
     """Returns the graph that results from contracting the specified edge.
 

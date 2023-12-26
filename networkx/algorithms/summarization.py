@@ -65,7 +65,7 @@ import networkx as nx
 __all__ = ["dedensify", "snap_aggregation"]
 
 
-@nx._dispatch
+@nx._dispatch(mutates_input={"not copy": 3})
 def dedensify(G, threshold, prefix=None, copy=True):
     """Compresses neighborhoods around high-degree nodes
 
