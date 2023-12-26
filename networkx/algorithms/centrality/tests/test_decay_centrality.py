@@ -8,7 +8,7 @@ import pytest
 import networkx as nx
 
 
-def test_decay_centrality_K():
+def test_decay_centrality_krackhardt_kite_graph():
     """
     Test the decay centrality of the krackhardt kite graph.
 
@@ -34,7 +34,7 @@ def test_decay_centrality_K():
         assert c[n] == pytest.approx(d[n], abs=1e-3)
 
 
-def test_decay_centrality_T():
+def test_decay_centrality_balanced_tree():
     T = nx.balanced_tree(r=2, h=2)
     T.add_edge(5, 6)
     T.add_edge(3, 4)
@@ -46,7 +46,7 @@ def test_decay_centrality_T():
         assert c[n] == pytest.approx(d[n], abs=1e-3)
 
 
-def test_decay_centrality_D():
+def test_decay_centrality_digraph():
     D = nx.DiGraph()
     D.add_edges_from(
         [
