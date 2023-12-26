@@ -4,25 +4,26 @@ __all__ = ["decay_centrality"]
 
 
 def decay_centrality(G, u=None, delta=0.5, mode="all", weight=None):
-    r"""
-    Compute the decay centrality for nodes.
-    Decay centrality [1]_ of a node `u` is the decay parameter raised to power
-    sum of shortest distance between `u`and `n-1` reachable nodes. This
+    r"""Return the decay centrality with specified `delta` for nodes in `nbunch`
+    
+    Decay centrality [1]_ of a node `u` is the `decay` parameter raised to power
+    sum of shortest distance between `u`and `n-1` reachable nodes where n is the total number of nodes. This
     particular algorithm allows to manipulate the emphasis of reachable nodes
     with respect to distance between the nodes.
 
     .. math::
         DC(u) = {\sum_{v=1}^{n - 1}} \delta ^{d(v, u)},
         0 < \delta < 1
-    where `d(v, u)` is the shortest-path distance between `v` and `u`,
+        
+    where ``d(v, u)`` is the shortest-path distance between ``v`` and ``u``,
     `delta` is the decay parameter with value between 0 and 1,
-    and `n` is the number of nodes that can reach `u`.
+    and ``n`` is the number of nodes that can reach ``u``.
 
     Notice that when `delta` approaches 0, the decay centrality approaches
     degree and decay centrality becomes propostional to the degree centrality.
 
     When `delta` approaches 1, the decay centrality approaches size of
-    component i.e the number of reachable nodes.
+    the component i.e the number of nodes which can reach `u`.
 
     Parameters
     ----------
@@ -97,15 +98,15 @@ def decay_centrality(G, u=None, delta=0.5, mode="all", weight=None):
         else:
             raise nx.NetworkXError("u is not a node in the graph")
 
-    for n in nodes:
-        geodisc_distance_for_n = path_length(n)
+    for node in nodes:
+        geodisc_distance_for_node = path_length(node)
 
-        decay_centrality[n] = 0
+        decay_centrality[node] = 0
 
-        for v in geodisc_distance_for_n:
-            if v == n or geodisc_distance_for_n[v] == 0:
+        for v in geodisc_distance_for_node:
+            if v == node or geodisc_distance_for_node[v] == 0:
                 continue
-            decay_centrality[n] += delta ** (geodisc_distance_for_n[v])
+            decay_centrality[node] += delta ** (geodisc_distance_for_node[v])
 
     if u is not None:
         decay_centrality = {u: decay_centrality[u] for u in nodes}
