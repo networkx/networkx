@@ -35,7 +35,6 @@ def test_decay_centrality_K():
 
 
 def test_decay_centrality_T():
-
     T = nx.balanced_tree(r=2, h=2)
     T.add_edge(5, 6)
     T.add_edge(3, 4)
@@ -48,7 +47,6 @@ def test_decay_centrality_T():
 
 
 def test_decay_centrality_D():
-
     D = nx.DiGraph()
     D.add_edges_from(
         [
@@ -121,7 +119,6 @@ def test_decay_centrality_D():
 
 
 def test_decay_centrality_Gb():
-
     Gb = nx.Graph()
 
     Gb.add_edges_from(

@@ -98,7 +98,6 @@ def decay_centrality(G, u=None, delta=0.5, mode="all", weight=None):
             raise nx.NetworkXError("u is not a node in the graph")
 
     for n in nodes:
-
         geodisc_distance_for_n = path_length(n)
 
         decay_centrality[n] = 0
