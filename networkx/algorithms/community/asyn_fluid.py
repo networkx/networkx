@@ -10,7 +10,8 @@ from networkx.utils import groups, not_implemented_for, py_random_state
 __all__ = ["asyn_fluidc"]
 
 
-@not_implemented_for("directed", "multigraph")
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 @py_random_state(3)
 @nx._dispatch
 def asyn_fluidc(G, k, max_iter=100, seed=None):
