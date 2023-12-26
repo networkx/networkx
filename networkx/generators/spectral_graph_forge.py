@@ -8,6 +8,7 @@ __all__ = ["spectral_graph_forge"]
 
 
 @np_random_state(3)
+@nx._dispatch
 def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
     """Returns a random simple graph with spectrum resembling that of `G`
 
@@ -81,7 +82,6 @@ def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
     """
     import numpy as np
     import scipy as sp
-    import scipy.stats  # call as sp.stats
 
     available_transformations = ["identity", "modularity"]
     alpha = np.clip(alpha, 0, 1)

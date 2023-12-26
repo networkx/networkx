@@ -4,7 +4,7 @@ version: 2.1
 jobs:
   documentation:
     docker:
-      - image: cimg/python:3.9
+      - image: cimg/python:3.10
 
     steps:
       - checkout
@@ -20,11 +20,6 @@ jobs:
             sudo apt-get install graphviz libgraphviz-dev
 
       - run:
-          name: Install TeX
-          command: |
-            sudo apt-get install texlive texlive-latex-extra latexmk texlive-xetex fonts-freefont-otf xindy
-
-      - run:
           name: Install pysal dependencies
           command: |
             sudo apt-get install libspatialindex-dev
@@ -38,11 +33,17 @@ jobs:
           command: |
             python3 -m venv venv
             source venv/bin/activate
-            pip install --upgrade pip wheel setuptools
+            pip install --upgrade pip
             pip install -r requirements/default.txt -r requirements/test.txt
             pip install -r requirements/extra.txt
             pip install -r requirements/example.txt
             pip install -r requirements/doc.txt
+            # Install trusted backends, but not their dependencies.
+            # We only need to use the "networkx.backend_info" entry-point.
+            # This is the nightly wheel for nx-cugraph.
+            pip install git+https://github.com/rapidsai/cugraph.git#subdirectory=python/nx-cugraph --no-deps
+            # Development version of GraphBLAS backend
+            pip install git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
             pip list
 
       - save_cache:
@@ -54,7 +55,7 @@ jobs:
           name: Install
           command: |
             source venv/bin/activate
-            pip install -e .
+            pip install -e . --no-deps
 
       - run:
           name: Build docs
@@ -63,15 +64,13 @@ jobs:
             export OMP_NUM_THREADS=1
             source venv/bin/activate
             make -C doc/ html
-            make -C doc/ latexpdf LATEXOPTS="-file-line-error -halt-on-error"
-            cp -a doc/build/latex/networkx_reference.pdf doc/build/html/_downloads/.
 
       - store_artifacts:
           path: doc/build/html
 
   image:
     docker:
-      - image: cimg/python:3.9
+      - image: cimg/python:3.10
 
     steps:
       - checkout
@@ -81,7 +80,7 @@ jobs:
           command: |
             python -m venv venv
             source venv/bin/activate
-            pip install --upgrade pip wheel setuptools
+            pip install --upgrade pip
             pip install -r requirements/default.txt -r requirements/test.txt
             pip install pytest-mpl  # NOTE: specified here to avoid confusing conda
             pip list

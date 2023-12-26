@@ -42,8 +42,8 @@ def write_dot(G, path):
     Path can be a string or a file handle.
     """
     msg = (
-        "nx.nx_pydot.write_dot depends on the pydot package, which has"
-        "known issues and is not actively maintained. Consider using"
+        "nx.nx_pydot.write_dot depends on the pydot package, which has "
+        "known issues and is not actively maintained. Consider using "
         "nx.nx_agraph.write_dot instead.\n\n"
         "See https://github.com/networkx/networkx/issues/5723"
     )
@@ -54,6 +54,7 @@ def write_dot(G, path):
 
 
 @open_file(0, mode="r")
+@nx._dispatch(name="pydot_read_dot", graphs=None)
 def read_dot(path):
     """Returns a NetworkX :class:`MultiGraph` or :class:`MultiDiGraph` from the
     dot file with the passed path.
@@ -79,8 +80,8 @@ def read_dot(path):
     import pydot
 
     msg = (
-        "nx.nx_pydot.read_dot depends on the pydot package, which has"
-        "known issues and is not actively maintained. Consider using"
+        "nx.nx_pydot.read_dot depends on the pydot package, which has "
+        "known issues and is not actively maintained. Consider using "
         "nx.nx_agraph.read_dot instead.\n\n"
         "See https://github.com/networkx/networkx/issues/5723"
     )
@@ -95,6 +96,7 @@ def read_dot(path):
     return from_pydot(P_list[0])
 
 
+@nx._dispatch(graphs=None)
 def from_pydot(P):
     """Returns a NetworkX graph from a Pydot graph.
 
@@ -119,7 +121,7 @@ def from_pydot(P):
 
     """
     msg = (
-        "nx.nx_pydot.from_pydot depends on the pydot package, which has"
+        "nx.nx_pydot.from_pydot depends on the pydot package, which has "
         "known issues and is not actively maintained.\n\n"
         "See https://github.com/networkx/networkx/issues/5723"
     )
@@ -219,7 +221,7 @@ def to_pydot(N):
     import pydot
 
     msg = (
-        "nx.nx_pydot.to_pydot depends on the pydot package, which has"
+        "nx.nx_pydot.to_pydot depends on the pydot package, which has "
         "known issues and is not actively maintained.\n\n"
         "See https://github.com/networkx/networkx/issues/5723"
     )
@@ -347,8 +349,8 @@ def graphviz_layout(G, prog="neato", root=None):
     This is a wrapper for pydot_layout.
     """
     msg = (
-        "nx.nx_pydot.graphviz_layout depends on the pydot package, which has"
-        "known issues and is not actively maintained. Consider using"
+        "nx.nx_pydot.graphviz_layout depends on the pydot package, which has "
+        "known issues and is not actively maintained. Consider using "
         "nx.nx_agraph.graphviz_layout instead.\n\n"
         "See https://github.com/networkx/networkx/issues/5723"
     )
@@ -398,7 +400,7 @@ def pydot_layout(G, prog="neato", root=None):
     import pydot
 
     msg = (
-        "nx.nx_pydot.pydot_layout depends on the pydot package, which has"
+        "nx.nx_pydot.pydot_layout depends on the pydot package, which has "
         "known issues and is not actively maintained.\n\n"
         "See https://github.com/networkx/networkx/issues/5723"
     )

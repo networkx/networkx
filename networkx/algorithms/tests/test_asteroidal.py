@@ -2,7 +2,6 @@ import networkx as nx
 
 
 def test_is_at_free():
-
     is_at_free = nx.asteroidal.is_at_free
 
     cycle = nx.cycle_graph(6)

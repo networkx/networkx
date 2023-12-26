@@ -9,6 +9,10 @@ from networkx.utils import edges_equal, nodes_equal
 def test_unknown_algorithm():
     with pytest.raises(ValueError):
         nx.minimum_spanning_tree(nx.Graph(), algorithm="random")
+    with pytest.raises(
+        ValueError, match="random is not a valid choice for an algorithm."
+    ):
+        nx.maximum_spanning_edges(nx.Graph(), algorithm="random")
 
 
 class MinimumSpanningTreeTestBase:
@@ -104,6 +108,19 @@ class MinimumSpanningTreeTestBase:
         with pytest.raises(ValueError):
             list(edges)
 
+    def test_nan_weights_MultiGraph(self):
+        G = nx.MultiGraph()
+        G.add_edge(0, 12, weight=float("nan"))
+        edges = nx.minimum_spanning_edges(
+            G, algorithm="prim", data=False, ignore_nan=False
+        )
+        with pytest.raises(ValueError):
+            list(edges)
+        # test default for ignore_nan as False
+        edges = nx.minimum_spanning_edges(G, algorithm="prim", data=False)
+        with pytest.raises(ValueError):
+            list(edges)
+
     def test_nan_weights_order(self):
         # now try again with a nan edge at the beginning of G.nodes
         edges = [
@@ -165,7 +182,7 @@ class MinimumSpanningTreeTestBase:
         assert edges_equal(actual, self.maximum_spanning_edgelist)
 
     def test_disconnected(self):
-        G = nx.Graph([(0, 1, dict(weight=1)), (2, 3, dict(weight=2))])
+        G = nx.Graph([(0, 1, {"weight": 1}), (2, 3, {"weight": 2})])
         T = nx.minimum_spanning_tree(G, algorithm=self.algo)
         assert nodes_equal(list(T), list(range(4)))
         assert edges_equal(list(T.edges()), [(0, 1), (2, 3)])
@@ -253,6 +270,44 @@ class TestKruskal(MultigraphMSTTestBase):
 
     algorithm = "kruskal"
 
+    def test_key_data_bool(self):
+        """Tests that the keys and data values are included in
+        MST edges based on whether keys and data parameters are
+        true or false"""
+        G = nx.MultiGraph()
+        G.add_edge(1, 2, key=1, weight=2)
+        G.add_edge(1, 2, key=2, weight=3)
+        G.add_edge(3, 2, key=1, weight=2)
+        G.add_edge(3, 1, key=1, weight=4)
+
+        # keys are included and data is not included
+        mst_edges = nx.minimum_spanning_edges(
+            G, algorithm=self.algo, keys=True, data=False
+        )
+        assert edges_equal([(1, 2, 1), (2, 3, 1)], list(mst_edges))
+
+        # keys are not included and data is included
+        mst_edges = nx.minimum_spanning_edges(
+            G, algorithm=self.algo, keys=False, data=True
+        )
+        assert edges_equal(
+            [(1, 2, {"weight": 2}), (2, 3, {"weight": 2})], list(mst_edges)
+        )
+
+        # both keys and data are not included
+        mst_edges = nx.minimum_spanning_edges(
+            G, algorithm=self.algo, keys=False, data=False
+        )
+        assert edges_equal([(1, 2), (2, 3)], list(mst_edges))
+
+        # both keys and data are included
+        mst_edges = nx.minimum_spanning_edges(
+            G, algorithm=self.algo, keys=True, data=True
+        )
+        assert edges_equal(
+            [(1, 2, 1, {"weight": 2}), (2, 3, 1, {"weight": 2})], list(mst_edges)
+        )
+
 
 class TestPrim(MultigraphMSTTestBase):
     """Unit tests for computing a minimum (or maximum) spanning tree
@@ -260,6 +315,37 @@ class TestPrim(MultigraphMSTTestBase):
     """
 
     algorithm = "prim"
+
+    def test_prim_mst_edges_simple_graph(self):
+        H = nx.Graph()
+        H.add_edge(1, 2, key=2, weight=3)
+        H.add_edge(3, 2, key=1, weight=2)
+        H.add_edge(3, 1, key=1, weight=4)
+
+        mst_edges = nx.minimum_spanning_edges(H, algorithm=self.algo, ignore_nan=True)
+        assert edges_equal(
+            [(1, 2, {"key": 2, "weight": 3}), (2, 3, {"key": 1, "weight": 2})],
+            list(mst_edges),
+        )
+
+    def test_ignore_nan(self):
+        """Tests that the edges with NaN weights are ignored or
+        raise an Error based on ignore_nan is true or false"""
+        H = nx.MultiGraph()
+        H.add_edge(1, 2, key=1, weight=float("nan"))
+        H.add_edge(1, 2, key=2, weight=3)
+        H.add_edge(3, 2, key=1, weight=2)
+        H.add_edge(3, 1, key=1, weight=4)
+
+        # NaN weight edges are ignored when ignore_nan=True
+        mst_edges = nx.minimum_spanning_edges(H, algorithm=self.algo, ignore_nan=True)
+        assert edges_equal(
+            [(1, 2, 2, {"weight": 3}), (2, 3, 1, {"weight": 2})], list(mst_edges)
+        )
+
+        # NaN weight edges raise Error when ignore_nan=False
+        with pytest.raises(ValueError):
+            list(nx.minimum_spanning_edges(H, algorithm=self.algo, ignore_nan=False))
 
     def test_multigraph_keys_tree(self):
         G = nx.MultiGraph()

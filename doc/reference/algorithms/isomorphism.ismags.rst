@@ -1,9 +1,5 @@
 .. _ismags:
 
-****************
-ISMAGS Algorithm
-****************
-
 .. automodule:: networkx.algorithms.isomorphism.ismags
 
 ISMAGS object

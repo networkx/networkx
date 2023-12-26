@@ -5,7 +5,6 @@ from collections import Counter
 from itertools import chain
 
 import networkx as nx
-from networkx.classes.graphviews import reverse_view, subgraph_view
 from networkx.utils import not_implemented_for, pairwise
 
 __all__ = [
@@ -21,9 +20,7 @@ __all__ = [
     "freeze",
     "is_frozen",
     "subgraph",
-    "subgraph_view",
     "induced_subgraph",
-    "reverse_view",
     "edge_subgraph",
     "restricted_view",
     "to_directed",
@@ -52,7 +49,10 @@ __all__ = [
 
 
 def nodes(G):
-    """Returns an iterator over the graph nodes."""
+    """Returns a NodeView over the graph nodes.
+
+    This function wraps the :func:`G.nodes <networkx.Graph.nodes>` property.
+    """
     return G.nodes()
 
 
@@ -62,6 +62,8 @@ def edges(G, nbunch=None):
     Return all edges if nbunch is unspecified or nbunch=None.
 
     For digraphs, edges=out_edges
+
+    This function wraps the :func:`G.edges <networkx.Graph.edges>` property.
     """
     return G.edges(nbunch)
 
@@ -69,22 +71,33 @@ def edges(G, nbunch=None):
 def degree(G, nbunch=None, weight=None):
     """Returns a degree view of single node or of nbunch of nodes.
     If nbunch is omitted, then return degrees of *all* nodes.
+
+    This function wraps the :func:`G.degree <networkx.Graph.degree>` property.
     """
     return G.degree(nbunch, weight)
 
 
 def neighbors(G, n):
-    """Returns a list of nodes connected to node n."""
+    """Returns an iterator over all neighbors of node n.
+
+    This function wraps the :func:``G.neighbors <networkx.Graph.neighbors>` function.
+    """
     return G.neighbors(n)
 
 
 def number_of_nodes(G):
-    """Returns the number of nodes in the graph."""
+    """Returns the number of nodes in the graph.
+
+    This function wraps the :func:`G.number_of_nodes <networkx.Graph.number_of_nodes>` function.
+    """
     return G.number_of_nodes()
 
 
 def number_of_edges(G):
-    """Returns the number of edges in the graph."""
+    """Returns the number of edges in the graph.
+
+    This function wraps the :func:`G.number_of_edges <networkx.Graph.number_of_edges>` function.
+    """
     return G.number_of_edges()
 
 
@@ -391,7 +404,7 @@ def induced_subgraph(G, nbunch):
     [0, 1, 3]
     """
     induced_nodes = nx.filters.show_nodes(G.nbunch_iter(nbunch))
-    return nx.graphviews.subgraph_view(G, induced_nodes)
+    return nx.subgraph_view(G, filter_node=induced_nodes)
 
 
 def edge_subgraph(G, edges):
@@ -450,7 +463,7 @@ def edge_subgraph(G, edges):
             induced_edges = nxf.show_diedges(edges)
         else:
             induced_edges = nxf.show_edges(edges)
-    return nx.graphviews.subgraph_view(G, induced_nodes, induced_edges)
+    return nx.subgraph_view(G, filter_node=induced_nodes, filter_edge=induced_edges)
 
 
 def restricted_view(G, nodes, edges):
@@ -506,7 +519,7 @@ def restricted_view(G, nodes, edges):
             hide_edges = nxf.hide_diedges(edges)
         else:
             hide_edges = nxf.hide_edges(edges)
-    return nx.graphviews.subgraph_view(G, hide_nodes, hide_edges)
+    return nx.subgraph_view(G, filter_node=hide_nodes, filter_edge=hide_edges)
 
 
 def to_directed(graph):
@@ -652,7 +665,7 @@ def set_node_attributes(G, values, name=None):
                 pass
 
 
-def get_node_attributes(G, name):
+def get_node_attributes(G, name, default=None):
     """Get node attributes from graph
 
     Parameters
@@ -661,6 +674,11 @@ def get_node_attributes(G, name):
 
     name : string
        Attribute name
+
+    default: object (default=None)
+       Default value of the node attribute if there is no value set for that
+       node in graph. If `None` then nodes without this attribute are not
+       included in the returned dict.
 
     Returns
     -------
@@ -673,7 +691,13 @@ def get_node_attributes(G, name):
     >>> color = nx.get_node_attributes(G, "color")
     >>> color[1]
     'red'
+    >>> G.add_node(4)
+    >>> color = nx.get_node_attributes(G, "color", default="yellow")
+    >>> color[4]
+    'yellow'
     """
+    if default is not None:
+        return {n: d.get(name, default) for n, d in G.nodes.items()}
     return {n: d[name] for n, d in G.nodes.items() if name in d}
 
 
@@ -814,7 +838,7 @@ def set_edge_attributes(G, values, name=None):
                     pass
 
 
-def get_edge_attributes(G, name):
+def get_edge_attributes(G, name, default=None):
     """Get edge attributes from graph
 
     Parameters
@@ -823,6 +847,11 @@ def get_edge_attributes(G, name):
 
     name : string
        Attribute name
+
+    default: object (default=None)
+       Default value of the edge attribute if there is no value set for that
+       edge in graph. If `None` then edges without this attribute are not
+       included in the returned dict.
 
     Returns
     -------
@@ -837,11 +866,17 @@ def get_edge_attributes(G, name):
     >>> color = nx.get_edge_attributes(G, "color")
     >>> color[(1, 2)]
     'red'
+    >>> G.add_edge(3, 4)
+    >>> color = nx.get_edge_attributes(G, "color", default="yellow")
+    >>> color[(3, 4)]
+    'yellow'
     """
     if G.is_multigraph():
         edges = G.edges(keys=True, data=True)
     else:
         edges = G.edges(data=True)
+    if default is not None:
+        return {x[:-1]: x[-1].get(name, default) for x in edges}
     return {x[:-1]: x[-1][name] for x in edges if name in x[-1]}
 
 
@@ -891,12 +926,12 @@ def non_neighbors(graph, node):
 
 
 def non_edges(graph):
-    """Returns the non-existent edges in the graph.
+    """Returns the nonexistent edges in the graph.
 
     Parameters
     ----------
     graph : NetworkX graph.
-        Graph to find non-existent edges.
+        Graph to find nonexistent edges.
 
     Returns
     -------
@@ -1253,10 +1288,7 @@ def is_path(G, path):
         True if `path` is a valid path in `G`
 
     """
-    for node, nbr in nx.utils.pairwise(path):
-        if (node not in G) or (nbr not in G[node]):
-            return False
-    return True
+    return all((node in G and nbr in G[node]) for node, nbr in nx.utils.pairwise(path))
 
 
 def path_weight(G, path, weight):

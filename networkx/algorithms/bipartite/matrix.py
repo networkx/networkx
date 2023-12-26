@@ -11,6 +11,7 @@ from networkx.convert_matrix import _generate_weighted_edges
 __all__ = ["biadjacency_matrix", "from_biadjacency_matrix"]
 
 
+@nx._dispatch(edge_attrs="weight")
 def biadjacency_matrix(
     G, row_order, column_order=None, dtype=None, weight="weight", format="csr"
 ):
@@ -75,7 +76,6 @@ def biadjacency_matrix(
        https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     nlen = len(row_order)
     if nlen == 0:
@@ -110,6 +110,7 @@ def biadjacency_matrix(
         raise nx.NetworkXError(f"Unknown sparse array format: {format}") from err
 
 
+@nx._dispatch(graphs=None)
 def from_biadjacency_matrix(A, create_using=None, edge_attribute="weight"):
     r"""Creates a new bipartite graph from a biadjacency matrix given as a
     SciPy sparse array.

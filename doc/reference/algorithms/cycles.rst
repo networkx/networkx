@@ -11,3 +11,5 @@ Cycles
    recursive_simple_cycles
    find_cycle
    minimum_cycle_basis
+   chordless_cycles
+   girth

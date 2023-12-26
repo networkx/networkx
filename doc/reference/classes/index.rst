@@ -95,16 +95,3 @@ Filters
    show_diedges
    show_multidiedges
    show_multiedges
-
-Backends
-========
-
-.. note:: This is an experimental feature to dispatch your computations to an
-   alternate backend like GraphBLAS, instead of using pure Python dictionaries
-   for computation. Things will change and break in the future!
-
-.. automodule:: networkx.classes.backends
-.. autosummary::
-   :toctree: generated/
-
-   _dispatch

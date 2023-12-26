@@ -2,12 +2,14 @@ r"""Function for computing the moral graph of a directed graph."""
 
 import itertools
 
+import networkx as nx
 from networkx.utils import not_implemented_for
 
 __all__ = ["moral_graph"]
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def moral_graph(G):
     r"""Return the Moral Graph
 

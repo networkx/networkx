@@ -22,7 +22,7 @@ def is_tree_decomp(graph, decomp):
         assert appear_once
 
     # Check if each connected pair of nodes are at least once together in a bag
-    for (x, y) in graph.edges():
+    for x, y in graph.edges():
         appear_together = False
         for bag in decomp.nodes():
             if x in bag and y in bag:

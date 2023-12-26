@@ -15,13 +15,14 @@ __all__ = [
     "rooted_product",
     "corona_product",
 ]
+_G_H = {"G": 0, "H": 1}
 
 
 def _dict_product(d1, d2):
     return {k: (d1.get(k), d2.get(k)) for k in set(d1) | set(d2)}
 
 
-# Generators for producting graph products
+# Generators for producing graph products
 def _node_product(G, H):
     for u, v in product(G, H):
         yield ((u, v), _dict_product(G.nodes[u], H.nodes[v]))
@@ -110,7 +111,7 @@ def _edges_cross_nodes_and_nodes(G, H):
 
 
 def _init_product_graph(G, H):
-    if not G.is_directed() == H.is_directed():
+    if G.is_directed() != H.is_directed():
         msg = "G and H must be both directed or both undirected"
         raise nx.NetworkXError(msg)
     if G.is_multigraph() or H.is_multigraph():
@@ -122,6 +123,7 @@ def _init_product_graph(G, H):
     return GH
 
 
+@nx._dispatch(graphs=_G_H, preserve_node_attrs=True)
 def tensor_product(G, H):
     r"""Returns the tensor product of G and H.
 
@@ -177,6 +179,7 @@ def tensor_product(G, H):
     return GH
 
 
+@nx._dispatch(graphs=_G_H, preserve_node_attrs=True)
 def cartesian_product(G, H):
     r"""Returns the Cartesian product of G and H.
 
@@ -228,6 +231,7 @@ def cartesian_product(G, H):
     return GH
 
 
+@nx._dispatch(graphs=_G_H, preserve_node_attrs=True)
 def lexicographic_product(G, H):
     r"""Returns the lexicographic product of G and H.
 
@@ -280,6 +284,7 @@ def lexicographic_product(G, H):
     return GH
 
 
+@nx._dispatch(graphs=_G_H, preserve_node_attrs=True)
 def strong_product(G, H):
     r"""Returns the strong product of G and H.
 
@@ -337,6 +342,7 @@ def strong_product(G, H):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def power(G, k):
     """Returns the specified power of a graph.
 
@@ -377,7 +383,7 @@ def power(G, k):
     >>> list(nx.power(G, 3).edges)
     [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)]
 
-    The `k`th power of a cycle graph on *n* nodes is the complete graph
+    The `k` th power of a cycle graph on *n* nodes is the complete graph
     on *n* nodes, if `k` is at least ``n // 2``:
 
     >>> G = nx.cycle_graph(5)
@@ -425,6 +431,7 @@ def power(G, k):
 
 
 @not_implemented_for("multigraph")
+@nx._dispatch(graphs=_G_H)
 def rooted_product(G, H, root):
     """Return the rooted product of graphs G and H rooted at root in H.
 
@@ -464,6 +471,7 @@ def rooted_product(G, H, root):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch(graphs=_G_H)
 def corona_product(G, H):
     r"""Returns the Corona product of G and H.
 
@@ -512,7 +520,6 @@ def corona_product(G, H):
     GH.add_edges_from(G.edges)
 
     for G_node in G:
-
         # copy nodes of H in GH, call it H_i
         GH.add_nodes_from((G_node, v) for v in H)
 

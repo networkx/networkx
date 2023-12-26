@@ -2,7 +2,7 @@
 
 .. warning::
     This parser uses the standard xml library present in Python, which is
-    insecure - see :doc:`library/xml` for additional information.
+    insecure - see :external+python:mod:`xml` for additional information.
     Only parse GEFX files you trust.
 
 GEXF (Graph Exchange XML Format) is a language for describing complex
@@ -133,6 +133,7 @@ def generate_gexf(G, encoding="utf-8", prettyprint=True, version="1.2draft"):
 
 
 @open_file(0, mode="rb")
+@nx._dispatch(graphs=None)
 def read_gexf(path, node_type=None, relabel=False, version="1.2draft"):
     """Read graph in GEXF format from path.
 
@@ -177,27 +178,32 @@ def read_gexf(path, node_type=None, relabel=False, version="1.2draft"):
 
 
 class GEXF:
-    versions = {}
-    d = {
-        "NS_GEXF": "http://www.gexf.net/1.1draft",
-        "NS_VIZ": "http://www.gexf.net/1.1draft/viz",
-        "NS_XSI": "http://www.w3.org/2001/XMLSchema-instance",
-        "SCHEMALOCATION": " ".join(
-            ["http://www.gexf.net/1.1draft", "http://www.gexf.net/1.1draft/gexf.xsd"]
-        ),
-        "VERSION": "1.1",
+    versions = {
+        "1.1draft": {
+            "NS_GEXF": "http://www.gexf.net/1.1draft",
+            "NS_VIZ": "http://www.gexf.net/1.1draft/viz",
+            "NS_XSI": "http://www.w3.org/2001/XMLSchema-instance",
+            "SCHEMALOCATION": " ".join(
+                [
+                    "http://www.gexf.net/1.1draft",
+                    "http://www.gexf.net/1.1draft/gexf.xsd",
+                ]
+            ),
+            "VERSION": "1.1",
+        },
+        "1.2draft": {
+            "NS_GEXF": "http://www.gexf.net/1.2draft",
+            "NS_VIZ": "http://www.gexf.net/1.2draft/viz",
+            "NS_XSI": "http://www.w3.org/2001/XMLSchema-instance",
+            "SCHEMALOCATION": " ".join(
+                [
+                    "http://www.gexf.net/1.2draft",
+                    "http://www.gexf.net/1.2draft/gexf.xsd",
+                ]
+            ),
+            "VERSION": "1.2",
+        },
     }
-    versions["1.1draft"] = d
-    d = {
-        "NS_GEXF": "http://www.gexf.net/1.2draft",
-        "NS_VIZ": "http://www.gexf.net/1.2draft/viz",
-        "NS_XSI": "http://www.w3.org/2001/XMLSchema-instance",
-        "SCHEMALOCATION": " ".join(
-            ["http://www.gexf.net/1.2draft", "http://www.gexf.net/1.2draft/gexf.xsd"]
-        ),
-        "VERSION": "1.2",
-    }
-    versions["1.2draft"] = d
 
     def construct_types(self):
         types = [
@@ -224,7 +230,6 @@ class GEXF:
                 (np.float64, "float"),
                 (np.float32, "float"),
                 (np.float16, "float"),
-                (np.float_, "float"),
                 (np.int_, "int"),
                 (np.int8, "int"),
                 (np.int16, "int"),
@@ -564,7 +569,7 @@ class GEXFWriter(GEXF):
                         r=str(color.get("r")),
                         g=str(color.get("g")),
                         b=str(color.get("b")),
-                        a=str(color.get("a")),
+                        a=str(color.get("a", 1.0)),
                     )
                 element.append(e)
 

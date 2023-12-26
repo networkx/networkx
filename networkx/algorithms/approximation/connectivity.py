@@ -12,6 +12,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch(name="approximate_local_node_connectivity")
 def local_node_connectivity(G, source, target, cutoff=None):
     """Compute node connectivity between source and target.
 
@@ -107,6 +108,7 @@ def local_node_connectivity(G, source, target, cutoff=None):
     return K
 
 
+@nx._dispatch(name="approximate_node_connectivity")
 def node_connectivity(G, s=None, t=None):
     r"""Returns an approximation for node connectivity for a graph or digraph G.
 
@@ -212,6 +214,7 @@ def node_connectivity(G, s=None, t=None):
     return K
 
 
+@nx._dispatch(name="approximate_all_pairs_node_connectivity")
 def all_pairs_node_connectivity(G, nbunch=None, cutoff=None):
     """Compute node connectivity between all pairs of nodes.
 
@@ -357,12 +360,6 @@ def _bidirectional_shortest_path(G, source, target, exclude):
 def _bidirectional_pred_succ(G, source, target, exclude):
     # does BFS from both source and target and meets in the middle
     # excludes nodes in the container "exclude" from the search
-    if source is None or target is None:
-        raise nx.NetworkXException(
-            "Bidirectional shortest path called without source or target"
-        )
-    if target == source:
-        return ({target: None}, {source: None}, source)
 
     # handle either directed or undirected
     if G.is_directed():
@@ -372,7 +369,7 @@ def _bidirectional_pred_succ(G, source, target, exclude):
         Gpred = G.neighbors
         Gsucc = G.neighbors
 
-    # predecesssor and successors in search
+    # predecessor and successors in search
     pred = {source: None}
     succ = {target: None}
 
@@ -387,7 +384,7 @@ def _bidirectional_pred_succ(G, source, target, exclude):
         # thus source and target will only trigger "found path" when they are
         # adjacent and then they can be safely included in the container 'exclude'
         level += 1
-        if not level % 2 == 0:
+        if level % 2 != 0:
             this_level = forward_fringe
             forward_fringe = []
             for v in this_level:

@@ -272,7 +272,7 @@ class AS_graph_generator:
     def add_cp_peering_link(self, cp, to_kind):
         """Add a peering link to a content provider (CP) node.
 
-        Target node j can be CP or M and it is drawn uniformely among the nodes
+        Target node j can be CP or M and it is drawn uniformly among the nodes
         belonging to the same region as cp.
 
         Parameters
@@ -376,7 +376,7 @@ class AS_graph_generator:
         self.nodes = {"T": set(), "M": set(), "CP": set(), "C": set()}
 
         self.t_graph()
-        self.nodes["T"] = set(list(self.G.nodes()))
+        self.nodes["T"] = set(self.G.nodes())
 
         i = len(self.nodes["T"])
         for _ in range(self.n_m):
@@ -397,6 +397,7 @@ class AS_graph_generator:
 
 
 @py_random_state(1)
+@nx._dispatch(graphs=None)
 def random_internet_as_graph(n, seed=None):
     """Generates a random undirected graph resembling the Internet AS network
 

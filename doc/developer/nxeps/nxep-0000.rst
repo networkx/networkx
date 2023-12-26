@@ -5,7 +5,7 @@ NXEP 0 — Purpose and Process
 ============================
 
 :Author: Jarrod Millman <millman@berkeley.edu>
-:Status: Draft
+:Status: Accepted
 :Type: Process
 :Created: 2020-06-25
 

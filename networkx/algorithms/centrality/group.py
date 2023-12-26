@@ -19,6 +19,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch(edge_attrs="weight")
 def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=False):
     r"""Compute the group betweenness centrality for a group of nodes.
 
@@ -207,7 +208,7 @@ def _group_preprocessing(G, set_v, weight):
         else:  # use Dijkstra's algorithm
             S, P, sigma[s], D[s] = _single_source_dijkstra_path_basic(G, s, weight)
         betweenness, delta[s] = _accumulate_endpoints(betweenness, S, P, sigma[s], s)
-        for i in delta[s].keys():  # add the paths from s to i and rescale sigma
+        for i in delta[s]:  # add the paths from s to i and rescale sigma
             if s != i:
                 delta[s][i] += 1
             if weight is not None:
@@ -235,6 +236,7 @@ def _group_preprocessing(G, set_v, weight):
     return PB, sigma, D
 
 
+@nx._dispatch(edge_attrs="weight")
 def prominent_group(
     G, k, weight=None, C=None, endpoints=False, normalized=True, greedy=False
 ):
@@ -414,7 +416,7 @@ def _dfbnb(G, k, DF_tree, max_GBC, root, D, max_group, nodes, greedy):
     if len(DF_tree.nodes[root]["GM"]) == k and DF_tree.nodes[root]["GBC"] > max_GBC:
         return DF_tree.nodes[root]["GBC"], DF_tree, DF_tree.nodes[root]["GM"]
     # stopping condition - if the size of group members equal to k or there are less than
-    # k - |GM| in the candidate list or the heuristic function plus the GBC is bellow the
+    # k - |GM| in the candidate list or the heuristic function plus the GBC is below the
     # maximal GBC found then prune
     if (
         len(DF_tree.nodes[root]["GM"]) == k
@@ -541,6 +543,7 @@ def _heuristic(k, root, DF_tree, D, nodes, greedy):
     return node_p, node_m, DF_tree
 
 
+@nx._dispatch(edge_attrs="weight")
 def group_closeness_centrality(G, S, weight=None):
     r"""Compute the group closeness centrality for a group of nodes.
 
@@ -637,6 +640,7 @@ def group_closeness_centrality(G, S, weight=None):
     return closeness
 
 
+@nx._dispatch
 def group_degree_centrality(G, S):
     """Compute the group degree centrality for a group of nodes.
 
@@ -682,12 +686,13 @@ def group_degree_centrality(G, S):
        Journal of Mathematical Sociology. 23(3): 181-201. 1999.
        http://www.analytictech.com/borgatti/group_centrality.htm
     """
-    centrality = len(set().union(*list(set(G.neighbors(i)) for i in S)) - set(S))
+    centrality = len(set().union(*[set(G.neighbors(i)) for i in S]) - set(S))
     centrality /= len(G.nodes()) - len(S)
     return centrality
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def group_in_degree_centrality(G, S):
     """Compute the group in-degree centrality for a group of nodes.
 
@@ -734,6 +739,7 @@ def group_in_degree_centrality(G, S):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch
 def group_out_degree_centrality(G, S):
     """Compute the group out-degree centrality for a group of nodes.
 

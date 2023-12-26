@@ -3,8 +3,7 @@ from copy import deepcopy
 from functools import cached_property
 
 import networkx as nx
-import networkx.convert as convert
-from networkx import NetworkXError
+from networkx import NetworkXError, convert
 from networkx.classes.coreviews import MultiAdjacencyView
 from networkx.classes.graph import Graph
 from networkx.classes.reportviews import MultiDegreeView, MultiEdgeView
@@ -562,6 +561,14 @@ class MultiGraph(Graph):
         This method can be overridden by subclassing the base class and
         providing a custom ``new_edge_key()`` method.
 
+        When adding edges from an iterator over the graph you are changing,
+        a `RuntimeError` can be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
+        object, e.g. by using `list(iterator_of_edges)`, and pass this
+        object to `G.add_edges_from`.
+
         Examples
         --------
         >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -573,6 +580,15 @@ class MultiGraph(Graph):
 
         >>> G.add_edges_from([(1, 2), (2, 3)], weight=3)
         >>> G.add_edges_from([(3, 4), (1, 4)], label="WN2898")
+
+        Evaluate an iterator over a graph if using it to modify the same graph
+
+        >>> G = nx.MultiGraph([(1, 2), (2, 3), (3, 4)])
+        >>> # Grow graph by one new node, adding edges to all existing nodes.
+        >>> # wrong way - will raise RuntimeError
+        >>> # G.add_edges_from(((5, n) for n in G.nodes))
+        >>> # right way - note that there will be no self-edge for node 5
+        >>> assigned_keys = G.add_edges_from(list((5, n) for n in G.nodes))
         """
         keylist = []
         for e in ebunch_to_add:
@@ -1208,7 +1224,7 @@ class MultiGraph(Graph):
 
         Parameters
         ----------
-        u, v : nodes, optional (Gefault=all edges)
+        u, v : nodes, optional (Default=all edges)
             If u and v are specified, return the number of edges between
             u and v. Otherwise return the total number of all edges.
 

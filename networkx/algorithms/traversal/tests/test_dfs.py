@@ -59,11 +59,43 @@ class TestDFS:
         edges = list(nx.dfs_labeled_edges(self.G, source=0))
         forward = [(u, v) for (u, v, d) in edges if d == "forward"]
         assert forward == [(0, 0), (0, 1), (1, 2), (2, 4), (1, 3)]
+        assert edges == [
+            (0, 0, "forward"),
+            (0, 1, "forward"),
+            (1, 0, "nontree"),
+            (1, 2, "forward"),
+            (2, 1, "nontree"),
+            (2, 4, "forward"),
+            (4, 2, "nontree"),
+            (4, 0, "nontree"),
+            (2, 4, "reverse"),
+            (1, 2, "reverse"),
+            (1, 3, "forward"),
+            (3, 1, "nontree"),
+            (3, 0, "nontree"),
+            (1, 3, "reverse"),
+            (0, 1, "reverse"),
+            (0, 3, "nontree"),
+            (0, 4, "nontree"),
+            (0, 0, "reverse"),
+        ]
 
     def test_dfs_labeled_disconnected_edges(self):
         edges = list(nx.dfs_labeled_edges(self.D))
         forward = [(u, v) for (u, v, d) in edges if d == "forward"]
         assert forward == [(0, 0), (0, 1), (2, 2), (2, 3)]
+        assert edges == [
+            (0, 0, "forward"),
+            (0, 1, "forward"),
+            (1, 0, "nontree"),
+            (0, 1, "reverse"),
+            (0, 0, "reverse"),
+            (2, 2, "forward"),
+            (2, 3, "forward"),
+            (3, 2, "nontree"),
+            (2, 3, "reverse"),
+            (2, 2, "reverse"),
+        ]
 
     def test_dfs_tree_isolates(self):
         G = nx.Graph()
@@ -141,12 +173,79 @@ class TestDepthLimitedSearch:
         edges = nx.dfs_edges(self.G, source=9, depth_limit=4)
         assert list(edges) == [(9, 8), (8, 7), (7, 2), (2, 1), (2, 3), (9, 10)]
 
-    def test_dls_labeled_edges(self):
+    def test_dls_labeled_edges_depth_1(self):
         edges = list(nx.dfs_labeled_edges(self.G, source=5, depth_limit=1))
         forward = [(u, v) for (u, v, d) in edges if d == "forward"]
         assert forward == [(5, 5), (5, 4), (5, 6)]
+        # Note: reverse-depth_limit edge types were not reported before gh-6240
+        assert edges == [
+            (5, 5, "forward"),
+            (5, 4, "forward"),
+            (5, 4, "reverse-depth_limit"),
+            (5, 6, "forward"),
+            (5, 6, "reverse-depth_limit"),
+            (5, 5, "reverse"),
+        ]
 
-    def test_dls_labeled_disconnected_edges(self):
+    def test_dls_labeled_edges_depth_2(self):
         edges = list(nx.dfs_labeled_edges(self.G, source=6, depth_limit=2))
         forward = [(u, v) for (u, v, d) in edges if d == "forward"]
         assert forward == [(6, 6), (6, 5), (5, 4)]
+        assert edges == [
+            (6, 6, "forward"),
+            (6, 5, "forward"),
+            (5, 4, "forward"),
+            (5, 4, "reverse-depth_limit"),
+            (5, 6, "nontree"),
+            (6, 5, "reverse"),
+            (6, 6, "reverse"),
+        ]
+
+    def test_dls_labeled_disconnected_edges(self):
+        edges = list(nx.dfs_labeled_edges(self.D, depth_limit=1))
+        assert edges == [
+            (0, 0, "forward"),
+            (0, 1, "forward"),
+            (0, 1, "reverse-depth_limit"),
+            (0, 0, "reverse"),
+            (2, 2, "forward"),
+            (2, 3, "forward"),
+            (2, 3, "reverse-depth_limit"),
+            (2, 7, "forward"),
+            (2, 7, "reverse-depth_limit"),
+            (2, 2, "reverse"),
+            (8, 8, "forward"),
+            (8, 7, "nontree"),
+            (8, 9, "forward"),
+            (8, 9, "reverse-depth_limit"),
+            (8, 8, "reverse"),
+            (10, 10, "forward"),
+            (10, 9, "nontree"),
+            (10, 10, "reverse"),
+        ]
+        # large depth_limit has no impact
+        edges = list(nx.dfs_labeled_edges(self.D, depth_limit=19))
+        assert edges == [
+            (0, 0, "forward"),
+            (0, 1, "forward"),
+            (1, 0, "nontree"),
+            (0, 1, "reverse"),
+            (0, 0, "reverse"),
+            (2, 2, "forward"),
+            (2, 3, "forward"),
+            (3, 2, "nontree"),
+            (2, 3, "reverse"),
+            (2, 7, "forward"),
+            (7, 2, "nontree"),
+            (7, 8, "forward"),
+            (8, 7, "nontree"),
+            (8, 9, "forward"),
+            (9, 8, "nontree"),
+            (9, 10, "forward"),
+            (10, 9, "nontree"),
+            (9, 10, "reverse"),
+            (8, 9, "reverse"),
+            (7, 8, "reverse"),
+            (2, 7, "reverse"),
+            (2, 2, "reverse"),
+        ]

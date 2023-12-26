@@ -20,6 +20,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 def strategy_largest_first(G, colors):
     """Returns a list of the nodes of ``G`` in decreasing order by
     degree.
@@ -31,6 +32,7 @@ def strategy_largest_first(G, colors):
 
 
 @py_random_state(2)
+@nx._dispatch
 def strategy_random_sequential(G, colors, seed=None):
     """Returns a random permutation of the nodes of ``G`` as a list.
 
@@ -45,6 +47,7 @@ def strategy_random_sequential(G, colors, seed=None):
     return nodes
 
 
+@nx._dispatch
 def strategy_smallest_last(G, colors):
     """Returns a deque of the nodes of ``G``, "smallest" last.
 
@@ -118,6 +121,7 @@ def _maximal_independent_set(G):
     return result
 
 
+@nx._dispatch
 def strategy_independent_set(G, colors):
     """Uses a greedy independent set removal strategy to determine the
     colors.
@@ -142,6 +146,7 @@ def strategy_independent_set(G, colors):
         yield from nodes
 
 
+@nx._dispatch
 def strategy_connected_sequential_bfs(G, colors):
     """Returns an iterable over nodes in ``G`` in the order given by a
     breadth-first traversal.
@@ -155,6 +160,7 @@ def strategy_connected_sequential_bfs(G, colors):
     return strategy_connected_sequential(G, colors, "bfs")
 
 
+@nx._dispatch
 def strategy_connected_sequential_dfs(G, colors):
     """Returns an iterable over nodes in ``G`` in the order given by a
     depth-first traversal.
@@ -168,6 +174,7 @@ def strategy_connected_sequential_dfs(G, colors):
     return strategy_connected_sequential(G, colors, "dfs")
 
 
+@nx._dispatch
 def strategy_connected_sequential(G, colors, traversal="bfs"):
     """Returns an iterable over nodes in ``G`` in the order given by a
     breadth-first or depth-first traversal.
@@ -196,10 +203,11 @@ def strategy_connected_sequential(G, colors, traversal="bfs"):
         # Yield the source node, then all the nodes in the specified
         # traversal order.
         yield source
-        for (_, end) in traverse(G.subgraph(component), source):
+        for _, end in traverse(G.subgraph(component), source):
             yield end
 
 
+@nx._dispatch
 def strategy_saturation_largest_first(G, colors):
     """Iterates over all the nodes of ``G`` in "saturation order" (also
     known as "DSATUR").
@@ -232,7 +240,7 @@ def strategy_saturation_largest_first(G, colors):
         for v in G[node]:
             distinct_colors[v].add(0)
 
-    while not len(G) == len(colors):
+    while len(G) != len(colors):
         # Update the distinct color sets for the neighbors.
         for node, color in colors.items():
             for neighbor in G[node]:
@@ -261,11 +269,12 @@ STRATEGIES = {
 }
 
 
+@nx._dispatch
 def greedy_color(G, strategy="largest_first", interchange=False):
     """Color a graph using various strategies of greedy graph coloring.
 
     Attempts to color a graph using as few colors as possible, where no
-    neighbours of a node can have same color as the node itself. The
+    neighbors of a node can have same color as the node itself. The
     given strategy determines the order in which nodes are colored.
 
     The strategies are described in [1]_, and smallest-last is based on
@@ -346,7 +355,7 @@ def greedy_color(G, strategy="largest_first", interchange=False):
     strategy = STRATEGIES.get(strategy, strategy)
     if not callable(strategy):
         raise nx.NetworkXError(
-            "strategy must be callable or a valid string. " f"{strategy} not valid."
+            f"strategy must be callable or a valid string. {strategy} not valid."
         )
     # Perform some validation on the arguments before executing any
     # strategy functions.
@@ -362,11 +371,11 @@ def greedy_color(G, strategy="largest_first", interchange=False):
     if interchange:
         return _greedy_coloring_with_interchange(G, nodes)
     for u in nodes:
-        # Set to keep track of colors of neighbours
-        neighbour_colors = {colors[v] for v in G[u] if v in colors}
+        # Set to keep track of colors of neighbors
+        nbr_colors = {colors[v] for v in G[u] if v in colors}
         # Find the first unused color.
         for color in itertools.count():
-            if color not in neighbour_colors:
+            if color not in nbr_colors:
                 break
         # Assign the new color to the current node.
         colors[u] = color
@@ -438,7 +447,7 @@ class _AdjEntry:
 
 
 def _greedy_coloring_with_interchange(G, nodes):
-    """Return a coloring for `orginal_graph` using interchange approach
+    """Return a coloring for `original_graph` using interchange approach
 
     This procedure is an adaption of the algorithm described by [1]_,
     and is an implementation of coloring with interchange. Please be
@@ -470,7 +479,7 @@ def _greedy_coloring_with_interchange(G, nodes):
 
     graph = {node: _Node(node, n) for node in G}
 
-    for (node1, node2) in G.edges():
+    for node1, node2 in G.edges():
         adj_entry1 = _AdjEntry(node2)
         adj_entry2 = _AdjEntry(node1)
         adj_entry1.mate = adj_entry2
@@ -499,7 +508,7 @@ def _greedy_coloring_with_interchange(G, nodes):
             while connected and col1 < k:
                 col1 += 1
                 neighbor_cols = graph[node].iter_neighbors_color(col1)
-                col1_adj = [it for it in neighbor_cols]
+                col1_adj = list(neighbor_cols)
 
                 col2 = col1
                 while connected and col2 < k:

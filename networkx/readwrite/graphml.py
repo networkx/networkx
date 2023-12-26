@@ -7,7 +7,7 @@ Read and write graphs in GraphML format.
 .. warning::
 
     This parser uses the standard xml library present in Python, which is
-    insecure - see :doc:`library/xml` for additional information.
+    insecure - see :external+python:mod:`xml` for additional information.
     Only parse GraphML files you trust.
 
 This implementation does not support mixed graphs (directed and unidirected
@@ -233,6 +233,7 @@ def generate_graphml(
 
 
 @open_file(0, mode="rb")
+@nx._dispatch(graphs=None)
 def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False):
     """Read graph in GraphML format from path.
 
@@ -305,6 +306,7 @@ def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False)
     return glist[0]
 
 
+@nx._dispatch(graphs=None)
 def parse_graphml(
     graphml_string, node_type=str, edge_key_type=int, force_multigraph=False
 ):
@@ -413,7 +415,6 @@ class GraphML:
                 (np.float64, "float"),
                 (np.float32, "float"),
                 (np.float16, "float"),
-                (np.float_, "float"),
                 (np.int_, "int"),
                 (np.int8, "int"),
                 (np.int16, "int"),
@@ -454,7 +455,7 @@ class GraphML:
             return self.xml_type[key]
         except KeyError as err:
             raise TypeError(
-                f"GraphML does not support type {type(key)} as data values."
+                f"GraphML does not support type {key} as data values."
             ) from err
 
 
@@ -643,8 +644,8 @@ class GraphMLWriter(GraphML):
         # data that needs to be added to them.
         # We postpone processing in order to do type inference/generalization.
         # See self.attr_type
-        for (xml_obj, data) in self.attributes.items():
-            for (k, v, scope, default) in data:
+        for xml_obj, data in self.attributes.items():
+            for k, v, scope, default in data:
                 xml_obj.append(
                     self.add_data(
                         str(k), self.attr_type(k, scope, v), str(v), scope, default
@@ -825,7 +826,7 @@ class GraphMLWriterLxml(GraphMLWriter):
     def __str__(self):
         return object.__str__(self)
 
-    def dump(self):
+    def dump(self, stream=None):
         self._graphml.__exit__(None, None, None)
         self._xml_base.__exit__(None, None, None)
 
@@ -997,7 +998,7 @@ class GraphMLReader(GraphML):
                 if node_label is not None:
                     data["label"] = node_label.text
 
-                # check all the different types of edges avaivable in yEd.
+                # check all the different types of edges available in yEd.
                 for edge_type in [
                     "PolyLineEdge",
                     "SplineEdge",

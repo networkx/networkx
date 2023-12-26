@@ -341,6 +341,13 @@ class TestWeightedPath(WeightedTestBase):
         pytest.raises(ValueError, nx.dijkstra_predecessor_and_distance, G, 8)
         G.add_edge(9, 10)
         pytest.raises(ValueError, nx.bidirectional_dijkstra, G, 8, 10)
+        G = nx.MultiDiGraph()
+        G.add_edge(2, 2, weight=-1)
+        assert nx.negative_edge_cycle(G)
+
+    def test_negative_edge_cycle_empty(self):
+        G = nx.DiGraph()
+        assert not nx.negative_edge_cycle(G)
 
     def test_negative_edge_cycle_custom_weight_key(self):
         d = nx.DiGraph()
@@ -587,6 +594,30 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
             nx.NetworkXUnbounded, nx.single_source_bellman_ford_path_length, G, 1
         )
         pytest.raises(nx.NetworkXUnbounded, nx.single_source_bellman_ford, G, 1)
+        pytest.raises(
+            nx.NetworkXUnbounded, nx.bellman_ford_predecessor_and_distance, G, 1
+        )
+        pytest.raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, 1)
+        G = nx.MultiDiGraph([(1, 1, {"weight": -1})])
+        pytest.raises(nx.NetworkXUnbounded, nx.single_source_bellman_ford_path, G, 1)
+        pytest.raises(
+            nx.NetworkXUnbounded, nx.single_source_bellman_ford_path_length, G, 1
+        )
+        pytest.raises(nx.NetworkXUnbounded, nx.single_source_bellman_ford, G, 1)
+        pytest.raises(
+            nx.NetworkXUnbounded, nx.bellman_ford_predecessor_and_distance, G, 1
+        )
+        pytest.raises(nx.NetworkXUnbounded, nx.goldberg_radzik, G, 1)
+
+    def test_zero_cycle(self):
+        G = nx.cycle_graph(5, create_using=nx.DiGraph())
+        G.add_edge(2, 3, weight=-4)
+        # check that zero cycle doesn't raise
+        nx.goldberg_radzik(G, 1)
+        nx.bellman_ford_predecessor_and_distance(G, 1)
+
+        G.add_edge(2, 3, weight=-4.0001)
+        # check that negative cycle does raise
         pytest.raises(
             nx.NetworkXUnbounded, nx.bellman_ford_predecessor_and_distance, G, 1
         )
@@ -861,10 +892,9 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
 
 class TestJohnsonAlgorithm(WeightedTestBase):
     def test_single_node_graph(self):
-        with pytest.raises(nx.NetworkXError):
-            G = nx.DiGraph()
-            G.add_node(0)
-            nx.johnson(G)
+        G = nx.DiGraph()
+        G.add_node(0)
+        assert nx.johnson(G) == {0: {0: [0]}}
 
     def test_negative_cycle(self):
         G = nx.DiGraph()
@@ -911,9 +941,27 @@ class TestJohnsonAlgorithm(WeightedTestBase):
         }
 
     def test_unweighted_graph(self):
-        with pytest.raises(nx.NetworkXError):
-            G = nx.path_graph(5)
-            nx.johnson(G)
+        G = nx.Graph()
+        G.add_edges_from([(1, 0), (2, 1)])
+        H = G.copy()
+        nx.set_edge_attributes(H, values=1, name="weight")
+        assert nx.johnson(G) == nx.johnson(H)
+
+    def test_partially_weighted_graph_with_negative_edges(self):
+        G = nx.DiGraph()
+        G.add_edges_from([(0, 1), (1, 2), (2, 0), (1, 0)])
+        G[1][0]["weight"] = -2
+        G[0][1]["weight"] = 3
+        G[1][2]["weight"] = -4
+
+        H = G.copy()
+        H[2][0]["weight"] = 1
+
+        I = G.copy()
+        I[2][0]["weight"] = 8
+
+        assert nx.johnson(G) == nx.johnson(H)
+        assert nx.johnson(G) != nx.johnson(I)
 
     def test_graphs(self):
         validate_path(self.XG, "s", "v", 9, nx.johnson(self.XG)["s"]["v"])

@@ -3,7 +3,7 @@ from copy import deepcopy
 from functools import cached_property
 
 import networkx as nx
-import networkx.convert as convert
+from networkx import convert
 from networkx.classes.coreviews import MultiAdjacencyView
 from networkx.classes.digraph import DiGraph
 from networkx.classes.multigraph import MultiGraph
@@ -758,7 +758,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
     def in_degree(self):
         """A DegreeView for (node, in_degree) or in_degree for single node.
 
-        The node in-degree is the number of edges pointing in to the node.
+        The node in-degree is the number of edges pointing into the node.
         The weighted node degree is the sum of the edge weights for
         edges incident to that node.
 
@@ -960,4 +960,4 @@ class MultiDiGraph(MultiGraph, DiGraph):
                 for u, v, k, d in self.edges(keys=True, data=True)
             )
             return H
-        return nx.graphviews.reverse_view(self)
+        return nx.reverse_view(self)

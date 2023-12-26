@@ -6,6 +6,7 @@ import networkx as nx
 __all__ = ["load_centrality", "edge_load_centrality"]
 
 
+@nx._dispatch(edge_attrs="weight")
 def newman_betweenness_centrality(G, v=None, cutoff=None, normalized=True, weight=None):
     """Compute load centrality for nodes.
 
@@ -135,6 +136,7 @@ def _node_betweenness(G, source, cutoff=False, normalized=True, weight=None):
 load_centrality = newman_betweenness_centrality
 
 
+@nx._dispatch
 def edge_load_centrality(G, cutoff=False):
     """Compute edge load.
 

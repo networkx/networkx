@@ -522,13 +522,13 @@ class TestReadGraphML(BaseGraphML):
                 # edges with no data, no keys:
                 (1, 2),
                 # edges with only data:
-                (1, 2, dict(key="data_key1")),
-                (1, 2, dict(id="data_id2")),
-                (1, 2, dict(key="data_key3", id="data_id3")),
+                (1, 2, {"key": "data_key1"}),
+                (1, 2, {"id": "data_id2"}),
+                (1, 2, {"key": "data_key3", "id": "data_id3"}),
                 # edges with both data and keys:
-                (1, 2, 103, dict(key="data_key4")),
-                (1, 2, 104, dict(id="data_id5")),
-                (1, 2, 105, dict(key="data_key6", id="data_id7")),
+                (1, 2, 103, {"key": "data_key4"}),
+                (1, 2, 104, {"id": "data_id5"}),
+                (1, 2, 105, {"key": "data_key6", "id": "data_id7"}),
             ]
         )
         fh = io.BytesIO()
@@ -1288,17 +1288,6 @@ class TestWriteGraphML(BaseGraphML):
         assert H.edges["n0", "n1", 0]["special"] == 2
         assert H.edges["n0", "n1", 1]["special"] == 3
 
-    def test_numpy_float(self):
-        np = pytest.importorskip("numpy")
-        wt = np.float_(3.4)
-        G = nx.Graph([(1, 2, {"weight": wt})])
-        fd, fname = tempfile.mkstemp()
-        self.writer(G, fname)
-        H = nx.read_graphml(fname, node_type=int)
-        assert G._adj == H._adj
-        os.close(fd)
-        os.unlink(fname)
-
     def test_multigraph_to_graph(self):
         # test converting multigraph to graph if no parallel edges found
         G = nx.MultiGraph()
@@ -1352,7 +1341,7 @@ class TestWriteGraphML(BaseGraphML):
                 ".//{http://graphml.graphdrawing.org/xmlns}edge"
             )
         ]
-        # verify edge id value is equal to sepcified attribute value
+        # verify edge id value is equal to specified attribute value
         assert sorted(edge_ids) == sorted(edge_attributes.values())
 
         # check graphml generated from generate_graphml()
@@ -1404,7 +1393,7 @@ class TestWriteGraphML(BaseGraphML):
                 ".//{http://graphml.graphdrawing.org/xmlns}edge"
             )
         ]
-        # verify edge id value is equal to sepcified attribute value
+        # verify edge id value is equal to specified attribute value
         assert sorted(edge_ids) == sorted(edge_attributes.values())
 
         # check graphml generated from generate_graphml()
@@ -1482,10 +1471,10 @@ class TestWriteGraphML(BaseGraphML):
         os.unlink(fname)
 
     def test_unicode_escape(self):
-        # test for handling json escaped stings in python 2 Issue #1880
+        # test for handling json escaped strings in python 2 Issue #1880
         import json
 
-        a = dict(a='{"a": "123"}')  # an object with many chars to escape
+        a = {"a": '{"a": "123"}'}  # an object with many chars to escape
         sa = json.dumps(a)
         G = nx.Graph()
         G.graph["test"] = sa

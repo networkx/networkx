@@ -39,6 +39,7 @@ Classic
    null_graph
    path_graph
    star_graph
+   tadpole_graph
    trivial_graph
    turan_graph
    wheel_graph
@@ -53,6 +54,9 @@ Expanders
    margulis_gabber_galil_graph
    chordal_cycle_graph
    paley_graph
+   maybe_regular_expander
+   is_regular_expander
+   random_regular_expander_graph
 
 Lattice
 -------
@@ -188,6 +192,7 @@ Geometric
    soft_random_geometric_graph
    thresholded_random_geometric_graph
    waxman_graph
+   geometric_soft_configuration_graph
 
 Line Graph
 ----------
@@ -282,8 +287,13 @@ Trees
 .. autosummary::
    :toctree: generated/
 
-   random_tree
    prefix_tree
+   random_labeled_tree
+   random_labeled_rooted_tree
+   random_labeled_rooted_forest
+   random_unlabeled_tree
+   random_unlabeled_rooted_tree
+   random_unlabeled_rooted_forest
 
 
 Non Isomorphic Trees
@@ -359,3 +369,11 @@ Sudoku
    :toctree: generated/
 
    sudoku_graph
+
+Time Series
+-----------
+.. automodule:: networkx.generators.time_series
+.. autosummary::
+   :toctree: generated/
+
+   visibility_graph

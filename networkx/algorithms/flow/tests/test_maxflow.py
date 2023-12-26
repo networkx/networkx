@@ -100,7 +100,7 @@ class TestMaxflowMinCutCommon:
 
     def test_graph2(self):
         # A more complex undirected graph
-        # adapted from www.topcoder.com/tc?module=Statc&d1=tutorials&d2=maxFlow
+        # adapted from https://web.archive.org/web/20220815055650/https://www.topcoder.com/thrive/articles/Maximum%20Flow:%20Part%20One
         G = nx.Graph()
         G.add_edge("x", "a", capacity=3.0)
         G.add_edge("x", "b", capacity=1.0)
@@ -189,7 +189,7 @@ class TestMaxflowMinCutCommon:
 
     def test_digraph4(self):
         # A more complex directed graph
-        # from www.topcoder.com/tc?module=Statc&d1=tutorials&d2=maxFlow
+        # from https://web.archive.org/web/20220815055650/https://www.topcoder.com/thrive/articles/Maximum%20Flow:%20Part%20One
         G = nx.DiGraph()
         G.add_edge("x", "a", capacity=3.0)
         G.add_edge("x", "b", capacity=1.0)
@@ -451,8 +451,8 @@ class TestMaxFlowMinCutInterface:
         G = self.H
         fv = 1.0
         to_test = (
-            (shortest_augmenting_path, dict(two_phase=True)),
-            (preflow_push, dict(global_relabel_freq=5)),
+            (shortest_augmenting_path, {"two_phase": True}),
+            (preflow_push, {"global_relabel_freq": 5}),
         )
         for interface_func in interface_funcs:
             for flow_func, kwargs in to_test:

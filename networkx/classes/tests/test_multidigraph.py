@@ -421,13 +421,13 @@ class CustomDictClass(UserDict):
 
 
 class MultiDiGraphSubClass(nx.MultiDiGraph):
-    node_dict_factory = CustomDictClass  # type: ignore
-    node_attr_dict_factory = CustomDictClass  # type: ignore
-    adjlist_outer_dict_factory = CustomDictClass  # type: ignore
-    adjlist_inner_dict_factory = CustomDictClass  # type: ignore
-    edge_key_dict_factory = CustomDictClass  # type: ignore
-    edge_attr_dict_factory = CustomDictClass  # type: ignore
-    graph_attr_dict_factory = CustomDictClass  # type: ignore
+    node_dict_factory = CustomDictClass  # type: ignore[assignment]
+    node_attr_dict_factory = CustomDictClass  # type: ignore[assignment]
+    adjlist_outer_dict_factory = CustomDictClass  # type: ignore[assignment]
+    adjlist_inner_dict_factory = CustomDictClass  # type: ignore[assignment]
+    edge_key_dict_factory = CustomDictClass  # type: ignore[assignment]
+    edge_attr_dict_factory = CustomDictClass  # type: ignore[assignment]
+    graph_attr_dict_factory = CustomDictClass  # type: ignore[assignment]
 
 
 class TestMultiDiGraphSubclass(TestMultiDiGraph):

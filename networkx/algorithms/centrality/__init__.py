@@ -4,6 +4,7 @@ from .closeness import *
 from .current_flow_betweenness import *
 from .current_flow_betweenness_subset import *
 from .current_flow_closeness import *
+from .decay import *
 from .degree_alg import *
 from .dispersion import *
 from .eigenvector import *
@@ -17,4 +18,4 @@ from .second_order import *
 from .subgraph_alg import *
 from .trophic import *
 from .voterank_alg import *
-from .decay import *
+from .laplacian import *

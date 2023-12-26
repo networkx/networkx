@@ -6,6 +6,7 @@ __all__ = ["trophic_levels", "trophic_differences", "trophic_incoherence_paramet
 
 
 @not_implemented_for("undirected")
+@nx._dispatch(edge_attrs="weight")
 def trophic_levels(G, weight="weight"):
     r"""Compute the trophic levels of nodes.
 
@@ -81,6 +82,7 @@ def trophic_levels(G, weight="weight"):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch(edge_attrs="weight")
 def trophic_differences(G, weight="weight"):
     r"""Compute the trophic differences of the edges of a directed graph.
 
@@ -115,6 +117,7 @@ def trophic_differences(G, weight="weight"):
 
 
 @not_implemented_for("undirected")
+@nx._dispatch(edge_attrs="weight")
 def trophic_incoherence_parameter(G, weight="weight", cannibalism=False):
     r"""Compute the trophic incoherence parameter of a graph.
 

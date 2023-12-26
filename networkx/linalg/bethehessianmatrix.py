@@ -7,6 +7,7 @@ __all__ = ["bethe_hessian_matrix"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def bethe_hessian_matrix(G, r=None, nodelist=None):
     r"""Returns the Bethe Hessian matrix of G.
 
@@ -63,7 +64,6 @@ def bethe_hessian_matrix(G, r=None, nodelist=None):
        arXiv:1507.00827, 2015.
     """
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     if nodelist is None:
         nodelist = list(G)
