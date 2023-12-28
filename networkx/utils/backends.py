@@ -1016,8 +1016,8 @@ if os.environ.get("_NETWORKX_BUILDING_DOCS_"):
         func.__doc__ = dispatched_func.__doc__
         return func
 
-    _dispatch.__doc__ = _orig_dispatch.__new__.__doc__
+    _dispatch.__doc__ = _orig_dispatch.__new__.__doc__  # type: ignore[method-assign,assignment]
     _sig = inspect.signature(_orig_dispatch.__new__)
-    _dispatch.__signature__ = _sig.replace(
+    _dispatch.__signature__ = _sig.replace(  # type: ignore[method-assign,assignment]
         parameters=[v for k, v in _sig.parameters.items() if k != "cls"]
     )
