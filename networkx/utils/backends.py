@@ -124,12 +124,8 @@ def _get_backends(group, *, load_and_call=False):
     return rv
 
 
-# Rename "plugin" to "backend", and give backends a release cycle to update.
-backends = _get_backends("networkx.plugins")
-backend_info = _get_backends("networkx.plugin_info", load_and_call=True)
-
-backends.update(_get_backends("networkx.backends"))
-backend_info.update(_get_backends("networkx.backend_info", load_and_call=True))
+backends = _get_backends("networkx.backends")
+backend_info = _get_backends("networkx.backend_info", load_and_call=True)
 
 # Load and cache backends on-demand
 _loaded_backends = {}  # type: ignore[var-annotated]
