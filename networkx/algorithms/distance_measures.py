@@ -237,7 +237,7 @@ def _extrema_bounding(G, compute="diameter", weight=None):
     return None
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def eccentricity(G, v=None, sp=None, weight=None):
     """Returns the eccentricity of nodes in G.
 
@@ -326,7 +326,7 @@ def eccentricity(G, v=None, sp=None, weight=None):
     return e
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def diameter(G, e=None, usebounds=False, weight=None):
     """Returns the diameter of the graph G.
 
@@ -382,7 +382,7 @@ def diameter(G, e=None, usebounds=False, weight=None):
     return max(e.values())
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def periphery(G, e=None, usebounds=False, weight=None):
     """Returns the periphery of the graph G.
 
@@ -441,7 +441,7 @@ def periphery(G, e=None, usebounds=False, weight=None):
     return p
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def radius(G, e=None, usebounds=False, weight=None):
     """Returns the radius of the graph G.
 
@@ -494,7 +494,7 @@ def radius(G, e=None, usebounds=False, weight=None):
     return min(e.values())
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def center(G, e=None, usebounds=False, weight=None):
     """Returns the center of the graph G.
 
@@ -553,7 +553,7 @@ def center(G, e=None, usebounds=False, weight=None):
     return p
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def barycenter(G, weight=None, attr=None, sp=None):
     r"""Calculate barycenter of a connected graph, optionally with edge weights.
 
@@ -633,7 +633,7 @@ def barycenter(G, weight=None, attr=None, sp=None):
 
 
 @not_implemented_for("directed")
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=True):
     """Returns the resistance distance between pairs of nodes in graph G.
 
@@ -765,7 +765,7 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
 
 
 @not_implemented_for("directed")
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def effective_graph_resistance(G, weight=None, invert_weight=True):
     """Returns the Effective graph resistance of G.
 
@@ -853,7 +853,7 @@ def effective_graph_resistance(G, weight=None, invert_weight=True):
 
 
 @nx.utils.not_implemented_for("directed")
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def kemeny_constant(G, *, weight=None):
     """Returns the Kemeny constant of the given graph.
 

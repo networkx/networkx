@@ -47,7 +47,7 @@ __all__ = [
 #     (x, (y + (2*x + 1)) % n),
 #     (x, (y + (2*x + 2)) % n),
 #
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def margulis_gabber_galil_graph(n, create_using=None):
     r"""Returns the Margulis-Gabber-Galil undirected MultiGraph on `n^2` nodes.
 
@@ -90,7 +90,7 @@ def margulis_gabber_galil_graph(n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def chordal_cycle_graph(p, create_using=None):
     """Returns the chordal cycle graph on `p` nodes.
 
@@ -154,7 +154,7 @@ def chordal_cycle_graph(p, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def paley_graph(p, create_using=None):
     r"""Returns the Paley $\frac{(p-1)}{2}$ -regular graph on $p$ nodes.
 

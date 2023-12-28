@@ -15,7 +15,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def degree_assortativity_coefficient(G, x="out", y="in", weight=None, nodes=None):
     """Compute degree assortativity of graph.
 
@@ -100,7 +100,7 @@ def degree_assortativity_coefficient(G, x="out", y="in", weight=None, nodes=None
     return _numeric_ac(M, mapping=mapping)
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, nodes=None):
     """Compute degree assortativity of graph.
 
@@ -159,7 +159,7 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
     return sp.stats.pearsonr(x, y)[0]
 
 
-@nx._dispatch(node_attrs="attribute")
+@nx._dispatchable(node_attrs="attribute")
 def attribute_assortativity_coefficient(G, attribute, nodes=None):
     """Compute assortativity for node attributes.
 
@@ -206,7 +206,7 @@ def attribute_assortativity_coefficient(G, attribute, nodes=None):
     return attribute_ac(M)
 
 
-@nx._dispatch(node_attrs="attribute")
+@nx._dispatchable(node_attrs="attribute")
 def numeric_assortativity_coefficient(G, attribute, nodes=None):
     """Compute assortativity for numerical node attributes.
 
