@@ -80,7 +80,7 @@ def degree(G, nbunch=None, weight=None):
 def neighbors(G, n):
     """Returns an iterator over all neighbors of node n.
 
-    This function wraps the :func:``G.neighbors <networkx.Graph.neighbors>` function.
+    This function wraps the :func:`G.neighbors <networkx.Graph.neighbors>` function.
     """
     return G.neighbors(n)
 

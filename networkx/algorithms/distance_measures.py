@@ -798,7 +798,7 @@ def effective_graph_resistance(G, weight=None, invert_weight=True):
         The effective graph resistance of `G`.
 
     Raises
-    -------
+    ------
     NetworkXNotImplemented
         If `G` is a directed graph.
 
