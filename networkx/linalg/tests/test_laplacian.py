@@ -24,6 +24,27 @@ class TestLaplacian:
         for node in cls.Gsl.nodes():
             cls.Gsl.add_edge(node, node)
 
+        # Graph used as an example in Sec. 4.1 of Langville and Meyer,
+        # "Google's PageRank and Beyond".
+        cls.DiG = nx.DiGraph()
+        cls.DiG.add_edges_from(
+            (
+                (1, 2),
+                (1, 3),
+                (3, 1),
+                (3, 2),
+                (3, 5),
+                (4, 5),
+                (4, 6),
+                (5, 4),
+                (5, 6),
+                (6, 4),
+            )
+        )
+        cls.DiWG = nx.DiGraph(
+            (u, v, {"weight": 0.5, "other": 0.3}) for (u, v) in cls.DiG.edges()
+        )
+
     def test_laplacian(self):
         "Graph Laplacian"
         # fmt: off
@@ -35,6 +56,16 @@ class TestLaplacian:
         # fmt: on
         WL = 0.5 * NL
         OL = 0.3 * NL
+        # fmt: off
+        DiNL = np.array([[ 2, -1, -1,  0,  0,  0],
+                         [ 0,  0,  0,  0,  0,  0],
+                         [-1, -1,  3, -1,  0,  0],
+                         [ 0,  0,  0,  2, -1, -1],
+                         [ 0,  0,  0, -1,  2, -1],
+                         [ 0,  0,  0,  0, -1,  1]])
+        # fmt: on
+        DiWL = 0.5 * DiNL
+        DiOL = 0.3 * DiNL
         np.testing.assert_equal(nx.laplacian_matrix(self.G).todense(), NL)
         np.testing.assert_equal(nx.laplacian_matrix(self.MG).todense(), NL)
         np.testing.assert_equal(
@@ -45,6 +76,19 @@ class TestLaplacian:
         np.testing.assert_equal(nx.laplacian_matrix(self.WG, weight=None).todense(), NL)
         np.testing.assert_equal(
             nx.laplacian_matrix(self.WG, weight="other").todense(), OL
+        )
+
+        np.testing.assert_equal(nx.laplacian_matrix(self.DiG).todense(), DiNL)
+        np.testing.assert_equal(
+            nx.laplacian_matrix(self.DiG, nodelist=[1, 2]).todense(),
+            np.array([[1, -1], [0, 0]]),
+        )
+        np.testing.assert_equal(nx.laplacian_matrix(self.DiWG).todense(), DiWL)
+        np.testing.assert_equal(
+            nx.laplacian_matrix(self.DiWG, weight=None).todense(), DiNL
+        )
+        np.testing.assert_equal(
+            nx.laplacian_matrix(self.DiWG, weight="other").todense(), DiOL
         )
 
     def test_normalized_laplacian(self):
