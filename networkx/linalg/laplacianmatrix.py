@@ -12,7 +12,6 @@ __all__ = [
 ]
 
 
-@not_implemented_for("directed")
 @nx._dispatch(edge_attrs="weight")
 def laplacian_matrix(G, nodelist=None, weight="weight"):
     """Returns the Laplacian matrix of G.
