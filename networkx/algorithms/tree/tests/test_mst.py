@@ -782,7 +782,7 @@ class TestNumberSpanningTrees:
             nx.number_of_spanning_trees(G, root=42)
 
     def test_nst_directed_not_weak_connected(self):
-        G = nx.MultiDiGraph()
+        G = nx.DiGraph()
         G.add_edge(1, 2)
         G.add_edge(3, 4)
         assert np.isclose(nx.number_of_spanning_trees(G, root=1), 0)

@@ -1140,14 +1140,14 @@ def number_of_spanning_trees(G, *, root=None, weight=None):
 
     A spanning tree for an undirected graph is a tree that connects
     all nodes in the graph. For a directed graph, the analog of a
-    spanning tree is called a (spanning) arborescence. Starting from
-    a root node, the arborescence includes a unique directed path to
-    each node. The graph must be weakly connected, and the root must
-    be a node that includes all nodes as descendants.
+    spanning tree is called a (spanning) arborescence. The arborescence
+    includes a unique directed path from each node to the `root` node.
+    The graph must be weakly connected, and the root must be a node
+    that includes all nodes as successors [3]_.
 
     This function (when `weight` is `None`) returns the number of
     spanning trees for an undirected graph and the number of
-    arborescence from a single root for a directed graph.
+    arborescences from a single root for a directed graph.
     When `weight` is the name of an edge attribute which holds the
     weight value of each edge, the function returns the sum over
     all trees of the multiplicative weight of each tree. That is,
@@ -1165,7 +1165,7 @@ def number_of_spanning_trees(G, *, root=None, weight=None):
 
     For directed graphs, a similar theorem (Tutte's Theorem) holds with
     the cofactor chosen to be the one with row and column removed that
-    correspond to the root node. The cofactor is the number of arborescence
+    correspond to the root node. The cofactor is the number of arborescences
     with the specified node as root. And the weighted version gives the
     sum of the arborescence weights with root `root`. The arborescence
     weight is the product of its edge weights.
@@ -1178,7 +1178,7 @@ def number_of_spanning_trees(G, *, root=None, weight=None):
        A node in the directed graph `G` that has all nodes as descendants.
        (This is ignored for undirected graphs.)
 
-    weight : string or None
+    weight : string or None, optional (default=None)
         The name of the edge attribute holding the edge weight. If `None`, then
         each edge is assumed to have a weight of 1.
 
@@ -1190,10 +1190,10 @@ def number_of_spanning_trees(G, *, root=None, weight=None):
             Or the sum of all spanning tree weights of the graph `G`
             where the weight of a tree is the product of its edge weights.
         Directed graphs:
-            The number of arborescence of `G` rooted at node `root`.
+            The number of arborescences of `G` rooted at node `root`.
             Or the sum of all arborescence weights of the graph `G` with
-            specified root where the weight of a tree is the product of
-            its edge weights.
+            specified root where the weight of an arborescence is the product
+            of its edge weights.
 
     Raises
     ------
@@ -1201,8 +1201,8 @@ def number_of_spanning_trees(G, *, root=None, weight=None):
         If `G` does not contain any nodes.
 
     NetworkXError
-        If the graph `G` is not (weakly) connected,
-        or if `G` is directed and the root node is not specified or not in G.
+        If the graph `G` is directed and the root node
+        is not specified or is not in G.
 
     Examples
     --------
@@ -1214,7 +1214,7 @@ def number_of_spanning_trees(G, *, root=None, weight=None):
     >>> G.add_edge(1, 2, weight=2)
     >>> G.add_edge(1, 3, weight=1)
     >>> G.add_edge(2, 3, weight=1)
-    >>> round(nx.total_spanning_tree_weight(G, "weight"))
+    >>> round(nx.total_spanning_tree_weight(G, weight="weight"))
     5
 
     Notes
@@ -1259,6 +1259,6 @@ def number_of_spanning_trees(G, *, root=None, weight=None):
     # Compute directed Laplacian matrix
     nodelist = [root] + [n for n in G if n != root]
     A = nx.adjacency_matrix(G, nodelist=nodelist, weight=weight)
-    D = np.diag([d for n, d in G.out_degree()], k=0)
+    D = np.diag([d for n, d in G.out_degree(nodelist, weight=weight)])
     G_laplacian = D - A
     return np.linalg.det(G_laplacian[1:, 1:])

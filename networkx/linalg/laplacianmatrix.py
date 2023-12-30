@@ -227,7 +227,7 @@ def total_spanning_tree_weight(G, weight=None, root=None):
 
     warnings.warn(
         (
-            "\n\ntotal_spanning_tree_weight is deprecated and will be rmoved in v3.5.\n"
+            "\n\ntotal_spanning_tree_weight is deprecated and will be removed in v3.5.\n"
             "Use `nx.number_of_spanning_trees(G)` instead."
         ),
         category=DeprecationWarning,
