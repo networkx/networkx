@@ -84,7 +84,7 @@ def dfs_edges(G, source=None, depth_limit=None, sort_children=None):
 
     get_children = G.neighbors
     if sort_children is not None and callable(sort_children):
-        get_children = lambda node: iter(sort_children(get_children(node)))
+        get_children = lambda node: iter(sort_children(G.neighbors(node)))
 
     visited = set()
     for start in nodes:
@@ -480,7 +480,7 @@ def dfs_labeled_edges(G, source=None, depth_limit=None, sort_children=None):
 
     get_children = G.neighbors
     if sort_children is not None and callable(sort_children):
-        get_children = lambda node: iter(sort_children(get_children(node)))
+        get_children = lambda node: iter(sort_children(G.neighbors(node)))
 
     visited = set()
     for start in nodes:
