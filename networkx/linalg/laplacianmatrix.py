@@ -75,7 +75,6 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     return D - A
 
 
-@not_implemented_for("directed")
 @nx._dispatch(edge_attrs="weight")
 def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     r"""Returns the normalized Laplacian matrix of G.
