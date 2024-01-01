@@ -58,7 +58,19 @@ H = nx.convert_node_labels_to_integers(H)
 # Create partitions with hierarchical clustering
 partitions = create_hc(H)
 # Build blockmodel graph
-BM = nx.quotient_graph(H, partitions, relabel=True)
+
+
+def node_data(b):
+    S = H.subgraph(b)
+    return {
+        "graph": S,
+        "nnodes": len(S),
+        "nedges": S.number_of_edges(),
+        "density": nx.density(S),
+    }
+
+
+BM = nx.quotient_graph(H, partitions, node_data=node_data, relabel=True)
 
 # Draw original graph
 pos = nx.spring_layout(H, iterations=100, seed=83)  # Seed for reproducibility

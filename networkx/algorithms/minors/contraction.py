@@ -1,8 +1,8 @@
 """Provides functions for computing minors of a graph."""
+from collections import Counter, defaultdict
 from itertools import chain, combinations, permutations, product
 
 import networkx as nx
-from networkx import density
 from networkx.exception import NetworkXException
 from networkx.utils import arbitrary_element
 
@@ -13,8 +13,6 @@ __all__ = [
     "identified_nodes",
     "quotient_graph",
 ]
-
-chaini = chain.from_iterable
 
 
 def equivalence_classes(iterable, relation):
@@ -94,15 +92,18 @@ def equivalence_classes(iterable, relation):
     return {frozenset(block) for block in blocks}
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatch(preserve_edge_attrs=True)
 def quotient_graph(
     G,
     partition,
     edge_relation=None,
     node_data=None,
     edge_data=None,
+    edge_data_reduce=None,
+    edge_data_default=None,
     weight="weight",
     relabel=False,
+    self_loops=False,
     create_using=None,
 ):
     """Returns the quotient graph of `G` under the specified equivalence
@@ -146,14 +147,7 @@ def quotient_graph(
         This function takes one argument, *B*, a set of nodes in `G`,
         and must return a dictionary representing the node data
         attributes to set on the node representing *B* in the quotient graph.
-        If None, the following node attributes will be set:
-
-        * 'graph', the subgraph of the graph `G` that this block
-          represents,
-        * 'nnodes', the number of nodes in this block,
-        * 'nedges', the number of edges within this block,
-        * 'density', the density of the subgraph of `G` that this
-          block represents.
+        If None, the no node attributes are set.
 
     edge_data : function
         This function takes two arguments, *B* and *C*, each one a set
@@ -163,19 +157,44 @@ def quotient_graph(
         no such edge occurs in the quotient graph as determined by
         `edge_relation`, then the output of this function is ignored).
 
+        This parameter may only be specified if `edge_reduce` is None.
+        Specifying `edge_reduce` is much more efficient than `edge_data`,
+        so it's advised to do so when possible.
+
         If the quotient graph would be a multigraph, this function is
         not applied, since the edge data from each edge in the graph
         `G` appears in the edges of the quotient graph.
 
+    edge_data_reduce : function
+        This function takes two arguments, both dictionaries of
+        edge attributes and returns a combined dictionary.
+
+        This parameter may only be specified if `edge_data` is None.
+        Specifying `edge_data_reduce` is much more efficient than `edge_data`,
+        so it's advised to do so when possible.
+
+        By default, each edge is queried to find its weight attribute specified
+        by the `weight` parameter, and these attributes are summed.
+
+    edge_data_default : function
+        Factory function taking no parameters for initial value of each
+        quotient graph edge attributes. Any edges in the original graph will
+        be reduced with this value. By default, `dict` is used.
+
     weight : string or None, optional (default="weight")
         The name of an edge attribute that holds the numerical value
-        used as a weight. If None then each edge has weight 1.
+        used as a weight. If None then each edge has weight 1. This is only
+        used if `edge_data_reduce` is None.
 
     relabel : bool
         If True, relabel the nodes of the quotient graph to be
         nonnegative integers. Otherwise, the nodes are identified with
         :class:`frozenset` instances representing the blocks given in
         `partition`.
+
+    self_loops : bool
+        If True, create self edges in the quotient graph for any edges in `G`
+        that belong to the same equivalence class.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
@@ -297,17 +316,33 @@ def quotient_graph(
            Cambridge University Press, 2004.
 
     """
-    # If the user provided an equivalence relation as a function to compute
-    # the blocks of the partition on the nodes of G induced by the
-    # equivalence relation.
+    if isinstance(partition, dict):
+        partition = list(partition.values())
     if callable(partition):
-        # equivalence_classes always return partition of whole G.
         partition = equivalence_classes(G, partition)
+    else:
+        partition_nodes = set().union(*partition)
+        if len(partition_nodes) != len(G):
+            G = G.subgraph(partition_nodes)
         if not nx.community.is_partition(G, partition):
-            raise nx.NetworkXException(
-                "Input `partition` is not an equivalence relation for nodes of G"
+            raise NetworkXException(
+                "each node must be in exactly one part of `partition`"
             )
+
+    if edge_relation is None and edge_data is None:
         return _quotient_graph(
+            G,
+            partition,
+            node_data,
+            edge_data_reduce,
+            edge_data_default,
+            weight,
+            relabel,
+            self_loops,
+            create_using,
+        )
+    elif edge_data_reduce is None and edge_data_default is None:
+        return _grouped_relation_graph(
             G,
             partition,
             edge_relation,
@@ -315,88 +350,119 @@ def quotient_graph(
             edge_data,
             weight,
             relabel,
+            self_loops,
             create_using,
         )
-
-    # If the partition is a dict, it is assumed to be one where the keys are
-    # user-defined block labels, and values are block lists, tuples or sets.
-    if isinstance(partition, dict):
-        partition = list(partition.values())
-
-    # If the user provided partition as a collection of sets. Then we
-    # need to check if partition covers all of G nodes. If the answer
-    # is 'No' then we need to prepare suitable subgraph view.
-    partition_nodes = set().union(*partition)
-    if len(partition_nodes) != len(G):
-        G = G.subgraph(partition_nodes)
-    # Each node in the graph/subgraph must be in exactly one block.
-    if not nx.community.is_partition(G, partition):
-        raise NetworkXException("each node must be in exactly one part of `partition`")
-    return _quotient_graph(
-        G,
-        partition,
-        edge_relation,
-        node_data,
-        edge_data,
-        weight,
-        relabel,
-        create_using,
-    )
+    else:
+        raise ValueError(
+            "`edge_relation` and `edge_data` cannot be specified at the "
+            "same time as `edge_data_reduce` or `edge_data_default`."
+        )
 
 
 def _quotient_graph(
-    G, partition, edge_relation, node_data, edge_data, weight, relabel, create_using
+    G,
+    partition,
+    node_data,
+    edge_data_reduce,
+    edge_data_default,
+    weight,
+    relabel,
+    self_loops,
+    create_using,
 ):
     """Construct the quotient graph assuming input has been checked"""
     if create_using is None:
         H = G.__class__()
     else:
         H = nx.empty_graph(0, create_using)
-    # By default set some basic information about the subgraph that each block
-    # represents on the nodes in the quotient graph.
+
     if node_data is None:
+        node_data = lambda _: {}
 
-        def node_data(b):
-            S = G.subgraph(b)
-            return {
-                "graph": S,
-                "nnodes": len(S),
-                "nedges": S.number_of_edges(),
-                "density": density(S),
-            }
+    reduce_weights = edge_data_reduce is None
+    if reduce_weights:
+        if edge_data_default is not None:
+            raise ValueError(
+                "`edge_data_default` may not be set if `edge_data_reduce is None."
+            )
+    elif edge_data_default is None:
+        edge_data_default = dict
 
-    # Each block of the partition becomes a node in the quotient graph.
-    partition = [frozenset(b) for b in partition]
-    H.add_nodes_from((b, node_data(b)) for b in partition)
-    # By default, the edge relation is the relation defined as follows. B is
-    # adjacent to C if a node in B is adjacent to a node in C, according to the
-    # edge set of G.
-    #
-    # This is not a particularly efficient implementation of this relation:
-    # there are O(n^2) pairs to check and each check may require O(log n) time
-    # (to check set membership). This can certainly be parallelized.
+    partition2nodes = {i: frozenset(b) for i, b in enumerate(partition)}
+    node2partition = dict(_node2partition(partition2nodes.items()))
+    H.add_nodes_from((u, node_data(b)) for u, b in partition2nodes.items())
+
+    if H.is_multigraph():
+        edges = _map_edges(G, node2partition, self_loops, data=True)
+        H.add_edges_from(edges)
+
+    elif reduce_weights:
+        edges = _map_edges(G, node2partition, self_loops, data=weight, default=1)
+        agg_edges = Counter()
+        for u, v, weight in edges:
+            agg_edges[u, v] += weight
+        H.add_edges_from((u, v, {"weight": w}) for (u, v), w in agg_edges.items())
+
+    else:
+        edges = _map_edges(G, node2partition, self_loops, data=True)
+        agg_edges = defaultdict(lambda: _reducible(edge_data_default))
+        for u, v, data in edges:
+            agg_edges[u, v](edge_data_reduce, data)
+        H.add_edges_from((u, v, d.value) for (u, v), d in agg_edges.items())
+
+    if not relabel:
+        nx.relabel_nodes(H, partition2nodes, copy=False)
+    return H
+
+
+def _grouped_relation_graph(
+    G,
+    partition,
+    edge_relation,
+    node_data,
+    edge_data,
+    weight,
+    relabel,
+    self_loops,
+    create_using,
+):
+    """Construct the quotient graph assuming input has been checked"""
+    if create_using is None:
+        H = G.__class__()
+    else:
+        H = nx.empty_graph(0, create_using)
+
     if edge_relation is None:
 
         def edge_relation(b, c):
             return any(v in G[u] for u, v in product(b, c))
 
-    # By default, sum the weights of the edges joining pairs of nodes across
-    # blocks to get the weight of the edge joining those two blocks.
+    if node_data is None:
+        node_data = lambda _: {}
+
     if edge_data is None:
 
         def edge_data(b, c):
-            edgedata = (
+            weights = (
                 d
-                for u, v, d in G.edges(b | c, data=True)
+                for u, v, d in G.edges(b | c, data=weight, default=1)
                 if (u in b and v in c) or (u in c and v in b)
             )
-            return {"weight": sum(d.get(weight, 1) for d in edgedata)}
+            return {"weight": sum(weights)}
+
+    # Each block of the partition becomes a node in the quotient graph.
+    partition = [frozenset(b) for b in partition]
+    H.add_nodes_from((b, node_data(b)) for b in partition)
 
     block_pairs = permutations(H, 2) if H.is_directed() else combinations(H, 2)
+    if self_loops:
+        block_pairs = chain(block_pairs, ((u, u) for u in H))
+
     # In a multigraph, add one edge in the quotient graph for each edge
     # in the original graph.
     if H.is_multigraph():
-        edges = chaini(
+        edges = chain.from_iterable(
             (
                 (b, c, G.get_edge_data(u, v, default={}))
                 for u, v in product(b, c)
@@ -628,3 +694,30 @@ def contracted_edge(G, edge, self_loops=True, copy=True):
     if not G.has_edge(u, v):
         raise ValueError(f"Edge {edge} does not exist in graph G; cannot contract it")
     return contracted_nodes(G, u, v, self_loops=self_loops, copy=copy)
+
+
+class _reducible:
+    "helper class to reduce edge dictionary in-place."
+
+    def __init__(self, default_factory):
+        self.value = default_factory()
+
+    def __call__(self, reduce_fn, other):
+        self.value = reduce_fn(self.value, other)
+
+
+def _node2partition(partition2nodes):
+    "iterate over node, partition pairs."
+    for i, bunch in partition2nodes:
+        for u in bunch:
+            yield u, i
+
+
+def _map_edges(G, mapping, self_loops=True, data=None, **kw):
+    "project edge src and dst through mapping and iterate over edges with data."
+    data = (data is None) or data
+    for u, v, data in G.edges(data=data, **kw):
+        pu, pv = mapping[u], mapping[v]
+        if not self_loops and pu == pv:
+            continue
+        yield pu, pv, data
