@@ -82,12 +82,16 @@ def dfs_edges(G, source=None, depth_limit=None, sort_children=None):
     if depth_limit is None:
         depth_limit = len(G)
 
+    get_children = G.neighbors
+    if sort_children is not None and callable(sort_children):
+        get_children = lambda node: iter(sort_children(get_children(node)))
+
     visited = set()
     for start in nodes:
         if start in visited:
             continue
         visited.add(start)
-        stack = [(start, iter(sort_children(G[start]) if sort_children else G[start]))]
+        stack = [(start, get_children(start))]
         depth_now = 1
         while stack:
             parent, children = stack[-1]
@@ -96,10 +100,8 @@ def dfs_edges(G, source=None, depth_limit=None, sort_children=None):
                     yield parent, child
                     visited.add(child)
                     if depth_now < depth_limit:
-                        sorted_children = (
-                            sort_children(G[child]) if sort_children else G[child]
-                        )
-                        stack.append((child, iter(sorted_children)))
+                        sorted_children = get_children(child)
+                        stack.append((child, sorted_children))
                         depth_now += 1
                         break
             else:
@@ -476,13 +478,17 @@ def dfs_labeled_edges(G, source=None, depth_limit=None, sort_children=None):
     if depth_limit is None:
         depth_limit = len(G)
 
+    get_children = G.neighbors
+    if sort_children is not None and callable(sort_children):
+        get_children = lambda node: iter(sort_children(get_children(node)))
+
     visited = set()
     for start in nodes:
         if start in visited:
             continue
         yield start, start, "forward"
         visited.add(start)
-        stack = [(start, iter(sort_children(G[start]) if sort_children else G[start]))]
+        stack = [(start, get_children(start))]
         depth_now = 1
         while stack:
             parent, children = stack[-1]
@@ -493,9 +499,7 @@ def dfs_labeled_edges(G, source=None, depth_limit=None, sort_children=None):
                     yield parent, child, "forward"
                     visited.add(child)
                     if depth_now < depth_limit:
-                        sorted_children = (
-                            sort_children(G[child]) if sort_children else G[child]
-                        )
+                        sorted_children = get_children(child)
                         stack.append((child, iter(sorted_children)))
                         depth_now += 1
                         break
