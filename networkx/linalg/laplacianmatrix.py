@@ -147,7 +147,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
 
 
 @nx._dispatch(edge_attrs="weight")
-def total_spanning_tree_weight(G, weight=None, root=None):
+def total_spanning_tree_weight(G, weight=None, leaf=None):
     """
     Returns the total weight of all spanning trees of `G`.
 
@@ -160,7 +160,7 @@ def total_spanning_tree_weight(G, weight=None, root=None):
     For unweighted graphs, the total weight equals the number of spanning trees in `G`.
 
     For directed graphs, the total weight follows by summing over all directed spanning trees in `G`
-    that end in the node `root` [3]_.
+    that end in the `leaf` node [3]_.
 
     Parameters
     ----------
@@ -170,7 +170,7 @@ def total_spanning_tree_weight(G, weight=None, root=None):
         The key for the edge attribute holding the edge weight.
         If None, then each edge has weight 1.
 
-    root : node (only required for directed graphs)
+    leaf : node (only required for directed graphs)
        A node in the directed graph `G`.
 
     Returns
@@ -180,7 +180,7 @@ def total_spanning_tree_weight(G, weight=None, root=None):
             The sum of the total multiplicative weights for all spanning trees in `G`.
         Directed graphs:
             The sum of the total multiplicative weights for all spanning trees of `G`,
-            rooted at node `root`.
+            at node `leaf`.
 
     Raises
     ------
@@ -189,7 +189,7 @@ def total_spanning_tree_weight(G, weight=None, root=None):
 
     NetworkXError
         If the graph `G` is not (weakly) connected,
-        or if `G` is directed and the root node is not specified or not in G.
+        or if `G` is directed and the leaf node is not specified or not in G.
 
     Examples
     --------
@@ -234,17 +234,17 @@ def total_spanning_tree_weight(G, weight=None, root=None):
         stacklevel=2,
     )
 
-    return nx.number_of_spanning_trees(G, weight=weight, root=root)
+    return nx.number_of_spanning_trees(G, weight=weight, leaf=leaf)
 
     ## TODO remove this
     import numpy as np
     import scipy as sp
 
     graph_is_directed = nx.is_directed(G)
-    if graph_is_directed and root is None:
-        raise nx.NetworkXError("Spanning trees in directed graphs require a root node.")
-    if graph_is_directed and root not in G:
-        raise nx.NetworkXError("The node root is not in the graph G.")
+    if graph_is_directed and leaf is None:
+        raise nx.NetworkXError("Spanning trees in directed graphs require a leaf node.")
+    if graph_is_directed and leaf not in G:
+        raise nx.NetworkXError("The node leaf is not in the graph G.")
     if graph_is_directed and not nx.is_weakly_connected(G):
         return 0
     if not graph_is_directed and not nx.is_connected(G):
@@ -261,9 +261,9 @@ def total_spanning_tree_weight(G, weight=None, root=None):
         D = sp.sparse.csr_array(sp.sparse.spdiags(out_deg, 0, m, n, format="csr"))
         L = D - A
 
-    # Remove one row/column corresponding to node `root`
+    # Remove one row/column corresponding to node `leaf`
     if graph_is_directed:
-        i = list(G).index(root)
+        i = list(G).index(leaf)
     else:
         i = 0
     L = L.todense()

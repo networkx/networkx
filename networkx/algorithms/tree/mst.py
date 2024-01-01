@@ -1135,19 +1135,19 @@ class SpanningTreeIterator:
 
 
 @nx._dispatch(edge_attrs="weight")
-def number_of_spanning_trees(G, *, root=None, weight=None):
+def number_of_spanning_trees(G, *, leaf=None, weight=None):
     """Returns the number of spanning trees in `G`.
 
     A spanning tree for an undirected graph is a tree that connects
     all nodes in the graph. For a directed graph, the analog of a
     spanning tree is called a (spanning) arborescence. The arborescence
-    includes a unique directed path from each node to the `root` node.
-    The graph must be weakly connected, and the root must be a node
-    that includes all nodes as successors [3]_.
+    includes a unique directed path from each node to the `leaf` node.
+    The graph must be weakly connected, and the leaf must be a node
+    that includes all nodes as ancestors [3]_.
 
     This function (when `weight` is `None`) returns the number of
     spanning trees for an undirected graph and the number of
-    arborescences from a single root for a directed graph.
+    arborescences to a single leaf node for a directed graph.
     When `weight` is the name of an edge attribute which holds the
     weight value of each edge, the function returns the sum over
     all trees of the multiplicative weight of each tree. That is,
@@ -1165,17 +1165,17 @@ def number_of_spanning_trees(G, *, root=None, weight=None):
 
     For directed graphs, a similar theorem (Tutte's Theorem) holds with
     the cofactor chosen to be the one with row and column removed that
-    correspond to the root node. The cofactor is the number of arborescences
-    with the specified node as root. And the weighted version gives the
-    sum of the arborescence weights with root `root`. The arborescence
+    correspond to the leaf node. The cofactor is the number of arborescences
+    with the specified node as leaf node. And the weighted version gives the
+    sum of the arborescence weights with leaf `leaf`. The arborescence
     weight is the product of its edge weights.
 
     Parameters
     ----------
     G : NetworkX graph
 
-    root : node
-       A node in the directed graph `G` that has all nodes as descendants.
+    leaf : node
+       A node in the directed graph `G` that has all nodes as ancestors.
        (This is ignored for undirected graphs.)
 
     weight : string or None, optional (default=None)
@@ -1190,9 +1190,9 @@ def number_of_spanning_trees(G, *, root=None, weight=None):
             Or the sum of all spanning tree weights of the graph `G`
             where the weight of a tree is the product of its edge weights.
         Directed graphs:
-            The number of arborescences of `G` rooted at node `root`.
+            The number of arborescences of `G` at node `leaf`.
             Or the sum of all arborescence weights of the graph `G` with
-            specified root where the weight of an arborescence is the product
+            specified leaf node where the weight of an arborescence is the product
             of its edge weights.
 
     Raises
@@ -1201,7 +1201,7 @@ def number_of_spanning_trees(G, *, root=None, weight=None):
         If `G` does not contain any nodes.
 
     NetworkXError
-        If the graph `G` is directed and the root node
+        If the graph `G` is directed and the leaf node
         is not specified or is not in G.
 
     Examples
@@ -1249,15 +1249,15 @@ def number_of_spanning_trees(G, *, root=None, weight=None):
         return np.linalg.det(G_laplacian[1:, 1:])
 
     # directed G
-    if root is None:
-        raise nx.NetworkXError("Input `root` must be provided when G is directed")
-    if root not in G:
-        raise nx.NetworkXError("The node root is not in the graph G.")
+    if leaf is None:
+        raise nx.NetworkXError("Input `leaf` must be provided when G is directed")
+    if leaf not in G:
+        raise nx.NetworkXError("The node leaf is not in the graph G.")
     if not nx.is_weakly_connected(G):
         return 0
 
     # Compute directed Laplacian matrix
-    nodelist = [root] + [n for n in G if n != root]
+    nodelist = [leaf] + [n for n in G if n != leaf]
     A = nx.adjacency_matrix(G, nodelist=nodelist, weight=weight)
     D = np.diag([d for n, d in G.out_degree(nodelist, weight=weight)])
     G_laplacian = D - A
