@@ -52,6 +52,9 @@ def dfs_edges(G, source=None, depth_limit=None, sort_children=None):
 
     Notes
     -----
+    If `sort_children` returns an iterable then it would be internally converted to
+    an iterator but it will be more efficient if it returns an iterator.
+
     If a source is not specified then a source is chosen arbitrarily and
     repeatedly until all components in the graph are searched.
 
@@ -132,6 +135,11 @@ def dfs_tree(G, source=None, depth_limit=None, sort_children=None):
     T : NetworkX DiGraph
        An oriented tree
 
+    Notes
+    -----
+    If `sort_children` returns an iterable then it would be internally converted to
+    an iterator but it will be more efficient if it returns an iterator.
+
     Examples
     --------
     >>> G = nx.path_graph(5)
@@ -195,6 +203,9 @@ def dfs_predecessors(G, source=None, depth_limit=None, sort_children=None):
 
     Notes
     -----
+    If `sort_children` returns an iterable then it would be internally converted to
+    an iterator but it will be more efficient if it returns an iterator.
+
     If a source is not specified then a source is chosen arbitrarily and
     repeatedly until all components in the graph are searched.
 
@@ -253,6 +264,9 @@ def dfs_successors(G, source=None, depth_limit=None, sort_children=None):
 
     Notes
     -----
+    If `sort_children` returns an iterable then it would be internally converted to
+    an iterator but it will be more efficient if it returns an iterator.
+
     If a source is not specified then a source is chosen arbitrarily and
     repeatedly until all components in the graph are searched.
 
@@ -313,6 +327,9 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None, sort_children=None):
 
     Notes
     -----
+    If `sort_children` returns an iterable then it would be internally converted to
+    an iterator but it will be more efficient if it returns an iterator.
+
     If a source is not specified then a source is chosen arbitrarily and
     repeatedly until all components in the graph are searched.
 
@@ -372,6 +389,9 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None, sort_children=None):
 
     Notes
     -----
+    If `sort_children` returns an iterable then it would be internally converted to
+    an iterator but it will be more efficient if it returns an iterator.
+
     If a source is not specified then a source is chosen arbitrarily and
     repeatedly until all components in the graph are searched.
 
@@ -450,6 +470,9 @@ def dfs_labeled_edges(G, source=None, depth_limit=None, sort_children=None):
 
     Notes
     -----
+    If `sort_children` returns an iterable then it would be internally converted to
+    an iterator but it will be more efficient if it returns an iterator.
+
     If a source is not specified then a source is chosen arbitrarily and
     repeatedly until all components in the graph are searched.
 
