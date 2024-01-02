@@ -791,7 +791,6 @@ class PlanarEmbedding(nx.DiGraph):
     * Edges must go in both directions (because the edge attributes differ)
     * Every edge must have a 'cw' and 'ccw' attribute which corresponds to a
       correct planar embedding.
-    * A node with non zero degree must have a node attribute 'first_nbr'.
 
     As long as a PlanarEmbedding is invalid only the following methods should
     be called:
@@ -912,7 +911,7 @@ class PlanarEmbedding(nx.DiGraph):
         if len(self[v]) == 0:
             # v has no neighbors
             return
-        start_node = self.nodes[v]["first_nbr"]
+        start_node = next(iter(self._succ[v]))
         yield start_node
         current_node = self[v][start_node]["cw"]
         while start_node != current_node:
@@ -927,7 +926,6 @@ class PlanarEmbedding(nx.DiGraph):
         * Edges go in both directions (because the edge attributes differ).
         * Every edge has a 'cw' and 'ccw' attribute which corresponds to a
           correct planar embedding.
-        * A node with a degree larger than 0 has a node attribute 'first_nbr'.
 
         Running this method verifies that the underlying Graph must be planar.
 
@@ -1006,18 +1004,17 @@ class PlanarEmbedding(nx.DiGraph):
 
         """
         if reference_neighbor is None:
+            if self._succ[start_node]:
+                raise nx.NetworkXError(
+                    "Attempted to add unreferenced half_edge to already "
+                    "connected node.")
             # The start node has no neighbors
             self.add_edge(start_node, end_node)  # Add edge to graph
             self[start_node][end_node]["cw"] = end_node
             self[start_node][end_node]["ccw"] = end_node
-            self.nodes[start_node]["first_nbr"] = end_node
         else:
             ccw_reference = self[start_node][reference_neighbor]["ccw"]
             self.add_half_edge_cw(start_node, end_node, ccw_reference)
-
-            if reference_neighbor == self.nodes[start_node].get("first_nbr", None):
-                # Update first neighbor
-                self.nodes[start_node]["first_nbr"] = end_node
 
     def add_half_edge_cw(self, start_node, end_node, reference_neighbor):
         """Adds a half-edge from start_node to end_node.
@@ -1048,24 +1045,26 @@ class PlanarEmbedding(nx.DiGraph):
         self.add_edge(start_node, end_node)  # Add edge to graph
 
         if reference_neighbor is None:
+            if self._succ[start_node]:
+                raise nx.NetworkXError(
+                    "Attempted to add unreferenced half_edge from an already "
+                    "connected node.")
             # The start node has no neighbors
             self[start_node][end_node]["cw"] = end_node
             self[start_node][end_node]["ccw"] = end_node
-            self.nodes[start_node]["first_nbr"] = end_node
-            return
+        else:
+            if reference_neighbor not in self._succ[start_node]:
+                raise nx.NetworkXException(
+                    "Cannot add edge. Reference neighbor does not exist."
+                )
 
-        if reference_neighbor not in self[start_node]:
-            raise nx.NetworkXException(
-                "Cannot add edge. Reference neighbor does not exist"
-            )
-
-        # Get half-edge at the other side
-        cw_reference = self[start_node][reference_neighbor]["cw"]
-        # Alter half-edge data structures
-        self[start_node][reference_neighbor]["cw"] = end_node
-        self[start_node][end_node]["cw"] = cw_reference
-        self[start_node][cw_reference]["ccw"] = end_node
-        self[start_node][end_node]["ccw"] = reference_neighbor
+            # Get half-edge at the other side
+            cw_reference = self[start_node][reference_neighbor]["cw"]
+            # Alter half-edge data structures
+            self[start_node][reference_neighbor]["cw"] = end_node
+            self[start_node][end_node]["cw"] = cw_reference
+            self[start_node][cw_reference]["ccw"] = end_node
+            self[start_node][end_node]["ccw"] = reference_neighbor
 
     def connect_components(self, v, w):
         """Adds half-edges for (v, w) and (w, v) at some position.
@@ -1105,11 +1104,11 @@ class PlanarEmbedding(nx.DiGraph):
         add_half_edge_cw
         connect_components
         """
-        if start_node in self and "first_nbr" in self.nodes[start_node]:
-            reference = self.nodes[start_node]["first_nbr"]
+        if start_node in self and self._succ[start_node]:
+            reference = next(iter(self._succ[start_node]))
         else:
             reference = None
-        self.add_half_edge_ccw(start_node, end_node, reference)
+        self.add_half_edge_cw(start_node, end_node, reference)
 
     def next_face_half_edge(self, v, w):
         """Returns the following half-edge left of a face.
