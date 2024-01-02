@@ -1276,7 +1276,7 @@ def simrank_similarity(
         the similarity value for the given pair of nodes.
 
     Raises
-    -------
+    ------
     ExceededMaxIterations
         If the algorithm does not converge within ``max_iterations``.
 
@@ -1558,7 +1558,7 @@ def panther_similarity(
         top 4 nodes and their similarity scores will be returned.
 
     Raises
-    -------
+    ------
     NetworkXUnfeasible
         If `source` is an isolated node.
 
@@ -1566,7 +1566,7 @@ def panther_similarity(
         If `source` is not in `G`.
 
     Notes
-    -------
+    -----
         The isolated nodes in `G` are ignored.
 
     Examples
