@@ -197,7 +197,7 @@ def directed_laplacian_matrix(
 
     .. math::
 
-        L = I - (\Phi^{1/2} P \Phi^{-1/2} + \Phi^{-1/2} P^T \Phi^{1/2} ) / 2
+        L = I - \frac{1}{2} (\Phi^{1/2} P \Phi^{-1/2} + \Phi^{-1/2} P^T \Phi^{1/2} )
 
     where `I` is the identity matrix, `P` is the transition matrix of the
     graph, and `\Phi` a matrix with the Perron vector of `P` in the diagonal and
@@ -238,6 +238,8 @@ def directed_laplacian_matrix(
     Notes
     -----
     Only implemented for DiGraphs
+
+    The result is always a symmetric matrix.
 
     See Also
     --------
@@ -291,7 +293,7 @@ def directed_combinatorial_laplacian_matrix(
 
     .. math::
 
-        L = \Phi - (\Phi P + P^T \Phi) / 2
+        L = \Phi - \frac{1}{2} (\Phi P + P^T \Phi)
 
     where `P` is the transition matrix of the graph and `\Phi` a matrix
     with the Perron vector of `P` in the diagonal and zeros elsewhere [1]_.
@@ -331,6 +333,8 @@ def directed_combinatorial_laplacian_matrix(
     Notes
     -----
     Only implemented for DiGraphs
+
+    The result is always a symmetric matrix.
 
     See Also
     --------
