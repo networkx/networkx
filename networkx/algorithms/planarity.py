@@ -376,7 +376,7 @@ class LRPlanarity:
             # initialize the embedding
             previous_node = None
             for w in self.ordered_adjs[v]:
-                self.embedding.add_half_edge_cw(v, w, previous_node)
+                self.embedding.add_half_edge(v, w, ccw=previous_node)
                 previous_node = w
 
         # Free no longer used variables
@@ -436,7 +436,7 @@ class LRPlanarity:
             # initialize the embedding
             previous_node = None
             for w in self.ordered_adjs[v]:
-                self.embedding.add_half_edge_cw(v, w, previous_node)
+                self.embedding.add_half_edge(v, w, ccw=previous_node)
                 previous_node = w
 
         # compute the complete embedding
@@ -458,7 +458,7 @@ class LRPlanarity:
             v = dfs_stack.pop()
             e = self.parent_edge[v]
 
-            for w in self.adjs[v][ind[v] :]:
+            for w in self.adjs[v][ind[v]:]:
                 vw = (v, w)
 
                 if not skip_init[vw]:
@@ -546,7 +546,7 @@ class LRPlanarity:
             # to indicate whether to skip the final block after the for loop
             skip_final = False
 
-            for w in self.ordered_adjs[v][ind[v] :]:
+            for w in self.ordered_adjs[v][ind[v]:]:
                 ei = (v, w)
 
                 if not skip_init[ei]:
@@ -700,7 +700,7 @@ class LRPlanarity:
         while dfs_stack:
             v = dfs_stack.pop()
 
-            for w in self.ordered_adjs[v][ind[v] :]:
+            for w in self.ordered_adjs[v][ind[v]:]:
                 ind[v] += 1
                 ei = (v, w)
 
@@ -714,9 +714,10 @@ class LRPlanarity:
                     break  # handle next node in dfs_stack (i.e. w)
                 else:  # back edge
                     if self.side[ei] == 1:
-                        self.embedding.add_half_edge_cw(w, v, self.right_ref[w])
+                        self.embedding.add_half_edge(w, v,
+                                                     ccw=self.right_ref[w])
                     else:
-                        self.embedding.add_half_edge_ccw(w, v, self.left_ref[w])
+                        self.embedding.add_half_edge(w, v, cw=self.left_ref[w])
                         self.left_ref[w] = v
 
     def dfs_embedding_recursive(self, v):
@@ -731,10 +732,10 @@ class LRPlanarity:
             else:  # back edge
                 if self.side[ei] == 1:
                     # place v directly after right_ref[w] in embed. list of w
-                    self.embedding.add_half_edge_cw(w, v, self.right_ref[w])
+                    self.embedding.add_half_edge(w, v, ccw=self.right_ref[w])
                 else:
                     # place v directly before left_ref[w] in embed. list of w
-                    self.embedding.add_half_edge_ccw(w, v, self.left_ref[w])
+                    self.embedding.add_half_edge(w, v, cw=self.left_ref[w])
                     self.left_ref[w] = v
 
     def sign(self, e):
@@ -795,10 +796,8 @@ class PlanarEmbedding(nx.DiGraph):
     As long as a PlanarEmbedding is invalid only the following methods should
     be called:
 
-    * :meth:`add_half_edge_ccw`
-    * :meth:`add_half_edge_cw`
+    * :meth:`add_half_edge`
     * :meth:`connect_components`
-    * :meth:`add_half_edge_first`
 
     Even though the graph is a subclass of nx.DiGraph, it can still be used
     for algorithms that require undirected graphs, because the method
@@ -807,14 +806,14 @@ class PlanarEmbedding(nx.DiGraph):
 
     **Half edges:**
 
-    In methods like `add_half_edge_ccw` the term "half-edge" is used, which is
+    In methods like `add_half_edge` the term "half-edge" is used, which is
     a term that is used in `doubly connected edge lists
     <https://en.wikipedia.org/wiki/Doubly_connected_edge_list>`_. It is used
     to emphasize that the edge is only in one direction and there exists
     another half-edge in the opposite direction.
     While conventional edges always have two faces (including outer face) next
     to them, it is possible to assign each half-edge *exactly one* face.
-    For a half-edge (u, v) that is orientated such that u is below v then the
+    For a half-edge (u, v) that is oriented such that u is below v then the
     face that belongs to (u, v) is to the right of this half-edge.
 
     See Also
@@ -832,23 +831,23 @@ class PlanarEmbedding(nx.DiGraph):
     Create an embedding of a star graph (compare `nx.star_graph(3)`):
 
     >>> G = nx.PlanarEmbedding()
-    >>> G.add_half_edge_cw(0, 1, None)
-    >>> G.add_half_edge_cw(0, 2, 1)
-    >>> G.add_half_edge_cw(0, 3, 2)
-    >>> G.add_half_edge_cw(1, 0, None)
-    >>> G.add_half_edge_cw(2, 0, None)
-    >>> G.add_half_edge_cw(3, 0, None)
+    >>> G.add_half_edge(0, 1)
+    >>> G.add_half_edge(0, 2, ccw=1)
+    >>> G.add_half_edge(0, 3, ccw=2)
+    >>> G.add_half_edge(1, 0)
+    >>> G.add_half_edge(2, 0)
+    >>> G.add_half_edge(3, 0)
 
     Alternatively the same embedding can also be defined in counterclockwise
     orientation. The following results in exactly the same PlanarEmbedding:
 
     >>> G = nx.PlanarEmbedding()
-    >>> G.add_half_edge_ccw(0, 1, None)
-    >>> G.add_half_edge_ccw(0, 3, 1)
-    >>> G.add_half_edge_ccw(0, 2, 3)
-    >>> G.add_half_edge_ccw(1, 0, None)
-    >>> G.add_half_edge_ccw(2, 0, None)
-    >>> G.add_half_edge_ccw(3, 0, None)
+    >>> G.add_half_edge(0, 1)
+    >>> G.add_half_edge(0, 3, cw=1)
+    >>> G.add_half_edge(0, 2, cw=3)
+    >>> G.add_half_edge(1, 0)
+    >>> G.add_half_edge(2, 0)
+    >>> G.add_half_edge(3, 0)
 
     After creating a graph, it is possible to validate that the PlanarEmbedding
     object is correct:
@@ -893,8 +892,10 @@ class PlanarEmbedding(nx.DiGraph):
 
         """
         for v in data:
+            ref = None
             for w in reversed(data[v]):
-                self.add_half_edge_first(v, w)
+                self.add_half_edge(v, w, cw=ref)
+                ref = w
 
     def neighbors_cw_order(self, v):
         """Generator for the neighbors of v in clockwise order.
@@ -908,15 +909,107 @@ class PlanarEmbedding(nx.DiGraph):
         node
 
         """
-        if len(self[v]) == 0:
+        if not self._succ[v]:
             # v has no neighbors
             return
-        start_node = next(iter(self._succ[v]))
+        start_node = next(reversed(self._succ[v]))
         yield start_node
-        current_node = self[v][start_node]["cw"]
+        current_node = self._succ[v][start_node]["cw"]
         while start_node != current_node:
             yield current_node
-            current_node = self[v][current_node]["cw"]
+            current_node = self._succ[v][current_node]["cw"]
+
+    def add_half_edge(self, start_node, end_node, cw=None, ccw=None):
+        """Adds a half-edge from start_node to end_node.
+
+        If the half-edge is not the first one out of start_node, a reference
+        node must be provided either in the clockwise (parameter cw) or in
+        the counterclockwise (parameter ccw) direction. Only one of cw/cww
+        parameter can be specified (or neither in the case of the first edge).
+        Note that specifying a reference in the clockwise (cw) direction means
+        inserting the new edge in the first counterclockwise position with
+        respect to the reference (and vice-versa).
+
+        Parameters
+        ----------
+        start_node : node
+            Start node of inserted edge.
+        end_node : node
+            End node of inserted edge.
+        cw/ccw: node
+            End node of reference edge.
+
+        Raises
+        ------
+        NetworkXException
+            If the reference_neighbor does not exist.
+
+        See Also
+        --------
+        connect_components
+        """
+
+        if start_node in self._succ and self._succ[start_node]:
+            # there is already some edge out of start_node
+            if cw is not None:
+                if cw not in self._succ[start_node]:
+                    raise nx.NetworkXError(
+                        "Invalid clockwise reference node."
+                    )
+                if ccw is not None:
+                    raise nx.NetworkXError(
+                        "Only one of cw/ccw can be specified."
+                    )
+                ref_ccw = self._succ[start_node][cw]["ccw"]
+
+                # keeping compatibility with old implementation that used
+                # "first_nbr" node attribute (required by LRPlanarity)
+                leftmost_nbr = next(reversed(self._succ[start_node]))
+
+                self.add_edge(start_node, end_node, cw=cw, ccw=ref_ccw)
+                self._succ[start_node][ref_ccw]["cw"] = end_node
+                self._succ[start_node][cw]["ccw"] = end_node
+
+                # keeping compatibility with old implementation that used
+                # "first_nbr" node attribute (required by LRPlanarity)
+                if leftmost_nbr != cw:
+                    data = self._succ[start_node][leftmost_nbr]
+                    del self._succ[start_node][leftmost_nbr]
+                    self._succ[start_node][leftmost_nbr] = data
+
+            elif ccw is not None:
+                if ccw not in self._succ[start_node]:
+                    raise nx.NetworkXError(
+                        "Invalid counterclockwise reference node."
+                    )
+                ref_cw = self._succ[start_node][ccw]["cw"]
+
+                # keeping compatibility with old implementation that used
+                # "first_nbr" node attribute (required by LRPlanarity)
+                leftmost_nbr = next(reversed(self._succ[start_node]))
+
+                self.add_edge(start_node, end_node, cw=ref_cw, ccw=ccw)
+                self._succ[start_node][ref_cw]["ccw"] = end_node
+                self._succ[start_node][ccw]["cw"] = end_node
+
+                # keeping compatibility with old implementation that used
+                # "first_nbr" node attribute (required by LRPlanarity)
+                data = self._succ[start_node][leftmost_nbr]
+                del self._succ[start_node][leftmost_nbr]
+                self._succ[start_node][leftmost_nbr] = data
+
+            else:
+                raise nx.NetworkXError(
+                    "Attempted to add unreferenced half_edge from an already "
+                    "connected node."
+                )
+        else:
+            if cw is not None or ccw is not None:
+                raise nx.NetworkXError(
+                    "Invalid reference node."
+                )
+            # adding the first edge out of start_node
+            self.add_edge(start_node, end_node, ccw=end_node, cw=end_node)
 
     def check_structure(self):
         """Runs without exceptions if this object is valid.
@@ -1003,18 +1096,7 @@ class PlanarEmbedding(nx.DiGraph):
         add_half_edge_first
 
         """
-        if reference_neighbor is None:
-            if self._succ[start_node]:
-                raise nx.NetworkXError(
-                    "Attempted to add unreferenced half_edge to already "
-                    "connected node.")
-            # The start node has no neighbors
-            self.add_edge(start_node, end_node)  # Add edge to graph
-            self[start_node][end_node]["cw"] = end_node
-            self[start_node][end_node]["ccw"] = end_node
-        else:
-            ccw_reference = self[start_node][reference_neighbor]["ccw"]
-            self.add_half_edge_cw(start_node, end_node, ccw_reference)
+        self.add_half_edge(start_node, end_node, cw=reference_neighbor)
 
     def add_half_edge_cw(self, start_node, end_node, reference_neighbor):
         """Adds a half-edge from start_node to end_node.
@@ -1042,29 +1124,7 @@ class PlanarEmbedding(nx.DiGraph):
         connect_components
         add_half_edge_first
         """
-        self.add_edge(start_node, end_node)  # Add edge to graph
-
-        if reference_neighbor is None:
-            if self._succ[start_node]:
-                raise nx.NetworkXError(
-                    "Attempted to add unreferenced half_edge from an already "
-                    "connected node.")
-            # The start node has no neighbors
-            self[start_node][end_node]["cw"] = end_node
-            self[start_node][end_node]["ccw"] = end_node
-        else:
-            if reference_neighbor not in self._succ[start_node]:
-                raise nx.NetworkXException(
-                    "Cannot add edge. Reference neighbor does not exist."
-                )
-
-            # Get half-edge at the other side
-            cw_reference = self[start_node][reference_neighbor]["cw"]
-            # Alter half-edge data structures
-            self[start_node][reference_neighbor]["cw"] = end_node
-            self[start_node][end_node]["cw"] = cw_reference
-            self[start_node][cw_reference]["ccw"] = end_node
-            self[start_node][end_node]["ccw"] = reference_neighbor
+        self.add_half_edge(start_node, end_node, ccw=reference_neighbor)
 
     def connect_components(self, v, w):
         """Adds half-edges for (v, w) and (w, v) at some position.
@@ -1083,15 +1143,23 @@ class PlanarEmbedding(nx.DiGraph):
 
         See Also
         --------
-        add_half_edge_ccw
-        add_half_edge_cw
-        add_half_edge_first
+        add_half_edge
         """
-        self.add_half_edge_first(v, w)
-        self.add_half_edge_first(w, v)
+        if v in self._succ and self._succ[v]:
+            ref = next(reversed(self._succ[v]))
+        else:
+            ref = None
+        self.add_half_edge(v, w, cw=ref)
+        if w in self._succ and self._succ[w]:
+            ref = next(reversed(self._succ[w]))
+        else:
+            ref = None
+        self.add_half_edge(w, v, cw=ref)
 
     def add_half_edge_first(self, start_node, end_node):
-        """The added half-edge is inserted at the first position in the order.
+        """Add a half-edge and set end_node as start_node's leftmost neighbor.
+        The new edge is inserted counterclockwise with respect to the current
+        leftmost neighbor, if there is one.
 
         Parameters
         ----------
@@ -1105,10 +1173,14 @@ class PlanarEmbedding(nx.DiGraph):
         connect_components
         """
         if start_node in self and self._succ[start_node]:
-            reference = next(iter(self._succ[start_node]))
+            # the leftmost neighbor is the last entry in the
+            # self._succ[start_node] dict
+            reference = next(reversed(self._succ[start_node]))
         else:
             reference = None
-        self.add_half_edge_cw(start_node, end_node, reference)
+        # if add_half_edge_first() is called for a start_node that already
+        # has out half-edges, the new edge is ccw to the last added half-edge
+        self.add_half_edge(start_node, end_node, cw=reference)
 
     def next_face_half_edge(self, v, w):
         """Returns the following half-edge left of a face.
