@@ -1,4 +1,6 @@
 """Laplacian matrix of graphs.
+
+All calculations here are done using the out-degree. For Laplacians using in-degree, us `G.reverse(copy=False)` instead of `G`.
 """
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -40,6 +42,8 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     Notes
     -----
     For MultiGraph, the edges weights are summed.
+
+    This calculation uses the out-degree of the graph `G`. To use the in-degree for calculations instead, use `G.reverse(copy=False)` instead.
 
     See Also
     --------
@@ -113,6 +117,8 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
 
     If the Graph contains selfloops, D is defined as ``diag(sum(A, 1))``, where A is
     the adjacency matrix [2]_.
+
+    This calculation uses the out-degree of the graph `G`. To use the in-degree for calculations instead, use `G.reverse(copy=False)` instead.
 
     See Also
     --------
@@ -241,6 +247,8 @@ def directed_laplacian_matrix(
 
     The result is always a symmetric matrix.
 
+    This calculation uses the out-degree of the graph `G`. To use the in-degree for calculations instead, use `G.reverse(copy=False)` instead.
+
     See Also
     --------
     laplacian_matrix
@@ -335,6 +343,8 @@ def directed_combinatorial_laplacian_matrix(
     Only implemented for DiGraphs
 
     The result is always a symmetric matrix.
+
+    This calculation uses the out-degree of the graph `G`. To use the in-degree for calculations instead, use `G.reverse(copy=False)` instead.
 
     See Also
     --------
