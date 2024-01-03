@@ -458,7 +458,7 @@ class LRPlanarity:
             v = dfs_stack.pop()
             e = self.parent_edge[v]
 
-            for w in self.adjs[v][ind[v]:]:
+            for w in self.adjs[v][ind[v] :]:
                 vw = (v, w)
 
                 if not skip_init[vw]:
@@ -546,7 +546,7 @@ class LRPlanarity:
             # to indicate whether to skip the final block after the for loop
             skip_final = False
 
-            for w in self.ordered_adjs[v][ind[v]:]:
+            for w in self.ordered_adjs[v][ind[v] :]:
                 ei = (v, w)
 
                 if not skip_init[ei]:
@@ -700,7 +700,7 @@ class LRPlanarity:
         while dfs_stack:
             v = dfs_stack.pop()
 
-            for w in self.ordered_adjs[v][ind[v]:]:
+            for w in self.ordered_adjs[v][ind[v] :]:
                 ind[v] += 1
                 ei = (v, w)
 
@@ -714,8 +714,7 @@ class LRPlanarity:
                     break  # handle next node in dfs_stack (i.e. w)
                 else:  # back edge
                     if self.side[ei] == 1:
-                        self.embedding.add_half_edge(w, v,
-                                                     ccw=self.right_ref[w])
+                        self.embedding.add_half_edge(w, v, ccw=self.right_ref[w])
                     else:
                         self.embedding.add_half_edge(w, v, cw=self.left_ref[w])
                         self.left_ref[w] = v
@@ -953,13 +952,9 @@ class PlanarEmbedding(nx.DiGraph):
             # there is already some edge out of start_node
             if cw is not None:
                 if cw not in self._succ[start_node]:
-                    raise nx.NetworkXError(
-                        "Invalid clockwise reference node."
-                    )
+                    raise nx.NetworkXError("Invalid clockwise reference node.")
                 if ccw is not None:
-                    raise nx.NetworkXError(
-                        "Only one of cw/ccw can be specified."
-                    )
+                    raise nx.NetworkXError("Only one of cw/ccw can be specified.")
                 ref_ccw = self._succ[start_node][cw]["ccw"]
 
                 # keeping compatibility with old implementation that used
@@ -979,9 +974,7 @@ class PlanarEmbedding(nx.DiGraph):
 
             elif ccw is not None:
                 if ccw not in self._succ[start_node]:
-                    raise nx.NetworkXError(
-                        "Invalid counterclockwise reference node."
-                    )
+                    raise nx.NetworkXError("Invalid counterclockwise reference node.")
                 ref_cw = self._succ[start_node][ccw]["cw"]
 
                 # keeping compatibility with old implementation that used
@@ -1005,9 +998,7 @@ class PlanarEmbedding(nx.DiGraph):
                 )
         else:
             if cw is not None or ccw is not None:
-                raise nx.NetworkXError(
-                    "Invalid reference node."
-                )
+                raise nx.NetworkXError("Invalid reference node.")
             # adding the first edge out of start_node
             self.add_edge(start_node, end_node, ccw=end_node, cw=end_node)
 
