@@ -35,21 +35,21 @@ def fast_label_propagation_communities(G, *, weight=None, seed=None):
     Parameters
     ----------
     G : Graph, DiGraph, MultiGraph, or MultiDiGraph
-      Any NetworkX graph.
+        Any NetworkX graph.
 
     weight : string, or None (default)
-      The edge attribute representing a non-negative weight of an edge. If None,
-      each edge is assumed to have weight one. The weight of an edge is used in
-      determining the frequency with which a label appears among the neighbors of
-      a node (edge with weight `w` is equivalent to `w` unweighted edges).
+        The edge attribute representing a non-negative weight of an edge. If None,
+        each edge is assumed to have weight one. The weight of an edge is used in
+        determining the frequency with which a label appears among the neighbors of
+        a node (edge with weight `w` is equivalent to `w` unweighted edges).
 
     seed : integer, random_state, or None (default)
-      Indicator of random number generation state. See :ref:`Randomness<randomness>`.
+        Indicator of random number generation state. See :ref:`Randomness<randomness>`.
 
     Returns
     -------
     communities : iterable
-      Iterable of communities given as sets of nodes.
+        Iterable of communities given as sets of nodes.
 
     Notes
     -----
@@ -59,8 +59,8 @@ def fast_label_propagation_communities(G, *, weight=None, seed=None):
     References
     ----------
     .. [1] Vincent A. Traag & Lovro Šubelj. "Large network community detection by
-    fast label propagation." Scientific Reports 13 (2023): 2701.
-    https://doi.org/10.1038/s41598-023-29610-z
+       fast label propagation." Scientific Reports 13 (2023): 2701.
+       https://doi.org/10.1038/s41598-023-29610-z
     """
 
     # Queue of nodes to be processed.
