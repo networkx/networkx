@@ -118,6 +118,8 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     --------
     laplacian_matrix
     normalized_laplacian_spectrum
+    directed_laplacian_matrix
+    directed_combinatorial_laplacian_matrix
 
     References
     ----------
@@ -240,6 +242,8 @@ def directed_laplacian_matrix(
     See Also
     --------
     laplacian_matrix
+    normalized_laplacian_matrix
+    directed_combinatorial_laplacian_matrix
 
     References
     ----------
@@ -331,6 +335,8 @@ def directed_combinatorial_laplacian_matrix(
     See Also
     --------
     laplacian_matrix
+    normalized_laplacian_matrix
+    directed_laplacian_matrix
 
     References
     ----------
