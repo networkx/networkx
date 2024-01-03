@@ -41,6 +41,7 @@ class TestLaplacian:
                 (6, 4),
             )
         )
+        cls.DiMG = nx.MultiDiGraph(cls.DiG)
         cls.DiWG = nx.DiGraph(
             (u, v, {"weight": 0.5, "other": 0.3}) for (u, v) in cls.DiG.edges()
         )
@@ -79,6 +80,7 @@ class TestLaplacian:
         )
 
         np.testing.assert_equal(nx.laplacian_matrix(self.DiG).todense(), DiNL)
+        np.testing.assert_equal(nx.laplacian_matrix(self.DiMG).todense(), DiNL)
         np.testing.assert_equal(
             nx.laplacian_matrix(self.DiG, nodelist=[1, 2]).todense(),
             np.array([[1, -1], [0, 0]]),
