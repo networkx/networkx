@@ -373,23 +373,19 @@ def check_counterexample(G, sub_graph):
 
 class TestPlanarEmbeddingClass:
     def test_add_half_edge(self):
+        embedding = nx.PlanarEmbedding()
+        embedding.add_half_edge(0, 1)
         with pytest.raises(
             nx.NetworkXException, match="Invalid clockwise reference node."
         ):
-            embedding = nx.PlanarEmbedding()
-            embedding.add_half_edge(0, 1)
             embedding.add_half_edge(0, 2, cw=3)
         with pytest.raises(
             nx.NetworkXException, match="Invalid counterclockwise reference node."
         ):
-            embedding = nx.PlanarEmbedding()
-            embedding.add_half_edge(0, 1)
             embedding.add_half_edge(0, 2, ccw=3)
         with pytest.raises(
             nx.NetworkXException, match="Only one of cw/ccw can be specified."
         ):
-            embedding = nx.PlanarEmbedding()
-            embedding.add_half_edge(0, 1)
             embedding.add_half_edge(0, 2, cw=1, ccw=1)
         with pytest.raises(
             nx.NetworkXException,
@@ -398,9 +394,10 @@ class TestPlanarEmbeddingClass:
                 " cw or ccw reference node required."
             ),
         ):
-            embedding = nx.PlanarEmbedding()
-            embedding.add_half_edge(0, 1)
             embedding.add_half_edge(0, 2)
+        # these should work
+        embedding.add_half_edge(0, 2, cw=1)
+        embedding.add_half_edge(0, 3, ccw=1)
 
     def test_get_data(self):
         embedding = self.get_star_embedding(4)
@@ -409,42 +406,42 @@ class TestPlanarEmbeddingClass:
         assert data == data_cmp
 
     def test_missing_edge_orientation(self):
+        embedding = nx.PlanarEmbedding()
+        embedding.add_edge(1, 2)
+        embedding.add_edge(2, 1)
         with pytest.raises(nx.NetworkXException):
-            embedding = nx.PlanarEmbedding()
-            embedding.add_edge(1, 2)
-            embedding.add_edge(2, 1)
             # Invalid structure because the orientation of the edge was not set
             embedding.check_structure()
 
     def test_invalid_edge_orientation(self):
+        embedding = nx.PlanarEmbedding()
+        embedding.add_half_edge(1, 2)
+        embedding.add_half_edge(2, 1)
+        embedding.add_edge(1, 3)
         with pytest.raises(nx.NetworkXException):
-            embedding = nx.PlanarEmbedding()
-            embedding.add_half_edge(1, 2)
-            embedding.add_half_edge(2, 1)
-            embedding.add_edge(1, 3)
             embedding.check_structure()
 
     def test_missing_half_edge(self):
+        embedding = nx.PlanarEmbedding()
+        embedding.add_half_edge(1, 2)
         with pytest.raises(nx.NetworkXException):
-            embedding = nx.PlanarEmbedding()
-            embedding.add_half_edge(1, 2)
             # Invalid structure because other half edge is missing
             embedding.check_structure()
 
     def test_not_fulfilling_euler_formula(self):
+        embedding = nx.PlanarEmbedding()
+        for i in range(5):
+            ref = None
+            for j in range(5):
+                if i != j:
+                    embedding.add_half_edge(i, j, cw=ref)
+                    ref = j
         with pytest.raises(nx.NetworkXException):
-            embedding = nx.PlanarEmbedding()
-            for i in range(5):
-                ref = None
-                for j in range(5):
-                    if i != j:
-                        embedding.add_half_edge(i, j, cw=ref)
-                        ref = j
             embedding.check_structure()
 
     def test_missing_reference(self):
-        with pytest.raises(nx.NetworkXException):
-            embedding = nx.PlanarEmbedding()
+        embedding = nx.PlanarEmbedding()
+        with pytest.raises(nx.NetworkXException, match="Invalid reference node."):
             embedding.add_half_edge(1, 2, ccw=3)
 
     def test_connect_components(self):
@@ -459,10 +456,10 @@ class TestPlanarEmbeddingClass:
         assert face == [1, 2]
 
     def test_unsuccessful_face_traversal(self):
+        embedding = nx.PlanarEmbedding()
+        embedding.add_edge(1, 2, ccw=2, cw=3)
+        embedding.add_edge(2, 1, ccw=1, cw=3)
         with pytest.raises(nx.NetworkXException):
-            embedding = nx.PlanarEmbedding()
-            embedding.add_edge(1, 2, ccw=2, cw=3)
-            embedding.add_edge(2, 1, ccw=1, cw=3)
             embedding.traverse_face(1, 2)
 
     @staticmethod
