@@ -9,15 +9,17 @@ import networkx as nx
 
 # Define the default maximum flow function to use in all flow based
 # connectivity algorithms.
-from networkx.algorithms.flow import boykov_kolmogorov
-from networkx.algorithms.flow import dinitz
-from networkx.algorithms.flow import edmonds_karp
-from networkx.algorithms.flow import shortest_augmenting_path
-from networkx.algorithms.flow import build_residual_network
+from networkx.algorithms.flow import (
+    boykov_kolmogorov,
+    build_residual_network,
+    dinitz,
+    edmonds_karp,
+    shortest_augmenting_path,
+)
 
 default_flow_func = edmonds_karp
 
-from .utils import build_auxiliary_node_connectivity, build_auxiliary_edge_connectivity
+from .utils import build_auxiliary_edge_connectivity, build_auxiliary_node_connectivity
 
 __all__ = [
     "average_node_connectivity",
@@ -29,6 +31,11 @@ __all__ = [
 ]
 
 
+@nx._dispatch(
+    graphs={"G": 0, "auxiliary?": 4, "residual?": 5},
+    preserve_edge_attrs={"residual": {"capacity": float("inf")}},
+    preserve_graph_attrs={"auxiliary", "residual"},
+)
 def local_node_connectivity(
     G, s, t, flow_func=None, auxiliary=None, residual=None, cutoff=None
 ):
@@ -73,12 +80,10 @@ def local_node_connectivity(
         Residual network to compute maximum flow. If provided it will be
         reused instead of recreated. Default value: None.
 
-    cutoff : integer, float
+    cutoff : integer, float, or None (default: None)
         If specified, the maximum flow algorithm will terminate when the
-        flow value reaches or exceeds the cutoff. This is only for the
-        algorithms that support the cutoff parameter: :meth:`edmonds_karp`
-        and :meth:`shortest_augmenting_path`. Other algorithms will ignore
-        this parameter. Default value: None.
+        flow value reaches or exceeds the cutoff. This only works for flows
+        that support the cutoff parameter (most do) and is ignored otherwise.
 
     Returns
     -------
@@ -195,7 +200,7 @@ def local_node_connectivity(
     if mapping is None:
         raise nx.NetworkXError("Invalid auxiliary digraph.")
 
-    kwargs = dict(flow_func=flow_func, residual=residual)
+    kwargs = {"flow_func": flow_func, "residual": residual}
     if flow_func is shortest_augmenting_path:
         kwargs["cutoff"] = cutoff
         kwargs["two_phase"] = True
@@ -209,6 +214,7 @@ def local_node_connectivity(
     return nx.maximum_flow_value(H, f"{mapping[s]}B", f"{mapping[t]}A", **kwargs)
 
 
+@nx._dispatch
 def node_connectivity(G, s=None, t=None, flow_func=None):
     r"""Returns node connectivity for a graph or digraph G.
 
@@ -330,7 +336,7 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     # Reuse the auxiliary digraph and the residual network
     H = build_auxiliary_node_connectivity(G)
     R = build_residual_network(H, "capacity")
-    kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
+    kwargs = {"flow_func": flow_func, "auxiliary": H, "residual": R}
 
     # Pick a node with minimum degree
     # Node connectivity is bounded by degree.
@@ -349,6 +355,7 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     return K
 
 
+@nx._dispatch
 def average_node_connectivity(G, flow_func=None):
     r"""Returns the average connectivity of a graph G.
 
@@ -405,7 +412,7 @@ def average_node_connectivity(G, flow_func=None):
     # Reuse the auxiliary digraph and the residual network
     H = build_auxiliary_node_connectivity(G)
     R = build_residual_network(H, "capacity")
-    kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
+    kwargs = {"flow_func": flow_func, "auxiliary": H, "residual": R}
 
     num, den = 0, 0
     for u, v in iter_func(G, 2):
@@ -417,6 +424,7 @@ def average_node_connectivity(G, flow_func=None):
     return num / den
 
 
+@nx._dispatch
 def all_pairs_node_connectivity(G, nbunch=None, flow_func=None):
     """Compute node connectivity between all pairs of nodes of G.
 
@@ -473,7 +481,7 @@ def all_pairs_node_connectivity(G, nbunch=None, flow_func=None):
     H = build_auxiliary_node_connectivity(G)
     mapping = H.graph["mapping"]
     R = build_residual_network(H, "capacity")
-    kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
+    kwargs = {"flow_func": flow_func, "auxiliary": H, "residual": R}
 
     for u, v in iter_func(nbunch, 2):
         K = local_node_connectivity(G, u, v, **kwargs)
@@ -484,6 +492,11 @@ def all_pairs_node_connectivity(G, nbunch=None, flow_func=None):
     return all_pairs
 
 
+@nx._dispatch(
+    graphs={"G": 0, "auxiliary?": 4, "residual?": 5},
+    preserve_edge_attrs={"residual": {"capacity": float("inf")}},
+    preserve_graph_attrs={"residual"},
+)
 def local_edge_connectivity(
     G, s, t, flow_func=None, auxiliary=None, residual=None, cutoff=None
 ):
@@ -527,12 +540,10 @@ def local_edge_connectivity(
         Residual network to compute maximum flow. If provided it will be
         reused instead of recreated. Default value: None.
 
-    cutoff : integer, float
+    cutoff : integer, float, or None (default: None)
         If specified, the maximum flow algorithm will terminate when the
-        flow value reaches or exceeds the cutoff. This is only for the
-        algorithms that support the cutoff parameter: :meth:`edmonds_karp`
-        and :meth:`shortest_augmenting_path`. Other algorithms will ignore
-        this parameter. Default value: None.
+        flow value reaches or exceeds the cutoff. This only works for flows
+        that support the cutoff parameter (most do) and is ignored otherwise.
 
     Returns
     -------
@@ -633,7 +644,7 @@ def local_edge_connectivity(
     else:
         H = auxiliary
 
-    kwargs = dict(flow_func=flow_func, residual=residual)
+    kwargs = {"flow_func": flow_func, "residual": residual}
     if flow_func is shortest_augmenting_path:
         kwargs["cutoff"] = cutoff
         kwargs["two_phase"] = True
@@ -647,6 +658,7 @@ def local_edge_connectivity(
     return nx.maximum_flow_value(H, s, t, **kwargs)
 
 
+@nx._dispatch
 def edge_connectivity(G, s=None, t=None, flow_func=None, cutoff=None):
     r"""Returns the edge connectivity of the graph or digraph G.
 
@@ -677,12 +689,10 @@ def edge_connectivity(G, s=None, t=None, flow_func=None, cutoff=None):
         choice of the default function may change from version
         to version and should not be relied on. Default value: None.
 
-    cutoff : integer, float
+    cutoff : integer, float, or None (default: None)
         If specified, the maximum flow algorithm will terminate when the
-        flow value reaches or exceeds the cutoff. This is only for the
-        algorithms that support the cutoff parameter: e.g., :meth:`edmonds_karp`
-        and :meth:`shortest_augmenting_path`. Other algorithms will ignore
-        this parameter. Default value: None.
+        flow value reaches or exceeds the cutoff. This only works for flows
+        that support the cutoff parameter (most do) and is ignored otherwise.
 
     Returns
     -------
@@ -764,7 +774,7 @@ def edge_connectivity(G, s=None, t=None, flow_func=None, cutoff=None):
     # reuse auxiliary digraph and residual network
     H = build_auxiliary_edge_connectivity(G)
     R = build_residual_network(H, "capacity")
-    kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
+    kwargs = {"flow_func": flow_func, "auxiliary": H, "residual": R}
 
     if G.is_directed():
         # Algorithm 8 in [1]

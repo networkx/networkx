@@ -12,5 +12,4 @@ JSON
    cytoscape_graph
    tree_data
    tree_graph
-   jit_data
-   jit_graph
+

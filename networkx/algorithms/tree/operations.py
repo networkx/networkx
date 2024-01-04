@@ -1,16 +1,46 @@
 """Operations on trees."""
 from functools import partial
-from itertools import chain
+from itertools import accumulate, chain
 
 import networkx as nx
-from itertools import accumulate
 
-__all__ = ["join"]
+__all__ = ["join", "join_trees"]
 
 
 def join(rooted_trees, label_attribute=None):
-    """Returns a new rooted tree with a root node joined with the roots
+    """A deprecated name for `join_trees`
+
+    Returns a new rooted tree with a root node joined with the roots
     of each of the given rooted trees.
+
+    .. deprecated:: 3.2
+
+       `join` is deprecated in NetworkX v3.2 and will be removed in v3.4.
+       It has been renamed join_trees with the same syntax/interface.
+
+    """
+    import warnings
+
+    warnings.warn(
+        "The function `join` is deprecated and is renamed `join_trees`.\n"
+        "The ``join`` function itself will be removed in v3.4",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
+    return join_trees(rooted_trees, label_attribute=label_attribute)
+
+
+# Argument types don't match dispatching, but allow manual selection of backend
+@nx._dispatch(graphs=None)
+def join_trees(rooted_trees, *, label_attribute=None, first_label=0):
+    """Returns a new rooted tree made by joining `rooted_trees`
+
+    Constructs a new tree by joining each tree in `rooted_trees`.
+    A new root node is added and connected to each of the roots
+    of the input trees. While copying the nodes from the trees,
+    relabeling to integers occurs. If the `label_attribute` is provided,
+    the old node labels will be stored in the new tree under this attribute.
 
     Parameters
     ----------
@@ -22,20 +52,27 @@ def join(rooted_trees, label_attribute=None):
 
     label_attribute : str
         If provided, the old node labels will be stored in the new tree
-        under this node attribute. If not provided, the node attribute
-        ``'_old'`` will store the original label of the node in the
-        rooted trees given in the input.
+        under this node attribute. If not provided, the original labels
+        of the nodes in the input trees are not stored.
+
+    first_label : int, optional (default=0)
+        Specifies the label for the new root node. If provided, the root node of the joined tree
+        will have this label. If not provided, the root node will default to a label of 0.
 
     Returns
     -------
     NetworkX graph
-        The rooted tree whose subtrees are the given rooted trees. The
-        new root node is labeled 0. Each non-root node has an attribute,
-        as described under the keyword argument ``label_attribute``,
-        that indicates the label of the original node in the input tree.
+        The rooted tree resulting from joining the provided `rooted_trees`. The new tree has a root node
+        labeled as specified by `first_label` (defaulting to 0 if not provided). Subtrees from the input
+        `rooted_trees` are attached to this new root node. Each non-root node, if the `label_attribute`
+        is provided, has an attribute that indicates the original label of the node in the input tree.
 
     Notes
     -----
+    Trees are stored in NetworkX as NetworkX Graphs. There is no specific
+    enforcement of the fact that these are trees. Testing for each tree
+    can be done using :func:`networkx.is_tree`.
+
     Graph, edge, and node attributes are propagated from the given
     rooted trees to the created tree. If there are any overlapping graph
     attributes, those from later trees will overwrite those from earlier
@@ -54,54 +91,38 @@ def join(rooted_trees, label_attribute=None):
         True
 
     """
-    if len(rooted_trees) == 0:
+    if not rooted_trees:
         return nx.empty_graph(1)
 
     # Unzip the zipped list of (tree, root) pairs.
     trees, roots = zip(*rooted_trees)
 
-    # The join of the trees has the same type as the type of the first
-    # tree.
+    # The join of the trees has the same type as the type of the first tree.
     R = type(trees[0])()
 
-    # Relabel the nodes so that their union is the integers starting at 1.
-    if label_attribute is None:
-        label_attribute = "_old"
+    lengths = (len(tree) for tree in trees[:-1])
+    first_labels = list(accumulate(lengths, initial=first_label + 1))
+
+    new_roots = []
+    for tree, root, first_node in zip(trees, roots, first_labels):
+        new_root = first_node + list(tree.nodes()).index(root)
+        new_roots.append(new_root)
+
+    # Relabel the nodes so that their union is the integers starting at first_label.
     relabel = partial(
         nx.convert_node_labels_to_integers, label_attribute=label_attribute
     )
-    lengths = (len(tree) for tree in trees[:-1])
-    first_labels = chain([0], accumulate(lengths))
-    trees = [
-        relabel(tree, first_label=first_label + 1)
+    new_trees = [
+        relabel(tree, first_label=first_label)
         for tree, first_label in zip(trees, first_labels)
     ]
 
-    # Get the relabeled roots.
-    roots = [
-        next(v for v, d in tree.nodes(data=True) if d.get("_old") == root)
-        for tree, root in zip(trees, roots)
-    ]
+    # Add all sets of nodes and edges, attributes
+    for tree in new_trees:
+        R.update(tree)
 
-    # Remove the old node labels.
-    for tree in trees:
-        for v in tree:
-            tree.nodes[v].pop("_old")
-
-    # Add all sets of nodes and edges, with data.
-    nodes = (tree.nodes(data=True) for tree in trees)
-    edges = (tree.edges(data=True) for tree in trees)
-    R.add_nodes_from(chain.from_iterable(nodes))
-    R.add_edges_from(chain.from_iterable(edges))
-
-    # Add graph attributes; later attributes take precedent over earlier
-    # attributes.
-    for tree in trees:
-        R.graph.update(tree.graph)
-
-    # Finally, join the subtrees at the root. We know 0 is unused by the
-    # way we relabeled the subtrees.
-    R.add_node(0)
-    R.add_edges_from((0, root) for root in roots)
+    # Finally, join the subtrees at the root. We know first_label is unused by the way we relabeled the subtrees.
+    R.add_node(first_label)
+    R.add_edges_from((first_label, root) for root in new_roots)
 
     return R

@@ -4,6 +4,7 @@ Eulerian circuits and graphs.
 from itertools import combinations
 
 import networkx as nx
+
 from ..utils import arbitrary_element, not_implemented_for
 
 __all__ = [
@@ -16,12 +17,18 @@ __all__ = [
 ]
 
 
+@nx._dispatch
 def is_eulerian(G):
     """Returns True if and only if `G` is Eulerian.
 
     A graph is *Eulerian* if it has an Eulerian circuit. An *Eulerian
     circuit* is a closed walk that includes each edge of a graph exactly
     once.
+
+    Graphs with isolated vertices (i.e. vertices with zero degree) are not
+    considered to have Eulerian circuits. Therefore, if the graph is not
+    connected (or not strongly connected, for directed graphs), this function
+    returns False.
 
     Parameters
     ----------
@@ -37,10 +44,18 @@ def is_eulerian(G):
     >>> nx.is_eulerian(nx.petersen_graph())
     False
 
-    Notes
-    -----
-    If the graph is not connected (or not strongly connected, for
-    directed graphs), this function returns False.
+    If you prefer to allow graphs with isolated vertices to have Eulerian circuits,
+    you can first remove such vertices and then call `is_eulerian` as below example shows.
+
+    >>> G = nx.Graph([(0, 1), (1, 2), (0, 2)])
+    >>> G.add_node(3)
+    >>> nx.is_eulerian(G)
+    False
+
+    >>> G.remove_nodes_from(list(nx.isolates(G)))
+    >>> nx.is_eulerian(G)
+    True
+
 
     """
     if G.is_directed():
@@ -54,10 +69,16 @@ def is_eulerian(G):
     return all(d % 2 == 0 for v, d in G.degree()) and nx.is_connected(G)
 
 
+@nx._dispatch
 def is_semieulerian(G):
     """Return True iff `G` is semi-Eulerian.
 
     G is semi-Eulerian if it has an Eulerian path but no Eulerian circuit.
+
+    See Also
+    --------
+    has_eulerian_path
+    is_eulerian
     """
     return has_eulerian_path(G) and not is_eulerian(G)
 
@@ -74,7 +95,7 @@ def _find_path_start(G):
         return arbitrary_element(G)
 
     if G.is_directed():
-        v1, v2 = [v for v in G if G.in_degree(v) != G.out_degree(v)]
+        v1, v2 = (v for v in G if G.in_degree(v) != G.out_degree(v))
         # Determines which is the 'start' node (as opposed to the 'end')
         if G.out_degree(v1) > G.in_degree(v1):
             return v1
@@ -133,6 +154,7 @@ def _multigraph_eulerian_circuit(G, source):
             G.remove_edge(current_vertex, next_vertex, next_key)
 
 
+@nx._dispatch
 def eulerian_circuit(G, source=None, keys=False):
     """Returns an iterator over the edges of an Eulerian circuit in `G`.
 
@@ -213,6 +235,7 @@ def eulerian_circuit(G, source=None, keys=False):
         yield from _simplegraph_eulerian_circuit(G, source)
 
 
+@nx._dispatch
 def has_eulerian_path(G, source=None):
     """Return True iff `G` has an Eulerian path.
 
@@ -224,8 +247,8 @@ def has_eulerian_path(G, source=None):
         - at most one vertex has out_degree - in_degree = 1,
         - at most one vertex has in_degree - out_degree = 1,
         - every other vertex has equal in_degree and out_degree,
-        - and all of its vertices with nonzero degree belong to a
-          single connected component of the underlying undirected graph.
+        - and all of its vertices belong to a single connected
+          component of the underlying undirected graph.
 
     If `source` is not None, an Eulerian path starting at `source` exists if no
     other node has out_degree - in_degree = 1. This is equivalent to either
@@ -234,12 +257,15 @@ def has_eulerian_path(G, source=None):
 
     An undirected graph has an Eulerian path iff:
         - exactly zero or two vertices have odd degree,
-        - and all of its vertices with nonzero degree belong to a
-        - single connected component.
+        - and all of its vertices belong to a single connected component.
 
     If `source` is not None, an Eulerian path starting at `source` exists if
     either there exists an Eulerian circuit or `source` has an odd degree and the
     conditions above hold.
+
+    Graphs with isolated vertices (i.e. vertices with zero degree) are not considered
+    to have an Eulerian path. Therefore, if the graph is not connected (or not strongly
+    connected, for directed graphs), this function returns False.
 
     Parameters
     ----------
@@ -253,6 +279,20 @@ def has_eulerian_path(G, source=None):
     -------
     Bool : True if G has an Eulerian path.
 
+    Examples
+    --------
+    If you prefer to allow graphs with isolated vertices to have Eulerian path,
+    you can first remove such vertices and then call `has_eulerian_path` as below example shows.
+
+    >>> G = nx.Graph([(0, 1), (1, 2), (0, 2)])
+    >>> G.add_node(3)
+    >>> nx.has_eulerian_path(G)
+    False
+
+    >>> G.remove_nodes_from(list(nx.isolates(G)))
+    >>> nx.has_eulerian_path(G)
+    True
+
     See Also
     --------
     is_eulerian
@@ -262,11 +302,6 @@ def has_eulerian_path(G, source=None):
         return True
 
     if G.is_directed():
-        # Remove isolated nodes (if any) without altering the input graph
-        nodes_remove = [v for v in G if G.in_degree[v] == 0 and G.out_degree[v] == 0]
-        if nodes_remove:
-            G = G.copy()
-            G.remove_nodes_from(nodes_remove)
         ins = G.in_degree
         outs = G.out_degree
         # Since we know it is not eulerian, outs - ins must be 1 for source
@@ -295,6 +330,7 @@ def has_eulerian_path(G, source=None):
         return sum(d % 2 == 1 for v, d in G.degree()) == 2 and nx.is_connected(G)
 
 
+@nx._dispatch
 def eulerian_path(G, source=None, keys=False):
     """Return an iterator over the edges of an Eulerian path in `G`.
 
@@ -350,8 +386,12 @@ def eulerian_path(G, source=None, keys=False):
 
 
 @not_implemented_for("directed")
+@nx._dispatch
 def eulerize(G):
-    """Transforms a graph into an Eulerian graph
+    """Transforms a graph into an Eulerian graph.
+
+    If `G` is Eulerian the result is `G` as a MultiGraph, otherwise the result is a smallest
+    (in terms of the number of edges) multigraph whose underlying simple graph is `G`.
 
     Parameters
     ----------
@@ -403,13 +443,21 @@ def eulerize(G):
         for m, n in combinations(odd_degree_nodes, 2)
     ]
 
-    # use inverse path lengths as edge-weights in a new graph
+    # use the number of vertices in a graph + 1 as an upper bound on
+    # the maximum length of a path in G
+    upper_bound_on_max_path_length = len(G) + 1
+
+    # use "len(G) + 1 - len(P)",
+    # where P is a shortest path between vertices n and m,
+    # as edge-weights in a new graph
     # store the paths in the graph for easy indexing later
     Gp = nx.Graph()
     for n, Ps in odd_deg_pairs_paths:
         for m, P in Ps.items():
             if n != m:
-                Gp.add_edge(m, n, weight=1 / len(P), path=P)
+                Gp.add_edge(
+                    m, n, weight=upper_bound_on_max_path_length - len(P), path=P
+                )
 
     # find the minimum weight matching of edges in the weighted graph
     best_matching = nx.Graph(list(nx.max_weight_matching(Gp)))

@@ -47,6 +47,8 @@ def run_all_random_functions(seed):
     sizes = (20, 20, 10)
     colors = [1, 2, 3]
     G = nx.barbell_graph(12, 20)
+    H = nx.cycle_graph(3)
+    H.add_weighted_edges_from((u, v, 0.2) for u, v in H.edges)
     deg_sequence = [3, 2, 1, 3, 2, 1, 3, 2, 1, 2, 1, 2, 1]
     in_degree_sequence = w = sequence = aseq = bseq = deg_sequence
 
@@ -69,9 +71,20 @@ def run_all_random_functions(seed):
     t(nx.spectral_ordering, G, seed=seed)
     # print('starting average_clustering')
     t(approx.average_clustering, G, seed=seed)
+    t(approx.simulated_annealing_tsp, H, "greedy", source=1, seed=seed)
+    t(approx.threshold_accepting_tsp, H, "greedy", source=1, seed=seed)
+    t(
+        approx.traveling_salesman_problem,
+        H,
+        method=lambda G, wt: approx.simulated_annealing_tsp(G, "greedy", wt, seed=seed),
+    )
+    t(
+        approx.traveling_salesman_problem,
+        H,
+        method=lambda G, wt: approx.threshold_accepting_tsp(G, "greedy", wt, seed=seed),
+    )
     t(nx.betweenness_centrality, G, seed=seed)
     t(nx.edge_betweenness_centrality, G, seed=seed)
-    t(nx.edge_betweenness, G, seed=seed)
     t(nx.approximate_current_flow_betweenness_centrality, G, seed=seed)
     # print("kernighan")
     t(nx.algorithms.community.kernighan_lin_bisection, G, seed=seed)
@@ -121,6 +134,7 @@ def run_all_random_functions(seed):
     t(nx.random_clustered_graph, joint_degree_sequence, seed=seed)
     constructor = [(3, 3, 0.5), (10, 10, 0.7)]
     t(nx.random_shell_graph, constructor, seed=seed)
+    t(nx.random_triad, G.to_directed(), seed=seed)
     mapping = {1: 0.4, 2: 0.3, 3: 0.3}
     t(nx.utils.random_weighted_sample, mapping, k, seed=seed)
     t(nx.utils.weighted_choice, mapping, seed=seed)

@@ -14,6 +14,7 @@ __all__ = [
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def subgraph_centrality_exp(G):
     r"""Returns the subgraph centrality for each node of G.
 
@@ -84,7 +85,6 @@ def subgraph_centrality_exp(G):
     """
     # alternative implementation that calculates the matrix exponential
     import scipy as sp
-    import scipy.linalg  # call as sp.linalg
 
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)
@@ -98,6 +98,7 @@ def subgraph_centrality_exp(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def subgraph_centrality(G):
     r"""Returns subgraph centrality for each node in G.
 
@@ -188,7 +189,8 @@ def subgraph_centrality(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-def communicability_betweenness_centrality(G, normalized=True):
+@nx._dispatch
+def communicability_betweenness_centrality(G):
     r"""Returns subgraph communicability for all pairs of nodes in G.
 
     Communicability betweenness measure makes use of the number of walks
@@ -255,7 +257,6 @@ def communicability_betweenness_centrality(G, normalized=True):
     """
     import numpy as np
     import scipy as sp
-    import scipy.linalg  # call as sp.linalg
 
     nodelist = list(G)  # ordering of nodes in matrix
     n = len(nodelist)
@@ -277,29 +278,20 @@ def communicability_betweenness_centrality(G, normalized=True):
         B[i, :] = 0
         B[:, i] = 0
         B -= np.diag(np.diag(B))
-        cbc[v] = float(B.sum())
+        cbc[v] = B.sum()
         # put row and col back
         A[i, :] = row
         A[:, i] = col
-    # rescaling
-    cbc = _rescale(cbc, normalized=normalized)
-    return cbc
-
-
-def _rescale(cbc, normalized):
-    # helper to rescale betweenness centrality
-    if normalized is True:
-        order = len(cbc)
-        if order <= 2:
-            scale = None
-        else:
-            scale = 1.0 / ((order - 1.0) ** 2 - (order - 1.0))
-    if scale is not None:
+    # rescale when more than two nodes
+    order = len(cbc)
+    if order > 2:
+        scale = 1.0 / ((order - 1.0) ** 2 - (order - 1.0))
         for v in cbc:
             cbc[v] *= scale
     return cbc
 
 
+@nx._dispatch
 def estrada_index(G):
     r"""Returns the Estrada index of a the graph G.
 

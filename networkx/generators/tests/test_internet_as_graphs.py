@@ -1,6 +1,7 @@
+from pytest import approx
+
 from networkx import is_connected, neighbors
 from networkx.generators.internet_as_graphs import random_internet_as_graph
-from networkx.testing import almost_equal
 
 
 class TestInternetASTopology:
@@ -26,10 +27,7 @@ class TestInternetASTopology:
             elif cls.G.nodes[i]["type"] == "CP":
                 cls.CP.append(i)
             else:
-                raise ValueError(
-                    "Inconsistent data in the graph\
-                        node attributes"
-                )
+                raise ValueError("Inconsistent data in the graph node attributes")
             cls.set_customers(i)
             cls.set_providers(i)
 
@@ -47,8 +45,7 @@ class TestInternetASTopology:
                         cls.customers[i].add(j)
                     elif i != customer:
                         raise ValueError(
-                            "Inconsistent data in the graph\
-                                edge attributes"
+                            "Inconsistent data in the graph edge attributes"
                         )
 
     @classmethod
@@ -65,8 +62,7 @@ class TestInternetASTopology:
                         cls.providers[i].add(j)
                     elif j != customer:
                         raise ValueError(
-                            "Inconsistent data in the graph\
-                                edge attributes"
+                            "Inconsistent data in the graph edge attributes"
                         )
 
     def test_wrong_input(self):
@@ -82,8 +78,8 @@ class TestInternetASTopology:
     def test_node_numbers(self):
         assert len(self.G.nodes()) == self.n
         assert len(self.T) < 7
-        assert len(self.M) == int(round(self.n * 0.15))
-        assert len(self.CP) == int(round(self.n * 0.05))
+        assert len(self.M) == round(self.n * 0.15)
+        assert len(self.CP) == round(self.n * 0.05)
         numb = self.n - len(self.T) - len(self.M) - len(self.CP)
         assert len(self.C) == numb
 
@@ -135,10 +131,7 @@ class TestInternetASTopology:
                 elif j == cust:
                     prov = i
                 else:
-                    raise ValueError(
-                        "Inconsistent data in the graph edge\
-                            attributes"
-                    )
+                    raise ValueError("Inconsistent data in the graph edge attributes")
                 if cust in self.M:
                     d_m += 1
                     if self.G.nodes[prov]["type"] == "T":
@@ -152,10 +145,7 @@ class TestInternetASTopology:
                     if self.G.nodes[prov]["type"] == "T":
                         t_cp += 1
                 else:
-                    raise ValueError(
-                        "Inconsistent data in the graph edge\
-                            attributes"
-                    )
+                    raise ValueError("Inconsistent data in the graph edge attributes")
             elif e["type"] == "peer":
                 if self.G.nodes[i]["type"] == "M" and self.G.nodes[j]["type"] == "M":
                     p_m_m += 1
@@ -169,21 +159,18 @@ class TestInternetASTopology:
                 ):
                     p_cp_m += 1
             else:
-                raise ValueError(
-                    "Unexpected data in the graph edge\
-                        attributes"
-                )
+                raise ValueError("Unexpected data in the graph edge attributes")
 
-        assert almost_equal(d_m / len(self.M), 2 + (2.5 * self.n) / 10000, places=0)
-        assert almost_equal(d_cp / len(self.CP), 2 + (1.5 * self.n) / 10000, places=0)
-        assert almost_equal(d_c / len(self.C), 1 + (5 * self.n) / 100000, places=0)
+        assert d_m / len(self.M) == approx((2 + (2.5 * self.n) / 10000), abs=1e-0)
+        assert d_cp / len(self.CP) == approx((2 + (1.5 * self.n) / 10000), abs=1e-0)
+        assert d_c / len(self.C) == approx((1 + (5 * self.n) / 100000), abs=1e-0)
 
-        assert almost_equal(p_m_m / len(self.M), 1 + (2 * self.n) / 10000, places=0)
-        assert almost_equal(p_cp_m / len(self.CP), 0.2 + (2 * self.n) / 10000, places=0)
-        assert almost_equal(
-            p_cp_cp / len(self.CP), 0.05 + (2 * self.n) / 100000, places=0
+        assert p_m_m / len(self.M) == approx((1 + (2 * self.n) / 10000), abs=1e-0)
+        assert p_cp_m / len(self.CP) == approx((0.2 + (2 * self.n) / 10000), abs=1e-0)
+        assert p_cp_cp / len(self.CP) == approx(
+            (0.05 + (2 * self.n) / 100000), abs=1e-0
         )
 
-        assert almost_equal(t_m / d_m, 0.375, places=1)
-        assert almost_equal(t_cp / d_cp, 0.375, places=1)
-        assert almost_equal(t_c / d_c, 0.125, places=1)
+        assert t_m / d_m == approx(0.375, abs=1e-1)
+        assert t_cp / d_cp == approx(0.375, abs=1e-1)
+        assert t_c / d_c == approx(0.125, abs=1e-1)

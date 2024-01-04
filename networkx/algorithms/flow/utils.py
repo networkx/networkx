@@ -3,6 +3,7 @@ Utility classes and functions for network flow algorithms.
 """
 
 from collections import deque
+
 import networkx as nx
 
 __all__ = [
@@ -71,6 +72,7 @@ class GlobalRelabelThreshold:
         self._work = 0
 
 
+@nx._dispatch(edge_attrs={"capacity": float("inf")})
 def build_residual_network(G, capacity):
     """Build a residual network and initialize a zero flow.
 
@@ -152,6 +154,11 @@ def build_residual_network(G, capacity):
     return R
 
 
+@nx._dispatch(
+    graphs="R",
+    preserve_edge_attrs={"R": {"capacity": float("inf")}},
+    preserve_graph_attrs=True,
+)
 def detect_unboundedness(R, s, t):
     """Detect an infinite-capacity s-t path in R."""
     q = deque([s])
@@ -169,6 +176,7 @@ def detect_unboundedness(R, s, t):
                 q.append(v)
 
 
+@nx._dispatch(graphs={"G": 0, "R": 1}, preserve_edge_attrs={"R": {"flow": None}})
 def build_flow_dict(G, R):
     """Build a flow dictionary from a residual network."""
     flow_dict = {}

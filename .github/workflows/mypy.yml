@@ -1,0 +1,32 @@
+name: Mypy
+
+on: [push, pull_request]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  type-check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install packages
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements/developer.txt
+          pip install -e .
+          pip list
+
+      - name: run mypy
+        run: mypy -p networkx

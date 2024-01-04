@@ -1,4 +1,5 @@
 import pytest
+
 import networkx as nx
 
 
@@ -59,11 +60,11 @@ class TestMCS:
         assert not nx.is_chordal(self.non_chordal_G)
         assert nx.is_chordal(self.chordal_G)
         assert nx.is_chordal(self.connected_chordal_G)
+        assert nx.is_chordal(nx.Graph())
         assert nx.is_chordal(nx.complete_graph(3))
         assert nx.is_chordal(nx.cycle_graph(3))
         assert not nx.is_chordal(nx.cycle_graph(5))
-        with pytest.raises(nx.NetworkXError, match="Input graph is not chordal"):
-            nx.is_chordal(self.self_loop_G)
+        assert nx.is_chordal(self.self_loop_G)
 
     def test_induced_nodes(self):
         G = nx.generators.classic.path_graph(10)
@@ -88,22 +89,22 @@ class TestMCS:
             frozenset([2, 3, 4]),
             frozenset([3, 4, 5, 6]),
         }
-        assert nx.chordal_graph_cliques(self.chordal_G) == cliques
+        assert set(nx.chordal_graph_cliques(self.chordal_G)) == cliques
         with pytest.raises(nx.NetworkXError, match="Input graph is not chordal"):
-            nx.chordal_graph_cliques(self.non_chordal_G)
+            set(nx.chordal_graph_cliques(self.non_chordal_G))
         with pytest.raises(nx.NetworkXError, match="Input graph is not chordal"):
-            nx.chordal_graph_cliques(self.self_loop_G)
+            set(nx.chordal_graph_cliques(self.self_loop_G))
 
     def test_chordal_find_cliques_path(self):
         G = nx.path_graph(10)
         cliqueset = nx.chordal_graph_cliques(G)
-        for (u, v) in G.edges():
+        for u, v in G.edges():
             assert frozenset([u, v]) in cliqueset or frozenset([v, u]) in cliqueset
 
     def test_chordal_find_cliquesCC(self):
         cliques = {frozenset([1, 2, 3]), frozenset([2, 3, 4]), frozenset([3, 4, 5, 6])}
         cgc = nx.chordal_graph_cliques
-        assert cgc(self.connected_chordal_G) == cliques
+        assert set(cgc(self.connected_chordal_G)) == cliques
 
     def test_complete_to_chordal_graph(self):
         fgrg = nx.fast_gnp_random_graph

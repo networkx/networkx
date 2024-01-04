@@ -9,14 +9,14 @@ Reading and writing graphs
 
    adjlist
    multiline_adjlist
+   dot
    edgelist
    gexf
    gml
-   gpickle
    graphml
    json_graph
    leda
-   yaml
    sparsegraph6
    pajek
-   nx_shp
+   matrix_market
+   text

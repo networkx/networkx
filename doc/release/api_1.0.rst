@@ -1,20 +1,41 @@
-*********************************
-Version 1.0 notes and API changes
-*********************************
+NetworkX 1.0
+============
 
-We have made some significant API changes, detailed below, to add
-functionality and clarity.  This page reflects changes from
-networkx-0.99 to networkx-1.0.  For changes from earlier versions to
-networkx-0.99 see :doc:`Version 0.99 API changes <api_0.99>`.
+Release date:  8 Jan 2010
 
 Version 1.0 requires Python 2.4 or greater.
 
-Please send comments and questions to the networkx-discuss mailing list:
-http://groups.google.com/group/networkx-discuss .
+
+New features
+------------
+This release has significant changes to parts of the graph API
+to allow graph, node, and edge attributes.
+See http://networkx.lanl.gov/reference/api_changes.html
+
+ - Update Graph, DiGraph, and MultiGraph classes to allow attributes.
+ - Default edge data is now an empty dictionary (was the integer 1)
+ - Difference and intersection operators
+ - Average shortest path
+ - A* (A-Star) algorithm
+ - PageRank, HITS, and eigenvector centrality
+ - Read Pajek files
+ - Line graphs
+ - Minimum spanning tree (Kruskal's algorithm)
+ - Dense and sparse Fruchterman-Reingold layout
+ - Random clustered graph generator
+ - Directed scale-free graph generator
+ - Faster random regular graph generator
+ - Improved edge color and label drawing with Matplotlib
+ - and much more, see  https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.0
+
+Examples
+--------
+ - Update to work with networkx-1.0 API
+ - Graph subclass example
 
 
 Version numbering
-=================
+-----------------
 
 In the future we will use a more standard release numbering system
 with major.minor[build] labels where major and minor are numbers and
@@ -28,7 +49,7 @@ bugs or other defects in the existing classes, until networkx-2.0 is
 released at some time in the future.
 
 Changes in base classes
-=======================
+-----------------------
 
 The most significant changes in are in the graph classes.  All of the
 graph classes now allow optional graph, node, and edge attributes.  Those
@@ -36,7 +57,7 @@ attributes are stored internally in the graph classes as dictionaries
 and can be accessed simply like Python dictionaries in most cases.
 
 Graph attributes
-----------------
+^^^^^^^^^^^^^^^^
 Each graph keeps a dictionary of key=value attributes
 in the member G.graph.  These attributes can be accessed
 directly using G.graph or added at instantiation using
@@ -48,7 +69,7 @@ keyword arguments.
 {'region': 'Africa', 'color': 'green'}
 
 Node attributes
----------------
+^^^^^^^^^^^^^^^
 Each node has a corresponding dictionary of attributes.
 Adding attributes to nodes is optional.
 
@@ -63,7 +84,7 @@ Add node attributes using add_node(), add_nodes_from() or G.node
 [(1, {'room': 714, 'time': '5pm'}), (3, {'time': '2pm'})]
 
 Edge attributes
----------------
+^^^^^^^^^^^^^^^
 Each edge has a corresponding dictionary of attributes.
 The default edge data is now an empty dictionary of attributes
 and adding attributes to edges is optional.
@@ -247,7 +268,7 @@ UbiGraph
 
 
 Additional functions/generators
-===============================
+-------------------------------
 
 ego_graph, stochastic_graph, PageRank algorithm, HITS algorithm,
 GraphML writer, freeze, is_frozen, A* algorithm,
@@ -255,10 +276,10 @@ directed scale-free generator, random clustered graph.
 
 
 Converting your existing code to networkx-1.0
-=============================================
+---------------------------------------------
 
 Weighted edges
---------------
+^^^^^^^^^^^^^^
 
 Edge information is now stored in an attribution dictionary
 so all edge data must be given a key to identify it.

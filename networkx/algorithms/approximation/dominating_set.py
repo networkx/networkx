@@ -10,15 +10,17 @@ incident to an endpoint of at least one edge in *F*.
 .. _edge dominating set: https://en.wikipedia.org/wiki/Edge_dominating_set
 
 """
+import networkx as nx
 
-from ..matching import maximal_matching
 from ...utils import not_implemented_for
+from ..matching import maximal_matching
 
 __all__ = ["min_weighted_dominating_set", "min_edge_dominating_set"]
 
 
 # TODO Why doesn't this algorithm work for directed graphs?
 @not_implemented_for("directed")
+@nx._dispatch(node_attrs="weight")
 def min_weighted_dominating_set(G, weight=None):
     r"""Returns a dominating set that approximates the minimum weight node
     dominating set.
@@ -99,6 +101,7 @@ def min_weighted_dominating_set(G, weight=None):
     return dom_set
 
 
+@nx._dispatch
 def min_edge_dominating_set(G):
     r"""Returns minimum cardinality edge dominating set.
 

@@ -1,8 +1,9 @@
 """Functions which help end users define customize node_match and
 edge_match functions to use during isomorphism checks.
 """
-from itertools import permutations
+import math
 import types
+from itertools import permutations
 
 __all__ = [
     "categorical_node_match",
@@ -36,25 +37,7 @@ def allclose(x, y, rtol=1.0000000000000001e-05, atol=1e-08):
 
     """
     # assume finite weights, see numpy.allclose() for reference
-    for xi, yi in zip(x, y):
-        if not (abs(xi - yi) <= atol + rtol * abs(yi)):
-            return False
-    return True
-
-
-def close(x, y, rtol=1.0000000000000001e-05, atol=1e-08):
-    """Returns True if x and y are sufficiently close.
-
-    Parameters
-    ----------
-    rtol : float
-        The relative error tolerance.
-    atol : float
-        The absolute error tolerance.
-
-    """
-    # assume finite weights, see numpy.allclose() for reference
-    return abs(x - y) <= atol + rtol * abs(y)
+    return all(math.isclose(xi, yi, rel_tol=rtol, abs_tol=atol) for xi, yi in zip(x, y))
 
 
 categorical_doc = """
@@ -176,8 +159,11 @@ def numerical_node_match(attr, default, rtol=1.0000000000000001e-05, atol=1e-08)
     if isinstance(attr, str):
 
         def match(data1, data2):
-            return close(
-                data1.get(attr, default), data2.get(attr, default), rtol=rtol, atol=atol
+            return math.isclose(
+                data1.get(attr, default),
+                data2.get(attr, default),
+                rel_tol=rtol,
+                abs_tol=atol,
             )
 
     else:
@@ -198,8 +184,8 @@ def numerical_multiedge_match(attr, default, rtol=1.0000000000000001e-05, atol=1
     if isinstance(attr, str):
 
         def match(datasets1, datasets2):
-            values1 = sorted([data.get(attr, default) for data in datasets1.values()])
-            values2 = sorted([data.get(attr, default) for data in datasets2.values()])
+            values1 = sorted(data.get(attr, default) for data in datasets1.values())
+            values2 = sorted(data.get(attr, default) for data in datasets2.values())
             return allclose(values1, values2, rtol=rtol, atol=atol)
 
     else:
@@ -260,11 +246,11 @@ match : function
 Examples
 --------
 >>> from operator import eq
->>> from networkx.algorithms.isomorphism.matchhelpers import close
+>>> from math import isclose
 >>> from networkx.algorithms.isomorphism import generic_node_match
->>> nm = generic_node_match("weight", 1.0, close)
+>>> nm = generic_node_match("weight", 1.0, isclose)
 >>> nm = generic_node_match("color", "red", eq)
->>> nm = generic_node_match(["weight", "color"], [1.0, "red"], [close, eq])
+>>> nm = generic_node_match(["weight", "color"], [1.0, "red"], [isclose, eq])
 
 """
 
@@ -307,7 +293,7 @@ def generic_multiedge_match(attr, default, op):
         to compare.
     default : value | list
         The default value for the edge attribute, or a list of
-        default values for the dgeattributes.
+        default values for the edgeattributes.
     op : callable | list
         The operator to use when comparing attribute values, or a list
         of operators to use when comparing values for each attribute.
@@ -320,11 +306,11 @@ def generic_multiedge_match(attr, default, op):
     Examples
     --------
     >>> from operator import eq
-    >>> from networkx.algorithms.isomorphism.matchhelpers import close
+    >>> from math import isclose
     >>> from networkx.algorithms.isomorphism import generic_node_match
-    >>> nm = generic_node_match("weight", 1.0, close)
+    >>> nm = generic_node_match("weight", 1.0, isclose)
     >>> nm = generic_node_match("color", "red", eq)
-    >>> nm = generic_node_match(["weight", "color"], [1.0, "red"], [close, eq])
+    >>> nm = generic_node_match(["weight", "color"], [1.0, "red"], [isclose, eq])
     ...
 
     """

@@ -1,9 +1,11 @@
 from collections import defaultdict
+
 import networkx as nx
 
 __all__ = ["k_clique_communities"]
 
 
+@nx._dispatch
 def k_clique_communities(G, k, cliques=None):
     """Find k-clique communities in graph using the percolation method.
 
@@ -26,14 +28,13 @@ def k_clique_communities(G, k, cliques=None):
 
     Examples
     --------
-    >>> from networkx.algorithms.community import k_clique_communities
     >>> G = nx.complete_graph(5)
     >>> K5 = nx.convert_node_labels_to_integers(G, first_label=2)
     >>> G.add_edges_from(K5.edges())
-    >>> c = list(k_clique_communities(G, 4))
+    >>> c = list(nx.community.k_clique_communities(G, 4))
     >>> sorted(list(c[0]))
     [0, 1, 2, 3, 4, 5, 6]
-    >>> list(k_clique_communities(G, 6))
+    >>> list(nx.community.k_clique_communities(G, 6))
     []
 
     References

@@ -1,0 +1,324 @@
+.. _NXEP4:
+
+=================================
+NXEP 4 — Default random interface
+=================================
+
+:Author: Ross Barnowski (rossbar@berkeley.edu)
+:Status: Draft
+:Type: Standards Track
+:Created: 2022-02-24
+
+
+Abstract
+--------
+
+Pseudo-random numbers play an important role in many graph and network analysis
+algorithms in NetworkX.
+NetworkX provides a :ref:`standard interface to random number generators <randomness>`
+that includes support for `numpy.random` and the Python built-in `random` module.
+`numpy.random` is used extensively within NetworkX and in several cases is the
+preferred package for random number generation.
+NumPy introduced a new interface in the `numpy.random` package in NumPy version
+1.17.
+According to :external+neps:doc:`NEP19 <nep-0019-rng-policy>`, the new interface based on
+`numpy.random.Generator`
+is recommended over the legacy `numpy.random.RandomState` as the former has
+`better statistical properties <https://www.pcg-random.org/index.html>`_,
+:external+numpy:doc:`more features <reference/random/new-or-different>`,
+and :external+numpy:doc:`improved performance <reference/random/performance>`.
+This NXEP proposes a strategy for adopting `numpy.random.Generator` as the
+**default** interface for random number generation within NetworkX.
+
+Motivation and Scope
+--------------------
+
+The primary motivation for adopting `numpy.random.Generator` as the default
+random number generation engine in NetworkX is to allow users to benefit from
+the improvements in `numpy.random.Generator`, including:
+- Advances in statistical quality of modern pRNG's
+- Improved performance
+- Additional features
+
+The `numpy.random.Generator` API is very similar to the `numpy.random.RandomState`
+API, so users can benefit from these improvements without any additional changes
+[#f1]_ to their existing NetworkX code.
+
+In principle this change would impact NetworkX users that use any of the
+functions decorated by `~networkx.utils.decorators.np_random_state`
+or `~networkx.utils.decorators.py_random_state` (when the ``random_state`` argument
+involves ``numpy``).
+See the next section for details.
+
+.. [#f1] See note about the compatibility layer in the :ref:`Implementation section <implementation>`
+
+Usage and Impact
+----------------
+
+In NetworkX, random number generators are typically created via a decorator::
+
+    from networkx.utils import np_random_state
+
+    @np_random_state("seed")  # Or could be the arg position, i.e. 0
+    def foo(seed=None):
+        return seed
+
+The decorator is responsible for mapping various different inputs into an
+instance of a random number generator within the function.
+Currently, the random number generator instance that is returned is a
+`numpy.random.RandomState` object::
+
+    >>> type(foo(None))
+    numpy.random.mtrand.RandomState
+    >>> type(foo(12345))
+    numpy.random.mtrand.RandomState
+
+The only way to get a `numpy.random.Generator` instance from the random state
+decorators is to pass the instance in directly::
+
+    >>> import numpy as np
+    >>> rng = np.random.default_rng()
+    >>> type(foo(rng))
+    numpy.random._generator.Generator
+
+This NXEP proposes to change the behavior so that when e.g. and integer or
+`None` is given for the ``seed`` parameter, a `numpy.random.Generator` instance
+is returned instead, i.e.::
+
+    >>> type(foo(None))
+    numpy.random._generator.Generator
+    >>> type(foo(12345))
+    numpy.random._generator.Generator
+
+`numpy.random.RandomState` instances can still be used as ``seed``, but they
+must be explicitly passed in::
+
+    >>> rs = np.random.RandomState(12345)
+    >>> type(foo(rs))
+    numpy.random.mtrand.RandomState
+
+Backward compatibility
+----------------------
+
+There are three main concerns:
+
+1. The ``Generator`` interface is not stream-compatible with ``RandomState``,
+   thus the results of the ``Generator`` methods will not be exactly the same
+   as the corresponding ``RandomState`` methods.
+2. There are a few slight differences in method names and availability between
+   the ``RandomState`` and ``Generator`` APIs.
+3. There is no global ``Generator`` instance internal to `numpy.random` as is
+   the case for `numpy.random.RandomState`.
+
+The `numpy.random.Generator` interface breaks the stream-compatibility
+guarantee that `numpy.random.RandomState` upheld of exact reproducibility of
+values.
+Switching the default random number generator from ``RandomState`` to
+``Generator`` would mean functions decorated with ``np_random_state`` would
+produce different results when a value *other than an instantiated rng* is used
+as the seed.
+For example, let's take the following function::
+
+    @np_random_state("seed")
+    def bar(num, seed=None):
+        """Return an array of `num` uniform random numbers."""
+        return seed.random(num)
+
+With the current implementation of ``np_random_state``, a user can pass in an
+integer value to ``seed`` which will be used to seed a new ``RandomState``
+instance.
+Using the same seed value guarantees the output is always exactly reproducible::
+
+    >>> bar(10, seed=12345)
+    array([0.92961609, 0.31637555, 0.18391881, 0.20456028, 0.56772503,
+           0.5955447 , 0.96451452, 0.6531771 , 0.74890664, 0.65356987])
+    >>> bar(10, seed=12345)
+    array([0.92961609, 0.31637555, 0.18391881, 0.20456028, 0.56772503,
+           0.5955447 , 0.96451452, 0.6531771 , 0.74890664, 0.65356987])
+
+However, after changing the default rng returned by ``np_random_state`` to
+a ``Generator`` instance, the values produced by the decorated ``bar`` function
+for integer seeds would no longer be identical::
+
+    >>> bar(10, seed=12345)
+    array([0.22733602, 0.31675834, 0.79736546, 0.67625467, 0.39110955,
+           0.33281393, 0.59830875, 0.18673419, 0.67275604, 0.94180287])
+
+In order to recover exact reproducibility of the original results, a seeded
+``RandomState`` instance would need to be explicitly created and passed in
+via ``seed``::
+
+    >>> import numpy as np
+    >>> rng = np.random.RandomState(12345)
+    >>> bar(10, seed=rng)
+    array([0.92961609, 0.31637555, 0.18391881, 0.20456028, 0.56772503,
+           0.5955447 , 0.96451452, 0.6531771 , 0.74890664, 0.65356987])
+
+Because the streams would no longer be compatible, it is proposed in this NXEP
+that switching the default random number generator only be considered for a
+major release, e.g. the transition from NetworkX 2.X to NetworkX 3.0.
+
+The second point is only a concern for users who are using
+`~networkx.utils.misc.create_random_state` and the corresponding decorator
+`~networkx.utils.decorators.np_random_state` in their own libraries.
+For example, the `numpy.random.RandomState.randint` method has been replaced
+by `numpy.random.Generator.integers`.
+Thus any code that uses `create_random_state` or `create_py_random_state` and
+relies on the ``randint`` method of the returned rng would result in an
+`AttributeError`.
+This can be addressed with a compatibility class similar to the
+`networkx.utils.misc.PythonRandomInterface` class, which provides a compatibility
+layer between `random` and `numpy.random.RandomState`.
+
+`create_random_state` currently returns the global ``numpy.random.mtrand._rand``
+`RandomState` instance when the input is `None` or the ``numpy.random`` module.
+By switching to `numpy.random.Generator`, this will no longer be possible as
+there is no global, internal `Generator` instance in the `numpy.random` module.
+This should have no effect on users, as ``seed=None`` currently does not
+guarantee reproducible results.
+
+Detailed description
+--------------------
+
+This NXEP proposes to change the default random number generator produced by
+the `~networkx.utils.misc.create_random_state` function (and the related
+decorator `~networkx.utils.decorators.np_random_state`) from a `numpy.random.RandomState`
+instance to a `numpy.random.Generator` instance when the input to the
+function is either an integer or `None`.
+
+Related Work
+------------
+
+Scikit-learn has a similar pattern for imposing determinism on functions that
+depend on randomness.
+For example, many functions in ``scikit-learn`` have a ``random_state`` argument
+that functions similarly to how ``seed`` behaves in many NetworkX function
+signatures.
+One difference between ``scikit-learn`` and ``networkx`` is that scikit-learn
+**only** supports ``RandomState`` via the ``random_state`` keyword argument,
+whereas NetworkX implicitly supports both the built-in `random` module, as well
+as both the numpy ``RandomState`` and ``Generator`` instances (depending on
+the type of ``seed``).
+This is reflected in the name of the keyword argument as ``random_state``
+(used by scikit-learn) is les ambiguous than ``seed`` (used by NetworkX).
+
+There are multiple relevant discussions in the scikit-learn community about
+potential approaches to supporting the new NumPy random interface:
+
+- `scikit-learn/scikit-learn#16988 <sklearn16988>`_ covers strategies and concerns
+  related to enabling users to use the ``Generator``-based random number generators.
+- `scikit-learn/scikit-learn#14042 <sklearn14042>`_ is a higher-level discussion
+  that includes additional information about the design considerations and constraints
+  related to scikit-learn's ``random_state``.
+- There is also a related `SLEP <slep011>`_.
+
+.. _sklearn16988: https://github.com/scikit-learn/scikit-learn/issues/16988
+.. _sklearn14042: https://github.com/scikit-learn/scikit-learn/issues/14042
+.. _slep011: https://github.com/scikit-learn/enhancement_proposals/pull/24
+
+.. _implementation:
+
+Implementation
+--------------
+
+The implementation itself is quite simple. The logic that determines how
+inputs are mapped to random number generators is encapsulated in the
+`~networkx.utils.misc.create_random_state` function (and the related
+`~networkx.utils.misc.create_py_random_state`).
+Currently (i.e. NetworkX <= 2.X), this function maps inputs like ``None``,
+``numpy.random``, and integers to ``RandomState`` instances::
+
+    def create_random_state(random_state=None):
+        if random_state is None or random_state is np.random:
+            return np.random.mtrand._rand
+        if isinstance(random_state, np.random.RandomState):
+            return random_state
+        if isinstance(random_state, int):
+            return np.random.RandomState(random_state)
+        if isinstance(random_state, np.random.Generator):
+            return random_state
+        msg = (
+            f"{random_state} cannot be used to create a numpy.random.RandomState or\n"
+            "numpy.random.Generator instance"
+        )
+        raise ValueError(msg)
+
+This NXEP proposes to modify the function to produce ``Generator`` instances
+for these inputs. An example implementation might look something like::
+
+
+    def create_random_state(random_state=None):
+        if random_state is None or random_state is np.random:
+            return np.random.default_rng()
+        if isinstance(random_state, (np.random.RandomState, np.random.Generator)):
+            return random_state
+        if isinstance(random_state, int):
+            return np.random.default_rng(random_state)
+        msg = (
+            f"{random_state} cannot be used to create a numpy.random.RandomState or\n"
+            "numpy.random.Generator instance"
+        )
+        raise ValueError(msg)
+
+
+The above captures the essential change in logic, though implementation details
+may differ.
+Most of the work related implementing this change will be associated with
+improved/reorganized tests; including adding tests rng-stream reproducibility.
+
+Alternatives
+------------
+
+The status quo, i.e. using ``RandomState`` by default, is a completely
+acceptable alternative.
+``RandomState`` is not deprecated, and is expected to maintain its stream-compatibility
+guarantee in perpetuity.
+
+Another possible alternative would be to provide a package-level toggle that
+users could use to switch the behavior the ``seed`` kwarg for all functions
+decorated by ``np_random_state`` or ``py_random_state``.
+To illustrate (ignoring implementation details)::
+
+    
+    >>> import networkx as nx
+    >>> from networkx.utils.misc import create_random_state
+
+    # NetworkX 2.X behavior: RandomState by default
+
+    >>> type(create_random_state(12345))
+    numpy.random.mtrand.RandomState
+
+    # Change random backend by setting pkg attr
+
+    >>> nx._random_backend = "Generator"
+
+    >>> type(create_random_state(12345))
+    numpy.random._generator.Generator
+
+
+Discussion
+----------
+
+This NXEP has been discussed at several community meetings, see e.g.
+`these meeting notes <https://github.com/networkx/archive/blob/main/meetings/2023-03-14.md#nxep-topic-of-the-week>`_.
+
+The main concern that has surfaced during these discussions is that the
+NumPy ``Generator`` interface does not make the same strict stream-compatibility
+guarantees as the older ``RandomState``.
+Therefore, if this NXEP were implemented as proposed, code that relies on seeded
+random numbers could in principle return different results with some future
+NumPy version due to changes in the default ``BitGenerator`` or ``Generator`` methods.
+
+Many NetworkX functions are quite sensitive to the random seed.
+For example, changing the seed for the default ``spring_layout`` function can
+yield a vastly different (but equally valid) layout for a network.
+Stream-compatibility is important for reproducibility in these contexts.
+
+Thus we have concluded through various discussions *not* to implement the
+changes proposed in this NXEP.
+``RandomState`` will remain the default random number generator for the ``random_state``
+decorator in an effort to support strict backward compatibility for all NetworkX
+user code that relies on ``random_state``.
+The ``Generator`` interface is *supported* in the ``random_state`` decorator,
+and users are encouraged to use ``Generator`` instances in new code where
+stream-compatibility is not a priority.

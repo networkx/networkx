@@ -2,16 +2,16 @@
 Flow based cut algorithms
 """
 import itertools
+
 import networkx as nx
 
 # Define the default maximum flow function to use in all flow based
 # cut algorithms.
-from networkx.algorithms.flow import edmonds_karp
-from networkx.algorithms.flow import build_residual_network
+from networkx.algorithms.flow import build_residual_network, edmonds_karp
 
 default_flow_func = edmonds_karp
 
-from .utils import build_auxiliary_node_connectivity, build_auxiliary_edge_connectivity
+from .utils import build_auxiliary_edge_connectivity, build_auxiliary_node_connectivity
 
 __all__ = [
     "minimum_st_node_cut",
@@ -21,6 +21,14 @@ __all__ = [
 ]
 
 
+@nx._dispatch(
+    graphs={"G": 0, "auxiliary?": 4, "residual?": 5},
+    preserve_edge_attrs={
+        "auxiliary": {"capacity": float("inf")},
+        "residual": {"capacity": float("inf")},
+    },
+    preserve_graph_attrs={"auxiliary", "residual"},
+)
 def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     """Returns the edges of the cut-set of a minimum (s, t)-cut.
 
@@ -140,7 +148,7 @@ def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     else:
         H = auxiliary
 
-    kwargs = dict(capacity="capacity", flow_func=flow_func, residual=residual)
+    kwargs = {"capacity": "capacity", "flow_func": flow_func, "residual": residual}
 
     cut_value, partition = nx.minimum_cut(H, s, t, **kwargs)
     reachable, non_reachable = partition
@@ -153,6 +161,12 @@ def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     return cutset
 
 
+@nx._dispatch(
+    graphs={"G": 0, "auxiliary?": 4, "residual?": 5},
+    preserve_edge_attrs={"residual": {"capacity": float("inf")}},
+    preserve_node_attrs={"auxiliary": {"id": None}},
+    preserve_graph_attrs={"auxiliary", "residual"},
+)
 def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     r"""Returns a set of nodes of minimum cardinality that disconnect source
     from target in G.
@@ -281,7 +295,7 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
         raise nx.NetworkXError("Invalid auxiliary digraph.")
     if G.has_edge(s, t) or G.has_edge(t, s):
         return {}
-    kwargs = dict(flow_func=flow_func, residual=residual, auxiliary=H)
+    kwargs = {"flow_func": flow_func, "residual": residual, "auxiliary": H}
 
     # The edge cut in the auxiliary digraph corresponds to the node cut in the
     # original graph.
@@ -291,6 +305,7 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     return node_cut - {s, t}
 
 
+@nx._dispatch
 def minimum_node_cut(G, s=None, t=None, flow_func=None):
     r"""Returns a set of nodes of minimum cardinality that disconnects G.
 
@@ -414,7 +429,7 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
     # Reuse the auxiliary digraph and the residual network.
     H = build_auxiliary_node_connectivity(G)
     R = build_residual_network(H, "capacity")
-    kwargs = dict(flow_func=flow_func, auxiliary=H, residual=R)
+    kwargs = {"flow_func": flow_func, "auxiliary": H, "residual": R}
 
     # Choose a node with minimum degree.
     v = min(G, key=G.degree)
@@ -436,6 +451,7 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
     return min_cut
 
 
+@nx._dispatch
 def minimum_edge_cut(G, s=None, t=None, flow_func=None):
     r"""Returns a set of edges of minimum cardinality that disconnects G.
 
@@ -537,7 +553,7 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
     # reuse auxiliary digraph and residual network
     H = build_auxiliary_edge_connectivity(G)
     R = build_residual_network(H, "capacity")
-    kwargs = dict(flow_func=flow_func, residual=R, auxiliary=H)
+    kwargs = {"flow_func": flow_func, "residual": R, "auxiliary": H}
 
     # Local minimum edge cut if s and t are not None
     if s is not None and t is not None:

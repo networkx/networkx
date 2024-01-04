@@ -5,14 +5,16 @@ is a directed graph in which there is exactly one directed edge joining
 each pair of distinct nodes. For each function in this module that
 accepts a graph as input, you must provide a tournament graph. The
 responsibility is on the caller to ensure that the graph is a tournament
-graph.
+graph:
+
+    >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
+    >>> nx.is_tournament(G)
+    True
 
 To access the functions in this module, you must access them through the
-:mod:`networkx.algorithms.tournament` module::
+:mod:`networkx.tournament` module::
 
-    >>> from networkx.algorithms import tournament
-    >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
-    >>> tournament.is_tournament(G)
+    >>> nx.tournament.is_reachable(G, 0, 1)
     True
 
 .. _tournament graph: https://en.wikipedia.org/wiki/Tournament_%28graph_theory%29
@@ -22,9 +24,7 @@ from itertools import combinations
 
 import networkx as nx
 from networkx.algorithms.simple_paths import is_simple_path as is_path
-from networkx.utils import arbitrary_element
-from networkx.utils import not_implemented_for
-from networkx.utils import py_random_state
+from networkx.utils import arbitrary_element, not_implemented_for, py_random_state
 
 __all__ = [
     "hamiltonian_path",
@@ -59,12 +59,13 @@ def index_satisfying(iterable, condition):
     # exception.
     try:
         return i + 1
-    except NameError as e:
-        raise ValueError("iterable must be non-empty") from e
+    except NameError as err:
+        raise ValueError("iterable must be non-empty") from err
 
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def is_tournament(G):
     """Returns True if and only if `G` is a tournament.
 
@@ -82,6 +83,12 @@ def is_tournament(G):
     bool
         Whether the given graph is a tournament graph.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
+    >>> nx.is_tournament(G)
+    True
+
     Notes
     -----
     Some definitions require a self-loop on each node, but that is not
@@ -97,6 +104,7 @@ def is_tournament(G):
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def hamiltonian_path(G):
     """Returns a Hamiltonian path in the given tournament graph.
 
@@ -113,6 +121,14 @@ def hamiltonian_path(G):
     -------
     path : list
         A list of nodes which form a Hamiltonian path in `G`.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)])
+    >>> nx.is_tournament(G)
+    True
+    >>> nx.tournament.hamiltonian_path(G)
+    [0, 1, 2, 3]
 
     Notes
     -----
@@ -135,6 +151,7 @@ def hamiltonian_path(G):
 
 
 @py_random_state(1)
+@nx._dispatch(graphs=None)
 def random_tournament(n, seed=None):
     r"""Returns a random tournament graph on `n` nodes.
 
@@ -169,6 +186,7 @@ def random_tournament(n, seed=None):
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def score_sequence(G):
     """Returns the score sequence for the given tournament graph.
 
@@ -185,12 +203,21 @@ def score_sequence(G):
     list
         A sorted list of the out-degrees of the nodes of `G`.
 
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 0), (1, 3), (0, 2), (0, 3), (2, 1), (3, 2)])
+    >>> nx.is_tournament(G)
+    True
+    >>> nx.tournament.score_sequence(G)
+    [1, 1, 2, 2]
+
     """
     return sorted(d for v, d in G.out_degree())
 
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def tournament_matrix(G):
     r"""Returns the tournament matrix for the given tournament graph.
 
@@ -218,7 +245,7 @@ def tournament_matrix(G):
 
     Returns
     -------
-    SciPy sparse matrix
+    SciPy sparse array
         The tournament matrix of the tournament graph `G`.
 
     Raises
@@ -233,6 +260,7 @@ def tournament_matrix(G):
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch
 def is_reachable(G, s, t):
     """Decides whether there is a path from `s` to `t` in the
     tournament.
@@ -259,6 +287,16 @@ def is_reachable(G, s, t):
     -------
     bool
         Whether there is a path from `s` to `t` in `G`.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 0), (1, 3), (1, 2), (2, 3), (2, 0), (3, 0)])
+    >>> nx.is_tournament(G)
+    True
+    >>> nx.tournament.is_reachable(G, 1, 3)
+    True
+    >>> nx.tournament.is_reachable(G, 3, 2)
+    False
 
     Notes
     -----
@@ -311,6 +349,7 @@ def is_reachable(G, s, t):
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatch(name="tournament_is_strongly_connected")
 def is_strongly_connected(G):
     """Decides whether the given tournament is strongly connected.
 
@@ -330,6 +369,20 @@ def is_strongly_connected(G):
     -------
     bool
         Whether the tournament is strongly connected.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (0, 2), (1, 2), (1, 3), (2, 3), (3, 0)])
+    >>> nx.is_tournament(G)
+    True
+    >>> nx.tournament.is_strongly_connected(G)
+    True
+    >>> G.remove_edge(3, 0)
+    >>> G.add_edge(0, 3)
+    >>> nx.is_tournament(G)
+    True
+    >>> nx.tournament.is_strongly_connected(G)
+    False
 
     Notes
     -----

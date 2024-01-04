@@ -83,6 +83,7 @@ EdgeDataView
     The argument `nbunch` restricts edges to those incident to nodes in nbunch.
 """
 from collections.abc import Mapping, Set
+
 import networkx as nx
 
 __all__ = [
@@ -207,6 +208,67 @@ class NodeView(Mapping, Set):
         return NodeDataView(self._nodes, data, default)
 
     def data(self, data=True, default=None):
+        """
+        Return a read-only view of node data.
+
+        Parameters
+        ----------
+        data : bool or node data key, default=True
+            If ``data=True`` (the default), return a `NodeDataView` object that
+            maps each node to *all* of its attributes. `data` may also be an
+            arbitrary key, in which case the `NodeDataView` maps each node to
+            the value for the keyed attribute. In this case, if a node does
+            not have the `data` attribute, the `default` value is used.
+        default : object, default=None
+            The value used when a node does not have a specific attribute.
+
+        Returns
+        -------
+        NodeDataView
+            The layout of the returned NodeDataView depends on the value of the
+            `data` parameter.
+
+        Notes
+        -----
+        If ``data=False``, returns a `NodeView` object without data.
+
+        See Also
+        --------
+        NodeDataView
+
+        Examples
+        --------
+        >>> G = nx.Graph()
+        >>> G.add_nodes_from([
+        ...     (0, {"color": "red", "weight": 10}),
+        ...     (1, {"color": "blue"}),
+        ...     (2, {"color": "yellow", "weight": 2})
+        ... ])
+
+        Accessing node data with ``data=True`` (the default) returns a
+        NodeDataView mapping each node to all of its attributes:
+
+        >>> G.nodes.data()
+        NodeDataView({0: {'color': 'red', 'weight': 10}, 1: {'color': 'blue'}, 2: {'color': 'yellow', 'weight': 2}})
+
+        If `data` represents  a key in the node attribute dict, a NodeDataView mapping
+        the nodes to the value for that specific key is returned:
+
+        >>> G.nodes.data("color")
+        NodeDataView({0: 'red', 1: 'blue', 2: 'yellow'}, data='color')
+
+        If a specific key is not found in an attribute dict, the value specified
+        by `default` is returned:
+
+        >>> G.nodes.data("weight", default=-999)
+        NodeDataView({0: 10, 1: -999, 2: 2}, data='weight')
+
+        Note that there is no check that the `data` key is in any of the
+        node attribute dictionaries:
+
+        >>> G.nodes.data("height")
+        NodeDataView({0: None, 1: None, 2: None}, data='height')
+        """
         if data is False:
             return self
         return NodeDataView(self._nodes, data, default)
@@ -695,7 +757,7 @@ class OutEdgeDataView:
     def __setstate__(self, state):
         self.__init__(**state)
 
-    def __init__(self, viewer, nbunch=None, data=False, default=None):
+    def __init__(self, viewer, nbunch=None, data=False, *, default=None):
         self._viewer = viewer
         adjdict = self._adjdict = viewer._adjdict
         if nbunch is None:
@@ -840,7 +902,7 @@ class OutMultiEdgeDataView(OutEdgeDataView):
     def __setstate__(self, state):
         self.__init__(**state)
 
-    def __init__(self, viewer, nbunch=None, data=False, keys=False, default=None):
+    def __init__(self, viewer, nbunch=None, data=False, *, default=None, keys=False):
         self._viewer = viewer
         adjdict = self._adjdict = viewer._adjdict
         self.keys = keys
@@ -904,10 +966,7 @@ class OutMultiEdgeDataView(OutEdgeDataView):
             except KeyError:
                 return False
             return e == self._report(u, v, k, dd)
-        for k, dd in kdict.items():
-            if e == self._report(u, v, k, dd):
-                return True
-        return False
+        return any(e == self._report(u, v, k, dd) for k, dd in kdict.items())
 
 
 class MultiEdgeDataView(OutMultiEdgeDataView):
@@ -943,10 +1002,7 @@ class MultiEdgeDataView(OutMultiEdgeDataView):
             except KeyError:
                 return False
             return e == self._report(u, v, k, dd)
-        for k, dd in kdict.items():
-            if e == self._report(u, v, k, dd):
-                return True
-        return False
+        return any(e == self._report(u, v, k, dd) for k, dd in kdict.items())
 
 
 class InMultiEdgeDataView(OutMultiEdgeDataView):
@@ -974,10 +1030,7 @@ class InMultiEdgeDataView(OutMultiEdgeDataView):
             k = e[2]
             dd = kdict[k]
             return e == self._report(u, v, k, dd)
-        for k, dd in kdict.items():
-            if e == self._report(u, v, k, dd):
-                return True
-        return False
+        return any(e == self._report(u, v, k, dd) for k, dd in kdict.items())
 
 
 # EdgeViews    have set operations and no data reported
@@ -987,11 +1040,11 @@ class OutEdgeView(Set, Mapping):
     __slots__ = ("_adjdict", "_graph", "_nodes_nbrs")
 
     def __getstate__(self):
-        return {"_graph": self._graph}
+        return {"_graph": self._graph, "_adjdict": self._adjdict}
 
     def __setstate__(self, state):
-        self._graph = G = state["_graph"]
-        self._adjdict = G._succ if hasattr(G, "succ") else G._adj
+        self._graph = state["_graph"]
+        self._adjdict = state["_adjdict"]
         self._nodes_nbrs = self._adjdict.items
 
     @classmethod
@@ -1032,15 +1085,88 @@ class OutEdgeView(Set, Mapping):
         return self._adjdict[u][v]
 
     # EdgeDataView methods
-    def __call__(self, nbunch=None, data=False, default=None):
+    def __call__(self, nbunch=None, data=False, *, default=None):
         if nbunch is None and data is False:
             return self
-        return self.dataview(self, nbunch, data, default)
+        return self.dataview(self, nbunch, data, default=default)
 
     def data(self, data=True, default=None, nbunch=None):
+        """
+        Return a read-only view of edge data.
+
+        Parameters
+        ----------
+        data : bool or edge attribute key
+            If ``data=True``, then the data view maps each edge to a dictionary
+            containing all of its attributes. If `data` is a key in the edge
+            dictionary, then the data view maps each edge to its value for
+            the keyed attribute. In this case, if the edge doesn't have the
+            attribute, the `default` value is returned.
+        default : object, default=None
+            The value used when an edge does not have a specific attribute
+        nbunch : container of nodes, optional (default=None)
+            Allows restriction to edges only involving certain nodes. All edges
+            are considered by default.
+
+        Returns
+        -------
+        dataview
+            Returns an `EdgeDataView` for undirected Graphs, `OutEdgeDataView`
+            for DiGraphs, `MultiEdgeDataView` for MultiGraphs and
+            `OutMultiEdgeDataView` for MultiDiGraphs.
+
+        Notes
+        -----
+        If ``data=False``, returns an `EdgeView` without any edge data.
+
+        See Also
+        --------
+        EdgeDataView
+        OutEdgeDataView
+        MultiEdgeDataView
+        OutMultiEdgeDataView
+
+        Examples
+        --------
+        >>> G = nx.Graph()
+        >>> G.add_edges_from([
+        ...     (0, 1, {"dist": 3, "capacity": 20}),
+        ...     (1, 2, {"dist": 4}),
+        ...     (2, 0, {"dist": 5})
+        ... ])
+
+        Accessing edge data with ``data=True`` (the default) returns an
+        edge data view object listing each edge with all of its attributes:
+
+        >>> G.edges.data()
+        EdgeDataView([(0, 1, {'dist': 3, 'capacity': 20}), (0, 2, {'dist': 5}), (1, 2, {'dist': 4})])
+
+        If `data` represents a key in the edge attribute dict, a dataview listing
+        each edge with its value for that specific key is returned:
+
+        >>> G.edges.data("dist")
+        EdgeDataView([(0, 1, 3), (0, 2, 5), (1, 2, 4)])
+
+        `nbunch` can be used to limit the edges:
+
+        >>> G.edges.data("dist", nbunch=[0])
+        EdgeDataView([(0, 1, 3), (0, 2, 5)])
+
+        If a specific key is not found in an edge attribute dict, the value
+        specified by `default` is used:
+
+        >>> G.edges.data("capacity")
+        EdgeDataView([(0, 1, 20), (0, 2, None), (1, 2, None)])
+
+        Note that there is no check that the `data` key is present in any of
+        the edge attribute dictionaries:
+
+        >>> G.edges.data("speed")
+        EdgeDataView([(0, 1, None), (0, 2, None), (1, 2, None)])
+        """
         if nbunch is None and data is False:
             return self
-        return self.dataview(self, nbunch, data, default)
+        return self.dataview(self, nbunch, data, default=default)
 
     # String Methods
     def __str__(self):
@@ -1152,8 +1278,8 @@ class InEdgeView(OutEdgeView):
     __slots__ = ()
 
     def __setstate__(self, state):
-        self._graph = G = state["_graph"]
-        self._adjdict = G._pred if hasattr(G, "pred") else G._adj
+        self._graph = state["_graph"]
+        self._adjdict = state["_adjdict"]
         self._nodes_nbrs = self._adjdict.items
 
     dataview = InEdgeDataView
@@ -1226,15 +1352,15 @@ class OutMultiEdgeView(OutEdgeView):
         u, v, k = e
         return self._adjdict[u][v][k]
 
-    def __call__(self, nbunch=None, data=False, keys=False, default=None):
+    def __call__(self, nbunch=None, data=False, *, default=None, keys=False):
         if nbunch is None and data is False and keys is True:
             return self
-        return self.dataview(self, nbunch, data, keys, default)
+        return self.dataview(self, nbunch, data, default=default, keys=keys)
 
-    def data(self, data=True, keys=False, default=None, nbunch=None):
+    def data(self, data=True, default=None, nbunch=None, keys=False):
         if nbunch is None and data is False and keys is True:
             return self
-        return self.dataview(self, nbunch, data, keys, default)
+        return self.dataview(self, nbunch, data, default=default, keys=keys)
 
 
 class MultiEdgeView(OutMultiEdgeView):
@@ -1264,8 +1390,8 @@ class InMultiEdgeView(OutMultiEdgeView):
     __slots__ = ()
 
     def __setstate__(self, state):
-        self._graph = G = state["_graph"]
-        self._adjdict = G._pred if hasattr(G, "pred") else G._adj
+        self._graph = state["_graph"]
+        self._adjdict = state["_adjdict"]
         self._nodes_nbrs = self._adjdict.items
 
     dataview = InMultiEdgeDataView

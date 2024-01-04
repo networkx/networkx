@@ -10,9 +10,12 @@ nodes in *S* that are outside *S*.
 """
 from itertools import chain
 
+import networkx as nx
+
 __all__ = ["edge_boundary", "node_boundary"]
 
 
+@nx._dispatch(edge_attrs={"data": "default"}, preserve_edge_attrs="data")
 def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False, default=None):
     """Returns the edge boundary of `nbunch1`.
 
@@ -56,6 +59,20 @@ def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False, default=None
         are specified and `G` is a multigraph, then edges are returned
         with keys and/or data, as in :meth:`MultiGraph.edges`.
 
+    Examples
+    --------
+    >>> G = nx.wheel_graph(6)
+
+    When nbunch2=None:
+
+    >>> list(nx.edge_boundary(G, (1, 3)))
+    [(1, 0), (1, 2), (1, 5), (3, 0), (3, 2), (3, 4)]
+
+    When nbunch2 is given:
+
+    >>> list(nx.edge_boundary(G, (1, 3), (2, 0)))
+    [(1, 0), (1, 2), (3, 0), (3, 2)]
+
     Notes
     -----
     Any element of `nbunch` that is not in the graph `G` will be
@@ -89,6 +106,7 @@ def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False, default=None
     )
 
 
+@nx._dispatch
 def node_boundary(G, nbunch1, nbunch2=None):
     """Returns the node boundary of `nbunch1`.
 
@@ -116,6 +134,20 @@ def node_boundary(G, nbunch1, nbunch2=None):
     -------
     set
         The node boundary of `nbunch1` with respect to `nbunch2`.
+
+    Examples
+    --------
+    >>> G = nx.wheel_graph(6)
+
+    When nbunch2=None:
+
+    >>> list(nx.node_boundary(G, (3, 4)))
+    [0, 2, 5]
+
+    When nbunch2 is given:
+
+    >>> list(nx.node_boundary(G, (3, 4), (0, 1, 5)))
+    [0, 5]
 
     Notes
     -----

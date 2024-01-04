@@ -1,10 +1,13 @@
 import itertools
+
 import pytest
 
 import networkx as nx
 from networkx.algorithms import flow
-from networkx.algorithms.connectivity import local_edge_connectivity
-from networkx.algorithms.connectivity import local_node_connectivity
+from networkx.algorithms.connectivity import (
+    local_edge_connectivity,
+    local_node_connectivity,
+)
 
 flow_funcs = [
     flow.boykov_kolmogorov,
@@ -44,7 +47,7 @@ def test_average_connectivity():
     G2.add_edges_from([(1, 3), (1, 4), (0, 3), (0, 4), (3, 4)])
     G3 = nx.Graph()
     for flow_func in flow_funcs:
-        kwargs = dict(flow_func=flow_func)
+        kwargs = {"flow_func": flow_func}
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
         assert nx.average_node_connectivity(G1, **kwargs) == 1, errmsg
         assert nx.average_node_connectivity(G2, **kwargs) == 2.2, errmsg
@@ -95,7 +98,7 @@ def test_brandes_erlebach():
         ]
     )
     for flow_func in flow_funcs:
-        kwargs = dict(flow_func=flow_func)
+        kwargs = {"flow_func": flow_func}
         errmsg = f"Assertion failed in function: {flow_func.__name__}"
         assert 3 == local_edge_connectivity(G, 1, 11, **kwargs), errmsg
         assert 3 == nx.edge_connectivity(G, 1, 11, **kwargs), errmsg
@@ -111,7 +114,7 @@ def test_brandes_erlebach():
 
 def test_white_harary_1():
     # Figure 1b white and harary (2001)
-    # # http://eclectic.ss.uci.edu/~drwhite/sm-w23.PDF
+    # https://doi.org/10.1111/0081-1750.00098
     # A graph with high adhesion (edge connectivity) and low cohesion
     # (vertex connectivity)
     G = nx.disjoint_union(nx.complete_graph(4), nx.complete_graph(4))
@@ -130,7 +133,7 @@ def test_white_harary_1():
 
 def test_white_harary_2():
     # Figure 8 white and harary (2001)
-    # # http://eclectic.ss.uci.edu/~drwhite/sm-w23.PDF
+    # https://doi.org/10.1111/0081-1750.00098
     G = nx.disjoint_union(nx.complete_graph(4), nx.complete_graph(4))
     G.add_edge(0, 4)
     # kappa <= lambda <= delta

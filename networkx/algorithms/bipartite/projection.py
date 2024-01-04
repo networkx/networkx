@@ -1,9 +1,9 @@
 """One-mode (unipartite) projections of bipartite graphs."""
 import networkx as nx
+from networkx.exception import NetworkXAlgorithmError
 from networkx.utils import not_implemented_for
 
 __all__ = [
-    "project",
     "projected_graph",
     "weighted_projected_graph",
     "collaboration_weighted_projected_graph",
@@ -12,6 +12,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch(graphs="B", preserve_node_attrs=True, preserve_graph_attrs=True)
 def projected_graph(B, nodes, multigraph=False):
     r"""Returns the projection of B onto one of its node sets.
 
@@ -116,6 +117,7 @@ def projected_graph(B, nodes, multigraph=False):
 
 
 @not_implemented_for("multigraph")
+@nx._dispatch(graphs="B")
 def weighted_projected_graph(B, nodes, ratio=False):
     r"""Returns a weighted projection of B onto one of its node sets.
 
@@ -132,7 +134,7 @@ def weighted_projected_graph(B, nodes, ratio=False):
         The input graph should be bipartite.
 
     nodes : list or iterable
-        Nodes to project onto (the "bottom" nodes).
+        Distinct nodes to project onto (the "bottom" nodes).
 
     ratio: Bool (default=False)
         If True, edge weight is the ratio between actual shared neighbors
@@ -159,7 +161,11 @@ def weighted_projected_graph(B, nodes, ratio=False):
 
     Notes
     -----
-    No attempt is made to verify that the input graph B is bipartite.
+    No attempt is made to verify that the input graph B is bipartite, or that
+    the input nodes are distinct. However, if the length of the input nodes is
+    greater than or equal to the nodes in the graph B, an exception is raised.
+    If the nodes are not distinct but don't raise this error, the output weights
+    will be incorrect.
     The graph and node properties are (shallow) copied to the projected graph.
 
     See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
@@ -189,7 +195,14 @@ def weighted_projected_graph(B, nodes, ratio=False):
         G = nx.Graph()
     G.graph.update(B.graph)
     G.add_nodes_from((n, B.nodes[n]) for n in nodes)
-    n_top = float(len(B) - len(nodes))
+    n_top = len(B) - len(nodes)
+
+    if n_top < 1:
+        raise NetworkXAlgorithmError(
+            f"the size of the nodes to project onto ({len(nodes)}) is >= the graph size ({len(B)}).\n"
+            "They are either not a valid bipartite partition or contain duplicates"
+        )
+
     for u in nodes:
         unbrs = set(B[u])
         nbrs2 = {n for nbr in unbrs for n in B[nbr]} - {u}
@@ -205,6 +218,7 @@ def weighted_projected_graph(B, nodes, ratio=False):
 
 
 @not_implemented_for("multigraph")
+@nx._dispatch(graphs="B")
 def collaboration_weighted_projected_graph(B, nodes):
     r"""Newman's weighted projection of B onto one of its node sets.
 
@@ -299,6 +313,7 @@ def collaboration_weighted_projected_graph(B, nodes):
 
 
 @not_implemented_for("multigraph")
+@nx._dispatch(graphs="B")
 def overlap_weighted_projected_graph(B, nodes, jaccard=True):
     r"""Overlap weighted projection of B onto one of its node sets.
 
@@ -390,14 +405,15 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
         for v in nbrs2:
             vnbrs = set(pred[v])
             if jaccard:
-                wt = float(len(unbrs & vnbrs)) / len(unbrs | vnbrs)
+                wt = len(unbrs & vnbrs) / len(unbrs | vnbrs)
             else:
-                wt = float(len(unbrs & vnbrs)) / min(len(unbrs), len(vnbrs))
+                wt = len(unbrs & vnbrs) / min(len(unbrs), len(vnbrs))
             G.add_edge(u, v, weight=wt)
     return G
 
 
 @not_implemented_for("multigraph")
+@nx._dispatch(graphs="B", preserve_all_attrs=True)
 def generic_weighted_projected_graph(B, nodes, weight_function=None):
     r"""Weighted projection of B with a user-specified weight function.
 
@@ -510,7 +526,3 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
             weight = weight_function(B, u, v)
             G.add_edge(u, v, weight=weight)
     return G
-
-
-def project(B, nodes, create_using=None):
-    return projected_graph(B, nodes)

@@ -1,6 +1,7 @@
 """Test sequences for graphiness.
 """
 import heapq
+
 import networkx as nx
 
 __all__ = [
@@ -13,6 +14,7 @@ __all__ = [
 ]
 
 
+@nx._dispatch(graphs=None)
 def is_graphical(sequence, method="eg"):
     """Returns True if sequence is a valid degree sequence.
 
@@ -25,8 +27,10 @@ def is_graphical(sequence, method="eg"):
 
     method : "eg" | "hh"  (default: 'eg')
         The method used to validate the degree sequence.
-        "eg" corresponds to the Erdős-Gallai algorithm, and
-        "hh" to the Havel-Hakimi algorithm.
+        "eg" corresponds to the Erdős-Gallai algorithm
+        [EG1960]_, [choudum1986]_, and
+        "hh" to the Havel-Hakimi algorithm
+        [havel1955]_, [hakimi1962]_, [CL1996]_.
 
     Returns
     -------
@@ -40,13 +44,24 @@ def is_graphical(sequence, method="eg"):
     >>> nx.is_graphical(sequence)
     True
 
+    To test a non-graphical sequence:
+    >>> sequence_list = [d for n, d in G.degree()]
+    >>> sequence_list[-1] += 1
+    >>> nx.is_graphical(sequence_list)
+    False
+
     References
     ----------
-    Erdős-Gallai
-        [EG1960]_, [choudum1986]_
-
-    Havel-Hakimi
-        [havel1955]_, [hakimi1962]_, [CL1996]_
+    .. [EG1960] Erdős and Gallai, Mat. Lapok 11 264, 1960.
+    .. [choudum1986] S.A. Choudum. "A simple proof of the Erdős-Gallai theorem on
+       graph sequences." Bulletin of the Australian Mathematical Society, 33,
+       pp 67-70, 1986. https://doi.org/10.1017/S0004972700002872
+    .. [havel1955] Havel, V. "A Remark on the Existence of Finite Graphs"
+       Casopis Pest. Mat. 80, 477-480, 1955.
+    .. [hakimi1962] Hakimi, S. "On the Realizability of a Set of Integers as
+       Degrees of the Vertices of a Graph." SIAM J. Appl. Math. 10, 496-506, 1962.
+    .. [CL1996] G. Chartrand and L. Lesniak, "Graphs and Digraphs",
+       Chapman and Hall/CRC, 1996.
     """
     if method == "eg":
         valid = is_valid_degree_sequence_erdos_gallai(list(sequence))
@@ -78,10 +93,12 @@ def _basic_graphical_tests(deg_sequence):
     return dmax, dmin, dsum, n, num_degs
 
 
+@nx._dispatch(graphs=None)
 def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     r"""Returns True if deg_sequence can be realized by a simple graph.
 
-    The validation proceeds using the Havel-Hakimi theorem.
+    The validation proceeds using the Havel-Hakimi theorem
+    [havel1955]_, [hakimi1962]_, [CL1996]_.
     Worst-case run time is $O(s)$ where $s$ is the sum of the sequence.
 
     Parameters
@@ -94,6 +111,19 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     -------
     valid : bool
         True if deg_sequence is graphical and False if not.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> sequence = (d for _, d in G.degree())
+    >>> nx.is_valid_degree_sequence_havel_hakimi(sequence)
+    True
+
+    To test a non-valid sequence:
+    >>> sequence_list = [d for _, d in G.degree()]
+    >>> sequence_list[-1] += 1
+    >>> nx.is_valid_degree_sequence_havel_hakimi(sequence_list)
+    False
 
     Notes
     -----
@@ -108,9 +138,12 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     ----------
     .. [1] I.E. Zverovich and V.E. Zverovich. "Contributions to the theory
        of graphic sequences", Discrete Mathematics, 105, pp. 292-303 (1992).
-
-    [havel1955]_, [hakimi1962]_, [CL1996]_
-
+    .. [havel1955] Havel, V. "A Remark on the Existence of Finite Graphs"
+       Casopis Pest. Mat. 80, 477-480, 1955.
+    .. [hakimi1962] Hakimi, S. "On the Realizability of a Set of Integers as
+       Degrees of the Vertices of a Graph." SIAM J. Appl. Math. 10, 496-506, 1962.
+    .. [CL1996] G. Chartrand and L. Lesniak, "Graphs and Digraphs",
+       Chapman and Hall/CRC, 1996.
     """
     try:
         dmax, dmin, dsum, n, num_degs = _basic_graphical_tests(deg_sequence)
@@ -150,6 +183,7 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     return True
 
 
+@nx._dispatch(graphs=None)
 def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     r"""Returns True if deg_sequence can be realized by a simple graph.
 
@@ -164,6 +198,19 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     -------
     valid : bool
         True if deg_sequence is graphical and False if not.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> sequence = (d for _, d in G.degree())
+    >>> nx.is_valid_degree_sequence_erdos_gallai(sequence)
+    True
+
+    To test a non-valid sequence:
+    >>> sequence_list = [d for _, d in G.degree()]
+    >>> sequence_list[-1] += 1
+    >>> nx.is_valid_degree_sequence_erdos_gallai(sequence_list)
+    False
 
     Notes
     -----
@@ -198,8 +245,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
        Discrete Mathematics, 265, pp. 417-420 (2003).
     .. [2] I.E. Zverovich and V.E. Zverovich. "Contributions to the theory
        of graphic sequences", Discrete Mathematics, 105, pp. 292-303 (1992).
-
-    [EG1960]_, [choudum1986]_
+    .. [EG1960] Erdős and Gallai, Mat. Lapok 11 264, 1960.
     """
     try:
         dmax, dmin, dsum, n, num_degs = _basic_graphical_tests(deg_sequence)
@@ -228,6 +274,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     return True
 
 
+@nx._dispatch(graphs=None)
 def is_multigraphical(sequence):
     """Returns True if some multigraph can realize the sequence.
 
@@ -240,6 +287,19 @@ def is_multigraphical(sequence):
     -------
     valid : bool
         True if deg_sequence is a multigraphic degree sequence and False if not.
+
+    Examples
+    --------
+    >>> G = nx.MultiGraph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> sequence = (d for _, d in G.degree())
+    >>> nx.is_multigraphical(sequence)
+    True
+
+    To test a non-multigraphical sequence:
+    >>> sequence_list = [d for _, d in G.degree()]
+    >>> sequence_list[-1] += 1
+    >>> nx.is_multigraphical(sequence_list)
+    False
 
     Notes
     -----
@@ -265,6 +325,7 @@ def is_multigraphical(sequence):
     return True
 
 
+@nx._dispatch(graphs=None)
 def is_pseudographical(sequence):
     """Returns True if some pseudograph can realize the sequence.
 
@@ -280,6 +341,19 @@ def is_pseudographical(sequence):
     -------
     valid : bool
       True if the sequence is a pseudographic degree sequence and False if not.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> sequence = (d for _, d in G.degree())
+    >>> nx.is_pseudographical(sequence)
+    True
+
+    To test a non-pseudographical sequence:
+    >>> sequence_list = [d for _, d in G.degree()]
+    >>> sequence_list[-1] += 1
+    >>> nx.is_pseudographical(sequence_list)
+    False
 
     Notes
     -----
@@ -298,6 +372,7 @@ def is_pseudographical(sequence):
     return sum(deg_sequence) % 2 == 0 and min(deg_sequence) >= 0
 
 
+@nx._dispatch(graphs=None)
 def is_digraphical(in_sequence, out_sequence):
     r"""Returns True if some directed graph can realize the in- and out-degree
     sequences.
@@ -314,6 +389,20 @@ def is_digraphical(in_sequence, out_sequence):
     -------
     valid : bool
       True if in and out-sequences are digraphic False if not.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 4), (4, 2), (5, 1), (5, 4)])
+    >>> in_seq = (d for n, d in G.in_degree())
+    >>> out_seq = (d for n, d in G.out_degree())
+    >>> nx.is_digraphical(in_seq, out_seq)
+    True
+
+    To test a non-digraphical scenario:
+    >>> in_seq_list = [d for n, d in G.in_degree()]
+    >>> in_seq_list[-1] += 1
+    >>> nx.is_digraphical(in_seq_list, out_seq)
+    False
 
     Notes
     -----
