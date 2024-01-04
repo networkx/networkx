@@ -963,7 +963,7 @@ class PlanarEmbedding(nx.DiGraph):
                 # when (cw == leftmost_nbr), the newly added neighbor is
                 # already at the end of dict self._succ[start_node] and
                 # takes the place of the former leftmost_nbr
-                move_leftmost_nbr_to_end = (cw != leftmost_nbr)
+                move_leftmost_nbr_to_end = cw != leftmost_nbr
             elif ccw is not None:
                 if ccw not in self._succ[start_node]:
                     raise nx.NetworkXError("Invalid counterclockwise reference node.")
@@ -973,7 +973,9 @@ class PlanarEmbedding(nx.DiGraph):
                 self._succ[start_node][ccw]["cw"] = end_node
                 move_leftmost_nbr_to_end = True
             else:
-                raise nx.NetworkXError("Node already has out-half-edge(s), either cw or ccw reference node required.")
+                raise nx.NetworkXError(
+                    "Node already has out-half-edge(s), either cw or ccw reference node required."
+                )
             if move_leftmost_nbr_to_end:
                 # LRPlanarity (via self.add_half_edge_first()) requires that
                 # we keep track of the leftmost neighbor, which we accomplish
