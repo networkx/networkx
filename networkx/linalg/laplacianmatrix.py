@@ -1,6 +1,8 @@
 """Laplacian matrix of graphs.
 
 All calculations here are done using the out-degree. For Laplacians using in-degree, us `G.reverse(copy=False)` instead of `G`.
+
+The `laplacian_matrix` function provides an unnormalized matrix, while `normalized_laplacian_matrix`, `directed_laplacian_matrix`, and `directed_combinatorial_laplacian_matrix` are all normalized.
 """
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -42,6 +44,8 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     Notes
     -----
     For MultiGraph, the edges weights are summed.
+
+    This returns an unnormalized matrix. For a normalized output, use `normalized_laplacian_matrix`, `directed_laplacian_matrix`, or `directed_combinatorial_laplacian_matrix`.
 
     This calculation uses the out-degree of the graph `G`. To use the in-degree for calculations instead, use `G.reverse(copy=False)` instead.
 
@@ -142,6 +146,8 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     the adjacency matrix [2]_.
 
     This calculation uses the out-degree of the graph `G`. To use the in-degree for calculations instead, use `G.reverse(copy=False)` instead.
+
+    For an unnormalized output, use `laplacian_matrix`.
 
     Examples
     --------
