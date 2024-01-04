@@ -60,12 +60,35 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     matrix for each component.
 
     >>> G = nx.Graph([(1, 2), (2, 3), (4, 5)])
-    >>> print(nx.laplacian_matrix(G).toarray())
-    [[ 1 -1  0  0  0]
-     [-1  2 -1  0  0]
-     [ 0 -1  1  0  0]
-     [ 0  0  0  1 -1]
-     [ 0  0  0 -1  1]]
+    >>> nx.laplacian_matrix(G).toarray()
+    array([[ 1, -1,  0,  0,  0],
+           [-1,  2, -1,  0,  0],
+           [ 0, -1,  1,  0,  0],
+           [ 0,  0,  0,  1, -1],
+           [ 0,  0,  0, -1,  1]])
+
+    >>> edges = [(1, 2), (1, 3), (3, 1), (3, 2), (3, 5), (5, 4), (5, 6), (4, 5), (4, 6), (6, 4)]
+    >>> DiG = nx.DiGraph(edges)
+    >>> nx.laplacian_matrix(DiG).toarray()
+    array([[ 2, -1, -1,  0,  0,  0],
+           [ 0,  0,  0,  0,  0,  0],
+           [-1, -1,  3, -1,  0,  0],
+           [ 0,  0,  0,  2, -1, -1],
+           [ 0,  0,  0, -1,  2, -1],
+           [ 0,  0,  0,  0, -1,  1]])
+    >>> G = nx.Graph(DiG)
+    >>> nx.laplacian_matrix(G).toarray()
+    array([[ 2, -1, -1,  0,  0,  0],
+           [-1,  2, -1,  0,  0,  0],
+           [-1, -1,  3, -1,  0,  0],
+           [ 0,  0, -1,  3, -1, -1],
+           [ 0,  0,  0, -1,  2, -1],
+           [ 0,  0,  0, -1, -1,  2]])
+
+    References
+    ----------
+    .. [1] Langville, Amy N., and Carl D. Meyer. Google’s PageRank and Beyond:
+       The Science of Search Engine Rankings. Princeton University Press, 2006.
 
     """
     import scipy as sp
@@ -120,6 +143,28 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
 
     This calculation uses the out-degree of the graph `G`. To use the in-degree for calculations instead, use `G.reverse(copy=False)` instead.
 
+    Examples
+    --------
+
+    >>> import numpy as np; np.set_printoptions(precision=4) # To print with lower precision
+    >>> edges = [(1, 2), (1, 3), (3, 1), (3, 2), (3, 5), (5, 4), (5, 6), (4, 5), (4, 6), (6, 4)]
+    >>> DiG = nx.DiGraph(edges)
+    >>> nx.normalized_laplacian_matrix(DiG).toarray()
+    array([[ 1.    ,  0.    , -0.4082,  0.    ,  0.    ,  0.    ],
+           [ 0.    ,  0.    ,  0.    ,  0.    ,  0.    ,  0.    ],
+           [-0.4082,  0.    ,  1.    , -0.4082,  0.    ,  0.    ],
+           [ 0.    ,  0.    ,  0.    ,  1.    , -0.5   , -0.7071],
+           [ 0.    ,  0.    ,  0.    , -0.5   ,  1.    , -0.7071],
+           [ 0.    ,  0.    ,  0.    ,  0.    , -0.7071,  1.    ]])
+    >>> G = nx.Graph(DiG)
+    >>> nx.normalized_laplacian_matrix(G).toarray()
+    array([[ 1.    , -0.5   , -0.4082,  0.    ,  0.    ,  0.    ],
+           [-0.5   ,  1.    , -0.4082,  0.    ,  0.    ,  0.    ],
+           [-0.4082, -0.4082,  1.    , -0.3333,  0.    ,  0.    ],
+           [ 0.    ,  0.    , -0.3333,  1.    , -0.4082, -0.4082],
+           [ 0.    ,  0.    ,  0.    , -0.4082,  1.    , -0.5   ],
+           [ 0.    ,  0.    ,  0.    , -0.4082, -0.5   ,  1.    ]])
+
     See Also
     --------
     laplacian_matrix
@@ -134,6 +179,8 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     .. [2] Steve Butler, Interlacing For Weighted Graphs Using The Normalized
        Laplacian, Electronic Journal of Linear Algebra, Volume 16, pp. 90-98,
        March 2007.
+    .. [3] Langville, Amy N., and Carl D. Meyer. Google’s PageRank and Beyond:
+       The Science of Search Engine Rankings. Princeton University Press, 2006.
     """
     import numpy as np
     import scipy as sp
