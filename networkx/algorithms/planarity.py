@@ -1136,6 +1136,7 @@ class PlanarEmbedding(nx.DiGraph):
 
     def add_half_edge_first(self, start_node, end_node):
         """Add a half-edge and set end_node as start_node's leftmost neighbor.
+
         The new edge is inserted counterclockwise with respect to the current
         leftmost neighbor, if there is one.
 
