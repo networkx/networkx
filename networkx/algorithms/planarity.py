@@ -950,52 +950,37 @@ class PlanarEmbedding(nx.DiGraph):
 
         if start_node in self._succ and self._succ[start_node]:
             # there is already some edge out of start_node
+            leftmost_nbr = next(reversed(self._succ[start_node]))
             if cw is not None:
                 if cw not in self._succ[start_node]:
                     raise nx.NetworkXError("Invalid clockwise reference node.")
                 if ccw is not None:
                     raise nx.NetworkXError("Only one of cw/ccw can be specified.")
                 ref_ccw = self._succ[start_node][cw]["ccw"]
-
-                # keeping compatibility with old implementation that used
-                # "first_nbr" node attribute (required by LRPlanarity)
-                leftmost_nbr = next(reversed(self._succ[start_node]))
-
                 self.add_edge(start_node, end_node, cw=cw, ccw=ref_ccw)
                 self._succ[start_node][ref_ccw]["cw"] = end_node
                 self._succ[start_node][cw]["ccw"] = end_node
-
-                # keeping compatibility with old implementation that used
-                # "first_nbr" node attribute (required by LRPlanarity)
-                if leftmost_nbr != cw:
-                    data = self._succ[start_node][leftmost_nbr]
-                    del self._succ[start_node][leftmost_nbr]
-                    self._succ[start_node][leftmost_nbr] = data
-
+                # when (cw == leftmost_nbr), the newly added neighbor is
+                # already at the end of dict self._succ[start_node] and
+                # takes the place of the former leftmost_nbr
+                move_leftmost_nbr_to_end = (cw != leftmost_nbr)
             elif ccw is not None:
                 if ccw not in self._succ[start_node]:
                     raise nx.NetworkXError("Invalid counterclockwise reference node.")
                 ref_cw = self._succ[start_node][ccw]["cw"]
-
-                # keeping compatibility with old implementation that used
-                # "first_nbr" node attribute (required by LRPlanarity)
-                leftmost_nbr = next(reversed(self._succ[start_node]))
-
                 self.add_edge(start_node, end_node, cw=ref_cw, ccw=ccw)
                 self._succ[start_node][ref_cw]["ccw"] = end_node
                 self._succ[start_node][ccw]["cw"] = end_node
-
-                # keeping compatibility with old implementation that used
-                # "first_nbr" node attribute (required by LRPlanarity)
+                move_leftmost_nbr_to_end = True
+            else:
+                raise nx.NetworkXError("Node already has out-half-edge(s), either cw or ccw reference node required.")
+            if move_leftmost_nbr_to_end:
+                # LRPlanarity (via self.add_half_edge_first()) requires that
+                # we keep track of the leftmost neighbor, which we accomplish
+                # by keeping it as the last key in dict self._succ[start_node]
                 data = self._succ[start_node][leftmost_nbr]
                 del self._succ[start_node][leftmost_nbr]
                 self._succ[start_node][leftmost_nbr] = data
-
-            else:
-                raise nx.NetworkXError(
-                    "Attempted to add unreferenced half_edge from an already "
-                    "connected node."
-                )
         else:
             if cw is not None or ccw is not None:
                 raise nx.NetworkXError("Invalid reference node.")
@@ -1169,8 +1154,6 @@ class PlanarEmbedding(nx.DiGraph):
             reference = next(reversed(self._succ[start_node]))
         else:
             reference = None
-        # if add_half_edge_first() is called for a start_node that already
-        # has out half-edges, the new edge is ccw to the last added half-edge
         self.add_half_edge(start_node, end_node, cw=reference)
 
     def next_face_half_edge(self, v, w):
