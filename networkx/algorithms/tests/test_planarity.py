@@ -372,6 +372,36 @@ def check_counterexample(G, sub_graph):
 
 
 class TestPlanarEmbeddingClass:
+    def test_add_half_edge(self):
+        with pytest.raises(
+            nx.NetworkXException, match="Invalid clockwise reference node."
+        ):
+            embedding = nx.PlanarEmbedding()
+            embedding.add_half_edge(0, 1)
+            embedding.add_half_edge(0, 2, cw=3)
+        with pytest.raises(
+            nx.NetworkXException, match="Invalid counterclockwise reference node."
+        ):
+            embedding = nx.PlanarEmbedding()
+            embedding.add_half_edge(0, 1)
+            embedding.add_half_edge(0, 2, ccw=3)
+        with pytest.raises(
+            nx.NetworkXException, match="Only one of cw/ccw can be specified."
+        ):
+            embedding = nx.PlanarEmbedding()
+            embedding.add_half_edge(0, 1)
+            embedding.add_half_edge(0, 2, cw=1, ccw=1)
+        with pytest.raises(
+            nx.NetworkXException,
+            match=(
+                r"Node already has out-half-edge\(s\), either"
+                " cw or ccw reference node required."
+            ),
+        ):
+            embedding = nx.PlanarEmbedding()
+            embedding.add_half_edge(0, 1)
+            embedding.add_half_edge(0, 2)
+
     def test_get_data(self):
         embedding = self.get_star_embedding(4)
         data = embedding.get_data()

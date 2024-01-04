@@ -908,15 +908,16 @@ class PlanarEmbedding(nx.DiGraph):
         node
 
         """
-        if not self._succ[v]:
+        succs = self._succ[v]
+        if not succs:
             # v has no neighbors
             return
-        start_node = next(reversed(self._succ[v]))
+        start_node = next(reversed(succs))
         yield start_node
-        current_node = self._succ[v][start_node]["cw"]
+        current_node = succs[start_node]["cw"]
         while start_node != current_node:
             yield current_node
-            current_node = self._succ[v][current_node]["cw"]
+            current_node = succs[current_node]["cw"]
 
     def add_half_edge(self, start_node, end_node, cw=None, ccw=None):
         """Adds a half-edge from start_node to end_node.
@@ -936,41 +937,44 @@ class PlanarEmbedding(nx.DiGraph):
         end_node : node
             End node of inserted edge.
         cw/ccw: node
-            End node of reference edge.
+            End node of reference edge. Ommit or pass None if adding the first out-half-edge of start_node.
 
         Raises
         ------
         NetworkXException
-            If the reference_neighbor does not exist.
+            If the cw or ccw node is not a successor of start_node.
+            Or if start_node has successors, but neither cw or ccw is provided.
+            Or if both cw and ccw are specified.
 
         See Also
         --------
         connect_components
         """
 
-        if start_node in self._succ and self._succ[start_node]:
+        succs = self._succ.get(start_node)
+        if succs:
             # there is already some edge out of start_node
             leftmost_nbr = next(reversed(self._succ[start_node]))
             if cw is not None:
-                if cw not in self._succ[start_node]:
+                if cw not in succs:
                     raise nx.NetworkXError("Invalid clockwise reference node.")
                 if ccw is not None:
                     raise nx.NetworkXError("Only one of cw/ccw can be specified.")
-                ref_ccw = self._succ[start_node][cw]["ccw"]
+                ref_ccw = succs[cw]["ccw"]
                 self.add_edge(start_node, end_node, cw=cw, ccw=ref_ccw)
-                self._succ[start_node][ref_ccw]["cw"] = end_node
-                self._succ[start_node][cw]["ccw"] = end_node
+                succs[ref_ccw]["cw"] = end_node
+                succs[cw]["ccw"] = end_node
                 # when (cw == leftmost_nbr), the newly added neighbor is
                 # already at the end of dict self._succ[start_node] and
                 # takes the place of the former leftmost_nbr
                 move_leftmost_nbr_to_end = cw != leftmost_nbr
             elif ccw is not None:
-                if ccw not in self._succ[start_node]:
+                if ccw not in succs:
                     raise nx.NetworkXError("Invalid counterclockwise reference node.")
-                ref_cw = self._succ[start_node][ccw]["cw"]
+                ref_cw = succs[ccw]["cw"]
                 self.add_edge(start_node, end_node, cw=ref_cw, ccw=ccw)
-                self._succ[start_node][ref_cw]["ccw"] = end_node
-                self._succ[start_node][ccw]["cw"] = end_node
+                succs[ref_cw]["ccw"] = end_node
+                succs[ccw]["cw"] = end_node
                 move_leftmost_nbr_to_end = True
             else:
                 raise nx.NetworkXError(
@@ -980,9 +984,9 @@ class PlanarEmbedding(nx.DiGraph):
                 # LRPlanarity (via self.add_half_edge_first()) requires that
                 # we keep track of the leftmost neighbor, which we accomplish
                 # by keeping it as the last key in dict self._succ[start_node]
-                data = self._succ[start_node][leftmost_nbr]
-                del self._succ[start_node][leftmost_nbr]
-                self._succ[start_node][leftmost_nbr] = data
+                data = succs[leftmost_nbr]
+                del succs[leftmost_nbr]
+                succs[leftmost_nbr] = data
         else:
             if cw is not None or ccw is not None:
                 raise nx.NetworkXError("Invalid reference node.")
@@ -1069,9 +1073,9 @@ class PlanarEmbedding(nx.DiGraph):
 
         See Also
         --------
+        add_half_edge
         add_half_edge_cw
         connect_components
-        add_half_edge_first
 
         """
         self.add_half_edge(start_node, end_node, cw=reference_neighbor)
@@ -1098,9 +1102,9 @@ class PlanarEmbedding(nx.DiGraph):
 
         See Also
         --------
+        add_half_edge
         add_half_edge_ccw
         connect_components
-        add_half_edge_first
         """
         self.add_half_edge(start_node, end_node, ccw=reference_neighbor)
 
@@ -1147,17 +1151,14 @@ class PlanarEmbedding(nx.DiGraph):
 
         See Also
         --------
-        add_half_edge_ccw
-        add_half_edge_cw
+        add_half_edge
         connect_components
         """
-        if start_node in self and self._succ[start_node]:
-            # the leftmost neighbor is the last entry in the
-            # self._succ[start_node] dict
-            reference = next(reversed(self._succ[start_node]))
-        else:
-            reference = None
-        self.add_half_edge(start_node, end_node, cw=reference)
+        succs = self._succ.get(start_node)
+        # the leftmost neighbor is the last entry in the
+        # self._succ[start_node] dict
+        leftmost_nbr = next(reversed(succs)) if succs else None
+        self.add_half_edge(start_node, end_node, cw=leftmost_nbr)
 
     def next_face_half_edge(self, v, w):
         """Returns the following half-edge left of a face.
