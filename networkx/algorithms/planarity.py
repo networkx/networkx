@@ -865,11 +865,10 @@ class PlanarEmbedding(nx.DiGraph):
         """Forbidden operation
 
         Any edge additions to a PlanarEmbedding should be done using
-        methods `add_half_edge_first`, `add_half_edge_cw` or
-        `add_half_edge_ccw`.
+        method `add_half_edge`.
         """
         raise nx.NetworkXError(
-            "Use `add_half_edge_*` methods to add edges to a PlanarEmbedding."
+            "Use `add_half_edge` method to add edges to a PlanarEmbedding."
         )
 
     def get_data(self):
