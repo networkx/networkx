@@ -420,18 +420,20 @@ class TestPlanarEmbeddingClass:
         assert data == data_cmp
 
     def test_missing_edge_orientation(self):
-        embedding = nx.PlanarEmbedding()
-        embedding.add_edge(1, 2)
-        embedding.add_edge(2, 1)
+        embedding = nx.PlanarEmbedding({1: {2: {}}, 2: {1: {}}})
         with pytest.raises(nx.NetworkXException):
             # Invalid structure because the orientation of the edge was not set
             embedding.check_structure()
 
     def test_invalid_edge_orientation(self):
-        embedding = nx.PlanarEmbedding()
-        embedding.add_half_edge(1, 2)
-        embedding.add_half_edge(2, 1)
-        embedding.add_edge(1, 3)
+        embedding = nx.PlanarEmbedding(
+            {
+                1: {2: {"cw": 2, "ccw": 2}},
+                2: {1: {"cw": 1, "ccw": 1}},
+                1: {3: {}},
+                3: {1: {}},
+            }
+        )
         with pytest.raises(nx.NetworkXException):
             embedding.check_structure()
 
@@ -470,9 +472,9 @@ class TestPlanarEmbeddingClass:
         assert face == [1, 2]
 
     def test_unsuccessful_face_traversal(self):
-        embedding = nx.PlanarEmbedding()
-        embedding.add_edge(1, 2, ccw=2, cw=3)
-        embedding.add_edge(2, 1, ccw=1, cw=3)
+        embedding = nx.PlanarEmbedding(
+            {1: {2: {"cw": 3, "ccw": 2}}, 2: {1: {"cw": 3, "ccw": 1}}}
+        )
         with pytest.raises(nx.NetworkXException):
             embedding.traverse_face(1, 2)
 
