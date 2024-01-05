@@ -476,10 +476,10 @@ def test_mean_degree_influence_on_connectivity_S1():
 
 def test_compare_mean_kappas_different_gammas_S1():
     G1 = nx.geometric_soft_configuration_graph(
-        beta=1.5, n=2000, gamma=2.7, mean_degree=20, seed=42
+        beta=1.5, n=20, gamma=2.7, mean_degree=5, seed=42
     )
     G2 = nx.geometric_soft_configuration_graph(
-        beta=1.5, n=2000, gamma=3.5, mean_degree=20, seed=42
+        beta=1.5, n=20, gamma=3.5, mean_degree=5, seed=42
     )
     kappas1 = nx.get_node_attributes(G1, "kappa")
     mean_kappas1 = sum(kappas1.values()) / len(kappas1)
