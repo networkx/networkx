@@ -387,8 +387,8 @@ def is_regular_expander(G, *, epsilon=0):
 
     _, d = nx.utils.arbitrary_element(G.degree)
 
-    A = nx.adjacency_matrix(G)
-    lams = eigsh(A.asfptype(), which="LM", k=2, return_eigenvectors=False)
+    A = nx.adjacency_matrix(G, dtype=float)
+    lams = eigsh(A, which="LM", k=2, return_eigenvectors=False)
 
     # lambda2 is the second biggest eigenvalue
     lambda2 = min(lams)
