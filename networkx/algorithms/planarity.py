@@ -937,7 +937,7 @@ class PlanarEmbedding(nx.DiGraph):
         end_node : node
             End node of inserted edge.
         cw/ccw: node
-            End node of reference edge. 
+            End node of reference edge.
             Omit or pass None if adding the first out-half-edge of start_node.
 
         Raises
