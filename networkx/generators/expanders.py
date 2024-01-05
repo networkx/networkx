@@ -248,7 +248,7 @@ def maybe_regular_expander(n, d, *, create_using=None, max_tries=100, seed=None)
 
     Examples
     --------
-    >>> G = nx.maybe_regular_expander(n=200, d=6)
+    >>> G = nx.maybe_regular_expander(n=200, d=6, seed=8020)
 
     Returns
     -------
