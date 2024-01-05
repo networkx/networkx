@@ -1048,7 +1048,7 @@ class PlanarEmbedding(nx.DiGraph):
                 if ccw is not None:
                     raise nx.NetworkXError("Only one of cw/ccw can be specified.")
                 ref_ccw = succs[cw]["ccw"]
-                self.add_edge(start_node, end_node, cw=cw, ccw=ref_ccw)
+                super().add_edge(start_node, end_node, cw=cw, ccw=ref_ccw)
                 succs[ref_ccw]["cw"] = end_node
                 succs[cw]["ccw"] = end_node
                 # when (cw == leftmost_nbr), the newly added neighbor is
@@ -1059,7 +1059,7 @@ class PlanarEmbedding(nx.DiGraph):
                 if ccw not in succs:
                     raise nx.NetworkXError("Invalid counterclockwise reference node.")
                 ref_cw = succs[ccw]["cw"]
-                self.add_edge(start_node, end_node, cw=ref_cw, ccw=ccw)
+                super().add_edge(start_node, end_node, cw=ref_cw, ccw=ccw)
                 succs[ref_cw]["ccw"] = end_node
                 succs[ccw]["cw"] = end_node
                 move_leftmost_nbr_to_end = True
@@ -1078,7 +1078,7 @@ class PlanarEmbedding(nx.DiGraph):
             if cw is not None or ccw is not None:
                 raise nx.NetworkXError("Invalid reference node.")
             # adding the first edge out of start_node
-            self.add_edge(start_node, end_node, ccw=end_node, cw=end_node)
+            super().add_edge(start_node, end_node, ccw=end_node, cw=end_node)
 
     def check_structure(self):
         """Runs without exceptions if this object is valid.
