@@ -936,21 +936,15 @@ class PlanarEmbedding(nx.DiGraph):
 
         """
         try:
-            nbrs = self._pred[n]
-            for u in tuple(nbrs):
-                un_cw = self._succ[u][n]["cw"]
-                un_ccw = self._succ[u][n]["ccw"]
-                del self._succ[u][n]
-                del self._pred[n][u]
-                del self._succ[n][u]
+            for u in self._pred[n]:
+                succs_u = self._succ[u]
+                un_cw = succs_u[n]["cw"]
+                un_ccw = succs_u[n]["ccw"]
+                del succs_u[n]
                 del self._pred[u][n]
                 if n != un_cw:
-                    self._succ[u][un_cw]["ccw"] = un_ccw
-                    self._succ[u][un_ccw]["cw"] = un_cw
-                    if self._node[u]["first_nbr"] == n:
-                        self._node[u]["first_nbr"] = un_ccw
-                else:
-                    del self._node[u]["first_nbr"]
+                    succs_u[un_cw]["ccw"] = un_ccw
+                    succs_u[un_ccw]["cw"] = un_cw
             del self._node[n]
             del self._succ[n]
             del self._pred[n]
@@ -1220,31 +1214,25 @@ class PlanarEmbedding(nx.DiGraph):
         remove_edges_from : remove a collection of edges
         """
         try:
-            uv_cw = self._succ[u][v]["cw"]
-            uv_ccw = self._succ[u][v]["ccw"]
-            vu_cw = self._succ[v][u]["cw"]
-            vu_ccw = self._succ[v][u]["ccw"]
-            del self._succ[u][v]
+            succs_u = self._succ[u]
+            succs_v = self._succ[v]
+            uv_cw = succs_u[v]["cw"]
+            uv_ccw = succs_u[v]["ccw"]
+            vu_cw = succs_v[u]["cw"]
+            vu_ccw = succs_v[u]["ccw"]
+            del succs_u[v]
             del self._pred[v][u]
-            del self._succ[v][u]
+            del succs_v[u]
             del self._pred[u][v]
             if v != uv_cw:
-                self._succ[u][uv_cw]["ccw"] = uv_ccw
-                self._succ[u][uv_ccw]["cw"] = uv_cw
-                if self._node[u]["first_nbr"] == v:
-                    self._node[u]["first_nbr"] = uv_ccw
-            else:
-                del self._node[u]["first_nbr"]
+                succs_u[uv_cw]["ccw"] = uv_ccw
+                succs_u[uv_ccw]["cw"] = uv_cw
             if u != vu_cw:
-                self._succ[v][vu_cw]["ccw"] = vu_ccw
-                self._succ[v][vu_ccw]["cw"] = vu_cw
-                if self._node[v]["first_nbr"] == u:
-                    self._node[v]["first_nbr"] = vu_ccw
-            else:
-                del self._node[v]["first_nbr"]
+                succs_v[vu_cw]["ccw"] = vu_ccw
+                succs_v[vu_ccw]["cw"] = vu_cw
         except KeyError as err:
             raise nx.NetworkXError(
-                f"The edge {u}-{v} not in the planar embedding."
+                f"The edge {u}-{v} is not in the planar embedding."
             ) from err
 
     def remove_edges_from(self, ebunch):
