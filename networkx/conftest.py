@@ -117,7 +117,9 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="\n\nThe `normalized`"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="function `join` is deprecated"
+        "ignore",
+        category=DeprecationWarning,
+        message="The function `join` is deprecated",
     )
     warnings.filterwarnings(
         "ignore",

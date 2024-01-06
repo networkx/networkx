@@ -248,7 +248,7 @@ def maybe_regular_expander(n, d, *, create_using=None, max_tries=100, seed=None)
 
     Examples
     --------
-    >>> G = nx.maybe_regular_expander(n=200, d=6)
+    >>> G = nx.maybe_regular_expander(n=200, d=6, seed=8020)
 
     Returns
     -------
@@ -387,8 +387,8 @@ def is_regular_expander(G, *, epsilon=0):
 
     _, d = nx.utils.arbitrary_element(G.degree)
 
-    A = nx.adjacency_matrix(G)
-    lams = eigsh(A.asfptype(), which="LM", k=2, return_eigenvectors=False)
+    A = nx.adjacency_matrix(G, dtype=float)
+    lams = eigsh(A, which="LM", k=2, return_eigenvectors=False)
 
     # lambda2 is the second biggest eigenvalue
     lambda2 = min(lams)
