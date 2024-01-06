@@ -64,12 +64,12 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     matrix for each component.
 
     >>> G = nx.Graph([(1, 2), (2, 3), (4, 5)])
-    >>> nx.laplacian_matrix(G).toarray()
-    array([[ 1, -1,  0,  0,  0],
-           [-1,  2, -1,  0,  0],
-           [ 0, -1,  1,  0,  0],
-           [ 0,  0,  0,  1, -1],
-           [ 0,  0,  0, -1,  1]])
+    >>> print(nx.laplacian_matrix(G).toarray())
+    [[ 1 -1  0  0  0]
+     [-1  2 -1  0  0]
+     [ 0 -1  1  0  0]
+     [ 0  0  0  1 -1]
+     [ 0  0  0 -1  1]]
 
     >>> edges = [(1, 2), (2, 1), (2, 4), (4, 3), (3, 4),]
     >>> DiG = nx.DiGraph(edges)
