@@ -148,24 +148,21 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     Examples
     --------
 
-    >>> import numpy as np; np.set_printoptions(precision=4) # To print with lower precision
-    >>> edges = [(1, 2), (1, 3), (3, 1), (3, 2), (3, 5), (5, 4), (5, 6), (4, 5), (4, 6), (6, 4)]
+    >>> import numpy as np
+    >>> np.set_printoptions(precision=4) # To print with lower precision
+    >>> edges = [(1, 2), (2, 1), (2, 4), (4, 3), (3, 4),]
     >>> DiG = nx.DiGraph(edges)
-    >>> nx.normalized_laplacian_matrix(DiG).toarray()
-    array([[ 1.    ,  0.    , -0.4082,  0.    ,  0.    ,  0.    ],
-           [ 0.    ,  0.    ,  0.    ,  0.    ,  0.    ,  0.    ],
-           [-0.4082,  0.    ,  1.    , -0.4082,  0.    ,  0.    ],
-           [ 0.    ,  0.    ,  0.    ,  1.    , -0.5   , -0.7071],
-           [ 0.    ,  0.    ,  0.    , -0.5   ,  1.    , -0.7071],
-           [ 0.    ,  0.    ,  0.    ,  0.    , -0.7071,  1.    ]])
+    >>> print(nx.normalized_laplacian_matrix(DiG).toarray())
+    [[ 1.     -0.7071  0.      0.    ]
+     [-0.7071  1.     -0.7071  0.    ]
+     [ 0.      0.      1.     -1.    ]
+     [ 0.      0.     -1.      1.    ]]
     >>> G = nx.Graph(DiG)
-    >>> nx.normalized_laplacian_matrix(G).toarray()
-    array([[ 1.    , -0.5   , -0.4082,  0.    ,  0.    ,  0.    ],
-           [-0.5   ,  1.    , -0.4082,  0.    ,  0.    ,  0.    ],
-           [-0.4082, -0.4082,  1.    , -0.3333,  0.    ,  0.    ],
-           [ 0.    ,  0.    , -0.3333,  1.    , -0.4082, -0.4082],
-           [ 0.    ,  0.    ,  0.    , -0.4082,  1.    , -0.5   ],
-           [ 0.    ,  0.    ,  0.    , -0.4082, -0.5   ,  1.    ]])
+    >>> print(nx.normalized_laplacian_matrix(G).toarray())
+    [[ 1.     -0.7071  0.      0.    ]
+     [-0.7071  1.     -0.5     0.    ]
+     [ 0.     -0.5     1.     -0.7071]
+     [ 0.      0.     -0.7071  1.    ]]
 
     See Also
     --------
