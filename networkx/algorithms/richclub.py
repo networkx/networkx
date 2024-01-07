@@ -44,6 +44,12 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
     rc : dictionary
        A dictionary, keyed by degree, with rich-club coefficient values.
 
+    Raises
+    ------
+    NetworkXError
+        If G has less than 4 nodes and normalized=True.
+        Raised from within nx.double_edge_swap()
+
     Examples
     --------
     >>> G = nx.Graph([(0, 1), (0, 2), (1, 2), (1, 3), (1, 4), (4, 5)])
@@ -75,8 +81,6 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
             "rich_club_coefficient is not implemented for graphs with self loops."
         )
     rc = _compute_rc(G)
-    # Normalized mode needs at least 4 nodes to perform a double edge swap
-    # Otherwise, an exception will be raised within nx.double_edge_swap()
     if normalized:
         # make R a copy of G, randomize with Q*|E| double edge swaps
         # and use rich_club coefficient of R to normalize
