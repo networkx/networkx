@@ -905,6 +905,8 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
             #    multiplicative total spanning tree weight if the weight of each edge
             #    is assumed to be 1, which is conveniently built into networkx already,
             #    by calling total_spanning_tree_weight with weight=None
+            #
+            # 3. There are no edges in the graph. Then the weight of the MST is zero
             else:
                 total = 0
                 for u, v, w in G.edges(data=weight):
@@ -913,6 +915,20 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
                     )
                 return total
 
+    # Spanning tree for an empty graph is an empty graph
+    if G.number_of_nodes() == 0:
+        spanning_tree = nx.Graph()
+        return spanning_tree
+
+    # Spanning tree for a single node graph is that single node.
+    # A new graph is returned instead of returning G or its copy,
+    # in case G had a self loop
+    if G.number_of_nodes() == 1:
+        spanning_tree = nx.Graph()
+        spanning_tree.add_node(list(G.nodes)[0])
+        return G
+
+    # General case: For graphs of 2 or more nodes
     U = set()
     st_cached_value = 0
     V = set(G.edges())
