@@ -926,7 +926,7 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
     if G.number_of_nodes() == 1:
         spanning_tree = nx.Graph()
         spanning_tree.add_node(list(G.nodes)[0])
-        return G
+        return spanning_tree
 
     # General case: For graphs of 2 or more nodes
     U = set()
