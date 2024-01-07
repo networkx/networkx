@@ -156,7 +156,10 @@ def degree_histogram(G):
     (Order(number_of_edges))
     """
     counts = Counter(d for n, d in G.degree())
-    return [counts.get(i, 0) for i in range(max(counts) + 1)]
+    if len(counts) > 0:
+        return [counts.get(i, 0) for i in range(max(counts) + 1)]
+    else:
+        return []
 
 
 def is_directed(G):

@@ -108,6 +108,9 @@ def _compute_rc(G):
     # side of the list, which would have a linear time cost.
     edge_degrees = sorted((sorted(map(G.degree, e)) for e in G.edges()), reverse=True)
     ek = G.number_of_edges()
+    if ek == 0:
+        return {}
+
     k1, k2 = edge_degrees.pop()
     rc = {}
     for d, nk in enumerate(nks):
