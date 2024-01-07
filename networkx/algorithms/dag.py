@@ -164,18 +164,23 @@ def is_directed_acyclic_graph(G):
 
 
 @nx._dispatch
-def topological_generations(G):
+def topological_generations(G, sources=None):
     """Stratifies a DAG into generations.
 
     A topological generation is node collection in which ancestors of a node in each
     generation are guaranteed to be in a previous generation, and any descendants of
     a node are guaranteed to be in a following generation. Nodes are guaranteed to
-    be in the earliest possible generation that they can belong to.
+    be in the earliest possible generation that they can belong to. Optionally, a
+    `sources` list can be provided which will act as the initial generation. No
+    source provided in `sources` can be a pure descendant of any combination of
+    other sources in `sources`.
+
 
     Parameters
     ----------
     G : NetworkX digraph
         A directed acyclic graph (DAG)
+    sources: list of nodes in `G`, optional
 
     Yields
     ------
@@ -217,7 +222,10 @@ def topological_generations(G):
 
     multigraph = G.is_multigraph()
     indegree_map = {v: d for v, d in G.in_degree() if d > 0}
-    zero_indegree = [v for v, d in G.in_degree() if d == 0]
+    if sources is None:
+        zero_indegree = [v for v, d in G.in_degree() if d == 0]
+    else:
+        zero_indegree = sources
 
     while zero_indegree:
         this_generation = zero_indegree
@@ -231,18 +239,23 @@ def topological_generations(G):
                 except KeyError as err:
                     raise RuntimeError("Graph changed during iteration") from err
                 if indegree_map[child] == 0:
+                    if child in sources:
+                        raise RuntimeError(
+                            f"source node `{child}` is a pure descendant of a combination "
+                            "of other sources, this is not allowed"
+                        )
                     zero_indegree.append(child)
                     del indegree_map[child]
         yield this_generation
 
-    if indegree_map:
+    if indegree_map and sources is None:
         raise nx.NetworkXUnfeasible(
             "Graph contains a cycle or graph changed during iteration"
         )
 
 
 @nx._dispatch
-def topological_sort(G):
+def topological_sort(G, sources=None):
     """Returns a generator of nodes in topologically sorted order.
 
     A topological sort is a nonunique permutation of the nodes of a
@@ -306,7 +319,7 @@ def topological_sort(G):
     .. [1] Manber, U. (1989).
        *Introduction to Algorithms - A Creative Approach.* Addison-Wesley.
     """
-    for generation in nx.topological_generations(G):
+    for generation in nx.topological_generations(G, sources=sources):
         yield from generation
 
 
@@ -570,6 +583,61 @@ def all_topological_sorts(G):
 
         if len(bases) == 0:
             break
+
+
+@nx._dispatch
+def pure_descendants(G, sources):
+    """Returns all nodes reachable from `sources` in `G`, assuming that
+    `sources` are the only dependencies initially satisfied. Contrast this
+    with `descendants` which assumes all leaf nodes are initially satisfied.
+    No source provided in `sources` can be a pure descendant of any
+    combination of other sources in `sources`.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+    sources : list of nodes in `G`
+
+    Returns
+    -------
+    set()
+        The pure descendants of `sources` in `G`
+
+    Raises
+    ------
+    NetworkXError
+        If any node in `sources` is not in `G`.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph({
+    ...     1: [],
+    ...     2: [1],
+    ...     3: [1],
+    ...     4: [2],
+    ...     5: [4],
+    ...     6: [2, 3, 5],
+    ...     7: [5]
+    ... })
+    >>> sorted(nx.pure_descendants(DG, [5]))
+    [4]
+    >>> sorted(nx.pure_descendants(DG, [2]))
+    []
+    >>> sorted(nx.pure_descendants(DG, [3]))
+    []
+    >>> sorted(nx.pure_descendants(DG, [2, 3]))
+    [1]
+
+    The `sources` nodes are not pure descendants of themselves, but can be included manually:
+
+    >>> sorted(nx.pure_descendants(DG, [2, 3]) | {2, 3})
+    [1, 2, 3]
+
+    See also
+    --------
+    descendants
+    """
+    return set(nx.topological_sort(G, sources)) - set(sources)
 
 
 @nx._dispatch
