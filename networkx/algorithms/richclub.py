@@ -75,7 +75,8 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
             "rich_club_coefficient is not implemented for graphs with self loops."
         )
     rc = _compute_rc(G)
-    if normalized:
+    # need at least 4 nodes to perform a double edge swap
+    if normalized and G.number_of_nodes() >= 4:
         # make R a copy of G, randomize with Q*|E| double edge swaps
         # and use rich_club coefficient of R to normalize
         R = G.copy()
