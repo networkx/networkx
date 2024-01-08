@@ -229,7 +229,7 @@ def local_constraint(G, u, v, weight=None):
     the node ``v`` in the graph ``G``.
 
     Formally, the *local constraint on u with respect to v*, denoted
-    $\ell(v)$, is defined by
+    $\ell(u, v)$, is defined by
 
     .. math::
 

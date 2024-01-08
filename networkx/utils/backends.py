@@ -124,12 +124,8 @@ def _get_backends(group, *, load_and_call=False):
     return rv
 
 
-# Rename "plugin" to "backend", and give backends a release cycle to update.
-backends = _get_backends("networkx.plugins")
-backend_info = _get_backends("networkx.plugin_info", load_and_call=True)
-
-backends.update(_get_backends("networkx.backends"))
-backend_info.update(_get_backends("networkx.backend_info", load_and_call=True))
+backends = _get_backends("networkx.backends")
+backend_info = _get_backends("networkx.backend_info", load_and_call=True)
 
 # Load and cache backends on-demand
 _loaded_backends = {}  # type: ignore[var-annotated]
@@ -146,64 +142,6 @@ _registered_algorithms = {}
 
 
 class _dispatch:
-    """Dispatches to a backend algorithm based on input graph types.
-
-    Parameters
-    ----------
-    func : function
-
-    name : str, optional
-        The name of the algorithm to use for dispatching. If not provided,
-        the name of ``func`` will be used. ``name`` is useful to avoid name
-        conflicts, as all dispatched algorithms live in a single namespace.
-
-    graphs : str or dict or None, default "G"
-        If a string, the parameter name of the graph, which must be the first
-        argument of the wrapped function. If more than one graph is required
-        for the algorithm (or if the graph is not the first argument), provide
-        a dict of parameter name to argument position for each graph argument.
-        For example, ``@_dispatch(graphs={"G": 0, "auxiliary?": 4})``
-        indicates the 0th parameter ``G`` of the function is a required graph,
-        and the 4th parameter ``auxiliary`` is an optional graph.
-        To indicate an argument is a list of graphs, do e.g. ``"[graphs]"``.
-        Use ``graphs=None`` if *no* arguments are NetworkX graphs such as for
-        graph generators, readers, and conversion functions.
-
-    edge_attrs : str or dict, optional
-        ``edge_attrs`` holds information about edge attribute arguments
-        and default values for those edge attributes.
-        If a string, ``edge_attrs`` holds the function argument name that
-        indicates a single edge attribute to include in the converted graph.
-        The default value for this attribute is 1. To indicate that an argument
-        is a list of attributes (all with default value 1), use e.g. ``"[attrs]"``.
-        If a dict, ``edge_attrs`` holds a dict keyed by argument names, with
-        values that are either the default value or, if a string, the argument
-        name that indicates the default value.
-
-    node_attrs : str or dict, optional
-        Like ``edge_attrs``, but for node attributes.
-
-    preserve_edge_attrs : bool or str or dict, optional
-        For bool, whether to preserve all edge attributes.
-        For str, the parameter name that may indicate (with ``True`` or a
-        callable argument) whether all edge attributes should be preserved
-        when converting.
-        For dict of ``{graph_name: {attr: default}}``, indicate pre-determined
-        edge attributes (and defaults) to preserve for input graphs.
-
-    preserve_node_attrs : bool or str or dict, optional
-        Like ``preserve_edge_attrs``, but for node attributes.
-
-    preserve_graph_attrs : bool or set
-        For bool, whether to preserve all graph attributes.
-        For set, which input graph arguments to preserve graph attributes.
-
-    preserve_all_attrs : bool
-        Whether to preserve all edge, node and graph attributes.
-        This overrides all the other preserve_*_attrs.
-
-    """
-
     # Allow any of the following decorator forms:
     #  - @_dispatch
     #  - @_dispatch()
@@ -238,6 +176,63 @@ class _dispatch:
         preserve_graph_attrs=False,
         preserve_all_attrs=False,
     ):
+        """Dispatches to a backend algorithm based on input graph types.
+
+        Parameters
+        ----------
+        func : function
+
+        name : str, optional
+            The name of the algorithm to use for dispatching. If not provided,
+            the name of ``func`` will be used. ``name`` is useful to avoid name
+            conflicts, as all dispatched algorithms live in a single namespace.
+
+        graphs : str or dict or None, default "G"
+            If a string, the parameter name of the graph, which must be the first
+            argument of the wrapped function. If more than one graph is required
+            for the algorithm (or if the graph is not the first argument), provide
+            a dict of parameter name to argument position for each graph argument.
+            For example, ``@_dispatch(graphs={"G": 0, "auxiliary?": 4})``
+            indicates the 0th parameter ``G`` of the function is a required graph,
+            and the 4th parameter ``auxiliary`` is an optional graph.
+            To indicate an argument is a list of graphs, do e.g. ``"[graphs]"``.
+            Use ``graphs=None`` if *no* arguments are NetworkX graphs such as for
+            graph generators, readers, and conversion functions.
+
+        edge_attrs : str or dict, optional
+            ``edge_attrs`` holds information about edge attribute arguments
+            and default values for those edge attributes.
+            If a string, ``edge_attrs`` holds the function argument name that
+            indicates a single edge attribute to include in the converted graph.
+            The default value for this attribute is 1. To indicate that an argument
+            is a list of attributes (all with default value 1), use e.g. ``"[attrs]"``.
+            If a dict, ``edge_attrs`` holds a dict keyed by argument names, with
+            values that are either the default value or, if a string, the argument
+            name that indicates the default value.
+
+        node_attrs : str or dict, optional
+            Like ``edge_attrs``, but for node attributes.
+
+        preserve_edge_attrs : bool or str or dict, optional
+            For bool, whether to preserve all edge attributes.
+            For str, the parameter name that may indicate (with ``True`` or a
+            callable argument) whether all edge attributes should be preserved
+            when converting.
+            For dict of ``{graph_name: {attr: default}}``, indicate pre-determined
+            edge attributes (and defaults) to preserve for input graphs.
+
+        preserve_node_attrs : bool or str or dict, optional
+            Like ``preserve_edge_attrs``, but for node attributes.
+
+        preserve_graph_attrs : bool or set
+            For bool, whether to preserve all graph attributes.
+            For set, which input graph arguments to preserve graph attributes.
+
+        preserve_all_attrs : bool
+            Whether to preserve all edge, node and graph attributes.
+            This overrides all the other preserve_*_attrs.
+
+        """
         if func is None:
             return partial(
                 _dispatch,
@@ -1016,3 +1011,9 @@ if os.environ.get("_NETWORKX_BUILDING_DOCS_"):
         dispatched_func = _orig_dispatch(func, **kwargs)
         func.__doc__ = dispatched_func.__doc__
         return func
+
+    _dispatch.__doc__ = _orig_dispatch.__new__.__doc__  # type: ignore[method-assign,assignment]
+    _sig = inspect.signature(_orig_dispatch.__new__)
+    _dispatch.__signature__ = _sig.replace(  # type: ignore[method-assign,assignment]
+        parameters=[v for k, v in _sig.parameters.items() if k != "cls"]
+    )
