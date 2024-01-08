@@ -149,7 +149,7 @@ def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
         Specify the maximum search depth
 
     sort_neighbors : function
-        A function that takes an iterator over all the neighbors of a given node 
+        A function that takes an iterator over all the neighbors of a given node
         as input, and returns an iterable over these neighbors but with a custom
         ordering.
 
@@ -237,7 +237,7 @@ def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
         Specify the maximum search depth
 
     sort_neighbors : function
-        A function that takes an iterator over all the neighbors of a given node 
+        A function that takes an iterator over all the neighbors of a given node
         as input, and returns an iterable over these neighbors but with a custom 
         ordering.
 
@@ -301,7 +301,7 @@ def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
         Specify the maximum search depth
 
     sort_neighbors : function
-        A function that takes an iterator over all the neighbors of a given node 
+        A function that takes an iterator over all the neighbors of a given node
         as input, and returns an iterable over these neighbors but with a custom
         ordering.
 
@@ -367,7 +367,7 @@ def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
         Specify the maximum search depth
 
     sort_neighbors : function
-        A function that takes an iterator over all the neighbors of a given node 
+        A function that takes an iterator over all the neighbors of a given node
         as input, and returns an iterable over these neighbors but with a custom
         ordering.
 
