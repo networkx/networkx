@@ -256,7 +256,7 @@ def directed_laplacian_matrix(
 
     .. math::
 
-        L = I - \frac{1}{2} (\Phi^{1/2} P \Phi^{-1/2} + \Phi^{-1/2} P^T \Phi^{1/2} )
+        L = I - \frac{1}{2} \left (\Phi^{1/2} P \Phi^{-1/2} + \Phi^{-1/2} P^T \Phi^{1/2} \right )
 
     where `I` is the identity matrix, `P` is the transition matrix of the
     graph, and `\Phi` a matrix with the Perron vector of `P` in the diagonal and
@@ -355,7 +355,7 @@ def directed_combinatorial_laplacian_matrix(
 
     .. math::
 
-        L = \Phi - \frac{1}{2} (\Phi P + P^T \Phi)
+        L = \Phi - \frac{1}{2} \left (\Phi P + P^T \Phi \right)
 
     where `P` is the transition matrix of the graph and `\Phi` a matrix
     with the Perron vector of `P` in the diagonal and zeros elsewhere [1]_.
