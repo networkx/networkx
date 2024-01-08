@@ -15,7 +15,7 @@ __all__ = [
 
 
 @nx._dispatch
-def dfs_edges(G, source=None, depth_limit=None, sort_children=None):
+def dfs_edges(G, source=None, depth_limit=None, sort_neighbors=None):
     """Iterate over edges in a depth-first-search (DFS).
 
     Perform a depth-first-search over the nodes of `G` and yield
@@ -33,7 +33,7 @@ def dfs_edges(G, source=None, depth_limit=None, sort_children=None):
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
 
-    sort_children : function
+    sort_neighbors : function
         A function that takes the list of children of given node as input, and
         returns an *iterator* over these children but with custom ordering.
 
@@ -52,7 +52,7 @@ def dfs_edges(G, source=None, depth_limit=None, sort_children=None):
 
     Notes
     -----
-    If `sort_children` returns an iterable then it would be internally converted to
+    If `sort_neighbors` returns an iterable then it would be internally converted to
     an iterator but it will be more efficient if it returns an iterator.
 
     If a source is not specified then a source is chosen arbitrarily and
@@ -86,8 +86,8 @@ def dfs_edges(G, source=None, depth_limit=None, sort_children=None):
         depth_limit = len(G)
 
     get_children = G.neighbors
-    if sort_children is not None and callable(sort_children):
-        get_children = lambda node: iter(sort_children(G.neighbors(node)))
+    if sort_neighbors is not None and callable(sort_neighbors):
+        get_children = lambda node: iter(sort_neighbors(G.neighbors(node)))
 
     visited = set()
     for start in nodes:
@@ -113,7 +113,7 @@ def dfs_edges(G, source=None, depth_limit=None, sort_children=None):
 
 
 @nx._dispatch
-def dfs_tree(G, source=None, depth_limit=None, sort_children=None):
+def dfs_tree(G, source=None, depth_limit=None, sort_neighbors=None):
     """Returns oriented tree constructed from a depth-first-search from source.
 
     Parameters
@@ -126,7 +126,7 @@ def dfs_tree(G, source=None, depth_limit=None, sort_children=None):
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
 
-    sort_children : function
+    sort_neighbors : function
         A function that takes the list of children of given node as input, and
         returns an *iterator* over these children but with custom ordering.
 
@@ -137,7 +137,7 @@ def dfs_tree(G, source=None, depth_limit=None, sort_children=None):
 
     Notes
     -----
-    If `sort_children` returns an iterable then it would be internally converted to
+    If `sort_neighbors` returns an iterable then it would be internally converted to
     an iterator but it will be more efficient if it returns an iterator.
 
     Examples
@@ -163,12 +163,12 @@ def dfs_tree(G, source=None, depth_limit=None, sort_children=None):
         T.add_nodes_from(G)
     else:
         T.add_node(source)
-    T.add_edges_from(dfs_edges(G, source, depth_limit, sort_children))
+    T.add_edges_from(dfs_edges(G, source, depth_limit, sort_neighbors))
     return T
 
 
 @nx._dispatch
-def dfs_predecessors(G, source=None, depth_limit=None, sort_children=None):
+def dfs_predecessors(G, source=None, depth_limit=None, sort_neighbors=None):
     """Returns dictionary of predecessors in depth-first-search from source.
 
     Parameters
@@ -184,7 +184,7 @@ def dfs_predecessors(G, source=None, depth_limit=None, sort_children=None):
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
 
-    sort_children : function
+    sort_neighbors : function
         A function that takes the list of children of given node as input, and
         returns an *iterator* over these children but with custom ordering.
 
@@ -203,7 +203,7 @@ def dfs_predecessors(G, source=None, depth_limit=None, sort_children=None):
 
     Notes
     -----
-    If `sort_children` returns an iterable then it would be internally converted to
+    If `sort_neighbors` returns an iterable then it would be internally converted to
     an iterator but it will be more efficient if it returns an iterator.
 
     If a source is not specified then a source is chosen arbitrarily and
@@ -225,11 +225,11 @@ def dfs_predecessors(G, source=None, depth_limit=None, sort_children=None):
     :func:`~networkx.algorithms.traversal.edgedfs.edge_dfs`
     :func:`~networkx.algorithms.traversal.breadth_first_search.bfs_tree`
     """
-    return {t: s for s, t in dfs_edges(G, source, depth_limit, sort_children)}
+    return {t: s for s, t in dfs_edges(G, source, depth_limit, sort_neighbors)}
 
 
 @nx._dispatch
-def dfs_successors(G, source=None, depth_limit=None, sort_children=None):
+def dfs_successors(G, source=None, depth_limit=None, sort_neighbors=None):
     """Returns dictionary of successors in depth-first-search from source.
 
     Parameters
@@ -245,7 +245,7 @@ def dfs_successors(G, source=None, depth_limit=None, sort_children=None):
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
 
-    sort_children : function
+    sort_neighbors : function
         A function that takes the list of children of given node as input, and
         returns an *iterator* over these children but with custom ordering.
 
@@ -264,7 +264,7 @@ def dfs_successors(G, source=None, depth_limit=None, sort_children=None):
 
     Notes
     -----
-    If `sort_children` returns an iterable then it would be internally converted to
+    If `sort_neighbors` returns an iterable then it would be internally converted to
     an iterator but it will be more efficient if it returns an iterator.
 
     If a source is not specified then a source is chosen arbitrarily and
@@ -288,14 +288,14 @@ def dfs_successors(G, source=None, depth_limit=None, sort_children=None):
     """
     d = defaultdict(list)
     for s, t in dfs_edges(
-        G, source=source, depth_limit=depth_limit, sort_children=sort_children
+        G, source=source, depth_limit=depth_limit, sort_neighbors=sort_csort_neighborshildren
     ):
         d[s].append(t)
     return dict(d)
 
 
 @nx._dispatch
-def dfs_postorder_nodes(G, source=None, depth_limit=None, sort_children=None):
+def dfs_postorder_nodes(G, source=None, depth_limit=None, sort_neighbors=None):
     """Generate nodes in a depth-first-search post-ordering starting at source.
 
     Parameters
@@ -308,7 +308,7 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None, sort_children=None):
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
 
-    sort_children : function
+    sort_neighbors : function
         A function that takes the list of children of given node as input, and
         returns an *iterator* over these children but with custom ordering.
 
@@ -327,7 +327,7 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None, sort_children=None):
 
     Notes
     -----
-    If `sort_children` returns an iterable then it would be internally converted to
+    If `sort_neighbors` returns an iterable then it would be internally converted to
     an iterator but it will be more efficient if it returns an iterator.
 
     If a source is not specified then a source is chosen arbitrarily and
@@ -350,13 +350,13 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None, sort_children=None):
     :func:`~networkx.algorithms.traversal.breadth_first_search.bfs_tree`
     """
     edges = nx.dfs_labeled_edges(
-        G, source=source, depth_limit=depth_limit, sort_children=sort_children
+        G, source=source, depth_limit=depth_limit, sort_neighbors=sort_neighbors
     )
     return (v for u, v, d in edges if d == "reverse")
 
 
 @nx._dispatch
-def dfs_preorder_nodes(G, source=None, depth_limit=None, sort_children=None):
+def dfs_preorder_nodes(G, source=None, depth_limit=None, sort_neighbors=None):
     """Generate nodes in a depth-first-search pre-ordering starting at source.
 
     Parameters
@@ -370,7 +370,7 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None, sort_children=None):
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
 
-    sort_children : function
+    sort_neighbors : function
         A function that takes the list of children of given node as input, and
         returns an *iterator* over these children but with custom ordering.
 
@@ -389,7 +389,7 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None, sort_children=None):
 
     Notes
     -----
-    If `sort_children` returns an iterable then it would be internally converted to
+    If `sort_neighbors` returns an iterable then it would be internally converted to
     an iterator but it will be more efficient if it returns an iterator.
 
     If a source is not specified then a source is chosen arbitrarily and
@@ -411,13 +411,13 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None, sort_children=None):
     :func:`~networkx.algorithms.traversal.breadth_first_search.bfs_edges`
     """
     edges = nx.dfs_labeled_edges(
-        G, source=source, depth_limit=depth_limit, sort_children=sort_children
+        G, source=source, depth_limit=depth_limit, sort_neighbors=sort_neighbors
     )
     return (v for u, v, d in edges if d == "forward")
 
 
 @nx._dispatch
-def dfs_labeled_edges(G, source=None, depth_limit=None, sort_children=None):
+def dfs_labeled_edges(G, source=None, depth_limit=None, sort_neighbors=None):
     """Iterate over edges in a depth-first-search (DFS) labeled by type.
 
     Parameters
@@ -431,7 +431,7 @@ def dfs_labeled_edges(G, source=None, depth_limit=None, sort_children=None):
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
 
-    sort_children : function
+    sort_neighbors : function
         A function that takes the list of children of given node as input, and
         returns an *iterator* over these children but with custom ordering.
 
@@ -470,7 +470,7 @@ def dfs_labeled_edges(G, source=None, depth_limit=None, sort_children=None):
 
     Notes
     -----
-    If `sort_children` returns an iterable then it would be internally converted to
+    If `sort_neighbors` returns an iterable then it would be internally converted to
     an iterator but it will be more efficient if it returns an iterator.
 
     If a source is not specified then a source is chosen arbitrarily and
@@ -502,8 +502,8 @@ def dfs_labeled_edges(G, source=None, depth_limit=None, sort_children=None):
         depth_limit = len(G)
 
     get_children = G.neighbors
-    if sort_children is not None and callable(sort_children):
-        get_children = lambda node: iter(sort_children(G.neighbors(node)))
+    if sort_neighbors is not None and callable(sort_neighbors):
+        get_children = lambda node: iter(sort_neighbors(G.neighbors(node)))
 
     visited = set()
     for start in nodes:
