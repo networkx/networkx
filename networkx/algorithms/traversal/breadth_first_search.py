@@ -1,5 +1,4 @@
 """Basic algorithms for breadth-first searching the nodes of a graph."""
-import math
 from collections import deque
 
 import networkx as nx
@@ -52,8 +51,8 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
            version 3.4. A custom (e.g. sorted) ordering of neighbors can be
            specified with the `neighbors` parameter.
 
-        A function that takes the list of neighbors of a given node as input,
-        and returns an iterator over these neighbors but with a custom
+        A function that takes an iterator over all the neighbors of a given node 
+        as input, and returns an iterable over these neighbors but with a custom
         ordering.
 
     Yields
@@ -96,7 +95,7 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
     """
     if neighbors is None:
         neighbors = G.neighbors
-    if sort_neighbors is not None:
+    if sort_neighbors is not None and callable(sort_neighbors):
         import warnings
 
         warnings.warn(
@@ -150,8 +149,9 @@ def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
         Specify the maximum search depth
 
     sort_neighbors : function
-        A function that takes the list of neighbors of given node as input, and
-        returns an *iterator* over these neighbors but with custom ordering.
+        A function that takes an iterator over all the neighbors of a given node 
+        as input, and returns an iterable over these neighbors but with a custom
+        ordering.
 
     Yields
     ------
@@ -237,8 +237,9 @@ def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
         Specify the maximum search depth
 
     sort_neighbors : function
-        A function that takes the list of neighbors of given node as input, and
-        returns an *iterator* over these neighbors but with custom ordering.
+        A function that takes an iterator over all the neighbors of a given node 
+        as input, and returns an iterable over these neighbors but with a custom 
+        ordering.
 
     Returns
     -------
@@ -300,8 +301,9 @@ def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
         Specify the maximum search depth
 
     sort_neighbors : function
-        A function that takes the list of neighbors of given node as input, and
-        returns an *iterator* over these neighbors but with custom ordering.
+        A function that takes an iterator over all the neighbors of a given node 
+        as input, and returns an iterable over these neighbors but with a custom
+        ordering.
 
     Returns
     -------
@@ -365,8 +367,9 @@ def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
         Specify the maximum search depth
 
     sort_neighbors : function
-        A function that takes the list of neighbors of given node as input, and
-        returns an *iterator* over these neighbors but with custom ordering.
+        A function that takes an iterator over all the neighbors of a given node 
+        as input, and returns an iterable over these neighbors but with a custom
+        ordering.
 
     Returns
     -------
