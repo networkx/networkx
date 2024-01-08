@@ -34,8 +34,8 @@ def dfs_edges(G, source=None, depth_limit=None, sort_neighbors=None):
        Specify the maximum search depth.
 
     sort_neighbors : function
-        A function that takes the list of children of given node as input, and
-        returns an *iterator* over these children but with custom ordering.
+        A function that takes an iterator over nodes as the input, and
+        returns an iterable of the same nodes with a custom ordering.
 
     Yields
     ------
@@ -52,9 +52,6 @@ def dfs_edges(G, source=None, depth_limit=None, sort_neighbors=None):
 
     Notes
     -----
-    If `sort_neighbors` returns an iterable then it would be internally converted to
-    an iterator but it will be more efficient if it returns an iterator.
-
     If a source is not specified then a source is chosen arbitrarily and
     repeatedly until all components in the graph are searched.
 
@@ -127,18 +124,13 @@ def dfs_tree(G, source=None, depth_limit=None, sort_neighbors=None):
        Specify the maximum search depth.
 
     sort_neighbors : function
-        A function that takes the list of children of given node as input, and
-        returns an *iterator* over these children but with custom ordering.
+        A function that takes an iterator over nodes as the input, and
+        returns an iterable of the same nodes with a custom ordering.
 
     Returns
     -------
     T : NetworkX DiGraph
        An oriented tree
-
-    Notes
-    -----
-    If `sort_neighbors` returns an iterable then it would be internally converted to
-    an iterator but it will be more efficient if it returns an iterator.
 
     Examples
     --------
@@ -185,8 +177,8 @@ def dfs_predecessors(G, source=None, depth_limit=None, sort_neighbors=None):
        Specify the maximum search depth.
 
     sort_neighbors : function
-        A function that takes the list of children of given node as input, and
-        returns an *iterator* over these children but with custom ordering.
+        A function that takes an iterator over nodes as the input, and
+        returns an iterable of the same nodes with a custom ordering.
 
     Returns
     -------
@@ -203,9 +195,6 @@ def dfs_predecessors(G, source=None, depth_limit=None, sort_neighbors=None):
 
     Notes
     -----
-    If `sort_neighbors` returns an iterable then it would be internally converted to
-    an iterator but it will be more efficient if it returns an iterator.
-
     If a source is not specified then a source is chosen arbitrarily and
     repeatedly until all components in the graph are searched.
 
@@ -246,8 +235,8 @@ def dfs_successors(G, source=None, depth_limit=None, sort_neighbors=None):
        Specify the maximum search depth.
 
     sort_neighbors : function
-        A function that takes the list of children of given node as input, and
-        returns an *iterator* over these children but with custom ordering.
+        A function that takes an iterator over nodes as the input, and
+        returns an iterable of the same nodes with a custom ordering.
 
     Returns
     -------
@@ -264,9 +253,6 @@ def dfs_successors(G, source=None, depth_limit=None, sort_neighbors=None):
 
     Notes
     -----
-    If `sort_neighbors` returns an iterable then it would be internally converted to
-    an iterator but it will be more efficient if it returns an iterator.
-
     If a source is not specified then a source is chosen arbitrarily and
     repeatedly until all components in the graph are searched.
 
@@ -309,8 +295,8 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None, sort_neighbors=None):
        Specify the maximum search depth.
 
     sort_neighbors : function
-        A function that takes the list of children of given node as input, and
-        returns an *iterator* over these children but with custom ordering.
+        A function that takes an iterator over nodes as the input, and
+        returns an iterable of the same nodes with a custom ordering.
 
     Returns
     -------
@@ -327,9 +313,6 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None, sort_neighbors=None):
 
     Notes
     -----
-    If `sort_neighbors` returns an iterable then it would be internally converted to
-    an iterator but it will be more efficient if it returns an iterator.
-
     If a source is not specified then a source is chosen arbitrarily and
     repeatedly until all components in the graph are searched.
 
@@ -371,8 +354,8 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None, sort_neighbors=None):
        Specify the maximum search depth.
 
     sort_neighbors : function
-        A function that takes the list of children of given node as input, and
-        returns an *iterator* over these children but with custom ordering.
+        A function that takes an iterator over nodes as the input, and
+        returns an iterable of the same nodes with a custom ordering.
 
     Returns
     -------
@@ -389,9 +372,6 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None, sort_neighbors=None):
 
     Notes
     -----
-    If `sort_neighbors` returns an iterable then it would be internally converted to
-    an iterator but it will be more efficient if it returns an iterator.
-
     If a source is not specified then a source is chosen arbitrarily and
     repeatedly until all components in the graph are searched.
 
@@ -432,8 +412,8 @@ def dfs_labeled_edges(G, source=None, depth_limit=None, sort_neighbors=None):
        Specify the maximum search depth.
 
     sort_neighbors : function
-        A function that takes the list of children of given node as input, and
-        returns an *iterator* over these children but with custom ordering.
+        A function that takes an iterator over nodes as the input, and
+        returns an iterable of the same nodes with a custom ordering.
 
     Returns
     -------
@@ -470,9 +450,6 @@ def dfs_labeled_edges(G, source=None, depth_limit=None, sort_neighbors=None):
 
     Notes
     -----
-    If `sort_neighbors` returns an iterable then it would be internally converted to
-    an iterator but it will be more efficient if it returns an iterator.
-
     If a source is not specified then a source is chosen arbitrarily and
     repeatedly until all components in the graph are searched.
 
