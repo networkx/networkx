@@ -81,10 +81,6 @@ def wiener_index(G, weight=None):
     References
     ----------
     .. [1] `Wikipedia: Wiener Index <https://en.wikipedia.org/wiki/Wiener_index>`_
-    .. [2] M.V. Diudeaa and I. Gutman, Wiener-Type Topological Indices,
-           Croatica Chemica Acta, 71 (1998), 21-51.
-           https://hrcak.srce.hr/132323
-
     """
     connected = nx.is_strongly_connected(G) if G.is_directed() else nx.is_connected(G)
     if not connected:
@@ -101,11 +97,12 @@ def wiener_index(G, weight=None):
 def schultz_index(G, weight=None):
     r"""Returns the Schultz Index (of the first kind) of `G`
 
-    The *Schultz Index* of a graph is the sum over all node pairs of
+    The *Schultz Index* [3]_ of a graph is the sum over all node pairs of
     distances times the sum of degrees. Consider an undirected graph `G`.
-    For each node pair {u, v} compute dist(u, v) * (deg(u) + deg(v)
-    where dist is the shortest path length between two nodes and deg
+    For each node pair ``(u, v)`` compute ``dist(u, v) * (deg(u) + deg(v)``
+    where ``dist`` is the shortest path length between two nodes and ``deg``
     is the degree of a node.
+
     The Schultz Index is the sum of these quantities over all (unordered)
     pairs of nodes.
 
@@ -122,24 +119,24 @@ def schultz_index(G, weight=None):
     Returns
     -------
     number
-        The first kind of Schultz Index of the graph `g`.
+        The first kind of Schultz Index of the graph `G`.
 
     Examples
     --------
     The Schultz Index of the (unweighted) complete graph on *n* nodes
-    equals the number of pairs of the *n* nodes times 2 * (n - 1),
+    equals the number of pairs of the *n* nodes times ``2 * (n - 1)``,
     since each pair of nodes is at distance one and the sum of degree
-    of two nodes is 2 * (n - 1).
+    of two nodes is ``2 * (n - 1)``.
 
-        >>> n = 10
-        >>> G = nx.complete_graph(n)
-        >>> nx.schultz_index(G) == (n * (n - 1) / 2) * (2 * (n - 1))
-        True
+    >>> n = 10
+    >>> G = nx.complete_graph(n)
+    >>> nx.schultz_index(G) == (n * (n - 1) / 2) * (2 * (n - 1))
+    True
 
     Graph that is disconnected
 
-        >>> nx.schultz_index(nx.empty_graph(2))
-        inf
+    >>> nx.schultz_index(nx.empty_graph(2))
+    inf
 
     References
     ----------
@@ -165,16 +162,16 @@ def schultz_index(G, weight=None):
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
 def gutman_index(G, weight=None):
-    r"""Returns the Gutman Index for the graph G
+    r"""Returns the Gutman Index for the graph `G`.
 
-    The Gutman Index measures the topology of networks, especially for molecule
+    The *Gutman Index* measures the topology of networks, especially for molecule
     networks of atoms connected by bonds [1]_. It is also called the Schultz Index
     of the second kind [2]_.
 
-    Consider an undirected graph G with node set V.
+    Consider an undirected graph `G` with node set ``V``.
     The Gutman Index of a graph is the sum over all (unordered) pairs of nodes
-    of nodes {u, v}, with distance dist(u, v) and degrees deg(u) and deg(v),
-    of dist(u, v) * deg(u) * deg(v)
+    of nodes ``(u, v)``, with distance ``dist(u, v)`` and degrees ``deg(u)``
+    and ``deg(v)``, of ``dist(u, v) * deg(u) * deg(v)``
 
     Parameters
     ----------
@@ -194,20 +191,20 @@ def gutman_index(G, weight=None):
     Examples
     --------
     The Gutman Index of the (unweighted) complete graph on *n* nodes
-    equals the number of pairs of the *n* nodes times (n - 1) * (n - 1),
+    equals the number of pairs of the *n* nodes times ``(n - 1) * (n - 1)``,
     since each pair of nodes is at distance one and the product of degree of two
-    vertices is (n - 1) * (n - 1).
+    vertices is ``(n - 1) * (n - 1)``.
 
-        >>> n = 10
-        >>> G = nx.complete_graph(n)
-        >>> nx.gutman_index(G) == (n * (n - 1) / 2) * ((n - 1) * (n - 1))
-        True
+    >>> n = 10
+    >>> G = nx.complete_graph(n)
+    >>> nx.gutman_index(G) == (n * (n - 1) / 2) * ((n - 1) * (n - 1))
+    True
 
     Graphs that are disconnected
 
-        >>> G = nx.empty_graph(2)
-        >>> nx.gutman_index(G)
-        inf
+    >>> G = nx.empty_graph(2)
+    >>> nx.gutman_index(G)
+    inf
 
     References
     ----------
