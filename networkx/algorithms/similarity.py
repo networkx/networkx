@@ -322,7 +322,7 @@ def optimal_edit_paths(
         edge_edit_path : list of tuples ((u1, v1), (u2, v2))
 
     cost : numeric
-        Optimal edit path cost (graph edit distance).When the cost
+        Optimal edit path cost (graph edit distance). When the cost
         is zero, it indicates that G1 and G2 are isomorphic.
 
     Examples
