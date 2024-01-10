@@ -1004,14 +1004,14 @@ class PlanarEmbedding(nx.DiGraph):
             yield current_node
             current_node = succs[current_node]["cw"]
 
-    def add_half_edge(self, start_node, end_node, cw=None, ccw=None):
-        """Adds a half-edge from start_node to end_node.
+    def add_half_edge(self, start_node, end_node, *, cw=None, ccw=None):
+        """Adds a half-edge from `start_node` to `end_node`.
 
-        If the half-edge is not the first one out of start_node, a reference
-        node must be provided either in the clockwise (parameter cw) or in
-        the counterclockwise (parameter ccw) direction. Only one of cw/cww
-        parameter can be specified (or neither in the case of the first edge).
-        Note that specifying a reference in the clockwise (cw) direction means
+        If the half-edge is not the first one out of `start_node`, a reference
+        node must be provided either in the clockwise (parameter `cw`) or in
+        the counterclockwise (parameter `ccw`) direction. Only one of `cw`/`ccw`
+        can be specified (or neither in the case of the first edge).
+        Note that specifying a reference in the clockwise (`cw`) direction means
         inserting the new edge in the first counterclockwise position with
         respect to the reference (and vice-versa).
 
@@ -1021,16 +1021,17 @@ class PlanarEmbedding(nx.DiGraph):
             Start node of inserted edge.
         end_node : node
             End node of inserted edge.
-        cw/ccw: node
+        cw, ccw: node
             End node of reference edge.
-            Omit or pass None if adding the first out-half-edge of start_node.
+            Omit or pass `None` if adding the first out-half-edge of `start_node`.
+
 
         Raises
         ------
         NetworkXException
-            If the cw or ccw node is not a successor of start_node.
-            Or if start_node has successors, but neither cw or ccw is provided.
-            Or if both cw and ccw are specified.
+            If the `cw` or `ccw` node is not a successor of `start_node`.
+            If `start_node` has successors, but neither `cw` or `ccw` is provided.
+            If both `cw` and `ccw` are specified.
 
         See Also
         --------
@@ -1070,9 +1071,8 @@ class PlanarEmbedding(nx.DiGraph):
                 # LRPlanarity (via self.add_half_edge_first()) requires that
                 # we keep track of the leftmost neighbor, which we accomplish
                 # by keeping it as the last key in dict self._succ[start_node]
-                data = succs[leftmost_nbr]
-                del succs[leftmost_nbr]
-                succs[leftmost_nbr] = data
+                succs[leftmost_nbr] = succs.pop(leftmost_nbr)
+
         else:
             if cw is not None or ccw is not None:
                 raise nx.NetworkXError("Invalid reference node.")

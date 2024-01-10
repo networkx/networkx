@@ -412,6 +412,11 @@ class TestPlanarEmbeddingClass:
         # these should work
         embedding.add_half_edge(0, 2, cw=1)
         embedding.add_half_edge(0, 3, ccw=1)
+        assert sorted(embedding.edges(data=True)) == [
+            (0, 1, {"ccw": 2, "cw": 3}),
+            (0, 2, {"cw": 1, "ccw": 3}),
+            (0, 3, {"cw": 2, "ccw": 1}),
+        ]
 
     def test_get_data(self):
         embedding = self.get_star_embedding(4)
