@@ -985,9 +985,7 @@ class PlanarEmbedding(nx.DiGraph):
                 # LRPlanarity (via self.add_half_edge_first()) requires that
                 # we keep track of the leftmost neighbor, which we accomplish
                 # by keeping it as the last key in dict self._succ[start_node]
-                data = succs[leftmost_nbr]
-                del succs[leftmost_nbr]
-                succs[leftmost_nbr] = data
+                succs[leftmost_nbr] = succs.pop(leftmost_nbr)
         else:
             if cw is not None or ccw is not None:
                 raise nx.NetworkXError("Invalid reference node.")
