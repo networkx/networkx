@@ -867,7 +867,7 @@ class PlanarEmbedding(nx.DiGraph):
         Any edge additions to a PlanarEmbedding should be done using
         method `add_half_edge`.
         """
-        raise nx.NetworkXError(
+        raise NotImplementedError(
             "Use `add_half_edge` method to add edges to a PlanarEmbedding."
         )
 

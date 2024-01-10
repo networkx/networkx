@@ -513,11 +513,11 @@ class TestPlanarEmbeddingClass:
         #  embedding = nx.Graph([(0, 1), (1, 2), (3, 4), (4, 5)])
         embedding.add_node(42)  # no exception
         embedding.add_nodes_from([(23, 24)])  # no exception
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(NotImplementedError):
             embedding.add_edge(1, 3)
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(NotImplementedError):
             embedding.add_edges_from([(0, 2), (1, 4)])
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(NotImplementedError):
             embedding.add_weighted_edges_from([(0, 2, 350), (1, 4, 125)])
 
     @staticmethod
