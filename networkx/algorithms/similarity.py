@@ -337,11 +337,11 @@ def optimal_edit_paths(
 
     Note
     -------
-    When the cost is zero, it indicates that G1 and G2 are isomorphic,
-    and the optimal paths represent different isomorphic mappings.
-    To transform G1 into a graph isomorphic to G2, apply the
-    node and edge edits in the optimal paths. In the case of isomorphic
-    graphs, these edits involve renaming nodes and edges to match the structure of G2.
+    To transform G1 into a graph isomorphic to G2, apply the node
+    and edge edits in the returned edit_paths.
+    In the case of isomorphic graphs, the cost is zero, and the paths
+    represent different isomorphic mappings (isomorphisms). That is, the
+    edits involve renaming nodes and edges to match the structure of G2.
 
     See Also
     --------
