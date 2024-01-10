@@ -919,7 +919,7 @@ class PlanarEmbedding(nx.DiGraph):
             yield current_node
             current_node = succs[current_node]["cw"]
 
-    def add_half_edge(self, start_node, end_node, cw=None, ccw=None):
+    def add_half_edge(self, start_node, end_node, *, cw=None, ccw=None):
         """Adds a half-edge from `start_node` to `end_node`.
 
         If the half-edge is not the first one out of `start_node`, a reference
