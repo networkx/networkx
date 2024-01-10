@@ -498,15 +498,15 @@ def _heuristic(k, root, DF_tree, D, nodes, greedy):
                         / root_node["sigma"][added_node][y]
                     )
             DF_tree.nodes[node_p]["sigma"][x][y] = root_node["sigma"][x][y] * (1 - dxvy)
-            DF_tree.nodes[node_p]["betweenness"][x][y] = (
+            DF_tree.nodes[node_p]["betweenness"].loc[y, x] = (
                 root_node["betweenness"][x][y] - root_node["betweenness"][x][y] * dxvy
             )
             if y != added_node:
-                DF_tree.nodes[node_p]["betweenness"][x][y] -= (
+                DF_tree.nodes[node_p]["betweenness"].loc[y, x] -= (
                     root_node["betweenness"][x][added_node] * dxyv
                 )
             if x != added_node:
-                DF_tree.nodes[node_p]["betweenness"][x][y] -= (
+                DF_tree.nodes[node_p]["betweenness"].loc[y, x] -= (
                     root_node["betweenness"][added_node][y] * dvxy
                 )
 
