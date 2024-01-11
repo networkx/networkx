@@ -771,58 +771,61 @@ class TestNumberSpanningTrees:
         G = nx.cycle_graph(5)
         assert np.isclose(nx.number_of_spanning_trees(G), 5)
 
-    def test_nst_directed_noleaf(self):
+    def test_nst_directed_noroot(self):
         G = nx.empty_graph(3, create_using=nx.MultiDiGraph)
         with pytest.raises(nx.NetworkXError):
             nx.number_of_spanning_trees(G)
 
-    def test_nst_directed_leaf_not_exist(self):
+    def test_nst_directed_root_not_exist(self):
         G = nx.empty_graph(3, create_using=nx.MultiDiGraph)
         with pytest.raises(nx.NetworkXError):
-            nx.number_of_spanning_trees(G, leaf=42)
+            nx.number_of_spanning_trees(G, root=42)
 
     def test_nst_directed_not_weak_connected(self):
         G = nx.DiGraph()
         G.add_edge(1, 2)
         G.add_edge(3, 4)
-        assert np.isclose(nx.number_of_spanning_trees(G, leaf=1), 0)
+        assert np.isclose(nx.number_of_spanning_trees(G, root=1), 0)
 
     def test_nst_directed_cycle_graph(self):
         G = nx.DiGraph()
         G = nx.cycle_graph(7, G)
-        assert np.isclose(nx.number_of_spanning_trees(G, leaf=0), 1)
+        assert np.isclose(nx.number_of_spanning_trees(G, root=0), 1)
 
     def test_nst_directed_complete_graph(self):
         G = nx.DiGraph()
         G = nx.complete_graph(7, G)
-        assert np.isclose(nx.number_of_spanning_trees(G, leaf=0), 7**5)
+        assert np.isclose(nx.number_of_spanning_trees(G, root=0), 7**5)
 
     def test_nst_directed_multi(self):
         G = nx.MultiDiGraph()
         G = nx.cycle_graph(3, G)
         G.add_edge(1, 2)
-        assert np.isclose(nx.number_of_spanning_trees(G, leaf=0), 2)
+        assert np.isclose(nx.number_of_spanning_trees(G, root=0), 2)
 
     def test_nst_directed_selfloop(self):
         G = nx.MultiDiGraph()
         G = nx.cycle_graph(3, G)
         G.add_edge(1, 1)
-        assert np.isclose(nx.number_of_spanning_trees(G, leaf=0), 1)
+        assert np.isclose(nx.number_of_spanning_trees(G, root=0), 1)
 
     def test_nst_directed_weak_connected(self):
         G = nx.MultiDiGraph()
         G = nx.cycle_graph(3, G)
         G.remove_edge(1, 2)
-        assert np.isclose(nx.number_of_spanning_trees(G, leaf=0), 0)
+        assert np.isclose(nx.number_of_spanning_trees(G, root=0), 0)
 
     def test_nst_directed_weighted(self):
+        # from root=1:
+        # arborescence 1: 1->2, 1->3, weight=2*1
+        # arborescence 2: 1->2, 2->3, weight=2*3
         G = nx.DiGraph()
-        G.add_edge(1, 2, weight=1)
-        G.add_edge(1, 3, weight=2)
+        G.add_edge(1, 2, weight=2)
+        G.add_edge(1, 3, weight=1)
         G.add_edge(2, 3, weight=3)
-        Nst = nx.number_of_spanning_trees(G, leaf=1, weight="weight")
+        Nst = nx.number_of_spanning_trees(G, root=1, weight="weight")
+        assert np.isclose(Nst, 8)
+        Nst = nx.number_of_spanning_trees(G, root=2, weight="weight")
         assert np.isclose(Nst, 0)
-        Nst = nx.number_of_spanning_trees(G, leaf=2, weight="weight")
+        Nst = nx.number_of_spanning_trees(G, root=3, weight="weight")
         assert np.isclose(Nst, 0)
-        Nst = nx.number_of_spanning_trees(G, leaf=3, weight="weight")
-        assert np.isclose(Nst, 9)
