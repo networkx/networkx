@@ -992,6 +992,14 @@ class _dispatch:
             else:
                 lines.append("")
 
+            if "backend_func_examples" in func_info:
+                lines.append(".. code-block:: python")
+                for line in func_info["backend_func_examples"].split("\n"):
+                    lines.extend(f" {line}" if line else line)
+
+            if "backend_func_url" in func_info:
+                lines.append(f"`Learn more <{func_info['backend_func_url']}>`_")
+
         lines.pop()  # Remove last empty line
         to_add = "\n    ".join(lines)
         return f"{self._orig_doc.rstrip()}\n\n    {to_add}"
