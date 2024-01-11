@@ -897,14 +897,15 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
             #    itself.
             if G.number_of_edges() == 1:
                 return G.edges(data=weight).__iter__().__next__()[2]
-            # 2. There are more than two edges in the graph. Then, we can find the
+            # 2. There are no edges or two or more edges in the graph. Then, we find the
             #    total weight of the spanning trees using the formula in the
-            #    reference paper: take the weight of that edge and multiple it by
-            #    the number of spanning trees which have to include that edge. This
+            #    reference paper: take the weight of each edge and multiply it by
+            #    the number of spanning trees which include that edge. This
             #    can be accomplished by contracting the edge and finding the
             #    multiplicative total spanning tree weight if the weight of each edge
             #    is assumed to be 1, which is conveniently built into networkx already,
-            #    by calling total_spanning_tree_weight with weight=None
+            #    by calling total_spanning_tree_weight with weight=None.
+            #    Note that with no edges the returned value is just zero.
             else:
                 total = 0
                 for u, v, w in G.edges(data=weight):
@@ -912,6 +913,10 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
                         nx.contracted_edge(G, edge=(u, v), self_loops=False), None
                     )
                 return total
+
+    if G.number_of_nodes() < 2:
+        # no edges in the spanning tree
+        return nx.empty_graph(G.nodes)
 
     U = set()
     st_cached_value = 0
