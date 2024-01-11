@@ -149,6 +149,9 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nk_corona"
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\ntotal_spanning_tree_weight"
+    )
 
 
 @pytest.fixture(autouse=True)
