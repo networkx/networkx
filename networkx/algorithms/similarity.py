@@ -322,7 +322,8 @@ def optimal_edit_paths(
         edge_edit_path : list of tuples ((u1, v1), (u2, v2))
 
     cost : numeric
-        Optimal edit path cost (graph edit distance).
+        Optimal edit path cost (graph edit distance). When the cost
+        is zero, it indicates that `G1` and `G2` are isomorphic.
 
     Examples
     --------
@@ -333,6 +334,14 @@ def optimal_edit_paths(
     40
     >>> cost
     5.0
+
+    Notes
+    -----
+    To transform `G1` into a graph isomorphic to `G2`, apply the node
+    and edge edits in the returned ``edit_paths``.
+    In the case of isomorphic graphs, the cost is zero, and the paths
+    represent different isomorphic mappings (isomorphisms). That is, the
+    edits involve renaming nodes and edges to match the structure of `G2`.
 
     See Also
     --------
