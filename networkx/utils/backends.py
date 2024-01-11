@@ -982,8 +982,10 @@ class _dispatch:
                 if add_gap:
                     lines.append("")
                 lines.append("  Additional parameters:")
-                if "extra_parameters" in func_info : extra_parameters = func_info["extra_parameters"]
-                else : extra_parameters = func_info["additional_parameters"]
+                if "extra_parameters" in func_info:
+                    extra_parameters = func_info["extra_parameters"]
+                else:
+                    extra_parameters = func_info["additional_parameters"]
                 for param in sorted(extra_parameters):
                     lines.append(f"    {param}")
                     if desc := extra_parameters[param]:
@@ -996,7 +998,8 @@ class _dispatch:
                 lines.append("  Backend Examples:")
                 lines.append(".. code-block:: python")
                 for line in func_info["backend_func_examples"].split("\n"):
-                    if line.strip() : lines.append(line.strip()+"\n")
+                    if line.strip():
+                        lines.append(line.strip() + "\n")
 
             if "backend_func_url" in func_info:
                 lines.append(f"`Learn more <{func_info['backend_func_url']}>`_")
