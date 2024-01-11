@@ -855,6 +855,22 @@ class PlanarEmbedding(nx.DiGraph):
 
     """
 
+    def __init__(self, incoming_graph_data=None, **attr):
+        super().__init__(incoming_graph_data=incoming_graph_data, **attr)
+        self.add_edge = self.__forbidden
+        self.add_edges_from = self.__forbidden
+        self.add_weighted_edges_from = self.__forbidden
+
+    def __forbidden(self, *args, **kwargs):
+        """Forbidden operation
+
+        Any edge additions to a PlanarEmbedding should be done using
+        method `add_half_edge`.
+        """
+        raise NotImplementedError(
+            "Use `add_half_edge` method to add edges to a PlanarEmbedding."
+        )
+
     def get_data(self):
         """Converts the adjacency structure into a better readable structure.
 
@@ -895,6 +911,75 @@ class PlanarEmbedding(nx.DiGraph):
             for w in reversed(data[v]):
                 self.add_half_edge(v, w, cw=ref)
                 ref = w
+
+    def remove_node(self, n):
+        """Remove node n.
+
+        Removes the node n and all adjacent edges, updating the
+        PlanarEmbedding to account for any resulting edge removal.
+        Attempting to remove a non-existent node will raise an exception.
+
+        Parameters
+        ----------
+        n : node
+           A node in the graph
+
+        Raises
+        ------
+        NetworkXError
+           If n is not in the graph.
+
+        See Also
+        --------
+        remove_nodes_from
+
+        """
+        try:
+            for u in self._pred[n]:
+                succs_u = self._succ[u]
+                un_cw = succs_u[n]["cw"]
+                un_ccw = succs_u[n]["ccw"]
+                del succs_u[n]
+                del self._pred[u][n]
+                if n != un_cw:
+                    succs_u[un_cw]["ccw"] = un_ccw
+                    succs_u[un_ccw]["cw"] = un_cw
+            del self._node[n]
+            del self._succ[n]
+            del self._pred[n]
+        except KeyError as err:  # NetworkXError if n not in self
+            raise nx.NetworkXError(
+                f"The node {n} is not in the planar embedding."
+            ) from err
+
+    def remove_nodes_from(self, nodes):
+        """Remove multiple nodes.
+
+        Parameters
+        ----------
+        nodes : iterable container
+            A container of nodes (list, dict, set, etc.).  If a node
+            in the container is not in the graph it is silently ignored.
+
+        See Also
+        --------
+        remove_node
+
+        Notes
+        -----
+        When removing nodes from an iterator over the graph you are changing,
+        a `RuntimeError` will be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
+        object, e.g. by using `list(iterator_of_nodes)`, and pass this
+        object to `G.remove_nodes_from`.
+
+        """
+        for n in nodes:
+            if n in self._node:
+                self.remove_node(n)
+            # silently skip non-existing nodes
 
     def neighbors_cw_order(self, v):
         """Generator for the neighbors of v in clockwise order.
@@ -940,6 +1025,7 @@ class PlanarEmbedding(nx.DiGraph):
             End node of reference edge.
             Omit or pass `None` if adding the first out-half-edge of `start_node`.
 
+
         Raises
         ------
         NetworkXException
@@ -962,7 +1048,7 @@ class PlanarEmbedding(nx.DiGraph):
                 if ccw is not None:
                     raise nx.NetworkXError("Only one of cw/ccw can be specified.")
                 ref_ccw = succs[cw]["ccw"]
-                self.add_edge(start_node, end_node, cw=cw, ccw=ref_ccw)
+                super().add_edge(start_node, end_node, cw=cw, ccw=ref_ccw)
                 succs[ref_ccw]["cw"] = end_node
                 succs[cw]["ccw"] = end_node
                 # when (cw == leftmost_nbr), the newly added neighbor is
@@ -973,7 +1059,7 @@ class PlanarEmbedding(nx.DiGraph):
                 if ccw not in succs:
                     raise nx.NetworkXError("Invalid counterclockwise reference node.")
                 ref_cw = succs[ccw]["cw"]
-                self.add_edge(start_node, end_node, cw=ref_cw, ccw=ccw)
+                super().add_edge(start_node, end_node, cw=ref_cw, ccw=ccw)
                 succs[ref_cw]["ccw"] = end_node
                 succs[ccw]["cw"] = end_node
                 move_leftmost_nbr_to_end = True
@@ -986,11 +1072,12 @@ class PlanarEmbedding(nx.DiGraph):
                 # we keep track of the leftmost neighbor, which we accomplish
                 # by keeping it as the last key in dict self._succ[start_node]
                 succs[leftmost_nbr] = succs.pop(leftmost_nbr)
+
         else:
             if cw is not None or ccw is not None:
                 raise nx.NetworkXError("Invalid reference node.")
             # adding the first edge out of start_node
-            self.add_edge(start_node, end_node, ccw=end_node, cw=end_node)
+            super().add_edge(start_node, end_node, ccw=end_node, cw=end_node)
 
     def check_structure(self):
         """Runs without exceptions if this object is valid.
@@ -1106,6 +1193,79 @@ class PlanarEmbedding(nx.DiGraph):
         connect_components
         """
         self.add_half_edge(start_node, end_node, ccw=reference_neighbor)
+
+    def remove_edge(self, u, v):
+        """Remove the edge between u and v.
+
+        Parameters
+        ----------
+        u, v : nodes
+        Remove the half-edges (u, v) and (v, u) and update the
+        edge ordering around the removed edge.
+
+        Raises
+        ------
+        NetworkXError
+        If there is not an edge between u and v.
+
+        See Also
+        --------
+        remove_edges_from : remove a collection of edges
+        """
+        try:
+            succs_u = self._succ[u]
+            succs_v = self._succ[v]
+            uv_cw = succs_u[v]["cw"]
+            uv_ccw = succs_u[v]["ccw"]
+            vu_cw = succs_v[u]["cw"]
+            vu_ccw = succs_v[u]["ccw"]
+            del succs_u[v]
+            del self._pred[v][u]
+            del succs_v[u]
+            del self._pred[u][v]
+            if v != uv_cw:
+                succs_u[uv_cw]["ccw"] = uv_ccw
+                succs_u[uv_ccw]["cw"] = uv_cw
+            if u != vu_cw:
+                succs_v[vu_cw]["ccw"] = vu_ccw
+                succs_v[vu_ccw]["cw"] = vu_cw
+        except KeyError as err:
+            raise nx.NetworkXError(
+                f"The edge {u}-{v} is not in the planar embedding."
+            ) from err
+
+    def remove_edges_from(self, ebunch):
+        """Remove all edges specified in ebunch.
+
+        Parameters
+        ----------
+        ebunch: list or container of edge tuples
+            Each pair of half-edges between the nodes given in the tuples
+            will be removed from the graph. The nodes can be passed as:
+
+                - 2-tuples (u, v) half-edges (u, v) and (v, u).
+                - 3-tuples (u, v, k) where k is ignored.
+
+        See Also
+        --------
+        remove_edge : remove a single edge
+
+        Notes
+        -----
+        Will fail silently if an edge in ebunch is not in the graph.
+
+        Examples
+        --------
+        >>> G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc
+        >>> ebunch = [(1, 2), (2, 3)]
+        >>> G.remove_edges_from(ebunch)
+        """
+        for e in ebunch:
+            u, v = e[:2]  # ignore edge data
+            # assuming that the PlanarEmbedding is valid, if the half_edge
+            # (u, v) is in the graph, then so is half_edge (v, u)
+            if u in self._succ and v in self._succ[u]:
+                self.remove_edge(u, v)
 
     def connect_components(self, v, w):
         """Adds half-edges for (v, w) and (w, v) at some position.
