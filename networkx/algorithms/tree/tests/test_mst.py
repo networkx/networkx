@@ -709,10 +709,6 @@ def test_random_spanning_tree_additive_large():
 
 
 def test_random_spanning_tree_empty_graph():
-    """
-    Test on empty graph, should return an empty spanning tree
-    """
-
     G = nx.Graph()
     rst = nx.tree.random_spanning_tree(G)
     assert len(rst.nodes) == 0
@@ -720,12 +716,17 @@ def test_random_spanning_tree_empty_graph():
 
 
 def test_random_spanning_tree_single_node_graph():
-    """
-    Test on single node graph, should return a spanning tree with that node
-    """
-
     G = nx.Graph()
     G.add_node(0)
+    rst = nx.tree.random_spanning_tree(G)
+    assert len(rst.nodes) == 1
+    assert len(rst.edges) == 0
+
+
+def test_random_spanning_tree_single_node_loop():
+    G = nx.Graph()
+    G.add_node(0)
+    G.add_edge(0, 0)
     rst = nx.tree.random_spanning_tree(G)
     assert len(rst.nodes) == 1
     assert len(rst.edges) == 0
