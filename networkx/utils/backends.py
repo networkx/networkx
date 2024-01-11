@@ -960,11 +960,19 @@ class _dispatch:
                 continue
 
             func_info = info["functions"][self.name]
-            if "extra_docstring" in func_info:
-                lines.extend(
-                    f"  {line}" if line else line
-                    for line in func_info["extra_docstring"].split("\n")
-                )
+
+            # Renaming extra_docstring to backend_func_docs
+            if "extra_docstring" in func_info or "backend_func_docs" in func_info:
+                if "extra_docstring" in func_info:
+                    lines.extend(
+                        f"  {line}" if line else line
+                        for line in func_info["extra_docstring"].split("\n")
+                    )
+                else:
+                    lines.extend(
+                        f"  {line}" if line else line
+                        for line in func_info["backend_func_docs"].split("\n")
+                    )
                 add_gap = True
             else:
                 add_gap = False
