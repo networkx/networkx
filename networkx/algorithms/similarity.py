@@ -323,7 +323,7 @@ def optimal_edit_paths(
 
     cost : numeric
         Optimal edit path cost (graph edit distance). When the cost
-        is zero, it indicates that G1 and G2 are isomorphic.
+        is zero, it indicates that `G1` and `G2` are isomorphic.
 
     Examples
     --------
@@ -335,13 +335,13 @@ def optimal_edit_paths(
     >>> cost
     5.0
 
-    Note
-    -------
-    To transform G1 into a graph isomorphic to G2, apply the node
-    and edge edits in the returned edit_paths.
+    Notes
+    -----
+    To transform `G1` into a graph isomorphic to `G2`, apply the node
+    and edge edits in the returned ``edit_paths``.
     In the case of isomorphic graphs, the cost is zero, and the paths
     represent different isomorphic mappings (isomorphisms). That is, the
-    edits involve renaming nodes and edges to match the structure of G2.
+    edits involve renaming nodes and edges to match the structure of `G2`.
 
     See Also
     --------
