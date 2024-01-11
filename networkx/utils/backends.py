@@ -993,6 +993,7 @@ class _dispatch:
                 lines.append("")
 
             if "backend_func_examples" in func_info:
+                lines.append("  Backend Examples:")
                 lines.append(".. code-block:: python")
                 for line in func_info["backend_func_examples"].split("\n"):
                     lines.extend(f" {line}" if line else line)
