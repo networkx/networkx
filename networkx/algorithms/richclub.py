@@ -44,12 +44,6 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
     rc : dictionary
        A dictionary, keyed by degree, with rich-club coefficient values.
 
-    Raises
-    ------
-    NetworkXError
-        If G has less than 4 nodes and normalized=True.
-        Raised from within nx.double_edge_swap()
-
     Examples
     --------
     >>> G = nx.Graph([(0, 1), (0, 2), (1, 2), (1, 3), (1, 4), (4, 5)])
@@ -62,6 +56,15 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
     The rich club definition and algorithm are found in [1]_.  This
     algorithm ignores any edge weights and is not defined for directed
     graphs or graphs with parallel edges or self loops.
+
+    For graphs with <= 3 nodes, it can be proven that the degree
+    sequence of the graph completely determines it. So the normalization
+    process which creates a random graph with the same degree sequence
+    will normalize against the same graph and set all existing rich club
+    coefficients to 1.
+    It can also be proven that the unnormalized rich club coefficients
+    for <= 3 node graphs are either {} or {0:1}. So normalization here
+    has no effect since 1/1=1.
 
     Estimates for appropriate values of `Q` are found in [2]_.
 
@@ -81,7 +84,7 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
             "rich_club_coefficient is not implemented for graphs with self loops."
         )
     rc = _compute_rc(G)
-    if normalized:
+    if normalized and G.number_of_nodes() >= 4:
         # make R a copy of G, randomize with Q*|E| double edge swaps
         # and use rich_club coefficient of R to normalize
         R = G.copy()
