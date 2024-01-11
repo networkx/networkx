@@ -515,7 +515,6 @@ class TestPlanarEmbeddingClass:
 
     def test_forbidden_methods(self):
         embedding = nx.PlanarEmbedding()
-        #  embedding = nx.Graph([(0, 1), (1, 2), (3, 4), (4, 5)])
         embedding.add_node(42)  # no exception
         embedding.add_nodes_from([(23, 24)])  # no exception
         with pytest.raises(NotImplementedError):
