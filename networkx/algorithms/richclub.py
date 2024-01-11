@@ -57,14 +57,11 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
     algorithm ignores any edge weights and is not defined for directed
     graphs or graphs with parallel edges or self loops.
 
-    For graphs with <= 3 nodes, it can be proven that the degree
-    sequence of the graph completely determines it. So the normalization
-    process which creates a random graph with the same degree sequence
-    will normalize against the same graph and set all existing rich club
-    coefficients to 1.
-    It can also be proven that the unnormalized rich club coefficients
-    for <= 3 node graphs are either {} or {0:1}. So normalization here
-    has no effect since 1/1=1.
+    For graphs with <= 3 nodes, it can be proven that given the degrees
+    of each vertex, we can completely determine the graph. So the
+    normalization process which creates a random graph with the same
+    degree sequence will normalize against the same graph and set all
+    existing rich club coefficients to 1.
 
     Estimates for appropriate values of `Q` are found in [2]_.
 
@@ -84,14 +81,17 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
             "rich_club_coefficient is not implemented for graphs with self loops."
         )
     rc = _compute_rc(G)
-    if normalized and G.number_of_nodes() >= 4:
-        # make R a copy of G, randomize with Q*|E| double edge swaps
-        # and use rich_club coefficient of R to normalize
-        R = G.copy()
-        E = R.number_of_edges()
-        nx.double_edge_swap(R, Q * E, max_tries=Q * E * 10, seed=seed)
-        rcran = _compute_rc(R)
-        rc = {k: v / rcran[k] for k, v in rc.items()}
+    if normalized:
+        if G.number_of_nodes() >= 4:
+            # make R a copy of G, randomize with Q*|E| double edge swaps
+            # and use rich_club coefficient of R to normalize
+            R = G.copy()
+            E = R.number_of_edges()
+            nx.double_edge_swap(R, Q * E, max_tries=Q * E * 10, seed=seed)
+            rcran = _compute_rc(R)
+            rc = {k: v / rcran[k] for k, v in rc.items()}
+        else:
+            rc = {k: 1 for k in rc}
     return rc
 
 
