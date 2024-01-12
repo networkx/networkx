@@ -2,8 +2,10 @@
 ====================
 3D Facebook Network
 ====================
-3D spring plot for the (reduced to maximally 5000 nodes) Facebook graph investigated at https://networkx.org/nx-guides/content/exploratory_notebooks/facebook_notebook.html.
-The plots is animated along a sequence of azimuthal and elevatory angles. One can see a slightly better clustering than the corresponding spring layout in 2D.
+
+Visualizing a 5000-node subgraph of the  Facebook graph investigated in
+<https://networkx.org/nx-guides/content/exploratory_notebooks/facebook_notebook.html>
+in 3D plotting with matplotlib.
 """
 import numpy as np
 import networkx as nx
@@ -20,12 +22,7 @@ facebook = pd.read_csv(
     names=["start_node", "end_node"],
 )
 
-#
-## parameters to play around with
-#
-
 parameters = {
-    "node_number": 2000,  # randomly sampled nodes from facebook graph (max 5000)
     "frames_number": 10,  # number of frames in animation
     "azimuthal_min": 0,  # initial azimuthal angle of camera drive
     "azimuthal_max": 100,  # maxmimal azimuthal angle of camera drive
@@ -33,16 +30,7 @@ parameters = {
     "elevation_max": 10,  # maximal elevation angle of camera drive
 }
 
-# random sampling from graph
-n = parameters["node_number"]  # n_max=5000
-assert n <= 5000, "number of nodes should not be larger than 5000"
-random.seed(n)
-random_indices = [random.randint(0, 4999) for _ in range(n)]
-
-# Generate randomly sampled graph from CSV data
-facebook_random = facebook.loc[random_indices]
-
-G = nx.from_pandas_edgelist(facebook_random, "start_node", "end_node")
+G = nx.from_pandas_edgelist(facebook, "start_node", "end_node")
 
 # Generate layout of the graph using spring_layout in 3D
 pos = nx.spring_layout(
