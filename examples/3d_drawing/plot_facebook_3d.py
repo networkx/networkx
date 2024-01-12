@@ -77,14 +77,6 @@ elevation_angles = elevation_angles_first_half + elevation_angles_first_half[::-
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection="3d")
-ax.scatter(*nodes.T, alpha=0.2, s=point_size, ec="w")
-for vizedge in edges:
-    ax.plot(*vizedge.T, color="tab:gray")
-ax.grid(False)
-ax.set_axis_off()
-plt.tight_layout()
-
-plt.show()  # uncomment, if you want to see the animation
 
 
 def init():
