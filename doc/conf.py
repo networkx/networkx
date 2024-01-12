@@ -78,7 +78,7 @@ source_suffix = ".rst"
 source_encoding = "utf-8"
 
 # Items to exclude during source collection, including release announcement template,
-# build outpus and README
+# build output and README
 exclude_patterns = ["release/release_template.rst", "build/*", "README.md"]
 
 # General substitutions.
