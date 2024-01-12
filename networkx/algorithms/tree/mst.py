@@ -1139,7 +1139,7 @@ class SpanningTreeIterator:
                 del d[self.partition_key]
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def number_of_spanning_trees(G, *, root=None, weight=None):
     """Returns the number of spanning trees in `G`.
 
