@@ -995,7 +995,10 @@ class _dispatch:
             else:
                 lines.append("")
 
-            if "backend_func_examples" in func_info and func_info["backend_func_examples"]:
+            if (
+                "backend_func_examples" in func_info
+                and func_info["backend_func_examples"]
+            ):
                 lines.append("  Backend Examples:")
                 lines.append(".. code-block:: python")
                 for line in func_info["backend_func_examples"].split("\n"):
