@@ -48,6 +48,7 @@ ax = fig.add_subplot(111, projection="3d")
 
 
 def init():
+    ax.clear()
     # Initialize the 3D scatter plot with nodes, edges, and formatting.
     ax.scatter(*nodes.T, alpha=0.2, s=point_size, ec="w")
     for vizedge in edges:
