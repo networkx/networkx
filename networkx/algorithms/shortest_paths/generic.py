@@ -19,7 +19,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch
+@nx._dispatchable
 def has_path(G, source, target):
     """Returns *True* if *G* has a path from *source* to *target*.
 
@@ -40,7 +40,7 @@ def has_path(G, source, target):
     return True
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     """Compute shortest paths in the graph.
 
@@ -187,7 +187,7 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     return paths
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def shortest_path_length(G, source=None, target=None, weight=None, method="dijkstra"):
     """Compute shortest path lengths in the graph.
 
@@ -331,7 +331,7 @@ def shortest_path_length(G, source=None, target=None, weight=None, method="dijks
     return paths
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def average_shortest_path_length(G, weight=None, method=None):
     r"""Returns the average shortest path length.
 
@@ -448,7 +448,7 @@ def average_shortest_path_length(G, weight=None, method=None):
     return s / (n * (n - 1))
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def all_shortest_paths(G, source, target, weight=None, method="dijkstra"):
     """Compute all shortest simple paths in the graph.
 
@@ -526,7 +526,7 @@ def all_shortest_paths(G, source, target, weight=None, method="dijkstra"):
     return _build_paths_from_predecessors({source}, target, pred)
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
     """Compute all shortest simple paths from the given source in the graph.
 
@@ -602,7 +602,7 @@ def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
             pass
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def all_pairs_all_shortest_paths(G, weight=None, method="dijkstra"):
     """Compute all shortest paths between all nodes.
 

@@ -20,7 +20,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch(node_attrs="pos_name")
+@nx._dispatchable(node_attrs="pos_name")
 def geometric_edges(G, radius, p=2, *, pos_name="pos"):
     """Returns edge list of node pairs within `radius` of each other.
 
@@ -111,7 +111,7 @@ def _geometric_edges(G, radius, p, pos_name):
 
 
 @py_random_state(5)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def random_geometric_graph(
     n, radius, dim=2, pos=None, p=2, seed=None, *, pos_name="pos"
 ):
@@ -205,7 +205,7 @@ def random_geometric_graph(
 
 
 @py_random_state(6)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def soft_random_geometric_graph(
     n, radius, dim=2, pos=None, p=2, p_dist=None, seed=None, *, pos_name="pos"
 ):
@@ -335,7 +335,7 @@ def soft_random_geometric_graph(
 
 
 @py_random_state(7)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def geographical_threshold_graph(
     n,
     theta,
@@ -502,7 +502,7 @@ def geographical_threshold_graph(
 
 
 @py_random_state(6)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def waxman_graph(
     n,
     beta=0.4,
@@ -635,7 +635,7 @@ def waxman_graph(
 
 
 @py_random_state(5)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
     r"""Returns a navigable small-world graph.
 
@@ -708,7 +708,7 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
 
 
 @py_random_state(7)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def thresholded_random_geometric_graph(
     n,
     radius,
@@ -848,7 +848,7 @@ def thresholded_random_geometric_graph(
 
 
 @py_random_state(5)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def geometric_soft_configuration_graph(
     *, beta, n=None, gamma=None, mean_degree=None, kappas=None, seed=None
 ):

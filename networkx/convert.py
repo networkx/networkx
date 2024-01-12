@@ -176,7 +176,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
     raise nx.NetworkXError("Input is not a known data type for conversion.")
 
 
-@nx._dispatch
+@nx._dispatchable
 def to_dict_of_lists(G, nodelist=None):
     """Returns adjacency representation of graph as a dictionary of lists.
 
@@ -202,7 +202,7 @@ def to_dict_of_lists(G, nodelist=None):
     return d
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def from_dict_of_lists(d, create_using=None):
     """Returns a graph from a dictionary of lists.
 
@@ -364,7 +364,7 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
     return dod
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
     """Returns a graph from a dictionary of dictionaries.
 
@@ -451,7 +451,7 @@ def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
     return G
 
 
-@nx._dispatch(preserve_edge_attrs=True)
+@nx._dispatchable(preserve_edge_attrs=True)
 def to_edgelist(G, nodelist=None):
     """Returns a list of edges in the graph.
 
@@ -469,7 +469,7 @@ def to_edgelist(G, nodelist=None):
     return G.edges(nodelist, data=True)
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def from_edgelist(edgelist, create_using=None):
     """Returns a graph from a list of edges.
 
