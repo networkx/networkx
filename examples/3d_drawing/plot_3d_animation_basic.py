@@ -33,12 +33,12 @@ edges = np.array([(pos[u], pos[v]) for u, v in G.edges()])
 
 
 def init():
+    ax.clear()
     ax.scatter(*nodes.T, alpha=0.2, s=100, color="blue")
     for vizedge in edges:
         ax.plot(*vizedge.T, color="gray")
     ax.grid(False)
     ax.set_axis_off()
-    plt.tight_layout()
 
 
 def _frame_update(index):
@@ -47,6 +47,7 @@ def _frame_update(index):
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection="3d")
+fig.tight_layout()
 
 ani = animation.FuncAnimation(
     fig,
