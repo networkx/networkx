@@ -979,18 +979,19 @@ class _dispatch:
 
             # Renaming extra_parameters to additional_parameters
             if "extra_parameters" in func_info or "additional_parameters" in func_info:
-                if add_gap:
-                    lines.append("")
-                lines.append("  Additional parameters:")
-                if "extra_parameters" in func_info:
-                    extra_parameters = func_info["extra_parameters"]
-                else:
-                    extra_parameters = func_info["additional_parameters"]
-                for param in sorted(extra_parameters):
-                    lines.append(f"    {param}")
-                    if desc := extra_parameters[param]:
-                        lines.append(f"      {desc}")
-                    lines.append("")
+                if func_info["extra_parameters"] or func_info["additional_parameters"]:
+                    if add_gap:
+                        lines.append("")
+                    lines.append("  Additional parameters:")
+                    if "extra_parameters" in func_info:
+                        extra_parameters = func_info["extra_parameters"]
+                    else:
+                        extra_parameters = func_info["additional_parameters"]
+                    for param in sorted(extra_parameters):
+                        lines.append(f"    {param}")
+                        if desc := extra_parameters[param]:
+                            lines.append(f"      {desc}")
+                        lines.append("")
             else:
                 lines.append("")
 
