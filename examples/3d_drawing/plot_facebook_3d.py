@@ -21,15 +21,6 @@ facebook = pd.read_csv(
     sep=" ",
     names=["start_node", "end_node"],
 )
-
-parameters = {
-    "frames_number": 10,  # number of frames in animation
-    "azimuthal_min": 0,  # initial azimuthal angle of camera drive
-    "azimuthal_max": 100,  # maxmimal azimuthal angle of camera drive
-    "elevation_min": 0,  # initial elevation angle of camera drive
-    "elevation_max": 10,  # maximal elevation angle of camera drive
-}
-
 G = nx.from_pandas_edgelist(facebook, "start_node", "end_node")
 
 # Generate layout of the graph using spring_layout in 3D
@@ -46,34 +37,11 @@ nodes = np.array([pos[v] for v in G])
 edges = np.array([(pos[u], pos[v]) for u, v in G.edges()])
 point_size = int(1000 / np.sqrt(len(nodes)))
 
-# Parameters defining the animation, feel free to play around
-
-# Ensure that the number of frames is even
-frames = parameters["frames_number"]
-frames = frames + (frames % 2)
-
-# Define the minimum and maximum azimuthal angles for camera movement.
-azimuthal_min = parameters["azimuthal_min"]
-azimuthal_max = parameters["azimuthal_max"]
-
-# Define the minimum and maximum elevation angles for camera movement.
-elevation_min = parameters["elevation_min"]
-elevation_max = parameters["elevation_max"]
-
-# Calculate the step size and create the angles for the first half
-step_size_azimuthal = (azimuthal_max - azimuthal_min) / (frames // 2 - 1)
-step_size_elevation = (elevation_max - elevation_min) / (frames // 2 - 1)
-azimuthal_angles_first_half = [
-    azimuthal_min + i * step_size_azimuthal for i in range(frames // 2)
-]
-elevation_angles_first_half = [
-    elevation_min + i * step_size_elevation for i in range(frames // 2)
-]
-
-# Combine the first half with its reverse to create the complete angles
-azimuthal_angles = azimuthal_angles_first_half + azimuthal_angles_first_half[::-1]
-elevation_angles = elevation_angles_first_half + elevation_angles_first_half[::-1]
 # generating the plot
+num_frames = 30
+azi_step = np.linspace(0, 360, num_frames, endpoint=False).astype(int)
+elev_step = np.linspace(0, 360, num_frames, endpoint=False).astype(int)
+
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection="3d")
@@ -93,7 +61,7 @@ def init():
 
 def _frame_update(index):
     # Update the view of the 3D plot with specified azimuthal and elevation angles.
-    ax.view_init(elevation_angles[index], azimuthal_angles[index])
+    ax.view_init(elev_step[index], azi_step[index])
     return
 
 
@@ -106,6 +74,6 @@ ani = animation.FuncAnimation(
     init_func=init,
     interval=50,
     cache_frame_data=False,
-    frames=frames,
+    frames=num_frames,
 )
 plt.show()
