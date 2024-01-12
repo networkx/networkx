@@ -20,7 +20,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 @nodes_or_number([0, 1])
 def complete_bipartite_graph(n1, n2, create_using=None):
     """Returns the complete bipartite graph `K_{n_1,n_2}`.
@@ -67,7 +67,7 @@ def complete_bipartite_graph(n1, n2, create_using=None):
 
 
 @py_random_state(3)
-@nx._dispatch(name="bipartite_configuration_model", graphs=None)
+@nx._dispatchable(name="bipartite_configuration_model", graphs=None)
 def configuration_model(aseq, bseq, create_using=None, seed=None):
     """Returns a random bipartite graph from two given degree sequences.
 
@@ -138,7 +138,7 @@ def configuration_model(aseq, bseq, create_using=None, seed=None):
     return G
 
 
-@nx._dispatch(name="bipartite_havel_hakimi_graph", graphs=None)
+@nx._dispatchable(name="bipartite_havel_hakimi_graph", graphs=None)
 def havel_hakimi_graph(aseq, bseq, create_using=None):
     """Returns a bipartite graph from two given degree sequences using a
     Havel-Hakimi style construction.
@@ -213,7 +213,7 @@ def havel_hakimi_graph(aseq, bseq, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
     """Returns a bipartite graph from two given degree sequences using a
     Havel-Hakimi style construction.
@@ -287,7 +287,7 @@ def reverse_havel_hakimi_graph(aseq, bseq, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def alternating_havel_hakimi_graph(aseq, bseq, create_using=None):
     """Returns a bipartite graph from two given degree sequences using
     an alternating Havel-Hakimi style construction.
@@ -366,7 +366,7 @@ def alternating_havel_hakimi_graph(aseq, bseq, create_using=None):
 
 
 @py_random_state(3)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def preferential_attachment_graph(aseq, p, create_using=None, seed=None):
     """Create a bipartite graph with a preferential attachment model from
     a given single degree sequence.
@@ -438,7 +438,7 @@ def preferential_attachment_graph(aseq, p, create_using=None, seed=None):
 
 
 @py_random_state(3)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def random_graph(n, m, p, seed=None, directed=False):
     """Returns a bipartite random graph.
 
@@ -525,7 +525,7 @@ def random_graph(n, m, p, seed=None, directed=False):
 
 
 @py_random_state(3)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def gnmk_random_graph(n, m, k, seed=None, directed=False):
     """Returns a random bipartite graph G_{n,m,k}.
 

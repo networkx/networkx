@@ -708,6 +708,30 @@ def test_random_spanning_tree_additive_large():
     assert not p < 0.05
 
 
+def test_random_spanning_tree_empty_graph():
+    G = nx.Graph()
+    rst = nx.tree.random_spanning_tree(G)
+    assert len(rst.nodes) == 0
+    assert len(rst.edges) == 0
+
+
+def test_random_spanning_tree_single_node_graph():
+    G = nx.Graph()
+    G.add_node(0)
+    rst = nx.tree.random_spanning_tree(G)
+    assert len(rst.nodes) == 1
+    assert len(rst.edges) == 0
+
+
+def test_random_spanning_tree_single_node_loop():
+    G = nx.Graph()
+    G.add_node(0)
+    G.add_edge(0, 0)
+    rst = nx.tree.random_spanning_tree(G)
+    assert len(rst.nodes) == 1
+    assert len(rst.edges) == 0
+
+
 class TestNumberSpanningTrees:
     @classmethod
     def setup_class(cls):

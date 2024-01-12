@@ -129,7 +129,7 @@ def _tricode(G, v, u, w):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def triadic_census(G, nodelist=None):
     """Determines the triadic census of a directed graph.
 
@@ -281,7 +281,7 @@ def triadic_census(G, nodelist=None):
     return census
 
 
-@nx._dispatch
+@nx._dispatchable
 def is_triad(G):
     """Returns True if the graph G is a triad, else False.
 
@@ -312,7 +312,7 @@ def is_triad(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def all_triplets(G):
     """Returns a generator of all possible sets of 3 nodes in a DiGraph.
 
@@ -355,7 +355,7 @@ def all_triplets(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def all_triads(G):
     """A generator of all possible triads in G.
 
@@ -386,7 +386,7 @@ def all_triads(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def triads_by_type(G):
     """Returns a list of all triads for each triad type in a directed graph.
     There are exactly 16 different types of triads possible. Suppose 1, 2, 3 are three
@@ -449,7 +449,7 @@ def triads_by_type(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def triad_type(G):
     """Returns the sociological triad type for a triad.
 
@@ -548,7 +548,7 @@ def triad_type(G):
 
 @not_implemented_for("undirected")
 @py_random_state(1)
-@nx._dispatch(preserve_all_attrs=True)
+@nx._dispatchable(preserve_all_attrs=True)
 def random_triad(G, seed=None):
     """Returns a random triad from a directed graph.
 

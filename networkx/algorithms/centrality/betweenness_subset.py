@@ -16,7 +16,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=None):
     r"""Compute betweenness centrality for a subset of nodes.
 
@@ -114,7 +114,7 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
     return b
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def edge_betweenness_centrality_subset(
     G, sources, targets, normalized=False, weight=None
 ):

@@ -5,7 +5,7 @@ from networkx.utils import not_implemented_for
 __all__ = ["is_regular", "is_k_regular", "k_factor"]
 
 
-@nx._dispatch
+@nx._dispatchable
 def is_regular(G):
     """Determines whether the graph ``G`` is a regular graph.
 
@@ -44,7 +44,7 @@ def is_regular(G):
 
 
 @not_implemented_for("directed")
-@nx._dispatch
+@nx._dispatchable
 def is_k_regular(G, k):
     """Determines whether the graph ``G`` is a k-regular graph.
 
@@ -71,7 +71,7 @@ def is_k_regular(G, k):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch(preserve_edge_attrs=True)
+@nx._dispatchable(preserve_edge_attrs=True)
 def k_factor(G, k, matching_weight="weight"):
     """Compute a k-factor of G
 
