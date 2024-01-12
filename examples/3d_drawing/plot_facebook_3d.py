@@ -34,7 +34,6 @@ pos = nx.spring_layout(
     seed=1721,
 )
 
-
 # Getting nodes and edges into the right format for matplotlib
 nodes = np.array([pos[v] for v in G])
 edges = np.array([(pos[u], pos[v]) for u, v in G.edges()])
@@ -68,10 +67,7 @@ def _frame_update(index):
     ax.view_init(elev_step[index], azi_step[index])
     return
 
-
-# Create a 3D plot, set up animation, and display the plot.
-
-
+# Create the 3D animation
 ani = animation.FuncAnimation(
     fig,
     _frame_update,
