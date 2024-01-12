@@ -21,7 +21,10 @@ facebook = pd.read_csv(
     sep=" ",
     names=["start_node", "end_node"],
 )
-G = nx.from_pandas_edgelist(facebook, "start_node", "end_node")
+
+# Randomly select 10% of the edges
+rng = np.random.default_rng()
+G = nx.from_edgelist(rng.choice(facebook, size=500, replace=False))
 
 # Generate layout of the graph using spring_layout in 3D
 pos = nx.spring_layout(
@@ -73,7 +76,7 @@ ani = animation.FuncAnimation(
     fig,
     _frame_update,
     init_func=init,
-    interval=50,
+    interval=100,
     cache_frame_data=False,
     frames=num_frames,
 )
