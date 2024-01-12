@@ -67,6 +67,7 @@ def _frame_update(index):
     ax.view_init(elev_step[index], azi_step[index])
     return
 
+
 # Create the 3D animation
 ani = animation.FuncAnimation(
     fig,
