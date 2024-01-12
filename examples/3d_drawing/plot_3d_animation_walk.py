@@ -42,7 +42,6 @@ def init():
     ax.plot(*nodes[0], alpha=1, marker="s", color="red")
     ax.grid(False)
     ax.set_axis_off()
-    plt.tight_layout()
 
 
 def _frame_update(index):
@@ -53,13 +52,14 @@ def _frame_update(index):
         # Update node
         node = random.choice(neighbors)
         # Update the last line object, which corresponds to the walking node
-        pt = ax.lines[-1].set_data_3d(nodes[node][:, np.newaxis])
+        _ = ax.lines[-1].set_data_3d(nodes[node][:, np.newaxis])
     # Update view
     ax.view_init(index * 0.2, index * 0.5)
 
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection="3d")
+fig.tight_layout()
 node = 0  # Initialize the walking node
 ani = animation.FuncAnimation(
     fig,
