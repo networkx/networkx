@@ -95,7 +95,19 @@ import networkx as nx
 
 from ..exception import NetworkXNotImplemented
 
-__all__ = ["_dispatchable"]
+__all__ = ["_dispatchable", "backend_config"]
+
+# Get default configuration from environment variables at import time.
+# Default backend config will be initialized from `backend_info` just below.
+backend_config = {
+    "fallback_to_nx": os.environ.get("NETWORKX_FALLBACK_TO_NX", "true").strip().lower()
+    == "true",
+    "automatic_backends": [
+        x.strip()
+        for x in os.environ.get("NETWORKX_AUTOMATIC_BACKENDS", "").split(",")
+        if x.strip()
+    ],
+}
 
 
 def _get_backends(group, *, load_and_call=False):
@@ -126,6 +138,12 @@ def _get_backends(group, *, load_and_call=False):
 
 backends = _get_backends("networkx.backends")
 backend_info = _get_backends("networkx.backend_info", load_and_call=True)
+# Initialize default configuration from backends (if provided)
+backend_config.update(
+    (backend, info["default_config"])
+    for backend, info in backend_info.items()
+    if "default_config" in info
+)
 
 # Load and cache backends on-demand
 _loaded_backends = {}  # type: ignore[var-annotated]
@@ -154,14 +172,6 @@ class _dispatchable:
     # For example: `PYTHONPATH=. pytest --backend graphblas --fallback-to-nx`
     # Future work: add configuration to control these
     _is_testing = False
-    _fallback_to_nx = (
-        os.environ.get("NETWORKX_FALLBACK_TO_NX", "true").strip().lower() == "true"
-    )
-    _automatic_backends = [
-        x.strip()
-        for x in os.environ.get("NETWORKX_AUTOMATIC_BACKENDS", "").split(",")
-        if x.strip()
-    ]
 
     def __new__(
         cls,
@@ -436,13 +446,14 @@ class _dispatchable:
         #     if (val := args[pos] if pos < len(args) else kwargs.get(gname)) is not None
         # }
 
-        if self._is_testing and self._automatic_backends and backend_name is None:
+        automatic_backends = backend_config["automatic_backends"]
+        if self._is_testing and automatic_backends and backend_name is None:
             # Special path if we are running networkx tests with a backend.
             return self._convert_and_call_for_tests(
-                self._automatic_backends[0],
+                automatic_backends[0],
                 args,
                 kwargs,
-                fallback_to_nx=self._fallback_to_nx,
+                fallback_to_nx=backend_config["fallback_to_nx"],
             )
 
         # Check if any graph comes from a backend
@@ -504,7 +515,7 @@ class _dispatchable:
                 raise ImportError(f"Unable to load backend: {graph_backend_name}")
             if (
                 "networkx" in graph_backend_names
-                and graph_backend_name not in self._automatic_backends
+                and graph_backend_name not in automatic_backends
             ):
                 # Not configured to convert networkx graphs to this backend
                 raise TypeError(
@@ -520,11 +531,11 @@ class _dispatchable:
                         graph_backend_name,
                         args,
                         kwargs,
-                        fallback_to_nx=self._fallback_to_nx,
+                        fallback_to_nx=backend_config["fallback_to_nx"],
                     )
                 # All graphs are backend graphs--no need to convert!
                 return getattr(backend, self.name)(*args, **kwargs)
-            # Future work: try to convert and run with other backends in self._automatic_backends
+            # Future work: try to convert and run with other backends in automatic_backends
             raise NetworkXNotImplemented(
                 f"'{self.name}' not implemented by {graph_backend_name}"
             )
@@ -538,13 +549,13 @@ class _dispatchable:
         # Only networkx graphs; try to convert and run with a backend with automatic
         # conversion, but don't do this by default for graph generators or loaders.
         if self.graphs:
-            for backend_name in self._automatic_backends:
+            for backend_name in automatic_backends:
                 if self._can_backend_run(backend_name, *args, **kwargs):
                     return self._convert_and_call(
                         backend_name,
                         args,
                         kwargs,
-                        fallback_to_nx=self._fallback_to_nx,
+                        fallback_to_nx=backend_config["fallback_to_nx"],
                     )
         # Default: run with networkx on networkx inputs
         return self.orig_func(*args, **kwargs)
