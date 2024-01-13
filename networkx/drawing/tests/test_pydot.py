@@ -1,5 +1,4 @@
 """Unit tests for pydot drawing functions."""
-import tempfile
 from io import StringIO
 
 import pytest
