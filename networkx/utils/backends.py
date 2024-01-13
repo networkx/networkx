@@ -540,7 +540,10 @@ class _dispatchable:
             for backend_name in self._automatic_backends:
                 if self._can_backend_run(backend_name, *args, **kwargs):
                     return self._convert_and_call(
-                        backend_name, args, kwargs, fallback_to_nx=self._fallback_to_nx,
+                        backend_name,
+                        args,
+                        kwargs,
+                        fallback_to_nx=self._fallback_to_nx,
                     )
         # Default: run with networkx on networkx inputs
         return self.orig_func(*args, **kwargs)
