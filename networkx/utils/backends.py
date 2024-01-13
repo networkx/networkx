@@ -86,7 +86,6 @@ the test using `item.add_marker(pytest.mark.xfail(reason=...))`.
 """
 import inspect
 import os
-import sys
 import warnings
 from functools import partial
 from importlib.metadata import entry_points
@@ -541,10 +540,7 @@ class _dispatchable:
             for backend_name in self._automatic_backends:
                 if self._can_backend_run(backend_name, *args, **kwargs):
                     return self._convert_and_call(
-                        backend_name,
-                        args,
-                        kwargs,
-                        fallback_to_nx=self._fallback_to_nx,
+                        backend_name, args, kwargs, fallback_to_nx=self._fallback_to_nx,
                     )
         # Default: run with networkx on networkx inputs
         return self.orig_func(*args, **kwargs)
@@ -962,36 +958,35 @@ class _dispatchable:
             func_info = info["functions"][self.name]
 
             # Renaming extra_docstring to backend_func_docs
-            if "extra_docstring" in func_info or "backend_func_docs" in func_info:
-                if "extra_docstring" in func_info:
-                    lines.extend(
-                        f"  {line}" if line else line
-                        for line in func_info["extra_docstring"].split("\n")
-                    )
-                else:
-                    lines.extend(
-                        f"  {line}" if line else line
-                        for line in func_info["backend_func_docs"].split("\n")
-                    )
+            if ("extra_docstring" in func_info and func_info["extra_docstring"]) or (
+                "backend_func_docs" in func_info and func_info["backend_func_docs"]
+            ):
+                key = (
+                    "extra_docstring"
+                    if func_info.get("extra_docstring")
+                    else "backend_func_docs"
+                )
+                lines.extend(
+                    f"  {line}" if line else line for line in func_info[key].split("\n")
+                )
                 add_gap = True
             else:
                 add_gap = False
 
             # Renaming extra_parameters to additional_parameters
-            if "extra_parameters" in func_info or "additional_parameters" in func_info:
-                if func_info["extra_parameters"] or func_info["additional_parameters"]:
-                    if add_gap:
-                        lines.append("")
-                    lines.append("  Additional parameters:")
-                    if "extra_parameters" in func_info:
-                        extra_parameters = func_info["extra_parameters"]
-                    else:
-                        extra_parameters = func_info["additional_parameters"]
-                    for param in sorted(extra_parameters):
-                        lines.append(f"    {param}")
-                        if desc := extra_parameters[param]:
-                            lines.append(f"      {desc}")
-                        lines.append("")
+            if (
+                "extra_parameters" in func_info or "additional_parameters" in func_info
+            ) and (func_info["extra_parameters"] or func_info["additional_parameters"]):
+                if add_gap:
+                    lines.append("")
+                lines.append("  Additional parameters:")
+                extra_parameters = func_info.get(
+                    "extra_parameters", func_info.get("additional_parameters", {})
+                )
+                lines.extend(
+                    [f"    {param}", f"      {desc}", ""]
+                    for param, desc in sorted(extra_parameters.items())
+                )
             else:
                 lines.append("")
 
