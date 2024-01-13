@@ -26,7 +26,7 @@ __all__ = [
 
 
 @not_implemented_for("directed")
-@nx._dispatch
+@nx._dispatchable
 def enumerate_all_cliques(G):
     """Returns all cliques in an undirected graph.
 
@@ -98,7 +98,7 @@ def enumerate_all_cliques(G):
 
 
 @not_implemented_for("directed")
-@nx._dispatch
+@nx._dispatchable
 def find_cliques(G, nodes=None):
     """Returns all maximal cliques in an undirected graph.
 
@@ -294,7 +294,7 @@ def find_cliques(G, nodes=None):
 
 
 # TODO Should this also be not implemented for directed graphs?
-@nx._dispatch
+@nx._dispatchable
 def find_cliques_recursive(G, nodes=None):
     """Returns all maximal cliques in a graph.
 
@@ -412,7 +412,7 @@ def find_cliques_recursive(G, nodes=None):
     return expand(subg_init, cand_init)
 
 
-@nx._dispatch
+@nx._dispatchable
 def make_max_clique_graph(G, create_using=None):
     """Returns the maximal clique graph of the given graph.
 
@@ -459,7 +459,7 @@ def make_max_clique_graph(G, create_using=None):
     return B
 
 
-@nx._dispatch
+@nx._dispatchable
 def make_clique_bipartite(G, fpos=None, create_using=None, name=None):
     """Returns the bipartite clique graph corresponding to `G`.
 
@@ -508,7 +508,7 @@ def make_clique_bipartite(G, fpos=None, create_using=None, name=None):
     return B
 
 
-@nx._dispatch
+@nx._dispatchable
 def node_clique_number(G, nodes=None, cliques=None, separate_nodes=False):
     """Returns the size of the largest maximal clique containing each given node.
 
@@ -698,7 +698,7 @@ class MaxWeightClique:
 
 
 @not_implemented_for("directed")
-@nx._dispatch(node_attrs="weight")
+@nx._dispatchable(node_attrs="weight")
 def max_weight_clique(G, weight="weight"):
     """Find a maximum weight clique in G.
 

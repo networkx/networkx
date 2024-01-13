@@ -6,7 +6,7 @@ import networkx as nx
 __all__ = ["laplacian_centrality"]
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def laplacian_centrality(
     G, normalized=True, nodelist=None, weight="weight", walk_type=None, alpha=0.95
 ):
