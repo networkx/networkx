@@ -8,7 +8,7 @@ __all__ = ["cd_index"]
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
-@nx._dispatch(node_attrs={"time": None, "weight": 1})
+@nx._dispatchable(node_attrs={"time": None, "weight": 1})
 def cd_index(G, node, time_delta, *, time="time", weight=None):
     r"""Compute the CD index for `node` within the graph `G`.
 

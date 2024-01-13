@@ -15,7 +15,7 @@ import networkx as nx
 __all__ = ["edge_boundary", "node_boundary"]
 
 
-@nx._dispatch(edge_attrs={"data": "default"}, preserve_edge_attrs="data")
+@nx._dispatchable(edge_attrs={"data": "default"}, preserve_edge_attrs="data")
 def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False, default=None):
     """Returns the edge boundary of `nbunch1`.
 
@@ -106,7 +106,7 @@ def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False, default=None
     )
 
 
-@nx._dispatch
+@nx._dispatchable
 def node_boundary(G, nbunch1, nbunch2=None):
     """Returns the node boundary of `nbunch1`.
 

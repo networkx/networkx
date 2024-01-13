@@ -11,7 +11,7 @@ __all__ = ["double_edge_swap", "connected_double_edge_swap", "directed_edge_swap
 
 @nx.utils.not_implemented_for("undirected")
 @py_random_state(3)
-@nx._dispatch
+@nx._dispatchable
 def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
     """Swap three edges in a directed graph while keeping the node degrees fixed.
 
@@ -131,7 +131,7 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
 
 
 @py_random_state(3)
-@nx._dispatch
+@nx._dispatchable
 def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
     """Swap two edges in the graph while keeping the node degrees fixed.
 
@@ -229,7 +229,7 @@ def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
 
 
 @py_random_state(3)
-@nx._dispatch
+@nx._dispatchable
 def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
     """Attempts the specified number of double-edge swaps in the graph `G`.
 
