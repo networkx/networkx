@@ -14,7 +14,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch
+@nx._dispatchable
 def dfs_edges(G, source=None, depth_limit=None):
     """Iterate over edges in a depth-first-search (DFS).
 
@@ -100,7 +100,7 @@ def dfs_edges(G, source=None, depth_limit=None):
                 depth_now -= 1
 
 
-@nx._dispatch
+@nx._dispatchable
 def dfs_tree(G, source=None, depth_limit=None):
     """Returns oriented tree constructed from a depth-first-search from source.
 
@@ -146,7 +146,7 @@ def dfs_tree(G, source=None, depth_limit=None):
     return T
 
 
-@nx._dispatch
+@nx._dispatchable
 def dfs_predecessors(G, source=None, depth_limit=None):
     """Returns dictionary of predecessors in depth-first-search from source.
 
@@ -200,7 +200,7 @@ def dfs_predecessors(G, source=None, depth_limit=None):
     return {t: s for s, t in dfs_edges(G, source, depth_limit)}
 
 
-@nx._dispatch
+@nx._dispatchable
 def dfs_successors(G, source=None, depth_limit=None):
     """Returns dictionary of successors in depth-first-search from source.
 
@@ -257,7 +257,7 @@ def dfs_successors(G, source=None, depth_limit=None):
     return dict(d)
 
 
-@nx._dispatch
+@nx._dispatchable
 def dfs_postorder_nodes(G, source=None, depth_limit=None):
     """Generate nodes in a depth-first-search post-ordering starting at source.
 
@@ -309,7 +309,7 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None):
     return (v for u, v, d in edges if d == "reverse")
 
 
-@nx._dispatch
+@nx._dispatchable
 def dfs_preorder_nodes(G, source=None, depth_limit=None):
     """Generate nodes in a depth-first-search pre-ordering starting at source.
 
@@ -361,7 +361,7 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None):
     return (v for u, v, d in edges if d == "forward")
 
 
-@nx._dispatch
+@nx._dispatchable
 def dfs_labeled_edges(G, source=None, depth_limit=None):
     """Iterate over edges in a depth-first-search (DFS) labeled by type.
 

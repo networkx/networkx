@@ -6,7 +6,7 @@
 # This is comprehensive, but only tests the `test_override_dispatch`
 # function in networkx.classes.backends.
 
-# To test the `_dispatch` function directly, several tests scattered throughout
+# To test the `_dispatchable` function directly, several tests scattered throughout
 # NetworkX have been augmented to test normal and dispatch mode.
 # Searching for `dispatch_interface` should locate the specific tests.
 

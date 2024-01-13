@@ -14,7 +14,7 @@ __all__ = ["wiener_index"]
 chaini = chain.from_iterable
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def wiener_index(G, weight=None):
     """Returns the Wiener index of the given graph.
 

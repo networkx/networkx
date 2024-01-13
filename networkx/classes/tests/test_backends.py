@@ -23,8 +23,8 @@ def test_pickle():
 
 
 @pytest.mark.skipif(
-    "not nx._dispatch._automatic_backends "
-    "or nx._dispatch._automatic_backends[0] != 'nx-loopback'"
+    "not nx._dispatchable._automatic_backends "
+    "or nx._dispatchable._automatic_backends[0] != 'nx-loopback'"
 )
 def test_graph_converter_needs_backend():
     # When testing, `nx.from_scipy_sparse_array` will *always* call the backend

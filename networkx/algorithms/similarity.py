@@ -36,7 +36,7 @@ def debug_print(*args, **kwargs):
     print(*args, **kwargs)
 
 
-@nx._dispatch(
+@nx._dispatchable(
     graphs={"G1": 0, "G2": 1}, preserve_edge_attrs=True, preserve_node_attrs=True
 )
 def graph_edit_distance(
@@ -210,7 +210,7 @@ def graph_edit_distance(
     return bestcost
 
 
-@nx._dispatch(graphs={"G1": 0, "G2": 1})
+@nx._dispatchable(graphs={"G1": 0, "G2": 1})
 def optimal_edit_paths(
     G1,
     G2,
@@ -322,7 +322,8 @@ def optimal_edit_paths(
         edge_edit_path : list of tuples ((u1, v1), (u2, v2))
 
     cost : numeric
-        Optimal edit path cost (graph edit distance).
+        Optimal edit path cost (graph edit distance). When the cost
+        is zero, it indicates that `G1` and `G2` are isomorphic.
 
     Examples
     --------
@@ -333,6 +334,14 @@ def optimal_edit_paths(
     40
     >>> cost
     5.0
+
+    Notes
+    -----
+    To transform `G1` into a graph isomorphic to `G2`, apply the node
+    and edge edits in the returned ``edit_paths``.
+    In the case of isomorphic graphs, the cost is zero, and the paths
+    represent different isomorphic mappings (isomorphisms). That is, the
+    edits involve renaming nodes and edges to match the structure of `G2`.
 
     See Also
     --------
@@ -373,7 +382,7 @@ def optimal_edit_paths(
     return paths, bestcost
 
 
-@nx._dispatch(graphs={"G1": 0, "G2": 1})
+@nx._dispatchable(graphs={"G1": 0, "G2": 1})
 def optimize_graph_edit_distance(
     G1,
     G2,
@@ -524,7 +533,7 @@ def optimize_graph_edit_distance(
         yield cost
 
 
-@nx._dispatch(
+@nx._dispatchable(
     graphs={"G1": 0, "G2": 1}, preserve_edge_attrs=True, preserve_node_attrs=True
 )
 def optimize_edit_paths(
@@ -1203,7 +1212,7 @@ def optimize_edit_paths(
         yield list(vertex_path), list(edge_path), cost
 
 
-@nx._dispatch
+@nx._dispatchable
 def simrank_similarity(
     G,
     source=None,
@@ -1276,7 +1285,7 @@ def simrank_similarity(
         the similarity value for the given pair of nodes.
 
     Raises
-    -------
+    ------
     ExceededMaxIterations
         If the algorithm does not converge within ``max_iterations``.
 
@@ -1516,7 +1525,7 @@ def _simrank_similarity_numpy(
     return newsim
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def panther_similarity(
     G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None, weight="weight"
 ):
@@ -1532,7 +1541,7 @@ def panther_similarity(
     source : node
         Source node for which to find the top `k` similar other nodes
     k : int (default = 5)
-        The number of most similar nodes to return
+        The number of most similar nodes to return.
     path_length : int (default = 5)
         How long the randomly generated paths should be (``T`` in [1]_)
     c : float (default = 0.5)
@@ -1554,10 +1563,11 @@ def panther_similarity(
     similarity : dictionary
         Dictionary of nodes to similarity scores (as floats). Note:
         the self-similarity (i.e., ``v``) will not be included in
-        the returned dictionary.
+        the returned dictionary. So, for ``k = 5``, a dictionary of
+        top 4 nodes and their similarity scores will be returned.
 
     Raises
-    -------
+    ------
     NetworkXUnfeasible
         If `source` is an isolated node.
 
@@ -1565,7 +1575,7 @@ def panther_similarity(
         If `source` is not in `G`.
 
     Notes
-    -------
+    -----
         The isolated nodes in `G` are ignored.
 
     Examples
@@ -1651,7 +1661,7 @@ def panther_similarity(
     return top_k_with_val
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def generate_random_paths(
     G, sample_size, path_length=5, index_map=None, weight="weight"
 ):

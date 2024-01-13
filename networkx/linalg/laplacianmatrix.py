@@ -1,4 +1,11 @@
 """Laplacian matrix of graphs.
+
+All calculations here are done using the out-degree. For Laplacians 
+using in-degree, us `G.reverse(copy=False)` instead of `G`.
+
+The `laplacian_matrix` function provides an unnormalized matrix, 
+while `normalized_laplacian_matrix`, `directed_laplacian_matrix`, 
+and `directed_combinatorial_laplacian_matrix` are all normalized.
 """
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -12,8 +19,7 @@ __all__ = [
 ]
 
 
-@not_implemented_for("directed")
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def laplacian_matrix(G, nodelist=None, weight="weight"):
     """Returns the Laplacian matrix of G.
 
@@ -42,10 +48,19 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     -----
     For MultiGraph, the edges weights are summed.
 
+    This returns an unnormalized matrix. For a normalized output,
+    use `normalized_laplacian_matrix`, `directed_laplacian_matrix`,
+    or `directed_combinatorial_laplacian_matrix`.
+
+    This calculation uses the out-degree of the graph `G`. To use the
+    in-degree for calculations instead, use `G.reverse(copy=False)` instead.
+
     See Also
     --------
     :func:`~networkx.convert_matrix.to_numpy_array`
     normalized_laplacian_matrix
+    directed_laplacian_matrix
+    directed_combinatorial_laplacian_matrix
     :func:`~networkx.linalg.spectrum.laplacian_spectrum`
 
     Examples
@@ -62,6 +77,25 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
      [ 0  0  0  1 -1]
      [ 0  0  0 -1  1]]
 
+    >>> edges = [(1, 2), (2, 1), (2, 4), (4, 3), (3, 4),]
+    >>> DiG = nx.DiGraph(edges)
+    >>> print(nx.laplacian_matrix(DiG).toarray())
+    [[ 1 -1  0  0]
+     [-1  2 -1  0]
+     [ 0  0  1 -1]
+     [ 0  0 -1  1]]
+    >>> G = nx.Graph(DiG)
+    >>> print(nx.laplacian_matrix(G).toarray())
+    [[ 1 -1  0  0]
+     [-1  2 -1  0]
+     [ 0 -1  2 -1]
+     [ 0  0 -1  1]]
+
+    References
+    ----------
+    .. [1] Langville, Amy N., and Carl D. Meyer. Google’s PageRank and Beyond:
+       The Science of Search Engine Rankings. Princeton University Press, 2006.
+
     """
     import scipy as sp
 
@@ -74,8 +108,7 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     return D - A
 
 
-@not_implemented_for("directed")
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     r"""Returns the normalized Laplacian matrix of G.
 
@@ -114,10 +147,36 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     If the Graph contains selfloops, D is defined as ``diag(sum(A, 1))``, where A is
     the adjacency matrix [2]_.
 
+    This calculation uses the out-degree of the graph `G`. To use the
+    in-degree for calculations instead, use `G.reverse(copy=False)` instead.
+
+    For an unnormalized output, use `laplacian_matrix`.
+
+    Examples
+    --------
+
+    >>> import numpy as np
+    >>> np.set_printoptions(precision=4) # To print with lower precision
+    >>> edges = [(1, 2), (2, 1), (2, 4), (4, 3), (3, 4),]
+    >>> DiG = nx.DiGraph(edges)
+    >>> print(nx.normalized_laplacian_matrix(DiG).toarray())
+    [[ 1.     -0.7071  0.      0.    ]
+     [-0.7071  1.     -0.7071  0.    ]
+     [ 0.      0.      1.     -1.    ]
+     [ 0.      0.     -1.      1.    ]]
+    >>> G = nx.Graph(DiG)
+    >>> print(nx.normalized_laplacian_matrix(G).toarray())
+    [[ 1.     -0.7071  0.      0.    ]
+     [-0.7071  1.     -0.5     0.    ]
+     [ 0.     -0.5     1.     -0.7071]
+     [ 0.      0.     -0.7071  1.    ]]
+
     See Also
     --------
     laplacian_matrix
     normalized_laplacian_spectrum
+    directed_laplacian_matrix
+    directed_combinatorial_laplacian_matrix
 
     References
     ----------
@@ -126,6 +185,8 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     .. [2] Steve Butler, Interlacing For Weighted Graphs Using The Normalized
        Laplacian, Electronic Journal of Linear Algebra, Volume 16, pp. 90-98,
        March 2007.
+    .. [3] Langville, Amy N., and Carl D. Meyer. Google’s PageRank and Beyond:
+       The Science of Search Engine Rankings. Princeton University Press, 2006.
     """
     import numpy as np
     import scipy as sp
@@ -146,7 +207,7 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     return DH @ (L @ DH)
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def total_spanning_tree_weight(G, weight=None):
     """
     Returns the total weight of all spanning trees of `G`.
@@ -185,7 +246,7 @@ def total_spanning_tree_weight(G, weight=None):
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def directed_laplacian_matrix(
     G, nodelist=None, weight="weight", walk_type=None, alpha=0.95
 ):
@@ -195,7 +256,7 @@ def directed_laplacian_matrix(
 
     .. math::
 
-        L = I - (\Phi^{1/2} P \Phi^{-1/2} + \Phi^{-1/2} P^T \Phi^{1/2} ) / 2
+        L = I - \frac{1}{2} \left (\Phi^{1/2} P \Phi^{-1/2} + \Phi^{-1/2} P^T \Phi^{1/2} \right )
 
     where `I` is the identity matrix, `P` is the transition matrix of the
     graph, and `\Phi` a matrix with the Perron vector of `P` in the diagonal and
@@ -237,9 +298,16 @@ def directed_laplacian_matrix(
     -----
     Only implemented for DiGraphs
 
+    The result is always a symmetric matrix.
+
+    This calculation uses the out-degree of the graph `G`. To use the
+    in-degree for calculations instead, use `G.reverse(copy=False)` instead.
+
     See Also
     --------
     laplacian_matrix
+    normalized_laplacian_matrix
+    directed_combinatorial_laplacian_matrix
 
     References
     ----------
@@ -277,7 +345,7 @@ def directed_laplacian_matrix(
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def directed_combinatorial_laplacian_matrix(
     G, nodelist=None, weight="weight", walk_type=None, alpha=0.95
 ):
@@ -287,7 +355,7 @@ def directed_combinatorial_laplacian_matrix(
 
     .. math::
 
-        L = \Phi - (\Phi P + P^T \Phi) / 2
+        L = \Phi - \frac{1}{2} \left (\Phi P + P^T \Phi \right)
 
     where `P` is the transition matrix of the graph and `\Phi` a matrix
     with the Perron vector of `P` in the diagonal and zeros elsewhere [1]_.
@@ -328,9 +396,16 @@ def directed_combinatorial_laplacian_matrix(
     -----
     Only implemented for DiGraphs
 
+    The result is always a symmetric matrix.
+
+    This calculation uses the out-degree of the graph `G`. To use the
+    in-degree for calculations instead, use `G.reverse(copy=False)` instead.
+
     See Also
     --------
     laplacian_matrix
+    normalized_laplacian_matrix
+    directed_laplacian_matrix
 
     References
     ----------

@@ -229,7 +229,7 @@ __all__ = [
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def is_d_separator(G, x, y, z):
     """Return whether node sets `x` and `y` are d-separated by `z`.
 
@@ -337,7 +337,7 @@ def is_d_separator(G, x, y, z):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def find_minimal_d_separator(G, x, y, *, included=None, restricted=None):
     """Returns a minimal d-separating set between `x` and `y` if possible
 
@@ -444,7 +444,7 @@ def find_minimal_d_separator(G, x, y, *, included=None, restricted=None):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def is_minimal_d_separator(G, x, y, z, *, included=None, restricted=None):
     """Determine if `z` is a minimal d-separator for `x` and `y`.
 

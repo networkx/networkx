@@ -36,7 +36,7 @@ __all__ = [
 chaini = chain.from_iterable
 
 
-@nx._dispatch
+@nx._dispatchable
 def descendants(G, source):
     """Returns all nodes reachable from `source` in `G`.
 
@@ -73,7 +73,7 @@ def descendants(G, source):
     return {child for parent, child in nx.bfs_edges(G, source)}
 
 
-@nx._dispatch
+@nx._dispatchable
 def ancestors(G, source):
     """Returns all nodes having a path to `source` in `G`.
 
@@ -110,7 +110,7 @@ def ancestors(G, source):
     return {child for parent, child in nx.bfs_edges(G, source, reverse=True)}
 
 
-@nx._dispatch
+@nx._dispatchable
 def has_cycle(G):
     """Decides whether the directed graph has a cycle."""
     try:
@@ -122,7 +122,7 @@ def has_cycle(G):
         return False
 
 
-@nx._dispatch
+@nx._dispatchable
 def is_directed_acyclic_graph(G):
     """Returns True if the graph `G` is a directed acyclic graph (DAG) or
     False if not.
@@ -163,7 +163,7 @@ def is_directed_acyclic_graph(G):
     return G.is_directed() and not has_cycle(G)
 
 
-@nx._dispatch
+@nx._dispatchable
 def topological_generations(G):
     """Stratifies a DAG into generations.
 
@@ -241,7 +241,7 @@ def topological_generations(G):
         )
 
 
-@nx._dispatch
+@nx._dispatchable
 def topological_sort(G):
     """Returns a generator of nodes in topologically sorted order.
 
@@ -310,7 +310,7 @@ def topological_sort(G):
         yield from generation
 
 
-@nx._dispatch
+@nx._dispatchable
 def lexicographical_topological_sort(G, key=None):
     """Generate the nodes in the unique lexicographical topological sort order.
 
@@ -453,7 +453,7 @@ def lexicographical_topological_sort(G, key=None):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def all_topological_sorts(G):
     """Returns a generator of _all_ topological sorts of the directed graph G.
 
@@ -572,7 +572,7 @@ def all_topological_sorts(G):
             break
 
 
-@nx._dispatch
+@nx._dispatchable
 def is_aperiodic(G):
     """Returns True if `G` is aperiodic.
 
@@ -665,7 +665,7 @@ def is_aperiodic(G):
         return g == 1 and nx.is_aperiodic(G.subgraph(set(G) - set(levels)))
 
 
-@nx._dispatch(preserve_all_attrs=True)
+@nx._dispatchable(preserve_all_attrs=True)
 def transitive_closure(G, reflexive=False):
     """Returns transitive closure of a graph
 
@@ -758,7 +758,7 @@ def transitive_closure(G, reflexive=False):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch(preserve_all_attrs=True)
+@nx._dispatchable(preserve_all_attrs=True)
 def transitive_closure_dag(G, topo_order=None):
     """Returns the transitive closure of a directed acyclic graph.
 
@@ -815,7 +815,7 @@ def transitive_closure_dag(G, topo_order=None):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def transitive_reduction(G):
     """Returns transitive reduction of a directed graph
 
@@ -888,7 +888,7 @@ def transitive_reduction(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def antichains(G, topo_order=None):
     """Generates antichains from a directed acyclic graph (DAG).
 
@@ -955,7 +955,7 @@ def antichains(G, topo_order=None):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch(edge_attrs={"weight": "default_weight"})
+@nx._dispatchable(edge_attrs={"weight": "default_weight"})
 def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
     """Returns the longest path in a directed acyclic graph (DAG).
 
@@ -1051,7 +1051,7 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch(edge_attrs={"weight": "default_weight"})
+@nx._dispatchable(edge_attrs={"weight": "default_weight"})
 def dag_longest_path_length(G, weight="weight", default_weight=1):
     """Returns the longest path length in a DAG
 
@@ -1103,7 +1103,7 @@ def dag_longest_path_length(G, weight="weight", default_weight=1):
     return path_length
 
 
-@nx._dispatch
+@nx._dispatchable
 def root_to_leaf_paths(G):
     """Yields root-to-leaf paths in a directed acyclic graph.
 
@@ -1124,7 +1124,7 @@ def root_to_leaf_paths(G):
 
 @not_implemented_for("multigraph")
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def dag_to_branching(G):
     """Returns a branching representing all (overlapping) paths from
     root nodes to leaf nodes in the given directed acyclic graph.
@@ -1222,7 +1222,7 @@ def dag_to_branching(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def compute_v_structures(G):
     """Iterate through the graph to compute all v-structures.
 

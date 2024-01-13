@@ -326,8 +326,8 @@ def triangulate_face(embedding, v1, v2):
             v1, v2, v3 = v2, v3, v4
         else:
             # Add edge for triangulation
-            embedding.add_half_edge_cw(v1, v3, v2)
-            embedding.add_half_edge_ccw(v3, v1, v2)
+            embedding.add_half_edge(v1, v3, ccw=v2)
+            embedding.add_half_edge(v3, v1, cw=v2)
             v1, v2, v3 = v1, v3, v4
         # Get next node
         _, v4 = embedding.next_face_half_edge(v2, v3)
@@ -445,8 +445,8 @@ def make_bi_connected(embedding, starting_node, outgoing_node, edges_counted):
         # cycle is not completed yet
         if v2 in face_set:
             # v2 encountered twice: Add edge to ensure 2-connectedness
-            embedding.add_half_edge_cw(v1, v3, v2)
-            embedding.add_half_edge_ccw(v3, v1, v2)
+            embedding.add_half_edge(v1, v3, ccw=v2)
+            embedding.add_half_edge(v3, v1, cw=v2)
             edges_counted.add((v2, v3))
             edges_counted.add((v3, v1))
             v2 = v1
