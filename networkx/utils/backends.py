@@ -984,12 +984,13 @@ class _dispatchable:
                     lines.append("")
                 lines.append("  Additional parameters:")
                 extra_parameters = func_info.get(
-                    "extra_parameters", func_info.get("additional_parameters", {})
+                    "extra_parameters", func_info.get("additional_parameters")
                 )
-                lines.extend(
-                    [f"    {param}", f"      {desc}", ""]
-                    for param, desc in sorted(extra_parameters.items())
-                )
+                for param in sorted(extra_parameters):
+                    lines.append(f"    {param}")
+                    if desc := extra_parameters[param]:
+                        lines.append(f"      {desc}")
+                    lines.append("")
             else:
                 lines.append("")
 
