@@ -33,9 +33,10 @@ def dfs_edges(G, source=None, depth_limit=None, sort_neighbors=None):
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
 
-    sort_neighbors : function
+    sort_neighbors : function (default=None)
         A function that takes an iterator over nodes as the input, and
         returns an iterable of the same nodes with a custom ordering.
+        For example, `sorted` will sort the nodes in increasing order.
 
     Yields
     ------
@@ -122,9 +123,10 @@ def dfs_tree(G, source=None, depth_limit=None, sort_neighbors=None):
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
 
-    sort_neighbors : function
+    sort_neighbors : function (default=None)
         A function that takes an iterator over nodes as the input, and
         returns an iterable of the same nodes with a custom ordering.
+        For example, `sorted` will sort the nodes in increasing order.
 
     Returns
     -------
@@ -175,9 +177,10 @@ def dfs_predecessors(G, source=None, depth_limit=None, sort_neighbors=None):
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
 
-    sort_neighbors : function
+    sort_neighbors : function (default=None)
         A function that takes an iterator over nodes as the input, and
         returns an iterable of the same nodes with a custom ordering.
+        For example, `sorted` will sort the nodes in increasing order.
 
     Returns
     -------
@@ -233,9 +236,10 @@ def dfs_successors(G, source=None, depth_limit=None, sort_neighbors=None):
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
 
-    sort_neighbors : function
+    sort_neighbors : function (default=None)
         A function that takes an iterator over nodes as the input, and
         returns an iterable of the same nodes with a custom ordering.
+        For example, `sorted` will sort the nodes in increasing order.
 
     Returns
     -------
@@ -296,9 +300,10 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None, sort_neighbors=None):
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
 
-    sort_neighbors : function
+    sort_neighbors : function (default=None)
         A function that takes an iterator over nodes as the input, and
         returns an iterable of the same nodes with a custom ordering.
+        For example, `sorted` will sort the nodes in increasing order.
 
     Returns
     -------
@@ -355,9 +360,10 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None, sort_neighbors=None):
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
 
-    sort_neighbors : function
+    sort_neighbors : function (default=None)
         A function that takes an iterator over nodes as the input, and
         returns an iterable of the same nodes with a custom ordering.
+        For example, `sorted` will sort the nodes in increasing order.
 
     Returns
     -------
@@ -413,9 +419,10 @@ def dfs_labeled_edges(G, source=None, depth_limit=None, sort_neighbors=None):
     depth_limit : int, optional (default=len(G))
        Specify the maximum search depth.
 
-    sort_neighbors : function
+    sort_neighbors : function (default=None)
         A function that takes an iterator over nodes as the input, and
         returns an iterable of the same nodes with a custom ordering.
+        For example, `sorted` will sort the nodes in increasing order.
 
     Returns
     -------
