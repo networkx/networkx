@@ -83,7 +83,7 @@ def dfs_edges(G, source=None, depth_limit=None, sort_neighbors=None):
         depth_limit = len(G)
 
     get_children = G.neighbors
-    if sort_neighbors is not None and callable(sort_neighbors):
+    if sort_neighbors is not None:
         get_children = lambda node: iter(sort_neighbors(G.neighbors(node)))
 
     visited = set()
@@ -107,7 +107,6 @@ def dfs_edges(G, source=None, depth_limit=None, sort_neighbors=None):
             else:
                 stack.pop()
                 depth_now -= 1
-
 
 
 @nx._dispatchable
@@ -483,7 +482,7 @@ def dfs_labeled_edges(G, source=None, depth_limit=None, sort_neighbors=None):
         depth_limit = len(G)
 
     get_children = G.neighbors
-    if sort_neighbors is not None and callable(sort_neighbors):
+    if sort_neighbors is not None:
         get_children = lambda node: iter(sort_neighbors(G.neighbors(node)))
 
     visited = set()

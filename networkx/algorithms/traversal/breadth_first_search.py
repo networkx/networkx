@@ -95,7 +95,7 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
     """
     if neighbors is None:
         neighbors = G.neighbors
-    if sort_neighbors is not None and callable(sort_neighbors):
+    if sort_neighbors is not None:
         import warnings
 
         warnings.warn(
@@ -210,7 +210,7 @@ def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     else:
         successors = G.neighbors
 
-    if callable(sort_neighbors):
+    if sort_neighbors is not None:
         yield from generic_bfs_edges(
             G, source, lambda node: iter(sort_neighbors(successors(node))), depth_limit
         )
