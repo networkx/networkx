@@ -1385,3 +1385,16 @@ class PlanarEmbedding(nx.DiGraph):
         contained.
         """
         return False
+
+    def copy(self, as_view=False):
+        if as_view is True:
+            return nx.graphviews.generic_graph_view(self)
+        G = self.__class__()
+        G.graph.update(self.graph)
+        G.add_nodes_from((n, d.copy()) for n, d in self._node.items())
+        super(self.__class__, G).add_edges_from(
+            (u, v, datadict.copy())
+            for u, nbrs in self._adj.items()
+            for v, datadict in nbrs.items()
+        )
+        return G
