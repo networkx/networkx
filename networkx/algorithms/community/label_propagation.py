@@ -14,7 +14,7 @@ __all__ = [
 
 
 @py_random_state("seed")
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def fast_label_propagation_communities(G, *, weight=None, seed=None):
     """Returns communities in `G` as detected by fast label propagation.
 
@@ -137,7 +137,7 @@ def _fast_label_count(G, comms, node, weight=None):
 
 
 @py_random_state(2)
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def asyn_lpa_communities(G, weight=None, seed=None):
     """Returns communities in `G` as detected by asynchronous label
     propagation.
@@ -233,7 +233,7 @@ def asyn_lpa_communities(G, weight=None, seed=None):
 
 
 @not_implemented_for("directed")
-@nx._dispatch
+@nx._dispatchable
 def label_propagation_communities(G):
     """Generates community sets determined by label propagation
 

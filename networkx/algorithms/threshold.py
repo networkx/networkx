@@ -9,7 +9,7 @@ from networkx.utils import py_random_state
 __all__ = ["is_threshold_graph", "find_threshold_graph"]
 
 
-@nx._dispatch
+@nx._dispatchable
 def is_threshold_graph(G):
     """
     Returns `True` if `G` is a threshold graph.
@@ -301,7 +301,7 @@ def weights_to_creation_sequence(
 
 
 # Manipulating NetworkX.Graphs in context of threshold graphs
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def threshold_graph(creation_sequence, create_using=None):
     """
     Create a threshold graph from the creation sequence or compact
@@ -353,7 +353,7 @@ def threshold_graph(creation_sequence, create_using=None):
     return G
 
 
-@nx._dispatch
+@nx._dispatchable
 def find_alternating_4_cycle(G):
     """
     Returns False if there aren't any alternating 4 cycles.
@@ -369,7 +369,7 @@ def find_alternating_4_cycle(G):
     return False
 
 
-@nx._dispatch
+@nx._dispatchable
 def find_threshold_graph(G, create_using=None):
     """
     Returns a threshold subgraph that is close to largest in `G`.
@@ -404,7 +404,7 @@ def find_threshold_graph(G, create_using=None):
     return threshold_graph(find_creation_sequence(G), create_using)
 
 
-@nx._dispatch
+@nx._dispatchable
 def find_creation_sequence(G):
     """
     Find a threshold subgraph that is close to largest in G.

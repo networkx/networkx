@@ -15,7 +15,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch
+@nx._dispatchable
 def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbors=None):
     """Iterate over edges in a breadth-first search.
 
@@ -129,7 +129,7 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
         depth += 1
 
 
-@nx._dispatch
+@nx._dispatchable
 def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     """Iterate over edges in a breadth-first-search starting at source.
 
@@ -218,7 +218,7 @@ def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
         yield from generic_bfs_edges(G, source, successors, depth_limit)
 
 
-@nx._dispatch
+@nx._dispatchable
 def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     """Returns an oriented tree constructed from of a breadth-first-search
     starting at source.
@@ -286,7 +286,7 @@ def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     return T
 
 
-@nx._dispatch
+@nx._dispatchable
 def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
     """Returns an iterator of predecessors in breadth-first-search from source.
 
@@ -352,7 +352,7 @@ def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
         yield (t, s)
 
 
-@nx._dispatch
+@nx._dispatchable
 def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
     """Returns an iterator of successors in breadth-first-search from source.
 
@@ -426,7 +426,7 @@ def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
     yield (parent, children)
 
 
-@nx._dispatch
+@nx._dispatchable
 def bfs_layers(G, sources):
     """Returns an iterator of all the layers in breadth-first search traversal.
 
@@ -484,7 +484,7 @@ FORWARD_EDGE = "forward"
 LEVEL_EDGE = "level"
 
 
-@nx._dispatch
+@nx._dispatchable
 def bfs_labeled_edges(G, sources):
     """Iterate over edges in a breadth-first search (BFS) labeled by type.
 
@@ -559,7 +559,7 @@ def bfs_labeled_edges(G, sources):
         visit(u)
 
 
-@nx._dispatch
+@nx._dispatchable
 def descendants_at_distance(G, source, distance):
     """Returns all nodes at a fixed `distance` from `source` in `G`.
 

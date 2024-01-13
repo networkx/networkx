@@ -4,7 +4,7 @@ import networkx as nx
 __all__ = ["complement", "reverse"]
 
 
-@nx._dispatch
+@nx._dispatchable
 def complement(G):
     """Returns the graph complement of G.
 
@@ -40,7 +40,7 @@ def complement(G):
     return R
 
 
-@nx._dispatch
+@nx._dispatchable
 def reverse(G, copy=True):
     """Returns the reverse directed graph of G.
 

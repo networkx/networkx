@@ -7,7 +7,7 @@ __all__ = ["randomized_partitioning", "one_exchange"]
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 @py_random_state(1)
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def randomized_partitioning(G, seed=None, p=0.5, weight=None):
     """Compute a random partitioning of the graph nodes and its cut value.
 
@@ -53,7 +53,7 @@ def _swap_node_partition(cut, node):
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 @py_random_state(2)
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def one_exchange(G, initial_cut=None, seed=None, weight=None):
     """Compute a partitioning of the graphs nodes and the corresponding cut value.
 

@@ -95,7 +95,7 @@ import networkx as nx
 
 from ..exception import NetworkXNotImplemented
 
-__all__ = ["_dispatch"]
+__all__ = ["_dispatchable"]
 
 
 def _get_backends(group, *, load_and_call=False):
@@ -141,14 +141,14 @@ def _load_backend(backend_name):
 _registered_algorithms = {}
 
 
-class _dispatch:
+class _dispatchable:
     # Allow any of the following decorator forms:
-    #  - @_dispatch
-    #  - @_dispatch()
-    #  - @_dispatch(name="override_name")
-    #  - @_dispatch(graphs="graph")
-    #  - @_dispatch(edge_attrs="weight")
-    #  - @_dispatch(graphs={"G": 0, "H": 1}, edge_attrs={"weight": "default"})
+    #  - @_dispatchable
+    #  - @_dispatchable()
+    #  - @_dispatchable(name="override_name")
+    #  - @_dispatchable(graphs="graph")
+    #  - @_dispatchable(edge_attrs="weight")
+    #  - @_dispatchable(graphs={"G": 0, "H": 1}, edge_attrs={"weight": "default"})
 
     # These class attributes are currently used to allow backends to run networkx tests.
     # For example: `PYTHONPATH=. pytest --backend graphblas --fallback-to-nx`
@@ -192,7 +192,7 @@ class _dispatch:
             argument of the wrapped function. If more than one graph is required
             for the algorithm (or if the graph is not the first argument), provide
             a dict of parameter name to argument position for each graph argument.
-            For example, ``@_dispatch(graphs={"G": 0, "auxiliary?": 4})``
+            For example, ``@_dispatchable(graphs={"G": 0, "auxiliary?": 4})``
             indicates the 0th parameter ``G`` of the function is a required graph,
             and the 4th parameter ``auxiliary`` is an optional graph.
             To indicate an argument is a list of graphs, do e.g. ``"[graphs]"``.
@@ -235,7 +235,7 @@ class _dispatch:
         """
         if func is None:
             return partial(
-                _dispatch,
+                _dispatchable,
                 name=name,
                 graphs=graphs,
                 edge_attrs=edge_attrs,
@@ -990,10 +990,10 @@ class _dispatch:
 
         This uses the global registry `_registered_algorithms` to deserialize.
         """
-        return _restore_dispatch, (self.name,)
+        return _restore_dispatchable, (self.name,)
 
 
-def _restore_dispatch(name):
+def _restore_dispatchable(name):
     return _registered_algorithms[name]
 
 
@@ -1003,17 +1003,17 @@ if os.environ.get("_NETWORKX_BUILDING_DOCS_"):
     # This doesn't show e.g. `*, backend=None, **backend_kwargs` in the
     # signatures, which is probably okay. It does allow the docstring to be
     # updated based on the installed backends.
-    _orig_dispatch = _dispatch
+    _orig_dispatchable = _dispatchable
 
-    def _dispatch(func=None, **kwargs):  # type: ignore[no-redef]
+    def _dispatchable(func=None, **kwargs):  # type: ignore[no-redef]
         if func is None:
-            return partial(_dispatch, **kwargs)
-        dispatched_func = _orig_dispatch(func, **kwargs)
+            return partial(_dispatchable, **kwargs)
+        dispatched_func = _orig_dispatchable(func, **kwargs)
         func.__doc__ = dispatched_func.__doc__
         return func
 
-    _dispatch.__doc__ = _orig_dispatch.__new__.__doc__  # type: ignore[method-assign,assignment]
-    _sig = inspect.signature(_orig_dispatch.__new__)
-    _dispatch.__signature__ = _sig.replace(  # type: ignore[method-assign,assignment]
+    _dispatchable.__doc__ = _orig_dispatchable.__new__.__doc__  # type: ignore[method-assign,assignment]
+    _sig = inspect.signature(_orig_dispatchable.__new__)
+    _dispatchable.__signature__ = _sig.replace(  # type: ignore[method-assign,assignment]
         parameters=[v for k, v in _sig.parameters.items() if k != "cls"]
     )
