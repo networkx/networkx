@@ -338,7 +338,6 @@ def is_reachable(G, s, t):
         *u* to *v*.
 
         """
-        # TODO This is trivially parallelizable.
         return all(v in G[u] for u in set(G) - nodes for v in nodes)
 
     neighborhoods = [two_neighborhood(G, v) for v in G]
