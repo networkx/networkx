@@ -543,7 +543,7 @@ def modular_product(G, H):
 
     The modular product of $G$ and $H$ is the graph $M = G \nabla H$,
     consisting of the node set $V(M) = V(G) \times V(H)$ that is the Cartesian
-    product of the node sets of $G$ and $H$. M has an edge $((u, v), (x, y))$:
+    product of the node sets of $G$ and $H$. Further, $M$ contains an edge $((u, v), (x, y))$:
 
     - if $u$ is adjacent to $x$ in $G$ and $v$ is adjacent to $y$ in $H$, or
     - if $u$ is not adjacent to $x$ in $G$ and $v$ is not adjacent to $y$ in $H$.
@@ -559,7 +559,7 @@ def modular_product(G, H):
     Returns
     -------
     M: NetworkX graph
-        The Modular product of G and H.
+        The Modular product of `G` and `H`.
 
     Raises
     ------
@@ -578,20 +578,20 @@ def modular_product(G, H):
 
     References
     ----------
-    [1] R. Hammack, W. Imrich, and S. Klavžar, "Handbook of Product Graphs",
-        CRC Press, 2011.
-    [2] H. G. Barrow and R. Burstall, "Subgraph isomorphism, matching
-        relational structures and maximal cliques", Information Processing
-        Letters, vol. 4, issue 4, pp. 83-84, 1976,
-        doi: 10.1016/0020-0190(76)90049-1.
+    [1] R. Hammack, W. Imrich, and S. Klavžar,
+        "Handbook of Product Graphs", CRC Press, 2011.
+    [2] H. G. Barrow and R. M. Burstall,
+        "Subgraph isomorphism, matching relational structures and maximal
+        cliques", Information Processing Letters, vol. 4, issue 4, pp. 83-84,
+        1976, https://doi.org/10.1016/0020-0190(76)90049-1.
     [3] V. G. Vizing, "Reduction of the problem of isomorphism and isomorphic
         entrance to the task of finding the nondensity of a graph." Proc. Third
         All-Union Conference on Problems of Theoretical Cybernetics. 1974.
 
     Notes
     -----
-    This definition of "modular product" comes from [1] and was first
-    introduced as the "weak modular product".
+    The *modular product* is defined in [1] and was first
+    introduced as the *weak modular product*.
 
     The modular product reduces the problem of counting isomorphic subgraphs
     in $G$ and $H$ to the problem of counting cliques in $M$. The subgraphs of
