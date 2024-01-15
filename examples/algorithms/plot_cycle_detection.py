@@ -21,8 +21,9 @@ nx.draw(G, pos, with_labels=True)
 
 # The `orientation` parameter can be used to determine how directed edges are
 # treated and the reporting of edge direction in the cycle
-print(nx.find_cycle(G, orientation="original"))
+cycle = nx.find_cycle(G, orientation="original")
+print(cycle)
 
 # Highlight the cycle in red
-nx.draw_networkx_edges(G, pos, edgelist=nx.find_cycle(G), edge_color="r", width=2)
+nx.draw_networkx_edges(G, pos, edgelist=cycle, edge_color="r", width=2)
 plt.show()
