@@ -601,12 +601,17 @@ def modular_product(G, H):
     GH = _init_product_graph(G, H)
     GH.add_nodes_from(_node_product(G, H))
 
-    GH.add_edges_from(_directed_edges_cross_edges(G, H))
-    GH.add_edges_from(_undirected_edges_cross_edges(G, H))
+    for u, v, c in G.edges(data=True):
+        for x, y, d in H.edges(data=True):
+            GH.add_edge((u, x), (v, y), **_dict_product(c, d))
+            GH.add_edge((v, x), (u, y), **_dict_product(c, d))
 
     G = nx.complement(G)
     H = nx.complement(H)
-    GH.add_edges_from(_directed_edges_cross_edges(G, H))
-    GH.add_edges_from(_undirected_edges_cross_edges(G, H))
+
+    for u, v, c in G.edges(data=True):
+        for x, y, d in H.edges(data=True):
+            GH.add_edge((u, x), (v, y), **_dict_product(c, d))
+            GH.add_edge((v, x), (u, y), **_dict_product(c, d))
 
     return GH
