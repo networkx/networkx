@@ -113,7 +113,7 @@ def tree_broadcast_time(G, node=None):
         Undirected graph
         The graph should be an undirected tree
     node: int
-        index of starting vertex. If none,
+        index of starting vertex. If None,
         the algorithm returns the broadcast
         time of the tree.
     Returns
