@@ -221,7 +221,11 @@ def total_spanning_tree_weight(G, weight=None, root=None):
     For unweighted graphs, the total weight equals the number of spanning trees in `G`.
 
     For directed graphs, the total weight follows by summing over all directed spanning trees in `G`
-    that end in the `root` node [3]_.
+    that start in the `root` node [3]_.
+
+    .. deprecated:: 3.5
+            `total_spanning_tree_weight` is deprecated and will be removed in v3.5.
+            Use `nx.number_of_spanning_trees(G)` instead.
 
     Parameters
     ----------
@@ -296,43 +300,6 @@ def total_spanning_tree_weight(G, weight=None, root=None):
     )
 
     return nx.number_of_spanning_trees(G, weight=weight, root=root)
-
-    ## TODO remove this
-    import numpy as np
-    import scipy as sp
-
-    graph_is_directed = nx.is_directed(G)
-    if graph_is_directed and root is None:
-        raise nx.NetworkXError("Spanning trees in directed graphs require a root node.")
-    if graph_is_directed and root not in G:
-        raise nx.NetworkXError("The node root is not in the graph G.")
-    if graph_is_directed and not nx.is_weakly_connected(G):
-        return 0
-    if not graph_is_directed and not nx.is_connected(G):
-        return 0
-
-    # Compute directed Laplacian matrix
-    if graph_is_directed == False:
-        L = nx.laplacian_matrix(G, weight=weight)
-    else:
-        A = nx.adjacency_matrix(G, weight=weight)
-        out_deg = [d for a, d in G.out_degree(weight=weight)]
-        n, m = A.shape
-        # TODO: rm csr_array wrapper when spdiags can produce arrays
-        D = sp.sparse.csr_array(sp.sparse.spdiags(out_deg, 0, m, n, format="csr"))
-        L = D - A
-
-    # Remove one row/column corresponding to node `root`
-    if graph_is_directed:
-        i = list(G).index(root)
-    else:
-        i = 0
-    L = L.todense()
-    L = np.delete(L, i, axis=0)
-    L = np.delete(L, i, axis=1)
-
-    # Compute sum of weight of all spanning trees
-    return np.linalg.det(L)
 
 
 ###############################################################################

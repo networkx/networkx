@@ -1265,7 +1265,7 @@ def number_of_spanning_trees(G, *, root=None, weight=None):
     nodelist = [root] + [n for n in G if n != root]
     A = nx.adjacency_matrix(G, nodelist=nodelist, weight=weight)
     D = np.diag(A.sum(axis=0))
-    D1 = np.diag([d for n, d in G.in_degree(nodelist, weight=weight)])
-    print(D, D1)
     G_laplacian = D - A
+
+    # Compute number of spanning trees
     return np.linalg.det(G_laplacian[1:, 1:])
