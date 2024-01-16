@@ -3,6 +3,7 @@
 version: 2.1
 jobs:
   documentation:
+    parallelism: 2
     docker:
       - image: cimg/python:3.10
 
@@ -71,6 +72,7 @@ jobs:
           path: doc/build/html
 
   image:
+    parallelism: 2
     docker:
       - image: cimg/python:3.10
 
