@@ -105,7 +105,8 @@ def tree_broadcast_time(G, node=None):
     - Each call only involves two adjacent vertices: a sender and a receiver.
     The minimum broadcast time of a vertex is defined as the minimum amount of time required to complete
     broadcasting starting from the originator.
-    The broadcast time of a graph is the maximum time required to broadcast from any vertex in the graph [1]_.
+    The broadcast time of a graph is the maximum over all nodes of the
+    minimum broadcast time from that node [1]_.
 
     Parameters
     ----------
