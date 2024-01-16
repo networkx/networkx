@@ -1148,7 +1148,9 @@ def number_of_spanning_trees(G, *, root=None, weight=None):
     spanning tree is called a (spanning) arborescence. The arborescence
     includes a unique directed path from the `root` node to each other node.
     The graph must be weakly connected, and the root must be a node
-    that includes all nodes as successors [3]_.
+    that includes all nodes as successors [3]_. Note that to avoid
+    discussing sink-roots and reverse-arborescences, we have reversed
+    the edge orientation from [3]_ and use the in-degree laplacian.
 
     This function (when `weight` is `None`) returns the number of
     spanning trees for an undirected graph and the number of
@@ -1184,8 +1186,8 @@ def number_of_spanning_trees(G, *, root=None, weight=None):
        (This is ignored for undirected graphs.)
 
     weight : string or None, optional (default=None)
-        The name of the edge attribute holding the edge weight. If `None`, then
-        each edge is assumed to have a weight of 1.
+        The name of the edge attribute holding the edge weight.
+        If `None`, then each edge is assumed to have a weight of 1.
 
     Returns
     -------
