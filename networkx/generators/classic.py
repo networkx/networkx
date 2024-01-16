@@ -30,7 +30,6 @@ __all__ = [
     "dorogovtsev_goltsev_mendes_graph",
     "empty_graph",
     "full_rary_tree",
-    "kneser_graph",
     "ladder_graph",
     "lollipop_graph",
     "null_graph",
@@ -97,57 +96,6 @@ def full_rary_tree(r, n, create_using=None):
     """
     G = empty_graph(n, create_using)
     G.add_edges_from(_tree_edges(n, r))
-    return G
-
-
-def kneser_graph(n, k):
-    """Returns the Kneser Graph with parameters $n$ and $k$.
-
-    The Kneser Graph is the graph whose vertices are the $k$-subsets of
-    range($n$), such that two vertices are adjacent if their corresponding sets
-    are disjoint.
-
-    Parameters
-    ----------
-        n: int
-        Total number of elements.
-
-        k: int
-        Size of the subsets.
-
-    Returns
-    -------
-    G : NetworkX Graph
-
-    Examples
-    --------
-    >>> G = nx.kneser_graph(5, 2)
-    >>> G.number_of_nodes()
-    10
-    >>> G.number_of_edges()
-    15
-    >>> nx.is_isomorphic(G, nx.petersen_graph())
-    True
-
-    """
-    if n <= 0:
-        raise NetworkXError("n should be greater than zero")
-    if k <= 0 or k > n:
-        raise NetworkXError("k should be greater than zero and smaller than n")
-
-    G = nx.Graph()
-    # Create all k-subsets of [0, 1, ..., n-1]
-    subsets = list(itertools.combinations(range(n), k))
-
-    if 2 * k > n:
-        G.add_nodes_from(subsets)
-
-    universe = set(range(n))
-
-    for s in subsets:
-        complement = universe - set(s)
-        for t in itertools.combinations(complement, k):
-            G.add_edge(s, tuple(t))
     return G
 
 
