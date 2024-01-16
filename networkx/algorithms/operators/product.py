@@ -548,9 +548,11 @@ def modular_product(G, H):
     - if $u$ is adjacent to $x$ in $G$ and $v$ is adjacent to $y$ in $H$, or
     - if $u$ is not adjacent to $x$ in $G$ and $v$ is not adjacent to $y$ in $H$.
 
-    More formally, $E(M) = \{((u, v), (x, y)) \mid (u, x) \in E(G) \text{ and } (v, y) \in E(H)\}
-    \cup \{((u, v), (x, y)) \mid (u, x) \notin E(G) \text{ and } (v, y) \notin E(H)\}$
+    More formally
+    ::
 
+        E(M) = {((u, v), (x, y)) | ((u, x) in E(G) and (v, y) in E(H)) or
+                                   ((u, x) not in E(G) and (v, y) not in E(H))}
     Parameters
     ----------
     G, H: NetworkX graphs
@@ -559,12 +561,12 @@ def modular_product(G, H):
     Returns
     -------
     M: NetworkX graph
-        The Modular product of `G` and `H`.
+        The Modular product of G and H.
 
     Raises
     ------
     NetworkXNotImplemented
-        If `G` is not a simple graph.
+        If G is not a simple graph.
 
     Examples
     --------
@@ -576,27 +578,29 @@ def modular_product(G, H):
     >>> print(M)
     Graph with 8 nodes and 8 edges
 
-    References
-    ----------
-    [1] R. Hammack, W. Imrich, and S. Klavžar,
-        "Handbook of Product Graphs", CRC Press, 2011.
-    [2] H. G. Barrow and R. M. Burstall,
-        "Subgraph isomorphism, matching relational structures and maximal
-        cliques", Information Processing Letters, vol. 4, issue 4, pp. 83-84,
-        1976, https://doi.org/10.1016/0020-0190(76)90049-1.
-    [3] V. G. Vizing, "Reduction of the problem of isomorphism and isomorphic
-        entrance to the task of finding the nondensity of a graph." Proc. Third
-        All-Union Conference on Problems of Theoretical Cybernetics. 1974.
-
     Notes
     -----
-    The *modular product* is defined in [1] and was first
+    The *modular product* is defined in [1]_ and was first
     introduced as the *weak modular product*.
 
     The modular product reduces the problem of counting isomorphic subgraphs
     in $G$ and $H$ to the problem of counting cliques in $M$. The subgraphs of
     $G$ and $H$ that are induced by the nodes of a clique in $M$ are
-    isomorphic.
+    isomorphic [2]_ [3]_.
+
+    References
+    ----------
+    .. [1] R. Hammack, W. Imrich, and S. Klavžar,
+        "Handbook of Product Graphs", CRC Press, 2011.
+
+    .. [2] H. G. Barrow and R. M. Burstall,
+        "Subgraph isomorphism, matching relational structures and maximal
+        cliques", Information Processing Letters, vol. 4, issue 4, pp. 83-84,
+        1976, https://doi.org/10.1016/0020-0190(76)90049-1.
+
+    .. [3] V. G. Vizing, "Reduction of the problem of isomorphism and isomorphic
+        entrance to the task of finding the nondensity of a graph." Proc. Third
+        All-Union Conference on Problems of Theoretical Cybernetics. 1974.
     """
     GH = _init_product_graph(G, H)
     GH.add_nodes_from(_node_product(G, H))

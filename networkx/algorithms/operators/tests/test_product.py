@@ -468,15 +468,11 @@ def test_modular_product():
 
 def test_modular_product_raises():
     with pytest.raises(nx.NetworkXNotImplemented):
-        G = nx.DiGraph()
-        G.add_edges_from([(0, 1), (1, 2), (2, 0)])
-        H = nx.DiGraph()
-        H.add_edges_from([(0, 1), (1, 2), (2, 0)])
+        G = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
+        H = nx.DiGraph([(0, 1), (1, 2), (2, 0)])
         nx.modular_product(G, H)
 
     with pytest.raises(nx.NetworkXNotImplemented):
-        G = nx.MultiGraph()
-        G.add_edges_from([(0, 1), (1, 2), (2, 0), (0, 1)])
-        H = nx.MultiGraph()
-        H.add_edges_from([(0, 1), (1, 2), (2, 0), (0, 1)])
+        G = nx.MultiGraph([(0, 1), (1, 2), (2, 0), (0, 1)])
+        H = nx.MultiGraph([(0, 1), (1, 2), (2, 0), (0, 1)])
         nx.modular_product(G, H)
