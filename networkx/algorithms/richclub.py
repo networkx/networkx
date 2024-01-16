@@ -44,6 +44,13 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
     rc : dictionary
        A dictionary, keyed by degree, with rich-club coefficient values.
 
+    Raises
+    ------
+    NetworkXError
+        If G has <= 3 nodes and normalized=True.
+        Raised from double_edge_swap(). A randomly sampled graph for
+        normalization cannot be generated in this case.
+
     Examples
     --------
     >>> G = nx.Graph([(0, 1), (0, 2), (1, 2), (1, 3), (1, 4), (4, 5)])
@@ -57,11 +64,14 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
     algorithm ignores any edge weights and is not defined for directed
     graphs or graphs with parallel edges or self loops.
 
-    For graphs with <= 3 nodes, it can be proven that given the degrees
-    of each vertex, we can completely determine the graph. So the
-    normalization process which creates a random graph with the same
-    degree sequence will normalize against the same graph and set all
-    existing rich club coefficients to 1.
+    For graphs with <= 3 nodes, it can be proven that the graph is
+    completely determined given the degree of each vertex.
+    Normalization is done against a randomly sampled graph with the
+    same vertex degrees and different edges by repeatedly swapping the
+    endpoints of existing edges. But for <= 3 nodes, we
+    cannot generate such a random graph since there exists only one
+    graph (hence making the coefficients trivially normalized to 1).
+    This function raises an exception in this case.
 
     Estimates for appropriate values of `Q` are found in [2]_.
 
@@ -82,16 +92,13 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
         )
     rc = _compute_rc(G)
     if normalized:
-        if G.number_of_nodes() >= 4:
-            # make R a copy of G, randomize with Q*|E| double edge swaps
-            # and use rich_club coefficient of R to normalize
-            R = G.copy()
-            E = R.number_of_edges()
-            nx.double_edge_swap(R, Q * E, max_tries=Q * E * 10, seed=seed)
-            rcran = _compute_rc(R)
-            rc = {k: v / rcran[k] for k, v in rc.items()}
-        else:
-            rc = {k: 1 for k in rc}
+        # make R a copy of G, randomize with Q*|E| double edge swaps
+        # and use rich_club coefficient of R to normalize
+        R = G.copy()
+        E = R.number_of_edges()
+        nx.double_edge_swap(R, Q * E, max_tries=Q * E * 10, seed=seed)
+        rcran = _compute_rc(R)
+        rc = {k: v / rcran[k] for k, v in rc.items()}
     return rc
 
 
