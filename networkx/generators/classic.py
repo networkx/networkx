@@ -65,7 +65,7 @@ def _tree_edges(n, r):
                 break
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def full_rary_tree(r, n, create_using=None):
     """Creates a full r-ary tree of `n` nodes.
 
@@ -74,6 +74,10 @@ def full_rary_tree(r, n, create_using=None):
     are full except for some rightmost position of the bottom level
     (if a leaf at the bottom level is missing, then so are all of the
     leaves to its right." [1]_
+
+    .. plot::
+
+        >>> nx.draw(nx.full_rary_tree(2, 10))
 
     Parameters
     ----------
@@ -99,9 +103,13 @@ def full_rary_tree(r, n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def balanced_tree(r, h, create_using=None):
     """Returns the perfectly balanced `r`-ary tree of height `h`.
+
+    .. plot::
+
+        >>> nx.draw(nx.balanced_tree(2, 3))
 
     Parameters
     ----------
@@ -145,9 +153,13 @@ def balanced_tree(r, h, create_using=None):
     return full_rary_tree(r, n, create_using=create_using)
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def barbell_graph(m1, m2, create_using=None):
     """Returns the Barbell Graph: two complete graphs connected by a path.
+
+    .. plot::
+
+        >>> nx.draw(nx.barbell_graph(4, 2))
 
     Parameters
     ----------
@@ -214,13 +226,17 @@ def barbell_graph(m1, m2, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def binomial_tree(n, create_using=None):
     """Returns the Binomial Tree of order n.
 
     The binomial tree of order 0 consists of a single node. A binomial tree of order k
     is defined recursively by linking two binomial trees of order k-1: the root of one is
     the leftmost child of the root of the other.
+
+    .. plot::
+
+        >>> nx.draw(nx.binomial_tree(3))
 
     Parameters
     ----------
@@ -248,7 +264,7 @@ def binomial_tree(n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 @nodes_or_number(0)
 def complete_graph(n, create_using=None):
     """Return the complete graph `K_n` with n nodes.
@@ -296,94 +312,7 @@ def complete_graph(n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
-def complete_multipartite_graph(*subset_sizes):
-    """Returns the complete multipartite graph with the specified subset sizes.
-
-    Parameters
-    ----------
-    subset_sizes : tuple of integers or tuple of node iterables
-       The arguments can either all be integer number of nodes or they
-       can all be iterables of nodes. If integers, they represent the
-       number of nodes in each subset of the multipartite graph.
-       If iterables, each is used to create the nodes for that subset.
-       The length of subset_sizes is the number of subsets.
-
-    Returns
-    -------
-    G : NetworkX Graph
-       Returns the complete multipartite graph with the specified subsets.
-
-       For each node, the node attribute 'subset' is an integer
-       indicating which subset contains the node.
-
-    Examples
-    --------
-    Creating a complete tripartite graph, with subsets of one, two, and three
-    nodes, respectively.
-
-        >>> G = nx.complete_multipartite_graph(1, 2, 3)
-        >>> [G.nodes[u]["subset"] for u in G]
-        [0, 1, 1, 2, 2, 2]
-        >>> list(G.edges(0))
-        [(0, 1), (0, 2), (0, 3), (0, 4), (0, 5)]
-        >>> list(G.edges(2))
-        [(2, 0), (2, 3), (2, 4), (2, 5)]
-        >>> list(G.edges(4))
-        [(4, 0), (4, 1), (4, 2)]
-
-        >>> G = nx.complete_multipartite_graph("a", "bc", "def")
-        >>> [G.nodes[u]["subset"] for u in sorted(G)]
-        [0, 1, 1, 2, 2, 2]
-
-    Notes
-    -----
-    This function generalizes several other graph builder functions.
-
-    - If no subset sizes are given, this returns the null graph.
-    - If a single subset size `n` is given, this returns the empty graph on
-      `n` nodes.
-    - If two subset sizes `m` and `n` are given, this returns the complete
-      bipartite graph on `m + n` nodes.
-    - If subset sizes `1` and `n` are given, this returns the star graph on
-      `n + 1` nodes.
-
-    See also
-    --------
-    complete_bipartite_graph
-    """
-    # The complete multipartite graph is an undirected simple graph.
-    G = Graph()
-
-    if len(subset_sizes) == 0:
-        return G
-
-    # set up subsets of nodes
-    try:
-        extents = pairwise(itertools.accumulate((0,) + subset_sizes))
-        subsets = [range(start, end) for start, end in extents]
-    except TypeError:
-        subsets = subset_sizes
-    else:
-        if any(size < 0 for size in subset_sizes):
-            raise NetworkXError(f"Negative number of nodes not valid: {subset_sizes}")
-
-    # add nodes with subset attribute
-    # while checking that ints are not mixed with iterables
-    try:
-        for i, subset in enumerate(subsets):
-            G.add_nodes_from(subset, subset=i)
-    except TypeError as err:
-        raise NetworkXError("Arguments must be all ints or all iterables") from err
-
-    # Across subsets, all nodes should be adjacent.
-    # We can use itertools.combinations() because undirected.
-    for subset1, subset2 in itertools.combinations(subsets, 2):
-        G.add_edges_from(itertools.product(subset1, subset2))
-    return G
-
-
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def circular_ladder_graph(n, create_using=None):
     """Returns the circular ladder graph $CL_n$ of length n.
 
@@ -392,6 +321,10 @@ def circular_ladder_graph(n, create_using=None):
 
     Node labels are the integers 0 to n-1
 
+    .. plot::
+
+        >>> nx.draw(nx.circular_ladder_graph(5))
+
     """
     G = ladder_graph(n, create_using)
     G.add_edge(0, n - 1)
@@ -399,13 +332,17 @@ def circular_ladder_graph(n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def circulant_graph(n, offsets, create_using=None):
     r"""Returns the circulant graph $Ci_n(x_1, x_2, ..., x_m)$ with $n$ nodes.
 
     The circulant graph $Ci_n(x_1, ..., x_m)$ consists of $n$ nodes $0, ..., n-1$
     such that node $i$ is connected to nodes $(i + x) \mod n$ and $(i - x) \mod n$
     for all $x$ in $x_1, ..., x_m$. Thus $Ci_n(1)$ is a cycle graph.
+
+    .. plot::
+
+        >>> nx.draw(nx.circulant_graph(10, [1]))
 
     Parameters
     ----------
@@ -472,12 +409,16 @@ def circulant_graph(n, offsets, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 @nodes_or_number(0)
 def cycle_graph(n, create_using=None):
     """Returns the cycle graph $C_n$ of cyclically connected nodes.
 
     $C_n$ is a path with its two end-nodes connected.
+
+    .. plot::
+
+        >>> nx.draw(nx.cycle_graph(5))
 
     Parameters
     ----------
@@ -500,7 +441,7 @@ def cycle_graph(n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     """Returns the hierarchically constructed Dorogovtsev-Goltsev-Mendes graph.
 
@@ -508,6 +449,10 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     deterministically with the following properties for a given `n`:
     - Total number of nodes = ``3 * (3**n + 1) / 2``
     - Total number of edges = ``3 ** (n + 1)``
+
+    .. plot::
+
+        >>> nx.draw(nx.dorogovtsev_goltsev_mendes_graph(3))
 
     Parameters
     ----------
@@ -558,10 +503,14 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 @nodes_or_number(0)
 def empty_graph(n=0, create_using=None, default=Graph):
     """Returns the empty graph with n nodes and zero edges.
+
+    .. plot::
+
+        >>> nx.draw(nx.empty_graph(5))
 
     Parameters
     ----------
@@ -653,92 +602,7 @@ def empty_graph(n=0, create_using=None, default=Graph):
     return G
 
 
-@nx._dispatch(graphs=None)
-def full_rary_tree(r, n, create_using=None):
-    """Creates a full r-ary tree of `n` nodes.
-
-    Sometimes called a k-ary, n-ary, or m-ary tree.
-    "... all non-leaf nodes have exactly r children and all levels
-    are full except for some rightmost position of the bottom level
-    (if a leaf at the bottom level is missing, then so are all of the
-    leaves to its right." [1]_
-
-    Parameters
-    ----------
-    r : int
-        branching factor of the tree
-    n : int
-        Number of nodes in the tree
-    create_using : NetworkX graph constructor, optional (default=nx.Graph)
-       Graph type to create. If graph instance, then cleared before populated.
-
-    Returns
-    -------
-    G : networkx Graph
-        An r-ary tree with n nodes
-
-    References
-    ----------
-    .. [1] An introduction to data structures and algorithms,
-           James Andrew Storer,  Birkhauser Boston 2001, (page 225).
-    """
-    G = empty_graph(n, create_using)
-    G.add_edges_from(_tree_edges(n, r))
-    return G
-
-
-def kneser_graph(n, k):
-    """Returns the Kneser Graph with parameters $n$ and $k$.
-
-    The Kneser Graph is the graph whose vertices are the $k$-subsets of
-    range($n$), such that two vertices are adjacent if their corresponding sets
-    are disjoint.
-
-    Parameters
-    ----------
-        n: int
-        Total number of elements.
-
-        k: int
-        Size of the subsets.
-
-    Returns
-    -------
-    G : NetworkX Graph
-
-    Examples
-    --------
-    >>> G = nx.kneser_graph(5, 2)
-    >>> G.number_of_nodes()
-    10
-    >>> G.number_of_edges()
-    15
-    >>> nx.is_isomorphic(G, nx.petersen_graph())
-    True
-
-    """
-    if n <= 0:
-        raise NetworkXError("n should be greater than zero")
-    if k <= 0 or k > n:
-        raise NetworkXError("k should be greater than zero and smaller than n")
-
-    G = nx.Graph()
-    # Create all k-subsets of [0, 1, ..., n-1]
-    subsets = list(itertools.combinations(range(n), k))
-
-    if 2 * k > n:
-        G.add_nodes_from(subsets)
-
-    universe = set(range(n))
-
-    for s in subsets:
-        complement = universe - set(s)
-        for t in itertools.combinations(complement, k):
-            G.add_edge(s, tuple(t))
-    return G
-
-
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def ladder_graph(n, create_using=None):
     """Returns the Ladder graph of length n.
 
@@ -746,6 +610,10 @@ def ladder_graph(n, create_using=None):
     each pair connected by a single edge.
 
     Node labels are the integers 0 to 2*n - 1.
+
+    .. plot::
+
+        >>> nx.draw(nx.ladder_graph(5))
 
     """
     G = empty_graph(2 * n, create_using)
@@ -757,12 +625,16 @@ def ladder_graph(n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 @nodes_or_number([0, 1])
 def lollipop_graph(m, n, create_using=None):
     """Returns the Lollipop Graph; ``K_m`` connected to ``P_n``.
 
     This is the Barbell Graph without the right barbell.
+
+    .. plot::
+
+        >>> nx.draw(nx.lollipop_graph(3, 4))
 
     Parameters
     ----------
@@ -820,7 +692,7 @@ def lollipop_graph(m, n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def null_graph(create_using=None):
     """Returns the Null graph with no nodes or edges.
 
@@ -831,10 +703,14 @@ def null_graph(create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 @nodes_or_number(0)
 def path_graph(n, create_using=None):
     """Returns the Path graph `P_n` of linearly connected nodes.
+
+    .. plot::
+
+        >>> nx.draw(nx.path_graph(5))
 
     Parameters
     ----------
@@ -853,12 +729,16 @@ def path_graph(n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 @nodes_or_number(0)
 def star_graph(n, create_using=None):
     """Return the star graph
 
     The star graph consists of one center node connected to n outer nodes.
+
+    .. plot::
+
+        >>> nx.draw(nx.star_graph(6))
 
     Parameters
     ----------
@@ -888,13 +768,17 @@ def star_graph(n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 @nodes_or_number([0, 1])
 def tadpole_graph(m, n, create_using=None):
     """Returns the (m,n)-tadpole graph; ``C_m`` connected to ``P_n``.
 
     This graph on m+n nodes connects a cycle of size `m` to a path of length `n`.
     It looks like a tadpole. It is also called a kite graph or a dragon graph.
+
+    .. plot::
+
+        >>> nx.draw(nx.tadpole_graph(3, 5))
 
     Parameters
     ----------
@@ -946,14 +830,20 @@ def tadpole_graph(m, n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def trivial_graph(create_using=None):
-    """Return the Trivial graph with one node (with label 0) and no edges."""
+    """Return the Trivial graph with one node (with label 0) and no edges.
+
+    .. plot::
+
+        >>> nx.draw(nx.trivial_graph(), with_labels=True)
+
+    """
     G = empty_graph(1, create_using)
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def turan_graph(n, r):
     r"""Return the Turan Graph
 
@@ -964,6 +854,10 @@ def turan_graph(n, r):
     Given $n$ and $r$, we create a complete multipartite graph with
     $r-(n \mod r)$ partitions of size $n/r$, rounded down, and
     $n \mod r$ partitions of size $n/r+1$, rounded down.
+
+    .. plot::
+
+        >>> nx.draw(nx.turan_graph(6, 2))
 
     Parameters
     ----------
@@ -987,12 +881,16 @@ def turan_graph(n, r):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 @nodes_or_number(0)
 def wheel_graph(n, create_using=None):
     """Return the wheel graph
 
     The wheel graph consists of a hub node connected to a cycle of (n-1) nodes.
+
+    .. plot::
+
+        >>> nx.draw(nx.wheel_graph(5))
 
     Parameters
     ----------
@@ -1016,4 +914,95 @@ def wheel_graph(n, create_using=None):
         G.add_edges_from((hub, node) for node in rim)
         if len(rim) > 1:
             G.add_edges_from(pairwise(rim, cyclic=True))
+    return G
+
+
+@nx._dispatchable(graphs=None)
+def complete_multipartite_graph(*subset_sizes):
+    """Returns the complete multipartite graph with the specified subset sizes.
+
+    .. plot::
+
+        >>> nx.draw(nx.complete_multipartite_graph(1, 2, 3))
+
+    Parameters
+    ----------
+    subset_sizes : tuple of integers or tuple of node iterables
+       The arguments can either all be integer number of nodes or they
+       can all be iterables of nodes. If integers, they represent the
+       number of nodes in each subset of the multipartite graph.
+       If iterables, each is used to create the nodes for that subset.
+       The length of subset_sizes is the number of subsets.
+
+    Returns
+    -------
+    G : NetworkX Graph
+       Returns the complete multipartite graph with the specified subsets.
+
+       For each node, the node attribute 'subset' is an integer
+       indicating which subset contains the node.
+
+    Examples
+    --------
+    Creating a complete tripartite graph, with subsets of one, two, and three
+    nodes, respectively.
+
+        >>> G = nx.complete_multipartite_graph(1, 2, 3)
+        >>> [G.nodes[u]["subset"] for u in G]
+        [0, 1, 1, 2, 2, 2]
+        >>> list(G.edges(0))
+        [(0, 1), (0, 2), (0, 3), (0, 4), (0, 5)]
+        >>> list(G.edges(2))
+        [(2, 0), (2, 3), (2, 4), (2, 5)]
+        >>> list(G.edges(4))
+        [(4, 0), (4, 1), (4, 2)]
+
+        >>> G = nx.complete_multipartite_graph("a", "bc", "def")
+        >>> [G.nodes[u]["subset"] for u in sorted(G)]
+        [0, 1, 1, 2, 2, 2]
+
+    Notes
+    -----
+    This function generalizes several other graph builder functions.
+
+    - If no subset sizes are given, this returns the null graph.
+    - If a single subset size `n` is given, this returns the empty graph on
+      `n` nodes.
+    - If two subset sizes `m` and `n` are given, this returns the complete
+      bipartite graph on `m + n` nodes.
+    - If subset sizes `1` and `n` are given, this returns the star graph on
+      `n + 1` nodes.
+
+    See also
+    --------
+    complete_bipartite_graph
+    """
+    # The complete multipartite graph is an undirected simple graph.
+    G = Graph()
+
+    if len(subset_sizes) == 0:
+        return G
+
+    # set up subsets of nodes
+    try:
+        extents = pairwise(itertools.accumulate((0,) + subset_sizes))
+        subsets = [range(start, end) for start, end in extents]
+    except TypeError:
+        subsets = subset_sizes
+    else:
+        if any(size < 0 for size in subset_sizes):
+            raise NetworkXError(f"Negative number of nodes not valid: {subset_sizes}")
+
+    # add nodes with subset attribute
+    # while checking that ints are not mixed with iterables
+    try:
+        for i, subset in enumerate(subsets):
+            G.add_nodes_from(subset, subset=i)
+    except TypeError as err:
+        raise NetworkXError("Arguments must be all ints or all iterables") from err
+
+    # Across subsets, all nodes should be adjacent.
+    # We can use itertools.combinations() because undirected.
+    for subset1, subset2 in itertools.combinations(subsets, 2):
+        G.add_edges_from(itertools.product(subset1, subset2))
     return G
