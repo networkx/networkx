@@ -994,19 +994,8 @@ class _dispatchable:
             else:
                 lines.append("")
 
-            if (
-                "backend_func_examples" in func_info
-                and func_info["backend_func_examples"]
-            ):
-                lines.append("  Backend Examples:")
-                lines.append(".. code-block:: python")
-                for line in func_info["backend_func_examples"].split("\n"):
-                    if line.strip():
-                        lines.append(line.strip() + "\n")
-                lines.append("")
-
             if "backend_func_url" in func_info and func_info["backend_func_url"]:
-                lines.append(f"`Learn more <{func_info['backend_func_url']}>`_")
+                lines.append(f"[`Source <{func_info['backend_func_url']}>`_]")
                 lines.append("")
 
         lines.pop()  # Remove last empty line
