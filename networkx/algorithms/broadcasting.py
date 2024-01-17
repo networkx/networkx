@@ -140,9 +140,10 @@ def tree_broadcast_time(G, node=None):
 
     References
     ----------
-    .. [1] Harutyunyan, H. A. and Li, Z. "A Simple Construction of
-    Broadcast Graphs." In Computing and Combinatorics. COCOON 2019
-    (Ed. D. Z. Du and C. Tian.) Cham, Switzerland: Springer, pp. 240-253, 2019.
+    .. [1] Harutyunyan, H. A. and Li, Z.
+        "A Simple Construction of Broadcast Graphs."
+        In Computing and Combinatorics. COCOON 2019
+        (Ed. D. Z. Du and C. Tian.) Springer, pp. 240-253, 2019.
     """
     b_T, b_C = tree_broadcast_center(G)
     if node is not None:
