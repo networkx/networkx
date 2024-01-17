@@ -1,12 +1,15 @@
-"""Routines to find the boundary of a set of nodes.
+"""Routines to calculate the broadcast time of certain graphs.
 
-An edge boundary is a set of edges, each of which has exactly one
-endpoint in a given set of nodes (or, in the case of directed graphs,
-the set of edges whose source node is in the set).
+Broadcasting is an information dissemination problem in which a node in a graph,
+called the originator, must distribute a message to all other nodes by placing
+a series of calls along the edges of the graph. Once informed, other nodes aid
+the originator in distributing the message.
 
-A node boundary of a set *S* of nodes is the set of (out-)neighbors of
-nodes in *S* that are outside *S*.
-
+The broadcasting must be completed as quickly as possible subject to the
+following constraints:
+- Each call requires one unit of time.
+- A node can only participate in one call per unit of time.
+- Each call only involves two adjacent nodes: a sender and a receiver.
 """
 
 import networkx as nx
@@ -35,9 +38,10 @@ def _get_broadcast_centers(G, v, values, target):
 def tree_broadcast_center(G):
     """Return the Broadcast Center of the tree G.
 
-    The broadcast center of a graph G denotes the set of nodes having minimum broadcast time [1]_.
-    This is a linear algorithm for determining the broadcast center of a tree with N nodes,
-    as a by-product it can also determine the broadcast time from the broadcast center.
+    The broadcast center of a graph G denotes the set of nodes having
+    minimum broadcast time [1]_. This is a linear algorithm for determining
+    the broadcast center of a tree with N nodes, as a by-product it can also
+    determine the broadcast time from the broadcast center.
 
     Parameters
     ----------
@@ -107,16 +111,10 @@ def tree_broadcast_center(G):
 def tree_broadcast_time(G, node=None):
     """Return the Broadcast Time of the tree G.
 
-    Broadcasting is an information dissemination problem in which a node in a graph, called the originator,
-    must distribute a message to all other nodes by placing a series of calls along the edges of the graph.
-    Once informed, other nodes aid the originator in distributing the message.
-    The broadcasting must be completed as quickly as possible subject to the following constraints:
-    - Each call requires one unit of time.
-    - A node can only participate in one call per unit of time.
-    - Each call only involves two adjacent nodes: a sender and a receiver.
-    The minimum broadcast time of a node is defined as the minimum amount of time required to complete
-    broadcasting starting from the originator.
-    The broadcast time of a graph is the maximum time required to broadcast from any node in the graph [1]_.
+    The minimum broadcast time of a node is defined as the minimum amount
+    of time required to complete broadcasting starting from the
+    originator. The broadcast time of a graph is the maximum over
+    all nodes of the minimum broadcast time from that node [1]_.
 
     Parameters
     ----------
@@ -124,14 +122,14 @@ def tree_broadcast_time(G, node=None):
         Undirected graph
         The graph should be an undirected tree
     node: int
-        index of starting vertex. If none,
+        index of starting node. If None,
         the algorithm returns the broadcast
         time of the tree.
 
     Returns
     -------
     BT : int
-        Broadcast Time of a vertex in a tree
+        Broadcast Time of a node in a tree
 
     Raises
     ------
@@ -140,9 +138,9 @@ def tree_broadcast_time(G, node=None):
 
     References
     ----------
-    .. [1] Harutyunyan, H. A. and Li, Z. "A Simple Construction of Broadcast Graphs."
-    In Computing and Combinatorics. COCOON 2019 (Ed. D. Z. Du and C. Tian.) Cham,
-    Switzerland: Springer, pp. 240-253, 2019.
+    .. [1] Harutyunyan, H. A. and Li, Z. "A Simple Construction of
+    Broadcast Graphs." In Computing and Combinatorics. COCOON 2019
+    (Ed. D. Z. Du and C. Tian.) Cham, Switzerland: Springer, pp. 240-253, 2019.
     """
     b_T, b_C = tree_broadcast_center(G)
     if node is not None:
