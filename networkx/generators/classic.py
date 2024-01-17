@@ -66,7 +66,7 @@ def _tree_edges(n, r):
                 break
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def full_rary_tree(r, n, create_using=None):
     """Creates a full r-ary tree of `n` nodes.
 
@@ -75,6 +75,10 @@ def full_rary_tree(r, n, create_using=None):
     are full except for some rightmost position of the bottom level
     (if a leaf at the bottom level is missing, then so are all of the
     leaves to its right." [1]_
+
+    .. plot::
+
+        >>> nx.draw(nx.full_rary_tree(2, 10))
 
     Parameters
     ----------
@@ -100,7 +104,7 @@ def full_rary_tree(r, n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def kneser_graph(n, k):
     """Returns the Kneser Graph with parameters $n$ and $k$.
 
@@ -146,9 +150,13 @@ def kneser_graph(n, k):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def balanced_tree(r, h, create_using=None):
     """Returns the perfectly balanced `r`-ary tree of height `h`.
+
+    .. plot::
+
+        >>> nx.draw(nx.balanced_tree(2, 3))
 
     Parameters
     ----------
@@ -192,9 +200,13 @@ def balanced_tree(r, h, create_using=None):
     return full_rary_tree(r, n, create_using=create_using)
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def barbell_graph(m1, m2, create_using=None):
     """Returns the Barbell Graph: two complete graphs connected by a path.
+
+    .. plot::
+
+        >>> nx.draw(nx.barbell_graph(4, 2))
 
     Parameters
     ----------
@@ -261,13 +273,17 @@ def barbell_graph(m1, m2, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def binomial_tree(n, create_using=None):
     """Returns the Binomial Tree of order n.
 
     The binomial tree of order 0 consists of a single node. A binomial tree of order k
     is defined recursively by linking two binomial trees of order k-1: the root of one is
     the leftmost child of the root of the other.
+
+    .. plot::
+
+        >>> nx.draw(nx.binomial_tree(3))
 
     Parameters
     ----------
@@ -295,7 +311,7 @@ def binomial_tree(n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 @nodes_or_number(0)
 def complete_graph(n, create_using=None):
     """Return the complete graph `K_n` with n nodes.
@@ -343,7 +359,7 @@ def complete_graph(n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def circular_ladder_graph(n, create_using=None):
     """Returns the circular ladder graph $CL_n$ of length n.
 
@@ -352,6 +368,10 @@ def circular_ladder_graph(n, create_using=None):
 
     Node labels are the integers 0 to n-1
 
+    .. plot::
+
+        >>> nx.draw(nx.circular_ladder_graph(5))
+
     """
     G = ladder_graph(n, create_using)
     G.add_edge(0, n - 1)
@@ -359,13 +379,17 @@ def circular_ladder_graph(n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def circulant_graph(n, offsets, create_using=None):
     r"""Returns the circulant graph $Ci_n(x_1, x_2, ..., x_m)$ with $n$ nodes.
 
     The circulant graph $Ci_n(x_1, ..., x_m)$ consists of $n$ nodes $0, ..., n-1$
     such that node $i$ is connected to nodes $(i + x) \mod n$ and $(i - x) \mod n$
     for all $x$ in $x_1, ..., x_m$. Thus $Ci_n(1)$ is a cycle graph.
+
+    .. plot::
+
+        >>> nx.draw(nx.circulant_graph(10, [1]))
 
     Parameters
     ----------
@@ -432,12 +456,16 @@ def circulant_graph(n, offsets, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 @nodes_or_number(0)
 def cycle_graph(n, create_using=None):
     """Returns the cycle graph $C_n$ of cyclically connected nodes.
 
     $C_n$ is a path with its two end-nodes connected.
+
+    .. plot::
+
+        >>> nx.draw(nx.cycle_graph(5))
 
     Parameters
     ----------
@@ -460,7 +488,7 @@ def cycle_graph(n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     """Returns the hierarchically constructed Dorogovtsev-Goltsev-Mendes graph.
 
@@ -468,6 +496,10 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     deterministically with the following properties for a given `n`:
     - Total number of nodes = ``3 * (3**n + 1) / 2``
     - Total number of edges = ``3 ** (n + 1)``
+
+    .. plot::
+
+        >>> nx.draw(nx.dorogovtsev_goltsev_mendes_graph(3))
 
     Parameters
     ----------
@@ -518,10 +550,14 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 @nodes_or_number(0)
 def empty_graph(n=0, create_using=None, default=Graph):
     """Returns the empty graph with n nodes and zero edges.
+
+    .. plot::
+
+        >>> nx.draw(nx.empty_graph(5))
 
     Parameters
     ----------
@@ -613,7 +649,7 @@ def empty_graph(n=0, create_using=None, default=Graph):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def ladder_graph(n, create_using=None):
     """Returns the Ladder graph of length n.
 
@@ -621,6 +657,10 @@ def ladder_graph(n, create_using=None):
     each pair connected by a single edge.
 
     Node labels are the integers 0 to 2*n - 1.
+
+    .. plot::
+
+        >>> nx.draw(nx.ladder_graph(5))
 
     """
     G = empty_graph(2 * n, create_using)
@@ -632,12 +672,16 @@ def ladder_graph(n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 @nodes_or_number([0, 1])
 def lollipop_graph(m, n, create_using=None):
     """Returns the Lollipop Graph; ``K_m`` connected to ``P_n``.
 
     This is the Barbell Graph without the right barbell.
+
+    .. plot::
+
+        >>> nx.draw(nx.lollipop_graph(3, 4))
 
     Parameters
     ----------
@@ -695,7 +739,7 @@ def lollipop_graph(m, n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def null_graph(create_using=None):
     """Returns the Null graph with no nodes or edges.
 
@@ -706,10 +750,14 @@ def null_graph(create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 @nodes_or_number(0)
 def path_graph(n, create_using=None):
     """Returns the Path graph `P_n` of linearly connected nodes.
+
+    .. plot::
+
+        >>> nx.draw(nx.path_graph(5))
 
     Parameters
     ----------
@@ -728,12 +776,16 @@ def path_graph(n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 @nodes_or_number(0)
 def star_graph(n, create_using=None):
     """Return the star graph
 
     The star graph consists of one center node connected to n outer nodes.
+
+    .. plot::
+
+        >>> nx.draw(nx.star_graph(6))
 
     Parameters
     ----------
@@ -763,13 +815,17 @@ def star_graph(n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 @nodes_or_number([0, 1])
 def tadpole_graph(m, n, create_using=None):
     """Returns the (m,n)-tadpole graph; ``C_m`` connected to ``P_n``.
 
     This graph on m+n nodes connects a cycle of size `m` to a path of length `n`.
     It looks like a tadpole. It is also called a kite graph or a dragon graph.
+
+    .. plot::
+
+        >>> nx.draw(nx.tadpole_graph(3, 5))
 
     Parameters
     ----------
@@ -821,14 +877,20 @@ def tadpole_graph(m, n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def trivial_graph(create_using=None):
-    """Return the Trivial graph with one node (with label 0) and no edges."""
+    """Return the Trivial graph with one node (with label 0) and no edges.
+
+    .. plot::
+
+        >>> nx.draw(nx.trivial_graph(), with_labels=True)
+
+    """
     G = empty_graph(1, create_using)
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def turan_graph(n, r):
     r"""Return the Turan Graph
 
@@ -839,6 +901,10 @@ def turan_graph(n, r):
     Given $n$ and $r$, we create a complete multipartite graph with
     $r-(n \mod r)$ partitions of size $n/r$, rounded down, and
     $n \mod r$ partitions of size $n/r+1$, rounded down.
+
+    .. plot::
+
+        >>> nx.draw(nx.turan_graph(6, 2))
 
     Parameters
     ----------
@@ -862,12 +928,16 @@ def turan_graph(n, r):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 @nodes_or_number(0)
 def wheel_graph(n, create_using=None):
     """Return the wheel graph
 
     The wheel graph consists of a hub node connected to a cycle of (n-1) nodes.
+
+    .. plot::
+
+        >>> nx.draw(nx.wheel_graph(5))
 
     Parameters
     ----------
@@ -894,9 +964,13 @@ def wheel_graph(n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def complete_multipartite_graph(*subset_sizes):
     """Returns the complete multipartite graph with the specified subset sizes.
+
+    .. plot::
+
+        >>> nx.draw(nx.complete_multipartite_graph(1, 2, 3))
 
     Parameters
     ----------

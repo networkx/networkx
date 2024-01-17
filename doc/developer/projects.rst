@@ -89,7 +89,7 @@ Centrality Atlas
   of network centrality measures.
   Centrality is a central concept in network science and has many applications
   across domains. NetworkX provides many functions for measuring
-  various types of :doc:`network centrality<reference/algorithms/centrality>`.
+  various types of :doc:`network centrality</reference/algorithms/centrality>`.
   The individual centrality functions are typically well-described by their
   docstrings (though there's always room for improvement!); however, there
   currently is no big-picture overview of centrality.

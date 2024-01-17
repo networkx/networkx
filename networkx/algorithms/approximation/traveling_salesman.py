@@ -124,7 +124,7 @@ def move_one_node(soln, seed):
 
 
 @not_implemented_for("directed")
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def christofides(G, weight="weight", tree=None):
     """Approximate a solution of the traveling salesman problem
 
@@ -197,7 +197,7 @@ def _shortcutting(circuit):
     return nodes
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, method=None):
     """Find the shortest path in `G` connecting specified nodes
 
@@ -340,7 +340,7 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
 
 @not_implemented_for("undirected")
 @py_random_state(2)
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def asadpour_atsp(G, weight="weight", seed=None, source=None):
     """
     Returns an approximate solution to the traveling salesman problem.
@@ -490,7 +490,7 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     return _shortcutting(circuit)
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def held_karp_ascent(G, weight="weight"):
     """
     Minimizes the Held-Karp relaxation of the TSP for `G`
@@ -801,7 +801,7 @@ def held_karp_ascent(G, weight="weight"):
     return next(k_max.__iter__()).size(weight), z_star
 
 
-@nx._dispatch
+@nx._dispatchable
 def spanning_tree_distribution(G, z):
     """
     Find the asadpour exponential distribution of spanning trees.
@@ -912,7 +912,7 @@ def spanning_tree_distribution(G, z):
     return gamma
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def greedy_tsp(G, weight="weight", source=None):
     """Return a low cost cycle starting at `source` and its cost.
 
@@ -1005,7 +1005,7 @@ def greedy_tsp(G, weight="weight", source=None):
 
 
 @py_random_state(9)
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def simulated_annealing_tsp(
     G,
     init_cycle,
@@ -1224,7 +1224,7 @@ def simulated_annealing_tsp(
 
 
 @py_random_state(9)
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def threshold_accepting_tsp(
     G,
     init_cycle,
