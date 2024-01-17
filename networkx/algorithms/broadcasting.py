@@ -35,8 +35,8 @@ def _get_broadcast_centers(G, v, values, target):
 def tree_broadcast_center(G):
     """Return the Broadcast Center of the tree G.
 
-    The broadcast center of a graph G denotes the set of vertices having minimum broadcast time [1]_.
-    This is a linear algorithm for determining the broadcast center of a tree with N vertices,
+    The broadcast center of a graph G denotes the set of nodes having minimum broadcast time [1]_.
+    This is a linear algorithm for determining the broadcast center of a tree with N nodes,
     as a by-product it can also determine the broadcast time from the broadcast center.
 
     Parameters
@@ -107,16 +107,16 @@ def tree_broadcast_center(G):
 def tree_broadcast_time(G, node=None):
     """Return the Broadcast Time of the tree G.
 
-    Broadcasting is an information dissemination problem in which one vertex in a graph, called the originator,
-    must distribute a message to all other vertices by placing a series of calls along the edges of the graph.
-    Once informed, other vertices aid the originator in distributing the message.
+    Broadcasting is an information dissemination problem in which a node in a graph, called the originator,
+    must distribute a message to all other nodes by placing a series of calls along the edges of the graph.
+    Once informed, other nodes aid the originator in distributing the message.
     The broadcasting must be completed as quickly as possible subject to the following constraints:
     - Each call requires one unit of time.
-    - A vertex can only participate in one call per unit of time.
-    - Each call only involves two adjacent vertices: a sender and a receiver.
-    The minimum broadcast time of a vertex is defined as the minimum amount of time required to complete
+    - A node can only participate in one call per unit of time.
+    - Each call only involves two adjacent nodes: a sender and a receiver.
+    The minimum broadcast time of a node is defined as the minimum amount of time required to complete
     broadcasting starting from the originator.
-    The broadcast time of a graph is the maximum time required to broadcast from any vertex in the graph [1]_.
+    The broadcast time of a graph is the maximum time required to broadcast from any node in the graph [1]_.
 
     Parameters
     ----------
@@ -127,6 +127,7 @@ def tree_broadcast_time(G, node=None):
         index of starting vertex. If none,
         the algorithm returns the broadcast
         time of the tree.
+
     Returns
     -------
     BT : int
