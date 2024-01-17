@@ -100,19 +100,24 @@ def full_rary_tree(r, n, create_using=None):
     return G
 
 
+@nx._dispatch(graphs=None)
 def kneser_graph(n, k):
     """Returns the Kneser Graph with parameters $n$ and $k$.
+
     The Kneser Graph has nodes that are k-tuples (subsets) of the integers
     between 0 and n-1. Nodes are adjacent if their corresponding sets are disjoint.
+
     Parameters
     ----------
         n: int
         Total number of elements.
         k: int
         Size of the subsets.
+
     Returns
     -------
     G : NetworkX Graph
+
     Examples
     --------
     >>> G = nx.kneser_graph(5, 2)
