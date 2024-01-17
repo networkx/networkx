@@ -40,8 +40,8 @@ def tree_broadcast_center(G):
 
     The broadcast center of a graph G denotes the set of nodes having
     minimum broadcast time [1]_. This is a linear algorithm for determining
-    the broadcast center of a tree with N nodes, as a by-product it can also
-    determine the broadcast time from the broadcast center.
+    the broadcast center of a tree with N nodes, as a by-product it also
+    determines the broadcast time from the broadcast center.
 
     Parameters
     ----------
