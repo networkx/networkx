@@ -116,7 +116,7 @@ def tree_broadcast_time(G, node=None):
     originator. The broadcast time of a graph is the maximum over
     all nodes of the minimum broadcast time from that node [1]_.
     This function returns the minimum broadcast time of `node`.
-    If `node` is None the broadcast time for the graph is returned. 
+    If `node` is None the broadcast time for the graph is returned.
 
     Parameters
     ----------
