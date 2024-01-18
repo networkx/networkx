@@ -101,3 +101,9 @@ def test_edge_current_flow_betweenness_partition():
 
     with pytest.raises(nx.NetworkXError):
         nx.community.edge_current_flow_betweenness_partition(G, 10)
+
+    N = 10
+    G = nx.empty_graph(N)
+    for i in range(2, N - 1):
+        C = nx.community.edge_current_flow_betweenness_partition(G, i)
+        assert C == [{n} for n in G]
