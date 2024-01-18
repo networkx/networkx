@@ -1,7 +1,19 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.13.1
+kernelspec:
+  display_name: Python 3 (ipykernel)
+  language: python
+  name: python3
+---
+
 # Introduction
 
-```{eval-rst}
-.. currentmodule:: networkx
+```{currentmodule} networkx
 ```
 
 The structure of NetworkX can be seen by the organization of its source code.
@@ -27,10 +39,8 @@ an underscore representing a space between words).
 
 After starting Python, import the networkx module with (the recommended way)
 
-```{eval-rst}
-.. nbplot::
-
-   >>> import networkx as nx
+```{code-cell}
+import networkx as nx
 ```
 
 To save repetition, in the documentation we assume that
@@ -43,35 +53,33 @@ The following basic graph types are provided as Python classes:
 
 {class}`Graph`
 
-: This class implements an undirected graph. It ignores
+- This class implements an undirected graph. It ignores
   multiple edges between two nodes.  It does allow self-loop
   edges between a node and itself.
 
 {class}`DiGraph`
 
-: Directed graphs, that is, graphs with directed edges.
+- Directed graphs, that is, graphs with directed edges.
   Provides operations common to directed graphs,
   (a subclass of Graph).
 
 {class}`MultiGraph`
 
-: A flexible graph class that allows multiple undirected edges between
+- A flexible graph class that allows multiple undirected edges between
   pairs of nodes.  The additional flexibility leads to some degradation
   in performance, though usually not significant.
 
 {class}`MultiDiGraph`
 
-: A directed version of a MultiGraph.
+- A directed version of a MultiGraph.
 
 Empty graph-like objects are created with
 
-```{eval-rst}
-.. nbplot::
-
-   >>> G = nx.Graph()
-   >>> G = nx.DiGraph()
-   >>> G = nx.MultiGraph()
-   >>> G = nx.MultiDiGraph()
+```{code-cell}
+G = nx.Graph()
+G = nx.DiGraph()
+G = nx.MultiGraph()
+G = nx.MultiDiGraph()
 ```
 
 All graph classes allow any {term}`hashable` object as a node.
@@ -106,7 +114,7 @@ different flavors depending on two main properties of the network:
 
 > - Directed: Are the edges **directed**?  Does the order of the edge
 >   pairs \$(u, v)\$ matter?  A directed graph is specified by the "Di"
->   prefix in the class name, e.g. `DiGraph()`.  We make this distinction
+>   prefix in the class name, e.g. {class}`DiGraph`.  We make this distinction
 >   because many classical graph properties are defined differently for
 >   directed graphs.
 > - Multi-edges: Are multiple edges allowed between each pair of nodes?
@@ -114,7 +122,7 @@ different flavors depending on two main properties of the network:
 >   structure, though clever users could design edge data attributes to
 >   support this functionality.  We provide a standard data structure
 >   and interface for this type of graph using the prefix "Multi",
->   e.g., `MultiGraph()`.
+>   e.g., {class}`MultiGraph`.
 
 The basic graph classes are named:
 {doc}`Graph </reference/classes/graph>`,
@@ -163,34 +171,27 @@ NetworkX graph objects can be created in one of three ways:
 Explicit addition and removal of nodes/edges is the easiest to describe.
 Each graph object supplies methods to manipulate the graph.  For example,
 
-```{eval-rst}
-.. nbplot::
-
-   >>> import networkx as nx
-   >>> G = nx.Graph()
-   >>> G.add_edge(1, 2)  # default edge data=1
-   >>> G.add_edge(2, 3, weight=0.9)  # specify edge data
+```{code-cell}
+G = nx.Graph()
+G.add_edge(1, 2)  # default edge data=1
+G.add_edge(2, 3, weight=0.9)  # specify edge data
 ```
 
 Edge attributes can be anything:
 
-```{eval-rst}
-.. nbplot::
-
-   >>> import math
-   >>> G.add_edge('y', 'x', function=math.cos)
-   >>> G.add_node(math.cos)  # any hashable can be a node
+```{code-cell}
+import math
+G.add_edge('y', 'x', function=math.cos)
+G.add_node(math.cos)  # any hashable can be a node
 ```
 
 You can add many edges at one time:
 
-```{eval-rst}
-.. nbplot::
-
-   >>> elist = [(1, 2), (2, 3), (1, 4), (4, 2)]
-   >>> G.add_edges_from(elist)
-   >>> elist = [('a', 'b', 5.0), ('b', 'c', 3.0), ('a', 'c', 1.0), ('c', 'd', 7.3)]
-   >>> G.add_weighted_edges_from(elist)
+```{code-cell}
+elist = [(1, 2), (2, 3), (1, 4), (4, 2)]
+G.add_edges_from(elist)
+elist = [('a', 'b', 5.0), ('b', 'c', 3.0), ('a', 'c', 1.0), ('c', 'd', 7.3)]
+G.add_weighted_edges_from(elist)
 ```
 
 See the {doc}`/tutorial` for more examples.
@@ -251,14 +252,11 @@ or the GitHub [Developer Zone](https://github.com/networkx/networkx).
 As an example here is code to use Dijkstra's algorithm to
 find the shortest weighted path:
 
-```{eval-rst}
-.. nbplot::
-
-   >>> G = nx.Graph()
-   >>> e = [('a', 'b', 0.3), ('b', 'c', 0.9), ('a', 'c', 0.5), ('c', 'd', 1.2)]
-   >>> G.add_weighted_edges_from(e)
-   >>> print(nx.dijkstra_path(G, 'a', 'd'))
-   ['a', 'c', 'd']
+```{code-cell}
+G = nx.Graph()
+e = [('a', 'b', 0.3), ('b', 'c', 0.9), ('a', 'c', 0.5), ('c', 'd', 1.2)]
+G.add_weighted_edges_from(e)
+print(nx.dijkstra_path(G, 'a', 'd'))
 ```
 
 ## Drawing
@@ -275,15 +273,13 @@ The basic drawing functions essentially place the nodes on a scatterplot
 using the positions you provide via a dictionary or the positions are
 computed with a layout function. The edges are lines between those dots.
 
-```{eval-rst}
-.. nbplot::
-
-   >>> import matplotlib.pyplot as plt
-   >>> G = nx.cubical_graph()
-   >>> subax1 = plt.subplot(121)
-   >>> nx.draw(G)   # default spring_layout
-   >>> subax2 = plt.subplot(122)
-   >>> nx.draw(G, pos=nx.circular_layout(G), node_color='r', edge_color='b')
+```{code-cell}
+import matplotlib.pyplot as plt
+G = nx.cubical_graph()
+subax1 = plt.subplot(121)
+nx.draw(G)   # default spring_layout
+subax2 = plt.subplot(122)
+nx.draw(G, pos=nx.circular_layout(G), node_color='r', edge_color='b')
 ```
 
 See the {doc}`examples </auto_examples/index>` for more ideas.
@@ -302,25 +298,22 @@ fast edge detection nor convenient storage of edge data.
 
 Advantages of dict-of-dicts-of-dicts data structure:
 
-> - Find edges and remove edges with two dictionary look-ups.
-> - Prefer to "lists" because of fast lookup with sparse storage.
-> - Prefer to "sets" since data can be attached to edge.
-> - `G[u][v]` returns the edge attribute dictionary.
-> - `n in G` tests if node `n` is in graph `G`.
-> - `for n in G:` iterates through the graph.
-> - `for nbr in G[n]:` iterates through neighbors.
+- Find edges and remove edges with two dictionary look-ups.
+- Prefer to "lists" because of fast lookup with sparse storage.
+- Prefer to "sets" since data can be attached to edge.
+- `G[u][v]` returns the edge attribute dictionary.
+- `n in G` tests if node `n` is in graph `G`.
+- `for n in G:` iterates through the graph.
+- `for nbr in G[n]:` iterates through neighbors.
 
 As an example, here is a representation of an undirected graph with the
 edges \$(A, B)\$ and \$(B, C)\$.
 
-```{eval-rst}
-.. nbplot::
-
-   >>> G = nx.Graph()
-   >>> G.add_edge('A', 'B')
-   >>> G.add_edge('B', 'C')
-   >>> print(G.adj)
-   {'A': {'B': {}}, 'B': {'A': {}, 'C': {}}, 'C': {'B': {}}}
+```{code-cell}
+G = nx.Graph()
+G.add_edge('A', 'B')
+G.add_edge('B', 'C')
+print(G.adj)
 ```
 
 The data structure gets morphed slightly for each base graph class.
@@ -334,19 +327,11 @@ the two nodes.
 Graphs provide two interfaces to the edge data attributes: adjacency
 and edges. So `G[u][v]['width']` is the same as `G.edges[u, v]['width']`.
 
-```{eval-rst}
-.. nbplot::
-
-   >>> G = nx.Graph()
-   >>> G.add_edge(1, 2, color='red', weight=0.84, size=300)
-   >>> print(G[1][2]['size'])
-   300
-   >>> print(G.edges[1, 2]['color'])
-   red
-```
-
-```{eval-rst}
-.. code-links::
+```{code-cell}
+G = nx.Graph()
+G.add_edge(1, 2, color='red', weight=0.84, size=300)
+print(G[1][2]['size'])
+print(G.edges[1, 2]['color'])
 ```
 
 ```{rubric} Footnotes
