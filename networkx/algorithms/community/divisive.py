@@ -8,7 +8,7 @@ __all__ = [
 ]
 
 
-def edge_betweenness_partition(G, number_of_sets, weight=None):
+def edge_betweenness_partition(G, number_of_sets, *, weight=None):
     """Partition created by iteratively removing the highest edge betweenness edge.
 
     This algorithm works by calculating the edge betweenness for all
@@ -83,7 +83,7 @@ def edge_betweenness_partition(G, number_of_sets, weight=None):
     return partition
 
 
-def edge_current_flow_betweenness_partition(G, number_of_sets, weight=None):
+def edge_current_flow_betweenness_partition(G, number_of_sets, *, weight=None):
     """Partition created by removing the highest edge current flow betweenness edge.
 
     This algorithm works by calculating the edge current flow
