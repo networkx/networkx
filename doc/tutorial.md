@@ -1,7 +1,19 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+    format_version: 0.13
+    jupytext_version: 1.13.1
+kernelspec:
+  display_name: Python 3 (ipykernel)
+  language: python
+  name: python3
+---
+
 # Tutorial
 
-```{eval-rst}
-.. currentmodule:: networkx
+```{currentmodule} networkx
 ```
 
 This guide can help you start working with NetworkX.
@@ -10,11 +22,9 @@ This guide can help you start working with NetworkX.
 
 Create an empty graph with no nodes and no edges.
 
-```{eval-rst}
-.. nbplot::
-
-    >>> import networkx as nx
-    >>> G = nx.Graph()
+```{code-cell}
+import networkx as nx
+G = nx.Graph()
 ```
 
 By definition, a {class}`Graph` is a collection of nodes (vertices) along with
@@ -22,11 +32,11 @@ identified pairs of nodes (called edges, links, etc).  In NetworkX, nodes can
 be any {py:term}`hashable` object e.g., a text string, an image, an XML object,
 another Graph, a customized node object, etc.
 
-:::{note}
+```{note}
 Python's `None` object is not allowed to be used as a node. It
 determines whether optional function arguments have been assigned in many
 functions.
-:::
+```
 
 ## Nodes
 
@@ -36,49 +46,38 @@ The graph `G` can be grown in several ways.  NetworkX includes many
 To get started though we'll look at simple manipulations.  You can add one node
 at a time,
 
-```{eval-rst}
-.. nbplot::
-
-    >>> G.add_node(1)
+```{code-cell}
+G.add_node(1)
 ```
 
 or add nodes from any {py:term}`iterable` container, such as a list
 
-```{eval-rst}
-.. nbplot::
-
-    >>> G.add_nodes_from([2, 3])
+```{code-cell}
+G.add_nodes_from([2, 3])
 ```
 
 You can also add nodes along with node
 attributes if your container yields 2-tuples of the form
 `(node, node_attribute_dict)`:
 
-```
->>> G.add_nodes_from([
-...     (4, {"color": "red"}),
-...     (5, {"color": "green"}),
-... ])
+```{code-cell}
+G.add_nodes_from([(4, {"color": "red"}), (5, {"color": "green"})])
 ```
 
 Node attributes are discussed further {ref}`below <attributes>`.
 
 Nodes from one graph can be incorporated into another:
 
-```{eval-rst}
-.. nbplot::
-
-    >>> H = nx.path_graph(10)
-    >>> G.add_nodes_from(H)
+```{code-cell}
+H = nx.path_graph(10)
+G.add_nodes_from(H)
 ```
 
 `G` now contains the nodes of `H` as nodes of `G`.
 In contrast, you could use the graph `H` as a node in `G`.
 
-```{eval-rst}
-.. nbplot::
-
-    >>> G.add_node(H)
+```{code-cell}
+G.add_node(H)
 ```
 
 The graph `G` now contains `H` as a node.  This flexibility is very powerful as
@@ -88,29 +87,24 @@ are useful entities.  Of course you can always use a unique identifier in `G`
 and have a separate dictionary keyed by identifier to the node information if
 you prefer.
 
-:::{note}
-You should not change the node object if the hash depends
-on its contents.
-:::
+```{note}
+You should not change the node object if the hash depends on its contents.
+```
 
 ## Edges
 
 `G` can also be grown by adding one edge at a time,
 
-```{eval-rst}
-.. nbplot::
-
-    >>> G.add_edge(1, 2)
-    >>> e = (2, 3)
-    >>> G.add_edge(*e)  # unpack edge tuple*
+```{code-cell}
+G.add_edge(1, 2)
+e = (2, 3)
+G.add_edge(*e)  # unpack edge tuple*
 ```
 
 by adding a list of edges,
 
-```{eval-rst}
-.. nbplot::
-
-    >>> G.add_edges_from([(1, 2), (1, 3)])
+```{code-cell}
+G.add_edges_from([(1, 2), (1, 3)])
 ```
 
 or by adding any {term}`ebunch` of edges.  An *ebunch* is any iterable
@@ -119,65 +113,56 @@ with 2 nodes followed by an edge attribute dictionary, e.g.,
 `(2, 3, {'weight': 3.1415})`.  Edge attributes are discussed further
 {ref}`below <attributes>`.
 
-```{eval-rst}
-.. nbplot::
-
-    >>> G.add_edges_from(H.edges)
+```{code-cell}
+G.add_edges_from(H.edges)
 ```
 
 There are no complaints when adding existing nodes or edges. For example,
 after removing all nodes and edges,
 
-```{eval-rst}
-.. nbplot::
-
-    >>> G.clear()
+```{code-cell}
+G.clear()
 ```
 
 we add new nodes/edges and NetworkX quietly ignores any that are
 already present.
 
-```{eval-rst}
-.. nbplot::
-
-    >>> G.add_edges_from([(1, 2), (1, 3)])
-    >>> G.add_node(1)
-    >>> G.add_edge(1, 2)
-    >>> G.add_node("spam")        # adds node "spam"
-    >>> G.add_nodes_from("spam")  # adds 4 nodes: 's', 'p', 'a', 'm'
-    >>> G.add_edge(3, 'm')
+```{code-cell}
+G.add_edges_from([(1, 2), (1, 3)])
+G.add_node(1)
+G.add_edge(1, 2)
+G.add_node("spam")        # adds node "spam"
+G.add_nodes_from("spam")  # adds 4 nodes: 's', 'p', 'a', 'm'
+G.add_edge(3, 'm')
 ```
 
 At this stage the graph `G` consists of 8 nodes and 3 edges, as can be seen by:
 
-```{eval-rst}
-.. nbplot::
-
-    >>> G.number_of_nodes()
-    8
-    >>> G.number_of_edges()
-    3
+```{code-cell}
+G.number_of_nodes()
 ```
 
-:::{note}
+```{code-cell}
+G.number_of_edges()
+```
+
+```{note}
 The order of adjacency reporting (e.g., {meth}`G.adj <networkx.Graph.adj>`,
 {meth}`G.successors <networkx.DiGraph.successors>`,
 {meth}`G.predecessors <networkx.DiGraph.predecessors>`) is the order of
 edge addition. However, the order of G.edges is the order of the adjacencies
 which includes both the order of the nodes and each
 node's adjacencies. See example below:
-:::
+```
 
-```{eval-rst}
-.. nbplot::
-
-    >>> DG = nx.DiGraph()
-    >>> DG.add_edge(2, 1)   # adds the nodes in order 2, 1
-    >>> DG.add_edge(1, 3)
-    >>> DG.add_edge(2, 4)
-    >>> DG.add_edge(1, 2)
-    >>> assert list(DG.successors(2)) == [1, 4]
-    >>> assert list(DG.edges) == [(2, 1), (2, 4), (1, 3), (1, 2)]
+```{code-cell}
+DG = nx.DiGraph()
+DG.add_edge(2, 1)   # adds the nodes in order 2, 1
+DG.add_edge(1, 3)
+DG.add_edge(2, 4)
+DG.add_edge(1, 2)
+assert list(DG.successors(2)) == [1, 4]
+assert list(DG.edges) == [(2, 1), (2, 4), (1, 3), (1, 2)]
 ```
 
 ## Examining elements of a graph
@@ -193,17 +178,17 @@ If you want a specific container type instead of a view, you can specify one.
 Here we use lists, though sets, dicts, tuples and other containers may be
 better in other contexts.
 
-```{eval-rst}
-.. nbplot::
-
-    >>> list(G.nodes)
-    [1, 2, 3, 'spam', 's', 'p', 'a', 'm']
-    >>> list(G.edges)
-    [(1, 2), (1, 3), (3, 'm')]
-    >>> list(G.adj[1])  # or list(G.neighbors(1))
-    [2, 3]
-    >>> G.degree[1]  # the number of edges incident to 1
-    2
+```{code-cell}
+list(G.nodes)
+```
+```{code-cell}
+list(G.edges)
+```
+```{code-cell}
+list(G.adj[1])  # or list(G.neighbors(1))
+```
+```{code-cell}
+G.degree[1]  # the number of edges incident to 1
 ```
 
 One can specify to report the edges and degree from a subset of all nodes
@@ -211,13 +196,11 @@ using an {term}`nbunch`. An *nbunch* is any of: `None` (meaning all nodes),
 a node, or an iterable container of nodes that is not itself a node in the
 graph.
 
-```{eval-rst}
-.. nbplot::
-
-    >>> G.edges([2, 'm'])
-    EdgeDataView([(2, 1), ('m', 3)])
-    >>> G.degree([2, 3])
-    DegreeView({2: 1, 3: 2})
+```{code-cell}
+G.edges([2, 'm'])
+```
+```{code-cell}
+G.degree([2, 3])
 ```
 
 ## Removing elements from a graph
@@ -230,14 +213,14 @@ Use methods
 and
 {meth}`Graph.remove_edges_from`, e.g.
 
-```{eval-rst}
-.. nbplot::
-
-    >>> G.remove_node(2)
-    >>> G.remove_nodes_from("spam")
-    >>> list(G.nodes)
-    [1, 3, 'spam']
-    >>> G.remove_edge(1, 3)
+```{code-cell}
+G.remove_node(2)
+G.remove_nodes_from("spam")
+list(G.nodes)
+```
+```{code-cell}
+G.remove_edge(1, 3)
+list(G)
 ```
 
 ## Using the graph constructors
@@ -248,21 +231,20 @@ graph classes.
 When creating a graph structure by instantiating one of the graph
 classes you can specify data in several formats.
 
-```{eval-rst}
-.. nbplot::
-
-    >>> G.add_edge(1, 2)
-    >>> H = nx.DiGraph(G)  # create a DiGraph using the connections from G
-    >>> list(H.edges())
-    [(1, 2), (2, 1)]
-    >>> edgelist = [(0, 1), (1, 2), (2, 3)]
-    >>> H = nx.Graph(edgelist)  # create a graph from an edge list
-    >>> list(H.edges())
-    [(0, 1), (1, 2), (2, 3)]
-    >>> adjacency_dict = {0: (1, 2), 1: (0, 2), 2: (0, 1)}
-    >>> H = nx.Graph(adjacency_dict)  # create a Graph dict mapping nodes to nbrs
-    >>> list(H.edges())
-    [(0, 1), (0, 2), (1, 2)]
+```{code-cell}
+G.add_edge(1, 2)
+H = nx.DiGraph(G)  # create a DiGraph using the connections from G
+list(H.edges())
+```
+```{code-cell}
+edgelist = [(0, 1), (1, 2), (2, 3)]
+H = nx.Graph(edgelist)  # create a graph from an edge list
+list(H.edges())
+```
+```{code-cell}
+adjacency_dict = {0: (1, 2), 1: (0, 2), 2: (0, 1)}
+H = nx.Graph(adjacency_dict)  # create a Graph dict mapping nodes to nbrs
+list(H.edges())
 ```
 
 ## What to use as nodes and edges
@@ -287,60 +269,46 @@ a more traditional graph with integer labels.
 In addition to the views {attr}`Graph.edges`, and {attr}`Graph.adj`,
 access to edges and neighbors is possible using subscript notation.
 
-```{eval-rst}
-.. nbplot::
-
-    >>> G = nx.Graph([(1, 2, {"color": "yellow"})])
-    >>> G[1]  # same as G.adj[1]
-    AtlasView({2: {'color': 'yellow'}})
-    >>> G[1][2]
-    {'color': 'yellow'}
-    >>> G.edges[1, 2]
-    {'color': 'yellow'}
+```{code-cell}
+G = nx.Graph([(1, 2, {"color": "yellow"})])
+G[1]  # same as G.adj[1]
+```
+```{code-cell}
+G[1][2]
+```
+```{code-cell}
+G.edges[1, 2]
 ```
 
 You can get/set the attributes of an edge using subscript notation
 if the edge already exists.
 
-```{eval-rst}
-.. nbplot::
-
-    >>> G.add_edge(1, 3)
-    >>> G[1][3]['color'] = "blue"
-    >>> G.edges[1, 2]['color'] = "red"
-    >>> G.edges[1, 2]
-    {'color': 'red'}
+```{code-cell}
+G.add_edge(1, 3)
+G[1][3]['color'] = "blue"
+G.edges[1, 2]['color'] = "red"
+G.edges[1, 2]
 ```
 
 Fast examination of all (node, adjacency) pairs is achieved using
 `G.adjacency()`, or `G.adj.items()`.
 Note that for undirected graphs, adjacency iteration sees each edge twice.
 
-```{eval-rst}
-.. nbplot::
-
-    >>> FG = nx.Graph()
-    >>> FG.add_weighted_edges_from([(1, 2, 0.125), (1, 3, 0.75), (2, 4, 1.2), (3, 4, 0.375)])
-    >>> for n, nbrs in FG.adj.items():
-    ...    for nbr, eattr in nbrs.items():
-    ...        wt = eattr['weight']
-    ...        if wt < 0.5: print(f"({n}, {nbr}, {wt:.3})")
-    (1, 2, 0.125)
-    (2, 1, 0.125)
-    (3, 4, 0.375)
-    (4, 3, 0.375)
+```{code-cell}
+FG = nx.Graph()
+FG.add_weighted_edges_from([(1, 2, 0.125), (1, 3, 0.75), (2, 4, 1.2), (3, 4, 0.375)])
+for n, nbrs in FG.adj.items():
+   for nbr, eattr in nbrs.items():
+       wt = eattr['weight']
+       if wt < 0.5: print(f"({n}, {nbr}, {wt:.3})")
 ```
 
 Convenient access to all edges is achieved with the edges property.
 
-```{eval-rst}
-.. nbplot::
-
-    >>> for (u, v, wt) in FG.edges.data('weight'):
-    ...     if wt < 0.5:
-    ...         print(f"({u}, {v}, {wt:.3})")
-    (1, 2, 0.125)
-    (3, 4, 0.375)
+```{code-cell}
+for (u, v, wt) in FG.edges.data('weight'):
+    if wt < 0.5:
+        print(f"({u}, {v}, {wt:.3})")
 ```
 
 (attributes)=
@@ -360,38 +328,31 @@ manipulation of the attribute dictionaries named `G.graph`, `G.nodes`, and
 
 Assign graph attributes when creating a new graph
 
-```{eval-rst}
-.. nbplot::
-
-    >>> G = nx.Graph(day="Friday")
-    >>> G.graph
-    {'day': 'Friday'}
+```{code-cell}
+G = nx.Graph(day="Friday")
+G.graph
 ```
 
 Or you can modify attributes later
 
-```{eval-rst}
-.. nbplot::
-
-    >>> G.graph['day'] = "Monday"
-    >>> G.graph
-    {'day': 'Monday'}
+```{code-cell}
+G.graph['day'] = "Monday"
+G.graph
 ```
 
 ### Node attributes
 
 Add node attributes using `add_node()`, `add_nodes_from()`, or `G.nodes`
 
-```{eval-rst}
-.. nbplot::
+```{code-cell}
+G.add_node(1, time='5pm')
+G.add_nodes_from([3], time='2pm')
+G.nodes[1]
+```
 
-    >>> G.add_node(1, time='5pm')
-    >>> G.add_nodes_from([3], time='2pm')
-    >>> G.nodes[1]
-    {'time': '5pm'}
-    >>> G.nodes[1]['room'] = 714
-    >>> G.nodes.data()
-    NodeDataView({1: {'time': '5pm', 'room': 714}, 3: {'time': '2pm'}})
+```{code-cell}
+G.nodes[1]['room'] = 714
+G.nodes.data()
 ```
 
 Note that adding a node to `G.nodes` does not add it to the graph, use
@@ -402,14 +363,12 @@ Note that adding a node to `G.nodes` does not add it to the graph, use
 Add/change edge attributes using `add_edge()`, `add_edges_from()`,
 or subscript notation.
 
-```{eval-rst}
-.. nbplot::
-
-    >>> G.add_edge(1, 2, weight=4.7 )
-    >>> G.add_edges_from([(3, 4), (4, 5)], color='red')
-    >>> G.add_edges_from([(1, 2, {'color': 'blue'}), (2, 3, {'weight': 8})])
-    >>> G[1][2]['weight'] = 4.7
-    >>> G.edges[3, 4]['weight'] = 4.2
+```{code-cell}
+G.add_edge(1, 2, weight=4.7 )
+G.add_edges_from([(3, 4), (4, 5)], color='red')
+G.add_edges_from([(1, 2, {'color': 'blue'}), (2, 3, {'weight': 8})])
+G[1][2]['weight'] = 4.7
+G.edges[3, 4]['weight'] = 4.2
 ```
 
 The special attribute `weight` should be numeric as it is used by
@@ -420,25 +379,26 @@ algorithms requiring weighted edges.
 The {class}`DiGraph` class provides additional methods and properties specific
 to directed edges, e.g.,
 {attr}`DiGraph.out_edges`, {attr}`DiGraph.in_degree`,
-`DiGraph.predecessors`, `DiGraph.successors` etc.
+{meth}`DiGraph.predecessors`, {meth}`DiGraph.successors` etc.
 To allow algorithms to work with both classes easily, the directed versions of
 {meth}`neighbors <DiGraph.neighbors>` is equivalent to
-`successors <DiGraph.successors>` while `~DiGraph.degree` reports the sum
-of `~DiGraph.in_degree` and `~DiGraph.out_degree` even though that may feel inconsistent at times.
+{meth}`successors <DiGraph.successors>` while {attr}`DiGraph.degree` reports the sum
+of {attr}`DiGraph.in_degree` and {attr}`DiGraph.out_degree` even though that may
+feel inconsistent at times.
 
-```{eval-rst}
-.. nbplot::
-
-    >>> DG = nx.DiGraph()
-    >>> DG.add_weighted_edges_from([(1, 2, 0.5), (3, 1, 0.75)])
-    >>> DG.out_degree(1, weight='weight')
-    0.5
-    >>> DG.degree(1, weight='weight')
-    1.25
-    >>> list(DG.successors(1))
-    [2]
-    >>> list(DG.neighbors(1))
-    [2]
+```{code-cell}
+DG = nx.DiGraph()
+DG.add_weighted_edges_from([(1, 2, 0.5), (3, 1, 0.75)])
+DG.out_degree(1, weight='weight')
+```
+```{code-cell}
+DG.degree(1, weight='weight')
+```
+```{code-cell}
+list(DG.successors(1))
+```
+```{code-cell}
+list(DG.neighbors(1))
 ```
 
 Some algorithms work only for directed graphs and others are not well
@@ -447,10 +407,8 @@ and undirected graphs together is dangerous.  If you want to treat
 a directed graph as undirected for some measurement you should probably
 convert it using {meth}`Graph.to_undirected` or with
 
-```{eval-rst}
-.. nbplot::
-
-    >>> H = nx.Graph(G)  # create an undirected graph H from a directed graph G
+```{code-cell}
+H = nx.Graph(G)  # create an undirected graph H from a directed graph G
 ```
 
 ## Multigraphs
@@ -466,21 +424,19 @@ e.g., {meth}`MultiGraph.degree` we provide the function.  Otherwise you
 should convert to a standard graph in a way that makes the measurement
 well defined.
 
-```{eval-rst}
-.. nbplot::
+```{code-cell}
+MG = nx.MultiGraph()
+MG.add_weighted_edges_from([(1, 2, 0.5), (1, 2, 0.75), (2, 3, 0.5)])
+dict(MG.degree(weight='weight'))
+```
+```{code-cell}
+GG = nx.Graph()
+for n, nbrs in MG.adjacency():
+   for nbr, edict in nbrs.items():
+       minvalue = min([d['weight'] for d in edict.values()])
+       GG.add_edge(n, nbr, weight = minvalue)
 
-    >>> MG = nx.MultiGraph()
-    >>> MG.add_weighted_edges_from([(1, 2, 0.5), (1, 2, 0.75), (2, 3, 0.5)])
-    >>> dict(MG.degree(weight='weight'))
-    {1: 1.25, 2: 1.75, 3: 0.5}
-    >>> GG = nx.Graph()
-    >>> for n, nbrs in MG.adjacency():
-    ...    for nbr, edict in nbrs.items():
-    ...        minvalue = min([d['weight'] for d in edict.values()])
-    ...        GG.add_edge(n, nbr, weight = minvalue)
-    ...
-    >>> nx.shortest_path(GG, 1, 3)
-    [1, 2, 3]
+nx.shortest_path(GG, 1, 3)
 ```
 
 ## Graph generators and graph operations
@@ -528,13 +484,11 @@ can also be generated by
 
 like so:
 
-```{eval-rst}
-.. nbplot::
-
-    >>> K_5 = nx.complete_graph(5)
-    >>> K_3_5 = nx.complete_bipartite_graph(3, 5)
-    >>> barbell = nx.barbell_graph(10, 10)
-    >>> lollipop = nx.lollipop_graph(10, 20)
+```{code-cell}
+K_5 = nx.complete_graph(5)
+K_3_5 = nx.complete_bipartite_graph(3, 5)
+barbell = nx.barbell_graph(10, 10)
+lollipop = nx.lollipop_graph(10, 20)
 ```
 
 ### 4. Using a stochastic graph generator, e.g,
@@ -550,13 +504,11 @@ like so:
 
 like so:
 
-```{eval-rst}
-.. nbplot::
-
-    >>> er = nx.erdos_renyi_graph(100, 0.15)
-    >>> ws = nx.watts_strogatz_graph(30, 3, 0.1)
-    >>> ba = nx.barabasi_albert_graph(100, 5)
-    >>> red = nx.random_lobster(100, 0.9, 0.9)
+```{code-cell}
+er = nx.erdos_renyi_graph(100, 0.15)
+ws = nx.watts_strogatz_graph(30, 3, 0.1)
+ba = nx.barabasi_albert_graph(100, 5)
+red = nx.random_lobster(100, 0.9, 0.9)
 ```
 
 ### 5. Reading a graph stored in a file using common graph formats
@@ -564,11 +516,9 @@ like so:
 NetworkX supports many popular formats, such as edge lists, adjacency lists,
 GML, GraphML, LEDA and others.
 
-```{eval-rst}
-.. nbplot::
-
-    >>> nx.write_gml(red, "path.to.file")
-    >>> mygraph = nx.read_gml("path.to.file")
+```{code-cell}
+nx.write_gml(red, "path.to.file")
+mygraph = nx.read_gml("path.to.file")
 ```
 
 For details on graph formats see {doc}`/reference/readwrite/index`
@@ -579,29 +529,25 @@ and for graph generator functions see {doc}`/reference/generators`
 The structure of `G` can be analyzed using various graph-theoretic
 functions such as:
 
-```{eval-rst}
-.. nbplot::
-
-    >>> G = nx.Graph()
-    >>> G.add_edges_from([(1, 2), (1, 3)])
-    >>> G.add_node("spam")       # adds node "spam"
-    >>> list(nx.connected_components(G))
-    [{1, 2, 3}, {'spam'}]
-    >>> sorted(d for n, d in G.degree())
-    [0, 1, 1, 2]
-    >>> nx.clustering(G)
-    {1: 0, 2: 0, 3: 0, 'spam': 0}
+```{code-cell}
+G = nx.Graph()
+G.add_edges_from([(1, 2), (1, 3)])
+G.add_node("spam")       # adds node "spam"
+list(nx.connected_components(G))
+```
+```{code-cell}
+sorted(d for n, d in G.degree())
+```
+```{code-cell}
+nx.clustering(G)
 ```
 
 Some functions with large output iterate over (node, value) 2-tuples.
 These are easily stored in a `dict` structure if you desire.
 
-```{eval-rst}
-.. nbplot::
-
-    >>> sp = dict(nx.all_pairs_shortest_path(G))
-    >>> sp[3]
-    {3: [3], 1: [3, 1], 2: [3, 1, 2]}
+```{code-cell}
+sp = dict(nx.all_pairs_shortest_path(G))
+sp[3]
 ```
 
 See {doc}`/reference/algorithms/index` for details on graph algorithms
@@ -616,62 +562,54 @@ module and will be imported if possible.
 
 First import Matplotlib's plot interface (pylab works too)
 
-```{eval-rst}
-.. nbplot::
-
-    >>> import matplotlib.pyplot as plt
+```{code-cell}
+import matplotlib.pyplot as plt
 ```
 
 To test if the import of `~networkx.drawing.nx_pylab` was successful draw `G`
 using one of
 
-```{eval-rst}
-.. nbplot::
-
-    >>> G = nx.petersen_graph()
-    >>> subax1 = plt.subplot(121)
-    >>> nx.draw(G, with_labels=True, font_weight='bold')
-    >>> subax2 = plt.subplot(122)
-    >>> nx.draw_shell(G, nlist=[range(5, 10), range(5)], with_labels=True, font_weight='bold')
+```{code-cell}
+G = nx.petersen_graph()
+subax1 = plt.subplot(121)
+nx.draw(G, with_labels=True, font_weight='bold')
+subax2 = plt.subplot(122)
+nx.draw_shell(G, nlist=[range(5, 10), range(5)], with_labels=True, font_weight='bold')
 ```
 
 when drawing to an interactive display.  Note that you may need to issue a
 Matplotlib
 
-```pycon
+```python
 >>> plt.show()  # doctest: +SKIP
 ```
 
 command if you are not using matplotlib in interactive mode.
 
-```{eval-rst}
-.. nbplot::
-
-    >>> options = {
-    ...     'node_color': 'black',
-    ...     'node_size': 100,
-    ...     'width': 3,
-    ... }
-    >>> subax1 = plt.subplot(221)
-    >>> nx.draw_random(G, **options)
-    >>> subax2 = plt.subplot(222)
-    >>> nx.draw_circular(G, **options)
-    >>> subax3 = plt.subplot(223)
-    >>> nx.draw_spectral(G, **options)
-    >>> subax4 = plt.subplot(224)
-    >>> nx.draw_shell(G, nlist=[range(5,10), range(5)], **options)
+```{code-cell}
+options = {
+    'node_color': 'black',
+    'node_size': 100,
+    'width': 3,
+}
+subax1 = plt.subplot(221)
+nx.draw_random(G, **options)
+subax2 = plt.subplot(222)
+nx.draw_circular(G, **options)
+subax3 = plt.subplot(223)
+nx.draw_spectral(G, **options)
+subax4 = plt.subplot(224)
+nx.draw_shell(G, nlist=[range(5,10), range(5)], **options)
 ```
 
 You can find additional options via {func}`~drawing.nx_pylab.draw_networkx` and
 layouts via the {mod}`layout module<networkx.drawing.layout>`.
 You can use multiple shells with {func}`~drawing.nx_pylab.draw_shell`.
 
-```{eval-rst}
-.. nbplot::
-
-    >>> G = nx.dodecahedral_graph()
-    >>> shells = [[2, 3, 4, 5, 6], [8, 1, 0, 19, 18, 17, 16, 15, 14, 7], [9, 10, 11, 12, 13]]
-    >>> nx.draw_shell(G, nlist=shells, **options)
+```{code-cell}
+G = nx.dodecahedral_graph()
+shells = [[2, 3, 4, 5, 6], [8, 1, 0, 19, 18, 17, 16, 15, 14, 7], [9, 10, 11, 12, 13]]
+nx.draw_shell(G, nlist=shells, **options)
 ```
 
 To save drawings to a file, use, for example
@@ -695,10 +633,6 @@ the graph in dot format for further processing.
 ```
 
 See {doc}`/reference/drawing` for additional details.
-
-```{eval-rst}
-.. code-links::
-```
 
 ## NX-Guides
 
