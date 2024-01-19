@@ -57,6 +57,8 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
 
     The graph G is modified in place.
 
+    A later swap is allowed to undo a previous swap.
+
     References
     ----------
     .. [1] Erdős, Péter L., et al. “A Simple Havel-Hakimi Type Algorithm to Realize

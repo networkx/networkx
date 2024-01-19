@@ -1,6 +1,4 @@
 """Unit tests for pydot drawing functions."""
-import os
-import tempfile
 from io import StringIO
 
 import pytest
@@ -12,7 +10,9 @@ pydot = pytest.importorskip("pydot")
 
 
 class TestPydot:
-    def pydot_checks(self, G, prog):
+    @pytest.mark.parametrize("G", (nx.Graph(), nx.DiGraph()))
+    @pytest.mark.parametrize("prog", ("neato", "dot"))
+    def test_pydot(self, G, prog, tmp_path):
         """
         Validate :mod:`pydot`-based usage of the passed NetworkX graph with the
         passed basename of an external GraphViz command (e.g., `dot`, `neato`).
@@ -39,7 +39,7 @@ class TestPydot:
         # Validate the original and resulting graphs to be the same.
         assert graphs_equal(G, G2)
 
-        fd, fname = tempfile.mkstemp()
+        fname = tmp_path / "out.dot"
 
         # Serialize this "pydot.Dot" instance to a temporary file in dot format
         P.write_raw(fname)
@@ -77,15 +77,6 @@ class TestPydot:
 
         # Validate the original and resulting graphs to be the same.
         assert graphs_equal(G, Hin)
-
-        os.close(fd)
-        os.unlink(fname)
-
-    def test_undirected(self):
-        self.pydot_checks(nx.Graph(), prog="neato")
-
-    def test_directed(self):
-        self.pydot_checks(nx.DiGraph(), prog="dot")
 
     def test_read_write(self):
         G = nx.MultiGraph()
