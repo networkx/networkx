@@ -46,11 +46,11 @@ def pytest_configure(config):
     if backend is None:
         backend = os.environ.get("NETWORKX_TEST_BACKEND")
     if backend:
-        networkx.backend_config["automatic_backends"] = [backend]
+        networkx.config["automatic_backends"] = [backend]
         fallback_to_nx = config.getoption("--fallback-to-nx")
         if not fallback_to_nx:
             fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
-        networkx.backend_config["fallback_to_nx"] = bool(fallback_to_nx)
+        networkx.config["fallback_to_nx"] = bool(fallback_to_nx)
     # nx-loopback backend is only available when testing
     backends = entry_points(name="nx-loopback", group="networkx.backends")
     if backends:
@@ -70,7 +70,7 @@ def pytest_collection_modifyitems(config, items):
     # Setting this to True here allows tests to be set up before dispatching
     # any function call to a backend.
     networkx.utils.backends._dispatchable._is_testing = True
-    if automatic_backends := networkx.backend_config["automatic_backends"]:
+    if automatic_backends := networkx.config["automatic_backends"]:
         # Allow pluggable backends to add markers to tests (such as skip or xfail)
         # when running in auto-conversion test mode
         backend = networkx.utils.backends.backends[automatic_backends[0]].load()
