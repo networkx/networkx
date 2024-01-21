@@ -958,16 +958,11 @@ class _dispatchable:
             func_info = info["functions"][self.name]
 
             # Renaming extra_docstring to backend_func_docs
-            if ("extra_docstring" in func_info and func_info["extra_docstring"]) or (
-                "backend_func_docs" in func_info and func_info["backend_func_docs"]
+            if func_docs := (
+                func_info.get("backend_func_docs") or func_info.get("extra_docstring")
             ):
-                key = (
-                    "extra_docstring"
-                    if func_info.get("extra_docstring")
-                    else "backend_func_docs"
-                )
                 lines.extend(
-                    f"  {line}" if line else line for line in func_info[key].split("\n")
+                    f"  {line}" if line else line for line in func_docs.split("\n")
                 )
                 add_gap = True
             else:
