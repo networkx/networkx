@@ -994,8 +994,8 @@ class _dispatchable:
             else:
                 lines.append("")
 
-            if "backend_func_url" in func_info and func_info["backend_func_url"]:
-                lines.append(f"[`Source <{func_info['backend_func_url']}>`_]")
+            if func_url := func_info.get("backend_func_url"):
+                lines.append(f"[`Source <{func_url}>`_]")
                 lines.append("")
 
         lines.pop()  # Remove last empty line
