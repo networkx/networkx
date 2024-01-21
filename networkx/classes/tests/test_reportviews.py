@@ -596,8 +596,17 @@ class TestEdgeView:
         assert ev[0, 1] == {"foo": "bar"}
 
         # slicing
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.NetworkXError) as e:
             G.edges[0:5]
+        assert (
+            str(e.value)
+            == f"{type(G.edges).__name__} does not support slicing, try list(G.edges)[0:5:None]"
+        )
+
+        # Invalid edge
+        with pytest.raises(nx.NetworkXError) as e:
+            G.edges[0, 9]
+        assert str(e.value) == "The edge (0, 9) is not in the graph."
 
     def test_call(self):
         ev = self.eview(self.G)

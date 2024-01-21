@@ -1082,7 +1082,10 @@ class OutEdgeView(Set, Mapping):
                 f"try list(G.edges)[{e.start}:{e.stop}:{e.step}]"
             )
         u, v = e
-        return self._adjdict[u][v]
+        try:
+            return self._adjdict[u][v]
+        except KeyError:
+            raise nx.NetworkXError(f"The edge {e} is not in the graph.")
 
     # EdgeDataView methods
     def __call__(self, nbunch=None, data=False, *, default=None):
