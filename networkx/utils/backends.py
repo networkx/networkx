@@ -540,10 +540,7 @@ class _dispatchable:
             for backend_name in self._automatic_backends:
                 if self._can_backend_run(backend_name, *args, **kwargs):
                     return self._convert_and_call(
-                        backend_name,
-                        args,
-                        kwargs,
-                        fallback_to_nx=self._fallback_to_nx,
+                        backend_name, args, kwargs, fallback_to_nx=self._fallback_to_nx,
                     )
         # Default: run with networkx on networkx inputs
         return self.orig_func(*args, **kwargs)
@@ -978,14 +975,14 @@ class _dispatchable:
 
             # Renaming extra_parameters to additional_parameters
             if (
-                "extra_parameters" in func_info or "additional_parameters" in func_info
-            ) and (func_info["extra_parameters"] or func_info["additional_parameters"]):
+                extra_parameters := (
+                    func_info.get("extra_parameters")
+                    or func_info.get("additional_parameters")
+                )
+            ) :
                 if add_gap:
                     lines.append("")
                 lines.append("  Additional parameters:")
-                extra_parameters = func_info.get(
-                    "extra_parameters", func_info.get("additional_parameters")
-                )
                 for param in sorted(extra_parameters):
                     lines.append(f"    {param}")
                     if desc := extra_parameters[param]:
