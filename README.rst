@@ -67,7 +67,7 @@ License
 
 Released under the 3-Clause BSD license (see `LICENSE.txt`)::
 
-   Copyright (C) 2004-2023 NetworkX Developers
+   Copyright (C) 2004-2024 NetworkX Developers
    Aric Hagberg <hagberg@lanl.gov>
    Dan Schult <dschult@colgate.edu>
    Pieter Swart <swart@lanl.gov>
