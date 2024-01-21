@@ -83,7 +83,11 @@ def dfs_edges(G, source=None, depth_limit=None, sort_neighbors=None):
     if depth_limit is None:
         depth_limit = len(G)
 
-    get_children = G.neighbors if sort_neighbors is None else lambda n: iter(sort_neighbors(G.neighbors(n)))
+    get_children = (
+        G.neighbors
+        if sort_neighbors is None
+        else lambda n: iter(sort_neighbors(G.neighbors(n)))
+    )
 
     visited = set()
     for start in nodes:
@@ -275,10 +279,7 @@ def dfs_successors(G, source=None, depth_limit=None, sort_neighbors=None):
     """
     d = defaultdict(list)
     for s, t in dfs_edges(
-        G,
-        source=source,
-        depth_limit=depth_limit,
-        sort_neighbors=sort_neighbors,
+        G, source=source, depth_limit=depth_limit, sort_neighbors=sort_neighbors,
     ):
         d[s].append(t)
     return dict(d)
@@ -485,9 +486,11 @@ def dfs_labeled_edges(G, source=None, depth_limit=None, sort_neighbors=None):
     if depth_limit is None:
         depth_limit = len(G)
 
-    get_children = G.neighbors
-    if sort_neighbors is not None:
-        get_children = lambda node: iter(sort_neighbors(G.neighbors(node)))
+    get_children = (
+        G.neighbors
+        if sort_neighbors is None
+        else lambda n: iter(sort_neighbors(G.neighbors(n)))
+    )
 
     visited = set()
     for start in nodes:
