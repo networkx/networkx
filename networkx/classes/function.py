@@ -985,7 +985,9 @@ def common_neighbors(G, u, v):
 
     # Return a generator explicitly instead of yielding so that the above
     # checks are executed eagerly.
-    return (w for w in G[u] if w in G[v] and w not in (u, v))
+    # return (w for w in G[u] if w in G[v] and w not in (u, v))
+
+    return G._adj[u].keys() & G._adj[v].keys() - {u, v}
 
 
 def is_weighted(G, edge=None, weight="weight"):
