@@ -83,9 +83,7 @@ def dfs_edges(G, source=None, depth_limit=None, sort_neighbors=None):
     if depth_limit is None:
         depth_limit = len(G)
 
-    get_children = G.neighbors
-    if sort_neighbors is not None:
-        get_children = lambda node: iter(sort_neighbors(G.neighbors(node)))
+    get_children = G.neighbors if sort_neighbors is None else lambda n: iter(sort_neighbors(G.neighbors(n)))
 
     visited = set()
     for start in nodes:
