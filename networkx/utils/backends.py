@@ -974,12 +974,10 @@ class _dispatchable:
                 add_gap = False
 
             # Renaming extra_parameters to additional_parameters
-            if (
-                extra_parameters := (
-                    func_info.get("extra_parameters")
-                    or func_info.get("additional_parameters")
-                )
-            ) :
+            if extra_parameters := (
+                func_info.get("extra_parameters")
+                or func_info.get("additional_parameters")
+            ):
                 if add_gap:
                     lines.append("")
                 lines.append("  Additional parameters:")
