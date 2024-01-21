@@ -279,7 +279,10 @@ def dfs_successors(G, source=None, depth_limit=None, sort_neighbors=None):
     """
     d = defaultdict(list)
     for s, t in dfs_edges(
-        G, source=source, depth_limit=depth_limit, sort_neighbors=sort_neighbors,
+        G, 
+        source=source, 
+        depth_limit=depth_limit, 
+        sort_neighbors=sort_neighbors,
     ):
         d[s].append(t)
     return dict(d)
