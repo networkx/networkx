@@ -15,7 +15,7 @@ __all__ = [
 
 
 @nx._dispatchable
-def dfs_edges(G, source=None, depth_limit=None, sort_neighbors=None):
+def dfs_edges(G, source=None, depth_limit=None, *, sort_neighbors=None):
     """Iterate over edges in a depth-first-search (DFS).
 
     Perform a depth-first-search over the nodes of `G` and yield
@@ -112,7 +112,7 @@ def dfs_edges(G, source=None, depth_limit=None, sort_neighbors=None):
 
 
 @nx._dispatchable
-def dfs_tree(G, source=None, depth_limit=None, sort_neighbors=None):
+def dfs_tree(G, source=None, depth_limit=None, *, sort_neighbors=None):
     """Returns oriented tree constructed from a depth-first-search from source.
 
     Parameters
@@ -158,12 +158,12 @@ def dfs_tree(G, source=None, depth_limit=None, sort_neighbors=None):
         T.add_nodes_from(G)
     else:
         T.add_node(source)
-    T.add_edges_from(dfs_edges(G, source, depth_limit, sort_neighbors))
+    T.add_edges_from(dfs_edges(G, source, depth_limit, sort_neighbors=sort_neighbors))
     return T
 
 
 @nx._dispatchable
-def dfs_predecessors(G, source=None, depth_limit=None, sort_neighbors=None):
+def dfs_predecessors(G, source=None, depth_limit=None, *, sort_neighbors=None):
     """Returns dictionary of predecessors in depth-first-search from source.
 
     Parameters
@@ -218,11 +218,11 @@ def dfs_predecessors(G, source=None, depth_limit=None, sort_neighbors=None):
     :func:`~networkx.algorithms.traversal.edgedfs.edge_dfs`
     :func:`~networkx.algorithms.traversal.breadth_first_search.bfs_tree`
     """
-    return {t: s for s, t in dfs_edges(G, source, depth_limit, sort_neighbors)}
+    return {t: s for s, t in dfs_edges(G, source, depth_limit, sort_neighbors=sort_neighbors)}
 
 
 @nx._dispatchable
-def dfs_successors(G, source=None, depth_limit=None, sort_neighbors=None):
+def dfs_successors(G, source=None, depth_limit=None, *, sort_neighbors=None):
     """Returns dictionary of successors in depth-first-search from source.
 
     Parameters
@@ -289,7 +289,7 @@ def dfs_successors(G, source=None, depth_limit=None, sort_neighbors=None):
 
 
 @nx._dispatchable
-def dfs_postorder_nodes(G, source=None, depth_limit=None, sort_neighbors=None):
+def dfs_postorder_nodes(G, source=None, depth_limit=None, *, sort_neighbors=None):
     """Generate nodes in a depth-first-search post-ordering starting at source.
 
     Parameters
@@ -348,7 +348,7 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None, sort_neighbors=None):
 
 
 @nx._dispatchable
-def dfs_preorder_nodes(G, source=None, depth_limit=None, sort_neighbors=None):
+def dfs_preorder_nodes(G, source=None, depth_limit=None, *, sort_neighbors=None):
     """Generate nodes in a depth-first-search pre-ordering starting at source.
 
     Parameters
@@ -407,7 +407,7 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None, sort_neighbors=None):
 
 
 @nx._dispatchable
-def dfs_labeled_edges(G, source=None, depth_limit=None, sort_neighbors=None):
+def dfs_labeled_edges(G, source=None, depth_limit=None, *, sort_neighbors=None):
     """Iterate over edges in a depth-first-search (DFS) labeled by type.
 
     Parameters
