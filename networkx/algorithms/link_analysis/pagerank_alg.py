@@ -457,14 +457,7 @@ def _pagerank_scipy(
         return {}
 
     nodelist = list(G)
-
-    # Check if the cache exists
-    if "networkx-sparse" in G._cache_it_all:
-        # Get the cached sparse array
-        A = G._cache_it_all["networkx-sparse"]
-    else:
-        A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, dtype=float)
-        G._cache_it_all["networkx-sparse"] = A
+    A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, dtype=float)
 
     S = A.sum(axis=1)
     S[S != 0] = 1.0 / S[S != 0]

@@ -305,7 +305,7 @@ class Graph:
 
     _adj = _CachedPropertyResetterAdj()
     _node = _CachedPropertyResetterNode()
-    _cache_it_all = {}
+    _cache = {}
 
     node_dict_factory = dict
     node_attr_dict_factory = dict
@@ -552,8 +552,8 @@ class Graph:
         NetworkX Graphs, though one should be careful that the hash
         doesn't change on mutables.
         """
-        if len(self._cache_it_all) > 0:
-            self._cache_it_all = {}
+        if len(self._cache) > 0:
+            self._cache = {}
         if node_for_adding not in self._node:
             if node_for_adding is None:
                 raise ValueError("None cannot be a node")
@@ -624,8 +624,8 @@ class Graph:
         >>> # correct way
         >>> G.add_nodes_from(list(n + 1 for n in G.nodes))
         """
-        if len(self._cache_it_all) > 0:
-            self._cache_it_all = {}
+        if len(self._cache) > 0:
+            self._cache = {}
         for n in nodes_for_adding:
             try:
                 newnode = n not in self._node
@@ -672,8 +672,8 @@ class Graph:
         []
 
         """
-        if len(self._cache_it_all) > 0:
-            self._cache_it_all = {}
+        if len(self._cache) > 0:
+            self._cache = {}
         adj = self._adj
         try:
             nbrs = list(adj[n])  # list handles self-loops (allows mutation)
@@ -726,8 +726,8 @@ class Graph:
         >>> # this command will work, since the dictionary underlying graph is not modified
         >>> G.remove_nodes_from(list(n for n in G.nodes if n < 2))
         """
-        if len(self._cache_it_all) > 0:
-            self._cache_it_all = {}
+        if len(self._cache) > 0:
+            self._cache = {}
         adj = self._adj
         for n in nodes:
             try:
@@ -2037,3 +2037,6 @@ class Graph:
 
             bunch = bunch_iter(nbunch, self._adj)
         return bunch
+
+    def _clear_cache(self):
+        self._cache = {}
