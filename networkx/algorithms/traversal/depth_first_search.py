@@ -218,7 +218,10 @@ def dfs_predecessors(G, source=None, depth_limit=None, *, sort_neighbors=None):
     :func:`~networkx.algorithms.traversal.edgedfs.edge_dfs`
     :func:`~networkx.algorithms.traversal.breadth_first_search.bfs_tree`
     """
-    return {t: s for s, t in dfs_edges(G, source, depth_limit, sort_neighbors=sort_neighbors)}
+    return {
+        t: s
+        for s, t in dfs_edges(G, source, depth_limit, sort_neighbors=sort_neighbors)
+    }
 
 
 @nx._dispatchable
