@@ -918,11 +918,10 @@ def non_neighbors(graph, node):
 
     Returns
     -------
-    non_neighbors : iterator
-        Iterator of nodes in the graph that are not neighbors of the node.
+    non_neighbors : set
+        Set of nodes in the graph that are not neighbors of the node.
     """
-    nbors = set(neighbors(graph, node)) | {node}
-    return (nnode for nnode in graph if nnode not in nbors)
+    return graph._adj.keys() - graph._adj[node].keys() - {node}
 
 
 def non_edges(graph):
@@ -964,8 +963,8 @@ def common_neighbors(G, u, v):
 
     Returns
     -------
-    cnbors : iterator
-        Iterator of common neighbors of u and v in the graph.
+    cnbors : set
+        Set of common neighbors of u and v in the graph.
 
     Raises
     ------
@@ -982,10 +981,6 @@ def common_neighbors(G, u, v):
         raise nx.NetworkXError("u is not in the graph.")
     if v not in G:
         raise nx.NetworkXError("v is not in the graph.")
-
-    # Return a generator explicitly instead of yielding so that the above
-    # checks are executed eagerly.
-    # return (w for w in G[u] if w in G[v] and w not in (u, v))
 
     return G._adj[u].keys() & G._adj[v].keys() - {u, v}
 
