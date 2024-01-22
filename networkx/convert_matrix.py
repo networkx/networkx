@@ -564,8 +564,8 @@ def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format=
     .. [1] Scipy Dev. References, "Sparse Matrices",
        https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
-    cache_key = f"sparse-{hash(tuple(nodelist))}-{dtype}-{weight}-{format}"
-    if cache_key in G._cache:
+    cache_key = f"sparse-{hash(tuple(nodelist)) if nodelist is not None else '-'}-{dtype}-{weight}-{format}"
+    if cache_key in G._cache and not G.is_directed() and not G.is_multigraph():
         return G._cache[cache_key]
 
     import scipy as sp
