@@ -564,9 +564,12 @@ def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format=
     .. [1] Scipy Dev. References, "Sparse Matrices",
        https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
-    cache_key = f"sparse-{hash(tuple(nodelist)) if nodelist is not None else '-'}-{dtype}-{weight}-{format}"
-    if cache_key in G._cache and not G.is_directed() and not G.is_multigraph():
-        return G._cache[cache_key]
+    if nodelist is None:
+        cache_key = f"sparse-{dtype}-{weight}-{format}"
+        if cache_key in G._cache:
+            return G._cache[cache_key]
+    else:
+        cache_key = None
 
     import scipy as sp
 
@@ -617,7 +620,8 @@ def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format=
         A = sp.sparse.coo_array((d, (r, c)), shape=(nlen, nlen), dtype=dtype)
     try:
         A = A.asformat(format)
-        G._cache[cache_key] = A
+        if cache_key:
+            G._cache[cache_key] = A
         return A
     except ValueError as err:
         raise nx.NetworkXError(f"Unknown sparse matrix format: {format}") from err
