@@ -1,8 +1,90 @@
 """Functions for computing measures of structural holes."""
 
 import networkx as nx
+import numpy as np
 
 __all__ = ["constraint", "local_constraint", "effective_size"]
+
+@nx._dispatchable(edge_attrs="weight")
+def constraint(G, nodes=None, weight=None):
+    r"""Returns the constraint on all nodes in the graph ``G``.
+
+    The *constraint* is a measure of the extent to which a node *v* is
+    invested in those nodes that are themselves invested in the
+    neighbors of *v*. Formally, the *constraint on v*, denoted `c(v)`,
+    is defined by
+
+    .. math::
+
+        c(v) = \sum_{w \in N(v) \setminus \{v\}} \ell(v, w)
+
+    where $N(v)$ is the subset of the neighbors of `v` that are either
+    predecessors or successors of `v` and $\ell(v, w)$ is the local
+    constraint on `v` with respect to `w` [1]_. For the definition of local
+    constraint, see :func:`local_constraint`.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        The graph containing ``v``. This can be either directed or undirected.
+
+    nodes : container, optional
+        Container of nodes in the graph ``G`` to compute the constraint. If
+        None, the constraint of every node is computed.
+
+    weight : None or string, optional
+      If None, all edge weights are considered equal.
+      Otherwise holds the name of the edge attribute used as weight.
+
+    Returns
+    -------
+    dict
+        Dictionary with nodes as keys and the constraint on the node as values.
+
+    See also
+    --------
+    local_constraint
+
+    References
+    ----------
+    .. [1] Burt, Ronald S.
+            "Structural holes and good ideas".
+            American Journal of Sociology (110): 349–399.
+
+    """
+    if nodes is None:
+        # In order to compute constraint of all nodes,
+        # algorithms based on sparse matrices can be much faster
+        
+        # Obtain the adjacency matrix
+        P = nx.adjacency_matrix(G, weight = weight)
+        # Calculate mutual weights
+        mutual_weights = P + P.T
+        # Normalize mutual weights by row sums
+        sum_mutual_weights = mutual_weights.sum(axis = 1)
+        val = np.asarray(np.repeat(sum_mutual_weights, mutual_weights.getnnz(axis=0))).flatten()
+        mutual_weights.data = mutual_weights.data / val
+        # Calculate local constraints and constraints
+        local_constraints = (mutual_weights + mutual_weights@mutual_weights).power(2)
+        constraints = ((mutual_weights>0).multiply(local_constraints)).sum(axis = 1)
+        # Special treatment to isolated nodes
+        isolated_nodes = (sum_mutual_weights == 0)      # Mark isolated nodes
+        constraints[isolated_nodes] = float("nan")      # Constraint is undefined for isolated nodes
+        result = dict(zip(list(G.nodes), np.asarray(constraints).flatten()))
+        return result
+    
+    else:
+        constraint = {}
+        for v in nodes:
+            # Constraint is not defined for isolated nodes
+            if len(G[v]) == 0:
+                constraint[v] = float("nan")
+                continue
+            constraint[v] = sum(
+                local_constraint(G, v, n, weight) for n in set(nx.all_neighbors(G, v))
+            )
+        return constraint
+
 
 
 @nx._dispatchable(edge_attrs="weight")
@@ -62,8 +144,8 @@ def effective_size(G, nodes=None, weight=None):
 
     .. math::
 
-       e(u) = \sum_{v \in N(u) \setminus \{u\}}
-       \left(1 - \sum_{w \in N(v)} p_{uw} m_{vw}\right)
+        e(u) = \sum_{v \in N(u) \setminus \{u\}}
+        \left(1 - \sum_{w \in N(v)} p_{uw} m_{vw}\right)
 
     where $N(u)$ is the set of neighbors of $u$ and $p_{uw}$ is the
     normalized mutual weight of the (directed or undirected) edges
@@ -78,7 +160,7 @@ def effective_size(G, nodes=None, weight=None):
 
     .. math::
 
-       e(u) = n - \frac{2t}{n}
+        e(u) = n - \frac{2t}{n}
 
     where `t` is the number of ties in the ego network (not including
     ties to ego) and `n` is the number of nodes (excluding ego).
@@ -120,16 +202,16 @@ def effective_size(G, nodes=None, weight=None):
     References
     ----------
     .. [1] Burt, Ronald S.
-           *Structural Holes: The Social Structure of Competition.*
-           Cambridge: Harvard University Press, 1995.
+            *Structural Holes: The Social Structure of Competition.*
+            Cambridge: Harvard University Press, 1995.
 
     .. [2] Borgatti, S.
-           "Structural Holes: Unpacking Burt's Redundancy Measures"
-           CONNECTIONS 20(1):35-38.
-           http://www.analytictech.com/connections/v20(1)/holes.htm
+            "Structural Holes: Unpacking Burt's Redundancy Measures"
+            CONNECTIONS 20(1):35-38.
+            http://www.analytictech.com/connections/v20(1)/holes.htm
 
     """
-
+    
     def redundancy(G, u, v, weight=None):
         nmw = normalized_mutual_weight
         r = sum(
@@ -137,90 +219,61 @@ def effective_size(G, nodes=None, weight=None):
             for w in set(nx.all_neighbors(G, u))
         )
         return 1 - r
-
-    effective_size = {}
+    
     if nodes is None:
-        nodes = G
-    # Use Borgatti's simplified formula for unweighted and undirected graphs
-    if not G.is_directed() and weight is None:
-        for v in nodes:
-            # Effective size is not defined for isolated nodes
-            if len(G[v]) == 0:
-                effective_size[v] = float("nan")
-                continue
-            E = nx.ego_graph(G, v, center=False, undirected=True)
-            effective_size[v] = len(E) - (2 * E.size()) / len(E)
+        # In order to compute constraint of all nodes,
+        # algorithms based on sparse matrices can be much faster
+        
+        # Obtain the adjacency matrix
+        P = nx.adjacency_matrix(G, weight = weight)
+        
+        # Calculate mutual weights
+        mutual_weights1 = P + P.T
+        mutual_weights2 = mutual_weights1.copy()
+        
+        # Mutual_weights1 = Normalize mutual weights by row sums
+        sum_mutual_weights = mutual_weights1.sum(axis = 1)
+        val = np.asarray(np.repeat(sum_mutual_weights, mutual_weights1.getnnz(axis=0))).flatten()
+        mutual_weights1.data = mutual_weights1.data / val
+        
+        # Mutual_weights2 = Normalize mutual weights by row max
+        max_mutual_weights = mutual_weights2.max(axis = 1).todense()
+        val = np.asarray(np.repeat(max_mutual_weights, mutual_weights2.getnnz(axis=0))).flatten()
+        mutual_weights2.data = mutual_weights2.data / val
+        
+        # Calculate effective sizes
+        n_nodes = len(G)
+        r = np.ones((n_nodes, n_nodes)) - mutual_weights1@(mutual_weights2.T) # Redundancy
+        effective_size = ((mutual_weights1>0).multiply(r)).sum(axis = 1)
+        
+        # Special treatment for isolated nodes
+        isolated_nodes = (sum_mutual_weights == 0)      # Mark isolated nodes
+        effective_size[isolated_nodes] = float("nan")      # Constraint is undefined for isolated nodes
+        result = dict(zip(list(G.nodes), np.asarray(effective_size).flatten()))
+        
+        return result
+
     else:
-        for v in nodes:
-            # Effective size is not defined for isolated nodes
-            if len(G[v]) == 0:
-                effective_size[v] = float("nan")
-                continue
-            effective_size[v] = sum(
-                redundancy(G, v, u, weight) for u in set(nx.all_neighbors(G, v))
-            )
-    return effective_size
-
-
-@nx._dispatchable(edge_attrs="weight")
-def constraint(G, nodes=None, weight=None):
-    r"""Returns the constraint on all nodes in the graph ``G``.
-
-    The *constraint* is a measure of the extent to which a node *v* is
-    invested in those nodes that are themselves invested in the
-    neighbors of *v*. Formally, the *constraint on v*, denoted `c(v)`,
-    is defined by
-
-    .. math::
-
-       c(v) = \sum_{w \in N(v) \setminus \{v\}} \ell(v, w)
-
-    where $N(v)$ is the subset of the neighbors of `v` that are either
-    predecessors or successors of `v` and $\ell(v, w)$ is the local
-    constraint on `v` with respect to `w` [1]_. For the definition of local
-    constraint, see :func:`local_constraint`.
-
-    Parameters
-    ----------
-    G : NetworkX graph
-        The graph containing ``v``. This can be either directed or undirected.
-
-    nodes : container, optional
-        Container of nodes in the graph ``G`` to compute the constraint. If
-        None, the constraint of every node is computed.
-
-    weight : None or string, optional
-      If None, all edge weights are considered equal.
-      Otherwise holds the name of the edge attribute used as weight.
-
-    Returns
-    -------
-    dict
-        Dictionary with nodes as keys and the constraint on the node as values.
-
-    See also
-    --------
-    local_constraint
-
-    References
-    ----------
-    .. [1] Burt, Ronald S.
-           "Structural holes and good ideas".
-           American Journal of Sociology (110): 349–399.
-
-    """
-    if nodes is None:
-        nodes = G
-    constraint = {}
-    for v in nodes:
-        # Constraint is not defined for isolated nodes
-        if len(G[v]) == 0:
-            constraint[v] = float("nan")
-            continue
-        constraint[v] = sum(
-            local_constraint(G, v, n, weight) for n in set(nx.all_neighbors(G, v))
-        )
-    return constraint
+        effective_size = {}
+        # Use Borgatti's simplified formula for unweighted and undirected graphs
+        if not G.is_directed() and weight is None:
+            for v in nodes:
+                # Effective size is not defined for isolated nodes
+                if len(G[v]) == 0:
+                    effective_size[v] = float("nan")
+                    continue
+                E = nx.ego_graph(G, v, center=False, undirected=True)
+                effective_size[v] = len(E) - (2 * E.size()) / len(E)
+        else:
+            for v in nodes:
+                # Effective size is not defined for isolated nodes
+                if len(G[v]) == 0:
+                    effective_size[v] = float("nan")
+                    continue
+                effective_size[v] = sum(
+                    redundancy(G, v, u, weight) for u in set(nx.all_neighbors(G, v))
+                )
+        return effective_size
 
 
 @nx._dispatchable(edge_attrs="weight")
@@ -233,7 +286,7 @@ def local_constraint(G, u, v, weight=None):
 
     .. math::
 
-       \ell(u, v) = \left(p_{uv} + \sum_{w \in N(v)} p_{uw} p_{wv}\right)^2,
+        \ell(u, v) = \left(p_{uv} + \sum_{w \in N(v)} p_{uw} p_{wv}\right)^2,
 
     where $N(v)$ is the set of neighbors of $v$ and $p_{uv}$ is the
     normalized mutual weight of the (directed or undirected) edges
@@ -270,8 +323,8 @@ def local_constraint(G, u, v, weight=None):
     References
     ----------
     .. [1] Burt, Ronald S.
-           "Structural holes and good ideas".
-           American Journal of Sociology (110): 349–399.
+            "Structural holes and good ideas".
+            American Journal of Sociology (110): 349–399.
 
     """
     nmw = normalized_mutual_weight
