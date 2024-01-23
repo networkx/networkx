@@ -24,42 +24,37 @@ __all__ = [
     "max_weight_clique",
 ]
 
-
 @not_implemented_for("directed")
 @nx._dispatchable
-def enumerate_all_cliques(G):
-    """Returns all cliques in an undirected graph.
+def enumerate_all_cliques(G, min_length=1):
+    """
+    Returns all cliques in an undirected graph that are at least of a given size.
 
     This function returns an iterator over cliques, each of which is a
-    list of nodes. The iteration is ordered by cardinality of the
-    cliques: first all cliques of size one, then all cliques of size
-    two, etc.
+    list of nodes, with a minimum specified length. The iteration is 
+    ordered by cardinality of the cliques: first all cliques of size 
+    `min_length`, then all cliques of larger sizes, etc.
 
     Parameters
     ----------
     G : NetworkX graph
         An undirected graph.
+    min_length : int, optional (default=1)
+        The minimum length of cliques to return.
 
     Returns
     -------
     iterator
-        An iterator over cliques, each of which is a list of nodes in
-        `G`. The cliques are ordered according to size.
+        An iterator over cliques of at least `min_length`, each of which 
+        is a list of nodes in `G`. The cliques are ordered according to size.
 
     Notes
     -----
-    To obtain a list of all cliques, use
-    `list(enumerate_all_cliques(G))`. However, be aware that in the
-    worst-case, the length of this list can be exponential in the number
-    of nodes in the graph (for example, when the graph is the complete
-    graph). This function avoids storing all cliques in memory by only
+    This function avoids storing all cliques in memory by only
     keeping current candidate node lists in memory during its search.
 
     The implementation is adapted from the algorithm by Zhang, et
     al. (2005) [1]_ to output all cliques discovered.
-
-    This algorithm ignores self-loops and parallel edges, since cliques
-    are not conventionally defined with such edges.
 
     References
     ----------
@@ -70,31 +65,23 @@ def enumerate_all_cliques(G):
            *Supercomputing*, 2005. Proceedings of the ACM/IEEE SC 2005
            Conference, pp. 12, 12--18 Nov. 2005.
            <https://doi.org/10.1109/SC.2005.29>.
-
     """
     index = {}
     nbrs = {}
     for u in G:
         index[u] = len(index)
-        # Neighbors of u that appear after u in the iteration order of G.
         nbrs[u] = {v for v in G[u] if v not in index}
 
     queue = deque(([u], sorted(nbrs[u], key=index.__getitem__)) for u in G)
-    # Loop invariants:
-    # 1. len(base) is nondecreasing.
-    # 2. (base + cnbrs) is sorted with respect to the iteration order of G.
-    # 3. cnbrs is a set of common neighbors of nodes in base.
     while queue:
         base, cnbrs = map(list, queue.popleft())
-        yield base
+        if len(base) >= min_length:
+            yield base
         for i, u in enumerate(cnbrs):
-            # Use generators to reduce memory consumption.
-            queue.append(
-                (
-                    chain(base, [u]),
-                    filter(nbrs[u].__contains__, islice(cnbrs, i + 1, None)),
-                )
-            )
+            new_base = list(chain(base, [u]))
+            if len(new_base) >= min_length:
+                new_cnbrs = list(filter(nbrs[u].__contains__, islice(cnbrs, i + 1, None)))
+                queue.append((new_base, new_cnbrs))
 
 
 @not_implemented_for("directed")
