@@ -584,8 +584,8 @@ def modular_product(G, H):
     introduced as the *weak modular product*.
 
     The modular product reduces the problem of counting isomorphic subgraphs
-    in $G$ and $H$ to the problem of counting cliques in $M$. The subgraphs of
-    $G$ and $H$ that are induced by the nodes of a clique in $M$ are
+    in `G` and `H` to the problem of counting cliques in M. The subgraphs of
+    `G` and `H` that are induced by the nodes of a clique in M are
     isomorphic [2]_ [3]_.
 
     References
