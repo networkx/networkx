@@ -602,10 +602,10 @@ def modular_product(G, H):
         entrance to the task of finding the nondensity of a graph." Proc. Third
         All-Union Conference on Problems of Theoretical Cybernetics. 1974.
     """
-    if H.is_directed():
-        raise nx.NetworkXNotImplemented("Modular not implemented for directed graphs")
-    if H.is_multigraph():
-        raise nx.NetworkXNotImplemented("Modular not implemented for multigraphs")
+    if G.is_directed() or H.is_directed():
+        raise nx.NetworkXNotImplemented("Modular product not implemented for directed graphs")
+    if G.is_multigraph() or H.is_multigraph():
+        raise nx.NetworkXNotImplemented("Modular product not implemented for multigraphs")
 
     GH = _init_product_graph(G, H)
     GH.add_nodes_from(_node_product(G, H))
