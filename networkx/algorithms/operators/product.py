@@ -535,8 +535,6 @@ def corona_product(G, H):
     return GH
 
 
-@not_implemented_for("directed")
-@not_implemented_for("multigraph")
 @nx._dispatchable(graphs=_G_H)
 def modular_product(G, H):
     r"""Returns the Modular product of G and H.
@@ -603,9 +601,13 @@ def modular_product(G, H):
         All-Union Conference on Problems of Theoretical Cybernetics. 1974.
     """
     if G.is_directed() or H.is_directed():
-        raise nx.NetworkXNotImplemented("Modular product not implemented for directed graphs")
+        raise nx.NetworkXNotImplemented(
+            "Modular product not implemented for directed graphs"
+        )
     if G.is_multigraph() or H.is_multigraph():
-        raise nx.NetworkXNotImplemented("Modular product not implemented for multigraphs")
+        raise nx.NetworkXNotImplemented(
+            "Modular product not implemented for multigraphs"
+        )
 
     GH = _init_product_graph(G, H)
     GH.add_nodes_from(_node_product(G, H))
