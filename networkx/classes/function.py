@@ -1288,9 +1288,10 @@ def is_path(G, path):
         True if `path` is a valid path in `G`
 
     """
-    return all(
-        (node in G and nbr in G._adj[node]) for node, nbr in nx.utils.pairwise(path)
-    )
+    try:
+        return all(nbr in G._adj[node] for node, nbr in nx.utils.pairwise(path))
+    except (KeyError, TypeError):
+        return False
 
 
 def path_weight(G, path, weight):
