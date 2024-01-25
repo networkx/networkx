@@ -44,4 +44,3 @@ Operators
    tensor_product
    power
    corona_product
-   modular_product

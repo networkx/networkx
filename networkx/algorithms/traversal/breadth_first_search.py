@@ -1,4 +1,5 @@
 """Basic algorithms for breadth-first searching the nodes of a graph."""
+import math
 from collections import deque
 
 import networkx as nx
@@ -43,7 +44,7 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
     depth_limit : int, optional(default=len(G))
         Specify the maximum search depth.
 
-    sort_neighbors : Callable (default=None)
+    sort_neighbors : Callable
 
         .. deprecated:: 3.2
 
@@ -51,9 +52,9 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None, sort_neighbor
            version 3.4. A custom (e.g. sorted) ordering of neighbors can be
            specified with the `neighbors` parameter.
 
-        A function that takes an iterator over nodes as the input, and
-        returns an iterable of the same nodes with a custom ordering.
-        For example, `sorted` will sort the nodes in increasing order.
+        A function that takes the list of neighbors of a given node as input,
+        and returns an iterator over these neighbors but with a custom
+        ordering.
 
     Yields
     ------
@@ -148,10 +149,9 @@ def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     depth_limit : int, optional(default=len(G))
         Specify the maximum search depth
 
-    sort_neighbors : function (default=None)
-        A function that takes an iterator over nodes as the input, and
-        returns an iterable of the same nodes with a custom ordering.
-        For example, `sorted` will sort the nodes in increasing order.
+    sort_neighbors : function
+        A function that takes the list of neighbors of given node as input, and
+        returns an *iterator* over these neighbors but with custom ordering.
 
     Yields
     ------
@@ -210,7 +210,7 @@ def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     else:
         successors = G.neighbors
 
-    if sort_neighbors is not None:
+    if callable(sort_neighbors):
         yield from generic_bfs_edges(
             G, source, lambda node: iter(sort_neighbors(successors(node))), depth_limit
         )
@@ -236,10 +236,9 @@ def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     depth_limit : int, optional(default=len(G))
         Specify the maximum search depth
 
-    sort_neighbors : function (default=None)
-        A function that takes an iterator over nodes as the input, and
-        returns an iterable of the same nodes with a custom ordering.
-        For example, `sorted` will sort the nodes in increasing order.
+    sort_neighbors : function
+        A function that takes the list of neighbors of given node as input, and
+        returns an *iterator* over these neighbors but with custom ordering.
 
     Returns
     -------
@@ -300,10 +299,9 @@ def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
     depth_limit : int, optional(default=len(G))
         Specify the maximum search depth
 
-    sort_neighbors : function (default=None)
-        A function that takes an iterator over nodes as the input, and
-        returns an iterable of the same nodes with a custom ordering.
-        For example, `sorted` will sort the nodes in increasing order.
+    sort_neighbors : function
+        A function that takes the list of neighbors of given node as input, and
+        returns an *iterator* over these neighbors but with custom ordering.
 
     Returns
     -------
@@ -366,10 +364,9 @@ def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
     depth_limit : int, optional(default=len(G))
         Specify the maximum search depth
 
-    sort_neighbors : function (default=None)
-        A function that takes an iterator over nodes as the input, and
-        returns an iterable of the same nodes with a custom ordering.
-        For example, `sorted` will sort the nodes in increasing order.
+    sort_neighbors : function
+        A function that takes the list of neighbors of given node as input, and
+        returns an *iterator* over these neighbors but with custom ordering.
 
     Returns
     -------
