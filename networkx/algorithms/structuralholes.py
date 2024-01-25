@@ -138,11 +138,16 @@ def effective_size(G, nodes=None, weight=None):
         )
         return 1 - r
 
-    if nodes is None:
+    try:
+        import numpy as np
+
+        has_numpy = True
+    except:
+        has_numpy = False
+
+    if nodes is None and has_numpy:
         # In order to compute constraint of all nodes,
         # algorithms based on sparse matrices can be much faster
-
-        import numpy as np
 
         # Obtain the adjacency matrix
         P = nx.adjacency_matrix(G, weight=weight)
@@ -252,11 +257,16 @@ def constraint(G, nodes=None, weight=None):
 
     """
 
-    if nodes is None:
+    try:
+        import numpy as np
+
+        has_numpy = True
+    except:
+        has_numpy = False
+
+    if nodes is None and has_numpy:
         # In order to compute constraint of all nodes,
         # algorithms based on sparse matrices can be much faster
-
-        import numpy as np
 
         # Obtain the adjacency matrix
         P = nx.adjacency_matrix(G, weight=weight)
