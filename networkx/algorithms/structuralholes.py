@@ -4,6 +4,7 @@ import networkx as nx
 
 __all__ = ["constraint", "local_constraint", "effective_size"]
 
+
 @nx._dispatchable(edge_attrs="weight")
 def mutual_weight(G, u, v, weight=None):
     """Returns the sum of the weights of the edge from `u` to `v` and
@@ -128,8 +129,7 @@ def effective_size(G, nodes=None, weight=None):
             http://www.analytictech.com/connections/v20(1)/holes.htm
 
     """
-    import numpy as np
-    
+
     def redundancy(G, u, v, weight=None):
         nmw = normalized_mutual_weight
         r = sum(
@@ -137,74 +137,72 @@ def effective_size(G, nodes=None, weight=None):
             for w in set(nx.all_neighbors(G, u))
         )
         return 1 - r
-    
+
     if nodes is None:
         # In order to compute constraint of all nodes,
         # algorithms based on sparse matrices can be much faster
-        
+
+        import numpy as np
+
         # Obtain the adjacency matrix
         P = nx.adjacency_matrix(G, weight=weight)
-        
+
         # Calculate mutual weights
         mutual_weights1 = P + P.T
         mutual_weights2 = mutual_weights1.copy()
-        
+
         # Mutual_weights1 = Normalize mutual weights by row sums
         sum_mutual_weights = mutual_weights1.sum(axis=1)
         val = np.asarray(
             np.repeat(sum_mutual_weights, mutual_weights1.getnnz(axis=0))
         ).flatten()
         mutual_weights1.data = mutual_weights1.data / val
-        
+
         # Mutual_weights2 = Normalize mutual weights by row max
         max_mutual_weights = mutual_weights2.max(axis=1).todense()
         val = np.asarray(
             np.repeat(max_mutual_weights, mutual_weights2.getnnz(axis=0))
         ).flatten()
         mutual_weights2.data = mutual_weights2.data / val
-        
+
         # Calculate effective sizes
         n_nodes = len(G)
         r = np.ones((n_nodes, n_nodes)) - mutual_weights1 @ (
             mutual_weights2.T
-        ) # Redundancy
-        effective_size = ((mutual_weights1>0).multiply(r)).sum(axis=1)
-        
+        )  # Redundancy
+        effective_size = ((mutual_weights1 > 0).multiply(r)).sum(axis=1)
+
         # Special treatment for isolated nodes
-        isolated_nodes = sum_mutual_weights == 0      # Mark isolated nodes
+        isolated_nodes = sum_mutual_weights == 0  # Mark isolated nodes
         effective_size[isolated_nodes] = float(
             "nan"
-        )      # Constraint is undefined for isolated nodes
-        result = dict(
-            zip(
-                list(G.nodes),
-                np.asarray(effective_size).flatten()
-            )
-        )
-        
+        )  # Constraint is undefined for isolated nodes
+        result = dict(zip(list(G.nodes), np.asarray(effective_size).flatten()))
+
         return result
 
+    # Results for only requested nodes
+    effective_size = {}
+    # Use Borgatti's simplified formula for unweighted and undirected graphs
+    if not G.is_directed() and weight is None:
+        for v in nodes:
+            # Effective size is not defined for isolated nodes
+            if len(G[v]) == 0:
+                effective_size[v] = float("nan")
+                continue
+            E = nx.ego_graph(G, v, center=False, undirected=True)
+            effective_size[v] = len(E) - (2 * E.size()) / len(E)
     else:
-        effective_size = {}
-        # Use Borgatti's simplified formula for unweighted and undirected graphs
-        if not G.is_directed() and weight is None:
-            for v in nodes:
-                # Effective size is not defined for isolated nodes
-                if len(G[v]) == 0:
-                    effective_size[v] = float("nan")
-                    continue
-                E = nx.ego_graph(G, v, center=False, undirected=True)
-                effective_size[v] = len(E) - (2 * E.size()) / len(E)
-        else:
-            for v in nodes:
-                # Effective size is not defined for isolated nodes
-                if len(G[v]) == 0:
-                    effective_size[v] = float("nan")
-                    continue
-                effective_size[v] = sum(
-                    redundancy(G, v, u, weight) for u in set(nx.all_neighbors(G, v))
-                )
-        return effective_size
+        for v in nodes:
+            # Effective size is not defined for isolated nodes
+            if len(G[v]) == 0:
+                effective_size[v] = float("nan")
+                continue
+            effective_size[v] = sum(
+                redundancy(G, v, u, weight) for u in set(nx.all_neighbors(G, v))
+            )
+    return effective_size
+
 
 @nx._dispatchable(edge_attrs="weight")
 def constraint(G, nodes=None, weight=None):
@@ -253,12 +251,13 @@ def constraint(G, nodes=None, weight=None):
             American Journal of Sociology (110): 349–399.
 
     """
-    import numpy as np
-    
+
     if nodes is None:
         # In order to compute constraint of all nodes,
         # algorithms based on sparse matrices can be much faster
-        
+
+        import numpy as np
+
         # Obtain the adjacency matrix
         P = nx.adjacency_matrix(G, weight=weight)
         # Calculate mutual weights
@@ -271,30 +270,27 @@ def constraint(G, nodes=None, weight=None):
         mutual_weights.data = mutual_weights.data / val
         # Calculate local constraints and constraints
         local_constraints = (mutual_weights + mutual_weights @ mutual_weights).power(2)
-        constraints = ((mutual_weights>0).multiply(local_constraints)).sum(axis=1)
+        constraints = ((mutual_weights > 0).multiply(local_constraints)).sum(axis=1)
         # Special treatment to isolated nodes
-        isolated_nodes = sum_mutual_weights == 0      # Mark isolated nodes
+        isolated_nodes = sum_mutual_weights == 0  # Mark isolated nodes
         constraints[isolated_nodes] = float(
             "nan"
-        )      # Constraint is undefined for isolated nodes
-        result = dict(
-            zip(list(G.nodes), 
-                np.asarray(constraints).flatten()
-               )
-        )
+        )  # Constraint is undefined for isolated nodes
+        result = dict(zip(list(G.nodes), np.asarray(constraints).flatten()))
         return result
-    
-    else:
-        constraint = {}
-        for v in nodes:
-            # Constraint is not defined for isolated nodes
-            if len(G[v]) == 0:
-                constraint[v] = float("nan")
-                continue
-            constraint[v] = sum(
-                local_constraint(G, v, n, weight) for n in set(nx.all_neighbors(G, v))
-            )
-        return constraint
+
+    # Result for only requested nodes
+    constraint = {}
+    for v in nodes:
+        # Constraint is not defined for isolated nodes
+        if len(G[v]) == 0:
+            constraint[v] = float("nan")
+            continue
+        constraint[v] = sum(
+            local_constraint(G, v, n, weight) for n in set(nx.all_neighbors(G, v))
+        )
+    return constraint
+
 
 @nx._dispatchable(edge_attrs="weight")
 def local_constraint(G, u, v, weight=None):
