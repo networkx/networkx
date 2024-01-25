@@ -340,9 +340,8 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
                 raise nx.NetworkXAlgorithmError("Self loops are not supported")
             path_len = spl[u].get(v, inf)
 
-            return alpha * len(nx.common_neighbors(G, u, v)) + (1 - alpha) * (
-                G.number_of_nodes() / path_len
-            )
+            n_nbrs = len(nx.common_neighbors(G, u, v))
+            return alpha * n_nbrs + (1 - alpha) * len(G) / path_len
 
     return _apply_prediction(G, predict, ebunch)
 
