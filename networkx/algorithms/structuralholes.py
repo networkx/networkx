@@ -1,7 +1,6 @@
 """Functions for computing measures of structural holes."""
 
 import networkx as nx
-import numpy as np
 
 __all__ = ["constraint", "local_constraint", "effective_size"]
 
@@ -129,6 +128,7 @@ def effective_size(G, nodes=None, weight=None):
             http://www.analytictech.com/connections/v20(1)/holes.htm
 
     """
+    import numpy as np
     
     def redundancy(G, u, v, weight=None):
         nmw = normalized_mutual_weight
@@ -143,31 +143,44 @@ def effective_size(G, nodes=None, weight=None):
         # algorithms based on sparse matrices can be much faster
         
         # Obtain the adjacency matrix
-        P = nx.adjacency_matrix(G, weight = weight)
+        P = nx.adjacency_matrix(G, weight=weight)
         
         # Calculate mutual weights
         mutual_weights1 = P + P.T
         mutual_weights2 = mutual_weights1.copy()
         
         # Mutual_weights1 = Normalize mutual weights by row sums
-        sum_mutual_weights = mutual_weights1.sum(axis = 1)
-        val = np.asarray(np.repeat(sum_mutual_weights, mutual_weights1.getnnz(axis=0))).flatten()
+        sum_mutual_weights = mutual_weights1.sum(axis=1)
+        val = np.asarray(
+            np.repeat(sum_mutual_weights, mutual_weights1.getnnz(axis=0))
+        ).flatten()
         mutual_weights1.data = mutual_weights1.data / val
         
         # Mutual_weights2 = Normalize mutual weights by row max
-        max_mutual_weights = mutual_weights2.max(axis = 1).todense()
-        val = np.asarray(np.repeat(max_mutual_weights, mutual_weights2.getnnz(axis=0))).flatten()
+        max_mutual_weights = mutual_weights2.max(axis=1).todense()
+        val = np.asarray(
+            np.repeat(max_mutual_weights, mutual_weights2.getnnz(axis=0))
+        ).flatten()
         mutual_weights2.data = mutual_weights2.data / val
         
         # Calculate effective sizes
         n_nodes = len(G)
-        r = np.ones((n_nodes, n_nodes)) - mutual_weights1@(mutual_weights2.T) # Redundancy
-        effective_size = ((mutual_weights1>0).multiply(r)).sum(axis = 1)
+        r = np.ones((n_nodes, n_nodes)) - mutual_weights1 @ (
+            mutual_weights2.T
+        ) # Redundancy
+        effective_size = ((mutual_weights1>0).multiply(r)).sum(axis=1)
         
         # Special treatment for isolated nodes
-        isolated_nodes = (sum_mutual_weights == 0)      # Mark isolated nodes
-        effective_size[isolated_nodes] = float("nan")      # Constraint is undefined for isolated nodes
-        result = dict(zip(list(G.nodes), np.asarray(effective_size).flatten()))
+        isolated_nodes = sum_mutual_weights == 0      # Mark isolated nodes
+        effective_size[isolated_nodes] = float(
+            "nan"
+        )      # Constraint is undefined for isolated nodes
+        result = dict(
+            zip(
+                list(G.nodes),
+                np.asarray(effective_size).flatten()
+            )
+        )
         
         return result
 
@@ -240,25 +253,35 @@ def constraint(G, nodes=None, weight=None):
             American Journal of Sociology (110): 349–399.
 
     """
+    import numpy as np
+    
     if nodes is None:
         # In order to compute constraint of all nodes,
         # algorithms based on sparse matrices can be much faster
         
         # Obtain the adjacency matrix
-        P = nx.adjacency_matrix(G, weight = weight)
+        P = nx.adjacency_matrix(G, weight=weight)
         # Calculate mutual weights
         mutual_weights = P + P.T
         # Normalize mutual weights by row sums
-        sum_mutual_weights = mutual_weights.sum(axis = 1)
-        val = np.asarray(np.repeat(sum_mutual_weights, mutual_weights.getnnz(axis=0))).flatten()
+        sum_mutual_weights = mutual_weights.sum(axis=1)
+        val = np.asarray(
+            np.repeat(sum_mutual_weights, mutual_weights.getnnz(axis=0))
+        ).flatten()
         mutual_weights.data = mutual_weights.data / val
         # Calculate local constraints and constraints
-        local_constraints = (mutual_weights + mutual_weights@mutual_weights).power(2)
-        constraints = ((mutual_weights>0).multiply(local_constraints)).sum(axis = 1)
+        local_constraints = (mutual_weights + mutual_weights @ mutual_weights).power(2)
+        constraints = ((mutual_weights>0).multiply(local_constraints)).sum(axis=1)
         # Special treatment to isolated nodes
-        isolated_nodes = (sum_mutual_weights == 0)      # Mark isolated nodes
-        constraints[isolated_nodes] = float("nan")      # Constraint is undefined for isolated nodes
-        result = dict(zip(list(G.nodes), np.asarray(constraints).flatten()))
+        isolated_nodes = sum_mutual_weights == 0      # Mark isolated nodes
+        constraints[isolated_nodes] = float(
+            "nan"
+        )      # Constraint is undefined for isolated nodes
+        result = dict(
+            zip(list(G.nodes), 
+                np.asarray(constraints).flatten()
+               )
+        )
         return result
     
     else:
