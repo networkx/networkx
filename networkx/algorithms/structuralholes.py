@@ -188,6 +188,8 @@ def effective_size(G, nodes=None, weight=None):
 
     # Results for only requested nodes
     effective_size = {}
+    if nodes is None:
+        nodes = G
     # Use Borgatti's simplified formula for unweighted and undirected graphs
     if not G.is_directed() and weight is None:
         for v in nodes:
@@ -291,6 +293,8 @@ def constraint(G, nodes=None, weight=None):
 
     # Result for only requested nodes
     constraint = {}
+    if nodes is None:
+        nodes = G
     for v in nodes:
         # Constraint is not defined for isolated nodes
         if len(G[v]) == 0:
