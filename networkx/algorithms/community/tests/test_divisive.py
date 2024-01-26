@@ -74,7 +74,7 @@ def test_edge_current_flow_betweenness_partition():
         assert s in C
 
     C = nx.community.edge_current_flow_betweenness_partition(G, 6)
-    answers = [[{2}, {5, 6}, {3}, {0}, {4}, {1}],[{1, 2}, {6}, {3}, {0}, {4}, {5}]]
+    answers = [[{2}, {5, 6}, {3}, {0}, {4}, {1}], [{1, 2}, {6}, {3}, {0}, {4}, {5}]]
     assert len(C) == len(answers[0])
     assert any(all(s in answer for s in C) for answer in answers)
 
