@@ -100,8 +100,6 @@ __all__ = ["_dispatchable", "config"]
 # Get default configuration from environment variables at import time.
 # Default backend config will be initialized from `backend_info` just below.
 config = {
-    "fallback_to_nx": os.environ.get("NETWORKX_FALLBACK_TO_NX", "true").strip().lower()
-    == "true",
     "automatic_backends": [
         x.strip()
         for x in os.environ.get("NETWORKX_AUTOMATIC_BACKENDS", "").split(",")
@@ -172,6 +170,9 @@ class _dispatchable:
     # For example: `PYTHONPATH=. pytest --backend graphblas --fallback-to-nx`
     # Future work: add configuration to control these
     _is_testing = False
+    _fallback_to_nx = (
+        os.environ.get("NETWORKX_FALLBACK_TO_NX", "true").strip().lower() == "true"
+    )
 
     def __new__(
         cls,
@@ -453,7 +454,7 @@ class _dispatchable:
                 automatic_backends[0],
                 args,
                 kwargs,
-                fallback_to_nx=config["fallback_to_nx"],
+                fallback_to_nx=self._fallback_to_nx,
             )
 
         # Check if any graph comes from a backend
@@ -531,7 +532,7 @@ class _dispatchable:
                         graph_backend_name,
                         args,
                         kwargs,
-                        fallback_to_nx=config["fallback_to_nx"],
+                        fallback_to_nx=self._fallback_to_nx,
                     )
                 # All graphs are backend graphs--no need to convert!
                 return getattr(backend, self.name)(*args, **kwargs)
@@ -555,7 +556,7 @@ class _dispatchable:
                         backend_name,
                         args,
                         kwargs,
-                        fallback_to_nx=config["fallback_to_nx"],
+                        fallback_to_nx=self._fallback_to_nx,
                     )
         # Default: run with networkx on networkx inputs
         return self.orig_func(*args, **kwargs)
