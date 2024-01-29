@@ -239,7 +239,13 @@ class _dispatchable:
             For dict of ``{arg_name: arg_pos}``, arguments that indicates whether an
             input graph will be mutated, and ``arg_name`` may begin with ``"not "``
             to negate the logic (for example, this is used by ``copy=`` arguments).
+            By default, dispatching doesn't convert input graphs to a different
+            backend for functions that mutate input graphs.
 
+        returns_graph : bool, default False
+            Whether the function can return or yield a graph object. By default,
+            dispatching doesn't convert input graphs to a different backend for
+            functions that return graphs.
         """
         if func is None:
             return partial(
@@ -319,6 +325,11 @@ class _dispatchable:
             raise TypeError(
                 f"Bad type for mutates_input: {type(self.mutates_input)}."
                 " Expected bool or dict."
+            ) from None
+        if not isinstance(self.returns_graph, bool):
+            raise TypeError(
+                f"Bad type for returns_graph: {type(self.returns_graph)}."
+                " Expected bool."
             ) from None
 
         if isinstance(graphs, str):
@@ -557,9 +568,9 @@ class _dispatchable:
 
         # Only networkx graphs; try to convert and run with a backend with automatic
         # conversion, but don't do this by default for graph generators or loaders,
-        # or if the functions mutates an input graph.
+        # or if the functions mutates an input graph or returns a graph.
         if (
-            self.graphs
+            not self.returns_graph
             and (
                 not self.mutates_input
                 or isinstance(self.mutates_input, dict)

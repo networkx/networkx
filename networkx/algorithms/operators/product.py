@@ -535,7 +535,7 @@ def corona_product(G, H):
     return GH
 
 
-@nx._dispatchable(graphs=_G_H)
+@nx._dispatchable(graphs=_G_H, returns_graph=True)
 def modular_product(G, H):
     r"""Returns the Modular product of G and H.
 
