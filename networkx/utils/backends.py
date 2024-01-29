@@ -904,6 +904,9 @@ class _dispatchable:
             pytest.xfail(
                 exc.args[0] if exc.args else f"{self.name} raised {type(exc).__name__}"
             )
+        # Verify that `self.returns_graph` is correct. This compares the return type
+        # to the type expected from `self.returns_graph`. This handles tuple and list
+        # return types, but *does not* catch functions that yield graphs.
         if (
             self.returns_graph
             != (
@@ -921,7 +924,7 @@ class _dispatchable:
                 and any(x is None for x in result)
             )
             and not (
-                # held_karp_ascent may return Graph or dict
+                # May return Graph or dict
                 self.name in {"held_karp_ascent"}
                 and any(isinstance(x, dict) for x in result)
             )
