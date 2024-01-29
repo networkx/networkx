@@ -12,7 +12,7 @@ __all__ = ["nonisomorphic_trees", "number_of_nonisomorphic_trees"]
 import networkx as nx
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def nonisomorphic_trees(order, create="graph"):
     """Returns a list of nonisomorphic trees
 

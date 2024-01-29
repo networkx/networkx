@@ -128,6 +128,7 @@ def edmonds_karp_impl(G, s, t, capacity, residual, cutoff):
     edge_attrs={"capacity": float("inf")},
     preserve_edge_attrs={"residual": {"capacity": float("inf")}},
     preserve_graph_attrs={"residual"},
+    returns_graph=True,
 )
 def edmonds_karp(
     G, s, t, capacity="capacity", residual=None, value_only=False, cutoff=None

@@ -176,6 +176,7 @@ class _dispatchable:
         preserve_graph_attrs=False,
         preserve_all_attrs=False,
         mutates_input=False,
+        returns_graph=False,
     ):
         """Dispatches to a backend algorithm based on input graph types.
 
@@ -252,6 +253,7 @@ class _dispatchable:
                 preserve_graph_attrs=preserve_graph_attrs,
                 preserve_all_attrs=preserve_all_attrs,
                 mutates_input=mutates_input,
+                returns_graph=returns_graph,
             )
         if isinstance(func, str):
             raise TypeError("'name' and 'graphs' must be passed by keyword") from None
@@ -288,6 +290,7 @@ class _dispatchable:
         self.preserve_node_attrs = preserve_node_attrs or preserve_all_attrs
         self.preserve_graph_attrs = preserve_graph_attrs or preserve_all_attrs
         self.mutates_input = mutates_input
+        self.returns_graph = returns_graph
 
         if edge_attrs is not None and not isinstance(edge_attrs, str | dict):
             raise TypeError(
@@ -890,6 +893,37 @@ class _dispatchable:
             pytest.xfail(
                 exc.args[0] if exc.args else f"{self.name} raised {type(exc).__name__}"
             )
+        if (
+            self.returns_graph
+            != (
+                isinstance(result, nx.Graph)
+                or hasattr(result, "__networkx_backend__")
+                or isinstance(result, tuple | list)
+                and any(
+                    isinstance(x, nx.Graph) or hasattr(x, "__networkx_backend__")
+                    for x in result
+                )
+            )
+            and not (
+                # May return Graph or None
+                self.name in {"check_planarity", "check_planarity_recursive"}
+                and any(x is None for x in result)
+            )
+            and not (
+                # held_karp_ascent may return Graph or dict
+                self.name in {"held_karp_ascent"}
+                and any(isinstance(x, dict) for x in result)
+            )
+            and self.name
+            not in {
+                # yields graphs
+                "all_triads",
+                "general_k_edge_subgraphs",
+                # yields graphs or arrays
+                "nonisomorphic_trees",
+            }
+        ):
+            raise RuntimeError(f"`returns_graph` is incorrect for {self.name}")
 
         if self.name in {
             "edmonds_karp_core",

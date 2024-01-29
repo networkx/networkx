@@ -218,7 +218,7 @@ def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
         yield from generic_bfs_edges(G, source, successors, depth_limit)
 
 
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     """Returns an oriented tree constructed from of a breadth-first-search
     starting at source.

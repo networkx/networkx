@@ -108,7 +108,7 @@ def branching_weight(G, attr="weight", default=1):
 
 
 @py_random_state(4)
-@nx._dispatchable(edge_attrs={"attr": "default"})
+@nx._dispatchable(edge_attrs={"attr": "default"}, returns_graph=True)
 def greedy_branching(G, attr="weight", default=1, kind="max", seed=None):
     """
     Returns a branching obtained through a greedy algorithm.
@@ -748,6 +748,7 @@ class Edmonds:
 @nx._dispatchable(
     edge_attrs={"attr": "default", "partition": 0},
     preserve_edge_attrs="preserve_attrs",
+    returns_graph=True,
 )
 def maximum_branching(
     G,
@@ -1176,6 +1177,7 @@ def maximum_branching(
 @nx._dispatchable(
     edge_attrs={"attr": "default", "partition": None},
     preserve_edge_attrs="preserve_attrs",
+    returns_graph=True,
 )
 def minimum_branching(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
@@ -1197,6 +1199,7 @@ def minimum_branching(
 @nx._dispatchable(
     edge_attrs={"attr": "default", "partition": None},
     preserve_edge_attrs="preserve_attrs",
+    returns_graph=True,
 )
 def minimal_branching(
     G, /, *, attr="weight", default=1, preserve_attrs=False, partition=None
@@ -1261,6 +1264,7 @@ def minimal_branching(
 @nx._dispatchable(
     edge_attrs={"attr": "default", "partition": None},
     preserve_edge_attrs="preserve_attrs",
+    returns_graph=True,
 )
 def maximum_spanning_arborescence(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
@@ -1303,6 +1307,7 @@ def maximum_spanning_arborescence(
 @nx._dispatchable(
     edge_attrs={"attr": "default", "partition": None},
     preserve_edge_attrs="preserve_attrs",
+    returns_graph=True,
 )
 def minimum_spanning_arborescence(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
