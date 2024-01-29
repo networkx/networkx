@@ -78,6 +78,17 @@ tests are working, while avoiding causing an explicit failure.
 If a backend only partially implements some algorithms, it can define
 a ``can_run(name, args, kwargs)`` function that returns True or False
 indicating whether it can run the algorithm with the given arguments.
+It may also return a string indicating why the algorithm can't be run;
+this string may be used in the future to give helpful info to the user.
+
+A backend may also define ``should_run(name, args, kwargs)`` that is similar
+to ``can_run``, but answers whether the backend *should* be run (converting
+if necessary). Like ``can_run``, it receives the original arguments so it
+can decide whether it should be run by inspecting the arguments. ``can_run``
+runs before ``should_run``, so ``should_run`` may assume ``can_run`` is True.
+
+If not implemented by the backend, ``can_run`` and ``should_run`` are
+assumed to always return True if the backend implements the algorithm.
 
 A special ``on_start_tests(items)`` function may be defined by the backend.
 It will be called with the list of NetworkX tests discovered. Each item
@@ -131,10 +142,18 @@ backend_info = _get_backends("networkx.backend_info", load_and_call=True)
 _loaded_backends = {}  # type: ignore[var-annotated]
 
 
+def _always_run(name, args, kwargs):
+    return True
+
+
 def _load_backend(backend_name):
     if backend_name in _loaded_backends:
         return _loaded_backends[backend_name]
     rv = _loaded_backends[backend_name] = backends[backend_name].load()
+    if not hasattr(rv, "can_run"):
+        rv.can_run = _always_run
+    if not hasattr(rv, "should_run"):
+        rv.should_run = _always_run
     return rv
 
 
@@ -537,9 +556,10 @@ class _dispatchable:
 
         # Only networkx graphs; try to convert and run with a backend with automatic
         # conversion, but don't do this by default for graph generators or loaders.
+        # Only convert and run if `backend.should_run(...)` returns True.
         if self.graphs:
             for backend_name in self._automatic_backends:
-                if self._can_backend_run(backend_name, *args, **kwargs):
+                if self._should_backend_run(backend_name, *args, **kwargs):
                     return self._convert_and_call(
                         backend_name,
                         args,
@@ -550,10 +570,17 @@ class _dispatchable:
         return self.orig_func(*args, **kwargs)
 
     def _can_backend_run(self, backend_name, /, *args, **kwargs):
-        """Can the specified backend run this algorithms with these arguments?"""
+        """Can the specified backend run this algorithm with these arguments?"""
         backend = _load_backend(backend_name)
-        return hasattr(backend, self.name) and (
-            not hasattr(backend, "can_run") or backend.can_run(self.name, args, kwargs)
+        return hasattr(backend, self.name) and backend.can_run(self.name, args, kwargs)
+
+    def _should_backend_run(self, backend_name, /, *args, **kwargs):
+        """Can/should the specified backend run this algorithm with these arguments?"""
+        backend = _load_backend(backend_name)
+        return (
+            hasattr(backend, self.name)
+            and backend.can_run(self.name, args, kwargs)
+            and backend.should_run(self.name, args, kwargs)
         )
 
     def _convert_arguments(self, backend_name, args, kwargs):
