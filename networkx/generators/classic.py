@@ -114,7 +114,8 @@ def kneser_graph(n, k):
     Parameters
     ----------
     n: int
-        Total number of elements.
+        Number of integers from which to make node subsets.
+        Subsets are drawn from ``set(range(n))``.
     k: int
         Size of the subsets.
 
