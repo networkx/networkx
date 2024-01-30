@@ -445,6 +445,10 @@ def transitivity(G):
     out : float
        Transitivity
 
+    Notes
+    -----
+    Self loops are ignored.
+
     Examples
     --------
     >>> G = nx.complete_graph(5)
@@ -581,6 +585,8 @@ def generalized_degree(G, nodes=None):
 
     Notes
     -----
+    Self loops are ignored.
+
     In a network of N nodes, the highest triangle multiplicity an edge can have
     is N-2.
 
