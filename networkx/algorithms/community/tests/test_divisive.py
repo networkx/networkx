@@ -52,10 +52,12 @@ def test_edge_current_flow_betweenness_partition():
 
     G = nx.barbell_graph(3, 1)
     C = nx.community.edge_current_flow_betweenness_partition(G, 2)
-    answer = [{0, 1, 2, 3}, {4, 5, 6}]
-    assert len(C) == len(answer)
-    for s in answer:
-        assert s in C
+    answers = [({0, 1, 2}, {3, 4, 5, 6}), ({0, 1, 2, 3}, {4, 5, 6})]
+    assert len(C) == len(answers[0])
+    # this picks which correct answer was returned
+    assert any(C[0] in (ans := a) for a in answers)
+    for s in C:
+        assert s in ans
 
     C = nx.community.edge_current_flow_betweenness_partition(G, 3)
     answer = [{0, 1, 2}, {4, 5, 6}, {3}]
@@ -64,10 +66,12 @@ def test_edge_current_flow_betweenness_partition():
         assert s in C
 
     C = nx.community.edge_current_flow_betweenness_partition(G, 4)
-    answer = [{1, 2}, {4, 5, 6}, {3}, {0}]
-    assert len(C) == len(answer)
-    for s in answer:
-        assert s in C
+    answers = [({0, 1, 2}, {5, 6}, {3}, {4}), ({1, 2}, {4, 5, 6}, {3}, {0})]
+    assert len(C) == len(answers[0])
+    # this picks which correct answer was returned
+    assert any(C[0] in (ans := a) for a in answers)
+    for s in C:
+        assert s in ans
 
     C = nx.community.edge_current_flow_betweenness_partition(G, 5)
     answer = [{1, 2}, {5, 6}, {3}, {0}, {4}]
@@ -76,10 +80,12 @@ def test_edge_current_flow_betweenness_partition():
         assert s in C
 
     C = nx.community.edge_current_flow_betweenness_partition(G, 6)
-    answer = [{2}, {5, 6}, {3}, {0}, {4}, {1}]
-    assert len(C) == len(answer)
-    for s in answer:
-        assert s in C
+    answers = [({1, 2}, {6}, {3}, {0}, {4}, {5}), ({2}, {5, 6}, {3}, {0}, {4}, {1})]
+    assert len(C) == len(answers[0])
+    # this picks which correct answer was returned
+    assert any(C[0] in (ans := a) for a in answers)
+    for s in C:
+        assert s in ans
 
     C = nx.community.edge_current_flow_betweenness_partition(G, 7)
     answer = [{n} for n in G]
