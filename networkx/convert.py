@@ -50,6 +50,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
 
         Current known types are:
          any NetworkX graph
+         any NetworkX backend graph (e.g. has ``__networkx_backend__`` attribute)
          dict-of-dicts
          dict-of-lists
          container (e.g. set, list, tuple) of edges
@@ -70,6 +71,8 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
         a multigraph from a multigraph.
 
     """
+    if hasattr(data, "__networkx_backend__"):
+        data = nx.utils.backends.convert_to_nx(data)
     # NX graph
     if hasattr(data, "adj"):
         try:

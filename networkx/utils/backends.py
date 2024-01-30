@@ -141,6 +141,12 @@ def _load_backend(backend_name):
 _registered_algorithms = {}
 
 
+def convert_to_nx(G):
+    """TODO"""
+    backend = _load_backend(G.__networkx_backend__)
+    return backend.convert_to_nx(G)
+
+
 class _dispatchable:
     # Allow any of the following decorator forms:
     #  - @_dispatchable
