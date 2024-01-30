@@ -800,6 +800,7 @@ class _dispatchable:
                 msg += " with the given arguments"
             pytest.xfail(msg)
 
+        import re
         from collections.abc import Iterator
         from copy import copy
         from io import BufferedReader, BytesIO
@@ -850,6 +851,78 @@ class _dispatchable:
             pytest.xfail(
                 exc.args[0] if exc.args else f"{self.name} raised {type(exc).__name__}"
             )
+        if self.__doc__ and self.name not in {
+            # Maybe these should use "Yields" instead of "Returns" in docstrings
+            "adamic_adar_index",
+            "all_node_cuts",
+            "all_pairs_all_shortest_paths",
+            "all_pairs_bellman_ford_path",
+            "all_pairs_bellman_ford_path_length",
+            "all_pairs_dijkstra_path",
+            "all_pairs_dijkstra_path_length",
+            "all_pairs_shortest_path",
+            "all_pairs_shortest_path_length",
+            "all_shortest_paths",
+            "all_simple_edge_paths",
+            "all_simple_paths",
+            "all_triads",
+            "all_triplets",
+            "asyn_fluidc",
+            "asyn_lpa_communities",
+            "attracting_components",
+            "bfs_predecessors",
+            "bfs_successors",
+            "biconnected_component_edges",
+            "biconnected_components",
+            "bridge_components",
+            "cn_soundarajan_hopcroft",
+            "common_neighbor_centrality",
+            "compute_v_structures",
+            "connected_components",
+            "dfs_labeled_edges",
+            "dfs_postorder_nodes",
+            "dfs_preorder_nodes",
+            "edge_boundary",
+            "edge_disjoint_paths",
+            "enumerate_all_cliques",
+            "eulerian_circuit",
+            "fast_label_propagation_communities",
+            "find_cliques",
+            "find_cliques_recursive",
+            "generate_random_paths",
+            "girvan_newman",
+            "isolates",
+            "jaccard_coefficient",
+            "k_clique_communities",
+            "k_edge_components",
+            "k_edge_subgraphs",
+            "kosaraju_strongly_connected_components",
+            "maximum_spanning_edges",
+            "minimum_spanning_edges",
+            "node_attribute_xy",
+            "node_degree_xy",
+            "node_disjoint_paths",
+            "nonisomorphic_trees",
+            "optimize_edit_paths",
+            "optimize_graph_edit_distance",
+            "preferential_attachment",
+            "ra_index_soundarajan_hopcroft",
+            "resource_allocation_index",
+            "shortest_path",
+            "shortest_path_length",
+            "shortest_simple_paths",
+            "single_source_all_shortest_paths",
+            "strongly_connected_components",
+            "strongly_connected_components_recursive",
+            "tree_all_pairs_lowest_common_ancestor",
+            "weakly_connected_components",
+            "within_inter_cluster",
+        }:
+            if isinstance(result, Iterator):
+                if re.findall(r"\n *Returns\n *-------\n", self.__doc__):
+                    raise RuntimeError(f"{self.name} should use Yields, not Returns")
+            elif re.findall(r"\n *Yields\n *------\n", self.__doc__):
+                raise RuntimeError(f"{self.name} should use Returns, not Yields")
 
         if self.name in {
             "edmonds_karp_core",
