@@ -851,78 +851,98 @@ class _dispatchable:
             pytest.xfail(
                 exc.args[0] if exc.args else f"{self.name} raised {type(exc).__name__}"
             )
-        if self.__doc__ and self.name not in {
-            # Maybe these should use "Yields" instead of "Returns" in docstrings
-            "adamic_adar_index",
-            "all_node_cuts",
-            "all_pairs_all_shortest_paths",
-            "all_pairs_bellman_ford_path",
-            "all_pairs_bellman_ford_path_length",
-            "all_pairs_dijkstra_path",
-            "all_pairs_dijkstra_path_length",
-            "all_pairs_shortest_path",
-            "all_pairs_shortest_path_length",
-            "all_shortest_paths",
-            "all_simple_edge_paths",
-            "all_simple_paths",
-            "all_triads",
-            "all_triplets",
-            "asyn_fluidc",
-            "asyn_lpa_communities",
-            "attracting_components",
-            "bfs_predecessors",
-            "bfs_successors",
-            "biconnected_component_edges",
-            "biconnected_components",
-            "bridge_components",
-            "cn_soundarajan_hopcroft",
-            "common_neighbor_centrality",
-            "compute_v_structures",
-            "connected_components",
-            "dfs_labeled_edges",
-            "dfs_postorder_nodes",
-            "dfs_preorder_nodes",
-            "edge_boundary",
-            "edge_disjoint_paths",
-            "enumerate_all_cliques",
-            "eulerian_circuit",
-            "fast_label_propagation_communities",
-            "find_cliques",
-            "find_cliques_recursive",
-            "generate_random_paths",
-            "girvan_newman",
-            "isolates",
-            "jaccard_coefficient",
-            "k_clique_communities",
-            "k_edge_components",
-            "k_edge_subgraphs",
-            "kosaraju_strongly_connected_components",
-            "maximum_spanning_edges",
-            "minimum_spanning_edges",
-            "node_attribute_xy",
-            "node_degree_xy",
-            "node_disjoint_paths",
-            "nonisomorphic_trees",
-            "optimize_edit_paths",
-            "optimize_graph_edit_distance",
-            "preferential_attachment",
-            "ra_index_soundarajan_hopcroft",
-            "resource_allocation_index",
-            "shortest_path",
-            "shortest_path_length",
-            "shortest_simple_paths",
-            "single_source_all_shortest_paths",
-            "strongly_connected_components",
-            "strongly_connected_components_recursive",
-            "tree_all_pairs_lowest_common_ancestor",
-            "weakly_connected_components",
-            "within_inter_cluster",
-        }:
+        if self.__doc__:
+            # Checks below will test whether these `should_be_*` sets are correct
+            should_be_returns = set()
+            should_be_yields = {
+                # Maybe these should use "Yields" instead of "Returns" in docstrings
+                "adamic_adar_index",
+                "all_node_cuts",
+                "all_pairs_all_shortest_paths",
+                "all_pairs_bellman_ford_path",
+                "all_pairs_bellman_ford_path_length",
+                "all_pairs_dijkstra_path",
+                "all_pairs_dijkstra_path_length",
+                "all_pairs_shortest_path",
+                "all_pairs_shortest_path_length",
+                "all_shortest_paths",
+                "all_simple_edge_paths",
+                "all_simple_paths",
+                "all_triads",
+                "all_triplets",
+                "asyn_fluidc",
+                "asyn_lpa_communities",
+                "attracting_components",
+                "bfs_predecessors",
+                "bfs_successors",
+                "biconnected_component_edges",
+                "biconnected_components",
+                "bridge_components",
+                "cn_soundarajan_hopcroft",
+                "common_neighbor_centrality",
+                "compute_v_structures",
+                "connected_components",
+                "dfs_labeled_edges",
+                "dfs_postorder_nodes",
+                "dfs_preorder_nodes",
+                "edge_boundary",
+                "edge_disjoint_paths",
+                "enumerate_all_cliques",
+                "eulerian_circuit",
+                "fast_label_propagation_communities",
+                "find_cliques",
+                "find_cliques_recursive",
+                "generate_random_paths",
+                "girvan_newman",
+                "isolates",
+                "jaccard_coefficient",
+                "k_clique_communities",
+                "k_edge_components",
+                "k_edge_subgraphs",
+                "kosaraju_strongly_connected_components",
+                "maximum_spanning_edges",
+                "minimum_spanning_edges",
+                "node_attribute_xy",
+                "node_degree_xy",
+                "node_disjoint_paths",
+                "nonisomorphic_trees",
+                "optimize_edit_paths",
+                "optimize_graph_edit_distance",
+                "preferential_attachment",
+                "ra_index_soundarajan_hopcroft",
+                "resource_allocation_index",
+                "shortest_path",
+                "shortest_path_length",
+                "shortest_simple_paths",
+                "single_source_all_shortest_paths",
+                "strongly_connected_components",
+                "strongly_connected_components_recursive",
+                "tree_all_pairs_lowest_common_ancestor",
+                "weakly_connected_components",
+                "within_inter_cluster",
+            }
+            has_returns = bool(re.findall(r"\n *Returns\n *-------\n", self.__doc__))
+            has_yields = bool(re.findall(r"\n *Yields\n *------\n", self.__doc__))
+            if has_returns and has_yields:
+                raise RuntimeError(
+                    f"{self.name} should not use both Yields and Returns in docstring"
+                )
             if isinstance(result, Iterator):
-                if re.findall(r"\n *Returns\n *-------\n", self.__doc__):
+                if has_returns and self.name not in should_be_yields:
                     raise RuntimeError(f"{self.name} should use Yields, not Returns")
-            elif re.findall(r"\n *Yields\n *------\n", self.__doc__):
-                raise RuntimeError(f"{self.name} should use Returns, not Yields")
+                if has_yields and self.name in should_be_yields:
+                    raise RuntimeError(
+                        f"{self.name} correctly uses Yields, so it should be "
+                        "removed from `should_be_yields` set"
+                    )
+            else:
+                if has_yields and self.name not in should_be_returns:
+                    raise RuntimeError(f"{self.name} should use Returns, not Yields")
+                if has_returns and self.name in should_be_returns:
+                    raise RuntimeError(
+                        f"{self.name} correctly uses Returns, so it should be "
+                        "removed from `should_be_returns` set"
+                    )
 
         if self.name in {
             "edmonds_karp_core",
