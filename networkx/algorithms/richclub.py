@@ -47,9 +47,8 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
     Raises
     ------
     NetworkXError
-        If G has <= 3 nodes and normalized=True.
-        Raised from double_edge_swap(). A randomly sampled graph for
-        normalization cannot be generated in this case.
+        If `G` has fewer than four nodes and ``normalized=True``.
+        A randomly sampled graph for normalization cannot be generated in this case.
 
     Examples
     --------
@@ -64,13 +63,12 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
     algorithm ignores any edge weights and is not defined for directed
     graphs or graphs with parallel edges or self loops.
 
-    For graphs with <= 3 nodes, it can be proven that the graph is
-    completely determined given the degree of each vertex.
-    Normalization is done against a randomly sampled graph with the
-    same vertex degrees and different edges by repeatedly swapping the
-    endpoints of existing edges. But for <= 3 nodes, we
-    cannot generate such a random graph since there exists only one
-    graph (hence making the coefficients trivially normalized to 1).
+    Normalization is done by computing the rich club coefficient for a randomly
+    sampled graph with the same degree distribution as `G` by
+    repeatedly swapping the endpoints of existing edges. For graphs with fewer than 4
+    nodes, it is not possible to generate a random graph with a prescribed
+    degree distribution, as the degree distribution fully determines the graph
+    (hence making the coefficients trivially normalized to 1).
     This function raises an exception in this case.
 
     Estimates for appropriate values of `Q` are found in [2]_.
