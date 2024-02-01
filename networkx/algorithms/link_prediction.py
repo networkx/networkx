@@ -37,12 +37,18 @@ def _apply_prediction(G, func, ebunch=None):
     """
     if ebunch is None:
         ebunch = nx.non_edges(G)
+    else:
+        for u, v in ebunch:
+            if u not in G:
+                raise nx.NodeNotFound(f"Node {u} not in G.")
+            if v not in G:
+                raise nx.NodeNotFound(f"Node {v} not in G.")
     return ((u, v, func(u, v)) for u, v in ebunch)
 
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def resource_allocation_index(G, ebunch=None):
     r"""Compute the resource allocation index of all node pairs in ebunch.
 
@@ -72,6 +78,14 @@ def resource_allocation_index(G, ebunch=None):
         An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
         pair of nodes and p is their resource allocation index.
 
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
+
+    NodeNotFound
+        If `ebunch` has a node that is not in `G`.
+
     Examples
     --------
     >>> G = nx.complete_graph(5)
@@ -97,7 +111,7 @@ def resource_allocation_index(G, ebunch=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def jaccard_coefficient(G, ebunch=None):
     r"""Compute the Jaccard coefficient of all node pairs in ebunch.
 
@@ -127,6 +141,14 @@ def jaccard_coefficient(G, ebunch=None):
         An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
         pair of nodes and p is their Jaccard coefficient.
 
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
+
+    NodeNotFound
+        If `ebunch` has a node that is not in `G`.
+
     Examples
     --------
     >>> G = nx.complete_graph(5)
@@ -154,7 +176,7 @@ def jaccard_coefficient(G, ebunch=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def adamic_adar_index(G, ebunch=None):
     r"""Compute the Adamic-Adar index of all node pairs in ebunch.
 
@@ -186,6 +208,14 @@ def adamic_adar_index(G, ebunch=None):
         An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
         pair of nodes and p is their Adamic-Adar index.
 
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
+
+    NodeNotFound
+        If `ebunch` has a node that is not in `G`.
+
     Examples
     --------
     >>> G = nx.complete_graph(5)
@@ -210,7 +240,7 @@ def adamic_adar_index(G, ebunch=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
     r"""Return the CCPA score for each pair of nodes.
 
@@ -264,6 +294,17 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
         pair of nodes and p is their Common Neighbor and Centrality based
         Parameterized Algorithm(CCPA) score.
 
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
+
+    NetworkXAlgorithmError
+        If self loops exsists in `ebunch` or in `G` (if `ebunch` is `None`).
+
+    NodeNotFound
+        If `ebunch` has a node that is not in `G`.
+
     Examples
     --------
     >>> G = nx.complete_graph(5)
@@ -286,7 +327,7 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
 
         def predict(u, v):
             if u == v:
-                raise nx.NetworkXAlgorithmError("Self links are not supported")
+                raise nx.NetworkXAlgorithmError("Self loops are not supported")
 
             return sum(1 for _ in nx.common_neighbors(G, u, v))
 
@@ -296,7 +337,7 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
 
         def predict(u, v):
             if u == v:
-                raise nx.NetworkXAlgorithmError("Self links are not supported")
+                raise nx.NetworkXAlgorithmError("Self loops are not supported")
             path_len = spl[u].get(v, inf)
 
             return alpha * sum(1 for _ in nx.common_neighbors(G, u, v)) + (
@@ -308,7 +349,7 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def preferential_attachment(G, ebunch=None):
     r"""Compute the preferential attachment score of all node pairs in ebunch.
 
@@ -338,6 +379,14 @@ def preferential_attachment(G, ebunch=None):
         An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
         pair of nodes and p is their preferential attachment score.
 
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
+
+    NodeNotFound
+        If `ebunch` has a node that is not in `G`.
+
     Examples
     --------
     >>> G = nx.complete_graph(5)
@@ -362,7 +411,7 @@ def preferential_attachment(G, ebunch=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch(node_attrs="community")
+@nx._dispatchable(node_attrs="community")
 def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
     r"""Count the number of common neighbors of all node pairs in ebunch
         using community information.
@@ -402,6 +451,17 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
         An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
         pair of nodes and p is their score.
 
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
+
+    NetworkXAlgorithmError
+        If no community information is available for a node in `ebunch` or in `G` (if `ebunch` is `None`).
+
+    NodeNotFound
+        If `ebunch` has a node that is not in `G`.
+
     Examples
     --------
     >>> G = nx.path_graph(3)
@@ -437,7 +497,7 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch(node_attrs="community")
+@nx._dispatchable(node_attrs="community")
 def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
     r"""Compute the resource allocation index of all node pairs in
     ebunch using community information.
@@ -477,6 +537,17 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
         An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
         pair of nodes and p is their score.
 
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
+
+    NetworkXAlgorithmError
+        If no community information is available for a node in `ebunch` or in `G` (if `ebunch` is `None`).
+
+    NodeNotFound
+        If `ebunch` has a node that is not in `G`.
+
     Examples
     --------
     >>> G = nx.Graph()
@@ -513,7 +584,7 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch(node_attrs="community")
+@nx._dispatchable(node_attrs="community")
 def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
     """Compute the ratio of within- and inter-cluster common neighbors
     of all node pairs in ebunch.
@@ -552,6 +623,18 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
     piter : iterator
         An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
         pair of nodes and p is their WIC measure.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is a `DiGraph`, a `Multigraph` or a `MultiDiGraph`.
+
+    NetworkXAlgorithmError
+        - If `delta` is less than or equal to zero.
+        - If no community information is available for a node in `ebunch` or in `G` (if `ebunch` is `None`).
+
+    NodeNotFound
+        If `ebunch` has a node that is not in `G`.
 
     Examples
     --------
@@ -601,4 +684,6 @@ def _community(G, u, community):
     try:
         return node_u[community]
     except KeyError as err:
-        raise nx.NetworkXAlgorithmError("No community information") from err
+        raise nx.NetworkXAlgorithmError(
+            f"No community information available for Node {u}"
+        ) from err

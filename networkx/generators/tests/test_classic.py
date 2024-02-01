@@ -617,3 +617,19 @@ class TestGeneratorClassic:
                 assert G.nodes[u] != G.nodes[v]
         with pytest.raises(nx.NetworkXError, match="Negative number of nodes"):
             nx.complete_multipartite_graph(2, -3, 4)
+
+    def test_kneser_graph(self):
+        # the petersen graph is a special case of the kneser graph when n=5 and k=2
+        assert is_isomorphic(nx.kneser_graph(5, 2), nx.petersen_graph())
+
+        # when k is 1, the kneser graph returns a complete graph with n vertices
+        for i in range(1, 7):
+            assert is_isomorphic(nx.kneser_graph(i, 1), nx.complete_graph(i))
+
+        # the kneser graph of n and n-1 is the empty graph with n vertices
+        for j in range(3, 7):
+            assert is_isomorphic(nx.kneser_graph(j, j - 1), nx.empty_graph(j))
+
+        # in general the number of edges of the kneser graph is equal to
+        # (n choose k) times (n-k choose k) divided by 2
+        assert nx.number_of_edges(nx.kneser_graph(8, 3)) == 280

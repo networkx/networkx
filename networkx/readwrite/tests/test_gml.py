@@ -1,8 +1,6 @@
 import codecs
 import io
 import math
-import os
-import tempfile
 from ast import literal_eval
 from contextlib import contextmanager
 from textwrap import dedent
@@ -165,17 +163,14 @@ graph   [
             ("Node 3", "Node 1", {"label": "Edge from node 3 to node 1"}),
         ]
 
-    def test_read_gml(self):
-        (fd, fname) = tempfile.mkstemp()
-        fh = open(fname, "w")
-        fh.write(self.simple_data)
-        fh.close()
+    def test_read_gml(self, tmp_path):
+        fname = tmp_path / "test.gml"
+        with open(fname, "w") as fh:
+            fh.write(self.simple_data)
         Gin = nx.read_gml(fname, label="label")
         G = nx.parse_gml(self.simple_data, label="label")
         assert sorted(G.nodes(data=True)) == sorted(Gin.nodes(data=True))
         assert sorted(G.edges(data=True)) == sorted(Gin.edges(data=True))
-        os.close(fd)
-        os.unlink(fname)
 
     def test_labels_are_strings(self):
         # GML requires labels to be strings (i.e., in quotes)
@@ -235,18 +230,18 @@ graph
 ]"""
         assert data == answer
 
-    def test_quotes(self):
+    def test_quotes(self, tmp_path):
         # https://github.com/networkx/networkx/issues/1061
         # Encoding quotes as HTML entities.
         G = nx.path_graph(1)
         G.name = "path_graph(1)"
         attr = 'This is "quoted" and this is a copyright: ' + chr(169)
         G.nodes[0]["demo"] = attr
-        fobj = tempfile.NamedTemporaryFile()
-        nx.write_gml(G, fobj)
-        fobj.seek(0)
-        # Should be bytes in 2.x and 3.x
-        data = fobj.read().strip().decode("ascii")
+        with open(tmp_path / "test.gml", "w+b") as fobj:
+            nx.write_gml(G, fobj)
+            fobj.seek(0)
+            # Should be bytes in 2.x and 3.x
+            data = fobj.read().strip().decode("ascii")
         answer = """graph [
   name "path_graph(1)"
   node [
@@ -257,15 +252,15 @@ graph
 ]"""
         assert data == answer
 
-    def test_unicode_node(self):
+    def test_unicode_node(self, tmp_path):
         node = "node" + chr(169)
         G = nx.Graph()
         G.add_node(node)
-        fobj = tempfile.NamedTemporaryFile()
-        nx.write_gml(G, fobj)
-        fobj.seek(0)
-        # Should be bytes in 2.x and 3.x
-        data = fobj.read().strip().decode("ascii")
+        with open(tmp_path / "test.gml", "w+b") as fobj:
+            nx.write_gml(G, fobj)
+            fobj.seek(0)
+            # Should be bytes in 2.x and 3.x
+            data = fobj.read().strip().decode("ascii")
         answer = """graph [
   node [
     id 0
@@ -274,15 +269,15 @@ graph
 ]"""
         assert data == answer
 
-    def test_float_label(self):
+    def test_float_label(self, tmp_path):
         node = 1.0
         G = nx.Graph()
         G.add_node(node)
-        fobj = tempfile.NamedTemporaryFile()
-        nx.write_gml(G, fobj)
-        fobj.seek(0)
-        # Should be bytes in 2.x and 3.x
-        data = fobj.read().strip().decode("ascii")
+        with open(tmp_path / "test.gml", "w+b") as fobj:
+            nx.write_gml(G, fobj)
+            fobj.seek(0)
+            # Should be bytes in 2.x and 3.x
+            data = fobj.read().strip().decode("ascii")
         answer = """graph [
   node [
     id 0
@@ -291,7 +286,7 @@ graph
 ]"""
         assert data == answer
 
-    def test_special_float_label(self):
+    def test_special_float_label(self, tmp_path):
         special_floats = [float("nan"), float("+inf"), float("-inf")]
         try:
             import numpy as np
@@ -307,12 +302,12 @@ graph
         attrs = {edges[i]: value for i, value in enumerate(special_floats)}
         nx.set_edge_attributes(G, attrs, "edgefloat")
 
-        fobj = tempfile.NamedTemporaryFile()
-        nx.write_gml(G, fobj)
-        fobj.seek(0)
-        # Should be bytes in 2.x and 3.x
-        data = fobj.read().strip().decode("ascii")
-        answer = """graph [
+        with open(tmp_path / "test.gml", "w+b") as fobj:
+            nx.write_gml(G, fobj)
+            fobj.seek(0)
+            # Should be bytes in 2.x and 3.x
+            data = fobj.read().strip().decode("ascii")
+            answer = """graph [
   node [
     id 0
     label "0"
@@ -374,24 +369,24 @@ graph
     edgefloat -INF
   ]
 ]"""
-        assert data == answer
+            assert data == answer
 
-        fobj.seek(0)
-        graph = nx.read_gml(fobj)
-        for indx, value in enumerate(special_floats):
-            node_value = graph.nodes[str(indx)]["nodefloat"]
-            if math.isnan(value):
-                assert math.isnan(node_value)
-            else:
-                assert node_value == value
+            fobj.seek(0)
+            graph = nx.read_gml(fobj)
+            for indx, value in enumerate(special_floats):
+                node_value = graph.nodes[str(indx)]["nodefloat"]
+                if math.isnan(value):
+                    assert math.isnan(node_value)
+                else:
+                    assert node_value == value
 
-            edge = edges[indx]
-            string_edge = (str(edge[0]), str(edge[1]))
-            edge_value = graph.edges[string_edge]["edgefloat"]
-            if math.isnan(value):
-                assert math.isnan(edge_value)
-            else:
-                assert edge_value == value
+                edge = edges[indx]
+                string_edge = (str(edge[0]), str(edge[1]))
+                edge_value = graph.edges[string_edge]["edgefloat"]
+                if math.isnan(value):
+                    assert math.isnan(edge_value)
+                else:
+                    assert edge_value == value
 
     def test_name(self):
         G = nx.parse_gml('graph [ name "x" node [ id 0 label "x" ] ]')
@@ -480,13 +475,13 @@ graph
         )
         assert answer == gml
 
-    def test_exceptions(self):
+    def test_exceptions(self, tmp_path):
         pytest.raises(ValueError, literal_destringizer, "(")
         pytest.raises(ValueError, literal_destringizer, "frozenset([1, 2, 3])")
         pytest.raises(ValueError, literal_destringizer, literal_destringizer)
         pytest.raises(ValueError, literal_stringizer, frozenset([1, 2, 3]))
         pytest.raises(ValueError, literal_stringizer, literal_stringizer)
-        with tempfile.TemporaryFile() as f:
+        with open(tmp_path / "test.gml", "w+b") as f:
             f.write(codecs.BOM_UTF8 + b"graph[]")
             f.seek(0)
             pytest.raises(nx.NetworkXError, nx.read_gml, f)
@@ -554,8 +549,8 @@ graph
             "directed 1 multigraph 1 ]"
         )
         assert_parse_error(
-            "graph [edge [ source u'u\4200' target u'u\4200' ] "
-            + "node [ id u'u\4200' label b ] ]"
+            "graph [edge [ source '\u4200' target '\u4200' ] "
+            + "node [ id '\u4200' label b ] ]"
         )
 
         def assert_generate_error(*args, **kwargs):
@@ -584,7 +579,7 @@ graph
         labels = [G.nodes[n]["label"] for n in sorted(G.nodes)]
         assert labels == ["Node 1", "Node 2", "Node 3"]
 
-    def test_outofrange_integers(self):
+    def test_outofrange_integers(self, tmp_path):
         # GML restricts integers to 32 signed bits.
         # Check that we honor this restriction on export
         G = nx.Graph()
@@ -601,19 +596,15 @@ graph
         }
         G.add_node("Node", **numbers)
 
-        fd, fname = tempfile.mkstemp()
-        try:
-            nx.write_gml(G, fname)
-            # Check that the export wrote the nonfitting numbers as strings
-            G2 = nx.read_gml(fname)
-            for attr, value in G2.nodes["Node"].items():
-                if attr == "toosmall" or attr == "toobig":
-                    assert type(value) == str
-                else:
-                    assert type(value) == int
-        finally:
-            os.close(fd)
-            os.unlink(fname)
+        fname = tmp_path / "test.gml"
+        nx.write_gml(G, fname)
+        # Check that the export wrote the nonfitting numbers as strings
+        G2 = nx.read_gml(fname)
+        for attr, value in G2.nodes["Node"].items():
+            if attr == "toosmall" or attr == "toobig":
+                assert type(value) == str
+            else:
+                assert type(value) == int
 
     def test_multiline(self):
         # example from issue #6836
