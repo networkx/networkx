@@ -891,7 +891,7 @@ def draw_networkx_edges(
         ax = plt.gca()
 
     if edgelist is None:
-        if isinstance(G, nx.MultiGraph):
+        if G.is_multigraph():
             edgelist = list(G.edges(data=False, keys=True))
         else:
             edgelist = list(G.edges(data=False))
@@ -1357,7 +1357,7 @@ def draw_networkx_edge_labels(
 
     if edge_labels is None:
         kwds = {}
-        if isinstance(G, nx.MultiGraph):
+        if G.is_multigraph():
             kwds = {"keys": True}
         edge_labels = {tuple(edge): d for *edge, d in G.edges(data=True, **kwds)}
     # NOTHING TO PLOT
