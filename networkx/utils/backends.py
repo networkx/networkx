@@ -136,12 +136,10 @@ def _get_backends(group, *, load_and_call=False):
 
 backends = _get_backends("networkx.backends")
 backend_info = _get_backends("networkx.backend_info", load_and_call=True)
-# Initialize default configuration from backends (if provided)
-config.update(
-    (backend, info["default_config"])
-    for backend, info in backend_info.items()
-    if "default_config" in info
-)
+# Initialize default configuration for backends
+config["backends"] = {
+    backend: info.get("default_config", {}) for backend, info in backend_info.items()
+}
 
 # Load and cache backends on-demand
 _loaded_backends = {}  # type: ignore[var-annotated]
