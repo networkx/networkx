@@ -97,16 +97,6 @@ from ..exception import NetworkXNotImplemented
 
 __all__ = ["_dispatchable", "config"]
 
-# Get default configuration from environment variables at import time.
-# Default backend config will be initialized from `backend_info` just below.
-config = {
-    "automatic_backends": [
-        x.strip()
-        for x in os.environ.get("NETWORKX_AUTOMATIC_BACKENDS", "").split(",")
-        if x.strip()
-    ],
-}
-
 
 def _get_backends(group, *, load_and_call=False):
     items = entry_points(group=group)
@@ -136,9 +126,19 @@ def _get_backends(group, *, load_and_call=False):
 
 backends = _get_backends("networkx.backends")
 backend_info = _get_backends("networkx.backend_info", load_and_call=True)
-# Initialize default configuration for backends
-config["backends"] = {
-    backend: info.get("default_config", {}) for backend, info in backend_info.items()
+
+config = {
+    # Get default configuration from environment variables at import time
+    "automatic_backends": [
+        x.strip()
+        for x in os.environ.get("NETWORKX_AUTOMATIC_BACKENDS", "").split(",")
+        if x.strip()
+    ],
+    # Initialize default configuration for backends
+    "backends": {
+        backend: info.get("default_config", {})
+        for backend, info in backend_info.items()
+    },
 }
 
 # Load and cache backends on-demand
