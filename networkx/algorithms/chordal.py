@@ -18,6 +18,9 @@ __all__ = [
     "chordal_graph_treewidth",
     "NetworkXTreewidthBoundExceeded",
     "complete_to_chordal_graph",
+    "reverse_lexBFS_order",
+    "perfect_elim_order",
+    "is_perfect_elim_order",
 ]
 
 
@@ -42,7 +45,7 @@ def is_chordal(G):
 
     Returns
     -------
-    chordal : bool
+    bool
       True if G is a chordal graph and False otherwise.
 
     Raises
@@ -70,22 +73,14 @@ def is_chordal(G):
 
     Notes
     -----
-    The routine tries to go through every node following maximum cardinality
-    search. It returns False when it finds that the separator for any node
-    is not a clique.  Based on the algorithms in [1]_.
-
-    Self loops are ignored.
+    This algorithm computes the reverse of a lexicographic breadth-first
+    search and returns true if it is a perfect elimination order.
 
     References
     ----------
-    .. [1] R. E. Tarjan and M. Yannakakis, Simple linear-time algorithms
-       to test chordality of graphs, test acyclicity of hypergraphs, and
-       selectively reduce acyclic hypergraphs, SIAM J. Comput., 13 (1984),
-       pp. 566–579.
     """
-    if len(G.nodes) <= 3:
-        return True
-    return len(_find_chordality_breaker(G)) == 0
+    order = reverse_lexBFS_order(G)
+    return is_perfect_elim_order(G, order)
 
 
 @nx._dispatchable
@@ -440,3 +435,189 @@ def complete_to_chordal_graph(G):
             weight[node] += 1
     H.add_edges_from(chords)
     return H, alpha
+
+
+def reverse_lexBFS_order(G):
+    """Returns a reversed lexicographic breadth-first ordering.
+        It is shown in [1] if G is a chordal graph, then this ordering
+        is a perfect elimination order.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Undirected graph
+
+    Returns
+    -------
+    order : Dictionary
+            A reverse lexicographic ordering of the vertices of G
+
+    Notes
+    -----
+    This implementation is based off the one given in
+    https://en.wikipedia.org/wiki/Lexicographic_breadth-first_search
+
+    References
+    ----------
+    [1] Algorithmic Aspects of Vertex Elimination on Graphs
+        Donald J. Rose, R. Endre Tarjan, and George S. Lueker
+        https://doi.org/10.1137/0205021
+    """
+    if len(G.nodes) == 0:
+        return {}
+
+    first_set = {"next": None, "prev": None, "set": set(G.nodes), "last_processed": 0}
+
+    get_set = {v: first_set for v in G.nodes}
+    order = {}
+    n = len(G.nodes)
+    i = 1
+
+    while first_set:
+        v = first_set["set"].pop()
+
+        if not first_set["set"]:
+            if first_set["next"]:
+                first_set["next"]["prev"] = None
+            first_set = first_set["next"]
+
+        order[v] = n - i + 1
+        get_set[v] = None
+        edges = G.edges(v)
+
+        for edge in edges:
+            u = edge[1]
+            S = get_set[u]
+
+            if S is None:
+                continue
+
+            if S["last_processed"] < i:
+                T = {"next": S, "prev": S["prev"], "set": set(), "last_processed": 0}
+
+                if S["prev"]:
+                    S["prev"]["next"] = T
+                S["prev"] = T
+                S["last_processed"] = i
+
+                if S is first_set:
+                    first_set = T
+
+            S["prev"]["set"].add(u)
+            get_set[u] = S["prev"]
+            S["set"].remove(u)
+
+            if not S["set"]:
+                if S["prev"]:
+                    S["prev"]["next"] = S["next"]
+                if S["next"]:
+                    S["next"]["prev"] = S["prev"]
+                if S is first_set:
+                    first_set = S["next"]
+                del S
+        i = i + 1
+
+    return order
+
+
+def perfect_elim_order(G):
+    """Returns a perfect elimination order of a chordal graph
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Undirected graph
+
+    Returns
+    -------
+    peo : Dictionary
+          A perfect elimination order of G
+
+    Raises
+    ------
+    NetworkXError
+          Raises if G is not chordal
+    """
+    if not is_chordal(G):
+        raise nx.NetworkXError("Input graph is not chordal.")
+
+    return reverse_lexBFS_order(G)
+
+
+def is_perfect_elim_order(G, order):
+    """Tests whether or not order is a perfect elimination order of G
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Undirected graph
+    order : Dictionary
+            An ordering on the vertices of G
+
+    Returns
+    -------
+    bool
+        True if order is a perfect elimination order of G,
+        False otherwise
+
+    Notes
+    -----
+    This implementation is based off the one given in
+    https://en.wikipedia.org/wiki/Lexicographic_breadth-first_search
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> e = [
+    ...     (1, 2),
+    ...     (1, 3),
+    ...     (2, 3),
+    ...     (2, 4),
+    ...     (3, 4),
+    ...     (3, 5),
+    ...     (3, 6),
+    ...     (4, 5),
+    ...     (4, 6),
+    ...     (5, 6),
+    ... ]
+    >>> G = nx.Graph(e)
+    >>> order = {1: 4, 2: 2, 3: 1, 4: 3, 5: 5, 6: 6}
+    >>> nx.perfect_elim_order(G, order)
+    False
+    """
+    n = len(G.nodes)
+
+    def rev_order(k):
+        return n - order[k] + 1
+
+    inv_order = {v: k for k, v in order.items()}
+
+    for i in range(1, n + 1):
+        v = inv_order[n - i + 1]
+        w = None
+        k = 0
+        neighbors_v = set()
+        edges = G.edges(v)
+        for edge in edges:
+            u = edge[1]
+            if rev_order(u) < rev_order(v):
+                neighbors_v.add(u)
+                if rev_order(u) > k:
+                    w = u
+                    k = rev_order(u)
+
+        if w is None:
+            continue
+
+        neighbors_w = set()
+        edges = G.edges(w)
+        for edge in edges:
+            u = edge[1]
+            if rev_order(u) < rev_order(w):
+                neighbors_w.add(u)
+
+        neighbors_v.remove(w)
+        if not neighbors_v.issubset(neighbors_w):
+            return False
+
+    return True
