@@ -3,7 +3,7 @@
 name: Benchmark PR
 on:
   pull_request:
-    types: [labeled]
+    types: [labeled, synchronize]
 
 jobs:
   ## This code below is to make sure a new commit on a PR with the label
