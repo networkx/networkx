@@ -184,7 +184,7 @@ class ada_star:
         self.weight = _weight_function(self.G, weight)
 
         # estimate g[n] of the cost from each state to the goal
-        self.g = {n: math.inf for n in G.nodes()}
+        self.state_to_goal_est = {n: math.inf for n in G.nodes()}
 
         # one-step lookahead cost, rhs[n], 0 is n is the goal, otherwise,
         # is the minimum of the following sum:
@@ -289,18 +289,18 @@ class ada_star:
             u, v = self._smallest_key()
             if (not self._key_lt(v, self._key(self.source))) and self.rhs[
                 self.source
-            ] == self.g[self.source]:
+            ] == self.state_to_goal_est[self.source]:
                 break
             self.OPEN.pop(u)
             self.visited.add(u)
 
-            if self.g[u] > self.rhs[u]:
-                self.g[u] = self.rhs[u]
+            if self.state_to_goal_est[u] > self.rhs[u]:
+                self.state_to_goal_est[u] = self.rhs[u]
                 self.CLOSED.add(u)
                 for un in self._get_neighbor(u):
                     self._update_state(un)
             else:
-                self.g[u] = float("inf")
+                self.state_to_goal_est[u] = float("inf")
                 for un in self._get_neighbor(u):
                     self._update_state(un)
                 self._update_state(u)
@@ -397,7 +397,7 @@ class ada_star:
             # find neighbour with lowest g value
             try:
                 source = min(
-                    neighbours, key=lambda x: self.g[x] + self._cost(source, x)
+                    neighbours, key=lambda x: self.state_to_goal_est[x] + self._cost(source, x)
                 )
             except:
                 raise nx.NetworkXNoPath(
@@ -414,12 +414,12 @@ class ada_star:
         if n != self.target:
             self.rhs[n] = float("inf")
             for nbr in self._get_neighbor(n):
-                self.rhs[n] = min(self.rhs[n], self.g[nbr] + self._cost(n, nbr))
+                self.rhs[n] = min(self.rhs[n], self.state_to_goal_est[nbr] + self._cost(n, nbr))
 
         if n in self.OPEN:
             self.OPEN.pop(n)
 
-        if self.g[n] != self.rhs[n]:
+        if self.state_to_goal_est[n] != self.rhs[n]:
             if n not in self.CLOSED:
                 self.OPEN[n] = self._key(n)
             else:
@@ -428,12 +428,12 @@ class ada_star:
     def _key(self, n):
         # return the key of a state
         # the key of a state is a list of two floats, (k1, k2)
-        if self.g[n] > self.rhs[n]:
+        if self.state_to_goal_est[n] > self.rhs[n]:
             return [
                 self.rhs[n] + (self.epsilon * self.heursistic(self.source, n)),
                 self.rhs[n],
             ]
-        return [self.g[n] + self.heursistic(self.source, n), self.g[n]]
+        return [self.state_to_goal_est[n] + self.heursistic(self.source, n), self.state_to_goal_est[n]]
 
     def _key_lt(self, key1: list, key2: list):
         # compare two keys
