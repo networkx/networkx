@@ -582,7 +582,7 @@ def is_perfect_elim_order(G, order):
     ... ]
     >>> G = nx.Graph(e)
     >>> order = {1: 4, 2: 2, 3: 1, 4: 3, 5: 5, 6: 6}
-    >>> nx.perfect_elim_order(G, order)
+    >>> nx.is_perfect_elim_order(G, order)
     False
     """
     n = len(G.nodes)
