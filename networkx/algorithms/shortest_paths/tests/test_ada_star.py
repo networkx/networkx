@@ -45,52 +45,6 @@ class TestADAStar:
 
         assert path in (path1, path2)
 
-    # def test_ada_star_directed(self): #TODO resolve directed case
-    #     search = ada_star("s", "v", self.XG, None, "weight", initial_epsilon=1)
-    #     path = search.extract_path()
-    #     assert path == ["s", "x", "u", "v"]
-    #     assert nx.path_weight(self.XG, path, "weight") == 9
-    #     assert nx.astar_path(self.XG, "s", "v") == ["s", "x", "u", "v"]
-    #     assert nx.astar_path_length(self.XG, "s", "v") == 9
-
-    # def test_ada_star_directed_weight_function(self): #TODO resolve directed case
-    #     w1 = lambda u, v, d: d["weight"]
-    #     assert nx.astar_path(self.XG, "x", "u", weight=w1) == ["x", "u"]
-    #     assert nx.astar_path_length(self.XG, "x", "u", weight=w1) == 3
-    #     assert nx.astar_path(self.XG, "s", "v", weight=w1) == ["s", "x", "u", "v"]
-    #     assert nx.astar_path_length(self.XG, "s", "v", weight=w1) == 9
-
-    # def test_ada_star_directed_weight_function(self): #TODO resolve directed case
-    #     w1 = lambda u, v, d: d["weight"]
-    #     assert nx.astar_path(self.XG, "x", "u", weight=w1) == ["x", "u"]
-    #     assert nx.astar_path_length(self.XG, "x", "u", weight=w1) == 3
-    #     assert nx.astar_path(self.XG, "s", "v", weight=w1) == ["s", "x", "u", "v"]
-    #     assert nx.astar_path_length(self.XG, "s", "v", weight=w1) == 9
-
-    # assert nx.astar_path(self.XG, "x", "u", weight=w1) == ["x", "u"]
-    # assert nx.astar_path_length(self.XG, "x", "u", weight=w1) == 3
-    # assert nx.astar_path(self.XG, "s", "v", weight=w1) == ["s", "x", "u", "v"]
-    # assert nx.astar_path_length(self.XG, "s", "v", weight=w1) == 9
-
-    # w2 = lambda u, v, d: None if (u, v) == ("x", "u") else d["weight"]
-    # assert nx.astar_path(self.XG, "x", "u", weight=w2) == ["x", "y", "s", "u"]
-    # assert nx.astar_path_length(self.XG, "x", "u", weight=w2) == 19
-    # assert nx.astar_path(self.XG, "s", "v", weight=w2) == ["s", "x", "v"]
-    # assert nx.astar_path_length(self.XG, "s", "v", weight=w2) == 10
-
-    # w3 = lambda u, v, d: d["weight"] + 10
-    # assert nx.astar_path(self.XG, "x", "u", weight=w3) == ["x", "u"]
-    # assert nx.astar_path_length(self.XG, "x", "u", weight=w3) == 13
-    # assert nx.astar_path(self.XG, "s", "v", weight=w3) == ["s", "x", "v"]
-    # assert nx.astar_path_length(self.XG, "s", "v", weight=w3) == 30
-
-    # def test_ada_star_multigraph(self): #TODO resolve case with multigraph
-    #     G = nx.MultiDiGraph(self.XG)
-    #     G.add_weighted_edges_from((u, v, 1000) for (u, v) in list(G.edges()))
-    #     search = ada_star("s", "v", G, None, initial_epsilon=1)
-    #     path = search.extract_path()
-    #     assert path == ["s", "x", "u", "v"]
-    #     assert nx.shortest_path_length(G, "s", "v") == 9
 
     def test_ada_star_undirected(self):
         GG = self.XG.to_undirected()
@@ -103,23 +57,6 @@ class TestADAStar:
         path = search.extract_path()
         assert path == ["s", "x", "u", "v"]
         assert nx.path_weight(GG, path, "weight") == 8
-
-    # def test_ada_star_directed2(self): #TODO resolve directed case
-    #     XG2 = nx.DiGraph()
-    #     edges = [
-    #         (1, 4, 1),
-    #         (4, 5, 1),
-    #         (5, 6, 1),
-    #         (6, 3, 1),
-    #         (1, 3, 50),
-    #         (1, 2, 100),
-    #         (2, 3, 100),
-    #     ]
-    #     XG2.add_weighted_edges_from(edges)
-
-    #     search = ada_star(1, 3, XG2, None, "weight", initial_epsilon=1)
-    #     path = search.extract_path()
-    #     assert path == [1, 4, 5, 6, 3]
 
     def test_ada_star_undirected2(self):
         XG3 = nx.Graph()
@@ -151,43 +88,6 @@ class TestADAStar:
     """ Tests that A* finds correct path when multiple paths exist
         and the best one is not expanded first (GH issue #3464)
     """
-
-    # def test_ada_star_directed3(self): #TODO resolve directed case
-    #     heuristic_values = {"n5": 36, "n2": 4, "n1": 0, "n0": 0}
-
-    #     def h(u, v):
-    #         return heuristic_values[u]
-
-    #     edges = [("n5", "n1", 11), ("n5", "n2", 9), ("n2", "n1", 1), ("n1", "n0", 32)]
-    #     graph = nx.DiGraph()
-    #     graph.add_weighted_edges_from(edges)
-    #     answer = ["n5", "n2", "n1", "n0"]
-    #     search = ada_star("n5", "n0", graph, h, initial_epsilon=1)
-    #     path = search.extract_path()
-    #     assert path == answer
-
-    """ Tests that parent is not wrongly overridden when a node
-        is re-explored multiple times.
-    """
-
-    # def test_ada_star_directed4(self): #TODO resolve directed case
-    #     edges = [
-    #         ("a", "b", 1),
-    #         ("a", "c", 1),
-    #         ("b", "d", 2),
-    #         ("c", "d", 1),
-    #         ("d", "e", 1),
-    #     ]
-    #     graph = nx.DiGraph()
-    #     graph.add_weighted_edges_from(edges)
-    #     search = ada_star("a", "e", graph, None, initial_epsilon=1)
-    #     path = search.extract_path()
-    #     assert path == ["a", "c", "d", "e"]
-
-    # >>> MXG4=NX.MultiGraph(XG4)
-    # >>> MXG4.add_edge(0,1,3)
-    # >>> NX.dijkstra_path(MXG4,0,2)
-    # [0, 1, 2]
 
     def test_ada_star_w1(self):
         G = nx.DiGraph()

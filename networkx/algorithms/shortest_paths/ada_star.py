@@ -52,9 +52,10 @@ class ada_star:
 
     initial_epsilon : float, default=1000
         The suboptimality bound, epsilon >= 1. The algorithm will
-    return a path that is suboptimal by this bound. The algorithm
-    will return a path that is suboptimal by this bound. The path
-    is accessable through the extract_path function.
+    return a path that is suboptimal when epsilon is greater than 1.
+    This Epsilon value gaurentees that the path is at least as good as
+    the optimal path + epsilon. 
+    The path is accessable through the extract_path function.
 
 
     Methods
@@ -178,10 +179,8 @@ class ada_star:
                 return 0
 
         self.heursistic = heuristic
-
+        self.OPEN = {}
         self.G = G
-        self.g, self.rhs, self.OPEN = {}, {}, {}
-
         self.weight = _weight_function(self.G, weight)
 
         # estimate g[n] of the cost from each state to the goal
@@ -192,8 +191,8 @@ class ada_star:
         # The cost between n and its neighbours plus the g value
         # of that neighbour
         self.rhs = {n: math.inf for n in G.nodes()}
-
         self.rhs[self.target] = 0.0
+        
         self.epsilon = initial_epsilon
 
         # initialize OPEN, CLOSED, INCONS
