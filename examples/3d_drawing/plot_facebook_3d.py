@@ -7,6 +7,7 @@ Visualizing a 5000-node subgraph of the  Facebook graph investigated in
 <https://networkx.org/nx-guides/content/exploratory_notebooks/facebook_notebook.html>
 in 3D plotting with matplotlib.
 """
+
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -40,9 +41,9 @@ edges = np.array([(pos[u], pos[v]) for u, v in G.edges()])
 point_size = int(1000 / np.sqrt(len(nodes)))
 
 # generating the plot
-num_frames = 30
-azi_step = np.linspace(0, 360, num_frames, endpoint=False).astype(int)
-elev_step = np.linspace(0, 360, num_frames, endpoint=False).astype(int)
+num_frames = 15
+azi_step = np.linspace(0, min(360,num_frames*5), num_frames, endpoint=False).astype(int)
+elev_step = np.linspace(0, min(360,num_frames*5), num_frames, endpoint=False).astype(int)
 
 
 fig = plt.figure()
@@ -74,7 +75,7 @@ ani = animation.FuncAnimation(
     _frame_update,
     init_func=init,
     interval=100,
-    cache_frame_data=False,
-    frames=num_frames,
+    cache_frame_data=True,
+    frames=num_frames
 )
 plt.show()
