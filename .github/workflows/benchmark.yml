@@ -96,7 +96,7 @@ jobs:
           echo "Contender: ${GITHUB_SHA} (${{ github.event.pull_request.head.label }})"
   
           # Run benchmarks for current commit against base
-          ASV_OPTIONS="--split --show-stderr --factor $ASV_FACTOR --conf asv.ci.conf.json"
+          ASV_OPTIONS="--split --show-stderr --factor $ASV_FACTOR --conf asv.conf.json"
           python -m asv continuous $ASV_OPTIONS ${{ github.event.pull_request.base.sha }} ${GITHUB_SHA} \
               | sed "/Traceback \|failed$\|PERFORMANCE DECREASED/ s/^/::error::/" \
               | tee benchmarks.log
