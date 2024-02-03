@@ -42,8 +42,12 @@ point_size = int(1000 / np.sqrt(len(nodes)))
 
 # generating the plot
 num_frames = 15
-azi_step = np.linspace(0, min(360,num_frames*5), num_frames, endpoint=False).astype(int)
-elev_step = np.linspace(0, min(360,num_frames*5), num_frames, endpoint=False).astype(int)
+azi_step = np.linspace(0, min(360, num_frames * 5), num_frames, endpoint=False).astype(
+    int
+)
+elev_step = np.linspace(0, min(360, num_frames * 5), num_frames, endpoint=False).astype(
+    int
+)
 
 
 fig = plt.figure()
@@ -76,6 +80,6 @@ ani = animation.FuncAnimation(
     init_func=init,
     interval=100,
     cache_frame_data=True,
-    frames=num_frames
+    frames=num_frames,
 )
 plt.show()
