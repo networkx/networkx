@@ -287,7 +287,7 @@ class ada_star:
 
         while True:
             u, v = self._smallest_key()
-            if (not self._key_lt(v, self._key(self.source))) and self.rhs[
+            if ( v >= self._key(self.source)) and self.rhs[
                 self.source
             ] == self.state_to_goal_est[self.source]:
                 break
@@ -312,11 +312,11 @@ class ada_star:
         previous work to find a new path in the updated graph.
 
         Parameters
-        ---------
+        ----------
         changes : list of changes, each change is a list of [node1, node2, new_weight]
 
         Returns
-        ---------
+        -------
         None
 
         Examples
@@ -376,14 +376,15 @@ class ada_star:
         """Extract the path based on current potentially suboptimal solution.
 
         Returns a path from the start state to the goal state. The path is
-        suboptimal by the bound given in the compute_or_improve_path function.
+        suboptimal by the at most the epsilon given in the 
+        compute_or_improve_path function.
 
         Returns
         -------
         list of nodes in the path
 
         Raises
-        -------
+        ------
         NetworkXNoPath
             If no path exists between source and target.
 
@@ -434,16 +435,6 @@ class ada_star:
                 self.rhs[n],
             ]
         return [self.state_to_goal_est[n] + self.heursistic(self.source, n), self.state_to_goal_est[n]]
-
-    def _key_lt(self, key1: list, key2: list):
-        # compare two keys
-        # return the higher of two keys, by prioritizing the first element and
-        # then the second element
-        if key1[0] < key2[0]:
-            return True
-        if key1[0] == key2[0] and key1[1] < key2[1]:
-            return True
-        return False
 
     def _smallest_key(self):
         # return the smallest key, smallest being the one with the lowest first element as priority,
