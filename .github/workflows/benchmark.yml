@@ -44,6 +44,15 @@ jobs:
         with:
           python-version: "3.x"
 
+      - name: Setup some dependencies
+        shell: bash -l {0}
+        run: |
+          sudo apt-get update -y && sudo apt-get install -y ccache
+          # Make gcc/gxx symlinks first in path
+          sudo /usr/sbin/update-ccache-symlinks
+          echo "/usr/lib/ccache" >> $GITHUB_PATH
+  
+
       - name: "Prepare ccache"
         id: prepare-ccache
         shell: bash -l {0}
