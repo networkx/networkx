@@ -8,7 +8,7 @@ Highlights
 
 New functions for finding articulation points, generating random bipartite graphs, constructing adjacency matrix representations, forming graph products, computing assortativity coefficients, measuring subgraph centrality and communicability, finding k-clique communities, and writing JSON format output.
 
-New examples for drawing with D3 Javascript library, and ordering matrices with the Cuthill-McKee algorithm.
+New examples for drawing with D3 JavaScript library, and ordering matrices with the Cuthill-McKee algorithm.
 
 More memory efficient implementation of current-flow betweenness and new approximation algorithms for current-flow betweenness and shortest-path betweenness.
 
@@ -81,7 +81,7 @@ and 'edge_match' functions, users are encouraged to work with::
 
     categorical_node_match
     categorical_edge_match
-    categroical_multiedge_match
+    categorical_multiedge_match
     numerical_node_match
     numerical_edge_match
     numerical_multiedge_match

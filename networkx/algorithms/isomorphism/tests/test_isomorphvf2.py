@@ -2,6 +2,7 @@
     Tests for VF2 isomorphism algorithm.
 """
 
+import importlib.resources
 import os
 import random
 import struct
@@ -118,18 +119,18 @@ class TestVF2GraphDB:
         return graph
 
     def test_graph(self):
-        head, tail = os.path.split(__file__)
-        g1 = self.create_graph(os.path.join(head, "iso_r01_s80.A99"))
-        g2 = self.create_graph(os.path.join(head, "iso_r01_s80.B99"))
+        head = importlib.resources.files("networkx.algorithms.isomorphism.tests")
+        g1 = self.create_graph(head / "iso_r01_s80.A99")
+        g2 = self.create_graph(head / "iso_r01_s80.B99")
         gm = iso.GraphMatcher(g1, g2)
         assert gm.is_isomorphic()
 
     def test_subgraph(self):
         # A is the subgraph
         # B is the full graph
-        head, tail = os.path.split(__file__)
-        subgraph = self.create_graph(os.path.join(head, "si2_b06_m200.A99"))
-        graph = self.create_graph(os.path.join(head, "si2_b06_m200.B99"))
+        head = importlib.resources.files("networkx.algorithms.isomorphism.tests")
+        subgraph = self.create_graph(head / "si2_b06_m200.A99")
+        graph = self.create_graph(head / "si2_b06_m200.B99")
         gm = iso.GraphMatcher(graph, subgraph)
         assert gm.subgraph_is_isomorphic()
         # Just testing some cases

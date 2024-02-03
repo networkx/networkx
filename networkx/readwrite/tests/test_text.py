@@ -1747,7 +1747,7 @@ def generate_test_graphs():
     for directed in [0, 1]:
         cls = nx.DiGraph if directed else nx.Graph
 
-        for num_nodes in range(0, 17):
+        for num_nodes in range(17):
             # Disconnected graph
             graph = cls()
             graph.add_nodes_from(range(num_nodes))

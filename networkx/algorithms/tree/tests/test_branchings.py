@@ -553,11 +553,11 @@ def test_arborescence_iterator_min():
     """
     Tests the arborescence iterator.
 
-    A brute force method found 680 arboresecences in this graph.
+    A brute force method found 680 arborescences in this graph.
     This test will not verify all of them individually, but will check two
     things
 
-    * The iterator returns 680 arboresecences
+    * The iterator returns 680 arborescences
     * The weight of the arborescences is non-strictly increasing
 
     for more information please visit
@@ -580,11 +580,11 @@ def test_arborescence_iterator_max():
     """
     Tests the arborescence iterator.
 
-    A brute force method found 680 arboresecences in this graph.
+    A brute force method found 680 arborescences in this graph.
     This test will not verify all of them individually, but will check two
     things
 
-    * The iterator returns 680 arboresecences
+    * The iterator returns 680 arborescences
     * The weight of the arborescences is non-strictly decreasing
 
     for more information please visit

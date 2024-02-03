@@ -12,11 +12,11 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu, macos, windows]
-        python-version: ["pypy-3.9", "3.12-dev"]
+        python-version: ["pypy-3.10", "3.13-dev"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -36,11 +36,11 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu, macos, windows]
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.10", "3.11", "3.12"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -51,26 +51,46 @@ jobs:
           python -m pip install .
           python -m pip list
 
+      - name: Test for warnings at import time
+        run: python -Werror -c "import networkx"
+
       - name: Test NetworkX
         run: |
           pytest --doctest-modules --durations=10 --pyargs networkx
 
-      - name: Test Dispatching
-        # Limit this to only a single combination from the matrix
-        if: ${{ (matrix.os == 'ubuntu') && (matrix.python-version == '3.11') }}
+  dispatch:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install packages
         run: |
-          NETWORKX_GRAPH_CONVERT=nx-loopback pytest --doctest-modules --durations=10 --pyargs networkx
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements/default.txt -r requirements/test.txt
+          python -m pip install .
+          python -m pip list
+
+      - name: Test Dispatching
+        run: |
+          NETWORKX_TEST_BACKEND=nx-loopback pytest --doctest-modules --durations=10 --pyargs networkx
 
   extra:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-22.04, macos-latest, windows-latest]
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.10", "3.11", "3.12"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -126,11 +146,11 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu, macos]
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.10", "3.11", "3.12"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -138,7 +158,6 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install --pre -r requirements/default.txt -r requirements/test.txt
-          pip install scipy==1.10.1
           pip install .
           pip list
 

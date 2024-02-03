@@ -210,7 +210,7 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
 
     def two_hop_pred(self, Gx, Gx_node, core_x, pred):
         """
-        The predeccessors of the ego node.
+        The predecessors of the ego node.
         """
         return all(
             self.one_hop(

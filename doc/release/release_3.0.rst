@@ -140,7 +140,7 @@ Merged PRs
 - Remove gdal dependency (#5766)
 - Update return type of attrmatrix (#5764)
 - Remove unused deprecated argument from to_pandas_edgelist (#5778)
-- Remove deprecated function edge_betweeness (#5765)
+- Remove deprecated function edge_betweenness (#5765)
 - Remove pyyaml dependency (#5763)
 - Remove copy methods for Filter* coreviews (#5776)
 - Remove deprecated function nx.info (#5759)

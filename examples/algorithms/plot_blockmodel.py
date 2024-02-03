@@ -40,7 +40,7 @@ def create_hc(G):
     # Create hierarchical cluster
     Y = distance.squareform(distances)
     Z = hierarchy.complete(Y)  # Creates HC using farthest point linkage
-    # This partition selection is arbitrary, for illustrive purposes
+    # This partition selection is arbitrary, for illustrative purposes
     membership = list(hierarchy.fcluster(Z, t=1.15))
     # Create collection of lists for blockmodel
     partition = defaultdict(list)

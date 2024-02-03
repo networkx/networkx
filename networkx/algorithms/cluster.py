@@ -17,7 +17,7 @@ __all__ = [
 
 
 @not_implemented_for("directed")
-@nx._dispatch
+@nx._dispatchable
 def triangles(G, nodes=None):
     """Compute the number of triangles.
 
@@ -67,20 +67,18 @@ def triangles(G, nodes=None):
 
     # dict used to avoid visiting the same nodes twice
     # this allows calculating/counting each triangle only once
-    later_neighbors = {}
+    later_nbrs = {}
 
     # iterate over the nodes in a graph
     for node, neighbors in G.adjacency():
-        later_neighbors[node] = {
-            n for n in neighbors if n not in later_neighbors and n is not node
-        }
+        later_nbrs[node] = {n for n in neighbors if n not in later_nbrs and n != node}
 
     # instantiate Counter for each node to include isolated nodes
     # add 1 to the count if a nodes neighbor's neighbor is also a neighbor
     triangle_counts = Counter(dict.fromkeys(G, 0))
-    for node1, neighbors in later_neighbors.items():
+    for node1, neighbors in later_nbrs.items():
         for node2 in neighbors:
-            third_nodes = neighbors & later_neighbors[node2]
+            third_nodes = neighbors & later_nbrs[node2]
             m = len(third_nodes)
             triangle_counts[node1] += m
             triangle_counts[node2] += m
@@ -249,7 +247,7 @@ def _directed_weighted_triangles_and_degree_iter(G, nodes=None, weight="weight")
         yield (i, dtotal, dbidirectional, directed_triangles)
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def average_clustering(G, nodes=None, weight=None, count_zeros=True):
     r"""Compute the average clustering coefficient for the graph G.
 
@@ -309,7 +307,7 @@ def average_clustering(G, nodes=None, weight=None, count_zeros=True):
     return sum(c) / len(c)
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def clustering(G, nodes=None, weight=None):
     r"""Compute the clustering coefficient for nodes.
 
@@ -424,7 +422,7 @@ def clustering(G, nodes=None, weight=None):
     return clusterc
 
 
-@nx._dispatch
+@nx._dispatchable
 def transitivity(G):
     r"""Compute graph transitivity, the fraction of all possible triangles
     present in G.
@@ -463,7 +461,7 @@ def transitivity(G):
     return 0 if triangles == 0 else triangles / contri
 
 
-@nx._dispatch
+@nx._dispatchable
 def square_clustering(G, nodes=None):
     r"""Compute the squares clustering coefficient for nodes.
 
@@ -542,7 +540,7 @@ def square_clustering(G, nodes=None):
 
 
 @not_implemented_for("directed")
-@nx._dispatch
+@nx._dispatchable
 def generalized_degree(G, nodes=None):
     r"""Compute the generalized degree for nodes.
 

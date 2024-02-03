@@ -43,7 +43,7 @@ def test_intersection():
     assert sorted(I.edges()) == [(2, 3)]
 
     ##################
-    # Tests for @nx._dispatch mechanism with multiple graph arguments
+    # Tests for @nx._dispatchable mechanism with multiple graph arguments
     # nx.intersection is called as if it were a re-implementation
     # from another package.
     ###################
@@ -53,7 +53,7 @@ def test_intersection():
     assert set(I2.nodes()) == {1, 2, 3, 4}
     assert sorted(I2.edges()) == [(2, 3)]
     # Only test if not performing auto convert testing of backend implementations
-    if os.environ.get("NETWORKX_GRAPH_CONVERT", None) is None:
+    if not nx.utils.backends._dispatchable._automatic_backends:
         with pytest.raises(TypeError):
             nx.intersection(G2, H)
         with pytest.raises(TypeError):
@@ -199,6 +199,9 @@ def test_difference_attributes():
     assert set(gh.nodes()) == set(g.nodes())
     assert set(gh.nodes()) == set(h.nodes())
     assert sorted(gh.edges()) == []
+    # node and graph data should not be copied over
+    assert gh.nodes.data() != g.nodes.data()
+    assert gh.graph != g.graph
 
 
 def test_difference_multigraph_attributes():

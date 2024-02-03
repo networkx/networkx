@@ -94,7 +94,7 @@ def equivalence_classes(iterable, relation):
     return {frozenset(block) for block in blocks}
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def quotient_graph(
     G,
     partition,
@@ -425,7 +425,7 @@ def _quotient_graph(
     return H
 
 
-@nx._dispatch(preserve_all_attrs=True)
+@nx._dispatchable(preserve_all_attrs=True)
 def contracted_nodes(G, u, v, self_loops=True, copy=True):
     """Returns the graph that results from contracting `u` and `v`.
 
@@ -497,6 +497,18 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
     >>> list(H.edges())
     [(1, 1)]
 
+    In a ``MultiDiGraph`` with a self loop, the in and out edges will
+    be treated separately as edges, so while contracting a node which
+    has a self loop the contraction will add multiple edges:
+
+    >>> G = nx.MultiDiGraph([(1, 2), (2, 2)])
+    >>> H = nx.contracted_nodes(G, 1, 2)
+    >>> list(H.edges())  # edge 1->2, 2->2, 2<-2 from the original Graph G
+    [(1, 1), (1, 1), (1, 1)]
+    >>> H = nx.contracted_nodes(G, 1, 2, self_loops=False)
+    >>> list(H.edges())  # edge 2->2, 2<-2 from the original Graph G
+    [(1, 1), (1, 1)]
+
     See Also
     --------
     contracted_edge
@@ -548,7 +560,7 @@ def contracted_nodes(G, u, v, self_loops=True, copy=True):
 identified_nodes = contracted_nodes
 
 
-@nx._dispatch(preserve_edge_attrs=True)
+@nx._dispatchable(preserve_edge_attrs=True)
 def contracted_edge(G, edge, self_loops=True, copy=True):
     """Returns the graph that results from contracting the specified edge.
 

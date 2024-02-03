@@ -73,7 +73,7 @@ def _max_weight(weight):
     return weight
 
 
-@nx._dispatch(edge_attrs={"attr": "default"})
+@nx._dispatchable(edge_attrs={"attr": "default"})
 def branching_weight(G, attr="weight", default=1):
     """
     Returns the total weight of a branching.
@@ -107,8 +107,8 @@ def branching_weight(G, attr="weight", default=1):
     return sum(edge[2].get(attr, default) for edge in G.edges(data=True))
 
 
-@nx._dispatch(edge_attrs={"attr": "default"})
 @py_random_state(4)
+@nx._dispatchable(edge_attrs={"attr": "default"})
 def greedy_branching(G, attr="weight", default=1, kind="max", seed=None):
     """
     Returns a branching obtained through a greedy algorithm.
@@ -277,7 +277,7 @@ def get_path(G, u, v):
     # in the shortest path.
 
     def first_key(i, vv):
-        # Needed for 2.x/3.x compatibilitity
+        # Needed for 2.x/3.x compatibility
         keys = G[nodes[i]][vv].keys()
         # Normalize behavior
         keys = list(keys)
@@ -324,7 +324,7 @@ class Edmonds:
 
         import warnings
 
-        msg = "Edmonds has been deprecated and will be removed in NetworkX 3.4. Please use the approiate minimum or maximum branching or arborescence function directly."
+        msg = "Edmonds has been deprecated and will be removed in NetworkX 3.4. Please use the appropriate minimum or maximum branching or arborescence function directly."
         warnings.warn(msg, DeprecationWarning)
 
     def _init(self, attr, default, kind, style, preserve_attrs, seed, partition):
@@ -745,7 +745,7 @@ class Edmonds:
         return H
 
 
-@nx._dispatch(
+@nx._dispatchable(
     edge_attrs={"attr": "default", "partition": 0},
     preserve_edge_attrs="preserve_attrs",
 )
@@ -847,7 +847,7 @@ def maximum_branching(
 
     # These are the buckets from the paper.
     #
-    # In the paper, G^i are modifed versions of the original graph.
+    # In the paper, G^i are modified versions of the original graph.
     # D^i and E^i are the nodes and edges of the maximal edges that are
     # consistent with G^i. In this implementation, D^i and E^i are stored
     # together as the graph B^i. We will have strictly more B^i then the
@@ -930,7 +930,7 @@ def maximum_branching(
 
     def edmonds_step_I2(v, desired_edge, level):
         """
-        Perfrom step I2 from Edmonds' paper
+        Perform step I2 from Edmonds' paper
 
         First, check if the last step I1 created a cycle. If it did not, do nothing.
         If it did, store the cycle for later reference and contract it.
@@ -1117,8 +1117,8 @@ def maximum_branching(
 
         # The current level is i, and we start counting from 0.
         #
-        # We need the node at level i+1 that resuilts from merging a circuit
-        # at level i. basename_0 is the first merged node and this happends
+        # We need the node at level i+1 that results from merging a circuit
+        # at level i. basename_0 is the first merged node and this happens
         # at level 1. That is basename_0 is a node at level 1 that results
         # from merging a circuit at level 0.
 
@@ -1173,7 +1173,7 @@ def maximum_branching(
     return H
 
 
-@nx._dispatch(
+@nx._dispatchable(
     edge_attrs={"attr": "default", "partition": None},
     preserve_edge_attrs="preserve_attrs",
 )
@@ -1194,7 +1194,7 @@ def minimum_branching(
     return B
 
 
-@nx._dispatch(
+@nx._dispatchable(
     edge_attrs={"attr": "default", "partition": None},
     preserve_edge_attrs="preserve_attrs",
 )
@@ -1258,7 +1258,7 @@ def minimal_branching(
     return B
 
 
-@nx._dispatch(
+@nx._dispatchable(
     edge_attrs={"attr": "default", "partition": None},
     preserve_edge_attrs="preserve_attrs",
 )
@@ -1300,7 +1300,7 @@ def maximum_spanning_arborescence(
     return B
 
 
-@nx._dispatch(
+@nx._dispatchable(
     edge_attrs={"attr": "default", "partition": None},
     preserve_edge_attrs="preserve_attrs",
 )

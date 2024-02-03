@@ -2,11 +2,11 @@
 
 # A full test of all dispatchable algorithms is performed by
 # modifying the pytest invocation and setting an environment variable
-# NETWORKX_GRAPH_CONVERT=nx-loopback pytest
+# NETWORKX_TEST_BACKEND=nx-loopback pytest
 # This is comprehensive, but only tests the `test_override_dispatch`
 # function in networkx.classes.backends.
 
-# To test the `_dispatch` function directly, several tests scattered throughout
+# To test the `_dispatchable` function directly, several tests scattered throughout
 # NetworkX have been augmented to test normal and dispatch mode.
 # Searching for `dispatch_interface` should locate the specific tests.
 
@@ -16,23 +16,23 @@ from networkx.classes.reportviews import NodeView
 
 
 class LoopbackGraph(Graph):
-    __networkx_plugin__ = "nx-loopback"
+    __networkx_backend__ = "nx-loopback"
 
 
 class LoopbackDiGraph(DiGraph):
-    __networkx_plugin__ = "nx-loopback"
+    __networkx_backend__ = "nx-loopback"
 
 
 class LoopbackMultiGraph(MultiGraph):
-    __networkx_plugin__ = "nx-loopback"
+    __networkx_backend__ = "nx-loopback"
 
 
 class LoopbackMultiDiGraph(MultiDiGraph):
-    __networkx_plugin__ = "nx-loopback"
+    __networkx_backend__ = "nx-loopback"
 
 
 class LoopbackPlanarEmbedding(PlanarEmbedding):
-    __networkx_plugin__ = "nx-loopback"
+    __networkx_backend__ = "nx-loopback"
 
 
 def convert(graph):
@@ -52,7 +52,7 @@ def convert(graph):
 class LoopbackDispatcher:
     def __getattr__(self, item):
         try:
-            return nx.utils.backends._registered_algorithms[item].__wrapped__
+            return nx.utils.backends._registered_algorithms[item].orig_func
         except KeyError:
             raise AttributeError(item) from None
 
@@ -184,6 +184,11 @@ class LoopbackDispatcher:
         # Verify that items can be xfailed
         for item in items:
             assert hasattr(item, "add_marker")
+
+    def can_run(self, name, args, kwargs):
+        # It is unnecessary to define this function if algorithms are fully supported.
+        # We include it for illustration purposes.
+        return hasattr(self, name)
 
 
 dispatcher = LoopbackDispatcher()
