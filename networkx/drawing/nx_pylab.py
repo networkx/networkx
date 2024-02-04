@@ -16,6 +16,8 @@ See Also
  - :func:`matplotlib.pyplot.scatter`
  - :obj:`matplotlib.patches.FancyArrowPatch`
 """
+import collections as coll
+import itertools as itl
 from numbers import Number
 
 import networkx as nx
@@ -485,10 +487,10 @@ class FancyArrowFactory:
             self.n = len(self.base_connection_styles)
             self.selfloop_height = selfloop_height
 
-        def curved(self, edge_key):
-            return self.base_connection_styles[edge_key % self.n]
+        def curved(self, edge_index):
+            return self.base_connection_styles[edge_index % self.n]
 
-        def self_loop(self, edge_key):
+        def self_loop(self, edge_index):
             def self_loop_connection(posA, posB, *args, **kwargs):
                 if not self.np.all(posA == posB):
                     raise nx.NetworkXError(
@@ -517,9 +519,9 @@ class FancyArrowFactory:
                 )
                 # Rotate self loop 90 deg. if more than 1
                 # This will allow for maximum of 4 visible self loops
-                if edge_key % 4:
+                if edge_index % 4:
                     x, y = path.T
-                    for i in range(edge_key % 4):
+                    for _ in range(edge_index % 4):
                         x, y = y, -x
                     path = self.np.array([x, y]).T
                 return self.mpl.path.Path(
@@ -533,7 +535,7 @@ class FancyArrowFactory:
         edge_pos,
         edgelist,
         nodelist,
-        edge_keys,
+        edge_indices,
         node_size,
         selfloop_height,
         connectionstyle="arc3",
@@ -553,6 +555,13 @@ class FancyArrowFactory:
         import matplotlib.pyplot as plt
         import numpy as np
 
+        if isinstance(connectionstyle, str):
+            connectionstyle = [connectionstyle]
+        elif np.iterable(connectionstyle):
+            connectionstyle = list(connectionstyle)
+        else:
+            msg = "ConnectionStyleFactory arg `connectionstyle` must be str or iterable"
+            raise nx.NetworkXError(msg)
         self.ax = ax
         self.mpl = mpl
         self.np = np
@@ -562,7 +571,7 @@ class FancyArrowFactory:
         self.node_shape = node_shape
         self.min_source_margin = min_source_margin
         self.min_target_margin = min_target_margin
-        self.edge_keys = edge_keys
+        self.edge_indices = edge_indices
         self.node_size = node_size
         self.connectionstyle_factory = self.ConnectionStyleFactory(
             connectionstyle, selfloop_height, ax
@@ -625,9 +634,11 @@ class FancyArrowFactory:
             linestyle = self.style
 
         if x1 == x2 and y1 == y2:
-            connectionstyle = self.connectionstyle_factory.self_loop(self.edge_keys[i])
+            connectionstyle = self.connectionstyle_factory.self_loop(
+                self.edge_indices[i]
+            )
         else:
-            connectionstyle = self.connectionstyle_factory.curved(self.edge_keys[i])
+            connectionstyle = self.connectionstyle_factory.curved(self.edge_indices[i])
         return self.mpl.patches.FancyArrowPatch(
             (x1, y1),
             (x2, y2),
@@ -911,9 +922,10 @@ def draw_networkx_edges(
 
     if len(edgelist[0]) == 3:
         # MultiGraph input
-        edge_keys = [e[2] for e in edgelist]
+        key_count = coll.defaultdict(lambda: itl.count(0))
+        edge_indices = [next(key_count[tuple(e[:2])]) for e in edgelist]
     else:
-        edge_keys = [0] * len(edgelist)
+        edge_indices = [0] * len(edgelist)
 
     # Check if edge_color is an array of floats and map to edge_cmap.
     # This is the only case handled differently from matplotlib
@@ -949,7 +961,7 @@ def draw_networkx_edges(
         edge_pos,
         edgelist,
         nodelist,
-        edge_keys,
+        edge_indices,
         node_size,
         selfloop_height,
         connectionstyle,
@@ -1373,9 +1385,10 @@ def draw_networkx_edge_labels(
 
     if len(edgelist[0]) == 3:
         # MultiGraph input
-        edge_keys = [e[2] for e in edgelist]
+        key_count = coll.defaultdict(lambda: itl.count(0))
+        edge_indices = [next(key_count[tuple(e[:2])]) for e in edgelist]
     else:
-        edge_keys = [0] * len(edgelist)
+        edge_indices = [0] * len(edgelist)
 
     # Used to determine self loop mid-point
     # Note, that this will not be accurate,
@@ -1390,7 +1403,7 @@ def draw_networkx_edge_labels(
         edge_pos,
         edgelist,
         nodelist,
-        edge_keys,
+        edge_indices,
         node_size,
         selfloop_height,
         connectionstyle,
