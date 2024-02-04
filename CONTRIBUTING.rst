@@ -78,8 +78,9 @@ Development Workflow
          # Test your installation
          pytest --pyargs networkx
 
-   * Finally, we recommend you use a pre-commit hook, which runs black when
-     you type ``git commit``::
+   * Finally, we recommend you use a pre-commit hook, which is useful
+     to ensure your contribution will pass some of our CI each time
+     you run ``git commit``::
 
        pre-commit install
 
