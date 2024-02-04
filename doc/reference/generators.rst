@@ -34,6 +34,7 @@ Classic
    dorogovtsev_goltsev_mendes_graph
    empty_graph
    full_rary_tree
+   kneser_graph
    ladder_graph
    lollipop_graph
    null_graph
