@@ -855,7 +855,7 @@ def draw_networkx_edges(
         use_linecollection = not (G.is_directed() or G.is_multigraph())
     else:
         if not isinstance(arrows, bool):
-            raise TypeError(f"Argument `arrows` must be of type bool or None")
+            raise TypeError("Argument `arrows` must be of type bool or None")
         use_linecollection = not arrows
 
     if arrowstyle is None:
@@ -880,7 +880,6 @@ def draw_networkx_edges(
             "force FancyArrowPatches or use the default values.\n"
             "Note that using FancyArrowPatches may be slow for large graphs.\n"
         )
-        warn_arg_list = set()
         if arrowstyle is not None:
             warnings.warn(msg.format("arrowstyle"), category=UserWarning, stacklevel=2)
         if arrowsize != 10:
