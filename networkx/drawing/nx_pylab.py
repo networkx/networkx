@@ -16,8 +16,8 @@ See Also
  - :func:`matplotlib.pyplot.scatter`
  - :obj:`matplotlib.patches.FancyArrowPatch`
 """
-import collections as coll
-import itertools as itl
+import collections
+import itertools
 from numbers import Number
 
 import networkx as nx
@@ -902,12 +902,15 @@ def draw_networkx_edges(
         ax = plt.gca()
 
     if edgelist is None:
-        if G.is_multigraph():
-            edgelist = list(G.edges(data=False, keys=True))
-        else:
-            edgelist = list(G.edges(data=False))
+        edgelist = list(G.edges)  # (u, v, k) for multigraph (u, v) otherwise
 
-    if len(edgelist) == 0:  # no edges!
+    if len(edgelist):
+        if G.is_multigraph():
+            key_count = collections.defaultdict(lambda: itertools.count(0))
+            edge_indices = [next(key_count[tuple(e[:2])]) for e in edgelist]
+        else:
+            edge_indices = [0] * len(edgelist)
+    else:  # no edges!
         return []
 
     if nodelist is None:
@@ -919,13 +922,6 @@ def draw_networkx_edges(
 
     # set edge positions
     edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
-
-    if len(edgelist[0]) == 3:
-        # MultiGraph input
-        key_count = coll.defaultdict(lambda: itl.count(0))
-        edge_indices = [next(key_count[tuple(e[:2])]) for e in edgelist]
-    else:
-        edge_indices = [0] * len(edgelist)
 
     # Check if edge_color is an array of floats and map to edge_cmap.
     # This is the only case handled differently from matplotlib
@@ -1368,9 +1364,7 @@ def draw_networkx_edge_labels(
         ax = plt.gca()
 
     if edge_labels is None:
-        kwds = {}
-        if G.is_multigraph():
-            kwds = {"keys": True}
+        kwds = {"keys": True} if G.is_multigraph() else {}
         edge_labels = {tuple(edge): d for *edge, d in G.edges(data=True, **kwds)}
     # NOTHING TO PLOT
     if not edge_labels:
@@ -1383,9 +1377,8 @@ def draw_networkx_edge_labels(
     # set edge positions
     edge_pos = np.asarray([(pos[e[0]], pos[e[1]]) for e in edgelist])
 
-    if len(edgelist[0]) == 3:
-        # MultiGraph input
-        key_count = coll.defaultdict(lambda: itl.count(0))
+    if G.is_multigraph():
+        key_count = collections.defaultdict(lambda: itertools.count(0))
         edge_indices = [next(key_count[tuple(e[:2])]) for e in edgelist]
     else:
         edge_indices = [0] * len(edgelist)
@@ -1456,7 +1449,7 @@ def draw_networkx_edge_labels(
                 zorder=1,
                 clip_on=clip_on,
                 label_pos=label_pos,
-                labels_horizontal=False,
+                labels_horizontal=not rotate,
                 ax=ax,
             )
 
