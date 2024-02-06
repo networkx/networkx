@@ -1282,34 +1282,37 @@ def draw_networkx_edge_labels(
             self.x, self.y, self.angle = self._update_text_pos_angle(arrow)
 
             # Create text object
-            mpl.text.Text.__init__(
-                self, self.x, self.y, *args, rotation=self.angle, **kwargs
-            )
+            super().__init__(self.x, self.y, *args, rotation=self.angle, **kwargs)
             # Bind to axis
             self.ax.add_artist(self)
 
         def _get_arrow_path_disp(self, arrow):
             """
             This is part of FancyArrowPatch._get_path_in_displaycoord
-            The transform is taken from ax, not the object
-            As the object has not been added yet, and doesn't have transform
-            It omitts the second part of the method before path is converted
-            To polygon based on width
+            It omits the second part of the method where path is converted
+                to polygon based on width
+            The transform is taken from ax, not the object, as the object
+                has not been added yet, and doesn't have transform
             """
             dpi_cor = arrow._dpi_cor
-            posA = arrow._convert_xy_units(arrow._posA_posB[0])
-            posB = arrow._convert_xy_units(arrow._posA_posB[1])
-            # (posA, posB) = arrow.get_transform().transform((posA, posB))
-            (posA, posB) = self.ax.transData.transform((posA, posB))
-            # Return in display coordinates
-            return arrow.get_connectionstyle()(
-                posA,
-                posB,
-                patchA=arrow.patchA,
-                patchB=arrow.patchB,
-                shrinkA=arrow.shrinkA * dpi_cor,
-                shrinkB=arrow.shrinkB * dpi_cor,
-            )
+            # trans_data = arrow.get_transform()
+            trans_data = self.ax.transData
+            if arrow._posA_posB is not None:
+                posA = arrow._convert_xy_units(arrow._posA_posB[0])
+                posB = arrow._convert_xy_units(arrow._posA_posB[1])
+                (posA, posB) = trans_data.transform((posA, posB))
+                _path = arrow.get_connectionstyle()(
+                    posA,
+                    posB,
+                    patchA=arrow.patchA,
+                    patchB=arrow.patchB,
+                    shrinkA=arrow.shrinkA * dpi_cor,
+                    shrinkB=arrow.shrinkB * dpi_cor,
+                )
+            else:
+                _path = trans_data.transform_path(arrow._path_original)
+            # Return is in display coordinates
+            return _path
 
         def _update_text_pos_angle(self, arrow):
             # Fractional label position
@@ -1343,7 +1346,7 @@ def draw_networkx_edge_labels(
             self.set_position((self.x, self.y))
             self.set_rotation(self.angle)
             # redraw text
-            mpl.text.Text.draw(self, renderer)
+            super().draw(renderer)
 
     # use default box of white with white border
     if bbox is None:
