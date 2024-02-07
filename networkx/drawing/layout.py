@@ -1341,9 +1341,11 @@ def bfs_layout(G, start, *, align="vertical", scale=1, center=None):
 
     if node_count != len(H):
         raise NetworkXError(
-            "bfs_layout didn't include all nodes. Perhaps use input graph:\n" 
+            "bfs_layout didn't include all nodes. Perhaps use input graph:\n"
             "        G.subgraph(nx.node_connected_component(G, start))"
         )
 
     # Compute node positions with multipartite_layout
-    return multipartite_layout(H, subset_key="layer", **kwargs)
+    return multipartite_layout(
+        H, subset_key="layer", align=align, scale=scale, center=center
+    )
