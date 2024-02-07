@@ -249,6 +249,39 @@ class TestNavigableSmallWorldGraph:
         gg = nx.grid_graph([5]).to_directed()
         assert nx.is_isomorphic(G, gg)
 
+    def test_invalid_diameter_value(self):
+        with pytest.raises(nx.NetworkXException, match=".*p must be >= 1"):
+            nx.navigable_small_world_graph(5, p=0, q=0, dim=1)
+
+    def test_invalid_long_range_connections_value(self):
+        with pytest.raises(nx.NetworkXException, match=".*q must be >= 0"):
+            nx.navigable_small_world_graph(5, p=1, q=-1, dim=1)
+
+    def test_invalid_exponent_for_decaying_probability_value(self):
+        with pytest.raises(nx.NetworkXException, match=".*r must be >= 0"):
+            nx.navigable_small_world_graph(5, p=1, q=0, r=-1, dim=1)
+
+    def test_r_between_0_and_1(self):
+        """Smoke test for radius in range [0, 1]"""
+        # q=0 means no long-range connections
+        G = nx.navigable_small_world_graph(3, p=1, q=0, r=0.5, dim=2, seed=42)
+        expected = nx.grid_2d_graph(3, 3, create_using=nx.DiGraph)
+        assert nx.utils.graphs_equal(G, expected)
+
+    @pytest.mark.parametrize("seed", range(2478, 2578, 10))
+    def test_r_general_scaling(self, seed):
+        """The probability of adding a long-range edge scales with `1 / dist**r`,
+        so a navigable_small_world graph created with r < 1 should generally
+        result in more edges than a navigable_small_world graph with r >= 1
+        (for 0 < q << n).
+
+        N.B. this is probabilistic, so this test may not hold for all seeds."""
+        G1 = nx.navigable_small_world_graph(7, q=3, r=0.5, seed=seed)
+        G2 = nx.navigable_small_world_graph(7, q=3, r=1, seed=seed)
+        G3 = nx.navigable_small_world_graph(7, q=3, r=2, seed=seed)
+        assert G1.number_of_edges() > G2.number_of_edges()
+        assert G2.number_of_edges() > G3.number_of_edges()
+
 
 class TestThresholdedRandomGeometricGraph:
     """Unit tests for :func:`~networkx.thresholded_random_geometric_graph`"""
@@ -333,3 +366,123 @@ def test_geometric_edges_raises_no_pos():
     msg = "all nodes. must have a '"
     with pytest.raises(nx.NetworkXError, match=msg):
         nx.geometric_edges(G, radius=1)
+
+
+def test_number_of_nodes_S1():
+    G = nx.geometric_soft_configuration_graph(
+        beta=1.5, n=100, gamma=2.7, mean_degree=10, seed=42
+    )
+    assert len(G) == 100
+
+
+def test_set_attributes_S1():
+    G = nx.geometric_soft_configuration_graph(
+        beta=1.5, n=100, gamma=2.7, mean_degree=10, seed=42
+    )
+    kappas = nx.get_node_attributes(G, "kappa")
+    assert len(kappas) == 100
+    thetas = nx.get_node_attributes(G, "theta")
+    assert len(thetas) == 100
+    radii = nx.get_node_attributes(G, "radius")
+    assert len(radii) == 100
+
+
+def test_mean_kappas_mean_degree_S1():
+    G = nx.geometric_soft_configuration_graph(
+        beta=2.5, n=50, gamma=2.7, mean_degree=10, seed=8023
+    )
+
+    kappas = nx.get_node_attributes(G, "kappa")
+    mean_kappas = sum(kappas.values()) / len(kappas)
+    assert math.fabs(mean_kappas - 10) < 0.5
+
+    degrees = dict(G.degree())
+    mean_degree = sum(degrees.values()) / len(degrees)
+    assert math.fabs(mean_degree - 10) < 1
+
+
+def test_dict_kappas_S1():
+    kappas = {i: 10 for i in range(1000)}
+    G = nx.geometric_soft_configuration_graph(beta=1, kappas=kappas)
+    assert len(G) == 1000
+    kappas = nx.get_node_attributes(G, "kappa")
+    assert all(kappa == 10 for kappa in kappas.values())
+
+
+def test_beta_clustering_S1():
+    G1 = nx.geometric_soft_configuration_graph(
+        beta=1.5, n=100, gamma=3.5, mean_degree=10, seed=42
+    )
+    G2 = nx.geometric_soft_configuration_graph(
+        beta=3.0, n=100, gamma=3.5, mean_degree=10, seed=42
+    )
+    assert nx.average_clustering(G1) < nx.average_clustering(G2)
+
+
+def test_wrong_parameters_S1():
+    with pytest.raises(
+        nx.NetworkXError,
+        match="Please provide either kappas, or all 3 of: n, gamma and mean_degree.",
+    ):
+        G = nx.geometric_soft_configuration_graph(
+            beta=1.5, gamma=3.5, mean_degree=10, seed=42
+        )
+
+    with pytest.raises(
+        nx.NetworkXError,
+        match="When kappas is input, n, gamma and mean_degree must not be.",
+    ):
+        kappas = {i: 10 for i in range(1000)}
+        G = nx.geometric_soft_configuration_graph(
+            beta=1.5, kappas=kappas, gamma=2.3, seed=42
+        )
+
+    with pytest.raises(
+        nx.NetworkXError,
+        match="Please provide either kappas, or all 3 of: n, gamma and mean_degree.",
+    ):
+        G = nx.geometric_soft_configuration_graph(beta=1.5, seed=42)
+
+
+def test_negative_beta_S1():
+    with pytest.raises(
+        nx.NetworkXError, match="The parameter beta cannot be smaller or equal to 0."
+    ):
+        G = nx.geometric_soft_configuration_graph(
+            beta=-1, n=100, gamma=2.3, mean_degree=10, seed=42
+        )
+
+
+def test_non_zero_clustering_beta_lower_one_S1():
+    G = nx.geometric_soft_configuration_graph(
+        beta=0.5, n=100, gamma=3.5, mean_degree=10, seed=42
+    )
+    assert nx.average_clustering(G) > 0
+
+
+def test_mean_degree_influence_on_connectivity_S1():
+    low_mean_degree = 2
+    high_mean_degree = 20
+    G_low = nx.geometric_soft_configuration_graph(
+        beta=1.2, n=100, gamma=2.7, mean_degree=low_mean_degree, seed=42
+    )
+    G_high = nx.geometric_soft_configuration_graph(
+        beta=1.2, n=100, gamma=2.7, mean_degree=high_mean_degree, seed=42
+    )
+    assert nx.number_connected_components(G_low) > nx.number_connected_components(
+        G_high
+    )
+
+
+def test_compare_mean_kappas_different_gammas_S1():
+    G1 = nx.geometric_soft_configuration_graph(
+        beta=1.5, n=20, gamma=2.7, mean_degree=5, seed=42
+    )
+    G2 = nx.geometric_soft_configuration_graph(
+        beta=1.5, n=20, gamma=3.5, mean_degree=5, seed=42
+    )
+    kappas1 = nx.get_node_attributes(G1, "kappa")
+    mean_kappas1 = sum(kappas1.values()) / len(kappas1)
+    kappas2 = nx.get_node_attributes(G2, "kappa")
+    mean_kappas2 = sum(kappas2.values()) / len(kappas2)
+    assert math.fabs(mean_kappas1 - mean_kappas2) < 1

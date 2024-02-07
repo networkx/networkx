@@ -12,11 +12,11 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu, macos, windows]
-        python-version: ["pypy-3.10"]
+        python-version: ["pypy-3.10", "3.13-dev"]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -40,7 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -50,6 +50,9 @@ jobs:
           python -m pip install -r requirements/default.txt -r requirements/test.txt
           python -m pip install .
           python -m pip list
+
+      - name: Test for warnings at import time
+        run: python -Werror -c "import networkx"
 
       - name: Test NetworkX
         run: |
@@ -63,7 +66,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -87,7 +90,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -147,7 +150,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 

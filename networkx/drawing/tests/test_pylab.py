@@ -706,19 +706,63 @@ def test_edgelist_kwarg_not_ignored():
     plt.delaxes(ax)
 
 
-def test_draw_networkx_edge_label_multiedge_exception():
-    """
-    draw_networkx_edge_labels should raise an informative error message when
-    the edge label includes keys
-    """
-    exception_msg = "draw_networkx_edge_labels does not support multiedges"
+@pytest.mark.parametrize(
+    ("G", "expected_n_edges"),
+    ([nx.DiGraph(), 2], [nx.MultiGraph(), 4], [nx.MultiDiGraph(), 4]),
+)
+def test_draw_networkx_edges_multiedge_connectionstyle(G, expected_n_edges):
+    """Draws edges correctly for 3 types of graphs and checks for valid length"""
+    for i, (u, v) in enumerate([(0, 1), (0, 1), (0, 1), (0, 2)]):
+        G.add_edge(u, v, weight=round(i / 3, 2))
+    pos = {n: (n, n) for n in G}
+    # Raises on insuficient connectionstyle length
+    for conn_style in [
+        "arc3,rad=0.1",
+        ["arc3,rad=0.1", "arc3,rad=0.1"],
+        ["arc3,rad=0.1", "arc3,rad=0.1", "arc3,rad=0.2"],
+    ]:
+        nx.draw_networkx_edges(G, pos, connectionstyle=conn_style)
+        arrows = nx.draw_networkx_edges(G, pos, connectionstyle=conn_style)
+        assert len(arrows) == expected_n_edges
+
+
+@pytest.mark.parametrize(
+    ("G", "expected_n_edges"),
+    ([nx.DiGraph(), 2], [nx.MultiGraph(), 4], [nx.MultiDiGraph(), 4]),
+)
+def test_draw_networkx_edge_labels_multiedge_connectionstyle(G, expected_n_edges):
+    """Draws labels correctly for 3 types of graphs and checks for valid length and class names"""
+    for i, (u, v) in enumerate([(0, 1), (0, 1), (0, 1), (0, 2)]):
+        G.add_edge(u, v, weight=round(i / 3, 2))
+    pos = {n: (n, n) for n in G}
+    # Raises on insuficient connectionstyle length
+    arrows = nx.draw_networkx_edges(
+        G, pos, connectionstyle=["arc3,rad=0.1", "arc3,rad=0.1", "arc3,rad=0.1"]
+    )
+    for conn_style in [
+        "arc3,rad=0.1",
+        ["arc3,rad=0.1", "arc3,rad=0.2"],
+        ["arc3,rad=0.1", "arc3,rad=0.1", "arc3,rad=0.1"],
+    ]:
+        text_items = nx.draw_networkx_edge_labels(G, pos, connectionstyle=conn_style)
+        assert len(text_items) == expected_n_edges
+        for ti in text_items.values():
+            assert ti.__class__.__name__ == "CurvedArrowText"
+
+
+def test_draw_networkx_edge_label_multiedge():
     G = nx.MultiGraph()
     G.add_edge(0, 1, weight=10)
     G.add_edge(0, 1, weight=20)
     edge_labels = nx.get_edge_attributes(G, "weight")  # Includes edge keys
     pos = {n: (n, n) for n in G}
-    with pytest.raises(nx.NetworkXError, match=exception_msg):
-        nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
+    text_items = nx.draw_networkx_edge_labels(
+        G,
+        pos,
+        edge_labels=edge_labels,
+        connectionstyle=["arc3,rad=0.1", "arc3,rad=0.2"],
+    )
+    assert len(text_items) == 2
 
 
 def test_draw_networkx_edge_label_empty_dict():

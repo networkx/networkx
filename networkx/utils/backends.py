@@ -91,9 +91,11 @@ import warnings
 from functools import partial
 from importlib.metadata import entry_points
 
+import networkx as nx
+
 from ..exception import NetworkXNotImplemented
 
-__all__ = ["_dispatch"]
+__all__ = ["_dispatchable"]
 
 
 def _get_backends(group, *, load_and_call=False):
@@ -122,12 +124,8 @@ def _get_backends(group, *, load_and_call=False):
     return rv
 
 
-# Rename "plugin" to "backend", and give backends a release cycle to update.
-backends = _get_backends("networkx.plugins")
-backend_info = _get_backends("networkx.plugin_info", load_and_call=True)
-
-backends.update(_get_backends("networkx.backends"))
-backend_info.update(_get_backends("networkx.backend_info", load_and_call=True))
+backends = _get_backends("networkx.backends")
+backend_info = _get_backends("networkx.backend_info", load_and_call=True)
 
 # Load and cache backends on-demand
 _loaded_backends = {}  # type: ignore[var-annotated]
@@ -143,72 +141,14 @@ def _load_backend(backend_name):
 _registered_algorithms = {}
 
 
-class _dispatch:
-    """Dispatches to a backend algorithm based on input graph types.
-
-    Parameters
-    ----------
-    func : function
-
-    name : str, optional
-        The name of the algorithm to use for dispatching. If not provided,
-        the name of ``func`` will be used. ``name`` is useful to avoid name
-        conflicts, as all dispatched algorithms live in a single namespace.
-
-    graphs : str or dict or None, default "G"
-        If a string, the parameter name of the graph, which must be the first
-        argument of the wrapped function. If more than one graph is required
-        for the algorithm (or if the graph is not the first argument), provide
-        a dict of parameter name to argument position for each graph argument.
-        For example, ``@_dispatch(graphs={"G": 0, "auxiliary?": 4})``
-        indicates the 0th parameter ``G`` of the function is a required graph,
-        and the 4th parameter ``auxiliary`` is an optional graph.
-        To indicate an argument is a list of graphs, do e.g. ``"[graphs]"``.
-        Use ``graphs=None`` if *no* arguments are NetworkX graphs such as for
-        graph generators, readers, and conversion functions.
-
-    edge_attrs : str or dict, optional
-        ``edge_attrs`` holds information about edge attribute arguments
-        and default values for those edge attributes.
-        If a string, ``edge_attrs`` holds the function argument name that
-        indicates a single edge attribute to include in the converted graph.
-        The default value for this attribute is 1. To indicate that an argument
-        is a list of attributes (all with default value 1), use e.g. ``"[attrs]"``.
-        If a dict, ``edge_attrs`` holds a dict keyed by argument names, with
-        values that are either the default value or, if a string, the argument
-        name that indicates the default value.
-
-    node_attrs : str or dict, optional
-        Like ``edge_attrs``, but for node attributes.
-
-    preserve_edge_attrs : bool or str or dict, optional
-        For bool, whether to preserve all edge attributes.
-        For str, the parameter name that may indicate (with ``True`` or a
-        callable argument) whether all edge attributes should be preserved
-        when converting.
-        For dict of ``{graph_name: {attr: default}}``, indicate pre-determined
-        edge attributes (and defaults) to preserve for input graphs.
-
-    preserve_node_attrs : bool or str or dict, optional
-        Like ``preserve_edge_attrs``, but for node attributes.
-
-    preserve_graph_attrs : bool or set
-        For bool, whether to preserve all graph attributes.
-        For set, which input graph arguments to preserve graph attributes.
-
-    preserve_all_attrs : bool
-        Whether to preserve all edge, node and graph attributes.
-        This overrides all the other preserve_*_attrs.
-
-    """
-
+class _dispatchable:
     # Allow any of the following decorator forms:
-    #  - @_dispatch
-    #  - @_dispatch()
-    #  - @_dispatch(name="override_name")
-    #  - @_dispatch(graphs="graph")
-    #  - @_dispatch(edge_attrs="weight")
-    #  - @_dispatch(graphs={"G": 0, "H": 1}, edge_attrs={"weight": "default"})
+    #  - @_dispatchable
+    #  - @_dispatchable()
+    #  - @_dispatchable(name="override_name")
+    #  - @_dispatchable(graphs="graph")
+    #  - @_dispatchable(edge_attrs="weight")
+    #  - @_dispatchable(graphs={"G": 0, "H": 1}, edge_attrs={"weight": "default"})
 
     # These class attributes are currently used to allow backends to run networkx tests.
     # For example: `PYTHONPATH=. pytest --backend graphblas --fallback-to-nx`
@@ -236,9 +176,66 @@ class _dispatch:
         preserve_graph_attrs=False,
         preserve_all_attrs=False,
     ):
+        """Dispatches to a backend algorithm based on input graph types.
+
+        Parameters
+        ----------
+        func : function
+
+        name : str, optional
+            The name of the algorithm to use for dispatching. If not provided,
+            the name of ``func`` will be used. ``name`` is useful to avoid name
+            conflicts, as all dispatched algorithms live in a single namespace.
+
+        graphs : str or dict or None, default "G"
+            If a string, the parameter name of the graph, which must be the first
+            argument of the wrapped function. If more than one graph is required
+            for the algorithm (or if the graph is not the first argument), provide
+            a dict of parameter name to argument position for each graph argument.
+            For example, ``@_dispatchable(graphs={"G": 0, "auxiliary?": 4})``
+            indicates the 0th parameter ``G`` of the function is a required graph,
+            and the 4th parameter ``auxiliary`` is an optional graph.
+            To indicate an argument is a list of graphs, do e.g. ``"[graphs]"``.
+            Use ``graphs=None`` if *no* arguments are NetworkX graphs such as for
+            graph generators, readers, and conversion functions.
+
+        edge_attrs : str or dict, optional
+            ``edge_attrs`` holds information about edge attribute arguments
+            and default values for those edge attributes.
+            If a string, ``edge_attrs`` holds the function argument name that
+            indicates a single edge attribute to include in the converted graph.
+            The default value for this attribute is 1. To indicate that an argument
+            is a list of attributes (all with default value 1), use e.g. ``"[attrs]"``.
+            If a dict, ``edge_attrs`` holds a dict keyed by argument names, with
+            values that are either the default value or, if a string, the argument
+            name that indicates the default value.
+
+        node_attrs : str or dict, optional
+            Like ``edge_attrs``, but for node attributes.
+
+        preserve_edge_attrs : bool or str or dict, optional
+            For bool, whether to preserve all edge attributes.
+            For str, the parameter name that may indicate (with ``True`` or a
+            callable argument) whether all edge attributes should be preserved
+            when converting.
+            For dict of ``{graph_name: {attr: default}}``, indicate pre-determined
+            edge attributes (and defaults) to preserve for input graphs.
+
+        preserve_node_attrs : bool or str or dict, optional
+            Like ``preserve_edge_attrs``, but for node attributes.
+
+        preserve_graph_attrs : bool or set
+            For bool, whether to preserve all graph attributes.
+            For set, which input graph arguments to preserve graph attributes.
+
+        preserve_all_attrs : bool
+            Whether to preserve all edge, node and graph attributes.
+            This overrides all the other preserve_*_attrs.
+
+        """
         if func is None:
             return partial(
-                _dispatch,
+                _dispatchable,
                 name=name,
                 graphs=graphs,
                 edge_attrs=edge_attrs,
@@ -461,46 +458,29 @@ class _dispatch:
                     args[self.graphs[gname]] = val
 
             has_backends = any(
-                hasattr(g, "__networkx_backend__") or hasattr(g, "__networkx_plugin__")
+                hasattr(g, "__networkx_backend__")
                 if gname not in self.list_graphs
-                else any(
-                    hasattr(g2, "__networkx_backend__")
-                    or hasattr(g2, "__networkx_plugin__")
-                    for g2 in g
-                )
+                else any(hasattr(g2, "__networkx_backend__") for g2 in g)
                 for gname, g in graphs_resolved.items()
             )
             if has_backends:
                 graph_backend_names = {
-                    getattr(
-                        g,
-                        "__networkx_backend__",
-                        getattr(g, "__networkx_plugin__", "networkx"),
-                    )
+                    getattr(g, "__networkx_backend__", "networkx")
                     for gname, g in graphs_resolved.items()
                     if gname not in self.list_graphs
                 }
                 for gname in self.list_graphs & graphs_resolved.keys():
                     graph_backend_names.update(
-                        getattr(
-                            g,
-                            "__networkx_backend__",
-                            getattr(g, "__networkx_plugin__", "networkx"),
-                        )
+                        getattr(g, "__networkx_backend__", "networkx")
                         for g in graphs_resolved[gname]
                     )
         else:
             has_backends = any(
-                hasattr(g, "__networkx_backend__") or hasattr(g, "__networkx_plugin__")
-                for g in graphs_resolved.values()
+                hasattr(g, "__networkx_backend__") for g in graphs_resolved.values()
             )
             if has_backends:
                 graph_backend_names = {
-                    getattr(
-                        g,
-                        "__networkx_backend__",
-                        getattr(g, "__networkx_plugin__", "networkx"),
-                    )
+                    getattr(g, "__networkx_backend__", "networkx")
                     for g in graphs_resolved.values()
                 }
         if has_backends:
@@ -738,12 +718,7 @@ class _dispatch:
                         name=self.name,
                         graph_name=gname,
                     )
-                    if getattr(
-                        g,
-                        "__networkx_backend__",
-                        getattr(g, "__networkx_plugin__", "networkx"),
-                    )
-                    == "networkx"
+                    if getattr(g, "__networkx_backend__", "networkx") == "networkx"
                     else g
                     for g in bound.arguments[gname]
                 ]
@@ -771,14 +746,7 @@ class _dispatch:
                     preserve_graph = gname in preserve_graph_attrs
                 else:
                     preserve_graph = preserve_graph_attrs
-                if (
-                    getattr(
-                        graph,
-                        "__networkx_backend__",
-                        getattr(graph, "__networkx_plugin__", "networkx"),
-                    )
-                    == "networkx"
-                ):
+                if getattr(graph, "__networkx_backend__", "networkx") == "networkx":
                     bound.arguments[gname] = backend.convert_from_nx(
                         graph,
                         edge_attrs=edges,
@@ -832,14 +800,51 @@ class _dispatch:
                 msg += " with the given arguments"
             pytest.xfail(msg)
 
+        from collections.abc import Iterator
+        from copy import copy
+        from io import BufferedReader, BytesIO
+        from itertools import tee
+        from random import Random
+
+        # We sometimes compare the backend result to the original result,
+        # so we need two sets of arguments. We tee iterators and copy
+        # random state so that they may be used twice.
+        if not args:
+            args1 = args2 = args
+        else:
+            args1, args2 = zip(
+                *(
+                    (arg, copy(arg))
+                    if isinstance(arg, Random | BytesIO)
+                    else tee(arg)
+                    if isinstance(arg, Iterator) and not isinstance(arg, BufferedReader)
+                    else (arg, arg)
+                    for arg in args
+                )
+            )
+        if not kwargs:
+            kwargs1 = kwargs2 = kwargs
+        else:
+            kwargs1, kwargs2 = zip(
+                *(
+                    ((k, v), (k, copy(v)))
+                    if isinstance(v, Random | BytesIO)
+                    else ((k, (teed := tee(v))[0]), (k, teed[1]))
+                    if isinstance(v, Iterator) and not isinstance(v, BufferedReader)
+                    else ((k, v), (k, v))
+                    for k, v in kwargs.items()
+                )
+            )
+            kwargs1 = dict(kwargs1)
+            kwargs2 = dict(kwargs2)
         try:
             converted_args, converted_kwargs = self._convert_arguments(
-                backend_name, args, kwargs
+                backend_name, args1, kwargs1
             )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, NetworkXNotImplemented) as exc:
             if fallback_to_nx:
-                return self.orig_func(*args, **kwargs)
+                return self.orig_func(*args2, **kwargs2)
             import pytest
 
             pytest.xfail(
@@ -849,6 +854,7 @@ class _dispatch:
         if self.name in {
             "edmonds_karp_core",
             "barycenter",
+            "contracted_edge",
             "contracted_nodes",
             "stochastic_graph",
             "relabel_nodes",
@@ -856,7 +862,7 @@ class _dispatch:
             # Special-case algorithms that mutate input graphs
             bound = self.__signature__.bind(*converted_args, **converted_kwargs)
             bound.apply_defaults()
-            bound2 = self.__signature__.bind(*args, **kwargs)
+            bound2 = self.__signature__.bind(*args2, **kwargs2)
             bound2.apply_defaults()
             if self.name == "edmonds_karp_core":
                 R1 = backend.convert_to_nx(bound.arguments["R"])
@@ -869,7 +875,10 @@ class _dispatch:
                 attr = bound.arguments["attr"]
                 for k, v in G1.nodes.items():
                     G2.nodes[k][attr] = v[attr]
-            elif self.name == "contracted_nodes" and not bound.arguments["copy"]:
+            elif (
+                self.name in {"contracted_nodes", "contracted_edge"}
+                and not bound.arguments["copy"]
+            ):
                 # Edges and nodes changed; node "contraction" and edge "weight" attrs
                 G1 = backend.convert_to_nx(bound.arguments["G"])
                 G2 = bound2.arguments["G"]
@@ -895,8 +904,43 @@ class _dispatch:
                     G2._succ.clear()
                     G2._succ.update(G1._succ)
                 return G2
+            return backend.convert_to_nx(result)
 
-        return backend.convert_to_nx(result, name=self.name)
+        converted_result = backend.convert_to_nx(result)
+        if isinstance(converted_result, nx.Graph) and self.name not in {
+            "boykov_kolmogorov",
+            "preflow_push",
+            "quotient_graph",
+            "shortest_augmenting_path",
+            "spectral_graph_forge",
+            # We don't handle tempfile.NamedTemporaryFile arguments
+            "read_gml",
+            "read_graph6",
+            "read_sparse6",
+            # We don't handle io.BufferedReader arguments
+            "bipartite_read_edgelist",
+            "read_adjlist",
+            "read_edgelist",
+            "read_graphml",
+            "read_multiline_adjlist",
+            "read_pajek",
+            # graph comparison fails b/c of nan values
+            "read_gexf",
+        }:
+            # For graph return types (e.g. generators), we compare that results are
+            # the same between the backend and networkx, then return the original
+            # networkx result so the iteration order will be consistent in tests.
+            G = self.orig_func(*args2, **kwargs2)
+            if not nx.utils.graphs_equal(G, converted_result):
+                assert G.number_of_nodes() == converted_result.number_of_nodes()
+                assert G.number_of_edges() == converted_result.number_of_edges()
+                assert G.graph == converted_result.graph
+                assert G.nodes == converted_result.nodes
+                assert G.adj == converted_result.adj
+                assert type(G) is type(converted_result)
+                raise AssertionError("Graphs are not equal")
+            return G
+        return converted_result
 
     def _make_doc(self):
         if not self.backends:
@@ -946,10 +990,10 @@ class _dispatch:
 
         This uses the global registry `_registered_algorithms` to deserialize.
         """
-        return _restore_dispatch, (self.name,)
+        return _restore_dispatchable, (self.name,)
 
 
-def _restore_dispatch(name):
+def _restore_dispatchable(name):
     return _registered_algorithms[name]
 
 
@@ -959,11 +1003,17 @@ if os.environ.get("_NETWORKX_BUILDING_DOCS_"):
     # This doesn't show e.g. `*, backend=None, **backend_kwargs` in the
     # signatures, which is probably okay. It does allow the docstring to be
     # updated based on the installed backends.
-    _orig_dispatch = _dispatch
+    _orig_dispatchable = _dispatchable
 
-    def _dispatch(func=None, **kwargs):  # type: ignore[no-redef]
+    def _dispatchable(func=None, **kwargs):  # type: ignore[no-redef]
         if func is None:
-            return partial(_dispatch, **kwargs)
-        dispatched_func = _orig_dispatch(func, **kwargs)
+            return partial(_dispatchable, **kwargs)
+        dispatched_func = _orig_dispatchable(func, **kwargs)
         func.__doc__ = dispatched_func.__doc__
         return func
+
+    _dispatchable.__doc__ = _orig_dispatchable.__new__.__doc__  # type: ignore[method-assign,assignment]
+    _sig = inspect.signature(_orig_dispatchable.__new__)
+    _dispatchable.__signature__ = _sig.replace(  # type: ignore[method-assign,assignment]
+        parameters=[v for k, v in _sig.parameters.items() if k != "cls"]
+    )

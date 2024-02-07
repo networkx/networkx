@@ -43,7 +43,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def to_pandas_adjacency(
     G,
     nodelist=None,
@@ -150,7 +150,7 @@ def to_pandas_adjacency(
     return pd.DataFrame(data=M, index=nodelist, columns=nodelist)
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def from_pandas_adjacency(df, create_using=None):
     r"""Returns a graph from Pandas DataFrame.
 
@@ -171,6 +171,14 @@ def from_pandas_adjacency(df, create_using=None):
 
     If `df` has a single data type for each entry it will be converted to an
     appropriate Python data type.
+
+    If you have node attributes stored in a separate dataframe `df_nodes`,
+    you can load those attributes to the graph `G` using the following code:
+
+    ```
+    df_nodes = pd.DataFrame({"node_id": [1, 2, 3], "attribute1": ["A", "B", "C"]})
+    G.add_nodes_from((n, dict(d)) for n, d in df_nodes.iterrows())
+    ```
 
     If `df` has a user-specified compound data type the names
     of the data fields will be used as attribute keys in the resulting
@@ -211,7 +219,7 @@ def from_pandas_adjacency(df, create_using=None):
     return G
 
 
-@nx._dispatch(preserve_edge_attrs=True)
+@nx._dispatchable(preserve_edge_attrs=True)
 def to_pandas_edgelist(
     G,
     source="source",
@@ -303,7 +311,7 @@ def to_pandas_edgelist(
     return pd.DataFrame(edgelistdict, dtype=dtype)
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def from_pandas_edgelist(
     df,
     source="source",
@@ -350,6 +358,14 @@ def from_pandas_edgelist(
         A valid column name for the edge keys (for a MultiGraph). The values in
         this column are used for the edge keys when adding edges if create_using
         is a multigraph.
+
+    If you have node attributes stored in a separate dataframe `df_nodes`,
+    you can load those attributes to the graph `G` using the following code:
+
+    ```
+    df_nodes = pd.DataFrame({"node_id": [1, 2, 3], "attribute1": ["A", "B", "C"]})
+    G.add_nodes_from((n, dict(d)) for n, d in df_nodes.iterrows())
+    ```
 
     See Also
     --------
@@ -467,7 +483,7 @@ def from_pandas_edgelist(
     return g
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format="csr"):
     """Returns the graph adjacency matrix as a SciPy sparse array.
 
@@ -659,7 +675,7 @@ def _generate_weighted_edges(A):
     return _coo_gen_triples(A.tocoo())
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def from_scipy_sparse_array(
     A, parallel_edges=False, create_using=None, edge_attribute="weight"
 ):
@@ -764,7 +780,7 @@ def from_scipy_sparse_array(
     return G
 
 
-@nx._dispatch(edge_attrs="weight")  # edge attrs may also be obtained from `dtype`
+@nx._dispatchable(edge_attrs="weight")  # edge attrs may also be obtained from `dtype`
 def to_numpy_array(
     G,
     nodelist=None,
@@ -1003,7 +1019,7 @@ def to_numpy_array(
     return A
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def from_numpy_array(A, parallel_edges=False, create_using=None, edge_attr="weight"):
     """Returns a graph from a 2D NumPy array.
 
@@ -1137,12 +1153,12 @@ def from_numpy_array(A, parallel_edges=False, create_using=None, edge_attr="weig
             (
                 u,
                 v,
-                {
+                {}
+                if edge_attr in [False, None]
+                else {
                     name: kind_to_python_type[dtype.kind](val)
                     for (_, dtype, name), val in zip(fields, A[u, v])
-                }
-                if edge_attr
-                else {},
+                },
             )
             for u, v in edges
         )
@@ -1159,17 +1175,17 @@ def from_numpy_array(A, parallel_edges=False, create_using=None, edge_attr="weig
         #         for d in range(A[u, v]):
         #             G.add_edge(u, v, weight=1)
         #
-        if edge_attr:
+        if edge_attr in [False, None]:
+            triples = chain(((u, v, {}) for d in range(A[u, v])) for (u, v) in edges)
+        else:
             triples = chain(
                 ((u, v, {edge_attr: 1}) for d in range(A[u, v])) for (u, v) in edges
             )
-        else:
-            triples = chain(((u, v, {}) for d in range(A[u, v])) for (u, v) in edges)
     else:  # basic data type
-        if edge_attr:
-            triples = ((u, v, {edge_attr: python_type(A[u, v])}) for u, v in edges)
-        else:
+        if edge_attr in [False, None]:
             triples = ((u, v, {}) for u, v in edges)
+        else:
+            triples = ((u, v, {edge_attr: python_type(A[u, v])}) for u, v in edges)
     # If we are creating an undirected multigraph, only add the edges from the
     # upper triangle of the matrix. Otherwise, add all the edges. This relies
     # on the fact that the vertices created in the

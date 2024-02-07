@@ -12,6 +12,7 @@ __all__ = [
     "barycenter",
     "resistance_distance",
     "kemeny_constant",
+    "effective_graph_resistance",
 ]
 
 
@@ -236,7 +237,7 @@ def _extrema_bounding(G, compute="diameter", weight=None):
     return None
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def eccentricity(G, v=None, sp=None, weight=None):
     """Returns the eccentricity of nodes in G.
 
@@ -325,7 +326,7 @@ def eccentricity(G, v=None, sp=None, weight=None):
     return e
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def diameter(G, e=None, usebounds=False, weight=None):
     """Returns the diameter of the graph G.
 
@@ -381,7 +382,7 @@ def diameter(G, e=None, usebounds=False, weight=None):
     return max(e.values())
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def periphery(G, e=None, usebounds=False, weight=None):
     """Returns the periphery of the graph G.
 
@@ -440,7 +441,7 @@ def periphery(G, e=None, usebounds=False, weight=None):
     return p
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def radius(G, e=None, usebounds=False, weight=None):
     """Returns the radius of the graph G.
 
@@ -493,7 +494,7 @@ def radius(G, e=None, usebounds=False, weight=None):
     return min(e.values())
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def center(G, e=None, usebounds=False, weight=None):
     """Returns the center of the graph G.
 
@@ -552,7 +553,7 @@ def center(G, e=None, usebounds=False, weight=None):
     return p
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def barycenter(G, weight=None, attr=None, sp=None):
     r"""Calculate barycenter of a connected graph, optionally with edge weights.
 
@@ -631,24 +632,10 @@ def barycenter(G, weight=None, attr=None, sp=None):
     return barycenter_vertices
 
 
-def _count_lu_permutations(perm_array):
-    """Counts the number of permutations in SuperLU perm_c or perm_r"""
-    perm_cnt = 0
-    arr = perm_array.tolist()
-    for i in range(len(arr)):
-        if i != arr[i]:
-            perm_cnt += 1
-            n = arr.index(i)
-            arr[n] = arr[i]
-            arr[i] = i
-
-    return perm_cnt
-
-
 @not_implemented_for("directed")
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=True):
-    """Returns the resistance distance between every pair of nodes on graph G.
+    """Returns the resistance distance between pairs of nodes in graph G.
 
     The resistance distance between two nodes of a graph is akin to treating
     the graph as a grid of resistors with a resistance equal to the provided
@@ -775,47 +762,98 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
                 j = node_list.index(n2)
                 d[n][n2] = Linv[i, i] + Linv[j, j] - Linv[i, j] - Linv[j, i]
         return d
-    # Replace with collapsing topology or approximated zero?
 
-    # Using determinants to compute the effective resistance is more memory
-    # efficient than directly calculating the pseudo-inverse
-    L = nx.laplacian_matrix(G, node_list, weight=weight).asformat("csc")
-    indices = list(range(L.shape[0]))
-    # w/ nodeA removed
-    indices.remove(node_list.index(nodeA))
-    L_a = L[indices, :][:, indices]
-    # Both nodeA and nodeB removed
-    indices.remove(node_list.index(nodeB))
-    L_ab = L[indices, :][:, indices]
 
-    # Factorize Laplacian submatrixes and extract diagonals
-    # Order the diagonals to minimize the likelihood over overflows
-    # during computing the determinant
-    lu_a = sp.sparse.linalg.splu(L_a, options={"SymmetricMode": True})
-    LdiagA = lu_a.U.diagonal()
-    LdiagA_s = np.prod(np.sign(LdiagA)) * np.prod(lu_a.L.diagonal())
-    LdiagA_s *= (-1) ** _count_lu_permutations(lu_a.perm_r)
-    LdiagA_s *= (-1) ** _count_lu_permutations(lu_a.perm_c)
-    LdiagA = np.absolute(LdiagA)
-    LdiagA = np.sort(LdiagA)
+@not_implemented_for("directed")
+@nx._dispatchable(edge_attrs="weight")
+def effective_graph_resistance(G, weight=None, invert_weight=True):
+    """Returns the Effective graph resistance of G.
 
-    lu_ab = sp.sparse.linalg.splu(L_ab, options={"SymmetricMode": True})
-    LdiagAB = lu_ab.U.diagonal()
-    LdiagAB_s = np.prod(np.sign(LdiagAB)) * np.prod(lu_ab.L.diagonal())
-    LdiagAB_s *= (-1) ** _count_lu_permutations(lu_ab.perm_r)
-    LdiagAB_s *= (-1) ** _count_lu_permutations(lu_ab.perm_c)
-    LdiagAB = np.absolute(LdiagAB)
-    LdiagAB = np.sort(LdiagAB)
+    Also known as the Kirchhoff index.
 
-    # Calculate the ratio of determinant, rd = det(L_ab)/det(L_a)
-    Ldet = np.prod(np.divide(np.append(LdiagAB, [1]), LdiagA))
-    rd = Ldet * LdiagAB_s / LdiagA_s
+    The effective graph resistance is defined as the sum
+    of the resistance distance of every node pair in G [1]_.
 
-    return rd
+    If weight is not provided, then a weight of 1 is used for all edges.
+
+    The effective graph resistance of a disconnected graph is infinite.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+       A graph
+
+    weight : string or None, optional (default=None)
+       The edge data key used to compute the effective graph resistance.
+       If None, then each edge has weight 1.
+
+    invert_weight : boolean (default=True)
+        Proper calculation of resistance distance requires building the
+        Laplacian matrix with the reciprocal of the weight. Not required
+        if the weight is already inverted. Weight cannot be zero.
+
+    Returns
+    -------
+    RG : float
+        The effective graph resistance of `G`.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is a directed graph.
+
+    NetworkXError
+        If `G` does not contain any nodes.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> round(nx.effective_graph_resistance(G), 10)
+    10.25
+
+    Notes
+    -----
+    The implementation is based on Theorem 2.2 in [2]_. Self-loops are ignored.
+    Multi-edges are contracted in one edge with weight equal to the harmonic sum of the weights.
+
+    References
+    ----------
+    .. [1] Wolfram
+       "Kirchhoff Index."
+       https://mathworld.wolfram.com/KirchhoffIndex.html
+    .. [2] W. Ellens, F. M. Spieksma, P. Van Mieghem, A. Jamakovic, R. E. Kooij.
+        Effective graph resistance.
+        Lin. Alg. Appl. 435:2491-2506, 2011.
+    """
+    import numpy as np
+
+    if len(G) == 0:
+        raise nx.NetworkXError("Graph G must contain at least one node.")
+
+    # Disconnected graphs have infinite Effective graph resistance
+    if not nx.is_connected(G):
+        return np.inf
+
+    # Invert weights
+    G = G.copy()
+    if invert_weight and weight is not None:
+        if G.is_multigraph():
+            for u, v, k, d in G.edges(keys=True, data=True):
+                d[weight] = 1 / d[weight]
+        else:
+            for u, v, d in G.edges(data=True):
+                d[weight] = 1 / d[weight]
+
+    # Get Laplacian eigenvalues
+    mu = np.sort(nx.laplacian_spectrum(G, weight=weight))
+
+    # Compute Effective graph resistance based on spectrum of the Laplacian
+    # Self-loops are ignored
+    return np.sum(1 / mu[1:]) * G.number_of_nodes()
 
 
 @nx.utils.not_implemented_for("directed")
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def kemeny_constant(G, *, weight=None):
     """Returns the Kemeny constant of the given graph.
 
@@ -844,7 +882,7 @@ def kemeny_constant(G, *, weight=None):
 
     Returns
     -------
-    K : float
+    float
         The Kemeny constant of the graph `G`.
 
     Raises

@@ -706,3 +706,27 @@ def test_random_spanning_tree_additive_large():
     # Assert that p is greater than the significance level so that we do not
     # reject the null hypothesis
     assert not p < 0.05
+
+
+def test_random_spanning_tree_empty_graph():
+    G = nx.Graph()
+    rst = nx.tree.random_spanning_tree(G)
+    assert len(rst.nodes) == 0
+    assert len(rst.edges) == 0
+
+
+def test_random_spanning_tree_single_node_graph():
+    G = nx.Graph()
+    G.add_node(0)
+    rst = nx.tree.random_spanning_tree(G)
+    assert len(rst.nodes) == 1
+    assert len(rst.edges) == 0
+
+
+def test_random_spanning_tree_single_node_loop():
+    G = nx.Graph()
+    G.add_node(0)
+    G.add_edge(0, 0)
+    rst = nx.tree.random_spanning_tree(G)
+    assert len(rst.nodes) == 1
+    assert len(rst.edges) == 0

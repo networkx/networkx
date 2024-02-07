@@ -138,5 +138,5 @@ Extendability
 .. autosummary::
    :toctree: generated/
 
-   find_extendability
+   maximal_extendability
 

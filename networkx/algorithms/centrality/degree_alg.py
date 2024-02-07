@@ -5,7 +5,7 @@ from networkx.utils.decorators import not_implemented_for
 __all__ = ["degree_centrality", "in_degree_centrality", "out_degree_centrality"]
 
 
-@nx._dispatch
+@nx._dispatchable
 def degree_centrality(G):
     """Compute the degree centrality for nodes.
 
@@ -50,7 +50,7 @@ def degree_centrality(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def in_degree_centrality(G):
     """Compute the in-degree centrality for nodes.
 
@@ -100,7 +100,7 @@ def in_degree_centrality(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def out_degree_centrality(G):
     """Compute the out-degree centrality for nodes.
 

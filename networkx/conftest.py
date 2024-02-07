@@ -46,21 +46,31 @@ def pytest_configure(config):
     if backend is None:
         backend = os.environ.get("NETWORKX_TEST_BACKEND")
     if backend:
-        networkx.utils.backends._dispatch._automatic_backends = [backend]
+        networkx.utils.backends._dispatchable._automatic_backends = [backend]
         fallback_to_nx = config.getoption("--fallback-to-nx")
         if not fallback_to_nx:
             fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
-        networkx.utils.backends._dispatch._fallback_to_nx = bool(fallback_to_nx)
+        networkx.utils.backends._dispatchable._fallback_to_nx = bool(fallback_to_nx)
     # nx-loopback backend is only available when testing
     backends = entry_points(name="nx-loopback", group="networkx.backends")
-    networkx.utils.backends.backends["nx-loopback"] = next(iter(backends))
+    if backends:
+        networkx.utils.backends.backends["nx-loopback"] = next(iter(backends))
+    else:
+        warnings.warn(
+            "\n\n             WARNING: Mixed NetworkX configuration! \n\n"
+            "        This environment has mixed configuration for networkx.\n"
+            "        The test object nx-loopback is not configured correctly.\n"
+            "        You should not be seeing this message.\n"
+            "        Try `pip install -e .`, or change your PYTHONPATH\n"
+            "        Make sure python finds the networkx repo you are testing\n\n"
+        )
 
 
 def pytest_collection_modifyitems(config, items):
     # Setting this to True here allows tests to be set up before dispatching
     # any function call to a backend.
-    networkx.utils.backends._dispatch._is_testing = True
-    if automatic_backends := networkx.utils.backends._dispatch._automatic_backends:
+    networkx.utils.backends._dispatchable._is_testing = True
+    if automatic_backends := networkx.utils.backends._dispatchable._automatic_backends:
         # Allow pluggable backends to add markers to tests (such as skip or xfail)
         # when running in auto-conversion test mode
         backend = networkx.utils.backends.backends[automatic_backends[0]].load()
@@ -80,17 +90,14 @@ def pytest_collection_modifyitems(config, items):
 @pytest.fixture(autouse=True)
 def set_warnings():
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="nx.nx_pydot"
+        "ignore",
+        category=FutureWarning,
+        message="\n\nsingle_target_shortest_path_length",
     )
     warnings.filterwarnings(
         "ignore",
-        category=DeprecationWarning,
-        message="single_target_shortest_path_length will",
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="shortest_path for all_pairs",
+        category=FutureWarning,
+        message="\n\nshortest_path",
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\nforest_str is deprecated"
@@ -110,12 +117,36 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="\n\nThe `normalized`"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="function `join` is deprecated"
+        "ignore",
+        category=DeprecationWarning,
+        message="The function `join` is deprecated",
     )
     warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
         message="\n\nstrongly_connected_components_recursive",
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nall_triplets"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nrandom_triad"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="minimal_d_separator"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="d_separated"
+    )
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="\n\nk_core")
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nk_shell"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nk_crust"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nk_corona"
     )
 
 
@@ -193,6 +224,7 @@ needs_numpy = [
     "algorithms/node_classification.py",
     "algorithms/non_randomness.py",
     "algorithms/shortest_paths/dense.py",
+    "generators/expanders.py",
     "linalg/bethehessianmatrix.py",
     "linalg/laplacianmatrix.py",
     "utils/misc.py",
@@ -219,6 +251,7 @@ needs_scipy = [
     "convert_matrix.py",
     "drawing/layout.py",
     "generators/spectral_graph_forge.py",
+    "generators/expanders.py",
     "linalg/algebraicconnectivity.py",
     "linalg/attrmatrix.py",
     "linalg/bethehessianmatrix.py",

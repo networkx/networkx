@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch(name="approximate_local_node_connectivity")
+@nx._dispatchable(name="approximate_local_node_connectivity")
 def local_node_connectivity(G, source, target, cutoff=None):
     """Compute node connectivity between source and target.
 
@@ -108,7 +108,7 @@ def local_node_connectivity(G, source, target, cutoff=None):
     return K
 
 
-@nx._dispatch(name="approximate_node_connectivity")
+@nx._dispatchable(name="approximate_node_connectivity")
 def node_connectivity(G, s=None, t=None):
     r"""Returns an approximation for node connectivity for a graph or digraph G.
 
@@ -214,7 +214,7 @@ def node_connectivity(G, s=None, t=None):
     return K
 
 
-@nx._dispatch(name="approximate_all_pairs_node_connectivity")
+@nx._dispatchable(name="approximate_all_pairs_node_connectivity")
 def all_pairs_node_connectivity(G, nbunch=None, cutoff=None):
     """Compute node connectivity between all pairs of nodes.
 
