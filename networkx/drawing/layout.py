@@ -1031,8 +1031,9 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     G : NetworkX graph or list of nodes
         A position will be assigned to every node in G.
 
-    subset_key : string (default='subset')
-        Key of node data to be used as layer subset.
+    subset_key : string or dict (default='subset')
+        If a string, the key of node data in G that holds the node subset.
+        If a dict, keyed by layer number to the nodes in that layer/subset.
 
     align : string (default='vertical')
         The alignment of nodes. Vertical or horizontal.
@@ -1053,6 +1054,12 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     >>> G = nx.complete_multipartite_graph(28, 16, 10)
     >>> pos = nx.multipartite_layout(G)
 
+    or use a dict to provide the layers of the layout
+
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 3), (3, 4)])
+    >>> layers = {'a': [0], 'b': [1], 'c': [2, 3], 'd': [4]}
+    >>> pos = nx.multipartite_layout(G, subset_key=layers)
+
     Notes
     -----
     This algorithm currently only works in two dimensions and does not
@@ -1072,25 +1079,31 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     if len(G) == 0:
         return {}
 
-    layers = {}
-    for v, data in G.nodes(data=True):
-        try:
-            layer = data[subset_key]
-        except KeyError:
-            msg = "all nodes must have subset_key (default='subset') as data"
-            raise ValueError(msg)
-        layers[layer] = [v] + layers.get(layer, [])
+    try:
+        # check if subset_key is dict-like
+        if len(G) != sum(len(nodes) for nodes in subset_key.values()):
+            raise nx.NetworkXError(
+                "all nodes must be in one subset of `subset_key` dict"
+            )
+    except AttributeError:
+        # subset_key is not a dict, hence a string
+        node_to_subset = nx.get_node_attributes(G, subset_key)
+        if len(node_to_subset) != len(G):
+            raise nx.NetworkXError(
+                f"all nodes need a subset_key attribute: {subset_key}"
+            )
+        subset_key = nx.utils.groups(node_to_subset)
 
     # Sort by layer, if possible
     try:
-        layers = sorted(layers.items())
+        layers = dict(sorted(subset_key.items()))
     except TypeError:
-        layers = list(layers.items())
+        layers = subset_key
 
     pos = None
     nodes = []
     width = len(layers)
-    for i, (_, layer) in enumerate(layers):
+    for i, layer in enumerate(layers.values()):
         height = len(layer)
         xs = np.repeat(i, height)
         ys = np.arange(0, height, dtype=float)
@@ -1328,18 +1341,12 @@ def bfs_layout(G, start, *, align="vertical", scale=1, center=None):
     try to minimize edge crossings.
 
     """
-    from collections import deque
-
     G, center = _process_params(G, center, 2)
-    H = G.copy()  # So original graph remains unmodified
 
     # Compute layers with BFS
-    node_count = 0
-    for layer, nodes in enumerate(nx.bfs_layers(H, start)):
-        node_count += len(nodes)
-        nx.set_node_attributes(H, {n: layer for n in nodes}, name="layer")
+    layers = dict(enumerate(nx.bfs_layers(G, start)))
 
-    if node_count != len(H):
+    if len(G) != sum(len(nodes) for nodes in layers.values()):
         raise NetworkXError(
             "bfs_layout didn't include all nodes. Perhaps use input graph:\n"
             "        G.subgraph(nx.node_connected_component(G, start))"
@@ -1347,5 +1354,5 @@ def bfs_layout(G, start, *, align="vertical", scale=1, center=None):
 
     # Compute node positions with multipartite_layout
     return multipartite_layout(
-        H, subset_key="layer", align=align, scale=scale, center=center
+        G, subset_key=layers, align=align, scale=scale, center=center
     )
