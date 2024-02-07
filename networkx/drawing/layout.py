@@ -1298,16 +1298,16 @@ def rescale_layout_dict(pos, scale=1):
     return dict(zip(pos, pos_v))
 
 
-def bfs_layout(G, start, center=None, **kwargs):
+def bfs_layout(G, start, *, align="vertical", scale=1, center=None):
     """Position nodes according to breadth-first search algorithm.
 
     Parameters
     ----------
-    G : NetworkX graph or list of nodes
+    G : NetworkX graph
         A position will be assigned to every node in G.
 
-    start : string
-        Starting point.
+    start : node in `G`
+        Starting node for bfs
 
     center : array-like or None
         Coordinate pair around which to center the layout.
@@ -1334,16 +1334,16 @@ def bfs_layout(G, start, center=None, **kwargs):
     H = G.copy()  # So original graph remains unmodified
 
     # Compute layers with BFS
-    visited = set()
-    queue = deque([(start, 0)])
-    while queue:
-        current_vertex, current_depth = queue.pop()
-        if current_vertex in visited:
-            continue
-        for nbr in H.neighbors(current_vertex):
-            queue.appendleft((nbr, current_depth + 1))
-        visited.add(current_vertex)
-        H.nodes[current_vertex]["layer"] = current_depth
+    node_count = 0
+    for layer, nodes in enumerate(nx.bfs_layers(H, start)):
+        node_count += len(nodes)
+        nx.set_node_attributes(H, {n: layer for n in nodes}, name="layer")
+
+    if node_count != len(H):
+        raise NetworkXError(
+            "bfs_layout didn't include all nodes. Perhaps use input graph:\n" 
+            "        G.subgraph(nx.node_connected_component(G, start))"
+        )
 
     # Compute node positions with multipartite_layout
     return multipartite_layout(H, subset_key="layer", **kwargs)
