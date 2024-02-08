@@ -22,6 +22,7 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
     "sphinx_gallery.gen_gallery",
+    "sphinx_togglebutton",
     "nb2plots",
     "texext",
     "numpydoc",
@@ -272,7 +273,10 @@ def new_setitem(self, key, val):
         return
     # Update how we show backend information in the online docs.
     # Start by creating an "admonition" section to make it stand out.
-    newval = [".. admonition:: Additional backends implement this function", ""]
+    newval = [
+        ".. admonition:: Additional backends implement this function\n:class: dropdown",
+        "",
+    ]
     for line in val:
         if line and not line.startswith(" "):
             # This line must identify a backend; let's try to add a link

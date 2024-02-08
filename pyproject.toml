@@ -70,6 +70,7 @@ doc = [
     'sphinx>=7',
     'pydata-sphinx-theme>=0.14',
     'sphinx-gallery>=0.14',
+    'sphinx_togglebutton>=0.3.2',
     'numpydoc>=1.6',
     'pillow>=9.4',
     'nb2plots>=0.7',
