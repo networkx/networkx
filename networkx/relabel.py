@@ -65,7 +65,7 @@ def relabel_nodes(G, mapping, copy=True):
     A mapping can also be given as a function:
 
     >>> G = nx.path_graph(3)
-    >>> H = nx.relabel_nodes(G, lambda x: x ** 2)
+    >>> H = nx.relabel_nodes(G, lambda x: x**2)
     >>> list(H)
     [0, 1, 4]
 

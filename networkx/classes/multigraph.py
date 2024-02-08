@@ -390,7 +390,7 @@ class MultiGraph(Graph):
         >>> G.edges[1, 2, 0]["weight"] = 3
         >>> result = set()
         >>> for edgekey, data in G[1][2].items():
-        ...     result.add(data.get('weight', 1))
+        ...     result.add(data.get("weight", 1))
         >>> result
         {1, 3}
 
