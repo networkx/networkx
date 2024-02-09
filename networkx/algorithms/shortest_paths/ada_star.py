@@ -54,7 +54,7 @@ class ada_star:
         The suboptimality bound, epsilon >= 1. The algorithm will
     return a path that is suboptimal when epsilon is greater than 1.
     This Epsilon value gaurentees that the path is at least as good as
-    the optimal path + epsilon. 
+    the optimal path + epsilon.
     The path is accessable through the extract_path function.
 
 
@@ -186,13 +186,13 @@ class ada_star:
         # estimate g[n] of the cost from each state to the goal
         self.state_to_goal_est = {n: math.inf for n in G.nodes()}
 
-        # one-step lookahead cost, rhs[n], 0 is n is the goal, otherwise,
-        # is the minimum of the following sum:
-        # The cost between n and its neighbours plus the g value
-        # of that neighbour
-        self.rhs = {n: math.inf for n in G.nodes()}
-        self.rhs[self.target] = 0.0
-        
+        # one-step lookahead cost, is 0 if n is the goal, otherwise,
+        # is the minimum of the cost between n and its neighbours plus
+        # the estimate of the cost of the neighbour to the goal
+
+        self.one_step_lookahead_cost = {n: math.inf for n in G.nodes()}
+        self.one_step_lookahead_cost[self.target] = 0.0
+
         self.epsilon = initial_epsilon
 
         # initialize OPEN, CLOSED, INCONS
@@ -298,16 +298,16 @@ class ada_star:
                         min_index = key
             v = [min_primary, min_secondary]
             u = min_index
-                
-            if ( v >= self._key(self.source)) and self.rhs[
+
+            if (v >= self._key(self.source)) and self.one_step_lookahead_cost[
                 self.source
             ] == self.state_to_goal_est[self.source]:
                 break
             self.OPEN.pop(u)
             self.visited.add(u)
 
-            if self.state_to_goal_est[u] > self.rhs[u]:
-                self.state_to_goal_est[u] = self.rhs[u]
+            if self.state_to_goal_est[u] > self.one_step_lookahead_cost[u]:
+                self.state_to_goal_est[u] = self.one_step_lookahead_cost[u]
                 self.CLOSED.add(u)
                 for un in self.G[u].keys():
                     self._update_state(un)
@@ -388,7 +388,7 @@ class ada_star:
         """Extract the path based on current potentially suboptimal solution.
 
         Returns a path from the start state to the goal state. The path is
-        suboptimal by the at most the epsilon given in the 
+        suboptimal by the at most the epsilon given in the
         compute_or_improve_path function.
 
         Returns
@@ -405,12 +405,14 @@ class ada_star:
         path = [self.source]
         source = self.source
 
-        while True: 
+        while True:
             neighbours = self.G[source].keys()
             # find neighbour with lowest g value
             try:
                 source = min(
-                    neighbours, key=lambda x: self.state_to_goal_est[x] + self.weight(source, x, self.G[source][x])
+                    neighbours,
+                    key=lambda x: self.state_to_goal_est[x]
+                    + self.weight(source, x, self.G[source][x]),
                 )
             except:
                 raise nx.NetworkXNoPath(
@@ -430,14 +432,17 @@ class ada_star:
 
     def _update_state(self, n):
         if n != self.target:
-            self.rhs[n] = float("inf")
+            self.one_step_lookahead_cost[n] = float("inf")
             for nbr in self.G[n].keys():
-                self.rhs[n] = min(self.rhs[n], self.state_to_goal_est[nbr] + self.weight(n, nbr, self.G[n][nbr]))
+                self.one_step_lookahead_cost[n] = min(
+                    self.one_step_lookahead_cost[n],
+                    self.state_to_goal_est[nbr] + self.weight(n, nbr, self.G[n][nbr]),
+                )
 
         if n in self.OPEN:
             self.OPEN.pop(n)
 
-        if self.state_to_goal_est[n] != self.rhs[n]:
+        if self.state_to_goal_est[n] != self.one_step_lookahead_cost[n]:
             if n not in self.CLOSED:
                 self.OPEN[n] = self._key(n)
             else:
@@ -446,9 +451,13 @@ class ada_star:
     def _key(self, n):
         # return the key of a state
         # the key of a state is a list of two floats, (k1, k2)
-        if self.state_to_goal_est[n] > self.rhs[n]:
+        if self.state_to_goal_est[n] > self.one_step_lookahead_cost[n]:
             return [
-                self.rhs[n] + (self.epsilon * self.heursistic(self.source, n)),
-                self.rhs[n],
+                self.one_step_lookahead_cost[n]
+                + (self.epsilon * self.heursistic(self.source, n)),
+                self.one_step_lookahead_cost[n],
             ]
-        return [self.state_to_goal_est[n] + self.heursistic(self.source, n), self.state_to_goal_est[n]]
+        return [
+            self.state_to_goal_est[n] + self.heursistic(self.source, n),
+            self.state_to_goal_est[n],
+        ]
