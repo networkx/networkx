@@ -457,6 +457,12 @@ class TestSquareClustering:
         G = nx.Graph([(1, 2), (1, 3), (2, 4), (3, 4), (3, 5), (3, 6)])
         assert nx.square_clustering(G, [1])[1] == 1 / 3
 
+    def test_self_loops_square_clustering(self):
+        G = nx.path_graph(5)
+        assert nx.square_clustering(G) == {0: 0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0}
+        G.add_edges_from([(0, 0), (1, 1), (2, 2)])
+        assert nx.square_clustering(G) == {0: 1, 1: 0.5, 2: 0.2, 3: 0.0, 4: 0}
+
 
 class TestAverageClustering:
     @classmethod

@@ -48,7 +48,7 @@ def line_graph(G, create_using=None):
     attributes can be copied manually:
 
     >>> G = nx.path_graph(4)
-    >>> G.add_edges_from((u, v, {"tot": u+v}) for u, v in G.edges)
+    >>> G.add_edges_from((u, v, {"tot": u + v}) for u, v in G.edges)
     >>> G.edges(data=True)
     EdgeDataView([(0, 1, {'tot': 1}), (1, 2, {'tot': 3}), (2, 3, {'tot': 5})])
     >>> H = nx.line_graph(G)

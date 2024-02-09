@@ -377,7 +377,7 @@ def lexicographical_topological_sort(G, key=None):
     The sort will fail for any graph with integer and string nodes. Comparison of integer to strings
     is not defined in python.  Is 3 greater or less than 'red'?
 
-    >>> DG = nx.DiGraph([(1, 'red'), (3, 'red'), (1, 'green'), (2, 'blue')])
+    >>> DG = nx.DiGraph([(1, "red"), (3, "red"), (1, "green"), (2, "blue")])
     >>> list(nx.lexicographical_topological_sort(DG))
     Traceback (most recent call last):
     ...
@@ -853,7 +853,7 @@ def transitive_reduction(G):
     To perform transitive reduction on a DiGraph and transfer node/edge data:
 
     >>> DG = nx.DiGraph()
-    >>> DG.add_edges_from([(1, 2), (2, 3), (1, 3)], color='red')
+    >>> DG.add_edges_from([(1, 2), (2, 3), (1, 3)], color="red")
     >>> TR = nx.transitive_reduction(DG)
     >>> TR.add_nodes_from(DG.nodes(data=True))
     >>> TR.add_edges_from((u, v, DG.edges[u, v]) for u, v in TR.edges)
@@ -988,7 +988,7 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
 
     Examples
     --------
-    >>> DG = nx.DiGraph([(0, 1, {'cost':1}), (1, 2, {'cost':1}), (0, 2, {'cost':42})])
+    >>> DG = nx.DiGraph([(0, 1, {"cost": 1}), (1, 2, {"cost": 1}), (0, 2, {"cost": 42})])
     >>> list(nx.all_simple_paths(DG, 0, 2))
     [[0, 1, 2], [0, 2]]
     >>> nx.dag_longest_path(DG)
@@ -1078,7 +1078,7 @@ def dag_longest_path_length(G, weight="weight", default_weight=1):
 
     Examples
     --------
-    >>> DG = nx.DiGraph([(0, 1, {'cost':1}), (1, 2, {'cost':1}), (0, 2, {'cost':42})])
+    >>> DG = nx.DiGraph([(0, 1, {"cost": 1}), (1, 2, {"cost": 1}), (0, 2, {"cost": 42})])
     >>> list(nx.all_simple_paths(DG, 0, 2))
     [[0, 1, 2], [0, 2]]
     >>> nx.dag_longest_path_length(DG)

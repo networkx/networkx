@@ -233,7 +233,7 @@ def floyd_warshall(G, weight="weight"):
     --------
     >>> G = nx.DiGraph()
     >>> G.add_weighted_edges_from([(0, 1, 5), (1, 2, 2), (2, 3, -3), (1, 3, 10), (3, 2, 8)])
-    >>> fw = nx.floyd_warshall(G, weight='weight')
+    >>> fw = nx.floyd_warshall(G, weight="weight")
     >>> results = {a: dict(b) for a, b in fw.items()}
     >>> print(results)
     {0: {0: 0, 1: 5, 2: 7, 3: 4}, 1: {1: 0, 2: 2, 3: -1, 0: inf}, 2: {2: 0, 3: -3, 0: inf, 1: inf}, 3: {3: 0, 2: 8, 0: inf, 1: inf}}

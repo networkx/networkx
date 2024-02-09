@@ -57,10 +57,12 @@ def not_implemented_for(*graph_types):
        def sp_function(G):
            pass
 
+
        # rule out MultiDiGraph
-       @not_implemented_for("directed","multigraph")
+       @not_implemented_for("directed", "multigraph")
        def sp_np_function(G):
            pass
+
 
        # rule out all except DiGraph
        @not_implemented_for("undirected")
@@ -124,21 +126,25 @@ def open_file(path_arg, mode="r"):
     --------
     Decorate functions like this::
 
-       @open_file(0,"r")
+       @open_file(0, "r")
        def read_function(pathname):
            pass
 
-       @open_file(1,"w")
+
+       @open_file(1, "w")
        def write_function(G, pathname):
            pass
 
-       @open_file(1,"w")
+
+       @open_file(1, "w")
        def write_function(G, pathname="graph.dot"):
            pass
 
-       @open_file("pathname","w")
+
+       @open_file("pathname", "w")
        def write_function(G, pathname="graph.dot"):
            pass
+
 
        @open_file("path", "w+")
        def another_function(arg, **kwargs):
@@ -155,19 +161,19 @@ def open_file(path_arg, mode="r"):
 
       @open_file("path")
       def some_function(arg1, arg2, path=None):
-         if path is None:
-             fobj = tempfile.NamedTemporaryFile(delete=False)
-         else:
-             # `path` could have been a string or file object or something
-             # similar. In any event, the decorator has given us a file object
-             # and it will close it for us, if it should.
-             fobj = path
+          if path is None:
+              fobj = tempfile.NamedTemporaryFile(delete=False)
+          else:
+              # `path` could have been a string or file object or something
+              # similar. In any event, the decorator has given us a file object
+              # and it will close it for us, if it should.
+              fobj = path
 
-         try:
-             fobj.write("blah")
-         finally:
-             if path is None:
-                 fobj.close()
+          try:
+              fobj.write("blah")
+          finally:
+              if path is None:
+                  fobj.close()
 
     Normally, we'd want to use "with" to ensure that fobj gets closed.
     However, the decorator will make `path` a file object for us,
@@ -289,9 +295,11 @@ def np_random_state(random_state_argument):
        def random_float(seed=None):
            return seed.rand()
 
+
        @np_random_state(0)
        def random_float(rng=None):
            return rng.rand()
+
 
        @np_random_state(1)
        def random_array(dims, random_state=1):
@@ -341,9 +349,11 @@ def py_random_state(random_state_argument):
        def random_float(random_state=None):
            return random_state.rand()
 
+
        @py_random_state(0)
        def random_float(rng=None):
            return rng.rand()
+
 
        @py_random_state(1)
        def random_array(dims, seed=12345):
@@ -414,6 +424,7 @@ class argmap:
                 if amount.currency != currency:
                     amount = amount.to_currency(currency)
                 return amount
+
             return argmap(_convert, which_arg)
 
     Despite this common idiom for argmap, most of the following examples
@@ -473,9 +484,11 @@ class argmap:
         def double(a):
             return 2 * a
 
+
         @argmap(double, 3)
         def overflow(a, *args):
             return a, args
+
 
         print(overflow(1, 2, 3, 4, 5, 6))  # output is 1, (2, 3, 8, 5, 6)
 
@@ -526,6 +539,7 @@ class argmap:
                     # assume `path` handles the closing
                     fclose = lambda: None
                 return path, fclose
+
             return argmap(_opener, which_arg, try_finally=True)
 
     which can then be used as::
@@ -548,6 +562,7 @@ class argmap:
         def file_to_lines_wrapped(file):
             for line in file.readlines():
                 yield line
+
 
         def file_to_lines_wrapper(file):
             try:
