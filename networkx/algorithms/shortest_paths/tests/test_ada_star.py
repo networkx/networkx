@@ -24,7 +24,6 @@ class TestADAStar:
         cls.XG.add_weighted_edges_from(edges)
 
     def test_multiple_optimal_paths(self):
-        """Tests that ADA* algorithm finds any of multiple optimal paths"""
         heuristic_values = {"a": 1.35, "b": 1.18, "c": 0.67, "d": 0}
 
         def h(u, v):
@@ -85,9 +84,6 @@ class TestADAStar:
         assert path == [0, 1, 2]
         assert nx.path_weight(XG4, path, "weight") == 4
 
-    """ Tests that A* finds correct path when multiple paths exist
-        and the best one is not expanded first (GH issue #3464)
-    """
 
     def test_ada_star_w1(self):
         G = nx.DiGraph()
@@ -121,11 +117,6 @@ class TestADAStar:
         assert nx.dijkstra_path(C, 0, 4) == [0, 6, 5, 4]
 
     def test_unorderable_nodes(self):
-        """Tests that A* accommodates nodes that are not orderable.
-
-        For more information, see issue #554.
-
-        """
         # Create the cycle graph on four nodes, with nodes represented
         # as (unorderable) Python objects.
         nodes = [object() for n in range(4)]
@@ -186,8 +177,6 @@ class TestADAStar:
         )
 
     def test_ada_star_NetworkXNoPath(self):
-        """Tests that exception is raised when there exists no
-        path between source and target"""
         G = nx.gnp_random_graph(10, 0.2, seed=10)
         with pytest.raises(nx.NetworkXNoPath):
             search = ada_star(4, 9, G, None, "weight", initial_epsilon=1)
@@ -195,8 +184,6 @@ class TestADAStar:
 
 
     def test_ada_star_NetworkXNoPath2(self):
-        """Tests that exception is raised when there exists no
-        path between source and target"""
         # graph with no edges
         G = nx.gnp_random_graph(10, 0.2, seed=10)
         for u, v in G.edges():
@@ -208,8 +195,6 @@ class TestADAStar:
         
 
     def test_ada_star_NodeNotFound(self):
-        """Tests that exception is raised when either
-        source or target is not in graph"""
         G = nx.gnp_random_graph(10, 0.2, seed=10)
         with pytest.raises(nx.NodeNotFound):
             search = ada_star(11, 9, G, None, initial_epsilon=1)
