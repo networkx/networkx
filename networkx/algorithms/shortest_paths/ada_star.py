@@ -286,7 +286,19 @@ class ada_star:
             self.CLOSED = set()
 
         while True:
-            u, v = self._smallest_key()
+            min_primary = math.inf
+            min_secondary = math.inf
+            min_index = None
+            for key, value in self.OPEN.items():
+                if value[0] <= min_primary:
+                    min_primary = value[0]
+                    min_index = key
+                    if value[1] < min_secondary:
+                        min_secondary = value[1]
+                        min_index = key
+            v = [min_primary, min_secondary]
+            u = min_index
+                
             if ( v >= self._key(self.source)) and self.rhs[
                 self.source
             ] == self.state_to_goal_est[self.source]:
@@ -435,23 +447,6 @@ class ada_star:
                 self.rhs[n],
             ]
         return [self.state_to_goal_est[n] + self.heursistic(self.source, n), self.state_to_goal_est[n]]
-
-    def _smallest_key(self):
-        # return the smallest key, smallest being the one with the lowest first element as priority,
-        # if the first elements are equal, the one with the lowest second element is chosen
-
-        min_primary = math.inf
-        min_secondary = math.inf
-        min_index = None
-        for key, value in self.OPEN.items():
-            if value[0] <= min_primary:
-                min_primary = value[0]
-                min_index = key
-                if value[1] < min_secondary:
-                    min_secondary = value[1]
-                    min_index = key
-
-        return min_index, [min_primary, min_secondary]
 
     def _cost(self, n, nbr):
         return self.weight(n, nbr, self.G[n][nbr])
