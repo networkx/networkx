@@ -111,7 +111,7 @@ class ada_star:
     >>> path, weight
     ([42, 32, 19, 72, 49, 29, 31, 94, 35, 25], 1.29129785933092)
 
-    >>> search = ada_star(source, target, G, heursistic)
+    >>> search = ada_star(G, source, target, heursistic=heursistic)
     >>> search.compute_or_improve_path(epsilon=2)
     >>> path = search.extract_path()
     >>> weight = nx.path_weight(G, path, "weight")
@@ -139,7 +139,7 @@ class ada_star:
     """
 
     def __init__(
-        self, source, target, G, heuristic=None, weight="weight", initial_epsilon=1000
+        self, G, source, target, *, heuristic=None, weight="weight", initial_epsilon=1000
     ):
         """initializer for ADA* algorithm
 
@@ -242,7 +242,7 @@ class ada_star:
         >>> path, weight
         ([42, 32, 19, 72, 49, 29, 31, 94, 35, 25], 1.29129785933092)
 
-        >>> search = ada_star(source, target, G, heursistic)
+        >>> search = ada_star(G, source, target, heursistic=heursistic)
         >>> search.compute_or_improve_path(epsilon=2)
         >>> path = search.extract_path()
         >>> weight = nx.path_weight(G, path, "weight")
@@ -346,7 +346,7 @@ class ada_star:
         >>> path, weight
         ([42, 32, 19, 72, 49, 29, 31, 94, 35, 25], 1.29129785933092)
 
-        >>> search = ada_star(source, target, G, heursistic)
+        >>> search = ada_star(G, source, target, heursistic=heursistic)
         >>> search.compute_or_improve_path(epsilon=1)
         >>> path = search.extract_path()
         >>> weight = nx.path_weight(G, path, "weight")

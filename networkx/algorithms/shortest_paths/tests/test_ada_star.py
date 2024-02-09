@@ -39,7 +39,7 @@ class TestADAStar:
         path1 = ["a", "c", "d"]
         path2 = ["a", "b", "c", "d"]
 
-        search = ada_star("a", "d", graph, h, "weight", initial_epsilon=1)
+        search = ada_star(graph, "a", "d", heuristic=h, weight="weight", initial_epsilon=1)
         path = search.extract_path()
 
         assert path in (path1, path2)
@@ -51,7 +51,7 @@ class TestADAStar:
         GG["u"]["x"]["weight"] = 2
         GG["y"]["v"]["weight"] = 2
 
-        search = ada_star("s", "v", GG, None, "weight", initial_epsilon=1)
+        search = ada_star(GG, "s", "v", heuristic=None, weight="weight", initial_epsilon=1)
         path = search.extract_path()
         assert path == ["s", "x", "u", "v"]
         assert nx.path_weight(GG, path, "weight") == 8
@@ -60,7 +60,7 @@ class TestADAStar:
         XG3 = nx.Graph()
         edges = [(0, 1, 2), (1, 2, 12), (2, 3, 1), (3, 4, 5), (4, 5, 1), (5, 0, 10)]
         XG3.add_weighted_edges_from(edges)
-        search = ada_star(0, 3, XG3, None, "weight", initial_epsilon=1)
+        search = ada_star(XG3, 0, 3, heuristic=None, weight="weight", initial_epsilon=1)
         path = search.extract_path()
         assert path == [0, 1, 2, 3]
         assert nx.path_weight(XG3, path, "weight") == 15
@@ -78,7 +78,7 @@ class TestADAStar:
             (7, 0, 1),
         ]
         XG4.add_weighted_edges_from(edges)
-        search = ada_star(0, 2, XG4, None, "weight", initial_epsilon=1)
+        search = ada_star(XG4, 0, 2, heuristic=None, weight="weight", initial_epsilon=1)
         path = search.extract_path()
         assert path == [0, 1, 2]
         assert nx.path_weight(XG4, path, "weight") == 4
@@ -101,14 +101,14 @@ class TestADAStar:
             ]
         )
 
-        search = ada_star("s", "v", G, None, "weight", initial_epsilon=1)
+        search = ada_star(G, "s", "v", heuristic=None, weight="weight", initial_epsilon=1)
         path = search.extract_path()
         assert path == ["s", "u", "v"]
         assert nx.shortest_path_length(G, "s", "v") == 2
 
     def test_cycle(self):
         C = nx.cycle_graph(7)
-        search = ada_star(0, 3, C, None, "weight", initial_epsilon=1)
+        search = ada_star(C, 0, 3, heuristic=None, weight="weight", initial_epsilon=1)
         path = search.extract_path()
         assert path == [0, 1, 2, 3]
         assert nx.shortest_path_length(C, 0, 4) == 3
@@ -120,7 +120,7 @@ class TestADAStar:
         nodes = [object() for n in range(4)]
         G = nx.Graph()
         G.add_edges_from(pairwise(nodes, cyclic=True))
-        search = ada_star(nodes[0], nodes[2], G, None, initial_epsilon=1)
+        search = ada_star(G, nodes[0], nodes[2], heuristic=None, initial_epsilon=1)
         path = search.extract_path()
         assert len(path) == 3
 
@@ -144,7 +144,7 @@ class TestADAStar:
         # A* search for comparison
         path = nx.astar_path(G, source, target, heursistic)
         # create search object
-        search = ada_star(source, target, G, heursistic)
+        search = ada_star(G, source, target, heuristic=heursistic)
 
         # compute first suboptimal path epsilon = 2
         search.compute_or_improve_path(epsilon=2)
@@ -177,7 +177,7 @@ class TestADAStar:
     def test_ada_star_NetworkXNoPath(self):
         G = nx.gnp_random_graph(10, 0.2, seed=10)
         with pytest.raises(nx.NetworkXNoPath):
-            search = ada_star(4, 9, G, None, "weight", initial_epsilon=1)
+            search = ada_star(G, 4, 9, heuristic=None, weight="weight", initial_epsilon=1)
             path = search.extract_path()
 
     def test_ada_star_NetworkXNoPath2(self):
@@ -187,10 +187,10 @@ class TestADAStar:
             G.remove_edge(u, v)
 
         with pytest.raises(nx.NetworkXNoPath):
-            search = ada_star(4, 9, G, None, "weight", initial_epsilon=1)
+            search = ada_star(G, 4, 9, heuristic=None, weight="weight", initial_epsilon=1)
             path = search.extract_path()
 
     def test_ada_star_NodeNotFound(self):
         G = nx.gnp_random_graph(10, 0.2, seed=10)
         with pytest.raises(nx.NodeNotFound):
-            search = ada_star(11, 9, G, None, initial_epsilon=1)
+            search = ada_star(G, 11, 9, heuristic=None, initial_epsilon=1)
