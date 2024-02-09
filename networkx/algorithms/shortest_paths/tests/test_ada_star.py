@@ -141,16 +141,16 @@ class TestADAStar:
             )
         source, target = 42, 25
 
-        def heursistic(u, v):  # Euclidean distance between nodes
+        def heuristic(u, v):  # Euclidean distance between nodes
             return math.sqrt(
                 (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
                 + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
             )
 
         # A* search for comparison
-        path = nx.astar_path(G, source, target, heursistic)
+        path = nx.astar_path(G, source, target, heuristic)
         # create search object
-        search = ada_star(G, source, target, heuristic=heursistic)
+        search = ada_star(G, source, target, heuristic=heuristic)
 
         # compute first suboptimal path epsilon = 2
         search.compute_or_improve_path(epsilon=2)
@@ -165,9 +165,9 @@ class TestADAStar:
         # compute third (best) suboptimal path
         search.compute_or_improve_path(epsilon=1)
         path = search.extract_path()
-        assert path == nx.astar_path(G, source, target, heursistic)
+        assert path == nx.astar_path(G, source, target, heuristic)
         assert nx.path_weight(G, path, "weight") == nx.astar_path_length(
-            G, source, target, heursistic
+            G, source, target, heuristic
         )
 
         # change graph edge weight
@@ -175,9 +175,9 @@ class TestADAStar:
         search.compute_or_improve_path(epsilon=1)
         path = search.extract_path()
         assert path == [42, 32, 19, 72, 49, 29, 31, 94, 35, 25]
-        assert path == nx.astar_path(G, source, target, heursistic)
+        assert path == nx.astar_path(G, source, target, heuristic)
         assert nx.path_weight(G, path, "weight") == nx.astar_path_length(
-            G, source, target, heursistic
+            G, source, target, heuristic
         )
 
     def test_ada_star_NetworkXNoPath(self):

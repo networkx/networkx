@@ -36,7 +36,7 @@ class ada_star:
     G : networkx graph
         Graph to find the path in
 
-    heursistic : function
+    heuristic : function
         A function to evaluate the estimate of the distance
     from the a node to the target.  The function takes
     two node labels as arguments and must return a number.
@@ -99,19 +99,19 @@ class ada_star:
     ...     )
     >>> source, target = 42, 25
 
-    >>> def heursistic(u, v):  # Euclidean distance between nodes
+    >>> def heuristic(u, v):  # Euclidean distance between nodes
     ...     return math.sqrt(
     ...         (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
     ...         + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
     ...     )
 
     >>> # A* search for comparison
-    >>> path = nx.astar_path(G, source, target, heursistic)
+    >>> path = nx.astar_path(G, source, target, heuristic)
     >>> weight = nx.path_weight(G, path, "weight")
     >>> path, weight
     ([42, 32, 19, 72, 49, 29, 31, 94, 35, 25], 1.29129785933092)
 
-    >>> search = ada_star(G, source, target, heursistic=heursistic)
+    >>> search = ada_star(G, source, target, heuristic=heuristic)
     >>> search.compute_or_improve_path(epsilon=2)
     >>> path = search.extract_path()
     >>> weight = nx.path_weight(G, path, "weight")
@@ -180,7 +180,7 @@ class ada_star:
             def heuristic(u, v):
                 return 0
 
-        self.heursistic = heuristic
+        self.heuristic = heuristic
         self.OPEN = {}
         self.G = G
         self.weight = _weight_function(self.G, weight)
@@ -237,19 +237,19 @@ class ada_star:
         ...     )
         >>> source, target = 42, 25
 
-        >>> def heursistic(u, v):  # Euclidean distance between nodes
+        >>> def heuristic(u, v):  # Euclidean distance between nodes
         ...     return math.sqrt(
         ...         (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
         ...         + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
         ...     )
 
         >>> # A* search for comparison
-        >>> path = nx.astar_path(G, source, target, heursistic)
+        >>> path = nx.astar_path(G, source, target, heuristic)
         >>> weight = nx.path_weight(G, path, "weight")
         >>> path, weight
         ([42, 32, 19, 72, 49, 29, 31, 94, 35, 25], 1.29129785933092)
 
-        >>> search = ada_star(G, source, target, heursistic=heursistic)
+        >>> search = ada_star(G, source, target, heuristic=heuristic)
         >>> search.compute_or_improve_path(epsilon=2)
         >>> path = search.extract_path()
         >>> weight = nx.path_weight(G, path, "weight")
@@ -341,19 +341,19 @@ class ada_star:
         ...     )
         >>> source, target = 42, 25
 
-        >>> def heursistic(u, v):  # Euclidean distance between nodes
+        >>> def heuristic(u, v):  # Euclidean distance between nodes
         ...     return math.sqrt(
         ...         (G.nodes[v]["pos"][0] - G.nodes[u]["pos"][0]) ** 2
         ...         + (G.nodes[v]["pos"][1] - G.nodes[u]["pos"][1]) ** 2
         ...     )
 
         >>> # A* search for comparison
-        >>> path = nx.astar_path(G, source, target, heursistic)
+        >>> path = nx.astar_path(G, source, target, heuristic)
         >>> weight = nx.path_weight(G, path, "weight")
         >>> path, weight
         ([42, 32, 19, 72, 49, 29, 31, 94, 35, 25], 1.29129785933092)
 
-        >>> search = ada_star(G, source, target, heursistic=heursistic)
+        >>> search = ada_star(G, source, target, heuristic=heuristic)
         >>> search.compute_or_improve_path(epsilon=1)
         >>> path = search.extract_path()
         >>> weight = nx.path_weight(G, path, "weight")
@@ -451,10 +451,10 @@ class ada_star:
         if self.state_to_goal_est[n] > self.one_step_lookahead_cost[n]:
             return [
                 self.one_step_lookahead_cost[n]
-                + (self.epsilon * self.heursistic(self.source, n)),
+                + (self.epsilon * self.heuristic(self.source, n)),
                 self.one_step_lookahead_cost[n],
             ]
         return [
-            self.state_to_goal_est[n] + self.heursistic(self.source, n),
+            self.state_to_goal_est[n] + self.heuristic(self.source, n),
             self.state_to_goal_est[n],
         ]
