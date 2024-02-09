@@ -309,11 +309,11 @@ class ada_star:
             if self.state_to_goal_est[u] > self.one_step_lookahead_cost[u]:
                 self.state_to_goal_est[u] = self.one_step_lookahead_cost[u]
                 self.CLOSED.add(u)
-                for un in self.G[u].keys():
+                for un in self.G[u]:
                     self._update_state(un)
             else:
                 self.state_to_goal_est[u] = float("inf")
-                for un in self.G[u].keys():
+                for un in self.G[u]:
                     self._update_state(un)
                 self._update_state(u)
 
@@ -433,7 +433,7 @@ class ada_star:
     def _update_state(self, n):
         if n != self.target:
             self.one_step_lookahead_cost[n] = float("inf")
-            for nbr in self.G[n].keys():
+            for nbr in self.G[n]:
                 self.one_step_lookahead_cost[n] = min(
                     self.one_step_lookahead_cost[n],
                     self.state_to_goal_est[nbr] + self.weight(n, nbr, self.G[n][nbr]),
