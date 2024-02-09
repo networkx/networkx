@@ -309,11 +309,11 @@ class ada_star:
             if self.state_to_goal_est[u] > self.rhs[u]:
                 self.state_to_goal_est[u] = self.rhs[u]
                 self.CLOSED.add(u)
-                for un in self._get_neighbor(u):
+                for un in self.G[u].keys():
                     self._update_state(un)
             else:
                 self.state_to_goal_est[u] = float("inf")
-                for un in self._get_neighbor(u):
+                for un in self.G[u].keys():
                     self._update_state(un)
                 self._update_state(u)
 
@@ -406,11 +406,11 @@ class ada_star:
         source = self.source
 
         while True:  # TODO raise exception if no path exists
-            neighbours = self._get_neighbor(source)
+            neighbours = self.G[source].keys()
             # find neighbour with lowest g value
             try:
                 source = min(
-                    neighbours, key=lambda x: self.state_to_goal_est[x] + self._cost(source, x)
+                    neighbours, key=lambda x: self.state_to_goal_est[x] + self.weight(source, x, self.G[source][x])
                 )
             except:
                 raise nx.NetworkXNoPath(
@@ -426,8 +426,8 @@ class ada_star:
     def _update_state(self, n):
         if n != self.target:
             self.rhs[n] = float("inf")
-            for nbr in self._get_neighbor(n):
-                self.rhs[n] = min(self.rhs[n], self.state_to_goal_est[nbr] + self._cost(n, nbr))
+            for nbr in self.G[n].keys():
+                self.rhs[n] = min(self.rhs[n], self.state_to_goal_est[nbr] + self.weight(n, nbr, self.G[n][nbr]))
 
         if n in self.OPEN:
             self.OPEN.pop(n)
@@ -447,9 +447,3 @@ class ada_star:
                 self.rhs[n],
             ]
         return [self.state_to_goal_est[n] + self.heursistic(self.source, n), self.state_to_goal_est[n]]
-
-    def _cost(self, n, nbr):
-        return self.weight(n, nbr, self.G[n][nbr])
-
-    def _get_neighbor(self, n):
-        return self.G[n].keys()
