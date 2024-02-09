@@ -139,7 +139,14 @@ class ada_star:
     """
 
     def __init__(
-        self, G, source, target, *, heuristic=None, weight="weight", initial_epsilon=1000
+        self,
+        G,
+        source,
+        target,
+        *,
+        heuristic=None,
+        weight="weight",
+        initial_epsilon=1000,
     ):
         """initializer for ADA* algorithm
 
