@@ -405,7 +405,7 @@ class ada_star:
         path = [self.source]
         source = self.source
 
-        while True:  # TODO raise exception if no path exists
+        while True: 
             neighbours = self.G[source].keys()
             # find neighbour with lowest g value
             try:
@@ -420,6 +420,11 @@ class ada_star:
             path.append(source)
             if source == self.target:
                 break
+
+        if path[-1] != self.target:
+            raise nx.NetworkXNoPath(
+                f"No path exists between {self.source} and {self.target}"
+            )
 
         return list(path)
 

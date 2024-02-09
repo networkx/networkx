@@ -193,6 +193,20 @@ class TestADAStar:
             search = ada_star(4, 9, G, None, "weight", initial_epsilon=1)
             path = search.extract_path()
 
+
+    def test_ada_star_NetworkXNoPath2(self):
+        """Tests that exception is raised when there exists no
+        path between source and target"""
+        # graph with no edges
+        G = nx.gnp_random_graph(10, 0.2, seed=10)
+        for u, v in G.edges():
+            G.remove_edge(u, v)
+
+        with pytest.raises(nx.NetworkXNoPath):
+            search = ada_star(4, 9, G, None, "weight", initial_epsilon=1)
+            path = search.extract_path()
+        
+
     def test_ada_star_NodeNotFound(self):
         """Tests that exception is raised when either
         source or target is not in graph"""
