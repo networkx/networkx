@@ -41,7 +41,7 @@ class EdgePartition(Enum):
 
 
 @not_implemented_for("multigraph")
-@nx._dispatch(edge_attrs="weight", preserve_edge_attrs="data")
+@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs="data")
 def boruvka_mst_edges(
     G, minimum=True, weight="weight", keys=False, data=True, ignore_nan=False
 ):
@@ -138,7 +138,7 @@ def boruvka_mst_edges(
                 forest.union(u, v)
 
 
-@nx._dispatch(
+@nx._dispatchable(
     edge_attrs={"weight": None, "partition": None}, preserve_edge_attrs="data"
 )
 def kruskal_mst_edges(
@@ -251,7 +251,7 @@ def kruskal_mst_edges(
                 subtrees.union(u, v)
 
 
-@nx._dispatch(edge_attrs="weight", preserve_edge_attrs="data")
+@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs="data")
 def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan=False):
     """Iterate over edges of Prim's algorithm min/max spanning tree.
 
@@ -367,7 +367,7 @@ ALGORITHMS = {
 
 
 @not_implemented_for("directed")
-@nx._dispatch(edge_attrs="weight", preserve_edge_attrs="data")
+@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs="data")
 def minimum_spanning_edges(
     G, algorithm="kruskal", weight="weight", keys=True, data=True, ignore_nan=False
 ):
@@ -462,7 +462,7 @@ def minimum_spanning_edges(
 
 
 @not_implemented_for("directed")
-@nx._dispatch(edge_attrs="weight", preserve_edge_attrs="data")
+@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs="data")
 def maximum_spanning_edges(
     G, algorithm="kruskal", weight="weight", keys=True, data=True, ignore_nan=False
 ):
@@ -555,7 +555,7 @@ def maximum_spanning_edges(
     )
 
 
-@nx._dispatch(preserve_all_attrs=True)
+@nx._dispatchable(preserve_all_attrs=True)
 def minimum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=False):
     """Returns a minimum spanning tree or forest on an undirected graph `G`.
 
@@ -615,7 +615,7 @@ def minimum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
     return T
 
 
-@nx._dispatch(preserve_all_attrs=True)
+@nx._dispatchable(preserve_all_attrs=True)
 def partition_spanning_tree(
     G, minimum=True, weight="weight", partition="partition", ignore_nan=False
 ):
@@ -679,7 +679,7 @@ def partition_spanning_tree(
     return T
 
 
-@nx._dispatch(preserve_all_attrs=True)
+@nx._dispatchable(preserve_all_attrs=True)
 def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=False):
     """Returns a maximum spanning tree or forest on an undirected graph `G`.
 
@@ -743,7 +743,7 @@ def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
 
 
 @py_random_state(3)
-@nx._dispatch(preserve_edge_attrs=True)
+@nx._dispatchable(preserve_edge_attrs=True)
 def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
     """
     Sample a random spanning tree using the edges weights of `G`.
@@ -897,14 +897,15 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
             #    itself.
             if G.number_of_edges() == 1:
                 return G.edges(data=weight).__iter__().__next__()[2]
-            # 2. There are more than two edges in the graph. Then, we can find the
+            # 2. There are no edges or two or more edges in the graph. Then, we find the
             #    total weight of the spanning trees using the formula in the
-            #    reference paper: take the weight of that edge and multiple it by
-            #    the number of spanning trees which have to include that edge. This
+            #    reference paper: take the weight of each edge and multiply it by
+            #    the number of spanning trees which include that edge. This
             #    can be accomplished by contracting the edge and finding the
             #    multiplicative total spanning tree weight if the weight of each edge
             #    is assumed to be 1, which is conveniently built into networkx already,
-            #    by calling total_spanning_tree_weight with weight=None
+            #    by calling total_spanning_tree_weight with weight=None.
+            #    Note that with no edges the returned value is just zero.
             else:
                 total = 0
                 for u, v, w in G.edges(data=weight):
@@ -912,6 +913,10 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
                         nx.contracted_edge(G, edge=(u, v), self_loops=False), None
                     )
                 return total
+
+    if G.number_of_nodes() < 2:
+        # no edges in the spanning tree
+        return nx.empty_graph(G.nodes)
 
     U = set()
     st_cached_value = 0

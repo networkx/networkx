@@ -124,7 +124,7 @@ def move_one_node(soln, seed):
 
 
 @not_implemented_for("directed")
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def christofides(G, weight="weight", tree=None):
     """Approximate a solution of the traveling salesman problem
 
@@ -197,7 +197,7 @@ def _shortcutting(circuit):
     return nodes
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, method=None):
     """Find the shortest path in `G` connecting specified nodes
 
@@ -340,7 +340,7 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
 
 @not_implemented_for("undirected")
 @py_random_state(2)
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def asadpour_atsp(G, weight="weight", seed=None, source=None):
     """
     Returns an approximate solution to the traveling salesman problem.
@@ -407,8 +407,10 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     >>> import networkx as nx
     >>> import networkx.algorithms.approximation as approx
     >>> G = nx.complete_graph(3, create_using=nx.DiGraph)
-    >>> nx.set_edge_attributes(G, {(0, 1): 2, (1, 2): 2, (2, 0): 2, (0, 2): 1, (2, 1): 1, (1, 0): 1}, "weight")
-    >>> tour = approx.asadpour_atsp(G,source=0)
+    >>> nx.set_edge_attributes(
+    ...     G, {(0, 1): 2, (1, 2): 2, (2, 0): 2, (0, 2): 1, (2, 1): 1, (1, 0): 1}, "weight"
+    ... )
+    >>> tour = approx.asadpour_atsp(G, source=0)
     >>> tour
     [0, 2, 1, 0]
     """
@@ -490,7 +492,7 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     return _shortcutting(circuit)
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def held_karp_ascent(G, weight="weight"):
     """
     Minimizes the Held-Karp relaxation of the TSP for `G`
@@ -801,7 +803,7 @@ def held_karp_ascent(G, weight="weight"):
     return next(k_max.__iter__()).size(weight), z_star
 
 
-@nx._dispatch
+@nx._dispatchable
 def spanning_tree_distribution(G, z):
     """
     Find the asadpour exponential distribution of spanning trees.
@@ -912,7 +914,7 @@ def spanning_tree_distribution(G, z):
     return gamma
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def greedy_tsp(G, weight="weight", source=None):
     """Return a low cost cycle starting at `source` and its cost.
 
@@ -951,11 +953,22 @@ def greedy_tsp(G, weight="weight", source=None):
     --------
     >>> from networkx.algorithms import approximation as approx
     >>> G = nx.DiGraph()
-    >>> G.add_weighted_edges_from({
-    ...     ("A", "B", 3), ("A", "C", 17), ("A", "D", 14), ("B", "A", 3),
-    ...     ("B", "C", 12), ("B", "D", 16), ("C", "A", 13),("C", "B", 12),
-    ...     ("C", "D", 4), ("D", "A", 14), ("D", "B", 15), ("D", "C", 2)
-    ... })
+    >>> G.add_weighted_edges_from(
+    ...     {
+    ...         ("A", "B", 3),
+    ...         ("A", "C", 17),
+    ...         ("A", "D", 14),
+    ...         ("B", "A", 3),
+    ...         ("B", "C", 12),
+    ...         ("B", "D", 16),
+    ...         ("C", "A", 13),
+    ...         ("C", "B", 12),
+    ...         ("C", "D", 4),
+    ...         ("D", "A", 14),
+    ...         ("D", "B", 15),
+    ...         ("D", "C", 2),
+    ...     }
+    ... )
     >>> cycle = approx.greedy_tsp(G, source="D")
     >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(cycle))
     >>> cycle
@@ -1005,7 +1018,7 @@ def greedy_tsp(G, weight="weight", source=None):
 
 
 @py_random_state(9)
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def simulated_annealing_tsp(
     G,
     init_cycle,
@@ -1114,11 +1127,22 @@ def simulated_annealing_tsp(
     --------
     >>> from networkx.algorithms import approximation as approx
     >>> G = nx.DiGraph()
-    >>> G.add_weighted_edges_from({
-    ...     ("A", "B", 3), ("A", "C", 17), ("A", "D", 14), ("B", "A", 3),
-    ...     ("B", "C", 12), ("B", "D", 16), ("C", "A", 13),("C", "B", 12),
-    ...     ("C", "D", 4), ("D", "A", 14), ("D", "B", 15), ("D", "C", 2)
-    ... })
+    >>> G.add_weighted_edges_from(
+    ...     {
+    ...         ("A", "B", 3),
+    ...         ("A", "C", 17),
+    ...         ("A", "D", 14),
+    ...         ("B", "A", 3),
+    ...         ("B", "C", 12),
+    ...         ("B", "D", 16),
+    ...         ("C", "A", 13),
+    ...         ("C", "B", 12),
+    ...         ("C", "D", 4),
+    ...         ("D", "A", 14),
+    ...         ("D", "B", 15),
+    ...         ("D", "C", 2),
+    ...     }
+    ... )
     >>> cycle = approx.simulated_annealing_tsp(G, "greedy", source="D")
     >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(cycle))
     >>> cycle
@@ -1224,7 +1248,7 @@ def simulated_annealing_tsp(
 
 
 @py_random_state(9)
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def threshold_accepting_tsp(
     G,
     init_cycle,
@@ -1331,11 +1355,22 @@ def threshold_accepting_tsp(
     --------
     >>> from networkx.algorithms import approximation as approx
     >>> G = nx.DiGraph()
-    >>> G.add_weighted_edges_from({
-    ...     ("A", "B", 3), ("A", "C", 17), ("A", "D", 14), ("B", "A", 3),
-    ...     ("B", "C", 12), ("B", "D", 16), ("C", "A", 13),("C", "B", 12),
-    ...     ("C", "D", 4), ("D", "A", 14), ("D", "B", 15), ("D", "C", 2)
-    ... })
+    >>> G.add_weighted_edges_from(
+    ...     {
+    ...         ("A", "B", 3),
+    ...         ("A", "C", 17),
+    ...         ("A", "D", 14),
+    ...         ("B", "A", 3),
+    ...         ("B", "C", 12),
+    ...         ("B", "D", 16),
+    ...         ("C", "A", 13),
+    ...         ("C", "B", 12),
+    ...         ("C", "D", 4),
+    ...         ("D", "A", 14),
+    ...         ("D", "B", 15),
+    ...         ("D", "C", 2),
+    ...     }
+    ... )
     >>> cycle = approx.threshold_accepting_tsp(G, "greedy", source="D")
     >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(cycle))
     >>> cycle

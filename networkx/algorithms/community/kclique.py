@@ -5,7 +5,7 @@ import networkx as nx
 __all__ = ["k_clique_communities"]
 
 
-@nx._dispatch
+@nx._dispatchable
 def k_clique_communities(G, k, cliques=None):
     """Find k-clique communities in graph using the percolation method.
 

@@ -37,13 +37,13 @@ def _neighborhood_aggregate(G, node, node_labels, edge_attr=None):
     return node_labels[node] + "".join(sorted(label_list))
 
 
-@nx._dispatch(edge_attrs={"edge_attr": None}, node_attrs="node_attr")
+@nx._dispatchable(edge_attrs={"edge_attr": None}, node_attrs="node_attr")
 def weisfeiler_lehman_graph_hash(
     G, edge_attr=None, node_attr=None, iterations=3, digest_size=16
 ):
     """Return Weisfeiler Lehman (WL) graph hash.
 
-    The function iteratively aggregates and hashes neighbourhoods of each node.
+    The function iteratively aggregates and hashes neighborhoods of each node.
     After each node's neighbors are hashed to obtain updated node labels,
     a hashed histogram of resulting labels is returned as the final hash.
 
@@ -160,7 +160,7 @@ def weisfeiler_lehman_graph_hash(
     return _hash_label(str(tuple(subgraph_hash_counts)), digest_size)
 
 
-@nx._dispatch(edge_attrs={"edge_attr": None}, node_attrs="node_attr")
+@nx._dispatchable(edge_attrs={"edge_attr": None}, node_attrs="node_attr")
 def weisfeiler_lehman_subgraph_hashes(
     G, edge_attr=None, node_attr=None, iterations=3, digest_size=16
 ):
@@ -176,7 +176,7 @@ def weisfeiler_lehman_subgraph_hashes(
     additionally a hash of the initial node label (or equivalently a
     subgraph of depth 0)
 
-    The function iteratively aggregates and hashes neighbourhoods of each node.
+    The function iteratively aggregates and hashes neighborhoods of each node.
     This is achieved for each step by replacing for each node its label from
     the previous iteration with its hashed 1-hop neighborhood aggregate.
     The new node label is then appended to a list of node labels for each
@@ -234,13 +234,9 @@ def weisfeiler_lehman_subgraph_hashes(
     Finding similar nodes in different graphs:
 
     >>> G1 = nx.Graph()
-    >>> G1.add_edges_from([
-    ...     (1, 2), (2, 3), (2, 4), (3, 5), (4, 6), (5, 7), (6, 7)
-    ... ])
+    >>> G1.add_edges_from([(1, 2), (2, 3), (2, 4), (3, 5), (4, 6), (5, 7), (6, 7)])
     >>> G2 = nx.Graph()
-    >>> G2.add_edges_from([
-    ...     (1, 3), (2, 3), (1, 6), (1, 5), (4, 6)
-    ... ])
+    >>> G2.add_edges_from([(1, 3), (2, 3), (1, 6), (1, 5), (4, 6)])
     >>> g1_hashes = nx.weisfeiler_lehman_subgraph_hashes(G1, iterations=3, digest_size=8)
     >>> g2_hashes = nx.weisfeiler_lehman_subgraph_hashes(G2, iterations=3, digest_size=8)
 
@@ -254,7 +250,7 @@ def weisfeiler_lehman_subgraph_hashes(
 
     The first 2 WL subgraph hashes match. From this we can conclude that it's very
     likely the neighborhood of 4 hops around these nodes are isomorphic: each
-    iteration aggregates 1-hop neighbourhoods meaning hashes at depth $n$ are influenced
+    iteration aggregates 1-hop neighborhoods meaning hashes at depth $n$ are influenced
     by every node within $2n$ hops.
 
     However the neighborhood of 6 hops is no longer isomorphic since their 3rd hash does

@@ -31,7 +31,7 @@ def _average_weight(G, path, weight=None):
     return total_weight / path_length
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def global_reaching_centrality(G, weight=None, normalized=True):
     """Returns the global reaching centrality of a directed graph.
 
@@ -112,14 +112,14 @@ def global_reaching_centrality(G, weight=None, normalized=True):
     # TODO This can be trivially parallelized.
     lrc = [
         centrality(G, node, paths=paths, weight=weight, normalized=normalized)
-        for node, paths in shortest_paths.items()
+        for node, paths in shortest_paths
     ]
 
     max_lrc = max(lrc)
     return sum(max_lrc - c for c in lrc) / (len(G) - 1)
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def local_reaching_centrality(G, v, paths=None, weight=None, normalized=True):
     """Returns the local reaching centrality of a node in a directed
     graph.

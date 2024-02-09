@@ -13,7 +13,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch
+@nx._dispatchable
 def is_simple_path(G, nodes):
     """Returns True if and only if `nodes` form a simple path in `G`.
 
@@ -91,7 +91,7 @@ def is_simple_path(G, nodes):
     return all(v in G[u] for u, v in pairwise(nodes))
 
 
-@nx._dispatch
+@nx._dispatchable
 def all_simple_paths(G, source, target, cutoff=None):
     """Generate all simple paths in the graph G from source to target.
 
@@ -257,7 +257,7 @@ def all_simple_paths(G, source, target, cutoff=None):
         yield [source] + [edge[1] for edge in edge_path]
 
 
-@nx._dispatch
+@nx._dispatchable
 def all_simple_edge_paths(G, source, target, cutoff=None):
     """Generate lists of edges for all simple paths in G from source to target.
 
@@ -319,7 +319,7 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
         >>> G.add_node(0)
         >>> paths = list(nx.all_simple_edge_paths(G, 0, 0))
         >>> for path in paths:
-        ...     print (path)
+        ...     print(path)
         []
         >>> len(paths)
         1
@@ -402,7 +402,7 @@ def _all_simple_edge_paths(G, source, targets, cutoff):
 
 
 @not_implemented_for("multigraph")
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def shortest_simple_paths(G, source, target, weight=None):
     """Generate all simple paths in the graph G from source to target,
        starting from shortest ones.
