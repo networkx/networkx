@@ -107,40 +107,35 @@ class ada_star:
 
     >>> # A* search for comparison
     >>> path = nx.astar_path(G, source, target, heursistic)
-    >>> print("A* path: ", path)
-    A* path:  [42, 32, 19, 72, 49, 29, 31, 94, 35, 25]
-    >>> search = ada_star(source, target, G, heursistic)
+    >>> weight = nx.path_weight(G, path, "weight")
+    >>> path, weight
+    ([42, 32, 19, 72, 49, 29, 31, 94, 35, 25], 1.29129785933092)
 
+    >>> search = ada_star(source, target, G, heursistic)
     >>> search.compute_or_improve_path(epsilon=2)
     >>> path = search.extract_path()
-    >>> print("epsilon = 2 path: ", path)
-    epsilon = 2 path:  [42, 32, 24, 40, 59, 4, 66, 27, 35, 25]
-    >>> print(
-    ...     "epsilon = 2 path_weight: ", nx.path_weight(G, search.extract_path(), "weight")
-    ... )
-    epsilon = 2 path_weight:  1.4679609830956495
+    >>> weight = nx.path_weight(G, path, "weight")
+    >>> path, weight
+    ([42, 32, 24, 40, 59, 4, 66, 27, 35, 25], 1.4679609830956495)
 
     >>> search.compute_or_improve_path(epsilon=1.2)
     >>> path = search.extract_path()
-    >>> print("epsilon = 1.2 path: ", path)
-    epsilon = 1.2 path:  [42, 32, 24, 12, 59, 4, 1, 27, 35, 25]
-    >>> print("epsilon = 1.2 path_weight: ", nx.path_weight(G, path, "weight"))
-    epsilon = 1.2 path_weight:  1.3335657361796027
+    >>> weight = nx.path_weight(G, path, "weight")
+    >>> path, weight
+    ([42, 32, 24, 12, 59, 4, 1, 27, 35, 25], 1.3335657361796027)
 
     >>> search.compute_or_improve_path(epsilon=1)
     >>> path = search.extract_path()
-    >>> print("epsilon = 1 path: ", path)
-    epsilon = 1 path:  [42, 32, 19, 72, 49, 29, 31, 94, 35, 25]
-    >>> print("epsilon = 1 path_weight: ", nx.path_weight(G, path, "weight"))
-    epsilon = 1 path_weight:  1.29129785933092
+    >>> weight = nx.path_weight(G, path, "weight")
+    >>> path, weight
+    ([42, 32, 19, 72, 49, 29, 31, 94, 35, 25], 1.29129785933092)
 
     >>> search.update_graph([[49, 97, 0]])  # set weight between 49 and 97 to 0
     >>> search.compute_or_improve_path(epsilon=1)
     >>> path = search.extract_path()
-    >>> print("changed epsilon = 1 path: ", path)
-    changed epsilon = 1 path:  [42, 32, 19, 72, 49, 29, 31, 94, 35, 25]
-    >>> print("changed epsilon = 1 path_weight: ", nx.path_weight(G, path, "weight"))
-    changed epsilon = 1 path_weight:  1.29129785933092
+    >>> weight = nx.path_weight(G, path, "weight")
+    >>> path, weight
+    ([42, 32, 19, 72, 49, 29, 31, 94, 35, 25], 1.29129785933092)
     """
 
     def __init__(
@@ -243,32 +238,28 @@ class ada_star:
 
         >>> # A* search for comparison
         >>> path = nx.astar_path(G, source, target, heursistic)
-        >>> print("A* path: ", path)
-        A* path:  [42, 32, 19, 72, 49, 29, 31, 94, 35, 25]
-        >>> search = ada_star(source, target, G, heursistic)
+        >>> weight = nx.path_weight(G, path, "weight")
+        >>> path, weight
+        ([42, 32, 19, 72, 49, 29, 31, 94, 35, 25], 1.29129785933092)
 
+        >>> search = ada_star(source, target, G, heursistic)
         >>> search.compute_or_improve_path(epsilon=2)
         >>> path = search.extract_path()
-        >>> print("epsilon = 2 path: ", path)
-        epsilon = 2 path:  [42, 32, 24, 40, 59, 4, 66, 27, 35, 25]
-        >>> print(
-        ...     "epsilon = 2 path_weight: ", nx.path_weight(G, search.extract_path(), "weight")
-        ... )
-        epsilon = 2 path_weight:  1.4679609830956495
+        >>> weight = nx.path_weight(G, path, "weight")
+        >>> path, weight
+        ([42, 32, 24, 40, 59, 4, 66, 27, 35, 25], 1.4679609830956495)
 
         >>> search.compute_or_improve_path(epsilon=1.2)
         >>> path = search.extract_path()
-        >>> print("epsilon = 1.2 path: ", path)
-        epsilon = 1.2 path:  [42, 32, 24, 12, 59, 4, 1, 27, 35, 25]
-        >>> print("epsilon = 1.2 path_weight: ", nx.path_weight(G, path, "weight"))
-        epsilon = 1.2 path_weight:  1.3335657361796027
+        >>> weight = nx.path_weight(G, path, "weight")
+        >>> path, weight
+        ([42, 32, 24, 12, 59, 4, 1, 27, 35, 25], 1.3335657361796027)
 
         >>> search.compute_or_improve_path(epsilon=1)
         >>> path = search.extract_path()
-        >>> print("epsilon = 1 path: ", path)
-        epsilon = 1 path:  [42, 32, 19, 72, 49, 29, 31, 94, 35, 25]
-        >>> print("epsilon = 1 path_weight: ", nx.path_weight(G, path, "weight"))
-        epsilon = 1 path_weight:  1.29129785933092
+        >>> weight = nx.path_weight(G, path, "weight")
+        >>> path, weight
+        ([42, 32, 19, 72, 49, 29, 31, 94, 35, 25], 1.29129785933092)
         """
         if self.initialize:
             self.epsilon = epsilon
@@ -351,24 +342,23 @@ class ada_star:
 
         >>> # A* search for comparison
         >>> path = nx.astar_path(G, source, target, heursistic)
-        >>> print("A* path: ", path)
-        A* path:  [42, 32, 19, 72, 49, 29, 31, 94, 35, 25]
-        >>> search = ada_star(source, target, G, heursistic)
+        >>> weight = nx.path_weight(G, path, "weight")
+        >>> path, weight
+        ([42, 32, 19, 72, 49, 29, 31, 94, 35, 25], 1.29129785933092)
 
+        >>> search = ada_star(source, target, G, heursistic)
         >>> search.compute_or_improve_path(epsilon=1)
         >>> path = search.extract_path()
-        >>> print("epsilon = 1 path: ", path)
-        epsilon = 1 path:  [42, 32, 19, 72, 49, 29, 31, 94, 35, 25]
-        >>> print("epsilon = 1 path_weight: ", nx.path_weight(G, path, "weight"))
-        epsilon = 1 path_weight:  1.29129785933092
+        >>> weight = nx.path_weight(G, path, "weight")
+        >>> path, weight
+        ([42, 32, 19, 72, 49, 29, 31, 94, 35, 25], 1.29129785933092)
 
         >>> search.update_graph([[49, 97, 0]])  # set weight between 49 and 97 to 0
         >>> search.compute_or_improve_path(epsilon=1)
         >>> path = search.extract_path()
-        >>> print("changed epsilon = 1 path: ", path)
-        changed epsilon = 1 path:  [42, 32, 19, 72, 49, 29, 31, 94, 35, 25]
-        >>> print("changed epsilon = 1 path_weight: ", nx.path_weight(G, path, "weight"))
-        changed epsilon = 1 path_weight:  1.29129785933092
+        >>> weight = nx.path_weight(G, path, "weight")
+        >>> path, weight
+        ([42, 32, 19, 72, 49, 29, 31, 94, 35, 25], 1.29129785933092)
         """
         for change in changes:
             self.G[change[0]][change[1]][self.weight] = change[2]
