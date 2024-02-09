@@ -319,7 +319,7 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
         >>> G.add_node(0)
         >>> paths = list(nx.all_simple_edge_paths(G, 0, 0))
         >>> for path in paths:
-        ...     print (path)
+        ...     print(path)
         []
         >>> len(paths)
         1

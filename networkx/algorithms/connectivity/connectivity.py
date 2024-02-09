@@ -118,7 +118,6 @@ def local_node_connectivity(
     >>> # You also have to explicitly import the function for
     >>> # building the auxiliary digraph from the connectivity package
     >>> from networkx.algorithms.connectivity import build_auxiliary_node_connectivity
-    ...
     >>> H = build_auxiliary_node_connectivity(G)
     >>> # And the function for building the residual network from the
     >>> # flow package
@@ -131,7 +130,6 @@ def local_node_connectivity(
     >>> for u, v in itertools.combinations(G, 2):
     ...     k = local_node_connectivity(G, u, v, auxiliary=H, residual=R)
     ...     result[u][v] = k
-    ...
     >>> all(result[u][v] == 5 for u, v in itertools.combinations(G, 2))
     True
 

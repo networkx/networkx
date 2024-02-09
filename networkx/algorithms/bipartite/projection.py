@@ -263,7 +263,6 @@ def collaboration_weighted_projected_graph(B, nodes):
     [0, 2, 4, 5]
     >>> for edge in sorted(G.edges(data=True)):
     ...     print(edge)
-    ...
     (0, 2, {'weight': 0.5})
     (0, 5, {'weight': 0.5})
     (2, 4, {'weight': 1.0})
@@ -451,22 +450,18 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
     ...     unbrs = set(G[u])
     ...     vnbrs = set(G[v])
     ...     return float(len(unbrs & vnbrs)) / len(unbrs | vnbrs)
-    ...
     >>> def my_weight(G, u, v, weight="weight"):
     ...     w = 0
     ...     for nbr in set(G[u]) & set(G[v]):
     ...         w += G[u][nbr].get(weight, 1) + G[v][nbr].get(weight, 1)
     ...     return w
-    ...
     >>> # A complete bipartite graph with 4 nodes and 4 edges
     >>> B = nx.complete_bipartite_graph(2, 2)
     >>> # Add some arbitrary weight to the edges
     >>> for i, (u, v) in enumerate(B.edges()):
     ...     B.edges[u, v]["weight"] = i + 1
-    ...
     >>> for edge in B.edges(data=True):
     ...     print(edge)
-    ...
     (0, 2, {'weight': 1})
     (0, 3, {'weight': 2})
     (1, 2, {'weight': 3})
@@ -476,14 +471,10 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
     >>> print(list(G.edges(data=True)))
     [(0, 1, {'weight': 2})]
     >>> # To specify a custom weight function use the weight_function parameter
-    >>> G = bipartite.generic_weighted_projected_graph(
-    ...     B, [0, 1], weight_function=jaccard
-    ... )
+    >>> G = bipartite.generic_weighted_projected_graph(B, [0, 1], weight_function=jaccard)
     >>> print(list(G.edges(data=True)))
     [(0, 1, {'weight': 1.0})]
-    >>> G = bipartite.generic_weighted_projected_graph(
-    ...     B, [0, 1], weight_function=my_weight
-    ... )
+    >>> G = bipartite.generic_weighted_projected_graph(B, [0, 1], weight_function=my_weight)
     >>> print(list(G.edges(data=True)))
     [(0, 1, {'weight': 10})]
 

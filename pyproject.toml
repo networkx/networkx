@@ -192,6 +192,9 @@ select = [
 "tools/*.py" = ['I']
 "networkx/classes/filters.py" = ['C416']
 
+[tool.ruff.format]
+docstring-code-format = true
+
 [tool.mypy]
 ignore_missing_imports = true
 exclude = 'subgraphviews|reportviews'

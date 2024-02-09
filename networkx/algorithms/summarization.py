@@ -492,13 +492,13 @@ def snap_aggregation(
     >>> for node in nodes:
     ...     attributes = nodes[node]
     ...     G.add_node(node, **attributes)
-    ...
     >>> for source, target, type in edges:
     ...     G.add_edge(source, target, type=type)
-    ...
-    >>> node_attributes = ('color', )
-    >>> edge_attributes = ('type', )
-    >>> summary_graph = nx.snap_aggregation(G, node_attributes=node_attributes, edge_attributes=edge_attributes)
+    >>> node_attributes = ("color",)
+    >>> edge_attributes = ("type",)
+    >>> summary_graph = nx.snap_aggregation(
+    ...     G, node_attributes=node_attributes, edge_attributes=edge_attributes
+    ... )
 
     Notes
     -----
