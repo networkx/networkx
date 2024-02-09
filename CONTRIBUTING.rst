@@ -78,9 +78,8 @@ Development Workflow
          # Test your installation
          pytest --pyargs networkx
 
-   * Finally, we recommend you use a pre-commit hook, which is useful
-     to ensure your contribution will pass some of our CI each time
-     you run ``git commit``::
+   * Finally, we recommend you install pre-commit which checks
+     that your code matches formatting guidelines::
 
        pre-commit install
 
