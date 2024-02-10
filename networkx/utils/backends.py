@@ -905,7 +905,6 @@ class _dispatchable:
                 "node_attribute_xy",
                 "node_degree_xy",
                 "node_disjoint_paths",
-                "nonisomorphic_trees",
                 "optimize_edit_paths",
                 "optimize_graph_edit_distance",
                 "preferential_attachment",
