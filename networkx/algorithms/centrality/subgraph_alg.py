@@ -278,7 +278,7 @@ def communicability_betweenness_centrality(G):
         B[i, :] = 0
         B[:, i] = 0
         B -= np.diag(np.diag(B))
-        cbc[v] = B.sum()
+        cbc[v] = B.sum().tolist()
         # put row and col back
         A[i, :] = row
         A[:, i] = col
@@ -286,8 +286,7 @@ def communicability_betweenness_centrality(G):
     order = len(cbc)
     if order > 2:
         scale = 1.0 / ((order - 1.0) ** 2 - (order - 1.0))
-        for v in cbc:
-            cbc[v] *= scale
+        cbc = {k: v * scale for k, v in cbc.items()}
     return cbc
 
 
