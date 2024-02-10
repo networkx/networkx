@@ -572,15 +572,25 @@ class _dispatchable:
     def _can_backend_run(self, backend_name, /, *args, **kwargs):
         """Can the specified backend run this algorithm with these arguments?"""
         backend = _load_backend(backend_name)
-        return hasattr(backend, self.name) and backend.can_run(self.name, args, kwargs)
+        # `backend.can_run` and `backend.should_run` may return strings that describe
+        # why they can't or shouldn't be run. We plan to use the strings in the future.
+        return (
+            hasattr(backend, self.name)
+            and (can_run := backend.can_run(self.name, args, kwargs))
+            and not isinstance(can_run, str)
+        )
 
     def _should_backend_run(self, backend_name, /, *args, **kwargs):
         """Can/should the specified backend run this algorithm with these arguments?"""
         backend = _load_backend(backend_name)
+        # `backend.can_run` and `backend.should_run` may return strings that describe
+        # why they can't or shouldn't be run. We plan to use the strings in the future.
         return (
             hasattr(backend, self.name)
-            and backend.can_run(self.name, args, kwargs)
-            and backend.should_run(self.name, args, kwargs)
+            and (can_run := backend.can_run(self.name, args, kwargs))
+            and not isinstance(can_run, str)
+            and (should_run := backend.should_run(self.name, args, kwargs))
+            and not isinstance(should_run, str)
         )
 
     def _convert_arguments(self, backend_name, args, kwargs):
