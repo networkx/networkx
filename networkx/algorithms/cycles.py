@@ -66,6 +66,7 @@ def cycle_basis(G, root=None):
     See Also
     --------
     simple_cycles
+    minimum_cycle_basis
     """
     gnodes = dict.fromkeys(G)  # set-like object that maintains node order
     cycles = []

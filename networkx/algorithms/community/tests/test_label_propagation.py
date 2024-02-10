@@ -193,7 +193,7 @@ class TestFastLabelPropagationCommunities:
         self._check_communities(G, truth)
 
     def test_random_graph(self):
-        G = nx.gnm_random_graph(self.N, self.N * self.K // 2)
+        G = nx.gnm_random_graph(self.N, self.N * self.K // 2, seed=42)
         truth = {frozenset(G)}
         self._check_communities(G, truth)
 
@@ -209,7 +209,7 @@ class TestFastLabelPropagationCommunities:
         self._check_communities(G, truth)
 
     def test_larger_graph(self):
-        G = nx.gnm_random_graph(100 * self.N, 50 * self.N * self.K)
+        G = nx.gnm_random_graph(100 * self.N, 50 * self.N * self.K, seed=42)
         nx.community.fast_label_propagation_communities(G)
 
     def test_graph_type(self):
