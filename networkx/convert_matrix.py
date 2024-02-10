@@ -273,9 +273,9 @@ def to_pandas_edgelist(
     0      A      B     1       7
     1      C      E     9      10
 
-    >>> G = nx.MultiGraph([('A', 'B', {'cost': 1}), ('A', 'B', {'cost': 9})])
-    >>> df = nx.to_pandas_edgelist(G, nodelist=['A', 'C'], edge_key='ekey')
-    >>> df[['source', 'target', 'cost', 'ekey']]
+    >>> G = nx.MultiGraph([("A", "B", {"cost": 1}), ("A", "B", {"cost": 9})])
+    >>> df = nx.to_pandas_edgelist(G, nodelist=["A", "C"], edge_key="ekey")
+    >>> df[["source", "target", "cost", "ekey"]]
       source target  cost  ekey
     0      A      B     1     0
     1      A      B     9     1
@@ -736,9 +736,7 @@ def from_scipy_sparse_array(
     as the number of parallel edges joining those two vertices:
 
     >>> A = sp.sparse.csr_array([[1, 1], [1, 2]])
-    >>> G = nx.from_scipy_sparse_array(
-    ...     A, parallel_edges=True, create_using=nx.MultiGraph
-    ... )
+    >>> G = nx.from_scipy_sparse_array(A, parallel_edges=True, create_using=nx.MultiGraph)
     >>> G[1][1]
     AtlasView({0: {'weight': 1}, 1: {'weight': 1}})
 
@@ -934,7 +932,7 @@ def to_numpy_array(
     >>> G.add_edge(2, 0, weight=0)
     >>> G.add_edge(2, 1, weight=0)
     >>> G.add_edge(3, 0, weight=1)
-    >>> nx.to_numpy_array(G, nonedge=-1.)
+    >>> nx.to_numpy_array(G, nonedge=-1.0)
     array([[-1.,  2., -1.,  1.],
            [ 2., -1.,  0., -1.],
            [-1.,  0., -1.,  0.],

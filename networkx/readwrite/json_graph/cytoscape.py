@@ -119,12 +119,16 @@ def cytoscape_graph(data, name="name", ident="id"):
     Examples
     --------
     >>> data_dict = {
-    ...     'data': [],
-    ...     'directed': False,
-    ...     'multigraph': False,
-    ...     'elements': {'nodes': [{'data': {'id': '0', 'value': 0, 'name': '0'}},
-    ...       {'data': {'id': '1', 'value': 1, 'name': '1'}}],
-    ...      'edges': [{'data': {'source': 0, 'target': 1}}]}
+    ...     "data": [],
+    ...     "directed": False,
+    ...     "multigraph": False,
+    ...     "elements": {
+    ...         "nodes": [
+    ...             {"data": {"id": "0", "value": 0, "name": "0"}},
+    ...             {"data": {"id": "1", "value": 1, "name": "1"}},
+    ...         ],
+    ...         "edges": [{"data": {"source": 0, "target": 1}}],
+    ...     },
     ... }
     >>> G = nx.cytoscape_graph(data_dict)
     >>> G.name

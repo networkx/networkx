@@ -54,7 +54,7 @@ def gn_graph(n, kernel=None, create_using=None, seed=None):
 
     To specify an attachment kernel, use the `kernel` keyword argument::
 
-    >>> D = nx.gn_graph(10, kernel=lambda x: x ** 1.5)  # A_k = k^1.5
+    >>> D = nx.gn_graph(10, kernel=lambda x: x**1.5)  # A_k = k^1.5
 
     References
     ----------

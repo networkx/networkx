@@ -155,7 +155,6 @@ def triadic_census(G, nodelist=None):
     >>> triadic_census = nx.triadic_census(G)
     >>> for key, value in triadic_census.items():
     ...     print(f"{key}: {value}")
-    ...
     003: 0
     012: 0
     102: 0
@@ -427,9 +426,9 @@ def triads_by_type(G):
     --------
     >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 1), (5, 6), (5, 4), (6, 7)])
     >>> dict = nx.triads_by_type(G)
-    >>> dict['120C'][0].edges()
+    >>> dict["120C"][0].edges()
     OutEdgeView([(1, 2), (1, 3), (2, 3), (3, 1)])
-    >>> dict['012'][0].edges()
+    >>> dict["012"][0].edges()
     OutEdgeView([(1, 2)])
 
     References

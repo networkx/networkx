@@ -424,7 +424,6 @@ def circulant_graph(n, offsets, create_using=None):
     ...     (7, 8),
     ...     (8, 9),
     ... ]
-    ...
     >>> sorted(edges) == sorted(G.edges())
     True
 
@@ -444,7 +443,6 @@ def circulant_graph(n, offsets, create_using=None):
     ...     (2, 4),
     ...     (3, 4),
     ... ]
-    ...
     >>> sorted(edges) == sorted(G.edges())
     True
 

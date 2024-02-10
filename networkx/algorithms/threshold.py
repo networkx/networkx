@@ -394,7 +394,7 @@ def find_threshold_graph(G, create_using=None):
     >>> from networkx.algorithms.threshold import find_threshold_graph
     >>> G = nx.barbell_graph(3, 3)
     >>> T = find_threshold_graph(G)
-    >>> T.nodes # may vary
+    >>> T.nodes  # may vary
     NodeView((7, 8, 5, 6))
 
     References

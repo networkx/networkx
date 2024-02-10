@@ -278,9 +278,7 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
     For a more custom approach to handling edge data, try::
 
         dod = {
-            n: {
-                nbr: custom(n, nbr, dd) for nbr, dd in nbrdict.items()
-            }
+            n: {nbr: custom(n, nbr, dd) for nbr, dd in nbrdict.items()}
             for n, nbrdict in G.adj.items()
         }
 
@@ -300,9 +298,9 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
     >>> G = nx.Graph()
     >>> G.add_edges_from(
     ...     [
-    ...         (0, 1, {'weight': 1.0}),
-    ...         (1, 2, {'weight': 2.0}),
-    ...         (2, 0, {'weight': 1.0}),
+    ...         (0, 1, {"weight": 1.0}),
+    ...         (1, 2, {"weight": 2.0}),
+    ...         (2, 0, {"weight": 1.0}),
     ...     ]
     ... )
     >>> d = nx.to_dict_of_dicts(G)
@@ -310,7 +308,7 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
     {0: {1: {'weight': 1.0}, 2: {'weight': 1.0}},
      1: {0: {'weight': 1.0}, 2: {'weight': 2.0}},
      2: {1: {'weight': 2.0}, 0: {'weight': 1.0}}}
-    >>> d[1][2]['weight']
+    >>> d[1][2]["weight"]
     2.0
 
     If `edge_data` is not `None`, edge data in the original graph (if any) is
@@ -325,15 +323,15 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
     This also applies to MultiGraphs: edge data is preserved by default:
 
     >>> G = nx.MultiGraph()
-    >>> G.add_edge(0, 1, key='a', weight=1.0)
+    >>> G.add_edge(0, 1, key="a", weight=1.0)
     'a'
-    >>> G.add_edge(0, 1, key='b', weight=5.0)
+    >>> G.add_edge(0, 1, key="b", weight=5.0)
     'b'
     >>> d = nx.to_dict_of_dicts(G)
     >>> d  # doctest: +SKIP
     {0: {1: {'a': {'weight': 1.0}, 'b': {'weight': 5.0}}},
      1: {0: {'a': {'weight': 1.0}, 'b': {'weight': 5.0}}}}
-    >>> d[0][1]['b']['weight']
+    >>> d[0][1]["b"]["weight"]
     5.0
 
     But multi edge data is lost if `edge_data` is not `None`:

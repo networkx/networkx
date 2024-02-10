@@ -407,8 +407,10 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     >>> import networkx as nx
     >>> import networkx.algorithms.approximation as approx
     >>> G = nx.complete_graph(3, create_using=nx.DiGraph)
-    >>> nx.set_edge_attributes(G, {(0, 1): 2, (1, 2): 2, (2, 0): 2, (0, 2): 1, (2, 1): 1, (1, 0): 1}, "weight")
-    >>> tour = approx.asadpour_atsp(G,source=0)
+    >>> nx.set_edge_attributes(
+    ...     G, {(0, 1): 2, (1, 2): 2, (2, 0): 2, (0, 2): 1, (2, 1): 1, (1, 0): 1}, "weight"
+    ... )
+    >>> tour = approx.asadpour_atsp(G, source=0)
     >>> tour
     [0, 2, 1, 0]
     """
@@ -951,11 +953,22 @@ def greedy_tsp(G, weight="weight", source=None):
     --------
     >>> from networkx.algorithms import approximation as approx
     >>> G = nx.DiGraph()
-    >>> G.add_weighted_edges_from({
-    ...     ("A", "B", 3), ("A", "C", 17), ("A", "D", 14), ("B", "A", 3),
-    ...     ("B", "C", 12), ("B", "D", 16), ("C", "A", 13),("C", "B", 12),
-    ...     ("C", "D", 4), ("D", "A", 14), ("D", "B", 15), ("D", "C", 2)
-    ... })
+    >>> G.add_weighted_edges_from(
+    ...     {
+    ...         ("A", "B", 3),
+    ...         ("A", "C", 17),
+    ...         ("A", "D", 14),
+    ...         ("B", "A", 3),
+    ...         ("B", "C", 12),
+    ...         ("B", "D", 16),
+    ...         ("C", "A", 13),
+    ...         ("C", "B", 12),
+    ...         ("C", "D", 4),
+    ...         ("D", "A", 14),
+    ...         ("D", "B", 15),
+    ...         ("D", "C", 2),
+    ...     }
+    ... )
     >>> cycle = approx.greedy_tsp(G, source="D")
     >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(cycle))
     >>> cycle
@@ -1114,11 +1127,22 @@ def simulated_annealing_tsp(
     --------
     >>> from networkx.algorithms import approximation as approx
     >>> G = nx.DiGraph()
-    >>> G.add_weighted_edges_from({
-    ...     ("A", "B", 3), ("A", "C", 17), ("A", "D", 14), ("B", "A", 3),
-    ...     ("B", "C", 12), ("B", "D", 16), ("C", "A", 13),("C", "B", 12),
-    ...     ("C", "D", 4), ("D", "A", 14), ("D", "B", 15), ("D", "C", 2)
-    ... })
+    >>> G.add_weighted_edges_from(
+    ...     {
+    ...         ("A", "B", 3),
+    ...         ("A", "C", 17),
+    ...         ("A", "D", 14),
+    ...         ("B", "A", 3),
+    ...         ("B", "C", 12),
+    ...         ("B", "D", 16),
+    ...         ("C", "A", 13),
+    ...         ("C", "B", 12),
+    ...         ("C", "D", 4),
+    ...         ("D", "A", 14),
+    ...         ("D", "B", 15),
+    ...         ("D", "C", 2),
+    ...     }
+    ... )
     >>> cycle = approx.simulated_annealing_tsp(G, "greedy", source="D")
     >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(cycle))
     >>> cycle
@@ -1331,11 +1355,22 @@ def threshold_accepting_tsp(
     --------
     >>> from networkx.algorithms import approximation as approx
     >>> G = nx.DiGraph()
-    >>> G.add_weighted_edges_from({
-    ...     ("A", "B", 3), ("A", "C", 17), ("A", "D", 14), ("B", "A", 3),
-    ...     ("B", "C", 12), ("B", "D", 16), ("C", "A", 13),("C", "B", 12),
-    ...     ("C", "D", 4), ("D", "A", 14), ("D", "B", 15), ("D", "C", 2)
-    ... })
+    >>> G.add_weighted_edges_from(
+    ...     {
+    ...         ("A", "B", 3),
+    ...         ("A", "C", 17),
+    ...         ("A", "D", 14),
+    ...         ("B", "A", 3),
+    ...         ("B", "C", 12),
+    ...         ("B", "D", 16),
+    ...         ("C", "A", 13),
+    ...         ("C", "B", 12),
+    ...         ("C", "D", 4),
+    ...         ("D", "A", 14),
+    ...         ("D", "B", 15),
+    ...         ("D", "C", 2),
+    ...     }
+    ... )
     >>> cycle = approx.threshold_accepting_tsp(G, "greedy", source="D")
     >>> cost = sum(G[n][nbr]["weight"] for n, nbr in nx.utils.pairwise(cycle))
     >>> cycle

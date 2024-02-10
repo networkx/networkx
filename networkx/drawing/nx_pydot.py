@@ -355,9 +355,9 @@ def pydot_layout(G, prog="neato", root=None):
     If this occurs in your case, consider relabeling the nodes just
     for the layout computation using something similar to::
 
-        H = nx.convert_node_labels_to_integers(G, label_attribute='node_label')
-        H_layout = nx.nx_pydot.pydot_layout(G, prog='dot')
-        G_layout = {H.nodes[n]['node_label']: p for n, p in H_layout.items()}
+        H = nx.convert_node_labels_to_integers(G, label_attribute="node_label")
+        H_layout = nx.nx_pydot.pydot_layout(G, prog="dot")
+        G_layout = {H.nodes[n]["node_label"]: p for n, p in H_layout.items()}
 
     """
     import pydot
