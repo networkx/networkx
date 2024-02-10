@@ -801,7 +801,7 @@ class _dispatchable:
             pytest.xfail(msg)
 
         import re
-        from collections.abc import Iterator
+        from collections.abc import Generator, Iterator
         from copy import copy
         from io import BufferedReader, BytesIO
         from itertools import tee
@@ -926,7 +926,7 @@ class _dispatchable:
                 raise RuntimeError(
                     f"{self.name} should not use both Yields and Returns in docstring"
                 )
-            if isinstance(result, Iterator):
+            if isinstance(result, Generator):
                 if has_returns and self.name not in should_be_yields:
                     raise RuntimeError(f"{self.name} should use Yields, not Returns")
                 if has_yields and self.name in should_be_yields:
