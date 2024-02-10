@@ -5,7 +5,7 @@ import networkx as nx
 __all__ = ["check_planarity", "is_planar", "PlanarEmbedding"]
 
 
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def is_planar(G):
     """Returns True if and only if `G` is planar.
 

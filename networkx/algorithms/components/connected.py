@@ -69,7 +69,7 @@ def connected_components(G):
 
 
 @not_implemented_for("directed")
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def number_connected_components(G):
     """Returns the number of connected components.
 
@@ -109,7 +109,7 @@ def number_connected_components(G):
 
 
 @not_implemented_for("directed")
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def is_connected(G):
     """Returns True if the graph is connected, False otherwise.
 

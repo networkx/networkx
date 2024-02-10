@@ -9,7 +9,7 @@ from networkx.utils import py_random_state
 __all__ = ["is_threshold_graph", "find_threshold_graph"]
 
 
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def is_threshold_graph(G):
     """
     Returns `True` if `G` is a threshold graph.

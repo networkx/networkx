@@ -17,7 +17,7 @@ __all__ = [
 ]
 
 
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def is_eulerian(G):
     """Returns True if and only if `G` is Eulerian.
 
@@ -69,7 +69,7 @@ def is_eulerian(G):
     return all(d % 2 == 0 for v, d in G.degree()) and nx.is_connected(G)
 
 
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def is_semieulerian(G):
     """Return True iff `G` is semi-Eulerian.
 

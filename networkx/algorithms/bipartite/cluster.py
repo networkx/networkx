@@ -211,7 +211,7 @@ def average_clustering(G, nodes=None, mode="dot"):
     return sum(ccs[v] for v in nodes) / len(nodes)
 
 
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def robins_alexander_clustering(G):
     r"""Compute the bipartite clustering of G.
 

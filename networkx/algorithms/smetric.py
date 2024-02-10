@@ -3,7 +3,7 @@ import networkx as nx
 __all__ = ["s_metric"]
 
 
-@nx._dispatchable
+@nx._dispatchable  # (auto_cache=True) Enable auto-cache when warning is removed
 def s_metric(G, **kwargs):
     """Returns the s-metric [1]_ of graph.
 
@@ -35,7 +35,7 @@ def s_metric(G, **kwargs):
            https://arxiv.org/abs/cond-mat/0501169
     """
     # NOTE: This entire code block + the **kwargs in the signature can all be
-    # removed when the deprecation expires.
+    # removed when the deprecation expires, and auto-cache can be enabled.
     # Normalized is always False, since all `normalized=True` did was raise
     # a NotImplementedError
     if kwargs:

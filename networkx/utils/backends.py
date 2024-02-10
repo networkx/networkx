@@ -175,6 +175,7 @@ class _dispatchable:
         preserve_node_attrs=False,
         preserve_graph_attrs=False,
         preserve_all_attrs=False,
+        auto_cache=False,
     ):
         """Dispatches to a backend algorithm based on input graph types.
 
@@ -232,6 +233,9 @@ class _dispatchable:
             Whether to preserve all edge, node and graph attributes.
             This overrides all the other preserve_*_attrs.
 
+        auto_cache : bool
+            Whether to automatically cache the result in ``G.__networkx_cache__``.
+
         """
         if func is None:
             return partial(
@@ -244,6 +248,7 @@ class _dispatchable:
                 preserve_node_attrs=preserve_node_attrs,
                 preserve_graph_attrs=preserve_graph_attrs,
                 preserve_all_attrs=preserve_all_attrs,
+                auto_cache=auto_cache,
             )
         if isinstance(func, str):
             raise TypeError("'name' and 'graphs' must be passed by keyword") from None
@@ -279,6 +284,7 @@ class _dispatchable:
         self.preserve_edge_attrs = preserve_edge_attrs or preserve_all_attrs
         self.preserve_node_attrs = preserve_node_attrs or preserve_all_attrs
         self.preserve_graph_attrs = preserve_graph_attrs or preserve_all_attrs
+        self.auto_cache = auto_cache
 
         if edge_attrs is not None and not isinstance(edge_attrs, str | dict):
             raise TypeError(
@@ -302,6 +308,10 @@ class _dispatchable:
             raise TypeError(
                 f"Bad type for preserve_graph_attrs: {type(self.preserve_graph_attrs)}."
                 " Expected bool or set."
+            ) from None
+        if not isinstance(self.auto_cache, bool):
+            raise TypeError(
+                f"Bad type for auto_cache: {type(self.auto_cache)}. Expected bool."
             ) from None
 
         if isinstance(graphs, str):
@@ -398,6 +408,29 @@ class _dispatchable:
         return self._sig
 
     def __call__(self, /, *args, backend=None, **kwargs):
+        if self.auto_cache:
+            # Assume first argument has the cache (true for now)
+            first_graph_name = next(
+                gname for gname, pos in self.graphs.items() if pos == 0
+            )
+            if args:
+                if first_graph_name in kwargs:
+                    raise TypeError(
+                        f"{self.name}() got multiple values for {first_graph_name!r}"
+                    )
+                first_graph = args[0]
+            else:
+                first_graph = kwargs.get(first_graph_name)
+            cache = getattr(first_graph, "__networkx_cache__", None)
+            if cache is not None:
+                if self.name in cache:
+                    return cache[self.name]
+                if not backends:
+                    # Fast path if no backends are installed
+                    result = self.orig_func(*args, **kwargs)
+                    cache[self.name] = result
+                    return result
+
         if not backends:
             # Fast path if no backends are installed
             return self.orig_func(*args, **kwargs)
@@ -438,12 +471,15 @@ class _dispatchable:
 
         if self._is_testing and self._automatic_backends and backend_name is None:
             # Special path if we are running networkx tests with a backend.
-            return self._convert_and_call_for_tests(
+            result = self._convert_and_call_for_tests(
                 self._automatic_backends[0],
                 args,
                 kwargs,
                 fallback_to_nx=self._fallback_to_nx,
             )
+            if self.auto_cache and cache is not None:
+                cache[self.name] = result
+            return result
 
         # Check if any graph comes from a backend
         if self.list_graphs:
@@ -483,6 +519,7 @@ class _dispatchable:
                     getattr(g, "__networkx_backend__", "networkx")
                     for g in graphs_resolved.values()
                 }
+
         if has_backends:
             # Dispatchable graphs found! Dispatch to backend function.
             # We don't handle calls with different backend graphs yet,
@@ -516,38 +553,49 @@ class _dispatchable:
             if hasattr(backend, self.name):
                 if "networkx" in graph_backend_names:
                     # We need to convert networkx graphs to backend graphs
-                    return self._convert_and_call(
+                    result = self._convert_and_call(
                         graph_backend_name,
                         args,
                         kwargs,
                         fallback_to_nx=self._fallback_to_nx,
                     )
-                # All graphs are backend graphs--no need to convert!
-                return getattr(backend, self.name)(*args, **kwargs)
-            # Future work: try to convert and run with other backends in self._automatic_backends
-            raise NetworkXNotImplemented(
-                f"'{self.name}' not implemented by {graph_backend_name}"
-            )
+                else:
+                    # All graphs are backend graphs--no need to convert!
+                    result = getattr(backend, self.name)(*args, **kwargs)
+            else:
+                # Future work: try to convert and run with other backends in self._automatic_backends
+                raise NetworkXNotImplemented(
+                    f"'{self.name}' not implemented by {graph_backend_name}"
+                )
 
-        # If backend was explicitly given by the user, so we need to use it no matter what
-        if backend_name is not None:
-            return self._convert_and_call(
+        # If backend was explicitly given by the user, we need to use it no matter what
+        elif backend_name is not None:
+            result = self._convert_and_call(
                 backend_name, args, kwargs, fallback_to_nx=False
             )
 
         # Only networkx graphs; try to convert and run with a backend with automatic
         # conversion, but don't do this by default for graph generators or loaders.
-        if self.graphs:
+        elif self.graphs:
             for backend_name in self._automatic_backends:
                 if self._can_backend_run(backend_name, *args, **kwargs):
-                    return self._convert_and_call(
+                    result = self._convert_and_call(
                         backend_name,
                         args,
                         kwargs,
                         fallback_to_nx=self._fallback_to_nx,
                     )
-        # Default: run with networkx on networkx inputs
-        return self.orig_func(*args, **kwargs)
+                    break
+            else:
+                # Default: run with networkx on networkx inputs
+                result = self.orig_func(*args, **kwargs)
+        else:
+            # Default: run with networkx on networkx inputs
+            result = self.orig_func(*args, **kwargs)
+
+        if self.auto_cache and cache is not None:
+            cache[self.name] = result
+        return result
 
     def _can_backend_run(self, backend_name, /, *args, **kwargs):
         """Can the specified backend run this algorithms with these arguments?"""

@@ -182,7 +182,7 @@ def clique_removal(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def large_clique_size(G):
     """Find the size of a large clique in a graph.
 

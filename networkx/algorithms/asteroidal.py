@@ -91,7 +91,7 @@ def find_asteroidal_triple(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def is_at_free(G):
     """Check if a graph is AT-free.
 

@@ -370,6 +370,7 @@ class Graph:
             convert.to_networkx_graph(incoming_graph_data, create_using=self)
         # load graph attributes (must be after convert)
         self.graph.update(attr)
+        self.__networkx_cache__ = {}
 
     @cached_property
     def adj(self):
@@ -559,6 +560,7 @@ class Graph:
             attr_dict.update(attr)
         else:  # update attr even if node already exists
             self._node[node_for_adding].update(attr)
+        self.__networkx_cache__ = {}
 
     def add_nodes_from(self, nodes_for_adding, **attr):
         """Add multiple nodes.
@@ -636,6 +638,7 @@ class Graph:
                 self._adj[n] = self.adjlist_inner_dict_factory()
                 self._node[n] = self.node_attr_dict_factory()
             self._node[n].update(newdict)
+        self.__networkx_cache__ = {}
 
     def remove_node(self, n):
         """Remove node n.
@@ -676,6 +679,7 @@ class Graph:
         for u in nbrs:
             del adj[u][n]  # remove all edges n-u in graph
         del adj[n]  # now remove node
+        self.__networkx_cache__ = {}
 
     def remove_nodes_from(self, nodes):
         """Remove multiple nodes.
@@ -728,6 +732,7 @@ class Graph:
                 del adj[n]
             except KeyError:
                 pass
+        self.__networkx_cache__ = {}
 
     @cached_property
     def nodes(self):
@@ -957,6 +962,7 @@ class Graph:
         datadict.update(attr)
         self._adj[u][v] = datadict
         self._adj[v][u] = datadict
+        self.__networkx_cache__ = {}
 
     def add_edges_from(self, ebunch_to_add, **attr):
         """Add all the edges in ebunch_to_add.
@@ -1037,6 +1043,7 @@ class Graph:
             datadict.update(dd)
             self._adj[u][v] = datadict
             self._adj[v][u] = datadict
+        self.__networkx_cache__ = {}
 
     def add_weighted_edges_from(self, ebunch_to_add, weight="weight", **attr):
         """Add weighted edges in `ebunch_to_add` with specified weight attr
@@ -1087,6 +1094,7 @@ class Graph:
         >>> G.add_weighted_edges_from(list((5, n, weight) for n in G.nodes))
         """
         self.add_edges_from(((u, v, {weight: d}) for u, v, d in ebunch_to_add), **attr)
+        self.__networkx_cache__ = {}
 
     def remove_edge(self, u, v):
         """Remove the edge between u and v.
@@ -1120,6 +1128,7 @@ class Graph:
                 del self._adj[v][u]
         except KeyError as err:
             raise NetworkXError(f"The edge {u}-{v} is not in the graph") from err
+        self.__networkx_cache__ = {}
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -1154,6 +1163,7 @@ class Graph:
                 del adj[u][v]
                 if u != v:  # self loop needs only one entry removed
                     del adj[v][u]
+        self.__networkx_cache__ = {}
 
     def update(self, edges=None, nodes=None):
         """Update the graph using nodes/edges/graphs as input.
@@ -1526,6 +1536,7 @@ class Graph:
         self._adj.clear()
         self._node.clear()
         self.graph.clear()
+        self.__networkx_cache__ = {}
 
     def clear_edges(self):
         """Remove all edges from the graph without altering nodes.
@@ -1541,6 +1552,7 @@ class Graph:
         """
         for nbr_dict in self._adj.values():
             nbr_dict.clear()
+        self.__networkx_cache__ = {}
 
     def is_multigraph(self):
         """Returns True if graph is a multigraph, False otherwise."""
