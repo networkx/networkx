@@ -1051,11 +1051,11 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight="weight"):
         dictionary of edge attributes for that edge. The function must
         return a number or None to indicate a hidden edge.
 
-    Returns
-    -------
-    distance : iterator
-        (source, dictionary) iterator with dictionary keyed by target and
-        shortest path length as the key value.
+    Yields
+    ------
+    (source, dictionary) tuple
+        2-tuple where the first element is the source node and the second element
+        is a dictionary keyed by target node and the shortest path length as the value.
 
     Examples
     --------
@@ -1110,11 +1110,12 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight="weight"):
         dictionary of edge attributes for that edge. The function must
         return a number or None to indicate a hidden edge.
 
-    Returns
-    -------
-    paths : iterator
-        (source, dictionary) iterator with dictionary keyed by target and
-        shortest path as the key value.
+    Yields
+    ------
+    (source, dict) tuple
+        A 2-tuple where the first element is the source node and the second is
+        a dictionary keyed by target node containing node lists representing a shortest path
+        betwen the source and target.
 
     Examples
     --------
@@ -1851,11 +1852,11 @@ def all_pairs_bellman_ford_path_length(G, weight="weight"):
         dictionary of edge attributes for that edge. The function must
         return a number.
 
-    Returns
-    -------
-    distance : iterator
-        (source, dictionary) iterator with dictionary keyed by target and
-        shortest path length as the key value.
+    Yields
+    ------
+    (source, dict) tuple
+        A 2-tuple where the first element is the source node and the second is
+        a dictionary keyed by target node with the shortest path length as the value.
 
     Examples
     --------
@@ -1906,11 +1907,12 @@ def all_pairs_bellman_ford_path(G, weight="weight"):
         dictionary of edge attributes for that edge. The function must
         return a number.
 
-    Returns
-    -------
-    paths : iterator
-        (source, dictionary) iterator with dictionary keyed by target and
-        shortest path as the key value.
+    Yields
+    ------
+    (source, dict) tuple
+        A 2-tuple where the first element is the source node and the second is
+        a dictionary keyed by target node containing node lists representing a shortest path
+        betwen the source and target.
 
     Examples
     --------
