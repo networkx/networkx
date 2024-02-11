@@ -156,7 +156,7 @@ def _multigraph_eulerian_circuit(G, source):
 
 @nx._dispatchable
 def eulerian_circuit(G, source=None, keys=False):
-    """Returns an iterator over the edges of an Eulerian circuit in `G`.
+    """Yields the edges of an Eulerian circuit in `G`.
 
     An *Eulerian circuit* is a closed walk that includes each edge of a
     graph exactly once.
@@ -174,10 +174,10 @@ def eulerian_circuit(G, source=None, keys=False):
        ``(u, v)``. Otherwise, edges will be of the form ``(u, v, k)``.
        This option is ignored unless `G` is a multigraph.
 
-    Returns
-    -------
-    edges : iterator
-       An iterator over edges in the Eulerian circuit.
+    Yields
+    ------
+    edges : tuple
+       Edges in the Eulerian circuit.
 
     Raises
     ------
