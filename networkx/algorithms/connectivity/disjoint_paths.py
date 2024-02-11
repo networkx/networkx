@@ -26,9 +26,9 @@ __all__ = ["edge_disjoint_paths", "node_disjoint_paths"]
 def edge_disjoint_paths(
     G, s, t, flow_func=None, cutoff=None, auxiliary=None, residual=None
 ):
-    """Returns the edges disjoint paths between source and target.
+    """Yields edge-disjoint paths between source `s` and target `t`.
 
-    Edge disjoint paths are paths that do not share any edge. The
+    Edge-disjoint paths are paths that do not share any edge. The
     number of edge disjoint paths between source and target is equal
     to their edge connectivity.
 
@@ -68,10 +68,10 @@ def edge_disjoint_paths(
         Residual network to compute maximum flow. If provided it will be
         reused instead of recreated. Default value: None.
 
-    Returns
-    -------
-    paths : generator
-        A generator of edge independent paths.
+    Yields
+    ------
+    path : list of nodes
+        A list of nodes representing an edge independent path between `s` and `t`.
 
     Raises
     ------
@@ -238,7 +238,7 @@ def edge_disjoint_paths(
 def node_disjoint_paths(
     G, s, t, flow_func=None, cutoff=None, auxiliary=None, residual=None
 ):
-    r"""Computes node disjoint paths between source and target.
+    r"""Yields node-disjoint paths between source `s` and target `t`.
 
     Node disjoint paths are paths that only share their first and last
     nodes. The number of node independent paths between two nodes is
@@ -280,10 +280,10 @@ def node_disjoint_paths(
         Residual network to compute maximum flow. If provided it will be
         reused instead of recreated. Default value: None.
 
-    Returns
-    -------
-    paths : generator
-        Generator of node disjoint paths.
+    Yields
+    ------
+    path : list of nodes
+        A list of nodes representing a node-disjoint path between `s` and `t`.
 
     Raises
     ------
