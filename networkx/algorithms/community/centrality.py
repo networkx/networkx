@@ -7,7 +7,7 @@ __all__ = ["girvan_newman"]
 
 @nx._dispatchable(preserve_edge_attrs="most_valuable_edge")
 def girvan_newman(G, most_valuable_edge=None):
-    """Finds communities in a graph using the Girvan–Newman method.
+    """Finds communities in graph `G` using the Girvan–Newman method.
 
     Parameters
     ----------
@@ -21,12 +21,11 @@ def girvan_newman(G, most_valuable_edge=None):
         If not specified, the edge with the highest
         :func:`networkx.edge_betweenness_centrality` will be used.
 
-    Returns
-    -------
-    iterator
-        Iterator over tuples of sets of nodes in `G`. Each set of node
-        is a community, each tuple is a sequence of communities at a
-        particular level of the algorithm.
+    Yields
+    ------
+    tuple
+        Tuples of sets of nodes in `G`. Each set of nodes is a community, each
+        tuple is a sequence of communities at a particular level of the algorithm.
 
     Examples
     --------
@@ -93,7 +92,7 @@ def girvan_newman(G, most_valuable_edge=None):
         ([0, 1, 2, 3, 4], [5, 6, 7, 8, 9])
 
     To specify a different ranking algorithm for edges, use the
-    `most_valuable_edge` keyword argument::
+    `most_valuable_edge` keyword argument:
 
         >>> from networkx import edge_betweenness_centrality
         >>> from random import random
@@ -106,7 +105,6 @@ def girvan_newman(G, most_valuable_edge=None):
         ...     # Add some random noise.
         ...     centrality = {e: c + random() for e, c in centrality.items()}
         ...     return max(centrality, key=centrality.get)
-        ...
         >>> G = nx.path_graph(10)
         >>> comp = nx.community.girvan_newman(G, most_valuable_edge=most_central_edge)
 
