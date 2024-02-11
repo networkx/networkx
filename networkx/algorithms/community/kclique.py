@@ -24,7 +24,8 @@ def k_clique_communities(G, k, cliques=None):
 
     Yields
     ------
-    Sets of nodes as `frozenset` s, one for each k-clique community.
+    frozenset
+       Sets of nodes as `frozenset` s, one for each k-clique community.
 
     Examples
     --------
