@@ -662,12 +662,23 @@ class ISMAGS:
         """
         Does the same as :meth:`find_isomorphisms` if :attr:`graph` and
         :attr:`subgraph` have the same number of nodes.
+
+        Yields
+        ------
+        dict
+            The found isomorphism mappings of {graph_node: subgraph_node}.
         """
         if len(self.graph) == len(self.subgraph):
             yield from self.subgraph_isomorphisms_iter(symmetry=symmetry)
 
     def subgraph_isomorphisms_iter(self, symmetry=True):
-        """Alternative name for :meth:`find_isomorphisms`."""
+        """Alternative name for :meth:`find_isomorphisms`.
+
+        Yields
+        ------
+        dict
+            The found isomorphism mappings of {graph_node: subgraph_node}.
+        """
         return self.find_isomorphisms(symmetry)
 
     def _find_nodecolor_candidates(self):
