@@ -801,7 +801,7 @@ class _dispatchable:
             pytest.xfail(msg)
 
         import re
-        from collections.abc import Generator, Iterator
+        from collections.abc import Iterator
         from copy import copy
         from io import BufferedReader, BytesIO
         from itertools import tee
@@ -851,10 +851,10 @@ class _dispatchable:
             pytest.xfail(
                 exc.args[0] if exc.args else f"{self.name} raised {type(exc).__name__}"
             )
-        if self.__doc__:
+        if self.__doc__ and backend_name == "nx-loopback":
             # Checks below will test whether these `should_be_*` sets are correct
             should_be_returns = set()
-            should_be_yields = {
+            should_be_yields_has_returns = {
                 # Maybe these should use "Yields" instead of "Returns" in docstrings
                 "adamic_adar_index",
                 "all_node_cuts",
@@ -920,20 +920,41 @@ class _dispatchable:
                 "weakly_connected_components",
                 "within_inter_cluster",
             }
+            should_be_yields_no_returns = {
+                "boruvka_mst_edges",
+                "prim_mst_edges",
+                "root_to_leaf_paths",
+                "strategy_connected_sequential",
+                "strategy_connected_sequential_bfs",
+                "strategy_connected_sequential_dfs",
+                "strategy_independent_set",
+                "strategy_saturation_largest_first",
+            }
             has_returns = bool(re.findall(r"\n *Returns\n *-------\n", self.__doc__))
             has_yields = bool(re.findall(r"\n *Yields\n *------\n", self.__doc__))
             if has_returns and has_yields:
                 raise RuntimeError(
                     f"{self.name} should not use both Yields and Returns in docstring"
                 )
-            if isinstance(result, Generator):
-                if has_returns and self.name not in should_be_yields:
+            if isinstance(result, Iterator):
+                if has_returns and self.name not in should_be_yields_has_returns:
                     raise RuntimeError(f"{self.name} should use Yields, not Returns")
-                if has_yields and self.name in should_be_yields:
+                if has_yields and self.name in should_be_yields_has_returns:
                     raise RuntimeError(
                         f"{self.name} correctly uses Yields, so it should be "
-                        "removed from `should_be_yields` set"
+                        "removed from `should_be_yields_has_returns` set"
                     )
+                if has_yields and self.name in should_be_yields_no_returns:
+                    raise RuntimeError(
+                        f"{self.name} correctly uses Yields, so it should be "
+                        "removed from `should_be_yields_no_returns` set"
+                    )
+                if (
+                    not has_yields
+                    and self.name not in should_be_yields_has_returns
+                    and self.name not in should_be_yields_no_returns
+                ):
+                    raise RuntimeError(f"{self.name} is missing Yields")
             else:
                 if has_yields and self.name not in should_be_returns:
                     raise RuntimeError(f"{self.name} should use Returns, not Yields")
