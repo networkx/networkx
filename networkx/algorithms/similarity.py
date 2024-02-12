@@ -401,10 +401,9 @@ def optimize_graph_edit_distance(
     edge_ins_cost=None,
     upper_bound=None,
 ):
-    """Returns consecutive approximations of GED (graph edit distance)
-    between graphs G1 and G2.
+    """Yields consecutive approximations of graph edit distance between `G1` and `G2`.
 
-    Graph edit distance is a graph similarity measure analogous to
+    Graph edit distance (GED) is a graph similarity measure analogous to
     Levenshtein distance for strings.  It is defined as minimum cost
     of edit path (sequence of node and edge edit operations)
     transforming graph G1 to graph isomorphic to G2.
@@ -412,7 +411,7 @@ def optimize_graph_edit_distance(
     Parameters
     ----------
     G1, G2: graphs
-        The two graphs G1 and G2 must be of the same type.
+        The two graphs `G1` and `G2` must be of the same type.
 
     node_match : callable
         A function that returns True if node n1 in G1 and n2 in G2
@@ -494,17 +493,16 @@ def optimize_graph_edit_distance(
     upper_bound : numeric
         Maximum edit distance to consider.
 
-    Returns
-    -------
-    Generator of consecutive approximations of graph edit distance.
+    Yields
+    ------
+    scalar
+       Scalar value representing sequential approximations of graph edit distance.
 
     Examples
     --------
     >>> G1 = nx.cycle_graph(6)
     >>> G2 = nx.wheel_graph(7)
-    >>> for v in nx.optimize_graph_edit_distance(G1, G2):
-    ...     minv = v
-    >>> minv
+    >>> min(nx.optimize_graph_edit_distance(G1, G2))
     7.0
 
     See Also
@@ -557,7 +555,7 @@ def optimize_edit_paths(
     roots=None,
     timeout=None,
 ):
-    """GED (graph edit distance) calculation: advanced interface.
+    """Compute graph edit paths and cost.
 
     Graph edit path is a sequence of node and edge edit operations
     transforming graph G1 to graph isomorphic to G2.  Edit operations
@@ -665,12 +663,13 @@ def optimize_edit_paths(
         Maximum number of seconds to execute.
         After timeout is met, the current best GED is returned.
 
-    Returns
-    -------
-    Generator of tuples (node_edit_path, edge_edit_path, cost)
-        node_edit_path : list of tuples (u, v)
-        edge_edit_path : list of tuples ((u1, v1), (u2, v2))
-        cost : numeric
+    Yields
+    ------
+    tuple
+        3-tuple of the form ``(node_edit_path, edge_edit_path, cost)`` where
+        ``node_edit_path`` : list of tuples ``(u, v)``
+        ``edge_edit_path`` : list of tuples ``((u1, v1), (u2, v2))``, and
+        ``cost : scalar value``
 
     See Also
     --------
@@ -1695,17 +1694,17 @@ def generate_random_paths(
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
 
-    Returns
-    -------
-    paths : generator of lists
-        Generator of `sample_size` paths each with length `path_length`.
+    Yields
+    ------
+    path : list of nodes
+        Generate `sample_size` paths each with length `path_length`.
 
     Examples
     --------
-    Note that the return value is the list of paths:
-
     >>> G = nx.star_graph(3)
-    >>> random_path = nx.generate_random_paths(G, 2)
+    >>> list(nx.generate_random_paths(G, 2))  # doctest: +SKIP
+    [[3, 0, 1, 0, 3, 0], [2, 0, 3, 0, 1, 0]]
+
 
     By passing a dictionary into `index_map`, it will build an
     inverted index mapping of nodes to the paths in which that node is present:
