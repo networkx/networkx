@@ -227,32 +227,10 @@ def _matching_saturating_max_degree(G, top_nodes=None):
     M1 = nx.bipartite.maximum_matching(A_major, top_nodes_A)
     M2 = nx.bipartite.maximum_matching(B_major, top_nodes_B)
 
-    return _combine_matchings(M1, M2, part_a, part_b)
-
-
-def _combine_matchings(M1, M2, A, B):
-    """Combines two matchings `M1` and `M2` in the bipartite graph.
-
-    Parameters
-    ----------
-    M1 : dict
-        Dictionary representing the first matching.
-    M2 : dict
-        Dictionary representing the second matching.
-    A : set
-        Set of nodes in the first part of the bipartite graph.
-    B : set
-        Set of nodes in the second part of the bipartite graph.
-
-    Returns
-    -------
-    final_matching : dict
-        A dictionary representing the combined matching.
-    """
+    # combine these two matchings
     final_matching = {}
     visited = set()
 
-    # while
     for u, v in list(M1.items()) + list(M2.items()):
         if (u, v) in visited:
             continue
@@ -262,8 +240,7 @@ def _combine_matchings(M1, M2, A, B):
         M = M2
 
         while v in M and v != u1:
-            u = v
-            v = M[v]
+            u, v = v, M[v]
             edges.append((u, v))
             visited.update([(u, v), (v, u)])
             M = M1 if M is M2 else M2
@@ -274,16 +251,15 @@ def _combine_matchings(M1, M2, A, B):
             visited.update([(u, v), (v, u)])
 
             while v in M:
-                u = v
-                v = M[v]
+                u, v = v, M[v]
                 edges.append((u, v))
                 visited.update([(u, v), (v, u)])
                 M = M1 if M is M2 else M2
 
             u, v = edges[0]
             if (len(edges) % 2 == 1) or (
-                (u in M1 and M1[u] == v and u in A)
-                or (u in M2 and M2[u] == v and u in B)
+                (u in M1 and M1[u] == v and u in part_a)
+                or (u in M2 and M2[u] == v and u in part_b)
             ):
                 k = 0
             else:
@@ -297,7 +273,6 @@ def _combine_matchings(M1, M2, A, B):
                 u, v = edges[i]
                 final_matching[u] = v
                 final_matching[v] = u
-
         else:
             raise ValueError("Bleh")
 
