@@ -30,6 +30,11 @@ def generate_pajek(G):
     G : graph
        A Networkx graph
 
+    Yields
+    ------
+    line : string
+       A line of a file representing `G` in Pajek format.
+
     References
     ----------
     See http://vlado.fmf.uni-lj.si/pub/networks/pajek/doc/draweps.htm

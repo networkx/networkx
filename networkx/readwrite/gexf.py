@@ -88,7 +88,7 @@ def write_gexf(G, path, encoding="utf-8", prettyprint=True, version="1.2draft"):
 
 
 def generate_gexf(G, encoding="utf-8", prettyprint=True, version="1.2draft"):
-    """Generate lines of GEXF format representation of G.
+    """Generate lines of GEXF format representation of `G`.
 
     "GEXF (Graph Exchange XML Format) is a language for describing
     complex networks structures, their associated data and dynamics" [1]_.
@@ -96,15 +96,19 @@ def generate_gexf(G, encoding="utf-8", prettyprint=True, version="1.2draft"):
     Parameters
     ----------
     G : graph
-    A NetworkX graph
+       A NetworkX graph
     encoding : string (optional, default: 'utf-8')
-    Encoding for text data.
+       Encoding for text data.
     prettyprint : bool (optional, default: True)
-    If True use line breaks and indenting in output XML.
+       If `True` use line breaks and indenting in output XML.
     version : string (default: 1.2draft)
-    Version of GEFX File Format (see http://gexf.net/schema.html)
-    Supported values: "1.1draft", "1.2draft"
+       Version of GEFX File Format (see <https://gexf.net/schema.html>_)
+       Supported values: "1.1draft", "1.2draft"
 
+    Yields
+    ------
+    line : string
+       Line of a file representing the graph `G` in GEXF format
 
     Examples
     --------
