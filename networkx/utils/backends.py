@@ -914,8 +914,8 @@ class _dispatchable:
                 "preferential_attachment",
                 "ra_index_soundarajan_hopcroft",
                 "resource_allocation_index",
-                "shortest_path",
-                "shortest_path_length",
+                # "shortest_path",  # ignore
+                # "shortest_path_length",  # ignore
                 "within_inter_cluster",
                 # Returns iterators
                 "all_triplets",
@@ -936,13 +936,20 @@ class _dispatchable:
                 # Returns iterators
                 "root_to_leaf_paths",
             }
+            ignore = {
+                # Returns iterator and non-iterator values
+                "shortest_path_length",
+                "shortest_path",
+            }
             has_returns = bool(re.findall(r"\n *Returns\n *-------\n", self.__doc__))
             has_yields = bool(re.findall(r"\n *Yields\n *------\n", self.__doc__))
             if has_returns and has_yields:
                 raise RuntimeError(
                     f"{self.name} should not use both Yields and Returns in docstring"
                 )
-            if isinstance(result, Iterator):
+            if self.name in ignore:
+                pass
+            elif isinstance(result, Iterator):
                 if has_returns and self.name not in should_be_yields_has_returns:
                     raise RuntimeError(f"{self.name} should use Yields, not Returns")
                 if has_yields and self.name in should_be_yields_has_returns:
@@ -961,6 +968,10 @@ class _dispatchable:
                     and self.name not in should_be_yields_no_returns
                 ):
                     raise RuntimeError(f"{self.name} is missing Yields")
+                if self.name in should_be_returns:
+                    raise RuntimeError(
+                        f"{self.name} does not belong in `should_be_returns`!"
+                    )
             else:
                 if has_yields and self.name not in should_be_returns:
                     raise RuntimeError(f"{self.name} should use Returns, not Yields")
@@ -968,6 +979,14 @@ class _dispatchable:
                     raise RuntimeError(
                         f"{self.name} correctly uses Returns, so it should be "
                         "removed from `should_be_returns` set"
+                    )
+                if self.name in should_be_yields_has_returns:
+                    raise RuntimeError(
+                        f"{self.name} does not belong in `should_be_yields_has_returns`!"
+                    )
+                if self.name in should_be_yields_no_returns:
+                    raise RuntimeError(
+                        f"{self.name} does not belong in `should_be_yields_no_returns`!"
                     )
 
         if self.name in {
