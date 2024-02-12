@@ -927,17 +927,17 @@ def non_neighbors(graph, node):
 
 
 def non_edges(graph):
-    """Returns the nonexistent edges in the graph.
+    """Yields the nonexistent edges in the `graph`.
 
     Parameters
     ----------
     graph : NetworkX graph.
         Graph to find nonexistent edges.
 
-    Returns
-    -------
-    non_edges : iterator
-        Iterator of edges that are not in the graph.
+    Yields
+    ------
+    non_edges : tuple
+        Edges that are not in `graph`
     """
     if graph.is_directed():
         for u in graph:
