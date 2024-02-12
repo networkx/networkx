@@ -192,7 +192,7 @@ def generate_graphml(
     named_key_ids=False,
     edge_id_from_attribute=None,
 ):
-    """Generate GraphML lines for G
+    """Generate GraphML lines for `G`
 
     Parameters
     ----------
@@ -205,9 +205,14 @@ def generate_graphml(
     named_key_ids : bool (optional)
        If True use attr.name as value for key elements' id attribute.
     edge_id_from_attribute : dict key (optional)
-        If provided, the graphml edge id is set by looking up the corresponding
-        edge data attribute keyed by this parameter. If `None` or the key does not exist in edge data,
-        the edge id is set by the edge key if `G` is a MultiGraph, else the edge id is left unset.
+       If provided, the graphml edge id is set by looking up the corresponding
+       edge data attribute keyed by this parameter. If `None` or the key does not exist in edge data,
+       the edge id is set by the edge key if `G` is a MultiGraph, else the edge id is left unset.
+
+    Yields
+    ------
+    line : str
+       Line of a file representing `G` in GraphML format.
 
     Examples
     --------

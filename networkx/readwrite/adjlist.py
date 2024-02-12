@@ -29,7 +29,7 @@ from networkx.utils import open_file
 
 
 def generate_adjlist(G, delimiter=" "):
-    """Generate a single line of the graph G in adjacency list format.
+    """Generate a single line of the graph `G` in adjacency list format.
 
     Parameters
     ----------
@@ -38,10 +38,10 @@ def generate_adjlist(G, delimiter=" "):
     delimiter : string, optional
        Separator for node labels
 
-    Returns
-    -------
-    lines : string
-        Lines of data in adjlist format.
+    Yields
+    ------
+    line : string
+        Line of data in adjlist format.
 
     Examples
     --------
@@ -62,7 +62,7 @@ def generate_adjlist(G, delimiter=" "):
 
     Notes
     -----
-    The default `delimiter=" "` will result in unexpected results if node names contain
+    The default ``delimiter=" "`` will result in unexpected results if node names contain
     whitespace characters. To avoid this problem, specify an alternate delimiter when spaces are
     valid in node names.
 
