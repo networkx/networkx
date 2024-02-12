@@ -27,24 +27,26 @@ def cuthill_mckee_ordering(G, heuristic=None):
       a node from a pseudo-peripheral pair is used.  A user-defined function
       can be supplied that takes a graph object and returns a single node.
 
-    Returns
-    -------
-    nodes : generator
-       Generator of nodes in Cuthill-McKee ordering.
+    Yields
+    ------
+    node
+       Yields nodes in Cuthill-McKee ordering.
 
     Examples
     --------
     >>> from networkx.utils import cuthill_mckee_ordering
     >>> G = nx.path_graph(4)
     >>> rcm = list(cuthill_mckee_ordering(G))
+    >>> rcm
+    [3, 2, 1, 0]
     >>> A = nx.adjacency_matrix(G, nodelist=rcm)
 
     Smallest degree node as heuristic function:
 
     >>> def smallest_degree(G):
     ...     return min(G, key=G.degree)
-    >>> rcm = list(cuthill_mckee_ordering(G, heuristic=smallest_degree))
-
+    >>> list(cuthill_mckee_ordering(G, heuristic=smallest_degree))
+    [0, 1, 2, 3]
 
     See Also
     --------
