@@ -57,11 +57,13 @@ def geometric_edges(G, radius, p=2, *, pos_name="pos"):
     coordinates.
 
     >>> G = nx.Graph()
-    >>> G.add_nodes_from([
-    ...     (0, {"pos": (0, 0)}),
-    ...     (1, {"pos": (3, 0)}),
-    ...     (2, {"pos": (8, 0)}),
-    ... ])
+    >>> G.add_nodes_from(
+    ...     [
+    ...         (0, {"pos": (0, 0)}),
+    ...         (1, {"pos": (3, 0)}),
+    ...         (2, {"pos": (8, 0)}),
+    ...     ]
+    ... )
     >>> nx.geometric_edges(G, radius=1)
     []
     >>> nx.geometric_edges(G, radius=4)
