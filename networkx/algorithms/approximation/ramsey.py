@@ -31,6 +31,12 @@ def ramsey_R2(G):
     max_pair : (set, set) tuple
         Maximum clique, Maximum independent set.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 3), (1, 2), (1, 3), (1, 4)])
+    >>> nx.approximation.ramsey_R2(G)
+    ({0, 1, 3}, {0, 2, 4})
+
     Raises
     ------
     NetworkXNotImplemented

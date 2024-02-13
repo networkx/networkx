@@ -40,6 +40,16 @@ def diameter(G, seed=None):
     d : integer
        Lower Bound on the Diameter of G
 
+    Examples
+    --------
+    >>> G = nx.path_graph(10)  # undirected graph
+    >>> nx.diameter(G)
+    9
+
+    >>> G = nx.cycle_graph([2, 3, 5], create_using=nx.DiGraph)  # directed graph
+    >>> nx.diameter(G)
+    2
+
     Raises
     ------
     NetworkXError

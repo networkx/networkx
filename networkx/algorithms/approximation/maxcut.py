@@ -32,6 +32,12 @@ def randomized_partitioning(G, seed=None, p=0.5, weight=None):
         Edge attribute key to use as weight. If not specified, edges
         have weight one.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 3), (1, 2), (1, 3), (1, 4)])
+    >>> nx.approximation.randomized_partitioning(G, seed=1)
+    (4, ({0, 2, 4}, {1, 3}))
+
     Returns
     -------
     cut_size : scalar
