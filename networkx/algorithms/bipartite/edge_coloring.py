@@ -7,7 +7,7 @@ __all__ = ["edge_coloring"]
 
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
-@nx._dispatchable(name="bipartite_edge_coloring")
+@nx._dispatch(name="bipartite_edge_coloring")
 def edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
     """Returns a minimum edge coloring of the bipartite graph `G`.
 
