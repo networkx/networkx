@@ -1,4 +1,5 @@
 """Basic algorithms for breadth-first searching the nodes of a graph."""
+import copy
 from collections import deque
 
 import networkx as nx
@@ -12,6 +13,7 @@ __all__ = [
     "bfs_layers",
     "bfs_labeled_edges",
     "generic_bfs_edges",
+    "lexicographic_bfs",
 ]
 
 
@@ -597,3 +599,221 @@ def descendants_at_distance(G, source, distance):
         if i == distance:
             return set(layer)
     return set()
+
+
+def lexicographic_bfs(G, minus=False, initial_order=None):
+    """Returns a lexicographic breadth-first ordering.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Undirected graph
+
+    Returns
+    -------
+    order : Dictionary
+            A lexicographic ordering of the vertices of G
+            in the form {vertex : int}
+
+    Notes
+    -----
+    This implementation uses partition refinement and is
+    based off the pseudo code given in
+    https://en.wikipedia.org/wiki/Lexicographic_breadth-first_search
+
+    References
+    ----------
+    [1] Algorithmic Aspects of Vertex Elimination on Graphs
+        Donald J. Rose, R. Endre Tarjan, and George S. Lueker
+        https://doi.org/10.1137/0205021
+    """
+    if len(G.nodes) == 0:
+        return {}
+
+    if initial_order is None:
+        initial_order = []
+
+    # set direction that new sets are inserted
+    if minus:
+        d1 = "prev"
+        d2 = "next"
+    else:
+        d1 = "next"
+        d2 = "prev"
+
+    # initialize ordered set
+    vertices = set(G.nodes)
+    head = {"next": None, "prev": None, "vertex": initial_order[0]}
+    tail = head
+    lookup = {initial_order[0]: head}
+    vertices.remove(initial_order[0])
+
+    for v in initial_order[1:]:
+        new_vertex = {"next": None, "prev": tail, "vertex": v}
+        tail["next"] = new_vertex
+        tail = new_vertex
+        lookup[v] = new_vertex
+        vertices.remove(v)
+
+    # handle unordered vertices
+    for v in vertices:
+        new_vertex = {"next": None, "prev": tail, "vertex": v}
+        tail["next"] = new_vertex
+        tail = new_vertex
+        lookup[v] = new_vertex
+
+    # order neighborhoods based on initial_order
+    neighborhoods, edge_lookup = _sort_adjacency_lists(G, initial_order)
+
+    first_set = {
+        "next": None,
+        "prev": None,
+        "set_head": head,
+        "set_tail": tail,
+        "lookup": lookup,
+        "last_processed": 0,
+    }
+    get_set = {v: first_set for v in G.nodes}
+    order = {}
+    i = 1
+
+    while first_set:
+        v = first_set["set_head"]["vertex"]
+        first_set["set_head"] = first_set["set_head"]["next"]
+
+        if first_set["set_head"]:
+            first_set["set_head"]["prev"] = None
+
+        first_set["lookup"].pop(v)
+
+        if not first_set["set_head"]:
+            if first_set["next"]:
+                first_set["next"]["prev"] = None
+
+            first_set = first_set["next"]
+
+        order[v] = i
+        get_set[v] = None
+        neighbor = neighborhoods[v]["head"]
+
+        while neighbor is not None:
+            u = neighbor["vertex"]
+            S = get_set[u]
+
+            if S is None:
+                neighbor = neighbor["next"]
+                continue
+
+            # add u to T
+            # By default, d1='next' and d2='prev'
+            # In minus mode, d1='prev' and d2='next'
+            if S["last_processed"] < i:
+                head = {"next": None, "prev": None, "vertex": u}
+                tail = head
+                T = {
+                    d1: S,
+                    d2: S[d2],
+                    "set_head": head,
+                    "set_tail": tail,
+                    "lookup": {},
+                    "last_processed": 0,
+                }
+
+                if S[d2]:
+                    S[d2][d1] = T
+                S[d2] = T
+                S[d2]["lookup"][u] = head
+                S["last_processed"] = i
+
+                # By default a set may be placed in front of the first set
+                # This does not happen in minus mode
+                if S is first_set and not minus:
+                    first_set = T
+            else:
+                new_vertex = {"next": None, "prev": S[d2]["set_tail"], "vertex": u}
+                S[d2]["set_tail"]["next"] = new_vertex
+                S[d2]["set_tail"] = new_vertex
+                S[d2]["lookup"][u] = new_vertex
+
+            get_set[u] = S[d2]
+
+            # remove u from S
+            old_vertex = S["lookup"][u]
+            S["lookup"].pop(u)
+            if old_vertex is S["set_head"]:
+                S["set_head"] = old_vertex["next"]
+            else:
+                old_vertex["prev"]["next"] = old_vertex["next"]
+
+            if old_vertex is S["set_tail"]:
+                S["set_tail"] = old_vertex["prev"]
+            else:
+                old_vertex["next"]["prev"] = old_vertex["prev"]
+
+            if S["set_head"] is None:
+                if S["prev"]:
+                    S["prev"]["next"] = S["next"]
+                if S["next"]:
+                    S["next"]["prev"] = S["prev"]
+                if S is first_set:
+                    first_set = S["next"]
+                del S
+
+            neighbor = neighbor["next"]
+        i = i + 1
+
+        debug(first_set)
+
+    return order
+
+
+def debug(first_set):
+    S = copy.deepcopy(first_set)
+    sets = []
+    while S is not None:
+        s = []
+        while S["set_head"] is not None:
+            s.append(S["set_head"]["vertex"])
+            S["set_head"] = S["set_head"]["next"]
+        sets.append(s)
+        S = S["next"]
+    print(sets)
+
+
+def _sort_adjacency_lists(G, order):
+    vertices = set(G.nodes)
+    heads = {
+        v: {
+            "next": None,
+            "prev": None,
+            "vertex": None,
+        }
+        for v in G.nodes
+    }
+    tails = {v: heads[v] for v in G.nodes}
+    lookup = {}
+
+    # handle ordered vertices
+    for v in order:
+        _append_to_adjacency_list(G, v, heads, tails, lookup)
+        vertices.remove(v)
+
+    # handle unordered vertices
+    for v in vertices:
+        _append_to_adjacency_list(G, v, heads, tails, lookup)
+
+    adj_lists = {v: {"head": heads[v], "tail": tails[v]} for v in G.nodes}
+
+    return adj_lists, lookup
+
+
+def _append_to_adjacency_list(G, v, heads, tails, lookup):
+    for e in G.edges(v):
+        u = e[1]
+        if heads[u]["vertex"] is None:
+            heads[u]["vertex"] = v
+        else:
+            new_vertex = {"next": None, "prev": tails[u], "vertex": v}
+            tails[u]["next"] = new_vertex
+            tails[u] = new_vertex
+            lookup[(u, v)] = new_vertex
