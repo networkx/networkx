@@ -175,6 +175,7 @@ class _dispatchable:
         preserve_node_attrs=False,
         preserve_graph_attrs=False,
         preserve_all_attrs=False,
+        backend_name_arg=None,
     ):
         """Dispatches to a backend algorithm based on input graph types.
 
@@ -244,6 +245,7 @@ class _dispatchable:
                 preserve_node_attrs=preserve_node_attrs,
                 preserve_graph_attrs=preserve_graph_attrs,
                 preserve_all_attrs=preserve_all_attrs,
+                backend_name_arg=backend_name_arg,
             )
         if isinstance(func, str):
             raise TypeError("'name' and 'graphs' must be passed by keyword") from None
@@ -279,6 +281,7 @@ class _dispatchable:
         self.preserve_edge_attrs = preserve_edge_attrs or preserve_all_attrs
         self.preserve_node_attrs = preserve_node_attrs or preserve_all_attrs
         self.preserve_graph_attrs = preserve_graph_attrs or preserve_all_attrs
+        self.backend_name_arg = backend_name_arg
 
         if edge_attrs is not None and not isinstance(edge_attrs, str | dict):
             raise TypeError(
@@ -302,6 +305,11 @@ class _dispatchable:
             raise TypeError(
                 f"Bad type for preserve_graph_attrs: {type(self.preserve_graph_attrs)}."
                 " Expected bool or set."
+            ) from None
+        if backend_name_arg is not None and not isinstance(backend_name_arg, int):
+            raise TypeError(
+                f"Bad type for backend_name_arg: {type(backend_name_arg)}."
+                " Expected int or None."
             ) from None
 
         if isinstance(graphs, str):
@@ -372,29 +380,21 @@ class _dispatchable:
             if not any(
                 p.kind == inspect.Parameter.VAR_KEYWORD for p in sig.parameters.values()
             ):
-                sig = sig.replace(
-                    parameters=[
-                        *sig.parameters.values(),
-                        inspect.Parameter(
-                            "backend", inspect.Parameter.KEYWORD_ONLY, default=None
-                        ),
-                        inspect.Parameter(
-                            "backend_kwargs", inspect.Parameter.VAR_KEYWORD
-                        ),
-                    ]
+                parameters = sig.parameters.values()
+                var_keyword = inspect.Parameter(
+                    "backend_kwargs", inspect.Parameter.VAR_KEYWORD
                 )
             else:
                 *parameters, var_keyword = sig.parameters.values()
-                sig = sig.replace(
-                    parameters=[
-                        *parameters,
-                        inspect.Parameter(
-                            "backend", inspect.Parameter.KEYWORD_ONLY, default=None
-                        ),
-                        var_keyword,
-                    ]
-                )
-            self._sig = sig
+            self._sig = sig.replace(
+                parameters=[
+                    *parameters,
+                    inspect.Parameter(
+                        "backend", inspect.Parameter.KEYWORD_ONLY, default=None
+                    ),
+                    var_keyword,
+                ]
+            )
         return self._sig
 
     def __call__(self, /, *args, backend=None, **kwargs):
@@ -411,14 +411,12 @@ class _dispatchable:
         for gname, pos in self.graphs.items():
             if pos < len(args):
                 if gname in kwargs:
-                    raise TypeError(f"{self.name}() got multiple values for {gname!r}")
+                    self.orig_func(*args, **kwargs)  # This will raise!
                 val = args[pos]
             elif gname in kwargs:
                 val = kwargs[gname]
             elif gname not in self.optional_graphs:
-                raise TypeError(
-                    f"{self.name}() missing required graph argument: {gname}"
-                )
+                self.orig_func(*args, **kwargs)  # This will raise!
             else:
                 continue
             if val is None:
@@ -533,6 +531,15 @@ class _dispatchable:
         if backend_name is not None:
             return self._convert_and_call(
                 backend_name, args, kwargs, fallback_to_nx=False
+            )
+
+        # Get backend from `backend_name` argument
+        if self.backend_name_arg is not None:
+            if self.backend_name_arg >= len(args):
+                self.orig_func(*args, **kwargs)  # This will raise!
+            backend_name = args[self.backend_name_arg]
+            return self._convert_and_call(
+                backend_name, args, kwargs, fallback_to_nx=self._fallback_to_nx
             )
 
         # Only networkx graphs; try to convert and run with a backend with automatic
