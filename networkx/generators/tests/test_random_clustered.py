@@ -18,18 +18,12 @@ class TestRandomClusteredGraph:
         assert G.number_of_edges() == 10
 
     def test_invalid_joint_degree_sequence_type(self):
-        pytest.raises(
-            (TypeError, nx.NetworkXError),
-            nx.random_clustered_graph,
-            [[1, 1], [2, 1], [0, 1]],
-        )
+        with pytest.raises(nx.NetworkXError, match="Invalid degree sequence"):
+            nx.random_clustered_graph([[1, 1], [2, 1], [0, 1]])
 
     def test_invalid_joint_degree_sequence_value(self):
-        pytest.raises(
-            (TypeError, nx.NetworkXError),
-            nx.random_clustered_graph,
-            [[1, 1], [1, 2], [0, 1]],
-        )
+        with pytest.raises(nx.NetworkXError, match="Invalid degree sequence"):
+            nx.random_clustered_graph([[1, 1], [1, 2], [0, 1]])
 
     def test_directed_graph_raises_error(self):
         with pytest.raises(nx.NetworkXError, match="Directed Graph not supported"):
