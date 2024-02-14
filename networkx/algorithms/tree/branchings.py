@@ -1196,7 +1196,7 @@ def minimum_branching(
 
 @nx._dispatchable(
     edge_attrs={"attr": "default", "partition": None},
-    preserve_edge_attrs="preserve_edge_attrsserve_attrs",
+    preserve_edge_attrs="preserve_attrs",
 )
 def minimal_branching(
     G, /, *, attr="weight", default=1, preserve_attrs=False, partition=None
