@@ -648,6 +648,9 @@ def test_branchings_with_default_weights():
     nx.maximum_spanning_arborescence(graph.copy())
     nx.minimum_branching(graph.copy())
     nx.maximum_branching(graph.copy())
+    nx.algorithms.tree.minimal_branching(graph.copy())
+    nx.algorithms.tree.branching_weight(graph.copy())
+    nx.algorithms.tree.greedy_branching(graph.copy())
 
     assert all('weight' not in d for (u, v, d) in graph.edges(data=True)), (
         'The above calls should not modify the initial graph in-place')
