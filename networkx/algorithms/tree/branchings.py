@@ -28,7 +28,6 @@ This implementation is based on:
 # }
 import string
 from dataclasses import dataclass, field
-from enum import Enum
 from operator import itemgetter
 from queue import PriorityQueue
 
@@ -470,7 +469,6 @@ class Edmonds:
         D = set()
         nodes = iter(list(G.nodes()))
         attr = self._attr
-        G_pred = G.pred
 
         def desired_edge(v):
             """
