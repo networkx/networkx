@@ -630,3 +630,27 @@ def test_arborescence_iterator_initial_partition():
         for e in excluded_edges:
             assert e not in B.edges
     assert arborescence_count == 16
+
+
+def test_minimum_spanning_arborescence_with_default_weights():
+    """
+    Tests building a minimum spanning arborescence uses default weights.
+    For more information, see issue #7279.
+    """
+    graph = nx.erdos_renyi_graph(10, p=0.2, directed=True, seed=123)
+    assert all('weight' not in d for (u, v, d) in graph.edges(data=True)), (
+        'test is for graphs without a weight attribute')
+    tree = nx.minimum_spanning_arborescence(graph)
+    assert tree.number_of_edges() == 9
+
+
+def test_maximum_spanning_arborescence_with_default_weights():
+    """
+    Tests building a maximum spanning arborescence uses default weights.
+    For more information, see issue #7279.
+    """
+    graph = nx.erdos_renyi_graph(10, p=0.2, directed=True, seed=123)
+    assert all('weight' not in d for (u, v, d) in graph.edges(data=True)), (
+        'test is for graphs without a weight attribute')
+    tree = nx.maximum_spanning_arborescence(graph)
+    assert tree.number_of_edges() == 9
