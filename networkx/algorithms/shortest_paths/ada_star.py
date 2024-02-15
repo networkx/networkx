@@ -284,13 +284,11 @@ class ada_star:
             self.CLOSED = set()
 
         while True:
-
             if not self.OPEN:
                 v = [math.inf, math.inf]
                 u = None
 
             else:
-
                 min_index = min(self.OPEN, key=self.OPEN.get)
                 min_primary, min_secondary = self.OPEN[min_index]
                 v = [min_primary, min_secondary]
