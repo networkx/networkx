@@ -43,12 +43,12 @@ __all__ = [
 
 def flatten(obj, result=None):
     """Return flattened version of (possibly nested) iterable object."""
-    if not isinstance(obj, (Iterable, Sized)) or isinstance(obj, str):
+    if not isinstance(obj, Iterable | Sized) or isinstance(obj, str):
         return obj
     if result is None:
         result = []
     for item in obj:
-        if not isinstance(item, (Iterable, Sized)) or isinstance(item, str):
+        if not isinstance(item, Iterable | Sized) or isinstance(item, str):
             result.append(item)
         else:
             flatten(item, result)
@@ -175,7 +175,7 @@ def arbitrary_element(iterable):
     >>> d = {k: v for k, v in zip([1, 2, 3], [3, 2, 1])}
     >>> nx.utils.arbitrary_element(d)  # dict_keys
     1
-    >>> nx.utils.arbitrary_element(d.values())   # dict values
+    >>> nx.utils.arbitrary_element(d.values())  # dict values
     3
 
     `str` is also an Iterable:
@@ -370,7 +370,7 @@ def create_py_random_state(random_state=None):
 
         if random_state is np.random:
             return PythonRandomInterface(np.random.mtrand._rand)
-        if isinstance(random_state, (np.random.RandomState, np.random.Generator)):
+        if isinstance(random_state, np.random.RandomState | np.random.Generator):
             return PythonRandomInterface(random_state)
         if isinstance(random_state, PythonRandomInterface):
             return random_state

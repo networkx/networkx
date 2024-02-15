@@ -6,7 +6,7 @@
 # This is comprehensive, but only tests the `test_override_dispatch`
 # function in networkx.classes.backends.
 
-# To test the `_dispatch` function directly, several tests scattered throughout
+# To test the `_dispatchable` function directly, several tests scattered throughout
 # NetworkX have been augmented to test normal and dispatch mode.
 # Searching for `dispatch_interface` should locate the specific tests.
 
@@ -16,23 +16,23 @@ from networkx.classes.reportviews import NodeView
 
 
 class LoopbackGraph(Graph):
-    __networkx_plugin__ = "nx-loopback"
+    __networkx_backend__ = "nx-loopback"
 
 
 class LoopbackDiGraph(DiGraph):
-    __networkx_plugin__ = "nx-loopback"
+    __networkx_backend__ = "nx-loopback"
 
 
 class LoopbackMultiGraph(MultiGraph):
-    __networkx_plugin__ = "nx-loopback"
+    __networkx_backend__ = "nx-loopback"
 
 
 class LoopbackMultiDiGraph(MultiDiGraph):
-    __networkx_plugin__ = "nx-loopback"
+    __networkx_backend__ = "nx-loopback"
 
 
 class LoopbackPlanarEmbedding(PlanarEmbedding):
-    __networkx_plugin__ = "nx-loopback"
+    __networkx_backend__ = "nx-loopback"
 
 
 def convert(graph):

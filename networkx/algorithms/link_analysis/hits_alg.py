@@ -5,7 +5,7 @@ import networkx as nx
 __all__ = ["hits"]
 
 
-@nx._dispatch
+@nx._dispatchable(preserve_edge_attrs={"G": {"weight": 1}})
 def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
     """Returns HITS hubs and authorities values for nodes.
 
@@ -77,11 +77,14 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
         return {}, {}
     A = nx.adjacency_matrix(G, nodelist=list(G), dtype=float)
 
-    if nstart is None:
-        _, _, vt = sp.sparse.linalg.svds(A, k=1, maxiter=max_iter, tol=tol)
-    else:
+    if nstart is not None:
         nstart = np.array(list(nstart.values()))
+    if max_iter <= 0:
+        raise nx.PowerIterationFailedConvergence(max_iter)
+    try:
         _, _, vt = sp.sparse.linalg.svds(A, k=1, v0=nstart, maxiter=max_iter, tol=tol)
+    except sp.sparse.linalg.ArpackNoConvergence as exc:
+        raise nx.PowerIterationFailedConvergence(max_iter) from exc
 
     a = vt.flatten().real
     h = A @ a
@@ -94,7 +97,7 @@ def hits(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
 
 
 def _hits_python(G, max_iter=100, tol=1.0e-8, nstart=None, normalized=True):
-    if isinstance(G, (nx.MultiGraph, nx.MultiDiGraph)):
+    if isinstance(G, nx.MultiGraph | nx.MultiDiGraph):
         raise Exception("hits() not defined for graphs with multiedges.")
     if len(G) == 0:
         return {}, {}

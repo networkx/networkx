@@ -36,7 +36,7 @@ def debug_print(*args, **kwargs):
     print(*args, **kwargs)
 
 
-@nx._dispatch(
+@nx._dispatchable(
     graphs={"G1": 0, "G2": 1}, preserve_edge_attrs=True, preserve_node_attrs=True
 )
 def graph_edit_distance(
@@ -210,7 +210,7 @@ def graph_edit_distance(
     return bestcost
 
 
-@nx._dispatch(graphs={"G1": 0, "G2": 1})
+@nx._dispatchable(graphs={"G1": 0, "G2": 1})
 def optimal_edit_paths(
     G1,
     G2,
@@ -322,7 +322,8 @@ def optimal_edit_paths(
         edge_edit_path : list of tuples ((u1, v1), (u2, v2))
 
     cost : numeric
-        Optimal edit path cost (graph edit distance).
+        Optimal edit path cost (graph edit distance). When the cost
+        is zero, it indicates that `G1` and `G2` are isomorphic.
 
     Examples
     --------
@@ -333,6 +334,14 @@ def optimal_edit_paths(
     40
     >>> cost
     5.0
+
+    Notes
+    -----
+    To transform `G1` into a graph isomorphic to `G2`, apply the node
+    and edge edits in the returned ``edit_paths``.
+    In the case of isomorphic graphs, the cost is zero, and the paths
+    represent different isomorphic mappings (isomorphisms). That is, the
+    edits involve renaming nodes and edges to match the structure of `G2`.
 
     See Also
     --------
@@ -373,7 +382,7 @@ def optimal_edit_paths(
     return paths, bestcost
 
 
-@nx._dispatch(graphs={"G1": 0, "G2": 1})
+@nx._dispatchable(graphs={"G1": 0, "G2": 1})
 def optimize_graph_edit_distance(
     G1,
     G2,
@@ -524,7 +533,7 @@ def optimize_graph_edit_distance(
         yield cost
 
 
-@nx._dispatch(
+@nx._dispatchable(
     graphs={"G1": 0, "G2": 1}, preserve_edge_attrs=True, preserve_node_attrs=True
 )
 def optimize_edit_paths(
@@ -1203,7 +1212,7 @@ def optimize_edit_paths(
         yield list(vertex_path), list(edge_path), cost
 
 
-@nx._dispatch
+@nx._dispatchable
 def simrank_similarity(
     G,
     source=None,
@@ -1223,9 +1232,9 @@ def simrank_similarity(
             in_neighbors_u = G.predecessors(u)
             in_neighbors_v = G.predecessors(v)
             scale = C / (len(in_neighbors_u) * len(in_neighbors_v))
-            return scale * sum(simrank(G, w, x)
-                               for w, x in product(in_neighbors_u,
-                                                   in_neighbors_v))
+            return scale * sum(
+                simrank(G, w, x) for w, x in product(in_neighbors_u, in_neighbors_v)
+            )
 
     where ``G`` is the graph, ``u`` is the source, ``v`` is the target,
     and ``C`` is a float decay or importance factor between 0 and 1.
@@ -1275,6 +1284,14 @@ def simrank_similarity(
         If neither ``source`` nor ``target`` is ``None``, this returns
         the similarity value for the given pair of nodes.
 
+    Raises
+    ------
+    ExceededMaxIterations
+        If the algorithm does not converge within ``max_iterations``.
+
+    NodeNotFound
+        If either ``source`` or ``target`` is not in `G`.
+
     Examples
     --------
     >>> G = nx.cycle_graph(2)
@@ -1311,8 +1328,21 @@ def simrank_similarity(
     import numpy as np
 
     nodelist = list(G)
-    s_indx = None if source is None else nodelist.index(source)
-    t_indx = None if target is None else nodelist.index(target)
+    if source is not None:
+        if source not in nodelist:
+            raise nx.NodeNotFound(f"Source node {source} not in G")
+        else:
+            s_indx = nodelist.index(source)
+    else:
+        s_indx = None
+
+    if target is not None:
+        if target not in nodelist:
+            raise nx.NodeNotFound(f"Target node {target} not in G")
+        else:
+            t_indx = nodelist.index(target)
+    else:
+        t_indx = None
 
     x = _simrank_similarity_numpy(
         G, s_indx, t_indx, importance_factor, max_iterations, tolerance
@@ -1363,7 +1393,7 @@ def _simrank_similarity_python(
 
     for its in range(max_iterations):
         oldsim = newsim
-        newsim = {u: {v: sim(u, v) if u is not v else 1 for v in G} for u in G}
+        newsim = {u: {v: sim(u, v) if u != v else 1 for v in G} for u in G}
         is_close = all(
             all(
                 abs(newsim[u][v] - old) <= tolerance * (1 + abs(old))
@@ -1495,7 +1525,7 @@ def _simrank_similarity_numpy(
     return newsim
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def panther_similarity(
     G, source, k=5, path_length=5, c=0.5, delta=0.1, eps=None, weight="weight"
 ):
@@ -1511,7 +1541,7 @@ def panther_similarity(
     source : node
         Source node for which to find the top `k` similar other nodes
     k : int (default = 5)
-        The number of most similar nodes to return
+        The number of most similar nodes to return.
     path_length : int (default = 5)
         How long the randomly generated paths should be (``T`` in [1]_)
     c : float (default = 0.5)
@@ -1533,7 +1563,20 @@ def panther_similarity(
     similarity : dictionary
         Dictionary of nodes to similarity scores (as floats). Note:
         the self-similarity (i.e., ``v``) will not be included in
-        the returned dictionary.
+        the returned dictionary. So, for ``k = 5``, a dictionary of
+        top 4 nodes and their similarity scores will be returned.
+
+    Raises
+    ------
+    NetworkXUnfeasible
+        If `source` is an isolated node.
+
+    NodeNotFound
+        If `source` is not in `G`.
+
+    Notes
+    -----
+        The isolated nodes in `G` are ignored.
 
     Examples
     --------
@@ -1549,6 +1592,18 @@ def panther_similarity(
            Association for Computing Machinery. https://doi.org/10.1145/2783258.2783267.
     """
     import numpy as np
+
+    if source not in G:
+        raise nx.NodeNotFound(f"Source node {source} not in G")
+
+    isolates = set(nx.isolates(G))
+
+    if source in isolates:
+        raise nx.NetworkXUnfeasible(
+            f"Panther similarity is not defined for the isolated source node {source}."
+        )
+
+    G = G.subgraph([node for node in G.nodes if node not in isolates]).copy()
 
     num_nodes = G.number_of_nodes()
     if num_nodes < k:
@@ -1606,7 +1661,7 @@ def panther_similarity(
     return top_k_with_val
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def generate_random_paths(
     G, sample_size, path_length=5, index_map=None, weight="weight"
 ):
@@ -1648,7 +1703,9 @@ def generate_random_paths(
     >>> G = nx.star_graph(3)
     >>> index_map = {}
     >>> random_path = nx.generate_random_paths(G, 3, index_map=index_map)
-    >>> paths_containing_node_0 = [random_path[path_idx] for path_idx in index_map.get(0, [])]
+    >>> paths_containing_node_0 = [
+    ...     random_path[path_idx] for path_idx in index_map.get(0, [])
+    ... ]
 
     References
     ----------
@@ -1689,22 +1746,22 @@ def generate_random_paths(
         for _ in range(path_length):
             # Randomly sample a neighbor (v_j) according
             # to transition probabilities from ``node`` (v) to its neighbors
-            neighbor_index = np.random.choice(
+            nbr_index = np.random.choice(
                 num_nodes, p=transition_probabilities[starting_index]
             )
 
             # Set current vertex (v = v_j)
-            starting_index = neighbor_index
+            starting_index = nbr_index
 
             # Add v into p_r
-            neighbor_node = node_map[neighbor_index]
-            path.append(neighbor_node)
+            nbr_node = node_map[nbr_index]
+            path.append(nbr_node)
 
             # Add p_r into P_v
             if index_map is not None:
-                if neighbor_node in index_map:
-                    index_map[neighbor_node].add(path_index)
+                if nbr_node in index_map:
+                    index_map[nbr_node].add(path_index)
                 else:
-                    index_map[neighbor_node] = {path_index}
+                    index_map[nbr_node] = {path_index}
 
         yield path

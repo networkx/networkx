@@ -3,7 +3,7 @@ import networkx as nx
 __all__ = ["s_metric"]
 
 
-@nx._dispatch
+@nx._dispatchable
 def s_metric(G, **kwargs):
     """Returns the s-metric [1]_ of graph.
 
@@ -15,12 +15,12 @@ def s_metric(G, **kwargs):
     G : graph
         The graph used to compute the s-metric.
     normalized : bool (optional)
+        Normalize the value.
 
         .. deprecated:: 3.2
 
            The `normalized` keyword argument is deprecated and will be removed
            in the future
-        Normalize the value.
 
     Returns
     -------

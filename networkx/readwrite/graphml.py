@@ -233,6 +233,7 @@ def generate_graphml(
 
 
 @open_file(0, mode="rb")
+@nx._dispatchable(graphs=None)
 def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False):
     """Read graph in GraphML format from path.
 
@@ -305,6 +306,7 @@ def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False)
     return glist[0]
 
 
+@nx._dispatchable(graphs=None)
 def parse_graphml(
     graphml_string, node_type=str, edge_key_type=int, force_multigraph=False
 ):
@@ -453,7 +455,7 @@ class GraphML:
             return self.xml_type[key]
         except KeyError as err:
             raise TypeError(
-                f"GraphML does not support type {type(key)} as data values."
+                f"GraphML does not support type {key} as data values."
             ) from err
 
 
@@ -824,7 +826,7 @@ class GraphMLWriterLxml(GraphMLWriter):
     def __str__(self):
         return object.__str__(self)
 
-    def dump(self):
+    def dump(self, stream=None):
         self._graphml.__exit__(None, None, None)
         self._xml_base.__exit__(None, None, None)
 

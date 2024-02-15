@@ -639,7 +639,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         >>> G = nx.MultiDiGraph()
         >>> nx.add_path(G, [0, 1, 2])
         >>> key = G.add_edge(2, 3, weight=5)
-        >>> key2 = G.add_edge(1, 2) # second edge between these nodes
+        >>> key2 = G.add_edge(1, 2)  # second edge between these nodes
         >>> [e for e in G.edges()]
         [(0, 1), (1, 2), (1, 2), (2, 3)]
         >>> list(G.edges(data=True))  # default data is {} (empty dict)
@@ -746,9 +746,9 @@ class MultiDiGraph(MultiGraph, DiGraph):
         1
         >>> list(G.degree([0, 1, 2]))
         [(0, 1), (1, 2), (2, 2)]
-        >>> G.add_edge(0, 1) # parallel edge
+        >>> G.add_edge(0, 1)  # parallel edge
         1
-        >>> list(G.degree([0, 1, 2])) # parallel edges are counted
+        >>> list(G.degree([0, 1, 2]))  # parallel edges are counted
         [(0, 2), (1, 3), (2, 2)]
 
         """
@@ -797,9 +797,9 @@ class MultiDiGraph(MultiGraph, DiGraph):
         0
         >>> list(G.in_degree([0, 1, 2]))
         [(0, 0), (1, 1), (2, 1)]
-        >>> G.add_edge(0, 1) # parallel edge
+        >>> G.add_edge(0, 1)  # parallel edge
         1
-        >>> list(G.in_degree([0, 1, 2])) # parallel edges counted
+        >>> list(G.in_degree([0, 1, 2]))  # parallel edges counted
         [(0, 0), (1, 2), (2, 1)]
 
         """
@@ -847,9 +847,9 @@ class MultiDiGraph(MultiGraph, DiGraph):
         1
         >>> list(G.out_degree([0, 1, 2]))
         [(0, 1), (1, 1), (2, 1)]
-        >>> G.add_edge(0, 1) # parallel edge
+        >>> G.add_edge(0, 1)  # parallel edge
         1
-        >>> list(G.out_degree([0, 1, 2])) # counts parallel edges
+        >>> list(G.out_degree([0, 1, 2]))  # counts parallel edges
         [(0, 2), (1, 1), (2, 1)]
 
         """

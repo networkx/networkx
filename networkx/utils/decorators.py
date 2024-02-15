@@ -4,8 +4,11 @@ import gzip
 import inspect
 import itertools
 import re
+import warnings
 from collections import defaultdict
 from contextlib import contextmanager
+from functools import wraps
+from inspect import Parameter, signature
 from os.path import splitext
 from pathlib import Path
 
@@ -19,6 +22,7 @@ __all__ = [
     "np_random_state",
     "py_random_state",
     "argmap",
+    "deprecate_positional_args",
 ]
 
 
@@ -53,10 +57,12 @@ def not_implemented_for(*graph_types):
        def sp_function(G):
            pass
 
+
        # rule out MultiDiGraph
-       @not_implemented_for("directed","multigraph")
+       @not_implemented_for("directed", "multigraph")
        def sp_np_function(G):
            pass
+
 
        # rule out all except DiGraph
        @not_implemented_for("undirected")
@@ -120,21 +126,25 @@ def open_file(path_arg, mode="r"):
     --------
     Decorate functions like this::
 
-       @open_file(0,"r")
+       @open_file(0, "r")
        def read_function(pathname):
            pass
 
-       @open_file(1,"w")
+
+       @open_file(1, "w")
        def write_function(G, pathname):
            pass
 
-       @open_file(1,"w")
+
+       @open_file(1, "w")
        def write_function(G, pathname="graph.dot"):
            pass
 
-       @open_file("pathname","w")
+
+       @open_file("pathname", "w")
        def write_function(G, pathname="graph.dot"):
            pass
+
 
        @open_file("path", "w+")
        def another_function(arg, **kwargs):
@@ -151,19 +161,19 @@ def open_file(path_arg, mode="r"):
 
       @open_file("path")
       def some_function(arg1, arg2, path=None):
-         if path is None:
-             fobj = tempfile.NamedTemporaryFile(delete=False)
-         else:
-             # `path` could have been a string or file object or something
-             # similar. In any event, the decorator has given us a file object
-             # and it will close it for us, if it should.
-             fobj = path
+          if path is None:
+              fobj = tempfile.NamedTemporaryFile(delete=False)
+          else:
+              # `path` could have been a string or file object or something
+              # similar. In any event, the decorator has given us a file object
+              # and it will close it for us, if it should.
+              fobj = path
 
-         try:
-             fobj.write("blah")
-         finally:
-             if path is None:
-                 fobj.close()
+          try:
+              fobj.write("blah")
+          finally:
+              if path is None:
+                  fobj.close()
 
     Normally, we'd want to use "with" to ensure that fobj gets closed.
     However, the decorator will make `path` a file object for us,
@@ -285,9 +295,11 @@ def np_random_state(random_state_argument):
        def random_float(seed=None):
            return seed.rand()
 
+
        @np_random_state(0)
        def random_float(rng=None):
            return rng.rand()
+
 
        @np_random_state(1)
        def random_array(dims, random_state=1):
@@ -337,9 +349,11 @@ def py_random_state(random_state_argument):
        def random_float(random_state=None):
            return random_state.rand()
 
+
        @py_random_state(0)
        def random_float(rng=None):
            return rng.rand()
+
 
        @py_random_state(1)
        def random_array(dims, seed=12345):
@@ -410,6 +424,7 @@ class argmap:
                 if amount.currency != currency:
                     amount = amount.to_currency(currency)
                 return amount
+
             return argmap(_convert, which_arg)
 
     Despite this common idiom for argmap, most of the following examples
@@ -469,9 +484,11 @@ class argmap:
         def double(a):
             return 2 * a
 
+
         @argmap(double, 3)
         def overflow(a, *args):
             return a, args
+
 
         print(overflow(1, 2, 3, 4, 5, 6))  # output is 1, (2, 3, 8, 5, 6)
 
@@ -522,6 +539,7 @@ class argmap:
                     # assume `path` handles the closing
                     fclose = lambda: None
                 return path, fclose
+
             return argmap(_opener, which_arg, try_finally=True)
 
     which can then be used as::
@@ -544,6 +562,7 @@ class argmap:
         def file_to_lines_wrapped(file):
             for line in file.readlines():
                 yield line
+
 
         def file_to_lines_wrapper(file):
             try:
@@ -682,10 +701,8 @@ class argmap:
     not_implemented_for
     open_file
     nodes_or_number
-    random_state
     py_random_state
-    networkx.community.quality.require_partition
-    require_partition
+    networkx.algorithms.community.quality.require_partition
 
     """
 
@@ -1207,3 +1224,60 @@ class argmap:
         for line in argmap._flatten(lines, set()):
             yield f"{argmap._tabs[:depth]}{line}"
             depth += (line[-1:] == ":") - (line[-1:] == "#")
+
+
+# Vendored in from https://github.com/scikit-learn/scikit-learn/blob/8ed0270b99344cee9bb253cbfa1d986561ea6cd7/sklearn/utils/validation.py#L37C1-L90C44
+def deprecate_positional_args(func=None, *, version):
+    """Decorator for methods that issues warnings for positional arguments.
+
+    Using the keyword-only argument syntax in pep 3102, arguments after the
+    * will issue a warning when passed as a positional argument.
+
+    Parameters
+    ----------
+    func : callable, default=None
+        Function to check arguments on.
+    version : callable, default="1.3"
+        The version when positional arguments will result in error.
+    """
+
+    def _inner_deprecate_positional_args(f):
+        sig = signature(f)
+        kwonly_args = []
+        all_args = []
+
+        for name, param in sig.parameters.items():
+            if param.kind == Parameter.POSITIONAL_OR_KEYWORD:
+                all_args.append(name)
+            elif param.kind == Parameter.KEYWORD_ONLY:
+                kwonly_args.append(name)
+
+        @wraps(f)
+        def inner_f(*args, **kwargs):
+            extra_args = len(args) - len(all_args)
+            if extra_args <= 0:
+                return f(*args, **kwargs)
+
+            # extra_args > 0
+            args_msg = [
+                f"{name}={arg}"
+                for name, arg in zip(kwonly_args[:extra_args], args[-extra_args:])
+            ]
+            args_msg = ", ".join(args_msg)
+            warnings.warn(
+                (
+                    f"Pass {args_msg} as keyword args. From NetworkX version "
+                    f"{version} passing these as positional arguments "
+                    "will result in an error"
+                ),
+                FutureWarning,
+            )
+            kwargs.update(zip(sig.parameters, args))
+            return f(**kwargs)
+
+        return inner_f
+
+    if func is not None:
+        return _inner_deprecate_positional_args(func)
+
+    return _inner_deprecate_positional_args

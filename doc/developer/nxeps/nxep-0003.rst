@@ -290,7 +290,7 @@ Related Work
 
 This proposal is based on ideas and discussions from #3036 and #1393.
 
-This proposal does not delve into backends using the `_dispatch` functionality
+This proposal does not delve into backends using the `_dispatchable` functionality
 and whether we should be providing or allowing control over the builder
 functions for backend libraries. This is a potentially helpful discussion
 but is beyond the scope of this NXEP.

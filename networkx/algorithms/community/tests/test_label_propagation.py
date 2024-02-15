@@ -163,7 +163,7 @@ class TestFastLabelPropagationCommunities:
     N = 100  # number of nodes
     K = 15  # average node degree
 
-    def _check_communities(self, G, truth, weight=None, seed=None):
+    def _check_communities(self, G, truth, weight=None, seed=42):
         C = nx.community.fast_label_propagation_communities(G, weight=weight, seed=seed)
         assert {frozenset(c) for c in C} == truth
 
@@ -193,7 +193,7 @@ class TestFastLabelPropagationCommunities:
         self._check_communities(G, truth)
 
     def test_random_graph(self):
-        G = nx.gnm_random_graph(self.N, self.N * self.K // 2)
+        G = nx.gnm_random_graph(self.N, self.N * self.K // 2, seed=42)
         truth = {frozenset(G)}
         self._check_communities(G, truth)
 
@@ -203,14 +203,13 @@ class TestFastLabelPropagationCommunities:
         self._check_communities(G, truth)
 
     def test_ring_of_cliques(self):
-        G = nx.ring_of_cliques(self.N, self.K)
-        truth = {
-            frozenset([self.K * i + k for k in range(self.K)]) for i in range(self.N)
-        }
+        N, K = self.N, self.K
+        G = nx.ring_of_cliques(N, K)
+        truth = {frozenset([K * i + k for k in range(K)]) for i in range(N)}
         self._check_communities(G, truth)
 
     def test_larger_graph(self):
-        G = nx.gnm_random_graph(100 * self.N, 50 * self.N * self.K)
+        G = nx.gnm_random_graph(100 * self.N, 50 * self.N * self.K, seed=42)
         nx.community.fast_label_propagation_communities(G)
 
     def test_graph_type(self):
@@ -238,3 +237,5 @@ class TestFastLabelPropagationCommunities:
         C = nx.community.fast_label_propagation_communities(G, seed=2023)
         truth = {frozenset(c) for c in C}
         self._check_communities(G, truth, seed=2023)
+        # smoke test that seed=None works
+        C = nx.community.fast_label_propagation_communities(G, seed=None)

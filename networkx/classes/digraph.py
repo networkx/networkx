@@ -1026,7 +1026,7 @@ class DiGraph(Graph):
         Examples
         --------
         >>> G = nx.DiGraph()
-        >>> G.add_edge(1, 2, color='blue')
+        >>> G.add_edge(1, 2, color="blue")
         >>> G.in_edges()
         InEdgeView([(1, 2)])
         >>> G.in_edges(nbunch=2)

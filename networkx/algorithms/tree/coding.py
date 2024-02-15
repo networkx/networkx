@@ -32,7 +32,7 @@ class NotATree(nx.NetworkXException):
 
 
 @not_implemented_for("directed")
-@nx._dispatch(graphs="T")
+@nx._dispatchable(graphs="T")
 def to_nested_tuple(T, root, canonical_form=False):
     """Returns a nested tuple representation of the given tree.
 
@@ -128,6 +128,7 @@ def to_nested_tuple(T, root, canonical_form=False):
     return _make_tuple(T, root, None)
 
 
+@nx._dispatchable(graphs=None)
 def from_nested_tuple(sequence, sensible_relabeling=False):
     """Returns the rooted tree corresponding to the given nested tuple.
 
@@ -195,7 +196,7 @@ def from_nested_tuple(sequence, sensible_relabeling=False):
         # For a nonempty sequence, get the subtrees for each child
         # sequence and join all the subtrees at their roots. After
         # joining the subtrees, the root is node 0.
-        return nx.tree.join([(_make_tree(child), 0) for child in sequence])
+        return nx.tree.join_trees([(_make_tree(child), 0) for child in sequence])
 
     # Make the tree and remove the `is_root` node attribute added by the
     # helper function.
@@ -212,7 +213,7 @@ def from_nested_tuple(sequence, sensible_relabeling=False):
 
 
 @not_implemented_for("directed")
-@nx._dispatch(graphs="T")
+@nx._dispatchable(graphs="T")
 def to_prufer_sequence(T):
     r"""Returns the Prüfer sequence of the given tree.
 
@@ -313,6 +314,7 @@ def to_prufer_sequence(T):
     return result
 
 
+@nx._dispatchable(graphs=None)
 def from_prufer_sequence(sequence):
     r"""Returns the tree corresponding to the given Prüfer sequence.
 

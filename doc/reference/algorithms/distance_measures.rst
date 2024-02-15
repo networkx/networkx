@@ -10,6 +10,8 @@ Distance Measures
    center
    diameter
    eccentricity
+   effective_graph_resistance
+   kemeny_constant
    periphery
    radius
    resistance_distance

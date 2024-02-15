@@ -157,16 +157,16 @@ def generate_network_text(
     Examples
     --------
     >>> graph = nx.path_graph(10)
-    >>> graph.add_node('A')
-    >>> graph.add_node('B')
-    >>> graph.add_node('C')
-    >>> graph.add_node('D')
-    >>> graph.add_edge(9, 'A')
-    >>> graph.add_edge(9, 'B')
-    >>> graph.add_edge(9, 'C')
-    >>> graph.add_edge('C', 'D')
-    >>> graph.add_edge('C', 'E')
-    >>> graph.add_edge('C', 'F')
+    >>> graph.add_node("A")
+    >>> graph.add_node("B")
+    >>> graph.add_node("C")
+    >>> graph.add_node("D")
+    >>> graph.add_edge(9, "A")
+    >>> graph.add_edge(9, "B")
+    >>> graph.add_edge(9, "C")
+    >>> graph.add_edge("C", "D")
+    >>> graph.add_edge("C", "E")
+    >>> graph.add_edge("C", "F")
     >>> nx.write_network_text(graph)
     ╙── 0
         └── 1
@@ -768,7 +768,7 @@ def _parse_network_text(lines):
     class ParseStackFrame(NamedTuple):
         node: Any
         indent: int
-        has_vertical_child: Union[int, None]
+        has_vertical_child: int | None
 
     initial_line_iter = iter(lines)
 
