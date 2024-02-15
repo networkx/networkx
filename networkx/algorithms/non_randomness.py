@@ -57,7 +57,7 @@ def non_randomness(G, k=None, weight="weight"):
     --------
     >>> G = nx.karate_club_graph()
     >>> nr, nr_rd = nx.non_randomness(G, 2)
-    >>> nr, nr_rd = nx.non_randomness(G, 2, 'weight')
+    >>> nr, nr_rd = nx.non_randomness(G, 2, "weight")
 
     Notes
     -----

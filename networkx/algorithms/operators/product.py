@@ -546,11 +546,11 @@ def modular_product(G, H):
     - if u is adjacent to x in `G` and v is adjacent to y in `H`, or
     - if u is not adjacent to x in `G` and v is not adjacent to y in `H`.
 
-    More formally
-    ::
+    More formally::
 
         E(M) = {((u, v), (x, y)) | ((u, x) in E(G) and (v, y) in E(H)) or
                                    ((u, x) not in E(G) and (v, y) not in E(H))}
+
     Parameters
     ----------
     G, H: NetworkX graphs
@@ -559,12 +559,12 @@ def modular_product(G, H):
     Returns
     -------
     M: NetworkX graph
-        The Modular product of G and H.
+        The Modular product of `G` and `H`.
 
     Raises
     ------
     NetworkXNotImplemented
-        If G is not a simple graph.
+        If `G` is not a simple graph.
 
     Examples
     --------

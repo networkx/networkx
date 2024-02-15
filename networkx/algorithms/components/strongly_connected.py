@@ -39,10 +39,7 @@ def strongly_connected_components(G):
 
     >>> G = nx.cycle_graph(4, create_using=nx.DiGraph())
     >>> nx.add_cycle(G, [10, 11, 12])
-    >>> [
-    ...     len(c)
-    ...     for c in sorted(nx.strongly_connected_components(G), key=len, reverse=True)
-    ... ]
+    >>> [len(c) for c in sorted(nx.strongly_connected_components(G), key=len, reverse=True)]
     [4, 3]
 
     If you only want the largest component, it's more efficient to
@@ -277,7 +274,9 @@ def number_strongly_connected_components(G):
 
     Examples
     --------
-    >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 0), (2, 3), (4, 5), (3, 4), (5, 6), (6, 3), (6, 7)])
+    >>> G = nx.DiGraph(
+    ...     [(0, 1), (1, 2), (2, 0), (2, 3), (4, 5), (3, 4), (5, 6), (6, 3), (6, 7)]
+    ... )
     >>> nx.number_strongly_connected_components(G)
     3
 
@@ -391,7 +390,7 @@ def condensation(G, scc=None):
     >>> H = nx.condensation(G)
     >>> H.nodes.data()
     NodeDataView({0: {'members': {0, 1, 2, 3}}, 1: {'members': {4, 5, 6, 7}}})
-    >>> H.graph['mapping']
+    >>> H.graph["mapping"]
     {0: 0, 1: 0, 2: 0, 3: 0, 4: 1, 5: 1, 6: 1, 7: 1}
 
     Contracting a complete graph into one single SCC.

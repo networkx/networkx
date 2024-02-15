@@ -77,7 +77,13 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
      [ 0  0  0  1 -1]
      [ 0  0  0 -1  1]]
 
-    >>> edges = [(1, 2), (2, 1), (2, 4), (4, 3), (3, 4),]
+    >>> edges = [
+    ...     (1, 2),
+    ...     (2, 1),
+    ...     (2, 4),
+    ...     (4, 3),
+    ...     (3, 4),
+    ... ]
     >>> DiG = nx.DiGraph(edges)
     >>> print(nx.laplacian_matrix(DiG).toarray())
     [[ 1 -1  0  0]
@@ -156,8 +162,14 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     --------
 
     >>> import numpy as np
-    >>> np.set_printoptions(precision=4) # To print with lower precision
-    >>> edges = [(1, 2), (2, 1), (2, 4), (4, 3), (3, 4),]
+    >>> np.set_printoptions(precision=4)  # To print with lower precision
+    >>> edges = [
+    ...     (1, 2),
+    ...     (2, 1),
+    ...     (2, 4),
+    ...     (4, 3),
+    ...     (3, 4),
+    ... ]
     >>> DiG = nx.DiGraph(edges)
     >>> print(nx.normalized_laplacian_matrix(DiG).toarray())
     [[ 1.     -0.7071  0.      0.    ]

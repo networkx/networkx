@@ -68,8 +68,9 @@ def equivalence_classes(iterable, relation):
     `X` and a function implementation of `R`.
 
     >>> X = set(range(10))
-    >>> def mod3(x, y): return (x - y) % 3 == 0
-    >>> equivalence_classes(X, mod3)    # doctest: +SKIP
+    >>> def mod3(x, y):
+    ...     return (x - y) % 3 == 0
+    >>> equivalence_classes(X, mod3)  # doctest: +SKIP
     {frozenset({1, 4, 7}), frozenset({8, 2, 5}), frozenset({0, 9, 3, 6})}
     """
     # For simplicity of implementation, we initialize the return value as a
@@ -202,9 +203,7 @@ def quotient_graph(
     are equivalent if they are not adjacent but have the same neighbor set.
 
     >>> G = nx.complete_bipartite_graph(2, 3)
-    >>> same_neighbors = lambda u, v: (
-    ...     u not in G[v] and v not in G[u] and G[u] == G[v]
-    ... )
+    >>> same_neighbors = lambda u, v: (u not in G[v] and v not in G[u] and G[u] == G[v])
     >>> Q = nx.quotient_graph(G, same_neighbors)
     >>> K2 = nx.complete_graph(2)
     >>> nx.is_isomorphic(Q, K2)

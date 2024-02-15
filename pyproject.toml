@@ -72,8 +72,8 @@ doc = [
     'sphinx-gallery>=0.14',
     'numpydoc>=1.6',
     'pillow>=9.4',
-    'nb2plots>=0.7',
     'texext>=0.6.7',
+    'myst-nb>=1.0',
 ]
 extra = [
     'lxml>=4.6',
@@ -191,6 +191,9 @@ select = [
 "doc/*.py" = ['I']
 "tools/*.py" = ['I']
 "networkx/classes/filters.py" = ['C416']
+
+[tool.ruff.format]
+docstring-code-format = true
 
 [tool.mypy]
 ignore_missing_imports = true
