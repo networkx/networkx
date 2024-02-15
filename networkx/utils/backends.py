@@ -90,12 +90,15 @@ import sys
 import warnings
 from functools import partial
 from importlib.metadata import entry_points
+import logging
 
 import networkx as nx
 
 from ..exception import NetworkXNotImplemented
 
 __all__ = ["_dispatch"]
+
+_logger = logging.getLogger(__name__)
 
 
 def _get_backends(group, *, load_and_call=False):
@@ -528,6 +531,9 @@ class _dispatch:
                         fallback_to_nx=self._fallback_to_nx,
                     )
                 # All graphs are backend graphs--no need to convert!
+                _logger.debug(f"using backend '{graph_backend_name}' for call "
+                              f"to `{self.name}' with args: {args}, kwargs: "
+                              f"{kwargs}")
                 return getattr(backend, self.name)(*args, **kwargs)
             # Future work: try to convert and run with other backends in self._automatic_backends
             raise NetworkXNotImplemented(
@@ -781,6 +787,9 @@ class _dispatch:
             converted_args, converted_kwargs = self._convert_arguments(
                 backend_name, args, kwargs
             )
+            _logger.debug(f"using backend '{backend_name}' for call to "
+                          f"`{self.name}' with args: {converted_args}, "
+                          f"kwargs: {converted_kwargs}")
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, NetworkXNotImplemented) as exc:
             if fallback_to_nx:
@@ -846,6 +855,9 @@ class _dispatch:
             converted_args, converted_kwargs = self._convert_arguments(
                 backend_name, args1, kwargs1
             )
+            _logger.debug(f"using backend '{backend_name}' for call to "
+                          f"`{self.name}' with args: {converted_args}, "
+                          f"kwargs: {converted_kwargs}")
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, NetworkXNotImplemented) as exc:
             if fallback_to_nx:
