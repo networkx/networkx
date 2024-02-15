@@ -1057,7 +1057,7 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     or use a dict to provide the layers of the layout
 
     >>> G = nx.Graph([(0, 1), (1, 2), (1, 3), (3, 4)])
-    >>> layers = {'a': [0], 'b': [1], 'c': [2, 3], 'd': [4]}
+    >>> layers = {"a": [0], "b": [1], "c": [2, 3], "d": [4]}
     >>> pos = nx.multipartite_layout(G, subset_key=layers)
 
     Notes
