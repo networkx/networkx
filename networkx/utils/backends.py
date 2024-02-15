@@ -526,9 +526,10 @@ class _dispatchable:
                         fallback_to_nx=self._fallback_to_nx,
                     )
                 # All graphs are backend graphs--no need to convert!
-                _logger.debug(f"using backend '{graph_backend_name}' for call "
-                              f"to `{self.name}' with args: {args}, kwargs: "
-                              f"{kwargs}")
+                _logger.debug(
+                    f"using backend '{graph_backend_name}' for call to `{self.name}' "
+                    f"with args: {args}, kwargs: {kwargs}"
+                )
                 return getattr(backend, self.name)(*args, **kwargs)
             # Future work: try to convert and run with other backends in self._automatic_backends
             raise NetworkXNotImplemented(
@@ -782,9 +783,10 @@ class _dispatchable:
             converted_args, converted_kwargs = self._convert_arguments(
                 backend_name, args, kwargs
             )
-            _logger.debug(f"using backend '{backend_name}' for call to "
-                          f"`{self.name}' with args: {converted_args}, "
-                          f"kwargs: {converted_kwargs}")
+            _logger.debug(
+                f"using backend '{backend_name}' for call to `{self.name}' "
+                f"with args: {converted_args}, kwargs: {converted_kwargs}"
+            )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, NetworkXNotImplemented) as exc:
             if fallback_to_nx:
@@ -850,9 +852,10 @@ class _dispatchable:
             converted_args, converted_kwargs = self._convert_arguments(
                 backend_name, args1, kwargs1
             )
-            _logger.debug(f"using backend '{backend_name}' for call to "
-                          f"`{self.name}' with args: {converted_args}, "
-                          f"kwargs: {converted_kwargs}")
+            _logger.debug(
+                f"using backend '{backend_name}' for call to `{self.name}' "
+                f"with args: {converted_args}, kwargs: {converted_kwargs}"
+            )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, NetworkXNotImplemented) as exc:
             if fallback_to_nx:
