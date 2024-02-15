@@ -16,7 +16,7 @@ default_flow_func = preflow_push
 __all__ = ["maximum_flow", "maximum_flow_value", "minimum_cut", "minimum_cut_value"]
 
 
-@nx._dispatch(graphs="flowG", edge_attrs={"capacity": float("inf")})
+@nx._dispatchable(graphs="flowG", edge_attrs={"capacity": float("inf")})
 def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """Find a maximum single-commodity flow.
 
@@ -140,9 +140,7 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     maximum flow by using the flow_func parameter.
 
     >>> from networkx.algorithms.flow import shortest_augmenting_path
-    >>> flow_value == nx.maximum_flow(G, "x", "y", flow_func=shortest_augmenting_path)[
-    ...     0
-    ... ]
+    >>> flow_value == nx.maximum_flow(G, "x", "y", flow_func=shortest_augmenting_path)[0]
     True
 
     """
@@ -163,7 +161,7 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     return (R.graph["flow_value"], flow_dict)
 
 
-@nx._dispatch(graphs="flowG", edge_attrs={"capacity": float("inf")})
+@nx._dispatchable(graphs="flowG", edge_attrs={"capacity": float("inf")})
 def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """Find the value of maximum single-commodity flow.
 
@@ -281,9 +279,7 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
     maximum flow by using the flow_func parameter.
 
     >>> from networkx.algorithms.flow import shortest_augmenting_path
-    >>> flow_value == nx.maximum_flow_value(
-    ...     G, "x", "y", flow_func=shortest_augmenting_path
-    ... )
+    >>> flow_value == nx.maximum_flow_value(G, "x", "y", flow_func=shortest_augmenting_path)
     True
 
     """
@@ -303,7 +299,7 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
     return R.graph["flow_value"]
 
 
-@nx._dispatch(graphs="flowG", edge_attrs={"capacity": float("inf")})
+@nx._dispatchable(graphs="flowG", edge_attrs={"capacity": float("inf")})
 def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """Compute the value and the node partition of a minimum (s, t)-cut.
 
@@ -467,7 +463,7 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     return (R.graph["flow_value"], partition)
 
 
-@nx._dispatch(graphs="flowG", edge_attrs={"capacity": float("inf")})
+@nx._dispatchable(graphs="flowG", edge_attrs={"capacity": float("inf")})
 def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
     """Compute the value of a minimum (s, t)-cut.
 
@@ -582,9 +578,7 @@ def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwar
     minimum cut by using the flow_func parameter.
 
     >>> from networkx.algorithms.flow import shortest_augmenting_path
-    >>> cut_value == nx.minimum_cut_value(
-    ...     G, "x", "y", flow_func=shortest_augmenting_path
-    ... )
+    >>> cut_value == nx.minimum_cut_value(G, "x", "y", flow_func=shortest_augmenting_path)
     True
 
     """

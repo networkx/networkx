@@ -10,7 +10,7 @@ from networkx.utils.decorators import not_implemented_for
 __all__ = ["line_graph", "inverse_line_graph"]
 
 
-@nx._dispatch
+@nx._dispatchable
 def line_graph(G, create_using=None):
     r"""Returns the line graph of the graph or digraph `G`.
 
@@ -48,7 +48,7 @@ def line_graph(G, create_using=None):
     attributes can be copied manually:
 
     >>> G = nx.path_graph(4)
-    >>> G.add_edges_from((u, v, {"tot": u+v}) for u, v in G.edges)
+    >>> G.add_edges_from((u, v, {"tot": u + v}) for u, v in G.edges)
     >>> G.edges(data=True)
     EdgeDataView([(0, 1, {'tot': 1}), (1, 2, {'tot': 3}), (2, 3, {'tot': 5})])
     >>> H = nx.line_graph(G)
@@ -215,7 +215,7 @@ def _lg_undirected(G, selfloops=False, create_using=None):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def inverse_line_graph(G):
     """Returns the inverse line graph of graph G.
 

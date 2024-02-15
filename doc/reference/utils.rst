@@ -85,4 +85,4 @@ Backends
 .. autosummary::
    :toctree: generated/
 
-   _dispatch
+   _dispatchable

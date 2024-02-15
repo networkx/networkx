@@ -28,7 +28,6 @@ This implementation is based on:
 # }
 import string
 from dataclasses import dataclass, field
-from enum import Enum
 from operator import itemgetter
 from queue import PriorityQueue
 
@@ -73,7 +72,7 @@ def _max_weight(weight):
     return weight
 
 
-@nx._dispatch(edge_attrs={"attr": "default"})
+@nx._dispatchable(edge_attrs={"attr": "default"})
 def branching_weight(G, attr="weight", default=1):
     """
     Returns the total weight of a branching.
@@ -108,7 +107,7 @@ def branching_weight(G, attr="weight", default=1):
 
 
 @py_random_state(4)
-@nx._dispatch(edge_attrs={"attr": "default"})
+@nx._dispatchable(edge_attrs={"attr": "default"})
 def greedy_branching(G, attr="weight", default=1, kind="max", seed=None):
     """
     Returns a branching obtained through a greedy algorithm.
@@ -470,7 +469,6 @@ class Edmonds:
         D = set()
         nodes = iter(list(G.nodes()))
         attr = self._attr
-        G_pred = G.pred
 
         def desired_edge(v):
             """
@@ -745,7 +743,7 @@ class Edmonds:
         return H
 
 
-@nx._dispatch(
+@nx._dispatchable(
     edge_attrs={"attr": "default", "partition": 0},
     preserve_edge_attrs="preserve_attrs",
 )
@@ -1173,7 +1171,7 @@ def maximum_branching(
     return H
 
 
-@nx._dispatch(
+@nx._dispatchable(
     edge_attrs={"attr": "default", "partition": None},
     preserve_edge_attrs="preserve_attrs",
 )
@@ -1181,20 +1179,20 @@ def minimum_branching(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
     for _, _, d in G.edges(data=True):
-        d[attr] = -d[attr]
+        d[attr] = -d.get(attr, default)
 
     B = maximum_branching(G, attr, default, preserve_attrs, partition)
 
     for _, _, d in G.edges(data=True):
-        d[attr] = -d[attr]
+        d[attr] = -d.get(attr, default)
 
     for _, _, d in B.edges(data=True):
-        d[attr] = -d[attr]
+        d[attr] = -d.get(attr, default)
 
     return B
 
 
-@nx._dispatch(
+@nx._dispatchable(
     edge_attrs={"attr": "default", "partition": None},
     preserve_edge_attrs="preserve_attrs",
 )
@@ -1233,7 +1231,7 @@ def minimal_branching(
     """
     max_weight = -INF
     min_weight = INF
-    for _, _, w in G.edges(data=attr):
+    for _, _, w in G.edges(data=attr, default=default):
         if w > max_weight:
             max_weight = w
         if w < min_weight:
@@ -1244,21 +1242,21 @@ def minimal_branching(
         # the difference between the max and min weights. This is important
         # in order to prevent the edge weights from becoming negative during
         # computation
-        d[attr] = max_weight + 1 + (max_weight - min_weight) - d[attr]
+        d[attr] = max_weight + 1 + (max_weight - min_weight) - d.get(attr, default)
 
     B = maximum_branching(G, attr, default, preserve_attrs, partition)
 
     # Reverse the weight transformations
     for _, _, d in G.edges(data=True):
-        d[attr] = max_weight + 1 + (max_weight - min_weight) - d[attr]
+        d[attr] = max_weight + 1 + (max_weight - min_weight) - d.get(attr, default)
 
     for _, _, d in B.edges(data=True):
-        d[attr] = max_weight + 1 + (max_weight - min_weight) - d[attr]
+        d[attr] = max_weight + 1 + (max_weight - min_weight) - d.get(attr, default)
 
     return B
 
 
-@nx._dispatch(
+@nx._dispatchable(
     edge_attrs={"attr": "default", "partition": None},
     preserve_edge_attrs="preserve_attrs",
 )
@@ -1277,22 +1275,22 @@ def maximum_spanning_arborescence(
 
     min_weight = INF
     max_weight = -INF
-    for _, _, w in G.edges(data=attr):
+    for _, _, w in G.edges(data=attr, default=default):
         if w < min_weight:
             min_weight = w
         if w > max_weight:
             max_weight = w
 
     for _, _, d in G.edges(data=True):
-        d[attr] = d[attr] - min_weight + 1 - (min_weight - max_weight)
+        d[attr] = d.get(attr, default) - min_weight + 1 - (min_weight - max_weight)
 
     B = maximum_branching(G, attr, default, preserve_attrs, partition)
 
     for _, _, d in G.edges(data=True):
-        d[attr] = d[attr] + min_weight - 1 + (min_weight - max_weight)
+        d[attr] = d.get(attr, default) + min_weight - 1 + (min_weight - max_weight)
 
     for _, _, d in B.edges(data=True):
-        d[attr] = d[attr] + min_weight - 1 + (min_weight - max_weight)
+        d[attr] = d.get(attr, default) + min_weight - 1 + (min_weight - max_weight)
 
     if not is_arborescence(B):
         raise nx.exception.NetworkXException("No maximum spanning arborescence in G.")
@@ -1300,7 +1298,7 @@ def maximum_spanning_arborescence(
     return B
 
 
-@nx._dispatch(
+@nx._dispatchable(
     edge_attrs={"attr": "default", "partition": None},
     preserve_edge_attrs="preserve_attrs",
 )
@@ -1365,8 +1363,8 @@ maximum_branching.__doc__ = docstring_branching.format(
 minimum_branching.__doc__ = (
     docstring_branching.format(kind="minimum", style="branching")
     + """
-See Also 
--------- 
+See Also
+--------
     minimal_branching
 """
 )
