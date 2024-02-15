@@ -290,7 +290,7 @@ class ada_star:
                 u = None
 
             else:
-                
+
                 min_index = min(self.OPEN, key=self.OPEN.get)
                 min_primary, min_secondary = self.OPEN[min_index]
                 v = [min_primary, min_secondary]
