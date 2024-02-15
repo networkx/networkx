@@ -284,18 +284,17 @@ class ada_star:
             self.CLOSED = set()
 
         while True:
-            min_primary = math.inf
-            min_secondary = math.inf
-            min_index = None
-            for key, value in self.OPEN.items():
-                if value[0] <= min_primary:
-                    min_primary = value[0]
-                    min_index = key
-                    if value[1] < min_secondary:
-                        min_secondary = value[1]
-                        min_index = key
-            v = [min_primary, min_secondary]
-            u = min_index
+
+            if not self.OPEN:
+                v = [math.inf, math.inf]
+                u = None
+
+            else:
+                
+                min_index = min(self.OPEN, key=self.OPEN.get)
+                min_primary, min_secondary = self.OPEN[min_index]
+                v = [min_primary, min_secondary]
+                u = min_index
 
             if (v >= self._key(self.source)) and self.one_step_lookahead_cost[
                 self.source
