@@ -74,3 +74,7 @@ def test_graph_converter_needs_backend():
         del LoopbackDispatcher.from_scipy_sparse_array
     with pytest.raises(ImportError, match="Unable to load"):
         nx.from_scipy_sparse_array(A, backend="bad-backend-name")
+
+
+def test_dispatchable_are_functions():
+    assert type(nx.pagerank) is type(nx.pagerank.orig_func)
