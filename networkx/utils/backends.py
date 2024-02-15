@@ -85,12 +85,12 @@ is a test object that can be marked as xfail if the backend does not support
 the test using `item.add_marker(pytest.mark.xfail(reason=...))`.
 """
 import inspect
+import logging
 import os
 import sys
 import warnings
 from functools import partial
 from importlib.metadata import entry_points
-import logging
 
 import networkx as nx
 
