@@ -17,8 +17,16 @@ def test_dispatch_kwds_vs_args():
 
 
 def test_pickle():
+    count = 0
     for name, func in nx.utils.backends._registered_algorithms.items():
-        assert pickle.loads(pickle.dumps(func)) is func
+        try:
+            # Some functions can't be pickled, but it's not b/c of _dispatchable
+            pickled = pickle.dumps(func)
+        except pickle.PicklingError:
+            continue
+        assert pickle.loads(pickled) is func
+        count += 1
+    assert count > 0
     assert pickle.loads(pickle.dumps(nx.inverse_line_graph)) is nx.inverse_line_graph
 
 
