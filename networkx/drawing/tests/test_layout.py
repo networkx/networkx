@@ -506,3 +506,10 @@ def test_bfs_layout_barbell():
     # Expected layers: {6 (start)}, {5, 7}, {4, 8}, {8 nodes from remainder of bells}
     expected_nodes_per_layer = [1, 2, 2, 8]
     assert np.array_equal(_num_nodes_per_bfs_layer(pos), expected_nodes_per_layer)
+
+
+def test_bfs_layout_disconnected():
+    G = nx.complete_graph(5)
+    G.add_edges_from([(10, 11), (11, 12)])
+    with pytest.raises(nx.NetworkXError, match="bfs_layout didn't include all nodes"):
+        nx.bfs_layout(G, start=0)

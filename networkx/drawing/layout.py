@@ -1347,7 +1347,7 @@ def bfs_layout(G, start, *, align="vertical", scale=1, center=None):
     layers = dict(enumerate(nx.bfs_layers(G, start)))
 
     if len(G) != sum(len(nodes) for nodes in layers.values()):
-        raise NetworkXError(
+        raise nx.NetworkXError(
             "bfs_layout didn't include all nodes. Perhaps use input graph:\n"
             "        G.subgraph(nx.node_connected_component(G, start))"
         )
