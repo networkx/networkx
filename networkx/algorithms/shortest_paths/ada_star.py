@@ -289,10 +289,8 @@ class ada_star:
                 u = None
 
             else:
-                min_index = min(self.OPEN, key=self.OPEN.get)
-                min_primary, min_secondary = self.OPEN[min_index]
-                v = [min_primary, min_secondary]
-                u = min_index
+                u = min(self.OPEN, key=self.OPEN.get)
+                v = self.OPEN[u]
 
             if (v >= self._key(self.source)) and self.one_step_lookahead_cost[
                 self.source
