@@ -119,8 +119,8 @@ def _get_backends(group, *, load_and_call=False):
                 )
         else:
             rv[ep.name] = ep
-    # nx-loopback backend is only available when testing (added in conftest.py)
-    rv.pop("nx-loopback", None)
+    # nx_loopback backend is only available when testing (added in conftest.py)
+    rv.pop("nx_loopback", None)
     return rv
 
 
@@ -398,6 +398,20 @@ class _dispatchable:
         return self._sig
 
     def __call__(self, /, *args, backend=None, **kwargs):
+        if kwargs:
+            # Separate `<backend>_kwargs=...` keywords
+            new_kwargs = {}
+            backends_kwargs = {}
+            for k, v in kwargs.items():
+                if k.endswith("_kwargs"):
+                    backends_kwargs[k[:-7]] = v
+                else:
+                    new_kwargs[k] = v
+            kwargs = new_kwargs
+            # Should we warn or log if `backends_kwargs` has backends that are not installed?
+        else:
+            backends_kwargs = kwargs
+
         if not backends:
             # Fast path if no backends are installed
             return self.orig_func(*args, **kwargs)
@@ -442,6 +456,7 @@ class _dispatchable:
                 self._automatic_backends[0],
                 args,
                 kwargs,
+                backends_kwargs,
                 fallback_to_nx=self._fallback_to_nx,
             )
 
@@ -520,10 +535,13 @@ class _dispatchable:
                         graph_backend_name,
                         args,
                         kwargs,
+                        backends_kwargs,
                         fallback_to_nx=self._fallback_to_nx,
                     )
                 # All graphs are backend graphs--no need to convert!
-                return getattr(backend, self.name)(*args, **kwargs)
+                return getattr(backend, self.name)(
+                    *args, **kwargs, **backends_kwargs.get(graph_backend_name, {})
+                )
             # Future work: try to convert and run with other backends in self._automatic_backends
             raise NetworkXNotImplemented(
                 f"'{self.name}' not implemented by {graph_backend_name}"
@@ -532,18 +550,24 @@ class _dispatchable:
         # If backend was explicitly given by the user, so we need to use it no matter what
         if backend_name is not None:
             return self._convert_and_call(
-                backend_name, args, kwargs, fallback_to_nx=False
+                backend_name, args, kwargs, backends_kwargs, fallback_to_nx=False
             )
 
         # Only networkx graphs; try to convert and run with a backend with automatic
         # conversion, but don't do this by default for graph generators or loaders.
         if self.graphs:
             for backend_name in self._automatic_backends:
-                if self._can_backend_run(backend_name, *args, **kwargs):
+                if self._can_backend_run(
+                    backend_name,
+                    *args,
+                    **kwargs,
+                    **backends_kwargs.get(backend_name, {}),
+                ):
                     return self._convert_and_call(
                         backend_name,
                         args,
                         kwargs,
+                        backends_kwargs,
                         fallback_to_nx=self._fallback_to_nx,
                     )
         # Default: run with networkx on networkx inputs
@@ -761,10 +785,14 @@ class _dispatchable:
         del bound_kwargs["backend"]
         return bound.args, bound_kwargs
 
-    def _convert_and_call(self, backend_name, args, kwargs, *, fallback_to_nx=False):
+    def _convert_and_call(
+        self, backend_name, args, kwargs, backends_kwargs, *, fallback_to_nx=False
+    ):
         """Call this dispatchable function with a backend, converting graphs if necessary."""
         backend = _load_backend(backend_name)
-        if not self._can_backend_run(backend_name, *args, **kwargs):
+        if not self._can_backend_run(
+            backend_name, *args, **kwargs, **backends_kwargs.get(backend_name, {})
+        ):
             if fallback_to_nx:
                 return self.orig_func(*args, **kwargs)
             msg = f"'{self.name}' not implemented by {backend_name}"
@@ -776,7 +804,11 @@ class _dispatchable:
             converted_args, converted_kwargs = self._convert_arguments(
                 backend_name, args, kwargs
             )
-            result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
+            result = getattr(backend, self.name)(
+                *converted_args,
+                **converted_kwargs,
+                **backends_kwargs.get(backend_name, {}),
+            )
         except (NotImplementedError, NetworkXNotImplemented) as exc:
             if fallback_to_nx:
                 return self.orig_func(*args, **kwargs)
@@ -785,11 +817,13 @@ class _dispatchable:
         return result
 
     def _convert_and_call_for_tests(
-        self, backend_name, args, kwargs, *, fallback_to_nx=False
+        self, backend_name, args, kwargs, backends_kwargs, *, fallback_to_nx=False
     ):
         """Call this dispatchable function with a backend; for use with testing."""
         backend = _load_backend(backend_name)
-        if not self._can_backend_run(backend_name, *args, **kwargs):
+        if not self._can_backend_run(
+            backend_name, *args, **kwargs, **backends_kwargs.get(backend_name, {})
+        ):
             if fallback_to_nx or not self.graphs:
                 return self.orig_func(*args, **kwargs)
 
@@ -841,7 +875,11 @@ class _dispatchable:
             converted_args, converted_kwargs = self._convert_arguments(
                 backend_name, args1, kwargs1
             )
-            result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
+            result = getattr(backend, self.name)(
+                *converted_args,
+                **converted_kwargs,
+                **backends_kwargs.get(backend_name, {}),
+            )
         except (NotImplementedError, NetworkXNotImplemented) as exc:
             if fallback_to_nx:
                 return self.orig_func(*args2, **kwargs2)
