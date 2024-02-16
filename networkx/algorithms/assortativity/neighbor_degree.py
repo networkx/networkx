@@ -3,7 +3,7 @@ import networkx as nx
 __all__ = ["average_neighbor_degree"]
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=None):
     r"""Returns the average degree of the neighborhood of each node.
 

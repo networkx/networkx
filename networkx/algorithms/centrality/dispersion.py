@@ -5,7 +5,7 @@ import networkx as nx
 __all__ = ["dispersion"]
 
 
-@nx._dispatch
+@nx._dispatchable
 def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
     r"""Calculate dispersion between `u` and `v` in `G`.
 

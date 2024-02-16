@@ -80,7 +80,7 @@ def degree(G, nbunch=None, weight=None):
 def neighbors(G, n):
     """Returns an iterator over all neighbors of node n.
 
-    This function wraps the :func:``G.neighbors <networkx.Graph.neighbors>` function.
+    This function wraps the :func:`G.neighbors <networkx.Graph.neighbors>` function.
     """
     return G.neighbors(n)
 
@@ -156,7 +156,7 @@ def degree_histogram(G):
     (Order(number_of_edges))
     """
     counts = Counter(d for n, d in G.degree())
-    return [counts.get(i, 0) for i in range(max(counts) + 1)]
+    return [counts.get(i, 0) for i in range(max(counts) + 1 if counts else 0)]
 
 
 def is_directed(G):
@@ -809,13 +809,13 @@ def set_edge_attributes(G, values, name=None):
             if G.is_multigraph():
                 for (u, v, key), value in values.items():
                     try:
-                        G[u][v][key][name] = value
+                        G._adj[u][v][key][name] = value
                     except KeyError:
                         pass
             else:
                 for (u, v), value in values.items():
                     try:
-                        G[u][v][name] = value
+                        G._adj[u][v][name] = value
                     except KeyError:
                         pass
         except AttributeError:
@@ -827,13 +827,13 @@ def set_edge_attributes(G, values, name=None):
         if G.is_multigraph():
             for (u, v, key), d in values.items():
                 try:
-                    G[u][v][key].update(d)
+                    G._adj[u][v][key].update(d)
                 except KeyError:
                     pass
         else:
             for (u, v), d in values.items():
                 try:
-                    G[u][v].update(d)
+                    G._adj[u][v].update(d)
                 except KeyError:
                     pass
 
@@ -918,11 +918,10 @@ def non_neighbors(graph, node):
 
     Returns
     -------
-    non_neighbors : iterator
-        Iterator of nodes in the graph that are not neighbors of the node.
+    non_neighbors : set
+        Set of nodes in the graph that are not neighbors of the node.
     """
-    nbors = set(neighbors(graph, node)) | {node}
-    return (nnode for nnode in graph if nnode not in nbors)
+    return graph._adj.keys() - graph._adj[node].keys() - {node}
 
 
 def non_edges(graph):
@@ -964,8 +963,8 @@ def common_neighbors(G, u, v):
 
     Returns
     -------
-    cnbors : iterator
-        Iterator of common neighbors of u and v in the graph.
+    cnbors : set
+        Set of common neighbors of u and v in the graph.
 
     Raises
     ------
@@ -983,9 +982,7 @@ def common_neighbors(G, u, v):
     if v not in G:
         raise nx.NetworkXError("v is not in the graph.")
 
-    # Return a generator explicitly instead of yielding so that the above
-    # checks are executed eagerly.
-    return (w for w in G[u] if w in G[v] and w not in (u, v))
+    return G._adj[u].keys() & G._adj[v].keys() - {u, v}
 
 
 def is_weighted(G, edge=None, weight="weight"):
@@ -1114,7 +1111,7 @@ def is_empty(G):
     is the number of nodes in the graph.
 
     """
-    return not any(G.adj.values())
+    return not any(G._adj.values())
 
 
 def nodes_with_selfloops(G):
@@ -1141,7 +1138,7 @@ def nodes_with_selfloops(G):
     [1]
 
     """
-    return (n for n, nbrs in G.adj.items() if n in nbrs)
+    return (n for n, nbrs in G._adj.items() if n in nbrs)
 
 
 def selfloop_edges(G, data=False, keys=False, default=None):
@@ -1191,56 +1188,59 @@ def selfloop_edges(G, data=False, keys=False, default=None):
             if keys is True:
                 return (
                     (n, n, k, d)
-                    for n, nbrs in G.adj.items()
+                    for n, nbrs in G._adj.items()
                     if n in nbrs
                     for k, d in nbrs[n].items()
                 )
             else:
                 return (
                     (n, n, d)
-                    for n, nbrs in G.adj.items()
+                    for n, nbrs in G._adj.items()
                     if n in nbrs
                     for d in nbrs[n].values()
                 )
         else:
-            return ((n, n, nbrs[n]) for n, nbrs in G.adj.items() if n in nbrs)
+            return ((n, n, nbrs[n]) for n, nbrs in G._adj.items() if n in nbrs)
     elif data is not False:
         if G.is_multigraph():
             if keys is True:
                 return (
                     (n, n, k, d.get(data, default))
-                    for n, nbrs in G.adj.items()
+                    for n, nbrs in G._adj.items()
                     if n in nbrs
                     for k, d in nbrs[n].items()
                 )
             else:
                 return (
                     (n, n, d.get(data, default))
-                    for n, nbrs in G.adj.items()
+                    for n, nbrs in G._adj.items()
                     if n in nbrs
                     for d in nbrs[n].values()
                 )
         else:
             return (
                 (n, n, nbrs[n].get(data, default))
-                for n, nbrs in G.adj.items()
+                for n, nbrs in G._adj.items()
                 if n in nbrs
             )
     else:
         if G.is_multigraph():
             if keys is True:
                 return (
-                    (n, n, k) for n, nbrs in G.adj.items() if n in nbrs for k in nbrs[n]
+                    (n, n, k)
+                    for n, nbrs in G._adj.items()
+                    if n in nbrs
+                    for k in nbrs[n]
                 )
             else:
                 return (
                     (n, n)
-                    for n, nbrs in G.adj.items()
+                    for n, nbrs in G._adj.items()
                     if n in nbrs
                     for i in range(len(nbrs[n]))  # for easy edge removal (#4068)
                 )
         else:
-            return ((n, n) for n, nbrs in G.adj.items() if n in nbrs)
+            return ((n, n) for n, nbrs in G._adj.items() if n in nbrs)
 
 
 def number_of_selfloops(G):
@@ -1288,7 +1288,10 @@ def is_path(G, path):
         True if `path` is a valid path in `G`
 
     """
-    return all((node in G and nbr in G[node]) for node, nbr in nx.utils.pairwise(path))
+    try:
+        return all(nbr in G._adj[node] for node, nbr in nx.utils.pairwise(path))
+    except (KeyError, TypeError):
+        return False
 
 
 def path_weight(G, path, weight):
@@ -1323,7 +1326,7 @@ def path_weight(G, path, weight):
         raise nx.NetworkXNoPath("path does not exist")
     for node, nbr in nx.utils.pairwise(path):
         if multigraph:
-            cost += min(v[weight] for v in G[node][nbr].values())
+            cost += min(v[weight] for v in G._adj[node][nbr].values())
         else:
-            cost += G[node][nbr][weight]
+            cost += G._adj[node][nbr][weight]
     return cost

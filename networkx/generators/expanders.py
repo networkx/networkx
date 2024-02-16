@@ -47,7 +47,7 @@ __all__ = [
 #     (x, (y + (2*x + 1)) % n),
 #     (x, (y + (2*x + 2)) % n),
 #
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def margulis_gabber_galil_graph(n, create_using=None):
     r"""Returns the Margulis-Gabber-Galil undirected MultiGraph on `n^2` nodes.
 
@@ -90,7 +90,7 @@ def margulis_gabber_galil_graph(n, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def chordal_cycle_graph(p, create_using=None):
     """Returns the chordal cycle graph on `p` nodes.
 
@@ -154,7 +154,7 @@ def chordal_cycle_graph(p, create_using=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def paley_graph(p, create_using=None):
     r"""Returns the Paley $\frac{(p-1)}{2}$ -regular graph on $p$ nodes.
 
@@ -248,7 +248,7 @@ def maybe_regular_expander(n, d, *, create_using=None, max_tries=100, seed=None)
 
     Examples
     --------
-    >>> G = nx.maybe_regular_expander(n=200, d=6)
+    >>> G = nx.maybe_regular_expander(n=200, d=6, seed=8020)
 
     Returns
     -------
@@ -340,7 +340,7 @@ def is_regular_expander(G, *, epsilon=0):
     the Alon-Boppana bound and given by
     $\lambda = 2 \sqrt{d - 1} + \epsilon$. [2]_
 
-    In the case where $\epsilon = 0 $ then if the graph successfully passes the test
+    In the case where $\epsilon = 0$ then if the graph successfully passes the test
     it is a Ramanujan graph. [3]_
 
     A Ramanujan graph has spectral gap almost as large as possible, which makes them
@@ -387,8 +387,8 @@ def is_regular_expander(G, *, epsilon=0):
 
     _, d = nx.utils.arbitrary_element(G.degree)
 
-    A = nx.adjacency_matrix(G)
-    lams = eigsh(A.asfptype(), which="LM", k=2, return_eigenvectors=False)
+    A = nx.adjacency_matrix(G, dtype=float)
+    lams = eigsh(A, which="LM", k=2, return_eigenvectors=False)
 
     # lambda2 is the second biggest eigenvalue
     lambda2 = min(lams)
@@ -404,7 +404,7 @@ def random_regular_expander_graph(n, d, *, epsilon=0, create_using=None, max_tri
     More precisely the returned graph is a $(n, d, \lambda)$-expander with
     $\lambda = 2 \sqrt{d - 1} + \epsilon$, close to the Alon-Boppana bound. [2]_
 
-    In the case where $\epsilon = 0 $ it returns a Ramanujan graph.
+    In the case where $\epsilon = 0$ it returns a Ramanujan graph.
     A Ramanujan graph has spectral gap almost as large as possible,
     which makes them excellent expanders. [3]_
 

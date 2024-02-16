@@ -699,6 +699,16 @@ class TestSimilarity:
         G = nx.cycle_graph(5)
         pytest.raises(nx.ExceededMaxIterations, alg, G, max_iterations=10)
 
+    def test_simrank_source_not_found(self):
+        G = nx.cycle_graph(5)
+        with pytest.raises(nx.NodeNotFound, match="Source node 10 not in G"):
+            nx.simrank_similarity(G, source=10)
+
+    def test_simrank_target_not_found(self):
+        G = nx.cycle_graph(5)
+        with pytest.raises(nx.NodeNotFound, match="Target node 10 not in G"):
+            nx.simrank_similarity(G, target=10)
+
     def test_simrank_between_versions(self):
         G = nx.cycle_graph(5)
         # _python tolerance 1e-4
@@ -818,6 +828,21 @@ class TestSimilarity:
         expected = {"v3": 0.75, "v4": 0.5, "v2": 0.5, "v5": 0.25}
         sim = nx.panther_similarity(G, "v1", path_length=2, weight="w")
         assert sim == expected
+
+    def test_panther_similarity_source_not_found(self):
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (0, 2), (0, 3), (1, 2), (2, 4)])
+        with pytest.raises(nx.NodeNotFound, match="Source node 10 not in G"):
+            nx.panther_similarity(G, source=10)
+
+    def test_panther_similarity_isolated(self):
+        G = nx.Graph()
+        G.add_nodes_from(range(5))
+        with pytest.raises(
+            nx.NetworkXUnfeasible,
+            match="Panther similarity is not defined for the isolated source node 1.",
+        ):
+            nx.panther_similarity(G, source=1)
 
     def test_generate_random_paths_unweighted(self):
         np.random.seed(42)
