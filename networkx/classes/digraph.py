@@ -466,7 +466,7 @@ class DiGraph(Graph):
             attr_dict.update(attr)
         else:  # update attr even if node already exists
             self._node[node_for_adding].update(attr)
-        self.__networkx_cache__ = {}
+        self.__networkx_cache__.clear()
 
     def add_nodes_from(self, nodes_for_adding, **attr):
         """Add multiple nodes.
@@ -545,7 +545,7 @@ class DiGraph(Graph):
                 self._pred[n] = self.adjlist_inner_dict_factory()
                 self._node[n] = self.node_attr_dict_factory()
             self._node[n].update(newdict)
-        self.__networkx_cache__ = {}
+        self.__networkx_cache__.clear()
 
     def remove_node(self, n):
         """Remove node n.
@@ -588,7 +588,7 @@ class DiGraph(Graph):
         for u in self._pred[n]:
             del self._succ[u][n]  # remove all edges n-u in digraph
         del self._pred[n]  # remove node from pred
-        self.__networkx_cache__ = {}
+        self.__networkx_cache__.clear()
 
     def remove_nodes_from(self, nodes):
         """Remove multiple nodes.
@@ -643,7 +643,7 @@ class DiGraph(Graph):
                 del self._pred[n]  # now remove node
             except KeyError:
                 pass  # silent failure on remove
-        self.__networkx_cache__ = {}
+        self.__networkx_cache__.clear()
 
     def add_edge(self, u_of_edge, v_of_edge, **attr):
         """Add an edge between u and v.
@@ -714,7 +714,7 @@ class DiGraph(Graph):
         datadict.update(attr)
         self._succ[u][v] = datadict
         self._pred[v][u] = datadict
-        self.__networkx_cache__ = {}
+        self.__networkx_cache__.clear()
 
     def add_edges_from(self, ebunch_to_add, **attr):
         """Add all the edges in ebunch_to_add.
@@ -797,7 +797,7 @@ class DiGraph(Graph):
             datadict.update(dd)
             self._succ[u][v] = datadict
             self._pred[v][u] = datadict
-        self.__networkx_cache__ = {}
+        self.__networkx_cache__.clear()
 
     def remove_edge(self, u, v):
         """Remove the edge between u and v.
@@ -831,7 +831,7 @@ class DiGraph(Graph):
             del self._pred[v][u]
         except KeyError as err:
             raise NetworkXError(f"The edge {u}-{v} not in graph.") from err
-        self.__networkx_cache__ = {}
+        self.__networkx_cache__.clear()
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -864,7 +864,7 @@ class DiGraph(Graph):
             if u in self._succ and v in self._succ[u]:
                 del self._succ[u][v]
                 del self._pred[v][u]
-        self.__networkx_cache__ = {}
+        self.__networkx_cache__.clear()
 
     def has_successor(self, u, v):
         """Returns True if node u has successor v.
@@ -1204,7 +1204,7 @@ class DiGraph(Graph):
         self._pred.clear()
         self._node.clear()
         self.graph.clear()
-        self.__networkx_cache__ = {}
+        self.__networkx_cache__.clear()
 
     def clear_edges(self):
         """Remove all edges from the graph without altering nodes.
@@ -1223,7 +1223,7 @@ class DiGraph(Graph):
             predecessor_dict.clear()
         for successor_dict in self._succ.values():
             successor_dict.clear()
-        self.__networkx_cache__ = {}
+        self.__networkx_cache__.clear()
 
     def is_multigraph(self):
         """Returns True if graph is a multigraph, False otherwise."""

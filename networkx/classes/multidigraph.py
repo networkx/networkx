@@ -584,7 +584,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
             # remove the key entries if last edge
             del self._succ[u][v]
             del self._pred[v][u]
-        self.__networkx_cache__ = {}
+        self.__networkx_cache__.clear()
 
     @cached_property
     def edges(self):
