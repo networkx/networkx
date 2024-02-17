@@ -355,12 +355,12 @@ class DiGraph(Graph):
         self._pred = self.adjlist_outer_dict_factory()  # predecessor
         # Note: self._succ = self._adj  # successor
 
+        self.__networkx_cache__ = {}
         # attempt to load graph with data
         if incoming_graph_data is not None:
             convert.to_networkx_graph(incoming_graph_data, create_using=self)
         # load graph attributes (must be after convert)
         self.graph.update(attr)
-        self.__networkx_cache__ = {}
 
     @cached_property
     def adj(self):

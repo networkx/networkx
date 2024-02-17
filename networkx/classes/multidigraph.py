@@ -508,7 +508,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
             keydict[key] = datadict
             self._succ[u][v] = keydict
             self._pred[v][u] = keydict
-        self.__networkx_cache__ = {}
+        self.__networkx_cache__.clear()
         return key
 
     def remove_edge(self, u, v, key=None):
