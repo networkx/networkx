@@ -806,6 +806,8 @@ class _dispatchable:
         from itertools import tee
         from random import Random
 
+        from numpy.random import Generator, RandomState
+
         # We sometimes compare the backend result to the original result,
         # so we need two sets of arguments. We tee iterators and copy
         # random state so that they may be used twice.
@@ -815,7 +817,7 @@ class _dispatchable:
             args1, args2 = zip(
                 *(
                     (arg, copy(arg))
-                    if isinstance(arg, Random | BytesIO)
+                    if isinstance(arg, BytesIO | Random | Generator | RandomState)
                     else tee(arg)
                     if isinstance(arg, Iterator) and not isinstance(arg, BufferedReader)
                     else (arg, arg)
@@ -828,7 +830,7 @@ class _dispatchable:
             kwargs1, kwargs2 = zip(
                 *(
                     ((k, v), (k, copy(v)))
-                    if isinstance(v, Random | BytesIO)
+                    if isinstance(v, BytesIO | Random | Generator | RandomState)
                     else ((k, (teed := tee(v))[0]), (k, teed[1]))
                     if isinstance(v, Iterator) and not isinstance(v, BufferedReader)
                     else ((k, v), (k, v))

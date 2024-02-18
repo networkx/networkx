@@ -8,6 +8,7 @@ __all__ = [
 ]
 
 
+@nx._dispatchable(edge_attrs="weight")
 def edge_betweenness_partition(G, number_of_sets, *, weight=None):
     """Partition created by iteratively removing the highest edge betweenness edge.
 
@@ -83,6 +84,7 @@ def edge_betweenness_partition(G, number_of_sets, *, weight=None):
     return partition
 
 
+@nx._dispatchable(edge_attrs="weight")
 def edge_current_flow_betweenness_partition(G, number_of_sets, *, weight=None):
     """Partition created by removing the highest edge current flow betweenness edge.
 
