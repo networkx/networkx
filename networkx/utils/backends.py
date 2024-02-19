@@ -31,33 +31,34 @@ computation work to it. Currently, the following backends are supported by Netwo
 - `parallel <https://github.com/networkx/nx-parallel>`_
 - `nx-loopback` is for testing purposes only and is not a real backend.
 
+
 Creating a Custom backend
 --------------------------
 
-1. To be a valid NetworkX backend, a package must register an entry_point
-of `networkx.backends` with a key pointing to the handler.
+1.  To be a valid NetworkX backend, a package must register an entry_point
+    of `networkx.backends` with a key pointing to the handler.
 
-You can include the following entry-point in your package's `pyproject.toml` file::
+    You can include the following entry-point in your package's `pyproject.toml` file::
 
-    [project.entry-points."networkx.backends"]
-    entry_point_name = "your_dispatcher_class"
+        [project.entry-points."networkx.backends"]
+        entry_point_name = "your_dispatcher_class"
 
-You can also add a `backend_info` entry-point to provide more information about
-the backend implementation of each function. This is useful for users to know which
-backends are available for a particular function::
+    You can also add a `backend_info` entry-point to provide more information about
+    the backend implementation of each function. This is useful for users to know which
+    backends are available for a particular function::
 
-    [project.entry-points."networkx.backend_info"]
-    entry_point_name = "your_get_info_function"
+        [project.entry-points."networkx.backend_info"]
+        entry_point_name = "your_get_info_function"
 
-2. The backend must create a nx.Graph-like object which contains an attribute
-`__networkx_backend__` with a value of the entry point name::
+2.  The backend must create a nx.Graph-like object which contains an attribute
+    `__networkx_backend__` with a value of the entry point name::
 
-    class BackendGraph:
-        __networkx_backend__ = "entry_point_name"
-        ...
+        class BackendGraph:
+            __networkx_backend__ = "entry_point_name"
+            ...
 
 
-Testing the custom backend
+Testing the Custom backend
 ---------------------------
 
 To test your custom backend, you can run the NetworkX test suite with your backend.
@@ -119,18 +120,18 @@ You can invoke tests using the custom backend with the following command::
 Notes
 ~~~~~~
 
-- Dispatchable algorithms which are not implemented by the backend
-will cause a `pytest.xfail()`, giving some indication that not all
-tests are working, while avoiding causing an explicit failure.
+-   Dispatchable algorithms which are not implemented by the backend
+    will cause a `pytest.xfail()`, giving some indication that not all
+    tests are working, while avoiding causing an explicit failure.
 
-- If a backend only partially implements some algorithms, it can define
-a `can_run(name, args, kwargs)` function that returns True or False
-indicating whether it can run the algorithm with the given arguments.
+-   If a backend only partially implements some algorithms, it can define
+    a `can_run(name, args, kwargs)` function that returns True or False
+    indicating whether it can run the algorithm with the given arguments.
 
-- A special `on_start_tests(items)` function may be defined by the backend.
-It will be called with the list of NetworkX tests discovered. Each item
-is a test object that can be marked as xfail if the backend does not support
-the test using `item.add_marker(pytest.mark.xfail(reason=...))`.
+-   A special `on_start_tests(items)` function may be defined by the backend.
+    It will be called with the list of NetworkX tests discovered. Each item
+    is a test object that can be marked as xfail if the backend does not support
+    the test using `item.add_marker(pytest.mark.xfail(reason=...))`.
 """
 
 import inspect
@@ -252,9 +253,9 @@ class _dispatchable:
             The name of the algorithm to use for dispatching. If not provided,
             the name of ``func`` will be used. ``name`` is useful to avoid name
             conflicts, as all dispatched algorithms live in a single namespace.
-            For example, `tournament.is_strongly_connected` had a name conflict
-            with the standard `nx.is_strongly_connected`, so we used
-            `@nx._dispatchable(name="tournament_is_strongly_connected")`.
+            For example, ``tournament.is_strongly_connected`` had a name conflict
+            with the standard ``nx.is_strongly_connected``, so we used
+            ``@_dispatchable(name="tournament_is_strongly_connected")``.
 
         graphs : str or dict or None, default "G"
             If a string, the parameter name of the graph, which must be the first
