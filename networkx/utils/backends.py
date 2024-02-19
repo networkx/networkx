@@ -61,7 +61,7 @@ Testing the custom backend
 ---------------------------
 
 To test your custom backend, you can run the NetworkX test suite with your backend.
-This also ensurs that the custom backend is compatible with NetworkX's API.
+This also ensures that the custom backend is compatible with NetworkX's API.
 
 Environment Variable Setup
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -137,7 +137,6 @@ import warnings
 from functools import partial
 from importlib.metadata import entry_points
 import networkx as nx
-
 
 __all__ = ["_dispatchable"]
 
