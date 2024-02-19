@@ -17,7 +17,7 @@ or you can specify the backend as a kwarg::
 
     nx.betweenness_centrality(G, k=10, backend="parallel")
 
-Also, you might have seen the `dispatchable` decorator on many of the NetworkX
+Also, you might have seen the `@nx._dispatchable` decorator on many of the NetworkX
 functions. It is used on functions that can have a backend implementation.
 This decorator is the key to the dispatching mechanism. It is used to redirect
 the execution of a function to its backend implementation and manage all
