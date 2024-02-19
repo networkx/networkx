@@ -452,11 +452,17 @@ def test_multipartite_layout_layer_order():
     """Return the layers in sorted order if the layers of the multipartite
     graph are sortable. See gh-5691"""
     G = nx.Graph()
-    for node, layer in zip(("a", "b", "c", "d", "e"), (2, 3, 1, 2, 4)):
+    node_group = dict(zip(("a", "b", "c", "d", "e"), (2, 3, 1, 2, 4)))
+    for node, layer in node_group.items():
         G.add_node(node, subset=layer)
 
     # Horizontal alignment, therefore y-coord determines layers
     pos = nx.multipartite_layout(G, align="horizontal")
+
+    layers = nx.utils.groups(node_group)
+    pos_from_layers = nx.multipartite_layout(G, align="horizontal", subset_key=layers)
+    for (n1, p1), (n2, p2) in zip(pos.items(), pos_from_layers.items()):
+        assert n1 == n2 and (p1 == p2).all()
 
     # Nodes "a" and "d" are in the same layer
     assert pos["a"][-1] == pos["d"][-1]
@@ -467,3 +473,43 @@ def test_multipartite_layout_layer_order():
     G.nodes["a"]["subset"] = "layer_0"  # Can't sort mixed strs/ints
     pos_nosort = nx.multipartite_layout(G)  # smoke test: this should not raise
     assert pos_nosort.keys() == pos.keys()
+
+
+def _num_nodes_per_bfs_layer(pos):
+    """Helper function to extract the number of nodes in each layer of bfs_layout"""
+    x = np.array(list(pos.values()))[:, 0]  # node positions in layered dimension
+    _, layer_count = np.unique(x, return_counts=True)
+    return layer_count
+
+
+@pytest.mark.parametrize("n", range(2, 7))
+def test_bfs_layout_complete_graph(n):
+    """The complete graph should result in two layers: the starting node and
+    a second layer containing all neighbors."""
+    G = nx.complete_graph(n)
+    pos = nx.bfs_layout(G, start=0)
+    assert np.array_equal(_num_nodes_per_bfs_layer(pos), [1, n - 1])
+
+
+def test_bfs_layout_barbell():
+    G = nx.barbell_graph(5, 3)
+    # Start in one of the "bells"
+    pos = nx.bfs_layout(G, start=0)
+    # start, bell-1, [1] * len(bar)+1, bell-1
+    expected_nodes_per_layer = [1, 4, 1, 1, 1, 1, 4]
+    assert np.array_equal(_num_nodes_per_bfs_layer(pos), expected_nodes_per_layer)
+    # Start in the other "bell" - expect same layer pattern
+    pos = nx.bfs_layout(G, start=12)
+    assert np.array_equal(_num_nodes_per_bfs_layer(pos), expected_nodes_per_layer)
+    # Starting in the center of the bar, expect layers to be symmetric
+    pos = nx.bfs_layout(G, start=6)
+    # Expected layers: {6 (start)}, {5, 7}, {4, 8}, {8 nodes from remainder of bells}
+    expected_nodes_per_layer = [1, 2, 2, 8]
+    assert np.array_equal(_num_nodes_per_bfs_layer(pos), expected_nodes_per_layer)
+
+
+def test_bfs_layout_disconnected():
+    G = nx.complete_graph(5)
+    G.add_edges_from([(10, 11), (11, 12)])
+    with pytest.raises(nx.NetworkXError, match="bfs_layout didn't include all nodes"):
+        nx.bfs_layout(G, start=0)
