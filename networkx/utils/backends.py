@@ -136,6 +136,7 @@ import os
 import warnings
 from functools import partial
 from importlib.metadata import entry_points
+
 import networkx as nx
 
 __all__ = ["_dispatchable"]
