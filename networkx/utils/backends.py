@@ -209,17 +209,19 @@ _registered_algorithms = {}
 
 
 class _dispatchable:
-    # Allow any of the following decorator forms:
-    #  - @_dispatchable
-    #  - @_dispatchable()
-    #  - @_dispatchable(name="override_name")
-    #  - @_dispatchable(graphs="graph")
-    #  - @_dispatchable(edge_attrs="weight")
-    #  - @_dispatchable(graphs={"G": 0, "H": 1}, edge_attrs={"weight": "default"})
+    """Allow any of the following decorator forms:
+    - @_dispatchable
+    - @_dispatchable()
+    - @_dispatchable(name="override_name")
+    - @_dispatchable(graphs="graph")
+    - @_dispatchable(edge_attrs="weight")
+    - @_dispatchable(graphs={"G": 0, "H": 1}, edge_attrs={"weight": "default"})
 
-    # These class attributes are currently used to allow backends to run networkx tests.
-    # For example: `PYTHONPATH=. pytest --backend graphblas --fallback-to-nx`
-    # Future work: add configuration to control these
+    These class attributes are currently used to allow backends to run networkx tests.
+    For example: `PYTHONPATH=. pytest --backend graphblas --fallback-to-nx`
+    Future work: add configuration to control these.
+    """
+
     _is_testing = False
     _fallback_to_nx = (
         os.environ.get("NETWORKX_FALLBACK_TO_NX", "true").strip().lower() == "true"
@@ -247,7 +249,11 @@ class _dispatchable:
 
         Parameters
         ----------
-        func : function
+        func : callable, optional
+            The function to be decorated. If `func` is not provided, returns a
+            partial object that can be used to decorate a function later. If `func
+            is provided, returns a new callable object that dispatches to a backend
+            algorithm based on input graph types.
 
         name : str, optional
             The name of the algorithm to use for dispatching. If not provided,
@@ -423,6 +429,10 @@ class _dispatchable:
 
     @property
     def __doc__(self):
+        """If the cached documentation exists, it is returned.
+        Otherwise, the documentation is generated using _make_doc() method,
+        cached, and then returned."""
+
         if (rv := self._cached_doc) is not None:
             return rv
         rv = self._cached_doc = self._make_doc()
@@ -430,11 +440,17 @@ class _dispatchable:
 
     @__doc__.setter
     def __doc__(self, val):
+        """Sets the original documentation to the given value and resets the
+        cached documentation."""
+
         self._orig_doc = val
         self._cached_doc = None
 
     @property
     def __signature__(self):
+        """Return the signature of the original function, with the addition of
+        the `backend` and `backend_kwargs` parameters."""
+
         if self._sig is None:
             sig = inspect.signature(self.orig_func)
             # `backend` is now a reserved argument used by dispatching.
@@ -468,6 +484,9 @@ class _dispatchable:
         return self._sig
 
     def __call__(self, /, *args, backend=None, **kwargs):
+        """Returns the result of the original function, or the backend function if
+        the backend is specified and that backend implements `func`."""
+
         if not backends:
             # Fast path if no backends are installed
             return self.orig_func(*args, **kwargs)
@@ -1015,6 +1034,9 @@ class _dispatchable:
         return converted_result
 
     def _make_doc(self):
+        """Generate the backends section at the end for functions having an alternate
+        backend implementation(s) using the `backend_info` entry-point."""
+
         if not self.backends:
             return self._orig_doc
         lines = [
