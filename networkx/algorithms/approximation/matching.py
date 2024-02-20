@@ -32,9 +32,9 @@ def min_maximal_matching(G):
 
     Examples
     --------
-    >>> G = nx.Graph([(0, 1), (0, 3), (1, 2), (1, 3), (1, 4)])
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (2, 4), (3, 5), (4, 5)])
     >>> nx.approximation.min_maximal_matching(G)
-    {(0, 1)}
+    {(1, 2), (3, 5)}
 
     Notes
     -----

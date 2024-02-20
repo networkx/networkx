@@ -34,9 +34,12 @@ def randomized_partitioning(G, seed=None, p=0.5, weight=None):
 
     Examples
     --------
-    >>> G = nx.Graph([(0, 1), (0, 3), (1, 2), (1, 3), (1, 4)])
-    >>> nx.approximation.randomized_partitioning(G, seed=1)
-    (4, ({0, 2, 4}, {1, 3}))
+    >>> G = nx.complete_graph(4)
+    >>> cut_size, partition = nx.approximation.randomized_partitioning(G, seed=1)
+    >>> cut_size
+    4
+    >>> partition
+    ({0, 3}, {1, 2})
 
     Returns
     -------

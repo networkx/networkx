@@ -33,9 +33,12 @@ def ramsey_R2(G):
 
     Examples
     --------
-    >>> G = nx.Graph([(0, 1), (0, 3), (1, 2), (1, 3), (1, 4)])
-    >>> nx.approximation.ramsey_R2(G)
-    ({0, 1, 3}, {0, 2, 4})
+    >>> G = nx.complete_graph(6)
+    >>> clique, independent_set = nx.approximation.ramsey_R2(graph)
+    >>> clique
+    {0, 1, 2, 3, 4, 5}
+    >>> independent_set
+    {5}
 
     Raises
     ------

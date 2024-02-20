@@ -47,9 +47,21 @@ def min_weighted_vertex_cover(G, weight=None):
 
     Examples
     --------
-    >>> G = nx.Graph([(0, 1), (0, 3), (1, 2), (1, 3), (1, 4), (5, 9), (9, 0)])
-    >>> nx.approximation.min_weighted_vertex_cover(G)
-    {0, 1, 5}
+    >>> G = nx.Graph()
+    >>> G.add_weighted_edges_from(
+    ...     [
+    ...         (0, 1, 10),
+    ...         (0, 2, 1),
+    ...         (0, 3, 1),
+    ...         (0, 4, 1),
+    ...         (1, 2, 1),
+    ...         (2, 3, 1),
+    ...         (3, 4, 1),
+    ...         (4, 1, 1),
+    ...     ]
+    ... )
+    >>> nx.approximation.min_weighted_vertex_cover(wg, weight="weight")
+    {0, 1, 2, 3}
 
     Notes
     -----
