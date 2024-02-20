@@ -10,7 +10,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
     """Find all-pairs shortest path lengths using Floyd's algorithm.
 
@@ -84,7 +84,7 @@ def floyd_warshall_numpy(G, nodelist=None, weight="weight"):
     return A
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def floyd_warshall_predecessor_and_distance(G, weight="weight"):
     """Find all-pairs shortest path lengths using Floyd's algorithm.
 
@@ -167,7 +167,7 @@ def floyd_warshall_predecessor_and_distance(G, weight="weight"):
     return dict(pred), dict(dist)
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def reconstruct_path(source, target, predecessors):
     """Reconstruct a path from source to target using the predecessors
     dict as returned by floyd_warshall_predecessor_and_distance
@@ -211,7 +211,7 @@ def reconstruct_path(source, target, predecessors):
     return list(reversed(path))
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def floyd_warshall(G, weight="weight"):
     """Find all-pairs shortest path lengths using Floyd's algorithm.
 
@@ -233,7 +233,7 @@ def floyd_warshall(G, weight="weight"):
     --------
     >>> G = nx.DiGraph()
     >>> G.add_weighted_edges_from([(0, 1, 5), (1, 2, 2), (2, 3, -3), (1, 3, 10), (3, 2, 8)])
-    >>> fw = nx.floyd_warshall(G, weight='weight')
+    >>> fw = nx.floyd_warshall(G, weight="weight")
     >>> results = {a: dict(b) for a, b in fw.items()}
     >>> print(results)
     {0: {0: 0, 1: 5, 2: 7, 3: 4}, 1: {1: 0, 2: 2, 3: -1, 0: inf}, 2: {2: 0, 3: -3, 0: inf, 1: inf}, 3: {3: 0, 2: 8, 0: inf, 1: inf}}

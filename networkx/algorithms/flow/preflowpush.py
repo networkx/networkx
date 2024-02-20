@@ -288,7 +288,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq, value_on
     return R
 
 
-@nx._dispatch(
+@nx._dispatchable(
     graphs={"G": 0, "residual?": 4},
     edge_attrs={"capacity": float("inf")},
     preserve_edge_attrs={"residual": {"capacity": float("inf")}},

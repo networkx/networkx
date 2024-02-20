@@ -10,7 +10,7 @@ from networkx.algorithms.flow.utils import build_residual_network
 __all__ = ["boykov_kolmogorov"]
 
 
-@nx._dispatch(
+@nx._dispatchable(
     graphs={"G": 0, "residual?": 4},
     edge_attrs={"capacity": float("inf")},
     preserve_edge_attrs={"residual": {"capacity": float("inf")}},

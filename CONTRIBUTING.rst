@@ -78,8 +78,8 @@ Development Workflow
          # Test your installation
          pytest --pyargs networkx
 
-   * Finally, we recommend you use a pre-commit hook, which runs black when
-     you type ``git commit``::
+   * Finally, we recommend you install pre-commit which checks
+     that your code matches formatting guidelines::
 
        pre-commit install
 

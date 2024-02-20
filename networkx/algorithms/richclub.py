@@ -10,7 +10,7 @@ __all__ = ["rich_club_coefficient"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
     r"""Returns the rich-club coefficient of the graph `G`.
 
@@ -44,6 +44,12 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
     rc : dictionary
        A dictionary, keyed by degree, with rich-club coefficient values.
 
+    Raises
+    ------
+    NetworkXError
+        If `G` has fewer than four nodes and ``normalized=True``.
+        A randomly sampled graph for normalization cannot be generated in this case.
+
     Examples
     --------
     >>> G = nx.Graph([(0, 1), (0, 2), (1, 2), (1, 3), (1, 4), (4, 5)])
@@ -56,6 +62,14 @@ def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
     The rich club definition and algorithm are found in [1]_.  This
     algorithm ignores any edge weights and is not defined for directed
     graphs or graphs with parallel edges or self loops.
+
+    Normalization is done by computing the rich club coefficient for a randomly
+    sampled graph with the same degree distribution as `G` by
+    repeatedly swapping the endpoints of existing edges. For graphs with fewer than 4
+    nodes, it is not possible to generate a random graph with a prescribed
+    degree distribution, as the degree distribution fully determines the graph
+    (hence making the coefficients trivially normalized to 1).
+    This function raises an exception in this case.
 
     Estimates for appropriate values of `Q` are found in [2]_.
 
@@ -108,6 +122,9 @@ def _compute_rc(G):
     # side of the list, which would have a linear time cost.
     edge_degrees = sorted((sorted(map(G.degree, e)) for e in G.edges()), reverse=True)
     ek = G.number_of_edges()
+    if ek == 0:
+        return {}
+
     k1, k2 = edge_degrees.pop()
     rc = {}
     for d, nk in enumerate(nks):

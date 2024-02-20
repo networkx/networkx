@@ -10,7 +10,7 @@ __all__ = ["maximal_independent_set"]
 
 @not_implemented_for("directed")
 @py_random_state(2)
-@nx._dispatch
+@nx._dispatchable
 def maximal_independent_set(G, nodes=None, seed=None):
     """Returns a random maximal independent set guaranteed to contain
     a given set of nodes.

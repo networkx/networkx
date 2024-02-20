@@ -14,6 +14,7 @@ functions as attributes of ``community``. For example::
 """
 from networkx.algorithms.community.asyn_fluid import *
 from networkx.algorithms.community.centrality import *
+from networkx.algorithms.community.divisive import *
 from networkx.algorithms.community.kclique import *
 from networkx.algorithms.community.kernighan_lin import *
 from networkx.algorithms.community.label_propagation import *

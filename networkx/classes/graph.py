@@ -1211,20 +1211,12 @@ class Graph:
         >>> DG = nx.DiGraph()
         >>> # dict-of-dict-of-attribute
         >>> adj = {1: {2: 1.3, 3: 0.7}, 2: {1: 1.4}, 3: {1: 0.7}}
-        >>> e = [
-        ...     (u, v, {"weight": d})
-        ...     for u, nbrs in adj.items()
-        ...     for v, d in nbrs.items()
-        ... ]
+        >>> e = [(u, v, {"weight": d}) for u, nbrs in adj.items() for v, d in nbrs.items()]
         >>> DG.update(edges=e, nodes=adj)
 
         >>> # dict-of-dict-of-dict
         >>> adj = {1: {2: {"weight": 1.3}, 3: {"color": 0.7, "weight": 1.2}}}
-        >>> e = [
-        ...     (u, v, {"weight": d})
-        ...     for u, nbrs in adj.items()
-        ...     for v, d in nbrs.items()
-        ... ]
+        >>> e = [(u, v, {"weight": d}) for u, nbrs in adj.items() for v, d in nbrs.items()]
         >>> DG.update(edges=e, nodes=adj)
 
         >>> # predecessor adjacency (dict-of-set)
@@ -1547,8 +1539,8 @@ class Graph:
         >>> list(G.edges)
         []
         """
-        for neighbours_dict in self._adj.values():
-            neighbours_dict.clear()
+        for nbr_dict in self._adj.values():
+            nbr_dict.clear()
 
     def is_multigraph(self):
         """Returns True if graph is a multigraph, False otherwise."""
@@ -1800,14 +1792,22 @@ class Graph:
             SG = G.__class__()
             SG.add_nodes_from((n, G.nodes[n]) for n in largest_wcc)
             if SG.is_multigraph():
-                SG.add_edges_from((n, nbr, key, d)
-                    for n, nbrs in G.adj.items() if n in largest_wcc
-                    for nbr, keydict in nbrs.items() if nbr in largest_wcc
-                    for key, d in keydict.items())
+                SG.add_edges_from(
+                    (n, nbr, key, d)
+                    for n, nbrs in G.adj.items()
+                    if n in largest_wcc
+                    for nbr, keydict in nbrs.items()
+                    if nbr in largest_wcc
+                    for key, d in keydict.items()
+                )
             else:
-                SG.add_edges_from((n, nbr, d)
-                    for n, nbrs in G.adj.items() if n in largest_wcc
-                    for nbr, d in nbrs.items() if nbr in largest_wcc)
+                SG.add_edges_from(
+                    (n, nbr, d)
+                    for n, nbrs in G.adj.items()
+                    if n in largest_wcc
+                    for nbr, d in nbrs.items()
+                    if nbr in largest_wcc
+                )
             SG.graph.update(G.graph)
 
         Examples

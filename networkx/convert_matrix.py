@@ -43,7 +43,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def to_pandas_adjacency(
     G,
     nodelist=None,
@@ -150,7 +150,7 @@ def to_pandas_adjacency(
     return pd.DataFrame(data=M, index=nodelist, columns=nodelist)
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def from_pandas_adjacency(df, create_using=None):
     r"""Returns a graph from Pandas DataFrame.
 
@@ -219,7 +219,7 @@ def from_pandas_adjacency(df, create_using=None):
     return G
 
 
-@nx._dispatch(preserve_edge_attrs=True)
+@nx._dispatchable(preserve_edge_attrs=True)
 def to_pandas_edgelist(
     G,
     source="source",
@@ -273,9 +273,9 @@ def to_pandas_edgelist(
     0      A      B     1       7
     1      C      E     9      10
 
-    >>> G = nx.MultiGraph([('A', 'B', {'cost': 1}), ('A', 'B', {'cost': 9})])
-    >>> df = nx.to_pandas_edgelist(G, nodelist=['A', 'C'], edge_key='ekey')
-    >>> df[['source', 'target', 'cost', 'ekey']]
+    >>> G = nx.MultiGraph([("A", "B", {"cost": 1}), ("A", "B", {"cost": 9})])
+    >>> df = nx.to_pandas_edgelist(G, nodelist=["A", "C"], edge_key="ekey")
+    >>> df[["source", "target", "cost", "ekey"]]
       source target  cost  ekey
     0      A      B     1     0
     1      A      B     9     1
@@ -311,7 +311,7 @@ def to_pandas_edgelist(
     return pd.DataFrame(edgelistdict, dtype=dtype)
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def from_pandas_edgelist(
     df,
     source="source",
@@ -483,7 +483,7 @@ def from_pandas_edgelist(
     return g
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format="csr"):
     """Returns the graph adjacency matrix as a SciPy sparse array.
 
@@ -675,7 +675,7 @@ def _generate_weighted_edges(A):
     return _coo_gen_triples(A.tocoo())
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def from_scipy_sparse_array(
     A, parallel_edges=False, create_using=None, edge_attribute="weight"
 ):
@@ -736,9 +736,7 @@ def from_scipy_sparse_array(
     as the number of parallel edges joining those two vertices:
 
     >>> A = sp.sparse.csr_array([[1, 1], [1, 2]])
-    >>> G = nx.from_scipy_sparse_array(
-    ...     A, parallel_edges=True, create_using=nx.MultiGraph
-    ... )
+    >>> G = nx.from_scipy_sparse_array(A, parallel_edges=True, create_using=nx.MultiGraph)
     >>> G[1][1]
     AtlasView({0: {'weight': 1}, 1: {'weight': 1}})
 
@@ -780,7 +778,7 @@ def from_scipy_sparse_array(
     return G
 
 
-@nx._dispatch(edge_attrs="weight")  # edge attrs may also be obtained from `dtype`
+@nx._dispatchable(edge_attrs="weight")  # edge attrs may also be obtained from `dtype`
 def to_numpy_array(
     G,
     nodelist=None,
@@ -934,7 +932,7 @@ def to_numpy_array(
     >>> G.add_edge(2, 0, weight=0)
     >>> G.add_edge(2, 1, weight=0)
     >>> G.add_edge(3, 0, weight=1)
-    >>> nx.to_numpy_array(G, nonedge=-1.)
+    >>> nx.to_numpy_array(G, nonedge=-1.0)
     array([[-1.,  2., -1.,  1.],
            [ 2., -1.,  0., -1.],
            [-1.,  0., -1.,  0.],
@@ -1019,7 +1017,7 @@ def to_numpy_array(
     return A
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def from_numpy_array(A, parallel_edges=False, create_using=None, edge_attr="weight"):
     """Returns a graph from a 2D NumPy array.
 

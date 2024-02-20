@@ -446,13 +446,13 @@ class TestColoring:
             )
 
             for u in node_iterator:
-                # Set to keep track of colors of neighbours
-                neighbour_colors = {
+                # Set to keep track of colors of neighbors
+                nbr_colors = {
                     aux_colored_nodes[v] for v in G[u] if v in aux_colored_nodes
                 }
                 # Find the first unused color.
                 for color in itertools.count():
-                    if color not in neighbour_colors:
+                    if color not in nbr_colors:
                         break
                 aux_colored_nodes[u] = color
                 color_assignments.append((u, color))

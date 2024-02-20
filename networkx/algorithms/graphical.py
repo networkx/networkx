@@ -14,7 +14,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def is_graphical(sequence, method="eg"):
     """Returns True if sequence is a valid degree sequence.
 
@@ -93,7 +93,7 @@ def _basic_graphical_tests(deg_sequence):
     return dmax, dmin, dsum, n, num_degs
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     r"""Returns True if deg_sequence can be realized by a simple graph.
 
@@ -183,7 +183,7 @@ def is_valid_degree_sequence_havel_hakimi(deg_sequence):
     return True
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     r"""Returns True if deg_sequence can be realized by a simple graph.
 
@@ -274,7 +274,7 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
     return True
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def is_multigraphical(sequence):
     """Returns True if some multigraph can realize the sequence.
 
@@ -325,7 +325,7 @@ def is_multigraphical(sequence):
     return True
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def is_pseudographical(sequence):
     """Returns True if some pseudograph can realize the sequence.
 
@@ -372,7 +372,7 @@ def is_pseudographical(sequence):
     return sum(deg_sequence) % 2 == 0 and min(deg_sequence) >= 0
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None)
 def is_digraphical(in_sequence, out_sequence):
     r"""Returns True if some directed graph can realize the in- and out-degree
     sequences.

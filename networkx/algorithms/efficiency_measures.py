@@ -9,7 +9,7 @@ __all__ = ["efficiency", "local_efficiency", "global_efficiency"]
 
 
 @not_implemented_for("directed")
-@nx._dispatch
+@nx._dispatchable
 def efficiency(G, u, v):
     """Returns the efficiency of a pair of nodes in a graph.
 
@@ -60,7 +60,7 @@ def efficiency(G, u, v):
 
 
 @not_implemented_for("directed")
-@nx._dispatch
+@nx._dispatchable
 def global_efficiency(G):
     """Returns the average global efficiency of the graph.
 
@@ -121,7 +121,7 @@ def global_efficiency(G):
 
 
 @not_implemented_for("directed")
-@nx._dispatch
+@nx._dispatchable
 def local_efficiency(G):
     """Returns the average local efficiency of the graph.
 

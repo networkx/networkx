@@ -8,7 +8,7 @@ __all__ = ["chain_decomposition"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def chain_decomposition(G, root=None):
     """Returns the chain decomposition of a graph.
 

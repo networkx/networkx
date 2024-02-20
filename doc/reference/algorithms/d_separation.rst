@@ -6,6 +6,6 @@ D-Separation
 .. autosummary::
    :toctree: generated/
 
-   d_separated
+   is_d_separator
    is_minimal_d_separator
-   minimal_d_separator
+   find_minimal_d_separator

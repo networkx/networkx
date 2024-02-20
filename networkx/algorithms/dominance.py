@@ -11,7 +11,7 @@ __all__ = ["immediate_dominators", "dominance_frontiers"]
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def immediate_dominators(G, start):
     """Returns the immediate dominators of all nodes of a directed graph.
 
@@ -84,7 +84,7 @@ def immediate_dominators(G, start):
     return idom
 
 
-@nx._dispatch
+@nx._dispatchable
 def dominance_frontiers(G, start):
     """Returns the dominance frontiers of all nodes of a directed graph.
 

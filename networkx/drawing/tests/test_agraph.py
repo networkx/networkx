@@ -1,6 +1,5 @@
 """Unit tests for PyGraphviz interface."""
-import os
-import tempfile
+import warnings
 
 import pytest
 
@@ -24,27 +23,26 @@ class TestAGraph:
         assert edges_equal(G1.edges(), G2.edges())
         assert G1.graph["metal"] == G2.graph["metal"]
 
-    def agraph_checks(self, G):
+    @pytest.mark.parametrize(
+        "G", (nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph())
+    )
+    def test_agraph_roundtripping(self, G, tmp_path):
         G = self.build_graph(G)
         A = nx.nx_agraph.to_agraph(G)
         H = nx.nx_agraph.from_agraph(A)
         self.assert_equal(G, H)
 
-        fd, fname = tempfile.mkstemp()
+        fname = tmp_path / "test.dot"
         nx.drawing.nx_agraph.write_dot(H, fname)
         Hin = nx.nx_agraph.read_dot(fname)
         self.assert_equal(H, Hin)
-        os.close(fd)
-        os.unlink(fname)
 
-        (fd, fname) = tempfile.mkstemp()
+        fname = tmp_path / "fh_test.dot"
         with open(fname, "w") as fh:
             nx.drawing.nx_agraph.write_dot(H, fh)
 
         with open(fname) as fh:
             Hin = nx.nx_agraph.read_dot(fh)
-        os.close(fd)
-        os.unlink(fname)
         self.assert_equal(H, Hin)
 
     def test_from_agraph_name(self):
@@ -73,18 +71,6 @@ class TestAGraph:
         H = nx.nx_agraph.from_agraph(A)
         assert isinstance(H, nx.Graph)
         assert ("0", "1", {"key": "foo"}) in H.edges(data=True)
-
-    def test_undirected(self):
-        self.agraph_checks(nx.Graph())
-
-    def test_directed(self):
-        self.agraph_checks(nx.DiGraph())
-
-    def test_multi_undirected(self):
-        self.agraph_checks(nx.MultiGraph())
-
-    def test_multi_directed(self):
-        self.agraph_checks(nx.MultiDiGraph())
 
     def test_to_agraph_with_nodedata(self):
         G = nx.Graph()
@@ -249,6 +235,6 @@ class TestAGraph:
         G.add_node(0, pos=(0, 0))
         G.add_node(1, pos=(1, 1))
         A = nx.nx_agraph.to_agraph(G)
-        with pytest.warns(None) as record:
+        with warnings.catch_warnings(record=True) as record:
             A.layout()
         assert len(record) == 0

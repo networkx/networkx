@@ -68,6 +68,12 @@ class TestIsRegular:
         assert reg.is_regular(g)
 
 
+def test_is_regular_empty_graph_raises():
+    G = nx.Graph()
+    with pytest.raises(nx.NetworkXPointlessConcept, match="Graph has no nodes"):
+        nx.is_regular(G)
+
+
 class TestIsKRegular:
     def test_is_k_regular1(self):
         g = gen.cycle_graph(4)

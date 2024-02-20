@@ -6,7 +6,7 @@ __all__ = ["is_semiconnected"]
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def is_semiconnected(G):
     r"""Returns True if the graph is semiconnected, False otherwise.
 

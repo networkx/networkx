@@ -2,14 +2,36 @@ import pytest
 
 import networkx as nx
 
+cycle = nx.cycle_graph(5, create_using=nx.DiGraph)
+tree = nx.random_tree(10, create_using=nx.DiGraph, seed=42)
+path = nx.path_graph(5, create_using=nx.DiGraph)
+binomial = nx.binomial_tree(3, create_using=nx.DiGraph)
+HH = nx.directed_havel_hakimi_graph([1, 2, 1, 2, 2, 2], [3, 1, 0, 1, 2, 3])
+balanced_tree = nx.balanced_tree(2, 3, create_using=nx.DiGraph)
 
-def test_directed_edge_swap():
-    graph = nx.path_graph(200, create_using=nx.DiGraph)
-    in_degrees = sorted((n, d) for n, d in graph.in_degree())
-    out_degrees = sorted((n, d) for n, d in graph.out_degree())
-    G = nx.directed_edge_swap(graph, nswap=40, max_tries=500, seed=1)
-    assert in_degrees == sorted((n, d) for n, d in G.in_degree())
-    assert out_degrees == sorted((n, d) for n, d in G.out_degree())
+
+@pytest.mark.parametrize("G", [path, binomial, HH, cycle, tree, balanced_tree])
+def test_directed_edge_swap(G):
+    in_degree = set(G.in_degree)
+    out_degree = set(G.out_degree)
+    edges = set(G.edges)
+    nx.directed_edge_swap(G, nswap=1, max_tries=100, seed=1)
+    assert in_degree == set(G.in_degree)
+    assert out_degree == set(G.out_degree)
+    assert edges != set(G.edges)
+    assert 3 == sum(e not in edges for e in G.edges)
+
+
+def test_directed_edge_swap_undo_previous_swap():
+    G = nx.DiGraph(nx.path_graph(4).edges)  # only 1 swap possible
+    edges = set(G.edges)
+    nx.directed_edge_swap(G, nswap=2, max_tries=100)
+    assert edges == set(G.edges)
+
+    nx.directed_edge_swap(G, nswap=1, max_tries=100, seed=1)
+    assert {(0, 2), (1, 3), (2, 1)} == set(G.edges)
+    nx.directed_edge_swap(G, nswap=1, max_tries=100, seed=1)
+    assert edges == set(G.edges)
 
 
 def test_edge_cases_directed_edge_swap():

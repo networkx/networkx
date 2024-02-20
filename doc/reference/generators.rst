@@ -34,6 +34,7 @@ Classic
    dorogovtsev_goltsev_mendes_graph
    empty_graph
    full_rary_tree
+   kneser_graph
    ladder_graph
    lollipop_graph
    null_graph
@@ -54,6 +55,9 @@ Expanders
    margulis_gabber_galil_graph
    chordal_cycle_graph
    paley_graph
+   maybe_regular_expander
+   is_regular_expander
+   random_regular_expander_graph
 
 Lattice
 -------
@@ -189,6 +193,7 @@ Geometric
    soft_random_geometric_graph
    thresholded_random_geometric_graph
    waxman_graph
+   geometric_soft_configuration_graph
 
 Line Graph
 ----------

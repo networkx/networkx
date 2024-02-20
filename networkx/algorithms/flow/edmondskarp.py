@@ -8,7 +8,7 @@ from networkx.algorithms.flow.utils import build_residual_network
 __all__ = ["edmonds_karp"]
 
 
-@nx._dispatch(
+@nx._dispatchable(
     graphs="R",
     preserve_edge_attrs={"R": {"capacity": float("inf"), "flow": 0}},
     preserve_graph_attrs=True,
@@ -122,7 +122,7 @@ def edmonds_karp_impl(G, s, t, capacity, residual, cutoff):
     return R
 
 
-@nx._dispatch(
+@nx._dispatchable(
     graphs={"G": 0, "residual?": 4},
     edge_attrs={"capacity": float("inf")},
     preserve_edge_attrs={"residual": {"capacity": float("inf")}},

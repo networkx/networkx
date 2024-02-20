@@ -26,9 +26,7 @@ def attach(module_name, submodules=None, submod_attrs=None):
     The typical way to call this function, replacing the above imports, is::
 
       __getattr__, __lazy_dir__, __all__ = lazy.attach(
-          __name__,
-          ['mysubmodule', 'anothersubmodule'],
-          {'foo': 'someattr'}
+          __name__, ["mysubmodule", "anothersubmodule"], {"foo": "someattr"}
       )
 
     This functionality requires Python 3.7 or higher.
@@ -149,8 +147,8 @@ def _lazy_import(fullname):
     fullname : str
         The full name of the package or subpackage to import.  For example::
 
-          sp = lazy.load('scipy')  # import scipy as sp
-          spla = lazy.load('scipy.linalg')  # import scipy.linalg as spla
+          sp = lazy.load("scipy")  # import scipy as sp
+          spla = lazy.load("scipy.linalg")  # import scipy.linalg as spla
 
     Returns
     -------

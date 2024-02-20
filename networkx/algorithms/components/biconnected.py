@@ -13,7 +13,7 @@ __all__ = [
 
 
 @not_implemented_for("directed")
-@nx._dispatch
+@nx._dispatchable
 def is_biconnected(G):
     """Returns True if the graph is biconnected, False otherwise.
 
@@ -94,7 +94,7 @@ def is_biconnected(G):
 
 
 @not_implemented_for("directed")
-@nx._dispatch
+@nx._dispatchable
 def biconnected_component_edges(G):
     """Returns a generator of lists of edges, one list for each biconnected
     component of the input graph.
@@ -167,7 +167,7 @@ def biconnected_component_edges(G):
 
 
 @not_implemented_for("directed")
-@nx._dispatch
+@nx._dispatchable
 def biconnected_components(G):
     """Returns a generator of sets of nodes, one set for each biconnected
     component of the graph
@@ -260,7 +260,7 @@ def biconnected_components(G):
 
 
 @not_implemented_for("directed")
-@nx._dispatch
+@nx._dispatchable
 def articulation_points(G):
     """Yield the articulation points, or cut vertices, of a graph.
 

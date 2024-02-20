@@ -1,6 +1,6 @@
 """
 =========================================
-Animations of 3D rotation and random walk.
+Animations of 3D rotation and random walk
 =========================================
 Examples of 3D plots of a graph in the 3D spectral layout with animation. 
 Following 

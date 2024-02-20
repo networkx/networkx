@@ -9,7 +9,7 @@ __all__ = ["communicability", "communicability_exp"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def communicability(G):
     r"""Returns communicability between all pairs of nodes in G.
 
@@ -91,7 +91,7 @@ def communicability(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def communicability_exp(G):
     r"""Returns communicability between all pairs of nodes in G.
 

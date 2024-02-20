@@ -42,7 +42,7 @@ def _kernighan_lin_sweep(edges, side):
 
 @not_implemented_for("directed")
 @py_random_state(4)
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def kernighan_lin_bisection(G, partition=None, max_iter=10, weight="weight", seed=None):
     """Partition a graph into two blocks using the Kernighan–Lin
     algorithm.

@@ -4,7 +4,7 @@ import networkx as nx
 __all__ = ["node_attribute_xy", "node_degree_xy"]
 
 
-@nx._dispatch(node_attrs="attribute")
+@nx._dispatchable(node_attrs="attribute")
 def node_attribute_xy(G, attribute, nodes=None):
     """Returns iterator of node-attribute pairs for all edges in G.
 
@@ -59,7 +59,7 @@ def node_attribute_xy(G, attribute, nodes=None):
                 yield (uattr, vattr)
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def node_degree_xy(G, x="out", y="in", weight=None, nodes=None):
     """Generate node degree-degree pairs for edges in G.
 

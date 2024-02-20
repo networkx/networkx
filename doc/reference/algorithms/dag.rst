@@ -21,3 +21,4 @@ Directed Acyclic Graphs
    dag_longest_path
    dag_longest_path_length
    dag_to_branching
+   compute_v_structures

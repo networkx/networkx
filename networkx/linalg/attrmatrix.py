@@ -142,7 +142,7 @@ def _edge_value(G, edge_attr):
     return value
 
 
-@nx._dispatch(edge_attrs={"edge_attr": None}, node_attrs="node_attr")
+@nx._dispatchable(edge_attrs={"edge_attr": None}, node_attrs="node_attr")
 def attr_matrix(
     G,
     edge_attr=None,
@@ -306,7 +306,7 @@ def attr_matrix(
         return M
 
 
-@nx._dispatch(edge_attrs={"edge_attr": None}, node_attrs="node_attr")
+@nx._dispatchable(edge_attrs={"edge_attr": None}, node_attrs="node_attr")
 def attr_sparse_matrix(
     G, edge_attr=None, node_attr=None, normalized=False, rc_order=None, dtype=None
 ):

@@ -175,7 +175,7 @@ def arbitrary_element(iterable):
     >>> d = {k: v for k, v in zip([1, 2, 3], [3, 2, 1])}
     >>> nx.utils.arbitrary_element(d)  # dict_keys
     1
-    >>> nx.utils.arbitrary_element(d.values())   # dict values
+    >>> nx.utils.arbitrary_element(d.values())  # dict values
     3
 
     `str` is also an Iterable:

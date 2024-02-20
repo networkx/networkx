@@ -27,7 +27,7 @@ RNGs, you may find yourself using another package that uses the other.
 Setting the state of the two global RNGs is as simple setting the
 seed of each RNG to an arbitrary integer:
 
-.. nbplot::
+.. code-block::
 
    >>> import random
    >>> random.seed(246)        # or any integer
@@ -41,7 +41,7 @@ to functions that use an RNG.  This argument is called `seed`, but
 determines more than the seed of the RNG. It tells the function which
 RNG package to use, and whether to use a global or local RNG.
 
-.. nbplot::
+.. code-block::
 
     >>> from networkx import path_graph, random_layout
     >>> G = path_graph(9)

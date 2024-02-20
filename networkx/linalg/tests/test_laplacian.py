@@ -24,6 +24,31 @@ class TestLaplacian:
         for node in cls.Gsl.nodes():
             cls.Gsl.add_edge(node, node)
 
+        # Graph used as an example in Sec. 4.1 of Langville and Meyer,
+        # "Google's PageRank and Beyond".
+        cls.DiG = nx.DiGraph()
+        cls.DiG.add_edges_from(
+            (
+                (1, 2),
+                (1, 3),
+                (3, 1),
+                (3, 2),
+                (3, 5),
+                (4, 5),
+                (4, 6),
+                (5, 4),
+                (5, 6),
+                (6, 4),
+            )
+        )
+        cls.DiMG = nx.MultiDiGraph(cls.DiG)
+        cls.DiWG = nx.DiGraph(
+            (u, v, {"weight": 0.5, "other": 0.3}) for (u, v) in cls.DiG.edges()
+        )
+        cls.DiGsl = cls.DiG.copy()
+        for node in cls.DiGsl.nodes():
+            cls.DiGsl.add_edge(node, node)
+
     def test_laplacian(self):
         "Graph Laplacian"
         # fmt: off
@@ -35,6 +60,16 @@ class TestLaplacian:
         # fmt: on
         WL = 0.5 * NL
         OL = 0.3 * NL
+        # fmt: off
+        DiNL = np.array([[ 2, -1, -1,  0,  0,  0],
+                         [ 0,  0,  0,  0,  0,  0],
+                         [-1, -1,  3, -1,  0,  0],
+                         [ 0,  0,  0,  2, -1, -1],
+                         [ 0,  0,  0, -1,  2, -1],
+                         [ 0,  0,  0,  0, -1,  1]])
+        # fmt: on
+        DiWL = 0.5 * DiNL
+        DiOL = 0.3 * DiNL
         np.testing.assert_equal(nx.laplacian_matrix(self.G).todense(), NL)
         np.testing.assert_equal(nx.laplacian_matrix(self.MG).todense(), NL)
         np.testing.assert_equal(
@@ -45,6 +80,20 @@ class TestLaplacian:
         np.testing.assert_equal(nx.laplacian_matrix(self.WG, weight=None).todense(), NL)
         np.testing.assert_equal(
             nx.laplacian_matrix(self.WG, weight="other").todense(), OL
+        )
+
+        np.testing.assert_equal(nx.laplacian_matrix(self.DiG).todense(), DiNL)
+        np.testing.assert_equal(nx.laplacian_matrix(self.DiMG).todense(), DiNL)
+        np.testing.assert_equal(
+            nx.laplacian_matrix(self.DiG, nodelist=[1, 2]).todense(),
+            np.array([[1, -1], [0, 0]]),
+        )
+        np.testing.assert_equal(nx.laplacian_matrix(self.DiWG).todense(), DiWL)
+        np.testing.assert_equal(
+            nx.laplacian_matrix(self.DiWG, weight=None).todense(), DiNL
+        )
+        np.testing.assert_equal(
+            nx.laplacian_matrix(self.DiWG, weight="other").todense(), DiOL
         )
 
     def test_normalized_laplacian(self):
@@ -65,6 +114,25 @@ class TestLaplacian:
                         [-0.2887, -0.3333,  0.6667,  0.    ,  0.    ],
                         [-0.3536,  0.    ,  0.    ,  0.5   ,  0.    ],
                         [ 0.    ,  0.    ,  0.    ,  0.    ,  0.    ]])
+
+        DiG = np.array([[ 1.    ,  0.    , -0.4082,  0.    ,  0.    ,  0.    ],
+                        [ 0.    ,  0.    ,  0.    ,  0.    ,  0.    ,  0.    ],
+                        [-0.4082,  0.    ,  1.    ,  0.    , -0.4082,  0.    ],
+                        [ 0.    ,  0.    ,  0.    ,  1.    , -0.5   , -0.7071],
+                        [ 0.    ,  0.    ,  0.    , -0.5   ,  1.    , -0.7071],
+                        [ 0.    ,  0.    ,  0.    , -0.7071,  0.     , 1.    ]])
+        DiGL = np.array([[ 1.    ,  0.    , -0.4082,  0.    ,  0.    ,  0.    ],
+                         [ 0.    ,  0.    ,  0.    ,  0.    ,  0.    ,  0.    ],
+                         [-0.4082,  0.    ,  1.    , -0.4082,  0.    ,  0.    ],
+                         [ 0.    ,  0.    ,  0.    ,  1.    , -0.5   , -0.7071],
+                         [ 0.    ,  0.    ,  0.    , -0.5   ,  1.    , -0.7071],
+                         [ 0.    ,  0.    ,  0.    ,  0.    , -0.7071,  1.    ]])
+        DiLsl = np.array([[ 0.6667, -0.5774, -0.2887,  0.    ,  0.    ,  0.    ],
+                          [ 0.    ,  0.    ,  0.    ,  0.    ,  0.    ,  0.    ],
+                          [-0.2887, -0.5   ,  0.75  , -0.2887,  0.    ,  0.    ],
+                          [ 0.    ,  0.    ,  0.    ,  0.6667, -0.3333, -0.4082],
+                          [ 0.    ,  0.    ,  0.    , -0.3333,  0.6667, -0.4082],
+                          [ 0.    ,  0.    ,  0.    ,  0.    , -0.4082,  0.5   ]])
         # fmt: on
 
         np.testing.assert_almost_equal(
@@ -88,6 +156,32 @@ class TestLaplacian:
         )
         np.testing.assert_almost_equal(
             nx.normalized_laplacian_matrix(self.Gsl).todense(), Lsl, decimal=3
+        )
+
+        np.testing.assert_almost_equal(
+            nx.normalized_laplacian_matrix(
+                self.DiG,
+                nodelist=range(1, 1 + 6),
+            ).todense(),
+            DiG,
+            decimal=3,
+        )
+        np.testing.assert_almost_equal(
+            nx.normalized_laplacian_matrix(self.DiG).todense(), DiGL, decimal=3
+        )
+        np.testing.assert_almost_equal(
+            nx.normalized_laplacian_matrix(self.DiMG).todense(), DiGL, decimal=3
+        )
+        np.testing.assert_almost_equal(
+            nx.normalized_laplacian_matrix(self.DiWG).todense(), DiGL, decimal=3
+        )
+        np.testing.assert_almost_equal(
+            nx.normalized_laplacian_matrix(self.DiWG, weight="other").todense(),
+            DiGL,
+            decimal=3,
+        )
+        np.testing.assert_almost_equal(
+            nx.normalized_laplacian_matrix(self.DiGsl).todense(), DiLsl, decimal=3
         )
 
 

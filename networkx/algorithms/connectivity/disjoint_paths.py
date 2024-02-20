@@ -19,7 +19,7 @@ from .utils import build_auxiliary_edge_connectivity, build_auxiliary_node_conne
 __all__ = ["edge_disjoint_paths", "node_disjoint_paths"]
 
 
-@nx._dispatch(
+@nx._dispatchable(
     graphs={"G": 0, "auxiliary?": 5, "residual?": 6},
     preserve_edge_attrs={
         "auxiliary": {"capacity": float("inf")},
@@ -234,7 +234,7 @@ def edge_disjoint_paths(
             paths_found += 1
 
 
-@nx._dispatch(
+@nx._dispatchable(
     graphs={"G": 0, "auxiliary?": 5, "residual?": 6},
     preserve_edge_attrs={"residual": {"capacity": float("inf")}},
     preserve_node_attrs={"auxiliary": {"id": None}},

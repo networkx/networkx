@@ -114,11 +114,11 @@ class MappedQueue:
     of initial elements and priorities.  The methods `push`, `pop`,
     `remove`, and `update` operate on the queue.
 
-    >>> colors_nm = {'red':665, 'blue': 470, 'green': 550}
+    >>> colors_nm = {"red": 665, "blue": 470, "green": 550}
     >>> q = MappedQueue(colors_nm)
-    >>> q.remove('red')
-    >>> q.update('green', 'violet', 400)
-    >>> q.push('indigo', 425)
+    >>> q.remove("red")
+    >>> q.update("green", "violet", 400)
+    >>> q.push("indigo", 425)
     True
     >>> [q.pop().element for i in range(len(q.heap))]
     ['violet', 'indigo', 'blue']
@@ -134,14 +134,14 @@ class MappedQueue:
 
     An exception is raised if the elements are not comparable.
 
-    >>> q = MappedQueue([100, 'a'])
+    >>> q = MappedQueue([100, "a"])
     Traceback (most recent call last):
     ...
     TypeError: '<' not supported between instances of 'int' and 'str'
 
     To avoid the exception, use a dictionary to assign priorities to the elements.
 
-    >>> q = MappedQueue({100: 0, 'a': 1 })
+    >>> q = MappedQueue({100: 0, "a": 1})
 
     References
     ----------

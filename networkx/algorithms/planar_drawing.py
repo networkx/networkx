@@ -78,18 +78,18 @@ def combinatorial_embedding_to_pos(embedding, fully_triangulate=False):
     left_t_child[v3] = None
 
     for k in range(3, len(node_list)):
-        vk, contour_neighbors = node_list[k]
-        wp = contour_neighbors[0]
-        wp1 = contour_neighbors[1]
-        wq = contour_neighbors[-1]
-        wq1 = contour_neighbors[-2]
-        adds_mult_tri = len(contour_neighbors) > 2
+        vk, contour_nbrs = node_list[k]
+        wp = contour_nbrs[0]
+        wp1 = contour_nbrs[1]
+        wq = contour_nbrs[-1]
+        wq1 = contour_nbrs[-2]
+        adds_mult_tri = len(contour_nbrs) > 2
 
         # Stretch gaps:
         delta_x[wp1] += 1
         delta_x[wq] += 1
 
-        delta_x_wp_wq = sum(delta_x[x] for x in contour_neighbors[1:])
+        delta_x_wp_wq = sum(delta_x[x] for x in contour_nbrs[1:])
 
         # Adjust offsets
         delta_x[vk] = (-y_coordinate[wp] + delta_x_wp_wq + y_coordinate[wq]) // 2
@@ -326,8 +326,8 @@ def triangulate_face(embedding, v1, v2):
             v1, v2, v3 = v2, v3, v4
         else:
             # Add edge for triangulation
-            embedding.add_half_edge_cw(v1, v3, v2)
-            embedding.add_half_edge_ccw(v3, v1, v2)
+            embedding.add_half_edge(v1, v3, ccw=v2)
+            embedding.add_half_edge(v3, v1, cw=v2)
             v1, v2, v3 = v1, v3, v4
         # Get next node
         _, v4 = embedding.next_face_half_edge(v2, v3)
@@ -445,8 +445,8 @@ def make_bi_connected(embedding, starting_node, outgoing_node, edges_counted):
         # cycle is not completed yet
         if v2 in face_set:
             # v2 encountered twice: Add edge to ensure 2-connectedness
-            embedding.add_half_edge_cw(v1, v3, v2)
-            embedding.add_half_edge_ccw(v3, v1, v2)
+            embedding.add_half_edge(v1, v3, ccw=v2)
+            embedding.add_half_edge(v3, v1, cw=v2)
             edges_counted.add((v2, v3))
             edges_counted.add((v3, v1))
             v2 = v1

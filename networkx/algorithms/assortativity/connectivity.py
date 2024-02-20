@@ -5,7 +5,7 @@ import networkx as nx
 __all__ = ["average_degree_connectivity"]
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def average_degree_connectivity(
     G, source="in+out", target="in+out", nodes=None, weight=None
 ):

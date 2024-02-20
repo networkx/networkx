@@ -58,7 +58,7 @@ def _require_partition(G, partition):
 require_partition = argmap(_require_partition, (0, 1))
 
 
-@nx._dispatch
+@nx._dispatchable
 def intra_community_edges(G, partition):
     """Returns the number of intra-community edges for a partition of `G`.
 
@@ -76,7 +76,7 @@ def intra_community_edges(G, partition):
     return sum(G.subgraph(block).size() for block in partition)
 
 
-@nx._dispatch
+@nx._dispatchable
 def inter_community_edges(G, partition):
     """Returns the number of inter-community edges for a partition of `G`.
     according to the given
@@ -108,7 +108,7 @@ def inter_community_edges(G, partition):
     return nx.quotient_graph(G, partition, create_using=MG).size()
 
 
-@nx._dispatch
+@nx._dispatchable
 def inter_community_non_edges(G, partition):
     """Returns the number of inter-community non-edges according to the
     given partition of the nodes of `G`.
@@ -141,7 +141,7 @@ def inter_community_non_edges(G, partition):
     return inter_community_edges(nx.complement(G), partition)
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def modularity(G, communities, weight="weight", resolution=1):
     r"""Returns the modularity of the given partition of the graph.
 
@@ -256,7 +256,7 @@ def modularity(G, communities, weight="weight", resolution=1):
 
 
 @require_partition
-@nx._dispatch
+@nx._dispatchable
 def partition_quality(G, partition):
     """Returns the coverage and performance of a partition of G.
 

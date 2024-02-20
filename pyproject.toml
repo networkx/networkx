@@ -55,9 +55,9 @@ nx-loopback = 'networkx.classes.tests.dispatch_interface:dispatcher'
 
 [project.optional-dependencies]
 default = [
-    'numpy>=1.22',
+    'numpy>=1.23',
     'scipy>=1.9,!=1.11.0,!=1.11.1',
-    'matplotlib>=3.5',
+    'matplotlib>=3.6',
     'pandas>=1.4',
 ]
 developer = [
@@ -72,13 +72,13 @@ doc = [
     'sphinx-gallery>=0.14',
     'numpydoc>=1.6',
     'pillow>=9.4',
-    'nb2plots>=0.7',
     'texext>=0.6.7',
+    'myst-nb>=1.0',
 ]
 extra = [
     'lxml>=4.6',
-    'pygraphviz>=1.11',
-    'pydot>=1.4.2',
+    'pygraphviz>=1.12',
+    'pydot>=2.0',
     'sympy>=1.10',
 ]
 test = [
@@ -191,6 +191,9 @@ select = [
 "doc/*.py" = ['I']
 "tools/*.py" = ['I']
 "networkx/classes/filters.py" = ['C416']
+
+[tool.ruff.format]
+docstring-code-format = true
 
 [tool.mypy]
 ignore_missing_imports = true

@@ -11,7 +11,7 @@ __all__ = ["non_randomness"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def non_randomness(G, k=None, weight="weight"):
     """Compute the non-randomness of graph G.
 
@@ -57,7 +57,7 @@ def non_randomness(G, k=None, weight="weight"):
     --------
     >>> G = nx.karate_club_graph()
     >>> nr, nr_rd = nx.non_randomness(G, 2)
-    >>> nr, nr_rd = nx.non_randomness(G, 2, 'weight')
+    >>> nr, nr_rd = nx.non_randomness(G, 2, "weight")
 
     Notes
     -----

@@ -6,6 +6,11 @@ import networkx as nx
 from networkx.utils import edges_equal, nodes_equal
 
 
+def test_degree_histogram_empty():
+    G = nx.Graph()
+    assert nx.degree_histogram(G) == []
+
+
 class TestFunction:
     def setup_method(self):
         self.G = nx.Graph({0: [1, 2, 3], 1: [1, 2, 0], 4: []}, name="Test")
@@ -297,13 +302,13 @@ class TestFunction:
     def test_non_neighbors(self):
         graph = nx.complete_graph(100)
         pop = random.sample(list(graph), 1)
-        nbors = list(nx.non_neighbors(graph, pop[0]))
+        nbors = nx.non_neighbors(graph, pop[0])
         # should be all the other vertices in the graph
         assert len(nbors) == 0
 
         graph = nx.path_graph(100)
         node = random.sample(list(graph), 1)[0]
-        nbors = list(nx.non_neighbors(graph, node))
+        nbors = nx.non_neighbors(graph, node)
         # should be all the other vertices in the graph
         if node != 0 and node != 99:
             assert len(nbors) == 97
@@ -312,13 +317,13 @@ class TestFunction:
 
         # create a star graph with 99 outer nodes
         graph = nx.star_graph(99)
-        nbors = list(nx.non_neighbors(graph, 0))
+        nbors = nx.non_neighbors(graph, 0)
         assert len(nbors) == 0
 
         # disconnected graph
         graph = nx.Graph()
         graph.add_nodes_from(range(10))
-        nbors = list(nx.non_neighbors(graph, 0))
+        nbors = nx.non_neighbors(graph, 0)
         assert len(nbors) == 9
 
     def test_non_edges(self):
