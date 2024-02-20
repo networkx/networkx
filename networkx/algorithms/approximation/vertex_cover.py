@@ -60,7 +60,7 @@ def min_weighted_vertex_cover(G, weight=None):
     ...         (4, 1, 1),
     ...     ]
     ... )
-    >>> nx.approximation.min_weighted_vertex_cover(wg, weight="weight")
+    >>> nx.approximation.min_weighted_vertex_cover(G)
     {0, 1, 2, 3}
 
     Notes
