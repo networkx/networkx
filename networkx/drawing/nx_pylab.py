@@ -858,9 +858,6 @@ def draw_networkx_edges(
             raise TypeError("Argument `arrows` must be of type bool or None")
         use_linecollection = not arrows
 
-    if arrowstyle is None:
-        arrowstyle = "-|>" if G.is_directed() else "-"
-
     if isinstance(connectionstyle, str):
         connectionstyle = [connectionstyle]
     elif np.iterable(connectionstyle):
@@ -896,6 +893,10 @@ def draw_networkx_edges(
             warnings.warn(
                 msg.format("connectionstyle"), category=UserWarning, stacklevel=2
             )
+
+    # NOTE: Arrowstyle modification must occur after the warnings section
+    if arrowstyle is None:
+        arrowstyle = "-|>" if G.is_directed() else "-"
 
     if ax is None:
         ax = plt.gca()
