@@ -1159,19 +1159,19 @@ def forceatlas2_layout(
     scaling_ratio : number (default: 2.0)
         Controls  force scaling  constants k_attraction  and
         k_repulsion
-    distributed_action : bool (default: false)
+    distributed_action : bool (default: False)
         Normalizes the attraction forces according to the degree of the nodes
     strong_gravity : bool (default: false)
         Controls the  "pull" to  the center  of mass  of the
         plot (0,0)
-    adjust_sizes: bool (default: false)
+    adjust_sizes: bool (default: False)
         Prevent node overlapping in the layout
     dissuade_hubs : bool (default: false)
         Prevent hub clustering
-    edge_weight_influence : bool (default: false)
+    edge_weight_influence : bool (default: False)
         Generate layout with or without considering the edge
         weights
-    linlog : bool (default: false)
+    linlog : bool (default: False)
         Use log attraction rather than linear attraction
     dim: number (default: 2)
        Sets the dimensions of the layout. This parameter is ignored if pos is given.
