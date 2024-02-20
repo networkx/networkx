@@ -251,7 +251,7 @@ class _dispatchable:
         ----------
         func : callable, optional
             The function to be decorated. If `func` is not provided, returns a
-            partial object that can be used to decorate a function later. If `func
+            partial object that can be used to decorate a function later. If `func`
             is provided, returns a new callable object that dispatches to a backend
             algorithm based on input graph types.
 
