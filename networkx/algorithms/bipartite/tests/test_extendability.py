@@ -29,7 +29,7 @@ def test_no_perfect_matching_raises():
         nx.bipartite.maximal_extendability(G)
 
 
-def test_not_connected_raises():
+def test_not_strongly_connected_raises():
     G = nx.Graph([(1, 2), (2, 3), (3, 4)])
     with pytest.raises(
         nx.NetworkXError, match="The residual graph of G is not strongly connected"
