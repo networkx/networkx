@@ -46,7 +46,7 @@ def diameter(G, seed=None):
     >>> nx.diameter(G)
     9
 
-    >>> G = nx.cycle_graph([2], create_using=nx.DiGraph)  # directed graph
+    >>> G = nx.cycle_graph(3, create_using=nx.DiGraph)  # directed graph
     >>> nx.diameter(G)
     2
 
