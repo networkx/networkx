@@ -1135,7 +1135,7 @@ def forceatlas2_layout(
     In  the  layout,  nodes  repulse  each other  similar  to
     oppositely charged  particles, while edges  attract like
     to  springs.  The  balance between  the  attractive  and
-    repulsive  forces  produce   visualy  pleasing  layouts,
+    repulsive  forces  produce   visually  pleasing  layouts,
     particularly for large graphs.
 
     The  algorithm  includes parameters  for  customization,
