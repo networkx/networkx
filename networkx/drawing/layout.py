@@ -1151,8 +1151,11 @@ def forceatlas2_layout(
     n_iter: number (default: 100)
         Simulation steps
     jitter_tolerance : number (default: 1.0)
-        Jitter  tolerance  for  adjusting  speed  of  layout convergence; lower values are slower but yield more accuracy. It controls how much swinging is allowed. Values above 1 are discouraged.
-        Jitter helps break symmetries between similar parts of the graph through random perturbations in the layout generation.
+        Jitter  tolerance  for  adjusting  speed  of  layout convergence;
+        lower values are slower but yield more accuracy. Jitter controls
+        how much swinging is allowed. Values above 1 are discouraged.
+        Jitter helps break symmetries between similar parts of the graph
+        through random perturbations in the layout generation.
     scaling_ratio : number (default: 2.0)
         Controls  force scaling  constants k_attraction  and
         k_repulsion
