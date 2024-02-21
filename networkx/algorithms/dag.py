@@ -21,6 +21,7 @@ __all__ = [
     "lexicographical_topological_sort",
     "all_topological_sorts",
     "topological_generations",
+    "pure_descendants",
     "is_directed_acyclic_graph",
     "is_aperiodic",
     "transitive_closure",
