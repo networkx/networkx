@@ -581,11 +581,9 @@ def all_topological_sorts(G):
 
 @nx._dispatch
 def pure_descendants(G, sources):
-    """Returns all nodes reachable from `sources` in `G`, assuming that
-    `sources` are the only dependencies initially satisfied. Contrast this
-    with `descendants` which assumes all leaf nodes are initially satisfied.
-    No source provided in `sources` can be a pure descendant of any
-    combination of other sources in `sources`.
+    """ Returns all descendants of the nodes in `sources` in `G` that are
+    entirely descended either directly or indirectly from the nodes in
+    `sources`.
 
     Parameters
     ----------
