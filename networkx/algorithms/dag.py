@@ -171,10 +171,7 @@ def topological_generations(G, sources=None):
     generation are guaranteed to be in a previous generation, and any descendants of
     a node are guaranteed to be in a following generation. Nodes are guaranteed to
     be in the earliest possible generation that they can belong to. Optionally, a
-    `sources` list can be provided which will act as the initial generation. No
-    source provided in `sources` can be a pure descendant of any combination of
-    other sources in `sources`.
-
+    `sources` list can be provided which will act as the initial generation.
 
     Parameters
     ----------
@@ -239,11 +236,8 @@ def topological_generations(G, sources=None):
                 except KeyError as err:
                     raise RuntimeError("Graph changed during iteration") from err
                 if indegree_map[child] == 0:
-                    if child in sources:
-                        raise RuntimeError(
-                            f"source node `{child}` is a pure descendant of a combination "
-                            "of other sources, this is not allowed"
-                        )
+                    if sources and child in sources:
+                        continue
                     zero_indegree.append(child)
                     del indegree_map[child]
         yield this_generation
