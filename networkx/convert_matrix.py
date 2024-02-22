@@ -623,11 +623,10 @@ def _csr_gen_triples(A):
 
     """
     nrows = A.shape[0]
-    indptr, dst_indices, data = A.indptr, A.indices, A.data
-    import numpy as np
-
-    src_indices = np.repeat(np.arange(nrows), np.diff(indptr))
-    return zip(src_indices.tolist(), dst_indices.tolist(), A.data.tolist())
+    data, indices, indptr = A.data, A.indices, A.indptr
+    for i in range(nrows):
+        for j in range(indptr[i], indptr[i + 1]):
+            yield i, int(indices[j]), data[j]
 
 
 def _csc_gen_triples(A):
@@ -636,11 +635,10 @@ def _csc_gen_triples(A):
 
     """
     ncols = A.shape[1]
-    indptr, src_indices, data = A.indptr, A.indices, A.data
-    import numpy as np
-
-    dst_indices = np.repeat(np.arange(ncols), np.diff(indptr))
-    return zip(src_indices.tolist(), dst_indices.tolist(), A.data.tolist())
+    data, indices, indptr = A.data, A.indices, A.indptr
+    for i in range(ncols):
+        for j in range(indptr[i], indptr[i + 1]):
+            yield int(indices[j]), i, data[j]
 
 
 def _coo_gen_triples(A):
@@ -648,7 +646,7 @@ def _coo_gen_triples(A):
     of weighted edge triples.
 
     """
-    return zip(A.row.tolist(), A.col.tolist(), A.data.tolist())
+    return ((int(i), int(j), d) for i, j, d in zip(A.row, A.col, A.data))
 
 
 def _dok_gen_triples(A):
@@ -657,7 +655,7 @@ def _dok_gen_triples(A):
 
     """
     for (r, c), v in A.items():
-        yield int(r), int(c), v.tolist()
+        yield r, c, v
 
 
 def _generate_weighted_edges(A):
