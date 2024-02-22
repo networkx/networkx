@@ -807,6 +807,7 @@ class _dispatchable:
         from random import Random
 
         import numpy as np
+        from numpy.random import Generator, RandomState
         from scipy.sparse import sparray
 
         # We sometimes compare the backend result to the original result,
@@ -818,7 +819,7 @@ class _dispatchable:
             args1, args2 = zip(
                 *(
                     (arg, copy(arg))
-                    if isinstance(arg, Random | BytesIO)
+                    if isinstance(arg, BytesIO | Random | Generator | RandomState)
                     else tee(arg)
                     if isinstance(arg, Iterator) and not isinstance(arg, BufferedReader)
                     else (arg, arg)
@@ -831,7 +832,7 @@ class _dispatchable:
             kwargs1, kwargs2 = zip(
                 *(
                     ((k, v), (k, copy(v)))
-                    if isinstance(v, Random | BytesIO)
+                    if isinstance(v, BytesIO | Random | Generator | RandomState)
                     else ((k, (teed := tee(v))[0]), (k, teed[1]))
                     if isinstance(v, Iterator) and not isinstance(v, BufferedReader)
                     else ((k, v), (k, v))

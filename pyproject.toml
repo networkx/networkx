@@ -72,8 +72,8 @@ doc = [
     'sphinx-gallery>=0.14',
     'numpydoc>=1.6',
     'pillow>=9.4',
-    'nb2plots>=0.7',
     'texext>=0.6.7',
+    'myst-nb>=1.0',
 ]
 extra = [
     'lxml>=4.6',
