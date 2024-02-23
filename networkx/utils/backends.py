@@ -960,7 +960,7 @@ class _dispatchable:
 
             func_info = info["functions"][self.name]
 
-            # Renaming extra_docstring to backend_func_docs
+            # Renaming extra_docstring to additional_docs
             if func_docs := (
                 func_info.get("additional_docs") or func_info.get("extra_docstring")
             ):
