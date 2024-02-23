@@ -962,7 +962,7 @@ class _dispatchable:
 
             # Renaming extra_docstring to backend_func_docs
             if func_docs := (
-                func_info.get("backend_func_docs") or func_info.get("extra_docstring")
+                func_info.get("additional_docs") or func_info.get("extra_docstring")
             ):
                 lines.extend(
                     f"  {line}" if line else line for line in func_docs.split("\n")
@@ -987,7 +987,7 @@ class _dispatchable:
             else:
                 lines.append("")
 
-            if func_url := func_info.get("backend_func_url"):
+            if func_url := func_info.get("url"):
                 lines.append(f"[`Source <{func_url}>`_]")
                 lines.append("")
 
