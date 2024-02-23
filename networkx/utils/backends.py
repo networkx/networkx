@@ -296,7 +296,8 @@ class _dispatchable:
         self.preserve_node_attrs = preserve_node_attrs or preserve_all_attrs
         self.preserve_graph_attrs = preserve_graph_attrs or preserve_all_attrs
         self.mutates_input = mutates_input
-        self.returns_graph = returns_graph
+        # Keep `returns_graph` private for now, b/c we may extend info on return types
+        self._returns_graph = returns_graph
 
         if edge_attrs is not None and not isinstance(edge_attrs, str | dict):
             raise TypeError(
@@ -326,9 +327,9 @@ class _dispatchable:
                 f"Bad type for mutates_input: {type(self.mutates_input)}."
                 " Expected bool or dict."
             ) from None
-        if not isinstance(self.returns_graph, bool):
+        if not isinstance(self._returns_graph, bool):
             raise TypeError(
-                f"Bad type for returns_graph: {type(self.returns_graph)}."
+                f"Bad type for returns_graph: {type(self._returns_graph)}."
                 " Expected bool."
             ) from None
 
@@ -570,7 +571,7 @@ class _dispatchable:
         # conversion, but don't do this by default for graph generators or loaders,
         # or if the functions mutates an input graph or returns a graph.
         if (
-            not self.returns_graph
+            not self._returns_graph
             and (
                 not self.mutates_input
                 or isinstance(self.mutates_input, dict)
@@ -906,11 +907,11 @@ class _dispatchable:
             pytest.xfail(
                 exc.args[0] if exc.args else f"{self.name} raised {type(exc).__name__}"
             )
-        # Verify that `self.returns_graph` is correct. This compares the return type
-        # to the type expected from `self.returns_graph`. This handles tuple and list
+        # Verify that `self._returns_graph` is correct. This compares the return type
+        # to the type expected from `self._returns_graph`. This handles tuple and list
         # return types, but *does not* catch functions that yield graphs.
         if (
-            self.returns_graph
+            self._returns_graph
             != (
                 isinstance(result, nx.Graph)
                 or hasattr(result, "__networkx_backend__")
