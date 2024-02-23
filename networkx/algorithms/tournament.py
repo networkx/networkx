@@ -217,7 +217,7 @@ def score_sequence(G):
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
-@nx._dispatchable
+@nx._dispatchable(preserve_edge_attrs={"G": {"weight": 1}})
 def tournament_matrix(G):
     r"""Returns the tournament matrix for the given tournament graph.
 
