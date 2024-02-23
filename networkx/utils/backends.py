@@ -284,7 +284,7 @@ class _dispatchable:
         self.preserve_edge_attrs = preserve_edge_attrs or preserve_all_attrs
         self.preserve_node_attrs = preserve_node_attrs or preserve_all_attrs
         self.preserve_graph_attrs = preserve_graph_attrs or preserve_all_attrs
-        self.auto_cache = auto_cache
+        self._auto_cache = auto_cache
 
         if edge_attrs is not None and not isinstance(edge_attrs, str | dict):
             raise TypeError(
@@ -309,9 +309,9 @@ class _dispatchable:
                 f"Bad type for preserve_graph_attrs: {type(self.preserve_graph_attrs)}."
                 " Expected bool or set."
             ) from None
-        if not isinstance(self.auto_cache, bool):
+        if not isinstance(self._auto_cache, bool):
             raise TypeError(
-                f"Bad type for auto_cache: {type(self.auto_cache)}. Expected bool."
+                f"Bad type for auto_cache: {type(self._auto_cache)}. Expected bool."
             ) from None
 
         if isinstance(graphs, str):
@@ -408,7 +408,7 @@ class _dispatchable:
         return self._sig
 
     def __call__(self, /, *args, backend=None, **kwargs):
-        if self.auto_cache:
+        if self._auto_cache:
             # Assume first argument has the cache (true for now)
             first_graph_name = next(
                 gname for gname, pos in self.graphs.items() if pos == 0
@@ -477,7 +477,7 @@ class _dispatchable:
                 kwargs,
                 fallback_to_nx=self._fallback_to_nx,
             )
-            if self.auto_cache and cache is not None:
+            if self._auto_cache and cache is not None:
                 cache[self.name] = result
             return result
 
@@ -593,7 +593,7 @@ class _dispatchable:
             # Default: run with networkx on networkx inputs
             result = self.orig_func(*args, **kwargs)
 
-        if self.auto_cache and cache is not None:
+        if self._auto_cache and cache is not None:
             cache[self.name] = result
         return result
 
