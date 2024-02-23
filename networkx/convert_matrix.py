@@ -657,8 +657,8 @@ def _dok_gen_triples(A):
 
     """
     for (r, c), v in A.items():
-        # Doing `v.tolist()` converts a NumPy scalar to the appropriate Python scalar
-        yield int(r), int(c), v.tolist()
+        # Use `v.item()` to convert a NumPy scalar to the appropriate Python scalar
+        yield int(r), int(c), v.item()
 
 
 def _generate_weighted_edges(A):

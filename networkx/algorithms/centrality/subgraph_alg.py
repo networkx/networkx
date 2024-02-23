@@ -286,7 +286,7 @@ def communicability_betweenness_centrality(G):
     order = len(cbc)
     if order > 2:
         scale = 1.0 / ((order - 1.0) ** 2 - (order - 1.0))
-        cbc = {k: v * scale for k, v in cbc.items()}
+        cbc = {node: value * scale for node, value in cbc.items()}
     return cbc
 
 
