@@ -657,6 +657,7 @@ def _dok_gen_triples(A):
 
     """
     for (r, c), v in A.items():
+        # Doing `v.tolist()` converts a NumPy scalar to the appropriate Python scalar
         yield int(r), int(c), v.tolist()
 
 
