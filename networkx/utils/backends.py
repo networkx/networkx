@@ -94,8 +94,13 @@ from importlib.metadata import entry_points
 import networkx as nx
 
 from ..exception import NetworkXNotImplemented
+from .decorators import argmap
 
 __all__ = ["_dispatchable"]
+
+
+def _do_nothing():
+    """This does nothing at all, yet it helps turn `_dispatchable` into functions."""
 
 
 def _get_backends(group, *, load_and_call=False):
@@ -348,6 +353,11 @@ class _dispatchable:
             raise KeyError(
                 f"Algorithm already exists in dispatch registry: {name}"
             ) from None
+        # Use the magic of `argmap` to turn `self` into a function. This does result
+        # in small additional overhead compared to calling `_dispatchable` directly,
+        # but `argmap` has the magical property that it can stack with other `argmap`
+        # decorators "for free". Being a function is better for REPRs and type-checkers.
+        self = argmap(_do_nothing)(self)
         _registered_algorithms[name] = self
         return self
 
