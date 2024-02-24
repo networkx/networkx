@@ -76,7 +76,7 @@ def trophic_levels(G, weight="weight"):
     # all other nodes have levels as calculated
     nonzero_node_ids = (node_id for node_id, degree in G.in_degree if degree != 0)
     for i, node_id in enumerate(nonzero_node_ids):
-        levels[node_id] = float(y[i])
+        levels[node_id] = y.item(i)
 
     return levels
 

@@ -64,5 +64,5 @@ def spectral_bipartivity(G, nodes=None, weight="weight"):
         sb = {}
         for n in nodes:
             i = index[n]
-            sb[n] = float(coshA[i, i] / expA[i, i])
+            sb[n] = coshA.item(i, i) / expA.item(i, i)
         return sb

@@ -108,15 +108,15 @@ def current_flow_betweenness_centrality_subset(
             i = mapping[ss]
             for tt in targets:
                 j = mapping[tt]
-                betweenness[s] += 0.5 * np.abs(row[i] - row[j])
-                betweenness[t] += 0.5 * np.abs(row[i] - row[j])
+                betweenness[s] += 0.5 * abs(row.item(i) - row.item(j))
+                betweenness[t] += 0.5 * abs(row.item(i) - row.item(j))
     if normalized:
         nb = (N - 1.0) * (N - 2.0)  # normalization factor
     else:
         nb = 2.0
     for node in H:
         betweenness[node] = betweenness[node] / nb + 1.0 / (2 - N)
-    return {ordering[node]: float(value) for node, value in betweenness.items()}
+    return {ordering[node]: value for node, value in betweenness.items()}
 
 
 @not_implemented_for("directed")
@@ -221,6 +221,6 @@ def edge_current_flow_betweenness_centrality_subset(
             i = mapping[ss]
             for tt in targets:
                 j = mapping[tt]
-                betweenness[e] += float(0.5 * np.abs(row[i] - row[j]))
+                betweenness[e] += 0.5 * abs(row.item(i) - row.item(j))
         betweenness[e] /= nb
     return {(ordering[s], ordering[t]): value for (s, t), value in betweenness.items()}
