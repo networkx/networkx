@@ -86,7 +86,6 @@ the test using `item.add_marker(pytest.mark.xfail(reason=...))`.
 """
 import inspect
 import os
-import sys
 import warnings
 from functools import partial
 from importlib.metadata import entry_points
@@ -972,25 +971,36 @@ class _dispatchable:
                 continue
 
             func_info = info["functions"][self.name]
-            if "extra_docstring" in func_info:
+
+            # Renaming extra_docstring to additional_docs
+            if func_docs := (
+                func_info.get("additional_docs") or func_info.get("extra_docstring")
+            ):
                 lines.extend(
-                    f"  {line}" if line else line
-                    for line in func_info["extra_docstring"].split("\n")
+                    f"  {line}" if line else line for line in func_docs.split("\n")
                 )
                 add_gap = True
             else:
                 add_gap = False
-            if "extra_parameters" in func_info:
+
+            # Renaming extra_parameters to additional_parameters
+            if extra_parameters := (
+                func_info.get("extra_parameters")
+                or func_info.get("additional_parameters")
+            ):
                 if add_gap:
                     lines.append("")
-                lines.append("  Extra parameters:")
-                extra_parameters = func_info["extra_parameters"]
+                lines.append("  Additional parameters:")
                 for param in sorted(extra_parameters):
                     lines.append(f"    {param}")
                     if desc := extra_parameters[param]:
                         lines.append(f"      {desc}")
                     lines.append("")
             else:
+                lines.append("")
+
+            if func_url := func_info.get("url"):
+                lines.append(f"[`Source <{func_url}>`_]")
                 lines.append("")
 
         lines.pop()  # Remove last empty line
