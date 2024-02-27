@@ -148,6 +148,9 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nk_corona"
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message=r"\n\nThe 'create=matrix'"
+    )
 
 
 @pytest.fixture(autouse=True)
