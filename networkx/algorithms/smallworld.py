@@ -23,7 +23,7 @@ __all__ = ["random_reference", "lattice_reference", "sigma", "omega"]
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 @py_random_state(3)
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def random_reference(G, niter=1, connectivity=True, seed=None):
     """Compute a random graph by swapping edges of a given graph.
 
@@ -121,7 +121,7 @@ def random_reference(G, niter=1, connectivity=True, seed=None):
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 @py_random_state(4)
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def lattice_reference(G, niter=5, D=None, connectivity=True, seed=None):
     """Latticize the given graph by swapping edges.
 

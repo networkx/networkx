@@ -179,6 +179,8 @@ class _dispatchable:
         preserve_node_attrs=False,
         preserve_graph_attrs=False,
         preserve_all_attrs=False,
+        mutates_input=False,
+        returns_graph=False,
     ):
         """Dispatches to a backend algorithm based on input graph types.
 
@@ -236,6 +238,18 @@ class _dispatchable:
             Whether to preserve all edge, node and graph attributes.
             This overrides all the other preserve_*_attrs.
 
+        mutates_input : bool or dict, default False
+            For bool, whether the functions mutates an input graph argument.
+            For dict of ``{arg_name: arg_pos}``, arguments that indicates whether an
+            input graph will be mutated, and ``arg_name`` may begin with ``"not "``
+            to negate the logic (for example, this is used by ``copy=`` arguments).
+            By default, dispatching doesn't convert input graphs to a different
+            backend for functions that mutate input graphs.
+
+        returns_graph : bool, default False
+            Whether the function can return or yield a graph object. By default,
+            dispatching doesn't convert input graphs to a different backend for
+            functions that return graphs.
         """
         if func is None:
             return partial(
@@ -248,6 +262,8 @@ class _dispatchable:
                 preserve_node_attrs=preserve_node_attrs,
                 preserve_graph_attrs=preserve_graph_attrs,
                 preserve_all_attrs=preserve_all_attrs,
+                mutates_input=mutates_input,
+                returns_graph=returns_graph,
             )
         if isinstance(func, str):
             raise TypeError("'name' and 'graphs' must be passed by keyword") from None
@@ -283,6 +299,9 @@ class _dispatchable:
         self.preserve_edge_attrs = preserve_edge_attrs or preserve_all_attrs
         self.preserve_node_attrs = preserve_node_attrs or preserve_all_attrs
         self.preserve_graph_attrs = preserve_graph_attrs or preserve_all_attrs
+        self.mutates_input = mutates_input
+        # Keep `returns_graph` private for now, b/c we may extend info on return types
+        self._returns_graph = returns_graph
 
         if edge_attrs is not None and not isinstance(edge_attrs, str | dict):
             raise TypeError(
@@ -306,6 +325,16 @@ class _dispatchable:
             raise TypeError(
                 f"Bad type for preserve_graph_attrs: {type(self.preserve_graph_attrs)}."
                 " Expected bool or set."
+            ) from None
+        if not isinstance(self.mutates_input, bool | dict):
+            raise TypeError(
+                f"Bad type for mutates_input: {type(self.mutates_input)}."
+                " Expected bool or dict."
+            ) from None
+        if not isinstance(self._returns_graph, bool):
+            raise TypeError(
+                f"Bad type for returns_graph: {type(self._returns_graph)}."
+                " Expected bool."
             ) from None
 
         if isinstance(graphs, str):
@@ -445,15 +474,6 @@ class _dispatchable:
         #     if (val := args[pos] if pos < len(args) else kwargs.get(gname)) is not None
         # }
 
-        if self._is_testing and self._automatic_backends and backend_name is None:
-            # Special path if we are running networkx tests with a backend.
-            return self._convert_and_call_for_tests(
-                self._automatic_backends[0],
-                args,
-                kwargs,
-                fallback_to_nx=self._fallback_to_nx,
-            )
-
         # Check if any graph comes from a backend
         if self.list_graphs:
             # Make sure we don't lose values by consuming an iterator
@@ -492,6 +512,17 @@ class _dispatchable:
                     getattr(g, "__networkx_backend__", "networkx")
                     for g in graphs_resolved.values()
                 }
+
+        if self._is_testing and self._automatic_backends and backend_name is None:
+            # Special path if we are running networkx tests with a backend.
+            # This even runs for (and handles) functions that mutate input graphs.
+            return self._convert_and_call_for_tests(
+                self._automatic_backends[0],
+                args,
+                kwargs,
+                fallback_to_nx=self._fallback_to_nx,
+            )
+
         if has_backends:
             # Dispatchable graphs found! Dispatch to backend function.
             # We don't handle calls with different backend graphs yet,
@@ -524,7 +555,8 @@ class _dispatchable:
             backend = _load_backend(graph_backend_name)
             if hasattr(backend, self.name):
                 if "networkx" in graph_backend_names:
-                    # We need to convert networkx graphs to backend graphs
+                    # We need to convert networkx graphs to backend graphs.
+                    # There is currently no need to check `self.mutates_input` here.
                     return self._convert_and_call(
                         graph_backend_name,
                         args,
@@ -545,8 +577,31 @@ class _dispatchable:
             )
 
         # Only networkx graphs; try to convert and run with a backend with automatic
-        # conversion, but don't do this by default for graph generators or loaders.
-        if self.graphs:
+        # conversion, but don't do this by default for graph generators or loaders,
+        # or if the functions mutates an input graph or returns a graph.
+        if (
+            not self._returns_graph
+            and (
+                not self.mutates_input
+                or isinstance(self.mutates_input, dict)
+                # If `mutates_input` begins with "not ", then assume the argument is boolean,
+                # otherwise treat it as a node or edge attribute if it's not None.
+                and any(
+                    not (
+                        args[arg_pos]
+                        if len(args) > arg_pos
+                        else kwargs.get(arg_name[4:], True)
+                    )
+                    if arg_name.startswith("not ")
+                    else (
+                        args[arg_pos] if len(args) > arg_pos else kwargs.get(arg_name)
+                    )
+                    is not None
+                    for arg_name, arg_pos in self.mutates_input.items()
+                )
+            )
+        ):
+            # Should we warn or log if we don't convert b/c the input will be mutated?
             for backend_name in self._automatic_backends:
                 if self._can_backend_run(backend_name, *args, **kwargs):
                     return self._convert_and_call(
@@ -861,6 +916,40 @@ class _dispatchable:
             pytest.xfail(
                 exc.args[0] if exc.args else f"{self.name} raised {type(exc).__name__}"
             )
+        # Verify that `self._returns_graph` is correct. This compares the return type
+        # to the type expected from `self._returns_graph`. This handles tuple and list
+        # return types, but *does not* catch functions that yield graphs.
+        if (
+            self._returns_graph
+            != (
+                isinstance(result, nx.Graph)
+                or hasattr(result, "__networkx_backend__")
+                or isinstance(result, tuple | list)
+                and any(
+                    isinstance(x, nx.Graph) or hasattr(x, "__networkx_backend__")
+                    for x in result
+                )
+            )
+            and not (
+                # May return Graph or None
+                self.name in {"check_planarity", "check_planarity_recursive"}
+                and any(x is None for x in result)
+            )
+            and not (
+                # May return Graph or dict
+                self.name in {"held_karp_ascent"}
+                and any(isinstance(x, dict) for x in result)
+            )
+            and self.name
+            not in {
+                # yields graphs
+                "all_triads",
+                "general_k_edge_subgraphs",
+                # yields graphs or arrays
+                "nonisomorphic_trees",
+            }
+        ):
+            raise RuntimeError(f"`returns_graph` is incorrect for {self.name}")
 
         if self.name in {
             "edmonds_karp_core",
