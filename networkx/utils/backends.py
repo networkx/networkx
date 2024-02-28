@@ -1,11 +1,13 @@
 """
 NetworkX utilizes a plugin-dispatch architecture, which basically means we can
-easily plug in and out of backends with minimal code changes. Once a backend is
-connected through an entry_point to NetworkX, the flow of execution seamlessly
-dispatches (redirects) to the designated backend implementation, similar to how
-plugging a charger into a socket redirects the electricity to your phone.
-This design enhances flexibility and integration, making NetworkX more adaptable
-and efficient. 
+easily plug in and out of backends with minimal code changes. A valid NetworkX backend
+needs to specify `entry points <https://packaging.python.org/en/latest/specifications/entry-points/#entry-points>`_,
+`networkx.backends` and `networkx.backend_info` in its `pyproject.toml` file
+so that the backend implementation could be discovered by NetworkX and the flow of
+execution could seamlessly dispatch (redirect) to the designated backend
+implementation, similar to how plugging a charger into a socket redirects the
+electricity to your phone. This design enhances flexibility and integration, making
+NetworkX more adaptable and efficient. 
 
 For example, you can either convert the NetworkX Graph object `G` into a Graph-like
 object specific to the backend and then pass that in the NetworkX function::
@@ -29,14 +31,14 @@ computation work to it. Currently, the following backends are supported by Netwo
 - `graphblas <https://github.com/python-graphblas/graphblas-algorithms>`_
 - `cugraph <https://github.com/rapidsai/cugraph/tree/branch-24.04/python/nx-cugraph>`_
 - `parallel <https://github.com/networkx/nx-parallel>`_
-- `nx-loopback` is for testing purposes only and is not a real backend.
+- `loopback` is for testing purposes only and is not a real backend.
 
 
 Creating a Custom backend
 --------------------------
 
 1.  To be a valid NetworkX backend, a package must register an entry_point
-    of `networkx.backends` with a key pointing to the handler.
+    `networkx.backends` with a key pointing to the handler. (`how? <https://packaging.python.org/en/latest/guides/creating-and-discovering-plugins/#using-package-metadata>`_)
 
     You can include the following entry-point in your package's `pyproject.toml` file::
 
@@ -69,17 +71,17 @@ Environment Variable Setup
 
 To enable automatic testing with your custom backend, follow these steps:
 
-1. Set Backend Environment Variable: 
-    If an environment variable `NETWORKX_TEST_BACKEND` is defined and points to a
-    registered backend key, NetworkX's dispatch machinery will automatically convert
-    regular NetworkX Graphs, DiGraphs, MultiGraphs, etc. to their backend equivalents,
-    using `your_dispatcher_class.convert_from_nx(G, ...)` function.
+1. Set Backend Environment Variables: 
+    - `NETWORKX_TEST_BACKEND` : Setting this to your registered backend key, will let
+      the NetworkX's dispatch machinery automatically convert a regular NetworkX
+      `Graph`, `DiGraph`, `MultiGraph`, etc. to their backend equivalents, using
+      `your_dispatcher_class.convert_from_nx(G, ...)` function.
+    - `NETWORKX_FALLBACK_TO_NX` (default=False) : Setting this variable to `True` will
+      instructs tests to use a NetworkX `Graph` for algorithms not implemented by your
+      custom backend. Setting this to `False` will only run the tests for algorithms
+      implemented by your custom backend and tests for other algorithms will `xfail`.
 
-2. Fallback Option: 
-    You can set the `NETWORKX_FALLBACK_TO_NX` environment variable. This instructs
-    tests to use NetworkX graphs for algorithms not implemented by the custom backend.
-
-3. Defining `convert_from_nx` and `convert_to_nx` methods:
+2. Defining `convert_from_nx` and `convert_to_nx` methods:
     The arguments to `convert_from_nx` are:
 
     - `G` : NetworkX Graph
@@ -102,20 +104,22 @@ To enable automatic testing with your custom backend, follow these steps:
     - `graph_name` : str
         The name of the graph argument being converted.
 
-
-Upon setting the appropriate environment variables, NetworkX will:
-
-- Convert NetworkX graphs using `<your_dispatcher_class>.convert_from_nx(G, ...)`.
-- Pass the converted objects to the backend implementation of the algorithm.
-- Convert the result back to a form expected by NetworkX tests using 
-  `<your_dispatcher_class>.convert_to_nx(result, ...)`.
-
 Running Tests
 ~~~~~~~~~~~~~~
 
-You can invoke tests using the custom backend with the following command::
+You can invoke NetworkX tests for your custom backend with the following commands::
 
-    NETWORKX_TEST_BACKEND=<entry_point_name> pytest --pyargs networkx
+    NETWORKX_TEST_BACKEND=<entry_point_name>
+    NETWORKX_FALLBACK_TO_NX=True # or False
+    pytest --pyargs networkx
+
+Conversions while running tests :
+
+- Convert NetworkX graphs using `<your_dispatcher_class>.convert_from_nx(G, ...)` into
+  the backend graph.
+- Pass the backend graph objects to the backend implementation of the algorithm.
+- Convert the result back to a form expected by NetworkX tests using 
+  `<your_dispatcher_class>.convert_to_nx(result, ...)`.
 
 Notes
 ~~~~~~
@@ -158,14 +162,11 @@ def _get_backends(group, *, load_and_call=False):
     --------
         dict: A dictionary mapping backend names to their respective backend objects.
 
-    Raises
-    -------
-        Exception: If an error occurs while loading a backend.
-
     Notes
     ------
         - If a backend is defined more than once, a warning is issued.
         - The `nx-loopback` backend is removed if it exists, as it is only available during testing.
+        - A warning is displayed if an error occurs while loading a backend.
     """
     items = entry_points(group=group)
     rv = {}
@@ -245,13 +246,14 @@ class _dispatchable:
         preserve_graph_attrs=False,
         preserve_all_attrs=False,
     ):
-        """Dispatches to a backend algorithm based on input graph types.
+        """A decorator function that dispatches to ``func``'s backend implementation
+        based on the input graph types.
 
         Parameters
         ----------
         func : callable, optional
-            The function to be decorated. If `func` is not provided, returns a
-            partial object that can be used to decorate a function later. If `func`
+            The function to be decorated. If ``func`` is not provided, returns a
+            partial object that can be used to decorate a function later. If ``func``
             is provided, returns a new callable object that dispatches to a backend
             algorithm based on input graph types.
 
