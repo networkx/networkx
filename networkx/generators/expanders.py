@@ -47,7 +47,7 @@ __all__ = [
 #     (x, (y + (2*x + 1)) % n),
 #     (x, (y + (2*x + 2)) % n),
 #
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def margulis_gabber_galil_graph(n, create_using=None):
     r"""Returns the Margulis-Gabber-Galil undirected MultiGraph on `n^2` nodes.
 
@@ -90,7 +90,7 @@ def margulis_gabber_galil_graph(n, create_using=None):
     return G
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def chordal_cycle_graph(p, create_using=None):
     """Returns the chordal cycle graph on `p` nodes.
 
@@ -154,7 +154,7 @@ def chordal_cycle_graph(p, create_using=None):
     return G
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def paley_graph(p, create_using=None):
     r"""Returns the Paley $\frac{(p-1)}{2}$ -regular graph on $p$ nodes.
 
@@ -214,7 +214,7 @@ def paley_graph(p, create_using=None):
 
 
 @nx.utils.decorators.np_random_state("seed")
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def maybe_regular_expander(n, d, *, create_using=None, max_tries=100, seed=None):
     r"""Utility for creating a random regular expander.
 
@@ -399,7 +399,7 @@ def is_regular_expander(G, *, epsilon=0):
 
 
 @nx.utils.decorators.np_random_state("seed")
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def random_regular_expander_graph(
     n, d, *, epsilon=0, create_using=None, max_tries=100, seed=None
 ):

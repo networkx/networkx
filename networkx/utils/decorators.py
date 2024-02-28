@@ -1107,7 +1107,13 @@ class argmap:
             if prev == param.POSITIONAL_ONLY != kind:
                 # the last token was position-only, but this one isn't
                 def_sig.append("/")
-            if prev != param.KEYWORD_ONLY == kind != param.VAR_POSITIONAL:
+            if (
+                param.VAR_POSITIONAL
+                != prev
+                != param.KEYWORD_ONLY
+                == kind
+                != param.VAR_POSITIONAL
+            ):
                 # param is the first keyword-only arg and isn't starred
                 def_sig.append("*")
 

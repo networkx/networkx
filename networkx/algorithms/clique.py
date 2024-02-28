@@ -412,7 +412,7 @@ def find_cliques_recursive(G, nodes=None):
     return expand(subg_init, cand_init)
 
 
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def make_max_clique_graph(G, create_using=None):
     """Returns the maximal clique graph of the given graph.
 
@@ -460,7 +460,7 @@ def make_max_clique_graph(G, create_using=None):
     return B
 
 
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def make_clique_bipartite(G, fpos=None, create_using=None, name=None):
     """Returns the bipartite clique graph corresponding to `G`.
 
