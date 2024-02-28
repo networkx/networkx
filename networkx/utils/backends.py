@@ -143,10 +143,10 @@ import os
 import warnings
 from functools import partial
 from importlib.metadata import entry_points
-from .decorators import argmap
 
 import networkx as nx
 
+from .decorators import argmap
 
 __all__ = ["_dispatchable"]
 
