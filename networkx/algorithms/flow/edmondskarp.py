@@ -94,6 +94,7 @@ def edmonds_karp_core(R, s, t, cutoff):
             path.append(u)
         flow_value += augment(path)
 
+    R.__networkx_cache__.clear()
     return flow_value
 
 
