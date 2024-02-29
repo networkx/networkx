@@ -133,9 +133,12 @@ backend_info = _get_backends("networkx.backend_info", load_and_call=True)
 
 config = {
     # Get default configuration from environment variables at import time
-    "automatic_backends": [
+    "backend_priority": [
         x.strip()
-        for x in os.environ.get("NETWORKX_AUTOMATIC_BACKENDS", "").split(",")
+        for x in os.environ.get(
+            "NETWORKX_BACKEND_PRIORITY",
+            os.environ.get("NETWORKX_AUTOMATIC_BACKENDS", ""),
+        ).split(",")
         if x.strip()
     ],
     # Initialize default configuration for backends
@@ -522,12 +525,12 @@ class _dispatchable:
                     for g in graphs_resolved.values()
                 }
 
-        automatic_backends = config["automatic_backends"]
-        if self._is_testing and automatic_backends and backend_name is None:
+        backend_priority = config["backend_priority"]
+        if self._is_testing and backend_priority and backend_name is None:
             # Special path if we are running networkx tests with a backend.
             # This even runs for (and handles) functions that mutate input graphs.
             return self._convert_and_call_for_tests(
-                automatic_backends[0],
+                backend_priority[0],
                 args,
                 kwargs,
                 fallback_to_nx=self._fallback_to_nx,
@@ -554,7 +557,7 @@ class _dispatchable:
                 raise ImportError(f"Unable to load backend: {graph_backend_name}")
             if (
                 "networkx" in graph_backend_names
-                and graph_backend_name not in automatic_backends
+                and graph_backend_name not in backend_priority
             ):
                 # Not configured to convert networkx graphs to this backend
                 raise TypeError(
@@ -575,7 +578,7 @@ class _dispatchable:
                     )
                 # All graphs are backend graphs--no need to convert!
                 return getattr(backend, self.name)(*args, **kwargs)
-            # Future work: try to convert and run with other backends in automatic_backends
+            # Future work: try to convert and run with other backends in backend_priority
             raise NetworkXNotImplemented(
                 f"'{self.name}' not implemented by {graph_backend_name}"
             )
@@ -612,7 +615,7 @@ class _dispatchable:
             )
         ):
             # Should we warn or log if we don't convert b/c the input will be mutated?
-            for backend_name in automatic_backends:
+            for backend_name in backend_priority:
                 if self._can_backend_run(backend_name, *args, **kwargs):
                     return self._convert_and_call(
                         backend_name,
