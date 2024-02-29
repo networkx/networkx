@@ -553,7 +553,7 @@ def center(G, e=None, usebounds=False, weight=None):
     return p
 
 
-@nx._dispatchable(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight", mutates_input={"attr": 2})
 def barycenter(G, weight=None, attr=None, sp=None):
     r"""Calculate barycenter of a connected graph, optionally with edge weights.
 

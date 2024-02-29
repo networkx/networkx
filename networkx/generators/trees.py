@@ -48,7 +48,7 @@ __all__ = [
 ]
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def prefix_tree(paths):
     """Creates a directed prefix tree from a list of paths.
 
@@ -181,7 +181,7 @@ def prefix_tree(paths):
     return tree
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def prefix_tree_recursive(paths):
     """Recursively creates a directed prefix tree from a list of paths.
 
@@ -324,7 +324,7 @@ def prefix_tree_recursive(paths):
 
 
 @py_random_state(1)
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def random_tree(n, seed=None, create_using=None):
     """Returns a uniformly random tree on `n` nodes.
 
@@ -426,7 +426,7 @@ def random_tree(n, seed=None, create_using=None):
 
 
 @py_random_state("seed")
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def random_labeled_tree(n, *, seed=None):
     """Returns a labeled tree on `n` nodes chosen uniformly at random.
 
@@ -462,7 +462,7 @@ def random_labeled_tree(n, *, seed=None):
 
 
 @py_random_state("seed")
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def random_labeled_rooted_tree(n, *, seed=None):
     """Returns a labeled rooted tree with `n` nodes.
 
@@ -499,7 +499,7 @@ def random_labeled_rooted_tree(n, *, seed=None):
 
 
 @py_random_state("seed")
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def random_labeled_rooted_forest(n, *, seed=None):
     """Returns a labeled rooted forest with `n` nodes.
 
@@ -737,7 +737,7 @@ def _random_unlabeled_rooted_tree(n, cache_trees, seed):
 
 
 @py_random_state("seed")
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def random_unlabeled_rooted_tree(n, *, number_of_trees=None, seed=None):
     """Returns a number of unlabeled rooted trees uniformly at random
 
@@ -922,7 +922,7 @@ def _random_unlabeled_rooted_forest(n, q, cache_trees, cache_forests, seed):
 
 
 @py_random_state("seed")
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def random_unlabeled_rooted_forest(n, *, q=None, number_of_forests=None, seed=None):
     """Returns a forest or list of forests selected at random.
 
@@ -1099,7 +1099,7 @@ def _random_unlabeled_tree(n, cache_trees, cache_forests, seed):
 
 
 @py_random_state("seed")
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def random_unlabeled_tree(n, *, number_of_trees=None, seed=None):
     """Returns a tree or list of trees chosen randomly.
 
