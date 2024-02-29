@@ -267,14 +267,15 @@ def nodes_or_number(which_args):
 
 
 def np_random_state(random_state_argument):
-    """Decorator to generate a `numpy.random.RandomState` instance.
+    """Decorator to generate a numpy RandomState or Generator instance.
 
     The decorator processes the argument indicated by `random_state_argument`
     using :func:`nx.utils.create_random_state`.
     The argument value can be a seed (integer), or a `numpy.random.RandomState`
-    instance or (`None` or `numpy.random`). The latter options use the glocal
-    random number generator used by `numpy.random`.
-    The result is a `numpy.random.RandomState` instance.
+    or `numpy.random.RandomState` instance or (`None` or `numpy.random`).
+    The latter two options use the global random number generator for `numpy.random`.
+
+    The returned instance is a `numpy.random.RandomState` or `numpy.random.Generator`.
 
     Parameters
     ----------
@@ -315,19 +316,24 @@ def np_random_state(random_state_argument):
 def py_random_state(random_state_argument):
     """Decorator to generate a random.Random instance (or equiv).
 
-    The decorator processes the argument indicated by `random_state_argument`
-    using :func:`nx.utils.create_py_random_state`.
-    The argument value can be a seed (integer), or a random number generator::
+    This decorator processes `random_state_argument` using
+    :func:`nx.utils.create_py_random_state`.
+    The input value can be a seed (integer), or a random number generator::
 
         If int, return a random.Random instance set with seed=int.
         If random.Random instance, return it.
         If None or the `random` package, return the global random number
         generator used by `random`.
-        If np.random package, return the global numpy random number
-        generator wrapped in a PythonRandomInterface class.
-        If np.random.RandomState instance, return it wrapped in
-        PythonRandomInterface
-        If a PythonRandomInterface instance, return it
+        If np.random package, or the default numpy RandomState instance,
+        return the default numpy random number generator wrapped in a
+        `PythonRandomViaNumpyBits`  class.
+        If np.random.Generator instance, return it wrapped in a
+        `PythonRandomViaNumpyBits`  class.
+
+        # Legacy options
+        If np.random.RandomState instance, return it wrapped in a
+        `PythonRandomInterface` class.
+        If a `PythonRandomInterface` instance, return it
 
     Parameters
     ----------
