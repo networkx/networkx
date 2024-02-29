@@ -346,7 +346,7 @@ def is_strongly_connected(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def condensation(G, scc=None):
     """Returns the condensation of G.
 
