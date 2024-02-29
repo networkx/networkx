@@ -665,7 +665,7 @@ def is_aperiodic(G):
         return g == 1 and nx.is_aperiodic(G.subgraph(set(G) - set(levels)))
 
 
-@nx._dispatchable(preserve_all_attrs=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def transitive_closure(G, reflexive=False):
     """Returns transitive closure of a graph
 
@@ -758,7 +758,7 @@ def transitive_closure(G, reflexive=False):
 
 
 @not_implemented_for("undirected")
-@nx._dispatchable(preserve_all_attrs=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def transitive_closure_dag(G, topo_order=None):
     """Returns the transitive closure of a directed acyclic graph.
 
@@ -815,7 +815,7 @@ def transitive_closure_dag(G, topo_order=None):
 
 
 @not_implemented_for("undirected")
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def transitive_reduction(G):
     """Returns transitive reduction of a directed graph
 
@@ -1124,7 +1124,7 @@ def root_to_leaf_paths(G):
 
 @not_implemented_for("multigraph")
 @not_implemented_for("undirected")
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def dag_to_branching(G):
     """Returns a branching representing all (overlapping) paths from
     root nodes to leaf nodes in the given directed acyclic graph.
