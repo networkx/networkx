@@ -833,3 +833,15 @@ def test_user_warnings_for_unused_edge_drawing_kwargs(fap_only_kwarg):
         nx.draw_networkx_edges(G, pos, ax=ax, arrows=True, **fap_only_kwarg)
 
     plt.delaxes(ax)
+
+
+@pytest.mark.parametrize("draw_fn", (nx.draw, nx.draw_circular))
+def test_no_warning_on_default_draw_arrowstyle(draw_fn):
+    # See gh-7284
+    fig, ax = plt.subplots()
+    G = nx.cycle_graph(5)
+    with warnings.catch_warnings(record=True) as w:
+        draw_fn(G, ax=ax)
+    assert len(w) == 0
+
+    plt.delaxes(ax)

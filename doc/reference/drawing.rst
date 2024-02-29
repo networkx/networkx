@@ -84,6 +84,7 @@ Graph Layout
    :toctree: generated/
 
    bipartite_layout
+   bfs_layout
    circular_layout
    kamada_kawai_layout
    planar_layout

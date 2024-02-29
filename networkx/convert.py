@@ -204,7 +204,7 @@ def to_dict_of_lists(G, nodelist=None):
     return d
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def from_dict_of_lists(d, create_using=None):
     """Returns a graph from a dictionary of lists.
 
@@ -364,7 +364,7 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
     return dod
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
     """Returns a graph from a dictionary of dictionaries.
 
@@ -469,7 +469,7 @@ def to_edgelist(G, nodelist=None):
     return G.edges(nodelist, data=True)
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def from_edgelist(edgelist, create_using=None):
     """Returns a graph from a list of edges.
 
