@@ -555,7 +555,7 @@ def maximum_spanning_edges(
     )
 
 
-@nx._dispatchable(preserve_all_attrs=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def minimum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=False):
     """Returns a minimum spanning tree or forest on an undirected graph `G`.
 
@@ -615,7 +615,7 @@ def minimum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
     return T
 
 
-@nx._dispatchable(preserve_all_attrs=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def partition_spanning_tree(
     G, minimum=True, weight="weight", partition="partition", ignore_nan=False
 ):
@@ -679,7 +679,7 @@ def partition_spanning_tree(
     return T
 
 
-@nx._dispatchable(preserve_all_attrs=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=False):
     """Returns a maximum spanning tree or forest on an undirected graph `G`.
 
@@ -743,7 +743,7 @@ def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
 
 
 @py_random_state(3)
-@nx._dispatchable(preserve_edge_attrs=True)
+@nx._dispatchable(preserve_edge_attrs=True, returns_graph=True)
 def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
     """
     Sample a random spanning tree using the edges weights of `G`.

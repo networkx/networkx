@@ -233,7 +233,7 @@ def generate_graphml(
 
 
 @open_file(0, mode="rb")
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False):
     """Read graph in GraphML format from path.
 
@@ -306,7 +306,7 @@ def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False)
     return glist[0]
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def parse_graphml(
     graphml_string, node_type=str, edge_key_type=int, force_multigraph=False
 ):
