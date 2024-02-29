@@ -492,7 +492,7 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     return _shortcutting(circuit)
 
 
-@nx._dispatchable(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight", returns_graph=True)
 def held_karp_ascent(G, weight="weight"):
     """
     Minimizes the Held-Karp relaxation of the TSP for `G`

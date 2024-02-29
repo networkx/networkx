@@ -70,3 +70,5 @@ Version 3.5
   to return a dict. See #6527
 * Change ``shortest_path`` in ``algorithms/shortest_path/generic.py``
   to return a iterator. See #6527
+* Remove ``create`` keyword argument from ``nonisomorphic_trees`` in 
+  ``generators/nonisomorphic_trees``.

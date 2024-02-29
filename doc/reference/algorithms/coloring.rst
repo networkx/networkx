@@ -1,3 +1,6 @@
+.. _networkx.algorithms.coloring.greedy_coloring:
+.. _networkx.algorithms.coloring.equitable_coloring:
+
 ********
 Coloring
 ********

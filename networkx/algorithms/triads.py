@@ -354,7 +354,7 @@ def all_triplets(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def all_triads(G):
     """A generator of all possible triads in G.
 
@@ -547,7 +547,7 @@ def triad_type(G):
 
 @not_implemented_for("undirected")
 @py_random_state(1)
-@nx._dispatchable(preserve_all_attrs=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def random_triad(G, seed=None):
     """Returns a random triad from a directed graph.
 

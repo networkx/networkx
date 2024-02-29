@@ -7,7 +7,7 @@ __all__ = ["metric_closure", "steiner_tree"]
 
 
 @not_implemented_for("directed")
-@nx._dispatchable(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight", returns_graph=True)
 def metric_closure(G, weight="weight"):
     """Return the metric closure of a graph.
 
@@ -126,7 +126,7 @@ ALGORITHMS = {
 
 
 @not_implemented_for("directed")
-@nx._dispatchable(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight", returns_graph=True)
 def steiner_tree(G, terminal_nodes, weight="weight", method=None):
     r"""Return an approximation to the minimum Steiner tree of a graph.
 
