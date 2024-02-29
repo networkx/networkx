@@ -179,9 +179,9 @@ class _dispatchable:
         preserve_node_attrs=False,
         preserve_graph_attrs=False,
         preserve_all_attrs=False,
-        auto_cache=False,
         mutates_input=False,
         returns_graph=False,
+        auto_cache=False,
     ):
         """Dispatches to a backend algorithm based on input graph types.
 
@@ -239,9 +239,6 @@ class _dispatchable:
             Whether to preserve all edge, node and graph attributes.
             This overrides all the other preserve_*_attrs.
 
-        auto_cache : bool
-            Whether to automatically cache the result in ``G.__networkx_cache__``.
-
         mutates_input : bool or dict, default False
             For bool, whether the functions mutates an input graph argument.
             For dict of ``{arg_name: arg_pos}``, arguments that indicates whether an
@@ -254,6 +251,9 @@ class _dispatchable:
             Whether the function can return or yield a graph object. By default,
             dispatching doesn't convert input graphs to a different backend for
             functions that return graphs.
+
+        auto_cache : bool
+            Whether to automatically cache the result in ``G.__networkx_cache__``.
         """
         if func is None:
             return partial(
@@ -266,9 +266,9 @@ class _dispatchable:
                 preserve_node_attrs=preserve_node_attrs,
                 preserve_graph_attrs=preserve_graph_attrs,
                 preserve_all_attrs=preserve_all_attrs,
-                auto_cache=auto_cache,
                 mutates_input=mutates_input,
                 returns_graph=returns_graph,
+                auto_cache=auto_cache,
             )
         if isinstance(func, str):
             raise TypeError("'name' and 'graphs' must be passed by keyword") from None
@@ -304,10 +304,10 @@ class _dispatchable:
         self.preserve_edge_attrs = preserve_edge_attrs or preserve_all_attrs
         self.preserve_node_attrs = preserve_node_attrs or preserve_all_attrs
         self.preserve_graph_attrs = preserve_graph_attrs or preserve_all_attrs
-        self._auto_cache = auto_cache
         self.mutates_input = mutates_input
         # Keep `returns_graph` private for now, b/c we may extend info on return types
         self._returns_graph = returns_graph
+        self._auto_cache = auto_cache
 
         if edge_attrs is not None and not isinstance(edge_attrs, str | dict):
             raise TypeError(
@@ -332,9 +332,6 @@ class _dispatchable:
                 f"Bad type for preserve_graph_attrs: {type(self.preserve_graph_attrs)}."
                 " Expected bool or set."
             ) from None
-        if not isinstance(self._auto_cache, bool):
-            raise TypeError(
-                f"Bad type for auto_cache: {type(self._auto_cache)}. Expected bool."
         if not isinstance(self.mutates_input, bool | dict):
             raise TypeError(
                 f"Bad type for mutates_input: {type(self.mutates_input)}."
@@ -344,6 +341,10 @@ class _dispatchable:
             raise TypeError(
                 f"Bad type for returns_graph: {type(self._returns_graph)}."
                 " Expected bool."
+            ) from None
+        if not isinstance(self._auto_cache, bool):
+            raise TypeError(
+                f"Bad type for auto_cache: {type(self._auto_cache)}. Expected bool."
             ) from None
 
         if isinstance(graphs, str):
@@ -548,12 +549,15 @@ class _dispatchable:
         if self._is_testing and self._automatic_backends and backend_name is None:
             # Special path if we are running networkx tests with a backend.
             # This even runs for (and handles) functions that mutate input graphs.
-            return self._convert_and_call_for_tests(
+            result = self._convert_and_call_for_tests(
                 self._automatic_backends[0],
                 args,
                 kwargs,
                 fallback_to_nx=self._fallback_to_nx,
             )
+            if self._auto_cache and cache is not None:
+                cache[self.name] = result
+            return result
 
         if has_backends:
             # Dispatchable graphs found! Dispatch to backend function.
@@ -589,7 +593,7 @@ class _dispatchable:
                 if "networkx" in graph_backend_names:
                     # We need to convert networkx graphs to backend graphs.
                     # There is currently no need to check `self.mutates_input` here.
-                    return self._convert_and_call(
+                    result = self._convert_and_call(
                         graph_backend_name,
                         args,
                         kwargs,
@@ -613,7 +617,7 @@ class _dispatchable:
         # Only networkx graphs; try to convert and run with a backend with automatic
         # conversion, but don't do this by default for graph generators or loaders,
         # or if the functions mutates an input graph or returns a graph.
-        if (
+        elif (
             not self._returns_graph
             and (
                 not self.mutates_input
