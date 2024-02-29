@@ -30,3 +30,4 @@ from networkx.generators.sudoku import *
 from networkx.generators.time_series import *
 from networkx.generators.trees import *
 from networkx.generators.triads import *
+from networkx.generators.harary_graph import *
