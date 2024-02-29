@@ -169,7 +169,7 @@ def jaccard_coefficient(G, ebunch=None):
         union_size = len(set(G[u]) | set(G[v]))
         if union_size == 0:
             return 0
-        return len(list(nx.common_neighbors(G, u, v))) / union_size
+        return len(nx.common_neighbors(G, u, v)) / union_size
 
     return _apply_prediction(G, predict, ebunch)
 
@@ -329,7 +329,7 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
             if u == v:
                 raise nx.NetworkXAlgorithmError("Self loops are not supported")
 
-            return sum(1 for _ in nx.common_neighbors(G, u, v))
+            return len(nx.common_neighbors(G, u, v))
 
     else:
         spl = dict(nx.shortest_path_length(G))
@@ -340,9 +340,8 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
                 raise nx.NetworkXAlgorithmError("Self loops are not supported")
             path_len = spl[u].get(v, inf)
 
-            return alpha * sum(1 for _ in nx.common_neighbors(G, u, v)) + (
-                1 - alpha
-            ) * (G.number_of_nodes() / path_len)
+            n_nbrs = len(nx.common_neighbors(G, u, v))
+            return alpha * n_nbrs + (1 - alpha) * len(G) / path_len
 
     return _apply_prediction(G, predict, ebunch)
 
@@ -486,7 +485,7 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
     def predict(u, v):
         Cu = _community(G, u, community)
         Cv = _community(G, v, community)
-        cnbors = list(nx.common_neighbors(G, u, v))
+        cnbors = nx.common_neighbors(G, u, v)
         neighbors = (
             sum(_community(G, w, community) == Cu for w in cnbors) if Cu == Cv else 0
         )
@@ -670,7 +669,7 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
         Cv = _community(G, v, community)
         if Cu != Cv:
             return 0
-        cnbors = set(nx.common_neighbors(G, u, v))
+        cnbors = nx.common_neighbors(G, u, v)
         within = {w for w in cnbors if _community(G, w, community) == Cu}
         inter = cnbors - within
         return len(within) / (len(inter) + delta)

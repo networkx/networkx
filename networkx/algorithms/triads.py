@@ -155,7 +155,6 @@ def triadic_census(G, nodelist=None):
     >>> triadic_census = nx.triadic_census(G)
     >>> for key, value in triadic_census.items():
     ...     print(f"{key}: {value}")
-    ...
     003: 0
     012: 0
     102: 0
@@ -355,7 +354,7 @@ def all_triplets(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def all_triads(G):
     """A generator of all possible triads in G.
 
@@ -427,9 +426,9 @@ def triads_by_type(G):
     --------
     >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 1), (5, 6), (5, 4), (6, 7)])
     >>> dict = nx.triads_by_type(G)
-    >>> dict['120C'][0].edges()
+    >>> dict["120C"][0].edges()
     OutEdgeView([(1, 2), (1, 3), (2, 3), (3, 1)])
-    >>> dict['012'][0].edges()
+    >>> dict["012"][0].edges()
     OutEdgeView([(1, 2)])
 
     References
@@ -548,7 +547,7 @@ def triad_type(G):
 
 @not_implemented_for("undirected")
 @py_random_state(1)
-@nx._dispatchable(preserve_all_attrs=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def random_triad(G, seed=None):
     """Returns a random triad from a directed graph.
 
