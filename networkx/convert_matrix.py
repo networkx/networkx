@@ -103,7 +103,6 @@ def to_pandas_adjacency(
     alternate convention of doubling the edge weight is desired the
     resulting Pandas DataFrame can be modified as follows::
 
-        >>> import numpy as np
         >>> import pandas as pd
         >>> G = nx.Graph([(1, 1), (2, 2)])
         >>> df = nx.to_pandas_adjacency(G)
