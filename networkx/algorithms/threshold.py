@@ -301,7 +301,7 @@ def weights_to_creation_sequence(
 
 
 # Manipulating NetworkX.Graphs in context of threshold graphs
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def threshold_graph(creation_sequence, create_using=None):
     """
     Create a threshold graph from the creation sequence or compact
@@ -369,7 +369,7 @@ def find_alternating_4_cycle(G):
     return False
 
 
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def find_threshold_graph(G, create_using=None):
     """
     Returns a threshold subgraph that is close to largest in `G`.
@@ -394,7 +394,7 @@ def find_threshold_graph(G, create_using=None):
     >>> from networkx.algorithms.threshold import find_threshold_graph
     >>> G = nx.barbell_graph(3, 3)
     >>> T = find_threshold_graph(G)
-    >>> T.nodes # may vary
+    >>> T.nodes  # may vary
     NodeView((7, 8, 5, 6))
 
     References

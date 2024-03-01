@@ -71,3 +71,5 @@ Version 3.5
 * Change ``shortest_path`` in ``algorithms/shortest_path/generic.py``
   to return a iterator. See #6527
 * Remove ``total_spanning_tree_weight`` from ``linalg/laplacianmatrix.py``
+* Remove ``create`` keyword argument from ``nonisomorphic_trees`` in 
+  ``generators/nonisomorphic_trees``.

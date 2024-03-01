@@ -151,6 +151,9 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\ntotal_spanning_tree_weight"
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message=r"\n\nThe 'create=matrix'"
+    )
 
 
 @pytest.fixture(autouse=True)

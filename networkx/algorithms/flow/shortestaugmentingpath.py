@@ -168,6 +168,7 @@ def shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase, cutoff
     edge_attrs={"capacity": float("inf")},
     preserve_edge_attrs={"residual": {"capacity": float("inf")}},
     preserve_graph_attrs={"residual"},
+    returns_graph=True,
 )
 def shortest_augmenting_path(
     G,
