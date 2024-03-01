@@ -1209,7 +1209,7 @@ def optimize_edit_paths(
         # assert sorted(G2.edges) == sorted(h for g, h in edge_path if h is not None)
         # print(vertex_path, edge_path, cost, file = sys.stderr)
         # assert cost == maxcost_value
-        yield list(vertex_path), list(edge_path), cost
+        yield list(vertex_path), list(edge_path), float(cost)
 
 
 @nx._dispatchable
@@ -1350,10 +1350,10 @@ def simrank_similarity(
 
     if isinstance(x, np.ndarray):
         if x.ndim == 1:
-            return dict(zip(G, x))
+            return dict(zip(G, x.tolist()))
         # else x.ndim == 2
-        return {u: dict(zip(G, row)) for u, row in zip(G, x)}
-    return x
+        return {u: dict(zip(G, row)) for u, row in zip(G, x.tolist())}
+    return float(x)
 
 
 def _simrank_similarity_python(
@@ -1653,8 +1653,9 @@ def panther_similarity(
     top_k_sorted = top_k_unsorted[np.argsort(S[top_k_unsorted])][::-1]
 
     # Add back the similarity scores
-    top_k_sorted_names = (node_map[n] for n in top_k_sorted)
-    top_k_with_val = dict(zip(top_k_sorted_names, S[top_k_sorted]))
+    top_k_with_val = dict(
+        zip(node_map[top_k_sorted].tolist(), S[top_k_sorted].tolist())
+    )
 
     # Remove the self-similarity
     top_k_with_val.pop(source, None)
@@ -1723,7 +1724,7 @@ def generate_random_paths(
     inv_row_sums = np.reciprocal(adj_mat.sum(axis=1)).reshape(-1, 1)
     transition_probabilities = adj_mat * inv_row_sums
 
-    node_map = np.array(G)
+    node_map = list(G)
     num_nodes = G.number_of_nodes()
 
     for path_index in range(sample_size):
