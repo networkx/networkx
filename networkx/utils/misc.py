@@ -255,13 +255,6 @@ def create_random_state(random_state=None):
         if `numpy.random.Generator` instance, return it.
         if None or numpy.random, return the global random number generator used
         by numpy.random.
-
-    A diagram hoping to illustrate the relationships and ideas behind our support
-    for numpy generated random numbers is available:
-    `Random Number Support<RN>`_ and also in this comment
-    `gh-6869#comment<https://github.com/networkx/networkx/pull/6869#issuecomment-1944799534>`_
-
-    .. _RN: https://excalidraw.com/#room=b5303f2b03d3af7ccc6a,e5ZDIWdWWCTTsg8OqoRvPA>`
     """
     import numpy as np
 
@@ -434,30 +427,36 @@ def create_py_random_state(random_state=None):
     Parameters
     ----------
     random_state : int or random number generator or None (default=None)
-        If int, return a random.Random instance set with seed=int.
-        if random.Random instance, return it.
-        if None or the `random` package, return the global random number
-        generator used by `random`.
-        if an np.random.Generator instance, or the np.random package, or
-        the global numpy random number generator, then return it
-        wrapped in a PythonRandomViaNumpyBits class.
-        if a PythonRandomViaNumpyBits instance, return it
+        - If int, return a `random.Random` instance set with seed=int.
+        - If `random.Random` instance, return it.
+        - If None or the `np.random` package, return the global random number
+          generator used by `np.random`.
+        - If an `np.random.Generator` instance, or the `np.random` package, or
+          the global numpy random number generator, then return it.
+          wrapped in a `PythonRandomViaNumpyBits` class.
+        - If a `PythonRandomViaNumpyBits` instance, return it.
+        - If a `PythonRandomInterface` instance, return it.
+        - If a `np.random.RandomState` instance and not the global numpy default,
+          return it wrapped in `PythonRandomInterface` for backward bit-stream
+          matching with legacy code.
 
-        # Provided for backward bit-stream matching with legacy code
-        if a np.randomRandomState instance and not the global numpy default,
-        return it wrapped in PythonRandomInterface
-        if a PythonRandomInterface instance, return it
-
-    Note: Conversion from older PythonRandomInterface to PythonRandomViaNumpyBits
-    is handled here to allow users of Legacy `numpy.random.RandomState` to exactly
-    match the legacy values produced. We assume that if a user cares about legacy
-    values, they are using a np.RandomState instance that is not the numpy default.
-    (The default instance has state reset for each Python session. The Generator
-    class does not guarantee to maintain bit stream across versions.) To provide
-    backward compatible legacy values, we wrap any RandomState instance other
-    than the default with the legacy wrapper `PythonRandomInterface`. All other
-    numpy random inputs (Generator or RandomState) are wrapped in the new wrapper
-    `PythonRandomViaNumpyBits`.
+    Notes
+    -----
+    - A diagram intending to illustrate the relationships behind our support
+      for numpy random numbers is called
+      `NetworkX Numpy Random Numbers <https://excalidraw.com/#room=b5303f2b03d3af7ccc6a,e5ZDIWdWWCTTsg8OqoRvPA>`_.
+    - More discussion about this support also appears in
+      `gh-6869#comment <https://github.com/networkx/networkx/pull/6869#issuecomment-1944799534>`_.
+    - Wrappers of numpy.random number generators allow them to mimic the Python random
+      number generation algorithms. For example, Python can create arbitrarily large
+      random ints, and the wrappers use Numpy bit-streams with CPython's random module
+      to choose arbitrarily large random integers too.
+    - We provide two wrapper classes:
+      `PythonRandomViaNumpyBits` is usually what you want and is always used for
+      `np.Generator` instances. But for users who need to recreate random numbers
+      produced in NetworkX 3.2 or earlier, we maintain the `PythonRandomInterface`
+      wrapper as well. We use it only used if passed a (non-default) `np.RandomState`
+      instance pre-initialized from a seed. Otherwise the newer wrapper is used.
     """
     if random_state is None or random_state is random:
         return random._inst
