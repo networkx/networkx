@@ -325,7 +325,7 @@ def total_spanning_tree_weight(G, weight=None, root=None):
             "Use `nx.number_of_spanning_trees(G)` instead."
         ),
         category=DeprecationWarning,
-        stacklevel=2,
+        stacklevel=3,
     )
 
     return nx.number_of_spanning_trees(G, weight=weight, root=root)
