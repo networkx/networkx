@@ -252,8 +252,9 @@ def total_spanning_tree_weight(G, weight=None, root=None):
     spanning trees in `G` that start in the `root` node [3]_.
 
     .. deprecated:: 3.3
-            `total_spanning_tree_weight` is deprecated and will be removed in v3.5.
-            Use `nx.number_of_spanning_trees(G)` instead.
+
+       ``total_spanning_tree_weight`` is deprecated and will be removed in v3.5.
+       Use ``nx.number_of_spanning_trees(G)`` instead.
 
     Parameters
     ----------
