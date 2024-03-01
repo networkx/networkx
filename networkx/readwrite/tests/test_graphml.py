@@ -1527,5 +1527,5 @@ def test_empty_attribute():
     </graphml>"""
     fh = io.BytesIO(s.encode("UTF-8"))
     G = nx.read_graphml(fh)
-    assert G.nodes['0'] == {'foo': 'aaa', 'bar': 'bbb'}
-    assert G.nodes['1'] == {'foo': 'ccc', 'bar': ''}
+    assert G.nodes["0"] == {"foo": "aaa", "bar": "bbb"}
+    assert G.nodes["1"] == {"foo": "ccc", "bar": ""}
