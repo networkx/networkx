@@ -344,8 +344,6 @@ def total_spanning_tree_weight(G, weight=None, root=None):
     # Determinant ignoring first row and column
     return float(abs(np.linalg.det(G_laplacian[1:, 1:])))
 
-    return nx.number_of_spanning_trees(G, weight=weight, root=root)
-
 
 ###############################################################################
 # Code based on work from https://github.com/bjedwards
