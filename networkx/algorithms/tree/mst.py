@@ -1214,14 +1214,14 @@ def number_of_spanning_trees(G, *, root=None, weight=None):
     Examples
     --------
     >>> G = nx.complete_graph(5)
-    >>> round(nx.total_spanning_tree_weight(G))
+    >>> round(nx.number_of_spanning_trees(G))
     125
 
     >>> G = nx.Graph()
     >>> G.add_edge(1, 2, weight=2)
     >>> G.add_edge(1, 3, weight=1)
     >>> G.add_edge(2, 3, weight=1)
-    >>> round(nx.total_spanning_tree_weight(G, weight="weight"))
+    >>> round(nx.number_of_spanning_trees(G, weight="weight"))
     5
 
     Notes
