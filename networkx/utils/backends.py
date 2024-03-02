@@ -864,13 +864,15 @@ class _dispatchable:
                 msg += " with the given arguments"
             pytest.xfail(msg)
 
-        from collections.abc import Iterator
+        from collections.abc import Iterable, Iterator, Mapping
         from copy import copy
         from io import BufferedReader, BytesIO
         from itertools import tee
         from random import Random
 
+        import numpy as np
         from numpy.random import Generator, RandomState
+        from scipy.sparse import sparray
 
         # We sometimes compare the backend result to the original result,
         # so we need two sets of arguments. We tee iterators and copy
@@ -950,6 +952,50 @@ class _dispatchable:
             }
         ):
             raise RuntimeError(f"`returns_graph` is incorrect for {self.name}")
+
+        def check_result(val, depth=0):
+            if isinstance(val, np.number):
+                raise RuntimeError(
+                    f"{self.name} returned a numpy scalar {val} ({type(val)}, depth={depth})"
+                )
+            if isinstance(val, np.ndarray | sparray):
+                return
+            if isinstance(val, nx.Graph):
+                check_result(val._node, depth=depth + 1)
+                check_result(val._adj, depth=depth + 1)
+                return
+            if isinstance(val, Iterator):
+                raise NotImplementedError
+            if isinstance(val, Iterable) and not isinstance(val, str):
+                for x in val:
+                    check_result(x, depth=depth + 1)
+            if isinstance(val, Mapping):
+                for x in val.values():
+                    check_result(x, depth=depth + 1)
+
+        def check_iterator(it):
+            for val in it:
+                try:
+                    check_result(val)
+                except RuntimeError as exc:
+                    raise RuntimeError(
+                        f"{self.name} returned a numpy scalar {val} ({type(val)})"
+                    ) from exc
+                yield val
+
+        if self.name in {"from_edgelist"}:
+            # numpy scalars are explicitly given as values in some tests
+            pass
+        elif isinstance(result, Iterator):
+            result = check_iterator(result)
+        else:
+            try:
+                check_result(result)
+            except RuntimeError as exc:
+                raise RuntimeError(
+                    f"{self.name} returned a numpy scalar {result} ({type(result)})"
+                ) from exc
+            check_result(result)
 
         if self.name in {
             "edmonds_karp_core",

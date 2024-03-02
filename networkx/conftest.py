@@ -159,13 +159,6 @@ def set_warnings():
 @pytest.fixture(autouse=True)
 def add_nx(doctest_namespace):
     doctest_namespace["nx"] = networkx
-    # TODO: remove the try-except block when we require numpy >= 2
-    try:
-        import numpy as np
-
-        np.set_printoptions(legacy="1.21")
-    except ImportError:
-        pass
 
 
 # What dependencies are installed?
