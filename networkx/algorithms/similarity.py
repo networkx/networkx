@@ -20,6 +20,7 @@ from dataclasses import dataclass
 from itertools import product
 
 import networkx as nx
+from networkx.utils import np_random_state
 
 __all__ = [
     "graph_edit_distance",
@@ -1662,9 +1663,10 @@ def panther_similarity(
     return top_k_with_val
 
 
+@np_random_state(5)
 @nx._dispatchable(edge_attrs="weight")
 def generate_random_paths(
-    G, sample_size, path_length=5, index_map=None, weight="weight"
+    G, sample_size, path_length=5, index_map=None, weight="weight", seed=None
 ):
     """Randomly generate `sample_size` paths of length `path_length`.
 
@@ -1685,6 +1687,9 @@ def generate_random_paths(
     weight : string or None, optional (default="weight")
         The name of an edge attribute that holds the numerical value
         used as a weight. If None then each edge has weight 1.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -1718,6 +1723,10 @@ def generate_random_paths(
     """
     import numpy as np
 
+    randint_fn = (
+        seed.integers if isinstance(seed, np.random.Generator) else seed.randint
+    )
+
     # Calculate transition probabilities between
     # every pair of vertices according to Eq. (3)
     adj_mat = nx.to_numpy_array(G, weight=weight)
@@ -1729,7 +1738,7 @@ def generate_random_paths(
 
     for path_index in range(sample_size):
         # Sample current vertex v = v_i uniformly at random
-        node_index = np.random.randint(0, high=num_nodes)
+        node_index = randint_fn(num_nodes)
         node = node_map[node_index]
 
         # Add v into p_r and add p_r into the path set
@@ -1747,7 +1756,7 @@ def generate_random_paths(
         for _ in range(path_length):
             # Randomly sample a neighbor (v_j) according
             # to transition probabilities from ``node`` (v) to its neighbors
-            nbr_index = np.random.choice(
+            nbr_index = seed.choice(
                 num_nodes, p=transition_probabilities[starting_index]
             )
 
