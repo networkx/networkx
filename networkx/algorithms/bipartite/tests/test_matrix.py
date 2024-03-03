@@ -42,7 +42,7 @@ class TestBiadjacencyMatrix:
     def test_biadjacency_matrix_empty_graph(self):
         G = nx.empty_graph(2)
         M = nx.bipartite.biadjacency_matrix(G, [0])
-        assert M == sp.sparse.coo_matrix(([], ([], [])), shape=(1, 1))
+        assert np.array_equal(M.toarray(), np.array([[0]]))
 
     def test_null_graph(self):
         with pytest.raises(nx.NetworkXError):
