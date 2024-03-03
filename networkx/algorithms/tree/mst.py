@@ -1253,7 +1253,7 @@ def number_of_spanning_trees(G, *, root=None, weight=None):
         if not nx.is_connected(G):
             return 0
         G_laplacian = nx.laplacian_matrix(G, weight=weight).toarray()
-        return np.linalg.det(G_laplacian[1:, 1:])
+        return float(np.linalg.det(G_laplacian[1:, 1:]))
 
     # directed G
     if root is None:
@@ -1270,4 +1270,4 @@ def number_of_spanning_trees(G, *, root=None, weight=None):
     G_laplacian = D - A
 
     # Compute number of spanning trees
-    return np.linalg.det(G_laplacian[1:, 1:])
+    return float(np.linalg.det(G_laplacian[1:, 1:]))
