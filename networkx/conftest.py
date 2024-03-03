@@ -149,6 +149,9 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="\n\nk_corona"
     )
     warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\ntotal_spanning_tree_weight"
+    )
+    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message=r"\n\nThe 'create=matrix'"
     )
 
@@ -220,6 +223,7 @@ needs_numpy = [
     "algorithms/node_classification.py",
     "algorithms/non_randomness.py",
     "algorithms/shortest_paths/dense.py",
+    "algorithms/tree/mst.py",
     "generators/expanders.py",
     "linalg/bethehessianmatrix.py",
     "linalg/laplacianmatrix.py",
