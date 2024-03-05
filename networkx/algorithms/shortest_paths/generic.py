@@ -444,7 +444,7 @@ def average_shortest_path_length(G, weight=None, method=None):
             all_pairs = nx.floyd_warshall(G, weight=weight)
             s = sum(sum(t.values()) for t in all_pairs.values())
         elif method == "floyd-warshall-numpy":
-            s = nx.floyd_warshall_numpy(G, weight=weight).sum()
+            s = float(nx.floyd_warshall_numpy(G, weight=weight).sum())
     return s / (n * (n - 1))
 
 
