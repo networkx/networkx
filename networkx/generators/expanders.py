@@ -308,7 +308,8 @@ def maybe_regular_expander(n, d, *, create_using=None, max_tries=100, seed=None)
             iterations -= 1
             # Faster than random.permutation(n) since there are only
             # (n-1)! distinct cycles against n! permutations of size n
-            cycle = np.concatenate((seed.permutation(n - 1), [n - 1]))
+            cycle = seed.permutation(n - 1).tolist()
+            cycle.append(n - 1)
 
             new_edges = {
                 (u, v)

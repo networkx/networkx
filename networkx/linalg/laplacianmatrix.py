@@ -1,7 +1,7 @@
 """Laplacian matrix of graphs.
 
-All calculations here are done using the out-degree. For Laplacians 
-using in-degree, us `G.reverse(copy=False)` instead of `G`.
+All calculations here are done using the out-degree. For Laplacians using
+in-degree, use `G.reverse(copy=False)` instead of `G` and take the transpose.
 
 The `laplacian_matrix` function provides an unnormalized matrix, 
 while `normalized_laplacian_matrix`, `directed_laplacian_matrix`, 
@@ -53,7 +53,8 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
     or `directed_combinatorial_laplacian_matrix`.
 
     This calculation uses the out-degree of the graph `G`. To use the
-    in-degree for calculations instead, use `G.reverse(copy=False)` instead.
+    in-degree for calculations instead, use `G.reverse(copy=False)` and
+    take the transpose.
 
     See Also
     --------
@@ -90,11 +91,26 @@ def laplacian_matrix(G, nodelist=None, weight="weight"):
      [-1  2 -1  0]
      [ 0  0  1 -1]
      [ 0  0 -1  1]]
-    >>> G = nx.Graph(DiG)
-    >>> print(nx.laplacian_matrix(G).toarray())
+
+    Notice that node 4 is represented by the third column and row. This is because
+    by default the row/column order is the order of `G.nodes` (i.e. the node added
+    order -- in the edgelist, 4 first appears in (2, 4), before node 3 in edge (4, 3).)
+    To control the node order of the matrix, use the `nodelist` argument.
+
+    >>> print(nx.laplacian_matrix(DiG, nodelist=[1, 2, 3, 4]).toarray())
     [[ 1 -1  0  0]
-     [-1  2 -1  0]
-     [ 0 -1  2 -1]
+     [-1  2  0 -1]
+     [ 0  0  1 -1]
+     [ 0  0 -1  1]]
+
+    This calculation uses the out-degree of the graph `G`. To use the
+    in-degree for calculations instead, use `G.reverse(copy=False)` and
+    take the transpose.
+
+    >>> print(nx.laplacian_matrix(DiG.reverse(copy=False)).toarray().T)
+    [[ 1 -1  0  0]
+     [-1  1 -1  0]
+     [ 0  0  2 -1]
      [ 0  0 -1  1]]
 
     References
@@ -154,7 +170,8 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     the adjacency matrix [2]_.
 
     This calculation uses the out-degree of the graph `G`. To use the
-    in-degree for calculations instead, use `G.reverse(copy=False)` instead.
+    in-degree for calculations instead, use `G.reverse(copy=False)` and
+    take the transpose.
 
     For an unnormalized output, use `laplacian_matrix`.
 
@@ -176,7 +193,18 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
      [-0.7071  1.     -0.7071  0.    ]
      [ 0.      0.      1.     -1.    ]
      [ 0.      0.     -1.      1.    ]]
-    >>> G = nx.Graph(DiG)
+
+    Notice that node 4 is represented by the third column and row. This is because
+    by default the row/column order is the order of `G.nodes` (i.e. the node added
+    order -- in the edgelist, 4 first appears in (2, 4), before node 3 in edge (4, 3).)
+    To control the node order of the matrix, use the `nodelist` argument.
+
+    >>> print(nx.normalized_laplacian_matrix(DiG, nodelist=[1, 2, 3, 4]).toarray())
+    [[ 1.     -0.7071  0.      0.    ]
+     [-0.7071  1.      0.     -0.7071]
+     [ 0.      0.      1.     -1.    ]
+     [ 0.      0.     -1.      1.    ]]
+    >>> G = nx.Graph(edges)
     >>> print(nx.normalized_laplacian_matrix(G).toarray())
     [[ 1.     -0.7071  0.      0.    ]
      [-0.7071  1.     -0.5     0.    ]
@@ -206,50 +234,113 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     if nodelist is None:
         nodelist = list(G)
     A = nx.to_scipy_sparse_array(G, nodelist=nodelist, weight=weight, format="csr")
-    n, m = A.shape
+    n, _ = A.shape
     diags = A.sum(axis=1)
     # TODO: rm csr_array wrapper when spdiags can produce arrays
-    D = sp.sparse.csr_array(sp.sparse.spdiags(diags, 0, m, n, format="csr"))
+    D = sp.sparse.csr_array(sp.sparse.spdiags(diags, 0, n, n, format="csr"))
     L = D - A
     with np.errstate(divide="ignore"):
         diags_sqrt = 1.0 / np.sqrt(diags)
     diags_sqrt[np.isinf(diags_sqrt)] = 0
     # TODO: rm csr_array wrapper when spdiags can produce arrays
-    DH = sp.sparse.csr_array(sp.sparse.spdiags(diags_sqrt, 0, m, n, format="csr"))
+    DH = sp.sparse.csr_array(sp.sparse.spdiags(diags_sqrt, 0, n, n, format="csr"))
     return DH @ (L @ DH)
 
 
 @nx._dispatchable(edge_attrs="weight")
-def total_spanning_tree_weight(G, weight=None):
+def total_spanning_tree_weight(G, weight=None, root=None):
     """
     Returns the total weight of all spanning trees of `G`.
 
-    Kirchoff's Tree Matrix Theorem states that the determinant of any cofactor of the
-    Laplacian matrix of a graph is the number of spanning trees in the graph. For a
-    weighted Laplacian matrix, it is the sum across all spanning trees of the
-    multiplicative weight of each tree. That is, the weight of each tree is the
-    product of its edge weights.
+    Kirchoff's Tree Matrix Theorem [1]_, [2]_ states that the determinant of any
+    cofactor of the Laplacian matrix of a graph is the number of spanning trees
+    in the graph. For a weighted Laplacian matrix, it is the sum across all
+    spanning trees of the multiplicative weight of each tree. That is, the
+    weight of each tree is the product of its edge weights.
+
+    For unweighted graphs, the total weight equals the number of spanning trees in `G`.
+
+    For directed graphs, the total weight follows by summing over all directed
+    spanning trees in `G` that start in the `root` node [3]_.
+
+    .. deprecated:: 3.3
+
+       ``total_spanning_tree_weight`` is deprecated and will be removed in v3.5.
+       Use ``nx.number_of_spanning_trees(G)`` instead.
 
     Parameters
     ----------
     G : NetworkX Graph
-        The graph to use Kirchhoff's theorem on.
 
-    weight : string or None
-        The key for the edge attribute holding the edge weight. If `None`, then
-        each edge is assumed to have a weight of 1 and this function returns the
-        total number of spanning trees in `G`.
+    weight : string or None, optional (default=None)
+        The key for the edge attribute holding the edge weight.
+        If None, then each edge has weight 1.
+
+    root : node (only required for directed graphs)
+       A node in the directed graph `G`.
 
     Returns
     -------
-    float
-        The sum of the total multiplicative weights for all spanning trees in `G`
-    """
-    import numpy as np
+    total_weight : float
+        Undirected graphs:
+            The sum of the total multiplicative weights for all spanning trees in `G`.
+        Directed graphs:
+            The sum of the total multiplicative weights for all spanning trees of `G`,
+            rooted at node `root`.
 
-    G_laplacian = nx.laplacian_matrix(G, weight=weight).toarray()
-    # Determinant ignoring first row and column
-    return abs(np.linalg.det(G_laplacian[1:, 1:]))
+    Raises
+    ------
+    NetworkXPointlessConcept
+        If `G` does not contain any nodes.
+
+    NetworkXError
+        If the graph `G` is not (weakly) connected,
+        or if `G` is directed and the root node is not specified or not in G.
+
+    Examples
+    --------
+    >>> G = nx.complete_graph(5)
+    >>> round(nx.total_spanning_tree_weight(G))
+    125
+
+    >>> G = nx.Graph()
+    >>> G.add_edge(1, 2, weight=2)
+    >>> G.add_edge(1, 3, weight=1)
+    >>> G.add_edge(2, 3, weight=1)
+    >>> round(nx.total_spanning_tree_weight(G, "weight"))
+    5
+
+    Notes
+    -----
+    Self-loops are excluded. Multi-edges are contracted in one edge
+    equal to the sum of the weights.
+
+    References
+    ----------
+    .. [1] Wikipedia
+       "Kirchhoff's theorem."
+       https://en.wikipedia.org/wiki/Kirchhoff%27s_theorem
+    .. [2] Kirchhoff, G. R.
+        Über die Auflösung der Gleichungen, auf welche man
+        bei der Untersuchung der linearen Vertheilung
+        Galvanischer Ströme geführt wird
+        Annalen der Physik und Chemie, vol. 72, pp. 497-508, 1847.
+    .. [3] Margoliash, J.
+        "Matrix-Tree Theorem for Directed Graphs"
+        https://www.math.uchicago.edu/~may/VIGRE/VIGRE2010/REUPapers/Margoliash.pdf
+    """
+    import warnings
+
+    warnings.warn(
+        (
+            "\n\ntotal_spanning_tree_weight is deprecated and will be removed in v3.5.\n"
+            "Use `nx.number_of_spanning_trees(G)` instead."
+        ),
+        category=DeprecationWarning,
+        stacklevel=3,
+    )
+
+    return nx.number_of_spanning_trees(G, weight=weight, root=root)
 
 
 ###############################################################################
@@ -313,7 +404,8 @@ def directed_laplacian_matrix(
     The result is always a symmetric matrix.
 
     This calculation uses the out-degree of the graph `G`. To use the
-    in-degree for calculations instead, use `G.reverse(copy=False)` instead.
+    in-degree for calculations instead, use `G.reverse(copy=False)` and
+    take the transpose.
 
     See Also
     --------
@@ -411,7 +503,8 @@ def directed_combinatorial_laplacian_matrix(
     The result is always a symmetric matrix.
 
     This calculation uses the out-degree of the graph `G`. To use the
-    in-degree for calculations instead, use `G.reverse(copy=False)` instead.
+    in-degree for calculations instead, use `G.reverse(copy=False)` and
+    take the transpose.
 
     See Also
     --------
