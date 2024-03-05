@@ -144,6 +144,6 @@ def laplacian_centrality(
         if normalized:
             lapl_cent = lapl_cent / full_energy
 
-        laplace_centralities_dict[node] = lapl_cent
+        laplace_centralities_dict[node] = float(lapl_cent)
 
     return laplace_centralities_dict
