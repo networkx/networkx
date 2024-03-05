@@ -12,6 +12,7 @@ from networkx.generators.duplication import *
 from networkx.generators.ego import *
 from networkx.generators.expanders import *
 from networkx.generators.geometric import *
+from networkx.generators.harary_graph import *
 from networkx.generators.internet_as_graphs import *
 from networkx.generators.intersection import *
 from networkx.generators.interval_graph import *

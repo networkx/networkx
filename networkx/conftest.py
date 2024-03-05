@@ -149,6 +149,9 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="\n\nk_corona"
     )
     warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\ntotal_spanning_tree_weight"
+    )
+    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message=r"\n\nThe 'create=matrix'"
     )
 
@@ -156,13 +159,6 @@ def set_warnings():
 @pytest.fixture(autouse=True)
 def add_nx(doctest_namespace):
     doctest_namespace["nx"] = networkx
-    # TODO: remove the try-except block when we require numpy >= 2
-    try:
-        import numpy as np
-
-        np.set_printoptions(legacy="1.21")
-    except ImportError:
-        pass
 
 
 # What dependencies are installed?
@@ -227,6 +223,7 @@ needs_numpy = [
     "algorithms/node_classification.py",
     "algorithms/non_randomness.py",
     "algorithms/shortest_paths/dense.py",
+    "algorithms/tree/mst.py",
     "generators/expanders.py",
     "linalg/bethehessianmatrix.py",
     "linalg/laplacianmatrix.py",
