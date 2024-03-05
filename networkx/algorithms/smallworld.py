@@ -308,7 +308,7 @@ def sigma(G, niter=100, nrand=10, seed=None):
 
     sigma = (C / Cr) / (L / Lr)
 
-    return sigma
+    return float(sigma)
 
 
 @not_implemented_for("directed")
@@ -400,4 +400,4 @@ def omega(G, niter=5, nrand=10, seed=None):
 
     omega = (Lr / L) - (C / Cl)
 
-    return omega
+    return float(omega)

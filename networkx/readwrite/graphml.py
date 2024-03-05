@@ -1010,9 +1010,10 @@ class GraphMLReader(GraphML):
                     edge_label = data_element.find(f"{pref}EdgeLabel")
                     if edge_label is not None:
                         break
-
                 if edge_label is not None:
                     data["label"] = edge_label.text
+            elif text is None:
+                data[data_name] = ""
         return data
 
     def find_graphml_keys(self, graph_element):

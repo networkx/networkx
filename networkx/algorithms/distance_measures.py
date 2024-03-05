@@ -737,14 +737,14 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
     if nodeA is not None and nodeB is not None:
         i = node_list.index(nodeA)
         j = node_list.index(nodeB)
-        return Linv[i, i] + Linv[j, j] - Linv[i, j] - Linv[j, i]
+        return Linv.item(i, i) + Linv.item(j, j) - Linv.item(i, j) - Linv.item(j, i)
 
     elif nodeA is not None:
         i = node_list.index(nodeA)
         d = {}
         for n in G:
             j = node_list.index(n)
-            d[n] = Linv[i, i] + Linv[j, j] - Linv[i, j] - Linv[j, i]
+            d[n] = Linv.item(i, i) + Linv.item(j, j) - Linv.item(i, j) - Linv.item(j, i)
         return d
 
     elif nodeB is not None:
@@ -752,7 +752,7 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
         d = {}
         for n in G:
             i = node_list.index(n)
-            d[n] = Linv[i, i] + Linv[j, j] - Linv[i, j] - Linv[j, i]
+            d[n] = Linv.item(i, i) + Linv.item(j, j) - Linv.item(i, j) - Linv.item(j, i)
         return d
 
     else:
@@ -762,7 +762,12 @@ def resistance_distance(G, nodeA=None, nodeB=None, weight=None, invert_weight=Tr
             d[n] = {}
             for n2 in G:
                 j = node_list.index(n2)
-                d[n][n2] = Linv[i, i] + Linv[j, j] - Linv[i, j] - Linv[j, i]
+                d[n][n2] = (
+                    Linv.item(i, i)
+                    + Linv.item(j, j)
+                    - Linv.item(i, j)
+                    - Linv.item(j, i)
+                )
         return d
 
 
@@ -834,7 +839,7 @@ def effective_graph_resistance(G, weight=None, invert_weight=True):
 
     # Disconnected graphs have infinite Effective graph resistance
     if not nx.is_connected(G):
-        return np.inf
+        return float("inf")
 
     # Invert weights
     G = G.copy()
@@ -851,7 +856,7 @@ def effective_graph_resistance(G, weight=None, invert_weight=True):
 
     # Compute Effective graph resistance based on spectrum of the Laplacian
     # Self-loops are ignored
-    return np.sum(1 / mu[1:]) * G.number_of_nodes()
+    return float(np.sum(1 / mu[1:]) * G.number_of_nodes())
 
 
 @nx.utils.not_implemented_for("directed")
@@ -943,4 +948,4 @@ def kemeny_constant(G, *, weight=None):
     eig = np.sort(sp.linalg.eigvalsh(H.todense()))
 
     # Compute the Kemeny constant
-    return np.sum(1 / (1 - eig[:-1]))
+    return float(np.sum(1 / (1 - eig[:-1])))
