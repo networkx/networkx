@@ -62,8 +62,8 @@ def effective_size(G, nodes=None, weight=None):
 
     .. math::
 
-        e(u) = \sum_{v \in N(u) \setminus \{u\}}
-        \left(1 - \sum_{w \in N(v)} p_{uw} m_{vw}\right)
+       e(u) = \sum_{v \in N(u) \setminus \{u\}}
+       \left(1 - \sum_{w \in N(v)} p_{uw} m_{vw}\right)
 
     where $N(u)$ is the set of neighbors of $u$ and $p_{uw}$ is the
     normalized mutual weight of the (directed or undirected) edges
@@ -78,7 +78,7 @@ def effective_size(G, nodes=None, weight=None):
 
     .. math::
 
-        e(u) = n - \frac{2t}{n}
+       e(u) = n - \frac{2t}{n}
 
     where `t` is the number of ties in the ego network (not including
     ties to ego) and `n` is the number of nodes (excluding ego).
@@ -120,13 +120,13 @@ def effective_size(G, nodes=None, weight=None):
     References
     ----------
     .. [1] Burt, Ronald S.
-            *Structural Holes: The Social Structure of Competition.*
-            Cambridge: Harvard University Press, 1995.
+           *Structural Holes: The Social Structure of Competition.*
+           Cambridge: Harvard University Press, 1995.
 
     .. [2] Borgatti, S.
-            "Structural Holes: Unpacking Burt's Redundancy Measures"
-            CONNECTIONS 20(1):35-38.
-            http://www.analytictech.com/connections/v20(1)/holes.htm
+           "Structural Holes: Unpacking Burt's Redundancy Measures"
+           CONNECTIONS 20(1):35-38.
+           http://www.analytictech.com/connections/v20(1)/holes.htm
 
     """
 
@@ -222,7 +222,7 @@ def constraint(G, nodes=None, weight=None):
 
     .. math::
 
-        c(v) = \sum_{w \in N(v) \setminus \{v\}} \ell(v, w)
+       c(v) = \sum_{w \in N(v) \setminus \{v\}} \ell(v, w)
 
     where $N(v)$ is the subset of the neighbors of `v` that are either
     predecessors or successors of `v` and $\ell(v, w)$ is the local
@@ -254,8 +254,8 @@ def constraint(G, nodes=None, weight=None):
     References
     ----------
     .. [1] Burt, Ronald S.
-            "Structural holes and good ideas".
-            American Journal of Sociology (110): 349–399.
+           "Structural holes and good ideas".
+           American Journal of Sociology (110): 349–399.
 
     """
 
@@ -316,7 +316,7 @@ def local_constraint(G, u, v, weight=None):
 
     .. math::
 
-        \ell(u, v) = \left(p_{uv} + \sum_{w \in N(v)} p_{uw} p_{wv}\right)^2,
+       \ell(u, v) = \left(p_{uv} + \sum_{w \in N(v)} p_{uw} p_{wv}\right)^2,
 
     where $N(v)$ is the set of neighbors of $v$ and $p_{uv}$ is the
     normalized mutual weight of the (directed or undirected) edges
@@ -353,8 +353,8 @@ def local_constraint(G, u, v, weight=None):
     References
     ----------
     .. [1] Burt, Ronald S.
-            "Structural holes and good ideas".
-            American Journal of Sociology (110): 349–399.
+           "Structural holes and good ideas".
+           American Journal of Sociology (110): 349–399.
 
     """
     nmw = normalized_mutual_weight
