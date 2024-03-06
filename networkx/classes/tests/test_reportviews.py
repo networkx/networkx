@@ -604,9 +604,10 @@ class TestEdgeView:
         )
 
         # Invalid edge
-        with pytest.raises(nx.NetworkXError) as e:
+        with pytest.raises(KeyError) as e:
             G.edges[0, 9]
-        assert str(e.value) == "The edge (0, 9) is not in the graph."
+
+        assert e.value.args[0] == "The edge (0, 9) is not in the graph."
 
     def test_call(self):
         ev = self.eview(self.G)
