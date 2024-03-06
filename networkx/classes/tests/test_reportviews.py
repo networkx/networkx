@@ -604,10 +604,8 @@ class TestEdgeView:
         )
 
         # Invalid edge
-        with pytest.raises(KeyError) as e:
+        with pytest.raises(KeyError, match="The edge (0, 9) is not in the graph."):
             G.edges[0, 9]
-
-        assert e.value.args[0] == "The edge (0, 9) is not in the graph."
 
     def test_call(self):
         ev = self.eview(self.G)
