@@ -56,19 +56,19 @@ def weisfeiler_lehman_graph_hash(
 
     Parameters
     ----------
-    G: graph
+    G : graph
         The graph to be hashed.
         Can have node and/or edge attributes. Can also have no attributes.
-    edge_attr: string, default=None
+    edge_attr : string, optional (default=None)
         The key in edge attribute dictionary to be used for hashing.
         If None, edge labels are ignored.
-    node_attr: string, default=None
+    node_attr: string, optional (default=None)
         The key in node attribute dictionary to be used for hashing.
         If None, and no edge_attr given, use the degrees of the nodes as labels.
-    iterations: int, default=3
+    iterations: int, optional (default=3)
         Number of neighbor aggregations to perform.
         Should be larger for larger graphs.
-    digest_size: int, default=16
+    digest_size: int, optional (default=16)
         Size (in bits) of blake2b hash digest to use for hashing node labels.
 
     Returns
@@ -162,7 +162,12 @@ def weisfeiler_lehman_graph_hash(
 
 @nx._dispatchable(edge_attrs={"edge_attr": None}, node_attrs="node_attr")
 def weisfeiler_lehman_subgraph_hashes(
-    G, edge_attr=None, node_attr=None, iterations=3, digest_size=16
+    G,
+    edge_attr=None,
+    node_attr=None,
+    iterations=3,
+    digest_size=16,
+    include_initial_labels=False,
 ):
     """
     Return a dictionary of subgraph hashes by node.
@@ -172,9 +177,10 @@ def weisfeiler_lehman_subgraph_hashes(
     Lists of subgraph hashes are sorted in increasing order of depth from
     their root node, with the hash at index i corresponding to a subgraph
     of nodes at most i edges distance from u. Thus, each list will contain
-    ``iterations + 1`` elements - a hash for a subgraph at each depth, and
-    additionally a hash of the initial node label (or equivalently a
-    subgraph of depth 0).
+    `iterations` elements - a hash for a subgraph at each depth. If
+    `include_initial_labels` is set to `True`, each list will additionally
+    have contain a hash of the initial node label (or equivalently a
+    subgraph of depth 0) prepended, totalling `iterations + 1` elements.
 
     The function iteratively aggregates and hashes neighborhoods of each node.
     This is achieved for each step by replacing for each node its label from
@@ -207,21 +213,25 @@ def weisfeiler_lehman_subgraph_hashes(
 
     Parameters
     ----------
-    G: graph
+    G : graph
         The graph to be hashed.
         Can have node and/or edge attributes. Can also have no attributes.
-    edge_attr: string, default=None
+    edge_attr : string, optional (default=None)
         The key in edge attribute dictionary to be used for hashing.
         If None, edge labels are ignored.
-    node_attr: string, default=None
+    node_attr : string, optional (default=None)
         The key in node attribute dictionary to be used for hashing.
         If None, and no edge_attr given, use the degrees of the nodes as labels.
-    iterations: int, default=3
+        If None, and edge_attr is given, each node starts with an identical label.
+    iterations : int, optional (default=3)
         Number of neighbor aggregations to perform.
         Should be larger for larger graphs.
-    digest_size: int, default=16
+    digest_size : int, optional (default=16)
         Size (in bits) of blake2b hash digest to use for hashing node labels.
-        The default size is 16 bits
+        The default size is 16 bits.
+    include_initial_labels : bool, optional (default=False)
+        If True, include the hashed initial node label as the first subgraph
+        hash for each node.
 
     Returns
     -------
@@ -297,8 +307,13 @@ def weisfeiler_lehman_subgraph_hashes(
         return new_labels
 
     node_labels = _init_node_labels(G, edge_attr, node_attr)
+    if include_initial_labels:
+        node_subgraph_hashes = {
+            k: [_hash_label(v, digest_size)] for k, v in node_labels.items()
+        }
+    else:
+        node_subgraph_hashes = defaultdict(list)
 
-    node_subgraph_hashes = defaultdict(list)
     for _ in range(iterations):
         node_labels = weisfeiler_lehman_step(
             G, node_labels, node_subgraph_hashes, edge_attr
