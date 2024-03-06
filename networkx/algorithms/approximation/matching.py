@@ -30,6 +30,12 @@ def min_maximal_matching(G):
       and every edge not in the set shares some common endpoint in the set.
       Cardinality will be 2*OPT in the worst case.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (2, 4), (3, 5), (4, 5)])
+    >>> nx.approximation.min_maximal_matching(G)
+    {(1, 2), (3, 5)}
+
     Notes
     -----
     The algorithm computes an approximate solution for the minimum maximal

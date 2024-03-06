@@ -38,6 +38,11 @@ def average_clustering(G, trials=1000, seed=None):
     c : float
         Approximated average clustering coefficient.
 
+    Raises
+    ------
+    NetworkXNotImplemented
+        If G is directed.
+
     Examples
     --------
     >>> from networkx.algorithms import approximation
