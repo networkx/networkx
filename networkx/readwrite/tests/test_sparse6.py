@@ -1,4 +1,3 @@
-import tempfile
 from io import BytesIO
 
 import pytest
@@ -158,16 +157,10 @@ class TestWriteSparse6:
         with pytest.raises(nx.NetworkXNotImplemented):
             nx.write_sparse6(nx.DiGraph(), BytesIO())
 
-    def test_write_path(self):
-        # On Windows, we can't reopen a file that is open
-        # So, for test we get a valid name from tempfile but close it.
-        with tempfile.NamedTemporaryFile() as f:
-            fullfilename = f.name
+    def test_write_path(self, tmp_path):
+        # Get a valid temporary file name
+        fullfilename = str(tmp_path / "test.s6")
         # file should be closed now, so write_sparse6 can open it
         nx.write_sparse6(nx.null_graph(), fullfilename)
-        fh = open(fullfilename, mode="rb")
-        assert fh.read() == b">>sparse6<<:?\n"
-        fh.close()
-        import os
-
-        os.remove(fullfilename)
+        with open(fullfilename, mode="rb") as fh:
+            assert fh.read() == b">>sparse6<<:?\n"

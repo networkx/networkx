@@ -12,8 +12,8 @@ __all__ = [
 ]
 
 
-@nx._dispatch
 @not_implemented_for("directed")
+@nx._dispatchable
 def connected_components(G):
     """Generate connected components.
 
@@ -68,6 +68,8 @@ def connected_components(G):
             yield c
 
 
+@not_implemented_for("directed")
+@nx._dispatchable
 def number_connected_components(G):
     """Returns the number of connected components.
 
@@ -80,6 +82,11 @@ def number_connected_components(G):
     -------
     n : integer
        Number of connected components
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If G is directed.
 
     Examples
     --------
@@ -101,8 +108,8 @@ def number_connected_components(G):
     return sum(1 for cc in connected_components(G))
 
 
-@nx._dispatch
 @not_implemented_for("directed")
+@nx._dispatchable
 def is_connected(G):
     """Returns True if the graph is connected, False otherwise.
 
@@ -142,13 +149,13 @@ def is_connected(G):
     """
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
-            "Connectivity is undefined ", "for the null graph."
+            "Connectivity is undefined for the null graph."
         )
     return sum(1 for node in _plain_bfs(G, arbitrary_element(G))) == len(G)
 
 
-@nx._dispatch
 @not_implemented_for("directed")
+@nx._dispatchable
 def node_connected_component(G, n):
     """Returns the set of nodes in the component of graph containing node n.
 

@@ -110,7 +110,7 @@ in other words, the ``seed`` argument now accepts `numpy.random.Generator` insta
 The `numpy.random.Generator` interface includes several improvements over the
 original `numpy.random.RandomState`, including better statistical properties
 and improved performance.
-However ``Generator`` is not stream-compatibile with ``RandomState`` and
+However ``Generator`` is not stream-compatible with ``RandomState`` and
 does not guarantee stream-compatibility with future versions of NumPy.
 Therefore, the best-practice is to be explicit when using random number
 generators.

@@ -9,8 +9,8 @@ __all__ = [
 ]
 
 
-@nx._dispatch
 @not_implemented_for("undirected")
+@nx._dispatchable
 def weakly_connected_components(G):
     """Generate weakly connected components of G.
 
@@ -36,10 +36,7 @@ def weakly_connected_components(G):
 
     >>> G = nx.path_graph(4, create_using=nx.DiGraph())
     >>> nx.add_path(G, [10, 11, 12])
-    >>> [
-    ...     len(c)
-    ...     for c in sorted(nx.weakly_connected_components(G), key=len, reverse=True)
-    ... ]
+    >>> [len(c) for c in sorted(nx.weakly_connected_components(G), key=len, reverse=True)]
     [4, 3]
 
     If you only want the largest component, it's more efficient to
@@ -66,6 +63,7 @@ def weakly_connected_components(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatchable
 def number_weakly_connected_components(G):
     """Returns the number of weakly connected components in G.
 
@@ -104,8 +102,8 @@ def number_weakly_connected_components(G):
     return sum(1 for wcc in weakly_connected_components(G))
 
 
-@nx._dispatch
 @not_implemented_for("undirected")
+@nx._dispatchable
 def is_weakly_connected(G):
     """Test directed graph for weak connectivity.
 

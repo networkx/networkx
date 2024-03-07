@@ -18,17 +18,15 @@ __all__ = [
     "find_cliques_recursive",
     "make_max_clique_graph",
     "make_clique_bipartite",
-    "graph_clique_number",
-    "graph_number_of_cliques",
     "node_clique_number",
     "number_of_cliques",
-    "cliques_containing_node",
     "enumerate_all_cliques",
     "max_weight_clique",
 ]
 
 
 @not_implemented_for("directed")
+@nx._dispatchable
 def enumerate_all_cliques(G):
     """Returns all cliques in an undirected graph.
 
@@ -100,6 +98,7 @@ def enumerate_all_cliques(G):
 
 
 @not_implemented_for("directed")
+@nx._dispatchable
 def find_cliques(G, nodes=None):
     """Returns all maximal cliques in an undirected graph.
 
@@ -295,6 +294,7 @@ def find_cliques(G, nodes=None):
 
 
 # TODO Should this also be not implemented for directed graphs?
+@nx._dispatchable
 def find_cliques_recursive(G, nodes=None):
     """Returns all maximal cliques in a graph.
 
@@ -412,6 +412,7 @@ def find_cliques_recursive(G, nodes=None):
     return expand(subg_init, cand_init)
 
 
+@nx._dispatchable(returns_graph=True)
 def make_max_clique_graph(G, create_using=None):
     """Returns the maximal clique graph of the given graph.
 
@@ -436,8 +437,9 @@ def make_max_clique_graph(G, create_using=None):
     This function behaves like the following code::
 
         import networkx as nx
+
         G = nx.make_clique_bipartite(G)
-        cliques = [v for v in G.nodes() if G.nodes[v]['bipartite'] == 0]
+        cliques = [v for v in G.nodes() if G.nodes[v]["bipartite"] == 0]
         G = nx.bipartite.projected_graph(G, cliques)
         G = nx.relabel_nodes(G, {-v: v - 1 for v in G})
 
@@ -458,6 +460,7 @@ def make_max_clique_graph(G, create_using=None):
     return B
 
 
+@nx._dispatchable(returns_graph=True)
 def make_clique_bipartite(G, fpos=None, create_using=None, name=None):
     """Returns the bipartite clique graph corresponding to `G`.
 
@@ -506,106 +509,7 @@ def make_clique_bipartite(G, fpos=None, create_using=None, name=None):
     return B
 
 
-def graph_clique_number(G, cliques=None):
-    """Returns the clique number of the graph.
-
-    The *clique number* of a graph is the size of the largest clique in
-    the graph.
-
-    .. deprecated:: 3.0
-
-       graph_clique_number is deprecated in NetworkX 3.0 and will be removed
-       in v3.2. The graph clique number can be computed directly with::
-
-           max(len(c) for c in nx.find_cliques(G))
-
-
-    Parameters
-    ----------
-    G : NetworkX graph
-        An undirected graph.
-
-    cliques : list
-        A list of cliques, each of which is itself a list of nodes. If
-        not specified, the list of all cliques will be computed, as by
-        :func:`find_cliques`.
-
-    Returns
-    -------
-    int
-        The size of the largest clique in `G`.
-
-    Notes
-    -----
-    You should provide `cliques` if you have already computed the list
-    of maximal cliques, in order to avoid an exponential time search for
-    maximal cliques.
-
-    """
-    import warnings
-
-    warnings.warn(
-        (
-            "\n\ngraph_clique_number is deprecated and will be removed.\n"
-            "Use: ``max(len(c) for c in nx.find_cliques(G))`` instead."
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    if len(G.nodes) < 1:
-        return 0
-    if cliques is None:
-        cliques = find_cliques(G)
-    return max([len(c) for c in cliques] or [1])
-
-
-def graph_number_of_cliques(G, cliques=None):
-    """Returns the number of maximal cliques in the graph.
-
-    .. deprecated:: 3.0
-
-       graph_number_of_cliques is deprecated and will be removed in v3.2.
-       The number of maximal cliques can be computed directly with::
-
-           sum(1 for _ in nx.find_cliques(G))
-
-    Parameters
-    ----------
-    G : NetworkX graph
-        An undirected graph.
-
-    cliques : list
-        A list of cliques, each of which is itself a list of nodes. If
-        not specified, the list of all cliques will be computed, as by
-        :func:`find_cliques`.
-
-    Returns
-    -------
-    int
-        The number of maximal cliques in `G`.
-
-    Notes
-    -----
-    You should provide `cliques` if you have already computed the list
-    of maximal cliques, in order to avoid an exponential time search for
-    maximal cliques.
-
-    """
-    import warnings
-
-    warnings.warn(
-        (
-            "\n\ngraph_number_of_cliques is deprecated and will be removed.\n"
-            "Use: ``sum(1 for _ in nx.find_cliques(G))`` instead."
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    if cliques is None:
-        cliques = list(find_cliques(G))
-    return len(cliques)
-
-
+@nx._dispatchable
 def node_clique_number(G, nodes=None, cliques=None, separate_nodes=False):
     """Returns the size of the largest maximal clique containing each given node.
 
@@ -672,29 +576,9 @@ def node_clique_number(G, nodes=None, cliques=None, separate_nodes=False):
 def number_of_cliques(G, nodes=None, cliques=None):
     """Returns the number of maximal cliques for each node.
 
-    .. deprecated:: 3.0
-
-       number_of_cliques is deprecated and will be removed in v3.2.
-       Use the result of `find_cliques` directly to compute the number of
-       cliques containing each node::
-
-           {n: sum(1 for c in nx.find_cliques(G) if n in c) for n in G}
-
     Returns a single or list depending on input nodes.
     Optional list of cliques can be input if already computed.
     """
-    import warnings
-
-    warnings.warn(
-        (
-            "\n\nnumber_of_cliques is deprecated and will be removed.\n"
-            "Use the result of find_cliques directly to compute the number\n"
-            "of cliques containing each node:\n\n"
-            "    {n: sum(1 for c in nx.find_cliques(G) if n in c) for n in G}\n\n"
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
     if cliques is None:
         cliques = list(find_cliques(G))
 
@@ -710,49 +594,6 @@ def number_of_cliques(G, nodes=None, cliques=None):
         for v in nodes:
             numcliq[v] = len([1 for c in cliques if v in c])
     return numcliq
-
-
-def cliques_containing_node(G, nodes=None, cliques=None):
-    """Returns a list of cliques containing the given node.
-
-    .. deprecated:: 3.0
-
-       cliques_containing_node is deprecated and will be removed in 3.2.
-       Use the result of `find_cliques` directly to compute the cliques that
-       contain each node::
-
-           {n: [c for c in nx.find_cliques(G) if n in c] for n in G}
-
-    Returns a single list or list of lists depending on input nodes.
-    Optional list of cliques can be input if already computed.
-    """
-    import warnings
-
-    warnings.warn(
-        (
-            "\n\ncliques_containing_node is deprecated and will be removed.\n"
-            "Use the result of find_cliques directly to compute maximal cliques\n"
-            "containing each node:\n\n"
-            "    {n: [c for c in nx.find_cliques(G) if n in c] for n in G}\n\n"
-        ),
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    if cliques is None:
-        cliques = list(find_cliques(G))
-
-    if nodes is None:
-        nodes = list(G.nodes())  # none, get entire graph
-
-    if not isinstance(nodes, list):  # check for a list
-        v = nodes
-        # assume it is a single value
-        vcliques = [c for c in cliques if v in c]
-    else:
-        vcliques = {}
-        for v in nodes:
-            vcliques[v] = [c for c in cliques if v in c]
-    return vcliques
 
 
 class MaxWeightClique:
@@ -858,6 +699,7 @@ class MaxWeightClique:
 
 
 @not_implemented_for("directed")
+@nx._dispatchable(node_attrs="weight")
 def max_weight_clique(G, weight="weight"):
     """Find a maximum weight clique in G.
 
@@ -902,7 +744,7 @@ def max_weight_clique(G, weight="weight"):
            algoritmo de branch and bound para o problema da clique máxima
            ponderada.  Proceedings of XLVII SBPO 1 (2015).
 
-    .. [2] Warrent, Jeffrey S, Hicks, Illya V.: Combinatorial Branch-and-Bound
+    .. [2] Warren, Jeffrey S, Hicks, Illya V.: Combinatorial Branch-and-Bound
            for the Maximum Weight Independent Set Problem.  Technical Report,
            Texas A&M University (2016).
     """

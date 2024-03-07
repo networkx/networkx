@@ -119,6 +119,12 @@ def test_emptybranch():
     assert not nx.is_arborescence(G)
 
 
+def test_is_branching_empty_graph_raises():
+    G = nx.DiGraph()
+    with pytest.raises(nx.NetworkXPointlessConcept, match="G has no nodes."):
+        nx.is_branching(G)
+
+
 def test_path():
     G = nx.DiGraph()
     nx.add_path(G, range(5))
@@ -160,3 +166,9 @@ def test_notarborescence2():
     G.add_edge(6, 4)
     assert not nx.is_branching(G)
     assert not nx.is_arborescence(G)
+
+
+def test_is_arborescense_empty_graph_raises():
+    G = nx.DiGraph()
+    with pytest.raises(nx.NetworkXPointlessConcept, match="G has no nodes."):
+        nx.is_arborescence(G)

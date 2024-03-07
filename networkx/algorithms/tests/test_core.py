@@ -69,10 +69,21 @@ class TestCore:
         assert nodes_equal(nodes_by_core[1], [1, 3])
         assert nodes_equal(nodes_by_core[2], [2, 4, 5, 6])
 
+    def test_core_number_multigraph(self):
+        G = nx.complete_graph(3)
+        G = nx.MultiGraph(G)
+        G.add_edge(1, 2)
+        with pytest.raises(
+            nx.NetworkXNotImplemented, match="not implemented for multigraph type"
+        ):
+            nx.core_number(G)
+
     def test_core_number_self_loop(self):
         G = nx.cycle_graph(3)
         G.add_edge(0, 0)
-        with pytest.raises(nx.NetworkXError, match="Input graph has self loops"):
+        with pytest.raises(
+            nx.NetworkXNotImplemented, match="Input graph has self loops"
+        ):
             nx.core_number(G)
 
     def test_directed_core_number(self):
@@ -102,6 +113,12 @@ class TestCore:
         k_core_subgraph = nx.k_core(self.H, k=2)
         assert sorted(k_core_subgraph.nodes()) == [2, 4, 5, 6]
 
+    def test_k_core_multigraph(self):
+        core_number = nx.core_number(self.H)
+        H = nx.MultiGraph(self.H)
+        with pytest.deprecated_call():
+            nx.k_core(H, k=0, core_number=core_number)
+
     def test_main_crust(self):
         main_crust_subgraph = nx.k_crust(self.H)
         assert sorted(main_crust_subgraph.nodes()) == [0, 1, 3]
@@ -116,6 +133,12 @@ class TestCore:
         # k=2
         k_crust_subgraph = nx.k_crust(self.H, k=0)
         assert sorted(k_crust_subgraph.nodes()) == [0]
+
+    def test_k_crust_multigraph(self):
+        core_number = nx.core_number(self.H)
+        H = nx.MultiGraph(self.H)
+        with pytest.deprecated_call():
+            nx.k_crust(H, k=0, core_number=core_number)
 
     def test_main_shell(self):
         main_shell_subgraph = nx.k_shell(self.H)
@@ -132,6 +155,12 @@ class TestCore:
         k_shell_subgraph = nx.k_shell(self.H, k=0)
         assert sorted(k_shell_subgraph.nodes()) == [0]
 
+    def test_k_shell_multigraph(self):
+        core_number = nx.core_number(self.H)
+        H = nx.MultiGraph(self.H)
+        with pytest.deprecated_call():
+            nx.k_shell(H, k=0, core_number=core_number)
+
     def test_k_corona(self):
         # k=0
         k_corona_subgraph = nx.k_corona(self.H, k=2)
@@ -142,6 +171,12 @@ class TestCore:
         # k=2
         k_corona_subgraph = nx.k_corona(self.H, k=0)
         assert sorted(k_corona_subgraph.nodes()) == [0]
+
+    def test_k_corona_multigraph(self):
+        core_number = nx.core_number(self.H)
+        H = nx.MultiGraph(self.H)
+        with pytest.deprecated_call():
+            nx.k_corona(H, k=0, core_number=core_number)
 
     def test_k_truss(self):
         # k=-1
@@ -166,6 +201,32 @@ class TestCore:
         k_truss_subgraph = nx.k_truss(self.G, 5)
         assert sorted(k_truss_subgraph.nodes()) == []
 
+    def test_k_truss_digraph(self):
+        G = nx.complete_graph(3)
+        G = nx.DiGraph(G)
+        G.add_edge(2, 1)
+        with pytest.raises(
+            nx.NetworkXNotImplemented, match="not implemented for directed type"
+        ):
+            nx.k_truss(G, k=1)
+
+    def test_k_truss_multigraph(self):
+        G = nx.complete_graph(3)
+        G = nx.MultiGraph(G)
+        G.add_edge(1, 2)
+        with pytest.raises(
+            nx.NetworkXNotImplemented, match="not implemented for multigraph type"
+        ):
+            nx.k_truss(G, k=1)
+
+    def test_k_truss_self_loop(self):
+        G = nx.cycle_graph(3)
+        G.add_edge(0, 0)
+        with pytest.raises(
+            nx.NetworkXNotImplemented, match="Input graph has self loops"
+        ):
+            nx.k_truss(G, k=1)
+
     def test_onion_layers(self):
         layers = nx.onion_layers(self.G)
         nodes_by_layer = [
@@ -178,8 +239,28 @@ class TestCore:
         assert nodes_equal(nodes_by_layer[4], [1, 2, 4, 5, 6, 8])
         assert nodes_equal(nodes_by_layer[5], [3, 7])
 
+    def test_onion_digraph(self):
+        G = nx.complete_graph(3)
+        G = nx.DiGraph(G)
+        G.add_edge(2, 1)
+        with pytest.raises(
+            nx.NetworkXNotImplemented, match="not implemented for directed type"
+        ):
+            nx.onion_layers(G)
+
+    def test_onion_multigraph(self):
+        G = nx.complete_graph(3)
+        G = nx.MultiGraph(G)
+        G.add_edge(1, 2)
+        with pytest.raises(
+            nx.NetworkXNotImplemented, match="not implemented for multigraph type"
+        ):
+            nx.onion_layers(G)
+
     def test_onion_self_loop(self):
         G = nx.cycle_graph(3)
         G.add_edge(0, 0)
-        with pytest.raises(nx.NetworkXError, match="Input graph contains self loops"):
+        with pytest.raises(
+            nx.NetworkXNotImplemented, match="Input graph contains self loops"
+        ):
             nx.onion_layers(G)

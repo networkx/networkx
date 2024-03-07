@@ -774,7 +774,7 @@ class TestGraph(BaseAttrGraphTester):
         assert G.get_edge_data(-1, 0, default=1) == 1
 
     def test_update(self):
-        # specify both edgees and nodes
+        # specify both edges and nodes
         G = self.K3.copy()
         G.update(nodes=[3, (4, {"size": 2})], edges=[(4, 5), (6, 7, {"weight": 2})])
         nlist = [

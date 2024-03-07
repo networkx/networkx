@@ -201,3 +201,12 @@ class TestBreadthLimitedSearch:
             assert nx.descendants_at_distance(self.G, 0, distance) == descendants
         for distance, descendants in enumerate([{2}, {3, 7}, {8}, {9}, {10}]):
             assert nx.descendants_at_distance(self.D, 2, distance) == descendants
+
+
+def test_deprecations():
+    G = nx.Graph([(1, 2)])
+    generic_bfs = nx.breadth_first_search.generic_bfs_edges
+    with pytest.deprecated_call():
+        list(generic_bfs(G, source=1, sort_neighbors=sorted))
+    with pytest.deprecated_call():
+        list(generic_bfs(G, source=1, neighbors=G.neighbors, sort_neighbors=sorted))

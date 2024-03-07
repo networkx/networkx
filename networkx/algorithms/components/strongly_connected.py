@@ -12,8 +12,8 @@ __all__ = [
 ]
 
 
-@nx._dispatch
 @not_implemented_for("undirected")
+@nx._dispatchable
 def strongly_connected_components(G):
     """Generate nodes in strongly connected components of graph.
 
@@ -39,10 +39,7 @@ def strongly_connected_components(G):
 
     >>> G = nx.cycle_graph(4, create_using=nx.DiGraph())
     >>> nx.add_cycle(G, [10, 11, 12])
-    >>> [
-    ...     len(c)
-    ...     for c in sorted(nx.strongly_connected_components(G), key=len, reverse=True)
-    ... ]
+    >>> [len(c) for c in sorted(nx.strongly_connected_components(G), key=len, reverse=True)]
     [4, 3]
 
     If you only want the largest component, it's more efficient to
@@ -112,6 +109,7 @@ def strongly_connected_components(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatchable
 def kosaraju_strongly_connected_components(G, source=None):
     """Generate nodes in strongly connected components of graph.
 
@@ -173,8 +171,14 @@ def kosaraju_strongly_connected_components(G, source=None):
 
 
 @not_implemented_for("undirected")
+@nx._dispatchable
 def strongly_connected_components_recursive(G):
     """Generate nodes in strongly connected components of graph.
+
+    .. deprecated:: 3.2
+
+       This function is deprecated and will be removed in a future version of
+       NetworkX. Use `strongly_connected_components` instead.
 
     Recursive version of algorithm.
 
@@ -234,38 +238,22 @@ def strongly_connected_components_recursive(G):
        Information Processing Letters 49(1): 9-14, (1994)..
 
     """
+    import warnings
 
-    def visit(v, cnt):
-        root[v] = cnt
-        visited[v] = cnt
-        cnt += 1
-        stack.append(v)
-        for w in G[v]:
-            if w not in visited:
-                yield from visit(w, cnt)
-            if w not in component:
-                root[v] = min(root[v], root[w])
-        if root[v] == visited[v]:
-            component[v] = root[v]
-            tmpc = {v}  # hold nodes in this component
-            while stack[-1] != v:
-                w = stack.pop()
-                component[w] = root[v]
-                tmpc.add(w)
-            stack.remove(v)
-            yield tmpc
+    warnings.warn(
+        (
+            "\n\nstrongly_connected_components_recursive is deprecated and will be\n"
+            "removed in the future. Use strongly_connected_components instead."
+        ),
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
 
-    visited = {}
-    component = {}
-    root = {}
-    cnt = 0
-    stack = []
-    for source in G:
-        if source not in visited:
-            yield from visit(source, cnt)
+    yield from strongly_connected_components(G)
 
 
 @not_implemented_for("undirected")
+@nx._dispatchable
 def number_strongly_connected_components(G):
     """Returns number of strongly connected components in graph.
 
@@ -286,7 +274,9 @@ def number_strongly_connected_components(G):
 
     Examples
     --------
-    >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 0), (2, 3), (4, 5), (3, 4), (5, 6), (6, 3), (6, 7)])
+    >>> G = nx.DiGraph(
+    ...     [(0, 1), (1, 2), (2, 0), (2, 3), (4, 5), (3, 4), (5, 6), (6, 3), (6, 7)]
+    ... )
     >>> nx.number_strongly_connected_components(G)
     3
 
@@ -304,6 +294,7 @@ def number_strongly_connected_components(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatchable
 def is_strongly_connected(G):
     """Test directed graph for strong connectivity.
 
@@ -355,6 +346,7 @@ def is_strongly_connected(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatchable(returns_graph=True)
 def condensation(G, scc=None):
     """Returns the condensation of G.
 
@@ -398,7 +390,7 @@ def condensation(G, scc=None):
     >>> H = nx.condensation(G)
     >>> H.nodes.data()
     NodeDataView({0: {'members': {0, 1, 2, 3}}, 1: {'members': {4, 5, 6, 7}}})
-    >>> H.graph['mapping']
+    >>> H.graph["mapping"]
     {0: 0, 1: 0, 2: 0, 3: 0, 4: 1, 5: 1, 6: 1, 7: 1}
 
     Contracting a complete graph into one single SCC.

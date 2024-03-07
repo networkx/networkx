@@ -15,6 +15,7 @@ Algorithms
    bipartite
    boundary
    bridges
+   broadcasting
    centrality
    chains
    chordal
@@ -70,10 +71,12 @@ Algorithms
    summarization
    swap
    threshold
+   time_dependent
    tournament
    traversal
    tree
    triads
    vitality
    voronoi
+   walks
    wiener

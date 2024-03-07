@@ -390,7 +390,7 @@ class MultiGraph(Graph):
         >>> G.edges[1, 2, 0]["weight"] = 3
         >>> result = set()
         >>> for edgekey, data in G[1][2].items():
-        ...     result.add(data.get('weight', 1))
+        ...     result.add(data.get("weight", 1))
         >>> result
         {1, 3}
 
@@ -1224,7 +1224,7 @@ class MultiGraph(Graph):
 
         Parameters
         ----------
-        u, v : nodes, optional (Gefault=all edges)
+        u, v : nodes, optional (Default=all edges)
             If u and v are specified, return the number of edges between
             u and v. Otherwise return the total number of all edges.
 
