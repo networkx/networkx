@@ -174,7 +174,7 @@ def effective_size(G, nodes=None, weight=None):
         effective_size[isolated_nodes] = float(
             "nan"
         )  # Constraint is undefined for isolated nodes
-        result = dict(zip(list(G.nodes), np.asarray(effective_size).flatten()))
+        result = dict(zip(list(G.nodes), effective_size.tolist()))
 
         return result
 
@@ -275,7 +275,7 @@ def constraint(G, nodes=None, weight=None):
             mutual_weights /= sum_mutual_weights[:, np.newaxis]
 
         # Calculate local constraints and constraints
-        local_constraints = (mutual_weights + mutual_weights @ mutual_weights).power(2)
+        local_constraints = (mutual_weights + mutual_weights @ mutual_weights) ** 2
         constraints = ((mutual_weights > 0) * local_constraints).sum(axis=1)
 
         # Special treatment to isolated nodes
@@ -283,7 +283,7 @@ def constraint(G, nodes=None, weight=None):
         constraints[isolated_nodes] = float(
             "nan"
         )  # Constraint is undefined for isolated nodes
-        result = dict(zip(list(G.nodes), np.asarray(constraints).flatten()))
+        result = dict(zip(list(G.nodes), constraints.tolist()))
         return result
 
     # Result for only requested nodes

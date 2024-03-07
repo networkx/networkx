@@ -1,0 +1,18 @@
+\documentclass{report}
+\usepackage{tikz}
+\usepackage{subcaption}
+
+\begin{document}
+\begin{figure}
+  \begin{tikzpicture}
+      \draw
+        (0.0:2) node (0){0}
+        (120.0:2) node (1){1}
+        (240.0:2) node (2){2};
+      \begin{scope}[-]
+        \draw (0) to (1);
+        \draw (1) to (2);
+      \end{scope}
+    \end{tikzpicture}
+\end{figure}
+\end{document}
