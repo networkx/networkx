@@ -69,9 +69,9 @@ def LCF_graph(n, shift_list, repeats, create_using=None):
     graphs of high symmetry. See, for example, `dodecahedral_graph`,
     `desargues_graph`, `heawood_graph` and `pappus_graph`.
 
-    For each node ``n_i``, cycling through the n-cycle a total of ``len(shift_list) * repeats``
-    with shift cycling through `shift_list` `repeat` s times connects ``n_i``
-    with ``n_i + shift mod n``.
+    Nodes are drawn from ``range(n)``. Each node ``n_i`` is connected with
+    node ``n_i + shift % n`` where ``shift`` is given by cycling through
+    the input `shift_list` `repeat` s times.
 
     Parameters
     ----------
