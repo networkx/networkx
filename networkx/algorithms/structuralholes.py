@@ -156,19 +156,12 @@ def effective_size(G, nodes=None, weight=None):
         mutual_weights1 = P + P.T
         mutual_weights2 = mutual_weights1.copy()
 
-        # Mutual_weights1 = Normalize mutual weights by row sums
-        sum_mutual_weights = mutual_weights1.sum(axis=1)
-        val = np.asarray(
-            np.repeat(sum_mutual_weights, mutual_weights1.getnnz(axis=0))
-        ).flatten()
-        mutual_weights1.data = mutual_weights1.data / val
+        with np.errstate(divide="ignore"):
+            # Mutual_weights1 = Normalize mutual weights by row sums
+            mutual_weights1 /= mutual_weights1.sum(axis=1)[:, np.newaxis]
 
-        # Mutual_weights2 = Normalize mutual weights by row max
-        max_mutual_weights = mutual_weights2.max(axis=1).todense()
-        val = np.asarray(
-            np.repeat(max_mutual_weights, mutual_weights2.getnnz(axis=0))
-        ).flatten()
-        mutual_weights2.data = mutual_weights2.data / val
+            # Mutual_weights2 = Normalize mutual weights by row max
+            mutual_weights2 /= mutual_weights2.max(axis=1).toarray()
 
         # Calculate effective sizes
         n_nodes = len(G)
