@@ -168,7 +168,7 @@ def effective_size(G, nodes=None, weight=None):
         r = np.ones((n_nodes, n_nodes)) - mutual_weights1 @ (
             mutual_weights2.T
         )  # Redundancy
-        effective_size = ((mutual_weights1 > 0).multiply(r)).sum(axis=1)
+        effective_size = ((mutual_weights1 > 0) * r).sum(axis=1)
 
         # Special treatment for isolated nodes
         isolated_nodes = sum_mutual_weights == 0  # Mark isolated nodes
