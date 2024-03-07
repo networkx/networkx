@@ -164,10 +164,7 @@ def effective_size(G, nodes=None, weight=None):
             mutual_weights2 /= mutual_weights2.max(axis=1).toarray()
 
         # Calculate effective sizes
-        n_nodes = len(G)
-        r = np.ones((n_nodes, n_nodes)) - mutual_weights1 @ (
-            mutual_weights2.T
-        )  # Redundancy
+        r = 1 - (mutual_weights1 @ mutual_weights2.T).toarray()
         effective_size = ((mutual_weights1 > 0) * r).sum(axis=1)
 
         # Special treatment for isolated nodes
