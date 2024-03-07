@@ -138,6 +138,7 @@ def effective_size(G, nodes=None, weight=None):
         )
         return 1 - r
 
+    # Check if Numpy is installed
     try:
         import numpy as np
 
@@ -168,6 +169,7 @@ def effective_size(G, nodes=None, weight=None):
         effective_size = ((mutual_weights1 > 0) * r).sum(axis=1)
 
         # Special treatment for isolated nodes
+        sum_mutual_weights = mutual_weights1.sum(axis=1)
         isolated_nodes = sum_mutual_weights == 0  # Mark isolated nodes
         effective_size[isolated_nodes] = float(
             "nan"
@@ -249,6 +251,7 @@ def constraint(G, nodes=None, weight=None):
 
     """
 
+    # Check if Numpy is installed
     try:
         import numpy as np
 
@@ -262,17 +265,19 @@ def constraint(G, nodes=None, weight=None):
 
         # Obtain the adjacency matrix
         P = nx.adjacency_matrix(G, weight=weight)
+
         # Calculate mutual weights
         mutual_weights = P + P.T
+
         # Normalize mutual weights by row sums
         sum_mutual_weights = mutual_weights.sum(axis=1)
-        val = np.asarray(
-            np.repeat(sum_mutual_weights, mutual_weights.getnnz(axis=0))
-        ).flatten()
-        mutual_weights.data = mutual_weights.data / val
+        with np.errstate(divide="ignore"):
+            mutual_weights /= sum_mutual_weights[:, np.newaxis]
+
         # Calculate local constraints and constraints
         local_constraints = (mutual_weights + mutual_weights @ mutual_weights).power(2)
-        constraints = ((mutual_weights > 0).multiply(local_constraints)).sum(axis=1)
+        constraints = ((mutual_weights > 0) * local_constraints).sum(axis=1)
+
         # Special treatment to isolated nodes
         isolated_nodes = sum_mutual_weights == 0  # Mark isolated nodes
         constraints[isolated_nodes] = float(
