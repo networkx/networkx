@@ -36,17 +36,16 @@ def _get_broadcast_centers(G, v, values, target):
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def tree_broadcast_center(G):
-    """Return the Broadcast Center of the tree G.
+    """Return the Broadcast Center of the tree `G`.
 
     The broadcast center of a graph G denotes the set of nodes having
     minimum broadcast time [1]_. This is a linear algorithm for determining
-    the broadcast center of a tree with N nodes, as a by-product it also
+    the broadcast center of a tree with ``N`` nodes, as a by-product it also
     determines the broadcast time from the broadcast center.
 
     Parameters
     ----------
-    G : NetworkX graph
-        Undirected graph
+    G : undirected graph
         The graph should be an undirected tree
 
     Returns
@@ -66,11 +65,11 @@ def tree_broadcast_center(G):
     """
     # Assert that the graph G is a tree
     if not nx.is_tree(G):
-        NetworkXError("Your graph is not a tree")
+        NetworkXError("Input graph is not a tree")
     # step 0
     if G.number_of_nodes() == 2:
         return 1, set(G.nodes())
-    elif G.number_of_nodes() == 1:
+    if G.number_of_nodes() == 1:
         return 0, set(G.nodes())
 
     # step 1
@@ -109,7 +108,7 @@ def tree_broadcast_center(G):
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def tree_broadcast_time(G, node=None):
-    """Return the Broadcast Time of the tree G.
+    """Return the Broadcast Time of the tree `G`.
 
     The minimum broadcast time of a node is defined as the minimum amount
     of time required to complete broadcasting starting from the
@@ -120,12 +119,10 @@ def tree_broadcast_time(G, node=None):
 
     Parameters
     ----------
-    G : NetworkX graph
-        Undirected graph
+    G : undirected graph
         The graph should be an undirected tree
-    node: int
-        index of starting node. If None,
-        the algorithm returns the broadcast
+    node: int, optional
+        index of starting node. If `None`, the algorithm returns the broadcast
         time of the tree.
 
     Returns
@@ -148,10 +145,9 @@ def tree_broadcast_time(G, node=None):
     b_T, b_C = tree_broadcast_center(G)
     if node is not None:
         return b_T + min(nx.shortest_path_length(G, node, u) for u in b_C)
-    else:
-        dist_from_center = dict.fromkeys(G, len(G))
-        for u in b_C:
-            for v, dist in nx.shortest_path_length(G, u).items():
-                if dist < dist_from_center[v]:
-                    dist_from_center[v] = dist
-        return b_T + max(dist_from_center.values())
+    dist_from_center = dict.fromkeys(G, len(G))
+    for u in b_C:
+        for v, dist in nx.shortest_path_length(G, u).items():
+            if dist < dist_from_center[v]:
+                dist_from_center[v] = dist
+    return b_T + max(dist_from_center.values())
