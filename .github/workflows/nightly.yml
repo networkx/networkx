@@ -1,0 +1,33 @@
+name: Upload and build nightly wheels
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+jobs:
+  cron:
+    # Do not attempt to upload nightly through forks
+    if: github.repository_owner == 'networkx'
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install Python requirements
+        run: |
+          python -m pip install -r requirements/release.txt
+      - name: Build a wheel and a sdist
+        run: |
+          python -m build .
+      - name: Verify the distribution
+        run: twine check --strict dist/*
+      - name: List contents of sdist
+        run: python -m tarfile --list dist/networkx-*.tar.gz
+      - name: List contents of wheel
+        run: python -m zipfile --list dist/networkx-*.whl
+      - name: Upload nighlty wheel
+        uses: scientific-python/upload-nightly-action@b67d7fcc0396e1128a474d1ab2b48aa94680f9fc # 0.5.0
+        with:
+          anaconda_nightly_upload_token: ${{ secrets.ANACONDA_NIGHTLY }}
+          artifacts_path: dist/

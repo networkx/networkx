@@ -75,6 +75,56 @@ class TestBFS:
         with pytest.raises(nx.NetworkXError):
             nx.descendants_at_distance(self.G, "abc", 0)
 
+    def test_bfs_labeled_edges_directed(self):
+        D = nx.cycle_graph(5, create_using=nx.DiGraph)
+        expected = [
+            (0, 1, "tree"),
+            (1, 2, "tree"),
+            (2, 3, "tree"),
+            (3, 4, "tree"),
+            (4, 0, "reverse"),
+        ]
+        answer = list(nx.bfs_labeled_edges(D, 0))
+        assert expected == answer
+
+        D.add_edge(4, 4)
+        expected.append((4, 4, "level"))
+        answer = list(nx.bfs_labeled_edges(D, 0))
+        assert expected == answer
+
+        D.add_edge(0, 2)
+        D.add_edge(1, 5)
+        D.add_edge(2, 5)
+        D.remove_edge(4, 4)
+        expected = [
+            (0, 1, "tree"),
+            (0, 2, "tree"),
+            (1, 2, "level"),
+            (1, 5, "tree"),
+            (2, 3, "tree"),
+            (2, 5, "forward"),
+            (3, 4, "tree"),
+            (4, 0, "reverse"),
+        ]
+        answer = list(nx.bfs_labeled_edges(D, 0))
+        assert expected == answer
+
+        G = D.to_undirected()
+        G.add_edge(4, 4)
+        expected = [
+            (0, 1, "tree"),
+            (0, 2, "tree"),
+            (0, 4, "tree"),
+            (1, 2, "level"),
+            (1, 5, "tree"),
+            (2, 3, "tree"),
+            (2, 5, "forward"),
+            (4, 3, "forward"),
+            (4, 4, "level"),
+        ]
+        answer = list(nx.bfs_labeled_edges(G, 0))
+        assert expected == answer
+
 
 class TestBreadthLimitedSearch:
     @classmethod
@@ -151,3 +201,12 @@ class TestBreadthLimitedSearch:
             assert nx.descendants_at_distance(self.G, 0, distance) == descendants
         for distance, descendants in enumerate([{2}, {3, 7}, {8}, {9}, {10}]):
             assert nx.descendants_at_distance(self.D, 2, distance) == descendants
+
+
+def test_deprecations():
+    G = nx.Graph([(1, 2)])
+    generic_bfs = nx.breadth_first_search.generic_bfs_edges
+    with pytest.deprecated_call():
+        list(generic_bfs(G, source=1, sort_neighbors=sorted))
+    with pytest.deprecated_call():
+        list(generic_bfs(G, source=1, neighbors=G.neighbors, sort_neighbors=sorted))

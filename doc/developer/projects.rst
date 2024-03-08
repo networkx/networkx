@@ -48,7 +48,7 @@ Visualization API with Matplotlib
   are trying to add new features especially with regard to plotting edges. We'd like
   someone to read a lot about what we offer and also what Matplotlib offers, and
   come up with a nice way for users to draw graphs flexibly and yet with good defaults.
-  There is little chace just a broad topic could be completed in one summer, but a
+  There is little chance just a broad topic could be completed in one summer, but a
   roadmap and substantial headway on that road is possible.
 
 - Recommended Skills: Python, matplotlib experience.
@@ -57,6 +57,7 @@ Visualization API with Matplotlib
   as well as code in the form of PR(s) which implement (part of) that API with tests.
 
 - Interested Mentors: `@dschult <https://github.com/dschult/>`__,
+  `@rossbar <https://github.com/rossbar/>`__
 
 - Expected time commitment: This project will be a full time 10 week project (~350 hrs).
 
@@ -77,8 +78,36 @@ Incorporate a Python library for ISMAGs isomorphism calculations
   with code to do that incorporation.
 
 - Interested Mentors: `@dschult <https://github.com/dschult/>`__,
+  `@rossbar <https://github.com/rossbar/>`__
 
 - Expected time commitment: This project will be a full time 10 week project (~350 hrs).
+
+Centrality Atlas
+----------------
+
+- Abstract: The goal of this project would be to produce a comprehensive review
+  of network centrality measures.
+  Centrality is a central concept in network science and has many applications
+  across domains. NetworkX provides many functions for measuring
+  various types of :doc:`network centrality</reference/algorithms/centrality>`.
+  The individual centrality functions are typically well-described by their
+  docstrings (though there's always room for improvement!); however, there
+  currently is no big-picture overview of centrality.
+  Furthermore, many of the centrality measures are closely related, but there is
+  no documentation that describes these relationships.
+
+- Recommended Skills: Python, literature review, technical writing
+
+- Expected Outcome: An executable document that provides an overview and applications
+  of network centrality measures. Potential outputs include (but are not limited
+  to): an article for ``nx-guides`` (see above) and/or an example gallery for centrality
+  measures.
+
+- Interested Mentors: `@dschult <https://github.com/dschult/>`__,
+  `@rossbar <https://github.com/rossbar/>`__
+
+- Expected time commitment: Variable, though a high-quality review article would
+  be expected to take several months of dedicated research (~350 hours).
 
 Completed Projects
 ==================

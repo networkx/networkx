@@ -4,7 +4,6 @@ import networkx as nx
 
 np = pytest.importorskip("numpy")
 sp = pytest.importorskip("scipy")
-import scipy.sparse  # call as sp.sparse
 
 from networkx.algorithms.link_analysis.hits_alg import (
     _hits_numpy,
@@ -73,7 +72,7 @@ class TestHITS:
             _hits_scipy(G, max_iter=0)
         with pytest.raises(nx.PowerIterationFailedConvergence):
             _hits_python(G, max_iter=0)
-        with pytest.raises(ValueError):
+        with pytest.raises(nx.PowerIterationFailedConvergence):
             nx.hits(G, max_iter=0)
-        with pytest.raises(sp.sparse.linalg.ArpackNoConvergence):
+        with pytest.raises(nx.PowerIterationFailedConvergence):
             nx.hits(G, max_iter=1)

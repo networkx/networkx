@@ -101,29 +101,6 @@ class TestGeneratorsRandom:
         G = nx.gnm_random_graph(100, 20, seed, directed=True)
         G = nx.dense_gnm_random_graph(100, 20, seed)
 
-        G = nx.watts_strogatz_graph(10, 2, 0.25, seed)
-        assert len(G) == 10
-        assert G.number_of_edges() == 10
-
-        G = nx.connected_watts_strogatz_graph(10, 2, 0.1, tries=10, seed=seed)
-        assert len(G) == 10
-        assert G.number_of_edges() == 10
-        pytest.raises(
-            nx.NetworkXError, nx.connected_watts_strogatz_graph, 10, 2, 0.1, tries=0
-        )
-
-        G = nx.watts_strogatz_graph(10, 4, 0.25, seed)
-        assert len(G) == 10
-        assert G.number_of_edges() == 20
-
-        G = nx.newman_watts_strogatz_graph(10, 2, 0.0, seed)
-        assert len(G) == 10
-        assert G.number_of_edges() == 10
-
-        G = nx.newman_watts_strogatz_graph(10, 4, 0.25, seed)
-        assert len(G) == 10
-        assert G.number_of_edges() >= 20
-
         G = nx.barabasi_albert_graph(100, 1, seed)
         G = nx.barabasi_albert_graph(100, 3, seed)
         assert G.number_of_edges() == (97 * 3)
@@ -333,3 +310,39 @@ class TestGeneratorsRandom:
         graph = nx.random_kernel_graph(1000, integral, root)
         graph = nx.random_kernel_graph(1000, integral, root, seed=42)
         assert len(graph) == 1000
+
+
+@pytest.mark.parametrize(
+    ("k", "expected_num_nodes", "expected_num_edges"),
+    [
+        (2, 10, 10),
+        (4, 10, 20),
+    ],
+)
+def test_watts_strogatz(k, expected_num_nodes, expected_num_edges):
+    G = nx.watts_strogatz_graph(10, k, 0.25, seed=42)
+    assert len(G) == expected_num_nodes
+    assert G.number_of_edges() == expected_num_edges
+
+
+def test_newman_watts_strogatz_zero_probability():
+    G = nx.newman_watts_strogatz_graph(10, 2, 0.0, seed=42)
+    assert len(G) == 10
+    assert G.number_of_edges() == 10
+
+
+def test_newman_watts_strogatz_nonzero_probability():
+    G = nx.newman_watts_strogatz_graph(10, 4, 0.25, seed=42)
+    assert len(G) == 10
+    assert G.number_of_edges() >= 20
+
+
+def test_connected_watts_strogatz():
+    G = nx.connected_watts_strogatz_graph(10, 2, 0.1, tries=10, seed=42)
+    assert len(G) == 10
+    assert G.number_of_edges() == 10
+
+
+def test_connected_watts_strogatz_zero_tries():
+    with pytest.raises(nx.NetworkXError, match="Maximum number of tries exceeded"):
+        nx.connected_watts_strogatz_graph(10, 2, 0.1, tries=0)

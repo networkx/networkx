@@ -57,7 +57,7 @@ Merged PRs
 - Fix link in isomorphvf2.py (#6347)
 - Add dev release notes template
 - Update precommit hooks (#6348)
-- Add clique examples and deprecate helper funtions (#6186)
+- Add clique examples and deprecate helper functions (#6186)
 - Laplace centrality for issue 4973 (#5399)
 - doc:improve doc of possible values of nodes and expected behaviour (#6333)
 - add OrderedGraph removal as an API change in release_3.0.rst (#6354)
@@ -70,7 +70,7 @@ Merged PRs
 - provide tikz with degrees, not radians (#6360)
 - Improve handling of create_using to allow Mixins of type Protocol (#6244)
 - Remove an instance of random.sample from a set (deprecated in Python 3.9) (#6380)
-- DOC: Add banner for user survey annoucement (#6375)
+- DOC: Add banner for user survey announcement (#6375)
 - bump pre-commit hooks (and fix CI) (#6396)
 - Add generate / write "network text" (formerly graph_str) (#5602)
 - Improve doc regular graphs (#6397)

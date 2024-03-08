@@ -58,7 +58,11 @@ positions = dict(zip(delaunay_graph.nodes, coordinates))
 
 # Now, we can plot with a nice basemap.
 ax = cells.plot(facecolor="lightblue", alpha=0.50, edgecolor="cornsilk", linewidth=2)
-add_basemap(ax)
+try:  # Try-except for issues with timeout/parsing failures in CI
+    add_basemap(ax)
+except:
+    pass
+
 ax.axis("off")
 nx.draw(
     delaunay_graph,

@@ -2,7 +2,6 @@ import pytest
 
 np = pytest.importorskip("numpy")
 sp = pytest.importorskip("scipy")
-import scipy.sparse  # call as sp.sparse
 
 import networkx as nx
 from networkx.generators.classic import barbell_graph, cycle_graph, path_graph

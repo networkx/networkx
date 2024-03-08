@@ -31,9 +31,8 @@ class TestReverseView:
         assert sorted(self.rv.edges) == expected
 
     def test_exceptions(self):
-        nxg = nx.graphviews
         G = nx.Graph()
-        pytest.raises(nx.NetworkXNotImplemented, nxg.reverse_view, G)
+        pytest.raises(nx.NetworkXNotImplemented, nx.reverse_view, G)
 
     def test_subclass(self):
         class MyGraph(nx.DiGraph):
@@ -82,9 +81,8 @@ class TestMultiReverseView:
         assert sorted(self.rv.edges) == expected
 
     def test_exceptions(self):
-        nxg = nx.graphviews
         MG = nx.MultiGraph(self.G)
-        pytest.raises(nx.NetworkXNotImplemented, nxg.reverse_view, MG)
+        pytest.raises(nx.NetworkXNotImplemented, nx.reverse_view, MG)
 
 
 def test_generic_multitype():

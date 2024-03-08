@@ -1,4 +1,3 @@
-import tempfile
 from io import BytesIO
 
 import pytest
@@ -104,8 +103,8 @@ class TestWriteGraph6:
             assert nodes_equal(G.nodes(), H.nodes())
             assert edges_equal(G.edges(), H.edges())
 
-    def test_write_path(self):
-        with tempfile.NamedTemporaryFile() as f:
+    def test_write_path(self, tmp_path):
+        with open(tmp_path / "test.g6", "w+b") as f:
             g6.write_graph6_file(nx.null_graph(), f)
             f.seek(0)
             assert f.read() == b">>graph6<<?\n"

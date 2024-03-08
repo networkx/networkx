@@ -29,7 +29,7 @@ However, NetworkX 3.0 includes many changes and improvements centered around
 tighter integration with other scientific Python libraries; namely
 ``numpy``, ``scipy``, ``matplotlib``, and ``pandas``.
 
-There are no dependencies for NetworkX's core funtionality, such as the data
+There are no dependencies for NetworkX's core functionality, such as the data
 structures (``Graph``, ``DiGraph``, etc.) and common algorithms, but some
 functionality, e.g. functions found in the ``networkx.linalg`` package, are
 only available if these additional libraries are installed.
@@ -110,7 +110,7 @@ in other words, the ``seed`` argument now accepts `numpy.random.Generator` insta
 The `numpy.random.Generator` interface includes several improvements over the
 original `numpy.random.RandomState`, including better statistical properties
 and improved performance.
-However ``Generator`` is not stream-compatibile with ``RandomState`` and
+However ``Generator`` is not stream-compatible with ``RandomState`` and
 does not guarantee stream-compatibility with future versions of NumPy.
 Therefore, the best-practice is to be explicit when using random number
 generators.

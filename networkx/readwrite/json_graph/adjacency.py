@@ -7,7 +7,7 @@ _attrs = {"id": "id", "key": "key"}
 
 def adjacency_data(G, attrs=_attrs):
     """Returns data in adjacency format that is suitable for JSON serialization
-    and use in Javascript documents.
+    and use in JavaScript documents.
 
     Parameters
     ----------
@@ -81,6 +81,7 @@ def adjacency_data(G, attrs=_attrs):
     return data
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def adjacency_graph(data, directed=False, multigraph=True, attrs=_attrs):
     """Returns graph from adjacency data format.
 
@@ -147,9 +148,9 @@ def adjacency_graph(data, directed=False, multigraph=True, attrs=_attrs):
             target = target_data.pop(id_)
             if not multigraph:
                 graph.add_edge(source, target)
-                graph[source][target].update(tdata)
+                graph[source][target].update(target_data)
             else:
                 ky = target_data.pop(key, None)
                 graph.add_edge(source, target, key=ky)
-                graph[source][target][ky].update(tdata)
+                graph[source][target][ky].update(target_data)
     return graph

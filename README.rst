@@ -1,8 +1,6 @@
 NetworkX
 ========
 
-`NetworkX Survey 2023!! <https://forms.gle/NUGcBxyjx5onbAgc8>`_ 🎉 Fill out the survey to tell us about your ideas, complaints, praises of NetworkX!
-
 
 .. image:: https://github.com/networkx/networkx/workflows/test/badge.svg?branch=main
   :target: https://github.com/networkx/networkx/actions?query=workflow%3A%22test%22
@@ -69,7 +67,7 @@ License
 
 Released under the 3-Clause BSD license (see `LICENSE.txt`)::
 
-   Copyright (C) 2004-2023 NetworkX Developers
+   Copyright (C) 2004-2024 NetworkX Developers
    Aric Hagberg <hagberg@lanl.gov>
    Dan Schult <dschult@colgate.edu>
    Pieter Swart <swart@lanl.gov>

@@ -89,9 +89,7 @@ class TimeRespectingGraphMatcher(GraphMatcher):
 
         >>> G2 = nx.Graph(nx.path_graph(4, create_using=nx.Graph()))
 
-        >>> GM = isomorphism.TimeRespectingGraphMatcher(
-        ...     G1, G2, "date", timedelta(days=1)
-        ... )
+        >>> GM = isomorphism.TimeRespectingGraphMatcher(G1, G2, "date", timedelta(days=1))
         """
         self.temporal_attribute_name = temporal_attribute_name
         self.delta = delta
@@ -158,9 +156,7 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
 
         >>> G2 = nx.DiGraph(nx.path_graph(4, create_using=nx.DiGraph()))
 
-        >>> GM = isomorphism.TimeRespectingDiGraphMatcher(
-        ...     G1, G2, "date", timedelta(days=1)
-        ... )
+        >>> GM = isomorphism.TimeRespectingDiGraphMatcher(G1, G2, "date", timedelta(days=1))
         """
         self.temporal_attribute_name = temporal_attribute_name
         self.delta = delta
@@ -210,7 +206,7 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
 
     def two_hop_pred(self, Gx, Gx_node, core_x, pred):
         """
-        The predeccessors of the ego node.
+        The predecessors of the ego node.
         """
         return all(
             self.one_hop(
