@@ -243,6 +243,9 @@ def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
     label : string, optional
         Label for graph legend
 
+    hide_ticks : bool
+        Hide ticks of axes.
+
     kwds : optional keywords
         See networkx.draw_networkx_nodes(), networkx.draw_networkx_edges(), and
         networkx.draw_networkx_labels() for a description of optional keywords.
@@ -326,6 +329,7 @@ def draw_networkx_nodes(
     edgecolors=None,
     label=None,
     margins=None,
+    hide_ticks=True,
 ):
     """Draw the nodes of the graph G.
 
@@ -390,6 +394,9 @@ def draw_networkx_nodes(
         be in the range ``[0, 1]``. See :meth:`matplotlib.axes.Axes.margins`
         for details. The default is `None`, which uses the Matplotlib default.
 
+    hide_ticks : bool
+        Hide ticks of axes
+
     Returns
     -------
     matplotlib.collections.PathCollection
@@ -450,14 +457,15 @@ def draw_networkx_nodes(
         edgecolors=edgecolors,
         label=label,
     )
-    ax.tick_params(
-        axis="both",
-        which="both",
-        bottom=False,
-        left=False,
-        labelbottom=False,
-        labelleft=False,
-    )
+    if hide_ticks:
+        ax.tick_params(
+            axis="both",
+            which="both",
+            bottom=False,
+            left=False,
+            labelbottom=False,
+            labelleft=False,
+        )
 
     if margins is not None:
         if isinstance(margins, Iterable):
@@ -682,6 +690,7 @@ def draw_networkx_edges(
     connectionstyle="arc3",
     min_source_margin=0,
     min_target_margin=0,
+    hide_ticks=True,
 ):
     r"""Draw the edges of the graph G.
 
@@ -780,6 +789,9 @@ def draw_networkx_edges(
 
     min_target_margin : int (default=0)
         The minimum margin (gap) at the end of the edge at the target.
+
+    hide_ticks : bool
+        Hide ticks of axes
 
     Returns
     -------
@@ -1013,14 +1025,16 @@ def draw_networkx_edges(
     corners = (minx - padx, miny - pady), (maxx + padx, maxy + pady)
     ax.update_datalim(corners)
     ax.autoscale_view()
-    ax.tick_params(
-        axis="both",
-        which="both",
-        bottom=False,
-        left=False,
-        labelbottom=False,
-        labelleft=False,
-    )
+
+    if hide_ticks:
+        ax.tick_params(
+            axis="both",
+            which="both",
+            bottom=False,
+            left=False,
+            labelbottom=False,
+            labelleft=False,
+        )
 
     return edge_viz_obj
 
@@ -1039,6 +1053,7 @@ def draw_networkx_labels(
     verticalalignment="center",
     ax=None,
     clip_on=True,
+    hide_ticks=True,
 ):
     """Draw node labels on the graph G.
 
@@ -1086,6 +1101,9 @@ def draw_networkx_labels(
 
     clip_on : bool (default=True)
         Turn on clipping of node labels at axis boundaries
+
+    hide_ticks : bool
+        Hide ticks of axes
 
     Returns
     -------
@@ -1138,14 +1156,15 @@ def draw_networkx_labels(
         )
         text_items[n] = t
 
-    ax.tick_params(
-        axis="both",
-        which="both",
-        bottom=False,
-        left=False,
-        labelbottom=False,
-        labelleft=False,
-    )
+    if hide_ticks:
+        ax.tick_params(
+            axis="both",
+            which="both",
+            bottom=False,
+            left=False,
+            labelbottom=False,
+            labelleft=False,
+        )
 
     return text_items
 
@@ -1169,6 +1188,7 @@ def draw_networkx_edge_labels(
     node_size=300,
     nodelist=None,
     connectionstyle="arc3",
+    hide_ticks=True,
 ):
     """Draw edge labels.
 
@@ -1235,6 +1255,9 @@ def draw_networkx_edge_labels(
         See `matplotlib.patches.ConnectionStyle` and
         `matplotlib.patches.FancyArrowPatch` for more info.
         If Iterable, index indicates i'th edge key of MultiGraph
+
+    hide_ticks : bool
+        Hide ticks of axes
 
     Returns
     -------
@@ -1456,14 +1479,15 @@ def draw_networkx_edge_labels(
                 ax=ax,
             )
 
-    ax.tick_params(
-        axis="both",
-        which="both",
-        bottom=False,
-        left=False,
-        labelbottom=False,
-        labelleft=False,
-    )
+    if hide_ticks:
+        ax.tick_params(
+            axis="both",
+            which="both",
+            bottom=False,
+            left=False,
+            labelbottom=False,
+            labelleft=False,
+        )
 
     return text_items
 
