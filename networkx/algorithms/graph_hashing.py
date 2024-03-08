@@ -180,7 +180,7 @@ def weisfeiler_lehman_subgraph_hashes(
     `iterations` elements - a hash for a subgraph at each depth. If
     `include_initial_labels` is set to `True`, each list will additionally
     have contain a hash of the initial node label (or equivalently a
-    subgraph of depth 0) prepended, totalling `iterations + 1` elements.
+    subgraph of depth 0) prepended, totalling ``iterations + 1`` elements.
 
     The function iteratively aggregates and hashes neighborhoods of each node.
     This is achieved for each step by replacing for each node its label from
