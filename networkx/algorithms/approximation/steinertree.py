@@ -200,8 +200,7 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
     try:
         algo = ALGORITHMS[method]
     except KeyError as e:
-        msg = f"{method} is not a valid choice for an algorithm."
-        raise ValueError(msg) from e
+        raise ValueError(f"{method} is not a valid choice for an algorithm.") from e
 
     edges = algo(G, terminal_nodes, weight)
     # For multigraph we should add the minimal weight edge keys
