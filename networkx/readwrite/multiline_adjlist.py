@@ -191,6 +191,7 @@ def write_multiline_adjlist(G, path, delimiter=" ", comments="#", encoding="utf-
         path.write(multiline.encode(encoding))
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def parse_multiline_adjlist(
     lines, comments="#", delimiter=None, create_using=None, nodetype=None, edgetype=None
 ):
@@ -254,7 +255,7 @@ def parse_multiline_adjlist(
                 u = nodetype(u)
             except BaseException as err:
                 raise TypeError(
-                    f"Failed to convert node ({u}) to " f"type {nodetype}"
+                    f"Failed to convert node ({u}) to type {nodetype}"
                 ) from err
         G.add_node(u)
         for i in range(deg):
@@ -280,14 +281,14 @@ def parse_multiline_adjlist(
                     v = nodetype(v)
                 except BaseException as err:
                     raise TypeError(
-                        f"Failed to convert node ({v}) " f"to type {nodetype}"
+                        f"Failed to convert node ({v}) to type {nodetype}"
                     ) from err
             if edgetype is not None:
                 try:
                     edgedata = {"weight": edgetype(data)}
                 except BaseException as err:
                     raise TypeError(
-                        f"Failed to convert edge data ({data}) " f"to type {edgetype}"
+                        f"Failed to convert edge data ({data}) to type {edgetype}"
                     ) from err
             else:
                 try:  # try to evaluate
@@ -300,6 +301,7 @@ def parse_multiline_adjlist(
 
 
 @open_file(0, mode="rb")
+@nx._dispatchable(graphs=None, returns_graph=True)
 def read_multiline_adjlist(
     path,
     comments="#",

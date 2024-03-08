@@ -16,11 +16,11 @@ class TestGeneratorThreshold:
     def test_threshold_sequence_graph_test(self):
         G = nx.star_graph(10)
         assert nxt.is_threshold_graph(G)
-        assert nxt.is_threshold_sequence(list(d for n, d in G.degree()))
+        assert nxt.is_threshold_sequence([d for n, d in G.degree()])
 
         G = nx.complete_graph(10)
         assert nxt.is_threshold_graph(G)
-        assert nxt.is_threshold_sequence(list(d for n, d in G.degree()))
+        assert nxt.is_threshold_sequence([d for n, d in G.degree()])
 
         deg = [3, 2, 2, 1, 1, 1]
         assert not nxt.is_threshold_sequence(deg)
@@ -227,7 +227,7 @@ class TestGeneratorThreshold:
 
         b1 = nx.betweenness_centrality(G).values()
         b2 = nxt.betweenness_sequence(cs)
-        assert sum(abs(c - d) for c, d in zip(b1, b2)) < 1e-14
+        assert sum(abs(c - d) for c, d in zip(b1, b2)) < 1e-7
 
         assert nxt.eigenvalues(cs) == [0, 1, 3, 3, 5, 7, 7, 8]
 

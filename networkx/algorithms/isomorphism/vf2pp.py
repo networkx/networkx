@@ -3,7 +3,7 @@
 VF2++ Algorithm
 ***************
 
-An implementation of the VF2++ algorithm for Graph Isomorphism testing.
+An implementation of the VF2++ algorithm [1]_ for Graph Isomorphism testing.
 
 The simplest interface to use this module is to call:
 
@@ -54,6 +54,12 @@ True
 >>> nx.vf2pp_isomorphism(G1, G2, node_label="label")
 {1: 1, 2: 2, 0: 0, 3: 3}
 
+References
+----------
+.. [1] Jüttner, Alpár & Madarasi, Péter. (2018). "VF2++—An improved subgraph
+   isomorphism algorithm". Discrete Applied Mathematics. 242.
+   https://doi.org/10.1016/j.dam.2018.02.018
+
 """
 import collections
 
@@ -91,6 +97,7 @@ _StateParameters = collections.namedtuple(
 )
 
 
+@nx._dispatchable(graphs={"G1": 0, "G2": 1}, node_attrs={"node_label": "default_label"})
 def vf2pp_isomorphism(G1, G2, node_label=None, default_label=None):
     """Return an isomorphic mapping between `G1` and `G2` if it exists.
 
@@ -121,6 +128,7 @@ def vf2pp_isomorphism(G1, G2, node_label=None, default_label=None):
         return None
 
 
+@nx._dispatchable(graphs={"G1": 0, "G2": 1}, node_attrs={"node_label": "default_label"})
 def vf2pp_is_isomorphic(G1, G2, node_label=None, default_label=None):
     """Examines whether G1 and G2 are isomorphic.
 
@@ -149,6 +157,7 @@ def vf2pp_is_isomorphic(G1, G2, node_label=None, default_label=None):
     return False
 
 
+@nx._dispatchable(graphs={"G1": 0, "G2": 1}, node_attrs={"node_label": "default_label"})
 def vf2pp_all_isomorphisms(G1, G2, node_label=None, default_label=None):
     """Yields all the possible mappings between G1 and G2.
 
@@ -338,8 +347,8 @@ def _initialize_parameters(G1, G2, G2_degree, node_label=None, default_label=-1)
         T2_tilde, T2_tilde_in = set(G2.nodes()), set()
 
     state_params = _StateParameters(
-        dict(),
-        dict(),
+        {},
+        {},
         T1,
         T1_in,
         T1_tilde,
@@ -467,8 +476,8 @@ def _find_candidates(
     G1, G2, G1_labels, _, _, nodes_of_G2Labels, G2_nodes_of_degree = graph_params
     mapping, reverse_mapping, _, _, _, _, _, _, T2_tilde, _ = state_params
 
-    covered_neighbors = [nbr for nbr in G1[u] if nbr in mapping]
-    if not covered_neighbors:
+    covered_nbrs = [nbr for nbr in G1[u] if nbr in mapping]
+    if not covered_nbrs:
         candidates = set(nodes_of_G2Labels[G1_labels[u]])
         candidates.intersection_update(G2_nodes_of_degree[G1_degree[u]])
         candidates.intersection_update(T2_tilde)
@@ -483,10 +492,10 @@ def _find_candidates(
             )
         return candidates
 
-    nbr1 = covered_neighbors[0]
+    nbr1 = covered_nbrs[0]
     common_nodes = set(G2[mapping[nbr1]])
 
-    for nbr1 in covered_neighbors[1:]:
+    for nbr1 in covered_nbrs[1:]:
         common_nodes.intersection_update(G2[mapping[nbr1]])
 
     common_nodes.difference_update(reverse_mapping)

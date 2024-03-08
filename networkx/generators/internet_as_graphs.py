@@ -376,7 +376,7 @@ class AS_graph_generator:
         self.nodes = {"T": set(), "M": set(), "CP": set(), "C": set()}
 
         self.t_graph()
-        self.nodes["T"] = set(list(self.G.nodes()))
+        self.nodes["T"] = set(self.G.nodes())
 
         i = len(self.nodes["T"])
         for _ in range(self.n_m):
@@ -397,6 +397,7 @@ class AS_graph_generator:
 
 
 @py_random_state(1)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def random_internet_as_graph(n, seed=None):
     """Generates a random undirected graph resembling the Internet AS network
 

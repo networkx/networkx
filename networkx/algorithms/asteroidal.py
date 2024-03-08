@@ -18,6 +18,7 @@ __all__ = ["is_at_free", "find_asteroidal_triple"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def find_asteroidal_triple(G):
     r"""Find an asteroidal triple in the given graph.
 
@@ -90,6 +91,7 @@ def find_asteroidal_triple(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def is_at_free(G):
     """Check if a graph is AT-free.
 
@@ -123,6 +125,7 @@ def is_at_free(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def create_component_structure(G):
     r"""Create component structure for G.
 

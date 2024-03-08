@@ -129,6 +129,7 @@ def _tricode(G, v, u, w):
 
 
 @not_implemented_for("undirected")
+@nx._dispatchable
 def triadic_census(G, nodelist=None):
     """Determines the triadic census of a directed graph.
 
@@ -154,7 +155,6 @@ def triadic_census(G, nodelist=None):
     >>> triadic_census = nx.triadic_census(G)
     >>> for key, value in triadic_census.items():
     ...     print(f"{key}: {value}")
-    ...
     003: 0
     012: 0
     102: 0
@@ -176,6 +176,11 @@ def triadic_census(G, nodelist=None):
     -----
     This algorithm has complexity $O(m)$ where $m$ is the number of edges in
     the graph.
+
+    For undirected graphs, the triadic census can be computed by first converting
+    the graph into a directed graph using the ``G.to_directed()`` method.
+    After this conversion, only the triad types 003, 102, 201 and 300 will be
+    present in the undirected scenario.
 
     Raises
     ------
@@ -275,7 +280,7 @@ def triadic_census(G, nodelist=None):
     return census
 
 
-@nx._dispatch()
+@nx._dispatchable
 def is_triad(G):
     """Returns True if the graph G is a triad, else False.
 
@@ -306,8 +311,16 @@ def is_triad(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatchable
 def all_triplets(G):
     """Returns a generator of all possible sets of 3 nodes in a DiGraph.
+
+    .. deprecated:: 3.3
+
+       all_triplets is deprecated and will be removed in NetworkX version 3.5.
+       Use `itertools.combinations` instead::
+
+          all_triplets = itertools.combinations(G, 3)
 
     Parameters
     ----------
@@ -326,11 +339,22 @@ def all_triplets(G):
     [(1, 2, 3), (1, 2, 4), (1, 3, 4), (2, 3, 4)]
 
     """
+    import warnings
+
+    warnings.warn(
+        (
+            "\n\nall_triplets is deprecated and will be rmoved in v3.5.\n"
+            "Use `itertools.combinations(G, 3)` instead."
+        ),
+        category=DeprecationWarning,
+        stacklevel=4,
+    )
     triplets = combinations(G.nodes(), 3)
     return triplets
 
 
 @not_implemented_for("undirected")
+@nx._dispatchable(returns_graph=True)
 def all_triads(G):
     """A generator of all possible triads in G.
 
@@ -361,6 +385,7 @@ def all_triads(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatchable
 def triads_by_type(G):
     """Returns a list of all triads for each triad type in a directed graph.
     There are exactly 16 different types of triads possible. Suppose 1, 2, 3 are three
@@ -384,7 +409,7 @@ def triads_by_type(G):
     - 210: 1 -> 2 <-> 3, 1 <-> 3
     - 300: 1 <-> 2 <-> 3, 1 <-> 3
 
-    Refer to the :doc:`example gallery <auto_examples/graph/plot_triad_types>`
+    Refer to the :doc:`example gallery </auto_examples/graph/plot_triad_types>`
     for visual examples of the triad types.
 
     Parameters
@@ -401,9 +426,9 @@ def triads_by_type(G):
     --------
     >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 1), (5, 6), (5, 4), (6, 7)])
     >>> dict = nx.triads_by_type(G)
-    >>> dict['120C'][0].edges()
+    >>> dict["120C"][0].edges()
     OutEdgeView([(1, 2), (1, 3), (2, 3), (3, 1)])
-    >>> dict['012'][0].edges()
+    >>> dict["012"][0].edges()
     OutEdgeView([(1, 2)])
 
     References
@@ -423,6 +448,7 @@ def triads_by_type(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatchable
 def triad_type(G):
     """Returns the sociological triad type for a triad.
 
@@ -490,7 +516,7 @@ def triad_type(G):
         elif e1[1] == e2[0] or e2[1] == e1[0]:
             return "021C"
     elif num_edges == 3:
-        for (e1, e2, e3) in permutations(G.edges(), 3):
+        for e1, e2, e3 in permutations(G.edges(), 3):
             if set(e1) == set(e2):
                 if e3[0] in e1:
                     return "111U"
@@ -502,7 +528,7 @@ def triad_type(G):
                 # e3 == (e1[0], e2[1]) and e2 == (e1[1], e3[1]):
                 return "030T"
     elif num_edges == 4:
-        for (e1, e2, e3, e4) in permutations(G.edges(), 4):
+        for e1, e2, e3, e4 in permutations(G.edges(), 4):
             if set(e1) == set(e2):
                 # identify pair of symmetric edges (which necessarily exists)
                 if set(e3) == set(e4):
@@ -521,8 +547,16 @@ def triad_type(G):
 
 @not_implemented_for("undirected")
 @py_random_state(1)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def random_triad(G, seed=None):
     """Returns a random triad from a directed graph.
+
+    .. deprecated:: 3.3
+
+       random_triad is deprecated and will be removed in version 3.5.
+       Use random sampling directly instead::
+
+          G.subgraph(random.sample(list(G), 3))
 
     Parameters
     ----------
@@ -537,6 +571,11 @@ def random_triad(G, seed=None):
     G2 : subgraph
        A randomly selected triad (order-3 NetworkX DiGraph)
 
+    Raises
+    ------
+    NetworkXError
+        If the input Graph has less than 3 nodes.
+
     Examples
     --------
     >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 1), (5, 6), (5, 4), (6, 7)])
@@ -545,64 +584,21 @@ def random_triad(G, seed=None):
     OutEdgeView([(1, 2)])
 
     """
+    import warnings
+
+    warnings.warn(
+        (
+            "\n\nrandom_triad is deprecated and will be removed in NetworkX v3.5.\n"
+            "Use random.sample instead, e.g.::\n\n"
+            "\tG.subgraph(random.sample(list(G), 3))\n"
+        ),
+        category=DeprecationWarning,
+        stacklevel=5,
+    )
+    if len(G) < 3:
+        raise nx.NetworkXError(
+            f"G needs at least 3 nodes to form a triad; (it has {len(G)} nodes)"
+        )
     nodes = seed.sample(list(G.nodes()), 3)
     G2 = G.subgraph(nodes)
     return G2
-
-
-"""
-@not_implemented_for('undirected')
-def triadic_closures(G):
-    '''Returns a list of order-3 subgraphs of G that are triadic closures.
-
-    Parameters
-    ----------
-    G : digraph
-       A NetworkX DiGraph
-
-    Returns
-    -------
-    closures : list
-       List of triads of G that are triadic closures
-    '''
-    pass
-
-
-@not_implemented_for('undirected')
-def focal_closures(G, attr_name):
-    '''Returns a list of order-3 subgraphs of G that are focally closed.
-
-    Parameters
-    ----------
-    G : digraph
-       A NetworkX DiGraph
-    attr_name : str
-        An attribute name
-
-
-    Returns
-    -------
-    closures : list
-       List of triads of G that are focally closed on attr_name
-    '''
-    pass
-
-
-@not_implemented_for('undirected')
-def balanced_triads(G, crit_func):
-    '''Returns a list of order-3 subgraphs of G that are stable.
-
-    Parameters
-    ----------
-    G : digraph
-       A NetworkX DiGraph
-    crit_func : function
-       A function that determines if a triad (order-3 digraph) is stable
-
-    Returns
-    -------
-    triads : list
-       List of triads in G that are stable
-    '''
-    pass
-"""

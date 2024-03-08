@@ -16,6 +16,7 @@ be found about `Triangular Tiling`_, and `Square, Hex and Triangle Grids`_
 from itertools import repeat
 from math import sqrt
 
+import networkx as nx
 from networkx.classes import set_node_attributes
 from networkx.exception import NetworkXError
 from networkx.generators.classic import cycle_graph, empty_graph, path_graph
@@ -31,6 +32,7 @@ __all__ = [
 ]
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 @nodes_or_number([0, 1])
 def grid_2d_graph(m, n, periodic=False, create_using=None):
     """Returns the two-dimensional grid graph.
@@ -84,6 +86,7 @@ def grid_2d_graph(m, n, periodic=False, create_using=None):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def grid_graph(dim, periodic=False):
     """Returns the *n*-dimensional grid graph.
 
@@ -140,6 +143,7 @@ def grid_graph(dim, periodic=False):
     return H
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def hypercube_graph(n):
     """Returns the *n*-dimensional hypercube graph.
 
@@ -166,6 +170,7 @@ def hypercube_graph(n):
     return G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def triangular_lattice_graph(
     m, n, periodic=False, with_positions=True, create_using=None
 ):
@@ -266,6 +271,7 @@ def triangular_lattice_graph(
     return H
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def hexagonal_lattice_graph(
     m, n, periodic=False, with_positions=True, create_using=None
 ):

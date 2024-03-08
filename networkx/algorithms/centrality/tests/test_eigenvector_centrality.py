@@ -128,25 +128,25 @@ class TestEigenvectorCentralityDirected:
     def test_eigenvector_centrality_weighted(self):
         G = self.G
         p = nx.eigenvector_centrality(G)
-        for (a, b) in zip(list(p.values()), self.G.evc):
+        for a, b in zip(list(p.values()), self.G.evc):
             assert a == pytest.approx(b, abs=1e-4)
 
     def test_eigenvector_centrality_weighted_numpy(self):
         G = self.G
         p = nx.eigenvector_centrality_numpy(G)
-        for (a, b) in zip(list(p.values()), self.G.evc):
+        for a, b in zip(list(p.values()), self.G.evc):
             assert a == pytest.approx(b, abs=1e-7)
 
     def test_eigenvector_centrality_unweighted(self):
         G = self.H
         p = nx.eigenvector_centrality(G)
-        for (a, b) in zip(list(p.values()), self.G.evc):
+        for a, b in zip(list(p.values()), self.G.evc):
             assert a == pytest.approx(b, abs=1e-4)
 
     def test_eigenvector_centrality_unweighted_numpy(self):
         G = self.H
         p = nx.eigenvector_centrality_numpy(G)
-        for (a, b) in zip(list(p.values()), self.G.evc):
+        for a, b in zip(list(p.values()), self.G.evc):
             assert a == pytest.approx(b, abs=1e-7)
 
 

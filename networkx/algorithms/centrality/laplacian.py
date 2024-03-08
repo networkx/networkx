@@ -6,13 +6,14 @@ import networkx as nx
 __all__ = ["laplacian_centrality"]
 
 
+@nx._dispatchable(edge_attrs="weight")
 def laplacian_centrality(
     G, normalized=True, nodelist=None, weight="weight", walk_type=None, alpha=0.95
 ):
     r"""Compute the Laplacian centrality for nodes in the graph `G`.
 
-    The Laplacian Centrality of a node `i` is measured by the drop in the
-    Laplacian Energy after deleting node `i` from the graph. The Laplacian Energy
+    The Laplacian Centrality of a node ``i`` is measured by the drop in the
+    Laplacian Energy after deleting node ``i`` from the graph. The Laplacian Energy
     is the sum of the squared eigenvalues of a graph's Laplacian matrix.
 
     .. math::
@@ -22,14 +23,13 @@ def laplacian_centrality(
         E_L (G) = \sum_{i=0}^n \lambda_i^2
 
     Where $E_L (G)$ is the Laplacian energy of graph `G`,
-    E_L (G_i) is the Laplacian energy of graph `G` after deleting node `i`
+    E_L (G_i) is the Laplacian energy of graph `G` after deleting node ``i``
     and $\lambda_i$ are the eigenvalues of `G`'s Laplacian matrix.
     This formula shows the normalized value. Without normalization,
     the numerator on the right side is returned.
 
     Parameters
     ----------
-
     G : graph
         A networkx graph
 
@@ -50,8 +50,11 @@ def laplacian_centrality(
     walk_type : string or None, optional (default=None)
         Optional parameter `walk_type` used when calling
         :func:`directed_laplacian_matrix <networkx.directed_laplacian_matrix>`.
-        If None, the transition matrix is selected depending on the properties
-        of the graph. Otherwise can be `random`, `lazy`, or `pagerank`.
+        One of ``"random"``, ``"lazy"``, or ``"pagerank"``. If ``walk_type=None``
+        (the default), then a value is selected according to the properties of `G`:
+        - ``walk_type="random"`` if `G` is strongly connected and aperiodic
+        - ``walk_type="lazy"`` if `G` is strongly connected but not aperiodic
+        - ``walk_type="pagerank"`` for all other cases.
 
     alpha : real (default = 0.95)
         Optional parameter `alpha` used when calling
@@ -73,34 +76,39 @@ def laplacian_centrality(
 
     Notes
     -----
-    The algorithm is implemented based on [1] with an extension to directed graphs
-    using the `nx.directed_laplacian_matrix` function.
+    The algorithm is implemented based on [1]_ with an extension to directed graphs
+    using the ``directed_laplacian_matrix`` function.
 
     Raises
     ------
     NetworkXPointlessConcept
         If the graph `G` is the null graph.
+    ZeroDivisionError
+        If the graph `G` has no edges (is empty) and normalization is requested.
 
     References
     ----------
     .. [1] Qi, X., Fuller, E., Wu, Q., Wu, Y., and Zhang, C.-Q. (2012).
-    Laplacian centrality: A new centrality measure for weighted networks.
-    Information Sciences, 194:240-253.
-    https://math.wvu.edu/~cqzhang/Publication-files/my-paper/INS-2012-Laplacian-W.pdf
+       Laplacian centrality: A new centrality measure for weighted networks.
+       Information Sciences, 194:240-253.
+       https://math.wvu.edu/~cqzhang/Publication-files/my-paper/INS-2012-Laplacian-W.pdf
 
     See Also
-    ========
-    directed_laplacian_matrix
-    laplacian_matrix
+    --------
+    :func:`~networkx.linalg.laplacianmatrix.directed_laplacian_matrix`
+    :func:`~networkx.linalg.laplacianmatrix.laplacian_matrix`
     """
     import numpy as np
     import scipy as sp
-    import scipy.linalg  # call as sp.linalg
 
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept("null graph has no centrality defined")
+    if G.size(weight=weight) == 0:
+        if normalized:
+            raise ZeroDivisionError("graph with no edges has zero full energy")
+        return {n: 0 for n in G}
 
-    if nodelist != None:
+    if nodelist is not None:
         nodeset = set(G.nbunch_iter(nodelist))
         if len(nodeset) != len(nodelist):
             raise nx.NetworkXError("nodelist has duplicate nodes or nodes not in G")
@@ -127,11 +135,15 @@ def laplacian_centrality(
         new_diag = lap_matrix.diagonal() - abs(lap_matrix[:, i])
         np.fill_diagonal(A_2, new_diag[all_but_i])
 
-        new_energy = np.power(sp.linalg.eigh(A_2, eigvals_only=True), 2).sum()
+        if len(all_but_i) > 0:  # catches degenerate case of single node
+            new_energy = np.power(sp.linalg.eigh(A_2, eigvals_only=True), 2).sum()
+        else:
+            new_energy = 0.0
+
         lapl_cent = full_energy - new_energy
         if normalized:
             lapl_cent = lapl_cent / full_energy
 
-        laplace_centralities_dict[node] = lapl_cent
+        laplace_centralities_dict[node] = float(lapl_cent)
 
     return laplace_centralities_dict

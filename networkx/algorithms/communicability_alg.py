@@ -9,6 +9,7 @@ __all__ = ["communicability", "communicability_exp"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def communicability(G):
     r"""Returns communicability between all pairs of nodes in G.
 
@@ -90,6 +91,7 @@ def communicability(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def communicability_exp(G):
     r"""Returns communicability between all pairs of nodes in G.
 
@@ -144,7 +146,6 @@ def communicability_exp(G):
     >>> c = nx.communicability_exp(G)
     """
     import scipy as sp
-    import scipy.linalg  # call as sp.linalg
 
     nodelist = list(G)  # ordering of nodes in matrix
     A = nx.to_numpy_array(G, nodelist)

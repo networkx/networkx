@@ -5,6 +5,13 @@ import pytest
 import networkx as nx
 
 
+@pytest.mark.parametrize("f", (nx.is_eulerian, nx.is_semieulerian))
+def test_empty_graph_raises(f):
+    G = nx.Graph()
+    with pytest.raises(nx.NetworkXPointlessConcept, match="Connectivity is undefined"):
+        f(G)
+
+
 class TestIsEulerian:
     def test_is_eulerian(self):
         assert nx.is_eulerian(nx.complete_graph(5))
@@ -238,6 +245,18 @@ class TestEulerianPath:
             list(nx.eulerian_path(G, source=3))
         with pytest.raises(nx.NetworkXError):
             list(nx.eulerian_path(G, source=1))
+
+    @pytest.mark.parametrize(
+        ("graph_type", "result"),
+        (
+            (nx.MultiGraph, [(0, 1, 0), (1, 0, 1)]),
+            (nx.MultiDiGraph, [(0, 1, 0), (1, 0, 0)]),
+        ),
+    )
+    def test_eulerian_with_keys(self, graph_type, result):
+        G = graph_type([(0, 1), (1, 0)])
+        answer = nx.eulerian_path(G, keys=True)
+        assert list(answer) == result
 
 
 class TestEulerize:

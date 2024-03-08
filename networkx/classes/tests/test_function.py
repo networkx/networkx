@@ -6,6 +6,11 @@ import networkx as nx
 from networkx.utils import edges_equal, nodes_equal
 
 
+def test_degree_histogram_empty():
+    G = nx.Graph()
+    assert nx.degree_histogram(G) == []
+
+
 class TestFunction:
     def setup_method(self):
         self.G = nx.Graph({0: [1, 2, 3], 1: [1, 2, 0], 4: []}, name="Test")
@@ -297,13 +302,13 @@ class TestFunction:
     def test_non_neighbors(self):
         graph = nx.complete_graph(100)
         pop = random.sample(list(graph), 1)
-        nbors = list(nx.non_neighbors(graph, pop[0]))
+        nbors = nx.non_neighbors(graph, pop[0])
         # should be all the other vertices in the graph
         assert len(nbors) == 0
 
         graph = nx.path_graph(100)
         node = random.sample(list(graph), 1)[0]
-        nbors = list(nx.non_neighbors(graph, node))
+        nbors = nx.non_neighbors(graph, node)
         # should be all the other vertices in the graph
         if node != 0 and node != 99:
             assert len(nbors) == 97
@@ -312,13 +317,13 @@ class TestFunction:
 
         # create a star graph with 99 outer nodes
         graph = nx.star_graph(99)
-        nbors = list(nx.non_neighbors(graph, 0))
+        nbors = nx.non_neighbors(graph, 0)
         assert len(nbors) == 0
 
         # disconnected graph
         graph = nx.Graph()
         graph.add_nodes_from(range(10))
-        nbors = list(nx.non_neighbors(graph, 0))
+        nbors = nx.non_neighbors(graph, 0)
         assert len(nbors) == 9
 
     def test_non_edges(self):
@@ -330,13 +335,13 @@ class TestFunction:
         graph = nx.path_graph(4)
         expected = [(0, 2), (0, 3), (1, 3)]
         nedges = list(nx.non_edges(graph))
-        for (u, v) in expected:
+        for u, v in expected:
             assert (u, v) in nedges or (v, u) in nedges
 
         graph = nx.star_graph(4)
         expected = [(1, 2), (1, 3), (1, 4), (2, 3), (2, 4), (3, 4)]
         nedges = list(nx.non_edges(graph))
-        for (u, v) in expected:
+        for u, v in expected:
             assert (u, v) in nedges or (v, u) in nedges
 
         # Directed graphs
@@ -623,6 +628,10 @@ def test_get_node_attributes():
         assert attrs[0] == vals
         assert attrs[1] == vals
         assert attrs[2] == vals
+        default_val = 1
+        G.add_node(4)
+        attrs = nx.get_node_attributes(G, attr, default=default_val)
+        assert attrs[4] == default_val
 
 
 def test_get_edge_attributes():
@@ -633,22 +642,18 @@ def test_get_edge_attributes():
         vals = 100
         nx.set_edge_attributes(G, vals, attr)
         attrs = nx.get_edge_attributes(G, attr)
-
         assert len(attrs) == 2
-        if G.is_multigraph():
-            keys = [(0, 1, 0), (1, 2, 0)]
-            for u, v, k in keys:
-                try:
-                    assert attrs[(u, v, k)] == 100
-                except KeyError:
-                    assert attrs[(v, u, k)] == 100
-        else:
-            keys = [(0, 1), (1, 2)]
-            for u, v in keys:
-                try:
-                    assert attrs[(u, v)] == 100
-                except KeyError:
-                    assert attrs[(v, u)] == 100
+
+        for edge in G.edges:
+            assert attrs[edge] == vals
+
+        default_val = vals
+        G.add_edge(4, 5)
+        deafult_attrs = nx.get_edge_attributes(G, attr, default=default_val)
+        assert len(deafult_attrs) == 3
+
+        for edge in G.edges:
+            assert deafult_attrs[edge] == vals
 
 
 def test_is_empty():
@@ -738,9 +743,9 @@ def test_pathweight():
     invalid_path = [1, 3, 2]
     graphs = [nx.Graph(), nx.DiGraph(), nx.MultiGraph(), nx.MultiDiGraph()]
     edges = [
-        (1, 2, dict(cost=5, dist=6)),
-        (2, 3, dict(cost=3, dist=4)),
-        (1, 2, dict(cost=1, dist=2)),
+        (1, 2, {"cost": 5, "dist": 6}),
+        (2, 3, {"cost": 3, "dist": 4}),
+        (1, 2, {"cost": 1, "dist": 2}),
     ]
     for graph in graphs:
         graph.add_edges_from(edges)

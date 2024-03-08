@@ -72,9 +72,17 @@ class TestConvertNumpyArray:
         nodelist += [nodelist[0]]
         pytest.raises(nx.NetworkXError, nx.to_numpy_array, P3, nodelist=nodelist)
 
+        # Make nodelist invalid by including nonexistent nodes
+        nodelist = [-1, 0, 1]
+        with pytest.raises(
+            nx.NetworkXError,
+            match=f"Nodes {nodelist - P3.nodes} in nodelist is not in G",
+        ):
+            nx.to_numpy_array(P3, nodelist=nodelist)
+
     def test_weight_keyword(self):
         WP4 = nx.Graph()
-        WP4.add_edges_from((n, n + 1, dict(weight=0.5, other=0.3)) for n in range(3))
+        WP4.add_edges_from((n, n + 1, {"weight": 0.5, "other": 0.3}) for n in range(3))
         P4 = path_graph(4)
         A = nx.to_numpy_array(P4)
         np.testing.assert_equal(A, nx.to_numpy_array(WP4, weight=None))
@@ -104,6 +112,12 @@ class TestConvertNumpyArray:
 
         A = np.array([[1]]).astype(object)
         pytest.raises(TypeError, nx.from_numpy_array, A)
+
+        A = np.array([[[1, 1, 1], [1, 1, 1]], [[1, 1, 1], [1, 1, 1]]])
+        with pytest.raises(
+            nx.NetworkXError, match=f"Input array must be 2D, not {A.ndim}"
+        ):
+            g = nx.from_numpy_array(A)
 
     def test_from_numpy_array_dtype(self):
         dt = [("weight", float), ("cost", int)]
@@ -149,6 +163,34 @@ class TestConvertNumpyArray:
             A, parallel_edges=False, create_using=nx.MultiDiGraph
         )
         assert graphs_equal(actual, expected)
+
+    @pytest.mark.parametrize(
+        "dt",
+        (
+            None,  # default
+            int,  # integer dtype
+            np.dtype(
+                [("weight", "f8"), ("color", "i1")]
+            ),  # Structured dtype with named fields
+        ),
+    )
+    def test_from_numpy_array_no_edge_attr(self, dt):
+        A = np.array([[0, 1], [1, 0]], dtype=dt)
+        G = nx.from_numpy_array(A, edge_attr=None)
+        assert "weight" not in G.edges[0, 1]
+        assert len(G.edges[0, 1]) == 0
+
+    def test_from_numpy_array_multiedge_no_edge_attr(self):
+        A = np.array([[0, 2], [2, 0]])
+        G = nx.from_numpy_array(A, create_using=nx.MultiDiGraph, edge_attr=None)
+        assert all("weight" not in e for _, e in G[0][1].items())
+        assert len(G[0][1][0]) == 0
+
+    def test_from_numpy_array_custom_edge_attr(self):
+        A = np.array([[0, 2], [3, 0]])
+        G = nx.from_numpy_array(A, edge_attr="cost")
+        assert "weight" not in G.edges[0, 1]
+        assert G.edges[0, 1]["cost"] == 3
 
     def test_symmetric(self):
         """Tests that a symmetric array has edges added only once to an

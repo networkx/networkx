@@ -43,6 +43,7 @@ __all__ = [
 ]
 
 
+@nx._dispatchable(edge_attrs="weight")
 def to_pandas_adjacency(
     G,
     nodelist=None,
@@ -100,20 +101,21 @@ def to_pandas_adjacency(
     diagonal matrix entry value to the weight attribute of the edge
     (or the number 1 if the edge has no weight attribute).  If the
     alternate convention of doubling the edge weight is desired the
-    resulting Pandas DataFrame can be modified as follows:
+    resulting Pandas DataFrame can be modified as follows::
 
-    >>> import pandas as pd
-    >>> pd.options.display.max_columns = 20
-    >>> import numpy as np
-    >>> G = nx.Graph([(1, 1)])
-    >>> df = nx.to_pandas_adjacency(G, dtype=int)
-    >>> df
-       1
-    1  1
-    >>> df.values[np.diag_indices_from(df)] *= 2
-    >>> df
-       1
-    1  2
+        >>> import pandas as pd
+        >>> G = nx.Graph([(1, 1), (2, 2)])
+        >>> df = nx.to_pandas_adjacency(G)
+        >>> df
+             1    2
+        1  1.0  0.0
+        2  0.0  1.0
+        >>> diag_idx = list(range(len(df)))
+        >>> df.iloc[diag_idx, diag_idx] *= 2
+        >>> df
+             1    2
+        1  2.0  0.0
+        2  0.0  2.0
 
     Examples
     --------
@@ -149,6 +151,7 @@ def to_pandas_adjacency(
     return pd.DataFrame(data=M, index=nodelist, columns=nodelist)
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def from_pandas_adjacency(df, create_using=None):
     r"""Returns a graph from Pandas DataFrame.
 
@@ -169,6 +172,14 @@ def from_pandas_adjacency(df, create_using=None):
 
     If `df` has a single data type for each entry it will be converted to an
     appropriate Python data type.
+
+    If you have node attributes stored in a separate dataframe `df_nodes`,
+    you can load those attributes to the graph `G` using the following code:
+
+    ```
+    df_nodes = pd.DataFrame({"node_id": [1, 2, 3], "attribute1": ["A", "B", "C"]})
+    G.add_nodes_from((n, dict(d)) for n, d in df_nodes.iterrows())
+    ```
 
     If `df` has a user-specified compound data type the names
     of the data fields will be used as attribute keys in the resulting
@@ -209,6 +220,7 @@ def from_pandas_adjacency(df, create_using=None):
     return G
 
 
+@nx._dispatchable(preserve_edge_attrs=True)
 def to_pandas_edgelist(
     G,
     source="source",
@@ -262,9 +274,9 @@ def to_pandas_edgelist(
     0      A      B     1       7
     1      C      E     9      10
 
-    >>> G = nx.MultiGraph([('A', 'B', {'cost': 1}), ('A', 'B', {'cost': 9})])
-    >>> df = nx.to_pandas_edgelist(G, nodelist=['A', 'C'], edge_key='ekey')
-    >>> df[['source', 'target', 'cost', 'ekey']]
+    >>> G = nx.MultiGraph([("A", "B", {"cost": 1}), ("A", "B", {"cost": 9})])
+    >>> df = nx.to_pandas_edgelist(G, nodelist=["A", "C"], edge_key="ekey")
+    >>> df[["source", "target", "cost", "ekey"]]
       source target  cost  ekey
     0      A      B     1     0
     1      A      B     9     1
@@ -300,6 +312,7 @@ def to_pandas_edgelist(
     return pd.DataFrame(edgelistdict, dtype=dtype)
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def from_pandas_edgelist(
     df,
     source="source",
@@ -346,6 +359,14 @@ def from_pandas_edgelist(
         A valid column name for the edge keys (for a MultiGraph). The values in
         this column are used for the edge keys when adding edges if create_using
         is a multigraph.
+
+    If you have node attributes stored in a separate dataframe `df_nodes`,
+    you can load those attributes to the graph `G` using the following code:
+
+    ```
+    df_nodes = pd.DataFrame({"node_id": [1, 2, 3], "attribute1": ["A", "B", "C"]})
+    G.add_nodes_from((n, dict(d)) for n, d in df_nodes.iterrows())
+    ```
 
     See Also
     --------
@@ -422,7 +443,7 @@ def from_pandas_edgelist(
     attribute_data = []
     if edge_attr is True:
         attr_col_headings = [c for c in df.columns if c not in reserved_columns]
-    elif isinstance(edge_attr, (list, tuple)):
+    elif isinstance(edge_attr, list | tuple):
         attr_col_headings = edge_attr
     else:
         attr_col_headings = [edge_attr]
@@ -463,6 +484,7 @@ def from_pandas_edgelist(
     return g
 
 
+@nx._dispatchable(edge_attrs="weight")
 def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format="csr"):
     """Returns the graph adjacency matrix as a SciPy sparse array.
 
@@ -544,7 +566,6 @@ def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format=
        https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     if len(G) == 0:
         raise nx.NetworkXError("Graph has no nodes or edges")
@@ -603,10 +624,11 @@ def _csr_gen_triples(A):
 
     """
     nrows = A.shape[0]
-    data, indices, indptr = A.data, A.indices, A.indptr
-    for i in range(nrows):
-        for j in range(indptr[i], indptr[i + 1]):
-            yield i, indices[j], data[j]
+    indptr, dst_indices, data = A.indptr, A.indices, A.data
+    import numpy as np
+
+    src_indices = np.repeat(np.arange(nrows), np.diff(indptr))
+    return zip(src_indices.tolist(), dst_indices.tolist(), A.data.tolist())
 
 
 def _csc_gen_triples(A):
@@ -615,10 +637,11 @@ def _csc_gen_triples(A):
 
     """
     ncols = A.shape[1]
-    data, indices, indptr = A.data, A.indices, A.indptr
-    for i in range(ncols):
-        for j in range(indptr[i], indptr[i + 1]):
-            yield indices[j], i, data[j]
+    indptr, src_indices, data = A.indptr, A.indices, A.data
+    import numpy as np
+
+    dst_indices = np.repeat(np.arange(ncols), np.diff(indptr))
+    return zip(src_indices.tolist(), dst_indices.tolist(), A.data.tolist())
 
 
 def _coo_gen_triples(A):
@@ -626,8 +649,7 @@ def _coo_gen_triples(A):
     of weighted edge triples.
 
     """
-    row, col, data = A.row, A.col, A.data
-    return zip(row, col, data)
+    return zip(A.row.tolist(), A.col.tolist(), A.data.tolist())
 
 
 def _dok_gen_triples(A):
@@ -636,7 +658,8 @@ def _dok_gen_triples(A):
 
     """
     for (r, c), v in A.items():
-        yield r, c, v
+        # Use `v.item()` to convert a NumPy scalar to the appropriate Python scalar
+        yield int(r), int(c), v.item()
 
 
 def _generate_weighted_edges(A):
@@ -656,6 +679,7 @@ def _generate_weighted_edges(A):
     return _coo_gen_triples(A.tocoo())
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def from_scipy_sparse_array(
     A, parallel_edges=False, create_using=None, edge_attribute="weight"
 ):
@@ -699,7 +723,6 @@ def from_scipy_sparse_array(
     Examples
     --------
     >>> import scipy as sp
-    >>> import scipy.sparse  # call as sp.sparse
     >>> A = sp.sparse.eye(2, 2, 1)
     >>> G = nx.from_scipy_sparse_array(A)
 
@@ -717,9 +740,7 @@ def from_scipy_sparse_array(
     as the number of parallel edges joining those two vertices:
 
     >>> A = sp.sparse.csr_array([[1, 1], [1, 2]])
-    >>> G = nx.from_scipy_sparse_array(
-    ...     A, parallel_edges=True, create_using=nx.MultiGraph
-    ... )
+    >>> G = nx.from_scipy_sparse_array(A, parallel_edges=True, create_using=nx.MultiGraph)
     >>> G[1][1]
     AtlasView({0: {'weight': 1}, 1: {'weight': 1}})
 
@@ -761,6 +782,7 @@ def from_scipy_sparse_array(
     return G
 
 
+@nx._dispatchable(edge_attrs="weight")  # edge attrs may also be obtained from `dtype`
 def to_numpy_array(
     G,
     nodelist=None,
@@ -786,7 +808,7 @@ def to_numpy_array(
         default is used. The dtype can be structured if `weight=None`, in which
         case the dtype field names are used to look up edge attributes. The
         result is a structured array where each named field in the dtype
-        corresponds to the adjaceny for that edge attribute. See examples for
+        corresponds to the adjacency for that edge attribute. See examples for
         details.
 
     order : {'C', 'F'}, optional
@@ -806,7 +828,7 @@ def to_numpy_array(
         dtype is used.
 
     nonedge : array_like (default = 0.0)
-        The value used to represent non-edges in the adjaceny matrix.
+        The value used to represent non-edges in the adjacency matrix.
         The array values corresponding to nonedges are typically set to zero.
         However, this could be undesirable if there are array values
         corresponding to actual edges that also have the value zero. If so,
@@ -914,7 +936,7 @@ def to_numpy_array(
     >>> G.add_edge(2, 0, weight=0)
     >>> G.add_edge(2, 1, weight=0)
     >>> G.add_edge(3, 0, weight=1)
-    >>> nx.to_numpy_array(G, nonedge=-1.)
+    >>> nx.to_numpy_array(G, nonedge=-1.0)
     array([[-1.,  2., -1.,  1.],
            [ 2., -1.,  0., -1.],
            [-1.,  0., -1.,  0.],
@@ -999,7 +1021,8 @@ def to_numpy_array(
     return A
 
 
-def from_numpy_array(A, parallel_edges=False, create_using=None):
+@nx._dispatchable(graphs=None, returns_graph=True)
+def from_numpy_array(A, parallel_edges=False, create_using=None, edge_attr="weight"):
     """Returns a graph from a 2D NumPy array.
 
     The 2D NumPy array is interpreted as an adjacency matrix for the graph.
@@ -1019,6 +1042,10 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
+    edge_attr : String, optional (default="weight")
+        The attribute to which the array values are assigned on each edge. If
+        it is None, edge attributes will not be assigned.
+
     Notes
     -----
     For directed graphs, explicitly mention create_using=nx.DiGraph,
@@ -1032,6 +1059,11 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
     If `create_using` indicates an undirected multigraph, then only the edges
     indicated by the upper triangle of the array `A` will be added to the
     graph.
+
+    If `edge_attr` is Falsy (False or None), edge attributes will not be
+    assigned, and the array data will be treated like a binary mask of
+    edge presence or absence. Otherwise, the attributes will be assigned
+    as follows:
 
     If the NumPy array has a single data type for each array entry it
     will be converted to an appropriate Python data type.
@@ -1123,7 +1155,9 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
             (
                 u,
                 v,
-                {
+                {}
+                if edge_attr in [False, None]
+                else {
                     name: kind_to_python_type[dtype.kind](val)
                     for (_, dtype, name), val in zip(fields, A[u, v])
                 },
@@ -1143,11 +1177,17 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
         #         for d in range(A[u, v]):
         #             G.add_edge(u, v, weight=1)
         #
-        triples = chain(
-            ((u, v, {"weight": 1}) for d in range(A[u, v])) for (u, v) in edges
-        )
+        if edge_attr in [False, None]:
+            triples = chain(((u, v, {}) for d in range(A[u, v])) for (u, v) in edges)
+        else:
+            triples = chain(
+                ((u, v, {edge_attr: 1}) for d in range(A[u, v])) for (u, v) in edges
+            )
     else:  # basic data type
-        triples = ((u, v, dict(weight=python_type(A[u, v]))) for u, v in edges)
+        if edge_attr in [False, None]:
+            triples = ((u, v, {}) for u, v in edges)
+        else:
+            triples = ((u, v, {edge_attr: python_type(A[u, v])}) for u, v in edges)
     # If we are creating an undirected multigraph, only add the edges from the
     # upper triangle of the matrix. Otherwise, add all the edges. This relies
     # on the fact that the vertices created in the

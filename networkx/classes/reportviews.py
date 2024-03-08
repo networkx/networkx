@@ -239,11 +239,13 @@ class NodeView(Mapping, Set):
         Examples
         --------
         >>> G = nx.Graph()
-        >>> G.add_nodes_from([
-        ...     (0, {"color": "red", "weight": 10}),
-        ...     (1, {"color": "blue"}),
-        ...     (2, {"color": "yellow", "weight": 2})
-        ... ])
+        >>> G.add_nodes_from(
+        ...     [
+        ...         (0, {"color": "red", "weight": 10}),
+        ...         (1, {"color": "blue"}),
+        ...         (2, {"color": "yellow", "weight": 2}),
+        ...     ]
+        ... )
 
         Accessing node data with ``data=True`` (the default) returns a
         NodeDataView mapping each node to all of its attributes:
@@ -757,7 +759,7 @@ class OutEdgeDataView:
     def __setstate__(self, state):
         self.__init__(**state)
 
-    def __init__(self, viewer, nbunch=None, data=False, default=None):
+    def __init__(self, viewer, nbunch=None, data=False, *, default=None):
         self._viewer = viewer
         adjdict = self._adjdict = viewer._adjdict
         if nbunch is None:
@@ -902,7 +904,7 @@ class OutMultiEdgeDataView(OutEdgeDataView):
     def __setstate__(self, state):
         self.__init__(**state)
 
-    def __init__(self, viewer, nbunch=None, data=False, keys=False, default=None):
+    def __init__(self, viewer, nbunch=None, data=False, *, default=None, keys=False):
         self._viewer = viewer
         adjdict = self._adjdict = viewer._adjdict
         self.keys = keys
@@ -966,10 +968,7 @@ class OutMultiEdgeDataView(OutEdgeDataView):
             except KeyError:
                 return False
             return e == self._report(u, v, k, dd)
-        for k, dd in kdict.items():
-            if e == self._report(u, v, k, dd):
-                return True
-        return False
+        return any(e == self._report(u, v, k, dd) for k, dd in kdict.items())
 
 
 class MultiEdgeDataView(OutMultiEdgeDataView):
@@ -1005,10 +1004,7 @@ class MultiEdgeDataView(OutMultiEdgeDataView):
             except KeyError:
                 return False
             return e == self._report(u, v, k, dd)
-        for k, dd in kdict.items():
-            if e == self._report(u, v, k, dd):
-                return True
-        return False
+        return any(e == self._report(u, v, k, dd) for k, dd in kdict.items())
 
 
 class InMultiEdgeDataView(OutMultiEdgeDataView):
@@ -1036,10 +1032,7 @@ class InMultiEdgeDataView(OutMultiEdgeDataView):
             k = e[2]
             dd = kdict[k]
             return e == self._report(u, v, k, dd)
-        for k, dd in kdict.items():
-            if e == self._report(u, v, k, dd):
-                return True
-        return False
+        return any(e == self._report(u, v, k, dd) for k, dd in kdict.items())
 
 
 # EdgeViews    have set operations and no data reported
@@ -1094,10 +1087,10 @@ class OutEdgeView(Set, Mapping):
         return self._adjdict[u][v]
 
     # EdgeDataView methods
-    def __call__(self, nbunch=None, data=False, default=None):
+    def __call__(self, nbunch=None, data=False, *, default=None):
         if nbunch is None and data is False:
             return self
-        return self.dataview(self, nbunch, data, default)
+        return self.dataview(self, nbunch, data, default=default)
 
     def data(self, data=True, default=None, nbunch=None):
         """
@@ -1138,11 +1131,13 @@ class OutEdgeView(Set, Mapping):
         Examples
         --------
         >>> G = nx.Graph()
-        >>> G.add_edges_from([
-        ...     (0, 1, {"dist": 3, "capacity": 20}),
-        ...     (1, 2, {"dist": 4}),
-        ...     (2, 0, {"dist": 5})
-        ... ])
+        >>> G.add_edges_from(
+        ...     [
+        ...         (0, 1, {"dist": 3, "capacity": 20}),
+        ...         (1, 2, {"dist": 4}),
+        ...         (2, 0, {"dist": 5}),
+        ...     ]
+        ... )
 
         Accessing edge data with ``data=True`` (the default) returns an
         edge data view object listing each edge with all of its attributes:
@@ -1175,7 +1170,7 @@ class OutEdgeView(Set, Mapping):
         """
         if nbunch is None and data is False:
             return self
-        return self.dataview(self, nbunch, data, default)
+        return self.dataview(self, nbunch, data, default=default)
 
     # String Methods
     def __str__(self):
@@ -1361,15 +1356,15 @@ class OutMultiEdgeView(OutEdgeView):
         u, v, k = e
         return self._adjdict[u][v][k]
 
-    def __call__(self, nbunch=None, data=False, keys=False, default=None):
+    def __call__(self, nbunch=None, data=False, *, default=None, keys=False):
         if nbunch is None and data is False and keys is True:
             return self
-        return self.dataview(self, nbunch, data, keys, default)
+        return self.dataview(self, nbunch, data, default=default, keys=keys)
 
-    def data(self, data=True, keys=False, default=None, nbunch=None):
+    def data(self, data=True, default=None, nbunch=None, keys=False):
         if nbunch is None and data is False and keys is True:
             return self
-        return self.dataview(self, nbunch, data, keys, default)
+        return self.dataview(self, nbunch, data, default=default, keys=keys)
 
 
 class MultiEdgeView(OutMultiEdgeView):

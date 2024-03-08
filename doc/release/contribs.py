@@ -63,7 +63,7 @@ for c in commits:
     print("- " + c)
 
 print(f"\nIt contained the following {len(merges)} merges:\n")
-for (merge, message) in merges:
+for merge, message in merges:
     if merge.startswith("Merge pull request #"):
         PR = f" ({merge.split()[3]})"
     else:
@@ -83,7 +83,7 @@ authors = [a.strip() for a in authors if a.strip()]
 
 
 def key(author):
-    author = [v for v in author.split()]
+    author = list(author.split())
     if len(author) > 0:
         return author[-1]
 

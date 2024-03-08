@@ -5,7 +5,13 @@ import networkx as nx
 __all__ = ["node_link_data", "node_link_graph"]
 
 
-_attrs = dict(source="source", target="target", name="id", key="key", link="links")
+_attrs = {
+    "source": "source",
+    "target": "target",
+    "name": "id",
+    "key": "key",
+    "link": "links",
+}
 
 
 def _to_tuple(x):
@@ -20,14 +26,13 @@ def _to_tuple(x):
     >>> _to_tuple([1, 2, [3, 4]])
     (1, 2, (3, 4))
     """
-    if not isinstance(x, (tuple, list)):
+    if not isinstance(x, tuple | list):
         return x
     return tuple(map(_to_tuple, x))
 
 
 def node_link_data(
     G,
-    attrs=None,
     *,
     source="source",
     target="target",
@@ -36,34 +41,11 @@ def node_link_data(
     link="links",
 ):
     """Returns data in node-link format that is suitable for JSON serialization
-    and use in Javascript documents.
+    and use in JavaScript documents.
 
     Parameters
     ----------
     G : NetworkX graph
-
-    attrs : dict
-        A dictionary that contains five keys 'source', 'target', 'name',
-        'key' and 'link'.  The corresponding values provide the attribute
-        names for storing NetworkX-internal graph data.  The values should
-        be unique.  Default value::
-
-            dict(source='source', target='target', name='id',
-                 key='key', link='links')
-
-        If some user-defined graph data use these attribute names as data keys,
-        they may be silently dropped.
-
-        .. deprecated:: 2.8.6
-
-           The `attrs` keyword argument will be replaced with `source`, `target`, `name`,
-           `key` and `link`. in networkx 3.2
-
-           If the `attrs` keyword and the new keywords are both used in a single function call (not recommended)
-           the `attrs` keyword argument will take precedence.
-
-           The values of the keywords must be unique.
-
     source : string
         A string that provides the 'source' attribute name for storing NetworkX-internal graph data.
     target : string
@@ -128,31 +110,6 @@ def node_link_data(
     --------
     node_link_graph, adjacency_data, tree_data
     """
-    # ------ TODO: Remove between the lines after signature change is complete ----- #
-    if attrs is not None:
-        import warnings
-
-        msg = (
-            "\n\nThe `attrs` keyword argument of node_link_data is deprecated\n"
-            "and will be removed in networkx 3.2. It is replaced with explicit\n"
-            "keyword arguments: `source`, `target`, `name`, `key` and `link`.\n"
-            "To make this warning go away, and ensure usage is forward\n"
-            "compatible, replace `attrs` with the keywords. "
-            "For example:\n\n"
-            "   >>> node_link_data(G, attrs={'target': 'foo', 'name': 'bar'})\n\n"
-            "should instead be written as\n\n"
-            "   >>> node_link_data(G, target='foo', name='bar')\n\n"
-            "in networkx 3.2.\n"
-            "The default values of the keywords will not change.\n"
-        )
-        warnings.warn(msg, DeprecationWarning, stacklevel=2)
-
-        source = attrs.get("source", "source")
-        target = attrs.get("target", "target")
-        name = attrs.get("name", "name")
-        key = attrs.get("key", "key")
-        link = attrs.get("link", "links")
-    # -------------------------------------------------- #
     multigraph = G.is_multigraph()
 
     # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
@@ -163,26 +120,23 @@ def node_link_data(
         "directed": G.is_directed(),
         "multigraph": multigraph,
         "graph": G.graph,
-        "nodes": [dict(chain(G.nodes[n].items(), [(name, n)])) for n in G],
+        "nodes": [{**G.nodes[n], name: n} for n in G],
     }
     if multigraph:
         data[link] = [
-            dict(chain(d.items(), [(source, u), (target, v), (key, k)]))
+            {**d, source: u, target: v, key: k}
             for u, v, k, d in G.edges(keys=True, data=True)
         ]
     else:
-        data[link] = [
-            dict(chain(d.items(), [(source, u), (target, v)]))
-            for u, v, d in G.edges(data=True)
-        ]
+        data[link] = [{**d, source: u, target: v} for u, v, d in G.edges(data=True)]
     return data
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def node_link_graph(
     data,
     directed=False,
     multigraph=True,
-    attrs=None,
     *,
     source="source",
     target="target",
@@ -203,24 +157,6 @@ def node_link_graph(
 
     multigraph : bool
         If True, and multigraph not specified in data, return a multigraph.
-
-    attrs : dict
-        A dictionary that contains five keys 'source', 'target', 'name',
-        'key' and 'link'.  The corresponding values provide the attribute
-        names for storing NetworkX-internal graph data.  Default value:
-
-            dict(source='source', target='target', name='id',
-                key='key', link='links')
-
-        .. deprecated:: 2.8.6
-
-           The `attrs` keyword argument will be replaced with the individual keywords: `source`, `target`, `name`,
-           `key` and `link`. in networkx 3.2.
-
-           If the `attrs` keyword and the new keywords are both used in a single function call (not recommended)
-           the `attrs` keyword argument will take precedence.
-
-           The values of the keywords must be unique.
 
     source : string
         A string that provides the 'source' attribute name for storing NetworkX-internal graph data.
@@ -243,7 +179,7 @@ def node_link_graph(
 
     Create data in node-link format by converting a graph.
 
-    >>> G = nx.Graph([('A', 'B')])
+    >>> G = nx.Graph([("A", "B")])
     >>> data = nx.node_link_data(G)
     >>> data
     {'directed': False, 'multigraph': False, 'graph': {}, 'nodes': [{'id': 'A'}, {'id': 'B'}], 'links': [{'source': 'A', 'target': 'B'}]}
@@ -274,31 +210,6 @@ def node_link_graph(
     --------
     node_link_data, adjacency_data, tree_data
     """
-    # ------ TODO: Remove between the lines after signature change is complete ----- #
-    if attrs is not None:
-        import warnings
-
-        msg = (
-            "\n\nThe `attrs` keyword argument of node_link_graph is deprecated\n"
-            "and will be removed in networkx 3.2. It is replaced with explicit\n"
-            "keyword arguments: `source`, `target`, `name`, `key` and `link`.\n"
-            "To make this warning go away, and ensure usage is forward\n"
-            "compatible, replace `attrs` with the keywords. "
-            "For example:\n\n"
-            "   >>> node_link_graph(data, attrs={'target': 'foo', 'name': 'bar'})\n\n"
-            "should instead be written as\n\n"
-            "   >>> node_link_graph(data, target='foo', name='bar')\n\n"
-            "in networkx 3.2.\n"
-            "The default values of the keywords will not change.\n"
-        )
-        warnings.warn(msg, DeprecationWarning, stacklevel=2)
-
-        source = attrs.get("source", "source")
-        target = attrs.get("target", "target")
-        name = attrs.get("name", "name")
-        key = attrs.get("key", "key")
-        link = attrs.get("link", "links")
-    # -------------------------------------------------- #
     multigraph = data.get("multigraph", multigraph)
     directed = data.get("directed", directed)
     if multigraph:

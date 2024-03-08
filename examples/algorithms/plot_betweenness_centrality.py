@@ -1,7 +1,7 @@
 """
-=====================
+======================
 Betweenness Centrality
-=====================
+======================
 
 Betweenness centrality measures of positive gene functional associations
 using WormNet v.3-GS.

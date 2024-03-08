@@ -17,9 +17,9 @@ jobs:
       matrix:
         python-version: ["3.10"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -30,7 +30,7 @@ jobs:
 
       - name: Install packages
         run: |
-          pip install --upgrade pip wheel setuptools
+          pip install --upgrade pip
           pip install -r requirements/default.txt -r requirements/test.txt
           pip install -r requirements/extra.txt
           pip install .
@@ -39,4 +39,6 @@ jobs:
       - name: Test NetworkX
         run: |
           pytest --cov=networkx --runslow --doctest-modules --durations=20 --pyargs networkx
-          codecov
+
+      - name: Upload to codecov
+        uses: codecov/codecov-action@v3

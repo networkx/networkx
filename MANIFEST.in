@@ -1,5 +1,5 @@
 include MANIFEST.in
-include setup.py
+include pyproject.toml
 include CONTRIBUTING.rst
 include INSTALL.rst
 include LICENSE.txt

@@ -32,6 +32,7 @@ __all__ = [
     "fruchterman_reingold_layout",
     "spiral_layout",
     "multipartite_layout",
+    "bfs_layout",
     "arf_layout",
 ]
 
@@ -323,9 +324,9 @@ def bipartite_layout(
     width = aspect_ratio * height
     offset = (width / 2, height / 2)
 
-    top = set(nodes)
-    bottom = set(G) - top
-    nodes = list(top) + list(bottom)
+    top = dict.fromkeys(nodes)
+    bottom = [v for v in G if v not in top]
+    nodes = list(top) + bottom
 
     left_xs = np.repeat(0, len(top))
     right_xs = np.repeat(width, len(bottom))
@@ -571,7 +572,6 @@ def _sparse_fruchterman_reingold(
     # Sparse version
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     try:
         nnodes, _ = A.shape
@@ -704,7 +704,7 @@ def kamada_kawai_layout(
         elif dim == 2:
             pos = circular_layout(G, dim=dim)
         else:
-            pos = {n: pt for n, pt in zip(G, np.linspace(0, 1, len(G)))}
+            pos = dict(zip(G, np.linspace(0, 1, len(G))))
     pos_arr = np.array([pos[n] for n in G])
 
     pos = _kamada_kawai_solve(dist_mtx, pos_arr, dim)
@@ -720,7 +720,6 @@ def _kamada_kawai_solve(dist_mtx, pos_arr, dim):
 
     import numpy as np
     import scipy as sp
-    import scipy.optimize  # call as sp.optimize
 
     meanwt = 1e-3
     costargs = (np, 1 / (dist_mtx + np.eye(dist_mtx.shape[0]) * 1e-3), meanwt, dim)
@@ -867,8 +866,6 @@ def _sparse_spectral(A, dim=2):
     # Could use multilevel methods here, see Koren "On spectral graph drawing"
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
-    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     try:
         nnodes, _ = A.shape
@@ -1034,8 +1031,9 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     G : NetworkX graph or list of nodes
         A position will be assigned to every node in G.
 
-    subset_key : string (default='subset')
-        Key of node data to be used as layer subset.
+    subset_key : string or dict (default='subset')
+        If a string, the key of node data in G that holds the node subset.
+        If a dict, keyed by layer number to the nodes in that layer/subset.
 
     align : string (default='vertical')
         The alignment of nodes. Vertical or horizontal.
@@ -1056,6 +1054,12 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     >>> G = nx.complete_multipartite_graph(28, 16, 10)
     >>> pos = nx.multipartite_layout(G)
 
+    or use a dict to provide the layers of the layout
+
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 3), (3, 4)])
+    >>> layers = {"a": [0], "b": [1], "c": [2, 3], "d": [4]}
+    >>> pos = nx.multipartite_layout(G, subset_key=layers)
+
     Notes
     -----
     This algorithm currently only works in two dimensions and does not
@@ -1075,25 +1079,31 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     if len(G) == 0:
         return {}
 
-    layers = {}
-    for v, data in G.nodes(data=True):
-        try:
-            layer = data[subset_key]
-        except KeyError:
-            msg = "all nodes must have subset_key (default='subset') as data"
-            raise ValueError(msg)
-        layers[layer] = [v] + layers.get(layer, [])
+    try:
+        # check if subset_key is dict-like
+        if len(G) != sum(len(nodes) for nodes in subset_key.values()):
+            raise nx.NetworkXError(
+                "all nodes must be in one subset of `subset_key` dict"
+            )
+    except AttributeError:
+        # subset_key is not a dict, hence a string
+        node_to_subset = nx.get_node_attributes(G, subset_key)
+        if len(node_to_subset) != len(G):
+            raise nx.NetworkXError(
+                f"all nodes need a subset_key attribute: {subset_key}"
+            )
+        subset_key = nx.utils.groups(node_to_subset)
 
     # Sort by layer, if possible
     try:
-        layers = sorted(layers.items())
+        layers = dict(sorted(subset_key.items()))
     except TypeError:
-        layers = list(layers.items())
+        layers = subset_key
 
     pos = None
     nodes = []
     width = len(layers)
-    for i, (_, layer) in enumerate(layers):
+    for i, layer in enumerate(layers.values()):
         height = len(layer)
         xs = np.repeat(i, height)
         ys = np.arange(0, height, dtype=float)
@@ -1128,7 +1138,7 @@ def arf_layout(
     strong forcing between nodes. Second, it utilizes the
     layout space more effectively by preventing large gaps
     that spring layout tends to create. Lastly, the arf
-    layout represents symmmetries in the layout better than
+    layout represents symmetries in the layout better than
     the default spring layout.
 
     Parameters
@@ -1143,7 +1153,7 @@ def arf_layout(
     a : float
         Strength of springs between connected nodes. Should be larger than 1. The greater a, the clearer the separation ofunconnected sub clusters.
     etol : float
-        Graduent sum of spring forces must be larger than `etol` before successful termination.
+        Gradient sum of spring forces must be larger than `etol` before successful termination.
     dt : float
         Time step for force differential equation simulations.
     max_iter : int
@@ -1151,7 +1161,7 @@ def arf_layout(
 
     References
     .. [1] "Self-Organization Applied to Dynamic Network Layout", M. Geipel,
-            International Jounral of Modern Physics C, 2007, Vol 18, No 10, pp. 1537-1549.
+            International Journal of Modern Physics C, 2007, Vol 18, No 10, pp. 1537-1549.
             https://doi.org/10.1142/S0129183107011558 https://arxiv.org/abs/0704.1748
 
     Returns
@@ -1220,7 +1230,7 @@ def arf_layout(
         if n_iter > max_iter:
             break
         n_iter += 1
-    return {node: pi for node, pi in zip(G.nodes(), p)}
+    return dict(zip(G.nodes(), p))
 
 
 def rescale_layout(pos, scale=1):
@@ -1252,15 +1262,14 @@ def rescale_layout(pos, scale=1):
     --------
     rescale_layout_dict
     """
+    import numpy as np
+
     # Find max length over all dimensions
-    lim = 0  # max coordinate for all axes
-    for i in range(pos.shape[1]):
-        pos[:, i] -= pos[:, i].mean()
-        lim = max(abs(pos[:, i]).max(), lim)
+    pos -= pos.mean(axis=0)
+    lim = np.abs(pos).max()  # max coordinate for all axes
     # rescale to (-scale, scale) in all directions, preserves aspect
     if lim > 0:
-        for i in range(pos.shape[1]):
-            pos[:, i] *= scale / lim
+        pos *= scale / lim
     return pos
 
 
@@ -1300,3 +1309,50 @@ def rescale_layout_dict(pos, scale=1):
     pos_v = np.array(list(pos.values()))
     pos_v = rescale_layout(pos_v, scale=scale)
     return dict(zip(pos, pos_v))
+
+
+def bfs_layout(G, start, *, align="vertical", scale=1, center=None):
+    """Position nodes according to breadth-first search algorithm.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A position will be assigned to every node in G.
+
+    start : node in `G`
+        Starting node for bfs
+
+    center : array-like or None
+        Coordinate pair around which to center the layout.
+
+    Returns
+    -------
+    pos : dict
+        A dictionary of positions keyed by node.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> pos = nx.bfs_layout(G, 0)
+
+    Notes
+    -----
+    This algorithm currently only works in two dimensions and does not
+    try to minimize edge crossings.
+
+    """
+    G, center = _process_params(G, center, 2)
+
+    # Compute layers with BFS
+    layers = dict(enumerate(nx.bfs_layers(G, start)))
+
+    if len(G) != sum(len(nodes) for nodes in layers.values()):
+        raise nx.NetworkXError(
+            "bfs_layout didn't include all nodes. Perhaps use input graph:\n"
+            "        G.subgraph(nx.node_connected_component(G, start))"
+        )
+
+    # Compute node positions with multipartite_layout
+    return multipartite_layout(
+        G, subset_key=layers, align=align, scale=scale, center=center
+    )

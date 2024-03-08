@@ -9,8 +9,8 @@ __all__ = [
 ]
 
 
-@nx._dispatch
 @not_implemented_for("undirected")
+@nx._dispatchable
 def weakly_connected_components(G):
     """Generate weakly connected components of G.
 
@@ -36,10 +36,7 @@ def weakly_connected_components(G):
 
     >>> G = nx.path_graph(4, create_using=nx.DiGraph())
     >>> nx.add_path(G, [10, 11, 12])
-    >>> [
-    ...     len(c)
-    ...     for c in sorted(nx.weakly_connected_components(G), key=len, reverse=True)
-    ... ]
+    >>> [len(c) for c in sorted(nx.weakly_connected_components(G), key=len, reverse=True)]
     [4, 3]
 
     If you only want the largest component, it's more efficient to
@@ -66,6 +63,7 @@ def weakly_connected_components(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatchable
 def number_weakly_connected_components(G):
     """Returns the number of weakly connected components in G.
 
@@ -105,6 +103,7 @@ def number_weakly_connected_components(G):
 
 
 @not_implemented_for("undirected")
+@nx._dispatchable
 def is_weakly_connected(G):
     """Test directed graph for weak connectivity.
 
@@ -169,17 +168,26 @@ def _plain_bfs(G, source):
     For directed graphs only.
 
     """
-    Gsucc = G.succ
-    Gpred = G.pred
+    n = len(G)
+    Gsucc = G._succ
+    Gpred = G._pred
+    seen = {source}
+    nextlevel = [source]
 
-    seen = set()
-    nextlevel = {source}
+    yield source
     while nextlevel:
         thislevel = nextlevel
-        nextlevel = set()
+        nextlevel = []
         for v in thislevel:
-            if v not in seen:
-                seen.add(v)
-                nextlevel.update(Gsucc[v])
-                nextlevel.update(Gpred[v])
-                yield v
+            for w in Gsucc[v]:
+                if w not in seen:
+                    seen.add(w)
+                    nextlevel.append(w)
+                    yield w
+            for w in Gpred[v]:
+                if w not in seen:
+                    seen.add(w)
+                    nextlevel.append(w)
+                    yield w
+            if len(seen) == n:
+                return

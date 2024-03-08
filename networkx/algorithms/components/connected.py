@@ -12,8 +12,8 @@ __all__ = [
 ]
 
 
-@nx._dispatch
 @not_implemented_for("directed")
+@nx._dispatchable
 def connected_components(G):
     """Generate connected components.
 
@@ -68,6 +68,8 @@ def connected_components(G):
             yield c
 
 
+@not_implemented_for("directed")
+@nx._dispatchable
 def number_connected_components(G):
     """Returns the number of connected components.
 
@@ -80,6 +82,11 @@ def number_connected_components(G):
     -------
     n : integer
        Number of connected components
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If G is directed.
 
     Examples
     --------
@@ -102,6 +109,7 @@ def number_connected_components(G):
 
 
 @not_implemented_for("directed")
+@nx._dispatchable
 def is_connected(G):
     """Returns True if the graph is connected, False otherwise.
 
@@ -141,12 +149,13 @@ def is_connected(G):
     """
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
-            "Connectivity is undefined ", "for the null graph."
+            "Connectivity is undefined for the null graph."
         )
     return sum(1 for node in _plain_bfs(G, arbitrary_element(G))) == len(G)
 
 
 @not_implemented_for("directed")
+@nx._dispatchable
 def node_connected_component(G, n):
     """Returns the set of nodes in the component of graph containing node n.
 
@@ -188,14 +197,18 @@ def node_connected_component(G, n):
 
 def _plain_bfs(G, source):
     """A fast BFS node generator"""
-    G_adj = G.adj
-    seen = set()
-    nextlevel = {source}
+    adj = G._adj
+    n = len(adj)
+    seen = {source}
+    nextlevel = [source]
     while nextlevel:
         thislevel = nextlevel
-        nextlevel = set()
+        nextlevel = []
         for v in thislevel:
-            if v not in seen:
-                seen.add(v)
-                nextlevel.update(G_adj[v])
+            for w in adj[v]:
+                if w not in seen:
+                    seen.add(w)
+                    nextlevel.append(w)
+            if len(seen) == n:
+                return seen
     return seen

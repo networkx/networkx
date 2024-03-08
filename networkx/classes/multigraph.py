@@ -3,8 +3,7 @@ from copy import deepcopy
 from functools import cached_property
 
 import networkx as nx
-import networkx.convert as convert
-from networkx import NetworkXError
+from networkx import NetworkXError, convert
 from networkx.classes.coreviews import MultiAdjacencyView
 from networkx.classes.graph import Graph
 from networkx.classes.reportviews import MultiDegreeView, MultiEdgeView
@@ -391,7 +390,7 @@ class MultiGraph(Graph):
         >>> G.edges[1, 2, 0]["weight"] = 3
         >>> result = set()
         >>> for edgekey, data in G[1][2].items():
-        ...     result.add(data.get('weight', 1))
+        ...     result.add(data.get("weight", 1))
         >>> result
         {1, 3}
 
@@ -1225,7 +1224,7 @@ class MultiGraph(Graph):
 
         Parameters
         ----------
-        u, v : nodes, optional (Gefault=all edges)
+        u, v : nodes, optional (Default=all edges)
             If u and v are specified, return the number of edges between
             u and v. Otherwise return the total number of all edges.
 

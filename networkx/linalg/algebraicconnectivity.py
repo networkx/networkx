@@ -10,7 +10,12 @@ from networkx.utils import (
     reverse_cuthill_mckee_ordering,
 )
 
-__all__ = ["algebraic_connectivity", "fiedler_vector", "spectral_ordering"]
+__all__ = [
+    "algebraic_connectivity",
+    "fiedler_vector",
+    "spectral_ordering",
+    "spectral_bisection",
+]
 
 
 class _PCGSolver:
@@ -46,7 +51,6 @@ class _PCGSolver:
     def _solve(self, b, tol):
         import numpy as np
         import scipy as sp
-        import scipy.linalg.blas  # call as sp.linalg.blas
 
         A = self._A
         M = self._M
@@ -84,7 +88,6 @@ class _LUSolver:
 
     def __init__(self, A):
         import scipy as sp
-        import scipy.sparse.linalg  # call as sp.sparse.linalg
 
         self._LU = sp.sparse.linalg.splu(
             A,
@@ -180,9 +183,6 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
     """
     import numpy as np
     import scipy as sp
-    import scipy.linalg  # call as sp.linalg
-    import scipy.linalg.blas  # call as sp.linalg.blas
-    import scipy.sparse  # call as sp.sparse
 
     n = X.shape[0]
 
@@ -222,7 +222,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         # element needs to modified. Changing to infinity forces a zero in the
         # corresponding element in the solution.
         i = (A.indptr[1:] - A.indptr[:-1]).argmax()
-        A[i, i] = float("inf")
+        A[i, i] = np.inf
         solver = _LUSolver(A)
     else:
         raise nx.NetworkXError(f"Unknown linear system solver: {method}")
@@ -273,8 +273,6 @@ def _get_fiedler_func(method):
 
         def find_fiedler(L, x, normalized, tol, seed):
             import scipy as sp
-            import scipy.sparse  # call as sp.sparse
-            import scipy.sparse.linalg  # call as sp.sparse.linalg
 
             L = sp.sparse.csc_array(L, dtype=float)
             n = L.shape[0]
@@ -312,8 +310,9 @@ def _get_fiedler_func(method):
     return find_fiedler
 
 
-@np_random_state(5)
 @not_implemented_for("directed")
+@np_random_state(5)
+@nx._dispatchable(edge_attrs="weight")
 def algebraic_connectivity(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
 ):
@@ -399,16 +398,17 @@ def algebraic_connectivity(
 
     L = nx.laplacian_matrix(G)
     if L.shape[0] == 2:
-        return 2.0 * L[0, 0] if not normalized else 2.0
+        return 2.0 * float(L[0, 0]) if not normalized else 2.0
 
     find_fiedler = _get_fiedler_func(method)
     x = None if method != "lobpcg" else _rcm_estimate(G, G)
     sigma, fiedler = find_fiedler(L, x, normalized, tol, seed)
-    return sigma
+    return float(sigma)
 
 
-@np_random_state(5)
 @not_implemented_for("directed")
+@np_random_state(5)
+@nx._dispatchable(edge_attrs="weight")
 def fiedler_vector(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
 ):
@@ -505,6 +505,7 @@ def fiedler_vector(
 
 
 @np_random_state(5)
+@nx._dispatchable(edge_attrs="weight")
 def spectral_ordering(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
 ):
@@ -585,3 +586,71 @@ def spectral_ordering(
             order.extend(component)
 
     return order
+
+
+@nx._dispatchable(edge_attrs="weight")
+def spectral_bisection(
+    G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
+):
+    """Bisect the graph using the Fiedler vector.
+
+    This method uses the Fiedler vector to bisect a graph.
+    The partition is defined by the nodes which are associated with
+    either positive or negative values in the vector.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+
+    weight : str, optional (default: weight)
+        The data key used to determine the weight of each edge. If None, then
+        each edge has unit weight.
+
+    normalized : bool, optional (default: False)
+        Whether the normalized Laplacian matrix is used.
+
+    tol : float, optional (default: 1e-8)
+        Tolerance of relative residual in eigenvalue computation.
+
+    method : string, optional (default: 'tracemin_pcg')
+        Method of eigenvalue computation. It must be one of the tracemin
+        options shown below (TraceMIN), 'lanczos' (Lanczos iteration)
+        or 'lobpcg' (LOBPCG).
+
+        The TraceMIN algorithm uses a linear system solver. The following
+        values allow specifying the solver to be used.
+
+        =============== ========================================
+        Value           Solver
+        =============== ========================================
+        'tracemin_pcg'  Preconditioned conjugate gradient method
+        'tracemin_lu'   LU factorization
+        =============== ========================================
+
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
+    Returns
+    -------
+    bisection : tuple of sets
+        Sets with the bisection of nodes
+
+    Examples
+    --------
+    >>> G = nx.barbell_graph(3, 0)
+    >>> nx.spectral_bisection(G)
+    ({0, 1, 2}, {3, 4, 5})
+
+    References
+    ----------
+    .. [1] M. E. J Newman 'Networks: An Introduction', pages 364-370
+       Oxford University Press 2011.
+    """
+    import numpy as np
+
+    v = nx.fiedler_vector(G, weight, normalized, tol, method, seed)
+    nodes = np.array(list(G))
+    pos_vals = v >= 0
+
+    return set(nodes[~pos_vals].tolist()), set(nodes[pos_vals].tolist())

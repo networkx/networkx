@@ -80,7 +80,6 @@ def test_joint_degree_graph(ntimes=10):
 
 
 def test_is_valid_directed_joint_degree():
-
     in_degrees = [0, 1, 1, 2]
     out_degrees = [1, 1, 1, 1]
     nkk = {1: {1: 2, 2: 2}}
@@ -106,7 +105,6 @@ def test_is_valid_directed_joint_degree():
 
 def test_directed_joint_degree_graph(n=15, m=100, ntimes=1000):
     for _ in range(ntimes):
-
         # generate gnm random graph and calculate its joint degree.
         g = gnm_random_graph(n, m, None, directed=True)
 

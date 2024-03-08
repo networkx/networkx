@@ -1,6 +1,8 @@
 import random
 import time
 
+import pytest
+
 import networkx as nx
 from networkx.algorithms.isomorphism.tree_isomorphism import (
     rooted_tree_isomorphism,
@@ -9,13 +11,20 @@ from networkx.algorithms.isomorphism.tree_isomorphism import (
 from networkx.classes.function import is_directed
 
 
+@pytest.mark.parametrize("graph_constructor", (nx.DiGraph, nx.MultiGraph))
+def test_tree_isomorphism_raises_on_directed_and_multigraphs(graph_constructor):
+    t1 = graph_constructor([(0, 1)])
+    t2 = graph_constructor([(1, 2)])
+    with pytest.raises(nx.NetworkXNotImplemented):
+        nx.isomorphism.tree_isomorphism(t1, t2)
+
+
 # have this work for graph
 # given two trees (either the directed or undirected)
 # transform t2 according to the isomorphism
 # and confirm it is identical to t1
 # randomize the order of the edges when constructing
 def check_isomorphism(t1, t2, isomorphism):
-
     # get the name of t1, given the name in t2
     mapping = {v2: v1 for (v1, v2) in isomorphism}
 
@@ -25,7 +34,7 @@ def check_isomorphism(t1, t2, isomorphism):
     assert d1 == d2
 
     edges_1 = []
-    for (u, v) in t1.edges():
+    for u, v in t1.edges():
         if d1:
             edges_1.append((u, v))
         else:
@@ -37,7 +46,7 @@ def check_isomorphism(t1, t2, isomorphism):
                 edges_1.append((v, u))
 
     edges_2 = []
-    for (u, v) in t2.edges():
+    for u, v in t2.edges():
         # translate to names for t1
         u = mapping[u]
         v = mapping[v]
@@ -53,7 +62,6 @@ def check_isomorphism(t1, t2, isomorphism):
 
 
 def test_hardcoded():
-
     print("hardcoded test")
 
     # define a test problem
@@ -134,7 +142,7 @@ def test_hardcoded():
     isomorphism = sorted(rooted_tree_isomorphism(t1, root1, t2, root2))
 
     # is correct by hand
-    assert (isomorphism == isomorphism1) or (isomorphism == isomorphism2)
+    assert isomorphism in (isomorphism1, isomorphism2)
 
     # check algorithmically
     assert check_isomorphism(t1, t2, isomorphism)
@@ -151,7 +159,7 @@ def test_hardcoded():
     isomorphism = sorted(rooted_tree_isomorphism(t1, root1, t2, root2))
 
     # is correct by hand
-    assert (isomorphism == isomorphism1) or (isomorphism == isomorphism2)
+    assert isomorphism in (isomorphism1, isomorphism2)
 
     # check algorithmically
     assert check_isomorphism(t1, t2, isomorphism)
@@ -170,20 +178,19 @@ def random_swap(t):
 # that is isomorphic to t1, with a known isomorphism
 # and test that our algorithm found the right one
 def positive_single_tree(t1):
-
     assert nx.is_tree(t1)
 
-    nodes1 = [n for n in t1.nodes()]
+    nodes1 = list(t1.nodes())
     # get a random permutation of this
     nodes2 = nodes1.copy()
     random.shuffle(nodes2)
 
     # this is one isomorphism, however they may be multiple
     # so we don't necessarily get this one back
-    someisomorphism = [(u, v) for (u, v) in zip(nodes1, nodes2)]
+    someisomorphism = list(zip(nodes1, nodes2))
 
     # map from old to new
-    map1to2 = {u: v for (u, v) in someisomorphism}
+    map1to2 = dict(someisomorphism)
 
     # get the edges with the transformed names
     edges2 = [random_swap((map1to2[u], map1to2[v])) for (u, v) in t1.edges()]
@@ -210,7 +217,6 @@ def positive_single_tree(t1):
 # larger values run slow down significantly
 # as the number of trees grows rapidly
 def test_positive(maxk=14):
-
     print("positive test")
 
     for k in range(2, maxk + 1):
@@ -225,7 +231,6 @@ def test_positive(maxk=14):
 # test the trivial case of a single node in each tree
 # note that nonisomorphic_trees doesn't work for k = 1
 def test_trivial():
-
     print("trivial test")
 
     # back to an undirected graph
@@ -247,7 +252,6 @@ def test_trivial():
 # test another trivial case where the two graphs have
 # different numbers of nodes
 def test_trivial_2():
-
     print("trivial test 2")
 
     edges_1 = [("a", "b"), ("a", "c")]
@@ -275,7 +279,6 @@ def test_trivial_2():
 # larger values run slow down significantly
 # as the number of trees grows rapidly
 def test_negative(maxk=11):
-
     print("negative test")
 
     for k in range(4, maxk + 1):
