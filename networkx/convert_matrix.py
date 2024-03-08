@@ -101,20 +101,21 @@ def to_pandas_adjacency(
     diagonal matrix entry value to the weight attribute of the edge
     (or the number 1 if the edge has no weight attribute).  If the
     alternate convention of doubling the edge weight is desired the
-    resulting Pandas DataFrame can be modified as follows:
+    resulting Pandas DataFrame can be modified as follows::
 
-    >>> import pandas as pd
-    >>> pd.options.display.max_columns = 20
-    >>> import numpy as np
-    >>> G = nx.Graph([(1, 1)])
-    >>> df = nx.to_pandas_adjacency(G, dtype=int)
-    >>> df
-       1
-    1  1
-    >>> df.values[np.diag_indices_from(df)] *= 2
-    >>> df
-       1
-    1  2
+        >>> import pandas as pd
+        >>> G = nx.Graph([(1, 1), (2, 2)])
+        >>> df = nx.to_pandas_adjacency(G)
+        >>> df
+             1    2
+        1  1.0  0.0
+        2  0.0  1.0
+        >>> diag_idx = list(range(len(df)))
+        >>> df.iloc[diag_idx, diag_idx] *= 2
+        >>> df
+             1    2
+        1  2.0  0.0
+        2  0.0  2.0
 
     Examples
     --------
