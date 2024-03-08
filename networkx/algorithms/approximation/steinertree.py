@@ -195,14 +195,7 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
            https://doi.org/10.1016/0020-0190(88)90066-X.
     """
     if method is None:
-        import warnings
-
-        msg = (
-            "steiner_tree will change default method from 'kou' to 'mehlhorn' "
-            "in version 3.2.\nSet the `method` kwarg to remove this warning."
-        )
-        warnings.warn(msg, FutureWarning, stacklevel=4)
-        method = "kou"
+        method = "mehlhorn"
 
     try:
         algo = ALGORITHMS[method]
