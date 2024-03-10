@@ -1,6 +1,7 @@
 from networkx.algorithms.assortativity import *
 from networkx.algorithms.asteroidal import *
 from networkx.algorithms.boundary import *
+from networkx.algorithms.broadcasting import *
 from networkx.algorithms.bridges import *
 from networkx.algorithms.chains import *
 from networkx.algorithms.centrality import *
