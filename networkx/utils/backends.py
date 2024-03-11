@@ -142,22 +142,30 @@ def _get_backends(group, *, load_and_call=False):
 backends = _get_backends("networkx.backends")
 backend_info = _get_backends("networkx.backend_info", load_and_call=True)
 
-config = {
-    # Get default configuration from environment variables at import time
-    "backend_priority": [
-        x.strip()
-        for x in os.environ.get(
-            "NETWORKX_BACKEND_PRIORITY",
-            os.environ.get("NETWORKX_AUTOMATIC_BACKENDS", ""),
-        ).split(",")
-        if x.strip()
-    ],
-    # Initialize default configuration for backends
-    "backends": {
-        backend: info.get("default_config", {})
+# We must import from config after defining `backends` above
+from .configs import Config, config
+
+# Get default configuration from environment variables at import time
+config.backend_priority = [
+    x.strip()
+    for x in os.environ.get(
+        "NETWORKX_BACKEND_PRIORITY",
+        os.environ.get("NETWORKX_AUTOMATIC_BACKENDS", ""),
+    ).split(",")
+    if x.strip()
+]
+# Initialize default configuration for backends
+config.backends = Config(
+    **{
+        backend: (
+            cfg if isinstance(cfg := info["default_config"], Config) else Config(cfg)
+        )
+        if "default_config" in info
+        else Config()
         for backend, info in backend_info.items()
-    },
-}
+    }
+)
+type(config.backends).__doc__ = "All installed NetworkX backends and their configs."
 
 # Load and cache backends on-demand
 _loaded_backends = {}  # type: ignore[var-annotated]
@@ -544,7 +552,7 @@ class _dispatchable:
                     for g in graphs_resolved.values()
                 }
 
-        backend_priority = config["backend_priority"]
+        backend_priority = config.backend_priority
         if self._is_testing and backend_priority and backend_name is None:
             # Special path if we are running networkx tests with a backend.
             # This even runs for (and handles) functions that mutate input graphs.
