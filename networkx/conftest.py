@@ -45,12 +45,6 @@ def pytest_configure(config):
     backend = config.getoption("--backend")
     if backend is None:
         backend = os.environ.get("NETWORKX_TEST_BACKEND")
-    if backend:
-        networkx.config["backend_priority"] = [backend]
-        fallback_to_nx = config.getoption("--fallback-to-nx")
-        if not fallback_to_nx:
-            fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
-        networkx.utils.backends._dispatchable._fallback_to_nx = bool(fallback_to_nx)
     # nx-loopback backend is only available when testing
     backends = entry_points(name="nx-loopback", group="networkx.backends")
     if backends:
@@ -64,6 +58,12 @@ def pytest_configure(config):
             "        Try `pip install -e .`, or change your PYTHONPATH\n"
             "        Make sure python finds the networkx repo you are testing\n\n"
         )
+    if backend:
+        networkx.config["backend_priority"] = [backend]
+        fallback_to_nx = config.getoption("--fallback-to-nx")
+        if not fallback_to_nx:
+            fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
+        networkx.utils.backends._dispatchable._fallback_to_nx = bool(fallback_to_nx)
 
 
 def pytest_collection_modifyitems(config, items):
