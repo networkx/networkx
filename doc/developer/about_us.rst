@@ -151,6 +151,7 @@ to add your name to the bottom of the list.
 - Davide D'Ascenzo, Github: `https://github.com/kidara`
 - Flavio Furia, Github: `https://github.com/flaviofuria`
 - Sebastiano Vigna, Github: `https://github.com/vigna`
+- Aaron Zolnai-Lucas, GitHub: `aaronzo <https://github.com/aaronzo>`_, LinkedIn: `aaronzolnailucas <https://www.linkedin.com/in/aaronzolnailucas/>`_
 
 A supplementary (but still incomplete) list of contributors is given by the
 list of names that have commits in ``networkx``'s
