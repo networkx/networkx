@@ -158,7 +158,7 @@ config.backend_priority = [
 config.backends = Config(
     **{
         backend: (
-            cfg if isinstance(cfg := info["default_config"], Config) else Config(cfg)
+            cfg if isinstance(cfg := info["default_config"], Config) else Config(**cfg)
         )
         if "default_config" in info
         else Config()
