@@ -1,3 +1,4 @@
+import collections
 import pickle
 
 import pytest
@@ -44,14 +45,18 @@ def test_config_empty(cfg):
     assert set(cfg.items()) == set()
     cfg2 = pickle.loads(pickle.dumps(cfg))
     assert cfg == cfg2
+    assert isinstance(cfg, collections.abc.Collection)
+    assert isinstance(cfg, collections.abc.Mapping)
 
 
 def test_config_subclass():
+    with pytest.raises(TypeError, match="missing 2 required keyword-only"):
+        ExampleConfig()
     with pytest.raises(ValueError, match="x must be positive"):
         ExampleConfig(x=0, y="foo")
-    with pytest.raises(AttributeError, match="Invalid config name: 'z'"):
+    with pytest.raises(TypeError, match="unexpected keyword"):
         ExampleConfig(x=1, y="foo", z="bad config")
-    with pytest.raises(AttributeError, match="Invalid config name: 'z'"):
+    with pytest.raises(TypeError, match="unexpected keyword"):
         EmptyConfig(z="bad config")
     cfg = ExampleConfig(x=1, y="foo")
     assert cfg.x == 1
@@ -97,6 +102,17 @@ def test_config_subclass():
     assert cfg == cfg2
     assert cfg.__doc__ == "Example configuration."
     assert cfg2.__doc__ == "Example configuration."
+
+
+def test_config_defaults():
+    class DefaultConfig(Config):
+        x: int = 0
+        y: int
+
+    cfg = DefaultConfig(y=1)
+    assert cfg.x == 0
+    cfg = DefaultConfig(x=2, y=1)
+    assert cfg.x == 2
 
 
 def test_nxconfig():

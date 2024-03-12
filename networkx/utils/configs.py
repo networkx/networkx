@@ -1,4 +1,5 @@
 import collections
+import types
 import typing
 from dataclasses import dataclass
 
@@ -57,13 +58,10 @@ class Config:
                 (cls,),
                 {"__annotations__": {key: typing.Any for key in kwargs}},
             )
-        cls = dataclass(
-            init=False, eq=False, slots=True, kw_only=True, match_args=False
-        )(cls)
+        cls = dataclass(eq=False, slots=True, kw_only=True, match_args=False)(cls)
         cls._orig_class = orig_class  # Save original class so we can pickle
         instance = object.__new__(cls)
-        for key, val in kwargs.items():
-            setattr(instance, key, val)
+        instance.__init__(**kwargs)
         return instance
 
     def _check_config(self, key, value):
@@ -138,6 +136,10 @@ class Config:
     def _deserialize(cls, kwargs):
         return cls(**kwargs)
 
+    # Make type annotations work with key and value types; e.g. Config[str, int]
+    def __class_getitem__(cls, item):
+        return types.GenericAlias(cls, item)
+
 
 # Register, b/c `Mapping.__subclasshook__` returns `NotImplemented`
 collections.abc.Mapping.register(Config)
@@ -147,7 +149,7 @@ class NetworkXConfig(Config):
     """Write me!"""
 
     backend_priority: list[str]
-    backends: Config
+    backends: Config[str, Config]
 
     def _check_config(self, key, value):
         from .backends import backends
