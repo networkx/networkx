@@ -9,7 +9,7 @@ implementation, similar to how plugging a charger into a socket redirects the
 electricity to your phone. This design enhances flexibility and integration, making
 NetworkX more adaptable and efficient. 
 
-For example, you can either convert the NetworkX Graph object `G` into a Graph-like
+For example, you can convert the NetworkX Graph object `G` into a Graph-like
 object specific to the backend and then pass that in the NetworkX function::
 
     H = nxp.ParallelGraph(G)
@@ -26,37 +26,46 @@ the execution of a function to its backend implementation and manage all
 the `backend_kwargs`. When a dispatchable NetworkX algorithm encounters a
 nx.Graph-like object with a `__networkx_backend__` attribute, it will look for
 the associated dispatch object in the entry_points, load it, and dispatch the
-computation work to it. Currently, the following backends are supported by NetworkX:
+computation work to it. Currently, the following are the trusted backends of NetworkX:
 
 - `graphblas <https://github.com/python-graphblas/graphblas-algorithms>`_
 - `cugraph <https://github.com/rapidsai/cugraph/tree/branch-24.04/python/nx-cugraph>`_
 - `parallel <https://github.com/networkx/nx-parallel>`_
 - `loopback` is for testing purposes only and is not a real backend.
 
+Note that the `backend_name` is `parallel` and the package name is `nx-parallel`, and
+we use `nx_parallel` while installing and importing the package.
 
 Creating a Custom backend
 --------------------------
 
-1.  To be a valid NetworkX backend, a package must register an entry_point
-    `networkx.backends` with a key pointing to the handler. (`how? <https://packaging.python.org/en/latest/guides/creating-and-discovering-plugins/#using-package-metadata>`_)
-
-    You can include the following entry-point in your package's `pyproject.toml` file::
+1.  To be a valid backend that could be discovered by NetworkX, your package must
+    register an `entry-point <https://packaging.python.org/en/latest/specifications/entry-points/#entry-points>`_
+    `networkx.backends` in the package's metadata, with a key pointing to your
+    dispatcher class. (`how? <https://packaging.python.org/en/latest/guides/creating-and-discovering-plugins/#using-package-metadata>`_)
+    For example, if you are using `setuptools` to manage your package, you can add the
+    following to your `pyproject.toml` file (ref. `setuptools docs <https://setuptools.pypa.io/en/latest/userguide/entry_point.html>`_)::
 
         [project.entry-points."networkx.backends"]
-        entry_point_name = "your_dispatcher_class"
+        backend_name = "your_dispatcher_class"
 
-    You can also add a `backend_info` entry-point to provide more information about
-    the backend implementation of each function. This is useful for users to know which
-    backends are available for a particular function::
+    You can also add the `backend_info` entry-point. It points towards the `get_info`
+    function that returns all the backend information, which is then used to build the
+    "Additional Backend Implementation" box at the end of algorithm's documentation
+    page (ref. `nx-cugraph's get_info function <https://github.com/rapidsai/cugraph/blob/branch-24.04/python/nx-cugraph/_nx_cugraph/__init__.py>`_)::
 
         [project.entry-points."networkx.backend_info"]
-        entry_point_name = "your_get_info_function"
+        backend_name = "your_get_info_function"
 
-2.  The backend must create a nx.Graph-like object which contains an attribute
+    Note that this would only work if your backend is a trusted backend of NetworkX,
+    and is present in the `.circleci/config.yml` and
+    `.github/workflows/deploy-docs.yml` files.
+
+2.  The backend must create an `nx.Graph`-like object which contains an attribute
     `__networkx_backend__` with a value of the entry point name::
 
         class BackendGraph:
-            __networkx_backend__ = "entry_point_name"
+            __networkx_backend__ = "backend_name"
             ...
 
 
@@ -72,12 +81,12 @@ Environment Variable Setup
 To enable automatic testing with your custom backend, follow these steps:
 
 1. Set Backend Environment Variables: 
-    - `NETWORKX_TEST_BACKEND` : Setting this to your registered backend key, will let
+    - `NETWORKX_TEST_BACKEND` : Setting this to your registered backend key will let
       the NetworkX's dispatch machinery automatically convert a regular NetworkX
       `Graph`, `DiGraph`, `MultiGraph`, etc. to their backend equivalents, using
       `your_dispatcher_class.convert_from_nx(G, ...)` function.
     - `NETWORKX_FALLBACK_TO_NX` (default=False) : Setting this variable to `True` will
-      instructs tests to use a NetworkX `Graph` for algorithms not implemented by your
+      instruct tests to use a NetworkX `Graph` for algorithms not implemented by your
       custom backend. Setting this to `False` will only run the tests for algorithms
       implemented by your custom backend and tests for other algorithms will `xfail`.
 
@@ -109,7 +118,7 @@ Running Tests
 
 You can invoke NetworkX tests for your custom backend with the following commands::
 
-    NETWORKX_TEST_BACKEND=<entry_point_name>
+    NETWORKX_TEST_BACKEND=<backend_name>
     NETWORKX_FALLBACK_TO_NX=True # or False
     pytest --pyargs networkx
 
@@ -124,9 +133,9 @@ Conversions while running tests :
 Notes
 ~~~~~~
 
--   Dispatchable algorithms which are not implemented by the backend
+-   Dispatchable algorithms that are not implemented by the backend
     will cause a `pytest.xfail()`, giving some indication that not all
-    tests are working, while avoiding causing an explicit failure.
+    tests are running, while avoiding causing an explicit failure.
 
 -   If a backend only partially implements some algorithms, it can define
     a `can_run(name, args, kwargs)` function that returns True or False
