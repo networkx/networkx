@@ -404,6 +404,7 @@ class Graph:
     @name.setter
     def name(self, s):
         self.graph["name"] = s
+        self.__networkx_cache__.clear()
 
     def __str__(self):
         """Returns a short summary of the graph.

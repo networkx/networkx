@@ -782,7 +782,7 @@ class _dispatchable:
             and not isinstance(should_run, str)
         )
 
-    def _convert_arguments(self, backend_name, args, kwargs):
+    def _convert_arguments(self, backend_name, args, kwargs, *, use_cache):
         """Convert graph arguments to the specified backend.
 
         Returns
@@ -942,6 +942,7 @@ class _dispatchable:
                         preserve_node_attrs=preserve_node_attrs,
                         preserve_graph_attrs=preserve_graph_attrs,
                         graph_name=gname,
+                        use_cache=use_cache,
                     )
                     if getattr(g, "__networkx_backend__", "networkx") == "networkx"
                     else g
@@ -981,6 +982,7 @@ class _dispatchable:
                         preserve_node_attrs=preserve_nodes,
                         preserve_graph_attrs=preserve_graph,
                         graph_name=gname,
+                        use_cache=use_cache,
                     )
         bound_kwargs = bound.kwargs
         del bound_kwargs["backend"]
@@ -997,8 +999,12 @@ class _dispatchable:
         preserve_node_attrs,
         preserve_graph_attrs,
         graph_name,
+        use_cache,
     ):
-        if (cache := getattr(graph, "__networkx_cache__", None)) is not None:
+        if (
+            use_cache
+            and (cache := getattr(graph, "__networkx_cache__", None)) is not None
+        ):
             cache = cache.setdefault("backends", {}).setdefault(backend_name, {})
             # edge_attrs: dict | None
             # preserve_edge_attrs: bool (False if edge_attrs is not None)
@@ -1052,7 +1058,7 @@ class _dispatchable:
             name=self.name,
             graph_name=graph_name,
         )
-        if cache is not None:  # TODO: check config if caching is enabled
+        if use_cache and cache is not None:
             cache[key] = rv
         return rv
 
@@ -1069,7 +1075,7 @@ class _dispatchable:
 
         try:
             converted_args, converted_kwargs = self._convert_arguments(
-                backend_name, args, kwargs
+                backend_name, args, kwargs, use_cache=True
             )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
@@ -1144,7 +1150,7 @@ class _dispatchable:
             kwargs2 = dict(kwargs2)
         try:
             converted_args, converted_kwargs = self._convert_arguments(
-                backend_name, args1, kwargs1
+                backend_name, args1, kwargs1, use_cache=False
             )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
