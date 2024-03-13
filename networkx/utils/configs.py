@@ -1,5 +1,4 @@
 import collections
-import types
 import typing
 from dataclasses import dataclass
 
@@ -136,20 +135,32 @@ class Config:
     def _deserialize(cls, kwargs):
         return cls(**kwargs)
 
-    # Make type annotations work with key and value types; e.g. Config[str, int]
-    def __class_getitem__(cls, item):
-        return types.GenericAlias(cls, item)
-
 
 # Register, b/c `Mapping.__subclasshook__` returns `NotImplemented`
 collections.abc.Mapping.register(Config)
 
 
 class NetworkXConfig(Config):
-    """Write me!"""
+    """Configuration for NetworkX that controls behaviors such as how to use backends.
+
+    Attribute and bracket notation are supported for getting and setting configurations:
+
+    >>> nx.config.backend_priority == nx.config["backend_priority"]
+    True
+
+    Config Parameters
+    -----------------
+    backend_priority : list of backend names
+        Enable automatic conversion of graphs to backend graphs for algorithms
+        implemented by the backend. Priority is given to backends listed earlier.
+
+    backends : Config mapping of backend names to backend Config
+        The keys of the Config mapping are names of all installed NetworkX backends,
+        and the values are their configurations as Config mappings.
+    """
 
     backend_priority: list[str]
-    backends: Config[str, Config]
+    backends: Config
 
     def _check_config(self, key, value):
         from .backends import backends
