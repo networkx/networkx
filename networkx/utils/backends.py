@@ -157,6 +157,7 @@ Notes
 """
 
 import inspect
+import itertools
 import os
 import warnings
 from functools import partial
@@ -929,18 +930,17 @@ class _dispatchable:
 
         # It should be safe to assume that we either have networkx graphs or backend graphs.
         # Future work: allow conversions between backends.
-        backend = _load_backend(backend_name)
         for gname in self.graphs:
             if gname in self.list_graphs:
                 bound.arguments[gname] = [
-                    backend.convert_from_nx(
+                    self._convert_graph(
+                        backend_name,
                         g,
                         edge_attrs=edge_attrs,
                         node_attrs=node_attrs,
                         preserve_edge_attrs=preserve_edge_attrs,
                         preserve_node_attrs=preserve_node_attrs,
                         preserve_graph_attrs=preserve_graph_attrs,
-                        name=self.name,
                         graph_name=gname,
                     )
                     if getattr(g, "__networkx_backend__", "networkx") == "networkx"
@@ -972,19 +972,89 @@ class _dispatchable:
                 else:
                     preserve_graph = preserve_graph_attrs
                 if getattr(graph, "__networkx_backend__", "networkx") == "networkx":
-                    bound.arguments[gname] = backend.convert_from_nx(
+                    bound.arguments[gname] = self._convert_graph(
+                        backend_name,
                         graph,
                         edge_attrs=edges,
                         node_attrs=nodes,
                         preserve_edge_attrs=preserve_edges,
                         preserve_node_attrs=preserve_nodes,
                         preserve_graph_attrs=preserve_graph,
-                        name=self.name,
                         graph_name=gname,
                     )
         bound_kwargs = bound.kwargs
         del bound_kwargs["backend"]
         return bound.args, bound_kwargs
+
+    def _convert_graph(
+        self,
+        backend_name,
+        graph,
+        *,
+        edge_attrs,
+        node_attrs,
+        preserve_edge_attrs,
+        preserve_node_attrs,
+        preserve_graph_attrs,
+        graph_name,
+    ):
+        if (cache := getattr(graph, "__networkx_cache__", None)) is not None:
+            cache = cache.setdefault("backends", {}).setdefault(backend_name, {})
+            # edge_attrs: dict | None
+            # preserve_edge_attrs: bool (False if edge_attrs is not None)
+            # node_attrs: dict | None
+            # preserve_node_attrs: bool (False if node_attrs is not None)
+            # preserve_graph_attrs: bool
+            key = (
+                frozenset(edge_attrs.items())
+                if edge_attrs is not None
+                else preserve_edge_attrs,
+                frozenset(node_attrs.items())
+                if node_attrs is not None
+                else preserve_node_attrs,
+                preserve_graph_attrs,
+            )
+            if cache:
+                # Do a simple search for a cached graph with compatible data.
+                # For example, if we need a single attribute, then it's okay
+                # to use a cached graph that preserved all attributes.
+                if edge_attrs is not None:
+                    edge_keys = (key[0], True)
+                elif preserve_edge_attrs:
+                    edge_keys = (True,)
+                else:
+                    edge_keys = (False, True)
+                if node_attrs is not None:
+                    node_keys = (key[1], True)
+                elif preserve_node_attrs:
+                    node_keys = (True,)
+                else:
+                    node_keys = (False, True)
+                if preserve_graph_attrs:
+                    graph_keys = (True,)
+                else:
+                    graph_keys = (False, True)
+                for compat_key in itertools.product(edge_keys, node_keys, graph_keys):
+                    if (rv := cache.get(compat_key)) is not None:
+                        return rv
+                # Future performance possibility: iterate over the items in `cache`
+                # to see if any are compatible. For example, if no edge attributes
+                # are needed, then a graph with any edge attribute will suffice.
+
+        backend = _load_backend(backend_name)
+        rv = backend.convert_from_nx(
+            graph,
+            edge_attrs=edge_attrs,
+            node_attrs=node_attrs,
+            preserve_edge_attrs=preserve_edge_attrs,
+            preserve_node_attrs=preserve_node_attrs,
+            preserve_graph_attrs=preserve_graph_attrs,
+            name=self.name,
+            graph_name=graph_name,
+        )
+        if cache is not None:  # TODO: check config if caching is enabled
+            cache[key] = rv
+        return rv
 
     def _convert_and_call(self, backend_name, args, kwargs, *, fallback_to_nx=False):
         """Call this dispatchable function with a backend, converting graphs if necessary."""
