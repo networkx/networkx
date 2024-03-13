@@ -20,13 +20,12 @@ or you can specify the backend as a kwarg::
     nx.betweenness_centrality(G, k=10, backend="parallel")
 
 Also, you might have seen the `@nx._dispatchable` decorator on many of the NetworkX
-functions. It is used on functions that can have a backend implementation.
-This decorator is the key to the dispatching mechanism. It is used to redirect
-the execution of a function to its backend implementation and manage all
-the `backend_kwargs`. When a dispatchable NetworkX algorithm encounters a
-nx.Graph-like object with a `__networkx_backend__` attribute, it will look for
-the associated dispatch object in the entry_points, load it, and dispatch the
-computation work to it. Currently, the following are the trusted backends of NetworkX:
+functions in the codebase. It is used to redirect the execution of a function to its
+backend implementation and manage all the `backend_kwargs`. When a dispatchable
+NetworkX algorithm encounters a nx.Graph-like object with a `__networkx_backend__`
+attribute, it will look for the associated dispatch object in the entry_points, load
+it, and dispatch the computation work to it. Currently, the following are the trusted
+backends of NetworkX:
 
 - `graphblas <https://github.com/python-graphblas/graphblas-algorithms>`_
 - `cugraph <https://github.com/rapidsai/cugraph/tree/branch-24.04/python/nx-cugraph>`_
