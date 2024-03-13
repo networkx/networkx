@@ -104,6 +104,14 @@ def effective_size(G, nodes=None, weight=None):
 
     Notes
     -----
+    Isolated nodes, including nodes which only have self-loop edges, do not
+    have a well-defined effective size::
+
+        >>> G = nx.path_graph(3)
+        >>> G.add_edge(4, 4)
+        >>> nx.effective_size(G)
+        {0: 1.0, 1: 2.0, 2: 1.0, 4: nan}
+
     Burt also defined the related concept of *efficiency* of a node's ego
     network, which is its effective size divided by the degree of that
     node [1]_. So you can easily compute efficiency:
