@@ -1,10 +1,10 @@
 """
-NetworkX utilizes a plugin-dispatch architecture, which basically means we can
-easily plug in and out of backends with minimal code changes. A valid NetworkX backend
-needs to specify `entry points <https://packaging.python.org/en/latest/specifications/entry-points/#entry-points>`_,
-`networkx.backends` and `networkx.backend_info` in its `pyproject.toml` file
-so that the backend implementation could be discovered by NetworkX and the flow of
-execution could seamlessly dispatch (redirect) to the designated backend
+NetworkX utilizes a plugin-dispatch architecture, which means we can plug in and
+out of backends with minimal code changes. A valid NetworkX backend specifies
+`entry points <https://packaging.python.org/en/latest/specifications/entry-points>`_,
+named `networkx.backends` and an optional `networkx.backend_info` when it is
+installed (not imported). This allows NetworkX to dispatch (redirect) function calls
+to the backend implementation so the execution flows to the designated backend
 implementation, similar to how plugging a charger into a socket redirects the
 electricity to your phone. This design enhances flexibility and integration, making
 NetworkX more adaptable and efficient. 
