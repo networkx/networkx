@@ -166,7 +166,7 @@ def _do_nothing():
 
 def _get_backends(group, *, load_and_call=False):
     """
-    Retrieve NetworkX `backends` and `backend_info` from the `pyproject.toml` file.
+    Retrieve NetworkX `backends` and `backend_info` from the Python entry points.
 
     Parameters
     -----------
