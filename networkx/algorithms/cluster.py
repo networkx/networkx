@@ -422,7 +422,7 @@ def clustering(G, nodes=None, weight=None):
     return clusterc
 
 
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def transitivity(G):
     r"""Compute graph transitivity, the fraction of all possible triangles
     present in G.

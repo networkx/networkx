@@ -200,6 +200,7 @@ class _dispatchable:
         preserve_all_attrs=False,
         mutates_input=False,
         returns_graph=False,
+        auto_cache=False,
     ):
         """Dispatches to a backend algorithm based on input graph types.
 
@@ -269,6 +270,9 @@ class _dispatchable:
             Whether the function can return or yield a graph object. By default,
             dispatching doesn't convert input graphs to a different backend for
             functions that return graphs.
+
+        auto_cache : bool
+            Whether to automatically cache the result in ``G.__networkx_cache__``.
         """
         if func is None:
             return partial(
@@ -283,6 +287,7 @@ class _dispatchable:
                 preserve_all_attrs=preserve_all_attrs,
                 mutates_input=mutates_input,
                 returns_graph=returns_graph,
+                auto_cache=auto_cache,
             )
         if isinstance(func, str):
             raise TypeError("'name' and 'graphs' must be passed by keyword") from None
@@ -321,6 +326,7 @@ class _dispatchable:
         self.mutates_input = mutates_input
         # Keep `returns_graph` private for now, b/c we may extend info on return types
         self._returns_graph = returns_graph
+        self._auto_cache = auto_cache
 
         if edge_attrs is not None and not isinstance(edge_attrs, str | dict):
             raise TypeError(
@@ -354,6 +360,10 @@ class _dispatchable:
             raise TypeError(
                 f"Bad type for returns_graph: {type(self._returns_graph)}."
                 " Expected bool."
+            ) from None
+        if not isinstance(self._auto_cache, bool):
+            raise TypeError(
+                f"Bad type for auto_cache: {type(self._auto_cache)}. Expected bool."
             ) from None
 
         if isinstance(graphs, str):
@@ -455,6 +465,29 @@ class _dispatchable:
         return self._sig
 
     def __call__(self, /, *args, backend=None, **kwargs):
+        if self._auto_cache:
+            # Assume first argument has the cache (true for now)
+            first_graph_name = next(
+                gname for gname, pos in self.graphs.items() if pos == 0
+            )
+            if args:
+                if first_graph_name in kwargs:
+                    raise TypeError(
+                        f"{self.name}() got multiple values for {first_graph_name!r}"
+                    )
+                first_graph = args[0]
+            else:
+                first_graph = kwargs.get(first_graph_name)
+            cache = getattr(first_graph, "__networkx_cache__", None)
+            if cache is not None:
+                if self.name in cache:
+                    return cache[self.name]
+                if not backends:
+                    # Fast path if no backends are installed
+                    result = self.orig_func(*args, **kwargs)
+                    cache[self.name] = result
+                    return result
+
         if not backends:
             # Fast path if no backends are installed
             return self.orig_func(*args, **kwargs)
@@ -535,12 +568,15 @@ class _dispatchable:
         if self._is_testing and self._automatic_backends and backend_name is None:
             # Special path if we are running networkx tests with a backend.
             # This even runs for (and handles) functions that mutate input graphs.
-            return self._convert_and_call_for_tests(
+            result = self._convert_and_call_for_tests(
                 self._automatic_backends[0],
                 args,
                 kwargs,
                 fallback_to_nx=self._fallback_to_nx,
             )
+            if self._auto_cache and cache is not None:
+                cache[self.name] = result
+            return result
 
         if has_backends:
             # Dispatchable graphs found! Dispatch to backend function.
@@ -576,22 +612,24 @@ class _dispatchable:
                 if "networkx" in graph_backend_names:
                     # We need to convert networkx graphs to backend graphs.
                     # There is currently no need to check `self.mutates_input` here.
-                    return self._convert_and_call(
+                    result = self._convert_and_call(
                         graph_backend_name,
                         args,
                         kwargs,
                         fallback_to_nx=self._fallback_to_nx,
                     )
-                # All graphs are backend graphs--no need to convert!
-                return getattr(backend, self.name)(*args, **kwargs)
-            # Future work: try to convert and run with other backends in self._automatic_backends
-            raise NetworkXNotImplemented(
-                f"'{self.name}' not implemented by {graph_backend_name}"
-            )
+                else:
+                    # All graphs are backend graphs--no need to convert!
+                    result = getattr(backend, self.name)(*args, **kwargs)
+            else:
+                # Future work: try to convert and run with other backends in self._automatic_backends
+                raise NetworkXNotImplemented(
+                    f"'{self.name}' not implemented by {graph_backend_name}"
+                )
 
-        # If backend was explicitly given by the user, so we need to use it no matter what
-        if backend_name is not None:
-            return self._convert_and_call(
+        # If backend was explicitly given by the user, we need to use it no matter what
+        elif backend_name is not None:
+            result = self._convert_and_call(
                 backend_name, args, kwargs, fallback_to_nx=False
             )
 
@@ -599,7 +637,7 @@ class _dispatchable:
         # conversion, but don't do this by default for graph generators or loaders,
         # or if the functions mutates an input graph or returns a graph.
         # Only convert and run if `backend.should_run(...)` returns True.
-        if (
+        elif (
             not self._returns_graph
             and (
                 not self.mutates_input
@@ -624,14 +662,23 @@ class _dispatchable:
             # Should we warn or log if we don't convert b/c the input will be mutated?
             for backend_name in self._automatic_backends:
                 if self._should_backend_run(backend_name, *args, **kwargs):
-                    return self._convert_and_call(
+                    result = self._convert_and_call(
                         backend_name,
                         args,
                         kwargs,
                         fallback_to_nx=self._fallback_to_nx,
                     )
-        # Default: run with networkx on networkx inputs
-        return self.orig_func(*args, **kwargs)
+                    break
+            else:
+                # Default: run with networkx on networkx inputs
+                result = self.orig_func(*args, **kwargs)
+        else:
+            # Default: run with networkx on networkx inputs
+            result = self.orig_func(*args, **kwargs)
+
+        if self._auto_cache and cache is not None:
+            cache[self.name] = result
+        return result
 
     def _can_backend_run(self, backend_name, /, *args, **kwargs):
         """Can the specified backend run this algorithm with these arguments?"""

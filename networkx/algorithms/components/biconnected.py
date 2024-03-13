@@ -13,7 +13,7 @@ __all__ = [
 
 
 @not_implemented_for("directed")
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def is_biconnected(G):
     """Returns True if the graph is biconnected, False otherwise.
 

@@ -10,7 +10,7 @@ __all__ = ["maximal_extendability"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def maximal_extendability(G):
     """Computes the extendability of a graph.
 

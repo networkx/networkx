@@ -28,7 +28,7 @@ class NetworkXTreewidthBoundExceeded(nx.NetworkXException):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def is_chordal(G):
     """Checks whether G is a chordal graph.
 
@@ -241,7 +241,7 @@ def chordal_graph_cliques(G):
             yield frozenset(clique_wanna_be)
 
 
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def chordal_graph_treewidth(G):
     """Returns the treewidth of the chordal graph G.
 

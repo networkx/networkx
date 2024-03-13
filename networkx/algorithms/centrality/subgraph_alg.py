@@ -290,7 +290,7 @@ def communicability_betweenness_centrality(G):
     return cbc
 
 
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def estrada_index(G):
     r"""Returns the Estrada index of a the graph G.
 

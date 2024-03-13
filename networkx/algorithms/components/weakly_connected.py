@@ -63,7 +63,7 @@ def weakly_connected_components(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def number_weakly_connected_components(G):
     """Returns the number of weakly connected components in G.
 
@@ -103,7 +103,7 @@ def number_weakly_connected_components(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def is_weakly_connected(G):
     """Test directed graph for weak connectivity.
 

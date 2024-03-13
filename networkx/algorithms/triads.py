@@ -280,7 +280,7 @@ def triadic_census(G, nodelist=None):
     return census
 
 
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def is_triad(G):
     """Returns True if the graph G is a triad, else False.
 
@@ -448,7 +448,7 @@ def triads_by_type(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def triad_type(G):
     """Returns the sociological triad type for a triad.
 

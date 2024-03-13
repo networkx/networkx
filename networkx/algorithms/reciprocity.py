@@ -76,7 +76,7 @@ def _reciprocity_iter(G, nodes):
 
 
 @not_implemented_for("undirected", "multigraph")
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def overall_reciprocity(G):
     """Compute the reciprocity for the whole graph.
 

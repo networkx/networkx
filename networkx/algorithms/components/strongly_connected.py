@@ -253,7 +253,7 @@ def strongly_connected_components_recursive(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def number_strongly_connected_components(G):
     """Returns number of strongly connected components in graph.
 
@@ -294,7 +294,7 @@ def number_strongly_connected_components(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def is_strongly_connected(G):
     """Test directed graph for strong connectivity.
 

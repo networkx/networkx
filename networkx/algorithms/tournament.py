@@ -65,7 +65,7 @@ def index_satisfying(iterable, condition):
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def is_tournament(G):
     """Returns True if and only if `G` is a tournament.
 
@@ -349,7 +349,7 @@ def is_reachable(G, s, t):
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
-@nx._dispatchable(name="tournament_is_strongly_connected")
+@nx._dispatchable(name="tournament_is_strongly_connected", auto_cache=True)
 def is_strongly_connected(G):
     """Decides whether the given tournament is strongly connected.
 

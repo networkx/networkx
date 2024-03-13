@@ -17,7 +17,7 @@ __all__ = [
 ]
 
 
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def is_distance_regular(G):
     """Returns True if the graph is distance regular, False otherwise.
 
@@ -184,7 +184,7 @@ def intersection_array(G):
 # TODO There is a definition for directed strongly regular graphs.
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def is_strongly_regular(G):
     """Returns True if and only if the given graph is strongly
     regular.

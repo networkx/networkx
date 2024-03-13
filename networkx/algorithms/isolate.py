@@ -85,7 +85,7 @@ def isolates(G):
     return (n for n, d in G.degree() if d == 0)
 
 
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def number_of_isolates(G):
     """Returns the number of isolates in the graph.
 

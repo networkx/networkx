@@ -5,7 +5,7 @@ from networkx.utils import not_implemented_for
 __all__ = ["is_regular", "is_k_regular", "k_factor"]
 
 
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def is_regular(G):
     """Determines whether the graph ``G`` is a regular graph.
 
