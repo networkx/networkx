@@ -1,8 +1,7 @@
+import networkx as nx
 from collections import defaultdict
 from itertools import combinations
 from operator import itemgetter
-
-import networkx as nx
 
 # Define the default maximum flow function.
 from networkx.algorithms.flow import edmonds_karp
@@ -10,17 +9,17 @@ from networkx.utils import not_implemented_for
 
 default_flow_func = edmonds_karp
 
-__all__ = ["k_components"]
+__all__ = ["unweighted_k_components", "k_components"]
 
 @not_implemented_for("undirected")
 @nx._dispatch
-def k_components(G, flow_func=None):
+def unweighted_k_components(G, flow_func=None):
+    # Implementation for computing unweighted k-components
     k_components = defaultdict(list)
     if flow_func is None:
         flow_func = default_flow_func
 
-    # Bicomponents as a base to check for higher order k-components
-    for component in nx.strongly_connected_components(G):  # Use strongly_connected_components for directed graphs
+    for component in nx.strongly_connected_components(G):
         comp = set(component)
         if len(comp) > 1:
             k_components[1].append(comp)
@@ -56,6 +55,16 @@ def k_components(G, flow_func=None):
 
     return _reconstruct_k_components(k_components)
 
+def k_components(G, weight=None, flow_func=None):
+    # Implementation for computing weighted k-components
+    # Compute the weighted k-components of a directed graph G.
+    # k-components are subsets of nodes such that removing them from the graph increases its connectivity.
+    # This implementation is based on the concept of node connectivity and uses Edmonds-Karp algorithm for flow computation.
+    if weight is None:
+        return unweighted_k_components(G, flow_func=flow_func)
+
+    # TODO: Implement weighted k-components functionality
+    pass
 
 def _consolidate(sets, k):
     G = nx.DiGraph()
@@ -66,7 +75,6 @@ def _consolidate(sets, k):
     )
     for component in nx.strongly_connected_components(G):
         yield set.union(*[nodes[n] for n in component])
-
 
 def _generate_partition_directed(G, cuts, k):
     def has_nbrs_in_partition(G, node, partition):
@@ -85,7 +93,6 @@ def _generate_partition_directed(G, cuts, k):
             components.append(component)
     yield from _consolidate(components, k + 1)
 
-
 def all_node_cuts_directed(G, k, flow_func=None):
     if flow_func is None:
         flow_func = default_flow_func
@@ -93,7 +100,6 @@ def all_node_cuts_directed(G, k, flow_func=None):
     for source, target in combinations(G, 2):
         if nx.node_connectivity(G, s=source, t=target, flow_func=flow_func) >= k:
             yield {source, target}
-
 
 def _reconstruct_k_components(k_comps):
     result = {}
@@ -112,7 +118,6 @@ def _reconstruct_k_components(k_comps):
                 result[k] = list(_consolidate(k_comps[k], k))
     return result
 
-
 def build_k_number_dict(kcomps):
     result = {}
     for k, comps in sorted(kcomps.items(), key=itemgetter(0)):
@@ -120,3 +125,4 @@ def build_k_number_dict(kcomps):
             for node in comp:
                 result[node] = k
     return result
+        
