@@ -208,3 +208,18 @@ def test_steiner_tree_multigraph_weight_attribute(method):
     H = nx.approximation.steiner_tree(G, list(G), method=method, weight="distance")
     assert len(H.edges) == 2 and H.has_edge(2, 0, key=1)
     assert sum(dist for *_, dist in H.edges(data="distance")) == 15
+
+
+def test_steiner_tree_method_None():
+    G = nx.star_graph(4)
+    a = nx.approximation.steiner_tree(G, [1, 3], method=None)
+    b = nx.approximation.steiner_tree(G, [1, 3], method="mehlhorn")
+    assert list(a) == list(b)
+
+
+def test_steiner_tree_method_invalid():
+    G = nx.star_graph(4)
+    with pytest.raises(
+        ValueError, match="invalid_method is not a valid choice for an algorithm."
+    ):
+        nx.approximation.steiner_tree(G, terminal_nodes=[1, 3], method="invalid_method")
