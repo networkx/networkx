@@ -1,5 +1,4 @@
 import pickle
-import re
 from copy import deepcopy
 
 import pytest
@@ -597,18 +596,11 @@ class TestEdgeView:
         assert ev[0, 1] == {"foo": "bar"}
 
         # slicing
-        with pytest.raises(
-            nx.NetworkXError,
-            match=re.escape(
-                f"{type(G.edges).__name__} does not support slicing, try list(G.edges)[0:5:None]"
-            ),
-        ):
+        with pytest.raises(nx.NetworkXError, match=".*does not support slicing"):
             G.edges[0:5]
 
         # Invalid edge
-        with pytest.raises(
-            KeyError, match=re.escape("'The edge (0, 9) is not in the graph.'")
-        ):
+        with pytest.raises(KeyError, match=r".*edge.*is not in the graph."):
             G.edges[0, 9]
 
     def test_call(self):

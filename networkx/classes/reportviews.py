@@ -1084,9 +1084,8 @@ class OutEdgeView(Set, Mapping):
         u, v = e
         try:
             return self._adjdict[u][v]
-        except KeyError as ex:
-            msg = f"The edge {e} is not in the graph."
-            raise KeyError(msg) from ex
+        except KeyError as ex:  # Customize msg to indicate exception origin
+            raise KeyError(f"The edge {e} is not in the graph.")
 
     # EdgeDataView methods
     def __call__(self, nbunch=None, data=False, *, default=None):
