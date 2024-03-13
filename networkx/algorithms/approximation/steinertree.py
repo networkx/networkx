@@ -64,7 +64,7 @@ def _mehlhorn_steiner_tree(G, terminal_nodes, weight):
         if not G_1_prime.has_edge(su, sv):
             G_1_prime.add_edge(su, sv, weight=weight_here)
         else:
-            new_weight = min(weight_here, G_1_prime[su][sv][weight])
+            new_weight = min(weight_here, G_1_prime[su][sv]["weight"])
             G_1_prime.add_edge(su, sv, weight=new_weight)
 
     G_2 = nx.minimum_spanning_edges(G_1_prime, data=True)
@@ -195,20 +195,12 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
            https://doi.org/10.1016/0020-0190(88)90066-X.
     """
     if method is None:
-        import warnings
-
-        msg = (
-            "steiner_tree will change default method from 'kou' to 'mehlhorn' "
-            "in version 3.2.\nSet the `method` kwarg to remove this warning."
-        )
-        warnings.warn(msg, FutureWarning, stacklevel=4)
-        method = "kou"
+        method = "mehlhorn"
 
     try:
         algo = ALGORITHMS[method]
     except KeyError as e:
-        msg = f"{method} is not a valid choice for an algorithm."
-        raise ValueError(msg) from e
+        raise ValueError(f"{method} is not a valid choice for an algorithm.") from e
 
     edges = algo(G, terminal_nodes, weight)
     # For multigraph we should add the minimal weight edge keys

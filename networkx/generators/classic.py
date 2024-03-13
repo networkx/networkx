@@ -803,7 +803,7 @@ def star_graph(n, create_using=None):
     """
     n, nodes = n
     if isinstance(n, numbers.Integral):
-        nodes.append(n)  # there should be n+1 nodes
+        nodes.append(int(n))  # there should be n+1 nodes
     G = empty_graph(nodes, create_using)
     if G.is_directed():
         raise NetworkXError("Directed Graph not supported")
