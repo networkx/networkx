@@ -28,7 +28,7 @@ class Config:
     ...         assert isinstance(value, int) and value >= 0
     >>> cfg = MyConfig(eggs=1, spam=5)
 
-    Once defined, configuration items may be modified, but can't be added or deleted.
+    Once defined, config items may be modified, but can't be added or deleted by default.
     ``Config`` is a ``Mapping``, and can get and set configs via attributes or brackets:
 
     >>> cfg.eggs = 2
@@ -46,6 +46,15 @@ class Config:
         ...
     AssertionError
 
+    If a more flexible configuration object is needed that allows adding and deleting
+    configurations, then pass ``strict=False`` when defining the subclass:
+
+    >>> class FlexibleConfig(Config, strict=False):
+    ...     default_greeting: str = "Hello"
+    >>> flexcfg = FlexibleConfig()
+    >>> flexcfg.name = "Mr. Anderson"
+    >>> flexcfg
+    FlexibleConfig(default_greeting='Hello', name='Mr. Anderson')
     """
 
     def __new__(cls, **kwargs):
@@ -57,7 +66,15 @@ class Config:
                 (cls,),
                 {"__annotations__": {key: typing.Any for key in kwargs}},
             )
-        cls = dataclass(eq=False, slots=True, kw_only=True, match_args=False)(cls)
+        cls = dataclass(
+            eq=False,
+            repr=cls._strict,
+            slots=cls._strict,
+            kw_only=True,
+            match_args=False,
+        )(cls)
+        if not cls._strict:
+            cls.__repr__ = _flexible_repr
         cls._orig_class = orig_class  # Save original class so we can pickle
         instance = object.__new__(cls)
         instance.__init__(**kwargs)
@@ -66,31 +83,40 @@ class Config:
     def _check_config(self, key, value):
         """Check whether config value is valid. This is useful for subclasses."""
 
+    def __init_subclass__(cls, strict=True):
+        cls._strict = strict
+
     # Control behavior of attributes
     def __dir__(self):
         return self.__dataclass_fields__.keys()
 
     def __setattr__(self, key, value):
-        if key not in self.__dataclass_fields__:
+        if self._strict and key not in self.__dataclass_fields__:
             raise AttributeError(f"Invalid config name: {key!r}")
         self._check_config(key, value)
         object.__setattr__(self, key, value)
 
     def __delattr__(self, key):
-        raise TypeError(f"Configuration items can't be deleted (can't delete {key!r}).")
+        if self._strict:
+            raise TypeError(
+                f"Configuration items can't be deleted (can't delete {key!r})."
+            )
+        object.__delattr__(self, key)
 
     # Be a `collection.abc.Collection`
     def __contains__(self, key):
-        return key in self.__dataclass_fields__
+        return (
+            key in self.__dataclass_fields__ if self._strict else key in self.__dict__
+        )
 
     def __iter__(self):
-        return iter(self.__dataclass_fields__)
+        return iter(self.__dataclass_fields__ if self._strict else self.__dict__)
 
     def __len__(self):
-        return len(self.__dataclass_fields__)
+        return len(self.__dataclass_fields__ if self._strict else self.__dict__)
 
     def __reversed__(self):
-        return reversed(self.__dataclass_fields__)
+        return reversed(self.__dataclass_fields__ if self._strict else self.__dict__)
 
     # Add dunder methods for `collections.abc.Mapping`
     def __getitem__(self, key):
@@ -134,6 +160,14 @@ class Config:
     @staticmethod
     def _deserialize(cls, kwargs):
         return cls(**kwargs)
+
+
+def _flexible_repr(self):
+    return (
+        f"{self.__class__.__qualname__}("
+        + ", ".join(f"{key}={val!r}" for key, val in self.__dict__.items())
+        + ")"
+    )
 
 
 # Register, b/c `Mapping.__subclasshook__` returns `NotImplemented`
