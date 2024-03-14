@@ -181,7 +181,7 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
         If `G` is directed.
 
     ValueError
-        If the specified method is not supported.
+        If the specified `method` is not supported.
 
     Notes
     -----
