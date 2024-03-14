@@ -278,12 +278,10 @@ def constraint(G, nodes=None, weight=None):
         local_constraints = (mutual_weights + mutual_weights @ mutual_weights) ** 2
         constraints = ((mutual_weights > 0) * local_constraints).sum(axis=1)
 
-        # Special treatment to isolated nodes
-        isolated_nodes = sum_mutual_weights == 0  # Mark isolated nodes
-        constraints[isolated_nodes] = float(
-            "nan"
-        )  # Constraint is undefined for isolated nodes
-        result = dict(zip(list(G.nodes), constraints.tolist()))
+        # Special treatment: isolated nodes marked with "nan"
+        isolated_nodes = sum_mutual_weights == 0
+        constraints[isolated_nodes] = float("nan")
+        result = dict(zip(G, constraints.tolist()))
         return result
 
     # Result for only requested nodes
