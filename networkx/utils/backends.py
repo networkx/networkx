@@ -1007,11 +1007,11 @@ class _dispatchable:
         ):
             cache = cache.setdefault("backends", {}).setdefault(backend_name, {})
             # edge_attrs: dict | None
-            # preserve_edge_attrs: bool (False if edge_attrs is not None)
             # node_attrs: dict | None
+            # preserve_edge_attrs: bool (False if edge_attrs is not None)
             # preserve_node_attrs: bool (False if node_attrs is not None)
             # preserve_graph_attrs: bool
-            key = (
+            key = edge_key, node_key, graph_key = (
                 frozenset(edge_attrs.items())
                 if edge_attrs is not None
                 else preserve_edge_attrs,
@@ -1024,28 +1024,38 @@ class _dispatchable:
                 # Do a simple search for a cached graph with compatible data.
                 # For example, if we need a single attribute, then it's okay
                 # to use a cached graph that preserved all attributes.
-                if edge_attrs is not None:
-                    edge_keys = (key[0], True)
-                elif preserve_edge_attrs:
-                    edge_keys = (True,)
-                else:
-                    edge_keys = (False, True)
-                if node_attrs is not None:
-                    node_keys = (key[1], True)
-                elif preserve_node_attrs:
-                    node_keys = (True,)
-                else:
-                    node_keys = (False, True)
-                if preserve_graph_attrs:
-                    graph_keys = (True,)
-                else:
-                    graph_keys = (False, True)
-                for compat_key in itertools.product(edge_keys, node_keys, graph_keys):
+                # This looks for an exact match first.
+                for compat_key in itertools.product(
+                    (edge_key, True) if edge_key is not True else (True,),
+                    (node_key, True) if node_key is not True else (True,),
+                    (graph_key, True) if graph_key is not True else (True,),
+                ):
                     if (rv := cache.get(compat_key)) is not None:
                         return rv
-                # Future performance possibility: iterate over the items in `cache`
-                # to see if any are compatible. For example, if no edge attributes
-                # are needed, then a graph with any edge attribute will suffice.
+                if edge_key is not True and node_key is not True:
+                    # Iterate over the items in `cache` to see if any are compatible.
+                    # For example, if no edge attributes are needed, then a graph with
+                    # any edge attribute will suffice.
+                    for (ekey, nkey, gkey), val in cache.items():
+                        if edge_key is False or ekey is True:
+                            pass
+                        elif (
+                            edge_key is True
+                            or ekey is False
+                            or not edge_key.issubset(ekey)
+                        ):
+                            continue
+                        if node_key is False or nkey is True:
+                            pass
+                        elif (
+                            node_key is True
+                            or nkey is False
+                            or not node_key.issubset(nkey)
+                        ):
+                            continue
+                        if graph_key and not gkey:
+                            continue
+                        return val
 
         backend = _load_backend(backend_name)
         rv = backend.convert_from_nx(
@@ -1060,6 +1070,25 @@ class _dispatchable:
         )
         if use_cache and cache is not None:
             cache[key] = rv
+            # Remove old cached items that are no longer necessary since
+            # then are dominated/subsumed by what was just calculated.
+            # This uses the same logic as above, but with keys switched.
+            for compat_key in list(cache):
+                if compat_key == key:
+                    continue
+                ekey, nkey, gkey = compat_key
+                if ekey is False or edge_key is True:
+                    pass
+                elif ekey is True or edge_key is False or not ekey.issubset(edge_key):
+                    continue
+                if nkey is False or node_key is True:
+                    pass
+                elif nkey is True or node_key is False or not nkey.issubset(node_key):
+                    continue
+                if gkey and not graph_key:
+                    continue
+                del cache[compat_key]
+
         return rv
 
     def _convert_and_call(self, backend_name, args, kwargs, *, fallback_to_nx=False):
