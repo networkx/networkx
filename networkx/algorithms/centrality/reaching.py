@@ -89,7 +89,9 @@ def global_reaching_centrality(G, weight=None, normalized=True):
     total_weight = G.size(weight=weight)
     if total_weight <= 0:
         raise nx.NetworkXError("Size of G must be positive")
-
+    # self loops
+    if total_weight > 0 and len(G) == 1:
+        raise nx.NetworkXPointlessConcept("G is a single node with self loop")
     # If provided, weights must be interpreted as connection strength
     # (so higher weights are more likely to be chosen). However, the
     # shortest path algorithms in NetworkX assume the provided "weight"
@@ -184,6 +186,9 @@ def local_reaching_centrality(G, v, paths=None, weight=None, normalized=True):
         total_weight = G.size(weight=weight)
         if total_weight <= 0:
             raise nx.NetworkXError("Size of G must be positive")
+        # self loops
+        if total_weight > 0 and len(G) == 1:
+            raise nx.NetworkXPointlessConcept("G is a single node with self loop")
         if weight is not None:
             # Interpret weights as lengths.
             def as_distance(u, v, d):
