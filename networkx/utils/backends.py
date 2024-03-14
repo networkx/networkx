@@ -1031,6 +1031,20 @@ class _dispatchable:
                     (graph_key, True) if graph_key is not True else (True,),
                 ):
                     if (rv := cache.get(compat_key)) is not None:
+                        warnings.warn(
+                            f"Using cached graph for {backend_name!r} backend in "
+                            f"call to {self.name}.\n\nFor the cache to be consistent "
+                            "(i.e., correct), the input graph must not have been "
+                            "manually mutated since the cached graph was created. "
+                            "Examples of manually mutating the graph data structures "
+                            "resulting in an inconsistent cache include:\n\n"
+                            "    >>> G[u][v][key] = val\n\n"
+                            "and\n\n"
+                            "    >>> for u, v, d in G.edges(data=True):\n"
+                            "    ...     d[key] = val\n\n"
+                            "Using methods such as `G.add_edge(u, v, weight=val)` "
+                            "will correctly clear the cache to keep it consistent."
+                        )
                         return rv
                 if edge_key is not True and node_key is not True:
                     # Iterate over the items in `cache` to see if any are compatible.
@@ -1056,6 +1070,20 @@ class _dispatchable:
                             continue
                         if graph_key and not gkey:
                             continue
+                        warnings.warn(
+                            f"Using cached graph for {backend_name!r} backend in "
+                            f"call to {self.name}.\n\nFor the cache to be consistent "
+                            "(i.e., correct), the input graph must not have been "
+                            "manually mutated since the cached graph was created. "
+                            "Examples of manually mutating the graph data structures "
+                            "resulting in an inconsistent cache include:\n\n"
+                            "    >>> G[u][v][key] = val\n\n"
+                            "and\n\n"
+                            "    >>> for u, v, d in G.edges(data=True):\n"
+                            "    ...     d[key] = val\n\n"
+                            "Using methods such as `G.add_edge(u, v, weight=val)` "
+                            "will correctly clear the cache to keep it consistent."
+                        )
                         return val
 
         backend = _load_backend(backend_name)
