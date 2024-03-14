@@ -1071,7 +1071,7 @@ class _dispatchable:
         if use_cache and cache is not None:
             cache[key] = rv
             # Remove old cached items that are no longer necessary since
-            # then are dominated/subsumed by what was just calculated.
+            # they are dominated/subsumed by what was just calculated.
             # This uses the same logic as above, but with keys switched.
             for compat_key in list(cache):
                 if compat_key == key:
