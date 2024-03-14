@@ -168,13 +168,11 @@ def effective_size(G, nodes=None, weight=None):
         r = 1 - (mutual_weights1 @ mutual_weights2.T).toarray()
         effective_size = ((mutual_weights1 > 0) * r).sum(axis=1)
 
-        # Special treatment for isolated nodes
+        # Special treatment: isolated nodes marked with "nan"
         sum_mutual_weights = mutual_weights1.sum(axis=1)
-        isolated_nodes = sum_mutual_weights == 0  # Mark isolated nodes
-        effective_size[isolated_nodes] = float(
-            "nan"
-        )  # Constraint is undefined for isolated nodes
-        result = dict(zip(list(G.nodes), effective_size.tolist()))
+        isolated_nodes = sum_mutual_weights == 0
+        effective_size[isolated_nodes] = float("nan")
+        result = dict(zip(G, effective_size.tolist()))
 
         return result
 
