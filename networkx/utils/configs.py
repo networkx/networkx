@@ -57,6 +57,9 @@ class Config:
     FlexibleConfig(default_greeting='Hello', name='Mr. Anderson')
     """
 
+    def __init_subclass__(cls, strict=True):
+        cls._strict = strict
+
     def __new__(cls, **kwargs):
         orig_class = cls
         if cls is Config:
@@ -82,9 +85,6 @@ class Config:
 
     def _check_config(self, key, value):
         """Check whether config value is valid. This is useful for subclasses."""
-
-    def __init_subclass__(cls, strict=True):
-        cls._strict = strict
 
     # Control behavior of attributes
     def __dir__(self):
