@@ -178,7 +178,7 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
     Raises
     ------
     NetworkXNotImplemented
-        If G is directed.
+        If `G` is directed.
 
     ValueError
         If the specified method is not supported.
