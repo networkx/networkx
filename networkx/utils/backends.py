@@ -1034,8 +1034,9 @@ class _dispatchable:
                         return rv
                 if edge_key is not True and node_key is not True:
                     # Iterate over the items in `cache` to see if any are compatible.
-                    # For example, if no edge attributes are needed, then a graph with
-                    # any edge attribute will suffice.
+                    # For example, if no edge attributes are needed, then a graph
+                    # with any edge attribute will suffice. We use the same logic
+                    # below (but switched) to clear unnecessary items from the cache.
                     for (ekey, nkey, gkey), val in cache.items():
                         if edge_key is False or ekey is True:
                             pass
@@ -1069,14 +1070,10 @@ class _dispatchable:
             graph_name=graph_name,
         )
         if use_cache and cache is not None:
-            cache[key] = rv
-            # Remove old cached items that are no longer necessary since
-            # they are dominated/subsumed by what was just calculated.
+            # Remove old cached items that are no longer necessary since they
+            # are dominated/subsumed/outdated by what was just calculated.
             # This uses the same logic as above, but with keys switched.
-            for compat_key in list(cache):
-                if compat_key == key:
-                    continue
-                ekey, nkey, gkey = compat_key
+            for ekey, nkey, gkey in list(cache):
                 if ekey is False or edge_key is True:
                     pass
                 elif ekey is True or edge_key is False or not ekey.issubset(edge_key):
@@ -1087,7 +1084,8 @@ class _dispatchable:
                     continue
                 if gkey and not graph_key:
                     continue
-                del cache[compat_key]
+                del cache[ekey, nkey, gkey]
+            cache[key] = rv
 
         return rv
 
