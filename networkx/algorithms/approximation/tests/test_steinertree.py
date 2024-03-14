@@ -210,11 +210,12 @@ def test_steiner_tree_multigraph_weight_attribute(method):
     assert sum(dist for *_, dist in H.edges(data="distance")) == 15
 
 
-def test_steiner_tree_method_None():
+@pytest.mark.parametrize("method", (None, "mehlhorn", "kou"))
+def test_steiner_tree_methods(method):
     G = nx.star_graph(4)
-    a = nx.approximation.steiner_tree(G, [1, 3], method=None)
-    b = nx.approximation.steiner_tree(G, [1, 3], method="mehlhorn")
-    assert list(a) == list(b)
+    expected = nx.Graph([(0, 1), (0, 3)])
+    st = nx.approximation.steinter_tree(G, [1, 3], method=method)
+    assert nx.utils.edges_equal(H.edges, expected.edges)
 
 
 def test_steiner_tree_method_invalid():
