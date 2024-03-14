@@ -141,6 +141,7 @@ def effective_size(G, nodes=None, weight=None):
     # Check if Numpy is installed
     try:
         import numpy as np
+        import scipy  # make sure nx.adjacency_matrix will not raise
 
         has_numpy = True
     except:
