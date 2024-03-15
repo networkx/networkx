@@ -17,7 +17,7 @@ from networkx.lazy_imports import _lazy_import
 from networkx.exception import *
 
 from networkx import utils
-from networkx.utils.backends import _dispatchable
+from networkx.utils.backends import _dispatchable, config
 
 from networkx import classes
 from networkx.classes import filters
