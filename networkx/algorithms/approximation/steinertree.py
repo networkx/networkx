@@ -126,7 +126,7 @@ ALGORITHMS = {
 
 
 @not_implemented_for("directed")
-@nx._dispatchable(edge_attrs="weight", returns_graph=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def steiner_tree(G, terminal_nodes, weight="weight", method=None):
     r"""Return an approximation to the minimum Steiner tree of a graph.
 
