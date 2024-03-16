@@ -58,7 +58,7 @@ Creating a Custom backend
 
     Note that this would only work if your backend is a trusted backend of NetworkX,
     and is present in the `.circleci/config.yml` and
-    `.github/workflows/deploy-docs.yml` files.
+    `.github/workflows/deploy-docs.yml` files in the NetworkX repository.
 
 2.  The backend must create an `nx.Graph`-like object which contains an attribute
     `__networkx_backend__` with a value of the entry point name::
