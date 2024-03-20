@@ -924,7 +924,7 @@ class _dispatchable:
 
         from collections.abc import Iterable, Iterator, Mapping
         from copy import copy
-        from io import BufferedReader, BytesIO
+        from io import BufferedReader, BytesIO, StringIO, TextIOWrapper
         from itertools import tee
         from random import Random
 
@@ -941,9 +941,12 @@ class _dispatchable:
             args1, args2 = zip(
                 *(
                     (arg, copy(arg))
-                    if isinstance(arg, BytesIO | Random | Generator | RandomState)
+                    if isinstance(
+                        arg, BytesIO | StringIO | Random | Generator | RandomState
+                    )
                     else tee(arg)
-                    if isinstance(arg, Iterator) and not isinstance(arg, BufferedReader)
+                    if isinstance(arg, Iterator)
+                    and not isinstance(arg, BufferedReader | TextIOWrapper)
                     else (arg, arg)
                     for arg in args
                 )
@@ -954,9 +957,12 @@ class _dispatchable:
             kwargs1, kwargs2 = zip(
                 *(
                     ((k, v), (k, copy(v)))
-                    if isinstance(v, BytesIO | Random | Generator | RandomState)
+                    if isinstance(
+                        v, BytesIO | StringIO | Random | Generator | RandomState
+                    )
                     else ((k, (teed := tee(v))[0]), (k, teed[1]))
-                    if isinstance(v, Iterator) and not isinstance(v, BufferedReader)
+                    if isinstance(v, Iterator)
+                    and not isinstance(v, BufferedReader | TextIOWrapper)
                     else ((k, v), (k, v))
                     for k, v in kwargs.items()
                 )
@@ -1121,13 +1127,15 @@ class _dispatchable:
             "read_gml",
             "read_graph6",
             "read_sparse6",
-            # We don't handle io.BufferedReader arguments
+            # We don't handle io.BufferedReader or io.TextIOWrapper arguments
             "bipartite_read_edgelist",
             "read_adjlist",
             "read_edgelist",
             "read_graphml",
             "read_multiline_adjlist",
             "read_pajek",
+            "from_pydot",
+            "pydot_read_dot",
             # graph comparison fails b/c of nan values
             "read_gexf",
         }:
