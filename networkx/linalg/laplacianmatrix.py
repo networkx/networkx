@@ -179,7 +179,6 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     --------
 
     >>> import numpy as np
-    >>> np.set_printoptions(precision=4)  # To print with lower precision
     >>> edges = [
     ...     (1, 2),
     ...     (2, 1),
@@ -189,10 +188,10 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     ... ]
     >>> DiG = nx.DiGraph(edges)
     >>> print(nx.normalized_laplacian_matrix(DiG).toarray())
-    [[ 1.     -0.7071  0.      0.    ]
-     [-0.7071  1.     -0.7071  0.    ]
-     [ 0.      0.      1.     -1.    ]
-     [ 0.      0.     -1.      1.    ]]
+    [[ 1.         -0.70710678  0.          0.        ]
+     [-0.70710678  1.         -0.70710678  0.        ]
+     [ 0.          0.          1.         -1.        ]
+     [ 0.          0.         -1.          1.        ]]
 
     Notice that node 4 is represented by the third column and row. This is because
     by default the row/column order is the order of `G.nodes` (i.e. the node added
@@ -200,16 +199,16 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
     To control the node order of the matrix, use the `nodelist` argument.
 
     >>> print(nx.normalized_laplacian_matrix(DiG, nodelist=[1, 2, 3, 4]).toarray())
-    [[ 1.     -0.7071  0.      0.    ]
-     [-0.7071  1.      0.     -0.7071]
-     [ 0.      0.      1.     -1.    ]
-     [ 0.      0.     -1.      1.    ]]
+    [[ 1.         -0.70710678  0.          0.        ]
+     [-0.70710678  1.          0.         -0.70710678]
+     [ 0.          0.          1.         -1.        ]
+     [ 0.          0.         -1.          1.        ]]
     >>> G = nx.Graph(edges)
     >>> print(nx.normalized_laplacian_matrix(G).toarray())
-    [[ 1.     -0.7071  0.      0.    ]
-     [-0.7071  1.     -0.5     0.    ]
-     [ 0.     -0.5     1.     -0.7071]
-     [ 0.      0.     -0.7071  1.    ]]
+    [[ 1.         -0.70710678  0.          0.        ]
+     [-0.70710678  1.         -0.5         0.        ]
+     [ 0.         -0.5         1.         -0.70710678]
+     [ 0.          0.         -0.70710678  1.        ]]
 
     See Also
     --------
