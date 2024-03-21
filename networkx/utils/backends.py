@@ -2,14 +2,14 @@
 NetworkX utilizes a plugin-dispatch architecture, which means we can plug in and
 out of backends with minimal code changes. A valid NetworkX backend specifies
 `entry points <https://packaging.python.org/en/latest/specifications/entry-points>`_,
-named `networkx.backends` and an optional `networkx.backend_info` when it is
+named ``networkx.backends`` and an optional ``networkx.backend_info`` when it is
 installed (not imported). This allows NetworkX to dispatch (redirect) function calls
-to the backend implementation so the execution flows to the designated backend
+to the backend so the execution flows to the designated backend
 implementation, similar to how plugging a charger into a socket redirects the
 electricity to your phone. This design enhances flexibility and integration, making
 NetworkX more adaptable and efficient. 
 
-For example, you can convert the NetworkX Graph object `G` into a Graph-like
+For example, you can convert the NetworkX Graph object ``G`` into a Graph-like
 object specific to the backend and then pass that in the NetworkX function::
 
     H = nxp.ParallelGraph(G)
@@ -19,10 +19,10 @@ or you can specify the backend as a kwarg::
 
     nx.betweenness_centrality(G, k=10, backend="parallel")
 
-Also, you might have seen the `@nx._dispatchable` decorator on many of the NetworkX
+Also, you might have seen the ``@nx._dispatchable`` decorator on many of the NetworkX
 functions in the codebase. It is used to redirect the execution of a function to its
-backend implementation and manage all the `backend_kwargs`. When a dispatchable
-NetworkX algorithm encounters a nx.Graph-like object with a `__networkx_backend__`
+backend implementation and manage all the ``backend_kwargs``. When a dispatchable
+NetworkX algorithm encounters a nx.Graph-like object with a ``__networkx_backend__``
 attribute, it will look for the associated dispatch object in the entry_points, load
 it, and dispatch the computation work to it. Currently, the following are the trusted
 backends of NetworkX:
@@ -30,28 +30,28 @@ backends of NetworkX:
 - `graphblas <https://github.com/python-graphblas/graphblas-algorithms>`_
 - `cugraph <https://github.com/rapidsai/cugraph/tree/branch-24.04/python/nx-cugraph>`_
 - `parallel <https://github.com/networkx/nx-parallel>`_
-- `loopback` is for testing purposes only and is not a real backend.
+- ``loopback`` is for testing purposes only and is not a real backend.
 
-Note that the `backend_name` is `parallel` and the package name is `nx-parallel`, and
-we use `nx_parallel` while installing and importing the package.
+Note that the ``backend_name`` is ``parallel`` and the package name is ``nx-parallel``, and
+we use ``nx_parallel`` while installing and importing the package.
 
 Creating a Custom backend
---------------------------
+-------------------------
 
-1.  To be a valid backend that could be discovered by NetworkX, your package must
+1.  To be a valid backend that is discoverable by NetworkX, your package must
     register an `entry-point <https://packaging.python.org/en/latest/specifications/entry-points/#entry-points>`_
-    `networkx.backends` in the package's metadata, with a key pointing to your
-    dispatcher class. (`how? <https://packaging.python.org/en/latest/guides/creating-and-discovering-plugins/#using-package-metadata>`_)
-    For example, if you are using `setuptools` to manage your package, you can add the
-    following to your `pyproject.toml` file (ref. `setuptools docs <https://setuptools.pypa.io/en/latest/userguide/entry_point.html>`_)::
+    ``networkx.backends`` in the package's metadata, with a `key pointing to your
+    dispatch object <https://packaging.python.org/en/latest/guides/creating-and-discovering-plugins/#using-package-metadata>`_ .
+    For example, if you are using ``setuptools`` to manage your backend package,
+    you can `add the following to your pyproject.toml file <https://setuptools.pypa.io/en/latest/userguide/entry_point.html>`_::
 
         [project.entry-points."networkx.backends"]
         backend_name = "your_dispatcher_class"
 
-    You can also add the `backend_info` entry-point. It points towards the `get_info`
+    You can also add the ``backend_info`` entry-point. It points towards the ``get_info``
     function that returns all the backend information, which is then used to build the
     "Additional Backend Implementation" box at the end of algorithm's documentation
-    page (ref. `nx-cugraph's get_info function <https://github.com/rapidsai/cugraph/blob/branch-24.04/python/nx-cugraph/_nx_cugraph/__init__.py>`_)::
+    page (e.g. `nx-cugraph's get_info function <https://github.com/rapidsai/cugraph/blob/branch-24.04/python/nx-cugraph/_nx_cugraph/__init__.py>`_)::
 
         [project.entry-points."networkx.backend_info"]
         backend_name = "your_get_info_function"
@@ -60,8 +60,8 @@ Creating a Custom backend
     and is present in the `.circleci/config.yml` and
     `.github/workflows/deploy-docs.yml` files in the NetworkX repository.
 
-2.  The backend must create an `nx.Graph`-like object which contains an attribute
-    `__networkx_backend__` with a value of the entry point name::
+2.  The backend must create an ``nx.Graph``-like object which contains an attribute
+    ``__networkx_backend__`` with a value of the entry point name::
 
         class BackendGraph:
             __networkx_backend__ = "backend_name"
@@ -69,51 +69,51 @@ Creating a Custom backend
 
 
 Testing the Custom backend
----------------------------
+--------------------------
 
 To test your custom backend, you can run the NetworkX test suite with your backend.
 This also ensures that the custom backend is compatible with NetworkX's API.
 
 Environment Variable Setup
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To enable automatic testing with your custom backend, follow these steps:
 
 1. Set Backend Environment Variables: 
-    - `NETWORKX_TEST_BACKEND` : Setting this to your registered backend key will let
+    - ``NETWORKX_TEST_BACKEND`` : Setting this to your registered backend key will let
       the NetworkX's dispatch machinery automatically convert a regular NetworkX
-      `Graph`, `DiGraph`, `MultiGraph`, etc. to their backend equivalents, using
-      `your_dispatcher_class.convert_from_nx(G, ...)` function.
-    - `NETWORKX_FALLBACK_TO_NX` (default=False) : Setting this variable to `True` will
-      instruct tests to use a NetworkX `Graph` for algorithms not implemented by your
+      ``Graph``, ``DiGraph``, ``MultiGraph``, etc. to their backend equivalents, using
+      ``your_dispatcher_class.convert_from_nx(G, ...)`` function.
+    - ``NETWORKX_FALLBACK_TO_NX`` (default=False) : Setting this variable to `True` will
+      instruct tests to use a NetworkX ``Graph`` for algorithms not implemented by your
       custom backend. Setting this to `False` will only run the tests for algorithms
-      implemented by your custom backend and tests for other algorithms will `xfail`.
+      implemented by your custom backend and tests for other algorithms will ``xfail``.
 
-2. Defining `convert_from_nx` and `convert_to_nx` methods:
-    The arguments to `convert_from_nx` are:
+2. Defining ``convert_from_nx`` and ``convert_to_nx`` methods:
+    The arguments to ``convert_from_nx`` are:
 
-    - `G` : NetworkX Graph
-    - `edge_attrs` : dict, optional
-        Dictionary mapping edge attributes to default values if missing in `G`.
+    - ``G`` : NetworkX Graph
+    - ``edge_attrs`` : dict, optional
+        Dictionary mapping edge attributes to default values if missing in ``G``.
         If None, then no edge attributes will be converted and default may be 1.
-    - `node_attrs`: dict, optional
-        Dictionary mapping node attributes to default values if missing in `G`.
+    - ``node_attrs``: dict, optional
+        Dictionary mapping node attributes to default values if missing in ``G``.
         If None, then no node attributes will be converted.
-    - `preserve_edge_attrs` : bool
+    - ``preserve_edge_attrs`` : bool
         Whether to preserve all edge attributes.
-    - `preserve_node_attrs` : bool
+    - ``preserve_node_attrs`` : bool
         Whether to preserve all node attributes.
-    - `preserve_graph_attrs` : bool
+    - ``preserve_graph_attrs`` : bool
         Whether to preserve all graph attributes.
-    - `preserve_all_attrs` : bool
+    - ``preserve_all_attrs`` : bool
         Whether to preserve all graph, node, and edge attributes.
-    - `name` : str
+    - ``name`` : str
         The name of the algorithm.
-    - `graph_name` : str
+    - ``graph_name`` : str
         The name of the graph argument being converted.
 
 Running Tests
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 You can invoke NetworkX tests for your custom backend with the following commands::
 
@@ -123,17 +123,17 @@ You can invoke NetworkX tests for your custom backend with the following command
 
 Conversions while running tests :
 
-- Convert NetworkX graphs using `<your_dispatcher_class>.convert_from_nx(G, ...)` into
+- Convert NetworkX graphs using ``<your_dispatcher_class>.convert_from_nx(G, ...)`` into
   the backend graph.
 - Pass the backend graph objects to the backend implementation of the algorithm.
 - Convert the result back to a form expected by NetworkX tests using 
-  `<your_dispatcher_class>.convert_to_nx(result, ...)`.
+  ``<your_dispatcher_class>.convert_to_nx(result, ...)``.
 
 Notes
-~~~~~~
+~~~~~
 
 -   Dispatchable algorithms that are not implemented by the backend
-    will cause a `pytest.xfail()`, giving some indication that not all
+    will cause a ``pytest.xfail``, giving some indication that not all
     tests are running, while avoiding causing an explicit failure.
 
 -   If a backend only partially implements some algorithms, it can define
@@ -150,10 +150,10 @@ Notes
     If not implemented by the backend, ``can_run`` and ``should_run`` are
     assumed to always return True if the backend implements the algorithm.
 
--   A special `on_start_tests(items)` function may be defined by the backend.
+-   A special ``on_start_tests(items)`` function may be defined by the backend.
     It will be called with the list of NetworkX tests discovered. Each item
     is a test object that can be marked as xfail if the backend does not support
-    the test using `item.add_marker(pytest.mark.xfail(reason=...))`.
+    the test using ``item.add_marker(pytest.mark.xfail(reason=...))``.
 """
 
 import inspect
