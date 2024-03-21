@@ -390,7 +390,7 @@ class TestWeightedPath(WeightedTestBase):
         p = dict(nx.all_pairs_dijkstra_path(cycle))
         assert p[0][3] == [0, 1, 2, 3]
 
-        cycle.add_edge(1, 2, weight=10)
+        cycle[1][2]["weight"] = 10
         p = dict(nx.all_pairs_dijkstra_path(cycle))
         assert p[0][3] == [0, 6, 5, 4, 3]
 
@@ -399,7 +399,7 @@ class TestWeightedPath(WeightedTestBase):
         pl = dict(nx.all_pairs_dijkstra_path_length(cycle))
         assert pl[0] == {0: 0, 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 1}
 
-        cycle.add_edge(1, 2, weight=10)
+        cycle[1][2]["weight"] = 10
         pl = dict(nx.all_pairs_dijkstra_path_length(cycle))
         assert pl[0] == {0: 0, 1: 1, 2: 5, 3: 4, 4: 3, 5: 2, 6: 1}
 
@@ -409,7 +409,7 @@ class TestWeightedPath(WeightedTestBase):
         assert out[0][0] == {0: 0, 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 1}
         assert out[0][1][3] == [0, 1, 2, 3]
 
-        cycle.add_edge(1, 2, weight=10)
+        cycle[1][2]["weight"] = 10
         out = dict(nx.all_pairs_dijkstra(cycle))
         assert out[0][0] == {0: 0, 1: 1, 2: 5, 3: 4, 4: 3, 5: 2, 6: 1}
         assert out[0][1][3] == [0, 6, 5, 4, 3]
@@ -539,7 +539,7 @@ class TestBellmanFordAndGoldbergRadzik(WeightedTestBase):
         assert not nx.negative_edge_cycle(G, heuristic=True)
         G.add_edge(2, 0, weight=1.999)
         assert nx.negative_edge_cycle(G, heuristic=True)
-        G.add_edge(2, 0, weight=2)
+        G.edges[2, 0]["weight"] = 2
         assert not nx.negative_edge_cycle(G, heuristic=True)
 
     def test_negative_cycle_consistency(self):

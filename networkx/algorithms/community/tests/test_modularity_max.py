@@ -146,7 +146,7 @@ def test_modularity_communities_directed_weighted():
 
     # A large weight of the edge (2, 6) causes 6 to change group, even if it shares
     # only one connection with the new group and 3 with the old one.
-    G.add_edge(2, 6, weight=20)
+    G[2][6]["weight"] = 20
     expected = [frozenset({1, 2, 3, 6}), frozenset({4, 5, 7, 8})]
     assert greedy_modularity_communities(G, weight="weight") == expected
 
@@ -214,7 +214,7 @@ def test_greedy_modularity_communities_multigraph_weighted():
     assert greedy_modularity_communities(G, weight="weight") == expected
 
     # Increasing the weight of edge (1, 4) causes node 4 to return to the former group.
-    G.add_edge(1, 4, 1, weight=3)
+    G[1][4][1]["weight"] = 3
     expected = [frozenset({1, 2, 3, 4}), frozenset({5, 6, 7, 8})]
     assert greedy_modularity_communities(G, weight="weight") == expected
 
