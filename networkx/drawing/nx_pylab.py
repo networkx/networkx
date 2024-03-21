@@ -243,8 +243,10 @@ def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
     label : string, optional
         Label for graph legend
 
-    hide_ticks : bool
-        Hide ticks of axes.
+    hide_ticks : bool, optional
+        Hide ticks of axes. When `True` (the default), ticks and ticklabels
+        are removed from the axes. To set ticks and tick labels to the pyplot default,
+        use ``hide_ticks=False``.
 
     kwds : optional keywords
         See networkx.draw_networkx_nodes(), networkx.draw_networkx_edges(), and
@@ -394,8 +396,10 @@ def draw_networkx_nodes(
         be in the range ``[0, 1]``. See :meth:`matplotlib.axes.Axes.margins`
         for details. The default is `None`, which uses the Matplotlib default.
 
-    hide_ticks : bool
-        Hide ticks of axes
+    hide_ticks : bool, optional
+        Hide ticks of axes. When `True` (the default), ticks and ticklabels
+        are removed from the axes. To set ticks and tick labels to the pyplot default,
+        use ``hide_ticks=False``.
 
     Returns
     -------
@@ -790,8 +794,10 @@ def draw_networkx_edges(
     min_target_margin : int (default=0)
         The minimum margin (gap) at the end of the edge at the target.
 
-    hide_ticks : bool
-        Hide ticks of axes
+    hide_ticks : bool, optional
+        Hide ticks of axes. When `True` (the default), ticks and ticklabels
+        are removed from the axes. To set ticks and tick labels to the pyplot default,
+        use ``hide_ticks=False``.
 
     Returns
     -------
@@ -1102,8 +1108,10 @@ def draw_networkx_labels(
     clip_on : bool (default=True)
         Turn on clipping of node labels at axis boundaries
 
-    hide_ticks : bool
-        Hide ticks of axes
+    hide_ticks : bool, optional
+        Hide ticks of axes. When `True` (the default), ticks and ticklabels
+        are removed from the axes. To set ticks and tick labels to the pyplot default,
+        use ``hide_ticks=False``.
 
     Returns
     -------
@@ -1256,8 +1264,10 @@ def draw_networkx_edge_labels(
         `matplotlib.patches.FancyArrowPatch` for more info.
         If Iterable, index indicates i'th edge key of MultiGraph
 
-    hide_ticks : bool
-        Hide ticks of axes
+    hide_ticks : bool, optional
+        Hide ticks of axes. When `True` (the default), ticks and ticklabels
+        are removed from the axes. To set ticks and tick labels to the pyplot default,
+        use ``hide_ticks=False``.
 
     Returns
     -------
