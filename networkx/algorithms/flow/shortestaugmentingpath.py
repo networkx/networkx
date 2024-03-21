@@ -296,6 +296,5 @@ def shortest_augmenting_path(
     """
     R = shortest_augmenting_path_impl(G, s, t, capacity, residual, two_phase, cutoff)
     R.graph["algorithm"] = "shortest_augmenting_path"
-    if cache := getattr(R, "__networkx_cache__", None):
-        cache.clear()
+    nx._clear_cache(R)
     return R

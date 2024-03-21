@@ -156,8 +156,7 @@ def boykov_kolmogorov(
     """
     R = boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff)
     R.graph["algorithm"] = "boykov_kolmogorov"
-    if cache := getattr(R, "__networkx_cache__", None):
-        cache.clear()
+    nx._clear_cache(R)
     return R
 
 

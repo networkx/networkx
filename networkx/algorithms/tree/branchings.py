@@ -1080,8 +1080,7 @@ def maximum_branching(
 
             edmonds_add_edge(B, B_edge_index, u, v, desired_edge[2], **dd)
             G[u][v][desired_edge[2]][candidate_attr] = True
-            if cache := getattr(G, "__networkx_cache__", None):
-                cache.clear()
+            nx._clear_cache(G)
             uf.union(u, v)
 
             ###################
@@ -1177,20 +1176,17 @@ def minimum_branching(
 ):
     for _, _, d in G.edges(data=True):
         d[attr] = -d.get(attr, default)
-    if cache := getattr(G, "__networkx_cache__", None):
-        cache.clear()
+    nx._clear_cache(G)
 
     B = maximum_branching(G, attr, default, preserve_attrs, partition)
 
     for _, _, d in G.edges(data=True):
         d[attr] = -d.get(attr, default)
-    if cache := getattr(G, "__networkx_cache__", None):
-        cache.clear()
+    nx._clear_cache(G)
 
     for _, _, d in B.edges(data=True):
         d[attr] = -d.get(attr, default)
-    if cache := getattr(B, "__networkx_cache__", None):
-        cache.clear()
+    nx._clear_cache(B)
 
     return B
 
@@ -1243,21 +1239,18 @@ def minimal_branching(
         # in order to prevent the edge weights from becoming negative during
         # computation
         d[attr] = max_weight + 1 + (max_weight - min_weight) - d.get(attr, default)
-    if cache := getattr(G, "__networkx_cache__", None):
-        cache.clear()
+    nx._clear_cache(G)
 
     B = maximum_branching(G, attr, default, preserve_attrs, partition)
 
     # Reverse the weight transformations
     for _, _, d in G.edges(data=True):
         d[attr] = max_weight + 1 + (max_weight - min_weight) - d.get(attr, default)
-    if cache := getattr(G, "__networkx_cache__", None):
-        cache.clear()
+    nx._clear_cache(G)
 
     for _, _, d in B.edges(data=True):
         d[attr] = max_weight + 1 + (max_weight - min_weight) - d.get(attr, default)
-    if cache := getattr(B, "__networkx_cache__", None):
-        cache.clear()
+    nx._clear_cache(B)
 
     return B
 
@@ -1286,20 +1279,17 @@ def maximum_spanning_arborescence(
 
     for _, _, d in G.edges(data=True):
         d[attr] = d.get(attr, default) - min_weight + 1 - (min_weight - max_weight)
-    if cache := getattr(G, "__networkx_cache__", None):
-        cache.clear()
+    nx._clear_cache(G)
 
     B = maximum_branching(G, attr, default, preserve_attrs, partition)
 
     for _, _, d in G.edges(data=True):
         d[attr] = d.get(attr, default) + min_weight - 1 + (min_weight - max_weight)
-    if cache := getattr(G, "__networkx_cache__", None):
-        cache.clear()
+    nx._clear_cache(G)
 
     for _, _, d in B.edges(data=True):
         d[attr] = d.get(attr, default) + min_weight - 1 + (min_weight - max_weight)
-    if cache := getattr(B, "__networkx_cache__", None):
-        cache.clear()
+    nx._clear_cache(B)
 
     if not is_arborescence(B):
         raise nx.exception.NetworkXException("No maximum spanning arborescence in G.")
@@ -1579,8 +1569,7 @@ class ArborescenceIterator:
                 d[self.partition_key] = partition.partition_dict[(u, v)]
             else:
                 d[self.partition_key] = nx.EdgePartition.OPEN
-        if cache := getattr(self.G, "__networkx_cache__", None):
-            cache.clear()
+        nx._clear_cache(self.G)
 
         for n in self.G:
             included_count = 0
@@ -1596,8 +1585,6 @@ class ArborescenceIterator:
                 for u, v, d in self.G.in_edges(nbunch=n, data=True):
                     if d.get(self.partition_key) != nx.EdgePartition.INCLUDED:
                         d[self.partition_key] = nx.EdgePartition.EXCLUDED
-        if cache := getattr(self.G, "__networkx_cache__", None):
-            cache.clear()  # CHECK (probably keep for sanity)
 
     def _clear_partition(self, G):
         """
@@ -1606,3 +1593,4 @@ class ArborescenceIterator:
         for u, v, d in G.edges(data=True):
             if self.partition_key in d:
                 del d[self.partition_key]
+        nx._clear_cache(self.G)

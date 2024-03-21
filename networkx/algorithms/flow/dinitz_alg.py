@@ -135,8 +135,7 @@ def dinitz(G, s, t, capacity="capacity", residual=None, value_only=False, cutoff
     """
     R = dinitz_impl(G, s, t, capacity, residual, cutoff)
     R.graph["algorithm"] = "dinitz"
-    if cache := getattr(R, "__networkx_cache__", None):
-        cache.clear()
+    nx._clear_cache(R)
     return R
 
 
