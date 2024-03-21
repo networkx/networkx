@@ -175,22 +175,25 @@ def _do_nothing():
 
 def _get_backends(group, *, load_and_call=False):
     """
-    Retrieve NetworkX `backends` and `backend_info` from the Python entry points.
+    Retrieve NetworkX ``backends`` and ``backend_info`` from the entry points.
 
     Parameters
     -----------
-        group (str): The entry_point to be retrieved.
-        load_and_call (bool, optional): If True, load and call the backend. Defaults to False.
+    group : str
+        The entry_point to be retrieved.
+    load_and_call : bool, optional
+        If True, load and call the backend. Defaults to False.
 
     Returns
     --------
-        dict: A dictionary mapping backend names to their respective backend objects.
+    dict
+        A dictionary mapping backend names to their respective backend objects.
 
     Notes
     ------
-        - If a backend is defined more than once, a warning is issued.
-        - The `nx-loopback` backend is removed if it exists, as it is only available during testing.
-        - A warning is displayed if an error occurs while loading a backend.
+    If a backend is defined more than once, a warning is issued.
+    The `nx-loopback` backend is removed if it exists, as it is only available during testing.
+    A warning is displayed if an error occurs while loading a backend.
     """
     items = entry_points(group=group)
     rv = {}
