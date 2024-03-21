@@ -211,6 +211,8 @@ class NetworkXConfig(Config):
 
     - NETWORKX_BACKEND_PRIORITY: set `backend_priority` from comma-separated names.
     - NETWORKX_CACHE_CONVERTED_GRAPHS: set `cache_converted_graphs` to True if nonempty.
+
+    This is a global configuration. Use with caution when using from multiple threads.
     """
 
     backend_priority: list[str]
