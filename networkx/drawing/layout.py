@@ -1251,7 +1251,8 @@ def forceatlas2_layout(
     else:
         return pos
 
-    pos_arr = np.random.rand(len(G), dim) * max_pos_range - min_pos_range
+    # center locs around 0
+    pos_arr = (np.random.rand(len(G), dim) - 0.5) * (max_pos_range - min_pos_range)
 
     mass = np.zeros(len(G))
     size = np.zeros(len(G))
