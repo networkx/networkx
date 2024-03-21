@@ -237,6 +237,5 @@ def edmonds_karp(
     """
     R = edmonds_karp_impl(G, s, t, capacity, residual, cutoff)
     R.graph["algorithm"] = "edmonds_karp"
-    if cache := getattr(R, "__networkx_cache__", None):
-        cache.clear()
+    nx._clear_cache(R)
     return R

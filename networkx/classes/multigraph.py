@@ -520,8 +520,7 @@ class MultiGraph(Graph):
             keydict[key] = datadict
             self._adj[u][v] = keydict
             self._adj[v][u] = keydict
-        if cache := getattr(self, "__networkx_cache__", None):
-            cache.clear()
+        nx._clear_cache(self)
         return key
 
     def add_edges_from(self, ebunch_to_add, **attr):
@@ -618,8 +617,7 @@ class MultiGraph(Graph):
             key = self.add_edge(u, v, key)
             self[u][v][key].update(ddd)
             keylist.append(key)
-        if cache := getattr(self, "__networkx_cache__", None):
-            cache.clear()
+        nx._clear_cache(self)
         return keylist
 
     def remove_edge(self, u, v, key=None):
@@ -699,8 +697,7 @@ class MultiGraph(Graph):
             del self._adj[u][v]
             if u != v:  # check for selfloop
                 del self._adj[v][u]
-        if cache := getattr(self, "__networkx_cache__", None):
-            cache.clear()
+        nx._clear_cache(self)
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -759,8 +756,7 @@ class MultiGraph(Graph):
                 self.remove_edge(*e[:3])
             except NetworkXError:
                 pass
-        if cache := getattr(self, "__networkx_cache__", None):
-            cache.clear()
+        nx._clear_cache(self)
 
     def has_edge(self, u, v, key=None):
         """Returns True if the graph has an edge between nodes u and v.

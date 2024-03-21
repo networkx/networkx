@@ -404,8 +404,7 @@ class Graph:
     @name.setter
     def name(self, s):
         self.graph["name"] = s
-        if cache := getattr(self, "__networkx_cache__", None):
-            cache.clear()
+        nx._clear_cache(self)
 
     def __str__(self):
         """Returns a short summary of the graph.
@@ -562,8 +561,7 @@ class Graph:
             attr_dict.update(attr)
         else:  # update attr even if node already exists
             self._node[node_for_adding].update(attr)
-        if cache := getattr(self, "__networkx_cache__", None):
-            cache.clear()
+        nx._clear_cache(self)
 
     def add_nodes_from(self, nodes_for_adding, **attr):
         """Add multiple nodes.
@@ -641,8 +639,7 @@ class Graph:
                 self._adj[n] = self.adjlist_inner_dict_factory()
                 self._node[n] = self.node_attr_dict_factory()
             self._node[n].update(newdict)
-        if cache := getattr(self, "__networkx_cache__", None):
-            cache.clear()
+        nx._clear_cache(self)
 
     def remove_node(self, n):
         """Remove node n.
@@ -683,8 +680,7 @@ class Graph:
         for u in nbrs:
             del adj[u][n]  # remove all edges n-u in graph
         del adj[n]  # now remove node
-        if cache := getattr(self, "__networkx_cache__", None):
-            cache.clear()
+        nx._clear_cache(self)
 
     def remove_nodes_from(self, nodes):
         """Remove multiple nodes.
@@ -737,8 +733,7 @@ class Graph:
                 del adj[n]
             except KeyError:
                 pass
-        if cache := getattr(self, "__networkx_cache__", None):
-            cache.clear()
+        nx._clear_cache(self)
 
     @cached_property
     def nodes(self):
@@ -968,8 +963,7 @@ class Graph:
         datadict.update(attr)
         self._adj[u][v] = datadict
         self._adj[v][u] = datadict
-        if cache := getattr(self, "__networkx_cache__", None):
-            cache.clear()
+        nx._clear_cache(self)
 
     def add_edges_from(self, ebunch_to_add, **attr):
         """Add all the edges in ebunch_to_add.
@@ -1050,8 +1044,7 @@ class Graph:
             datadict.update(dd)
             self._adj[u][v] = datadict
             self._adj[v][u] = datadict
-        if cache := getattr(self, "__networkx_cache__", None):
-            cache.clear()
+        nx._clear_cache(self)
 
     def add_weighted_edges_from(self, ebunch_to_add, weight="weight", **attr):
         """Add weighted edges in `ebunch_to_add` with specified weight attr
@@ -1102,8 +1095,7 @@ class Graph:
         >>> G.add_weighted_edges_from(list((5, n, weight) for n in G.nodes))
         """
         self.add_edges_from(((u, v, {weight: d}) for u, v, d in ebunch_to_add), **attr)
-        if cache := getattr(self, "__networkx_cache__", None):
-            cache.clear()
+        nx._clear_cache(self)
 
     def remove_edge(self, u, v):
         """Remove the edge between u and v.
@@ -1137,8 +1129,7 @@ class Graph:
                 del self._adj[v][u]
         except KeyError as err:
             raise NetworkXError(f"The edge {u}-{v} is not in the graph") from err
-        if cache := getattr(self, "__networkx_cache__", None):
-            cache.clear()
+        nx._clear_cache(self)
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -1173,8 +1164,7 @@ class Graph:
                 del adj[u][v]
                 if u != v:  # self loop needs only one entry removed
                     del adj[v][u]
-        if cache := getattr(self, "__networkx_cache__", None):
-            cache.clear()
+        nx._clear_cache(self)
 
     def update(self, edges=None, nodes=None):
         """Update the graph using nodes/edges/graphs as input.
@@ -1547,8 +1537,7 @@ class Graph:
         self._adj.clear()
         self._node.clear()
         self.graph.clear()
-        if cache := getattr(self, "__networkx_cache__", None):
-            cache.clear()
+        nx._clear_cache(self)
 
     def clear_edges(self):
         """Remove all edges from the graph without altering nodes.
@@ -1564,8 +1553,7 @@ class Graph:
         """
         for nbr_dict in self._adj.values():
             nbr_dict.clear()
-        if cache := getattr(self, "__networkx_cache__", None):
-            cache.clear()
+        nx._clear_cache(self)
 
     def is_multigraph(self):
         """Returns True if graph is a multigraph, False otherwise."""

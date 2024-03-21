@@ -421,6 +421,5 @@ def preflow_push(
     """
     R = preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq, value_only)
     R.graph["algorithm"] = "preflow_push"
-    if cache := getattr(R, "__networkx_cache__", None):
-        cache.clear()
+    nx._clear_cache(R)
     return R

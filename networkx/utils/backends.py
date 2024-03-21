@@ -170,7 +170,7 @@ import networkx as nx
 
 from .decorators import argmap
 
-__all__ = ["_dispatchable", "config"]
+__all__ = ["_dispatchable"]
 
 
 def _do_nothing():
@@ -1338,7 +1338,7 @@ class _dispatchable:
                 G1 = backend.convert_to_nx(bound.arguments["G"])
                 G2 = bound2.arguments["G"]
                 G2._adj = G1._adj
-                G2.__networkx_cache__.clear()
+                nx._clear_cache(G2)
             elif self.name == "edmonds_karp":
                 R1 = backend.convert_to_nx(bound.arguments["residual"])
                 R2 = bound2.arguments["residual"]
@@ -1346,15 +1346,14 @@ class _dispatchable:
                     for k, v in R1.edges.items():
                         R2.edges[k]["flow"] = v["flow"]
                     R2.graph.update(R1.graph)
-                    if cache := getattr(R2, "__networkx_cache__", None):
-                        cache.clear()
+                    nx._clear_cache(R2)
             elif self.name == "barycenter" and bound.arguments["attr"] is not None:
                 G1 = backend.convert_to_nx(bound.arguments["G"])
                 G2 = bound2.arguments["G"]
                 attr = bound.arguments["attr"]
                 for k, v in G1.nodes.items():
                     G2.nodes[k][attr] = v[attr]
-                G2.__networkx_cache__.clear()
+                nx._clear_cache(G2)
             elif (
                 self.name in {"contracted_nodes", "contracted_edge"}
                 and not bound.arguments["copy"]
@@ -1363,13 +1362,13 @@ class _dispatchable:
                 G1 = backend.convert_to_nx(bound.arguments["G"])
                 G2 = bound2.arguments["G"]
                 G2.__dict__.update(G1.__dict__)
-                G2.__networkx_cache__.clear()
+                nx._clear_cache(G2)
             elif self.name == "stochastic_graph" and not bound.arguments["copy"]:
                 G1 = backend.convert_to_nx(bound.arguments["G"])
                 G2 = bound2.arguments["G"]
                 for k, v in G1.edges.items():
                     G2.edges[k]["weight"] = v["weight"]
-                G2.__networkx_cache__.clear()
+                nx._clear_cache(G2)
             elif (
                 self.name == "relabel_nodes"
                 and not bound.arguments["copy"]
@@ -1389,7 +1388,7 @@ class _dispatchable:
                 if hasattr(G1, "_succ") and hasattr(G2, "_succ"):
                     G2._succ.clear()
                     G2._succ.update(G1._succ)
-                G2.__networkx_cache__.clear()
+                nx._clear_cache(G2)
                 if self.name == "relabel_nodes":
                     return G2
             return backend.convert_to_nx(result)

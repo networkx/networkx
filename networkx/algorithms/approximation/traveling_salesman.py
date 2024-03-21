@@ -767,8 +767,7 @@ def held_karp_ascent(G, weight="weight"):
         for u, v, d in G.edges(data=True):
             d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
         dir_ascent, k_d = direction_of_ascent()
-    if cache := getattr(G, "__networkx_cache__", None):
-        cache.clear()
+    nx._clear_cache(G)
     # k_d is no longer an individual 1-arborescence but rather a set of
     # minimal 1-arborescences at the maximum point of the polytope and should
     # be reflected as such
