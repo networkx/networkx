@@ -12,7 +12,7 @@ __all__ = ["nonisomorphic_trees", "number_of_nonisomorphic_trees"]
 import networkx as nx
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def nonisomorphic_trees(order, create="graph"):
     """Generates lists of nonisomorphic trees
 
@@ -24,6 +24,15 @@ def nonisomorphic_trees(order, create="graph"):
     create : one of {"graph", "matrix"} (default="graph")
        If ``"graph"`` is selected a list of ``Graph`` instances will be returned,
        if matrix is selected a list of adjacency matrices will be returned.
+
+       .. deprecated:: 3.3
+
+          The `create` argument is deprecated and will be removed in NetworkX
+          version 3.5. In the future, `nonisomorphic_trees` will yield graph
+          instances by default. To generate adjacency matrices, call
+          ``nx.to_numpy_array`` on the output, e.g.::
+
+             [nx.to_numpy_array(G) for G in nx.nonisomorphic_trees(N)]
 
     Yields
     ------
@@ -45,6 +54,20 @@ def nonisomorphic_trees(order, create="graph"):
             if create == "graph":
                 yield _layout_to_graph(layout)
             elif create == "matrix":
+                import warnings
+
+                warnings.warn(
+                    (
+                        "\n\nThe 'create=matrix' argument of nonisomorphic_trees\n"
+                        "is deprecated and will be removed in version 3.5.\n"
+                        "Use ``nx.to_numpy_array`` to convert graphs to adjacency "
+                        "matrices, e.g.::\n\n"
+                        "   [nx.to_numpy_array(G) for G in nx.nonisomorphic_trees(N)]"
+                    ),
+                    category=DeprecationWarning,
+                    stacklevel=2,
+                )
+
                 yield _layout_to_matrix(layout)
             layout = _next_rooted_tree(layout)
 

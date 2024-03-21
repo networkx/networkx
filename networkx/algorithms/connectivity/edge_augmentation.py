@@ -1040,7 +1040,7 @@ def _minimum_rooted_branching(D, root):
     return A
 
 
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def collapse(G, grouped_nodes):
     """Collapses each group of nodes into a single node.
 

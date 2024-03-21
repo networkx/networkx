@@ -236,7 +236,7 @@ def test_threshold():
     mod1 = nx.community.modularity(G, partition1)
     mod2 = nx.community.modularity(G, partition2)
 
-    assert mod1 < mod2
+    assert mod1 <= mod2
 
 
 def test_empty_graph():

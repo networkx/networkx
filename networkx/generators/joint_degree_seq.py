@@ -142,7 +142,7 @@ def _neighbor_switch(G, w, unsat, h_node_residual, avoid_node_id=None):
 
 
 @py_random_state(1)
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def joint_degree_graph(joint_degrees, seed=None):
     """Generates a random simple graph with the given joint degree dictionary.
 
@@ -469,7 +469,7 @@ def _directed_neighbor_switch_rev(
 
 
 @py_random_state(3)
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def directed_joint_degree_graph(in_degrees, out_degrees, nkk, seed=None):
     """Generates a random simple directed graph with the joint degree.
 

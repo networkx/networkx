@@ -76,7 +76,10 @@ streets.plot(color="k", ax=ax[0])
 for i, facet in enumerate(ax):
     facet.set_title(("Streets", "Graph")[i])
     facet.axis("off")
-    add_basemap(facet)
+    try:  # For issues with downloading/parsing in CI
+        add_basemap(facet)
+    except:
+        pass
 nx.draw(
     G_primal, {n: [n[0], n[1]] for n in list(G_primal.nodes)}, ax=ax[1], node_size=50
 )
@@ -92,7 +95,10 @@ streets.plot(color="k", ax=ax[0])
 for i, facet in enumerate(ax):
     facet.set_title(("Streets", "Graph")[i])
     facet.axis("off")
-    add_basemap(facet)
+    try:  # For issues with downloading/parsing in CI
+        add_basemap(facet)
+    except:
+        pass
 nx.draw(G_dual, {n: [n[0], n[1]] for n in list(G_dual.nodes)}, ax=ax[1], node_size=50)
 plt.show()
 

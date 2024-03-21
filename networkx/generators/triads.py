@@ -33,7 +33,7 @@ TRIAD_EDGES = {
 }
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def triad_graph(triad_name):
     """Returns the triad graph with the given name.
 

@@ -301,7 +301,7 @@ def weights_to_creation_sequence(
 
 
 # Manipulating NetworkX.Graphs in context of threshold graphs
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def threshold_graph(creation_sequence, create_using=None):
     """
     Create a threshold graph from the creation sequence or compact
@@ -369,7 +369,7 @@ def find_alternating_4_cycle(G):
     return False
 
 
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def find_threshold_graph(G, create_using=None):
     """
     Returns a threshold subgraph that is close to largest in `G`.

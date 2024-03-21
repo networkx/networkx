@@ -492,7 +492,7 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     return _shortcutting(circuit)
 
 
-@nx._dispatchable(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight", returns_graph=True)
 def held_karp_ascent(G, weight="weight"):
     """
     Minimizes the Held-Karp relaxation of the TSP for `G`
@@ -683,7 +683,9 @@ def held_karp_ascent(G, weight="weight"):
                     a_eq[n_count][arb_count] = deg - 2
                     n_count -= 1
                 a_eq[len(G)][arb_count] = 1
-            program_result = optimize.linprog(c, A_eq=a_eq, b_eq=b_eq)
+            program_result = optimize.linprog(
+                c, A_eq=a_eq, b_eq=b_eq, method="highs-ipm"
+            )
             # If the constants exist, then the direction of ascent doesn't
             if program_result.success:
                 # There is no direction of ascent

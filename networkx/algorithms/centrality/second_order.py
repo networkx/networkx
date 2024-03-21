@@ -134,5 +134,8 @@ def second_order_centrality(G, weight="weight"):
         )  # eq 3
 
     return dict(
-        zip(G.nodes, [np.sqrt(2 * np.sum(M[:, i]) - n * (n + 1)) for i in range(n)])
+        zip(
+            G.nodes,
+            (float(np.sqrt(2 * np.sum(M[:, i]) - n * (n + 1))) for i in range(n)),
+        )
     )  # eq 6

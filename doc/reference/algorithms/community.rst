@@ -15,7 +15,7 @@ Bipartitions
    kernighan_lin_bisection
 
 Divisive Communities
----------------------
+--------------------
 .. automodule:: networkx.algorithms.community.divisive
 .. autosummary::
    :toctree: generated/

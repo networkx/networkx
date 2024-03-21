@@ -503,7 +503,7 @@ def _high_degree_components(G, k):
         yield from nx.connected_components(H)
 
 
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def general_k_edge_subgraphs(G, k):
     """General algorithm to find all maximal k-edge-connected subgraphs in `G`.
 

@@ -10,7 +10,7 @@ import networkx as nx
 __all__ = ["kl_connected_subgraph", "is_kl_connected"]
 
 
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
     """Returns the maximum locally `(k, l)`-connected subgraph of `G`.
 

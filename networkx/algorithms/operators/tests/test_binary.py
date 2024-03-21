@@ -53,7 +53,7 @@ def test_intersection():
     assert set(I2.nodes()) == {1, 2, 3, 4}
     assert sorted(I2.edges()) == [(2, 3)]
     # Only test if not performing auto convert testing of backend implementations
-    if not nx.utils.backends._dispatchable._automatic_backends:
+    if not nx.config["backend_priority"]:
         with pytest.raises(TypeError):
             nx.intersection(G2, H)
         with pytest.raises(TypeError):

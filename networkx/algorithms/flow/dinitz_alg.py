@@ -15,6 +15,7 @@ __all__ = ["dinitz"]
     edge_attrs={"capacity": float("inf")},
     preserve_edge_attrs={"residual": {"capacity": float("inf")}},
     preserve_graph_attrs={"residual"},
+    returns_graph=True,
 )
 def dinitz(G, s, t, capacity="capacity", residual=None, value_only=False, cutoff=None):
     """Find a maximum single-commodity flow using Dinitz' algorithm.

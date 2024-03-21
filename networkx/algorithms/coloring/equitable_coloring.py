@@ -112,7 +112,7 @@ def move_witnesses(src_color, dst_color, N, H, F, C, T_cal, L):
         X = Y
 
 
-@nx._dispatchable
+@nx._dispatchable(mutates_input=True)
 def pad_graph(G, num_colors):
     """Add a disconnected complete clique K_p such that the number of nodes in
     the graph becomes a multiple of `num_colors`.

@@ -29,6 +29,14 @@ def test_no_perfect_matching_raises():
         nx.bipartite.maximal_extendability(G)
 
 
+def test_residual_graph_not_strongly_connected_raises():
+    G = nx.Graph([(1, 2), (2, 3), (3, 4)])
+    with pytest.raises(
+        nx.NetworkXError, match="The residual graph of G is not strongly connected"
+    ):
+        nx.bipartite.maximal_extendability(G)
+
+
 def test_ladder_graph_is_1():
     G = nx.ladder_graph(3)
     assert nx.bipartite.maximal_extendability(G) == 1

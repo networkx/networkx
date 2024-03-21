@@ -20,7 +20,6 @@ __all__ = [
 ]
 
 
-@nx._dispatchable
 def strategy_largest_first(G, colors):
     """Returns a list of the nodes of ``G`` in decreasing order by
     degree.
@@ -32,7 +31,6 @@ def strategy_largest_first(G, colors):
 
 
 @py_random_state(2)
-@nx._dispatchable
 def strategy_random_sequential(G, colors, seed=None):
     """Returns a random permutation of the nodes of ``G`` as a list.
 
@@ -47,7 +45,6 @@ def strategy_random_sequential(G, colors, seed=None):
     return nodes
 
 
-@nx._dispatchable
 def strategy_smallest_last(G, colors):
     """Returns a deque of the nodes of ``G``, "smallest" last.
 
@@ -121,7 +118,6 @@ def _maximal_independent_set(G):
     return result
 
 
-@nx._dispatchable
 def strategy_independent_set(G, colors):
     """Uses a greedy independent set removal strategy to determine the
     colors.
@@ -146,7 +142,6 @@ def strategy_independent_set(G, colors):
         yield from nodes
 
 
-@nx._dispatchable
 def strategy_connected_sequential_bfs(G, colors):
     """Returns an iterable over nodes in ``G`` in the order given by a
     breadth-first traversal.
@@ -160,7 +155,6 @@ def strategy_connected_sequential_bfs(G, colors):
     return strategy_connected_sequential(G, colors, "bfs")
 
 
-@nx._dispatchable
 def strategy_connected_sequential_dfs(G, colors):
     """Returns an iterable over nodes in ``G`` in the order given by a
     depth-first traversal.
@@ -174,7 +168,6 @@ def strategy_connected_sequential_dfs(G, colors):
     return strategy_connected_sequential(G, colors, "dfs")
 
 
-@nx._dispatchable
 def strategy_connected_sequential(G, colors, traversal="bfs"):
     """Returns an iterable over nodes in ``G`` in the order given by a
     breadth-first or depth-first traversal.
@@ -207,7 +200,6 @@ def strategy_connected_sequential(G, colors, traversal="bfs"):
             yield end
 
 
-@nx._dispatchable
 def strategy_saturation_largest_first(G, colors):
     """Iterates over all the nodes of ``G`` in "saturation order" (also
     known as "DSATUR").

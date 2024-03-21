@@ -151,7 +151,7 @@ def hamiltonian_path(G):
 
 
 @py_random_state(1)
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def random_tournament(n, seed=None):
     r"""Returns a random tournament graph on `n` nodes.
 

@@ -54,6 +54,7 @@ sphinx_gallery_conf = {
     "image_scrapers": ("matplotlib",),
     "matplotlib_animations": True,
     "plot_gallery": "True",
+    "reference_url": {"sphinx_gallery": None},
 }
 # Add pygraphviz png scraper, if available
 try:

@@ -1,12 +1,16 @@
 """
-=====================================================
+==================================================
 Image Segmentation via Spectral Graph Partitioning
-=====================================================
-Example of partitioning a undirected graph obtained by `k-neighbors`
+==================================================
+
+Example of partitioning a undirected graph obtained by ``k-neighbors``
 from an RGB image into two subgraphs using spectral clustering
 illustrated by 3D plots of the original labeled data points in RGB 3D space
 vs the bi-partition marking performed by graph partitioning via spectral clustering.
-All 3D plots and animations use the 3D spectral layout.
+All 3D plots use the 3D spectral layout.
+
+See :ref:`sphx_glr_auto_examples_3d_drawing` for recipes to create 3D animations
+from these visualizations.
 """
 import numpy as np
 import networkx as nx
@@ -15,7 +19,7 @@ from matplotlib import animation
 from matplotlib.lines import Line2D
 from sklearn.cluster import SpectralClustering
 
-# sphinx_gallery_thumbnail_number = 4
+# sphinx_gallery_thumbnail_number = 3
 
 ###############################################################################
 # Create an example 3D dataset "The Rings".
@@ -129,40 +133,6 @@ _scatter_plot(ax1, X, array_of_markers)
 
 plt.show()
 
-###############################################################################
-# Generate the rotating animation of the clustered data.
-# ------------------------------------------------------
-# The data points are marked according to clustering and rotated
-# in the 3D animation.
-
-
-def _init():
-    ax.clear()
-    _scatter_plot(ax, X, array_of_markers)
-    ax.grid(False)
-    ax.set_axis_off()
-    ax.view_init(elev=6.0, azim=-22.0)
-
-
-def _frame_update(index):
-    ax.view_init(6.0 + index * 0.2, -22.0 + index * 0.5)
-
-
-fig = plt.figure(layout="tight")
-ax = fig.add_subplot(111, projection="3d")
-ax.grid(False)
-ax.set_axis_off()
-ani = animation.FuncAnimation(
-    fig,
-    _frame_update,
-    init_func=_init,
-    interval=50,
-    cache_frame_data=False,
-    frames=100,
-)
-
-plt.show()
-
 
 ###############################################################################
 # Generate the plots of the graph.
@@ -216,30 +186,4 @@ def _3d_graph_plot(ax):
 
 _3d_graph_plot(ax1)
 plt.tight_layout()
-plt.show()
-
-###############################################################################
-# Generate the rotating 3D animation of the graph.
-# ------------------------------------------------
-# The nodes of the graph are marked according to clustering.
-# The graph is rotated in the 3D animation.
-
-
-def _frame_update(index):
-    ax.view_init(100.0 + index * 0.7, -100.0 + index * 0.5)
-
-
-fig = plt.figure(layout="tight")
-ax = fig.add_subplot(111, projection="3d")
-ax.grid(False)
-ax.set_axis_off()
-_3d_graph_plot(ax)
-ani = animation.FuncAnimation(
-    fig,
-    _frame_update,
-    interval=50,
-    cache_frame_data=False,
-    frames=100,
-)
-
 plt.show()

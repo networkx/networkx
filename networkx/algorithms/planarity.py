@@ -38,7 +38,7 @@ def is_planar(G):
     return check_planarity(G, counterexample=False)[0]
 
 
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def check_planarity(G, counterexample=False):
     """Check if a graph is planar and return a counterexample or an embedding.
 
@@ -114,7 +114,7 @@ def check_planarity(G, counterexample=False):
         return True, embedding
 
 
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def check_planarity_recursive(G, counterexample=False):
     """Recursive version of :meth:`check_planarity`."""
     planarity_state = LRPlanarity(G)
@@ -130,7 +130,7 @@ def check_planarity_recursive(G, counterexample=False):
         return True, embedding
 
 
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def get_counterexample(G):
     """Obtains a Kuratowski subgraph.
 
@@ -169,7 +169,7 @@ def get_counterexample(G):
     return subgraph
 
 
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def get_counterexample_recursive(G):
     """Recursive version of :meth:`get_counterexample`."""
 
@@ -1385,3 +1385,16 @@ class PlanarEmbedding(nx.DiGraph):
         contained.
         """
         return False
+
+    def copy(self, as_view=False):
+        if as_view is True:
+            return nx.graphviews.generic_graph_view(self)
+        G = self.__class__()
+        G.graph.update(self.graph)
+        G.add_nodes_from((n, d.copy()) for n, d in self._node.items())
+        super(self.__class__, G).add_edges_from(
+            (u, v, datadict.copy())
+            for u, nbrs in self._adj.items()
+            for v, datadict in nbrs.items()
+        )
+        return G

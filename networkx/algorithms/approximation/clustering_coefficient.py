@@ -45,6 +45,11 @@ def average_clustering(G, trials=1000, seed=None):
     >>> approximation.average_clustering(G, trials=1000, seed=10)
     0.214
 
+    Raises
+    ------
+    NetworkXNotImplemented
+        If G is directed.
+
     References
     ----------
     .. [1] Schank, Thomas, and Dorothea Wagner. Approximating clustering

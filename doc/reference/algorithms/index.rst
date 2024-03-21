@@ -15,6 +15,7 @@ Algorithms
    bipartite
    boundary
    bridges
+   broadcasting
    centrality
    chains
    chordal

@@ -10,6 +10,7 @@ __all__ = ["maximal_extendability"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def maximal_extendability(G):
     """Computes the extendability of a graph.
 
@@ -97,7 +98,7 @@ def maximal_extendability(G):
 
     # For node-pairs between V & U, keep min of max number of node-disjoint paths
     # Variable $k$ stands for the extendability of graph G
-    k = float("Inf")
+    k = float("inf")
     for u in U:
         for v in V:
             num_paths = sum(1 for _ in nx.node_disjoint_paths(residual_G, u, v))

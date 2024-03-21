@@ -369,7 +369,7 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
 
 
 @not_implemented_for("directed")
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def complete_to_chordal_graph(G):
     """Return a copy of G completed to a chordal graph
 

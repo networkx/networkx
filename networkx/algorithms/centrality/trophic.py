@@ -76,7 +76,7 @@ def trophic_levels(G, weight="weight"):
     # all other nodes have levels as calculated
     nonzero_node_ids = (node_id for node_id, degree in G.in_degree if degree != 0)
     for i, node_id in enumerate(nonzero_node_ids):
-        levels[node_id] = y[i]
+        levels[node_id] = y.item(i)
 
     return levels
 
@@ -159,4 +159,4 @@ def trophic_incoherence_parameter(G, weight="weight", cannibalism=False):
             # Avoid copy otherwise
             G_2 = G
         diffs = trophic_differences(G_2, weight=weight)
-    return np.std(list(diffs.values()))
+    return float(np.std(list(diffs.values())))
