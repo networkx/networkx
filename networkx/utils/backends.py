@@ -154,6 +154,9 @@ Notes
     It will be called with the list of NetworkX tests discovered. Each item
     is a test object that can be marked as xfail if the backend does not support
     the test using ``item.add_marker(pytest.mark.xfail(reason=...))``.
+
+-   A backend graph instance may have a ``G.__networkx_cache__`` dict to enable
+    caching, and care should be taken to clear the cache when appropriate.
 """
 
 import inspect
@@ -1046,7 +1049,8 @@ class _dispatchable:
                             "will correctly clear the cache to keep it consistent. "
                             "You may also use `G.__networkx_cache__.clear()` to "
                             "manually clear the cache, or set `G.__networkx_cache__` "
-                            "to None to disable caching for G."
+                            "to None to disable caching for G. Enable or disable "
+                            "caching via `nx.config.cache_converted_graphs` config."
                         )
                         return rv
                 if edge_key is not True and node_key is not True:
@@ -1089,7 +1093,8 @@ class _dispatchable:
                             "will correctly clear the cache to keep it consistent. "
                             "You may also use `G.__networkx_cache__.clear()` to "
                             "manually clear the cache, or set `G.__networkx_cache__` "
-                            "to None to disable caching for G."
+                            "to None to disable caching for G. Enable or disable "
+                            "caching via `nx.config.cache_converted_graphs` config."
                         )
                         return val
 
@@ -1140,7 +1145,7 @@ class _dispatchable:
 
         try:
             converted_args, converted_kwargs = self._convert_arguments(
-                backend_name, args, kwargs, use_cache=True
+                backend_name, args, kwargs, use_cache=config.cache_converted_graphs
             )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
