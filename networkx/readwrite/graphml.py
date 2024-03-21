@@ -982,7 +982,7 @@ class GraphMLReader(GraphML):
                 node_label = None
                 # set GenericNode's configuration as shape type
                 gn = data_element.find(f"{{{self.NS_Y}}}GenericNode")
-                if gn:
+                if gn is not None:
                     data["shape_type"] = gn.get("configuration")
                 for node_type in ["GenericNode", "ShapeNode", "SVGNode", "ImageNode"]:
                     pref = f"{{{self.NS_Y}}}{node_type}/{{{self.NS_Y}}}"
