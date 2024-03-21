@@ -175,6 +175,8 @@ def lukes_partitioning(G, max_size, node_weight=None, edge_weight=None):
         t_G.nodes[inner][PKEY] = {}
         slot = safe_G.nodes[inner][node_weight]
         t_G.nodes[inner][PKEY][slot] = [{inner}]
+    if cache := getattr(t_G, "__networkx_cache__", None):
+        cache.clear()
 
     # CORE ALGORITHM -----------------------
     while True:

@@ -1003,9 +1003,9 @@ class _dispatchable:
     ):
         if (
             use_cache
-            and (cache := getattr(graph, "__networkx_cache__", None)) is not None
+            and (nx_cache := getattr(graph, "__networkx_cache__", None)) is not None
         ):
-            cache = cache.setdefault("backends", {}).setdefault(backend_name, {})
+            cache = nx_cache.setdefault("backends", {}).setdefault(backend_name, {})
             # edge_attrs: dict | None
             # node_attrs: dict | None
             # preserve_edge_attrs: bool (False if edge_attrs is not None)
@@ -1043,7 +1043,10 @@ class _dispatchable:
                             "    >>> for u, v, d in G.edges(data=True):\n"
                             "    ...     d[key] = val\n\n"
                             "Using methods such as `G.add_edge(u, v, weight=val)` "
-                            "will correctly clear the cache to keep it consistent."
+                            "will correctly clear the cache to keep it consistent. "
+                            "You may also use `G.__networkx_cache__.clear()` to "
+                            "manually clear the cache, or set `G.__networkx_cache__` "
+                            "to None to disable caching for G."
                         )
                         return rv
                 if edge_key is not True and node_key is not True:
@@ -1051,7 +1054,8 @@ class _dispatchable:
                     # For example, if no edge attributes are needed, then a graph
                     # with any edge attribute will suffice. We use the same logic
                     # below (but switched) to clear unnecessary items from the cache.
-                    for (ekey, nkey, gkey), val in cache.items():
+                    # Use `list(cache.items())` to be thread-safe.
+                    for (ekey, nkey, gkey), val in list(cache.items()):
                         if edge_key is False or ekey is True:
                             pass
                         elif (
@@ -1082,7 +1086,10 @@ class _dispatchable:
                             "    >>> for u, v, d in G.edges(data=True):\n"
                             "    ...     d[key] = val\n\n"
                             "Using methods such as `G.add_edge(u, v, weight=val)` "
-                            "will correctly clear the cache to keep it consistent."
+                            "will correctly clear the cache to keep it consistent. "
+                            "You may also use `G.__networkx_cache__.clear()` to "
+                            "manually clear the cache, or set `G.__networkx_cache__` "
+                            "to None to disable caching for G."
                         )
                         return val
 
@@ -1097,11 +1104,15 @@ class _dispatchable:
             name=self.name,
             graph_name=graph_name,
         )
-        if use_cache and cache is not None:
+        if use_cache and nx_cache is not None:
             # Remove old cached items that are no longer necessary since they
             # are dominated/subsumed/outdated by what was just calculated.
             # This uses the same logic as above, but with keys switched.
-            for ekey, nkey, gkey in list(cache):
+            cache[key] = rv  # Set at beginning to be thread-safe
+            for cur_key in list(cache):
+                if cur_key == key:
+                    continue
+                ekey, nkey, gkey = cur_key
                 if ekey is False or edge_key is True:
                     pass
                 elif ekey is True or edge_key is False or not ekey.issubset(edge_key):
@@ -1112,8 +1123,7 @@ class _dispatchable:
                     continue
                 if gkey and not graph_key:
                     continue
-                del cache[ekey, nkey, gkey]
-            cache[key] = rv
+                cache.pop(cur_key, None)  # Use pop instead of del to be thread-safe
 
         return rv
 
@@ -1296,29 +1306,50 @@ class _dispatchable:
             check_result(result)
 
         if self.name in {
-            "edmonds_karp_core",
+            "edmonds_karp",
             "barycenter",
             "contracted_edge",
             "contracted_nodes",
             "stochastic_graph",
             "relabel_nodes",
+            "maximum_branching",
+            "incremental_closeness_centrality",
+            "minimal_branching",
+            "minimum_spanning_arborescence",
+            "recursive_simple_cycles",
+            "connected_double_edge_swap",
         }:
             # Special-case algorithms that mutate input graphs
             bound = self.__signature__.bind(*converted_args, **converted_kwargs)
             bound.apply_defaults()
             bound2 = self.__signature__.bind(*args2, **kwargs2)
             bound2.apply_defaults()
-            if self.name == "edmonds_karp_core":
-                R1 = backend.convert_to_nx(bound.arguments["R"])
-                R2 = bound2.arguments["R"]
-                for k, v in R1.edges.items():
-                    R2.edges[k]["flow"] = v["flow"]
+            if self.name in {
+                "minimal_branching",
+                "minimum_spanning_arborescence",
+                "recursive_simple_cycles",
+                "connected_double_edge_swap",
+            }:
+                G1 = backend.convert_to_nx(bound.arguments["G"])
+                G2 = bound2.arguments["G"]
+                G2._adj = G1._adj
+                G2.__networkx_cache__.clear()
+            elif self.name == "edmonds_karp":
+                R1 = backend.convert_to_nx(bound.arguments["residual"])
+                R2 = bound2.arguments["residual"]
+                if R1 is not None and R2 is not None:
+                    for k, v in R1.edges.items():
+                        R2.edges[k]["flow"] = v["flow"]
+                    R2.graph.update(R1.graph)
+                    if cache := getattr(R2, "__networkx_cache__", None):
+                        cache.clear()
             elif self.name == "barycenter" and bound.arguments["attr"] is not None:
                 G1 = backend.convert_to_nx(bound.arguments["G"])
                 G2 = bound2.arguments["G"]
                 attr = bound.arguments["attr"]
                 for k, v in G1.nodes.items():
                     G2.nodes[k][attr] = v[attr]
+                G2.__networkx_cache__.clear()
             elif (
                 self.name in {"contracted_nodes", "contracted_edge"}
                 and not bound.arguments["copy"]
@@ -1327,12 +1358,18 @@ class _dispatchable:
                 G1 = backend.convert_to_nx(bound.arguments["G"])
                 G2 = bound2.arguments["G"]
                 G2.__dict__.update(G1.__dict__)
+                G2.__networkx_cache__.clear()
             elif self.name == "stochastic_graph" and not bound.arguments["copy"]:
                 G1 = backend.convert_to_nx(bound.arguments["G"])
                 G2 = bound2.arguments["G"]
                 for k, v in G1.edges.items():
                     G2.edges[k]["weight"] = v["weight"]
-            elif self.name == "relabel_nodes" and not bound.arguments["copy"]:
+                G2.__networkx_cache__.clear()
+            elif (
+                self.name == "relabel_nodes"
+                and not bound.arguments["copy"]
+                or self.name in {"incremental_closeness_centrality"}
+            ):
                 G1 = backend.convert_to_nx(bound.arguments["G"])
                 G2 = bound2.arguments["G"]
                 if G1 is G2:
@@ -1347,7 +1384,9 @@ class _dispatchable:
                 if hasattr(G1, "_succ") and hasattr(G2, "_succ"):
                     G2._succ.clear()
                     G2._succ.update(G1._succ)
-                return G2
+                G2.__networkx_cache__.clear()
+                if self.name == "relabel_nodes":
+                    return G2
             return backend.convert_to_nx(result)
 
         converted_result = backend.convert_to_nx(result)

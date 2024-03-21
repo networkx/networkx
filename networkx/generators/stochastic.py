@@ -50,5 +50,6 @@ def stochastic_graph(G, copy=True, weight="weight"):
             d[weight] = 0
         else:
             d[weight] = d.get(weight, 1) / degree[u]
-    G.__networkx_cache__.clear()
+    if cache := getattr(G, "__networkx_cache__", None):
+        cache.clear()
     return G

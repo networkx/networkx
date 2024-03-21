@@ -340,7 +340,7 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
 
 @not_implemented_for("undirected")
 @py_random_state(2)
-@nx._dispatchable(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight", mutates_input=True)
 def asadpour_atsp(G, weight="weight", seed=None, source=None):
     """
     Returns an approximate solution to the traveling salesman problem.
@@ -492,7 +492,7 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     return _shortcutting(circuit)
 
 
-@nx._dispatchable(edge_attrs="weight", returns_graph=True)
+@nx._dispatchable(edge_attrs="weight", mutates_input=True, returns_graph=True)
 def held_karp_ascent(G, weight="weight"):
     """
     Minimizes the Held-Karp relaxation of the TSP for `G`
@@ -767,6 +767,8 @@ def held_karp_ascent(G, weight="weight"):
         for u, v, d in G.edges(data=True):
             d[weight] = original_edge_weights[(u, v)] + pi_dict[u]
         dir_ascent, k_d = direction_of_ascent()
+    if cache := getattr(G, "__networkx_cache__", None):
+        cache.clear()
     # k_d is no longer an individual 1-arborescence but rather a set of
     # minimal 1-arborescences at the maximum point of the polytope and should
     # be reflected as such
@@ -777,6 +779,7 @@ def held_karp_ascent(G, weight="weight"):
     for k in k_max:
         if len([n for n in k if k.degree(n) == 2]) == G.order():
             # Tour found
+            # TODO: this branch does not restore original_edge_weights of G!
             return k.size(weight), k
 
     # Write the original edge weights back to G and every member of k_max at

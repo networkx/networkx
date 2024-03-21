@@ -630,7 +630,8 @@ def barycenter(G, weight=None, attr=None, sp=None):
         elif barycentricity == smallest:
             barycenter_vertices.append(v)
     if attr is not None:
-        G.__networkx_cache__.clear()
+        if cache := getattr(G, "__networkx_cache__", None):
+            cache.clear()
     return barycenter_vertices
 
 
