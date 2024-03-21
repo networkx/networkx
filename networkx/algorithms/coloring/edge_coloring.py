@@ -23,7 +23,8 @@ def edge_coloring(G):
     the edge coloring algorithm proposed by Vizing.
 
     """
-
+    
+    # function to color an edge
     def color_edge(edge, color):
         u, v = edge
         used_colors[u][color] = v
@@ -44,6 +45,7 @@ def edge_coloring(G):
         v_colors = set(used_colors[v].keys())
         available_colors = colors - (u_colors | v_colors)
 
+        # no conflict case
         if available_colors:
             color = min(available_colors)
             color_edge((u, v), color)
@@ -51,71 +53,76 @@ def edge_coloring(G):
         else:
             fan_vertices = []
             fan_colors = []
-            c1 = list(colors - set(used_colors[u].keys()))[0]
-            fan_colors.append(c1)
-            c = c1
+            c = list(colors - u_colors)[0]
+            kempe_flag = 0
+
+            # Start finding fan
             while True:
                 xk = used_colors[v][c]
                 fan_vertices.append(xk)
+                fan_colors.append(c)
                 xk_colors = set(used_colors[xk].keys())
-                missing_colors_set = colors - (xk_colors.union(v_colors))
-                missing_color = next(iter(missing_colors_set), None)
+                available_colors = colors - (xk_colors | v_colors)
 
-                if missing_color is not None:
-                    col = missing_color
+                # Simple fan recoloring case
+                if available_colors:
+                    col = min(available_colors)
                     break
 
                 c = next(iter(v_colors - xk_colors), None)
 
+                # Kempe Chain Case
                 if c in fan_colors:
-                    a = c
-                    b = next(iter(colors - set(used_colors[v].keys())))
-                    B = b
-                    t = used_colors[xk][b]
-                    used_colors[xk].pop(b)
-                    s = xk
+                    kempe_flag = 1
+                    break
+            
+            # Finding Kempe Chain
+            if kempe_flag:
+                a = c
+                b = min(colors - v_colors)
+                B = b
+                t = used_colors[xk][b]
+                used_colors[xk].pop(b)
+                s = xk
 
-                    while True:
-                        coloring[(s, t)] = a
-                        coloring[(t, s)] = a
-                        used_colors[s][a] = t
+                while True:
+                    coloring[(s, t)] = a
+                    coloring[(t, s)] = a
+                    used_colors[s][a] = t
 
-                        if a not in used_colors[t]:
-                            used_colors[t].pop(b)
-                            used_colors[t][a] = s
+                    if a not in used_colors[t]:
+                        used_colors[t].pop(b)
+                        used_colors[t][a] = s
 
-                            if t == v:
-                                index_b = fan_colors.index(b)
-                                fan_colors = fan_colors[:index_b]
-                                fan_vertices = fan_vertices[:index_b]
-                                col = c
-                                break
-
-                            col = B
-
-                            if t == u:
-                                fan_vertices = []
-                                fan_colors = []
-                                break
-
-                            if t in fan_vertices:
-                                index_t = fan_vertices.index(t)
-                                fan_colors = fan_colors[: index_t + 1]
-                                fan_vertices = fan_vertices[: index_t + 1]
-                                break
-
+                        if t == v:
+                            index_b = fan_colors.index(b)
+                            fan_colors = fan_colors[:index_b]
+                            fan_vertices = fan_vertices[:index_b]
+                            col = c
                             break
 
-                        t_old = t
-                        t = used_colors[t_old][a]
-                        used_colors[t_old][a] = s
-                        s = t_old
-                        a, b = b, a
+                        col = B
 
-                    break
+                        if t == u:
+                            fan_vertices = []
+                            fan_colors = []
+                            break
 
-                fan_colors.append(c)
+                        if t in fan_vertices:
+                            index_t = fan_vertices.index(t)
+                            fan_colors = fan_colors[: index_t + 1]
+                            fan_vertices = fan_vertices[: index_t + 1]
+                            break
 
+                        break
+
+                    t_old = t
+                    t = used_colors[t_old][a]
+                    used_colors[t_old][a] = s
+                    s = t_old
+                    a, b = b, a
+
+            # Recoloring the fan
             while fan_vertices:
                 x = fan_vertices.pop()
                 old_color = coloring[(x, v)]
