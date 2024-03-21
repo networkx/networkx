@@ -951,7 +951,8 @@ class PlanarEmbedding(nx.DiGraph):
             raise nx.NetworkXError(
                 f"The node {n} is not in the planar embedding."
             ) from err
-        self.__networkx_cache__.clear()
+        if cache := getattr(self, "__networkx_cache__", None):
+            cache.clear()
 
     def remove_nodes_from(self, nodes):
         """Remove multiple nodes.
@@ -1079,7 +1080,6 @@ class PlanarEmbedding(nx.DiGraph):
                 raise nx.NetworkXError("Invalid reference node.")
             # adding the first edge out of start_node
             super().add_edge(start_node, end_node, ccw=end_node, cw=end_node)
-        self.__networkx_cache__.clear()
 
     def check_structure(self):
         """Runs without exceptions if this object is valid.
@@ -1235,7 +1235,8 @@ class PlanarEmbedding(nx.DiGraph):
             raise nx.NetworkXError(
                 f"The edge {u}-{v} is not in the planar embedding."
             ) from err
-        self.__networkx_cache__.clear()
+        if cache := getattr(self, "__networkx_cache__", None):
+            cache.clear()
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
