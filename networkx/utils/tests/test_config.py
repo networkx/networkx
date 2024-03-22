@@ -183,6 +183,12 @@ def test_not_strict():
 def test_context():
     cfg = Config(x=1)
     with cfg(x=2) as c:
+        assert c.x == 2
+        c.x = 3
+        assert cfg.x == 3
+    assert cfg.x == 1
+
+    with cfg(x=2) as c:
         assert c == cfg
         assert cfg.x == 2
         with cfg(x=3) as c2:
