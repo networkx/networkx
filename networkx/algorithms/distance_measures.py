@@ -144,38 +144,39 @@ def _extrema_bounding(G, compute="diameter", weight=None):
             minupper = min(ecc_upper[i], minupper)
             maxupper = max(ecc_upper[i], maxupper)
 
-        # update candidate set
-        if compute == "diameter":
-            ruled_out = {
-                i
-                for i in candidates
-                if ecc_upper[i] <= maxlower and 2 * ecc_lower[i] >= maxupper
-            }
-        elif compute == "radius":
-            ruled_out = {
-                i
-                for i in candidates
-                if ecc_lower[i] >= minupper and ecc_upper[i] + 1 <= 2 * minlower
-            }
-        elif compute == "periphery":
-            ruled_out = {
-                i
-                for i in candidates
-                if ecc_upper[i] < maxlower
-                and (maxlower == maxupper or ecc_lower[i] > maxupper)
-            }
-        elif compute == "center":
-            ruled_out = {
-                i
-                for i in candidates
-                if ecc_lower[i] > minupper
-                and (minlower == minupper or ecc_upper[i] + 1 < 2 * minlower)
-            }
-        elif compute == "eccentricities":
-            ruled_out = set()
-        else:
-            msg = "compute must be one of 'diameter', 'radius', 'periphery', 'center', 'eccentricities'"
-            raise ValueError(msg)
+        match compute:
+            # update candidate set
+            case "diameter":
+                ruled_out = {
+                    i
+                    for i in candidates
+                    if ecc_upper[i] <= maxlower and 2 * ecc_lower[i] >= maxupper
+                }
+            case "radius":
+                ruled_out = {
+                    i
+                    for i in candidates
+                    if ecc_lower[i] >= minupper and ecc_upper[i] + 1 <= 2 * minlower
+                }
+            case "periphery":
+                ruled_out = {
+                    i
+                    for i in candidates
+                    if ecc_upper[i] < maxlower
+                    and (maxlower == maxupper or ecc_lower[i] > maxupper)
+                }
+            case "center":
+                ruled_out = {
+                    i
+                    for i in candidates
+                    if ecc_lower[i] > minupper
+                    and (minlower == minupper or ecc_upper[i] + 1 < 2 * minlower)
+                }
+            case "eccentricities":
+                ruled_out = set()
+            case _:
+                msg = "compute must be one of 'diameter', 'radius', 'periphery', 'center', 'eccentricities'"
+                raise ValueError(msg)
 
         ruled_out.update(i for i in candidates if ecc_lower[i] == ecc_upper[i])
         candidates -= ruled_out
@@ -222,18 +223,19 @@ def _extrema_bounding(G, compute="diameter", weight=None):
     #        wait = input("press Enter to continue")
 
     # return the correct value of the requested metric
-    if compute == "diameter":
-        return maxlower
-    if compute == "radius":
-        return minupper
-    if compute == "periphery":
-        p = [v for v in G if ecc_lower[v] == maxlower]
-        return p
-    if compute == "center":
-        c = [v for v in G if ecc_upper[v] == minupper]
-        return c
-    if compute == "eccentricities":
-        return ecc_lower
+    match compute:
+        case "diameter":
+            return maxlower
+        case "radius":
+            return minupper
+        case "periphery":
+            p = [v for v in G if ecc_lower[v] == maxlower]
+            return p
+        case "center":
+            c = [v for v in G if ecc_upper[v] == minupper]
+            return c
+        case "eccentricities":
+            return ecc_lower
     return None
 
 
