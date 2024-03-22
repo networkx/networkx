@@ -144,8 +144,8 @@ def _extrema_bounding(G, compute="diameter", weight=None):
             minupper = min(ecc_upper[i], minupper)
             maxupper = max(ecc_upper[i], maxupper)
 
+        # update candidate set
         match compute:
-            # update candidate set
             case "diameter":
                 ruled_out = {
                     i
