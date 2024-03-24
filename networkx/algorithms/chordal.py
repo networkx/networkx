@@ -18,6 +18,7 @@ __all__ = [
     "chordal_graph_treewidth",
     "NetworkXTreewidthBoundExceeded",
     "complete_to_chordal_graph",
+    "generate_peo",
 ]
 
 
@@ -440,3 +441,44 @@ def complete_to_chordal_graph(G):
             weight[node] += 1
     H.add_edges_from(chords)
     return H, alpha
+
+
+def generate_peo(G):
+    """
+    Generate a Perfect Elimination Ordering (PEO) for a graph G.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Undirected graph.
+
+    Returns
+    -------
+    list
+        A list representing a Perfect Elimination Ordering (PEO) of nodes in G.
+
+    Notes
+    -----
+    A PEO is an ordering of the nodes of a chordal graph such that,
+    for each node, it is simplicial in the induced subgraph of the remaining nodes.
+
+    References
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Perfect_elimination_ordering
+
+    Examples
+    --------
+    >>> G = nx.wheel_graph(10)
+    >>> peo = generate_peo(G)
+    """
+    peo = []
+    remaining_nodes = set(G.nodes())
+
+    while remaining_nodes:
+        node = min(
+            remaining_nodes, key=lambda n: len(set(G.neighbors(n)) & remaining_nodes)
+        )
+        peo.append(node)
+        remaining_nodes.remove(node)
+
+    return peo
