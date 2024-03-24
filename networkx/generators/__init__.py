@@ -21,6 +21,7 @@ from networkx.generators.lattice import *
 from networkx.generators.line import *
 from networkx.generators.mycielski import *
 from networkx.generators.nonisomorphic_trees import *
+from networkx.generators.product import *
 from networkx.generators.random_clustered import *
 from networkx.generators.random_graphs import *
 from networkx.generators.small import *
