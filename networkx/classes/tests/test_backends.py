@@ -49,10 +49,11 @@ def test_graph_converter_needs_backend():
 
     side_effects = []
 
-    def from_scipy_sparse_array(self, *args, **kwargs):
+    @classmethod
+    def from_scipy_sparse_array(cls, *args, **kwargs):
         side_effects.append(1)  # Just to prove this was called
-        return self.convert_from_nx(
-            self.__getattr__("from_scipy_sparse_array")(*args, **kwargs),
+        return cls.convert_from_nx(
+            cls.__getattr__("from_scipy_sparse_array")(*args, **kwargs),
             preserve_edge_attrs=True,
             preserve_node_attrs=True,
             preserve_graph_attrs=True,
