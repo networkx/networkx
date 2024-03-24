@@ -584,3 +584,67 @@ class TestWithinInterCluster:
         G.nodes[2]["community"] = 0
         G.nodes[3]["community"] = 0
         self.test(G, None, [(0, 3, 1 / self.delta), (1, 2, 0), (1, 3, 0)])
+
+
+class Test_Katz_Index:
+    @classmethod
+    def setup_class(cls):
+        global np
+        np = pytest.importorskip("numpy")
+        pytest.importorskip("scipy")
+        cls.beta = 0.1
+        cls.func = staticmethod(nx.katz_index)
+        cls.test = partial(_test_func, predict_func=cls.func)
+
+    def test_K5(self):
+        G = nx.complete_graph(5)
+        A = np.ones((5, 5))
+        I = np.identity(5)
+        # No self loops
+        A -= I
+        A *= self.beta
+        res = np.linalg.inv(I - A) - I
+        self.test(G, [(0, 1)], [(0, 1, res[0][1])])
+
+    def test_P4(self):
+        G = nx.path_graph(4)
+        A = np.array([[0.0, 1, 0, 0], [1, 0, 1, 0], [0, 1, 0, 1], [0, 0, 1, 0]])
+        A *= self.beta
+        I = np.identity(4)
+        res = np.linalg.inv(I - A) - I
+        self.test(G, [(0, 2)], [(0, 2, res[0, 2])])
+
+    def test_notimplemented(self):
+        assert pytest.raises(
+            nx.NetworkXNotImplemented, self.func, nx.DiGraph([(0, 1), (1, 2)]), [(0, 2)]
+        )
+        assert pytest.raises(
+            nx.NetworkXNotImplemented,
+            self.func,
+            nx.MultiGraph([(0, 1), (1, 2)]),
+            [(0, 2)],
+        )
+        assert pytest.raises(
+            nx.NetworkXNotImplemented,
+            self.func,
+            nx.MultiDiGraph([(0, 1), (1, 2)]),
+            [(0, 2)],
+        )
+
+    def test_no_common_neighbor(self):
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (2, 3)])
+        self.test(G, [(0, 2)], [(0, 2, 0)])
+
+    def test_isolated_nodes(self):
+        G = nx.Graph()
+        G.add_nodes_from([0, 1])
+        self.test(G, [(0, 1)], [(0, 1, 0)])
+
+    def test_all_nonexistent_edges(self):
+        G = nx.Graph([(0, 1), (0, 2), (2, 3)])
+        A = np.array([[0.0, 1, 1, 0], [1, 0, 0, 0], [1, 0, 0, 1], [0, 0, 1, 0]])
+        A *= self.beta
+        I = np.identity(4)
+        res = np.linalg.inv(I - A) - I
+        self.test(G, None, [(0, 3, res[0, 3]), (1, 2, res[1, 2]), (1, 3, res[1, 3])])
