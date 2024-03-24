@@ -14,6 +14,8 @@ from typing import (
 from networkx.exception import NetworkXException
 
 if TYPE_CHECKING:
+    from importlib.metadata import EntryPoint
+
     import pytest
 
     import networkx as nx
@@ -29,13 +31,15 @@ class BackendRegistrationException(ImportError, NetworkXException):
 class BackendInfo(TypedDict, total=False):
     backend_name: str
     functions: dict[str, dict[str, Any]]
+    short_summary: str
 
 
 @runtime_checkable
-class BackendInterface(Generic[G], Protocol):  # Type param for backend graph type?
+class BackendInterface(Generic[G], Protocol):
+    @classmethod
     @abstractmethod
     def convert_from_nx(
-        self,  # should these methods have self or be static (isinstance vs issubclass)?
+        cls,
         G: "nx.Graph",
         edge_attrs: dict[str, Any] | None,
         node_attrs: dict[str, Any] | None,
@@ -48,14 +52,17 @@ class BackendInterface(Generic[G], Protocol):  # Type param for backend graph ty
     ) -> G:
         ...
 
+    @classmethod
     @abstractmethod
-    def convert_to_nx(self, result: G, name: str) -> "nx.Graph":  # optional type?
+    def convert_to_nx(cls, result: G, name: str | None) -> "nx.Graph":
         ...
 
-    def can_run(self, name: str, args: tuple[Any, ...], kwargs: dict[str, Any]) -> bool:
+    @classmethod
+    def can_run(cls, name: str, args: tuple[Any, ...], kwargs: dict[str, Any]) -> bool:
         ...
 
-    def on_start_tests(self, items: "list[pytest.Item]") -> None:
+    @classmethod
+    def on_start_tests(cls, items: "list[pytest.Item]") -> None:
         ...
 
     def __init_subclass__(
@@ -69,7 +76,7 @@ class BackendInterface(Generic[G], Protocol):  # Type param for backend graph ty
 
         missing_methods = []
         for required_method in BackendInterface.__abstractmethods__:
-            # option to check all methods?
+            # option to check optional methods exist too?
             if not hasattr(cls, required_method):
                 missing_methods.append(required_method)
         if missing_methods:
@@ -84,12 +91,20 @@ class BackendInterface(Generic[G], Protocol):  # Type param for backend graph ty
             )
 
         if plugin:
-            name = _get_backend_entry_point_name(cls)
+            name = _get_entry_point(cls, group="networkx.backends").name
             if info:
-                _info = _get_backend_info(name)
+                info_factory = _get_entry_point(
+                    name, group="networkx.backend_info"
+                ).load()
+                if not callable(info_factory):
+                    raise BackendRegistrationException(
+                        "Invalid type returned by 'networkx.backend_info' entrypoint "
+                        f"(expected callable, got {type(info_factory)})."
+                    )
+                _info = info_factory()
                 if _info["backend_name"] != name:
                     raise BackendRegistrationException(
-                        "Backend info registered under different name than given in backend information"
+                        "Backend registered under different name than given in backend information"
                     )
                 _check_networkx_api(cls, _info)
 
@@ -97,37 +112,34 @@ class BackendInterface(Generic[G], Protocol):  # Type param for backend graph ty
             setattr(type(cls), "__getattr__", staticmethod(fallback))
 
 
-def _get_backend_entry_point_name(interface: type[BackendInterface]) -> str:
-    expected_ep_value = f"{interface.__module__}:{interface.__qualname__}"
-    eps = [
-        ep
-        for ep in entry_points(group="networkx.backends")
-        if ep.value == expected_ep_value
-    ]
+def _get_entry_point(
+    select: str | type[BackendInterface], /, *, group: str
+) -> "EntryPoint":
+    if isinstance(select, str):
+        name = f"'{select}'"
+        eps = iter(entry_points(group=group, name=select))
+    else:
+        value = f"{select.__module__}:{select.__qualname__}"
+        name = f"interface '{select.__qualname__}'"
+        eps = iter(entry_points(group=group, value=value))
 
-    if not eps:
-        raise BackendRegistrationException("Backend did not register an entry point")
-    if len(eps) > 1:
-        # raise BackendRegistrationException("Backend entry point defined multiple times")
-        # warn because the LoopbackDispatcher would throw this error
+    ep = next(eps, None)
+    if ep is None:
+        raise BackendRegistrationException(
+            f"Backend {name} did not register a '{group}' entry point."
+        )
+    if next(eps, None) is not None:
+        # raise BackendRegistrationException(
+        #     f"Backend '{name}' registered multiple '{group}' entry points."
+        # )
+        # warn otherwise LoopbackDispatcher raises this exception
         import warnings
 
-        warnings.warn("Backend entry point defined multiple times", RuntimeWarning)
-    return eps.pop().name
-
-
-def _get_backend_info(name: str) -> BackendInfo:
-    info_factory = next(
-        iter(entry_points(group="networkx.backend_info", name=name)), None
-    )
-    # multiple times error/warning like with networkx.backends?
-    if info_factory is None:
-        raise BackendRegistrationException("Backend registered no information")
-    if not callable(info_factory):
-        raise BackendRegistrationException(
-            "Invalid type returned by `backend_info` entrypoint"
+        warnings.warn(
+            f"Backend {name} registered multiple '{group}' entry points.",
+            RuntimeWarning,
         )
-    return info_factory()
+    return ep
 
 
 def _check_networkx_api(interface, backend_info: BackendInfo) -> None:
@@ -136,7 +148,9 @@ def _check_networkx_api(interface, backend_info: BackendInfo) -> None:
     for name in backend_info["functions"]:
         if not hasattr(interface, name):
             raise BackendRegistrationException(
-                "Function declared in backend info not implemented by interface"
+                "Function declared in backend info not implemented by interface."
             )
         if name not in networkx.utils.backends._registered_algorithms:
-            raise BackendRegistrationException("Unknown function registered by backend")
+            raise BackendRegistrationException(
+                f"Unknown/undispatchable NetworkX function '{name}' registered by backend."
+            )
