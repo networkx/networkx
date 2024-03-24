@@ -1,0 +1,12 @@
+1: dim n, p, i
+    2: goto X
+    3: Y
+    4: for i = 1 to n do
+    5:      p = p * i
+    6: end for
+    7: goto Z
+    8: X
+    9: n = 5
+    10: p = 1
+    11: goto Y
+    12: Z   

@@ -1,0 +1,4 @@
+1: int a
+    2: a = 0
+    3: while(a == 0)
+    4:      fork()

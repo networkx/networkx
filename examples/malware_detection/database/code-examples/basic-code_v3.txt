@@ -1,0 +1,8 @@
+1: dim n, p, i # variables initialization
+    2: n = 5
+    3: p = 1
+
+    5: for i = 1 to n do
+
+    7:      p = p * i
+    8: end for
