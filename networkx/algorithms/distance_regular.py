@@ -3,6 +3,9 @@
 Distance-regular graphs
 =======================
 """
+from collections import defaultdict
+from itertools import combinations_with_replacement
+from math import log
 
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -68,10 +71,10 @@ def is_distance_regular(G):
 def global_parameters(b, c):
     """Returns global parameters for a given intersection array.
 
-    Given a distance-regular graph G with integers b_i, c_i,i = 0,....,d
-    such that for any 2 vertices x,y in G at a distance i=d(x,y), there
-    are exactly c_i neighbors of y at a distance of i-1 from x and b_i
-    neighbors of y at a distance of i+1 from x.
+    Given a distance-regular graph G with diameter d and integers b_i,
+    c_i,i = 0,....,d such that for any 2 vertices x,y in G at a distance
+    i=d(x,y), there are exactly c_i neighbors of y at a distance of i-1 from x
+    and b_i neighbors of y at a distance of i+1 from x.
 
     Thus, a distance regular graph has the global parameters,
     [[c_0,a_0,b_0],[c_1,a_1,b_1],......,[c_d,a_d,b_d]] for the
@@ -147,37 +150,66 @@ def intersection_array(G):
     --------
     global_parameters
     """
+    # the input graph is very unlikely to be distance-regular: here are the
+    # number a(n) of connected simple graphs, and the number b(n) of
+    # distance-regular graphs among them:
+    #
+    #    n  | 1 2 3 4  5   6   7     8      9       10
+    #  -----+------------------------------------------------------------------
+    #  a(n) | 1 1 2 6 21 112 853 11117 261080 11716571 https://oeis.org/A001349
+    #  b(n) | 1 1 1 2  2   4   2     5      4        7 https://oeis.org/A241814
+    #
+    # in light of this, let's compute shortest path lengths as we go instead of
+    # precomputing them all
     # test for regular graph (all degrees must be equal)
-    if len(G) == 0:
-        raise nx.NetworkXPointlessConcept("Graph has no nodes.")
-    degree = iter(G.degree())
-    (_, k) = next(degree)
-    for _, knext in degree:
-        if knext != k:
-            raise nx.NetworkXError("Graph is not distance regular.")
-        k = knext
-    path_length = dict(nx.all_pairs_shortest_path_length(G))
-    diameter = max(max(path_length[n].values()) for n in path_length)
+    if not nx.is_regular(G) or not nx.is_connected(G):
+        raise nx.NetworkXError("Graph is not distance regular.")
+
+    # path_length = dict(nx.all_pairs_shortest_path_length(G))
+    path_length = defaultdict(dict)
     bint = {}  # 'b' intersection array
     cint = {}  # 'c' intersection array
-    for u in G:
-        for v in G:
-            try:
-                i = path_length[u][v]
-            except KeyError as err:  # graph must be connected
-                raise nx.NetworkXError("Graph is not distance regular.") from err
-            # number of neighbors of v at a distance of i-1 from u
-            c = len([n for n in G[v] if path_length[n][u] == i - 1])
-            # number of neighbors of v at a distance of i+1 from u
-            b = len([n for n in G[v] if path_length[n][u] == i + 1])
-            # b,c are independent of u and v
-            if cint.get(i, c) != c or bint.get(i, b) != b:
-                raise nx.NetworkXError("Graph is not distance regular")
-            bint[i] = b
-            cint[i] = c
+
+    # see https://doi.org/10.1016/j.ejc.2004.07.004, Theorem 1.5 page 81: the
+    # diameter of a distance-regular graph is at most (8 log_2 n) / 3, so let's
+    # compute it as we go in the hope that we can stop early
+    diam = 0
+    max_diameter_for_dr_graphs = (8 * log(G.number_of_nodes(), 2)) / 3
+    for u, v in combinations_with_replacement(G, 2):
+        # compute needed shortest path lengths
+        if u not in path_length or v not in path_length[u]:
+            path_length[u].update(nx.single_source_shortest_path_length(G, u))
+            for x, distance in path_length[u].items():
+                path_length[x][u] = distance
+
+        i = path_length[u][v]
+        diam = max(diam, i)
+
+        # diameter too large: graph can't be distance-regular
+        if diam > max_diameter_for_dr_graphs:
+            raise nx.NetworkXError("Graph is not distance regular.")
+
+        # compute needed path lengths
+        for n in G[v]:
+            if n not in path_length or u not in path_length[n]:
+                path_length[n].update(nx.single_source_shortest_path_length(G, n))
+                for x, distance in path_length[n].items():
+                    path_length[x][n] = distance
+
+        # number of neighbors of v at a distance of i-1 from u
+        c = sum(1 for n in G[v] if path_length[n][u] == i - 1)
+        # number of neighbors of v at a distance of i+1 from u
+        b = sum(1 for n in G[v] if path_length[n][u] == i + 1)
+        # b, c are independent of u and v
+        if cint.get(i, c) != c or bint.get(i, b) != b:
+            raise nx.NetworkXError("Graph is not distance regular")
+        bint[i] = b
+        cint[i] = c
+
+    # diameter = max(max(path_length[n].values()) for n in path_length)
     return (
-        [bint.get(j, 0) for j in range(diameter)],
-        [cint.get(j + 1, 0) for j in range(diameter)],
+        [bint.get(j, 0) for j in range(diam)],
+        [cint.get(j + 1, 0) for j in range(diam)],
     )
 
 
