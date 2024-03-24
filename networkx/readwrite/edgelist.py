@@ -41,7 +41,7 @@ from networkx.utils import open_file
 
 
 def generate_edgelist(G, delimiter=" ", data=True):
-    """Generate a single line of the graph G in edge list format.
+    """Generate a single line of the graph `G` in edge list format.
 
     Parameters
     ----------
@@ -51,14 +51,14 @@ def generate_edgelist(G, delimiter=" ", data=True):
        Separator for node labels
 
     data : bool or list of keys
-       If False generate no edge data.  If True use a dictionary
+       If `False` generate no edge data.  If `True` use a dictionary
        representation of edge data.  If a list of keys use a list of data
        values corresponding to the keys.
 
-    Returns
-    -------
-    lines : string
-        Lines of data in adjlist format.
+    Yields
+    ------
+    line : string
+        Line of data in edge list format.
 
     Examples
     --------

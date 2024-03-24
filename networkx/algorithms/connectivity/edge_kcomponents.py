@@ -25,19 +25,19 @@ __all__ = [
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def k_edge_components(G, k):
-    """Generates nodes in each maximal k-edge-connected component in G.
+    """Yields nodes in each maximal `k`-edge-connected component in `G`.
 
     Parameters
     ----------
     G : NetworkX graph
 
-    k : Integer
+    k : int
         Desired edge connectivity
 
-    Returns
-    -------
-    k_edge_components : a generator of k-edge-ccs. Each set of returned nodes
-       will have k-edge-connectivity in the graph G.
+    Yields
+    ------
+    k_edge_components : sets of nodes
+       Each set of returned nodes will have `k`-edge-connectivity in the graph `G`.
 
     See Also
     --------
@@ -60,9 +60,9 @@ def k_edge_components(G, k):
     Attempts to use the most efficient implementation available based on k.
     If k=1, this is simply connected components for directed graphs and
     connected components for undirected graphs.
-    If k=2 on an efficient bridge connected component algorithm from _[1] is
+    If k=2 on an efficient bridge connected component algorithm from [1]_ is
     run based on the chain decomposition.
-    Otherwise, the algorithm from _[2] is used.
+    Otherwise, the algorithm from [2]_ is used.
 
     Examples
     --------
@@ -109,20 +109,20 @@ def k_edge_components(G, k):
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def k_edge_subgraphs(G, k):
-    """Generates nodes in each maximal k-edge-connected subgraph in G.
+    """Yields nodes in each maximal `k`-edge-connected subgraph in `G`.
 
     Parameters
     ----------
     G : NetworkX graph
 
-    k : Integer
+    k : int
         Desired edge connectivity
 
-    Returns
-    -------
-    k_edge_subgraphs : a generator of k-edge-subgraphs
+    Yields
+    ------
+    k_edge_subgraph : set of nodes
         Each k-edge-subgraph is a maximal set of nodes that defines a subgraph
-        of G that is k-edge-connected.
+        of `G` that is `k`-edge-connected.
 
     See Also
     --------
@@ -143,7 +143,7 @@ def k_edge_subgraphs(G, k):
     -----
     Attempts to use the most efficient implementation available based on k.
     If k=1, or k=2 and the graph is undirected, then this simply calls
-    `k_edge_components`.  Otherwise the algorithm from _[1] is used.
+    `k_edge_components`.  Otherwise the algorithm from [1]_ is used.
 
     Examples
     --------
@@ -198,15 +198,16 @@ def _k_edge_subgraphs_nodes(G, k):
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def bridge_components(G):
-    """Finds all bridge-connected components G.
+    """Yields all bridge-connected components `G`.
 
     Parameters
     ----------
     G : NetworkX undirected graph
 
-    Returns
-    -------
-    bridge_components : a generator of 2-edge-connected components
+    Yields
+    ------
+    bridge_component : sets of nodes
+       Sets of nodes comprising 2-edge-connected components
 
 
     See Also
@@ -387,9 +388,10 @@ class EdgeComponentAuxGraph:
         k : Integer
             Desired edge connectivity
 
-        Returns
-        -------
-        k_edge_components : a generator of k-edge-ccs
+        Yields
+        ------
+        k_edge_components : set of nodes
+            Sets of nodes representing k-edge-connected components
 
         Notes
         -----
@@ -420,9 +422,10 @@ class EdgeComponentAuxGraph:
         k : Integer
             Desired edge connectivity
 
-        Returns
-        -------
-        k_edge_subgraphs : a generator of k-edge-subgraphs
+        Yields
+        ------
+        k_edge_subgraphs : sets of nodes
+            Sets of nodes representing k-edge-subgraphs.
 
         Notes
         -----

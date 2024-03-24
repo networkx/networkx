@@ -247,6 +247,8 @@ intersphinx_mapping = {
 default_role = "obj"
 
 numpydoc_show_class_members = False
+numpydoc_validation_checks = {"YD01"}
+numpydoc_validation_exclude = {r".coreviews.", r".coloring.strategy."}
 
 plot_pre_code = """
 import networkx as nx

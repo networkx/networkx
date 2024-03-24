@@ -7,10 +7,10 @@ __all__ = ["k_clique_communities"]
 
 @nx._dispatchable
 def k_clique_communities(G, k, cliques=None):
-    """Find k-clique communities in graph using the percolation method.
+    """Find k-clique communities in `G` using the percolation method [1]_.
 
-    A k-clique community is the union of all cliques of size k that
-    can be reached through adjacent (sharing k-1 nodes) k-cliques.
+    A k-clique community is the union of all cliques of size `k` that
+    can be reached through adjacent (sharing ``k-1`` nodes) k-cliques.
 
     Parameters
     ----------
@@ -22,9 +22,10 @@ def k_clique_communities(G, k, cliques=None):
     cliques: list or generator
        Precomputed cliques (use networkx.find_cliques(G))
 
-    Returns
-    -------
-    Yields sets of nodes, one for each k-clique community.
+    Yields
+    ------
+    frozenset
+       Sets of nodes as `frozenset` s, one for each k-clique community.
 
     Examples
     --------

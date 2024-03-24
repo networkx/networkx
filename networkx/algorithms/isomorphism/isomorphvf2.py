@@ -205,7 +205,13 @@ class GraphMatcher:
         sys.setrecursionlimit(self.old_recursion_limit)
 
     def candidate_pairs_iter(self):
-        """Iterator over candidate pairs of nodes in G1 and G2."""
+        """Iterator over candidate pairs of nodes in G1 and G2.
+
+        Yields
+        ------
+        tuple
+            Candidate pairs of nodes
+        """
 
         # All computations are done using the current state!
 
@@ -292,7 +298,13 @@ class GraphMatcher:
             return False
 
     def isomorphisms_iter(self):
-        """Generator over isomorphisms between G1 and G2."""
+        """Generator over isomorphisms between G1 and G2.
+
+        Yields
+        ------
+        dict
+           Isomorphic mapping between G1 and G2
+        """
         # Declare that we are looking for a graph-graph isomorphism.
         self.test = "graph"
         self.initialize()
@@ -306,6 +318,10 @@ class GraphMatcher:
         variables after each recursive call. If an isomorphism is found,
         we yield the mapping.
 
+        Yields
+        ------
+        dict
+           Isomorphic mapping between G1 and G2
         """
         if len(self.core_1) == len(self.G2):
             # Save the final mapping, otherwise garbage collection deletes it.
@@ -382,14 +398,26 @@ class GraphMatcher:
     #    subgraph_is_isomorphic.__doc__ += "\n" + subgraph.replace('\n','\n'+indent)
 
     def subgraph_isomorphisms_iter(self):
-        """Generator over isomorphisms between a subgraph of G1 and G2."""
+        """Generator over isomorphisms between a subgraph of G1 and G2.
+
+        Yields
+        ------
+        dict
+           Isomorphic mapping between G1 and G2
+        """
         # Declare that we are looking for graph-subgraph isomorphism.
         self.test = "subgraph"
         self.initialize()
         yield from self.match()
 
     def subgraph_monomorphisms_iter(self):
-        """Generator over monomorphisms between a subgraph of G1 and G2."""
+        """Generator over monomorphisms between a subgraph of G1 and G2.
+
+        Yields
+        ------
+        dict
+           Monomorphic mapping between G1 and G2
+        """
         # Declare that we are looking for graph-subgraph monomorphism.
         self.test = "mono"
         self.initialize()
@@ -544,7 +572,13 @@ class DiGraphMatcher(GraphMatcher):
         super().__init__(G1, G2)
 
     def candidate_pairs_iter(self):
-        """Iterator over candidate pairs of nodes in G1 and G2."""
+        """Iterator over candidate pairs of nodes in G1 and G2.
+
+        Yields
+        ------
+        tuple
+            Candidate pairs of nodes
+        """
 
         # All computations are done using the current state!
 

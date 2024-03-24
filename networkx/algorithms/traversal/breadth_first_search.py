@@ -288,7 +288,7 @@ def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
 
 @nx._dispatchable
 def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
-    """Returns an iterator of predecessors in breadth-first-search from source.
+    """Yields predecessors of `source` via breadth-first-search.
 
     Parameters
     ----------
@@ -305,11 +305,12 @@ def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
         returns an iterable of the same nodes with a custom ordering.
         For example, `sorted` will sort the nodes in increasing order.
 
-    Returns
-    -------
-    pred: iterator
-        (node, predecessor) iterator where `predecessor` is the predecessor of
-        `node` in a breadth first search starting from `source`.
+    Yields
+    ------
+    tuple
+        2-tuple of nodes  ``(node, predecessor)`` where the first element is the
+        node and the second is its predecessor, yielded according to the order
+        seen via breadth-first-search from `source`.
 
     Examples
     --------
@@ -354,7 +355,7 @@ def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
 
 @nx._dispatchable
 def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
-    """Returns an iterator of successors in breadth-first-search from source.
+    """Yields ``(node, successor)`` pairs as encountered via BFS from `source`
 
     Parameters
     ----------
@@ -371,12 +372,13 @@ def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
         returns an iterable of the same nodes with a custom ordering.
         For example, `sorted` will sort the nodes in increasing order.
 
-    Returns
-    -------
-    succ: iterator
-       (node, successors) iterator where `successors` is the non-empty list of
-       successors of `node` in a breadth first search from `source`.
-       To appear in the iterator, `node` must have successors.
+    Yields
+    ------
+    tuple
+        2-tuple of nodes  ``(node, successors)`` where the first element is the
+        node and the second is a list of nodes representing the successors of the
+        node as encountered in a breadth-first-search from `source`. To appear in
+        the iterator, ``node`` must have successors.
 
     Examples
     --------

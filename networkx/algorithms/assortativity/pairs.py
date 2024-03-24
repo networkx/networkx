@@ -6,7 +6,7 @@ __all__ = ["node_attribute_xy", "node_degree_xy"]
 
 @nx._dispatchable(node_attrs="attribute")
 def node_attribute_xy(G, attribute, nodes=None):
-    """Returns iterator of node-attribute pairs for all edges in G.
+    """Yields node-attribute pairs for all edges in `G`.
 
     Parameters
     ----------
@@ -16,13 +16,12 @@ def node_attribute_xy(G, attribute, nodes=None):
        The node attribute key.
 
     nodes: list or iterable (optional)
-        Use only edges that are incident to specified nodes.
-        The default is all nodes.
+       Use only edges that are incident to specified nodes. The default is all nodes.
 
-    Returns
-    -------
+    Yields
+    ------
     (x, y): 2-tuple
-        Generates 2-tuple of (attribute, attribute) values.
+        2-tuples of ``(attribute, attribute)`` values.
 
     Examples
     --------
@@ -61,7 +60,7 @@ def node_attribute_xy(G, attribute, nodes=None):
 
 @nx._dispatchable(edge_attrs="weight")
 def node_degree_xy(G, x="out", y="in", weight=None, nodes=None):
-    """Generate node degree-degree pairs for edges in G.
+    """Generate node degree-degree pairs for edges in `G`.
 
     Parameters
     ----------
@@ -82,10 +81,10 @@ def node_degree_xy(G, x="out", y="in", weight=None, nodes=None):
         Use only edges that are adjacency to specified nodes.
         The default is all nodes.
 
-    Returns
-    -------
+    Yields
+    ------
     (x, y): 2-tuple
-        Generates 2-tuple of (degree, degree) values.
+        2-tuples of ``(degree, degree)`` values.
 
 
     Examples
