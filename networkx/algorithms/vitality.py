@@ -72,5 +72,4 @@ def closeness_vitality(G, node=None, weight=None, wiener_index=None):
         after = nx.wiener_index(G.subgraph(set(G) - {node}), weight=weight)
         return wiener_index - after
     vitality = partial(closeness_vitality, G, weight=weight, wiener_index=wiener_index)
-    # TODO This can be trivially parallelized.
     return {v: vitality(node=v) for v in G}
