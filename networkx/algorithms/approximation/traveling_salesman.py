@@ -322,7 +322,6 @@ def traveling_salesman_problem(
             if u == v:
                 continue
             GG.add_edge(u, v, weight=dist[u][v])
-    print(f"Calling method(GG={GG}, {weight=}, {kwargs=})")
 
     # Several methods using init_cycle is a positional argument.
     # To avoid chaning the API for those methods, we use this check.
