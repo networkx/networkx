@@ -287,14 +287,20 @@ def traveling_salesman_problem(
     >>> path in ([4, 3, 2, 1, 0, 8, 7, 6, 5], [5, 6, 7, 8, 0, 1, 2, 3, 4])
     True
 
-    Build (curry) your own function to provide parameter values to the methods.
+    While no longer required, you can still build (curry) your own function
+    to provide parameter values to the methods.
 
     >>> SA_tsp = nx.approximation.simulated_annealing_tsp
-    >>> method = lambda G, wt: SA_tsp(G, "greedy", weight=wt, temp=500)
+    >>> method = lambda G, weight: SA_tsp(G, "greedy", weight=weight, temp=500)
     >>> path = tsp(G, cycle=False, method=method)
     >>> path in ([4, 3, 2, 1, 0, 8, 7, 6, 5], [5, 6, 7, 8, 0, 1, 2, 3, 4])
     True
 
+    Otherwise, pass other keyword arguments directly into the tsp function.
+
+    >>> path = tsp(G, cycle=False, method=nx.approximation.simulated_annealing_tsp, init_cycle="greedy", temp=500)
+    >>> path in ([4, 3, 2, 1, 0, 8, 7, 6, 5], [5, 6, 7, 8, 0, 1, 2, 3, 4])
+    True
     """
     if method is None:
         if G.is_directed():
