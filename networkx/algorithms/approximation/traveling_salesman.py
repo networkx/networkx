@@ -198,7 +198,9 @@ def _shortcutting(circuit):
 
 
 @nx._dispatchable(edge_attrs="weight")
-def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, method=None):
+def traveling_salesman_problem(
+    G, weight="weight", nodes=None, cycle=True, method=None, **kwargs
+):
     """Find the shortest path in `G` connecting specified nodes
 
     This function allows approximate solution to the traveling salesman
@@ -259,9 +261,8 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
         If `method is None`: use :func:`christofides` for undirected `G` and
         :func:`threshold_accepting_tsp` for directed `G`.
 
-        To specify parameters for these provided functions, construct lambda
-        functions that state the specific value. `method` must have 2 inputs.
-        (See examples).
+    **kwargs : dict
+        Other keyword arguments to be passed to the `method` function passed in.
 
     Returns
     -------
@@ -321,7 +322,15 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
             if u == v:
                 continue
             GG.add_edge(u, v, weight=dist[u][v])
-    best_GG = method(GG, weight)
+    print(f"Calling method(GG={GG}, {weight=}, {kwargs=})")
+
+    # Several methods using init_cycle is a positional argument.
+    # To avoid chaning the API for those methods, we use this check.
+    if "init_cycle" in kwargs:
+        init_cycle = kwargs.pop("init_cycle")
+        best_GG = method(GG, init_cycle, **kwargs)
+    else:
+        best_GG = method(GG, weight, **kwargs)
 
     if not cycle:
         # find and remove the biggest edge
