@@ -259,7 +259,7 @@ def traveling_salesman_problem(
         :func:`simulated_annealing_tsp` and :func:`threshold_accepting_tsp`.
 
         If `method is None`: use :func:`christofides` for undirected `G` and
-        :func:`threshold_accepting_tsp` for directed `G`.
+        :func:`asadpour_atsp` for directed `G`.
 
     **kwargs : dict
         Other keyword arguments to be passed to the `method` function passed in.
