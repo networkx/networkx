@@ -323,13 +323,7 @@ def traveling_salesman_problem(
                 continue
             GG.add_edge(u, v, weight=dist[u][v])
 
-    # Several methods using init_cycle is a positional argument.
-    # To avoid chaning the API for those methods, we use this check.
-    if "init_cycle" in kwargs:
-        init_cycle = kwargs.pop("init_cycle")
-        best_GG = method(GG, init_cycle, **kwargs)
-    else:
-        best_GG = method(GG, weight, **kwargs)
+    best_GG = method(GG, weight=weight, **kwargs)
 
     if not cycle:
         # find and remove the biggest edge
