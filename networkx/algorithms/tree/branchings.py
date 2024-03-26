@@ -823,6 +823,8 @@ def maximum_branching(
 
     G_original = G
     G = nx.MultiDiGraph()
+    G.__networkx_cache__ = None  # Disable caching
+
     # A dict to reliably track mutations to the edges using the key of the edge.
     G_edge_index = {}
     # Each edge is given an arbitrary numerical key
@@ -1080,7 +1082,6 @@ def maximum_branching(
 
             edmonds_add_edge(B, B_edge_index, u, v, desired_edge[2], **dd)
             G[u][v][desired_edge[2]][candidate_attr] = True
-            nx._clear_cache(G)
             uf.union(u, v)
 
             ###################
