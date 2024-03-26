@@ -321,7 +321,7 @@ def optimal_edit_paths(
     edit_paths : list of tuples (node_edit_path, edge_edit_path)
         node_edit_path : list of tuples (u, v)
             Indicates node transformations between G1 and G2,
-            u=None or v=None for insertion/deletion.
+            u is None for insertion.  v is None for deletion.
         edge_edit_path : list of tuples ((u1, v1), (u2, v2))
             Indicates edge transformations between G1 and G2,
             (None,(u2,v2)) or ((u1,v1),None) for insertion/deletion.
