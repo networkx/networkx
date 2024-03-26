@@ -604,6 +604,7 @@ def test_nonzero_selfloop_with_single_node():
     assert bbox.width > 0 and bbox.height > 0
     # Cleanup
     plt.delaxes(ax)
+    plt.close()
 
 
 def test_nonzero_selfloop_with_single_edge_in_edgelist():
@@ -623,6 +624,7 @@ def test_nonzero_selfloop_with_single_edge_in_edgelist():
     assert bbox.width > 0 and bbox.height > 0
     # Cleanup
     plt.delaxes(ax)
+    plt.close()
 
 
 def test_apply_alpha():
@@ -680,6 +682,7 @@ def test_draw_networkx_arrows_default_undirected(drawing_func):
     assert any(isinstance(c, mpl.collections.LineCollection) for c in ax.collections)
     assert not ax.patches
     plt.delaxes(ax)
+    plt.close()
 
 
 @pytest.mark.parametrize("drawing_func", (nx.draw, nx.draw_networkx))
@@ -694,6 +697,7 @@ def test_draw_networkx_arrows_default_directed(drawing_func):
     )
     assert ax.patches
     plt.delaxes(ax)
+    plt.close()
 
 
 def test_edgelist_kwarg_not_ignored():
@@ -704,6 +708,7 @@ def test_edgelist_kwarg_not_ignored():
     nx.draw(G, edgelist=[(0, 1), (1, 2)], ax=ax)  # Exclude self-loop from edgelist
     assert not ax.patches
     plt.delaxes(ax)
+    plt.close()
 
 
 @pytest.mark.parametrize(
@@ -799,6 +804,7 @@ def test_draw_networkx_edges_undirected_selfloop_colors():
         assert fap.get_path().contains_point(slp)
         assert mpl.colors.same_color(fap.get_edgecolor(), clr)
     plt.delaxes(ax)
+    plt.close()
 
 
 @pytest.mark.parametrize(
@@ -833,6 +839,7 @@ def test_user_warnings_for_unused_edge_drawing_kwargs(fap_only_kwarg):
         nx.draw_networkx_edges(G, pos, ax=ax, arrows=True, **fap_only_kwarg)
 
     plt.delaxes(ax)
+    plt.close()
 
 
 @pytest.mark.parametrize("draw_fn", (nx.draw, nx.draw_circular))
@@ -845,6 +852,7 @@ def test_no_warning_on_default_draw_arrowstyle(draw_fn):
     assert len(w) == 0
 
     plt.delaxes(ax)
+    plt.close()
 
 
 @pytest.mark.parametrize("hide_ticks", [False, True])
@@ -867,3 +875,4 @@ def test_hide_ticks(method, hide_ticks):
         assert bool(axis.get_ticklabels()) != hide_ticks
 
     plt.delaxes(ax)
+    plt.close()
