@@ -324,7 +324,7 @@ def optimal_edit_paths(
             u is None for insertion.  v is None for deletion.
         edge_edit_path : list of tuples ((u1, v1), (u2, v2))
             Indicates edge transformations between G1 and G2,
-            (None,(u2,v2)) or ((u1,v1),None) for insertion/deletion.
+            (None, (u2,v2)) for insertion. ((u1,v1), None) for deletion.
 
     cost : numeric
         Optimal edit path cost (graph edit distance). When the cost
