@@ -95,27 +95,29 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
        PNAS 101 (11): 3747–3752 (2004).
     """
     if G.is_directed():
-        if source == "in":
-            source_degree = G.in_degree
-        elif source == "out":
-            source_degree = G.out_degree
-        elif source == "in+out":
-            source_degree = G.degree
-        else:
-            raise nx.NetworkXError(
-                f"source argument {source} must be 'in', 'out' or 'in+out'"
-            )
+        match source:
+            case "in":
+                source_degree = G.in_degree
+            case "out":
+                source_degree = G.out_degree
+            case "in+out":
+                source_degree = G.degree
+            case _:
+                raise nx.NetworkXError(
+                    f"source argument {source} must be 'in', 'out' or 'in+out'"
+                )
 
-        if target == "in":
-            target_degree = G.in_degree
-        elif target == "out":
-            target_degree = G.out_degree
-        elif target == "in+out":
-            target_degree = G.degree
-        else:
-            raise nx.NetworkXError(
-                f"target argument {target} must be 'in', 'out' or 'in+out'"
-            )
+        match target:
+            case "in":
+                target_degree = G.in_degree
+            case "out":
+                target_degree = G.out_degree
+            case "in+out":
+                target_degree = G.degree
+            case _:
+                raise nx.NetworkXError(
+                    f"target argument {target} must be 'in', 'out' or 'in+out'"
+                )
     else:
         if source != "out" or target != "out":
             raise nx.NetworkXError(
