@@ -277,13 +277,14 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
     FilterMultiAdjacency
     """
 
-    def __init__(self, d, NODE_OK):
+    def __init__(self, d, NODE_OK, cache_length: bool = False):
         self._atlas = d
         self.NODE_OK = NODE_OK
+        self.cache_length = cache_length
         self.__len = None
 
     def __len__(self):
-        if self.__len is None:
+        if self.__len is None or not self.cache_length:
             self.__len = sum(1 for _ in self)
         return self.__len
 
@@ -322,14 +323,15 @@ class FilterAdjacency(Mapping):  # edgedict
     FilterMultiAdjacency
     """
 
-    def __init__(self, d, NODE_OK, EDGE_OK):
+    def __init__(self, d, NODE_OK, EDGE_OK, cache_length: bool = False):
         self._atlas = d
         self.NODE_OK = NODE_OK
         self.EDGE_OK = EDGE_OK
+        self.cache_length = cache_length
         self.__len = None
 
     def __len__(self):
-        if self.__len is None:
+        if self.__len is None or not self.cache_length:
             self.__len = sum(1 for _ in self)
         return self.__len
 
