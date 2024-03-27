@@ -80,13 +80,13 @@ class TestGlobalReachingCentrality:
         assert expected == pytest.approx(actual, abs=1e-7)
 
     def test_single_node_with_cycle(self):
-        with pytest.raises(nx.NetworkXPointlessConcept):
+        with pytest.raises(nx.NetworkXError):
             G = nx.DiGraph()
             G.add_edge(1, 1)
             nx.global_reaching_centrality(G)
 
     def test_single_node_with_weighted_cycle(self):
-        with pytest.raises(nx.NetworkXPointlessConcept):
+        with pytest.raises(nx.NetworkXError):
             G = nx.DiGraph()
             G.add_weighted_edges_from([(1, 1, 2)])
             nx.global_reaching_centrality(G, weight="weight")
@@ -129,13 +129,13 @@ class TestLocalReachingCentrality:
         assert centrality == 1.0
 
     def test_single_node_with_cycle(self):
-        with pytest.raises(nx.NetworkXPointlessConcept):
+        with pytest.raises(nx.NetworkXError):
             G = nx.DiGraph()
             G.add_edge(1, 1)
             nx.local_reaching_centrality(G, 1)
 
     def test_single_node_with_weighted_cycle(self):
-        with pytest.raises(nx.NetworkXPointlessConcept):
+        with pytest.raises(nx.NetworkXError):
             G = nx.DiGraph()
             G.add_weighted_edges_from([(1, 1, 2)])
             nx.local_reaching_centrality(G, 1, weight="weight")
