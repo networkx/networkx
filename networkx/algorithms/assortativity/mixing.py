@@ -102,7 +102,6 @@ def attribute_mixing_matrix(G, attribute, nodes=None, mapping=None, normalized=T
     >>> nx.set_node_attributes(G, gender, "gender")
     >>> mapping = {"male": 0, "female": 1}
     >>> mix_mat = nx.attribute_mixing_matrix(G, "gender", mapping=mapping)
-    >>> # mixing from male nodes to female nodes
     >>> mix_mat
     array([[0.  , 0.25],
            [0.25, 0.5 ]])
@@ -195,7 +194,7 @@ def degree_mixing_matrix(
     --------
     >>> G = nx.star_graph(3)
     >>> mix_mat = nx.degree_mixing_matrix(G)
-    >>> mix_mat  # mixing from node degree 1 to node degree 3
+    >>> mix_mat
     array([[0. , 0.5],
            [0.5, 0. ]])
 
@@ -205,7 +204,7 @@ def degree_mixing_matrix(
     >>> max_degree = max(deg for n, deg in G.degree)
     >>> mapping = {x: x for x in range(max_degree + 1)}  # identity mapping
     >>> mix_mat = nx.degree_mixing_matrix(G, mapping=mapping)
-    >>> mix_mat  # mixing from node degree 3 to node degree 1
+    >>> mix_mat
     array([[0. , 0. , 0. , 0. ],
            [0. , 0. , 0. , 0.5],
            [0. , 0. , 0. , 0. ],
