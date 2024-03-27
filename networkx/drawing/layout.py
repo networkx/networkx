@@ -21,6 +21,7 @@ from networkx.utils import np_random_state
 __all__ = [
     "bipartite_layout",
     "circular_layout",
+    "forceatlas2_layout",
     "kamada_kawai_layout",
     "random_layout",
     "rescale_layout",
@@ -1119,6 +1120,236 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
         pos = pos[:, ::-1]  # swap x and y coords
     pos = dict(zip(nodes, pos))
     return pos
+
+
+def forceatlas2_layout(
+    G,
+    pos=None,
+    n_iter=100,
+    jitter_tolerance=1.0,
+    scaling_ratio=2.0,
+    gravity=1.0,
+    distributed_action=False,
+    strong_gravity=False,
+    adjust_sizes=False,
+    dissuade_hubs=False,
+    edge_weight_influence=False,
+    linlog=False,
+    dim=2,
+):
+    """Forceatlas2 layout for networkx
+
+    The ForceAtlas2 layout is a force-directed approach that
+    improves upon  ForceAtlas by simplifying  the parameters
+    [1]. It offers a  good compromise between clustering and
+    spatially separating  parts of  the network.  The layout
+    was originally  designed and used by  Gephi to visualize
+    graphs in a continuous and interactive manner.
+
+    In  the  layout,  nodes  repulse  each other  similar  to
+    oppositely charged  particles, while edges  attract like
+    to  springs.  The  balance between  the  attractive  and
+    repulsive  forces  produce   visually  pleasing  layouts,
+    particularly for large graphs.
+
+    The  algorithm  includes parameters  for  customization,
+    such as gravity (pull towards the center), scaling (size
+    of the layout) and jitter (random perturbations).
+
+    Parameters
+    ----------
+    G : nx.Graph
+       Networkx graph
+    pos: dict or None
+       Optional starting positions
+    n_iter: number (default: 100)
+        Simulation steps
+    jitter_tolerance : number (default: 1.0)
+        Jitter  tolerance  for  adjusting  speed  of  layout convergence;
+        lower values are slower but yield more accuracy. Jitter controls
+        how much swinging is allowed. Values above 1 are discouraged.
+        Jitter helps break symmetries between similar parts of the graph
+        through random perturbations in the layout generation.
+    scaling_ratio : number (default: 2.0)
+        Controls  force scaling  constants k_attraction  and
+        k_repulsion
+    distributed_action : bool (default: False)
+        Normalizes the attraction forces according to the degree of the nodes
+    strong_gravity : bool (default: false)
+        Controls the  "pull" to  the center  of mass  of the
+        plot (0,0)
+    adjust_sizes: bool (default: False)
+        Prevent node overlapping in the layout
+    dissuade_hubs : bool (default: false)
+        Prevent hub clustering
+    edge_weight_influence : bool (default: False)
+        Generate layout with or without considering the edge
+        weights
+    linlog : bool (default: False)
+        Use log attraction rather than linear attraction
+    dim: number (default: 2)
+       Sets the dimensions of the layout. This parameter is ignored if pos is given.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> G = nx.florentine_families_graph()
+    >>> nx.draw(G, pos=nx.forceatlas2_layout(G))
+
+    [1] https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0098679&type=printable
+
+    """
+    import numpy as np
+
+    def estimate_factor(n, swing, traction, speed, speed_efficiency, jitter_tolerance):
+        """
+        ForceAtlas2 helper function
+        Computes scaling factor for force
+        """
+
+        # estimate jitter
+        opt_jitter = 0.05 * np.sqrt(n)
+        min_jitter = np.sqrt(opt_jitter)
+        max_jitter = 10
+        min_speed_efficiency = 0.05
+
+        other = min(max_jitter, opt_jitter * traction / n**2)
+        jitter = jitter_tolerance * max(min_jitter, other)
+
+        if swing / traction > 2.0:
+            if speed_efficiency > min_speed_efficiency:
+                speed_efficiency *= 0.5
+            jitter = max(jitter, jitter_tolerance)
+        if swing == 0:
+            target_speed = np.inf
+        else:
+            target_speed = jitter * speed_efficiency * traction / swing
+
+        if swing > jitter * traction:
+            if speed_efficiency > min_speed_efficiency:
+                speed_efficiency *= 0.7
+        elif speed < 1000:
+            speed_efficiency *= 1.3
+
+        max_rise = 0.5
+        speed = speed + min(target_speed - speed, max_rise * speed)
+        return speed, speed_efficiency
+
+    # parse optional pos positions
+    if pos is None:
+        pos = nx.random_layout(G, dim=dim)
+    else:
+        dim = len(next(iter(pos.values())))
+
+    # Scale the position of the node proportional to the @pos
+    max_pos_range = 1
+    min_pos_range = 0
+    # check if we have a valid pos else just return (empty graph)
+    if pos:
+        max_pos_range = np.array([max(i) for i in pos.values()]).max()
+        min_pos_range = np.array([min(i) for i in pos.values()]).min()
+    else:
+        return pos
+
+    # center locs around 0
+    pos_arr = (np.random.rand(len(G), dim) - 0.5) * (max_pos_range - min_pos_range)
+
+    mass = np.zeros(len(G))
+    size = np.zeros(len(G))
+    for idx, node in enumerate(G.nodes()):
+        if node in pos:
+            pos_arr[idx] = pos[node].copy()
+        mass[idx] = G.nodes[node].get("mass", G.degree(node) + 1)
+        size[idx] = G.nodes[node].get("size", 1)
+
+    n = G.number_of_nodes()
+    gravities = np.zeros((n, dim))
+    attraction = np.zeros((n, dim))
+    repulsion = np.zeros((n, dim))
+    weight = None
+    if edge_weight_influence:
+        weight = "weight"
+    A = nx.adjacency_matrix(G, weight=weight).todense()
+
+    speed = 1
+    speed_efficiency = 1
+    swing = 1
+    traction = 1
+    for idx in range(n_iter):
+        # compute pairwise difference
+        diff = pos_arr[:, None] - pos_arr[None]
+        # compute pairwise distance
+        distance = np.linalg.norm(diff, axis=-1)
+
+        # linear attraction
+        if linlog:
+            attraction = -np.log(1 + distance) / distance
+            np.fill_diagonal(attraction, 0)
+            attraction = np.einsum("ij, ij -> ij", attraction, A)
+            attraction = np.einsum("ijk, ij -> ik", diff, attraction)
+
+        else:
+            attraction = -np.einsum("ijk, ij -> ik", diff, A)
+
+        if distributed_action:
+            attraction /= mass[:, None]
+
+        # repulsion
+        tmp = mass[:, None] @ mass[None]
+        if adjust_sizes:
+            distance += -size[:, None] - size[None]
+            # multiply negative distance * 100 (squared below)
+            distance[distance < 0] = 1 / 10
+
+        d2 = distance**2
+        # remove self-interaction
+        np.fill_diagonal(tmp, 0)
+        np.fill_diagonal(d2, 0)
+        factor = (tmp / d2) * scaling_ratio
+        np.fill_diagonal(factor, 0)
+        repulsion = np.einsum("ijk, ij -> ik", diff, factor)
+
+        # gravity
+        gravities = (
+            -gravity
+            * mass[:, None]
+            * pos_arr
+            / np.linalg.norm(pos_arr, axis=-1)[:, None]
+        )
+
+        if strong_gravity:
+            gravities *= np.linalg.norm(pos_arr, axis=-1)[:, None]
+        # total forces
+        update = attraction + repulsion + gravities
+
+        # compute total swing and traction
+        swing += (mass * np.linalg.norm(pos_arr - update, axis=-1)).sum()
+        traction += (0.5 * mass * np.linalg.norm(pos_arr + update, axis=-1)).sum()
+
+        speed, speed_efficiency = estimate_factor(
+            n,
+            swing,
+            traction,
+            speed,
+            speed_efficiency,
+            jitter_tolerance,
+        )
+
+        # update pos
+        if adjust_sizes:
+            swinging = mass * np.linalg.norm(update, axis=-1)
+            factor = 0.1 * speed / (1 + np.sqrt(speed * swinging))
+            df = np.linalg.norm(update, axis=-1)
+            factor = np.minimum(factor * df, 10.0 * np.ones(df.shape)) / df
+        else:
+            swinging = mass * np.linalg.norm(update, axis=-1)
+            factor = speed / (1 + np.sqrt(speed * swinging))
+
+        pos_arr += update * factor[:, None]
+        if abs((update * factor[:, None]).sum()) < 1e-10:
+            break
+
+    return {node: pos_arr[idx] for idx, node in enumerate(G.nodes())}
 
 
 def arf_layout(
