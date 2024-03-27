@@ -62,7 +62,13 @@ def test_graph_converter_needs_backend():
     def convert_to_nx(obj, *, name=None):
         if type(obj) is nx.Graph:
             return obj
-        return nx.Graph(obj)
+        assert type(obj) is LoopbackGraph
+        # Avoid recursion; use `.copy` to create a `nx.Graph`
+        obj.__class__ = nx.Graph
+        try:
+            return obj.copy()
+        finally:
+            obj.__class__ = LoopbackGraph
 
     # *This mutates LoopbackDispatcher!*
     orig_convert_to_nx = LoopbackDispatcher.convert_to_nx
@@ -82,6 +88,12 @@ def test_graph_converter_needs_backend():
         del LoopbackDispatcher.from_scipy_sparse_array
     with pytest.raises(ImportError, match="Unable to load"):
         nx.from_scipy_sparse_array(A, backend="bad-backend-name")
+
+    # While we're here...
+    Gloopback = LoopbackGraph()
+    Gloopback.add_edge(0, 1)
+    G = nx.Graph(Gloopback)
+    assert nx.utils.graphs_equal(Gloopback, G)
 
 
 def test_dispatchable_are_functions():
