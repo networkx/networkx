@@ -23,6 +23,7 @@ the chain is tricky and much harder with restricted_views than
 with induced subgraphs.
 Often it is easiest to use .copy() to avoid chains.
 """
+
 import networkx as nx
 from networkx.classes.coreviews import (
     FilterAdjacency,
@@ -133,7 +134,9 @@ def generic_graph_view(G, create_using=None):
 
 
 @deprecate_positional_args(version="3.4")
-def subgraph_view(G, *, filter_node=no_filter, filter_edge=no_filter):
+def subgraph_view(
+    G, *, filter_node=no_filter, filter_edge=no_filter, cache_length: bool = False
+):
     """View of `G` applying a filter on nodes and edges.
 
     `subgraph_view` provides a read-only view of the input graph that excludes
@@ -165,6 +168,11 @@ def subgraph_view(G, *, filter_node=no_filter, filter_edge=no_filter):
         A function taking as input the two nodes describing an edge (plus the
         edge-key if `G` is a multi-graph), which returns `True` if the edge
         should appear in the view.
+
+    cache_length : bool, optional
+        If 'True' the length of the filtered nodes is cached for performance
+        improvement. Setting cache_length 'True' assumes that the length
+        is not change by another function.
 
     Returns
     -------
@@ -212,7 +220,7 @@ def subgraph_view(G, *, filter_node=no_filter, filter_edge=no_filter):
     newG._graph = G
     newG.graph = G.graph
 
-    newG._node = FilterAtlas(G._node, filter_node)
+    newG._node = FilterAtlas(G._node, filter_node, cache_length)
     if G.is_multigraph():
         Adj = FilterMultiAdjacency
 
@@ -226,8 +234,8 @@ def subgraph_view(G, *, filter_node=no_filter, filter_edge=no_filter):
             return filter_edge(v, u)
 
     if G.is_directed():
-        newG._succ = Adj(G._succ, filter_node, filter_edge)
-        newG._pred = Adj(G._pred, filter_node, reverse_edge)
+        newG._succ = Adj(G._succ, filter_node, filter_edge, cache_length)
+        newG._pred = Adj(G._pred, filter_node, reverse_edge, cache_length)
         # newG._adj is synced with _succ
     else:
         newG._adj = Adj(G._adj, filter_node, filter_edge)
