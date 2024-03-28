@@ -369,6 +369,7 @@ class Edmonds:
 
         # The object we manipulate at each step is a multidigraph.
         self.G = G = MultiDiGraph_EdgeKey()
+        self.G.__networkx_cache__ = None  # Disable caching
         for key, (u, v, data) in enumerate(self.G_original.edges(data=True)):
             d = {attr: trans(data.get(attr, default))}
 
@@ -743,11 +744,7 @@ class Edmonds:
         return H
 
 
-@nx._dispatchable(
-    edge_attrs={"attr": "default", "partition": 0},
-    preserve_edge_attrs="preserve_attrs",
-    returns_graph=True,
-)
+@nx._dispatchable(preserve_edge_attrs=True, returns_graph=True)
 def maximum_branching(
     G,
     attr="weight",
@@ -826,6 +823,8 @@ def maximum_branching(
 
     G_original = G
     G = nx.MultiDiGraph()
+    G.__networkx_cache__ = None  # Disable caching
+
     # A dict to reliably track mutations to the edges using the key of the edge.
     G_edge_index = {}
     # Each edge is given an arbitrary numerical key
@@ -1172,33 +1171,28 @@ def maximum_branching(
     return H
 
 
-@nx._dispatchable(
-    edge_attrs={"attr": "default", "partition": None},
-    preserve_edge_attrs="preserve_attrs",
-    returns_graph=True,
-)
+@nx._dispatchable(preserve_edge_attrs=True, mutates_input=True, returns_graph=True)
 def minimum_branching(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
     for _, _, d in G.edges(data=True):
         d[attr] = -d.get(attr, default)
+    nx._clear_cache(G)
 
     B = maximum_branching(G, attr, default, preserve_attrs, partition)
 
     for _, _, d in G.edges(data=True):
         d[attr] = -d.get(attr, default)
+    nx._clear_cache(G)
 
     for _, _, d in B.edges(data=True):
         d[attr] = -d.get(attr, default)
+    nx._clear_cache(B)
 
     return B
 
 
-@nx._dispatchable(
-    edge_attrs={"attr": "default", "partition": None},
-    preserve_edge_attrs="preserve_attrs",
-    returns_graph=True,
-)
+@nx._dispatchable(preserve_edge_attrs=True, mutates_input=True, returns_graph=True)
 def minimal_branching(
     G, /, *, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
@@ -1246,24 +1240,23 @@ def minimal_branching(
         # in order to prevent the edge weights from becoming negative during
         # computation
         d[attr] = max_weight + 1 + (max_weight - min_weight) - d.get(attr, default)
+    nx._clear_cache(G)
 
     B = maximum_branching(G, attr, default, preserve_attrs, partition)
 
     # Reverse the weight transformations
     for _, _, d in G.edges(data=True):
         d[attr] = max_weight + 1 + (max_weight - min_weight) - d.get(attr, default)
+    nx._clear_cache(G)
 
     for _, _, d in B.edges(data=True):
         d[attr] = max_weight + 1 + (max_weight - min_weight) - d.get(attr, default)
+    nx._clear_cache(B)
 
     return B
 
 
-@nx._dispatchable(
-    edge_attrs={"attr": "default", "partition": None},
-    preserve_edge_attrs="preserve_attrs",
-    returns_graph=True,
-)
+@nx._dispatchable(preserve_edge_attrs=True, mutates_input=True, returns_graph=True)
 def maximum_spanning_arborescence(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
@@ -1287,14 +1280,17 @@ def maximum_spanning_arborescence(
 
     for _, _, d in G.edges(data=True):
         d[attr] = d.get(attr, default) - min_weight + 1 - (min_weight - max_weight)
+    nx._clear_cache(G)
 
     B = maximum_branching(G, attr, default, preserve_attrs, partition)
 
     for _, _, d in G.edges(data=True):
         d[attr] = d.get(attr, default) + min_weight - 1 + (min_weight - max_weight)
+    nx._clear_cache(G)
 
     for _, _, d in B.edges(data=True):
         d[attr] = d.get(attr, default) + min_weight - 1 + (min_weight - max_weight)
+    nx._clear_cache(B)
 
     if not is_arborescence(B):
         raise nx.exception.NetworkXException("No maximum spanning arborescence in G.")
@@ -1302,11 +1298,7 @@ def maximum_spanning_arborescence(
     return B
 
 
-@nx._dispatchable(
-    edge_attrs={"attr": "default", "partition": None},
-    preserve_edge_attrs="preserve_attrs",
-    returns_graph=True,
-)
+@nx._dispatchable(preserve_edge_attrs=True, mutates_input=True, returns_graph=True)
 def minimum_spanning_arborescence(
     G, attr="weight", default=1, preserve_attrs=False, partition=None
 ):
@@ -1578,6 +1570,7 @@ class ArborescenceIterator:
                 d[self.partition_key] = partition.partition_dict[(u, v)]
             else:
                 d[self.partition_key] = nx.EdgePartition.OPEN
+        nx._clear_cache(self.G)
 
         for n in self.G:
             included_count = 0
@@ -1601,3 +1594,4 @@ class ArborescenceIterator:
         for u, v, d in G.edges(data=True):
             if self.partition_key in d:
                 del d[self.partition_key]
+        nx._clear_cache(self.G)

@@ -102,6 +102,7 @@ def build_residual_network(G, capacity):
         raise nx.NetworkXError("MultiGraph and MultiDiGraph not supported (yet).")
 
     R = nx.DiGraph()
+    R.__networkx_cache__ = None  # Disable caching
     R.add_nodes_from(G)
 
     inf = float("inf")

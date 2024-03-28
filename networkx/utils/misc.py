@@ -35,6 +35,7 @@ __all__ = [
     "nodes_equal",
     "edges_equal",
     "graphs_equal",
+    "_clear_cache",
 ]
 
 
@@ -589,3 +590,12 @@ def graphs_equal(graph1, graph2):
         and graph1.nodes == graph2.nodes
         and graph1.graph == graph2.graph
     )
+
+
+def _clear_cache(G):
+    """Clear the cache of a graph (currently stores converted graphs).
+
+    Caching is controlled via ``nx.config.cache_converted_graphs`` configuration.
+    """
+    if cache := getattr(G, "__networkx_cache__", None):
+        cache.clear()
