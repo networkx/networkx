@@ -1,4 +1,5 @@
 """Unit tests for the traveling_salesman module."""
+
 import random
 
 import pytest
@@ -300,13 +301,15 @@ def test_TSP_method():
     G = nx.cycle_graph(9)
     G[4][5]["weight"] = 10
 
+    # Test using the old currying method
+    sa_tsp = lambda G, weight: nx_app.simulated_annealing_tsp(
+        G, "greedy", weight, source=4, seed=1
+    )
+
     path = nx_app.traveling_salesman_problem(
         G,
-        method=nx_app.simulated_annealing_tsp,
+        method=sa_tsp,
         cycle=False,
-        init_cycle="greedy",
-        source=4,
-        seed=1,
     )
     print(path)
     assert path == [4, 3, 2, 1, 0, 8, 7, 6, 5]
