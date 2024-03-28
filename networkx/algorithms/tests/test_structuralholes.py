@@ -137,3 +137,18 @@ class TestStructuralHoles:
         G.add_node(1)
         effective_size = nx.effective_size(G)
         assert math.isnan(effective_size[1])
+
+
+@pytest.mark.parametrize("graph", (nx.Graph, nx.DiGraph))
+def test_effective_size_isolated_node_with_selfloop(graph):
+    """Behavior consistent with isolated node without self-loop. See gh-6916"""
+    G = graph([(0, 0)])  # Single node with one self-edge
+    assert math.isnan(nx.effective_size(G)[0])
+
+
+@pytest.mark.parametrize("graph", (nx.Graph, nx.DiGraph))
+def test_effective_size_isolated_node_with_selfloop_weighted(graph):
+    """Weighted self-loop. See gh-6916"""
+    G = graph()
+    G.add_weighted_edges_from([(0, 0, 10)])
+    assert math.isnan(nx.effective_size(G)[0])
