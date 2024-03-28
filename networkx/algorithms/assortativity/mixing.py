@@ -102,9 +102,9 @@ def attribute_mixing_matrix(G, attribute, nodes=None, mapping=None, normalized=T
     >>> nx.set_node_attributes(G, gender, "gender")
     >>> mapping = {"male": 0, "female": 1}
     >>> mix_mat = nx.attribute_mixing_matrix(G, "gender", mapping=mapping)
-    >>> # mixing from male nodes to female nodes
-    >>> mix_mat[mapping["male"], mapping["female"]]
-    0.25
+    >>> mix_mat
+    array([[0.  , 0.25],
+           [0.25, 0.5 ]])
     """
     d = attribute_mixing_dict(G, attribute, nodes)
     a = dict_to_numpy_array(d, mapping=mapping)
@@ -194,8 +194,9 @@ def degree_mixing_matrix(
     --------
     >>> G = nx.star_graph(3)
     >>> mix_mat = nx.degree_mixing_matrix(G)
-    >>> mix_mat[0, 1]  # mixing from node degree 1 to node degree 3
-    0.5
+    >>> mix_mat
+    array([[0. , 0.5],
+           [0.5, 0. ]])
 
     If you want every possible degree to appear as a row, even if no nodes
     have that degree, use `mapping` as follows,
@@ -203,8 +204,11 @@ def degree_mixing_matrix(
     >>> max_degree = max(deg for n, deg in G.degree)
     >>> mapping = {x: x for x in range(max_degree + 1)}  # identity mapping
     >>> mix_mat = nx.degree_mixing_matrix(G, mapping=mapping)
-    >>> mix_mat[3, 1]  # mixing from node degree 3 to node degree 1
-    0.5
+    >>> mix_mat
+    array([[0. , 0. , 0. , 0. ],
+           [0. , 0. , 0. , 0.5],
+           [0. , 0. , 0. , 0. ],
+           [0. , 0.5, 0. , 0. ]])
     """
     d = degree_mixing_dict(G, x=x, y=y, nodes=nodes, weight=weight)
     a = dict_to_numpy_array(d, mapping=mapping)
