@@ -13,6 +13,7 @@
 import networkx as nx
 from networkx import DiGraph, Graph, MultiDiGraph, MultiGraph, PlanarEmbedding
 from networkx.classes.reportviews import NodeView
+from networkx.utils.interface import BackendInterface
 
 
 class LoopbackGraph(Graph):
@@ -49,13 +50,14 @@ def convert(graph):
     raise TypeError(f"Unsupported type of graph: {type(graph)}")
 
 
-class LoopbackDispatcher:
-    def __getattr__(self, item):
-        try:
-            return nx.utils.backends._registered_algorithms[item].orig_func
-        except KeyError:
-            raise AttributeError(item) from None
+def loopback(item):
+    try:
+        return nx.utils.backends._registered_algorithms[item].orig_func
+    except KeyError:
+        raise AttributeError(item) from None
 
+
+class LoopbackDispatcher(BackendInterface[nx.Graph], plugin=True, fallback=loopback):
     @staticmethod
     def convert_from_nx(
         graph,
@@ -185,10 +187,8 @@ class LoopbackDispatcher:
         for item in items:
             assert hasattr(item, "add_marker")
 
-    def can_run(self, name, args, kwargs):
+    @classmethod
+    def can_run(cls, name, args, kwargs):
         # It is unnecessary to define this function if algorithms are fully supported.
         # We include it for illustration purposes.
-        return hasattr(self, name)
-
-
-dispatcher = LoopbackDispatcher()
+        return hasattr(cls, name)
