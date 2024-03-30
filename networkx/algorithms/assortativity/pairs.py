@@ -1,12 +1,12 @@
-#-*- coding: utf-8 -*-
 """Generators of  x-y pairs of node data."""
 import networkx as nx
-__author__ = ' '.join(['Aric Hagberg <aric.hagberg@gmail.com>'])
-__all__ = ['node_attribute_xy',
-           'node_degree_xy']
 
+__all__ = ["node_attribute_xy", "node_degree_xy"]
+
+
+@nx._dispatchable(node_attrs="attribute")
 def node_attribute_xy(G, attribute, nodes=None):
-    """Return iterator of node-attribute pairs for all edges in G.
+    """Returns iterator of node-attribute pairs for all edges in G.
 
     Parameters
     ----------
@@ -16,27 +16,27 @@ def node_attribute_xy(G, attribute, nodes=None):
        The node attribute key.
 
     nodes: list or iterable (optional)
-        Use only edges that are adjacency to specified nodes.
+        Use only edges that are incident to specified nodes.
         The default is all nodes.
 
     Returns
     -------
-    (x,y): 2-tuple
-        Generates 2-tuple of (attribute,attribute) values.
+    (x, y): 2-tuple
+        Generates 2-tuple of (attribute, attribute) values.
 
     Examples
     --------
     >>> G = nx.DiGraph()
-    >>> G.add_node(1,color='red')
-    >>> G.add_node(2,color='blue')
-    >>> G.add_edge(1,2)
-    >>> list(nx.node_attribute_xy(G,'color'))
+    >>> G.add_node(1, color="red")
+    >>> G.add_node(2, color="blue")
+    >>> G.add_edge(1, 2)
+    >>> list(nx.node_attribute_xy(G, "color"))
     [('red', 'blue')]
 
     Notes
     -----
-    For undirected graphs each edge is produced twice, once for each edge 
-    representation (u,v) and (v,u), with the exception of self-loop edges 
+    For undirected graphs each edge is produced twice, once for each edge
+    representation (u, v) and (v, u), with the exception of self-loop edges
     which only appear once.
     """
     if nodes is None:
@@ -44,22 +44,23 @@ def node_attribute_xy(G, attribute, nodes=None):
     else:
         nodes = set(nodes)
     Gnodes = G.nodes
-    for u,nbrsdict in G.adjacency():
+    for u, nbrsdict in G.adjacency():
         if u not in nodes:
             continue
-        uattr = Gnodes[u].get(attribute,None)
+        uattr = Gnodes[u].get(attribute, None)
         if G.is_multigraph():
-            for v,keys in nbrsdict.items():
-                vattr = Gnodes[v].get(attribute,None)
-                for k,d in keys.items():
-                    yield (uattr,vattr)
+            for v, keys in nbrsdict.items():
+                vattr = Gnodes[v].get(attribute, None)
+                for _ in keys:
+                    yield (uattr, vattr)
         else:
-            for v,eattr in nbrsdict.items():
-                vattr = Gnodes[v].get(attribute,None)
-                yield (uattr,vattr)
+            for v in nbrsdict:
+                vattr = Gnodes[v].get(attribute, None)
+                yield (uattr, vattr)
 
 
-def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
+@nx._dispatchable(edge_attrs="weight")
+def node_degree_xy(G, x="out", y="in", weight=None, nodes=None):
     """Generate node degree-degree pairs for edges in G.
 
     Parameters
@@ -73,7 +74,7 @@ def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
        The degree type for target node (directed graphs only).
 
     weight: string or None, optional (default=None)
-       The edge attribute that holds the numerical value used 
+       The edge attribute that holds the numerical value used
        as a weight.  If None, then each edge has weight 1.
        The degree is the sum of the edge weights adjacent to the node.
 
@@ -83,51 +84,35 @@ def node_degree_xy(G, x='out', y='in', weight=None, nodes=None):
 
     Returns
     -------
-    (x,y): 2-tuple
-        Generates 2-tuple of (degree,degree) values.
+    (x, y): 2-tuple
+        Generates 2-tuple of (degree, degree) values.
 
 
     Examples
     --------
     >>> G = nx.DiGraph()
-    >>> G.add_edge(1,2)
-    >>> list(nx.node_degree_xy(G,x='out',y='in'))
+    >>> G.add_edge(1, 2)
+    >>> list(nx.node_degree_xy(G, x="out", y="in"))
     [(1, 1)]
-    >>> list(nx.node_degree_xy(G,x='in',y='out'))
+    >>> list(nx.node_degree_xy(G, x="in", y="out"))
     [(0, 0)]
 
     Notes
     -----
-    For undirected graphs each edge is produced twice, once for each edge 
-    representation (u,v) and (v,u), with the exception of self-loop edges 
+    For undirected graphs each edge is produced twice, once for each edge
+    representation (u, v) and (v, u), with the exception of self-loop edges
     which only appear once.
     """
-    if nodes is None:
-        nodes = set(G)
-    else:
-        nodes = set(nodes)
-    xdeg = G.degree
-    ydeg = G.degree
+    nodes = set(G) if nodes is None else set(nodes)
     if G.is_directed():
-        direction = {'out':G.out_degree,
-                     'in':G.in_degree}
+        direction = {"out": G.out_degree, "in": G.in_degree}
         xdeg = direction[x]
         ydeg = direction[y]
+    else:
+        xdeg = ydeg = G.degree
 
-    for u,degu in xdeg(nodes, weight=weight):
-        neighbors = (nbr for _,nbr in G.edges(u) if nbr in nodes)
-        for v,degv in ydeg(neighbors, weight=weight):
-            yield degu,degv
- 
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")
+    for u, degu in xdeg(nodes, weight=weight):
+        # use G.edges to treat multigraphs correctly
+        neighbors = (nbr for _, nbr in G.edges(u) if nbr in nodes)
+        for _, degv in ydeg(neighbors, weight=weight):
+            yield degu, degv

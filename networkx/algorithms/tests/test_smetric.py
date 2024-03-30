@@ -1,5 +1,6 @@
+import warnings
 
-from nose.tools import assert_equal, raises
+import pytest
 
 import networkx as nx
 
@@ -11,11 +12,25 @@ def test_smetric():
     g.add_edge(2, 4)
     g.add_edge(1, 4)
     sm = nx.s_metric(g, normalized=False)
-    assert_equal(sm, 19.0)
-#    smNorm = nx.s_metric(g,normalized=True)
-#    assert_equal(smNorm, 0.95)
+    assert sm == 19.0
 
 
-@raises(nx.NetworkXError)
-def test_normalized():
-    sm = nx.s_metric(nx.Graph(), normalized=True)
+# NOTE: Tests below to be deleted when deprecation of `normalized` kwarg expires
+
+
+def test_normalized_deprecation_warning():
+    """Test that a deprecation warning is raised when s_metric is called with
+    a `normalized` kwarg."""
+    G = nx.cycle_graph(7)
+    # No warning raised when called without kwargs (future behavior)
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")  # Fail the test if warning caught
+        assert nx.s_metric(G) == 28
+
+    # Deprecation warning
+    with pytest.deprecated_call():
+        nx.s_metric(G, normalized=True)
+
+    # Make sure you get standard Python behavior when unrecognized keyword provided
+    with pytest.raises(TypeError):
+        nx.s_metric(G, normalize=True)

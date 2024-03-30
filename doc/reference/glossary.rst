@@ -8,14 +8,14 @@ Glossary
    dictionary
       A Python dictionary maps keys to values. Also known as "hashes",
       or "associative arrays" in other programming languages.
-      See https://docs.python.org/2/tutorial/datastructures.html#dictionaries
+      See :ref:`the Python tutorial on dictionaries <tut-dictionaries>`.
 
    edge
       Edges are either two-tuples of nodes `(u, v)` or three tuples of nodes
       with an edge attribute dictionary `(u, v, dict)`.
 
    ebunch
-      An iteratable container of edge tuples like a list, iterator,
+      An iterable container of edge tuples like a list, iterator,
       or file.
 
    edge attribute
@@ -24,28 +24,42 @@ Glossary
       assigning to the `G.edges[u][v]` attribute dictionary for the
       specified edge *u*-*v*.
 
-   hashable
-      An object is hashable if it has a hash value which never changes
-      during its lifetime (it needs a :meth:`__hash__` method), and can be
-      compared to other objects (it needs an :meth:`__eq__` or :meth:`__cmp__`
-      method). Hashable objects which compare equal must have the same
-      hash value.
-
-      Hashability makes an object usable as a dictionary key and a set
-      member, because these data structures use the hash value internally.
-
-      All of Python's immutable built-in objects are hashable, while no
-      mutable containers (such as lists or dictionaries) are. Objects
-      which are instances of user-defined classes are hashable by
-      default; they all compare unequal, and their hash value is their
-      :func:`id`.
-
-      Definition from https://docs.python.org/2/glossary.html
-
    nbunch
-      An nbunch is a single node, container of nodes or None (representing
-      all nodes). It can be a list, set, graph, etc.. To filter an nbunch
-      so that only nodes actually in `G` appear, use `G.nbunch_iter(nbunch)`.
+      An nbunch is a single node, container of nodes or `None` (representing
+      all nodes). It can be a list, set, graph, etc. To filter an nbunch
+      so that only nodes actually in ``G`` appear, use ``G.nbunch_iter(nbunch)``.
+
+      If the nbunch is a container or iterable that is not itself a node
+      in the graph, then it will be treated as an iterable of nodes, for
+      instance, when nbunch is a string or a tuple::
+
+         >>> import networkx as nx
+         >>> G = nx.DiGraph()
+         >>> G.add_edges_from([("b", "c"), ("a", "ab"), ("ab", "c")])
+         >>> G.edges("ab")
+         OutEdgeDataView([('ab', 'c')])
+      
+      Since "ab" is a node in G, it is treated as a single node::
+
+         >>> G.edges("bc")
+         OutEdgeDataView([('b', 'c')])
+
+      Since "bc" is not a node in G, it is treated as an iterator::
+
+         >>> G.edges(["bc"])
+         OutEdgeDataView([])
+
+      If "bc" is wrapped in a list, the list is the iterable and
+      "bc" is treated as a single node. That is, if the
+      nbunch is an iterable of iterables, the inner iterables will
+      always be treated as nodes::
+
+         >>> G.edges("de")
+         OutEdgeDataView([])
+
+      When nbunch is an iterator that is not itself a node and none of 
+      its elements are nodes, then the edge view suite of methods return
+      an empty edge view.
 
    node
       A node can be any hashable Python object except None.

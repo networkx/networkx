@@ -1,20 +1,16 @@
-#    Copyright 2016-2017 NetworkX developers.
-#    Copyright (C) 2016 by
-#    Nishant Nikhil <nishantiam@gmail.com>
-#    All rights reserved.
-#    BSD license.
-
 """ Functions related to graph covers."""
 
-from networkx.utils import not_implemented_for
+import networkx as nx
 from networkx.algorithms.bipartite.matching import hopcroft_karp_matching
 from networkx.algorithms.covering import min_edge_cover as _min_edge_cover
+from networkx.utils import not_implemented_for
 
-__all__ = ['min_edge_cover']
+__all__ = ["min_edge_cover"]
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+@nx._dispatchable(name="bipartite_min_edge_cover")
 def min_edge_cover(G, matching_algorithm=None):
     """Returns a set of edges which constitutes
     the minimum edge cover of the graph.
@@ -54,7 +50,7 @@ def min_edge_cover(G, matching_algorithm=None):
     is bounded by the worst-case running time of the function
     ``matching_algorithm``.
     """
-    if G.order() == 0: # Special case for the empty graph
+    if G.order() == 0:  # Special case for the empty graph
         return set()
     if matching_algorithm is None:
         matching_algorithm = hopcroft_karp_matching

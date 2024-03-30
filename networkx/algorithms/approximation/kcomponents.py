@@ -1,29 +1,20 @@
 """ Fast approximation for k-component structure
 """
-#    Copyright (C) 2015 by
-#    Jordi Torrents <jtorrents@milnou.net>
-#    All rights reserved.
-#    BSD license.
 import itertools
-from collections import defaultdict, Mapping
+from collections import defaultdict
+from collections.abc import Mapping
+from functools import cached_property
 
 import networkx as nx
+from networkx.algorithms.approximation import local_node_connectivity
 from networkx.exception import NetworkXError
 from networkx.utils import not_implemented_for
 
-from networkx.algorithms.approximation import local_node_connectivity
-from networkx.algorithms.connectivity import \
-    local_node_connectivity as exact_local_node_connectivity
+__all__ = ["k_components"]
 
 
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>'])
-
-__all__ = ['k_components']
-
-
-not_implemented_for('directed')
-
-
+@not_implemented_for("directed")
+@nx._dispatchable(name="approximate_k_components")
 def k_components(G, min_density=0.95):
     r"""Returns the approximate k-component structure of a graph G.
 
@@ -35,7 +26,7 @@ def k_components(G, min_density=0.95):
     one or more 3-components, and so forth.
 
     This implementation is based on the fast heuristics to approximate
-    the `k`-component sturcture of a graph [1]_. Which, in turn, it is based on
+    the `k`-component structure of a graph [1]_. Which, in turn, it is based on
     a fast approximation algorithm for finding good lower bounds of the number
     of node independent paths between two nodes [2]_.
 
@@ -45,7 +36,7 @@ def k_components(G, min_density=0.95):
         Undirected graph
 
     min_density : Float
-        Density relaxation treshold. Default value 0.95
+        Density relaxation threshold. Default value 0.95
 
     Returns
     -------
@@ -53,6 +44,10 @@ def k_components(G, min_density=0.95):
         Dictionary with connectivity level `k` as key and a list of
         sets of nodes that form a k-component of level `k` as values.
 
+    Raises
+    ------
+    NetworkXNotImplemented
+        If G is directed.
 
     Examples
     --------
@@ -99,12 +94,12 @@ def k_components(G, min_density=0.95):
 
     .. [2]  White, Douglas R., and Mark Newman (2001) A Fast Algorithm for
             Node-Independent Paths. Santa Fe Institute Working Paper #01-07-035
-            http://eclectic.ss.uci.edu/~drwhite/working.pdf
+            https://www.santafe.edu/research/results/working-papers/fast-approximation-algorithms-for-finding-node-ind
 
     .. [3]  Moody, J. and D. White (2003). Social cohesion and embeddedness:
             A hierarchical conception of social groups.
             American Sociological Review 68(1), 103--28.
-            http://www2.asanet.org/journals/ASRFeb03MoodyWhite.pdf
+            https://doi.org/10.2307/3088904
 
     """
     # Dictionary with connectivity level (k) as keys and a list of
@@ -115,7 +110,6 @@ def k_components(G, min_density=0.95):
     k_core = nx.k_core
     core_number = nx.core_number
     biconnected_components = nx.biconnected_components
-    density = nx.density
     combinations = itertools.combinations
     # Exact solution for k = {1,2}
     # There is a linear time algorithm for triconnectivity, if we had an
@@ -165,14 +159,14 @@ def k_components(G, min_density=0.95):
 def _cliques_heuristic(G, H, k, min_density):
     h_cnumber = nx.core_number(H)
     for i, c_value in enumerate(sorted(set(h_cnumber.values()), reverse=True)):
-        cands = set(n for n, c in h_cnumber.items() if c == c_value)
+        cands = {n for n, c in h_cnumber.items() if c == c_value}
         # Skip checking for overlap for the highest core value
         if i == 0:
             overlap = False
         else:
-            overlap = set.intersection(*[
-                set(x for x in H[n] if x not in cands)
-                for n in cands])
+            overlap = set.intersection(
+                *[{x for x in H[n] if x not in cands} for n in cands]
+            )
         if overlap and len(overlap) < k:
             SH = H.subgraph(cands | overlap)
         else:
@@ -180,7 +174,7 @@ def _cliques_heuristic(G, H, k, min_density):
         sh_cnumber = nx.core_number(SH)
         SG = nx.k_core(G.subgraph(SH), k)
         while not (_same(sh_cnumber) and nx.density(SH) >= min_density):
-            #!! This subgraph must be writable => .copy()
+            # This subgraph must be writable => .copy()
             SH = H.subgraph(SG).copy()
             if len(SH) <= k:
                 break
@@ -205,7 +199,7 @@ class _AntiGraph(nx.Graph):
     Class for complement graphs.
 
     The main goal is to be able to work with big and dense graphs with
-    a low memory foodprint.
+    a low memory footprint.
 
     In this class you add the edges that *do not exist* in the dense graph,
     the report methods of the class return the neighbors, the edges and
@@ -214,14 +208,15 @@ class _AntiGraph(nx.Graph):
     case we only use k-core, connected_components, and biconnected_components.
     """
 
-    all_edge_dict = {'weight': 1}
+    all_edge_dict = {"weight": 1}
 
     def single_edge_dict(self):
         return self.all_edge_dict
-    edge_attr_dict_factory = single_edge_dict
+
+    edge_attr_dict_factory = single_edge_dict  # type: ignore[assignment]
 
     def __getitem__(self, n):
-        """Return a dict of neighbors of node n in the dense graph.
+        """Returns a dict of neighbors of node n in the dense graph.
 
         Parameters
         ----------
@@ -235,17 +230,18 @@ class _AntiGraph(nx.Graph):
 
         """
         all_edge_dict = self.all_edge_dict
-        return {node: all_edge_dict for node in
-                set(self._adj) - set(self._adj[n]) - set([n])}
+        return {
+            node: all_edge_dict for node in set(self._adj) - set(self._adj[n]) - {n}
+        }
 
     def neighbors(self, n):
-        """Return an iterator over all neighbors of node n in the
-           dense graph.
+        """Returns an iterator over all neighbors of node n in the
+        dense graph.
         """
         try:
-            return iter(set(self._adj) - set(self._adj[n]) - set([n]))
-        except KeyError:
-            raise NetworkXError("The node %s is not in the graph." % (n,))
+            return iter(set(self._adj) - set(self._adj[n]) - {n})
+        except KeyError as err:
+            raise NetworkXError(f"The node {n} is not in the graph.") from err
 
     class AntiAtlasView(Mapping):
         """An adjacency inner dict for AntiGraph"""
@@ -262,7 +258,7 @@ class _AntiGraph(nx.Graph):
             return (n for n in self._graph if n not in self._atlas and n != self._node)
 
         def __getitem__(self, nbr):
-            nbrs = set(self._graph._adj) - set(self._atlas) - set([self._node])
+            nbrs = set(self._graph._adj) - set(self._atlas) - {self._node}
             if nbr in nbrs:
                 return self._graph.all_edge_dict
             raise KeyError(nbr)
@@ -285,7 +281,7 @@ class _AntiGraph(nx.Graph):
                 raise KeyError(node)
             return self._graph.AntiAtlasView(self._graph, node)
 
-    @property
+    @cached_property
     def adj(self):
         return self.AntiAdjacencyView(self)
 
@@ -308,17 +304,17 @@ class _AntiGraph(nx.Graph):
         def __iter__(self):
             all_nodes = set(self._succ)
             for n in self._nodes:
-                nbrs = all_nodes - set(self._succ[n]) - set([n])
+                nbrs = all_nodes - set(self._succ[n]) - {n}
                 yield (n, len(nbrs))
 
         def __getitem__(self, n):
-            nbrs = set(self._succ) - set(self._succ[n]) - set([n])
+            nbrs = set(self._succ) - set(self._succ[n]) - {n}
             # AntiGraph is a ThinGraph so all edges have weight 1
             return len(nbrs) + (n in nbrs)
 
-    @property
+    @cached_property
     def degree(self):
-        """Return an iterator for (node, degree) and degree for single node.
+        """Returns an iterator for (node, degree) and degree for single node.
 
         The node degree is the number of edges adjacent to the node.
 
@@ -347,16 +343,16 @@ class _AntiGraph(nx.Graph):
         Examples
         --------
         >>> G = nx.path_graph(4)
-        >>> G.degree(0) # node 0 with degree 1
+        >>> G.degree(0)  # node 0 with degree 1
         1
-        >>> list(G.degree([0,1]))
+        >>> list(G.degree([0, 1]))
         [(0, 1), (1, 2)]
 
         """
         return self.AntiDegreeView(self)
 
     def adjacency(self):
-        """Return an iterator of (node, adjacency set) tuples for all nodes
+        """Returns an iterator of (node, adjacency set) tuples for all nodes
            in the dense graph.
 
         This is the fastest way to look at every edge.
@@ -370,4 +366,4 @@ class _AntiGraph(nx.Graph):
 
         """
         for n in self._adj:
-            yield (n, set(self._adj) - set(self._adj[n]) - set([n]))
+            yield (n, set(self._adj) - set(self._adj[n]) - {n})

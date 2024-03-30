@@ -1,10 +1,3 @@
-#    Copyright (C) 2004-2017 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    Copyright 2015 NetworkX developers.
-#    All rights reserved.
-#    BSD license.
 """Routines to find the boundary of a set of nodes.
 
 An edge boundary is a set of edges, each of which has exactly one
@@ -17,13 +10,13 @@ nodes in *S* that are outside *S*.
 """
 from itertools import chain
 
-__author__ = """Aric Hagberg (hagberg@lanl.gov)\nPieter Swart (swart@lanl.gov)\nDan Schult (dschult@colgate.edu)"""
+import networkx as nx
 
-__all__ = ['edge_boundary', 'node_boundary']
+__all__ = ["edge_boundary", "node_boundary"]
 
 
-def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False,
-                  default=None):
+@nx._dispatchable(edge_attrs={"data": "default"}, preserve_edge_attrs="data")
+def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False, default=None):
     """Returns the edge boundary of `nbunch1`.
 
     The *edge boundary* of a set *S* with respect to a set *T* is the
@@ -66,6 +59,20 @@ def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False,
         are specified and `G` is a multigraph, then edges are returned
         with keys and/or data, as in :meth:`MultiGraph.edges`.
 
+    Examples
+    --------
+    >>> G = nx.wheel_graph(6)
+
+    When nbunch2=None:
+
+    >>> list(nx.edge_boundary(G, (1, 3)))
+    [(1, 0), (1, 2), (1, 5), (3, 0), (3, 2), (3, 4)]
+
+    When nbunch2 is given:
+
+    >>> list(nx.edge_boundary(G, (1, 3), (2, 0)))
+    [(1, 0), (1, 2), (3, 0), (3, 2)]
+
     Notes
     -----
     Any element of `nbunch` that is not in the graph `G` will be
@@ -75,7 +82,7 @@ def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False,
     the interest of speed and generality, that is not required here.
 
     """
-    nset1 = {v for v in G if v in nbunch1}
+    nset1 = {n for n in nbunch1 if n in G}
     # Here we create an iterator over edges incident to nodes in the set
     # `nset1`. The `Graph.edges()` method does not provide a guarantee
     # on the orientation of the edges, so our algorithm below must
@@ -92,11 +99,14 @@ def edge_boundary(G, nbunch1, nbunch2=None, data=False, keys=False,
     if nbunch2 is None:
         return (e for e in edges if (e[0] in nset1) ^ (e[1] in nset1))
     nset2 = set(nbunch2)
-    return (e for e in edges
-            if (e[0] in nset1 and e[1] in nset2)
-            or (e[1] in nset1 and e[0] in nset2))
+    return (
+        e
+        for e in edges
+        if (e[0] in nset1 and e[1] in nset2) or (e[1] in nset1 and e[0] in nset2)
+    )
 
 
+@nx._dispatchable
 def node_boundary(G, nbunch1, nbunch2=None):
     """Returns the node boundary of `nbunch1`.
 
@@ -124,6 +134,20 @@ def node_boundary(G, nbunch1, nbunch2=None):
     -------
     set
         The node boundary of `nbunch1` with respect to `nbunch2`.
+
+    Examples
+    --------
+    >>> G = nx.wheel_graph(6)
+
+    When nbunch2=None:
+
+    >>> list(nx.node_boundary(G, (3, 4)))
+    [0, 2, 5]
+
+    When nbunch2 is given:
+
+    >>> list(nx.node_boundary(G, (3, 4), (0, 1, 5)))
+    [0, 5]
 
     Notes
     -----

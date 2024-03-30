@@ -1,3 +1,6 @@
+.. _networkx.algorithms.coloring.greedy_coloring:
+.. _networkx.algorithms.coloring.equitable_coloring:
+
 ********
 Coloring
 ********
@@ -7,6 +10,7 @@ Coloring
    :toctree: generated/
 
    greedy_color
+   equitable_color
 
 Some node ordering strategies are provided for use with :func:`greedy_color`.
 

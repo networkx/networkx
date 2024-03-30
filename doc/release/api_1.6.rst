@@ -1,26 +1,35 @@
-*********************************
-Version 1.6 notes and API changes
-*********************************
+NetworkX 1.6
+============
 
-This page reflects API changes from networkx-1.5 to networkx-1.6.
+Release date:  20 November 2011
 
-Please send comments and questions to the networkx-discuss mailing list:
-http://groups.google.com/group/networkx-discuss .
+Highlights
+~~~~~~~~~~
+
+New functions for finding articulation points, generating random bipartite graphs, constructing adjacency matrix representations, forming graph products, computing assortativity coefficients, measuring subgraph centrality and communicability, finding k-clique communities, and writing JSON format output.
+
+New examples for drawing with D3 JavaScript library, and ordering matrices with the Cuthill-McKee algorithm.
+
+More memory efficient implementation of current-flow betweenness and new approximation algorithms for current-flow betweenness and shortest-path betweenness.
+
+Simplified handling of "weight" attributes for algorithms that use weights/costs/values.
+
+Updated all code to work with the PyPy Python implementation http://pypy.org which produces faster performance on many algorithms.
 
 Graph Classes
 -------------
 
 The degree* methods in the graph classes (Graph, DiGraph, MultiGraph,
 MultiDiGraph) now take an optional weight= keyword that allows computing
-weighted degree with arbitrary (numerical) edge attributes.  Setting 
+weighted degree with arbitrary (numerical) edge attributes.  Setting
 weight=None is equivalent to the previous weighted=False.
 
 
 Weighted graph algorithms
 -------------------------
 
-Many 'weighted' graph algorithms now take optional parameter to 
-specifiy which edge attribute should be used for the weight
+Many 'weighted' graph algorithms now take optional parameter to
+specify which edge attribute should be used for the weight
 (default='weight') (ticket https://networkx.lanl.gov/trac/ticket/573)
 
 In some cases the parameter name was changed from weighted, to weight.  Here is
@@ -28,13 +37,13 @@ how to specify which edge attribute will be used in the algorithms:
 
 - Use weight=None to consider all weights equally (unweighted case)
 
-- Use weight='weight' to use the 'weight' edge atribute
+- Use weight='weight' to use the 'weight' edge attribute
 
-- Use weight='other' to use the 'other' edge attribute 
+- Use weight='other' to use the 'other' edge attribute
 
 Algorithms affected are:
 
-to_scipy_sparse_matrix, 
+to_scipy_sparse_matrix,
 clustering,
 average_clustering,
 bipartite.degree,
@@ -72,7 +81,7 @@ and 'edge_match' functions, users are encouraged to work with::
 
     categorical_node_match
     categorical_edge_match
-    categroical_multiedge_match
+    categorical_multiedge_match
     numerical_node_match
     numerical_edge_match
     numerical_multiedge_match
@@ -95,13 +104,13 @@ Other
 
 * condensation
 
-  The condensation algorithm now takes a second argument (scc) and returns a   
+  The condensation algorithm now takes a second argument (scc) and returns a
   graph with nodes labeled as integers instead of node tuples.
 
 * degree connectivity
 
-  average_in_degree_connectivity and average_out_degree_connectivity have 
-  have been replaced with 
+  average_in_degree_connectivity and average_out_degree_connectivity have
+  been replaced with
 
   average_degree_connectivity(G, source='in', target='in')
 
@@ -111,8 +120,8 @@ Other
 
 * neighbor degree
 
-  average_neighbor_in_degree and  average_neighbor_out_degreey have 
-  have been replaced with 
+  average_neighbor_in_degree and  average_neighbor_out_degreey have
+  have been replaced with
 
   average_neighbor_degree(G, source='in', target='in')
 

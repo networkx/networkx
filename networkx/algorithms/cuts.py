@@ -1,30 +1,27 @@
-# -*- coding: utf-8 -*-
-# cuts.py - functions for computing and evaluating cuts
-#
-# Copyright 2011 Ben Edwards <bedwards@cs.unm.edu>.
-# Copyright 2011 Aric Hagberg <hagberg@lanl.gov>.
-# Copyright 2015 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions for finding and evaluating cuts in a graph.
 
 """
-from __future__ import division
 
 from itertools import chain
 
 import networkx as nx
 
-__all__ = ['boundary_expansion', 'conductance', 'cut_size', 'edge_expansion',
-           'mixing_expansion', 'node_expansion', 'normalized_cut_size',
-           'volume']
+__all__ = [
+    "boundary_expansion",
+    "conductance",
+    "cut_size",
+    "edge_expansion",
+    "mixing_expansion",
+    "node_expansion",
+    "normalized_cut_size",
+    "volume",
+]
 
 
 # TODO STILL NEED TO UPDATE ALL THE DOCUMENTATION!
 
+
+@nx._dispatchable(edge_attrs="weight")
 def cut_size(G, S, T=None, weight=None):
     """Returns the size of the cut between two sets of nodes.
 
@@ -36,11 +33,11 @@ def cut_size(G, S, T=None, weight=None):
     ----------
     G : NetworkX graph
 
-    S : sequence
-        A sequence of nodes in `G`.
+    S : collection
+        A collection of nodes in `G`.
 
-    T : sequence
-        A sequence of nodes in `G`. If not specified, this is taken to
+    T : collection
+        A collection of nodes in `G`. If not specified, this is taken to
         be the set complement of `S`.
 
     weight : object
@@ -69,9 +66,9 @@ def cut_size(G, S, T=None, weight=None):
     Each parallel edge in a multigraph is counted when determining the
     cut size::
 
-        >>> G = nx.MultiGraph(['ab', 'ab'])
-        >>> S = {'a'}
-        >>> T = {'b'}
+        >>> G = nx.MultiGraph(["ab", "ab"])
+        >>> S = {"a"}
+        >>> T = {"b"}
         >>> nx.cut_size(G, S, T)
         2
 
@@ -87,6 +84,7 @@ def cut_size(G, S, T=None, weight=None):
     return sum(weight for u, v, weight in edges)
 
 
+@nx._dispatchable(edge_attrs="weight")
 def volume(G, S, weight=None):
     """Returns the volume of a set of nodes.
 
@@ -97,8 +95,8 @@ def volume(G, S, weight=None):
     ----------
     G : NetworkX graph
 
-    S : sequence
-        A sequence of nodes in `G`.
+    S : collection
+        A collection of nodes in `G`.
 
     weight : object
         Edge attribute key to use as weight. If not specified, edges
@@ -129,6 +127,7 @@ def volume(G, S, weight=None):
     return sum(d for v, d in degree(S, weight=weight))
 
 
+@nx._dispatchable(edge_attrs="weight")
 def normalized_cut_size(G, S, T=None, weight=None):
     """Returns the normalized size of the cut between two sets of nodes.
 
@@ -139,11 +138,11 @@ def normalized_cut_size(G, S, T=None, weight=None):
     ----------
     G : NetworkX graph
 
-    S : sequence
-        A sequence of nodes in `G`.
+    S : collection
+        A collection of nodes in `G`.
 
-    T : sequence
-        A sequence of nodes in `G`.
+    T : collection
+        A collection of nodes in `G`.
 
     weight : object
         Edge attribute key to use as weight. If not specified, edges
@@ -181,6 +180,7 @@ def normalized_cut_size(G, S, T=None, weight=None):
     return num_cut_edges * ((1 / volume_S) + (1 / volume_T))
 
 
+@nx._dispatchable(edge_attrs="weight")
 def conductance(G, S, T=None, weight=None):
     """Returns the conductance of two sets of nodes.
 
@@ -191,11 +191,11 @@ def conductance(G, S, T=None, weight=None):
     ----------
     G : NetworkX graph
 
-    S : sequence
-        A sequence of nodes in `G`.
+    S : collection
+        A collection of nodes in `G`.
 
-    T : sequence
-        A sequence of nodes in `G`.
+    T : collection
+        A collection of nodes in `G`.
 
     weight : object
         Edge attribute key to use as weight. If not specified, edges
@@ -228,6 +228,7 @@ def conductance(G, S, T=None, weight=None):
     return num_cut_edges / min(volume_S, volume_T)
 
 
+@nx._dispatchable(edge_attrs="weight")
 def edge_expansion(G, S, T=None, weight=None):
     """Returns the edge expansion between two node sets.
 
@@ -238,11 +239,11 @@ def edge_expansion(G, S, T=None, weight=None):
     ----------
     G : NetworkX graph
 
-    S : sequence
-        A sequence of nodes in `G`.
+    S : collection
+        A collection of nodes in `G`.
 
-    T : sequence
-        A sequence of nodes in `G`.
+    T : collection
+        A collection of nodes in `G`.
 
     weight : object
         Edge attribute key to use as weight. If not specified, edges
@@ -274,6 +275,7 @@ def edge_expansion(G, S, T=None, weight=None):
     return num_cut_edges / min(len(S), len(T))
 
 
+@nx._dispatchable(edge_attrs="weight")
 def mixing_expansion(G, S, T=None, weight=None):
     """Returns the mixing expansion between two node sets.
 
@@ -284,11 +286,11 @@ def mixing_expansion(G, S, T=None, weight=None):
     ----------
     G : NetworkX graph
 
-    S : sequence
-        A sequence of nodes in `G`.
+    S : collection
+        A collection of nodes in `G`.
 
-    T : sequence
-        A sequence of nodes in `G`.
+    T : collection
+        A collection of nodes in `G`.
 
     weight : object
         Edge attribute key to use as weight. If not specified, edges
@@ -311,7 +313,7 @@ def mixing_expansion(G, S, T=None, weight=None):
            "Pseudorandomness."
            *Foundations and Trends
            in Theoretical Computer Science* 7.1–3 (2011): 1–336.
-           <http://dx.doi.org/10.1561/0400000010>
+           <https://doi.org/10.1561/0400000010>
 
     """
     num_cut_edges = cut_size(G, S, T=T, weight=weight)
@@ -321,6 +323,7 @@ def mixing_expansion(G, S, T=None, weight=None):
 
 # TODO What is the generalization to two arguments, S and T? Does the
 # denominator become `min(len(S), len(T))`?
+@nx._dispatchable
 def node_expansion(G, S):
     """Returns the node expansion of the set `S`.
 
@@ -331,8 +334,8 @@ def node_expansion(G, S):
     ----------
     G : NetworkX graph
 
-    S : sequence
-        A sequence of nodes in `G`.
+    S : collection
+        A collection of nodes in `G`.
 
     Returns
     -------
@@ -351,7 +354,7 @@ def node_expansion(G, S):
            "Pseudorandomness."
            *Foundations and Trends
            in Theoretical Computer Science* 7.1–3 (2011): 1–336.
-           <http://dx.doi.org/10.1561/0400000010>
+           <https://doi.org/10.1561/0400000010>
 
     """
     neighborhood = set(chain.from_iterable(G.neighbors(v) for v in S))
@@ -360,18 +363,19 @@ def node_expansion(G, S):
 
 # TODO What is the generalization to two arguments, S and T? Does the
 # denominator become `min(len(S), len(T))`?
+@nx._dispatchable
 def boundary_expansion(G, S):
     """Returns the boundary expansion of the set `S`.
 
-    The *boundary expansion* is the quotient of the size of the edge
-    boundary and the cardinality of *S*. [1]
+    The *boundary expansion* is the quotient of the size
+    of the node boundary and the cardinality of *S*. [1]
 
     Parameters
     ----------
     G : NetworkX graph
 
-    S : sequence
-        A sequence of nodes in `G`.
+    S : collection
+        A collection of nodes in `G`.
 
     Returns
     -------
@@ -390,7 +394,7 @@ def boundary_expansion(G, S):
            "Pseudorandomness."
            *Foundations and Trends in Theoretical Computer Science*
            7.1–3 (2011): 1–336.
-           <http://dx.doi.org/10.1561/0400000010>
+           <https://doi.org/10.1561/0400000010>
 
     """
     return len(nx.node_boundary(G, S)) / len(S)

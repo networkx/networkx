@@ -1,8 +1,3 @@
-#    Copyright (C) 2011 by
-#    Dheeraj M R <dheerajrav@gmail.com>
-#    Aric Hagberg <aric.hagberg@gmail.com>
-#    All rights reserved.
-#    BSD license.
 """
 =======================
 Distance-regular graphs
@@ -11,15 +6,18 @@ Distance-regular graphs
 
 import networkx as nx
 from networkx.utils import not_implemented_for
+
 from .distance_measures import diameter
 
-__author__ = """\n""".join(['Dheeraj M R <dheerajrav@gmail.com>',
-                            'Aric Hagberg <aric.hagberg@gmail.com>'])
+__all__ = [
+    "is_distance_regular",
+    "is_strongly_regular",
+    "intersection_array",
+    "global_parameters",
+]
 
-__all__ = ['is_distance_regular', 'is_strongly_regular',
-           'intersection_array', 'global_parameters']
 
-
+@nx._dispatchable
 def is_distance_regular(G):
     """Returns True if the graph is distance regular, False otherwise.
 
@@ -40,7 +38,7 @@ def is_distance_regular(G):
 
     Examples
     --------
-    >>> G=nx.hypercube_graph(6)
+    >>> G = nx.hypercube_graph(6)
     >>> nx.is_distance_regular(G)
     True
 
@@ -68,7 +66,7 @@ def is_distance_regular(G):
 
 
 def global_parameters(b, c):
-    """Return global parameters for a given intersection array.
+    """Returns global parameters for a given intersection array.
 
     Given a distance-regular graph G with integers b_i, c_i,i = 0,....,d
     such that for any 2 vertices x,y in G at a distance i=d(x,y), there
@@ -111,7 +109,9 @@ def global_parameters(b, c):
     return ((y, b[0] - x - y, x) for x, y in zip(b + [0], [0] + c))
 
 
-@not_implemented_for('directed', 'multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+@nx._dispatchable
 def intersection_array(G):
     """Returns the intersection array of a distance-regular graph.
 
@@ -133,7 +133,7 @@ def intersection_array(G):
 
     Examples
     --------
-    >>> G=nx.icosahedral_graph()
+    >>> G = nx.icosahedral_graph()
     >>> nx.intersection_array(G)
     ([5, 2, 1], [1, 2, 5])
 
@@ -148,37 +148,43 @@ def intersection_array(G):
     global_parameters
     """
     # test for regular graph (all degrees must be equal)
+    if len(G) == 0:
+        raise nx.NetworkXPointlessConcept("Graph has no nodes.")
     degree = iter(G.degree())
     (_, k) = next(degree)
     for _, knext in degree:
         if knext != k:
-            raise nx.NetworkXError('Graph is not distance regular.')
+            raise nx.NetworkXError("Graph is not distance regular.")
         k = knext
     path_length = dict(nx.all_pairs_shortest_path_length(G))
-    diameter = max([max(path_length[n].values()) for n in path_length])
+    diameter = max(max(path_length[n].values()) for n in path_length)
     bint = {}  # 'b' intersection array
     cint = {}  # 'c' intersection array
     for u in G:
         for v in G:
             try:
                 i = path_length[u][v]
-            except KeyError:  # graph must be connected
-                raise nx.NetworkXError('Graph is not distance regular.')
+            except KeyError as err:  # graph must be connected
+                raise nx.NetworkXError("Graph is not distance regular.") from err
             # number of neighbors of v at a distance of i-1 from u
             c = len([n for n in G[v] if path_length[n][u] == i - 1])
             # number of neighbors of v at a distance of i+1 from u
             b = len([n for n in G[v] if path_length[n][u] == i + 1])
             # b,c are independent of u and v
             if cint.get(i, c) != c or bint.get(i, b) != b:
-                raise nx.NetworkXError('Graph is not distance regular')
+                raise nx.NetworkXError("Graph is not distance regular")
             bint[i] = b
             cint[i] = c
-    return ([bint.get(j, 0) for j in range(diameter)],
-            [cint.get(j + 1, 0) for j in range(diameter)])
+    return (
+        [bint.get(j, 0) for j in range(diameter)],
+        [cint.get(j + 1, 0) for j in range(diameter)],
+    )
 
 
 # TODO There is a definition for directed strongly regular graphs.
-@not_implemented_for('directed', 'multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+@nx._dispatchable
 def is_strongly_regular(G):
     """Returns True if and only if the given graph is strongly
     regular.
@@ -213,7 +219,6 @@ def is_strongly_regular(G):
     two-regular, each pair of adjacent vertices has no shared neighbors,
     and each pair of nonadjacent vertices has one shared neighbor::
 
-        >>> import networkx as nx
         >>> G = nx.cycle_graph(5)
         >>> nx.is_strongly_regular(G)
         True

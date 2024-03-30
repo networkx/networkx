@@ -1,13 +1,3 @@
-# boykovkolmogorov.py - Boykov Kolmogorov algorithm for maximum flow problems.
-#
-# Copyright 2016-2017 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
-#
-# Author: Jordi Torrents <jordi.t21@gmail.com>
 """
 Boykov-Kolmogorov algorithm for maximum flow problems.
 """
@@ -17,11 +7,19 @@ from operator import itemgetter
 import networkx as nx
 from networkx.algorithms.flow.utils import build_residual_network
 
-__all__ = ['boykov_kolmogorov']
+__all__ = ["boykov_kolmogorov"]
 
 
-def boykov_kolmogorov(G, s, t, capacity='capacity', residual=None,
-                      value_only=False, cutoff=None):
+@nx._dispatchable(
+    graphs={"G": 0, "residual?": 4},
+    edge_attrs={"capacity": float("inf")},
+    preserve_edge_attrs={"residual": {"capacity": float("inf")}},
+    preserve_graph_attrs={"residual"},
+    returns_graph=True,
+)
+def boykov_kolmogorov(
+    G, s, t, capacity="capacity", residual=None, value_only=False, cutoff=None
+):
     r"""Find a maximum single-commodity flow using Boykov-Kolmogorov algorithm.
 
     This function returns the residual network resulting after computing
@@ -114,7 +112,6 @@ def boykov_kolmogorov(G, s, t, capacity='capacity', residual=None,
 
     Examples
     --------
-    >>> import networkx as nx
     >>> from networkx.algorithms.flow import boykov_kolmogorov
 
     The functions that implement flow algorithms and output a residual
@@ -122,19 +119,19 @@ def boykov_kolmogorov(G, s, t, capacity='capacity', residual=None,
     namespace, so you have to explicitly import them from the flow package.
 
     >>> G = nx.DiGraph()
-    >>> G.add_edge('x','a', capacity=3.0)
-    >>> G.add_edge('x','b', capacity=1.0)
-    >>> G.add_edge('a','c', capacity=3.0)
-    >>> G.add_edge('b','c', capacity=5.0)
-    >>> G.add_edge('b','d', capacity=4.0)
-    >>> G.add_edge('d','e', capacity=2.0)
-    >>> G.add_edge('c','y', capacity=2.0)
-    >>> G.add_edge('e','y', capacity=3.0)
-    >>> R = boykov_kolmogorov(G, 'x', 'y')
-    >>> flow_value = nx.maximum_flow_value(G, 'x', 'y')
+    >>> G.add_edge("x", "a", capacity=3.0)
+    >>> G.add_edge("x", "b", capacity=1.0)
+    >>> G.add_edge("a", "c", capacity=3.0)
+    >>> G.add_edge("b", "c", capacity=5.0)
+    >>> G.add_edge("b", "d", capacity=4.0)
+    >>> G.add_edge("d", "e", capacity=2.0)
+    >>> G.add_edge("c", "y", capacity=2.0)
+    >>> G.add_edge("e", "y", capacity=3.0)
+    >>> R = boykov_kolmogorov(G, "x", "y")
+    >>> flow_value = nx.maximum_flow_value(G, "x", "y")
     >>> flow_value
     3.0
-    >>> flow_value == R.graph['flow_value']
+    >>> flow_value == R.graph["flow_value"]
     True
 
     A nice feature of the Boykov-Kolmogorov algorithm is that a partition
@@ -142,7 +139,7 @@ def boykov_kolmogorov(G, s, t, capacity='capacity', residual=None,
     on the search trees used during the algorithm. These trees are stored
     in the graph attribute `trees` of the residual network.
 
-    >>> source_tree, target_tree = R.graph['trees']
+    >>> source_tree, target_tree = R.graph["trees"]
     >>> partition = (set(source_tree), set(G) - set(source_tree))
 
     Or equivalently:
@@ -155,26 +152,26 @@ def boykov_kolmogorov(G, s, t, capacity='capacity', residual=None,
            of min-cut/max-flow algorithms for energy minimization in vision.
            Pattern Analysis and Machine Intelligence, IEEE Transactions on,
            26(9), 1124-1137.
-           http://www.csd.uwo.ca/~yuri/Papers/pami04.pdf
+           https://doi.org/10.1109/TPAMI.2004.60
 
     .. [2] Vladimir Kolmogorov. Graph-based Algorithms for Multi-camera
            Reconstruction Problem. PhD thesis, Cornell University, CS Department,
            2003. pp. 109-114.
-           https://pub.ist.ac.at/~vnk/papers/thesis.pdf
+           https://web.archive.org/web/20170809091249/https://pub.ist.ac.at/~vnk/papers/thesis.pdf
 
     """
     R = boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff)
-    R.graph['algorithm'] = 'boykov_kolmogorov'
+    R.graph["algorithm"] = "boykov_kolmogorov"
     return R
 
 
 def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
     if s not in G:
-        raise nx.NetworkXError('node %s not in graph' % str(s))
+        raise nx.NetworkXError(f"node {str(s)} not in graph")
     if t not in G:
-        raise nx.NetworkXError('node %s not in graph' % str(t))
+        raise nx.NetworkXError(f"node {str(t)} not in graph")
     if s == t:
-        raise nx.NetworkXError('source and sink are the same node')
+        raise nx.NetworkXError("source and sink are the same node")
 
     if residual is None:
         R = build_residual_network(G, capacity)
@@ -183,14 +180,14 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
 
     # Initialize/reset the residual network.
     # This is way too slow
-    #nx.set_edge_attributes(R, 0, 'flow')
+    # nx.set_edge_attributes(R, 0, 'flow')
     for u in R:
         for e in R[u].values():
-            e['flow'] = 0
+            e["flow"] = 0
 
     # Use an arbitrary high value as infinite. It is computed
     # when building the residual network.
-    INF = R.graph['inf']
+    INF = R.graph["inf"]
 
     if cutoff is None:
         cutoff = INF
@@ -201,11 +198,11 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
     def grow():
         """Bidirectional breadth-first search for the growth stage.
 
-           Returns a connecting edge, that is and edge that connects
-           a node from the source search tree with a node from the
-           target search tree.
-           The first node in the connecting edge is always from the
-           source tree and the last node from the target tree.
+        Returns a connecting edge, that is and edge that connects
+        a node from the source search tree with a node from the
+        target search tree.
+        The first node in the connecting edge is always from the
+        source tree and the last node from the target tree.
         """
         while active:
             u = active[0]
@@ -218,7 +215,7 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
                 other_tree = source_tree
                 neighbors = R_pred
             for v, attr in neighbors[u].items():
-                if attr['capacity'] - attr['flow'] > 0:
+                if attr["capacity"] - attr["flow"] > 0:
                     if v not in this_tree:
                         if v in other_tree:
                             return (u, v) if this_tree is source_tree else (v, u)
@@ -236,14 +233,14 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
     def augment(u, v):
         """Augmentation stage.
 
-           Reconstruct path and determine its residual capacity.
-           We start from a connecting edge, which links a node
-           from the source tree to a node from the target tree.
-           The connecting edge is the output of the grow function
-           and the input of this function.
+        Reconstruct path and determine its residual capacity.
+        We start from a connecting edge, which links a node
+        from the source tree to a node from the target tree.
+        The connecting edge is the output of the grow function
+        and the input of this function.
         """
         attr = R_succ[u][v]
-        flow = min(INF, attr['capacity'] - attr['flow'])
+        flow = min(INF, attr["capacity"] - attr["flow"])
         path = [u]
         # Trace a path from u to s in source_tree.
         w = u
@@ -251,7 +248,7 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
             n = w
             w = source_tree[n]
             attr = R_pred[n][w]
-            flow = min(flow, attr['capacity'] - attr['flow'])
+            flow = min(flow, attr["capacity"] - attr["flow"])
             path.append(w)
         path.reverse()
         # Trace a path from v to t in target_tree.
@@ -261,16 +258,16 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
             n = w
             w = target_tree[n]
             attr = R_succ[n][w]
-            flow = min(flow, attr['capacity'] - attr['flow'])
+            flow = min(flow, attr["capacity"] - attr["flow"])
             path.append(w)
         # Augment flow along the path and check for saturated edges.
         it = iter(path)
         u = next(it)
         these_orphans = []
         for v in it:
-            R_succ[u][v]['flow'] += flow
-            R_succ[v][u]['flow'] -= flow
-            if R_succ[u][v]['flow'] == R_succ[u][v]['capacity']:
+            R_succ[u][v]["flow"] += flow
+            R_succ[v][u]["flow"] -= flow
+            if R_succ[u][v]["flow"] == R_succ[u][v]["capacity"]:
                 if v in source_tree:
                     source_tree[v] = None
                     these_orphans.append(v)
@@ -284,12 +281,12 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
     def adopt():
         """Adoption stage.
 
-           Reconstruct search trees by adopting or discarding orphans.
-           During augmentation stage some edges got saturated and thus
-           the source and target search trees broke down to forests, with
-           orphans as roots of some of its trees. We have to reconstruct
-           the search trees rooted to source and target before we can grow
-           them again.
+        Reconstruct search trees by adopting or discarding orphans.
+        During augmentation stage some edges got saturated and thus
+        the source and target search trees broke down to forests, with
+        orphans as roots of some of its trees. We have to reconstruct
+        the search trees rooted to source and target before we can grow
+        them again.
         """
         while orphans:
             u = orphans.popleft()
@@ -299,20 +296,20 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
             else:
                 tree = target_tree
                 neighbors = R_succ
-            nbrs = ((n, attr, dist[n]) for n, attr in neighbors[u].items()
-                    if n in tree)
+            nbrs = ((n, attr, dist[n]) for n, attr in neighbors[u].items() if n in tree)
             for v, attr, d in sorted(nbrs, key=itemgetter(2)):
-                if attr['capacity'] - attr['flow'] > 0:
+                if attr["capacity"] - attr["flow"] > 0:
                     if _has_valid_root(v, tree):
                         tree[u] = v
                         dist[u] = dist[v] + 1
                         timestamp[u] = time
                         break
             else:
-                nbrs = ((n, attr, dist[n]) for n, attr in neighbors[u].items()
-                        if n in tree)
+                nbrs = (
+                    (n, attr, dist[n]) for n, attr in neighbors[u].items() if n in tree
+                )
                 for v, attr, d in sorted(nbrs, key=itemgetter(2)):
-                    if attr['capacity'] - attr['flow'] > 0:
+                    if attr["capacity"] - attr["flow"] > 0:
                         if v not in active:
                             active.append(v)
                     if tree[v] == u:
@@ -327,7 +324,7 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
         v = n
         while v is not None:
             path.append(v)
-            if v == s or v == t:
+            if v in (s, t):
                 base_dist = 0
                 break
             elif timestamp[v] == time:
@@ -366,12 +363,12 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
         adopt()
 
     if flow_value * 2 > INF:
-        raise nx.NetworkXUnbounded('Infinite capacity path, flow unbounded above.')
+        raise nx.NetworkXUnbounded("Infinite capacity path, flow unbounded above.")
 
     # Add source and target tree in a graph attribute.
     # A partition that defines a minimum cut can be directly
     # computed from the search trees as explained in the docstrings.
-    R.graph['trees'] = (source_tree, target_tree)
+    R.graph["trees"] = (source_tree, target_tree)
     # Add the standard flow_value graph attribute.
-    R.graph['flow_value'] = flow_value
+    R.graph["flow_value"] = flow_value
     return R

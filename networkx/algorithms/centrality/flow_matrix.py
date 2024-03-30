@@ -1,40 +1,43 @@
-# Helpers for current-flow betweenness and current-flow closness
+# Helpers for current-flow betweenness and current-flow closeness
 # Lazy computations for inverse Laplacian and flow-matrix rows.
 import networkx as nx
 
 
-def flow_matrix_row(G, weight=None, dtype=float, solver='lu'):
+@nx._dispatchable(edge_attrs="weight")
+def flow_matrix_row(G, weight=None, dtype=float, solver="lu"):
     # Generate a row of the current-flow matrix
     import numpy as np
-    from scipy import sparse
-    from scipy.sparse import linalg
-    solvername = {"full": FullInverseLaplacian,
-                  "lu": SuperLUInverseLaplacian,
-                  "cg": CGInverseLaplacian}
+
+    solvername = {
+        "full": FullInverseLaplacian,
+        "lu": SuperLUInverseLaplacian,
+        "cg": CGInverseLaplacian,
+    }
     n = G.number_of_nodes()
-    L = laplacian_sparse_matrix(G, nodelist=range(n), weight=weight,
-                                dtype=dtype, format='csc')
+    L = nx.laplacian_matrix(G, nodelist=range(n), weight=weight).asformat("csc")
+    L = L.astype(dtype)
     C = solvername[solver](L, dtype=dtype)  # initialize solver
     w = C.w  # w is the Laplacian matrix width
     # row-by-row flow matrix
     for u, v in sorted(sorted((u, v)) for u, v in G.edges()):
         B = np.zeros(w, dtype=dtype)
         c = G[u][v].get(weight, 1.0)
-        B[u%w] = c
-        B[v%w] = -c
-        # get only the rows needed in the inverse laplacian 
+        B[u % w] = c
+        B[v % w] = -c
+        # get only the rows needed in the inverse laplacian
         # and multiply to get the flow matrix row
-        row = np.dot(B, C.get_rows(u, v))
+        row = B @ C.get_rows(u, v)
         yield row, (u, v)
 
 
 # Class to compute the inverse laplacian only for specified rows
 # Allows computation of the current-flow matrix without storing entire
 # inverse laplacian matrix
-class InverseLaplacian(object):
+class InverseLaplacian:
     def __init__(self, L, width=None, dtype=None):
         global np
         import numpy as np
+
         (n, n) = L.shape
         self.dtype = dtype
         self.n = n
@@ -50,13 +53,13 @@ class InverseLaplacian(object):
         pass
 
     def solve(self, r):
-        raise("Implement solver")
+        raise nx.NetworkXError("Implement solver")
 
     def solve_inverse(self, r):
-        raise("Implement solver")
+        raise nx.NetworkXError("Implement solver")
 
     def get_rows(self, r1, r2):
-        for r in range(r1, r2+1):
+        for r in range(r1, r2 + 1):
             self.C[r % self.w, 1:] = self.solve_inverse(r)
         return self.C
 
@@ -70,8 +73,8 @@ class InverseLaplacian(object):
             w = 0
             x, y = np.nonzero(row)
             if len(y) > 0:
-                v = y-i
-                w = v.max()-v.min()+1
+                v = y - i
+                w = v.max() - v.min() + 1
                 m = max(w, m)
         return m
 
@@ -83,7 +86,7 @@ class FullInverseLaplacian(InverseLaplacian):
 
     def solve(self, rhs):
         s = np.zeros(rhs.shape, dtype=self.dtype)
-        s = np.dot(self.IL, rhs)
+        s = self.IL @ rhs
         return s
 
     def solve_inverse(self, r):
@@ -92,8 +95,9 @@ class FullInverseLaplacian(InverseLaplacian):
 
 class SuperLUInverseLaplacian(InverseLaplacian):
     def init_solver(self, L):
-        from scipy.sparse import linalg
-        self.lusolve = linalg.factorized(self.L1.tocsc())
+        import scipy as sp
+
+        self.lusolve = sp.sparse.linalg.factorized(self.L1.tocsc())
 
     def solve_inverse(self, r):
         rhs = np.zeros(self.n, dtype=self.dtype)
@@ -108,31 +112,19 @@ class SuperLUInverseLaplacian(InverseLaplacian):
 
 class CGInverseLaplacian(InverseLaplacian):
     def init_solver(self, L):
-        global linalg
-        from scipy.sparse import linalg
-        ilu = linalg.spilu(self.L1.tocsc())
-        n = self.n-1
-        self.M = linalg.LinearOperator(shape=(n, n), matvec=ilu.solve)
+        global sp
+        import scipy as sp
+
+        ilu = sp.sparse.linalg.spilu(self.L1.tocsc())
+        n = self.n - 1
+        self.M = sp.sparse.linalg.LinearOperator(shape=(n, n), matvec=ilu.solve)
 
     def solve(self, rhs):
         s = np.zeros(rhs.shape, dtype=self.dtype)
-        s[1:] = linalg.cg(self.L1, rhs[1:], M=self.M)[0]
+        s[1:] = sp.sparse.linalg.cg(self.L1, rhs[1:], M=self.M, atol=0)[0]
         return s
 
     def solve_inverse(self, r):
         rhs = np.zeros(self.n, self.dtype)
         rhs[r] = 1
-        return linalg.cg(self.L1, rhs[1:], M=self.M)[0]
-
-
-# graph laplacian, sparse version, will move to linalg/laplacianmatrix.py
-def laplacian_sparse_matrix(G, nodelist=None, weight=None, dtype=None,
-                            format='csr'):
-    import numpy as np
-    import scipy.sparse
-    A = nx.to_scipy_sparse_matrix(G, nodelist=nodelist, weight=weight,
-                                  dtype=dtype, format=format)
-    (n, n) = A.shape
-    data = np.asarray(A.sum(axis=1).T)
-    D = scipy.sparse.spdiags(data, 0, n, n, format=format)
-    return D - A
+        return sp.sparse.linalg.cg(self.L1, rhs[1:], M=self.M, atol=0)[0]

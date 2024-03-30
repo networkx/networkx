@@ -1,22 +1,16 @@
-# -*- coding: utf-8 -*-
-# chains.py - functions for finding chains in a graph
-#
-# Copyright 2004-2017 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Functions for finding chains in a graph."""
 
 import networkx as nx
 from networkx.utils import not_implemented_for
 
+__all__ = ["chain_decomposition"]
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+@nx._dispatchable
 def chain_decomposition(G, root=None):
-    """Return the chain decomposition of a graph.
+    """Returns the chain decomposition of a graph.
 
     The *chain decomposition* of a graph with respect a depth-first
     search tree is a set of cycles or paths derived from the set of
@@ -51,6 +45,12 @@ def chain_decomposition(G, root=None):
     NodeNotFound
        If `root` is not in the graph `G`.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (1, 4), (3, 4), (3, 5), (4, 5)])
+    >>> list(nx.chain_decomposition(G))
+    [[(4, 5), (5, 3), (3, 4)]]
+
     Notes
     -----
     The worst-case running time of this implementation is linear in the
@@ -60,7 +60,7 @@ def chain_decomposition(G, root=None):
     ----------
     .. [1] Jens M. Schmidt (2013). "A simple test on 2-vertex-
        and 2-edge-connectivity." *Information Processing Letters*,
-       113, 241–244. Elsevier. <http://dx.doi.org/10.1016/j.ipl.2013.01.016>
+       113, 241–244. Elsevier. <https://doi.org/10.1016/j.ipl.2013.01.016>
 
     """
 
@@ -98,7 +98,7 @@ def chain_decomposition(G, root=None):
         H = nx.DiGraph()
         nodes = []
         for u, v, d in nx.dfs_labeled_edges(G, source=root):
-            if d == 'forward':
+            if d == "forward":
                 # `dfs_labeled_edges()` yields (root, root, 'forward')
                 # if it is beginning the search on a new connected
                 # component.
@@ -112,7 +112,7 @@ def chain_decomposition(G, root=None):
             # `dfs_labeled_edges` considers nontree edges in both
             # orientations, so we need to not add the edge if it its
             # other orientation has been added.
-            elif d == 'nontree' and v not in H[u]:
+            elif d == "nontree" and v not in H[u]:
                 H.add_edge(v, u, nontree=True)
             else:
                 # Do nothing on 'reverse' edges; we only care about
@@ -139,8 +139,12 @@ def chain_decomposition(G, root=None):
         while v not in visited:
             yield u, v
             visited.add(v)
-            u, v = v, G.nodes[v]['parent']
+            u, v = v, G.nodes[v]["parent"]
         yield u, v
+
+    # Check if the root is in the graph G. If not, raise NodeNotFound
+    if root is not None and root not in G:
+        raise nx.NodeNotFound(f"Root node {root} is not in graph")
 
     # Create a directed version of H that has the DFS edges directed
     # toward the root and the nontree edges directed away from the root
@@ -160,7 +164,7 @@ def chain_decomposition(G, root=None):
     for u in nodes:
         visited.add(u)
         # For each nontree edge going out of node u...
-        edges = ((u, v) for u, v, d in H.out_edges(u, data='nontree') if d)
+        edges = ((u, v) for u, v, d in H.out_edges(u, data="nontree") if d)
         for u, v in edges:
             # Create the cycle or cycle prefix starting with the
             # nontree edge.

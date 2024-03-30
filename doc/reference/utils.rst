@@ -11,17 +11,17 @@ Helper Functions
 .. autosummary::
    :toctree: generated/
 
-   is_string_like
+   arbitrary_element
    flatten
-   iterable
-   is_list_of_ints
-   make_str
-   generate_unique_node
-   default_opener
+   make_list_of_ints
+   dict_to_numpy_array
    pairwise
    groups
    create_random_state
-
+   create_py_random_state
+   nodes_equal
+   edges_equal
+   graphs_equal
 
 Data Structures and Algorithms
 ------------------------------
@@ -53,8 +53,9 @@ Decorators
    open_file
    not_implemented_for
    nodes_or_number
-   preserve_random_state
-   random_state
+   np_random_state
+   py_random_state
+   argmap
 
 Cuthill-Mckee Ordering
 ----------------------
@@ -65,10 +66,22 @@ Cuthill-Mckee Ordering
    cuthill_mckee_ordering
    reverse_cuthill_mckee_ordering
 
-Context Managers
-----------------
-.. automodule:: networkx.utils.contextmanagers
+Mapped Queue
+------------
+.. automodule:: networkx.utils.mapped_queue
 .. autosummary::
    :toctree: generated/
 
-   reversed
+   MappedQueue
+
+Backends
+--------
+.. note:: NetworkX backends are experimental. They let you execute an alternate
+   backend implementation instead of NetworkX's pure Python dictionaries
+   implementation. Things will change and break in the future!
+
+.. automodule:: networkx.utils.backends
+.. autosummary::
+   :toctree: generated/
+
+   _dispatchable

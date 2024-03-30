@@ -1,0 +1,321 @@
+.. _NXEP2:
+
+==================================
+NXEP 2 — API design of view slices
+==================================
+
+:Author: Mridul Seth
+:Status: Accepted
+:Type: Standards Track
+:Created: 2020-07-23
+
+
+Abstract
+--------
+
+Iterating over a subset of nodes or edges in a graph is a very common 
+operation in networkx analysis.
+The graph classes in NetworkX (e.g. :class:`~networkx.Graph`,
+:class:`~networkx.DiGraph`, :class:`~networkx.MultiGraph`, etc.) expose the
+node and edge data of the graph via :meth:`~networkx.Graph.nodes` and
+:meth:`~networkx.Graph.edges`, which return dict view objects, `NodeView`
+(or `NodeDataView`) and `EdgeView` (or `EdgeDataView`), respectively.
+The node and edge `View` classes have dict-like semantics for item access,
+returning the data dict corresponding to a given node or edge.
+This NXEP proposes adding support for slicing to the relevant node & edge
+`View` classes.
+
+Motivation and Scope
+--------------------
+
+While accessing Graph data with `G.nodes` and `G.edges`, the only way of slicing the data
+is by casting the view to a list manually and then calling a slice on it.
+A slice inherently implies an ordering of the elements. We intend to use the ordering
+imposed on the nodes and edges by the iteration order (due to the adjacency data structure).
+
+``G.nodes(data=True)`` returns a NodeDataView of all the nodes, ``G.nodes(data=True)[x]`` returns an attribute dictionary for the node x.
+The current way of getting a slice out of the underlying dict view is to cast it to list and then
+slice it ``list(G.nodes(data=True))[0:10]``. This bit of code is something that is written a lot of times
+by users. For graphs with a lot of nodes and edges, ``G.nodes`` and ``G.edges`` will take a lot of screen space and
+when the users try to slice the resulting view (the first instinct) it will error out. Users definitely need to go through
+a couple of documentation links before they realise that they need to first cast this NodeDataView to a list and then create
+a slice. Updating the documentation to make this more clear would be helpful.
+But it also seems good to ease the complexity of this common idiom.
+
+In this NXEP we propose to move the casting as list inside the Node(data)View methods.
+Thus ``list(G.nodes(data=True))[0:10]`` either becomes ``G.nodes(data=True)[0:10]``
+or it is provided by a new slicing method like ``G.nodes(data=True).slice(10)``
+or a new slicing object to allow subscripting like ``G.nodes(data=True).slice[0:10:2]``.
+Then users can get a small subset of nodes by creating a slice.
+
+Motivating Use-Case
+~~~~~~~~~~~~~~~~~~~
+
+It is common to use :meth:`~networkx.Graph.nodes` and 
+:meth:`~networkx.Graph.edges` when using NetworkX interactively, e.g. in a
+terminal.
+If a graph has very many components (i.e. edges or nodes) then the `repr` of 
+`View` object may be very long::
+
+   >>> G = nx.complete_graph(100)   # A graph with 4950 edges
+   >>> G.edges                      # Output suppressed
+   
+In this case, the first instinct of the user is often to inspect only the first
+few edges, say 10, via slicing::
+
+   >>> G.edges[0:10]
+   Traceback (most recent call last)
+      ...
+   TypeError: cannot unpack non-iterable slice object
+
+The resulting `TypeError` is opaque and hard to understand in the context of 
+what was originally intended.
+
+Usage and Impact
+----------------
+
+The main impact and the decision that needs to be taken in this NXEP is with
+respect to the user facing API. By implementing this NXEP via subscripting NodeViews,
+we may end up adding some ambiguity for users. As for example `G.nodes[x]`
+will return an attribute dict but `G.nodes[0:5]` will return a list of first five nodes.
+This will be more ambiguous with EdgeView as ``G.edges[0, 1]`` will return an
+attribute dictionary of the edge between 0 and 1 and ``G.edges[0:1]`` will return the first edge.
+We need to find a way to counter this potential confusion.
+The alternative proposal of a new slicing method is one possible solution.
+
+For a historical context, in pre 2.0 NetworkX, G.nodes() and G.edges() returned lists.
+So, slicing was native behavior like ``G.nodes()[:10]``. One caveat is that the order
+of that list could change from one call to the next if the adjacency structure changed
+between calls.
+
+In more detail, in pre 2.0 NetworkX, there were 3 ways to access node information:
+
+- ``G.node`` was a dict keyed by node to that node's attribute dict as a value.
+- ``G.nodes()`` returned a list.
+- ``G.nodes_iter()`` returned an iterator over the nodes.
+
+In line with Python 3's move toward returning dict views and iterators rather than lists,
+NetworkX 2.0 introduced a single interface for node information. ``G.nodes`` is a
+dict-like object keyed by node to that node's attribute dict.
+It also provides set-like operations on the nodes. And it offers a method ``G.nodes.data``
+which provides an interface similar to ``dict.items`` but pulling out specific attributes
+from the inner attribute dict rather than the entire dict. Functional synonyms
+``G.nodes(data="cost", default=1)`` and ``G.nodes.data("cost", 1)`` allow an interface
+that looks like a dict keyed by node to a specific node attribute.
+
+Slicing was not provided in NetworkX 2.0 primarily because there was
+no inherent order to the nodes or edges as stored in the
+dict-of-dict-of-dict data structure. However, in Python 3.6, dicts
+became ordered based on insertion order. So, nodes are ordered based
+on when they were added to the graph and edges are ordered based on the
+adjacency dict-of-dict structure. So, there is now a concept of the "first edge".
+
+With this NXEP we would like to bring the intuitiveness
+of slicing behavior back to ``G.edges`` and ``G.nodes`` using the node
+add order and edge order based on adjacency storage.
+
+On the computational front, if we create lists to allow slices, we use memory to store the lists.
+This is something user would have anyway done with something like ``list(G.nodes(data=True))[0:10]``.
+But we can do better with our slicing mechanisms.
+We should be able to avoid constructing the entire list simply to get the slices by internally
+using code like: ``indx=[n for i, n in enumerate(G.nodes(data=True)) if i in range(x.start, x.stop, s.step)]``
+where x is the desired slice object.
+
+Backward compatibility
+----------------------
+
+N/A
+
+Detailed description
+--------------------
+
+The new implementation will let users slice Node(Data)View and Edge(Data)View.
+
+The following code will be valid::
+
+  >>> G.nodes(data=True)[0:10]
+  >>> G.nodes[3:10]
+  >>> G.edges[1:10]
+  >>> G.edges(data=True)[4:6]
+
+Preliminary implementation work is available at https://github.com/networkx/networkx/pull/4086
+
+Alternatively, to get rid of the ambiguity in slicing API with respect to
+the dict views we can implement a new
+``slice`` method which leads to a less ambiguous API.::
+
+  >>> G.nodes(data=True).slice[:10]
+  >>> G.nodes.slice[10:30]
+  >>> G.edges.slice[10:40]
+  >>> G.edges(data=True).slice[5:]
+
+
+Related Work
+------------
+
+N/A
+
+
+Implementation
+--------------
+
+A reference implementation is proposed in 
+`#4086 <https://github.com/networkx/networkx/pull/4086/files>`_.
+
+The core of this NXEP is to implement ``slicing`` to Node(Data)View
+and Edge(Data)View to allow users to access a subset of nodes and edges without casting them
+first to a list. We will do this by adding a check of ``slice`` in the getitem dunder method of
+Node(Data)View and Edge(Data)View and returning a list of the sliced values.
+For example, the `__getitem__` method for `NodeView` might look something like:
+
+.. code-block:: python
+
+    def __getitem__(self, n):
+        if isinstance(n, slice):
+            return list(self._nodes).__getitem__(n)
+        return self._nodes[n]
+
+
+We can instead move the check for ``slice`` to an independent ``slice`` method for nodes and edges to
+implement this NXEP.
+
+Alternatives
+------------
+
+The following list summarizes some alternatives to modifying the `__getitem__`
+of the various `View` classes.
+The listed alternatives are not mutually exclusive.
+
+- **Improved Documentation** - Add more explicit documentation about the 
+  necessity of casting Node(Data)View and Edge(Data)View objects to lists in
+  order to be able to use slicing.
+- **Improved Exceptions** - Currently, users see the following exception when
+  attempting to slice a `View`::
+
+     >>> G.nodes[0:10]
+     Traceback (most recent call last)
+        ...
+     TypeError: unhashable type: 'slice'
+
+  The exception message is not very useful in the context of accessing a subset
+  of nodes or edges of a graph. 
+  A more specific exception message could be something along the lines of::
+
+     >>> G.nodes[0:10]
+     Traceback (most recent call last)
+        ...
+     NetworkXError: NodeView does not support slicing. Try list(G.nodes)[0:10].
+
+- Instead of changing the behavior of ``__getitem__`` we can implement a new
+  method, something like ``G.nodes.head(x)`` (inspired by pandas) which
+  returns the first x nodes.
+  This approach could be expanded to using a ``slice`` object directly but
+  interfacing it with an independent ``slice`` method of G.nodes and G.edges
+  instead of implementing it in getitem dunder method.
+
+  - The nice colon syntax for slices is only available with subscript notation.
+    To allow G.nodes.slice to use the nice colon syntax, we could make it a
+    property that creates a subscriptable object. Syntax would be ``G.nodes.slice[4:9:2]``.
+
+
+Discussion
+----------
+
+- https://github.com/networkx/networkx/pull/4086
+
+The motivating example for the NXEP is the use-case where users want to
+introspect a subset (usually the first few) of the nodes and/or edges.
+If we look at the changes proposed by this NXEP and the listed alternatives,
+there are several ways that this use-case might be improved.
+
+1. Add a descriptive error message when users try to access ``View`` objects
+   with a slice object.
+2. Add specialized methods to the slice object (e.g. ``head()`` and ``tail()``
+   or ``slice()`` that provide functionality useful for introspection.
+3. The approach this NXEP proposes - modify ``View.__getitem__`` to add
+   Sequence semantics.
+
+Option 1 (better error messages) changes neither API nor behavior and would
+help guide users to the correct solution for the introspection use-case.
+The downside is that it does not offer the same level of convenience that
+support for slicing does.
+
+Option 2 (``head``, ``tail``, and/or ``slice`` methods) would add new methods
+to view a subset of the nodes/edges.
+For example::
+
+   >>> G = nx.path_graph(10)
+   >>> G.nodes()
+   NodeView((0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
+   >>> G.nodes().head(3)   # Display the first three nodes
+   NodeView((0, 1, 2))
+
+One drawback of the approach is that is introduces new API, which has to be
+both discoverable and intuitive in order to make node/edge viewing more
+convenient.
+For example, is ``G.nodes().head(3)`` or ``G.nodes().slice(0, 10, 2)``
+more convenient than ``list(G.nodes())[:3]`` or ``list(G.nodes())[0:10:2]``,
+respectively?
+Another complication involves choosing the names for the new methods.
+``head`` and ``tail`` are intuitive for users coming from `*nix` backgrounds
+and have been adopted by other popular libraries like `pandas`.
+However, ``head`` and ``tail`` also have meaning in the context of network
+science pertaining to e.g. graph edges.
+For example, a user might reasonably assume that ``G.edges().tail()`` would
+give the set of source nodes in a directed graph, instead of the last `n`
+edges.
+
+Option 3 (add sequence semantics to `View` objects) is arguably the most
+convenient as it doesn't involve raising any error messages.
+However, overriding the behavior of `*View.__getitem__` to mix Mapping and
+Sequence semantics is a relatively pervasive change that may have
+unforeseen consequences for some use-cases.
+Furthermore there is precedent in Python itself for returning un-sliceable view
+objects from some mappings, a notable example being the `dict_keys` and
+`dict_values` objects returned when accessing components in dictionaries::
+
+   >>> d = {k:v for k, v in zip(range(10), range(10))}
+   >>> d.values()[3:6]
+   Traceback (most recent call last)
+      ...
+   TypeError: 'dict_values' object is not subscriptable
+   >>> list(d.values())[3:6]
+   [3, 4, 5]
+    
+Since Python dictionaries are now ordered by default (as of 3.6 in CPython),
+this behavior may change in the future.
+
+Given the considerations associated with the listed options, the following
+course of action is proposed:
+
+- **Adopt option 1** - more informative error messages for the motivating
+  use-case (e.g. ``G.edges()[0:10]``) alleviates the need for users to go
+  digging through the documentation to find/remember how to get the
+  desired behavior.
+  Since no new API is introduced nor are there any backwards compatibility
+  concerns, this change doesn't require any further design discussion.
+  It is possible that this change is enough to resolve the motivating
+  use-case satisfactorily - monitor user feedback.
+- Option 2 doesn't require any further discussion in a design doc (i.e. NXEP).
+  New methods along the lines discussed above can be proposed via PR.
+- Defer implementing option 3 for now, but reconsider if:
+
+   - The improved error message is not in itself a sufficient solution
+   - Other use-cases are identified for which adding slicing to the `*View`
+     objects would be a nice improvement (e.g. improved performance).
+
+Resolution
+----------
+
+To make slicing intuitive for new users, we went ahead with **Option 1** in the
+discussion above. Users will now see `NetworkXError` when they try to slice a
+`*View` object.::
+
+   >>> G.edges()[0:10]
+   Traceback (most recent call last)
+      ...
+   NetworkXError: EdgeView does not support slicing, try list(G.edges)[0:10:None]
+
+
+The implementation is available at https://github.com/networkx/networkx/pull/4300 and
+https://github.com/networkx/networkx/pull/4304.

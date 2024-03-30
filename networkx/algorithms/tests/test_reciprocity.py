@@ -1,20 +1,20 @@
-from nose.tools import *
+import pytest
+
 import networkx as nx
 
 
-class TestReciprocity(object):
-
-    # test overall reicprocity by passing whole graph
+class TestReciprocity:
+    # test overall reciprocity by passing whole graph
     def test_reciprocity_digraph(self):
         DG = nx.DiGraph([(1, 2), (2, 1)])
         reciprocity = nx.reciprocity(DG)
         assert reciprocity == 1.0
 
     # test empty graph's overall reciprocity which will throw an error
-    @raises(nx.NetworkXError)
     def test_overall_reciprocity_empty_graph(self):
-        DG = nx.DiGraph()
-        nx.overall_reciprocity(DG)
+        with pytest.raises(nx.NetworkXError):
+            DG = nx.DiGraph()
+            nx.overall_reciprocity(DG)
 
     # test for reciprocity for a list of nodes
     def test_reciprocity_graph_nodes(self):
@@ -30,8 +30,8 @@ class TestReciprocity(object):
         assert reciprocity == 0.6666666666666666
 
     # test for reciprocity for an isolated node
-    @raises(nx.NetworkXError)
     def test_reciprocity_graph_isolated_nodes(self):
-        DG = nx.DiGraph([(1, 2)])
-        DG.add_node(4)
-        nx.reciprocity(DG, 4)
+        with pytest.raises(nx.NetworkXError):
+            DG = nx.DiGraph([(1, 2)])
+            DG.add_node(4)
+            nx.reciprocity(DG, 4)

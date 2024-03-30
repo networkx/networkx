@@ -1,22 +1,11 @@
-#    Copyright (C) 2004-2017 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (hagberg@lanl.gov)
-#          Pieter Swart (swart@lanl.gov)
-#          Sasha Gutfraind (ag362@cornell.edu)
 """Degree centrality measures."""
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
-__all__ = ['degree_centrality',
-           'in_degree_centrality',
-           'out_degree_centrality']
+__all__ = ["degree_centrality", "in_degree_centrality", "out_degree_centrality"]
 
 
+@nx._dispatchable
 def degree_centrality(G):
     """Compute the degree centrality for nodes.
 
@@ -33,6 +22,12 @@ def degree_centrality(G):
     nodes : dictionary
        Dictionary of nodes with degree centrality as the value.
 
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)])
+    >>> nx.degree_centrality(G)
+    {0: 1.0, 1: 1.0, 2: 0.6666666666666666, 3: 0.6666666666666666}
+
     See Also
     --------
     betweenness_centrality, load_centrality, eigenvector_centrality
@@ -46,13 +41,16 @@ def degree_centrality(G):
     be higher than n-1 and values of degree centrality greater than 1
     are possible.
     """
-    centrality = {}
-    s = 1.0/(len(G)-1.0)
-    centrality = {n: d*s for n, d in G.degree()}
+    if len(G) <= 1:
+        return {n: 1 for n in G}
+
+    s = 1.0 / (len(G) - 1.0)
+    centrality = {n: d * s for n, d in G.degree()}
     return centrality
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
+@nx._dispatchable
 def in_degree_centrality(G):
     """Compute the in-degree centrality for nodes.
 
@@ -71,8 +69,14 @@ def in_degree_centrality(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is undirected.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)])
+    >>> nx.in_degree_centrality(G)
+    {0: 0.0, 1: 0.3333333333333333, 2: 0.6666666666666666, 3: 0.6666666666666666}
 
     See Also
     --------
@@ -87,13 +91,16 @@ def in_degree_centrality(G):
     be higher than n-1 and values of degree centrality greater than 1
     are possible.
     """
-    centrality = {}
-    s = 1.0/(len(G)-1.0)
-    centrality = {n: d*s for n, d in G.in_degree()}
+    if len(G) <= 1:
+        return {n: 1 for n in G}
+
+    s = 1.0 / (len(G) - 1.0)
+    centrality = {n: d * s for n, d in G.in_degree()}
     return centrality
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
+@nx._dispatchable
 def out_degree_centrality(G):
     """Compute the out-degree centrality for nodes.
 
@@ -112,8 +119,14 @@ def out_degree_centrality(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is undirected.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (0, 2), (0, 3), (1, 2), (1, 3)])
+    >>> nx.out_degree_centrality(G)
+    {0: 1.0, 1: 0.6666666666666666, 2: 0.0, 3: 0.0}
 
     See Also
     --------
@@ -128,7 +141,9 @@ def out_degree_centrality(G):
     be higher than n-1 and values of degree centrality greater than 1
     are possible.
     """
-    centrality = {}
-    s = 1.0/(len(G)-1.0)
-    centrality = {n: d*s for n, d in G.out_degree()}
+    if len(G) <= 1:
+        return {n: 1 for n in G}
+
+    s = 1.0 / (len(G) - 1.0)
+    centrality = {n: d * s for n, d in G.out_degree()}
     return centrality

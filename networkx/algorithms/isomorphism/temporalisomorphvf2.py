@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 """
 *****************************
 Time-respecting VF2 Algorithm
 *****************************
 
-An extension of the VF2 algorithm for time-respecting graph ismorphism
+An extension of the VF2 algorithm for time-respecting graph isomorphism
 testing in temporal graphs.
 
 A temporal graph is one in which edges contain a datetime attribute,
@@ -66,17 +65,14 @@ Handles directed and undirected graphs and graphs with parallel edges.
 
 """
 
-from __future__ import absolute_import
 import networkx as nx
-from datetime import datetime, timedelta
-from .isomorphvf2 import GraphMatcher, DiGraphMatcher
 
-__all__ = ['TimeRespectingGraphMatcher',
-           'TimeRespectingDiGraphMatcher']
+from .isomorphvf2 import DiGraphMatcher, GraphMatcher
+
+__all__ = ["TimeRespectingGraphMatcher", "TimeRespectingDiGraphMatcher"]
 
 
 class TimeRespectingGraphMatcher(GraphMatcher):
-
     def __init__(self, G1, G2, temporal_attribute_name, delta):
         """Initialize TimeRespectingGraphMatcher.
 
@@ -88,15 +84,16 @@ class TimeRespectingGraphMatcher(GraphMatcher):
         syntactic and semantic feasibility:
 
         >>> from networkx.algorithms import isomorphism
+        >>> from datetime import timedelta
         >>> G1 = nx.Graph(nx.path_graph(4, create_using=nx.Graph()))
 
         >>> G2 = nx.Graph(nx.path_graph(4, create_using=nx.Graph()))
 
-        >>> GM = isomorphism.TimeRespectingGraphMatcher(G1, G2, 'date', timedelta(days=1))
+        >>> GM = isomorphism.TimeRespectingGraphMatcher(G1, G2, "date", timedelta(days=1))
         """
         self.temporal_attribute_name = temporal_attribute_name
         self.delta = delta
-        super(TimeRespectingGraphMatcher, self).__init__(G1, G2)
+        super().__init__(G1, G2)
 
     def one_hop(self, Gx, Gx_node, neighbors):
         """
@@ -105,20 +102,25 @@ class TimeRespectingGraphMatcher(GraphMatcher):
         """
         dates = []
         for n in neighbors:
-            if type(Gx) == type(nx.Graph()):  # Graph G[u][v] returns the data dictionary.
+            if isinstance(Gx, nx.Graph):  # Graph G[u][v] returns the data dictionary.
                 dates.append(Gx[Gx_node][n][self.temporal_attribute_name])
             else:  # MultiGraph G[u][v] returns a dictionary of key -> data dictionary.
-                for edge in Gx[Gx_node][n].values():  # Iterates all edges between node pair.
+                for edge in Gx[Gx_node][
+                    n
+                ].values():  # Iterates all edges between node pair.
                     dates.append(edge[self.temporal_attribute_name])
         if any(x is None for x in dates):
-            raise ValueError('Datetime not supplied for at least one edge.')
+            raise ValueError("Datetime not supplied for at least one edge.")
         return not dates or max(dates) - min(dates) <= self.delta
 
     def two_hop(self, Gx, core_x, Gx_node, neighbors):
         """
         Paths of length 2 from Gx_node should be time-respecting.
         """
-        return all(self.one_hop(Gx, v, [n for n in Gx[v] if n in core_x] + [Gx_node]) for v in neighbors)
+        return all(
+            self.one_hop(Gx, v, [n for n in Gx[v] if n in core_x] + [Gx_node])
+            for v in neighbors
+        )
 
     def semantic_feasibility(self, G1_node, G2_node):
         """Returns True if adding (G1_node, G2_node) is semantically
@@ -133,12 +135,11 @@ class TimeRespectingGraphMatcher(GraphMatcher):
             return False
         if not self.two_hop(self.G1, self.core_1, G1_node, neighbors):
             return False
-        # Otherwise, this node is sematically feasible!
+        # Otherwise, this node is semantically feasible!
         return True
 
 
 class TimeRespectingDiGraphMatcher(DiGraphMatcher):
-
     def __init__(self, G1, G2, temporal_attribute_name, delta):
         """Initialize TimeRespectingDiGraphMatcher.
 
@@ -150,27 +151,30 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         syntactic and semantic feasibility:
 
         >>> from networkx.algorithms import isomorphism
+        >>> from datetime import timedelta
         >>> G1 = nx.DiGraph(nx.path_graph(4, create_using=nx.DiGraph()))
 
         >>> G2 = nx.DiGraph(nx.path_graph(4, create_using=nx.DiGraph()))
 
-        >>> GM = isomorphism.TimeRespectingDiGraphMatcher(G1, G2, 'date', timedelta(days=1))
+        >>> GM = isomorphism.TimeRespectingDiGraphMatcher(G1, G2, "date", timedelta(days=1))
         """
         self.temporal_attribute_name = temporal_attribute_name
         self.delta = delta
-        super(TimeRespectingDiGraphMatcher, self).__init__(G1, G2)
+        super().__init__(G1, G2)
 
     def get_pred_dates(self, Gx, Gx_node, core_x, pred):
         """
         Get the dates of edges from predecessors.
         """
         pred_dates = []
-        if type(Gx) == type(nx.DiGraph()):  # Graph G[u][v] returns the data dictionary.
+        if isinstance(Gx, nx.DiGraph):  # Graph G[u][v] returns the data dictionary.
             for n in pred:
                 pred_dates.append(Gx[n][Gx_node][self.temporal_attribute_name])
         else:  # MultiGraph G[u][v] returns a dictionary of key -> data dictionary.
             for n in pred:
-                for edge in Gx[n][Gx_node].values():  # Iterates all edge data between node pair.
+                for edge in Gx[n][
+                    Gx_node
+                ].values():  # Iterates all edge data between node pair.
                     pred_dates.append(edge[self.temporal_attribute_name])
         return pred_dates
 
@@ -179,12 +183,14 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         Get the dates of edges to successors.
         """
         succ_dates = []
-        if type(Gx) == type(nx.DiGraph()):  # Graph G[u][v] returns the data dictionary.
+        if isinstance(Gx, nx.DiGraph):  # Graph G[u][v] returns the data dictionary.
             for n in succ:
                 succ_dates.append(Gx[Gx_node][n][self.temporal_attribute_name])
         else:  # MultiGraph G[u][v] returns a dictionary of key -> data dictionary.
             for n in succ:
-                for edge in Gx[Gx_node][n].values():  # Iterates all edge data between node pair.
+                for edge in Gx[Gx_node][
+                    n
+                ].values():  # Iterates all edge data between node pair.
                     succ_dates.append(edge[self.temporal_attribute_name])
         return succ_dates
 
@@ -194,19 +200,39 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         """
         pred_dates = self.get_pred_dates(Gx, Gx_node, core_x, pred)
         succ_dates = self.get_succ_dates(Gx, Gx_node, core_x, succ)
-        return self.test_one(pred_dates, succ_dates) and self.test_two(pred_dates, succ_dates)
+        return self.test_one(pred_dates, succ_dates) and self.test_two(
+            pred_dates, succ_dates
+        )
 
     def two_hop_pred(self, Gx, Gx_node, core_x, pred):
         """
-        The predeccessors of the ego node.
+        The predecessors of the ego node.
         """
-        return all(self.one_hop(Gx, p, core_x, self.preds(Gx, core_x, p), self.succs(Gx, core_x, p, Gx_node)) for p in pred)
+        return all(
+            self.one_hop(
+                Gx,
+                p,
+                core_x,
+                self.preds(Gx, core_x, p),
+                self.succs(Gx, core_x, p, Gx_node),
+            )
+            for p in pred
+        )
 
     def two_hop_succ(self, Gx, Gx_node, core_x, succ):
         """
         The successors of the ego node.
         """
-        return all(self.one_hop(Gx, s, core_x, self.preds(Gx, core_x, s, Gx_node), self.succs(Gx, core_x, s)) for s in succ)
+        return all(
+            self.one_hop(
+                Gx,
+                s,
+                core_x,
+                self.preds(Gx, core_x, s, Gx_node),
+                self.succs(Gx, core_x, s),
+            )
+            for s in succ
+        )
 
     def preds(self, Gx, core_x, v, Gx_node=None):
         pred = [n for n in Gx.predecessors(v) if n in core_x]
@@ -230,7 +256,7 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         dates = pred_dates + succ_dates
 
         if any(x is None for x in dates):
-            raise ValueError('Date or datetime not supplied for at least one edge.')
+            raise ValueError("Date or datetime not supplied for at least one edge.")
 
         dates.sort()  # Small to large.
         if 0 < len(dates) and not (dates[-1] - dates[0] <= self.delta):
@@ -246,7 +272,11 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         pred_dates.sort()
         succ_dates.sort()
         # First out before last in; negative of the necessary condition for time-respect.
-        if 0 < len(succ_dates) and 0 < len(pred_dates) and succ_dates[0] < pred_dates[-1]:
+        if (
+            0 < len(succ_dates)
+            and 0 < len(pred_dates)
+            and succ_dates[0] < pred_dates[-1]
+        ):
             time_respecting = False
         return time_respecting
 
@@ -258,12 +288,17 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         maintain the self.tests if needed, to keep the match() method
         functional. Implementations should consider multigraphs.
         """
-        pred, succ = [n for n in self.G1.predecessors(G1_node) if n in self.core_1], [n for n in self.G1.successors(G1_node) if n in self.core_1]
-        if not self.one_hop(self.G1, G1_node, self.core_1, pred, succ):  # Fail fast on first node.
+        pred, succ = (
+            [n for n in self.G1.predecessors(G1_node) if n in self.core_1],
+            [n for n in self.G1.successors(G1_node) if n in self.core_1],
+        )
+        if not self.one_hop(
+            self.G1, G1_node, self.core_1, pred, succ
+        ):  # Fail fast on first node.
             return False
         if not self.two_hop_pred(self.G1, G1_node, self.core_1, pred):
             return False
         if not self.two_hop_succ(self.G1, G1_node, self.core_1, succ):
             return False
-        # Otherwise, this node is sematically feasible!
+        # Otherwise, this node is semantically feasible!
         return True

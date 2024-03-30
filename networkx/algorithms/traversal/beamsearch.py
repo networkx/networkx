@@ -1,19 +1,10 @@
-# beamsearch.py - breadth-first search with limited queueing
-#
-# Copyright 2016-2017 NetworkX developers.
-#
-# This file is part of NetworkX.
-#
-# NetworkX is distributed under a BSD license; see LICENSE.txt for more
-# information.
 """Basic algorithms for breadth-first searching the nodes of a graph."""
-
 import networkx as nx
-from .breadth_first_search import generic_bfs_edges
 
-__all__ = ['bfs_beam_edges']
+__all__ = ["bfs_beam_edges"]
 
 
+@nx._dispatchable
 def bfs_beam_edges(G, source, value, width=None):
     """Iterates over edges in a beam search.
 
@@ -22,6 +13,15 @@ def bfs_beam_edges(G, source, value, width=None):
     is the beam width and "best" is an application-specific
     heuristic. In general, a beam search with a small beam width might
     not visit each node in the graph.
+
+    .. note::
+
+       With the default value of ``width=None`` or `width` greater than the
+       maximum degree of the graph, this function equates to a slower
+       version of `~networkx.algorithms.traversal.breadth_first_search.bfs_edges`.
+       All nodes will be visited, though the order of the reported edges may
+       vary. In such cases, `value` has no effect - consider using `bfs_edges`
+       directly instead.
 
     Parameters
     ----------
@@ -53,15 +53,12 @@ def bfs_beam_edges(G, source, value, width=None):
     --------
     To give nodes with, for example, a higher centrality precedence
     during the search, set the `value` function to return the centrality
-    value of the node::
+    value of the node:
 
-        >>> G = nx.karate_club_graph()
-        >>> centrality = nx.eigenvector_centrality(G)
-        >>> source = 0
-        >>> width = 5
-        >>> for u, v in nx.bfs_beam_edges(G, source, centrality.get, width):
-        ...     print((u, v))  # doctest: +SKIP
-
+    >>> G = nx.karate_club_graph()
+    >>> centrality = nx.eigenvector_centrality(G)
+    >>> list(nx.bfs_beam_edges(G, source=0, value=centrality.get, width=3))
+    [(0, 2), (0, 1), (0, 8), (2, 32), (1, 13), (8, 33)]
     """
 
     if width is None:
@@ -75,10 +72,6 @@ def bfs_beam_edges(G, source, value, width=None):
         The "best" neighbors are chosen according to the `value`
         function (higher is better). Only the `width` best neighbors of
         `v` are returned.
-
-        The list returned by this function is in decreasing value as
-        measured by the `value` function.
-
         """
         # TODO The Python documentation states that for small values, it
         # is better to use `heapq.nlargest`. We should determine the
@@ -93,6 +86,4 @@ def bfs_beam_edges(G, source, value, width=None):
         # `bfs_edges(G, source)` but with a sorted enqueue step.
         return iter(sorted(G.neighbors(v), key=value, reverse=True)[:width])
 
-    # TODO In Python 3.3+, this should be `yield from ...`
-    for e in generic_bfs_edges(G, source, successors):
-        yield e
+    yield from nx.generic_bfs_edges(G, source, successors)

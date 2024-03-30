@@ -1,29 +1,19 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2017 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Eben Kenah
-#          Aric Hagberg (hagberg@lanl.gov)
-#          Christopher Ellison
 """Connected components."""
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
+
 from ...utils import arbitrary_element
 
 __all__ = [
-    'number_connected_components',
-    'connected_components',
-    'connected_component_subgraphs',
-    'is_connected',
-    'node_connected_component',
+    "number_connected_components",
+    "connected_components",
+    "is_connected",
+    "node_connected_component",
 ]
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
+@nx._dispatchable
 def connected_components(G):
     """Generate connected components.
 
@@ -39,7 +29,7 @@ def connected_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is directed.
 
     Examples
@@ -56,6 +46,10 @@ def connected_components(G):
 
     >>> largest_cc = max(nx.connected_components(G), key=len)
 
+    To create the induced subgraph of each component use:
+
+    >>> S = [G.subgraph(c).copy() for c in nx.connected_components(G)]
+
     See Also
     --------
     strongly_connected_components
@@ -69,65 +63,15 @@ def connected_components(G):
     seen = set()
     for v in G:
         if v not in seen:
-            c = set(_plain_bfs(G, v))
-            yield c
+            c = _plain_bfs(G, v)
             seen.update(c)
+            yield c
 
 
-@not_implemented_for('directed')
-def connected_component_subgraphs(G, copy=True):
-    """Generate connected components as subgraphs.
-
-    Parameters
-    ----------
-    G : NetworkX graph
-       An undirected graph.
-
-    copy: bool (default=True)
-      If True make a copy of the graph attributes
-
-    Returns
-    -------
-    comp : generator
-      A generator of graphs, one for each connected component of G.
-
-    Raises
-    ------
-    NetworkXNotImplemented:
-        If G is directed.
-
-    Examples
-    --------
-    >>> G = nx.path_graph(4)
-    >>> G.add_edge(5,6)
-    >>> graphs = list(nx.connected_component_subgraphs(G))
-
-    If you only want the largest connected component, it's more
-    efficient to use max instead of sort:
-
-    >>> Gc = max(nx.connected_component_subgraphs(G), key=len)
-
-    See Also
-    --------
-    connected_components
-    strongly_connected_component_subgraphs
-    weakly_connected_component_subgraphs
-
-    Notes
-    -----
-    For undirected graphs only.
-    Graph, node, and edge attributes are copied to the subgraphs by default.
-
-    """
-    for c in connected_components(G):
-        if copy:
-            yield G.subgraph(c).copy()
-        else:
-            yield G.subgraph(c)
-
-
+@not_implemented_for("directed")
+@nx._dispatchable
 def number_connected_components(G):
-    """Return the number of connected components.
+    """Returns the number of connected components.
 
     Parameters
     ----------
@@ -138,6 +82,17 @@ def number_connected_components(G):
     -------
     n : integer
        Number of connected components
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If G is directed.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (1, 2), (5, 6), (3, 4)])
+    >>> nx.number_connected_components(G)
+    3
 
     See Also
     --------
@@ -150,12 +105,13 @@ def number_connected_components(G):
     For undirected graphs only.
 
     """
-    return len(list(connected_components(G)))
+    return sum(1 for cc in connected_components(G))
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
+@nx._dispatchable
 def is_connected(G):
-    """Return True if the graph is connected, false otherwise.
+    """Returns True if the graph is connected, False otherwise.
 
     Parameters
     ----------
@@ -169,7 +125,7 @@ def is_connected(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is directed.
 
     Examples
@@ -192,14 +148,16 @@ def is_connected(G):
 
     """
     if len(G) == 0:
-        raise nx.NetworkXPointlessConcept('Connectivity is undefined ',
-                                          'for the null graph.')
-    return len(set(_plain_bfs(G, arbitrary_element(G)))) == len(G)
+        raise nx.NetworkXPointlessConcept(
+            "Connectivity is undefined for the null graph."
+        )
+    return sum(1 for node in _plain_bfs(G, arbitrary_element(G))) == len(G)
 
 
-@not_implemented_for('directed')
+@not_implemented_for("directed")
+@nx._dispatchable
 def node_connected_component(G, n):
-    """Return the nodes in the component of graph containing node n.
+    """Returns the set of nodes in the component of graph containing node n.
 
     Parameters
     ----------
@@ -216,8 +174,14 @@ def node_connected_component(G, n):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is directed.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (1, 2), (5, 6), (3, 4)])
+    >>> nx.node_connected_component(G, 0)  # nodes of component that contains node 0
+    {0, 1, 2}
 
     See Also
     --------
@@ -228,19 +192,23 @@ def node_connected_component(G, n):
     For undirected graphs only.
 
     """
-    return set(_plain_bfs(G, n))
+    return _plain_bfs(G, n)
 
 
 def _plain_bfs(G, source):
     """A fast BFS node generator"""
-    G_adj = G.adj
-    seen = set()
-    nextlevel = {source}
+    adj = G._adj
+    n = len(adj)
+    seen = {source}
+    nextlevel = [source]
     while nextlevel:
         thislevel = nextlevel
-        nextlevel = set()
+        nextlevel = []
         for v in thislevel:
-            if v not in seen:
-                yield v
-                seen.add(v)
-                nextlevel.update(G_adj[v])
+            for w in adj[v]:
+                if w not in seen:
+                    seen.add(w)
+                    nextlevel.append(w)
+            if len(seen) == n:
+                return seen
+    return seen

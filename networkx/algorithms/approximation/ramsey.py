@@ -1,19 +1,25 @@
-# -*- coding: utf-8 -*-
 """
 Ramsey numbers.
 """
-#   Copyright (C) 2011 by
-#   Nicholas Mancuso <nick.mancuso@gmail.com>
-#   All rights reserved.
-#   BSD license.
 import networkx as nx
+from networkx.utils import not_implemented_for
+
 from ...utils import arbitrary_element
 
 __all__ = ["ramsey_R2"]
-__author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
+
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+@nx._dispatchable
 def ramsey_R2(G):
-    r"""Approximately computes the Ramsey number `R(2;s,t)` for graph.
+    r"""Compute the largest clique and largest independent set in `G`.
+
+    This can be used to estimate bounds for the 2-color
+    Ramsey number `R(2;s,t)` for `G`.
+
+    This is a recursive implementation which could run into trouble
+    for large recursions. Note that self-loop edges are ignored.
 
     Parameters
     ----------
@@ -24,12 +30,17 @@ def ramsey_R2(G):
     -------
     max_pair : (set, set) tuple
         Maximum clique, Maximum independent set.
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If the graph is directed or is a multigraph.
     """
     if not G:
         return set(), set()
 
     node = arbitrary_element(G)
-    nbrs = nx.all_neighbors(G, node)
+    nbrs = (nbr for nbr in nx.all_neighbors(G, node) if nbr != node)
     nnbrs = nx.non_neighbors(G, node)
     c_1, i_1 = ramsey_R2(G.subgraph(nbrs).copy())
     c_2, i_2 = ramsey_R2(G.subgraph(nnbrs).copy())

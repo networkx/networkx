@@ -1,0 +1,448 @@
+.. _NXEP3:
+
+==================================
+NXEP 3 — Graph Builders
+==================================
+
+:Author: Dan Schult
+:Author: Kelly Boothby
+:Status: Draft
+:Type: Standards Track
+:Created: 2020-11-27
+:Revision: Spring 2023
+
+Abstract
+--------
+
+Graph generators in NetworkX create a Graph starting from an object
+specified in the `create_using` argument. Many of these generators
+do no more than create edges to add to the graph. Sometimes all we
+want the graph for is to generate those edges. It might be better
+to allow the graph generator functions to return either
+the `edgelist` or a graph object as specified by `create_using`.
+This NXEP proposes a framework for graph builders which allows a
+user friendly interface to this feature and decorators to make it
+easy for developers to provide this feature whether the graph
+builder algorithm requires a graph, or just edges.
+
+Motivation and Scope
+--------------------
+
+Consider, for example, the function `nx.path_graph(nodes, create_using)`.
+It creates the edges for the indicated path and adds them to a
+graph data structure created using the type `create_using`.
+`path_graph` does not use the graph structure to create the edges
+being generated and could arguably just yield
+the edges without involving the data structure at all.
+This NXEP proposes the syntax `nx.path_graph_generator(nodes)`
+to obtain a generator of the graph. That is, the result iterates
+over the edge-list for the graph without constructing the graph itself.
+Note that we are adding a new function for each of the existing graph
+building functions. The API is `*_graph()` for the graph builder, and
+`*_graph_generator()` for the generator of edges.
+
+An edge-list is actually not sufficient to represent a graph because
+of node attributes, graph attributes and isolated nodes. To handle these
+more exotic elements, we introduce the Graph Sequence as a way to specify
+all nodes, edges and attributes for a graph. The generator yields this
+sequence.
+
+Separating edge generation from graph data structure creation
+arguably makes a cleaner interface where independent tools can be put
+together in creative ways. To the extent that users need to generate
+edges rather than graphs, having an edge generator that doesn't store
+the graph is an advantage. It's not exactly clear how much demand there
+is for this feature. But as an example of the flexibility of this approach,
+the `nx.utils.pairwise(nbunch)` call could be replaced via
+`nx.path_graph_generator(nbunch)`.
+
+The `create_using` parameter is a mechanism to tell the builder function what
+class of graph data structure to start with. Separating edge generation
+from graph construction would mean the edge generator function would
+no longer need a type for the graph data structure when there isn't one.
+This NXEP proposes one way to provide an interface that separates edge
+generation from graph data structure creation when desired, while leaving
+the familiar `create_using` syntax for graph type selection when desired.
+
+
+Graph Sequences
+---------------
+
+Edgelists that only contain pairs of nodes indicating an edge are restrictive.
+Some graphs have isolated nodes which would not appear in any node-pair.
+Some graphs have node or edge attributes associated with the node or edge.
+Multigraphs have edge keys associated with each edge, often as a 3-tuple
+(u, v, ekey). This proposal suggests that we adopt the following Graph
+Sequence protocol for describing a graph.
+
+A Graph Sequence is a sequence-of-sequences, usually a list-of-tuples.
+The length of each tuple along with the hashable nature of the tuple's final
+element determine the type of information included in the tuple.
+All networkx graph information can be stored in such a sequence.
+The logic is as follows where S denotes the inner sequence:
+
++------------------------------+--------+-----------------+
+|                              | len(S) | hashable(S[-1]) |
++==============================+========+=================+
+|Graph attributes:             |   1    |    False        |
++------------------------------+--------+-----------------+
+|Node without attributes:      |   1    |    True         |
++------------------------------+--------+-----------------+
+|Node with attributes:         |   2    |    False        |
++------------------------------+--------+-----------------+
+|Edge without attributes:      |   2    |    True         |
++------------------------------+--------+-----------------+
+|Edge with attributes:         |   3    |    False        |
++------------------------------+--------+-----------------+
+|Multiedge without attributes: |   3    |    True         |
++------------------------------+--------+-----------------+
+|Multiedge with attributes:    |   4    |    False        |
++------------------------------+--------+-----------------+
+
+Here is some code to process such a sequence and construct the graph
+starting from an empty graph G:
+
+.. code-block:: python
+
+    for S in graphsequence:
+        N = len(S)
+        last_entry = S[-1]
+        attrs = not hashable(last_entry)
+        if N == 1:
+            if attrs:
+                G.graph.update(last_entry)  # graph attributes
+            else:
+                G.add_node(last_entry)  # node without attributes
+        elif N == 2:
+            if attrs:
+                G.add_node(S[0], **last_entry)  # (node, attrdict)
+            else:
+                G.add_edge(*S)  # (u, v)
+        elif N == 3:
+            if attrs:
+                G.add_edge(*S[:2], **last_entry)  # (u, v, attrdict)
+            else:
+                G.add_edge(*S)  # (u, v, edge_key)
+        elif N == 4:
+            if attrs:
+                G.add_edge(*S)  # (u, v, edge_key, attrdict)
+            else:
+                raise NetworkXInvalidEdgelist(
+                    "Sequence element has 4 items and last is not hashable: {S}"
+                )
+        else:
+            raise NetworkXInvalidEdgelist(
+                "Graph Sequence element has more than 4 items: {S}"
+            )
+
+Note that order does not affect the network structure, but the reporting
+order of nodes can be retained if the nodes are added in the desired order
+before the edges.
+
+Usage and Impact
+----------------
+
+Each graph builder function (formerly called graph generators) will allow
+return of graph structures with the same syntax as before. For example,
+create a wheel graph with 9 spokes (10 nodes):
+
+    >>> G = nx.wheel_graph(9)  # same as current code
+
+To iterate over a Graph Sequence without creating a graph:
+
+    >>> for u, v in nx.binomial_graph.edges(9):
+    >>>     process(u, v)
+
+Add 10 new nodes with random edges (maybe including isolated nodes)
+to an existing graph G:
+
+    >>> G.update(nx.binomial_graph_generator(range(9, 19))
+
+Construct a path graph using a MultiDiGraph data structure (two methods):
+
+    >>> MDG = nx.path_graph([3, 4, 2, 5, 7, 6], create_using=MultiDiGraph)
+    >>> MDG = nx.MultiDiGraph(nx.path_graph_generator([3, 4, 2, 5, 7, 6])
+
+The code to read in an edgelist upon instantiation, or via the `update` method
+will change to allow Graph Sequences in addition to edgelists. An additional
+base class method `G.as_sequence()` will yield the Graph Sequence for the graph.
+
+Developers will use a decorator to indicate whether their graph builder
+has underlying code that yields from an edgelist, or returns a graph.
+
+.. code-block:: python
+
+    @graph_builder
+    @py_random_state(4)
+    def extended_barabasi_albert_graph(n, m, p, q, seed=None):
+        # some fancy code that requires we construct G to use graph properties
+        # while we decide what edges to add next.
+        return G
+
+The `@graph_builder` decorator adds code to enable
+e.g. `nx.extended_barabasi_albert_graph_generator`.
+
+Another decorator provides code to handle the `create_using` argument for developers
+that write code which simply yields an edgelist.
+
+.. code-block:: python
+
+    @node_and_edge_builder
+    def ladder_graph_generator(n):
+        yield from pairwise(range(n))
+        yield from pairwise(range(n, 2 * n))
+        yield from ((v, v + n) for v in range(n))
+
+The `@node_and_edge_builder` decorator adds code to enable
+e.g. `nx.ladder_graph(6, create_using=MultiGraph)`. Note that `nx.ladder_graph(6)`
+would still return an nx.Graph as it currently does. To make use of the
+edgelist functionality, the syntax would be `nx.ladder_graph.edges(6)`.
+
+It would be ideal to have the doc_strings show up on a single webpage for
+both the function and generator. We are exploring this possibility.
+
+Backward compatibility
+----------------------
+
+To reduce backward incompatibility, the base calling structure `nx.path_graph(9)`
+works as it currently does. The `create_using` parameter behaves as usual.
+So, no existing code should break.
+
+To reduce developer impact, upon inception, we could reuse all current graph
+generators as graph builders by attaching the `@graph_builder` decorator.
+Presumably for efficiency many of them should be rewritten to yield
+edgelists rather than returning graphs. But this could be done gradually
+and along with switching the decorator to `@node_and_edge_builder`.
+Both sets of code should return equivalent graph builder objects.
+
+
+Detailed description
+--------------------
+
+This can be accomplished through a couple decorators, which could be
+adopted gradually -- a big patch initially decorating all existing generators
+with `@graph_builder` would immediately support the notation
+`nx.complete_graph_generator(...)` without impacting existing code.
+Later generators could use `@node_and_edge_builder`.
+
+** NEEDS UPDATING **
+
+.. code-block:: python
+
+    def node_and_edge_builder(f):
+        @wraps(f)
+        def graph(*args, create_using=None, **kwargs):
+            G = nx.empty_graph(0, create_using=create_using)
+            G.update(f(*args, **kwargs))
+            return G
+
+        graph.edges = f
+        graph.edges_plus = f
+        return graph
+
+
+    def graph_builder(f):
+        @wraps(f)
+        def edgelist(*args, **kwargs):
+            G = f(*args, **kwargs)
+            return itertools.ichain(map(tuple, G.nodes.data()), map(tuple, G.edges.data()))
+
+        def edges(*args, **kwargs):
+            G = f(*args, **kwargs)
+            return map(tuple, G.edges.data())
+
+        f.edges_plus = edgelist
+        f.edges = edges
+
+        return f
+
+Note: the graph_builder underlying code should accept a create_using
+parameter for this implementation to work. We need to think if this is
+universally applicable and how to handle builders that shouldn't work
+with all four of the major NetworkX graph classes.
+
+Graph.update will need to handle graph sequence input. It currently handles
+node-pairs and node-pair-with-edge-key triples for multigraphs. Code like
+that shown above in the description of Graph Sequences should be used.
+
+Example developer usage:
+
+.. code-block:: python
+
+    @node_and_edge_builder
+    def path_graph(n):
+        """an overly simplified path graph implementation"""
+        return pairwise(range(n))
+
+
+    @graph_builder
+    def complete_graph(n, create_using=None):
+        """an overly simplified complete graph implementation"""
+        if create_using is None:
+            create_using = nx.Graph
+        g = empty_graph(0, create_using)
+        g.update(itertools.combinations(range(n), 2))
+        return g
+
+
+Related Work
+------------
+
+This proposal is based on ideas and discussions from #3036 and #1393.
+
+This proposal does not delve into backends using the `_dispatchable` functionality
+and whether we should be providing or allowing control over the builder
+functions for backend libraries. This is a potentially helpful discussion
+but is beyond the scope of this NXEP.
+
+
+Implementation
+--------------
+
+The first major step is to implement the two builder decorators.
+Next we need to change the Graph update methods, convert functions, etc.
+to process graph sequences that contain isolated nodes and data attributes.
+Third we should identify any functions that build graphs or edgelists
+and decorate them to make them Graph Builders. And we should take care
+that code which handles edgelists and are not able to handle Graph Sequences
+are appropriately protected.
+
+Special care should be made to ensure only desired graph types are
+accepted and appropriate errors raised when not.
+
+Later steps include going through the existing generator code and switching
+that code to yield edgelists instead of returning graphs (where appropriate).
+
+
+Alternatives
+------------
+
+#) We can just leave the generators as they are and deal with the cost of
+creating a graph when one only needs the edgelist. It's not a huge cost
+most of the time.
+
+#) We can create an attribute-function on the graph builder function to
+provide the generator functionality. Like: `nx.path_graph.edges_plus()`
+along with `nx.path_graph.edges()`.
+
+#) We can provide `nx.path_graph.edges_plus` without providing the `edges`
+attribute. The simpler interface (by one attribute function) costs us
+making sure that easy tools for creating, consuming and handling Graph
+Sequences are available.
+
+#) We can provide the decorators to use an attribute syntax for graph type
+instead of the argument `create_using`. Thus `nx.path_graph.MultiGraph(9)`
+would be the same as `nx.path_graph(9, create_using=nx.MultiGraph)`.
+Similarly for `Graph`, `DiGraph`, `MultiDiGraph` and perhaps `CustomGraph`
+with a kwarg `create_using`.
+
+An earlier version of this proposal included this attribute-style alternative
+as a replacement of the `create_using` argument. Developers would still write
+code to either 1) yield edges, or 2) construct a graph from an input graph
+parameter. Two decorators would then add the extra code needed to
+construct a single object so users would use the same interface no
+matter which style of underlying code was used. The user facing
+interface would allow the user to specify a graph data structure
+by type, or request an edgelist. One syntax proposal was::
+
+    G = nx.path_graph(9)
+    DG = nx.path_graph.DiGraph(9)
+    MG = nx.path_graph.MultiGraph(9)
+    MDG = nx.path_graph.MultiDiGraph(9)
+    CG = nx.path_graph.CustomGraph(9, create_using)
+    elist = nx.path_graph.edgelist(9)
+
+This can be accomplished through decorators named as above,
+and coded similar to these examples.
+
+.. code-block:: python
+
+    def node_and_edge_builder(f):
+        @wraps(f)
+        def graph(*args, **kwargs):
+            return nx.Graph(f(*args, **kwargs))
+
+        def digraph(*args, **kwargs):
+            return nx.DiGraph(f(*args, **kwargs))
+
+        def multigraph(*args, **kwargs):
+            return nx.MultiGraph(f(*args, **kwargs))
+
+        def multidigraph(*args, **kwargs):
+            return nx.MultiDiGraph(f(*args, **kwargs))
+
+        def custom_graph(*args, create_using=None, **kwargs):
+            g = create_using()
+            g.update(f(*args, **kwargs))
+            return g
+
+        graph.Graph = graph
+        graph.DiGraph = digraph
+        graph.MultiGraph = multigraph
+        graph.MultiDiGraph = multidigraph
+        graph.CustomGraph = custom_graph
+        graph.edgelist = f
+        return graph
+
+
+    def graph_builder(f):
+        @wraps(f)
+        def edgelist(*args, **kwargs):
+            g = f(*args, **kwargs)
+            return itertools.ichain(map(tuple, G.nodes.data()), map(tuple, G.edges.data()))
+
+        f.edgelist = edgelist
+        f.CustomGraph = f
+
+        def graph(*args, **kwargs):
+            return f(*args, create_using=nx.Graph, **kwargs)
+
+        def digraph(*args, **kwargs):
+            return f(*args, create_using=nx.DiGraph, **kwargs)
+
+        def multigraph(*args, **kwargs):
+            return f(*args, create_using=nx.MultiGraph, **kwargs)
+
+        def multidigraph(*args, **kwargs):
+            return f(*args, create_using=nx.MultiDiGraph, **kwargs)
+
+        f.Graph = graph
+        f.DiGraph = digraph
+        f.MultiGraph = multigraph
+        f.MultiDiGraph = multidigraph
+        return f
+
+#) We might be able to avoid the function attribute syntax altogether
+if we can construct a Graph Sequence generator object (of class EdgesPlus?)
+that can be provided as the `create_using` argument. Graph builder code
+would treat it like a graph class, but the object would magically handle
+all the `add_node` and `add_edge` calls in the style of an iterator,
+yielding graph information as construction progresses. The user could
+halt construction if the structure showed early signs of not being useful.
+Graph Sequences could then be generated using `nx.path_graph, create_using=EdgesPlus)`
+This could perhaps be built with some creative coroutine magic.
+
+
+Discussion
+----------
+
+Most of the ideas here are from
+- [`#3036 <https://github.com/networkx/networkx/pull/3036>`]
+which built on discussion from
+- [`#1393 <https://github.com/networkx/networkx/pull/1393>`]
+
+Over a year of occasional thought and more occasional mentioning-in-passing,
+most core developers feel that the `create_using` parameter should be retained.
+The proposal was rewritten to retain that feature and not develop the attribute
+syntax seen in the Alternatives section. The attribute syntax continued to be
+used for the `edges` and `edges_plus` generators, with `edges` for an edge-list
+and `edges_plus` for the full Graph Sequence.
+
+More discussion led to the proposal to make two functions for each graph type.
+That is, `nx.path_graph(9)` for a graph and `nx.path_graph_generator(9)` for the
+generator. This gained enough support to be included. No attribute support is
+needed.
+
+Remaining questions:
+- how to handle docs
+- how to have a decorator add two functions to the namespace.

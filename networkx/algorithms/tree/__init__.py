@@ -3,3 +3,4 @@ from .coding import *
 from .mst import *
 from .recognition import *
 from .operations import *
+from .decomposition import *

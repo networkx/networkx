@@ -1,28 +1,22 @@
-# -*- coding: utf-8 -*-
 """
 Subraph centrality and communicability betweenness.
 """
-#    Copyright (C) 2011 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
-from networkx.utils import *
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Franck Kalala (franckkalala@yahoo.fr'])
-__all__ = ['subgraph_centrality_exp',
-           'subgraph_centrality',
-           'communicability_betweenness_centrality',
-           'estrada_index'
-           ]
+from networkx.utils import not_implemented_for
+
+__all__ = [
+    "subgraph_centrality_exp",
+    "subgraph_centrality",
+    "communicability_betweenness_centrality",
+    "estrada_index",
+]
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+@nx._dispatchable
 def subgraph_centrality_exp(G):
-    r"""Return the subgraph centrality for each node of G.
+    r"""Returns the subgraph centrality for each node of G.
 
     Subgraph centrality  of a node `n` is the sum of weighted closed
     walks of all lengths starting and ending at node `n`. The weights
@@ -69,27 +63,44 @@ def subgraph_centrality_exp(G):
     Examples
     --------
     (Example from [1]_)
-    >>> G = nx.Graph([(1,2),(1,5),(1,8),(2,3),(2,8),(3,4),(3,6),(4,5),(4,7),(5,6),(6,7),(7,8)])
+    >>> G = nx.Graph(
+    ...     [
+    ...         (1, 2),
+    ...         (1, 5),
+    ...         (1, 8),
+    ...         (2, 3),
+    ...         (2, 8),
+    ...         (3, 4),
+    ...         (3, 6),
+    ...         (4, 5),
+    ...         (4, 7),
+    ...         (5, 6),
+    ...         (6, 7),
+    ...         (7, 8),
+    ...     ]
+    ... )
     >>> sc = nx.subgraph_centrality_exp(G)
-    >>> print(['%s %0.2f'%(node,sc[node]) for node in sorted(sc)])
+    >>> print([f"{node} {sc[node]:0.2f}" for node in sorted(sc)])
     ['1 3.90', '2 3.90', '3 3.64', '4 3.71', '5 3.64', '6 3.71', '7 3.64', '8 3.90']
     """
     # alternative implementation that calculates the matrix exponential
-    import scipy.linalg
+    import scipy as sp
+
     nodelist = list(G)  # ordering of nodes in matrix
-    A = nx.to_numpy_matrix(G, nodelist)
+    A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
     A[A != 0.0] = 1
-    expA = scipy.linalg.expm(A.A)
+    expA = sp.linalg.expm(A)
     # convert diagonal to dictionary keyed by node
     sc = dict(zip(nodelist, map(float, expA.diagonal())))
     return sc
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+@nx._dispatchable
 def subgraph_centrality(G):
-    r"""Return subgraph centrality for each node in G.
+    r"""Returns subgraph centrality for each node in G.
 
     Subgraph centrality  of a node `n` is the sum of weighted closed
     walks of all lengths starting and ending at node `n`. The weights
@@ -128,14 +139,29 @@ def subgraph_centrality(G):
        SC(u)=\sum_{j=1}^{N}(v_{j}^{u})^2 e^{\lambda_{j}},
 
     where `v_j` is an eigenvector of the adjacency matrix `A` of G
-    corresponding corresponding to the eigenvalue `\lambda_j`.
+    corresponding to the eigenvalue `\lambda_j`.
 
     Examples
     --------
     (Example from [1]_)
-    >>> G = nx.Graph([(1,2),(1,5),(1,8),(2,3),(2,8),(3,4),(3,6),(4,5),(4,7),(5,6),(6,7),(7,8)])
+    >>> G = nx.Graph(
+    ...     [
+    ...         (1, 2),
+    ...         (1, 5),
+    ...         (1, 8),
+    ...         (2, 3),
+    ...         (2, 8),
+    ...         (3, 4),
+    ...         (3, 6),
+    ...         (4, 5),
+    ...         (4, 7),
+    ...         (5, 6),
+    ...         (6, 7),
+    ...         (7, 8),
+    ...     ]
+    ... )
     >>> sc = nx.subgraph_centrality(G)
-    >>> print(['%s %0.2f'%(node,sc[node]) for node in sorted(sc)])
+    >>> print([f"{node} {sc[node]:0.2f}" for node in sorted(sc)])
     ['1 3.90', '2 3.90', '3 3.64', '4 3.71', '5 3.64', '6 3.71', '7 3.64', '8 3.90']
 
     References
@@ -146,25 +172,26 @@ def subgraph_centrality(G):
        https://arxiv.org/abs/cond-mat/0504730
 
     """
-    import numpy
-    import numpy.linalg
+    import numpy as np
+
     nodelist = list(G)  # ordering of nodes in matrix
-    A = nx.to_numpy_matrix(G, nodelist)
+    A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
-    A[A != 0.0] = 1
-    w, v = numpy.linalg.eigh(A.A)
-    vsquare = numpy.array(v)**2
-    expw = numpy.exp(w)
-    xg = numpy.dot(vsquare, expw)
+    A[np.nonzero(A)] = 1
+    w, v = np.linalg.eigh(A)
+    vsquare = np.array(v) ** 2
+    expw = np.exp(w)
+    xg = vsquare @ expw
     # convert vector dictionary keyed by node
     sc = dict(zip(nodelist, map(float, xg)))
     return sc
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
-def communicability_betweenness_centrality(G, normalized=True):
-    r"""Return subgraph communicability for all pairs of nodes in G.
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+@nx._dispatchable
+def communicability_betweenness_centrality(G):
+    r"""Returns subgraph communicability for all pairs of nodes in G.
 
     Communicability betweenness measure makes use of the number of walks
     connecting every pair of nodes as the basis of a betweenness centrality
@@ -223,17 +250,20 @@ def communicability_betweenness_centrality(G, normalized=True):
 
     Examples
     --------
-    >>> G = nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3), (3, 6)])
     >>> cbc = nx.communicability_betweenness_centrality(G)
+    >>> print([f"{node} {cbc[node]:0.2f}" for node in sorted(cbc)])
+    ['0 0.03', '1 0.45', '2 0.51', '3 0.45', '4 0.40', '5 0.19', '6 0.03']
     """
-    import scipy
-    import scipy.linalg
+    import numpy as np
+    import scipy as sp
+
     nodelist = list(G)  # ordering of nodes in matrix
     n = len(nodelist)
-    A = nx.to_numpy_matrix(G, nodelist)
+    A = nx.to_numpy_array(G, nodelist)
     # convert to 0-1 matrix
-    A[A != 0.0] = 1
-    expA = scipy.linalg.expm(A.A)
+    A[np.nonzero(A)] = 1
+    expA = sp.linalg.expm(A)
     mapping = dict(zip(nodelist, range(n)))
     cbc = {}
     for v in G:
@@ -243,36 +273,26 @@ def communicability_betweenness_centrality(G, normalized=True):
         col = A[:, i].copy()
         A[i, :] = 0
         A[:, i] = 0
-        B = (expA - scipy.linalg.expm(A.A)) / expA
+        B = (expA - sp.linalg.expm(A)) / expA
         # sum with row/col of node v and diag set to zero
         B[i, :] = 0
         B[:, i] = 0
-        B -= scipy.diag(scipy.diag(B))
+        B -= np.diag(np.diag(B))
         cbc[v] = float(B.sum())
         # put row and col back
         A[i, :] = row
         A[:, i] = col
-    # rescaling
-    cbc = _rescale(cbc, normalized=normalized)
+    # rescale when more than two nodes
+    order = len(cbc)
+    if order > 2:
+        scale = 1.0 / ((order - 1.0) ** 2 - (order - 1.0))
+        cbc = {node: value * scale for node, value in cbc.items()}
     return cbc
 
 
-def _rescale(cbc, normalized):
-    # helper to rescale betweenness centrality
-    if normalized is True:
-        order = len(cbc)
-        if order <= 2:
-            scale = None
-        else:
-            scale = 1.0 / ((order - 1.0)**2 - (order - 1.0))
-    if scale is not None:
-        for v in cbc:
-            cbc[v] *= scale
-    return cbc
-
-
+@nx._dispatchable
 def estrada_index(G):
-    r"""Return the Estrada index of a the graph G.
+    r"""Returns the Estrada index of a the graph G.
 
     The Estrada Index is a topological index of folding or 3D "compactness" ([1]_).
 
@@ -303,29 +323,17 @@ def estrada_index(G):
     ----------
     .. [1] E. Estrada, "Characterization of 3D molecular structure",
        Chem. Phys. Lett. 319, 713 (2000).
-       http://dx.doi.org/10.1016/S0009-2614(00)00158-5
+       https://doi.org/10.1016/S0009-2614(00)00158-5
     .. [2] José Antonio de la Peñaa, Ivan Gutman, Juan Rada,
        "Estimating the Estrada index",
        Linear Algebra and its Applications. 427, 1 (2007).
-       http://dx.doi.org/10.1016/j.laa.2007.06.020
+       https://doi.org/10.1016/j.laa.2007.06.020
 
     Examples
     --------
-    >>> G=nx.Graph([(0,1),(1,2),(1,5),(5,4),(2,4),(2,3),(4,3),(3,6)])
-    >>> ei=nx.estrada_index(G)
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 5), (5, 4), (2, 4), (2, 3), (4, 3), (3, 6)])
+    >>> ei = nx.estrada_index(G)
+    >>> print(f"{ei:0.5}")
+    20.55
     """
     return sum(subgraph_centrality(G).values())
-
-# fixture for nose tests
-
-
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-    except:
-        raise SkipTest("NumPy not available")
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")

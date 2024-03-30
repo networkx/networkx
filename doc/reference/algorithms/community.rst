@@ -14,15 +14,14 @@ Bipartitions
 
    kernighan_lin_bisection
 
-
-Generators
-----------
-.. automodule:: networkx.algorithms.community.community_generators
+Divisive Communities
+--------------------
+.. automodule:: networkx.algorithms.community.divisive
 .. autosummary::
    :toctree: generated/
 
-   LFR_benchmark_graph
-
+   edge_betweenness_partition
+   edge_current_flow_betweenness_partition
 
 K-Clique
 --------
@@ -32,17 +31,45 @@ K-Clique
 
    k_clique_communities
 
+Modularity-based communities
+----------------------------
+.. automodule:: networkx.algorithms.community.modularity_max
+.. autosummary::
+   :toctree: generated/
+
+   greedy_modularity_communities
+   naive_greedy_modularity_communities
+
+Tree partitioning
+-----------------
+.. automodule:: networkx.algorithms.community.lukes
+.. autosummary::
+   :toctree: generated/
+
+   lukes_partitioning
+
 Label propagation
 -----------------
-.. automodule:: networkx.algorithms.community.asyn_lpa
+.. automodule:: networkx.algorithms.community.label_propagation
 .. autosummary::
    :toctree: generated/
 
    asyn_lpa_communities
+   label_propagation_communities
+   fast_label_propagation_communities
+
+Louvain Community Detection
+---------------------------
+.. automodule:: networkx.algorithms.community.louvain
+.. autosummary::
+    :toctree: generated/
+
+    louvain_communities
+    louvain_partitions
 
 Fluid Communities
 -----------------
-.. automodule:: networkx.algorithms.community.asyn_fluidc
+.. automodule:: networkx.algorithms.community.asyn_fluid
 .. autosummary::
    :toctree: generated/
 
@@ -54,8 +81,8 @@ Measuring partitions
 .. autosummary::
    :toctree: generated/
 
-   coverage
-   performance
+   modularity
+   partition_quality
 
 Partitions via centrality measures
 ----------------------------------

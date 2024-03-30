@@ -1,17 +1,9 @@
-#-*- coding: utf-8 -*-
-#    Copyright (C) 2011 by
-#    Jordi Torrents <jtorrents@milnou.net>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
-                            'Aric Hagberg (hagberg@lanl.gov)'])
-__all__ = ['degree_centrality',
-           'betweenness_centrality',
-           'closeness_centrality']
+
+__all__ = ["degree_centrality", "betweenness_centrality", "closeness_centrality"]
 
 
+@nx._dispatchable(name="bipartite_degree_centrality")
 def degree_centrality(G, nodes):
     r"""Compute the degree centrality for nodes in a bipartite network.
 
@@ -31,16 +23,23 @@ def degree_centrality(G, nodes):
     centrality : dictionary
        Dictionary keyed by node with bipartite degree centrality as the value.
 
+    Examples
+    --------
+    >>> G = nx.wheel_graph(5)
+    >>> top_nodes = {0, 1, 2}
+    >>> nx.bipartite.degree_centrality(G, nodes=top_nodes)
+    {0: 2.0, 1: 1.5, 2: 1.5, 3: 1.0, 4: 1.0}
+
     See Also
     --------
-    betweenness_centrality,
-    closeness_centrality,
-    sets,
-    is_bipartite
+    betweenness_centrality
+    closeness_centrality
+    :func:`~networkx.algorithms.bipartite.basic.sets`
+    :func:`~networkx.algorithms.bipartite.basic.is_bipartite`
 
     Notes
     -----
-    The nodes input parameter must conatin all nodes in one bipartite node set,
+    The nodes input parameter must contain all nodes in one bipartite node set,
     but the dictionary returned contains all nodes from both bipartite node
     sets. See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
     for further details on how bipartite graphs are handled in NetworkX.
@@ -68,17 +67,18 @@ def degree_centrality(G, nodes):
     .. [1] Borgatti, S.P. and Halgin, D. In press. "Analyzing Affiliation
         Networks". In Carrington, P. and Scott, J. (eds) The Sage Handbook
         of Social Network Analysis. Sage Publications.
-        http://www.steveborgatti.com/research/publications/bhaffiliations.pdf
+        https://dx.doi.org/10.4135/9781446294413.n28
     """
     top = set(nodes)
     bottom = set(G) - top
     s = 1.0 / len(bottom)
-    centrality = dict((n, d * s) for n, d in G.degree(top))
+    centrality = {n: d * s for n, d in G.degree(top)}
     s = 1.0 / len(top)
-    centrality.update(dict((n, d * s) for n, d in G.degree(bottom)))
+    centrality.update({n: d * s for n, d in G.degree(bottom)})
     return centrality
 
 
+@nx._dispatchable(name="bipartite_betweenness_centrality")
 def betweenness_centrality(G, nodes):
     r"""Compute betweenness centrality for nodes in a bipartite network.
 
@@ -129,12 +129,19 @@ def betweenness_centrality(G, nodes):
         Dictionary keyed by node with bipartite betweenness centrality
         as the value.
 
+    Examples
+    --------
+    >>> G = nx.cycle_graph(4)
+    >>> top_nodes = {1, 2}
+    >>> nx.bipartite.betweenness_centrality(G, nodes=top_nodes)
+    {0: 0.25, 1: 0.25, 2: 0.25, 3: 0.25}
+
     See Also
     --------
-    degree_centrality,
-    closeness_centrality,
-    sets,
-    is_bipartite
+    degree_centrality
+    closeness_centrality
+    :func:`~networkx.algorithms.bipartite.basic.sets`
+    :func:`~networkx.algorithms.bipartite.basic.is_bipartite`
 
     Notes
     -----
@@ -149,24 +156,25 @@ def betweenness_centrality(G, nodes):
     .. [1] Borgatti, S.P. and Halgin, D. In press. "Analyzing Affiliation
         Networks". In Carrington, P. and Scott, J. (eds) The Sage Handbook
         of Social Network Analysis. Sage Publications.
-        http://www.steveborgatti.com/research/publications/bhaffiliations.pdf
+        https://dx.doi.org/10.4135/9781446294413.n28
     """
     top = set(nodes)
     bottom = set(G) - top
-    n = float(len(top))
-    m = float(len(bottom))
-    s = (n - 1) // m
-    t = (n - 1) % m
-    bet_max_top = (((m**2) * ((s + 1)**2)) +
-                   (m * (s + 1) * (2 * t - s - 1)) -
-                   (t * ((2 * s) - t + 3))) / 2.0
-    p = (m - 1) // n
-    r = (m - 1) % n
-    bet_max_bot = (((n**2) * ((p + 1)**2)) +
-                   (n * (p + 1) * (2 * r - p - 1)) -
-                   (r * ((2 * p) - r + 3))) / 2.0
-    betweenness = nx.betweenness_centrality(G, normalized=False,
-                                            weight=None)
+    n = len(top)
+    m = len(bottom)
+    s, t = divmod(n - 1, m)
+    bet_max_top = (
+        ((m**2) * ((s + 1) ** 2))
+        + (m * (s + 1) * (2 * t - s - 1))
+        - (t * ((2 * s) - t + 3))
+    ) / 2.0
+    p, r = divmod(m - 1, n)
+    bet_max_bot = (
+        ((n**2) * ((p + 1) ** 2))
+        + (n * (p + 1) * (2 * r - p - 1))
+        - (r * ((2 * p) - r + 3))
+    ) / 2.0
+    betweenness = nx.betweenness_centrality(G, normalized=False, weight=None)
     for node in top:
         betweenness[node] /= bet_max_top
     for node in bottom:
@@ -174,6 +182,7 @@ def betweenness_centrality(G, nodes):
     return betweenness
 
 
+@nx._dispatchable(name="bipartite_closeness_centrality")
 def closeness_centrality(G, nodes, normalized=True):
     r"""Compute the closeness centrality for nodes in a bipartite network.
 
@@ -198,16 +207,23 @@ def closeness_centrality(G, nodes, normalized=True):
         Dictionary keyed by node with bipartite closeness centrality
         as the value.
 
+    Examples
+    --------
+    >>> G = nx.wheel_graph(5)
+    >>> top_nodes = {0, 1, 2}
+    >>> nx.bipartite.closeness_centrality(G, nodes=top_nodes)
+    {0: 1.5, 1: 1.2, 2: 1.2, 3: 1.0, 4: 1.0}
+
     See Also
     --------
-    betweenness_centrality,
+    betweenness_centrality
     degree_centrality
-    sets,
-    is_bipartite
+    :func:`~networkx.algorithms.bipartite.basic.sets`
+    :func:`~networkx.algorithms.bipartite.basic.is_bipartite`
 
     Notes
     -----
-    The nodes input parameter must conatin all nodes in one bipartite node set,
+    The nodes input parameter must contain all nodes in one bipartite node set,
     but the dictionary returned contains all nodes from both node sets.
     See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
     for further details on how bipartite graphs are handled in NetworkX.
@@ -243,32 +259,32 @@ def closeness_centrality(G, nodes, normalized=True):
     .. [1] Borgatti, S.P. and Halgin, D. In press. "Analyzing Affiliation
         Networks". In Carrington, P. and Scott, J. (eds) The Sage Handbook
         of Social Network Analysis. Sage Publications.
-        http://www.steveborgatti.com/research/publications/bhaffiliations.pdf
+        https://dx.doi.org/10.4135/9781446294413.n28
     """
     closeness = {}
     path_length = nx.single_source_shortest_path_length
     top = set(nodes)
     bottom = set(G) - top
-    n = float(len(top))
-    m = float(len(bottom))
+    n = len(top)
+    m = len(bottom)
     for node in top:
         sp = dict(path_length(G, node))
         totsp = sum(sp.values())
         if totsp > 0.0 and len(G) > 1:
             closeness[node] = (m + 2 * (n - 1)) / totsp
             if normalized:
-                s = (len(sp) - 1.0) / (len(G) - 1)
+                s = (len(sp) - 1) / (len(G) - 1)
                 closeness[node] *= s
         else:
-            closeness[n] = 0.0
+            closeness[node] = 0.0
     for node in bottom:
         sp = dict(path_length(G, node))
         totsp = sum(sp.values())
         if totsp > 0.0 and len(G) > 1:
             closeness[node] = (n + 2 * (m - 1)) / totsp
             if normalized:
-                s = (len(sp) - 1.0) / (len(G) - 1)
+                s = (len(sp) - 1) / (len(G) - 1)
                 closeness[node] *= s
         else:
-            closeness[n] = 0.0
+            closeness[node] = 0.0
     return closeness

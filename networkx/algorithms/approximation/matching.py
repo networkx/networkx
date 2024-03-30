@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 **************
 Graph Matching
@@ -9,15 +8,12 @@ edges; that is, no two edges share a common vertex.
 
 `Wikipedia: Matching <https://en.wikipedia.org/wiki/Matching_(graph_theory)>`_
 """
-#   Copyright (C) 2011-2012 by
-#   Nicholas Mancuso <nick.mancuso@gmail.com>
-#   All rights reserved.
-#   BSD license.
 import networkx as nx
+
 __all__ = ["min_maximal_matching"]
-__author__ = """Nicholas Mancuso (nick.mancuso@gmail.com)"""
 
 
+@nx._dispatchable
 def min_maximal_matching(G):
     r"""Returns the minimum maximal matching of G. That is, out of all maximal
     matchings of the graph G, the smallest is returned.
@@ -36,7 +32,7 @@ def min_maximal_matching(G):
 
     Notes
     -----
-    The algorithm computes an approximate solution fo the minimum maximal
+    The algorithm computes an approximate solution for the minimum maximal
     cardinality matching problem. The solution is no more than 2 * OPT in size.
     Runtime is $O(|E|)$.
 

@@ -1,22 +1,12 @@
-# -*- encoding: utf-8 -*-
-#    Copyright 2015 NetworkX developers.
-#    Copyright (C) 2004-2017 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 """
 Functions for identifying isolate (degree zero) nodes.
 """
 import networkx as nx
 
-__author__ = """\n""".join(['Drew Conway <drew.conway@nyu.edu>',
-                            'Aric Hagberg <hagberg@lanl.gov>'])
-
-__all__ = ['is_isolate', 'isolates', 'number_of_isolates']
+__all__ = ["is_isolate", "isolates", "number_of_isolates"]
 
 
+@nx._dispatchable
 def is_isolate(G, n):
     """Determines whether a node is an isolate.
 
@@ -38,17 +28,18 @@ def is_isolate(G, n):
 
     Examples
     --------
-    >>> G=nx.Graph()
-    >>> G.add_edge(1,2)
+    >>> G = nx.Graph()
+    >>> G.add_edge(1, 2)
     >>> G.add_node(3)
-    >>> nx.is_isolate(G,2)
+    >>> nx.is_isolate(G, 2)
     False
-    >>> nx.is_isolate(G,3)
+    >>> nx.is_isolate(G, 3)
     True
     """
     return G.degree(n) == 0
 
 
+@nx._dispatchable
 def isolates(G):
     """Iterator over isolates in the graph.
 
@@ -94,6 +85,7 @@ def isolates(G):
     return (n for n, d in G.degree() if d == 0)
 
 
+@nx._dispatchable
 def number_of_isolates(G):
     """Returns the number of isolates in the graph.
 

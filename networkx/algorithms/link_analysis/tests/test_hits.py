@@ -1,8 +1,15 @@
-#!/usr/bin/env python
-from nose.tools import *
-from nose import SkipTest
-from nose.plugins.attrib import attr
-import networkx
+import pytest
+
+import networkx as nx
+
+np = pytest.importorskip("numpy")
+sp = pytest.importorskip("scipy")
+
+from networkx.algorithms.link_analysis.hits_alg import (
+    _hits_numpy,
+    _hits_python,
+    _hits_scipy,
+)
 
 # Example from
 # A. Langville and C. Meyer, "A survey of eigenvector methods of web
@@ -10,90 +17,62 @@ import networkx
 
 
 class TestHITS:
+    @classmethod
+    def setup_class(cls):
+        G = nx.DiGraph()
 
-    def setUp(self):
-        
-        G=networkx.DiGraph()
+        edges = [(1, 3), (1, 5), (2, 1), (3, 5), (5, 4), (5, 3), (6, 5)]
 
-        edges=[(1,3),(1,5),\
-           (2,1),\
-           (3,5),\
-           (5,4),(5,3),\
-           (6,5)]
-           
-        G.add_edges_from(edges,weight=1)
-        self.G=G
-        self.G.a=dict(zip(sorted(G),[0.000000, 0.000000, 0.366025,
-                             0.133975, 0.500000, 0.000000]))
-        self.G.h=dict(zip(sorted(G),[ 0.366025, 0.000000, 0.211325, 
-                              0.000000, 0.211325, 0.211325]))
+        G.add_edges_from(edges, weight=1)
+        cls.G = G
+        cls.G.a = dict(
+            zip(sorted(G), [0.000000, 0.000000, 0.366025, 0.133975, 0.500000, 0.000000])
+        )
+        cls.G.h = dict(
+            zip(sorted(G), [0.366025, 0.000000, 0.211325, 0.000000, 0.211325, 0.211325])
+        )
 
-
-    def test_hits(self):
-        G=self.G
-        h,a=networkx.hits(G,tol=1.e-08)
-        for n in G:
-            assert_almost_equal(h[n],G.h[n],places=4)
-        for n in G:
-            assert_almost_equal(a[n],G.a[n],places=4)
-
-    def test_hits_nstart(self):
-        G = self.G
-        nstart = dict([(i, 1./2) for i in G])
-        h, a = networkx.hits(G, nstart = nstart)
-
-    @attr('numpy')
     def test_hits_numpy(self):
-        try:
-            import numpy as np
-        except ImportError:
-            raise SkipTest('NumPy not available.')
-
-
-        G=self.G
-        h,a=networkx.hits_numpy(G)
-        for n in G:
-            assert_almost_equal(h[n],G.h[n],places=4)
-        for n in G:
-            assert_almost_equal(a[n],G.a[n],places=4)
-
-
-    def test_hits_scipy(self):
-        try:
-            import scipy as sp
-        except ImportError:
-            raise SkipTest('SciPy not available.')
-
-        G=self.G
-        h,a=networkx.hits_scipy(G,tol=1.e-08)
-        for n in G:
-            assert_almost_equal(h[n],G.h[n],places=4)
-        for n in G:
-            assert_almost_equal(a[n],G.a[n],places=4)
-
-
-    @attr('numpy')
-    def test_empty(self):
-        try:
-            import numpy
-        except ImportError:
-            raise SkipTest('numpy not available.')
-        G=networkx.Graph()
-        assert_equal(networkx.hits(G),({},{}))
-        assert_equal(networkx.hits_numpy(G),({},{}))
-        assert_equal(networkx.authority_matrix(G).shape,(0,0))
-        assert_equal(networkx.hub_matrix(G).shape,(0,0))
-
-    def test_empty_scipy(self):
-        try:
-            import scipy
-        except ImportError:
-            raise SkipTest('scipy not available.')
-        G=networkx.Graph()
-        assert_equal(networkx.hits_scipy(G),({},{}))
-
-
-    @raises(networkx.PowerIterationFailedConvergence)
-    def test_hits_not_convergent(self):
         G = self.G
-        networkx.hits(G, max_iter=0)
+        h, a = _hits_numpy(G)
+        for n in G:
+            assert h[n] == pytest.approx(G.h[n], abs=1e-4)
+        for n in G:
+            assert a[n] == pytest.approx(G.a[n], abs=1e-4)
+
+    @pytest.mark.parametrize("hits_alg", (nx.hits, _hits_python, _hits_scipy))
+    def test_hits(self, hits_alg):
+        G = self.G
+        h, a = hits_alg(G, tol=1.0e-08)
+        for n in G:
+            assert h[n] == pytest.approx(G.h[n], abs=1e-4)
+        for n in G:
+            assert a[n] == pytest.approx(G.a[n], abs=1e-4)
+        nstart = {i: 1.0 / 2 for i in G}
+        h, a = hits_alg(G, nstart=nstart)
+        for n in G:
+            assert h[n] == pytest.approx(G.h[n], abs=1e-4)
+        for n in G:
+            assert a[n] == pytest.approx(G.a[n], abs=1e-4)
+
+    def test_empty(self):
+        G = nx.Graph()
+        assert nx.hits(G) == ({}, {})
+        assert _hits_numpy(G) == ({}, {})
+        assert _hits_python(G) == ({}, {})
+        assert _hits_scipy(G) == ({}, {})
+
+    def test_hits_not_convergent(self):
+        G = nx.path_graph(50)
+        with pytest.raises(nx.PowerIterationFailedConvergence):
+            _hits_scipy(G, max_iter=1)
+        with pytest.raises(nx.PowerIterationFailedConvergence):
+            _hits_python(G, max_iter=1)
+        with pytest.raises(nx.PowerIterationFailedConvergence):
+            _hits_scipy(G, max_iter=0)
+        with pytest.raises(nx.PowerIterationFailedConvergence):
+            _hits_python(G, max_iter=0)
+        with pytest.raises(nx.PowerIterationFailedConvergence):
+            nx.hits(G, max_iter=0)
+        with pytest.raises(nx.PowerIterationFailedConvergence):
+            nx.hits(G, max_iter=1)

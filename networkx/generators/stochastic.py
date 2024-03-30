@@ -1,25 +1,20 @@
-#    Copyright (C) 2010-2013 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 """Functions for generating stochastic graphs from a given weighted directed
 graph.
 
 """
-from __future__ import division
 
-from networkx.classes import DiGraph
-from networkx.classes import MultiDiGraph
+import networkx as nx
+from networkx.classes import DiGraph, MultiDiGraph
 from networkx.utils import not_implemented_for
 
-__author__ = "Aric Hagberg <aric.hagberg@gmail.com>"
-__all__ = ['stochastic_graph']
+__all__ = ["stochastic_graph"]
 
 
-@not_implemented_for('undirected')
-def stochastic_graph(G, copy=True, weight='weight'):
+@not_implemented_for("undirected")
+@nx._dispatchable(
+    edge_attrs="weight", mutates_input={"not copy": 1}, returns_graph=True
+)
+def stochastic_graph(G, copy=True, weight="weight"):
     """Returns a right-stochastic representation of directed graph `G`.
 
     A right-stochastic graph is a weighted digraph in which for each
@@ -41,7 +36,7 @@ def stochastic_graph(G, copy=True, weight='weight'):
         Edge attribute key used for reading the existing weight and
         setting the new weight.  If no attribute with this key is found
         for an edge, then the edge weight is assumed to be 1. If an edge
-        has a weight, it must be a a positive number.
+        has a weight, it must be a positive number.
 
     """
     if copy:

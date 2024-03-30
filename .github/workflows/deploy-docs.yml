@@ -1,0 +1,76 @@
+name: deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  documentation:
+    # Do not attempt to deploy documentation on forks
+    if: github.repository_owner == 'networkx'
+
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Before install
+        run: |
+          sudo apt-get update
+          sudo apt-get install graphviz graphviz-dev
+          sudo apt-get install libspatialindex-dev
+
+      - name: Install packages
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements/default.txt -r requirements/test.txt
+          pip install -r requirements/extra.txt
+          pip install -r requirements/example.txt
+          pip install -U -r requirements/doc.txt
+          pip install .
+          # Install trusted backends, but not their dependencies.
+          # We only need to use the "networkx.backend_info" entry-point.
+          # This is the nightly wheel for nx-cugraph.
+          pip install git+https://github.com/rapidsai/cugraph.git#subdirectory=python/nx-cugraph --no-deps
+          # Development version of GraphBLAS backend
+          pip install git+https://github.com/python-graphblas/graphblas-algorithms.git@main --no-deps
+          # Development version of nx-parallel backend
+          pip install git+https://github.com/networkx/nx-parallel.git@main --no-deps
+          pip list
+
+      # To set up a cross-repository deploy key:
+      # 1. Create a key pair:
+      #   `ssh-keygen -t ed25519 -C "nx_doc_deploy_bot@nomail"`
+      # 2. Add the public key to the networkx/documentation repo
+      #   - Settings -> Deploy keys -> Add new
+      #   - Make sure the key has write permissions
+      # 3. Add private key as a secret to networkx/networkx repo
+      #   - Settings -> Secrets -> New Repository Secret
+      #   - Make sure the name is the same as below: CI_DEPLOY_KEY
+      - name: Install SSH agent
+        if: github.ref == 'refs/heads/main'
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.CI_DEPLOY_KEY }}
+
+      - name: Build docs
+        if: github.ref == 'refs/heads/main'
+        run: |
+          export DISPLAY=:99
+          make -C doc/ html
+
+      - name: Deploy docs
+        if: github.ref == 'refs/heads/main'
+        uses: JamesIves/github-pages-deploy-action@releases/v4
+        with:
+          git-config-name: nx-doc-deploy-bot
+          git-config-email: nx-doc-deploy-bot@nomail
+          folder: doc/build/html
+          repository-name: networkx/documentation
+          branch: gh-pages
+          target-folder: latest
+          ssh-key: true

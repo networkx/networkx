@@ -25,17 +25,22 @@ Classic
 
    balanced_tree
    barbell_graph
+   binomial_tree
    complete_graph
    complete_multipartite_graph
    circular_ladder_graph
+   circulant_graph
    cycle_graph
    dorogovtsev_goltsev_mendes_graph
    empty_graph
+   full_rary_tree
+   kneser_graph
    ladder_graph
    lollipop_graph
    null_graph
    path_graph
    star_graph
+   tadpole_graph
    trivial_graph
    turan_graph
    wheel_graph
@@ -49,7 +54,10 @@ Expanders
 
    margulis_gabber_galil_graph
    chordal_cycle_graph
-
+   paley_graph
+   maybe_regular_expander
+   is_regular_expander
+   random_regular_expander_graph
 
 Lattice
 -------
@@ -70,7 +78,6 @@ Small
 .. autosummary::
    :toctree: generated/
 
-   make_small_graph
    LCF_graph
    bull_graph
    chvatal_graph
@@ -80,6 +87,7 @@ Small
    dodecahedral_graph
    frucht_graph
    heawood_graph
+   hoffman_singleton_graph
    house_graph
    house_x_graph
    icosahedral_graph
@@ -112,12 +120,15 @@ Random Graphs
    connected_watts_strogatz_graph
    random_regular_graph
    barabasi_albert_graph
+   dual_barabasi_albert_graph
+   extended_barabasi_albert_graph
    powerlaw_cluster_graph
    random_kernel_graph
    random_lobster
    random_shell_graph
    random_powerlaw_tree
    random_powerlaw_tree_sequence
+   random_kernel_graph
 
 
 Duplication Divergence
@@ -175,12 +186,14 @@ Geometric
 .. autosummary::
    :toctree: generated/
 
+   geometric_edges
+   geographical_threshold_graph
+   navigable_small_world_graph
    random_geometric_graph
    soft_random_geometric_graph
-   geographical_threshold_graph
-   waxman_graph
-   navigable_small_world_graph
    thresholded_random_geometric_graph
+   waxman_graph
+   geometric_soft_configuration_graph
 
 Line Graph
 ----------
@@ -210,6 +223,15 @@ Stochastic
    stochastic_graph
 
 
+AS graph
+--------
+.. automodule:: networkx.generators.internet_as_graphs
+.. autosummary::
+   :toctree: generated/
+
+   random_internet_as_graph
+
+
 Intersection
 ------------
 .. automodule:: networkx.generators.intersection
@@ -230,6 +252,7 @@ Social Networks
    karate_club_graph
    davis_southern_women_graph
    florentine_families_graph
+   les_miserables_graph
 
 
 Community
@@ -240,22 +263,38 @@ Community
 
    caveman_graph
    connected_caveman_graph
-   relaxed_caveman_graph
-   random_partition_graph
-   planted_partition_graph
    gaussian_random_partition_graph
+   LFR_benchmark_graph
+   planted_partition_graph
+   random_partition_graph
+   relaxed_caveman_graph
    ring_of_cliques
+   stochastic_block_model
    windmill_graph
+
+
+Spectral
+--------
+.. automodule:: networkx.generators.spectral_graph_forge
+.. autosummary::
+   :toctree: generated/
+
+   spectral_graph_forge
 
 
 Trees
 -----
-.. automodule:: networkx.generators.tree
+.. automodule:: networkx.generators.trees
 .. autosummary::
    :toctree: generated/
 
-   random_tree
    prefix_tree
+   random_labeled_tree
+   random_labeled_rooted_tree
+   random_labeled_rooted_forest
+   random_unlabeled_tree
+   random_unlabeled_rooted_tree
+   random_unlabeled_rooted_forest
 
 
 Non Isomorphic Trees
@@ -285,6 +324,9 @@ Joint Degree Sequence
 
    is_valid_joint_degree
    joint_degree_graph
+   is_valid_directed_joint_degree
+   directed_joint_degree_graph
+
 
 Mycielski
 ---------
@@ -294,3 +336,45 @@ Mycielski
 
    mycielskian
    mycielski_graph
+
+
+Harary Graph
+------------
+.. automodule:: networkx.generators.harary_graph
+.. autosummary::
+   :toctree: generated/
+
+   hnm_harary_graph
+   hkn_harary_graph
+
+Cographs
+------------
+.. automodule:: networkx.generators.cographs
+.. autosummary::
+   :toctree: generated/
+
+   random_cograph
+
+Interval Graph
+---------------
+.. automodule:: networkx.generators.interval_graph
+.. autosummary::
+   :toctree: generated/
+
+   interval_graph
+
+Sudoku
+------
+.. automodule:: networkx.generators.sudoku
+.. autosummary::
+   :toctree: generated/
+
+   sudoku_graph
+
+Time Series
+-----------
+.. automodule:: networkx.generators.time_series
+.. autosummary::
+   :toctree: generated/
+
+   visibility_graph

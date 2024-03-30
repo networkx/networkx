@@ -19,6 +19,7 @@ Reference
    relabel
    readwrite/index
    drawing
+   randomness
    exceptions
    utils
    glossary

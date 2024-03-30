@@ -30,7 +30,9 @@ Adding and Removing Nodes and Edges
    MultiDiGraph.new_edge_key
    MultiDiGraph.remove_edge
    MultiDiGraph.remove_edges_from
+   MultiDiGraph.update
    MultiDiGraph.clear
+   MultiDiGraph.clear_edges
 
 
 
@@ -54,7 +56,7 @@ Reporting nodes edges and neighbors
    MultiDiGraph.successors
    MultiDiGraph.succ
    MultiDiGraph.predecessors
-   MultiDiGraph.succ
+   MultiDiGraph.pred
    MultiDiGraph.adjacency
    MultiDiGraph.nbunch_iter
 
@@ -84,4 +86,3 @@ Making copies and subgraphs
    MultiDiGraph.subgraph
    MultiDiGraph.edge_subgraph
    MultiDiGraph.reverse
-   MultiDiGraph.fresh_copy

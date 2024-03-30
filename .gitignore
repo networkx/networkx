@@ -42,8 +42,17 @@ networkx.egg-info/
 # Vim's swap files
 *.sw[op]
 
-#Spyder project file
+# Spyder project file
 .spyderproject
 
 # PyCharm project file
 .idea
+
+# VS Code settings
+.vscode
+
+# PyTest Cache
+.pytest_cache
+
+# Virtual environment directory
+networkx-dev/

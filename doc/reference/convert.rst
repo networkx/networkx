@@ -37,17 +37,16 @@ Numpy
 .. autosummary::
    :toctree: generated/
 
-   to_numpy_matrix
-   to_numpy_recarray
-   from_numpy_matrix
+   to_numpy_array
+   from_numpy_array
 
 Scipy
 -----
 .. autosummary::
    :toctree: generated/
 
-   to_scipy_sparse_matrix
-   from_scipy_sparse_matrix
+   to_scipy_sparse_array
+   from_scipy_sparse_array
 
 Pandas
 ------

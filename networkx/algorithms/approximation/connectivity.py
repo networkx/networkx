@@ -1,34 +1,29 @@
 """ Fast approximation for node connectivity
 """
-#    Copyright (C) 2015 by 
-#    Jordi Torrents <jtorrents@milnou.net>
-#    All rights reserved.
-#    BSD license.
 import itertools
 from operator import itemgetter
 
 import networkx as nx
 
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>'])
-
-__all__ = ['local_node_connectivity',
-           'node_connectivity',
-           'all_pairs_node_connectivity']
-
-INF = float('inf')
+__all__ = [
+    "local_node_connectivity",
+    "node_connectivity",
+    "all_pairs_node_connectivity",
+]
 
 
+@nx._dispatchable(name="approximate_local_node_connectivity")
 def local_node_connectivity(G, source, target, cutoff=None):
     """Compute node connectivity between source and target.
-    
-    Pairwise or local node connectivity between two distinct and nonadjacent 
-    nodes is the minimum number of nodes that must be removed (minimum 
-    separating cutset) to disconnect them. By Menger's theorem, this is equal 
+
+    Pairwise or local node connectivity between two distinct and nonadjacent
+    nodes is the minimum number of nodes that must be removed (minimum
+    separating cutset) to disconnect them. By Menger's theorem, this is equal
     to the number of node independent paths (paths that share no nodes other
     than source and target). Which is what we compute in this function.
 
     This algorithm is a fast approximation that gives an strict lower
-    bound on the actual number of node independent paths between two nodes [1]_. 
+    bound on the actual number of node independent paths between two nodes [1]_.
     It works for both directed and undirected graphs.
 
     Parameters
@@ -60,17 +55,17 @@ def local_node_connectivity(G, source, target, cutoff=None):
     >>> approx.local_node_connectivity(G, 0, 5)
     4
 
-    Notes 
+    Notes
     -----
-    This algorithm [1]_ finds node independents paths between two nodes by 
-    computing their shortest path using BFS, marking the nodes of the path 
-    found as 'used' and then searching other shortest paths excluding the 
-    nodes marked as used until no more paths exist. It is not exact because 
+    This algorithm [1]_ finds node independents paths between two nodes by
+    computing their shortest path using BFS, marking the nodes of the path
+    found as 'used' and then searching other shortest paths excluding the
+    nodes marked as used until no more paths exist. It is not exact because
     a shortest path could use nodes that, if the path were longer, may belong
     to two different node independent paths. Thus it only guarantees an
     strict lower bound on node connectivity.
 
-    Note that the authors propose a further refinement, losing accuracy and 
+    Note that the authors propose a further refinement, losing accuracy and
     gaining speed, which is not implemented yet.
 
     See also
@@ -80,10 +75,10 @@ def local_node_connectivity(G, source, target, cutoff=None):
 
     References
     ----------
-    .. [1] White, Douglas R., and Mark Newman. 2001 A Fast Algorithm for 
+    .. [1] White, Douglas R., and Mark Newman. 2001 A Fast Algorithm for
         Node-Independent Paths. Santa Fe Institute Working Paper #01-07-035
         http://eclectic.ss.uci.edu/~drwhite/working.pdf
- 
+
     """
     if target == source:
         raise nx.NetworkXError("source and target have to be different nodes.")
@@ -97,9 +92,9 @@ def local_node_connectivity(G, source, target, cutoff=None):
     K = 0
     if not possible:
         return K
-    
+
     if cutoff is None:
-        cutoff = INF
+        cutoff = float("inf")
 
     exclude = set()
     for i in range(min(possible, cutoff)):
@@ -113,22 +108,23 @@ def local_node_connectivity(G, source, target, cutoff=None):
     return K
 
 
+@nx._dispatchable(name="approximate_node_connectivity")
 def node_connectivity(G, s=None, t=None):
     r"""Returns an approximation for node connectivity for a graph or digraph G.
 
     Node connectivity is equal to the minimum number of nodes that
     must be removed to disconnect G or render it trivial. By Menger's theorem,
-    this is equal to the number of node independent paths (paths that 
+    this is equal to the number of node independent paths (paths that
     share no nodes other than source and target).
 
-    If source and target nodes are provided, this function returns the 
-    local node connectivity: the minimum number of nodes that must be 
+    If source and target nodes are provided, this function returns the
+    local node connectivity: the minimum number of nodes that must be
     removed to break all paths from source to target in G.
 
     This algorithm is based on a fast approximation that gives an strict lower
-    bound on the actual number of node independent paths between two nodes [1]_. 
+    bound on the actual number of node independent paths between two nodes [1]_.
     It works for both directed and undirected graphs.
-   
+
     Parameters
     ----------
     G : NetworkX graph
@@ -148,18 +144,18 @@ def node_connectivity(G, s=None, t=None):
 
     Examples
     --------
-    >>> # Platonic octahedral graph is 4-node-connected 
+    >>> # Platonic octahedral graph is 4-node-connected
     >>> from networkx.algorithms import approximation as approx
     >>> G = nx.octahedral_graph()
     >>> approx.node_connectivity(G)
     4
-    
+
     Notes
     -----
-    This algorithm [1]_ finds node independents paths between two nodes by 
-    computing their shortest path using BFS, marking the nodes of the path 
-    found as 'used' and then searching other shortest paths excluding the 
-    nodes marked as used until no more paths exist. It is not exact because 
+    This algorithm [1]_ finds node independents paths between two nodes by
+    computing their shortest path using BFS, marking the nodes of the path
+    found as 'used' and then searching other shortest paths excluding the
+    nodes marked as used until no more paths exist. It is not exact because
     a shortest path could use nodes that, if the path were longer, may belong
     to two different node independent paths. Thus it only guarantees an
     strict lower bound on node connectivity.
@@ -171,28 +167,30 @@ def node_connectivity(G, s=None, t=None):
 
     References
     ----------
-    .. [1] White, Douglas R., and Mark Newman. 2001 A Fast Algorithm for 
+    .. [1] White, Douglas R., and Mark Newman. 2001 A Fast Algorithm for
         Node-Independent Paths. Santa Fe Institute Working Paper #01-07-035
         http://eclectic.ss.uci.edu/~drwhite/working.pdf
 
     """
     if (s is not None and t is None) or (s is None and t is not None):
-        raise nx.NetworkXError('Both source and target must be specified.')
+        raise nx.NetworkXError("Both source and target must be specified.")
 
     # Local node connectivity
     if s is not None and t is not None:
         if s not in G:
-            raise nx.NetworkXError('node %s not in graph' % s)
+            raise nx.NetworkXError(f"node {s} not in graph")
         if t not in G:
-            raise nx.NetworkXError('node %s not in graph' % t)
+            raise nx.NetworkXError(f"node {t} not in graph")
         return local_node_connectivity(G, s, t)
 
     # Global node connectivity
     if G.is_directed():
         connected_func = nx.is_weakly_connected
         iter_func = itertools.permutations
+
         def neighbors(v):
             return itertools.chain(G.predecessors(v), G.successors(v))
+
     else:
         connected_func = nx.is_connected
         iter_func = itertools.combinations
@@ -207,7 +205,7 @@ def node_connectivity(G, s=None, t=None):
     K = minimum_degree
     # compute local node connectivity with all non-neighbors nodes
     # and store the minimum
-    for w in set(G) - set(neighbors(v)) - set([v]):
+    for w in set(G) - set(neighbors(v)) - {v}:
         K = min(K, local_node_connectivity(G, v, w, cutoff=K))
     # Same for non adjacent pairs of neighbors of v
     for x, y in iter_func(neighbors(v), 2):
@@ -216,17 +214,18 @@ def node_connectivity(G, s=None, t=None):
     return K
 
 
+@nx._dispatchable(name="approximate_all_pairs_node_connectivity")
 def all_pairs_node_connectivity(G, nbunch=None, cutoff=None):
-    """ Compute node connectivity between all pairs of nodes.
+    """Compute node connectivity between all pairs of nodes.
 
-    Pairwise or local node connectivity between two distinct and nonadjacent 
-    nodes is the minimum number of nodes that must be removed (minimum 
-    separating cutset) to disconnect them. By Menger's theorem, this is equal 
+    Pairwise or local node connectivity between two distinct and nonadjacent
+    nodes is the minimum number of nodes that must be removed (minimum
+    separating cutset) to disconnect them. By Menger's theorem, this is equal
     to the number of node independent paths (paths that share no nodes other
     than source and target). Which is what we compute in this function.
 
     This algorithm is a fast approximation that gives an strict lower
-    bound on the actual number of node independent paths between two nodes [1]_. 
+    bound on the actual number of node independent paths between two nodes [1]_.
     It works for both directed and undirected graphs.
 
 
@@ -248,14 +247,28 @@ def all_pairs_node_connectivity(G, nbunch=None, cutoff=None):
     K : dictionary
         Dictionary, keyed by source and target, of pairwise node connectivity
 
+    Examples
+    --------
+    A 3 node cycle with one extra node attached has connectivity 2 between all
+    nodes in the cycle and connectivity 1 between the extra node and the rest:
+
+    >>> G = nx.cycle_graph(3)
+    >>> G.add_edge(2, 3)
+    >>> import pprint  # for nice dictionary formatting
+    >>> pprint.pprint(nx.all_pairs_node_connectivity(G))
+    {0: {1: 2, 2: 2, 3: 1},
+     1: {0: 2, 2: 2, 3: 1},
+     2: {0: 2, 1: 2, 3: 1},
+     3: {0: 1, 1: 1, 2: 1}}
+
     See Also
     --------
     local_node_connectivity
-    all_pairs_node_connectivity
+    node_connectivity
 
     References
     ----------
-    .. [1] White, Douglas R., and Mark Newman. 2001 A Fast Algorithm for 
+    .. [1] White, Douglas R., and Mark Newman. 2001 A Fast Algorithm for
         Node-Independent Paths. Santa Fe Institute Working Paper #01-07-035
         http://eclectic.ss.uci.edu/~drwhite/working.pdf
     """
@@ -282,7 +295,7 @@ def all_pairs_node_connectivity(G, nbunch=None, cutoff=None):
 
 
 def _bidirectional_shortest_path(G, source, target, exclude):
-    """Return shortest path between source and target ignoring nodes in the
+    """Returns shortest path between source and target ignoring nodes in the
     container 'exclude'.
 
     Parameters
@@ -306,23 +319,23 @@ def _bidirectional_shortest_path(G, source, target, exclude):
 
     Raises
     ------
-    NetworkXNoPath: exception
+    NetworkXNoPath
         If there is no path or if nodes are adjacent and have only one path
         between them
 
     Notes
     -----
-    This function and its helper are originaly from
-    networkx.algorithms.shortest_paths.unweighted and are modified to 
-    accept the extra parameter 'exclude', which is a container for nodes 
+    This function and its helper are originally from
+    networkx.algorithms.shortest_paths.unweighted and are modified to
+    accept the extra parameter 'exclude', which is a container for nodes
     already used in other paths that should be ignored.
 
     References
     ----------
-    .. [1] White, Douglas R., and Mark Newman. 2001 A Fast Algorithm for 
+    .. [1] White, Douglas R., and Mark Newman. 2001 A Fast Algorithm for
         Node-Independent Paths. Santa Fe Institute Working Paper #01-07-035
         http://eclectic.ss.uci.edu/~drwhite/working.pdf
-    
+
     """
     # call helper to do the real work
     results = _bidirectional_pred_succ(G, source, target, exclude)
@@ -347,11 +360,6 @@ def _bidirectional_shortest_path(G, source, target, exclude):
 def _bidirectional_pred_succ(G, source, target, exclude):
     # does BFS from both source and target and meets in the middle
     # excludes nodes in the container "exclude" from the search
-    if source is None or target is None:
-        raise nx.NetworkXException(\
-            "Bidirectional shortest path called without source or target")
-    if target == source:
-        return ({target:None},{source:None},source)
 
     # handle either directed or undirected
     if G.is_directed():
@@ -361,7 +369,7 @@ def _bidirectional_pred_succ(G, source, target, exclude):
         Gpred = G.neighbors
         Gsucc = G.neighbors
 
-    # predecesssor and successors in search
+    # predecessor and successors in search
     pred = {source: None}
     succ = {target: None}
 
@@ -370,13 +378,13 @@ def _bidirectional_pred_succ(G, source, target, exclude):
     reverse_fringe = [target]
 
     level = 0
-    
+
     while forward_fringe and reverse_fringe:
         # Make sure that we iterate one step forward and one step backwards
-        # thus source and target will only tigger "found path" when they are
+        # thus source and target will only trigger "found path" when they are
         # adjacent and then they can be safely included in the container 'exclude'
         level += 1
-        if not level % 2 == 0:
+        if level % 2 != 0:
             this_level = forward_fringe
             forward_fringe = []
             for v in this_level:
@@ -387,7 +395,7 @@ def _bidirectional_pred_succ(G, source, target, exclude):
                         forward_fringe.append(w)
                         pred[w] = v
                     if w in succ:
-                        return pred, succ, w # found path
+                        return pred, succ, w  # found path
         else:
             this_level = reverse_fringe
             reverse_fringe = []
@@ -398,7 +406,7 @@ def _bidirectional_pred_succ(G, source, target, exclude):
                     if w not in succ:
                         succ[w] = v
                         reverse_fringe.append(w)
-                    if w in pred: 
-                        return pred, succ, w # found path
+                    if w in pred:
+                        return pred, succ, w  # found path
 
-    raise nx.NetworkXNoPath("No path between %s and %s." % (source, target))
+    raise nx.NetworkXNoPath(f"No path between {source} and {target}.")

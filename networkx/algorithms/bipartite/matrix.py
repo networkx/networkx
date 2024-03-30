@@ -1,27 +1,21 @@
-# -*- coding: utf-8 -*-
 """
 ====================
 Biadjacency matrices
 ====================
 """
-#    Copyright (C) 2013-2017 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import itertools
-from networkx.convert import _prep_create_using
-from networkx.convert_matrix import _generate_weighted_edges
+
 import networkx as nx
-__author__ = """\n""".join(['Jordi Torrents <jtorrents@milnou.net>',
-                            'Aric Hagberg <aric.hagberg@gmail.com>'])
-__all__ = ['biadjacency_matrix', 'from_biadjacency_matrix']
+from networkx.convert_matrix import _generate_weighted_edges
+
+__all__ = ["biadjacency_matrix", "from_biadjacency_matrix"]
 
 
-def biadjacency_matrix(G, row_order, column_order=None,
-                       dtype=None, weight='weight',  format='csr'):
-    r"""Return the biadjacency matrix of the bipartite graph G.
+@nx._dispatchable(edge_attrs="weight")
+def biadjacency_matrix(
+    G, row_order, column_order=None, dtype=None, weight="weight", format="csr"
+):
+    r"""Returns the biadjacency matrix of the bipartite graph G.
 
     Let `G = (U, V, E)` be a bipartite graph with node sets
     `U = u_{1},...,u_{r}` and `V = v_{1},...,v_{s}`. The biadjacency
@@ -57,7 +51,7 @@ def biadjacency_matrix(G, row_order, column_order=None,
 
     Returns
     -------
-    M : SciPy sparse matrix
+    M : SciPy sparse array
         Biadjacency matrix representation of the bipartite graph G.
 
     Notes
@@ -81,7 +75,8 @@ def biadjacency_matrix(G, row_order, column_order=None,
     .. [2] Scipy Dev. References, "Sparse Matrices",
        https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
-    from scipy import sparse
+    import scipy as sp
+
     nlen = len(row_order)
     if nlen == 0:
         raise nx.NetworkXError("row_order is empty list")
@@ -101,24 +96,28 @@ def biadjacency_matrix(G, row_order, column_order=None,
     if G.number_of_edges() == 0:
         row, col, data = [], [], []
     else:
-        row, col, data = zip(*((row_index[u], col_index[v], d.get(weight, 1))
-                               for u, v, d in G.edges(row_order, data=True)
-                               if u in row_index and v in col_index))
-    M = sparse.coo_matrix((data, (row, col)),
-                          shape=(nlen, mlen), dtype=dtype)
+        row, col, data = zip(
+            *(
+                (row_index[u], col_index[v], d.get(weight, 1))
+                for u, v, d in G.edges(row_order, data=True)
+                if u in row_index and v in col_index
+            )
+        )
+    A = sp.sparse.coo_array((data, (row, col)), shape=(nlen, mlen), dtype=dtype)
     try:
-        return M.asformat(format)
-    except AttributeError:
-        raise nx.NetworkXError("Unknown sparse matrix format: %s" % format)
+        return A.asformat(format)
+    except ValueError as err:
+        raise nx.NetworkXError(f"Unknown sparse array format: {format}") from err
 
 
-def from_biadjacency_matrix(A, create_using=None, edge_attribute='weight'):
+@nx._dispatchable(graphs=None, returns_graph=True)
+def from_biadjacency_matrix(A, create_using=None, edge_attribute="weight"):
     r"""Creates a new bipartite graph from a biadjacency matrix given as a
-    SciPy sparse matrix.
+    SciPy sparse array.
 
     Parameters
     ----------
-    A: scipy sparse matrix
+    A: scipy sparse array
       A biadjacency matrix representation of a graph
 
     create_using: NetworkX graph
@@ -142,13 +141,13 @@ def from_biadjacency_matrix(A, create_using=None, edge_attribute='weight'):
     See Also
     --------
     biadjacency_matrix
-    from_numpy_matrix
+    from_numpy_array
 
     References
     ----------
     [1] https://en.wikipedia.org/wiki/Adjacency_matrix#Adjacency_matrix_of_a_bipartite_graph
     """
-    G = _prep_create_using(create_using)
+    G = nx.empty_graph(0, create_using)
     n, m = A.shape
     # Make sure we get even the isolated nodes of the graph.
     G.add_nodes_from(range(n), bipartite=0)
@@ -161,18 +160,8 @@ def from_biadjacency_matrix(A, create_using=None, edge_attribute='weight'):
     # entry in the adjacency matrix. Otherwise, create one edge for each
     # positive entry in the adjacency matrix and set the weight of that edge to
     # be the entry in the matrix.
-    if A.dtype.kind in ('i', 'u') and G.is_multigraph():
+    if A.dtype.kind in ("i", "u") and G.is_multigraph():
         chain = itertools.chain.from_iterable
         triples = chain(((u, v, 1) for d in range(w)) for (u, v, w) in triples)
     G.add_weighted_edges_from(triples, weight=edge_attribute)
     return G
-
-# fixture for nose tests
-
-
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import scipy
-    except:
-        raise SkipTest("SciPy not available")

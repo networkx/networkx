@@ -1,26 +1,14 @@
-# -*- coding: utf-8 -*-
-#
-#    Copyright (C) 2011 by
-#    Jordi Torrents <jtorrents@milnou.net>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-#
-# Authors: Jordi Torrents <jtorrents@milnou.net>
-#          Aric Hagberg <hagberg@lanl.gov>
-from __future__ import division
-
 from collections import defaultdict
 
 import networkx as nx
 
-__all__ = ['average_degree_connectivity',
-           'k_nearest_neighbors']
+__all__ = ["average_degree_connectivity"]
 
 
-def average_degree_connectivity(G, source="in+out", target="in+out",
-                                nodes=None, weight=None):
+@nx._dispatchable(edge_attrs="weight")
+def average_degree_connectivity(
+    G, source="in+out", target="in+out", nodes=None, weight=None
+):
     r"""Compute the average degree connectivity of graph.
 
     The average degree connectivity is the average nearest neighbor degree of
@@ -61,27 +49,23 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
 
     Raises
     ------
-    ValueError
+    NetworkXError
         If either `source` or `target` are not one of 'in',
         'out', or 'in+out'.
+        If either `source` or `target` is passed for an undirected graph.
 
     Examples
     --------
-    >>> G=nx.path_graph(4)
-    >>> G.edges[1, 2]['weight'] = 3
-    >>> nx.k_nearest_neighbors(G)
+    >>> G = nx.path_graph(4)
+    >>> G.edges[1, 2]["weight"] = 3
+    >>> nx.average_degree_connectivity(G)
     {1: 2.0, 2: 1.5}
-    >>> nx.k_nearest_neighbors(G, weight='weight')
+    >>> nx.average_degree_connectivity(G, weight="weight")
     {1: 2.0, 2: 1.75}
 
-    See also
+    See Also
     --------
-    neighbors_average_degree
-
-    Notes
-    -----
-    This algorithm is sometimes called "k nearest neighbors" and is also
-    available as `k_nearest_neighbors`.
+    average_neighbor_degree
 
     References
     ----------
@@ -91,23 +75,27 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
     """
     # First, determine the type of neighbors and the type of degree to use.
     if G.is_directed():
-        if source not in ('in', 'out', 'in+out'):
-            raise ValueError('source must be one of "in", "out", or "in+out"')
-        if target not in ('in', 'out', 'in+out'):
-            raise ValueError('target must be one of "in", "out", or "in+out"')
-        direction = {'out': G.out_degree,
-                     'in': G.in_degree,
-                     'in+out': G.degree}
-        neighbor_funcs = {'out': G.successors,
-                          'in': G.predecessors,
-                          'in+out': G.neighbors}
+        if source not in ("in", "out", "in+out"):
+            raise nx.NetworkXError('source must be one of "in", "out", or "in+out"')
+        if target not in ("in", "out", "in+out"):
+            raise nx.NetworkXError('target must be one of "in", "out", or "in+out"')
+        direction = {"out": G.out_degree, "in": G.in_degree, "in+out": G.degree}
+        neighbor_funcs = {
+            "out": G.successors,
+            "in": G.predecessors,
+            "in+out": G.neighbors,
+        }
         source_degree = direction[source]
         target_degree = direction[target]
         neighbors = neighbor_funcs[source]
         # `reverse` indicates whether to look at the in-edge when
         # computing the weight of an edge.
-        reverse = (source == 'in')
+        reverse = source == "in"
     else:
+        if source != "in+out" or target != "in+out":
+            raise nx.NetworkXError(
+                f"source and target arguments are only supported for directed graphs"
+            )
         source_degree = G.degree
         target_degree = G.degree
         neighbors = G.neighbors
@@ -131,12 +119,4 @@ def average_degree_connectivity(G, source="in+out", target="in+out",
         dsum[k] += s
 
     # normalize
-    dc = {}
-    for k, avg in dsum.items():
-        dc[k] = avg
-        norm = dnorm[k]
-        if avg > 0 and norm > 0:
-            dc[k] /= norm
-    return dc
-
-k_nearest_neighbors = average_degree_connectivity
+    return {k: avg if dnorm[k] == 0 else avg / dnorm[k] for k, avg in dsum.items()}

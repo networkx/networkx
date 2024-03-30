@@ -1,10 +1,3 @@
-#    Copyright (C) 2010-2017 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-
 """Functions related to the Mycielski Operation and the Mycielskian family
 of graphs.
 
@@ -13,11 +6,12 @@ of graphs.
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['mycielskian', 'mycielski_graph']
+__all__ = ["mycielskian", "mycielski_graph"]
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+@nx._dispatchable(returns_graph=True)
 def mycielskian(G, iterations=1):
     r"""Returns the Mycielskian of a simple, undirected graph G
 
@@ -47,7 +41,7 @@ def mycielskian(G, iterations=1):
         A simple, undirected NetworkX graph
     iterations : int
         The number of iterations of the Mycielski operation to
-        preform on G. Defaults to 1. Must be a non-negative integer.
+        perform on G. Defaults to 1. Must be a non-negative integer.
 
     Returns
     -------
@@ -55,26 +49,26 @@ def mycielskian(G, iterations=1):
         The Mycielskian of G after the specified number of iterations.
 
     Notes
-    ------
+    -----
     Graph, node, and edge data are not necessarily propagated to the new graph.
 
     """
 
-    n = G.number_of_nodes()
     M = nx.convert_node_labels_to_integers(G)
 
     for i in range(iterations):
         n = M.number_of_nodes()
-        M.add_nodes_from(range(n, 2*n))
+        M.add_nodes_from(range(n, 2 * n))
         old_edges = list(M.edges())
-        M.add_edges_from((u, v+n) for u, v in old_edges)
-        M.add_edges_from((u+n, v) for u, v in old_edges)
-        M.add_node(2*n)
-        M.add_edges_from((u+n, 2*n) for u in range(n))
+        M.add_edges_from((u, v + n) for u, v in old_edges)
+        M.add_edges_from((u + n, v) for u, v in old_edges)
+        M.add_node(2 * n)
+        M.add_edges_from((u + n, 2 * n) for u in range(n))
 
     return M
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def mycielski_graph(n):
     """Generator for the n_th Mycielski Graph.
 
@@ -107,10 +101,10 @@ def mycielski_graph(n):
     """
 
     if n < 1:
-        raise nx.NetworkXError("must satisfy n >= 0")
+        raise nx.NetworkXError("must satisfy n >= 1")
 
     if n == 1:
         return nx.empty_graph(1)
 
     else:
-        return mycielskian(nx.path_graph(2), n-2)
+        return mycielskian(nx.path_graph(2), n - 2)

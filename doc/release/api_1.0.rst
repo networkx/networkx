@@ -1,20 +1,41 @@
-*********************************
-Version 1.0 notes and API changes
-*********************************
+NetworkX 1.0
+============
 
-We have made some significant API changes, detailed below, to add
-functionality and clarity.  This page reflects changes from
-networkx-0.99 to networkx-1.0.  For changes from earlier versions to
-networkx-0.99 see :doc:`Version 0.99 API changes <api_0.99>`.
+Release date:  8 Jan 2010
 
 Version 1.0 requires Python 2.4 or greater.
 
-Please send comments and questions to the networkx-discuss mailing list:
-http://groups.google.com/group/networkx-discuss .
+
+New features
+------------
+This release has significant changes to parts of the graph API
+to allow graph, node, and edge attributes.
+See http://networkx.lanl.gov/reference/api_changes.html
+
+ - Update Graph, DiGraph, and MultiGraph classes to allow attributes.
+ - Default edge data is now an empty dictionary (was the integer 1)
+ - Difference and intersection operators
+ - Average shortest path
+ - A* (A-Star) algorithm
+ - PageRank, HITS, and eigenvector centrality
+ - Read Pajek files
+ - Line graphs
+ - Minimum spanning tree (Kruskal's algorithm)
+ - Dense and sparse Fruchterman-Reingold layout
+ - Random clustered graph generator
+ - Directed scale-free graph generator
+ - Faster random regular graph generator
+ - Improved edge color and label drawing with Matplotlib
+ - and much more, see  https://networkx.lanl.gov/trac/query?status=closed&group=milestone&milestone=networkx-1.0
+
+Examples
+--------
+ - Update to work with networkx-1.0 API
+ - Graph subclass example
 
 
 Version numbering
-=================
+-----------------
 
 In the future we will use a more standard release numbering system
 with major.minor[build] labels where major and minor are numbers and
@@ -28,7 +49,7 @@ bugs or other defects in the existing classes, until networkx-2.0 is
 released at some time in the future.
 
 Changes in base classes
-=======================
+-----------------------
 
 The most significant changes in are in the graph classes.  All of the
 graph classes now allow optional graph, node, and edge attributes.  Those
@@ -36,19 +57,19 @@ attributes are stored internally in the graph classes as dictionaries
 and can be accessed simply like Python dictionaries in most cases.
 
 Graph attributes
-----------------
+^^^^^^^^^^^^^^^^
 Each graph keeps a dictionary of key=value attributes
 in the member G.graph.  These attributes can be accessed
-directly using G.graph or added at instantiation using 
+directly using G.graph or added at instantiation using
 keyword arguments.
 
 >>> G=nx.Graph(region='Africa')
 >>> G.graph['color']='green'
 >>> G.graph
-{'color': 'green', 'region': 'Africa'}
+{'region': 'Africa', 'color': 'green'}
 
 Node attributes
----------------
+^^^^^^^^^^^^^^^
 Each node has a corresponding dictionary of attributes.
 Adding attributes to nodes is optional.
 
@@ -63,9 +84,9 @@ Add node attributes using add_node(), add_nodes_from() or G.node
 [(1, {'room': 714, 'time': '5pm'}), (3, {'time': '2pm'})]
 
 Edge attributes
----------------
+^^^^^^^^^^^^^^^
 Each edge has a corresponding dictionary of attributes.
-The default edge data is now an empty dictionary of attributes   
+The default edge data is now an empty dictionary of attributes
 and adding attributes to edges is optional.
 
 A common use case is to add a weight attribute to an edge:
@@ -98,11 +119,11 @@ add_node()
 
 
 add_nodes_from()
-^^^^^^^^^^^^^^^^	
-   Now takes optional keyword=value attributes or a dictionary of 
+^^^^^^^^^^^^^^^^
+   Now takes optional keyword=value attributes or a dictionary of
    attributes applied to all affected nodes.
 
-   >>> G.add_nodes_from([1,2],time='2pm')  # all nodes have same attribute 
+   >>> G.add_nodes_from([1,2],time='2pm')  # all nodes have same attribute
 
 add_edge()
 ^^^^^^^^^^
@@ -111,8 +132,8 @@ add_edge()
    >>> G.add_edge(1, 2, weight=4.7 )
 
 add_edges_from()
-^^^^^^^^^^^^^^^^	
-   Now takes optional keyword=value attributes or a dictionary of 
+^^^^^^^^^^^^^^^^
+   Now takes optional keyword=value attributes or a dictionary of
    attributes applied to all affected edges.
 
    >>> G.add_edges_from([(3,4),(4,5)], color='red')
@@ -151,7 +172,7 @@ to_directed(), to_undirected()
 subgraph()
 ^^^^^^^^^^
 
-   With copy=True now returns a deep copy of the graph 
+   With copy=True now returns a deep copy of the graph
    (copies all underlying data and attributes for nodes and edges).
 
    >>> G = nx.Graph()
@@ -160,7 +181,7 @@ subgraph()
 
 add_cycle(), add_path(), add_star()
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   Now take optional keyword=value attributes or a dictionary of 
+   Now take optional keyword=value attributes or a dictionary of
    attributes which are applied to all edges affected by the method.
 
    >>> G = nx.Graph()
@@ -171,7 +192,7 @@ Methods removed
 
 delete_node()
 ^^^^^^^^^^^^^
-   The preferred name is now remove_node().        
+   The preferred name is now remove_node().
 
 delete_nodes_from()
 ^^^^^^^^^^^^^^^^^^^
@@ -189,7 +210,7 @@ delete_edges_from()
 
 has_neighbor():
 
-   Use has_edge()  
+   Use has_edge()
 
 get_edge()
 ^^^^^^^^^^
@@ -213,13 +234,13 @@ Methods added
 -------------
 
 add_weighted edges_from()
-^^^^^^^^^^^^^^^^^^^^^^^^^ 
+^^^^^^^^^^^^^^^^^^^^^^^^^
    Convenience method to add weighted edges to graph using a list of
    3-tuples (u,v,weight).
 
 get_edge_data()
 ^^^^^^^^^^^^^^^
-   Renamed from get_edge().	
+   Renamed from get_edge().
 
    The fastest way to get edge data for edge (u,v) is to use G[u][v]
    instead of G.get_edge_data(u,v)
@@ -247,21 +268,21 @@ UbiGraph
 
 
 Additional functions/generators
-===============================
+-------------------------------
 
-ego_graph, stochastic_graph, PageRank algorithm, HITS algorithm, 
-GraphML writer, freeze, is_frozen, A* algorithm, 
+ego_graph, stochastic_graph, PageRank algorithm, HITS algorithm,
+GraphML writer, freeze, is_frozen, A* algorithm,
 directed scale-free generator, random clustered graph.
 
 
 Converting your existing code to networkx-1.0
-=============================================
+---------------------------------------------
 
 Weighted edges
---------------
+^^^^^^^^^^^^^^
 
 Edge information is now stored in an attribution dictionary
-so all edge data must be given a key to identify it.  
+so all edge data must be given a key to identify it.
 
 There is currently only one standard/reserved key, 'weight', which is
 used by algorithms and functions that use weighted edges.  The
@@ -272,7 +293,7 @@ users to assign as needed.
 >>> G.add_edge(1,2,weight=3.1415) # add the edge 1-2 with a weight
 >>> G[1][2]['weight']=2.3 # set the weight to 2.3
 
-Similarly, for direct access the edge data, use 
+Similarly, for direct access the edge data, use
 the key of the edge data to retrieve it.
 
 >>> w = G[1][2]['weight']

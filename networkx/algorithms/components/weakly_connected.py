@@ -1,26 +1,16 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2017 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Aric Hagberg (hagberg@lanl.gov)
-#          Christopher Ellison
 """Weakly connected components."""
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = [
-    'number_weakly_connected_components',
-    'weakly_connected_components',
-    'weakly_connected_component_subgraphs',
-    'is_weakly_connected',
+    "number_weakly_connected_components",
+    "weakly_connected_components",
+    "is_weakly_connected",
 ]
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
+@nx._dispatchable
 def weakly_connected_components(G):
     """Generate weakly connected components of G.
 
@@ -37,7 +27,7 @@ def weakly_connected_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is undirected.
 
     Examples
@@ -46,8 +36,7 @@ def weakly_connected_components(G):
 
     >>> G = nx.path_graph(4, create_using=nx.DiGraph())
     >>> nx.add_path(G, [10, 11, 12])
-    >>> [len(c) for c in sorted(nx.weakly_connected_components(G),
-    ...                         key=len, reverse=True)]
+    >>> [len(c) for c in sorted(nx.weakly_connected_components(G), key=len, reverse=True)]
     [4, 3]
 
     If you only want the largest component, it's more efficient to
@@ -69,13 +58,14 @@ def weakly_connected_components(G):
     for v in G:
         if v not in seen:
             c = set(_plain_bfs(G, v))
-            yield c
             seen.update(c)
+            yield c
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
+@nx._dispatchable
 def number_weakly_connected_components(G):
-    """Return the number of weakly connected components in G.
+    """Returns the number of weakly connected components in G.
 
     Parameters
     ----------
@@ -89,8 +79,14 @@ def number_weakly_connected_components(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is undirected.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (2, 1), (3, 4)])
+    >>> nx.number_weakly_connected_components(G)
+    2
 
     See Also
     --------
@@ -103,66 +99,11 @@ def number_weakly_connected_components(G):
     For directed graphs only.
 
     """
-    return len(list(weakly_connected_components(G)))
+    return sum(1 for wcc in weakly_connected_components(G))
 
 
-@not_implemented_for('undirected')
-def weakly_connected_component_subgraphs(G, copy=True):
-    """Generate weakly connected components as subgraphs.
-
-    Parameters
-    ----------
-    G : NetworkX graph
-        A directed graph.
-
-    copy: bool (default=True)
-        If True make a copy of the graph attributes
-
-    Returns
-    -------
-    comp : generator
-        A generator of graphs, one for each weakly connected component of G.
-
-    Raises
-    ------
-    NetworkXNotImplemented:
-        If G is undirected.
-
-    Examples
-    --------
-    Generate a sorted list of weakly connected components, largest first.
-
-    >>> G = nx.path_graph(4, create_using=nx.DiGraph())
-    >>> nx.add_path(G, [10, 11, 12])
-    >>> [len(c) for c in sorted(nx.weakly_connected_component_subgraphs(G),
-    ...                         key=len, reverse=True)]
-    [4, 3]
-
-    If you only want the largest component, it's more efficient to
-    use max instead of sort:
-
-    >>> Gc = max(nx.weakly_connected_component_subgraphs(G), key=len)
-
-    See Also
-    --------
-    weakly_connected_components
-    strongly_connected_component_subgraphs
-    connected_component_subgraphs
-
-    Notes
-    -----
-    For directed graphs only.
-    Graph, node, and edge attributes are copied to the subgraphs by default.
-
-    """
-    for comp in weakly_connected_components(G):
-        if copy:
-            yield G.subgraph(comp).copy()
-        else:
-            yield G.subgraph(comp)
-
-
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
+@nx._dispatchable
 def is_weakly_connected(G):
     """Test directed graph for weak connectivity.
 
@@ -185,8 +126,18 @@ def is_weakly_connected(G):
 
     Raises
     ------
-    NetworkXNotImplemented:
+    NetworkXNotImplemented
         If G is undirected.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(0, 1), (2, 1)])
+    >>> G.add_node(3)
+    >>> nx.is_weakly_connected(G)  # node 3 is not connected to the graph
+    False
+    >>> G.add_edge(2, 3)
+    >>> nx.is_weakly_connected(G)
+    True
 
     See Also
     --------
@@ -203,9 +154,10 @@ def is_weakly_connected(G):
     """
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
-            """Connectivity is undefined for the null graph.""")
+            """Connectivity is undefined for the null graph."""
+        )
 
-    return len(list(weakly_connected_components(G))[0]) == len(G)
+    return len(next(weakly_connected_components(G))) == len(G)
 
 
 def _plain_bfs(G, source):
@@ -216,17 +168,26 @@ def _plain_bfs(G, source):
     For directed graphs only.
 
     """
-    Gsucc = G.succ
-    Gpred = G.pred
+    n = len(G)
+    Gsucc = G._succ
+    Gpred = G._pred
+    seen = {source}
+    nextlevel = [source]
 
-    seen = set()
-    nextlevel = {source}
+    yield source
     while nextlevel:
         thislevel = nextlevel
-        nextlevel = set()
+        nextlevel = []
         for v in thislevel:
-            if v not in seen:
-                yield v
-                seen.add(v)
-                nextlevel.update(Gsucc[v])
-                nextlevel.update(Gpred[v])
+            for w in Gsucc[v]:
+                if w not in seen:
+                    seen.add(w)
+                    nextlevel.append(w)
+                    yield w
+            for w in Gpred[v]:
+                if w not in seen:
+                    seen.add(w)
+                    nextlevel.append(w)
+                    yield w
+            if len(seen) == n:
+                return

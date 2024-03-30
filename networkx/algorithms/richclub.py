@@ -1,26 +1,17 @@
-# -*- coding: utf-8 -*-
-#    Copyright (C) 2004-2017 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: Ben Edwards (bedwards@cs.unm.edu)
-#          Aric Hagberg (hagberg@lanl.gov)
 """Functions for computing rich-club coefficients."""
-from __future__ import division
+
+from itertools import accumulate
 
 import networkx as nx
-from networkx.utils import accumulate
 from networkx.utils import not_implemented_for
 
-__all__ = ['rich_club_coefficient']
+__all__ = ["rich_club_coefficient"]
 
 
-@not_implemented_for('directed')
-@not_implemented_for('multigraph')
-def rich_club_coefficient(G, normalized=True, Q=100):
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+@nx._dispatchable
+def rich_club_coefficient(G, normalized=True, Q=100, seed=None):
     r"""Returns the rich-club coefficient of the graph `G`.
 
     For each degree *k*, the *rich-club coefficient* is the ratio of the
@@ -44,17 +35,26 @@ def rich_club_coefficient(G, normalized=True, Q=100):
         If `normalized` is True, perform `Q * m` double-edge
         swaps, where `m` is the number of edges in `G`, to use as a
         null-model for normalization.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
     rc : dictionary
        A dictionary, keyed by degree, with rich-club coefficient values.
 
+    Raises
+    ------
+    NetworkXError
+        If `G` has fewer than four nodes and ``normalized=True``.
+        A randomly sampled graph for normalization cannot be generated in this case.
+
     Examples
     --------
     >>> G = nx.Graph([(0, 1), (0, 2), (1, 2), (1, 3), (1, 4), (4, 5)])
-    >>> rc = nx.rich_club_coefficient(G, normalized=False)
-    >>> rc[0] # doctest: +SKIP
+    >>> rc = nx.rich_club_coefficient(G, normalized=False, seed=42)
+    >>> rc[0]
     0.4
 
     Notes
@@ -62,6 +62,14 @@ def rich_club_coefficient(G, normalized=True, Q=100):
     The rich club definition and algorithm are found in [1]_.  This
     algorithm ignores any edge weights and is not defined for directed
     graphs or graphs with parallel edges or self loops.
+
+    Normalization is done by computing the rich club coefficient for a randomly
+    sampled graph with the same degree distribution as `G` by
+    repeatedly swapping the endpoints of existing edges. For graphs with fewer than 4
+    nodes, it is not possible to generate a random graph with a prescribed
+    degree distribution, as the degree distribution fully determines the graph
+    (hence making the coefficients trivially normalized to 1).
+    This function raises an exception in this case.
 
     Estimates for appropriate values of `Q` are found in [2]_.
 
@@ -77,15 +85,16 @@ def rich_club_coefficient(G, normalized=True, Q=100):
        sequences", 2006. https://arxiv.org/abs/cond-mat/0312028
     """
     if nx.number_of_selfloops(G) > 0:
-        raise Exception('rich_club_coefficient is not implemented for '
-                        'graphs with self loops.')
+        raise Exception(
+            "rich_club_coefficient is not implemented for graphs with self loops."
+        )
     rc = _compute_rc(G)
     if normalized:
         # make R a copy of G, randomize with Q*|E| double edge swaps
         # and use rich_club coefficient of R to normalize
         R = G.copy()
         E = R.number_of_edges()
-        nx.double_edge_swap(R, Q * E, max_tries=Q * E * 10)
+        nx.double_edge_swap(R, Q * E, max_tries=Q * E * 10, seed=seed)
         rcran = _compute_rc(R)
         rc = {k: v / rcran[k] for k, v in rc.items()}
     return rc
@@ -111,9 +120,11 @@ def _compute_rc(G):
     # The list is sorted in reverse order so that we can pop from the
     # right side of the list later, instead of popping from the left
     # side of the list, which would have a linear time cost.
-    edge_degrees = sorted((sorted(map(G.degree, e)) for e in G.edges()),
-                          reverse=True)
+    edge_degrees = sorted((sorted(map(G.degree, e)) for e in G.edges()), reverse=True)
     ek = G.number_of_edges()
+    if ek == 0:
+        return {}
+
     k1, k2 = edge_degrees.pop()
     rc = {}
     for d, nk in enumerate(nks):

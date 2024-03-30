@@ -1,25 +1,23 @@
-#    Copyright (C) 2004-2017 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author: Aric Hagberg (hagberg@lanl.gov)
 """Betweenness centrality measures for subsets of nodes."""
 import networkx as nx
+from networkx.algorithms.centrality.betweenness import (
+    _add_edge_keys,
+)
+from networkx.algorithms.centrality.betweenness import (
+    _single_source_dijkstra_path_basic as dijkstra,
+)
+from networkx.algorithms.centrality.betweenness import (
+    _single_source_shortest_path_basic as shortest_path,
+)
 
-from networkx.algorithms.centrality.betweenness import\
-    _single_source_dijkstra_path_basic as dijkstra
-from networkx.algorithms.centrality.betweenness import\
-    _single_source_shortest_path_basic as shortest_path
-
-__all__ = ['betweenness_centrality_subset', 'betweenness_centrality_source',
-           'edge_betweenness_centrality_subset']
+__all__ = [
+    "betweenness_centrality_subset",
+    "edge_betweenness_centrality_subset",
+]
 
 
-def betweenness_centrality_subset(G, sources, targets, normalized=False,
-                                  weight=None):
+@nx._dispatchable(edge_attrs="weight")
+def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=None):
     r"""Compute betweenness centrality for a subset of nodes.
 
     .. math::
@@ -53,6 +51,8 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False,
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      Weights are used to calculate weighted shortest paths, so they are
+      interpreted as distances.
 
     Returns
     -------
@@ -72,36 +72,52 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False,
     Zero edge weights can produce an infinite number of equal length
     paths between pairs of nodes.
 
-    The normalization might seem a little strange but it is the same
-    as in betweenness_centrality() and is designed to make
-    betweenness_centrality(G) be the same as
+    The normalization might seem a little strange but it is
+    designed to make betweenness_centrality(G) be the same as
     betweenness_centrality_subset(G,sources=G.nodes(),targets=G.nodes()).
 
+    The total number of paths between source and target is counted
+    differently for directed and undirected graphs. Directed paths
+    are easy to count. Undirected paths are tricky: should a path
+    from "u" to "v" count as 1 undirected path or as 2 directed paths?
+
+    For betweenness_centrality we report the number of undirected
+    paths when G is undirected.
+
+    For betweenness_centrality_subset the reporting is different.
+    If the source and target subsets are the same, then we want
+    to count undirected paths. But if the source and target subsets
+    differ -- for example, if sources is {0} and targets is {1},
+    then we are only counting the paths in one direction. They are
+    undirected paths but we are counting them in a directed way.
+    To count them as undirected paths, each should count as half a path.
 
     References
     ----------
     .. [1] Ulrik Brandes, A Faster Algorithm for Betweenness Centrality.
        Journal of Mathematical Sociology 25(2):163-177, 2001.
-       http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
+       https://doi.org/10.1080/0022250X.2001.9990249
     .. [2] Ulrik Brandes: On Variants of Shortest-Path Betweenness
        Centrality and their Generic Computation.
        Social Networks 30(2):136-145, 2008.
-       http://www.inf.uni-konstanz.de/algo/publications/b-vspbc-08.pdf
+       https://doi.org/10.1016/j.socnet.2007.11.001
     """
     b = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
     for s in sources:
         # single source shortest paths
         if weight is None:  # use BFS
-            S, P, sigma = shortest_path(G, s)
+            S, P, sigma, _ = shortest_path(G, s)
         else:  # use Dijkstra's algorithm
-            S, P, sigma = dijkstra(G, s, weight)
+            S, P, sigma, _ = dijkstra(G, s, weight)
         b = _accumulate_subset(b, S, P, sigma, s, targets)
     b = _rescale(b, len(G), normalized=normalized, directed=G.is_directed())
     return b
 
 
-def edge_betweenness_centrality_subset(G, sources, targets, normalized=False,
-                                       weight=None):
+@nx._dispatchable(edge_attrs="weight")
+def edge_betweenness_centrality_subset(
+    G, sources, targets, normalized=False, weight=None
+):
     r"""Compute betweenness centrality for edges for a subset of nodes.
 
     .. math::
@@ -132,6 +148,8 @@ def edge_betweenness_centrality_subset(G, sources, targets, normalized=False,
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      Weights are used to calculate weighted shortest paths, so they are
+      interpreted as distances.
 
     Returns
     -------
@@ -160,47 +178,40 @@ def edge_betweenness_centrality_subset(G, sources, targets, normalized=False,
     ----------
     .. [1] Ulrik Brandes, A Faster Algorithm for Betweenness Centrality.
        Journal of Mathematical Sociology 25(2):163-177, 2001.
-       http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
+       https://doi.org/10.1080/0022250X.2001.9990249
     .. [2] Ulrik Brandes: On Variants of Shortest-Path Betweenness
        Centrality and their Generic Computation.
        Social Networks 30(2):136-145, 2008.
-       http://www.inf.uni-konstanz.de/algo/publications/b-vspbc-08.pdf
+       https://doi.org/10.1016/j.socnet.2007.11.001
     """
     b = dict.fromkeys(G, 0.0)  # b[v]=0 for v in G
     b.update(dict.fromkeys(G.edges(), 0.0))  # b[e] for e in G.edges()
     for s in sources:
         # single source shortest paths
         if weight is None:  # use BFS
-            S, P, sigma = shortest_path(G, s)
+            S, P, sigma, _ = shortest_path(G, s)
         else:  # use Dijkstra's algorithm
-            S, P, sigma = dijkstra(G, s, weight)
+            S, P, sigma, _ = dijkstra(G, s, weight)
         b = _accumulate_edges_subset(b, S, P, sigma, s, targets)
     for n in G:  # remove nodes to only return edges
         del b[n]
     b = _rescale_e(b, len(G), normalized=normalized, directed=G.is_directed())
+    if G.is_multigraph():
+        b = _add_edge_keys(G, b, weight=weight)
     return b
 
 
-# obsolete name
-def betweenness_centrality_source(G, normalized=True, weight=None,
-                                  sources=None):
-    if sources is None:
-        sources = G.nodes()
-    targets = list(G)
-    return betweenness_centrality_subset(G, sources, targets, normalized,
-                                         weight)
-
-
 def _accumulate_subset(betweenness, S, P, sigma, s, targets):
-    delta = dict.fromkeys(S, 0)
-    target_set = set(targets)
+    delta = dict.fromkeys(S, 0.0)
+    target_set = set(targets) - {s}
     while S:
         w = S.pop()
+        if w in target_set:
+            coeff = (delta[w] + 1.0) / sigma[w]
+        else:
+            coeff = delta[w] / sigma[w]
         for v in P[w]:
-            if w in target_set:
-                delta[v] += (sigma[v] / sigma[w]) * (1.0 + delta[w])
-            else:
-                delta[v] += delta[w] / len(P[w])
+            delta[v] += sigma[v] * coeff
         if w != s:
             betweenness[w] += delta[w]
     return betweenness
@@ -233,7 +244,7 @@ def _rescale(betweenness, n, normalized, directed=False):
         if n <= 2:
             scale = None  # no normalization b=0 for all nodes
         else:
-            scale = 1.0 / ((n-1) * (n-2))
+            scale = 1.0 / ((n - 1) * (n - 2))
     else:  # rescale by 2 for undirected graphs
         if not directed:
             scale = 0.5
@@ -251,7 +262,7 @@ def _rescale_e(betweenness, n, normalized, directed=False):
         if n <= 1:
             scale = None  # no normalization b=0 for all nodes
         else:
-            scale = 1.0 / (n*(n-1))
+            scale = 1.0 / (n * (n - 1))
     else:  # rescale by 2 for undirected graphs
         if not directed:
             scale = 0.5

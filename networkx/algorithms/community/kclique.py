@@ -1,15 +1,11 @@
-#-*- coding: utf-8 -*-
-#    Copyright (C) 2011 by 
-#    Conrad Lee <conradlee@gmail.com>
-#    Aric Hagberg <hagberg@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 from collections import defaultdict
-import networkx as nx
-__author__ = """\n""".join(['Conrad Lee <conradlee@gmail.com>',
-                            'Aric Hagberg <aric.hagberg@gmail.com>'])
-__all__ = ['k_clique_communities']
 
+import networkx as nx
+
+__all__ = ["k_clique_communities"]
+
+
+@nx._dispatchable
 def k_clique_communities(G, k, cliques=None):
     """Find k-clique communities in graph using the percolation method.
 
@@ -23,7 +19,7 @@ def k_clique_communities(G, k, cliques=None):
     k : int
        Size of smallest clique
 
-    cliques: list or generator       
+    cliques: list or generator
        Precomputed cliques (use networkx.find_cliques(G))
 
     Returns
@@ -32,25 +28,24 @@ def k_clique_communities(G, k, cliques=None):
 
     Examples
     --------
-    >>> from networkx.algorithms.community import k_clique_communities
     >>> G = nx.complete_graph(5)
-    >>> K5 = nx.convert_node_labels_to_integers(G,first_label=2)
+    >>> K5 = nx.convert_node_labels_to_integers(G, first_label=2)
     >>> G.add_edges_from(K5.edges())
-    >>> c = list(k_clique_communities(G, 4))
-    >>> list(c[0])
+    >>> c = list(nx.community.k_clique_communities(G, 4))
+    >>> sorted(list(c[0]))
     [0, 1, 2, 3, 4, 5, 6]
-    >>> list(k_clique_communities(G, 6))
+    >>> list(nx.community.k_clique_communities(G, 6))
     []
 
     References
     ----------
     .. [1] Gergely Palla, Imre Derényi, Illés Farkas1, and Tamás Vicsek,
-       Uncovering the overlapping community structure of complex networks 
+       Uncovering the overlapping community structure of complex networks
        in nature and society Nature 435, 814-818, 2005,
        doi:10.1038/nature03607
     """
     if k < 2:
-        raise nx.NetworkXError("k=%d, k must be greater than 1."%k)
+        raise nx.NetworkXError(f"k={k}, k must be greater than 1.")
     if cliques is None:
         cliques = nx.find_cliques(G)
     cliques = [frozenset(c) for c in cliques if len(c) >= k]
@@ -72,7 +67,8 @@ def k_clique_communities(G, k, cliques=None):
     # Connected components of clique graph with perc edges
     # are the percolated cliques
     for component in nx.connected_components(perc_graph):
-        yield(frozenset.union(*component))
+        yield (frozenset.union(*component))
+
 
 def _get_adjacent_cliques(clique, membership_dict):
     adjacent_cliques = set()

@@ -29,9 +29,12 @@ Breadth First Search
    :toctree: generated/
 
    bfs_edges
+   bfs_layers
    bfs_tree
    bfs_predecessors
    bfs_successors
+   descendants_at_distance
+   generic_bfs_edges
 
 Beam search
 -----------
@@ -49,3 +52,11 @@ Depth First Search on Edges
    :toctree: generated/
 
    edge_dfs
+
+Breadth First Search on Edges
+-----------------------------
+.. automodule:: networkx.algorithms.traversal.edgebfs
+.. autosummary::
+   :toctree: generated/
+
+   edge_bfs

@@ -6,43 +6,41 @@ lists in which the i-th element specifies the distance of vertex i to
 the root.
 
 """
-#    Copyright (C) 2013 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-__author__ = "\n".join(["Aric Hagberg (hagberg@lanl.gov)",
-                        "Mridul Seth (seth.mridul@gmail.com)"])
 
-__all__ = ['nonisomorphic_trees',
-           'number_of_nonisomorphic_trees']
+__all__ = ["nonisomorphic_trees", "number_of_nonisomorphic_trees"]
 
 import networkx as nx
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def nonisomorphic_trees(order, create="graph"):
-    """Returns a list of nonisomporphic trees
+    """Generates lists of nonisomorphic trees
 
     Parameters
     ----------
     order : int
-      order of the desired tree(s)
+       order of the desired tree(s)
 
-    create : graph or matrix (default="Graph)
-      If graph is selected a list of trees will be returned,
-      if matrix is selected a list of adjancency matrix will
-      be returned
+    create : one of {"graph", "matrix"} (default="graph")
+       If ``"graph"`` is selected a list of ``Graph`` instances will be returned,
+       if matrix is selected a list of adjacency matrices will be returned.
 
-    Returns
-    -------
-    G : List of NetworkX Graphs
+       .. deprecated:: 3.3
 
-    M : List of Adjacency matrices
+          The `create` argument is deprecated and will be removed in NetworkX
+          version 3.5. In the future, `nonisomorphic_trees` will yield graph
+          instances by default. To generate adjacency matrices, call
+          ``nx.to_numpy_array`` on the output, e.g.::
 
-    References
-    ----------
+             [nx.to_numpy_array(G) for G in nx.nonisomorphic_trees(N)]
 
+    Yields
+    ------
+    list
+       A list of nonisomorphic trees, in one of two formats depending on the
+       value of the `create` parameter:
+       - ``create="graph"``: yields a list of `networkx.Graph` instances
+       - ``create="matrix"``: yields a list of list-of-lists representing adjacency matrices
     """
 
     if order < 2:
@@ -56,10 +54,25 @@ def nonisomorphic_trees(order, create="graph"):
             if create == "graph":
                 yield _layout_to_graph(layout)
             elif create == "matrix":
+                import warnings
+
+                warnings.warn(
+                    (
+                        "\n\nThe 'create=matrix' argument of nonisomorphic_trees\n"
+                        "is deprecated and will be removed in version 3.5.\n"
+                        "Use ``nx.to_numpy_array`` to convert graphs to adjacency "
+                        "matrices, e.g.::\n\n"
+                        "   [nx.to_numpy_array(G) for G in nx.nonisomorphic_trees(N)]"
+                    ),
+                    category=DeprecationWarning,
+                    stacklevel=2,
+                )
+
                 yield _layout_to_matrix(layout)
             layout = _next_rooted_tree(layout)
 
 
+@nx._dispatchable(graphs=None)
 def number_of_nonisomorphic_trees(order):
     """Returns the number of nonisomorphic trees
 
@@ -133,12 +146,12 @@ def _next_tree(candidate):
             new_left, new_rest = _split_tree(new_candidate)
             new_left_height = max(new_left)
             suffix = range(1, new_left_height + 2)
-            new_candidate[-len(suffix):] = suffix
+            new_candidate[-len(suffix) :] = suffix
         return new_candidate
 
 
 def _split_tree(layout):
-    """Return a tuple of two layouts, one containing the left
+    """Returns a tuple of two layouts, one containing the left
     subtree of the root vertex, and one containing the original tree
     with the left subtree removed."""
 
@@ -183,7 +196,6 @@ def _layout_to_matrix(layout):
 def _layout_to_graph(layout):
     """Create a NetworkX Graph for the tree specified by the
     given layout(level sequence)"""
-    result = [[0] * len(layout) for i in range(len(layout))]
     G = nx.Graph()
     stack = []
     for i in range(len(layout)):

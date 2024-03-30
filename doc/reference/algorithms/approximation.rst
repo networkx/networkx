@@ -1,6 +1,6 @@
-*************
-Approximation
-*************
+*****************************
+Approximations and Heuristics
+*****************************
 
 .. automodule:: networkx.algorithms.approximation
 
@@ -31,8 +31,11 @@ Clique
 .. autosummary::
    :toctree: generated/
 
+   maximum_independent_set
    max_clique
    clique_removal
+   large_clique_size
+
 
 Clustering
 ----------
@@ -43,6 +46,15 @@ Clustering
    average_clustering
 
 
+Distance Measures
+-----------------
+.. automodule:: networkx.algorithms.approximation.distance_measures
+.. autosummary::
+   :toctree: generated/
+
+   diameter
+
+
 Dominating Set
 ---------------
 .. automodule:: networkx.algorithms.approximation.dominating_set
@@ -51,16 +63,6 @@ Dominating Set
 
    min_weighted_dominating_set
    min_edge_dominating_set
-
-
-Independent Set
----------------
-.. automodule:: networkx.algorithms.approximation.independent_set
-.. autosummary::
-   :toctree: generated/
-
-   maximum_independent_set
-
 
 Matching
 --------
@@ -89,6 +91,30 @@ Steiner Tree
    steiner_tree
 
 
+Traveling Salesman
+------------------
+.. automodule:: networkx.algorithms.approximation.traveling_salesman
+.. autosummary::
+   :toctree: generated/
+
+   christofides
+   traveling_salesman_problem
+   greedy_tsp
+   simulated_annealing_tsp
+   threshold_accepting_tsp
+   asadpour_atsp
+
+
+Treewidth
+---------
+.. automodule:: networkx.algorithms.approximation.treewidth
+.. autosummary::
+   :toctree: generated/
+
+   treewidth_min_degree
+   treewidth_min_fill_in
+
+
 Vertex Cover
 ------------
 .. automodule:: networkx.algorithms.approximation.vertex_cover
@@ -96,3 +122,13 @@ Vertex Cover
    :toctree: generated/
 
    min_weighted_vertex_cover
+
+
+Max Cut
+-------
+.. automodule:: networkx.algorithms.approximation.maxcut
+.. autosummary::
+   :toctree: generated/
+
+   randomized_partitioning
+   one_exchange

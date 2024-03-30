@@ -1,14 +1,3 @@
-# Copyright (C) 2010 by
-#   Aric Hagberg (hagberg@lanl.gov)
-#   Renato Fabbri
-# Copyright (C) 2012 by
-#   Aric Hagberg <hagberg@lanl.gov>
-#   Dan Schult <dschult@colgate.edu>
-#   Pieter Swart <swart@lanl.gov>
-# Copyright (C) 2016-2017 by NetworkX developers.
-#
-# All rights reserved.
-# BSD license.
 """
 Vitality measures.
 """
@@ -16,9 +5,10 @@ from functools import partial
 
 import networkx as nx
 
-__all__ = ['closeness_vitality']
+__all__ = ["closeness_vitality"]
 
 
+@nx._dispatchable(edge_attrs="weight")
 def closeness_vitality(G, node=None, weight=None, wiener_index=None):
     """Returns the closeness vitality for nodes in the graph.
 
@@ -37,7 +27,7 @@ def closeness_vitality(G, node=None, weight=None, wiener_index=None):
 
     node : object
         If specified, only the closeness vitality for this node will be
-        returned. Otherwise, a dictionary mappping each node to its
+        returned. Otherwise, a dictionary mapping each node to its
         closeness vitality will be returned.
 
     Other parameters
@@ -50,7 +40,7 @@ def closeness_vitality(G, node=None, weight=None, wiener_index=None):
     Returns
     -------
     dictionary or float
-        If `node` is None, this function returnes a dictionary
+        If `node` is None, this function returns a dictionary
         with nodes as keys and closeness vitality as the
         value. Otherwise, it returns only the closeness vitality for the
         specified `node`.
@@ -81,7 +71,6 @@ def closeness_vitality(G, node=None, weight=None, wiener_index=None):
     if node is not None:
         after = nx.wiener_index(G.subgraph(set(G) - {node}), weight=weight)
         return wiener_index - after
-    vitality = partial(closeness_vitality, G, weight=weight,
-                       wiener_index=wiener_index)
+    vitality = partial(closeness_vitality, G, weight=weight, wiener_index=wiener_index)
     # TODO This can be trivially parallelized.
     return {v: vitality(node=v) for v in G}

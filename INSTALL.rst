@@ -1,21 +1,10 @@
 Install
 =======
 
-NetworkX requires Python 2.7, 3.4, 3.5, or 3.6.  If you do not already
+NetworkX requires Python 3.10, 3.11, or 3.12.  If you do not already
 have a Python environment configured on your computer, please see the
 instructions for installing the full `scientific Python stack
 <https://scipy.org/install.html>`_.
-
-.. note::
-   If you are on Windows and want to install optional packages (e.g., `scipy`),
-   then you will need to install a Python distribution such as
-   `Anaconda <https://www.anaconda.com/download/>`_,
-   `Enthought Canopy <https://www.enthought.com/product/canopy>`_,
-   `Python(x,y) <http://python-xy.github.io/>`_,
-   `WinPython <https://winpython.github.io/>`_, or
-   `Pyzo <http://www.pyzo.org/>`_.
-   If you use one of these Python distribution, please refer to their online
-   documentation.
 
 Below we assume you have the default Python environment already configured on
 your computer and you intend to install ``networkx`` inside of it.  If you want
@@ -32,16 +21,25 @@ Install the released version
 
 Install the current release of ``networkx`` with ``pip``::
 
-    $ pip install networkx
+    $ pip install networkx[default]
 
 To upgrade to a newer release use the ``--upgrade`` flag::
 
-    $ pip install --upgrade networkx
+    $ pip install --upgrade networkx[default]
 
 If you do not have permission to install software systemwide, you can
 install into your user directory using the ``--user`` flag::
 
-    $ pip install --user networkx
+    $ pip install --user networkx[default]
+
+If you do not want to install our dependencies (e.g., ``numpy``, ``scipy``, etc.),
+you can use::
+
+    $ pip install networkx
+
+This may be helpful if you are using PyPy or you are working on a project that
+only needs a limited subset of our functionality and you want to limit the
+number of dependencies.
 
 Alternatively, you can manually download ``networkx`` from
 `GitHub <https://github.com/networkx/networkx/releases>`_  or
@@ -49,7 +47,7 @@ Alternatively, you can manually download ``networkx`` from
 To install one of these versions, unpack it and run the following from the
 top-level source directory using the Terminal::
 
-    $ pip install .
+    $ pip install .[default]
 
 Install the development version
 -------------------------------
@@ -66,9 +64,9 @@ Then do::
 
     $ git clone https://github.com/networkx/networkx.git
     $ cd networkx
-    $ pip install -e .
+    $ pip install -e .[default]
 
-The ``pip install -e .`` command allows you to follow the development branch as
+The ``pip install -e .[default]`` command allows you to follow the development branch as
 it changes by creating links in the right places and installing the command
 line scripts to the appropriate locations.
 
@@ -76,100 +74,51 @@ Then, if you want to update ``networkx`` at any time, in the same directory do::
 
     $ git pull
 
-Optional packages
------------------
+Extra packages
+--------------
 
 .. note::
-   Some optional packages (e.g., `scipy`, `gdal`) may require compiling
+   Some optional packages may require compiling
    C or C++ code.  If you have difficulty installing these packages
-   with `pip`, please review the instructions for installing
-   the full `scientific Python stack <https://scipy.org/install.html>`_.
+   with `pip`, please consult the homepages of those packages.
 
-The following optional packages provide additional functionality.
+The following extra packages provide additional functionality. See the
+files in the ``requirements/`` directory for information about specific
+version requirements.
 
-- `NumPy <http://www.numpy.org/>`_ (>= 1.12.0) provides matrix representation of
-  graphs and is used in some graph algorithms for high-performance matrix
-  computations.
-- `SciPy <http://scipy.org/>`_ (>= 0.19.0) provides sparse matrix representation
-  of graphs and many numerical scientific tools.
-- `pandas <http://pandas.pydata.org/>`_ (>= 0.20.0) provides a DataFrame, which
-  is a tabular data structure with labeled axes.
-- `Matplotlib <http://matplotlib.org/>`_ (>= 2.0.2) provides flexible drawing of
-  graphs.
 - `PyGraphviz <http://pygraphviz.github.io/>`_ and
-  `pydot <https://github.com/erocarrera/pydot>`_ (>= 1.2.3) provide graph drawing
+  `pydot <https://github.com/erocarrera/pydot>`_ provide graph drawing
   and graph layout algorithms via `GraphViz <http://graphviz.org/>`_.
-- `PyYAML <http://pyyaml.org/>`_ provides YAML format reading and writing.
-- `gdal <http://www.gdal.org/>`_ provides shapefile format reading and writing.
 - `lxml <http://lxml.de/>`_ used for GraphML XML format.
 
-To install ``networkx`` and all optional packages, do::
+To install ``networkx`` and extra packages, do::
 
-    $ pip install networkx[all]
+    $ pip install networkx[default,extra]
 
 To explicitly install all optional packages, do::
 
-    $ pip install numpy scipy pandas matplotlib pygraphviz pydot pyyaml gdal
+    $ pip install pygraphviz pydot lxml
 
-Or, install any optional package (e.g., ``numpy``) individually::
+Or, install any optional package (e.g., ``pygraphviz``) individually::
 
-    $ pip install numpy
+    $ pip install pygraphviz
 
 Testing
 -------
 
-NetworkX uses the Python ``nose`` testing package.  If you don't already have
-that package installed, follow the directions on the `nose homepage
-<https://nose.readthedocs.org/>`_.
+NetworkX uses the Python ``pytest`` testing package.  You can learn more
+about pytest on their `homepage <https://pytest.org>`_.
 
 Test a source distribution
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can test the complete package from the unpacked source directory with::
 
-    nosetests networkx -v
+    pytest networkx
 
 Test an installed package
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you have a file-based (not a Python egg) installation you can test the
-installed package with::
+From a shell command prompt you can test the installed package with::
 
-    >>> import networkx as nx
-    >>> nx.test()
-
-or::
-
-    python -c "import networkx as nx; nx.test()"
-
-Testing for developers
-^^^^^^^^^^^^^^^^^^^^^^
-
-You can test any or all of NetworkX by using the ``nosetests`` test runner.
-
-First make sure the NetworkX version you want to test is in your ``PYTHONPATH``
-(either installed or pointing to your unpacked source directory).
-
-Then you can run individual test files with::
-
-    nosetests path/to/file
-
-or all tests found in dir and an directories contained in dir::
-
-    nosetests path/to/dir
-
-By default nosetests does not test docutils style tests in
-Python modules but you can turn that on with::
-
-    nosetests --with-doctest
-
-For doctests in stand-alone files NetworkX uses the extension ``txt`` so
-you can add::
-
-    nosetests --with-doctest --doctest-extension=txt
-
-to also execute those tests.
-
-These options are on by default if you run nosetests from the root of the
-NetworkX distribution since they are specified in the ``setup.cfg`` file found
-there.
+   pytest --pyargs networkx

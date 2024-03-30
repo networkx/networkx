@@ -1,23 +1,17 @@
-#    Copyright (C) 2014-2017 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Authors: ysitu (ysitu@users.noreply.github.com)
 """
 Dominance algorithms.
 """
 
 from functools import reduce
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ['immediate_dominators', 'dominance_frontiers']
+__all__ = ["immediate_dominators", "dominance_frontiers"]
 
 
-@not_implemented_for('undirected')
+@not_implemented_for("undirected")
+@nx._dispatchable
 def immediate_dominators(G, start):
     """Returns the immediate dominators of all nodes of a directed graph.
 
@@ -61,7 +55,7 @@ def immediate_dominators(G, start):
            Software Practice & Experience, 4:110, 2001.
     """
     if start not in G:
-        raise nx.NetworkXError('start is not in G')
+        raise nx.NetworkXError("start is not in G")
 
     idom = {start: start}
 
@@ -90,6 +84,7 @@ def immediate_dominators(G, start):
     return idom
 
 
+@nx._dispatchable
 def dominance_frontiers(G, start):
     """Returns the dominance frontiers of all nodes of a directed graph.
 

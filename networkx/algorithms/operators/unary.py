@@ -1,54 +1,48 @@
 """Unary operations on graphs"""
-#    Copyright (C) 2004-2017 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
 import networkx as nx
-from networkx.utils import not_implemented_for
-__author__ = """\n""".join(['Aric Hagberg <aric.hagberg@gmail.com>',
-                           'Pieter Swart (swart@lanl.gov)',
-                           'Dan Schult(dschult@colgate.edu)'])
-__all__ = ['complement', 'reverse']
+
+__all__ = ["complement", "reverse"]
 
 
-def complement(G, name=None):
-    """Return the graph complement of G.
+@nx._dispatchable(returns_graph=True)
+def complement(G):
+    """Returns the graph complement of G.
 
     Parameters
     ----------
     G : graph
        A NetworkX graph
 
-    name : string
-       Specify name for new graph
-
     Returns
     -------
     GC : A new graph.
 
     Notes
-    ------
-    Note that complement() does not create self-loops and also
+    -----
+    Note that `complement` does not create self-loops and also
     does not produce parallel edges for MultiGraphs.
 
     Graph, node, and edge data are not propagated to the new graph.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5)])
+    >>> G_complement = nx.complement(G)
+    >>> G_complement.edges()  # This shows the edges of the complemented graph
+    EdgeView([(1, 4), (1, 5), (2, 4), (2, 5), (4, 5)])
+
     """
-    if name is None:
-        name = "complement(%s)" % (G.name)
-    R = G.fresh_copy()
-    R.name = name
+    R = G.__class__()
     R.add_nodes_from(G)
-    R.add_edges_from(((n, n2)
-                      for n, nbrs in G.adjacency()
-                      for n2 in G if n2 not in nbrs
-                      if n != n2))
+    R.add_edges_from(
+        ((n, n2) for n, nbrs in G.adjacency() for n2 in G if n2 not in nbrs if n != n2)
+    )
     return R
 
 
+@nx._dispatchable(returns_graph=True)
 def reverse(G, copy=True):
-    """Return the reverse directed graph of G.
+    """Returns the reverse directed graph of G.
 
     Parameters
     ----------
@@ -62,6 +56,18 @@ def reverse(G, copy=True):
     -------
     H : directed graph
         The reversed G.
+
+    Raises
+    ------
+    NetworkXError
+        If graph is undirected.
+
+    Examples
+    --------
+    >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5)])
+    >>> G_reversed = nx.reverse(G)
+    >>> G_reversed.edges()
+    OutEdgeView([(2, 1), (3, 1), (3, 2), (4, 3), (5, 3)])
 
     """
     if not G.is_directed():

@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Questions about NetworkX
+    url: https://github.com/networkx/networkx/discussions/new?category=q-a
+    about: Ask questions about usage of NetworkX
+  - name: Discussions and Ideas
+    url: https://github.com/networkx/networkx/discussions
+    about: Talk about new algorithms, feature requests, show your latest application of networks.

@@ -13,3 +13,4 @@ Link Prediction
    cn_soundarajan_hopcroft
    ra_index_soundarajan_hopcroft
    within_inter_cluster
+   common_neighbor_centrality

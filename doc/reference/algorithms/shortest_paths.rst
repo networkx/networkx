@@ -20,6 +20,9 @@ Advanced Interface
 
    single_source_shortest_path
    single_source_shortest_path_length
+   single_target_shortest_path
+   single_target_shortest_path_length
+   bidirectional_shortest_path
    all_pairs_shortest_path
    all_pairs_shortest_path_length
    predecessor
@@ -34,22 +37,26 @@ Advanced Interface
    single_source_dijkstra
    single_source_dijkstra_path
    single_source_dijkstra_path_length
+   multi_source_dijkstra
    multi_source_dijkstra_path
    multi_source_dijkstra_path_length
+   all_pairs_dijkstra
    all_pairs_dijkstra_path
    all_pairs_dijkstra_path_length
    bidirectional_dijkstra
 
    bellman_ford_path
    bellman_ford_path_length
+   single_source_bellman_ford
    single_source_bellman_ford_path
    single_source_bellman_ford_path_length
    all_pairs_bellman_ford_path
    all_pairs_bellman_ford_path_length
-   single_source_bellman_ford
    bellman_ford_predecessor_and_distance
 
    negative_edge_cycle
+   find_negative_cycle
+   goldberg_radzik
    johnson
 
 
@@ -63,6 +70,7 @@ Dense Graphs
    floyd_warshall
    floyd_warshall_predecessor_and_distance
    floyd_warshall_numpy
+   reconstruct_path
 
 
 A* Algorithm
@@ -73,5 +81,5 @@ A* Algorithm
    :toctree: generated/
 
    astar_path
-   astar_path_length   
+   astar_path_length
 

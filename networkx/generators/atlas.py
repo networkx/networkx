@@ -1,23 +1,15 @@
-#    Copyright (C) 2004-2017 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-#
-# Author:
-#     Pieter Swart <swart@lanl.gov>
 """
 Generators for the small graph atlas.
 """
 import gzip
-from itertools import islice
+import importlib.resources
 import os
 import os.path
+from itertools import islice
 
 import networkx as nx
 
-__all__ = ['graph_atlas', 'graph_atlas_g']
+__all__ = ["graph_atlas", "graph_atlas_g"]
 
 #: The total number of graphs in the atlas.
 #:
@@ -25,12 +17,9 @@ __all__ = ['graph_atlas', 'graph_atlas_g']
 #: including) this number.
 NUM_GRAPHS = 1253
 
-#: The absolute path representing the directory containing this file.
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-
 #: The path to the data file containing the graph edge lists.
 #:
-#: This is the absolute filename of the gzipped text file containing the
+#: This is the absolute path of the gzipped text file containing the
 #: edge list for each graph in the atlas. The file contains one entry
 #: per graph in the atlas, in sequential order, starting from graph
 #: number 0 and extending through graph number 1252 (see
@@ -56,11 +45,13 @@ THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 #:
 #:     with gzip.open('atlas.dat.gz', 'wb') as f:
 #:         for i, G in enumerate(graph_atlas_g()):
-#:             f.write(bytes('GRAPH {}\n'.format(i), encoding='utf-8'))
-#:             f.write(bytes('NODES {}\n'.format(len(G)), encoding='utf-8'))
+#:             f.write(bytes(f'GRAPH {i}\n', encoding='utf-8'))
+#:             f.write(bytes(f'NODES {len(G)}\n', encoding='utf-8'))
 #:             write_edgelist(G, f, data=False)
 #:
-ATLAS_FILE = os.path.join(THIS_DIR, 'atlas.dat.gz')
+
+# Path to the atlas file
+ATLAS_FILE = importlib.resources.files("networkx.generators") / "atlas.dat.gz"
 
 
 def _generate_graphs():
@@ -70,9 +61,9 @@ def _generate_graphs():
     This function reads the file given in :data:`.ATLAS_FILE`.
 
     """
-    with gzip.open(ATLAS_FILE, 'rb') as f:
+    with gzip.open(ATLAS_FILE, "rb") as f:
         line = f.readline()
-        while line and line.startswith(b'GRAPH'):
+        while line and line.startswith(b"GRAPH"):
             # The first two lines of each entry tell us the index of the
             # graph in the list and the number of nodes in the graph.
             # They look like this:
@@ -87,16 +78,17 @@ def _generate_graphs():
             # GRAPH line (or until the end of the file).
             edgelist = []
             line = f.readline()
-            while line and not line.startswith(b'GRAPH'):
+            while line and not line.startswith(b"GRAPH"):
                 edgelist.append(line.rstrip())
                 line = f.readline()
             G = nx.Graph()
-            G.name = 'G{}'.format(graph_index)
+            G.name = f"G{graph_index}"
             G.add_nodes_from(range(num_nodes))
             G.add_edges_from(tuple(map(int, e.split())) for e in edgelist)
             yield G
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def graph_atlas(i):
     """Returns graph number `i` from the Graph Atlas.
 
@@ -131,12 +123,13 @@ def graph_atlas(i):
 
     """
     if not (0 <= i < NUM_GRAPHS):
-        raise ValueError('index must be between 0 and {}'.format(NUM_GRAPHS))
+        raise ValueError(f"index must be between 0 and {NUM_GRAPHS}")
     return next(islice(_generate_graphs(), i, None))
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def graph_atlas_g():
-    """Return the list of all graphs with up to seven nodes named in the
+    """Returns the list of all graphs with up to seven nodes named in the
     Graph Atlas.
 
     The graphs are listed in increasing order by
