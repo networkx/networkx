@@ -1239,6 +1239,7 @@ class _dispatchable:
             "read_pajek",
             "from_pydot",
             "pydot_read_dot",
+            "agraph_read_dot",
             # graph comparison fails b/c of nan values
             "read_gexf",
         }:
