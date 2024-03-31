@@ -370,16 +370,16 @@ def test_TSP_weighted():
             {"init_cycle": "greedy"},
         ),
     ]
-    for method in methods:
-        cycle = tsp(G, nodes=[3, 6], weight="weight", method=method[0], **method[1])
+    for method, kwargs in methods:
+        cycle = tsp(G, nodes=[3, 6], weight="weight", method=method, **kwargs)
         assert cycle in expected_cycles
 
         path = tsp(
-            G, nodes=[3, 6], weight="weight", method=method[0], cycle=False, **method[1]
+            G, nodes=[3, 6], weight="weight", method=method, cycle=False, **kwargs
         )
         assert path in expected_paths
 
-        tourpath = tsp(G, weight="weight", method=method[0], cycle=False, **method[1])
+        tourpath = tsp(G, weight="weight", method=method, cycle=False, **kwargs)
         assert tourpath in expected_tourpaths
 
 
