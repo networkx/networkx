@@ -154,9 +154,13 @@ Notes
     It will be called with the list of NetworkX tests discovered. Each item
     is a test object that can be marked as xfail if the backend does not support
     the test using ``item.add_marker(pytest.mark.xfail(reason=...))``.
+
+-   A backend graph instance may have a ``G.__networkx_cache__`` dict to enable
+    caching, and care should be taken to clear the cache when appropriate.
 """
 
 import inspect
+import itertools
 import os
 import warnings
 from functools import partial
@@ -166,7 +170,7 @@ import networkx as nx
 
 from .decorators import argmap
 
-__all__ = ["_dispatchable", "config"]
+__all__ = ["_dispatchable"]
 
 
 def _do_nothing():
@@ -781,7 +785,7 @@ class _dispatchable:
             and not isinstance(should_run, str)
         )
 
-    def _convert_arguments(self, backend_name, args, kwargs):
+    def _convert_arguments(self, backend_name, args, kwargs, *, use_cache):
         """Convert graph arguments to the specified backend.
 
         Returns
@@ -929,19 +933,19 @@ class _dispatchable:
 
         # It should be safe to assume that we either have networkx graphs or backend graphs.
         # Future work: allow conversions between backends.
-        backend = _load_backend(backend_name)
         for gname in self.graphs:
             if gname in self.list_graphs:
                 bound.arguments[gname] = [
-                    backend.convert_from_nx(
+                    self._convert_graph(
+                        backend_name,
                         g,
                         edge_attrs=edge_attrs,
                         node_attrs=node_attrs,
                         preserve_edge_attrs=preserve_edge_attrs,
                         preserve_node_attrs=preserve_node_attrs,
                         preserve_graph_attrs=preserve_graph_attrs,
-                        name=self.name,
                         graph_name=gname,
+                        use_cache=use_cache,
                     )
                     if getattr(g, "__networkx_backend__", "networkx") == "networkx"
                     else g
@@ -972,19 +976,145 @@ class _dispatchable:
                 else:
                     preserve_graph = preserve_graph_attrs
                 if getattr(graph, "__networkx_backend__", "networkx") == "networkx":
-                    bound.arguments[gname] = backend.convert_from_nx(
+                    bound.arguments[gname] = self._convert_graph(
+                        backend_name,
                         graph,
                         edge_attrs=edges,
                         node_attrs=nodes,
                         preserve_edge_attrs=preserve_edges,
                         preserve_node_attrs=preserve_nodes,
                         preserve_graph_attrs=preserve_graph,
-                        name=self.name,
                         graph_name=gname,
+                        use_cache=use_cache,
                     )
         bound_kwargs = bound.kwargs
         del bound_kwargs["backend"]
         return bound.args, bound_kwargs
+
+    def _convert_graph(
+        self,
+        backend_name,
+        graph,
+        *,
+        edge_attrs,
+        node_attrs,
+        preserve_edge_attrs,
+        preserve_node_attrs,
+        preserve_graph_attrs,
+        graph_name,
+        use_cache,
+    ):
+        if (
+            use_cache
+            and (nx_cache := getattr(graph, "__networkx_cache__", None)) is not None
+        ):
+            cache = nx_cache.setdefault("backends", {}).setdefault(backend_name, {})
+            # edge_attrs: dict | None
+            # node_attrs: dict | None
+            # preserve_edge_attrs: bool (False if edge_attrs is not None)
+            # preserve_node_attrs: bool (False if node_attrs is not None)
+            # preserve_graph_attrs: bool
+            key = edge_key, node_key, graph_key = (
+                frozenset(edge_attrs.items())
+                if edge_attrs is not None
+                else preserve_edge_attrs,
+                frozenset(node_attrs.items())
+                if node_attrs is not None
+                else preserve_node_attrs,
+                preserve_graph_attrs,
+            )
+            if cache:
+                warning_message = (
+                    f"Using cached graph for {backend_name!r} backend in "
+                    f"call to {self.name}.\n\nFor the cache to be consistent "
+                    "(i.e., correct), the input graph must not have been "
+                    "manually mutated since the cached graph was created. "
+                    "Examples of manually mutating the graph data structures "
+                    "resulting in an inconsistent cache include:\n\n"
+                    "    >>> G[u][v][key] = val\n\n"
+                    "and\n\n"
+                    "    >>> for u, v, d in G.edges(data=True):\n"
+                    "    ...     d[key] = val\n\n"
+                    "Using methods such as `G.add_edge(u, v, weight=val)` "
+                    "will correctly clear the cache to keep it consistent. "
+                    "You may also use `G.__networkx_cache__.clear()` to "
+                    "manually clear the cache, or set `G.__networkx_cache__` "
+                    "to None to disable caching for G. Enable or disable "
+                    "caching via `nx.config.cache_converted_graphs` config."
+                )
+                # Do a simple search for a cached graph with compatible data.
+                # For example, if we need a single attribute, then it's okay
+                # to use a cached graph that preserved all attributes.
+                # This looks for an exact match first.
+                for compat_key in itertools.product(
+                    (edge_key, True) if edge_key is not True else (True,),
+                    (node_key, True) if node_key is not True else (True,),
+                    (graph_key, True) if graph_key is not True else (True,),
+                ):
+                    if (rv := cache.get(compat_key)) is not None:
+                        warnings.warn(warning_message)
+                        return rv
+                if edge_key is not True and node_key is not True:
+                    # Iterate over the items in `cache` to see if any are compatible.
+                    # For example, if no edge attributes are needed, then a graph
+                    # with any edge attribute will suffice. We use the same logic
+                    # below (but switched) to clear unnecessary items from the cache.
+                    # Use `list(cache.items())` to be thread-safe.
+                    for (ekey, nkey, gkey), val in list(cache.items()):
+                        if edge_key is False or ekey is True:
+                            pass
+                        elif (
+                            edge_key is True
+                            or ekey is False
+                            or not edge_key.issubset(ekey)
+                        ):
+                            continue
+                        if node_key is False or nkey is True:
+                            pass
+                        elif (
+                            node_key is True
+                            or nkey is False
+                            or not node_key.issubset(nkey)
+                        ):
+                            continue
+                        if graph_key and not gkey:
+                            continue
+                        warnings.warn(warning_message)
+                        return val
+
+        backend = _load_backend(backend_name)
+        rv = backend.convert_from_nx(
+            graph,
+            edge_attrs=edge_attrs,
+            node_attrs=node_attrs,
+            preserve_edge_attrs=preserve_edge_attrs,
+            preserve_node_attrs=preserve_node_attrs,
+            preserve_graph_attrs=preserve_graph_attrs,
+            name=self.name,
+            graph_name=graph_name,
+        )
+        if use_cache and nx_cache is not None:
+            # Remove old cached items that are no longer necessary since they
+            # are dominated/subsumed/outdated by what was just calculated.
+            # This uses the same logic as above, but with keys switched.
+            cache[key] = rv  # Set at beginning to be thread-safe
+            for cur_key in list(cache):
+                if cur_key == key:
+                    continue
+                ekey, nkey, gkey = cur_key
+                if ekey is False or edge_key is True:
+                    pass
+                elif ekey is True or edge_key is False or not ekey.issubset(edge_key):
+                    continue
+                if nkey is False or node_key is True:
+                    pass
+                elif nkey is True or node_key is False or not nkey.issubset(node_key):
+                    continue
+                if gkey and not graph_key:
+                    continue
+                cache.pop(cur_key, None)  # Use pop instead of del to be thread-safe
+
+        return rv
 
     def _convert_and_call(self, backend_name, args, kwargs, *, fallback_to_nx=False):
         """Call this dispatchable function with a backend, converting graphs if necessary."""
@@ -999,7 +1129,7 @@ class _dispatchable:
 
         try:
             converted_args, converted_kwargs = self._convert_arguments(
-                backend_name, args, kwargs
+                backend_name, args, kwargs, use_cache=config.cache_converted_graphs
             )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
@@ -1074,7 +1204,7 @@ class _dispatchable:
             kwargs2 = dict(kwargs2)
         try:
             converted_args, converted_kwargs = self._convert_arguments(
-                backend_name, args1, kwargs1
+                backend_name, args1, kwargs1, use_cache=False
             )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
@@ -1165,29 +1295,49 @@ class _dispatchable:
             check_result(result)
 
         if self.name in {
-            "edmonds_karp_core",
+            "edmonds_karp",
             "barycenter",
             "contracted_edge",
             "contracted_nodes",
             "stochastic_graph",
             "relabel_nodes",
+            "maximum_branching",
+            "incremental_closeness_centrality",
+            "minimal_branching",
+            "minimum_spanning_arborescence",
+            "recursive_simple_cycles",
+            "connected_double_edge_swap",
         }:
             # Special-case algorithms that mutate input graphs
             bound = self.__signature__.bind(*converted_args, **converted_kwargs)
             bound.apply_defaults()
             bound2 = self.__signature__.bind(*args2, **kwargs2)
             bound2.apply_defaults()
-            if self.name == "edmonds_karp_core":
-                R1 = backend.convert_to_nx(bound.arguments["R"])
-                R2 = bound2.arguments["R"]
-                for k, v in R1.edges.items():
-                    R2.edges[k]["flow"] = v["flow"]
+            if self.name in {
+                "minimal_branching",
+                "minimum_spanning_arborescence",
+                "recursive_simple_cycles",
+                "connected_double_edge_swap",
+            }:
+                G1 = backend.convert_to_nx(bound.arguments["G"])
+                G2 = bound2.arguments["G"]
+                G2._adj = G1._adj
+                nx._clear_cache(G2)
+            elif self.name == "edmonds_karp":
+                R1 = backend.convert_to_nx(bound.arguments["residual"])
+                R2 = bound2.arguments["residual"]
+                if R1 is not None and R2 is not None:
+                    for k, v in R1.edges.items():
+                        R2.edges[k]["flow"] = v["flow"]
+                    R2.graph.update(R1.graph)
+                    nx._clear_cache(R2)
             elif self.name == "barycenter" and bound.arguments["attr"] is not None:
                 G1 = backend.convert_to_nx(bound.arguments["G"])
                 G2 = bound2.arguments["G"]
                 attr = bound.arguments["attr"]
                 for k, v in G1.nodes.items():
                     G2.nodes[k][attr] = v[attr]
+                nx._clear_cache(G2)
             elif (
                 self.name in {"contracted_nodes", "contracted_edge"}
                 and not bound.arguments["copy"]
@@ -1196,12 +1346,18 @@ class _dispatchable:
                 G1 = backend.convert_to_nx(bound.arguments["G"])
                 G2 = bound2.arguments["G"]
                 G2.__dict__.update(G1.__dict__)
+                nx._clear_cache(G2)
             elif self.name == "stochastic_graph" and not bound.arguments["copy"]:
                 G1 = backend.convert_to_nx(bound.arguments["G"])
                 G2 = bound2.arguments["G"]
                 for k, v in G1.edges.items():
                     G2.edges[k]["weight"] = v["weight"]
-            elif self.name == "relabel_nodes" and not bound.arguments["copy"]:
+                nx._clear_cache(G2)
+            elif (
+                self.name == "relabel_nodes"
+                and not bound.arguments["copy"]
+                or self.name in {"incremental_closeness_centrality"}
+            ):
                 G1 = backend.convert_to_nx(bound.arguments["G"])
                 G2 = bound2.arguments["G"]
                 if G1 is G2:
@@ -1216,7 +1372,9 @@ class _dispatchable:
                 if hasattr(G1, "_succ") and hasattr(G2, "_succ"):
                     G2._succ.clear()
                     G2._succ.update(G1._succ)
-                return G2
+                nx._clear_cache(G2)
+                if self.name == "relabel_nodes":
+                    return G2
             return backend.convert_to_nx(result)
 
         converted_result = backend.convert_to_nx(result)

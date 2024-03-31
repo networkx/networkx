@@ -1027,6 +1027,7 @@ class SpanningTreeIterator:
             If `ignore_nan is True` then that edge is ignored instead.
         """
         self.G = G.copy()
+        self.G.__networkx_cache__ = None  # Disable caching
         self.weight = weight
         self.minimum = minimum
         self.ignore_nan = ignore_nan
