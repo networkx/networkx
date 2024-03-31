@@ -106,13 +106,13 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
     >>> print(nx.shortest_path(G, source=0, target=4))
     [0, 1, 2, 3, 4]
     >>> p = nx.shortest_path(G, source=0)  # target not specified
-    >>> p[3] # shortest path from source=0 to target=3
+    >>> p[3]  # shortest path from source=0 to target=3
     [0, 1, 2, 3]
     >>> p = nx.shortest_path(G, target=4)  # source not specified
-    >>> p[1] # shortest path from source=1 to target=4
+    >>> p[1]  # shortest path from source=1 to target=4
     [1, 2, 3, 4]
     >>> p = dict(nx.shortest_path(G))  # source, target not specified
-    >>> p[2][4] # shortest path from source=2 to target=4
+    >>> p[2][4]  # shortest path from source=2 to target=4
     [2, 3, 4]
 
     Notes
@@ -149,11 +149,11 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
 
             # Find paths between all pairs.
             if method == "unweighted":
-                paths = nx.all_pairs_shortest_path(G)
+                paths = dict(nx.all_pairs_shortest_path(G))
             elif method == "dijkstra":
-                paths = nx.all_pairs_dijkstra_path(G, weight=weight)
+                paths = dict(nx.all_pairs_dijkstra_path(G, weight=weight))
             else:  # method == 'bellman-ford':
-                paths = nx.all_pairs_bellman_ford_path(G, weight=weight)
+                paths = dict(nx.all_pairs_bellman_ford_path(G, weight=weight))
         else:
             # Find paths from all nodes co-accessible to the target.
             if G.is_directed():
@@ -444,7 +444,7 @@ def average_shortest_path_length(G, weight=None, method=None):
             all_pairs = nx.floyd_warshall(G, weight=weight)
             s = sum(sum(t.values()) for t in all_pairs.values())
         elif method == "floyd-warshall-numpy":
-            s = nx.floyd_warshall_numpy(G, weight=weight).sum()
+            s = float(nx.floyd_warshall_numpy(G, weight=weight).sum())
     return s / (n * (n - 1))
 
 

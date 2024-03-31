@@ -46,7 +46,7 @@ def write_dot(G, path):
 
 
 @open_file(0, mode="r")
-@nx._dispatchable(name="pydot_read_dot", graphs=None)
+@nx._dispatchable(name="pydot_read_dot", graphs=None, returns_graph=True)
 def read_dot(path):
     """Returns a NetworkX :class:`MultiGraph` or :class:`MultiDiGraph` from the
     dot file with the passed path.
@@ -80,7 +80,7 @@ def read_dot(path):
     return from_pydot(P_list[0])
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def from_pydot(P):
     """Returns a NetworkX graph from a Pydot graph.
 
@@ -355,9 +355,9 @@ def pydot_layout(G, prog="neato", root=None):
     If this occurs in your case, consider relabeling the nodes just
     for the layout computation using something similar to::
 
-        H = nx.convert_node_labels_to_integers(G, label_attribute='node_label')
-        H_layout = nx.nx_pydot.pydot_layout(G, prog='dot')
-        G_layout = {H.nodes[n]['node_label']: p for n, p in H_layout.items()}
+        H = nx.convert_node_labels_to_integers(G, label_attribute="node_label")
+        H_layout = nx.nx_pydot.pydot_layout(G, prog="dot")
+        G_layout = {H.nodes[n]["node_label"]: p for n, p in H_layout.items()}
 
     """
     import pydot

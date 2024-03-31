@@ -3,6 +3,8 @@ Components
 **********
 .. automodule:: networkx.algorithms.components
 
+.. _networkx.algorithms.components.connected:
+
 Connectivity
 ------------
 .. autosummary::
@@ -12,6 +14,8 @@ Connectivity
    number_connected_components
    connected_components
    node_connected_component
+
+.. _networkx.algorithms.components.strongly_connected:
 
 Strong connectivity
 -------------------
@@ -25,6 +29,8 @@ Strong connectivity
    kosaraju_strongly_connected_components
    condensation
 
+.. _networkx.algorithms.components.weakly_connected:
+
 Weak connectivity
 -----------------
 .. autosummary::
@@ -33,6 +39,8 @@ Weak connectivity
    is_weakly_connected
    number_weakly_connected_components
    weakly_connected_components
+
+.. _networkx.algorithms.components.attracting:
 
 Attracting components
 ---------------------
@@ -43,6 +51,8 @@ Attracting components
    number_attracting_components
    attracting_components
 
+.. _networkx.algorithms.components.biconnected:
+
 Biconnected components
 ----------------------
 .. autosummary::
@@ -52,6 +62,8 @@ Biconnected components
    biconnected_components
    biconnected_component_edges
    articulation_points
+
+.. _networkx.algorithms.components.semiconnected:
 
 Semiconnectedness
 -----------------

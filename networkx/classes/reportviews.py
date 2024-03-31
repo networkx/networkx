@@ -239,11 +239,13 @@ class NodeView(Mapping, Set):
         Examples
         --------
         >>> G = nx.Graph()
-        >>> G.add_nodes_from([
-        ...     (0, {"color": "red", "weight": 10}),
-        ...     (1, {"color": "blue"}),
-        ...     (2, {"color": "yellow", "weight": 2})
-        ... ])
+        >>> G.add_nodes_from(
+        ...     [
+        ...         (0, {"color": "red", "weight": 10}),
+        ...         (1, {"color": "blue"}),
+        ...         (2, {"color": "yellow", "weight": 2}),
+        ...     ]
+        ... )
 
         Accessing node data with ``data=True`` (the default) returns a
         NodeDataView mapping each node to all of its attributes:
@@ -1082,7 +1084,10 @@ class OutEdgeView(Set, Mapping):
                 f"try list(G.edges)[{e.start}:{e.stop}:{e.step}]"
             )
         u, v = e
-        return self._adjdict[u][v]
+        try:
+            return self._adjdict[u][v]
+        except KeyError as ex:  # Customize msg to indicate exception origin
+            raise KeyError(f"The edge {e} is not in the graph.")
 
     # EdgeDataView methods
     def __call__(self, nbunch=None, data=False, *, default=None):
@@ -1129,11 +1134,13 @@ class OutEdgeView(Set, Mapping):
         Examples
         --------
         >>> G = nx.Graph()
-        >>> G.add_edges_from([
-        ...     (0, 1, {"dist": 3, "capacity": 20}),
-        ...     (1, 2, {"dist": 4}),
-        ...     (2, 0, {"dist": 5})
-        ... ])
+        >>> G.add_edges_from(
+        ...     [
+        ...         (0, 1, {"dist": 3, "capacity": 20}),
+        ...         (1, 2, {"dist": 4}),
+        ...         (2, 0, {"dist": 5}),
+        ...     ]
+        ... )
 
         Accessing edge data with ``data=True`` (the default) returns an
         edge data view object listing each edge with all of its attributes:

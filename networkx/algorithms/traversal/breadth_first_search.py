@@ -218,7 +218,7 @@ def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
         yield from generic_bfs_edges(G, source, successors, depth_limit)
 
 
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
     """Returns an oriented tree constructed from of a breadth-first-search
     starting at source.
@@ -516,7 +516,7 @@ def bfs_labeled_edges(G, sources):
 
     Examples
     --------
-    >>> G = nx.cycle_graph(4, create_using = nx.DiGraph)
+    >>> G = nx.cycle_graph(4, create_using=nx.DiGraph)
     >>> list(nx.bfs_labeled_edges(G, 0))
     [(0, 1, 'tree'), (1, 2, 'tree'), (2, 3, 'tree'), (3, 0, 'reverse')]
     >>> G = nx.complete_graph(3)

@@ -20,6 +20,7 @@ from dataclasses import dataclass
 from itertools import product
 
 import networkx as nx
+from networkx.utils import np_random_state
 
 __all__ = [
     "graph_edit_distance",
@@ -1209,7 +1210,7 @@ def optimize_edit_paths(
         # assert sorted(G2.edges) == sorted(h for g, h in edge_path if h is not None)
         # print(vertex_path, edge_path, cost, file = sys.stderr)
         # assert cost == maxcost_value
-        yield list(vertex_path), list(edge_path), cost
+        yield list(vertex_path), list(edge_path), float(cost)
 
 
 @nx._dispatchable
@@ -1232,9 +1233,9 @@ def simrank_similarity(
             in_neighbors_u = G.predecessors(u)
             in_neighbors_v = G.predecessors(v)
             scale = C / (len(in_neighbors_u) * len(in_neighbors_v))
-            return scale * sum(simrank(G, w, x)
-                               for w, x in product(in_neighbors_u,
-                                                   in_neighbors_v))
+            return scale * sum(
+                simrank(G, w, x) for w, x in product(in_neighbors_u, in_neighbors_v)
+            )
 
     where ``G`` is the graph, ``u`` is the source, ``v`` is the target,
     and ``C`` is a float decay or importance factor between 0 and 1.
@@ -1350,10 +1351,10 @@ def simrank_similarity(
 
     if isinstance(x, np.ndarray):
         if x.ndim == 1:
-            return dict(zip(G, x))
+            return dict(zip(G, x.tolist()))
         # else x.ndim == 2
-        return {u: dict(zip(G, row)) for u, row in zip(G, x)}
-    return x
+        return {u: dict(zip(G, row)) for u, row in zip(G, x.tolist())}
+    return float(x)
 
 
 def _simrank_similarity_python(
@@ -1653,17 +1654,19 @@ def panther_similarity(
     top_k_sorted = top_k_unsorted[np.argsort(S[top_k_unsorted])][::-1]
 
     # Add back the similarity scores
-    top_k_sorted_names = (node_map[n] for n in top_k_sorted)
-    top_k_with_val = dict(zip(top_k_sorted_names, S[top_k_sorted]))
+    top_k_with_val = dict(
+        zip(node_map[top_k_sorted].tolist(), S[top_k_sorted].tolist())
+    )
 
     # Remove the self-similarity
     top_k_with_val.pop(source, None)
     return top_k_with_val
 
 
+@np_random_state(5)
 @nx._dispatchable(edge_attrs="weight")
 def generate_random_paths(
-    G, sample_size, path_length=5, index_map=None, weight="weight"
+    G, sample_size, path_length=5, index_map=None, weight="weight", seed=None
 ):
     """Randomly generate `sample_size` paths of length `path_length`.
 
@@ -1684,6 +1687,9 @@ def generate_random_paths(
     weight : string or None, optional (default="weight")
         The name of an edge attribute that holds the numerical value
         used as a weight. If None then each edge has weight 1.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
 
     Returns
     -------
@@ -1703,7 +1709,9 @@ def generate_random_paths(
     >>> G = nx.star_graph(3)
     >>> index_map = {}
     >>> random_path = nx.generate_random_paths(G, 3, index_map=index_map)
-    >>> paths_containing_node_0 = [random_path[path_idx] for path_idx in index_map.get(0, [])]
+    >>> paths_containing_node_0 = [
+    ...     random_path[path_idx] for path_idx in index_map.get(0, [])
+    ... ]
 
     References
     ----------
@@ -1715,18 +1723,22 @@ def generate_random_paths(
     """
     import numpy as np
 
+    randint_fn = (
+        seed.integers if isinstance(seed, np.random.Generator) else seed.randint
+    )
+
     # Calculate transition probabilities between
     # every pair of vertices according to Eq. (3)
     adj_mat = nx.to_numpy_array(G, weight=weight)
     inv_row_sums = np.reciprocal(adj_mat.sum(axis=1)).reshape(-1, 1)
     transition_probabilities = adj_mat * inv_row_sums
 
-    node_map = np.array(G)
+    node_map = list(G)
     num_nodes = G.number_of_nodes()
 
     for path_index in range(sample_size):
         # Sample current vertex v = v_i uniformly at random
-        node_index = np.random.randint(0, high=num_nodes)
+        node_index = randint_fn(num_nodes)
         node = node_map[node_index]
 
         # Add v into p_r and add p_r into the path set
@@ -1744,7 +1756,7 @@ def generate_random_paths(
         for _ in range(path_length):
             # Randomly sample a neighbor (v_j) according
             # to transition probabilities from ``node`` (v) to its neighbors
-            nbr_index = np.random.choice(
+            nbr_index = seed.choice(
                 num_nodes, p=transition_probabilities[starting_index]
             )
 

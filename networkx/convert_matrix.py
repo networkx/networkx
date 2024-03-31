@@ -101,20 +101,21 @@ def to_pandas_adjacency(
     diagonal matrix entry value to the weight attribute of the edge
     (or the number 1 if the edge has no weight attribute).  If the
     alternate convention of doubling the edge weight is desired the
-    resulting Pandas DataFrame can be modified as follows:
+    resulting Pandas DataFrame can be modified as follows::
 
-    >>> import pandas as pd
-    >>> pd.options.display.max_columns = 20
-    >>> import numpy as np
-    >>> G = nx.Graph([(1, 1)])
-    >>> df = nx.to_pandas_adjacency(G, dtype=int)
-    >>> df
-       1
-    1  1
-    >>> df.values[np.diag_indices_from(df)] *= 2
-    >>> df
-       1
-    1  2
+        >>> import pandas as pd
+        >>> G = nx.Graph([(1, 1), (2, 2)])
+        >>> df = nx.to_pandas_adjacency(G)
+        >>> df
+             1    2
+        1  1.0  0.0
+        2  0.0  1.0
+        >>> diag_idx = list(range(len(df)))
+        >>> df.iloc[diag_idx, diag_idx] *= 2
+        >>> df
+             1    2
+        1  2.0  0.0
+        2  0.0  2.0
 
     Examples
     --------
@@ -150,7 +151,7 @@ def to_pandas_adjacency(
     return pd.DataFrame(data=M, index=nodelist, columns=nodelist)
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def from_pandas_adjacency(df, create_using=None):
     r"""Returns a graph from Pandas DataFrame.
 
@@ -273,9 +274,9 @@ def to_pandas_edgelist(
     0      A      B     1       7
     1      C      E     9      10
 
-    >>> G = nx.MultiGraph([('A', 'B', {'cost': 1}), ('A', 'B', {'cost': 9})])
-    >>> df = nx.to_pandas_edgelist(G, nodelist=['A', 'C'], edge_key='ekey')
-    >>> df[['source', 'target', 'cost', 'ekey']]
+    >>> G = nx.MultiGraph([("A", "B", {"cost": 1}), ("A", "B", {"cost": 9})])
+    >>> df = nx.to_pandas_edgelist(G, nodelist=["A", "C"], edge_key="ekey")
+    >>> df[["source", "target", "cost", "ekey"]]
       source target  cost  ekey
     0      A      B     1     0
     1      A      B     9     1
@@ -311,7 +312,7 @@ def to_pandas_edgelist(
     return pd.DataFrame(edgelistdict, dtype=dtype)
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def from_pandas_edgelist(
     df,
     source="source",
@@ -623,10 +624,11 @@ def _csr_gen_triples(A):
 
     """
     nrows = A.shape[0]
-    data, indices, indptr = A.data, A.indices, A.indptr
-    for i in range(nrows):
-        for j in range(indptr[i], indptr[i + 1]):
-            yield i, int(indices[j]), data[j]
+    indptr, dst_indices, data = A.indptr, A.indices, A.data
+    import numpy as np
+
+    src_indices = np.repeat(np.arange(nrows), np.diff(indptr))
+    return zip(src_indices.tolist(), dst_indices.tolist(), A.data.tolist())
 
 
 def _csc_gen_triples(A):
@@ -635,10 +637,11 @@ def _csc_gen_triples(A):
 
     """
     ncols = A.shape[1]
-    data, indices, indptr = A.data, A.indices, A.indptr
-    for i in range(ncols):
-        for j in range(indptr[i], indptr[i + 1]):
-            yield int(indices[j]), i, data[j]
+    indptr, src_indices, data = A.indptr, A.indices, A.data
+    import numpy as np
+
+    dst_indices = np.repeat(np.arange(ncols), np.diff(indptr))
+    return zip(src_indices.tolist(), dst_indices.tolist(), A.data.tolist())
 
 
 def _coo_gen_triples(A):
@@ -646,7 +649,7 @@ def _coo_gen_triples(A):
     of weighted edge triples.
 
     """
-    return ((int(i), int(j), d) for i, j, d in zip(A.row, A.col, A.data))
+    return zip(A.row.tolist(), A.col.tolist(), A.data.tolist())
 
 
 def _dok_gen_triples(A):
@@ -655,7 +658,8 @@ def _dok_gen_triples(A):
 
     """
     for (r, c), v in A.items():
-        yield r, c, v
+        # Use `v.item()` to convert a NumPy scalar to the appropriate Python scalar
+        yield int(r), int(c), v.item()
 
 
 def _generate_weighted_edges(A):
@@ -675,7 +679,7 @@ def _generate_weighted_edges(A):
     return _coo_gen_triples(A.tocoo())
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def from_scipy_sparse_array(
     A, parallel_edges=False, create_using=None, edge_attribute="weight"
 ):
@@ -736,9 +740,7 @@ def from_scipy_sparse_array(
     as the number of parallel edges joining those two vertices:
 
     >>> A = sp.sparse.csr_array([[1, 1], [1, 2]])
-    >>> G = nx.from_scipy_sparse_array(
-    ...     A, parallel_edges=True, create_using=nx.MultiGraph
-    ... )
+    >>> G = nx.from_scipy_sparse_array(A, parallel_edges=True, create_using=nx.MultiGraph)
     >>> G[1][1]
     AtlasView({0: {'weight': 1}, 1: {'weight': 1}})
 
@@ -934,7 +936,7 @@ def to_numpy_array(
     >>> G.add_edge(2, 0, weight=0)
     >>> G.add_edge(2, 1, weight=0)
     >>> G.add_edge(3, 0, weight=1)
-    >>> nx.to_numpy_array(G, nonedge=-1.)
+    >>> nx.to_numpy_array(G, nonedge=-1.0)
     array([[-1.,  2., -1.,  1.],
            [ 2., -1.,  0., -1.],
            [-1.,  0., -1.,  0.],
@@ -1019,7 +1021,7 @@ def to_numpy_array(
     return A
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def from_numpy_array(A, parallel_edges=False, create_using=None, edge_attr="weight"):
     """Returns a graph from a 2D NumPy array.
 
