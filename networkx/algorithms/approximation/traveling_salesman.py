@@ -198,7 +198,9 @@ def _shortcutting(circuit):
 
 
 @nx._dispatchable(edge_attrs="weight")
-def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, method=None):
+def traveling_salesman_problem(
+    G, weight="weight", nodes=None, cycle=True, method=None, **kwargs
+):
     """Find the shortest path in `G` connecting specified nodes
 
     This function allows approximate solution to the traveling salesman
@@ -257,11 +259,10 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
         :func:`simulated_annealing_tsp` and :func:`threshold_accepting_tsp`.
 
         If `method is None`: use :func:`christofides` for undirected `G` and
-        :func:`threshold_accepting_tsp` for directed `G`.
+        :func:`asadpour_atsp` for directed `G`.
 
-        To specify parameters for these provided functions, construct lambda
-        functions that state the specific value. `method` must have 2 inputs.
-        (See examples).
+    **kwargs : dict
+        Other keyword arguments to be passed to the `method` function passed in.
 
     Returns
     -------
@@ -286,14 +287,26 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
     >>> path in ([4, 3, 2, 1, 0, 8, 7, 6, 5], [5, 6, 7, 8, 0, 1, 2, 3, 4])
     True
 
-    Build (curry) your own function to provide parameter values to the methods.
+    While no longer required, you can still build (curry) your own function
+    to provide parameter values to the methods.
 
     >>> SA_tsp = nx.approximation.simulated_annealing_tsp
-    >>> method = lambda G, wt: SA_tsp(G, "greedy", weight=wt, temp=500)
+    >>> method = lambda G, weight: SA_tsp(G, "greedy", weight=weight, temp=500)
     >>> path = tsp(G, cycle=False, method=method)
     >>> path in ([4, 3, 2, 1, 0, 8, 7, 6, 5], [5, 6, 7, 8, 0, 1, 2, 3, 4])
     True
 
+    Otherwise, pass other keyword arguments directly into the tsp function.
+
+    >>> path = tsp(
+    ...     G,
+    ...     cycle=False,
+    ...     method=nx.approximation.simulated_annealing_tsp,
+    ...     init_cycle="greedy",
+    ...     temp=500,
+    ... )
+    >>> path in ([4, 3, 2, 1, 0, 8, 7, 6, 5], [5, 6, 7, 8, 0, 1, 2, 3, 4])
+    True
     """
     if method is None:
         if G.is_directed():
@@ -321,7 +334,8 @@ def traveling_salesman_problem(G, weight="weight", nodes=None, cycle=True, metho
             if u == v:
                 continue
             GG.add_edge(u, v, weight=dist[u][v])
-    best_GG = method(GG, weight)
+
+    best_GG = method(GG, weight=weight, **kwargs)
 
     if not cycle:
         # find and remove the biggest edge
