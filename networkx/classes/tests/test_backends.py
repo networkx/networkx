@@ -85,8 +85,8 @@ def test_graph_converter_needs_backend():
 
 
 @pytest.mark.skipif(
-    "not nx._dispatchable._automatic_backends "
-    "or nx._dispatchable._automatic_backends[0] != 'nx_loopback'"
+    "not nx.config['backend_priority'] "
+    "or nx.config['backend_priority'][0] != 'nx_loopback'"
 )
 def test_backends_kwargs():
     """Test that `<backend-name>_kwargs={...}` works (and is ignored) as expected."""
