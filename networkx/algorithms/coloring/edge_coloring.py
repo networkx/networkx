@@ -94,6 +94,7 @@ def edge_coloring(G):
                         used_colors[t].pop(b)
                         used_colors[t][a] = s
 
+                        # Kempe chain ending at v
                         if t == v:
                             index_b = fan_colors.index(b)
                             fan_colors = fan_colors[:index_b]
@@ -103,11 +104,13 @@ def edge_coloring(G):
 
                         col = B
 
+                        # Kempe chain ending at u
                         if t == u:
                             fan_vertices = []
                             fan_colors = []
                             break
 
+                        # Kempe chain ending at one of the fan vertices
                         if t in fan_vertices:
                             index_t = fan_vertices.index(t)
                             fan_colors = fan_colors[: index_t + 1]
