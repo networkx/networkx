@@ -1,4 +1,5 @@
 """Unit tests for the traveling_salesman module."""
+
 import random
 
 import pytest
@@ -300,10 +301,16 @@ def test_TSP_method():
     G = nx.cycle_graph(9)
     G[4][5]["weight"] = 10
 
-    def my_tsp_method(G, weight):
-        return nx_app.simulated_annealing_tsp(G, "greedy", weight, source=4, seed=1)
+    # Test using the old currying method
+    sa_tsp = lambda G, weight: nx_app.simulated_annealing_tsp(
+        G, "greedy", weight, source=4, seed=1
+    )
 
-    path = nx_app.traveling_salesman_problem(G, method=my_tsp_method, cycle=False)
+    path = nx_app.traveling_salesman_problem(
+        G,
+        method=sa_tsp,
+        cycle=False,
+    )
     print(path)
     assert path == [4, 3, 2, 1, 0, 8, 7, 6, 5]
 
@@ -352,19 +359,27 @@ def test_TSP_weighted():
 
     # Check all methods
     methods = [
-        nx_app.christofides,
-        nx_app.greedy_tsp,
-        lambda G, wt: nx_app.simulated_annealing_tsp(G, "greedy", weight=wt),
-        lambda G, wt: nx_app.threshold_accepting_tsp(G, "greedy", weight=wt),
+        (nx_app.christofides, {}),
+        (nx_app.greedy_tsp, {}),
+        (
+            nx_app.simulated_annealing_tsp,
+            {"init_cycle": "greedy"},
+        ),
+        (
+            nx_app.threshold_accepting_tsp,
+            {"init_cycle": "greedy"},
+        ),
     ]
-    for method in methods:
-        cycle = tsp(G, nodes=[3, 6], weight="weight", method=method)
+    for method, kwargs in methods:
+        cycle = tsp(G, nodes=[3, 6], weight="weight", method=method, **kwargs)
         assert cycle in expected_cycles
 
-        path = tsp(G, nodes=[3, 6], weight="weight", method=method, cycle=False)
+        path = tsp(
+            G, nodes=[3, 6], weight="weight", method=method, cycle=False, **kwargs
+        )
         assert path in expected_paths
 
-        tourpath = tsp(G, weight="weight", method=method, cycle=False)
+        tourpath = tsp(G, weight="weight", method=method, cycle=False, **kwargs)
         assert tourpath in expected_tourpaths
 
 
@@ -738,10 +753,9 @@ def test_asadpour_tsp():
     G = nx.DiGraph()
     G.add_weighted_edges_from(edge_list)
 
-    def fixed_asadpour(G, weight):
-        return nx_app.asadpour_atsp(G, weight, 19)
-
-    tour = nx_app.traveling_salesman_problem(G, weight="weight", method=fixed_asadpour)
+    tour = nx_app.traveling_salesman_problem(
+        G, weight="weight", method=nx_app.asadpour_atsp, seed=19
+    )
 
     # Check that the returned list is a valid tour. Because this is an
     # incomplete graph, the conditions are not as strict. We need the tour to
@@ -756,9 +770,15 @@ def test_asadpour_tsp():
     # the shortest path between those vertices, allowing vertices to appear more
     # than once.
     #
-    # However, we are using a fixed random number generator so we know what the
-    # expected tour is.
-    expected_tours = [[1, 4, 5, 0, 2, 3, 2, 1], [3, 2, 0, 1, 4, 5, 3]]
+    # Even though we are using a fixed seed, multiple tours have been known to
+    # be returned. The first two are from the original delevopment of this test,
+    # and the third one from issue #5913 on GitHub. If other tours are returned,
+    # add it on the list of expected tours.
+    expected_tours = [
+        [1, 4, 5, 0, 2, 3, 2, 1],
+        [3, 2, 0, 1, 4, 5, 3],
+        [3, 2, 1, 0, 5, 4, 3],
+    ]
 
     assert tour in expected_tours
 
@@ -805,10 +825,9 @@ def test_asadpour_real_world():
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
     nx.relabel_nodes(G, node_map, copy=False)
 
-    def fixed_asadpour(G, weight):
-        return nx_app.asadpour_atsp(G, weight, 37, source="JFK")
-
-    tour = nx_app.traveling_salesman_problem(G, weight="weight", method=fixed_asadpour)
+    tour = nx_app.traveling_salesman_problem(
+        G, weight="weight", method=nx_app.asadpour_atsp, seed=37, source="JFK"
+    )
 
     assert tour in expected_tours
 
@@ -853,11 +872,8 @@ def test_asadpour_real_world_path():
     G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
     nx.relabel_nodes(G, node_map, copy=False)
 
-    def fixed_asadpour(G, weight):
-        return nx_app.asadpour_atsp(G, weight, 56)
-
     path = nx_app.traveling_salesman_problem(
-        G, weight="weight", cycle=False, method=fixed_asadpour
+        G, weight="weight", cycle=False, method=nx_app.asadpour_atsp, seed=56
     )
 
     assert path in expected_paths
