@@ -1520,7 +1520,7 @@ def _simrank_similarity_numpy(
         )
 
     if source is not None and target is not None:
-        return newsim[source, target]
+        return float(newsim[source, target])
     if source is not None:
         return newsim[source]
     return newsim
