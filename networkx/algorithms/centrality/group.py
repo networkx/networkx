@@ -350,6 +350,7 @@ def prominent_group(
     else:
         nodes = list(G.nodes)
     DF_tree = nx.Graph()
+    DF_tree.__networkx_cache__ = None  # Disable caching
     PB, sigma, D = _group_preprocessing(G, nodes, weight)
     betweenness = pd.DataFrame.from_dict(PB)
     if C is not None:

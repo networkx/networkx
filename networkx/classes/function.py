@@ -663,6 +663,7 @@ def set_node_attributes(G, values, name=None):
                 G.nodes[n].update(d)
             except KeyError:
                 pass
+    nx._clear_cache(G)
 
 
 def get_node_attributes(G, name, default=None):
@@ -836,6 +837,7 @@ def set_edge_attributes(G, values, name=None):
                     G._adj[u][v].update(d)
                 except KeyError:
                     pass
+    nx._clear_cache(G)
 
 
 def get_edge_attributes(G, name, default=None):
@@ -1038,6 +1040,7 @@ def is_weighted(G, edge=None, weight="weight"):
     return all(weight in data for u, v, data in G.edges(data=True))
 
 
+@nx._dispatchable(edge_attrs="weight")
 def is_negatively_weighted(G, edge=None, weight="weight"):
     """Returns True if `G` has negatively weighted edges.
 

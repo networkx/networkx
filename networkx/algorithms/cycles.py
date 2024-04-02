@@ -764,7 +764,7 @@ def _chordless_cycle_search(F, B, path, length_bound):
 
 
 @not_implemented_for("undirected")
-@nx._dispatchable
+@nx._dispatchable(mutates_input=True)
 def recursive_simple_cycles(G):
     """Find simple cycles (elementary circuits) of a directed graph.
 

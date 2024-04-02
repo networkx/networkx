@@ -951,6 +951,7 @@ class PlanarEmbedding(nx.DiGraph):
             raise nx.NetworkXError(
                 f"The node {n} is not in the planar embedding."
             ) from err
+        nx._clear_cache(self)
 
     def remove_nodes_from(self, nodes):
         """Remove multiple nodes.
@@ -1233,6 +1234,7 @@ class PlanarEmbedding(nx.DiGraph):
             raise nx.NetworkXError(
                 f"The edge {u}-{v} is not in the planar embedding."
             ) from err
+        nx._clear_cache(self)
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
