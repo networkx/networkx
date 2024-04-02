@@ -35,6 +35,7 @@ def _get_broadcast_centers(G, v, values, target):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def tree_broadcast_center(G):
     """Return the Broadcast Center of the tree `G`.
 
@@ -107,6 +108,7 @@ def tree_broadcast_center(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def tree_broadcast_time(G, node=None):
     """Return the Broadcast Time of the tree `G`.
 
