@@ -32,7 +32,8 @@ def test_draw():
         for function, option in itertools.product(functions, options):
             function(barbell, **option)
             plt.savefig("test.ps")
-
+    except ModuleNotFoundError:  # draw_kamada_kawai requires scipy
+        pass
     finally:
         try:
             os.unlink("test.ps")
