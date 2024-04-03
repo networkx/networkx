@@ -167,11 +167,6 @@ def subgraph_view(G, *, filter_node=no_filter, filter_edge=no_filter):
         edge-key if `G` is a multi-graph), which returns `True` if the edge
         should appear in the view.
 
-    cache_length : bool, optional
-        If 'True' the length of the filtered nodes is cached for performance
-        improvement. Setting cache_length 'True' assumes that the length
-        is not change by another function.
-
     Returns
     -------
     graph : networkx.Graph
