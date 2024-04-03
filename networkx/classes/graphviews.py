@@ -134,9 +134,7 @@ def generic_graph_view(G, create_using=None):
 
 
 @deprecate_positional_args(version="3.4")
-def subgraph_view(
-    G, *, filter_node=no_filter, filter_edge=no_filter, cache_length: bool = False
-):
+def subgraph_view(G, *, filter_node=no_filter, filter_edge=no_filter):
     """View of `G` applying a filter on nodes and edges.
 
     `subgraph_view` provides a read-only view of the input graph that excludes
@@ -220,7 +218,7 @@ def subgraph_view(
     newG._graph = G
     newG.graph = G.graph
 
-    newG._node = FilterAtlas(G._node, filter_node, cache_length)
+    newG._node = FilterAtlas(G._node, filter_node)
     if G.is_multigraph():
         Adj = FilterMultiAdjacency
 
@@ -234,8 +232,8 @@ def subgraph_view(
             return filter_edge(v, u)
 
     if G.is_directed():
-        newG._succ = Adj(G._succ, filter_node, filter_edge, cache_length)
-        newG._pred = Adj(G._pred, filter_node, reverse_edge, cache_length)
+        newG._succ = Adj(G._succ, filter_node, filter_edge)
+        newG._pred = Adj(G._pred, filter_node, reverse_edge)
         # newG._adj is synced with _succ
     else:
         newG._adj = Adj(G._adj, filter_node, filter_edge)
