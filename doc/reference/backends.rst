@@ -13,7 +13,7 @@ Backends
 
 Decorator: _dispatchable
 ------------------------
-.. autofunction:: _dispatchable
+.. autodecorator:: _dispatchable
 
 Configs
 -------
@@ -21,3 +21,4 @@ Configs
 
 .. autoclass:: config
 .. autoclass:: NetworkXConfig
+.. autoclass:: Config
