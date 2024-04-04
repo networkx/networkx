@@ -183,8 +183,8 @@ class NetworkXConfig(Config):
     >>> nx.config.backend_priority == nx.config["backend_priority"]
     True
 
-    Config Parameters
-    -----------------
+    Parameters
+    ----------
     backend_priority : list of backend names
         Enable automatic conversion of graphs to backend graphs for algorithms
         implemented by the backend. Priority is given to backends listed earlier.

@@ -1,0 +1,23 @@
+********************
+Backends and Configs
+********************
+
+.. note:: Both NetworkX backend and config systems are experimental. They
+   let you execute an alternate backend implementation instead of NetworkX's
+   pure Python dictionaries implementation. Things will almost certainly
+   change and break in future releases!
+
+Backends
+--------
+.. automodule:: networkx.utils.backends
+
+Backend Decorators
+------------------
+.. autofunction:: _dispatchable
+
+Configs
+-------
+.. automodule:: networkx.utils.configs
+
+.. autoclass:: config
+.. autoclass:: NetworkXConfig
