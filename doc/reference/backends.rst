@@ -11,8 +11,8 @@ Backends
 --------
 .. automodule:: networkx.utils.backends
 
-Backend Decorators
-------------------
+Decorator: _dispatchable
+------------------------
 .. autofunction:: _dispatchable
 
 Configs
