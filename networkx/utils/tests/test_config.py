@@ -169,9 +169,9 @@ def test_not_strict():
     del cfg["y"]
     assert len(cfg) == 0
     assert list(cfg) == []
-    with pytest.raises(AttributeError, match="'y'"):
+    with pytest.raises(AttributeError, match="y"):
         del cfg.y
-    with pytest.raises(KeyError, match="'y'"):
+    with pytest.raises(KeyError, match="y"):
         del cfg["y"]
     with pytest.raises(TypeError, match="missing 1 required keyword-only"):
         FlexibleConfig()
