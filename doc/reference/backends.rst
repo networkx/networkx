@@ -3,7 +3,7 @@ Backends and Configs
 ********************
 
 .. note:: Both NetworkX backend and config systems are experimental. They
-   let you execute an alternate backend implementation instead of NetworkX's
+   let you execute an alternative backend implementation instead of NetworkX's
    pure Python dictionaries implementation. Things will almost certainly
    change and break in future releases!
 

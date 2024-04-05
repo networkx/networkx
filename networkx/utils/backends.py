@@ -9,31 +9,63 @@ implementation, similar to how plugging a charger into a socket redirects the
 electricity to your phone. This design enhances flexibility and integration, making
 NetworkX more adaptable and efficient. 
 
-For example, you can convert the NetworkX Graph object ``G`` into a Graph-like
-object specific to the backend and then pass that in the NetworkX function::
+There are three main ways to use a backend after the package is installed.
+You can set environment variables and run the exact same code you run for
+NetworkX. You can use a keyword argument ``backend=...`` with the NetworkX
+function. Or, you can convert the NetworkX Graph to a backend graph type and
+call a NetworkX function supported by that backend. Environment variables
+and backend keywords automatically convert your NetworkX Graph to the
+backend type. Manually converting it yourself allows you to use that same
+backend graph for more than one function call, reducing conversion time.
 
-    H = nxp.ParallelGraph(G)
-    nx.betweenness_centrality(H, k=10)
+For example, you can set an environment variable before starting python to request
+all dispatchable functions automatically dispatch to the given backend::
+
+    bash> NETWORKX_AUTOMATIC_BACKENDS=cugraph python my_networkx_script.py
 
 or you can specify the backend as a kwarg::
 
     nx.betweenness_centrality(G, k=10, backend="parallel")
 
-Also, you might have seen the ``@nx._dispatchable`` decorator on many of the NetworkX
-functions in the codebase. It is used to redirect the execution of a function to its
-backend implementation and manage all the ``backend_kwargs``. When a dispatchable
-NetworkX algorithm encounters a nx.Graph-like object with a ``__networkx_backend__``
-attribute, it will look for the associated dispatch object in the entry_points, load
-it, and dispatch the computation work to it. Currently, the following are the trusted
-backends of NetworkX:
+or you can convert the NetworkX Graph object ``G`` into a Graph-like
+object specific to the backend and then pass that in the NetworkX function::
+
+    H = nx_parallel.ParallelGraph(G)
+    nx.betweenness_centrality(H, k=10)
+
+How it works: You might have seen the ``@nx._dispatchable`` decorator on
+many of the NetworkX functions in the codebase. It decorates the function
+with code that redirects execution to the function's backend implementation.
+The code also manages any ``backend_kwargs`` you provide to the backend
+version of the function. The code looks for the environment variable or
+a ``backend`` keyword argument and if found, converts the input NetworkX
+graph to the backend format before calling the backend's version of the
+function. If no environment variable or backend keyword are found, the
+dispatching code checks the input graph object for an attribute
+called ``__networkx_backend__`` which tells it which backend provides this
+graph type. That backend's version of the function is then called.
+The backend system relies on Python ``entry_point`` system to signal
+NetworkX that a backend is installed (even if not imported yet). Thus no
+code needs to be changed between running with NetworkX and running with
+a backend to NetworkX. The attribute ``__networkx_backend__`` holds a
+string with the name of the ``entry_point``. If none of these options
+are being used, the decorator code simply calls the NetworkX function
+on the NetworkX graph as usual.
+
+The NetworkX library does not need to know that a backend exists for it
+to work. So long as the backend package creates the entry_point, and
+provides the correct interface, it will be called when the user requests
+it using one of the three approaches described above. Some backends have
+been working with the NetworkX developers to ensure smooth operation.
+They are the following::
 
 - `graphblas <https://github.com/python-graphblas/graphblas-algorithms>`_
 - `cugraph <https://github.com/rapidsai/cugraph/tree/branch-24.04/python/nx-cugraph>`_
 - `parallel <https://github.com/networkx/nx-parallel>`_
 - ``loopback`` is for testing purposes only and is not a real backend.
 
-Note that the ``backend_name`` is ``parallel`` and the package name is ``nx-parallel``, and
-we use ``nx_parallel`` while installing and importing the package.
+Note that the ``backend_name`` is e.g. ``parallel``, the package installed
+is ``nx-parallel``, and we use ``nx_parallel`` while importing the package.
 
 Creating a Custom backend
 -------------------------
@@ -74,8 +106,8 @@ Testing the Custom backend
 To test your custom backend, you can run the NetworkX test suite with your backend.
 This also ensures that the custom backend is compatible with NetworkX's API.
 
-Environment Variable Setup
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Testing Environment Setup
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To enable automatic testing with your custom backend, follow these steps:
 
@@ -307,8 +339,22 @@ class _dispatchable:
         mutates_input=False,
         returns_graph=False,
     ):
-        """A decorator function that dispatches to ``func``'s backend implementation
-        based on the input graph types.
+        """A decorator that makes certain input graph types dispatch to ``func``'s
+        backend implementation.
+
+        Usage can be any of the following decorator forms:
+        - @_dispatchable
+        - @_dispatchable()
+        - @_dispatchable(name="override_name")
+        - @_dispatchable(graphs="graph_var_name")
+        - @_dispatchable(edge_attrs="weight")
+        - @_dispatchable(graphs={"G": 0, "H": 1}, edge_attrs={"weight": "default"})
+        with 0 and 1 giving the position in the signature function for graph objects.
+        When edge_attrs is a dict, keys are keyword names and values are defaults.
+
+        The class attributes are used to allow backends to run networkx tests.
+        For example: `PYTHONPATH=. pytest --backend graphblas --fallback-to-nx`
+        Future work: add configuration to control these.
 
         Parameters
         ----------
