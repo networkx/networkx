@@ -73,15 +73,3 @@ Mapped Queue
    :toctree: generated/
 
    MappedQueue
-
-Backends
---------
-.. note:: NetworkX backends are experimental. They let you execute an alternate
-   backend implementation instead of NetworkX's pure Python dictionaries
-   implementation. Things will change and break in the future!
-
-.. automodule:: networkx.utils.backends
-.. autosummary::
-   :toctree: generated/
-
-   _dispatchable
