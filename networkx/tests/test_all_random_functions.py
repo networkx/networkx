@@ -76,12 +76,16 @@ def run_all_random_functions(seed):
     t(
         approx.traveling_salesman_problem,
         H,
-        method=lambda G, wt: approx.simulated_annealing_tsp(G, "greedy", wt, seed=seed),
+        method=lambda G, weight: approx.simulated_annealing_tsp(
+            G, "greedy", weight, seed=seed
+        ),
     )
     t(
         approx.traveling_salesman_problem,
         H,
-        method=lambda G, wt: approx.threshold_accepting_tsp(G, "greedy", wt, seed=seed),
+        method=lambda G, weight: approx.threshold_accepting_tsp(
+            G, "greedy", weight, seed=seed
+        ),
     )
     t(nx.betweenness_centrality, G, seed=seed)
     t(nx.edge_betweenness_centrality, G, seed=seed)

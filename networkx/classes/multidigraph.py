@@ -508,6 +508,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
             keydict[key] = datadict
             self._succ[u][v] = keydict
             self._pred[v][u] = keydict
+        nx._clear_cache(self)
         return key
 
     def remove_edge(self, u, v, key=None):
@@ -583,6 +584,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
             # remove the key entries if last edge
             del self._succ[u][v]
             del self._pred[v][u]
+        nx._clear_cache(self)
 
     @cached_property
     def edges(self):
