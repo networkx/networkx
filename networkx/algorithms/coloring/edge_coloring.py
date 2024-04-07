@@ -19,11 +19,15 @@ def edge_coloring(G):
                 and values are integers representing colors assigned to the edges.
 
     Edge coloring is the assignment of colors to the edges of a graph in such a way
-    that no two adjacent edges share the same color. This implementation follows
-    the edge coloring algorithm proposed by Vizing.
-
+    that no two adjacent edges share the same color.
+    This implementation follows the proof of the lemma given in Zdenek Dvorak's lecture notes
+    titled Graph coloring: Heawood and Brooks theorems, edge coloring which states
+    Let G be a graph of maximum degree at most d with edges properly colored using
+    d + 1 colors. Let u and v be distinct non-adjacent vertices of G.
+    Then there exists a proper edge coloring using d + 1 colors
+    such that the same color missing at both u and v.
     """
-    
+
     # function to color an edge
     def color_edge(edge, color):
         u, v = edge
@@ -75,7 +79,7 @@ def edge_coloring(G):
                 if c in fan_colors:
                     kempe_flag = 1
                     break
-            
+
             # Finding Kempe Chain
             if kempe_flag:
                 a = c
