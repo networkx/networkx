@@ -42,4 +42,4 @@ def test_hierarchy_weight():
 def test_hierarchy_null_graph():
     G = nx.DiGraph()
     G.add_node(1)
-    pytest.raises(nx.NetworkXPointlessConcept, nx.flow_hierarchy, G)
+    pytest.raises(nx.NetworkXError, nx.flow_hierarchy, G)
