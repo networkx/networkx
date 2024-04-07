@@ -134,6 +134,11 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
     r : float
        Assortativity of graph by degree.
 
+    Raises
+    ------
+    NetworkXPointlessConcept
+        If the graph 'G' is empty.
+
     Examples
     --------
     >>> G = nx.path_graph(4)
@@ -154,6 +159,10 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
     """
     import scipy as sp
 
+    if nx.is_empty(G):
+        raise nx.NetworkXPointlessConcept(
+            "Cannot compute correlation coefficient on an empty graph."
+        )
     xy = node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
     x, y = zip(*xy)
     return float(sp.stats.pearsonr(x, y)[0])
