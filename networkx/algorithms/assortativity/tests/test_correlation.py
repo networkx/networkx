@@ -70,6 +70,7 @@ class TestDegreeMixingCorrelation(BaseTestDegreeMixing):
         ):
             nx.degree_pearson_correlation_coefficient(G)
 
+
 class TestAttributeMixingCorrelation(BaseTestAttributeMixing):
     def test_attribute_assortativity_undirected(self):
         r = nx.attribute_assortativity_coefficient(self.G, "fish")
