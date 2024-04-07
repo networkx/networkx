@@ -3,7 +3,7 @@ import pytest
 import networkx as nx
 
 
-def test_hierarchy_exception():
+def test_hierarchy_undirected():
     G = nx.cycle_graph(5)
     pytest.raises(nx.NetworkXError, nx.flow_hierarchy, G)
 
@@ -42,4 +42,4 @@ def test_hierarchy_weight():
 def test_hierarchy_null_graph():
     G = nx.DiGraph()
     G.add_node(1)
-    pytest.raises(nx.NetworkXError, nx.flow_hierarchy, G)
+    pytest.raises(nx.NetworkXPointlessConcept, nx.flow_hierarchy, G)

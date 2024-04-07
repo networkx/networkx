@@ -26,6 +26,13 @@ def flow_hierarchy(G, weight=None):
     h : float
        Flow hierarchy value
 
+    Raises
+    ------
+    NetworkXPointlessConcept
+       If `G` is empty.
+
+    NetworkXError
+       If `G` is not a directed graph.
     Notes
     -----
     The algorithm described in [1]_ computes the flow hierarchy through
@@ -43,8 +50,8 @@ def flow_hierarchy(G, weight=None):
        http://web.mit.edu/~cmagee/www/documents/28-DetectingEvolvingPatterns_FlowHierarchy.pdf
     """
     # corner case: G has no edges
-    if G.size() == 0:
-        raise nx.NetworkXError("G must have edges in flow_hierarchy")
+    if nx.is_empty(G):
+        raise nx.NetworkXPointlessConcept("G must have edges in flow_hierarchy")
     if not G.is_directed():
         raise nx.NetworkXError("G must be a digraph in flow_hierarchy")
     scc = nx.strongly_connected_components(G)
