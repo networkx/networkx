@@ -42,6 +42,9 @@ def flow_hierarchy(G, weight=None):
        DOI: 10.1002/cplx.20368
        http://web.mit.edu/~cmagee/www/documents/28-DetectingEvolvingPatterns_FlowHierarchy.pdf
     """
+    # corner case: G has no edges
+    if G.size() == 0:
+        raise nx.NetworkXError("G must have edges in flow_hierarchy")
     if not G.is_directed():
         raise nx.NetworkXError("G must be a digraph in flow_hierarchy")
     scc = nx.strongly_connected_components(G)

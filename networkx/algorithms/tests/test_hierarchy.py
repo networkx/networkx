@@ -37,3 +37,9 @@ def test_hierarchy_weight():
         ]
     )
     assert nx.flow_hierarchy(G, weight="weight") == 0.75
+
+
+def test_hierarchy_null_graph():
+    G = nx.DiGraph()
+    G.add_node(1)
+    pytest.raises(nx.NetworkXError, nx.flow_hierarchy, G)
