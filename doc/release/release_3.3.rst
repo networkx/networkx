@@ -16,7 +16,7 @@ API Changes
 - Deprecate the ``create`` argument of ``nonisomorphic_trees`` (`#7316 <https://github.com/networkx/networkx/pull/7316>`_).
 - Improve total_spanning_tree_weight (`#7100 <https://github.com/networkx/networkx/pull/7100>`_).
 - Update __init__.py (`#7320 <https://github.com/networkx/networkx/pull/7320>`_).
-- add **kwargs to traveling_salesman_problem (`#7371 <https://github.com/networkx/networkx/pull/7371>`_).
+- add \*\*kwargs to traveling_salesman_problem (`#7371 <https://github.com/networkx/networkx/pull/7371>`_).
 
 Enhancements
 ------------
@@ -138,7 +138,7 @@ Documentation
 - Option to include initial labels in ``weisfeiler_lehman_subgraph_hashes`` (`#6601 <https://github.com/networkx/networkx/pull/6601>`_).
 - Add eriknw as contributor (`#7343 <https://github.com/networkx/networkx/pull/7343>`_).
 - [DOC, DISPATCH] : updated and added ``backend.py``'s docs (`#7305 <https://github.com/networkx/networkx/pull/7305>`_).
-- add **kwargs to traveling_salesman_problem (`#7371 <https://github.com/networkx/networkx/pull/7371>`_).
+- add \*\*kwargs to traveling_salesman_problem (`#7371 <https://github.com/networkx/networkx/pull/7371>`_).
 - Move the backend docs and connect the config docs. Both in a single sidebar entry (`#7389 <https://github.com/networkx/networkx/pull/7389>`_).
 
 Maintenance
