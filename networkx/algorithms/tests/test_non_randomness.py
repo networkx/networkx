@@ -38,6 +38,5 @@ def test_self_loops():
 
 
 def test_empty_graph():
-    G = nx.Graph()
-    G.add_node(1)
+    G = nx.empty_graph(1)
     pytest.raises(nx.NetworkXError, nx.non_randomness, G)
