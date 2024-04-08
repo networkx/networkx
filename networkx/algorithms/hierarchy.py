@@ -30,6 +30,7 @@ def flow_hierarchy(G, weight=None):
     ------
     NetworkXError
        If `G` is not a directed graph or if `G` has no edges.
+
     Notes
     -----
     The algorithm described in [1]_ computes the flow hierarchy through
