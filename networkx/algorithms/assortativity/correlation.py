@@ -136,8 +136,10 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
 
     Raises
     ------
-    NetworkXPointlessConcept
+    NetworkXError
         If the graph 'G' is empty.
+    ValueError
+        If the graph has insufficient data to compute the correlation coefficient.
 
     Examples
     --------
@@ -160,11 +162,13 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
     import scipy as sp
 
     if nx.is_empty(G):
-        raise nx.NetworkXPointlessConcept(
+        raise nx.NetworkXError(
             "Cannot compute correlation coefficient on an empty graph."
         )
     xy = node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
     x, y = zip(*xy)
+    if len(x) < 2 or len(y) < 2:
+        raise ValueError("Not enough degrees to compute correlation coefficient.")
     return float(sp.stats.pearsonr(x, y)[0])
 
 
