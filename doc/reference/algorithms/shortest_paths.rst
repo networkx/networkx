@@ -6,6 +6,8 @@ Shortest Paths
 
    shortest_path
    all_shortest_paths
+   all_pairs_all_shortest_paths
+   single_source_all_shortest_paths
    shortest_path_length
    average_shortest_path_length
    has_path
