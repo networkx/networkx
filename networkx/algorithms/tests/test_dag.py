@@ -758,6 +758,25 @@ def test_ancestors_descendants_undirected():
     nx.ancestors(G, 2) == nx.descendants(G, 2) == {0, 1, 3, 4}
 
 
+def test_compute_colliders_raise():
+    G = nx.Graph()
+    pytest.raises(nx.NetworkXNotImplemented, nx.compute_colliders, G)
+
+
+def test_compute_colliders():
+    edges = [(0, 1), (0, 2), (3, 2)]
+    G = nx.DiGraph(edges)
+
+    colliders = set(nx.compute_colliders(G))
+    assert len(colliders) == 1
+    assert (0, 2, 3) in colliders
+
+    edges = [("A", "B"), ("C", "B"), ("B", "D"), ("D", "E"), ("G", "E")]
+    G = nx.DiGraph(edges)
+    colliders = set(nx.compute_colliders(G))
+    assert len(colliders) == 2
+
+
 def test_compute_v_structures_raise():
     G = nx.Graph()
     pytest.raises(nx.NetworkXNotImplemented, nx.compute_v_structures, G)
@@ -775,3 +794,7 @@ def test_compute_v_structures():
     G = nx.DiGraph(edges)
     v_structs = set(nx.compute_v_structures(G))
     assert len(v_structs) == 2
+
+    edges = [(0, 1), (2, 1), (0, 2)]  # adjacent parents case: issues#7385
+    G = nx.DiGraph(edges)
+    assert set(nx.compute_v_structures(G)) == set()
