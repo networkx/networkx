@@ -220,7 +220,7 @@ def simple_cycles(G, length_bound=None):
         G = nx.DiGraph()
     else:
         G = nx.Graph()
-    G.add_edges_from((u, v) for u, Gu in G.adj.items() for v in Gu if v != u)
+    G.add_edges_from([(u, v) for u, Gu in G.adj.items() for v in Gu if v != u])
     # this case is not strictly necessary but improves performance
     if length_bound is not None and length_bound == 2:
         if directed:
