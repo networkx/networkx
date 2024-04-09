@@ -398,3 +398,10 @@ class TestGeneratorsBipartite:
         assert set(range(n)) == X
         assert set(range(n, n + m)) == Y
         assert edges == len(list(G.edges()))
+
+    def test_complete_bipartite_graph_str(self):
+        n = (i for i in range(4))
+        m = (i for i in range(4, 7))
+        G = nx.complete_bipartite_graph(n, m)
+        ans = "Graph named 'complete_bipartite_graph(4, 3)' with 7 nodes and 12 edges"
+        assert str(G) == ans
