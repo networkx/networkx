@@ -217,10 +217,10 @@ def simple_cycles(G, length_bound=None):
 
     # explicitly filter out loops; implicitly filter out parallel edges
     if directed:
-        G = nx.DiGraph((u, v) for u, Gu in G.adj.items() for v in Gu if v != u)
+        G = nx.DiGraph()
     else:
-        G = nx.Graph((u, v) for u, Gu in G.adj.items() for v in Gu if v != u)
-
+        G = nx.Graph()
+    G.add_edges_from((u, v) for u, Gu in G.adj.items() for v in Gu if v != u)
     # this case is not strictly necessary but improves performance
     if length_bound is not None and length_bound == 2:
         if directed:
@@ -586,11 +586,14 @@ def chordless_cycles(G, length_bound=None):
     # Nodes with loops cannot belong to longer cycles.  Let's delete them here.
     # also, we implicitly reduce the multiplicity of edges down to 1 in the case
     # of multiedges.
+    edges = [(u, v) for u, Gu in G.adj.items() if u not in Gu for v in Gu]
     if directed:
-        F = nx.DiGraph((u, v) for u, Gu in G.adj.items() if u not in Gu for v in Gu)
+        F = nx.DiGraph()
+        F.add_edges_from(edges)
         B = F.to_undirected(as_view=False)
     else:
-        F = nx.Graph((u, v) for u, Gu in G.adj.items() if u not in Gu for v in Gu)
+        F = nx.Graph()
+        F.add_edges_from(edges)
         B = None
 
     # If we're given a multigraph, we have a few cases to consider with parallel
