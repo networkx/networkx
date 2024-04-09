@@ -11,13 +11,14 @@ class Config:
     """The base class for NetworkX configuration.
 
     There are two ways to use this to create configurations. The first is to
-    simply pass the initial configuration as keyword arguments to ``Config``:
+    simply pass the initial configuration as keyword arguments in a ``Config`` instance:
 
     >>> cfg = Config(eggs=1, spam=5)
     >>> cfg
     Config(eggs=1, spam=5)
 
-    The second--and preferred--way is to subclass ``Config`` with docs and annotations.
+    The second and the more preferred way is to subclass ``Config`` with docs and
+    annotations.
 
     >>> class MyConfig(Config):
     ...     '''Breakfast!'''
@@ -214,8 +215,8 @@ class NetworkXConfig(Config):
     -----
     Environment variables may be used to control some default configurations:
 
-    - NETWORKX_BACKEND_PRIORITY: set `backend_priority` from comma-separated names.
-    - NETWORKX_CACHE_CONVERTED_GRAPHS: set `cache_converted_graphs` to True if nonempty.
+    - ``NETWORKX_BACKEND_PRIORITY``: set ``backend_priority`` from comma-separated names.
+    - ``NETWORKX_CACHE_CONVERTED_GRAPHS``: set ``cache_converted_graphs`` to True if nonempty.
 
     This is a global configuration. Use with caution when using from multiple threads.
     """

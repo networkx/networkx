@@ -1,11 +1,11 @@
-********************
-Backends and Configs
-********************
+**********************************
+Experimental: Backends and Configs
+**********************************
 
-.. note:: Both NetworkX backend and config systems are experimental. They
+.. note:: Both NetworkX backend and config systems are experimental. Backends
    let you execute an alternative backend implementation instead of NetworkX's
-   pure Python dictionaries implementation. Things will almost certainly
-   change and break in future releases!
+   pure Python dictionaries implementation. These things will almost certainly
+   change and break in the future releases!
 
 Backends
 --------
