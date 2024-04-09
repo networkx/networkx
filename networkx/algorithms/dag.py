@@ -1249,7 +1249,7 @@ def compute_colliders(G):
     >>> G = nx.DiGraph()
     >>> G.add_edges_from([(1, 2), (0, 5), (3, 1), (2, 4), (3, 1), (4, 5), (1, 5)])
     >>> sorted(nx.compute_colliders(G))
-    [(0, 5, 1), (0, 5, 4), (4, 5, 1)]
+    [(0, 5, 1), (0, 5, 4), (1, 5, 4)]
 
     See Also
     --------
@@ -1261,6 +1261,7 @@ def compute_colliders(G):
     """
     for node in G.nodes:
         for p1, p2 in combinations(G.predecessors(node), 2):
+            p1, p2 = sorted([p1, p2])  # sorting parents for consistent output
             yield ((p1, node, p2))
 
 
@@ -1291,7 +1292,7 @@ def compute_v_structures(G):
     >>> G = nx.DiGraph()
     >>> G.add_edges_from([(1, 2), (0, 5), (3, 1), (2, 4), (3, 1), (4, 5), (1, 5), (5, 2)])
     >>> sorted(nx.compute_v_structures(G))
-    [(0, 5, 1), (0, 5, 4), (4, 5, 1)]
+    [(0, 5, 1), (0, 5, 4), (1, 5, 4)]
 
     See Also
     --------
