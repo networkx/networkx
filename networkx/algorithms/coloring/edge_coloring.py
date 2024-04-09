@@ -20,12 +20,16 @@ def edge_coloring(G):
 
     Edge coloring is the assignment of colors to the edges of a graph in such a way
     that no two adjacent edges share the same color.
+
+    References
+    ----------
     This implementation follows the proof of the lemma given in Zdenek Dvorak's lecture notes
     titled Graph coloring: Heawood and Brooks theorems, edge coloring which states
     Let G be a graph of maximum degree at most d with edges properly colored using
     d + 1 colors. Let u and v be distinct non-adjacent vertices of G.
     Then there exists a proper edge coloring using d + 1 colors
     such that the same color missing at both u and v.
+    https://iuuk.mff.cuni.cz/~rakdver/kgii/lesson20-6.pdf
     """
 
     # function to color an edge
