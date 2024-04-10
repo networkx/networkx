@@ -11,9 +11,10 @@ Backends
 --------
 .. automodule:: networkx.utils.backends
 
-Decorator: _dispatchable
-------------------------
-.. autodecorator:: _dispatchable
+.. autosummary::
+   :toctree: generated/
+
+   _dispatchable
 
 Configs
 -------
