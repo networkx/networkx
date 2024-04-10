@@ -220,15 +220,16 @@ collect_ignore = []
 needs_numpy = [
     "algorithms/approximation/traveling_salesman.py",
     "algorithms/centrality/current_flow_closeness.py",
+    "algorithms/centrality/laplacian.py",
     "algorithms/node_classification.py",
     "algorithms/non_randomness.py",
     "algorithms/shortest_paths/dense.py",
     "algorithms/tree/mst.py",
+    "drawing/nx_latex.py",
     "generators/expanders.py",
     "linalg/bethehessianmatrix.py",
     "linalg/laplacianmatrix.py",
     "utils/misc.py",
-    "algorithms/centrality/laplacian.py",
 ]
 needs_scipy = [
     "algorithms/approximation/traveling_salesman.py",
@@ -267,7 +268,7 @@ needs_scipy = [
     "linalg/spectrum.py",
     "utils/rcm.py",
 ]
-needs_matplotlib = ["drawing/nx_pylab.py"]
+needs_matplotlib = ["drawing/nx_pylab.py", "generators/classic.py"]
 needs_pandas = ["convert_matrix.py"]
 needs_pygraphviz = ["drawing/nx_agraph.py"]
 needs_pydot = ["drawing/nx_pydot.py"]
