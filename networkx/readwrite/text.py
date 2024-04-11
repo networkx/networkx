@@ -122,7 +122,7 @@ def generate_network_text(
     5. If a maximum depth is specified, an edge to nodes past this maximum
     depth will be represented by an ellipsis.
 
-    6. If a a node has a truthy "collapse" value, then we do not traverse past
+    6. If a node has a truthy "collapse" value, then we do not traverse past
     that node.
 
     Parameters
