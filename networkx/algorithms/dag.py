@@ -1250,9 +1250,9 @@ def colliders(G):
     --------
     >>> G = nx.DiGraph()
     >>> G.add_edges_from([(1, 2), (0, 4), (2, 3), (3, 4), (1, 4), (4, 2)])
-    >>> colliders = [(p1, v, p2) for p1, v, p2 in colliders(G)]
-    >>> colliders
-    [(1, 2, 4), (0, 4, 3), (0, 4, 1), (3, 4, 1)]
+    >>> collidrs = [(min(p1, p2), v, max(p1, p2)) for p1, v, p2 in colliders(G)]
+    >>> sorted(collidrs)
+    [(0, 4, 1), (0, 4, 3), (1, 2, 4), (1, 4, 3)]
 
     See Also
     --------
@@ -1295,9 +1295,9 @@ def v_structures(G):
     --------
     >>> G = nx.DiGraph()
     >>> G.add_edges_from([(1, 2), (0, 4), (2, 3), (3, 4), (1, 4), (4, 2)])
-    >>> vstrct = [(p1, v, p2) for p1, v, p2 in v_structures(G)]
-    >>> vstrct
-    [(0, 4, 3), (0, 4, 1), (3, 4, 1)]
+    >>> vstrct = [(min(p1, p2), v, max(p1, p2)) for p1, v, p2 in v_structures(G)]
+    >>> sorted(vstrct)
+    [(0, 4, 1), (0, 4, 3), (1, 4, 3)]
 
     See Also
     --------
