@@ -1264,7 +1264,7 @@ def colliders(G):
     """
     for node in G.nodes:
         for p1, p2 in combinations(G.predecessors(node), 2):
-            yield ((p1, node, p2))
+            yield (p1, node, p2)
 
 
 @not_implemented_for("undirected")
@@ -1308,7 +1308,5 @@ def v_structures(G):
     `Pearl's PRIMER, Ch-2 page 50: v-structures def. <http://bayes.cs.ucla.edu/PRIMER/primer-ch2.pdf>`_
     """
     for p1, c, p2 in colliders(G):
-        if not (
-            G.has_edge(p1, p2) or G.has_edge(p2, p1)
-        ):
-            yield ((p1, c, p2))
+        if not (G.has_edge(p1, p2) or G.has_edge(p2, p1)):
+            yield (p1, c, p2)
