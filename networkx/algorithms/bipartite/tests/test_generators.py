@@ -398,3 +398,12 @@ class TestGeneratorsBipartite:
         assert set(range(n)) == X
         assert set(range(n, n + m)) == Y
         assert edges == len(list(G.edges()))
+
+    @pytest.mark.parametrize("n", (4, range(4), {0, 1, 2, 3}))
+    @pytest.mark.parametrize("m", (range(4, 7), {4, 5, 6}))
+    def test_complete_bipartite_graph_str(self, n, m):
+        """Ensure G.name is consistent for all inputs accepted by nodes_or_number.
+        See gh-7396"""
+        G = nx.complete_bipartite_graph(n, m)
+        ans = "Graph named 'complete_bipartite_graph(4, 3)' with 7 nodes and 12 edges"
+        assert str(G) == ans
