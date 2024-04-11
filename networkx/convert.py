@@ -98,7 +98,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
             raise nx.NetworkXError("Input is not a correct pygraphviz graph.") from err
 
     # dict of dicts/lists
-    if isinstance(data, dict):
+    if hasattr(data, "setdefault"):
         try:
             return from_dict_of_dicts(
                 data, create_using=create_using, multigraph_input=multigraph_input
@@ -115,9 +115,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
 
     # Pandas DataFrame
     try:
-        import pandas as pd
-
-        if isinstance(data, pd.DataFrame):
+        if hasattr(data, "columns"):
             if data.shape[0] == data.shape[1]:
                 try:
                     return nx.from_pandas_adjacency(data, create_using=create_using)
@@ -137,9 +135,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
 
     # numpy array
     try:
-        import numpy as np
-
-        if isinstance(data, np.ndarray):
+        if hasattr(data, "view"):
             try:
                 return nx.from_numpy_array(data, create_using=create_using)
             except Exception as err:
@@ -151,8 +147,6 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
 
     # scipy sparse array - any format
     try:
-        import scipy
-
         if hasattr(data, "format"):
             try:
                 return nx.from_scipy_sparse_array(data, create_using=create_using)
@@ -164,16 +158,12 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
         warnings.warn("scipy not found, skipping conversion test.", ImportWarning)
 
     # Note: most general check - should remain last in order of execution
-    # Includes containers (e.g. list, set, dict, etc.), generators, and
+    # Includes containers (e.g. list, set, etc.), generators, and
     # iterators (e.g. itertools.chain) of edges
-
-    if isinstance(data, Collection | Generator | Iterator):
-        try:
-            return from_edgelist(data, create_using=create_using)
-        except Exception as err:
-            raise nx.NetworkXError("Input is not a valid edge list") from err
-
-    raise nx.NetworkXError("Input is not a known data type for conversion.")
+    try:
+        return from_edgelist(data, create_using=create_using)
+    except Exception as err:
+        raise nx.NetworkXError("Input is not a known data type for conversion") from err
 
 
 @nx._dispatchable
