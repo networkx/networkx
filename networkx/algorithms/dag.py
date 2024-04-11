@@ -1249,10 +1249,10 @@ def colliders(G):
     Examples
     --------
     >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(1, 2), (0, 5), (3, 1), (2, 4), (3, 1), (4, 5), (1, 5), (5, 2)])
+    >>> G.add_edges_from([(1, 2), (0, 4), (2, 3), (3, 4), (1, 4), (4, 2)])
     >>> colliders = [(p1, v, p2) for p1, v, p2 in colliders(G)]
     >>> colliders
-    [(1, 2, 5), (0, 5, 4), (0, 5, 1), (4, 5, 1)]
+    [(1, 2, 4), (0, 4, 3), (0, 4, 1), (3, 4, 1)]
 
     See Also
     --------
@@ -1294,10 +1294,10 @@ def v_structures(G):
     Examples
     --------
     >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(1, 2), (0, 5), (3, 1), (2, 4), (3, 1), (4, 5), (1, 5), (5, 2)])
+    >>> G.add_edges_from([(1, 2), (0, 4), (2, 3), (3, 4), (1, 4), (4, 2)])
     >>> vstrct = [(p1, v, p2) for p1, v, p2 in v_structures(G)]
     >>> vstrct
-    [(0, 5, 4), (0, 5, 1), (4, 5, 1)]
+    [(0, 4, 3), (0, 4, 1), (3, 4, 1)]
 
     See Also
     --------
