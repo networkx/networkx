@@ -163,7 +163,9 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
     try:
         return from_edgelist(data, create_using=create_using)
     except Exception as err:
-        raise nx.NetworkXError("Input is not a known data type for conversion") from err
+        raise nx.NetworkXError("Input is not a valid edge list") from err
+
+    raise nx.NetworkXError("Input is not a known data type for conversion.")
 
 
 @nx._dispatchable
