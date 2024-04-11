@@ -216,7 +216,7 @@ def from_pandas_adjacency(df, create_using=None):
     A = df.values
     G = from_numpy_array(A, create_using=create_using)
 
-    nx.relabel.relabel_nodes(G, dict(enumerate(df.columns)), copy=False)
+    nx.relabel.relabel_nodes(G, dict(enumerate(df.columns)), copy=True)
     return G
 
 
