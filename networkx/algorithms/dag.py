@@ -30,8 +30,8 @@ __all__ = [
     "dag_longest_path",
     "dag_longest_path_length",
     "dag_to_branching",
-    "compute_colliders",
-    "compute_v_structures",
+    "colliders",
+    "v_structures",
 ]
 
 chaini = chain.from_iterable
@@ -1224,8 +1224,10 @@ def dag_to_branching(G):
 
 @not_implemented_for("undirected")
 @nx._dispatchable
-def compute_colliders(G):
-    """In a DAG, if you have three nodes A, B, and C, and there are edges from A to C
+def colliders(G):
+    """Yields an iterator of 3-nodes tuples that represent all the colliders in `G`.
+
+    In a DAG, if you have three nodes A, B, and C, and there are edges from A to C
     and from B to C, then C is a collider. This means that both A and B are "causing" C
     in the graph, and conditioning on C would open up an association between A and B.
 
@@ -1234,9 +1236,9 @@ def compute_colliders(G):
     G : graph
         A networkx `DiGraph`.
 
-    Returns
-    -------
-    collider : iterator of tuples
+    Yields
+    ------
+    An iterator of tuples
         Each collider is a 3-tuple with the parent, collider, and other parent.
 
     Raises
@@ -1247,13 +1249,14 @@ def compute_colliders(G):
     Examples
     --------
     >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(1, 2), (0, 5), (3, 1), (2, 4), (3, 1), (4, 5), (1, 5)])
-    >>> sorted(nx.compute_colliders(G))
-    [(0, 5, 1), (0, 5, 4), (1, 5, 4)]
+    >>> G.add_edges_from([(1, 2), (0, 5), (3, 1), (2, 4), (3, 1), (4, 5), (1, 5), (5, 2)])
+    >>> colliders = [(p1, v, p2) for p1, v, p2 in colliders(G)]
+    >>> colliders
+    [(1, 2, 5), (0, 5, 4), (0, 5, 1), (4, 5, 1)]
 
     See Also
     --------
-    compute_v_structures
+    v_structures
 
     Notes
     -----
@@ -1261,14 +1264,15 @@ def compute_colliders(G):
     """
     for node in G.nodes:
         for p1, p2 in combinations(G.predecessors(node), 2):
-            p1, p2 = sorted([p1, p2])  # sorting parents for consistent output
             yield ((p1, node, p2))
 
 
 @not_implemented_for("undirected")
 @nx._dispatchable
-def compute_v_structures(G):
-    """Colliders are triples in the directed graph where two parent nodes point to the
+def v_structures(G):
+    """Yields an iterator of 3-nodes tuples that represent all the v-structures in `G`.
+
+    Colliders are triples in the directed graph where two parent nodes point to the
     same child node. V-structures are colliders where the two parent nodes are not
     adjacent.
 
@@ -1277,9 +1281,9 @@ def compute_v_structures(G):
     G : graph
         A networkx `DiGraph`.
 
-    Returns
-    -------
-    vstructs : iterator of tuples
+    Yields
+    ------
+    An iterator of tuples
         Each v-structure is a 3-tuple with the parent, collider, and other parent.
 
     Raises
@@ -1291,19 +1295,20 @@ def compute_v_structures(G):
     --------
     >>> G = nx.DiGraph()
     >>> G.add_edges_from([(1, 2), (0, 5), (3, 1), (2, 4), (3, 1), (4, 5), (1, 5), (5, 2)])
-    >>> sorted(nx.compute_v_structures(G))
-    [(0, 5, 1), (0, 5, 4), (1, 5, 4)]
+    >>> vstrct = [(p1, v, p2) for p1, v, p2 in v_structures(G)]
+    >>> vstrct
+    [(0, 5, 4), (0, 5, 1), (4, 5, 1)]
 
     See Also
     --------
-    compute_colliders
+    colliders
 
     Notes
     -----
     `Pearl's PRIMER, Ch-2 page 50: v-structures def. <http://bayes.cs.ucla.edu/PRIMER/primer-ch2.pdf>`_
     """
-    for collider in compute_colliders(G):
+    for p1, c, p2 in colliders(G):
         if not (
-            G.has_edge(collider[0], collider[2]) or G.has_edge(collider[2], collider[0])
+            G.has_edge(p1, p2) or G.has_edge(p2, p1)
         ):
-            yield collider
+            yield ((p1, c, p2))
