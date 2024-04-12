@@ -2,6 +2,7 @@
 These ``Views`` often restrict element access, with either the entire view or
 layers of nested mappings being read-only.
 """
+
 from collections.abc import Mapping
 
 __all__ = [
@@ -374,7 +375,12 @@ class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
     """
 
     def __iter__(self):
-        if hasattr(self.NODE_OK, "nodes"):
+        try:  # check that NODE_OK has attr 'nodes'
+            node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
+        except AttributeError:
+            node_ok_shorter = False
+        if node_ok_shorter:
+            my_nodes = (n for n in self.NODE_OK.nodes if n in self._atlas)
             my_nodes = (n for n in self.NODE_OK.nodes & self._atlas.keys())
         else:
             my_nodes = (n for n in self._atlas if self.NODE_OK(n))
