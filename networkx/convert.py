@@ -106,10 +106,8 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
             except Exception as err2:
                 raise TypeError("Input is not known type.") from err2
 
-    # edgelist
-    if isinstance(
-        data, list | nx.reportviews.EdgeView | nx.reportviews.EdgeDataView | Iterator
-    ):
+    # edgelists
+    if isinstance(data, list | tuple | nx.reportviews.EdgeViewABC | Iterator):
         try:
             return from_edgelist(data, create_using=create_using)
         except:
