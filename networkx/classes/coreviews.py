@@ -381,7 +381,6 @@ class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
             node_ok_shorter = False
         if node_ok_shorter:
             my_nodes = (n for n in self.NODE_OK.nodes if n in self._atlas)
-            my_nodes = (n for n in self.NODE_OK.nodes & self._atlas.keys())
         else:
             my_nodes = (n for n in self._atlas if self.NODE_OK(n))
         for n in my_nodes:
