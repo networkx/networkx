@@ -319,7 +319,7 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
         return f"{name}({self._atlas!r}, {self.NODE_OK!r})"
 
 
-class FilterAdjacency(Mapping):  # edgedict
+class FilterAdjacency(FilterMixin):  # edgedict
     """A read-only Mapping of Mappings with filtering criteria for nodes and edges.
 
     It is a view into a dict-of-dict-of-dict data structure, and it selects nodes
