@@ -292,7 +292,7 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
         if hasattr(self.NODE_OK, "nodes") and 2 * len(self.NODE_OK.nodes) < len(
             self._atlas
         ):
-            return (n for n in self.NODE_OK.nodes & self._atlas.keys())
+            return (n for n in self.NODE_OK.nodes if n in self._atlas)
         return (n for n in self._atlas if self.NODE_OK(n))
 
     def __getitem__(self, key):
@@ -337,7 +337,7 @@ class FilterAdjacency(Mapping):  # edgedict
         if hasattr(self.NODE_OK, "nodes") and 2 * len(self.NODE_OK.nodes) < len(
             self._atlas
         ):
-            return (n for n in self.NODE_OK.nodes & self._atlas.keys())
+            return (n for n in self.NODE_OK.nodes if n in self._atlas)
         return (n for n in self._atlas if self.NODE_OK(n))
 
     def __getitem__(self, node):
