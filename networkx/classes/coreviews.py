@@ -293,7 +293,7 @@ class FilterMixin(Mapping):
         return (n for n in self._atlas if self.NODE_OK(n))
 
 
-class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
+class FilterAtlas(FilterMixin):  # nodedict, nbrdict, keydict
     """A read-only Mapping of Mappings with filtering criteria for nodes.
 
     It is a view into a dict-of-dict data structure, and it selects only
