@@ -397,8 +397,8 @@ def test_to_numpy_array_structured_multigraph_raises(graph_type):
         nx.to_numpy_array(G, dtype=dtype, weight=None)
 
 
-def test_from_numpy_array_node_labels_bad_size():
-    """An exception is raised when `len(node_labels) != A.shape[0]`."""
+def test_from_numpy_array_nodelist_bad_size():
+    """An exception is raised when `len(nodelist) != A.shape[0]`."""
     n = 5  # Number of nodes
     A = np.diag(np.ones(n - 1), k=1)  # Adj. matrix for P_n
     expected = nx.path_graph(n)
@@ -406,18 +406,18 @@ def test_from_numpy_array_node_labels_bad_size():
     assert graphs_equal(nx.from_numpy_array(A, edge_attr=None), expected)
     nodes = list(range(n))
     assert graphs_equal(
-        nx.from_numpy_array(A, edge_attr=None, node_labels=nodes), expected
+        nx.from_numpy_array(A, edge_attr=None, nodelist=nodes), expected
     )
 
     # Too many node labels
     nodes = list(range(n + 1))
     with pytest.raises(ValueError):
-        nx.from_numpy_array(A, node_labels=nodes)
+        nx.from_numpy_array(A, nodelist=nodes)
 
     # Too few node labels
     nodes = list(range(n - 1))
     with pytest.raises(ValueError):
-        nx.from_numpy_array(A, node_labels=list(range(n - 1)))
+        nx.from_numpy_array(A, nodelist=list(range(n - 1)))
 
 
 @pytest.mark.parametrize(
@@ -430,18 +430,18 @@ def test_from_numpy_array_node_labels_bad_size():
         ["A", 2, 7, "spam", (1, 3)],
     ),
 )
-def test_from_numpy_array_node_labels(nodes):
+def test_from_numpy_array_nodelist(nodes):
     A = np.diag(np.ones(4), k=1)
     # Without edge attributes
     expected = nx.relabel_nodes(
         nx.path_graph(5), mapping=dict(enumerate(nodes)), copy=True
     )
-    G = nx.from_numpy_array(A, edge_attr=None, node_labels=nodes)
+    G = nx.from_numpy_array(A, edge_attr=None, nodelist=nodes)
     assert graphs_equal(G, expected)
 
     # With edge attributes
     nx.set_edge_attributes(expected, 1.0, name="weight")
-    G = nx.from_numpy_array(A, node_labels=nodes)
+    G = nx.from_numpy_array(A, nodelist=nodes)
     assert graphs_equal(G, expected)
 
 
@@ -455,19 +455,17 @@ def test_from_numpy_array_node_labels(nodes):
         ["A", 2, 7, "spam", (1, 3)],
     ),
 )
-def test_from_numpy_array_node_labels_directed(nodes):
+def test_from_numpy_array_nodelist_directed(nodes):
     A = np.diag(np.ones(4), k=1)
     # Without edge attributes
     H = nx.DiGraph([(0, 1), (1, 2), (2, 3), (3, 4)])
     expected = nx.relabel_nodes(H, mapping=dict(enumerate(nodes)), copy=True)
-    G = nx.from_numpy_array(
-        A, create_using=nx.DiGraph, edge_attr=None, node_labels=nodes
-    )
+    G = nx.from_numpy_array(A, create_using=nx.DiGraph, edge_attr=None, nodelist=nodes)
     assert graphs_equal(G, expected)
 
     # With edge attributes
     nx.set_edge_attributes(expected, 1.0, name="weight")
-    G = nx.from_numpy_array(A, create_using=nx.DiGraph, node_labels=nodes)
+    G = nx.from_numpy_array(A, create_using=nx.DiGraph, nodelist=nodes)
     assert graphs_equal(G, expected)
 
 
@@ -481,7 +479,7 @@ def test_from_numpy_array_node_labels_directed(nodes):
         ["A", 2, 7, "spam", (1, 3)],
     ),
 )
-def test_from_numpy_array_node_labels_multigraph(nodes):
+def test_from_numpy_array_nodelist_multigraph(nodes):
     A = np.array(
         [
             [0, 1, 0, 0, 0],
@@ -502,7 +500,7 @@ def test_from_numpy_array_node_labels_multigraph(nodes):
         parallel_edges=True,
         create_using=nx.MultiGraph,
         edge_attr=None,
-        node_labels=nodes,
+        nodelist=nodes,
     )
     assert graphs_equal(G, expected)
 
@@ -518,11 +516,11 @@ def test_from_numpy_array_node_labels_multigraph(nodes):
     ),
 )
 @pytest.mark.parametrize("graph", (nx.complete_graph, nx.cycle_graph, nx.wheel_graph))
-def test_from_numpy_array_node_labels_rountrip(graph, nodes):
+def test_from_numpy_array_nodelist_rountrip(graph, nodes):
     G = graph(5)
     A = nx.to_numpy_array(G)
     expected = nx.relabel_nodes(G, mapping=dict(enumerate(nodes)), copy=True)
-    H = nx.from_numpy_array(A, edge_attr=None, node_labels=nodes)
+    H = nx.from_numpy_array(A, edge_attr=None, nodelist=nodes)
     assert graphs_equal(H, expected)
 
     # With an isolated node
@@ -530,5 +528,5 @@ def test_from_numpy_array_node_labels_rountrip(graph, nodes):
     G.add_node("foo")
     A = nx.to_numpy_array(G)
     expected = nx.relabel_nodes(G, mapping=dict(zip(G.nodes, nodes)), copy=True)
-    H = nx.from_numpy_array(A, edge_attr=None, node_labels=nodes)
+    H = nx.from_numpy_array(A, edge_attr=None, nodelist=nodes)
     assert graphs_equal(H, expected)
