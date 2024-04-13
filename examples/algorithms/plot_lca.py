@@ -14,7 +14,6 @@ color scheme.
 import networkx as nx
 import matplotlib.pyplot as plt
 
-# Generate a random tree with its node positions
 G = nx.DiGraph(
     [
         (0, 2),
@@ -42,8 +41,7 @@ node_colors = ["#D5D7D8" for _ in G]
 node_edge_colors = ["None" for _ in G]
 node_seq = list(G.nodes)
 clr_pairs = (("cyan", "tab:blue"), ("moccasin", "tab:orange"), ("lime", "tab:green"))
-for (children, ancestor), clr_pair in zip(ancestors, clr_pairs):
-    child_clr, anc_clr = clr_pair
+for (children, ancestor), (child_clr, anc_clr) in zip(ancestors, clr_pairs):
     for c in children:
         node_colors[node_seq.index(c)] = child_clr
     node_colors[node_seq.index(ancestor)] = anc_clr
