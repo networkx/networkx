@@ -1047,8 +1047,8 @@ def from_numpy_array(
         The attribute to which the array values are assigned on each edge. If
         it is None, edge attributes will not be assigned.
 
-    nodelist : list of nodes, optional
-        A list of objects to use as the nodes in the graph. If provided, the
+    nodelist : sequence of nodes, optional
+        A sequence of objects to use as the nodes in the graph. If provided, the
         list of nodes must be the same length as the dimensions of `A`. The
         default is `None`, in which case the nodes are drawn from ``range(n)``.
 
