@@ -505,3 +505,30 @@ def test_from_numpy_array_node_labels_multigraph(nodes):
         node_labels=nodes,
     )
     assert graphs_equal(G, expected)
+
+
+@pytest.mark.parametrize(
+    "nodes",
+    (
+        [4, 3, 2, 1, 0],
+        [9, 7, 1, 2, 8],
+        ["a", "b", "c", "d", "e"],
+        [(0, 0), (1, 1), (2, 3), (0, 2), (3, 1)],
+        ["A", 2, 7, "spam", (1, 3)],
+    ),
+)
+@pytest.mark.parametrize("graph", (nx.complete_graph, nx.cycle_graph, nx.wheel_graph))
+def test_from_numpy_array_node_labels_rountrip(graph, nodes):
+    G = graph(5)
+    A = nx.to_numpy_array(G)
+    expected = nx.relabel_nodes(G, mapping=dict(enumerate(nodes)), copy=True)
+    H = nx.from_numpy_array(A, edge_attr=None, node_labels=nodes)
+    assert graphs_equal(H, expected)
+
+    # With an isolated node
+    G = graph(4)
+    G.add_node("foo")
+    A = nx.to_numpy_array(G)
+    expected = nx.relabel_nodes(G, mapping=dict(zip(G.nodes, nodes)), copy=True)
+    H = nx.from_numpy_array(A, edge_attr=None, node_labels=nodes)
+    assert graphs_equal(H, expected)
