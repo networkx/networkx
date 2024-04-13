@@ -1,3 +1,5 @@
+import itertools
+
 import pytest
 
 np = pytest.importorskip("numpy")
@@ -393,3 +395,113 @@ def test_to_numpy_array_structured_multigraph_raises(graph_type):
     dtype = np.dtype([("weight", int), ("cost", int)])
     with pytest.raises(nx.NetworkXError, match="Structured arrays are not supported"):
         nx.to_numpy_array(G, dtype=dtype, weight=None)
+
+
+def test_from_numpy_array_node_labels_bad_size():
+    """An exception is raised when `len(node_labels) != A.shape[0]`."""
+    n = 5  # Number of nodes
+    A = np.diag(np.ones(n - 1), k=1)  # Adj. matrix for P_n
+    expected = nx.path_graph(n)
+
+    assert graphs_equal(nx.from_numpy_array(A, edge_attr=None), expected)
+    nodes = list(range(n))
+    assert graphs_equal(
+        nx.from_numpy_array(A, edge_attr=None, node_labels=nodes), expected
+    )
+
+    # Too many node labels
+    nodes = list(range(n + 1))
+    with pytest.raises(ValueError):
+        nx.from_numpy_array(A, node_labels=nodes)
+
+    # Too few node labels
+    nodes = list(range(n - 1))
+    with pytest.raises(ValueError):
+        nx.from_numpy_array(A, node_labels=list(range(n - 1)))
+
+
+@pytest.mark.parametrize(
+    "nodes",
+    (
+        [4, 3, 2, 1, 0],
+        [9, 7, 1, 2, 8],
+        ["a", "b", "c", "d", "e"],
+        [(0, 0), (1, 1), (2, 3), (0, 2), (3, 1)],
+        ["A", 2, 7, "spam", (1, 3)],
+    ),
+)
+def test_from_numpy_array_node_labels(nodes):
+    A = np.diag(np.ones(4), k=1)
+    # Without edge attributes
+    expected = nx.relabel_nodes(
+        nx.path_graph(5), mapping=dict(enumerate(nodes)), copy=True
+    )
+    G = nx.from_numpy_array(A, edge_attr=None, node_labels=nodes)
+    assert graphs_equal(G, expected)
+
+    # With edge attributes
+    nx.set_edge_attributes(expected, 1.0, name="weight")
+    G = nx.from_numpy_array(A, node_labels=nodes)
+    assert graphs_equal(G, expected)
+
+
+@pytest.mark.parametrize(
+    "nodes",
+    (
+        [4, 3, 2, 1, 0],
+        [9, 7, 1, 2, 8],
+        ["a", "b", "c", "d", "e"],
+        [(0, 0), (1, 1), (2, 3), (0, 2), (3, 1)],
+        ["A", 2, 7, "spam", (1, 3)],
+    ),
+)
+def test_from_numpy_array_node_labels_directed(nodes):
+    A = np.diag(np.ones(4), k=1)
+    # Without edge attributes
+    H = nx.DiGraph([(0, 1), (1, 2), (2, 3), (3, 4)])
+    expected = nx.relabel_nodes(H, mapping=dict(enumerate(nodes)), copy=True)
+    G = nx.from_numpy_array(
+        A, create_using=nx.DiGraph, edge_attr=None, node_labels=nodes
+    )
+    assert graphs_equal(G, expected)
+
+    # With edge attributes
+    nx.set_edge_attributes(expected, 1.0, name="weight")
+    G = nx.from_numpy_array(A, create_using=nx.DiGraph, node_labels=nodes)
+    assert graphs_equal(G, expected)
+
+
+@pytest.mark.parametrize(
+    "nodes",
+    (
+        [4, 3, 2, 1, 0],
+        [9, 7, 1, 2, 8],
+        ["a", "b", "c", "d", "e"],
+        [(0, 0), (1, 1), (2, 3), (0, 2), (3, 1)],
+        ["A", 2, 7, "spam", (1, 3)],
+    ),
+)
+def test_from_numpy_array_node_labels_multigraph(nodes):
+    A = np.array(
+        [
+            [0, 1, 0, 0, 0],
+            [1, 0, 2, 0, 0],
+            [0, 2, 0, 3, 0],
+            [0, 0, 3, 0, 4],
+            [0, 0, 0, 4, 0],
+        ]
+    )
+
+    H = nx.MultiGraph()
+    for i, edge in enumerate(((0, 1), (1, 2), (2, 3), (3, 4))):
+        H.add_edges_from(itertools.repeat(edge, i + 1))
+    expected = nx.relabel_nodes(H, mapping=dict(enumerate(nodes)), copy=True)
+
+    G = nx.from_numpy_array(
+        A,
+        parallel_edges=True,
+        create_using=nx.MultiGraph,
+        edge_attr=None,
+        node_labels=nodes,
+    )
+    assert graphs_equal(G, expected)
