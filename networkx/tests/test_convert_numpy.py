@@ -417,7 +417,7 @@ def test_from_numpy_array_nodelist_bad_size():
     # Too few node labels
     nodes = list(range(n - 1))
     with pytest.raises(ValueError, match="nodelist must have the same length as A"):
-        nx.from_numpy_array(A, nodelist=list(range(n - 1)))
+        nx.from_numpy_array(A, nodelist=nodes)
 
 
 @pytest.mark.parametrize(
