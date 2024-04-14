@@ -281,6 +281,8 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
         self.NODE_OK = NODE_OK
 
     def __len__(self):
+        # check whether NODE_OK stores the number of nodes as `length`
+        # or the nodes themselves as a set `nodes`. If not, count the nodes.
         if hasattr(self.NODE_OK, "length"):
             return self.NODE_OK.length
         if hasattr(self.NODE_OK, "nodes"):
@@ -328,6 +330,8 @@ class FilterAdjacency(Mapping):  # edgedict
         self.EDGE_OK = EDGE_OK
 
     def __len__(self):
+        # check whether NODE_OK stores the number of nodes as `length`
+        # or the nodes themselves as a set `nodes`. If not, count the nodes.
         if hasattr(self.NODE_OK, "length"):
             return self.NODE_OK.length
         if hasattr(self.NODE_OK, "nodes"):
