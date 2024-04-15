@@ -125,8 +125,8 @@ Creating a Custom backend
 
 2.  Adding entry points
 
-        To be a valid backend that is discoverable by NetworkX, your package must
-        register an `entry-point <https://packaging.python.org/en/latest/specifications/entry-points/#entry-points>`_
+        To be discoverable by NetworkX, your package must register an 
+        `entry-point <https://packaging.python.org/en/latest/specifications/entry-points>`_
         ``networkx.backends`` in the package's metadata, with a `key pointing to your
         dispatch object <https://packaging.python.org/en/latest/guides/creating-and-discovering-plugins/#using-package-metadata>`_ .
         For example, if you are using ``setuptools`` to manage your backend package,
