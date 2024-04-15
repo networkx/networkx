@@ -53,7 +53,7 @@ are being used, the decorator code simply calls the NetworkX function
 on the NetworkX graph as usual.
 
 The NetworkX library does not need to know that a backend exists for it
-to work. So as long as the backend package creates the ``entry_point``, and
+to work. As long as the backend package creates the ``entry_point``, and
 provides the correct interface, it will be called when the user requests
 it using one of the three approaches described above. Some backends have
 been working with the NetworkX developers to ensure smooth operation.
