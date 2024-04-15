@@ -151,8 +151,8 @@ Creating a Custom backend
 
 3.  Defining a Backend Graph class
 
-        The backend must create an ``nx.Graph``-like object which contains an attribute
-        ``__networkx_backend__`` with a value of the entry point name::
+        The backend must create an object with an attribute ``__networkx_backend__`` that holds 
+        a string with the entry point name::
 
             class BackendGraph:
                 __networkx_backend__ = "backend_name"
