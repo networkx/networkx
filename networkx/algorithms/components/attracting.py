@@ -30,10 +30,10 @@ def attracting_components(G):
     G : DiGraph, MultiDiGraph
         The graph to be analyzed.
 
-    Returns
-    -------
-    attractors : generator of sets
-        A generator of sets of nodes, one for each attracting component of G.
+    Yields
+    ------
+    attractors : set
+        Sets of nodes, one for each attracting component of `G`.
 
     Raises
     ------

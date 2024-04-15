@@ -46,10 +46,10 @@ def fast_label_propagation_communities(G, *, weight=None, seed=None):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state. See :ref:`Randomness<randomness>`.
 
-    Returns
-    -------
-    communities : iterable
-        Iterable of communities given as sets of nodes.
+    Yields
+    ------
+    communities : set
+        Sets of nodes representing the communities in `G`
 
     Notes
     -----
@@ -172,10 +172,10 @@ def asyn_lpa_communities(G, weight=None, seed=None):
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
 
-    Returns
-    -------
-    communities : iterable
-        Iterable of communities given as sets of nodes.
+    Yields
+    ------
+    communities : set
+        Sets of nodes representing communities in `G`
 
     Notes
     -----

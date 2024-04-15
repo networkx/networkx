@@ -22,10 +22,10 @@ def connected_components(G):
     G : NetworkX graph
        An undirected graph
 
-    Returns
-    -------
-    comp : generator of sets
-       A generator of sets of nodes, one for each component of G.
+    Yields
+    ------
+    set
+       Sets of nodes representing the components of `G`.
 
     Raises
     ------

@@ -96,8 +96,8 @@ def generate_edgelist(G, delimiter=" ", data=True):
        representation of edge data.  If a list of keys use a list of data
        values corresponding to the keys.
 
-    Returns
-    -------
+    Yields
+    ------
     lines : string
         Lines of data in adjlist format.
 

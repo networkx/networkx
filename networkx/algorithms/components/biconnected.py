@@ -112,10 +112,10 @@ def biconnected_component_edges(G):
     G : NetworkX Graph
         An undirected graph.
 
-    Returns
-    -------
-    edges : generator of lists
-        Generator of lists of edges, one list for each bicomponent.
+    Yields
+    ------
+    list
+        Lists of edges, one for each bicomponent of `G`.
 
     Raises
     ------
@@ -169,8 +169,7 @@ def biconnected_component_edges(G):
 @not_implemented_for("directed")
 @nx._dispatchable
 def biconnected_components(G):
-    """Returns a generator of sets of nodes, one set for each biconnected
-    component of the graph
+    """Yield all biconnected components of `G`
 
     Biconnected components are maximal subgraphs such that the removal of a
     node (and all edges incident on that node) will not disconnect the
@@ -186,10 +185,10 @@ def biconnected_components(G):
     G : NetworkX Graph
         An undirected graph.
 
-    Returns
-    -------
-    nodes : generator
-        Generator of sets of nodes, one set for each biconnected component.
+    Yields
+    ------
+    set
+        Sets of nodes, one set for each biconnected component.
 
     Raises
     ------

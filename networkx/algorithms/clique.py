@@ -40,11 +40,11 @@ def enumerate_all_cliques(G):
     G : NetworkX graph
         An undirected graph.
 
-    Returns
-    -------
-    iterator
-        An iterator over cliques, each of which is a list of nodes in
-        `G`. The cliques are ordered according to size.
+    Yields
+    ------
+    list
+        Lists of nodes representing the cliques in `G`. The cliques are ordered
+        according to size.
 
     Notes
     -----
@@ -123,13 +123,12 @@ def find_cliques(G, nodes=None):
         If provided, only yield *maximal cliques* containing all nodes in `nodes`.
         If `nodes` isn't a clique itself, a ValueError is raised.
 
-    Returns
-    -------
-    iterator
-        An iterator over maximal cliques, each of which is a list of
-        nodes in `G`. If `nodes` is provided, only the maximal cliques
-        containing all the nodes in `nodes` are returned. The order of
-        cliques is arbitrary.
+    Yields
+    ------
+    list
+        Lists of nodes representing the maximal cliques in `G`. If `nodes` is
+        provided, only the maximal cliques containing all the nodes in `nodes`
+        are returned. The order of cliques is arbitrary.
 
     Raises
     ------
