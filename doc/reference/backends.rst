@@ -1,6 +1,6 @@
-**********************************
-Experimental: Backends and Configs
-**********************************
+********************
+Backends and Configs
+********************
 
 .. note:: Both NetworkX backend and config systems are experimental. Backends
    let you execute an alternative backend implementation instead of NetworkX's

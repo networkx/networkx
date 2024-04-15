@@ -78,7 +78,7 @@ Creating a Custom backend
 
         You can define the following methods in your backend's ``Dispatcher`` class:
 
-        1. ``convert_from_nx`` and ``convert_to_nx`` methods are essential for backend
+        1. ``convert_from_nx`` and ``convert_to_nx`` methods are required for backend
         dispatching to work. The arguments to ``convert_from_nx`` are:
 
             - ``G`` : NetworkX Graph
@@ -101,14 +101,14 @@ Creating a Custom backend
             - ``graph_name`` : str
                 The name of the graph argument being converted.
 
-        2. ``can_run``: 
+        2. ``can_run`` (Optional): 
                 If your backend only partially implements an algorithm, you can define
                 a ``can_run(name, args, kwargs)`` function in your ``Dispatcher`` class that
                 returns True or False indicating whether the backend can run the algorithm with
                 the given arguments or not. Instead of a boolean you can also return a string
                 message to inform the user why that algorithm can't be run.
 
-        3. ``should_run``: 
+        3. ``should_run`` (Optional): 
                 A backend may also define ``should_run(name, args, kwargs)``
                 that is similar to ``can_run``, but answers whether the backend *should* be run
                 (converting if necessary). Like ``can_run``, it receives the original arguments
@@ -117,7 +117,7 @@ Creating a Custom backend
                 is True. If not implemented by the backend, ``can_run`` and ``should_run`` are
                 assumed to always return True if the backend implements the algorithm.
 
-        4. ``on_start_tests``: 
+        4. ``on_start_tests`` (Optional): 
                 A special ``on_start_tests(items)`` function may be defined by the backend.
                 It will be called with the list of NetworkX tests discovered. Each item
                 is a test object that can be marked as xfail if the backend does not support

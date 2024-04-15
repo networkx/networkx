@@ -10,15 +10,8 @@ __all__ = ["Config", "config"]
 class Config:
     """The base class for NetworkX configuration.
 
-    There are two ways to use this to create configurations. The first is to
-    simply pass the initial configuration as keyword arguments in a ``Config`` instance:
-
-    >>> cfg = Config(eggs=1, spam=5)
-    >>> cfg
-    Config(eggs=1, spam=5)
-
-    The second and the more preferred way is to subclass ``Config`` with docs and
-    annotations.
+    There are two ways to use this to create configurations. The recommended way
+    is to subclass ``Config`` with docs and annotations.
 
     >>> class MyConfig(Config):
     ...     '''Breakfast!'''
@@ -29,6 +22,13 @@ class Config:
     ...     def _check_config(self, key, value):
     ...         assert isinstance(value, int) and value >= 0
     >>> cfg = MyConfig(eggs=1, spam=5)
+
+    Another way is to simply pass the initial configuration as keyword arguments to
+    the ``Config`` instance:
+
+    >>> cfg = Config(eggs=1, spam=5)
+    >>> cfg
+    Config(eggs=1, spam=5)
 
     Once defined, config items may be modified, but can't be added or deleted by default.
     ``Config`` is a ``Mapping``, and can get and set configs via attributes or brackets:
