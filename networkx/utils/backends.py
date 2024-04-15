@@ -194,8 +194,7 @@ How tests are run?
    for functions that returns graphs it runs the the backend implementation and the
    networkx implementation and then converts the backend graph into a NetworkX graph
    and then compares them and returns the networkx graph. This can be regarded as
-   (pragmatic) technical debt. We are considering to remove these in future and find
-   other ways to check for such cases.     
+   (pragmatic) technical debt. We may replace these checks in the future.
 
 2. Conversions while running tests :
 
