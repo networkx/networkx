@@ -166,10 +166,11 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
         The pairs of interest. If None, Defaults to all pairs of nodes
         under `root` that have a lowest common ancestor.
 
-    Returns
-    -------
-    lcas : generator of tuples `((u, v), lca)` where `u` and `v` are nodes
-        in `pairs` and `lca` is their lowest common ancestor.
+    Yields
+    ------
+    tuple
+       2-tuples of the form ``((u, v), lca)`` where ``u`` and ``v`` are nodes
+       in `pairs` and ``lca`` is their lowest common ancestor.
 
     Examples
     --------

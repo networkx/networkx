@@ -19,11 +19,10 @@ def weakly_connected_components(G):
     G : NetworkX graph
         A directed graph
 
-    Returns
-    -------
-    comp : generator of sets
-        A generator of sets of nodes, one for each weakly connected
-        component of G.
+    Yields
+    ------
+    set
+        A set of nodes comprising a weakly-connected component of `G`.
 
     Raises
     ------

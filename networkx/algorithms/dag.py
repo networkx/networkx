@@ -1235,11 +1235,11 @@ def compute_v_structures(G):
     G : graph
         A networkx DiGraph.
 
-    Returns
-    -------
-    vstructs : iterator of tuples
-        The v structures within the graph. Each v structure is a 3-tuple with the
-        parent, collider, and other parent.
+    Yields
+    ------
+    tuple
+        The v structures in `G`, where each v structure is a 3-tuple of the form
+        ``(parent1, collider, parent2)``
 
     Examples
     --------

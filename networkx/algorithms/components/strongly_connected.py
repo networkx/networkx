@@ -22,11 +22,10 @@ def strongly_connected_components(G):
     G : NetworkX Graph
         A directed graph.
 
-    Returns
-    -------
-    comp : generator of sets
-        A generator of sets of nodes, one for each strongly connected
-        component of G.
+    Yields
+    ------
+    set
+        A set of nodes representing a strongly connected component of `G`.
 
     Raises
     ------

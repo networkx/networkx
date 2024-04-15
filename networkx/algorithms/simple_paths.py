@@ -403,8 +403,7 @@ def _all_simple_edge_paths(G, source, targets, cutoff):
 @not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs="weight")
 def shortest_simple_paths(G, source, target, weight=None):
-    """Generate all simple paths in the graph G from source to target,
-       starting from shortest ones.
+    """All simple paths in `G` from `source` to `target`, starting from the shortest ones.
 
     A simple path is a path with no repeated nodes.
 
@@ -433,11 +432,11 @@ def shortest_simple_paths(G, source, target, weight=None):
         If None all edges are considered to have unit weight. Default
         value None.
 
-    Returns
-    -------
-    path_generator: generator
-       A generator that produces lists of simple paths, in order from
-       shortest to longest.
+    Yields
+    ------
+    list
+       A list of nodes representing a simple path. Paths are yielded in order
+       according to path length, from shortest to longest.
 
     Raises
     ------
