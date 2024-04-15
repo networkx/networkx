@@ -346,7 +346,9 @@ class _dispatchable:
         returns_graph=False,
     ):
         """A decorator function that is used to redirect the execution of ``func``
-        function to its backend implementation. This decorator function dispatches to
+        function to its backend implementation.
+
+        This decorator function dispatches to
         a different backend implementation based on the input graph types, and it also
         manages all the ``backend_kwargs``. Usage can be any of the following decorator
         forms:
