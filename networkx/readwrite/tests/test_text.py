@@ -7,7 +7,7 @@ import pytest
 import networkx as nx
 
 
-def test_forest_str_directed():
+def test_generate_network_text_forest_directed():
     # Create a directed forest with labels
     graph = nx.balanced_tree(r=2, h=2, create_using=nx.DiGraph)
     for node in graph.nodes:
@@ -38,26 +38,12 @@ def test_forest_str_directed():
     ).strip()
 
     # Basic node case
-    ret = nx.forest_str(graph, with_labels=False)
-    print(ret)
-    assert ret == node_target
+    ret = nx.generate_network_text(graph, with_labels=False)
+    assert "\n".join(ret) == node_target
 
     # Basic label case
-    ret = nx.forest_str(graph, with_labels=True)
-    print(ret)
-    assert ret == label_target
-
-    # Custom write function case
-    lines = []
-    ret = nx.forest_str(graph, write=lines.append, with_labels=False)
-    assert ret is None
-    assert lines == node_target.split("\n")
-
-    # Smoke test to ensure passing the print function works. To properly test
-    # this case we would need to capture stdout. (for potential reference
-    # implementation see :class:`ubelt.util_stream.CaptureStdout`)
-    ret = nx.forest_str(graph, write=print)
-    assert ret is None
+    ret = nx.generate_network_text(graph, with_labels=True)
+    assert "\n".join(ret) == label_target
 
 
 def test_write_network_text_empty_graph():
@@ -97,12 +83,11 @@ def test_write_network_text_within_forest_glyph():
     assert text == target
 
 
-def test_forest_str_directed_multi_tree():
+def test_generate_network_text_directed_multi_tree():
     tree1 = nx.balanced_tree(r=2, h=2, create_using=nx.DiGraph)
     tree2 = nx.balanced_tree(r=2, h=2, create_using=nx.DiGraph)
     forest = nx.disjoint_union_all([tree1, tree2])
-    ret = nx.forest_str(forest)
-    print(ret)
+    ret = "\n".join(nx.generate_network_text(forest))
 
     target = dedent(
         """
@@ -126,8 +111,7 @@ def test_forest_str_directed_multi_tree():
 
     tree3 = nx.balanced_tree(r=2, h=2, create_using=nx.DiGraph)
     forest = nx.disjoint_union_all([tree1, tree2, tree3])
-    ret = nx.forest_str(forest, sources=[0, 14, 7])
-    print(ret)
+    ret = "\n".join(nx.generate_network_text(forest, sources=[0, 14, 7]))
 
     target = dedent(
         """
@@ -156,8 +140,9 @@ def test_forest_str_directed_multi_tree():
     ).strip()
     assert ret == target
 
-    ret = nx.forest_str(forest, sources=[0, 14, 7], ascii_only=True)
-    print(ret)
+    ret = "\n".join(
+        nx.generate_network_text(forest, sources=[0, 14, 7], ascii_only=True)
+    )
 
     target = dedent(
         """
@@ -187,13 +172,12 @@ def test_forest_str_directed_multi_tree():
     assert ret == target
 
 
-def test_forest_str_undirected_multi_tree():
+def test_generate_network_text_undirected_multi_tree():
     tree1 = nx.balanced_tree(r=2, h=2, create_using=nx.Graph)
     tree2 = nx.balanced_tree(r=2, h=2, create_using=nx.Graph)
     tree2 = nx.relabel_nodes(tree2, {n: n + len(tree1) for n in tree2.nodes})
     forest = nx.union(tree1, tree2)
-    ret = nx.forest_str(forest, sources=[0, 7])
-    print(ret)
+    ret = "\n".join(nx.generate_network_text(forest, sources=[0, 7]))
 
     target = dedent(
         """
@@ -215,8 +199,7 @@ def test_forest_str_undirected_multi_tree():
     ).strip()
     assert ret == target
 
-    ret = nx.forest_str(forest, sources=[0, 7], ascii_only=True)
-    print(ret)
+    ret = "\n".join(nx.generate_network_text(forest, sources=[0, 7], ascii_only=True))
 
     target = dedent(
         """
@@ -239,12 +222,9 @@ def test_forest_str_undirected_multi_tree():
     assert ret == target
 
 
-def test_forest_str_undirected():
+def test_generate_network_text_forest_undirected():
     # Create a directed forest
     graph = nx.balanced_tree(r=2, h=2, create_using=nx.Graph)
-
-    # arbitrary starting point
-    nx.forest_str(graph)
 
     node_target0 = dedent(
         """
@@ -259,8 +239,7 @@ def test_forest_str_undirected():
     ).strip()
 
     # defined starting point
-    ret = nx.forest_str(graph, sources=[0])
-    print(ret)
+    ret = "\n".join(nx.generate_network_text(graph, sources=[0]))
     assert ret == node_target0
 
     # defined starting point
@@ -275,24 +254,11 @@ def test_forest_str_undirected():
             └── 6
         """
     ).strip()
-    ret = nx.forest_str(graph, sources=[2])
-    print(ret)
+    ret = "\n".join(nx.generate_network_text(graph, sources=[2]))
     assert ret == node_target2
 
 
-def test_forest_str_errors():
-    ugraph = nx.complete_graph(3, create_using=nx.Graph)
-
-    with pytest.raises(nx.NetworkXNotImplemented):
-        nx.forest_str(ugraph)
-
-    dgraph = nx.complete_graph(3, create_using=nx.DiGraph)
-
-    with pytest.raises(nx.NetworkXNotImplemented):
-        nx.forest_str(dgraph)
-
-
-def test_forest_str_overspecified_sources():
+def test_generate_network_text_overspecified_sources():
     """
     When sources are directly specified, we won't be able to determine when we
     are in the last component, so there will always be a trailing, leftmost
@@ -335,18 +301,8 @@ def test_forest_str_overspecified_sources():
         """
     ).strip()
 
-    lines = []
-    nx.forest_str(graph, write=lines.append, sources=graph.nodes)
-    got1 = "\n".join(lines)
-    print("got1: ")
-    print(got1)
-
-    lines = []
-    nx.forest_str(graph, write=lines.append)
-    got2 = "\n".join(lines)
-    print("got2: ")
-    print(got2)
-
+    got1 = "\n".join(nx.generate_network_text(graph, sources=graph.nodes))
+    got2 = "\n".join(nx.generate_network_text(graph))
     assert got1 == target1
     assert got2 == target2
 
