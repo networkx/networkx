@@ -73,8 +73,8 @@ class TestDegreeMixingCorrelation(BaseTestDegreeMixing):
     def test_degree_pearson_assortativity_not_enough_degrees(self):
         G = nx.Graph([(1, 1)])
         with pytest.raises(
-            ValueError,
-            match="Not enough degrees to compute correlation coefficient.",
+            nx.NetworkXError,
+            match="Not enough node degrees to compute correlation coefficient.",
         ):
             nx.degree_pearson_correlation_coefficient(G)
 

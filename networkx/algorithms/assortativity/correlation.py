@@ -138,8 +138,7 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
     ------
     NetworkXError
         If the graph 'G' is empty.
-    ValueError
-        If the graph has insufficient data to compute the correlation coefficient.
+        If the graph 'G' has nodes with degrees less than two.
 
     Examples
     --------
@@ -168,7 +167,9 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
     xy = node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
     x, y = zip(*xy)
     if len(x) < 2 or len(y) < 2:
-        raise ValueError("Not enough degrees to compute correlation coefficient.")
+        raise nx.NetworkXError(
+            "Not enough node degrees to compute correlation coefficient."
+        )
     return float(sp.stats.pearsonr(x, y)[0])
 
 
