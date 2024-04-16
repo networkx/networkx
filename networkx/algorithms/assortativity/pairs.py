@@ -6,8 +6,8 @@ __all__ = ["node_attribute_xy", "node_degree_xy"]
 
 @nx._dispatchable(node_attrs="attribute")
 def node_attribute_xy(G, attribute, nodes=None):
-    """Yields a 2-tuple of (attribute, attribute) values for a specificed
-    node-attribute for all edges in G.
+    """Yields a 2-tuple of (`attribute`, `attribute`) values for a specified
+    node-attribute for all edges in `G`.
 
     Parameters
     ----------
