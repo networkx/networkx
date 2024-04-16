@@ -50,7 +50,6 @@ Operations
    :toctree: generated/
 
    join_trees
-   join
 
 Spanning Trees
 --------------
