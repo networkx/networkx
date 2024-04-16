@@ -63,7 +63,7 @@ def node_attribute_xy(G, attribute, nodes=None):
 
 @nx._dispatchable(edge_attrs="weight")
 def node_degree_xy(G, x="out", y="in", weight=None, nodes=None):
-    """Yields a 2-tuple of (degree, degree) values for all edges in G.
+    """Yields 2-tuples of ``(degree, degree)`` values for all edges in `G`.
 
     Parameters
     ----------
