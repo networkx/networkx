@@ -1,4 +1,4 @@
-"""Generators of  x-y pairs of node data."""
+"""Generators of x-y pairs of node data."""
 import networkx as nx
 
 __all__ = ["node_attribute_xy", "node_degree_xy"]
@@ -6,21 +6,22 @@ __all__ = ["node_attribute_xy", "node_degree_xy"]
 
 @nx._dispatchable(node_attrs="attribute")
 def node_attribute_xy(G, attribute, nodes=None):
-    """Returns iterator of node-attribute pairs for all edges in G.
+    """Yields a 2-tuple of (attribute, attribute) values for a specificed
+    node-attribute for all edges in G.
 
     Parameters
     ----------
     G: NetworkX graph
 
     attribute: key
-       The node attribute key.
+        The node attribute key.
 
     nodes: list or iterable (optional)
         Use only edges that are incident to specified nodes.
         The default is all nodes.
 
-    Returns
-    -------
+    Yields
+    ------
     (x, y): 2-tuple
         Generates 2-tuple of (attribute, attribute) values.
 
@@ -29,13 +30,14 @@ def node_attribute_xy(G, attribute, nodes=None):
     >>> G = nx.DiGraph()
     >>> G.add_node(1, color="red")
     >>> G.add_node(2, color="blue")
+    >>> G.add_node(3, color="green")
     >>> G.add_edge(1, 2)
     >>> list(nx.node_attribute_xy(G, "color"))
     [('red', 'blue')]
 
     Notes
     -----
-    For undirected graphs each edge is produced twice, once for each edge
+    For undirected graphs, each edge is produced twice, once for each edge
     representation (u, v) and (v, u), with the exception of self-loop edges
     which only appear once.
     """
@@ -61,7 +63,7 @@ def node_attribute_xy(G, attribute, nodes=None):
 
 @nx._dispatchable(edge_attrs="weight")
 def node_degree_xy(G, x="out", y="in", weight=None, nodes=None):
-    """Generate node degree-degree pairs for edges in G.
+    """Yields a 2-tuple of (degree, degree) values for all edges in G.
 
     Parameters
     ----------
@@ -82,11 +84,10 @@ def node_degree_xy(G, x="out", y="in", weight=None, nodes=None):
         Use only edges that are adjacency to specified nodes.
         The default is all nodes.
 
-    Returns
-    -------
+    Yields
+    ------
     (x, y): 2-tuple
         Generates 2-tuple of (degree, degree) values.
-
 
     Examples
     --------
@@ -99,7 +100,7 @@ def node_degree_xy(G, x="out", y="in", weight=None, nodes=None):
 
     Notes
     -----
-    For undirected graphs each edge is produced twice, once for each edge
+    For undirected graphs, each edge is produced twice, once for each edge
     representation (u, v) and (v, u), with the exception of self-loop edges
     which only appear once.
     """
