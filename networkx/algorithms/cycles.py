@@ -106,7 +106,7 @@ def cycle_basis(G, root=None):
 def simple_cycles(G, length_bound=None):
     """Find simple cycles (elementary circuits) of a graph.
 
-    A ``simple cycle``, or ``elementary circuit``, is a closed path where
+    A "simple cycle", or "elementary circuit", is a closed path where
     no node appears twice.  In a directed graph, two simple cycles are distinct
     if they are not cyclic permutations of each other.  In an undirected graph,
     two simple cycles are distinct if they are not cyclic permutations of each
