@@ -26,8 +26,8 @@ class Config:
     Another way is to simply pass the initial configuration as keyword arguments to
     the ``Config`` instance:
 
-    >>> cfg = Config(eggs=1, spam=5)
-    >>> cfg
+    >>> cfg1 = Config(eggs=1, spam=5)
+    >>> cfg1
     Config(eggs=1, spam=5)
 
     Once defined, config items may be modified, but can't be added or deleted by default.
