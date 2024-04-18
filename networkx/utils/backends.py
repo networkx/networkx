@@ -105,7 +105,7 @@ Creating a Custom backend
                 If your backend only partially implements an algorithm, you can define
                 a ``can_run(name, args, kwargs)`` function in your ``Dispatcher`` class that
                 returns True or False indicating whether the backend can run the algorithm with
-                the given arguments or not. Instead of a boolean you can also return a string
+                the given arguments or not. Instead of a boolean, you can also return a string
                 message to inform the user why that algorithm can't be run.
 
         3. ``should_run`` (Optional): 
@@ -137,7 +137,7 @@ Creating a Custom backend
 
         You can also add the ``backend_info`` entry-point. It points towards the ``get_info``
         function that returns all the backend information, which is then used to build the
-        "Additional Backend Implementation" box at the end of algorithm's documentation
+        "Additional Backend Implementation" box at the end of the algorithm's documentation
         page (e.g. `nx-cugraph's get_info function <https://github.com/rapidsai/cugraph/blob/branch-24.04/python/nx-cugraph/_nx_cugraph/__init__.py>`_)
         Note that the `get_info` function should be an independent function.::
 
@@ -145,7 +145,7 @@ Creating a Custom backend
             backend_name = "your_get_info_function"    
 
         Note that your backend's docs would only appear on the official NetworkX docs only
-        if your backend is a trusted backend of NetworkX, and is present in the
+        if your backend is a trusted backend of NetworkX and is present in the
         `.circleci/config.yml` and `.github/workflows/deploy-docs.yml` files in the
         NetworkX repository.
 
@@ -159,7 +159,7 @@ Creating a Custom backend
                 ...
 
         A backend graph instance may have a ``G.__networkx_cache__`` dict to enable
-        caching, and care should be taken to clear the cache when appropriate.
+        caching and care should be taken to clear the cache when appropriate.
 
 Testing the Custom backend
 --------------------------
@@ -170,7 +170,7 @@ The following steps will help you run the tests:
 
 1. Setting Backend Environment Variables: 
     - ``NETWORKX_TEST_BACKEND`` : Setting this to your registered backend key will let
-      the NetworkX's dispatch machinery automatically convert a regular NetworkX
+      the NetworkX's dispatch machinery automatically converts a regular NetworkX
       ``Graph``, ``DiGraph``, ``MultiGraph``, etc. to their backend equivalents, using
       ``your_dispatcher_class.convert_from_nx(G, ...)`` function.
     - ``NETWORKX_FALLBACK_TO_NX`` (default=False) : Setting this variable to `True` will
@@ -190,10 +190,10 @@ How tests are run?
 
 1. While dispatching to the backend implementation the ``_convert_and_call`` function
    is used and while testing the ``_convert_and_call_for_tests`` function is used.
-   Other than testing it also have checks for functions that returns numpy scalars, and
-   for functions that returns graphs it runs the the backend implementation and the
+   Other than testing it also checks for functions that return numpy scalars, and
+   for functions that return graphs it runs the backend implementation and the
    networkx implementation and then converts the backend graph into a NetworkX graph
-   and then compares them and returns the networkx graph. This can be regarded as
+   and then compares them, and returns the networkx graph. This can be regarded as
    (pragmatic) technical debt. We may replace these checks in the future.
 
 2. Conversions while running tests :
@@ -383,7 +383,7 @@ class _dispatchable:
             If a string, the parameter name of the graph, which must be the first
             argument of the wrapped function. If more than one graph is required
             for the algorithm (or if the graph is not the first argument), provide
-            a dict of parameter name to argument position for each graph argument.
+            a dict of the parameter name to argument position for each graph argument.
             For example, ``@_dispatchable(graphs={"G": 0, "auxiliary?": 4})``
             indicates the 0th parameter ``G`` of the function is a required graph,
             and the 4th parameter ``auxiliary`` is an optional graph.
@@ -425,8 +425,8 @@ class _dispatchable:
             This overrides all the other preserve_*_attrs.
 
         mutates_input : bool or dict, default False
-            For bool, whether the functions mutates an input graph argument.
-            For dict of ``{arg_name: arg_pos}``, arguments that indicates whether an
+            For bool, whether the functions mutate an input graph argument.
+            For dict of ``{arg_name: arg_pos}``, arguments that indicate whether an
             input graph will be mutated, and ``arg_name`` may begin with ``"not "``
             to negate the logic (for example, this is used by ``copy=`` arguments).
             By default, dispatching doesn't convert input graphs to a different
