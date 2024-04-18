@@ -114,9 +114,18 @@ def _kou_steiner_tree(G, terminal_nodes, weight):
 
 def _remove_nonterminal_leaves(G, terminals):
     terminals_set = set(terminals)
-    for n in list(G.nodes):
-        if n not in terminals_set and G.degree(n) == 1:
-            G.remove_node(n)
+    degree_one_nodes = {n for n in G if G.degree(n) == 1}
+    nonterminal_leaves = degree_one_nodes - terminals_set
+    while nonterminal_leaves:
+        possible_nonterminal_leaves = set()
+        for n in nonterminal_leaves:
+            possible_nonterminal_leaves = possible_nonterminal_leaves | set(
+                G.neighbors(n)
+            )
+        G.remove_nodes_from(nonterminal_leaves)
+        nonterminal_leaves = {
+            leaf for leaf in possible_nonterminal_leaves if G.degree(leaf) == 1
+        } - terminals_set
 
 
 ALGORITHMS = {
