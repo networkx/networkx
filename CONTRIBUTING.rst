@@ -430,7 +430,7 @@ General guidelines for making a good gallery plot:
 * Examples should highlight a single feature/command.
 * Try to make the example as simple as possible.
 * Data needed by examples should be included in the same directory and the example script.
-* Add comments to explain things are aren't obvious from reading the code.
+* Add comments to explain things that aren't obvious from reading the code.
 * Describe the feature that you're showcasing and link to other relevant parts of the
   documentation.
 

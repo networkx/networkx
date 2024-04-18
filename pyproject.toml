@@ -61,7 +61,7 @@ default = [
     'pandas>=1.4',
 ]
 developer = [
-    'changelist==0.4',
+    'changelist==0.5',
     'pre-commit>=3.2',
     'mypy>=1.1',
     'rtoml',
@@ -70,7 +70,7 @@ doc = [
     'sphinx>=7',
     'pydata-sphinx-theme>=0.14',
     'sphinx-gallery>=0.14',
-    'numpydoc>=1.6',
+    'numpydoc>=1.7',
     'pillow>=9.4',
     'texext>=0.6.7',
     'myst-nb>=1.0',
