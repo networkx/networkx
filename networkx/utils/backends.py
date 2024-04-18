@@ -76,90 +76,90 @@ Creating a Custom backend
 
 1.  Defining a ``Dispatcher`` class:
 
-        You can define the following methods in your backend's ``Dispatcher`` class:
+      You can define the following methods in your backend's ``Dispatcher`` class:
 
-        1. ``convert_from_nx`` and ``convert_to_nx`` methods are required for backend
-        dispatching to work. The arguments to ``convert_from_nx`` are:
+      1. ``convert_from_nx`` and ``convert_to_nx`` methods are required for backend
+         dispatching to work. The arguments to ``convert_from_nx`` are:
 
-            - ``G`` : NetworkX Graph
-            - ``edge_attrs`` : dict, optional
-                Dictionary mapping edge attributes to default values if missing in ``G``.
-                If None, then no edge attributes will be converted and default may be 1.
-            - ``node_attrs``: dict, optional
-                Dictionary mapping node attributes to default values if missing in ``G``.
-                If None, then no node attributes will be converted.
-            - ``preserve_edge_attrs`` : bool
-                Whether to preserve all edge attributes.
-            - ``preserve_node_attrs`` : bool
-                Whether to preserve all node attributes.
-            - ``preserve_graph_attrs`` : bool
-                Whether to preserve all graph attributes.
-            - ``preserve_all_attrs`` : bool
-                Whether to preserve all graph, node, and edge attributes.
-            - ``name`` : str
-                The name of the algorithm.
-            - ``graph_name`` : str
-                The name of the graph argument being converted.
+          - ``G`` : NetworkX Graph
+          - ``edge_attrs`` : dict, optional
+              Dictionary mapping edge attributes to default values if missing in ``G``.
+              If None, then no edge attributes will be converted and default may be 1.
+          - ``node_attrs``: dict, optional
+              Dictionary mapping node attributes to default values if missing in ``G``.
+              If None, then no node attributes will be converted.
+          - ``preserve_edge_attrs`` : bool
+              Whether to preserve all edge attributes.
+          - ``preserve_node_attrs`` : bool
+              Whether to preserve all node attributes.
+          - ``preserve_graph_attrs`` : bool
+              Whether to preserve all graph attributes.
+          - ``preserve_all_attrs`` : bool
+              Whether to preserve all graph, node, and edge attributes.
+          - ``name`` : str
+              The name of the algorithm.
+          - ``graph_name`` : str
+              The name of the graph argument being converted.
 
-        2. ``can_run`` (Optional): 
-                If your backend only partially implements an algorithm, you can define
-                a ``can_run(name, args, kwargs)`` function in your ``Dispatcher`` class that
-                returns True or False indicating whether the backend can run the algorithm with
-                the given arguments or not. Instead of a boolean, you can also return a string
-                message to inform the user why that algorithm can't be run.
+    2. ``can_run`` (Optional): 
+          If your backend only partially implements an algorithm, you can define
+          a ``can_run(name, args, kwargs)`` function in your ``Dispatcher`` class that
+          returns True or False indicating whether the backend can run the algorithm with
+          the given arguments or not. Instead of a boolean you can also return a string
+          message to inform the user why that algorithm can't be run.
 
-        3. ``should_run`` (Optional): 
-                A backend may also define ``should_run(name, args, kwargs)``
-                that is similar to ``can_run``, but answers whether the backend *should* be run
-                (converting if necessary). Like ``can_run``, it receives the original arguments
-                so it can decide whether it should be run by inspecting the arguments.
-                ``can_run`` runs before ``should_run``, so ``should_run`` may assume ``can_run``
-                is True. If not implemented by the backend, ``can_run`` and ``should_run`` are
-                assumed to always return True if the backend implements the algorithm.
+    3. ``should_run`` (Optional): 
+          A backend may also define ``should_run(name, args, kwargs)``
+          that is similar to ``can_run``, but answers whether the backend *should* be run
+          (converting if necessary). Like ``can_run``, it receives the original arguments
+          so it can decide whether it should be run by inspecting the arguments.
+          ``can_run`` runs before ``should_run``, so ``should_run`` may assume ``can_run``
+          is True. If not implemented by the backend, ``can_run`` and ``should_run`` are
+          assumed to always return True if the backend implements the algorithm.
 
-        4. ``on_start_tests`` (Optional): 
-                A special ``on_start_tests(items)`` function may be defined by the backend.
-                It will be called with the list of NetworkX tests discovered. Each item
-                is a test object that can be marked as xfail if the backend does not support
-                the test using ``item.add_marker(pytest.mark.xfail(reason=...))``.
+    4. ``on_start_tests`` (Optional): 
+          A special ``on_start_tests(items)`` function may be defined by the backend.
+          It will be called with the list of NetworkX tests discovered. Each item
+          is a test object that can be marked as xfail if the backend does not support
+          the test using ``item.add_marker(pytest.mark.xfail(reason=...))``.
 
 2.  Adding entry points
 
-        To be discoverable by NetworkX, your package must register an 
-        `entry-point <https://packaging.python.org/en/latest/specifications/entry-points>`_
-        ``networkx.backends`` in the package's metadata, with a `key pointing to your
-        dispatch object <https://packaging.python.org/en/latest/guides/creating-and-discovering-plugins/#using-package-metadata>`_ .
-        For example, if you are using ``setuptools`` to manage your backend package,
-        you can `add the following to your pyproject.toml file <https://setuptools.pypa.io/en/latest/userguide/entry_point.html>`_::
+      To be discoverable by NetworkX, your package must register an 
+      `entry-point <https://packaging.python.org/en/latest/specifications/entry-points>`_
+      ``networkx.backends`` in the package's metadata, with a `key pointing to your
+      dispatch object <https://packaging.python.org/en/latest/guides/creating-and-discovering-plugins/#using-package-metadata>`_ .
+      For example, if you are using ``setuptools`` to manage your backend package,
+      you can `add the following to your pyproject.toml file <https://setuptools.pypa.io/en/latest/userguide/entry_point.html>`_::
 
-            [project.entry-points."networkx.backends"]
-            backend_name = "your_dispatcher_class"
+          [project.entry-points."networkx.backends"]
+          backend_name = "your_dispatcher_class"
 
-        You can also add the ``backend_info`` entry-point. It points towards the ``get_info``
-        function that returns all the backend information, which is then used to build the
-        "Additional Backend Implementation" box at the end of the algorithm's documentation
-        page (e.g. `nx-cugraph's get_info function <https://github.com/rapidsai/cugraph/blob/branch-24.04/python/nx-cugraph/_nx_cugraph/__init__.py>`_)
-        Note that the `get_info` function should be an independent function.::
+      You can also add the ``backend_info`` entry-point. It points towards the ``get_info``
+      function that returns all the backend information, which is then used to build the
+      "Additional Backend Implementation" box at the end of algorithm's documentation
+      page (e.g. `nx-cugraph's get_info function <https://github.com/rapidsai/cugraph/blob/branch-24.04/python/nx-cugraph/_nx_cugraph/__init__.py>`_)
+      Note that the `get_info` function should be an independent function.::
 
-            [project.entry-points."networkx.backend_info"]
-            backend_name = "your_get_info_function"    
+          [project.entry-points."networkx.backend_info"]
+          backend_name = "your_get_info_function"    
 
-        Note that your backend's docs would only appear on the official NetworkX docs only
-        if your backend is a trusted backend of NetworkX and is present in the
-        `.circleci/config.yml` and `.github/workflows/deploy-docs.yml` files in the
-        NetworkX repository.
+      Note that your backend's docs would only appear on the official NetworkX docs only
+      if your backend is a trusted backend of NetworkX, and is present in the
+      `.circleci/config.yml` and `.github/workflows/deploy-docs.yml` files in the
+      NetworkX repository.
 
 3.  Defining a Backend Graph class
 
-        The backend must create an object with an attribute ``__networkx_backend__`` that holds 
-        a string with the entry point name::
+      The backend must create an object with an attribute ``__networkx_backend__`` that holds 
+      a string with the entry point name::
 
-            class BackendGraph:
-                __networkx_backend__ = "backend_name"
-                ...
+          class BackendGraph:
+              __networkx_backend__ = "backend_name"
+              ...
 
-        A backend graph instance may have a ``G.__networkx_cache__`` dict to enable
-        caching and care should be taken to clear the cache when appropriate.
+      A backend graph instance may have a ``G.__networkx_cache__`` dict to enable
+      caching, and care should be taken to clear the cache when appropriate.
 
 Testing the Custom backend
 --------------------------
