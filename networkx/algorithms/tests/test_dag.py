@@ -771,10 +771,10 @@ def test_colliders():
     assert len(colliders) == 1
     assert (0, 2, 3) in colliders
 
-    edges = [("A", "B"), ("C", "B"), ("B", "D"), ("D", "E"), ("G", "E")]
+    edges = [("A", "B"), ("C", "B"), ("D", "G"), ("D", "E"), ("G", "E")]
     G = nx.DiGraph(edges)
     colliders = set(nx.colliders(G))
-    assert len(colliders) == 2
+    assert colliders == {("A", "B", "C"), ("D", "E", "G")}
 
 
 def test_v_structures_raise():
@@ -790,10 +790,10 @@ def test_v_structures():
     assert len(v_structs) == 1
     assert (0, 2, 3) in v_structs
 
-    edges = [("A", "B"), ("C", "B"), ("B", "D"), ("D", "E"), ("G", "E")]
+    edges = [("A", "B"), ("C", "B"), ("D", "G"), ("D", "E"), ("G", "E")]
     G = nx.DiGraph(edges)
     v_structs = set(nx.v_structures(G))
-    assert len(v_structs) == 2
+    assert v_structs == {("A", "B", "C")}
 
     edges = [(0, 1), (2, 1), (0, 2)]  # adjacent parents case: issues#7385
     G = nx.DiGraph(edges)

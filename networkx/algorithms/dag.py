@@ -1225,11 +1225,13 @@ def dag_to_branching(G):
 @not_implemented_for("undirected")
 @nx._dispatchable
 def colliders(G):
-    """Yields an iterator of 3-nodes tuples that represent all the colliders in `G`.
+    """Yields 3-node tuples that represent the colliders in `G`.
 
-    In a DAG, if you have three nodes A, B, and C, and there are edges from A to C
-    and from B to C, then C is a collider. This means that both A and B are "causing" C
-    in the graph, and conditioning on C would open up an association between A and B.
+    In a Directed Acyclic Graph (DAG), if you have three nodes A, B, and C, and
+    there are edges from A to C and from B to C, then C is a collider [1]_ . In
+    a causal graph setting, this means that both events A and B are "causing" C,
+    and conditioning on C provide an association between A and B even if
+    no direct causal relationship exists between A and B.
 
     Parameters
     ----------
@@ -1248,11 +1250,10 @@ def colliders(G):
 
     Examples
     --------
-    >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(1, 2), (0, 4), (2, 3), (3, 4), (1, 4), (4, 2)])
-    >>> colliders = [(min(p1, p2), v, max(p1, p2)) for p1, v, p2 in nx.colliders(G)]
-    >>> sorted(colliders)
-    [(0, 4, 1), (0, 4, 3), (1, 2, 4), (1, 4, 3)]
+    >>> G = nx.DiGraph([(1, 2), (0, 4), (3, 1), (2, 4), (0, 5), (4, 5), (1, 5)])
+    >>> assert nx.is_directed_acyclic_graph(G)
+    >>> list(nx.colliders(G))
+    [(0, 4, 2), (0, 5, 4), (0, 5, 1), (4, 5, 1)]
 
     See Also
     --------
@@ -1260,7 +1261,19 @@ def colliders(G):
 
     Notes
     -----
-    `Wikipedia: Collider in causal graphs <https://en.wikipedia.org/wiki/Collider_(statistics)>`_
+    This function was written to be used on DAGs. But it works on cyclic graphs
+    too and since colliders are referred to in the cyclic causal graph literature
+    [2]_ we allow cyclic graphs in this function. It is suggested that you test if
+    your input graph is acyclic as in the example if you want that property.
+
+    References
+    ----------
+    .. [1] `Wikipedia: Collider in causal graphs <https://en.wikipedia.org/wiki/Collider_(statistics)>`_
+    .. [2] A Hyttinen, P.O. Hoyer, F. Eberhardt, M J ̈arvisalo, (2013)
+           "Discovering cyclic causal models with latent variables:
+           a general SAT-based procedure", UAI'13: Proceedings of the Twenty-Ninth
+           Conference on Uncertainty in Artificial Intelligence, pg 301–310,
+           `doi:10.5555/3023638.3023669 <https://dl.acm.org/doi/10.5555/3023638.3023669>`_
     """
     for node in G.nodes:
         for p1, p2 in combinations(G.predecessors(node), 2):
@@ -1270,11 +1283,12 @@ def colliders(G):
 @not_implemented_for("undirected")
 @nx._dispatchable
 def v_structures(G):
-    """Yields an iterator of 3-nodes tuples that represent all the v-structures in `G`.
+    """Yields 3-node tuples that represent the v-structures in `G`.
 
-    Colliders are triples in the directed graph where two parent nodes point to the
-    same child node. V-structures are colliders where the two parent nodes are not
-    adjacent.
+    Colliders are triples in the directed acyclic graph (DAG) where two parent nodes
+    point to the same child node. V-structures are colliders where the two parent
+    nodes are not adjacent. In a causal graph setting, the parents do not directly
+    depend on each other, but conditioning on the child node provides an association.
 
     Parameters
     ----------
@@ -1293,11 +1307,10 @@ def v_structures(G):
 
     Examples
     --------
-    >>> G = nx.DiGraph()
-    >>> G.add_edges_from([(1, 2), (0, 4), (2, 3), (3, 4), (1, 4), (4, 2)])
-    >>> vstructures = [(min(p1, p2), v, max(p1, p2)) for p1, v, p2 in nx.v_structures(G)]
-    >>> sorted(vstructures)
-    [(0, 4, 1), (0, 4, 3), (1, 4, 3)]
+    >>> G = nx.DiGraph([(1, 2), (0, 4), (3, 1), (2, 4), (0, 5), (4, 5), (1, 5)])
+    >>> assert nx.is_directed_acyclic_graph(G)
+    >>> list(nx.v_structures(G))
+    [(0, 4, 2), (0, 5, 1), (4, 5, 1)]
 
     See Also
     --------
@@ -1305,7 +1318,15 @@ def v_structures(G):
 
     Notes
     -----
-    `Pearl's PRIMER, Ch-2 page 50: v-structures def. <http://bayes.cs.ucla.edu/PRIMER/primer-ch2.pdf>`_
+    This function was written to be used on DAGs. But it works on cyclic graphs
+    too and since colliders are referred to in the cyclic causal graph literature
+    [2]_ we allow cyclic graphs in this function. It is suggested that you test if
+    your input graph is acyclic as in the example if you want that property.
+
+    References
+    ----------
+    .. [1]  `Pearl's PRIMER,<http://bayes.cs.ucla.edu/PRIMER/primer-ch2.pdf>`_
+            Ch-2 page 50: v-structures def.
     """
     for p1, c, p2 in colliders(G):
         if not (G.has_edge(p1, p2) or G.has_edge(p2, p1)):
