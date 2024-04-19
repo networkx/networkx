@@ -771,7 +771,7 @@ def test_asadpour_tsp():
     # than once.
     #
     # Even though we are using a fixed seed, multiple tours have been known to
-    # be returned. The first two are from the original delevopment of this test,
+    # be returned. The first two are from the original development of this test,
     # and the third one from issue #5913 on GitHub. If other tours are returned,
     # add it on the list of expected tours.
     expected_tours = [
