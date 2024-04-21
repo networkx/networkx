@@ -815,15 +815,14 @@ def test_asadpour_real_world():
         ]
     )
 
-    node_map = {0: "JFK", 1: "LAX", 2: "ORD", 3: "IAH", 4: "PHX", 5: "PHL"}
+    node_list = ["JFK", "LAX", "ORD", "IAH", "PHX", "PHL"]
 
     expected_tours = [
         ["JFK", "LAX", "PHX", "ORD", "IAH", "PHL", "JFK"],
         ["JFK", "ORD", "PHX", "LAX", "IAH", "PHL", "JFK"],
     ]
 
-    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
-    nx.relabel_nodes(G, node_map, copy=False)
+    G = nx.from_numpy_array(G_array, nodelist=node_list, create_using=nx.DiGraph)
 
     tour = nx_app.traveling_salesman_problem(
         G, weight="weight", method=nx_app.asadpour_atsp, seed=37, source="JFK"
@@ -862,15 +861,14 @@ def test_asadpour_real_world_path():
         ]
     )
 
-    node_map = {0: "JFK", 1: "LAX", 2: "ORD", 3: "IAH", 4: "PHX", 5: "PHL"}
+    node_list = ["JFK", "LAX", "ORD", "IAH", "PHX", "PHL"]
 
     expected_paths = [
         ["ORD", "PHX", "LAX", "IAH", "PHL", "JFK"],
         ["JFK", "PHL", "IAH", "ORD", "PHX", "LAX"],
     ]
 
-    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
-    nx.relabel_nodes(G, node_map, copy=False)
+    G = nx.from_numpy_array(G_array, nodelist=node_list, create_using=nx.DiGraph)
 
     path = nx_app.traveling_salesman_problem(
         G, weight="weight", cycle=False, method=nx_app.asadpour_atsp, seed=56
