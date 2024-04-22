@@ -1,8 +1,9 @@
 import pytest
+
 import networkx as nx
 
 
-def test_hierarchy_exception():
+def test_hierarchy_undirected():
     G = nx.cycle_graph(5)
     pytest.raises(nx.NetworkXError, nx.flow_hierarchy, G)
 
@@ -36,3 +37,10 @@ def test_hierarchy_weight():
         ]
     )
     assert nx.flow_hierarchy(G, weight="weight") == 0.75
+
+
+@pytest.mark.parametrize("n", (0, 1, 3))
+def test_hierarchy_empty_graph(n):
+    G = nx.empty_graph(n, create_using=nx.DiGraph)
+    with pytest.raises(nx.NetworkXError, match=".*not applicable to empty graphs"):
+        nx.flow_hierarchy(G)

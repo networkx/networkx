@@ -11,13 +11,32 @@ can be accessed, for example, as
 1
 """
 
-from collections import defaultdict, deque
-from collections.abc import Iterable, Iterator, Sized
-import warnings
+import random
 import sys
 import uuid
-from itertools import tee, chain
+import warnings
+from collections import defaultdict, deque
+from collections.abc import Iterable, Iterator, Sized
+from itertools import chain, tee
+
 import networkx as nx
+
+__all__ = [
+    "flatten",
+    "make_list_of_ints",
+    "dict_to_numpy_array",
+    "arbitrary_element",
+    "pairwise",
+    "groups",
+    "create_random_state",
+    "create_py_random_state",
+    "PythonRandomInterface",
+    "PythonRandomViaNumpyBits",
+    "nodes_equal",
+    "edges_equal",
+    "graphs_equal",
+    "_clear_cache",
+]
 
 
 # some cookbook stuff
@@ -25,45 +44,14 @@ import networkx as nx
 # see G.add_nodes and others in Graph Class in networkx/base.py
 
 
-def is_string_like(obj):  # from John Hunter, types-free version
-    """Check if obj is string."""
-    msg = (
-        "is_string_like is deprecated and will be removed in 3.0."
-        "Use isinstance(obj, str) instead."
-    )
-    warnings.warn(msg, DeprecationWarning)
-    return isinstance(obj, str)
-
-
-def iterable(obj):
-    """ Return True if obj is iterable with a well-defined len()."""
-    msg = (
-        "iterable is deprecated and will be removed in 3.0."
-        "Use isinstance(obj, (collections.abc.Iterable, collections.abc.Sized)) instead."
-    )
-    warnings.warn(msg, DeprecationWarning)
-    if hasattr(obj, "__iter__"):
-        return True
-    try:
-        len(obj)
-    except:
-        return False
-    return True
-
-
-def empty_generator():
-    """ Return a generator with no members """
-    yield from ()
-
-
 def flatten(obj, result=None):
-    """ Return flattened version of (possibly nested) iterable object. """
-    if not isinstance(obj, (Iterable, Sized)) or isinstance(obj, str):
+    """Return flattened version of (possibly nested) iterable object."""
+    if not isinstance(obj, Iterable | Sized) or isinstance(obj, str):
         return obj
     if result is None:
         result = []
     for item in obj:
-        if not isinstance(item, (Iterable, Sized)) or isinstance(item, str):
+        if not isinstance(item, Iterable | Sized) or isinstance(item, str):
             result.append(item)
         else:
             flatten(item, result)
@@ -106,70 +94,18 @@ def make_list_of_ints(sequence):
     return sequence
 
 
-def is_list_of_ints(intlist):
-    """
-    Return True if list is a list of ints.
-
-    .. deprecated:: 2.6
-    """
-    msg = (
-        "is_list_of_ints is deprecated and will be removed in 3.0."
-        "See also: ``networkx.utils.make_list_of_ints.``"
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-    if not isinstance(intlist, list):
-        return False
-    for i in intlist:
-        if not isinstance(i, int):
-            return False
-    return True
-
-
-def make_str(x):
-    """Returns the string representation of t."""
-    msg = "make_str is deprecated and will be removed in 3.0. Use str instead."
-    warnings.warn(msg, DeprecationWarning)
-    return str(x)
-
-
-def generate_unique_node():
-    """ Generate a unique node label."""
-    return str(uuid.uuid1())
-
-
-def default_opener(filename):
-    """Opens `filename` using system's default program.
-
-    Parameters
-    ----------
-    filename : str
-        The path of the file to be opened.
-
-    """
-    from subprocess import call
-
-    cmds = {
-        "darwin": ["open"],
-        "linux": ["xdg-open"],
-        "linux2": ["xdg-open"],
-        "win32": ["cmd.exe", "/C", "start", ""],
-    }
-    cmd = cmds[sys.platform] + [filename]
-    call(cmd)
-
-
 def dict_to_numpy_array(d, mapping=None):
     """Convert a dictionary of dictionaries to a numpy array
     with optional mapping."""
     try:
-        return dict_to_numpy_array2(d, mapping)
+        return _dict_to_numpy_array2(d, mapping)
     except (AttributeError, TypeError):
         # AttributeError is when no mapping was provided and v.keys() fails.
         # TypeError is when a mapping was provided and d[k1][k2] fails.
-        return dict_to_numpy_array1(d, mapping)
+        return _dict_to_numpy_array1(d, mapping)
 
 
-def dict_to_numpy_array2(d, mapping=None):
+def _dict_to_numpy_array2(d, mapping=None):
     """Convert a dictionary of dictionaries to a 2d numpy array
     with optional mapping.
 
@@ -192,11 +128,8 @@ def dict_to_numpy_array2(d, mapping=None):
     return a
 
 
-def dict_to_numpy_array1(d, mapping=None):
-    """Convert a dictionary of numbers to a 1d numpy array
-    with optional mapping.
-
-    """
+def _dict_to_numpy_array1(d, mapping=None):
+    """Convert a dictionary of numbers to a 1d numpy array with optional mapping."""
     import numpy as np
 
     if mapping is None:
@@ -210,62 +143,73 @@ def dict_to_numpy_array1(d, mapping=None):
     return a
 
 
-def is_iterator(obj):
-    """Returns True if and only if the given object is an iterator
-    object.
-
-    .. deprecated:: 2.6.0
-
-       Deprecated in favor of ``isinstance(obj, collections.abc.Iterator)``
-
-    """
-    msg = (
-        "is_iterator is deprecated and will be removed in version 3.0. "
-        "Use ``isinstance(obj, collections.abc.Iterator)`` instead."
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-    has_next_attr = hasattr(obj, "__next__") or hasattr(obj, "next")
-    return iter(obj) is obj and has_next_attr
-
-
 def arbitrary_element(iterable):
     """Returns an arbitrary element of `iterable` without removing it.
 
     This is most useful for "peeking" at an arbitrary element of a set,
-    but can be used for any list, dictionary, etc., as well::
+    but can be used for any list, dictionary, etc., as well.
 
-        >>> arbitrary_element({3, 2, 1})
+    Parameters
+    ----------
+    iterable : `abc.collections.Iterable` instance
+        Any object that implements ``__iter__``, e.g. set, dict, list, tuple,
+        etc.
+
+    Returns
+    -------
+    The object that results from ``next(iter(iterable))``
+
+    Raises
+    ------
+    ValueError
+        If `iterable` is an iterator (because the current implementation of
+        this function would consume an element from the iterator).
+
+    Examples
+    --------
+    Arbitrary elements from common Iterable objects:
+
+    >>> nx.utils.arbitrary_element([1, 2, 3])  # list
+    1
+    >>> nx.utils.arbitrary_element((1, 2, 3))  # tuple
+    1
+    >>> nx.utils.arbitrary_element({1, 2, 3})  # set
+    1
+    >>> d = {k: v for k, v in zip([1, 2, 3], [3, 2, 1])}
+    >>> nx.utils.arbitrary_element(d)  # dict_keys
+    1
+    >>> nx.utils.arbitrary_element(d.values())  # dict values
+    3
+
+    `str` is also an Iterable:
+
+    >>> nx.utils.arbitrary_element("hello")
+    'h'
+
+    :exc:`ValueError` is raised if `iterable` is an iterator:
+
+    >>> iterator = iter([1, 2, 3])  # Iterator, *not* Iterable
+    >>> nx.utils.arbitrary_element(iterator)
+    Traceback (most recent call last):
+        ...
+    ValueError: cannot return an arbitrary item from an iterator
+
+    Notes
+    -----
+    This function does not return a *random* element. If `iterable` is
+    ordered, sequential calls will return the same value::
+
+        >>> l = [1, 2, 3]
+        >>> nx.utils.arbitrary_element(l)
         1
-        >>> arbitrary_element("hello")
-        'h'
-
-    This function raises a :exc:`ValueError` if `iterable` is an
-    iterator (because the current implementation of this function would
-    consume an element from the iterator)::
-
-        >>> iterator = iter([1, 2, 3])
-        >>> arbitrary_element(iterator)
-        Traceback (most recent call last):
-            ...
-        ValueError: cannot return an arbitrary item from an iterator
+        >>> nx.utils.arbitrary_element(l)
+        1
 
     """
     if isinstance(iterable, Iterator):
         raise ValueError("cannot return an arbitrary item from an iterator")
     # Another possible implementation is ``for x in iterable: return x``.
     return next(iter(iterable))
-
-
-# Recipe from the itertools documentation.
-def consume(iterator):
-    "Consume the iterator entirely."
-    # Feed the entire iterator into a zero-length deque.
-    msg = (
-        "consume is deprecated and will be removed in version 3.0. "
-        "Use ``collections.deque(iterator, maxlen=0)`` instead."
-    )
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-    deque(iterator, maxlen=0)
 
 
 # Recipe from the itertools documentation.
@@ -300,29 +244,16 @@ def groups(many_to_one):
     return dict(one_to_many)
 
 
-def to_tuple(x):
-    """Converts lists to tuples.
-
-    Examples
-    --------
-    >>> from networkx.utils import to_tuple
-    >>> a_list = [1, 2, [1, 4]]
-    >>> to_tuple(a_list)
-    (1, 2, (1, 4))
-    """
-    if not isinstance(x, (tuple, list)):
-        return x
-    return tuple(map(to_tuple, x))
-
-
 def create_random_state(random_state=None):
-    """Returns a numpy.random.RandomState instance depending on input.
+    """Returns a numpy.random.RandomState or numpy.random.Generator instance
+    depending on input.
 
     Parameters
     ----------
-    random_state : int or RandomState instance or None  optional (default=None)
+    random_state : int or NumPy RandomState or Generator instance, optional (default=None)
         If int, return a numpy.random.RandomState instance set with seed=int.
-        if numpy.random.RandomState instance, return it.
+        if `numpy.random.RandomState` instance, return it.
+        if `numpy.random.Generator` instance, return it.
         if None or numpy.random, return the global random number generator used
         by numpy.random.
     """
@@ -334,13 +265,78 @@ def create_random_state(random_state=None):
         return random_state
     if isinstance(random_state, int):
         return np.random.RandomState(random_state)
+    if isinstance(random_state, np.random.Generator):
+        return random_state
     msg = (
-        f"{random_state} cannot be used to generate a numpy.random.RandomState instance"
+        f"{random_state} cannot be used to create a numpy.random.RandomState or\n"
+        "numpy.random.Generator instance"
     )
     raise ValueError(msg)
 
 
+class PythonRandomViaNumpyBits(random.Random):
+    """Provide the random.random algorithms using a numpy.random bit generator
+
+    The intent is to allow people to contribute code that uses Python's random
+    library, but still allow users to provide a single easily controlled random
+    bit-stream for all work with NetworkX. This implementation is based on helpful
+    comments and code from Robert Kern on NumPy's GitHub Issue #24458.
+
+    This implementation supercedes that of `PythonRandomInterface` which rewrote
+    methods to account for subtle differences in API between `random` and
+    `numpy.random`. Instead this subclasses `random.Random` and overwrites
+    the methods `random`, `getrandbits`, `getstate`, `setstate` and `seed`.
+    It makes them use the rng values from an input numpy `RandomState` or `Generator`.
+    Those few methods allow the rest of the `random.Random` methods to provide
+    the API interface of `random.random` while using randomness generated by
+    a numpy generator.
+    """
+
+    def __init__(self, rng=None):
+        try:
+            import numpy as np
+        except ImportError:
+            msg = "numpy not found, only random.random available."
+            warnings.warn(msg, ImportWarning)
+
+        if rng is None:
+            self._rng = np.random.mtrand._rand
+        else:
+            self._rng = rng
+
+        # Not necessary, given our overriding of gauss() below, but it's
+        # in the superclass and nominally public, so initialize it here.
+        self.gauss_next = None
+
+    def random(self):
+        """Get the next random number in the range 0.0 <= X < 1.0."""
+        return self._rng.random()
+
+    def getrandbits(self, k):
+        """getrandbits(k) -> x.  Generates an int with k random bits."""
+        if k < 0:
+            raise ValueError("number of bits must be non-negative")
+        numbytes = (k + 7) // 8  # bits / 8 and rounded up
+        x = int.from_bytes(self._rng.bytes(numbytes), "big")
+        return x >> (numbytes * 8 - k)  # trim excess bits
+
+    def getstate(self):
+        return self._rng.__getstate__()
+
+    def setstate(self, state):
+        self._rng.__setstate__(state)
+
+    def seed(self, *args, **kwds):
+        "Do nothing override method."
+        raise NotImplementedError("seed() not implemented in PythonRandomViaNumpyBits")
+
+
+##################################################################
 class PythonRandomInterface:
+    """PythonRandomInterface is included for backward compatibility
+    New code should use PythonRandomViaNumpyBits instead.
+    """
+
     def __init__(self, rng=None):
         try:
             import numpy as np
@@ -354,16 +350,34 @@ class PythonRandomInterface:
             self._rng = rng
 
     def random(self):
-        return self._rng.random_sample()
+        return self._rng.random()
 
     def uniform(self, a, b):
-        return a + (b - a) * self._rng.random_sample()
+        return a + (b - a) * self._rng.random()
 
     def randrange(self, a, b=None):
+        import numpy as np
+
+        if b is None:
+            a, b = 0, a
+        if b > 9223372036854775807:  # from np.iinfo(np.int64).max
+            tmp_rng = PythonRandomViaNumpyBits(self._rng)
+            return tmp_rng.randrange(a, b)
+
+        if isinstance(self._rng, np.random.Generator):
+            return self._rng.integers(a, b)
         return self._rng.randint(a, b)
 
+    # NOTE: the numpy implementations of `choice` don't support strings, so
+    # this cannot be replaced with self._rng.choice
     def choice(self, seq):
-        return seq[self._rng.randint(0, len(seq))]
+        import numpy as np
+
+        if isinstance(self._rng, np.random.Generator):
+            idx = self._rng.integers(0, len(seq))
+        else:
+            idx = self._rng.randint(0, len(seq))
+        return seq[idx]
 
     def gauss(self, mu, sigma):
         return self._rng.normal(mu, sigma)
@@ -378,6 +392,14 @@ class PythonRandomInterface:
         return self._rng.choice(list(seq), size=(k,), replace=False)
 
     def randint(self, a, b):
+        import numpy as np
+
+        if b > 9223372036854775807:  # from np.iinfo(np.int64).max
+            tmp_rng = PythonRandomViaNumpyBits(self._rng)
+            return tmp_rng.randint(a, b)
+
+        if isinstance(self._rng, np.random.Generator):
+            return self._rng.integers(a, b + 1)
         return self._rng.randint(a, b + 1)
 
     #    exponential as expovariate with 1/argument,
@@ -406,35 +428,174 @@ def create_py_random_state(random_state=None):
     Parameters
     ----------
     random_state : int or random number generator or None (default=None)
-        If int, return a random.Random instance set with seed=int.
-        if random.Random instance, return it.
-        if None or the `random` package, return the global random number
-        generator used by `random`.
-        if np.random package, return the global numpy random number
-        generator wrapped in a PythonRandomInterface class.
-        if np.random.RandomState instance, return it wrapped in
-        PythonRandomInterface
-        if a PythonRandomInterface instance, return it
+        - If int, return a `random.Random` instance set with seed=int.
+        - If `random.Random` instance, return it.
+        - If None or the `np.random` package, return the global random number
+          generator used by `np.random`.
+        - If an `np.random.Generator` instance, or the `np.random` package, or
+          the global numpy random number generator, then return it.
+          wrapped in a `PythonRandomViaNumpyBits` class.
+        - If a `PythonRandomViaNumpyBits` instance, return it.
+        - If a `PythonRandomInterface` instance, return it.
+        - If a `np.random.RandomState` instance and not the global numpy default,
+          return it wrapped in `PythonRandomInterface` for backward bit-stream
+          matching with legacy code.
+
+    Notes
+    -----
+    - A diagram intending to illustrate the relationships behind our support
+      for numpy random numbers is called
+      `NetworkX Numpy Random Numbers <https://excalidraw.com/#room=b5303f2b03d3af7ccc6a,e5ZDIWdWWCTTsg8OqoRvPA>`_.
+    - More discussion about this support also appears in
+      `gh-6869#comment <https://github.com/networkx/networkx/pull/6869#issuecomment-1944799534>`_.
+    - Wrappers of numpy.random number generators allow them to mimic the Python random
+      number generation algorithms. For example, Python can create arbitrarily large
+      random ints, and the wrappers use Numpy bit-streams with CPython's random module
+      to choose arbitrarily large random integers too.
+    - We provide two wrapper classes:
+      `PythonRandomViaNumpyBits` is usually what you want and is always used for
+      `np.Generator` instances. But for users who need to recreate random numbers
+      produced in NetworkX 3.2 or earlier, we maintain the `PythonRandomInterface`
+      wrapper as well. We use it only used if passed a (non-default) `np.RandomState`
+      instance pre-initialized from a seed. Otherwise the newer wrapper is used.
     """
-    import random
-
-    try:
-        import numpy as np
-
-        if random_state is np.random:
-            return PythonRandomInterface(np.random.mtrand._rand)
-        if isinstance(random_state, np.random.RandomState):
-            return PythonRandomInterface(random_state)
-        if isinstance(random_state, PythonRandomInterface):
-            return random_state
-    except ImportError:
-        pass
-
     if random_state is None or random_state is random:
         return random._inst
     if isinstance(random_state, random.Random):
         return random_state
     if isinstance(random_state, int):
         return random.Random(random_state)
+
+    try:
+        import numpy as np
+    except ImportError:
+        pass
+    else:
+        if isinstance(random_state, PythonRandomInterface | PythonRandomViaNumpyBits):
+            return random_state
+        if isinstance(random_state, np.random.Generator):
+            return PythonRandomViaNumpyBits(random_state)
+        if random_state is np.random:
+            return PythonRandomViaNumpyBits(np.random.mtrand._rand)
+
+        if isinstance(random_state, np.random.RandomState):
+            if random_state is np.random.mtrand._rand:
+                return PythonRandomViaNumpyBits(random_state)
+            # Only need older interface if specially constructed RandomState used
+            return PythonRandomInterface(random_state)
+
     msg = f"{random_state} cannot be used to generate a random.Random instance"
     raise ValueError(msg)
+
+
+def nodes_equal(nodes1, nodes2):
+    """Check if nodes are equal.
+
+    Equality here means equal as Python objects.
+    Node data must match if included.
+    The order of nodes is not relevant.
+
+    Parameters
+    ----------
+    nodes1, nodes2 : iterables of nodes, or (node, datadict) tuples
+
+    Returns
+    -------
+    bool
+        True if nodes are equal, False otherwise.
+    """
+    nlist1 = list(nodes1)
+    nlist2 = list(nodes2)
+    try:
+        d1 = dict(nlist1)
+        d2 = dict(nlist2)
+    except (ValueError, TypeError):
+        d1 = dict.fromkeys(nlist1)
+        d2 = dict.fromkeys(nlist2)
+    return d1 == d2
+
+
+def edges_equal(edges1, edges2):
+    """Check if edges are equal.
+
+    Equality here means equal as Python objects.
+    Edge data must match if included.
+    The order of the edges is not relevant.
+
+    Parameters
+    ----------
+    edges1, edges2 : iterables of with u, v nodes as
+        edge tuples (u, v), or
+        edge tuples with data dicts (u, v, d), or
+        edge tuples with keys and data dicts (u, v, k, d)
+
+    Returns
+    -------
+    bool
+        True if edges are equal, False otherwise.
+    """
+    from collections import defaultdict
+
+    d1 = defaultdict(dict)
+    d2 = defaultdict(dict)
+    c1 = 0
+    for c1, e in enumerate(edges1):
+        u, v = e[0], e[1]
+        data = [e[2:]]
+        if v in d1[u]:
+            data = d1[u][v] + data
+        d1[u][v] = data
+        d1[v][u] = data
+    c2 = 0
+    for c2, e in enumerate(edges2):
+        u, v = e[0], e[1]
+        data = [e[2:]]
+        if v in d2[u]:
+            data = d2[u][v] + data
+        d2[u][v] = data
+        d2[v][u] = data
+    if c1 != c2:
+        return False
+    # can check one direction because lengths are the same.
+    for n, nbrdict in d1.items():
+        for nbr, datalist in nbrdict.items():
+            if n not in d2:
+                return False
+            if nbr not in d2[n]:
+                return False
+            d2datalist = d2[n][nbr]
+            for data in datalist:
+                if datalist.count(data) != d2datalist.count(data):
+                    return False
+    return True
+
+
+def graphs_equal(graph1, graph2):
+    """Check if graphs are equal.
+
+    Equality here means equal as Python objects (not isomorphism).
+    Node, edge and graph data must match.
+
+    Parameters
+    ----------
+    graph1, graph2 : graph
+
+    Returns
+    -------
+    bool
+        True if graphs are equal, False otherwise.
+    """
+    return (
+        graph1.adj == graph2.adj
+        and graph1.nodes == graph2.nodes
+        and graph1.graph == graph2.graph
+    )
+
+
+def _clear_cache(G):
+    """Clear the cache of a graph (currently stores converted graphs).
+
+    Caching is controlled via ``nx.config.cache_converted_graphs`` configuration.
+    """
+    if cache := getattr(G, "__networkx_cache__", None):
+        cache.clear()

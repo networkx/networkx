@@ -1,20 +1,82 @@
-import pytest
-import networkx
+"""
+Testing
+=======
+
+General guidelines for writing good tests:
+
+- doctests always assume ``import networkx as nx`` so don't add that
+- prefer pytest fixtures over classes with setup methods.
+- use the ``@pytest.mark.parametrize``  decorator
+- use ``pytest.importorskip`` for numpy, scipy, pandas, and matplotlib b/c of PyPy.
+  and add the module to the relevant entries below.
+
+"""
+import os
 import sys
 import warnings
+from importlib.metadata import entry_points
+
+import pytest
+
+import networkx
 
 
 def pytest_addoption(parser):
     parser.addoption(
         "--runslow", action="store_true", default=False, help="run slow tests"
     )
+    parser.addoption(
+        "--backend",
+        action="store",
+        default=None,
+        help="Run tests with a backend by auto-converting nx graphs to backend graphs",
+    )
+    parser.addoption(
+        "--fallback-to-nx",
+        action="store_true",
+        default=False,
+        help="Run nx function if a backend doesn't implement a dispatchable function"
+        " (use with --backend)",
+    )
 
 
 def pytest_configure(config):
     config.addinivalue_line("markers", "slow: mark test as slow to run")
+    backend = config.getoption("--backend")
+    if backend is None:
+        backend = os.environ.get("NETWORKX_TEST_BACKEND")
+    # nx-loopback backend is only available when testing
+    backends = entry_points(name="nx-loopback", group="networkx.backends")
+    if backends:
+        networkx.utils.backends.backends["nx-loopback"] = next(iter(backends))
+    else:
+        warnings.warn(
+            "\n\n             WARNING: Mixed NetworkX configuration! \n\n"
+            "        This environment has mixed configuration for networkx.\n"
+            "        The test object nx-loopback is not configured correctly.\n"
+            "        You should not be seeing this message.\n"
+            "        Try `pip install -e .`, or change your PYTHONPATH\n"
+            "        Make sure python finds the networkx repo you are testing\n\n"
+        )
+    if backend:
+        networkx.config["backend_priority"] = [backend]
+        fallback_to_nx = config.getoption("--fallback-to-nx")
+        if not fallback_to_nx:
+            fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
+        networkx.utils.backends._dispatchable._fallback_to_nx = bool(fallback_to_nx)
 
 
 def pytest_collection_modifyitems(config, items):
+    # Setting this to True here allows tests to be set up before dispatching
+    # any function call to a backend.
+    networkx.utils.backends._dispatchable._is_testing = True
+    if backend_priority := networkx.config["backend_priority"]:
+        # Allow pluggable backends to add markers to tests (such as skip or xfail)
+        # when running in auto-conversion test mode
+        backend = networkx.utils.backends.backends[backend_priority[0]].load()
+        if hasattr(backend, "on_start_tests"):
+            getattr(backend, "on_start_tests")(items)
+
     if config.getoption("--runslow"):
         # --runslow given in cli: do not skip slow tests
         return
@@ -29,81 +91,65 @@ def pytest_collection_modifyitems(config, items):
 def set_warnings():
     warnings.filterwarnings(
         "ignore",
-        category=DeprecationWarning,
-        message="literal_stringizer is deprecated",
+        category=FutureWarning,
+        message="\n\nsingle_target_shortest_path_length",
+    )
+    warnings.filterwarnings(
+        "ignore",
+        category=FutureWarning,
+        message="\n\nshortest_path",
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nrandom_tree"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="Edmonds has been deprecated"
     )
     warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
-        message="literal_destringizer is deprecated",
+        message="MultiDiGraph_EdgeKey has been deprecated",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="is_string_like is deprecated"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="make_str is deprecated"
+        "ignore", category=DeprecationWarning, message="\n\nThe `normalized`"
     )
     warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
-        message="context manager reversed is deprecated",
+        message="The function `join` is deprecated",
     )
     warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
-        message="This will return a generator in 3.0*",
+        message="\n\nstrongly_connected_components_recursive",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="betweenness_centrality_source"
+        "ignore", category=DeprecationWarning, message="\n\nall_triplets"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="edge_betweeness"
+        "ignore", category=DeprecationWarning, message="\n\nrandom_triad"
     )
     warnings.filterwarnings(
-        "ignore", category=PendingDeprecationWarning, message="the matrix subclass"
+        "ignore", category=DeprecationWarning, message="minimal_d_separator"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="to_numpy_matrix"
+        "ignore", category=DeprecationWarning, message="d_separated"
+    )
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="\n\nk_core")
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nk_shell"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="from_numpy_matrix"
+        "ignore", category=DeprecationWarning, message="\n\nk_crust"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="networkx.pagerank_numpy"
+        "ignore", category=DeprecationWarning, message="\n\nk_corona"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="networkx.pagerank_scipy"
+        "ignore", category=DeprecationWarning, message="\n\ntotal_spanning_tree_weight"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="write_gpickle"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="read_gpickle"
-    )
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="write_shp")
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="read_shp")
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="edges_from_line"
-    )
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="write_yaml")
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="read_yaml")
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="FilterAtlas.copy"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="FilterAdjacency.copy"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="FilterMultiAdjacency.copy"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="FilterMultiInner.copy"
-    )
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="jit_data")
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="jit_graph")
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="consume")
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="iterable is deprecated"
+        "ignore", category=DeprecationWarning, message=r"\n\nThe 'create=matrix'"
     )
 
 
@@ -150,13 +196,6 @@ except ImportError:
     has_pygraphviz = False
 
 try:
-    import yaml
-
-    has_yaml = True
-except ImportError:
-    has_yaml = False
-
-try:
     import pydot
 
     has_pydot = True
@@ -164,11 +203,11 @@ except ImportError:
     has_pydot = False
 
 try:
-    import ogr
+    import sympy
 
-    has_ogr = True
+    has_sympy = True
 except ImportError:
-    has_ogr = False
+    has_sympy = False
 
 
 # List of files that pytest should ignore
@@ -176,15 +215,21 @@ except ImportError:
 collect_ignore = []
 
 needs_numpy = [
+    "algorithms/approximation/traveling_salesman.py",
     "algorithms/centrality/current_flow_closeness.py",
-    "algorithms/node_classification/__init__.py",
+    "algorithms/centrality/laplacian.py",
+    "algorithms/node_classification.py",
     "algorithms/non_randomness.py",
     "algorithms/shortest_paths/dense.py",
+    "algorithms/tree/mst.py",
+    "drawing/nx_latex.py",
+    "generators/expanders.py",
     "linalg/bethehessianmatrix.py",
     "linalg/laplacianmatrix.py",
     "utils/misc.py",
 ]
 needs_scipy = [
+    "algorithms/approximation/traveling_salesman.py",
     "algorithms/assortativity/correlation.py",
     "algorithms/assortativity/mixing.py",
     "algorithms/assortativity/pairs.py",
@@ -194,30 +239,37 @@ needs_scipy = [
     "algorithms/centrality/current_flow_betweenness_subset.py",
     "algorithms/centrality/eigenvector.py",
     "algorithms/centrality/katz.py",
+    "algorithms/centrality/laplacian.py",
     "algorithms/centrality/second_order.py",
     "algorithms/centrality/subgraph_alg.py",
     "algorithms/communicability_alg.py",
+    "algorithms/community/divisive.py",
+    "algorithms/distance_measures.py",
     "algorithms/link_analysis/hits_alg.py",
     "algorithms/link_analysis/pagerank_alg.py",
-    "algorithms/node_classification/hmn.py",
-    "algorithms/node_classification/lgc.py",
+    "algorithms/node_classification.py",
     "algorithms/similarity.py",
+    "algorithms/tree/mst.py",
+    "algorithms/walks.py",
     "convert_matrix.py",
     "drawing/layout.py",
+    "drawing/nx_pylab.py",
     "generators/spectral_graph_forge.py",
+    "generators/expanders.py",
     "linalg/algebraicconnectivity.py",
     "linalg/attrmatrix.py",
+    "linalg/bethehessianmatrix.py",
     "linalg/graphmatrix.py",
+    "linalg/laplacianmatrix.py",
     "linalg/modularitymatrix.py",
     "linalg/spectrum.py",
     "utils/rcm.py",
 ]
-needs_matplotlib = ["drawing/nx_pylab.py"]
+needs_matplotlib = ["drawing/nx_pylab.py", "generators/classic.py"]
 needs_pandas = ["convert_matrix.py"]
-needs_yaml = ["readwrite/nx_yaml.py"]
 needs_pygraphviz = ["drawing/nx_agraph.py"]
 needs_pydot = ["drawing/nx_pydot.py"]
-needs_ogr = ["readwrite/nx_shp.py"]
+needs_sympy = ["algorithms/polynomials.py"]
 
 if not has_numpy:
     collect_ignore += needs_numpy
@@ -227,15 +279,9 @@ if not has_matplotlib:
     collect_ignore += needs_matplotlib
 if not has_pandas:
     collect_ignore += needs_pandas
-if not has_yaml:
-    collect_ignore += needs_yaml
 if not has_pygraphviz:
     collect_ignore += needs_pygraphviz
 if not has_pydot:
     collect_ignore += needs_pydot
-if not has_ogr:
-    collect_ignore += needs_ogr
-
-# FIXME:  This is to avoid errors on AppVeyor
-if sys.platform.startswith("win"):
-    collect_ignore += ["readwrite/graph6.py", "readwrite/sparse6.py"]
+if not has_sympy:
+    collect_ignore += needs_sympy

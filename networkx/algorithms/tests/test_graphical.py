@@ -1,4 +1,5 @@
 import pytest
+
 import networkx as nx
 
 
@@ -41,7 +42,7 @@ class TestAtlas:
     @classmethod
     def setup_class(cls):
         global atlas
-        import networkx.generators.atlas as atlas
+        from networkx.generators import atlas
 
         cls.GAG = atlas.graph_atlas_g()
 

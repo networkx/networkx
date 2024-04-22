@@ -1,6 +1,6 @@
-import networkx as nx
 from collections import defaultdict
 
+import networkx as nx
 
 __all__ = ["combinatorial_embedding_to_pos"]
 
@@ -78,18 +78,18 @@ def combinatorial_embedding_to_pos(embedding, fully_triangulate=False):
     left_t_child[v3] = None
 
     for k in range(3, len(node_list)):
-        vk, contour_neighbors = node_list[k]
-        wp = contour_neighbors[0]
-        wp1 = contour_neighbors[1]
-        wq = contour_neighbors[-1]
-        wq1 = contour_neighbors[-2]
-        adds_mult_tri = len(contour_neighbors) > 2
+        vk, contour_nbrs = node_list[k]
+        wp = contour_nbrs[0]
+        wp1 = contour_nbrs[1]
+        wq = contour_nbrs[-1]
+        wq1 = contour_nbrs[-2]
+        adds_mult_tri = len(contour_nbrs) > 2
 
         # Stretch gaps:
         delta_x[wp1] += 1
         delta_x[wq] += 1
 
-        delta_x_wp_wq = sum(delta_x[x] for x in contour_neighbors[1:])
+        delta_x_wp_wq = sum(delta_x[x] for x in contour_nbrs[1:])
 
         # Adjust offsets
         delta_x[vk] = (-y_coordinate[wp] + delta_x_wp_wq + y_coordinate[wq]) // 2
@@ -108,7 +108,7 @@ def combinatorial_embedding_to_pos(embedding, fully_triangulate=False):
             left_t_child[vk] = None
 
     # 2. Phase: Set absolute positions
-    pos = dict()
+    pos = {}
     pos[v1] = (0, y_coordinate[v1])
     remaining_nodes = [v1]
     while remaining_nodes:
@@ -213,7 +213,7 @@ def get_canonical_ordering(embedding, outer_face):
         return outer_face_ccw_nbr[x] == y or outer_face_cw_nbr[x] == y
 
     def is_on_outer_face(x):
-        return x not in marked_nodes and (x in outer_face_ccw_nbr.keys() or x == v1)
+        return x not in marked_nodes and (x in outer_face_ccw_nbr or x == v1)
 
     # Initialize number of chords
     for v in outer_face:
@@ -223,7 +223,7 @@ def get_canonical_ordering(embedding, outer_face):
                 ready_to_pick.discard(v)
 
     # Initialize canonical_ordering
-    canonical_ordering = [None] * len(embedding.nodes())  # type: list
+    canonical_ordering = [None] * len(embedding.nodes())
     canonical_ordering[0] = (v1, [])
     canonical_ordering[1] = (v2, [])
     ready_to_pick.discard(v1)
@@ -316,7 +316,7 @@ def triangulate_face(embedding, v1, v2):
     """
     _, v3 = embedding.next_face_half_edge(v1, v2)
     _, v4 = embedding.next_face_half_edge(v2, v3)
-    if v1 == v2 or v1 == v3:
+    if v1 in (v2, v3):
         # The component has less than 3 nodes
         return
     while v1 != v4:
@@ -326,8 +326,8 @@ def triangulate_face(embedding, v1, v2):
             v1, v2, v3 = v2, v3, v4
         else:
             # Add edge for triangulation
-            embedding.add_half_edge_cw(v1, v3, v2)
-            embedding.add_half_edge_ccw(v3, v1, v2)
+            embedding.add_half_edge(v1, v3, ccw=v2)
+            embedding.add_half_edge(v3, v1, cw=v2)
             v1, v2, v3 = v1, v3, v4
         # Get next node
         _, v4 = embedding.next_face_half_edge(v2, v3)
@@ -445,8 +445,8 @@ def make_bi_connected(embedding, starting_node, outgoing_node, edges_counted):
         # cycle is not completed yet
         if v2 in face_set:
             # v2 encountered twice: Add edge to ensure 2-connectedness
-            embedding.add_half_edge_cw(v1, v3, v2)
-            embedding.add_half_edge_ccw(v3, v1, v2)
+            embedding.add_half_edge(v1, v3, ccw=v2)
+            embedding.add_half_edge(v3, v1, cw=v2)
             edges_counted.add((v2, v3))
             edges_counted.add((v3, v1))
             v2 = v1

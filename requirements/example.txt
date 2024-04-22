@@ -1,12 +1,7 @@
-Cartopy>=0.18
-# Required for Cartopy
---no-binary shapely
-shapely
-# Required for Cartopy
-osmnx>=0.16
-momepy>=0.4
-contextily>=1.0
-mayavi>=4.7
-seaborn>=0.11
-cairocffi>=1.2
-python-igraph>=0.8.3
+osmnx>=1.2
+momepy>=0.5
+contextily>=1.2
+seaborn>=0.12
+cairocffi>=1.4
+igraph>=0.10
+scikit-learn>=1.3.1

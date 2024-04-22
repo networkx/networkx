@@ -10,6 +10,7 @@ from networkx.algorithms.flow.utils import build_residual_network
 __all__ = ["boykov_kolmogorov"]
 
 
+@nx._dispatchable(edge_attrs={"capacity": float("inf")}, returns_graph=True)
 def boykov_kolmogorov(
     G, s, t, capacity="capacity", residual=None, value_only=False, cutoff=None
 ):
@@ -145,16 +146,17 @@ def boykov_kolmogorov(
            of min-cut/max-flow algorithms for energy minimization in vision.
            Pattern Analysis and Machine Intelligence, IEEE Transactions on,
            26(9), 1124-1137.
-           http://www.csd.uwo.ca/~yuri/Papers/pami04.pdf
+           https://doi.org/10.1109/TPAMI.2004.60
 
     .. [2] Vladimir Kolmogorov. Graph-based Algorithms for Multi-camera
            Reconstruction Problem. PhD thesis, Cornell University, CS Department,
            2003. pp. 109-114.
-           https://pub.ist.ac.at/~vnk/papers/thesis.pdf
+           https://web.archive.org/web/20170809091249/https://pub.ist.ac.at/~vnk/papers/thesis.pdf
 
     """
     R = boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff)
     R.graph["algorithm"] = "boykov_kolmogorov"
+    nx._clear_cache(R)
     return R
 
 
@@ -317,7 +319,7 @@ def boykov_kolmogorov_impl(G, s, t, capacity, residual, cutoff):
         v = n
         while v is not None:
             path.append(v)
-            if v == s or v == t:
+            if v in (s, t):
                 base_dist = 0
                 break
             elif timestamp[v] == time:

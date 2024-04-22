@@ -11,6 +11,7 @@ __all__ = ["mycielskian", "mycielski_graph"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable(returns_graph=True)
 def mycielskian(G, iterations=1):
     r"""Returns the Mycielskian of a simple, undirected graph G
 
@@ -53,7 +54,6 @@ def mycielskian(G, iterations=1):
 
     """
 
-    n = G.number_of_nodes()
     M = nx.convert_node_labels_to_integers(G)
 
     for i in range(iterations):
@@ -68,6 +68,7 @@ def mycielskian(G, iterations=1):
     return M
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def mycielski_graph(n):
     """Generator for the n_th Mycielski Graph.
 
@@ -100,7 +101,7 @@ def mycielski_graph(n):
     """
 
     if n < 1:
-        raise nx.NetworkXError("must satisfy n >= 0")
+        raise nx.NetworkXError("must satisfy n >= 1")
 
     if n == 1:
         return nx.empty_graph(1)

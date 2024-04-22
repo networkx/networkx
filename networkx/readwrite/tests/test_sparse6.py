@@ -1,21 +1,20 @@
 from io import BytesIO
-import tempfile
+
 import pytest
 
 import networkx as nx
-from networkx.testing.utils import assert_edges_equal
-from networkx.testing.utils import assert_nodes_equal
+from networkx.utils import edges_equal, nodes_equal
 
 
 class TestSparseGraph6:
     def test_from_sparse6_bytes(self):
         data = b":Q___eDcdFcDeFcE`GaJ`IaHbKNbLM"
         G = nx.from_sparse6_bytes(data)
-        assert_nodes_equal(
+        assert nodes_equal(
             sorted(G.nodes()),
             [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
         )
-        assert_edges_equal(
+        assert edges_equal(
             G.edges(),
             [
                 (0, 1),
@@ -61,8 +60,8 @@ class TestSparseGraph6:
         G = nx.from_sparse6_bytes(data)
         fh = BytesIO(data)
         Gin = nx.read_sparse6(fh)
-        assert_nodes_equal(G.nodes(), Gin.nodes())
-        assert_edges_equal(G.edges(), Gin.edges())
+        assert nodes_equal(G.nodes(), Gin.nodes())
+        assert edges_equal(G.edges(), Gin.edges())
 
     def test_read_many_graph6(self):
         # Read many graphs into list
@@ -71,7 +70,7 @@ class TestSparseGraph6:
         glist = nx.read_sparse6(fh)
         assert len(glist) == 2
         for G in glist:
-            assert_nodes_equal(
+            assert nodes_equal(
                 G.nodes(),
                 [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
             )
@@ -152,22 +151,16 @@ class TestWriteSparse6:
             gstr = gstr.getvalue().rstrip()
             g2 = nx.from_sparse6_bytes(gstr)
             assert g2.order() == g.order()
-            assert_edges_equal(g2.edges(), g.edges())
+            assert edges_equal(g2.edges(), g.edges())
 
     def test_no_directed_graphs(self):
         with pytest.raises(nx.NetworkXNotImplemented):
             nx.write_sparse6(nx.DiGraph(), BytesIO())
 
-    def test_write_path(self):
-        # On Windows, we can't reopen a file that is open
-        # So, for test we get a valid name from tempfile but close it.
-        with tempfile.NamedTemporaryFile() as f:
-            fullfilename = f.name
+    def test_write_path(self, tmp_path):
+        # Get a valid temporary file name
+        fullfilename = str(tmp_path / "test.s6")
         # file should be closed now, so write_sparse6 can open it
         nx.write_sparse6(nx.null_graph(), fullfilename)
-        fh = open(fullfilename, mode="rb")
-        assert fh.read() == b">>sparse6<<:?\n"
-        fh.close()
-        import os
-
-        os.remove(fullfilename)
+        with open(fullfilename, mode="rb") as fh:
+            assert fh.read() == b">>sparse6<<:?\n"

@@ -1,0 +1,27 @@
+name: Run test suite in random order
+on:
+  schedule:
+    # Run this workflow once a day
+    - cron: "0 0 * * *"
+
+jobs:
+  randomize-test-order:
+    if: github.repository == 'networkx/networkx'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install packages
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements/default.txt -r requirements/test.txt
+          pip install pytest-randomly
+          pip install .
+          pip list
+
+      - name: Run tests
+        run: pytest --doctest-modules --durations=10 --pyargs networkx

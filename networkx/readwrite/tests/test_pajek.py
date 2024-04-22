@@ -2,9 +2,7 @@
 Pajek tests
 """
 import networkx as nx
-import os
-import tempfile
-from networkx.testing import assert_edges_equal, assert_nodes_equal
+from networkx.utils import edges_equal, nodes_equal
 
 
 class TestPajek:
@@ -26,25 +24,18 @@ class TestPajek:
         )
 
         cls.G.graph["name"] = "Tralala"
-        (fd, cls.fname) = tempfile.mkstemp()
-        with os.fdopen(fd, "wb") as fh:
-            fh.write(cls.data.encode("UTF-8"))
-
-    @classmethod
-    def teardown_class(cls):
-        os.unlink(cls.fname)
 
     def test_parse_pajek_simple(self):
         # Example without node positions or shape
         data = """*Vertices 2\n1 "1"\n2 "2"\n*Edges\n1 2\n2 1"""
         G = nx.parse_pajek(data)
         assert sorted(G.nodes()) == ["1", "2"]
-        assert_edges_equal(G.edges(), [("1", "2"), ("1", "2")])
+        assert edges_equal(G.edges(), [("1", "2"), ("1", "2")])
 
     def test_parse_pajek(self):
         G = nx.parse_pajek(self.data)
         assert sorted(G.nodes()) == ["A1", "Bb", "C", "D2"]
-        assert_edges_equal(
+        assert edges_equal(
             G.edges(),
             [
                 ("A1", "A1"),
@@ -62,16 +53,21 @@ class TestPajek:
         G = nx.parse_pajek(data)
         assert set(G.nodes()) == {"one", "two", "three"}
         assert G.nodes["two"] == {"id": "2"}
-        assert_edges_equal(
+        assert edges_equal(
             set(G.edges()),
             {("one", "one"), ("two", "one"), ("two", "two"), ("two", "three")},
         )
 
-    def test_read_pajek(self):
+    def test_read_pajek(self, tmp_path):
         G = nx.parse_pajek(self.data)
-        Gin = nx.read_pajek(self.fname)
+        # Read data from file
+        fname = tmp_path / "test.pjk"
+        with open(fname, "wb") as fh:
+            fh.write(self.data.encode("UTF-8"))
+
+        Gin = nx.read_pajek(fname)
         assert sorted(G.nodes()) == sorted(Gin.nodes())
-        assert_edges_equal(G.edges(), Gin.edges())
+        assert edges_equal(G.edges(), Gin.edges())
         assert self.G.graph == Gin.graph
         for n in G:
             assert G.nodes[n] == Gin.nodes[n]
@@ -84,8 +80,8 @@ class TestPajek:
         nx.write_pajek(G, fh)
         fh.seek(0)
         H = nx.read_pajek(fh)
-        assert_nodes_equal(list(G), list(H))
-        assert_edges_equal(list(G.edges()), list(H.edges()))
+        assert nodes_equal(list(G), list(H))
+        assert edges_equal(list(G.edges()), list(H.edges()))
         # Graph name is left out for now, therefore it is not tested.
         # assert_equal(G.graph, H.graph)
 
@@ -124,6 +120,6 @@ class TestPajek:
         nx.write_pajek(G, fh)
         fh.seek(0)
         H = nx.read_pajek(fh)
-        assert_nodes_equal(list(G), list(H))
-        assert_edges_equal(list(G.edges()), list(H.edges()))
+        assert nodes_equal(list(G), list(H))
+        assert edges_equal(list(G.edges()), list(H.edges()))
         assert G.graph == H.graph

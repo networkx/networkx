@@ -1,8 +1,9 @@
 """Original NetworkX graph tests"""
 import pytest
+
 import networkx as nx
 from networkx import convert_node_labels_to_integers as cnlti
-from networkx.testing import assert_edges_equal, assert_nodes_equal
+from networkx.utils import edges_equal, nodes_equal
 
 
 class HistoricalTests:
@@ -69,8 +70,8 @@ class HistoricalTests:
         G = self.G()
         G.add_node("A")
         assert "A" in G
-        assert not [] in G  # never raise a Key or TypeError in this test
-        assert not {1: 1} in G
+        assert [] not in G  # never raise a Key or TypeError in this test
+        assert {1: 1} not in G
 
     def test_add_remove(self):
         # Test add_node and remove_node acting for various nbunch
@@ -258,22 +259,22 @@ class HistoricalTests:
         else:
             elist = [("A", "B"), ("A", "C"), ("B", "C"), ("B", "D")]
         # nbunch can be a list
-        assert_edges_equal(list(G.edges(["A", "B"])), elist)
+        assert edges_equal(list(G.edges(["A", "B"])), elist)
         # nbunch can be a set
-        assert_edges_equal(G.edges({"A", "B"}), elist)
+        assert edges_equal(G.edges({"A", "B"}), elist)
         # nbunch can be a graph
         G1 = self.G()
         G1.add_nodes_from("AB")
-        assert_edges_equal(G.edges(G1), elist)
+        assert edges_equal(G.edges(G1), elist)
         # nbunch can be a dict with nodes as keys
         ndict = {"A": "thing1", "B": "thing2"}
-        assert_edges_equal(G.edges(ndict), elist)
+        assert edges_equal(G.edges(ndict), elist)
         # nbunch can be a single node
-        assert_edges_equal(list(G.edges("A")), [("A", "B"), ("A", "C")])
-        assert_nodes_equal(sorted(G), ["A", "B", "C", "D"])
+        assert edges_equal(list(G.edges("A")), [("A", "B"), ("A", "C")])
+        assert nodes_equal(sorted(G), ["A", "B", "C", "D"])
 
         # nbunch can be nothing (whole graph)
-        assert_edges_equal(
+        assert edges_equal(
             list(G.edges()),
             [("A", "B"), ("A", "C"), ("B", "D"), ("C", "B"), ("C", "D")],
         )
@@ -324,14 +325,14 @@ class HistoricalTests:
         H = G.copy()  # copy
         assert H.adj == G.adj
         assert H.name == G.name
-        assert H != G
+        assert H is not G
 
     def test_subgraph(self):
         G = self.G()
         G.add_edges_from([("A", "B"), ("A", "C"), ("B", "D"), ("C", "B"), ("C", "D")])
         SG = G.subgraph(["A", "B", "D"])
-        assert_nodes_equal(list(SG), ["A", "B", "D"])
-        assert_edges_equal(list(SG.edges()), [("A", "B"), ("B", "D")])
+        assert nodes_equal(list(SG), ["A", "B", "D"])
+        assert edges_equal(list(SG.edges()), [("A", "B"), ("B", "D")])
 
     def test_to_directed(self):
         G = self.G()
@@ -341,7 +342,7 @@ class HistoricalTests:
             )
 
             DG = G.to_directed()
-            assert DG != G  # directed copy or copy
+            assert DG is not G  # directed copy or copy
 
             assert DG.is_directed()
             assert DG.name == G.name
@@ -364,7 +365,7 @@ class HistoricalTests:
                 [("A", "B"), ("A", "C"), ("B", "D"), ("C", "B"), ("C", "D")]
             )
             UG = G.to_undirected()  # to_undirected
-            assert UG != G
+            assert UG is not G
             assert not UG.is_directed()
             assert G.is_directed()
             assert UG.name == G.name
@@ -400,11 +401,11 @@ class HistoricalTests:
         G.add_edges_from([("A", "B"), ("A", "C"), ("B", "D"), ("C", "B"), ("C", "D")])
         G.add_nodes_from("GJK")
         assert sorted(G.nodes()) == ["A", "B", "C", "D", "G", "J", "K"]
-        assert_edges_equal(
+        assert edges_equal(
             G.edges(), [("A", "B"), ("A", "C"), ("B", "D"), ("C", "B"), ("C", "D")]
         )
 
-        assert sorted([v for k, v in G.degree()]) == [0, 0, 0, 2, 2, 3, 3]
+        assert sorted(v for k, v in G.degree()) == [0, 0, 0, 2, 2, 3, 3]
         assert sorted(G.degree(), key=str) == [
             ("A", 2),
             ("B", 3),

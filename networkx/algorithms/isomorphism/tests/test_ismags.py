@@ -3,6 +3,7 @@
 """
 
 import pytest
+
 import networkx as nx
 from networkx.algorithms import isomorphism as iso
 
@@ -12,19 +13,19 @@ def _matches_to_sets(matches):
     Helper function to facilitate comparing collections of dictionaries in
     which order does not matter.
     """
-    return set(map(lambda m: frozenset(m.items()), matches))
+    return {frozenset(m.items()) for m in matches}
 
 
 class TestSelfIsomorphism:
     data = [
         (
             [
-                (0, dict(name="a")),
-                (1, dict(name="a")),
-                (2, dict(name="b")),
-                (3, dict(name="b")),
-                (4, dict(name="a")),
-                (5, dict(name="a")),
+                (0, {"name": "a"}),
+                (1, {"name": "a"}),
+                (2, {"name": "b"}),
+                (3, {"name": "b"}),
+                (4, {"name": "a"}),
+                (5, {"name": "a"}),
             ],
             [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5)],
         ),
@@ -114,7 +115,7 @@ class TestSubgraphIsomorphism:
 
         g2 = nx.Graph()
         nx.add_cycle(g2, range(4))
-        g2.add_edges_from([(n, m) for n, m in zip(g2, range(4, 8))])
+        g2.add_edges_from(list(zip(g2, range(4, 8))))
         ismags = iso.ISMAGS(g2, g1)
         assert list(ismags.subgraph_isomorphisms_iter(symmetry=True)) == [
             {n: n for n in g1.nodes}

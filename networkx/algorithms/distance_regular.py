@@ -6,6 +6,7 @@ Distance-regular graphs
 
 import networkx as nx
 from networkx.utils import not_implemented_for
+
 from .distance_measures import diameter
 
 __all__ = [
@@ -16,6 +17,7 @@ __all__ = [
 ]
 
 
+@nx._dispatchable
 def is_distance_regular(G):
     """Returns True if the graph is distance regular, False otherwise.
 
@@ -107,7 +109,9 @@ def global_parameters(b, c):
     return ((y, b[0] - x - y, x) for x, y in zip(b + [0], [0] + c))
 
 
-@not_implemented_for("directed", "multigraph")
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+@nx._dispatchable
 def intersection_array(G):
     """Returns the intersection array of a distance-regular graph.
 
@@ -144,6 +148,8 @@ def intersection_array(G):
     global_parameters
     """
     # test for regular graph (all degrees must be equal)
+    if len(G) == 0:
+        raise nx.NetworkXPointlessConcept("Graph has no nodes.")
     degree = iter(G.degree())
     (_, k) = next(degree)
     for _, knext in degree:
@@ -151,15 +157,15 @@ def intersection_array(G):
             raise nx.NetworkXError("Graph is not distance regular.")
         k = knext
     path_length = dict(nx.all_pairs_shortest_path_length(G))
-    diameter = max([max(path_length[n].values()) for n in path_length])
+    diameter = max(max(path_length[n].values()) for n in path_length)
     bint = {}  # 'b' intersection array
     cint = {}  # 'c' intersection array
     for u in G:
         for v in G:
             try:
                 i = path_length[u][v]
-            except KeyError as e:  # graph must be connected
-                raise nx.NetworkXError("Graph is not distance regular.") from e
+            except KeyError as err:  # graph must be connected
+                raise nx.NetworkXError("Graph is not distance regular.") from err
             # number of neighbors of v at a distance of i-1 from u
             c = len([n for n in G[v] if path_length[n][u] == i - 1])
             # number of neighbors of v at a distance of i+1 from u
@@ -176,7 +182,9 @@ def intersection_array(G):
 
 
 # TODO There is a definition for directed strongly regular graphs.
-@not_implemented_for("directed", "multigraph")
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+@nx._dispatchable
 def is_strongly_regular(G):
     """Returns True if and only if the given graph is strongly
     regular.

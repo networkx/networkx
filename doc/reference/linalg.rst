@@ -25,6 +25,7 @@ Laplacian Matrix
    normalized_laplacian_matrix
    directed_laplacian_matrix
    directed_combinatorial_laplacian_matrix
+   total_spanning_tree_weight
 
 Bethe Hessian Matrix
 --------------------
@@ -43,6 +44,7 @@ Algebraic Connectivity
    algebraic_connectivity
    fiedler_vector
    spectral_ordering
+   spectral_bisection
 
 Attribute Matrices
 ------------------

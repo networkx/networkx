@@ -1,5 +1,6 @@
-import networkx as nx
 import io
+
+import networkx as nx
 
 
 class TestLEDA:

@@ -3,7 +3,7 @@
 Time-respecting VF2 Algorithm
 *****************************
 
-An extension of the VF2 algorithm for time-respecting graph ismorphism
+An extension of the VF2 algorithm for time-respecting graph isomorphism
 testing in temporal graphs.
 
 A temporal graph is one in which edges contain a datetime attribute,
@@ -66,7 +66,8 @@ Handles directed and undirected graphs and graphs with parallel edges.
 """
 
 import networkx as nx
-from .isomorphvf2 import GraphMatcher, DiGraphMatcher
+
+from .isomorphvf2 import DiGraphMatcher, GraphMatcher
 
 __all__ = ["TimeRespectingGraphMatcher", "TimeRespectingDiGraphMatcher"]
 
@@ -88,9 +89,7 @@ class TimeRespectingGraphMatcher(GraphMatcher):
 
         >>> G2 = nx.Graph(nx.path_graph(4, create_using=nx.Graph()))
 
-        >>> GM = isomorphism.TimeRespectingGraphMatcher(
-        ...     G1, G2, "date", timedelta(days=1)
-        ... )
+        >>> GM = isomorphism.TimeRespectingGraphMatcher(G1, G2, "date", timedelta(days=1))
         """
         self.temporal_attribute_name = temporal_attribute_name
         self.delta = delta
@@ -157,9 +156,7 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
 
         >>> G2 = nx.DiGraph(nx.path_graph(4, create_using=nx.DiGraph()))
 
-        >>> GM = isomorphism.TimeRespectingDiGraphMatcher(
-        ...     G1, G2, "date", timedelta(days=1)
-        ... )
+        >>> GM = isomorphism.TimeRespectingDiGraphMatcher(G1, G2, "date", timedelta(days=1))
         """
         self.temporal_attribute_name = temporal_attribute_name
         self.delta = delta
@@ -209,7 +206,7 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
 
     def two_hop_pred(self, Gx, Gx_node, core_x, pred):
         """
-        The predeccessors of the ego node.
+        The predecessors of the ego node.
         """
         return all(
             self.one_hop(

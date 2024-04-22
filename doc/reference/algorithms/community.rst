@@ -14,6 +14,15 @@ Bipartitions
 
    kernighan_lin_bisection
 
+Divisive Communities
+--------------------
+.. automodule:: networkx.algorithms.community.divisive
+.. autosummary::
+   :toctree: generated/
+
+   edge_betweenness_partition
+   edge_current_flow_betweenness_partition
+
 K-Clique
 --------
 .. automodule:: networkx.algorithms.community.kclique
@@ -29,7 +38,7 @@ Modularity-based communities
    :toctree: generated/
 
    greedy_modularity_communities
-   _naive_greedy_modularity_communities
+   naive_greedy_modularity_communities
 
 Tree partitioning
 -----------------
@@ -47,6 +56,16 @@ Label propagation
 
    asyn_lpa_communities
    label_propagation_communities
+   fast_label_propagation_communities
+
+Louvain Community Detection
+---------------------------
+.. automodule:: networkx.algorithms.community.louvain
+.. autosummary::
+    :toctree: generated/
+
+    louvain_communities
+    louvain_partitions
 
 Fluid Communities
 -----------------
@@ -62,9 +81,8 @@ Measuring partitions
 .. autosummary::
    :toctree: generated/
 
-   coverage
    modularity
-   performance
+   partition_quality
 
 Partitions via centrality measures
 ----------------------------------

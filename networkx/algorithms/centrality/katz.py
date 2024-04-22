@@ -1,5 +1,5 @@
 """Katz centrality."""
-from math import sqrt
+import math
 
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -8,6 +8,7 @@ __all__ = ["katz_centrality", "katz_centrality_numpy"]
 
 
 @not_implemented_for("multigraph")
+@nx._dispatchable(edge_attrs="weight")
 def katz_centrality(
     G,
     alpha=0.1,
@@ -53,12 +54,12 @@ def katz_centrality(
     G : graph
       A NetworkX graph.
 
-    alpha : float
+    alpha : float, optional (default=0.1)
       Attenuation factor
 
     beta : scalar or dictionary, optional (default=1.0)
       Weight attributed to the immediate neighborhood. If not a scalar, the
-      dictionary must have an value for every node.
+      dictionary must have a value for every node.
 
     max_iter : integer, optional (default=1000)
       Maximum number of iterations in power method.
@@ -75,6 +76,7 @@ def katz_centrality(
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      In this measure the weight is interpreted as the connection strength.
 
     Returns
     -------
@@ -110,8 +112,8 @@ def katz_centrality(
     katz_centrality_numpy
     eigenvector_centrality
     eigenvector_centrality_numpy
-    pagerank
-    hits
+    :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`
+    :func:`~networkx.algorithms.link_analysis.hits_alg.hits`
 
     Notes
     -----
@@ -126,11 +128,11 @@ def katz_centrality(
     The iteration will stop after ``max_iter`` iterations or an error tolerance of
     ``number_of_nodes(G) * tol`` has been reached.
 
-    When $\alpha = 1/\lambda_{\max}$ and $\beta=0$, Katz centrality is the same
-    as eigenvector centrality.
+    For strongly connected graphs, as $\alpha \to 1/\lambda_{\max}$, and $\beta > 0$,
+    Katz centrality approaches the results for eigenvector centrality.
 
     For directed graphs this finds "left" eigenvectors which corresponds
-    to the in-edges in the graph. For out-edges Katz centrality
+    to the in-edges in the graph. For out-edges Katz centrality,
     first reverse the graph with ``G.reverse()``.
 
     References
@@ -141,7 +143,7 @@ def katz_centrality(
     .. [2] Leo Katz:
        A New Status Index Derived from Sociometric Index.
        Psychometrika 18(1):39–43, 1953
-       http://phya.snu.ac.kr/~dkim/PRL87278701.pdf
+       https://link.springer.com/content/pdf/10.1007/BF02289026.pdf
     """
     if len(G) == 0:
         return {}
@@ -156,18 +158,18 @@ def katz_centrality(
 
     try:
         b = dict.fromkeys(G, float(beta))
-    except (TypeError, ValueError, AttributeError) as e:
+    except (TypeError, ValueError, AttributeError) as err:
         b = beta
         if set(beta) != set(G):
             raise nx.NetworkXError(
-                "beta dictionary " "must have a value for every node"
-            ) from e
+                "beta dictionary must have a value for every node"
+            ) from err
 
     # make up to max_iter iterations
-    for i in range(max_iter):
+    for _ in range(max_iter):
         xlast = x
         x = dict.fromkeys(xlast, 0)
-        # do the multiplication y^T = Alpha * x^T A - Beta
+        # do the multiplication y^T = Alpha * x^T A + Beta
         for n in x:
             for nbr in G[n]:
                 x[nbr] += xlast[n] * G[n][nbr].get(weight, 1)
@@ -175,13 +177,12 @@ def katz_centrality(
             x[n] = alpha * x[n] + b[n]
 
         # check convergence
-        err = sum([abs(x[n] - xlast[n]) for n in x])
-        if err < nnodes * tol:
+        error = sum(abs(x[n] - xlast[n]) for n in x)
+        if error < nnodes * tol:
             if normalized:
                 # normalize vector
                 try:
-                    s = 1.0 / sqrt(sum(v ** 2 for v in x.values()))
-                # this should never be zero?
+                    s = 1.0 / math.hypot(*x.values())
                 except ZeroDivisionError:
                     s = 1.0
             else:
@@ -193,6 +194,7 @@ def katz_centrality(
 
 
 @not_implemented_for("multigraph")
+@nx._dispatchable(edge_attrs="weight")
 def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     r"""Compute the Katz centrality for the graph G.
 
@@ -242,6 +244,7 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     weight : None or string, optional
       If None, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
+      In this measure the weight is interpreted as the connection strength.
 
     Returns
     -------
@@ -272,8 +275,8 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     katz_centrality
     eigenvector_centrality_numpy
     eigenvector_centrality
-    pagerank
-    hits
+    :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`
+    :func:`~networkx.algorithms.link_analysis.hits_alg.hits`
 
     Notes
     -----
@@ -285,22 +288,22 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     You can use ``max(nx.adjacency_spectrum(G))`` to get $\lambda_{\max}$ the largest
     eigenvalue of the adjacency matrix.
 
-    When $\alpha = 1/\lambda_{\max}$ and $\beta=0$, Katz centrality is the same
-    as eigenvector centrality.
+    For strongly connected graphs, as $\alpha \to 1/\lambda_{\max}$, and $\beta > 0$,
+    Katz centrality approaches the results for eigenvector centrality.
 
     For directed graphs this finds "left" eigenvectors which corresponds
-    to the in-edges in the graph. For out-edges Katz centrality
+    to the in-edges in the graph. For out-edges Katz centrality,
     first reverse the graph with ``G.reverse()``.
 
     References
     ----------
     .. [1] Mark E. J. Newman:
        Networks: An Introduction.
-       Oxford University Press, USA, 2010, p. 720.
+       Oxford University Press, USA, 2010, p. 173.
     .. [2] Leo Katz:
        A New Status Index Derived from Sociometric Index.
        Psychometrika 18(1):39–43, 1953
-       http://phya.snu.ac.kr/~dkim/PRL87278701.pdf
+       https://link.springer.com/content/pdf/10.1007/BF02289026.pdf
     """
     import numpy as np
 
@@ -309,23 +312,19 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     try:
         nodelist = beta.keys()
         if set(nodelist) != set(G):
-            raise nx.NetworkXError(
-                "beta dictionary " "must have a value for every node"
-            )
+            raise nx.NetworkXError("beta dictionary must have a value for every node")
         b = np.array(list(beta.values()), dtype=float)
     except AttributeError:
         nodelist = list(G)
         try:
-            b = np.ones((len(nodelist), 1)) * float(beta)
-        except (TypeError, ValueError, AttributeError) as e:
-            raise nx.NetworkXError("beta must be a number") from e
+            b = np.ones((len(nodelist), 1)) * beta
+        except (TypeError, ValueError, AttributeError) as err:
+            raise nx.NetworkXError("beta must be a number") from err
 
-    A = nx.adj_matrix(G, nodelist=nodelist, weight=weight).todense().T
+    A = nx.adjacency_matrix(G, nodelist=nodelist, weight=weight).todense().T
     n = A.shape[0]
-    centrality = np.linalg.solve(np.eye(n, n) - (alpha * A), b)
-    if normalized:
-        norm = np.sign(sum(centrality)) * np.linalg.norm(centrality)
-    else:
-        norm = 1.0
-    centrality = dict(zip(nodelist, map(float, centrality / norm)))
-    return centrality
+    centrality = np.linalg.solve(np.eye(n, n) - (alpha * A), b).squeeze()
+
+    # Normalize: rely on truediv to cast to float, then tolist to make Python numbers
+    norm = np.sign(sum(centrality)) * np.linalg.norm(centrality) if normalized else 1
+    return dict(zip(nodelist, (centrality / norm).tolist()))

@@ -3,24 +3,28 @@
 import pytest
 
 import networkx as nx
-from networkx.algorithms.flow import build_flow_dict, build_residual_network
-from networkx.algorithms.flow import boykov_kolmogorov
-from networkx.algorithms.flow import edmonds_karp
-from networkx.algorithms.flow import preflow_push
-from networkx.algorithms.flow import shortest_augmenting_path
-from networkx.algorithms.flow import dinitz
+from networkx.algorithms.flow import (
+    boykov_kolmogorov,
+    build_flow_dict,
+    build_residual_network,
+    dinitz,
+    edmonds_karp,
+    preflow_push,
+    shortest_augmenting_path,
+)
 
-flow_funcs = [
+flow_funcs = {
     boykov_kolmogorov,
     dinitz,
     edmonds_karp,
     preflow_push,
     shortest_augmenting_path,
-]
-max_min_funcs = [nx.maximum_flow, nx.minimum_cut]
-flow_value_funcs = [nx.maximum_flow_value, nx.minimum_cut_value]
-interface_funcs = sum([max_min_funcs, flow_value_funcs], [])
-all_funcs = sum([flow_funcs, interface_funcs], [])
+}
+
+max_min_funcs = {nx.maximum_flow, nx.minimum_cut}
+flow_value_funcs = {nx.maximum_flow_value, nx.minimum_cut_value}
+interface_funcs = max_min_funcs & flow_value_funcs
+all_funcs = flow_funcs & interface_funcs
 
 
 def compute_cutset(G, partition):
@@ -96,7 +100,7 @@ class TestMaxflowMinCutCommon:
 
     def test_graph2(self):
         # A more complex undirected graph
-        # adapted from www.topcoder.com/tc?module=Statc&d1=tutorials&d2=maxFlow
+        # adapted from https://web.archive.org/web/20220815055650/https://www.topcoder.com/thrive/articles/Maximum%20Flow:%20Part%20One
         G = nx.Graph()
         G.add_edge("x", "a", capacity=3.0)
         G.add_edge("x", "b", capacity=1.0)
@@ -185,7 +189,7 @@ class TestMaxflowMinCutCommon:
 
     def test_digraph4(self):
         # A more complex directed graph
-        # from www.topcoder.com/tc?module=Statc&d1=tutorials&d2=maxFlow
+        # from https://web.archive.org/web/20220815055650/https://www.topcoder.com/thrive/articles/Maximum%20Flow:%20Part%20One
         G = nx.DiGraph()
         G.add_edge("x", "a", capacity=3.0)
         G.add_edge("x", "b", capacity=1.0)
@@ -383,7 +387,7 @@ class TestMaxflowMinCutCommon:
 
 
 class TestMaxFlowMinCutInterface:
-    def setup(self):
+    def setup_method(self):
         G = nx.DiGraph()
         G.add_edge("x", "a", capacity=3.0)
         G.add_edge("x", "b", capacity=1.0)
@@ -424,32 +428,31 @@ class TestMaxFlowMinCutInterface:
 
     def test_minimum_cut_no_cutoff(self):
         G = self.G
-        for flow_func in flow_funcs:
-            pytest.raises(
-                nx.NetworkXError,
-                nx.minimum_cut,
-                G,
-                "x",
-                "y",
-                flow_func=flow_func,
-                cutoff=1.0,
-            )
-            pytest.raises(
-                nx.NetworkXError,
-                nx.minimum_cut_value,
-                G,
-                "x",
-                "y",
-                flow_func=flow_func,
-                cutoff=1.0,
-            )
+        pytest.raises(
+            nx.NetworkXError,
+            nx.minimum_cut,
+            G,
+            "x",
+            "y",
+            flow_func=preflow_push,
+            cutoff=1.0,
+        )
+        pytest.raises(
+            nx.NetworkXError,
+            nx.minimum_cut_value,
+            G,
+            "x",
+            "y",
+            flow_func=preflow_push,
+            cutoff=1.0,
+        )
 
     def test_kwargs(self):
         G = self.H
         fv = 1.0
         to_test = (
-            (shortest_augmenting_path, dict(two_phase=True)),
-            (preflow_push, dict(global_relabel_freq=5)),
+            (shortest_augmenting_path, {"two_phase": True}),
+            (preflow_push, {"global_relabel_freq": 5}),
         )
         for interface_func in interface_funcs:
             for flow_func, kwargs in to_test:
@@ -536,11 +539,20 @@ class TestCutoff:
         assert k <= R.graph["flow_value"] <= (2 * k)
         R = edmonds_karp(G, "s", "t", cutoff=k)
         assert k <= R.graph["flow_value"] <= (2 * k)
+        R = dinitz(G, "s", "t", cutoff=k)
+        assert k <= R.graph["flow_value"] <= (2 * k)
+        R = boykov_kolmogorov(G, "s", "t", cutoff=k)
+        assert k <= R.graph["flow_value"] <= (2 * k)
 
     def test_complete_graph_cutoff(self):
         G = nx.complete_graph(5)
         nx.set_edge_attributes(G, {(u, v): 1 for u, v in G.edges()}, "capacity")
-        for flow_func in [shortest_augmenting_path, edmonds_karp]:
+        for flow_func in [
+            shortest_augmenting_path,
+            edmonds_karp,
+            dinitz,
+            boykov_kolmogorov,
+        ]:
             for cutoff in [3, 2, 1]:
                 result = nx.maximum_flow_value(
                     G, 0, 4, flow_func=flow_func, cutoff=cutoff
