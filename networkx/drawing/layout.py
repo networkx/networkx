@@ -1292,8 +1292,6 @@ def forceatlas2_layout(
         tmp = mass[:, None] @ mass[None]
         if adjust_sizes:
             distance += -size[:, None] - size[None]
-            # multiply negative distance * 100 (squared below)
-            distance[distance < 0] = 1 / 10
 
         d2 = distance**2
         # remove self-interaction
