@@ -24,9 +24,7 @@ Edge Coloring
 .. autosummary::
    :toctree: generated/
 
-   bipartite_edge_coloring
-   kempe_chain_bipartite_edge_coloring
-   iterated_matching_edge_coloring
+   edge_coloring
 
 Edgelist
 --------
