@@ -400,7 +400,7 @@ class TestLayout:
         G = self.Gs
         pos = nx.random_layout(G)
         del pos[list(G.nodes())[0]]
-        pos = nx.forceatlas2_layout(G, pos = pos)
+        pos = nx.forceatlas2_layout(G, pos=pos)
         assert len(pos) == len(G)
 
 

@@ -30,8 +30,6 @@ from networkx.drawing.layout import (
     shell_layout,
     spectral_layout,
     spring_layout,
-    random_layout,
-    planar_layout,
 )
 
 __all__ = [

@@ -1324,7 +1324,7 @@ def forceatlas2_layout(
     --------
     >>> import networkx as nx
     >>> G = nx.florentine_families_graph()
-    >>> nx.draw(G, pos = nx.forceatlas2_layout(G))
+    >>> nx.draw(G, pos=nx.forceatlas2_layout(G))
     """
     import numpy as np
     # parse optional pos positions
@@ -1340,7 +1340,7 @@ def forceatlas2_layout(
     # check if we have a valid pos else just return (empty graph)
     if pos:
         max_dim = np.array([max(i) for i in pos.values()]).max()
-        min_dim = np.array(([min(i) for i in pos.values()])).min()
+        min_dim = np.array([min(i) for i in pos.values()]).min()
     else:
         return pos
 
