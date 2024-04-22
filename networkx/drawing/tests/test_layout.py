@@ -403,7 +403,6 @@ class TestLayout:
         pos = nx.forceatlas2_layout(G, pos=pos)
         assert len(pos) == len(G)
 
-
     def test_rescale_layout_dict(self):
         G = nx.empty_graph()
         vpos = nx.random_layout(G, center=(1, 1))

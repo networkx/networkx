@@ -1327,6 +1327,7 @@ def forceatlas2_layout(
     >>> nx.draw(G, pos=nx.forceatlas2_layout(G))
     """
     import numpy as np
+
     # parse optional pos positions
     if pos is None:
         pos = nx.random_layout(G, dim=dim)
