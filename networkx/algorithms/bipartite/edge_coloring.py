@@ -31,9 +31,8 @@ def edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
     Returns
     --------
     edge_colors : dict
-        The edge coloring is returned as a dictionary, `edge_colors`, such that
-        `edge_colors[e]` is the color assigned to edge `e`. Colors are represented
-        as integers.
+        The edge coloring as a dict keyed by edges to integers
+        that represent that edge's color.
 
     References
     -----------
@@ -45,8 +44,8 @@ def edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
     Raises
     ------
     AmbiguousSolution
-      Raised if the input bipartite graph is disconnected and no container
-      with all nodes in one bipartite set is provided. When determining
+        Raised if the input bipartite graph is disconnected and no `top_nodes`
+        parameter is provided to determine the node sets. When determining
       the nodes in each bipartite set more than one valid solution is
       possible if the input graph is disconnected.
     """
@@ -67,7 +66,7 @@ def edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
 
 
 def _kempe_chain_bipartite_edge_coloring(G):
-    """Returns the minimum edge coloring of the bipartite graph `graph`.
+    """Returns the minimum edge coloring of the bipartite graph `G`.
 
     This function uses the procedure augment to color the edges of the bipartite
     graph such that no two adjacent edges have the same color.
@@ -91,11 +90,8 @@ def _kempe_chain_bipartite_edge_coloring(G):
     # For example, v1 has edges (c1: u1), (c2: u2), etc., indicating connections
     # to u1, u2, etc., with respective colors c1, c2, etc.
 
-    # Get a dictionary of node degrees
-    degrees = dict(G.degree())
-
     # Find the maximum degree in the graph
-    delta = max(degrees.values())
+    delta = max(deg for node, deg in G.degree)
 
     colors = set(range(delta))
     coloring = {}
@@ -178,8 +174,7 @@ def _iterated_matching_edge_coloring(G, top_nodes):
         matching = _matching_saturating_max_degree(G1, top_nodes)
 
         # Assign colors to the edges in the matching
-        for u, v in list(matching.items()):
-            edge = (u, v)
+        for edge in matching.items():
             coloring[edge] = i
 
         # Remove the edges in the matching from G1
@@ -192,7 +187,7 @@ def _iterated_matching_edge_coloring(G, top_nodes):
 
 
 def _matching_saturating_max_degree(G, top_nodes=None):
-    """Returns a maximum-degree saturating matching in the bipartite graph `graph`.
+    """Returns a maximum-degree saturating matching in the bipartite graph `G`.
 
     Parameters
     ----------
@@ -206,9 +201,8 @@ def _matching_saturating_max_degree(G, top_nodes=None):
     matching : dict
         A dictionary representing the maximum-degree saturating matching.
     """
-    degrees = dict(G.degree())
-    max_degree = max(degrees.values())
-    max_degree_vertices = {node for node, deg in degrees.items() if deg == max_degree}
+    max_degree = max(deg for node, deg in G.degree)
+    max_degree_vertices = {node for node, deg in G.degree if deg == max_degree}
 
     # two parts of the bipartite graph
     part_a, part_b = nx.bipartite.sets(G, top_nodes)
@@ -268,8 +262,7 @@ def _matching_saturating_max_degree(G, top_nodes=None):
                 final_matching[u1] = v1
                 final_matching[v1] = u1
         elif v == u1:
-            for i in range(0, len(edges), 2):
-                u, v = edges[i]
+            for u, v in edges[::2]:
                 final_matching[u] = v
                 final_matching[v] = u
         else:
