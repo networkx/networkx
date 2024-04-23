@@ -14,24 +14,25 @@ def _is_proper_edge_coloring(G, coloring):
     node_colors = defaultdict(set)
 
     # iterate through each edge in the graph
-    for (u, v) in G.edges():
+    for u, v in G.edges():
         if (u, v) not in coloring:
             return False
         if (v, u) not in coloring:
             return False
-        if coloring[(u,v)] != coloring[(v, u)]:
+        if coloring[(u, v)] != coloring[(v, u)]:
             return False
         else:
-            color = coloring[(u,v)]
-        
+            color = coloring[(u, v)]
+
         if color in node_colors[u] or color in node_colors[v]:
             return False
-        
+
         # add the edge color to the dictionary at each node
         node_colors[u].add(color)
         node_colors[v].add(color)
 
     return True
+
 
 @pytest.mark.parametrize("strategy", ["iterated-matching", "kempe_chain"])
 class TestEdgeColoring:
@@ -45,7 +46,7 @@ class TestEdgeColoring:
         # Check that no node has two edges with the same color
         assert _is_proper_edge_coloring(G, coloring)
 
-        #Checking if the coloring is minimal
+        # Checking if the coloring is minimal
         # Check that the number of colors used is equal to the maximum degree
         max_degree = max(G.degree(), key=lambda x: x[1])[1]
         used_colors = set(coloring.values())
@@ -74,7 +75,7 @@ class TestEdgeColoring:
         # Check that no node has two edges with the same color
         assert _is_proper_edge_coloring(G, coloring)
 
-        #Checking if the coloring is minimal
+        # Checking if the coloring is minimal
         # Check that the number of colors used is equal to the maximum degree
         max_degree = max(G.degree(), key=lambda x: x[1])[1]
         used_colors = set(coloring.values())
@@ -90,7 +91,7 @@ class TestEdgeColoring:
         # Check that no node has two edges with the same color
         assert _is_proper_edge_coloring(G, coloring)
 
-        #Checking if the coloring is minimal
+        # Checking if the coloring is minimal
         # Check that the number of colors used is equal to the maximum degree
         max_degree = max(G.degree(), key=lambda x: x[1])[1]
         used_colors = set(coloring.values())
@@ -108,7 +109,7 @@ class TestEdgeColoring:
         # Check that no node has two edges with the same color
         assert _is_proper_edge_coloring(G, coloring)
 
-        #Checking if the coloring is minimal
+        # Checking if the coloring is minimal
         # Check that the number of colors used is equal to the maximum degree
         max_degree = max(G.degree(), key=lambda x: x[1])[1]
         used_colors = set(coloring.values())
@@ -121,7 +122,7 @@ class TestEdgeColoring:
         # Check that no node has two edges with the same color
         assert _is_proper_edge_coloring(G, coloring)
 
-        #Checking if the coloring is minimal
+        # Checking if the coloring is minimal
         # Check that the number of colors used is equal to the maximum degree
         max_degree = max(G.degree(), key=lambda x: x[1])[1]
         used_colors = set(coloring.values())
@@ -134,7 +135,7 @@ class TestEdgeColoring:
         # Check that no node has two edges with the same color
         assert _is_proper_edge_coloring(G, coloring)
 
-        #Checking if the coloring is minimal
+        # Checking if the coloring is minimal
         # Check that the number of colors used is equal to the maximum degree
         max_degree = max(G.degree(), key=lambda x: x[1])[1]
         used_colors = set(coloring.values())

@@ -2,10 +2,7 @@
 
 import networkx as nx
 
-__all__ = [
-    "edge_coloring",
-    "minimum_edge_coloring"
-    ]
+__all__ = ["edge_coloring", "minimum_edge_coloring"]
 
 
 @nx.utils.not_implemented_for("directed")
@@ -15,7 +12,7 @@ def minimum_edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
     """Returns a minimum edge coloring of the bipartite graph `G`.
 
     An edge coloring is an assignment of colors to the edges of a graph such
-    that no two adjacent edges share the same color. 
+    that no two adjacent edges share the same color.
 
     Parameters
     ----------
@@ -64,16 +61,18 @@ def minimum_edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
 
     return coloring
 
+
 #: This function is simply an alias for :func:`minimum_edge_coloring`.
 edge_coloring = minimum_edge_coloring
+
 
 def _kempe_chain_bipartite_edge_coloring(G):
     """Returns the minimum edge coloring of the bipartite graph `G`.
 
     This function uses the `procedure-augment` as explained in the (paper)[ https://dl.acm.org/doi/pdf/10.1145/800133.804346] to color the edges of the bipartite
-    graph such that no two adjacent edges have the same color. 
-    In the `procedure-augment`, an edge denoted as type αβ, between nodes `u` and `v`, is considered. 
-    The edge `e` is labeled as type αβ if color α is free at node `u` and color β is free at node `v`. 
+    graph such that no two adjacent edges have the same color.
+    In the `procedure-augment`, an edge denoted as type αβ, between nodes `u` and `v`, is considered.
+    The edge `e` is labeled as type αβ if color α is free at node `u` and color β is free at node `v`.
     If `e` is of type αβ, an αβ path (from `e`) is a path that starts at one end of `e`, alternates between colors α and β, and achieves maximal length.
 
     Parameters
@@ -151,7 +150,7 @@ def _iterated_matching_edge_coloring(G, top_nodes):
 
     This function uses the `procedure one-color` to color the edges of the bipartite
     graph such that no two adjacent edges have the same color.
-    The `one-color` procedure identifies the matching with nodes of maximum degree, 
+    The `one-color` procedure identifies the matching with nodes of maximum degree,
     subsequently coloring all edges within that matching with a single color. This process iterates by removing the edges of that matching from the graph.
 
     Parameters
