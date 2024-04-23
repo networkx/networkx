@@ -4,7 +4,7 @@ import networkx as nx
 
 __all__ = [
     "edge_coloring",
-    "minimum_ege_coloring"
+    "minimum_edge_coloring"
     ]
 
 
