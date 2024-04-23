@@ -24,8 +24,8 @@ def minimum_edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
         List of nodes that belong to one node set.
     strategy : str, optional
         The strategy to use for edge coloring. Currently, the following strategies are supported :
-        "iterated-matching" :
-        "kempe-chain" :
+        "iterated-matching" : Finds coloring iteratively via matching.
+        "kempe-chain" : Resolves conflicts at edges using Kempe-chain flipping.
         The default strategy is "kempe-chain".
 
     Returns
@@ -107,22 +107,22 @@ def _kempe_chain_bipartite_edge_coloring(G):
 
     for u, v in G.edges:
         # Get the colors of edges ending at u and v
-        u_colors = set(used_colors[u].keys())
-        v_colors = set(used_colors[v].keys())
+        u_colors = used_colors[u]
+        v_colors = used_colors[v]
 
         # Take the union and subtract from the color pallete
-        available_colors = colors - (u_colors | v_colors)
+        available_colors = colors - (u_colors.keys() | v_colors.keys())
 
         if available_colors:
             # Color the edge with the lowest available color
             color = min(available_colors)
-            used_colors[u][color] = v
-            used_colors[v][color] = u
+            u_colors[color] = v
+            v_colors[color] = u
             coloring[(u, v)] = color
             coloring[(v, u)] = color
         else:
-            u_color = next(iter(colors - set(used_colors[u])))
-            v_color = next(iter(colors - set(used_colors[v])))
+            u_color = next(c for c in colors if c not in u_colors)
+            v_color = next(c for c in colors if c not in v_colors)
             u1 = u
             v1 = v
             color = v_color
@@ -185,7 +185,7 @@ def _iterated_matching_edge_coloring(G, top_nodes):
             coloring[edge] = i
 
         # Remove the edges in the matching from G1
-        G1.remove_edges_from(list(matching.items()))
+        G1.remove_edges_from(matching.items())
 
         # Increment the color counter
         i += 1
