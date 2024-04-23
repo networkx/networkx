@@ -7,19 +7,29 @@ import networkx as nx
 from networkx.algorithms.coloring.edge_colorings import edge_coloring
 
 
-def _is_proper_edge_coloring(coloring):
-    """Checks through each vertex and saves the colors at each vertex to find out
+def _is_proper_edge_coloring(G, coloring):
+    """Checks through each node and saves the colors at each node to find out
     if there is any conflict
     """
-    vertex_colors = defaultdict(set)
+    node_colors = defaultdict(set)
 
-    for edge, color in coloring.items():
-        u, _ = edge  # Assuming the edges are represented as pairs (u, v)
+    # iterate through each edge in the graph
+    for u, v in G.edges():
+        if (u, v) not in coloring:
+            return False
+        if (v, u) not in coloring:
+            return False
+        if coloring[(u, v)] != coloring[(v, u)]:
+            return False
+        else:
+            color = coloring[(u, v)]
 
-        if color in vertex_colors[u]:
+        if color in node_colors[u] or color in node_colors[v]:
             return False
 
-        vertex_colors[u].add(color)
+        # add the edge color to the dictionary at each node
+        node_colors[u].add(color)
+        node_colors[v].add(color)
 
     return True
 
@@ -32,7 +42,7 @@ class TestEdgeColoring:
         coloring = edge_coloring(G)
 
         # Check that no vertex has two edges with the same color
-        assert _is_proper_edge_coloring(coloring)
+        assert _is_proper_edge_coloring(G, coloring)
 
         # Check that the number of colors used is equal to (maximum degree + 1)
         max_degree = max(G.degree(), key=lambda x: x[1])[1]
@@ -45,7 +55,7 @@ class TestEdgeColoring:
         coloring = edge_coloring(G)
 
         # Check that no vertex has two edges with the same color
-        assert _is_proper_edge_coloring(coloring)
+        assert _is_proper_edge_coloring(G, coloring)
 
         # Check that the number of colors used is equal to (maximum degree + 1)
         max_degree = max(G.degree(), key=lambda x: x[1])[1]
@@ -100,7 +110,7 @@ class TestEdgeColoring:
         coloring = edge_coloring(G)
 
         # Check that no vertex has two edges with the same color
-        assert _is_proper_edge_coloring(coloring)
+        assert _is_proper_edge_coloring(G, coloring)
 
         # Check that the number of colors used is equal to (maximum degree + 1)
         max_degree = max(G.degree(), key=lambda x: x[1])[1]
@@ -118,7 +128,7 @@ class TestEdgeColoring:
         coloring = edge_coloring(G)
 
         # Check that no vertex has two edges with the same color
-        assert _is_proper_edge_coloring(coloring)
+        assert _is_proper_edge_coloring(G, coloring)
 
         # Check that the number of colors used is equal to (maximum degree + 1)
         max_degree = max(G.degree(), key=lambda x: x[1])[1]

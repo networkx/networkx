@@ -42,8 +42,7 @@ def edge_coloring(G):
         coloring[(v, u)] = color
 
     G = G.copy()
-    degrees = dict(G.degree())
-    delta = max(degrees.values())
+    delta = max(deg for node, deg in G.degree)
     colors = set(range(delta + 1))
     coloring = {}
     used_colors = {node: {} for node in G.nodes}
@@ -52,7 +51,7 @@ def edge_coloring(G):
         u, v = edge
         u_colors = used_colors[u]
         v_colors = used_colors[v]
-        available_colors = colors - (set(u_colors.keys()) | set(v_colors.keys()))
+        available_colors = colors - (u_colors.keys() | v_colors.keys())
 
         # no conflict case
         if available_colors:
@@ -71,14 +70,14 @@ def edge_coloring(G):
                 fan_vertices.append(xk)
                 fan_colors.append(c)
                 xk_colors = set(used_colors[xk].keys())
-                available_colors = colors - (xk_colors | set(v_colors.keys()))
+                available_colors = colors - (xk_colors | v_colors.keys())
 
                 # Simple fan recoloring case
                 if available_colors:
                     col = min(available_colors)
                     break
 
-                c = next(iter(set(v_colors.keys()) - xk_colors), None)
+                c = next(iter(v_colors.keys() - xk_colors), None)
 
                 # Kempe Chain Case
                 if c in fan_colors:
@@ -88,7 +87,7 @@ def edge_coloring(G):
             # Finding Kempe Chain
             if kempe_flag:
                 a = c
-                b = min(colors - set(v_colors.keys()))
+                b = min(colors - v_colors.keys())
                 B = b
                 t = used_colors[xk][b]
                 used_colors[xk].pop(b)
