@@ -90,8 +90,8 @@ def _kempe_chain_bipartite_edge_coloring(G):
         is the color assigned to edge `e`. Colors are represented as integers.
     """
 
-    # The dictionary represents connections between vertices using colors.
-    # Each vertex (key) has color-keyed edges pointing to other vertices.
+    # The dictionary represents connections between nodes using colors.
+    # Each node (key) has color-keyed edges pointing to other nodes.
     # For example, v1 has edges (c1: u1), (c2: u2), etc., indicating connections
     # to u1, u2, etc., with respective colors c1, c2, etc.
 
@@ -101,7 +101,7 @@ def _kempe_chain_bipartite_edge_coloring(G):
     colors = set(range(delta))
     coloring = {}
 
-    # Initialize color dictionary for each vertex
+    # Initialize color dictionary for each node
     # dictionary of dictionary
     used_colors = {node: {} for node in G.nodes}
 
@@ -151,7 +151,7 @@ def _iterated_matching_edge_coloring(G, top_nodes):
 
     This function uses the `procedure one-color` to color the edges of the bipartite
     graph such that no two adjacent edges have the same color.
-    The "one-color" procedure identifies the matching with vertices of maximum degree, 
+    The "one-color" procedure identifies the matching with nodes of maximum degree, 
     subsequently coloring all edges within that matching with a single color. This process iterates by removing the edges of that matching from the graph.
 
     Parameters
@@ -209,14 +209,14 @@ def _matching_saturating_max_degree(G, top_nodes=None):
         A dictionary representing the maximum-degree saturating matching.
     """
     max_degree = max(deg for node, deg in G.degree)
-    max_degree_vertices = {node for node, deg in G.degree if deg == max_degree}
+    max_degree_nodes = {node for node, deg in G.degree if deg == max_degree}
 
     # two parts of the bipartite graph
     part_a, part_b = nx.bipartite.sets(G, top_nodes)
 
     # make two different graphs A_major and B_major
-    A_major_nodes = (part_a & max_degree_vertices) | part_b
-    B_major_nodes = (part_b & max_degree_vertices) | part_a
+    A_major_nodes = (part_a & max_degree_nodes) | part_b
+    B_major_nodes = (part_b & max_degree_nodes) | part_a
 
     A_major = G.subgraph(A_major_nodes)
     B_major = G.subgraph(B_major_nodes)

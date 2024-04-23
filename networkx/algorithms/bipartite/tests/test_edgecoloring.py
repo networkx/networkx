@@ -7,40 +7,51 @@ import networkx as nx
 from networkx.algorithms.bipartite.edge_colorings import edge_coloring
 
 
-def _is_proper_edge_coloring(coloring):
-    """Checks through each vertex and saves the colors at each vertex to find out
+def _is_proper_edge_coloring(G, coloring):
+    """Checks through each node and saves the colors at each node to find out
     if there is any conflict
     """
-    vertex_colors = defaultdict(set)
+    node_colors = defaultdict(set)
 
-    for edge, color in coloring.items():
-        u, _ = edge  # Assuming the edges are represented as pairs (u, v)
-
-        if color in vertex_colors[u]:
+    # iterate through each edge in the graph
+    for (u, v) in G.edges():
+        if (u, v) not in coloring:
             return False
-
-        vertex_colors[u].add(color)
+        if (v, u) not in coloring:
+            return False
+        if coloring[(u,v)] != coloring[(v, u)]:
+            return False
+        else:
+            color = coloring[(u,v)]
+        
+        if color in node_colors[u] or color in node_colors[v]:
+            return False
+        
+        # add the edge color to the dictionary at each node
+        node_colors[u].add(color)
+        node_colors[v].add(color)
 
     return True
 
+@pytest.mark.parametrize("strategy", ["iterated-matching", "kempe_chain"])
+class TestEdgeColoring:
+    """Tests for bipartite edge coloring algorithms"""
 
-class TestEdgeColoring_IteratedMatching:
-    """Tests for bipartite iterated matching edge coloring algorithm"""
-
-    def test_complete_graph(self):
+    def test_complete_graph(self, strategy):
         # Create a simple bipartite graph
         G = nx.complete_bipartite_graph(2, 3)
-        coloring = edge_coloring(G, strategy="iterated-matching")
+        coloring = edge_coloring(G, strategy)
 
-        # Check that no vertex has two edges with the same color
-        assert _is_proper_edge_coloring(coloring)
+        # Check that no node has two edges with the same color
+        assert _is_proper_edge_coloring(G, coloring)
 
+        #Checking if the coloring is minimal
         # Check that the number of colors used is equal to the maximum degree
         max_degree = max(G.degree(), key=lambda x: x[1])[1]
         used_colors = set(coloring.values())
         assert len(used_colors) == max_degree
 
-    def test_cube_graph(self):
+    def test_cube_graph(self, strategy):
         # Create a cube graph
         edge_list = [
             (1, 2),
@@ -58,167 +69,72 @@ class TestEdgeColoring_IteratedMatching:
         ]
         G = nx.Graph()
         G.add_edges_from(edge_list)
-        coloring = edge_coloring(G, strategy="iterated-matching")
+        coloring = edge_coloring(G, strategy)
 
-        # Check that no vertex has two edges with the same color
-        assert _is_proper_edge_coloring(coloring)
+        # Check that no node has two edges with the same color
+        assert _is_proper_edge_coloring(G, coloring)
 
+        #Checking if the coloring is minimal
         # Check that the number of colors used is equal to the maximum degree
         max_degree = max(G.degree(), key=lambda x: x[1])[1]
         used_colors = set(coloring.values())
         assert len(used_colors) == max_degree
 
-    def test_even_cycle(self):
+    def test_even_cycle(self, strategy):
         # Create a an even cycle graph
         edge_list = [(1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 1)]
         G = nx.Graph()
         G.add_edges_from(edge_list)
-        coloring = edge_coloring(G, strategy="iterated-matching")
+        coloring = edge_coloring(G, strategy)
 
-        # Check that no vertex has two edges with the same color
-        assert _is_proper_edge_coloring(coloring)
+        # Check that no node has two edges with the same color
+        assert _is_proper_edge_coloring(G, coloring)
 
+        #Checking if the coloring is minimal
         # Check that the number of colors used is equal to the maximum degree
         max_degree = max(G.degree(), key=lambda x: x[1])[1]
         used_colors = set(coloring.values())
         assert len(used_colors) == max_degree
 
-    # def test_odd_cycle(self):
+    # def test_odd_cycle(self, strategy):
 
-    def test_disconnected_graph(self):
+    def test_disconnected_graph(self, strategy):
         edges = [(1, 2), (1, 3), (3, 4), (3, 5), (5, 6), (7, 9), (8, 9)]
         G = nx.Graph()
         G.add_edges_from(edges)
         top_nodes = {1, 4, 5, 9}
-        coloring = edge_coloring(G, top_nodes, strategy="iterated-matching")
+        coloring = edge_coloring(G, top_nodes, strategy)
 
-        # Check that no vertex has two edges with the same color
-        assert _is_proper_edge_coloring(coloring)
+        # Check that no node has two edges with the same color
+        assert _is_proper_edge_coloring(G, coloring)
 
+        #Checking if the coloring is minimal
         # Check that the number of colors used is equal to the maximum degree
         max_degree = max(G.degree(), key=lambda x: x[1])[1]
         used_colors = set(coloring.values())
         assert len(used_colors) == max_degree
 
-    def test_complete_graph_1(self):
+    def test_complete_graph_1(self, strategy):
         G = nx.complete_bipartite_graph(4, 6)
-        coloring = edge_coloring(G, strategy="iterated-matching")
+        coloring = edge_coloring(G, strategy)
 
-        # Check that no vertex has two edges with the same color
-        assert _is_proper_edge_coloring(coloring)
+        # Check that no node has two edges with the same color
+        assert _is_proper_edge_coloring(G, coloring)
 
+        #Checking if the coloring is minimal
         # Check that the number of colors used is equal to the maximum degree
         max_degree = max(G.degree(), key=lambda x: x[1])[1]
         used_colors = set(coloring.values())
         assert len(used_colors) == max_degree
 
-    def test_complete_balanced_graph(self):
+    def test_complete_balanced_graph(self, strategy):
         G = nx.complete_bipartite_graph(5, 5)
-        coloring = edge_coloring(G, strategy="iterated-matching")
+        coloring = edge_coloring(G, strategy)
 
-        # Check that no vertex has two edges with the same color
-        assert _is_proper_edge_coloring(coloring)
+        # Check that no node has two edges with the same color
+        assert _is_proper_edge_coloring(G, coloring)
 
-        # Check that the number of colors used is equal to the maximum degree
-        max_degree = max(G.degree(), key=lambda x: x[1])[1]
-        used_colors = set(coloring.values())
-        assert len(used_colors) == max_degree
-
-
-class TestEdgeColoring_KempeChain:
-    """Tests for bipartite Kempe Chain edge coloring algorithm"""
-
-    def test_complete_graph(self):
-        # Create a simple bipartite graph
-        G = nx.complete_bipartite_graph(2, 3)
-        coloring = edge_coloring(G, strategy="kempe-chain")
-
-        # Check that no vertex has two edges with the same color
-        assert _is_proper_edge_coloring(coloring)
-
-        # Check that the number of colors used is equal to the maximum degree
-        max_degree = max(G.degree(), key=lambda x: x[1])[1]
-        used_colors = set(coloring.values())
-        assert len(used_colors) == max_degree
-
-    def test_cube_graph(self):
-        # Create a cube graph
-        edge_list = [
-            (1, 2),
-            (2, 3),
-            (3, 4),
-            (4, 1),
-            (6, 7),
-            (7, 8),
-            (8, 5),
-            (5, 6),
-            (1, 6),
-            (2, 7),
-            (3, 8),
-            (4, 5),
-        ]
-        G = nx.Graph()
-        G.add_edges_from(edge_list)
-        coloring = edge_coloring(G, strategy="kempe-chain")
-
-        # Check that no vertex has two edges with the same color
-        assert _is_proper_edge_coloring(coloring)
-
-        # Check that the number of colors used is equal to the maximum degree
-        max_degree = max(G.degree(), key=lambda x: x[1])[1]
-        used_colors = set(coloring.values())
-        assert len(used_colors) == max_degree
-
-    def test_even_cycle(self):
-        # Create a an even cycle graph
-        edge_list = [(1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 1)]
-        G = nx.Graph()
-        G.add_edges_from(edge_list)
-        coloring = edge_coloring(G, strategy="kempe-chain")
-
-        # Check that no vertex has two edges with the same color
-        assert _is_proper_edge_coloring(coloring)
-
-        # Check that the number of colors used is equal to the maximum degree
-        max_degree = max(G.degree(), key=lambda x: x[1])[1]
-        used_colors = set(coloring.values())
-        assert len(used_colors) == max_degree
-
-    # def test_odd_cycle(self):
-
-    def test_disconnected_graph(self):
-        edges = [(1, 2), (1, 3), (3, 4), (3, 5), (5, 6), (7, 9), (8, 9)]
-        G = nx.Graph()
-        G.add_edges_from(edges)
-        coloring = edge_coloring(G, strategy="kempe-chain")
-
-        # Check that no vertex has two edges with the same color
-        assert _is_proper_edge_coloring(coloring)
-
-        # Check that the number of colors used is equal to the maximum degree
-        max_degree = max(G.degree(), key=lambda x: x[1])[1]
-        used_colors = set(coloring.values())
-        assert len(used_colors) == max_degree
-
-    def test_complete_graph_1(self):
-        G = nx.complete_bipartite_graph(4, 6)
-        coloring = edge_coloring(G, strategy="kempe-chain")
-
-        # Check that no vertex has two edges with the same color
-        assert _is_proper_edge_coloring(coloring)
-
-        # Check that the number of colors used is equal to the maximum degree
-        max_degree = max(G.degree(), key=lambda x: x[1])[1]
-        used_colors = set(coloring.values())
-        assert len(used_colors) == max_degree
-
-    def test_complete_balanced_graph(self):
-        G = nx.complete_bipartite_graph(5, 5)
-        coloring = edge_coloring(G, strategy="kempe-chain")
-
-        # Check that no vertex has two edges with the same color
-        assert _is_proper_edge_coloring(coloring)
-
+        #Checking if the coloring is minimal
         # Check that the number of colors used is equal to the maximum degree
         max_degree = max(G.degree(), key=lambda x: x[1])[1]
         used_colors = set(coloring.values())
