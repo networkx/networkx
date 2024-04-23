@@ -151,7 +151,7 @@ def _iterated_matching_edge_coloring(G, top_nodes):
 
     This function uses the `procedure one-color` to color the edges of the bipartite
     graph such that no two adjacent edges have the same color.
-    The "one-color" procedure identifies the matching with nodes of maximum degree, 
+    The `one-color` procedure identifies the matching with nodes of maximum degree, 
     subsequently coloring all edges within that matching with a single color. This process iterates by removing the edges of that matching from the graph.
 
     Parameters
