@@ -53,12 +53,11 @@ def edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
 
     if strategy == "iterated-matching":
         # Handle the disconnected Graph case
-        if not nx.is_connected(G) and top_nodes is None:
-            raise nx.AmbiguousSolution(
-                "Disconnected graph: Ambiguous solution for bipartite sets."
-            )
-
         if top_nodes is None:
+            if not nx.is_connected(G):
+                raise nx.AmbiguousSolution(
+                    "Disconnected graph: Ambiguous solution for bipartite sets."
+                )
             top_nodes, _ = nx.bipartite.sets(G)
         coloring = _iterated_matching_edge_coloring(G, top_nodes)
     else:
