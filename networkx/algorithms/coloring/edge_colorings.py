@@ -9,6 +9,9 @@ __all__ = ["edge_coloring"]
 def edge_coloring(G):
     """This function performs edge coloring on a given graph G.
 
+    Edge coloring is the assignment of colors to the edges of a graph in such a way
+    that no two adjacent edges share the same color.
+
     Parameters
     ----------
     G: NetworkX graph object representing the input graph.
@@ -18,8 +21,6 @@ def edge_coloring(G):
     coloring: A dictionary where keys are tuples representing edges of the graph,
                 and values are integers representing colors assigned to the edges.
 
-    Edge coloring is the assignment of colors to the edges of a graph in such a way
-    that no two adjacent edges share the same color.
 
     References
     ----------
@@ -49,9 +50,9 @@ def edge_coloring(G):
 
     for edge in G.edges:
         u, v = edge
-        u_colors = set(used_colors[u].keys())
-        v_colors = set(used_colors[v].keys())
-        available_colors = colors - (u_colors | v_colors)
+        u_colors = used_colors[u]
+        v_colors = used_colors[v]
+        available_colors = colors - (set(u_colors.keys()) | set(v_colors.keys()))
 
         # no conflict case
         if available_colors:
@@ -61,23 +62,23 @@ def edge_coloring(G):
         else:
             fan_vertices = []
             fan_colors = []
-            c = list(colors - u_colors)[0]
+            c = next(c for c in colors if c not in u_colors)
             kempe_flag = 0
 
             # Start finding fan
             while True:
-                xk = used_colors[v][c]
+                xk = v_colors[c]
                 fan_vertices.append(xk)
                 fan_colors.append(c)
                 xk_colors = set(used_colors[xk].keys())
-                available_colors = colors - (xk_colors | v_colors)
+                available_colors = colors - (xk_colors | set(v_colors.keys()))
 
                 # Simple fan recoloring case
                 if available_colors:
                     col = min(available_colors)
                     break
 
-                c = next(iter(v_colors - xk_colors), None)
+                c = next(iter(set(v_colors.keys()) - xk_colors), None)
 
                 # Kempe Chain Case
                 if c in fan_colors:
@@ -87,7 +88,7 @@ def edge_coloring(G):
             # Finding Kempe Chain
             if kempe_flag:
                 a = c
-                b = min(colors - v_colors)
+                b = min(colors - set(v_colors.keys()))
                 B = b
                 t = used_colors[xk][b]
                 used_colors[xk].pop(b)

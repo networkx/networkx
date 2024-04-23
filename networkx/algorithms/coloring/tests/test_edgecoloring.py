@@ -4,7 +4,7 @@ from collections import defaultdict
 import pytest
 
 import networkx as nx
-from networkx.algorithms.coloring.edge_coloring import edge_coloring
+from networkx.algorithms.coloring.edge_colorings import edge_coloring
 
 
 def _is_proper_edge_coloring(coloring):
