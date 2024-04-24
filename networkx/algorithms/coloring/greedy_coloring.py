@@ -6,7 +6,7 @@ from collections import defaultdict, deque
 from queue import PriorityQueue
 
 import networkx as nx
-from networkx.utils import arbitrary_element, py_random_state, not_implemented_for
+from networkx.utils import arbitrary_element, not_implemented_for, py_random_state
 
 __all__ = [
     "greedy_color",
@@ -26,11 +26,12 @@ def strategy_largest_first(G, colors):
     """Returns a list of the nodes of ``G`` in decreasing order of degree.
 
     ``G`` is a NetworkX graph. ``colors`` is ignored.
-    
+
     Operates in $O(n log n)$ time, where $n$ is the number of nodes.
-    
+
     """
     return sorted(G, key=G.degree, reverse=True)
+
 
 @py_random_state(2)
 def strategy_random_sequential(G, colors, seed=None):
@@ -41,9 +42,9 @@ def strategy_random_sequential(G, colors, seed=None):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
-    
+
     Operates in $O(n)$ time, where $n$ is the number of nodes.
-    
+
     """
     nodes = list(G)
     seed.shuffle(nodes)
@@ -111,7 +112,7 @@ def _maximal_independent_set(G):
     """Returns a maximal independent set of nodes in ``G`` by repeatedly
     choosing an independent node of minimum degree (with respect to the
     subgraph of unchosen nodes).
-    
+
     """
     result = set()
     remaining = set(G)
@@ -206,8 +207,8 @@ def strategy_connected_sequential(G, colors, traversal="bfs"):
 
 
 def strategy_saturation_largest_first(G, colors):
-    """Returns an iterable over the nodes in ``G`` in the order they would 
-    be colored using their "saturation order" (also known as the Dsatur 
+    """Returns an iterable over the nodes in ``G`` in the order they would
+    be colored using their "saturation order" (also known as the Dsatur
     algorithm).
 
     Parameters
@@ -216,113 +217,119 @@ def strategy_saturation_largest_first(G, colors):
 
     Notes
     -----
-    If ``G`` is a cycle graph, a wheel graph, or a bipartite graph, the 
-    generated sequence, when used with the greedy colouring algorithm, results 
-    in a solution that uses the minimal number of colors  (that is, the 
-    algorithm is **exact** for such graphs). 
+    If ``G`` is a cycle graph, a wheel graph, or a bipartite graph, the
+    generated sequence, when used with the greedy colouring algorithm, results
+    in a solution that uses the minimal number of colors  (that is, the
+    algorithm is **exact** for such graphs).
 
     This implementation of the DSatur algorithm has a complexity of
-    $O(n lg n + m lg m)$. See [1]_ for further details. 
+    $O(n lg n + m lg m)$. See [1]_ for further details.
 
     References
     ----------
-    .. [1] Lewis, R. (2021) A Guide to Graph Colouring: Algorithms and 
+    .. [1] Lewis, R. (2021) A Guide to Graph Colouring: Algorithms and
        Applications, 2nd Ed. Springer, ISBN: 978-3-030-81053-5.
        <https://link.springer.com/book/10.1007/978-3-030-81054-2>
-    
+
     """
     # First initialise the data structures. These are:
-    # the colors of each vertex c[v]; the degree d[v] of each 
-    # uncolored vertex in the graph induced by uncolored nodes; the set of 
-    # colors adjacent to each uncolored vertex (initially empty sets); and 
-    # a priority queue q; 
-    c, d, adjcols, q = dict(), dict(), dict(), PriorityQueue()
+    # the colors of each vertex c[v]; the degree d[v] of each
+    # uncolored vertex in the graph induced by uncolored nodes; the set of
+    # colors adjacent to each uncolored vertex (initially empty sets); and
+    # a priority queue q;
+    c, d, adjcols, q = {}, {}, {}, PriorityQueue()
     for u in G.nodes:
         d[u] = G.degree(u)
         adjcols[u] = set()
-        q.put((0, d[u]*(-1), u))
+        q.put((0, d[u] * (-1), u))
     while len(c) < len(G):
-        # Get the uncolored vertex u with max saturation degree, breaking 
+        # Get the uncolored vertex u with max saturation degree, breaking
         # ties using the highest value for d. Remove u from q.
         _, _, u = q.get()
         if u not in c:
             yield u
-            #Get lowest color label i for uncolored vertex u
+            # Get lowest color label i for uncolored vertex u
             for i in itertools.count():
-                if i not in adjcols[u]: break
+                if i not in adjcols[u]:
+                    break
             c[u] = i
-            #Update the data structures 
+            # Update the data structures
             for v in G[u]:
                 if v not in c:
                     adjcols[v].add(i)
                     d[v] -= 1
-                    q.put((len(adjcols[v])*(-1), d[v]*(-1), v))
+                    q.put((len(adjcols[v]) * (-1), d[v] * (-1), v))
 
 
 def strategy_rlf(G, colors):
-    """Returns an iterable over the nodes in ``G`` in the order they would 
+    """Returns an iterable over the nodes in ``G`` in the order they would
     be colored using the "recursive largest first" (RLF) algorithm.
-    
+
     Parameters
     ----------
     ``G`` is a NetworkX graph. ``colors`` is ignored.
-    
+
     Notes
     -----
-    If ``G`` is a cycle graph, a wheel graph, or a bipartite graph, the 
-    generated sequence, when used with the greedy colouring algorithm, results 
-    in a solution that uses the minimal number of colors  (that is, the 
-    algorithm is **exact** for such graphs). 
-    
-    This implementation of the RLF algorithm has a complexity of $O(nm)$. 
-    See [1]_ for further details. 
-    
+    If ``G`` is a cycle graph, a wheel graph, or a bipartite graph, the
+    generated sequence, when used with the greedy colouring algorithm, results
+    in a solution that uses the minimal number of colors  (that is, the
+    algorithm is **exact** for such graphs).
+
+    This implementation of the RLF algorithm has a complexity of $O(nm)$.
+    See [1]_ for further details.
+
     References
     ----------
-    .. [1] Lewis, R. (2021) A Guide to Graph Colouring: Algorithms and 
+    .. [1] Lewis, R. (2021) A Guide to Graph Colouring: Algorithms and
        Applications, 2nd Ed. Springer, ISBN: 978-3-030-81053-5.
        <https://link.springer.com/book/10.1007/978-3-030-81054-2>
-       
+
     """
+
     def update_rlf(u):
-        # Remove u from X (it has been colored) and move all uncolored 
+        # Remove u from X (it has been colored) and move all uncolored
         # neighbors of u from X to Y
         X.remove(u)
         for v in G[u]:
             if v not in c:
                 X.discard(v)
                 Y.add(v)
-        # Recalculate the contets of NInX and NInY. First calculate a set D2 
+        # Recalculate the contets of NInX and NInY. First calculate a set D2
         # of all uncolored nodes within distance two of u.
         D2 = set()
         for v in G[u]:
             if v not in c:
                 D2.add(v)
                 for w in G[v]:
-                    if w not in c: D2.add(w)
-        # For each vertex v in D2, recalculate the number of (uncolored) 
+                    if w not in c:
+                        D2.add(w)
+        # For each vertex v in D2, recalculate the number of (uncolored)
         # neighbors in X and Y
         for v in D2:
             NInX[v] = 0
             NInY[v] = 0
             for w in G[v]:
                 if w not in c:
-                    if w in X: NInX[v] += 1
-                    elif w in Y: NInY[v] += 1
-    
-    # Main algorithm. Here, X is the set of uncolored vertices not adjacent 
-    # to any vertices colored with color i, and Y is the set of uncolored 
+                    if w in X:
+                        NInX[v] += 1
+                    elif w in Y:
+                        NInY[v] += 1
+
+    # Main algorithm. Here, X is the set of uncolored vertices not adjacent
+    # to any vertices colored with color i, and Y is the set of uncolored
     # vertices that are adjcent to vertices colored with i.
-    c, Y, n, i = dict(), set(), len(G), 0
-    X = {u for u in G.nodes()}
+    c, Y, n, i = {}, set(), len(G), 0
+    X = set(G.nodes())
     while X:
         # Construct color class i. First, for each vertex u in X, calculate the
         # number of neighbors it has in X and Y
         NInX, NInY = {u: 0 for u in X}, {u: 0 for u in X}
         for u in X:
             for v in G[u]:
-                if v in X: NInX[u] += 1
-        # Identify and colur the uncolored vertex u in X that has the most 
+                if v in X:
+                    NInX[u] += 1
+        # Identify and colur the uncolored vertex u in X that has the most
         # neighbors in X
         maxVal = -1
         for v in X:
@@ -332,8 +339,8 @@ def strategy_rlf(G, colors):
         c[u] = i
         update_rlf(u)
         while X:
-            # Identify and color the vertex u in X that has the largest 
-            # number of neighbors in Y. Break ties according to the min 
+            # Identify and color the vertex u in X that has the largest
+            # number of neighbors in Y. Break ties according to the min
             # neighbors in X
             maxVal, minVal = -1, n
             for v in X:
@@ -351,42 +358,43 @@ def strategy_rlf(G, colors):
 def tabusearch(G, inputtuple, seed=None):
     """Applies a tabu search algorithm that attempts to reduce the number of
     colors being used to color the vertices of ``G`` (see [1]_).
-    
+
     Parameters
     ----------
     G : NetworkX graph
 
     inputtuple : a tuple containing two items
-    
+
         inputtuple[0] : dict()
             This defines a proper $k$-coloring of the vertices of ``G``
             using color labels $0,1,...,k-1$. This coloring is expressed as a
-            dictionary, with keys representing nodes and values representing 
+            dictionary, with keys representing nodes and values representing
             the colors.
-        
+
         inputtuple[1] : integer
             Specifies the maximum number of iterations to perform. Each iteration
             has complexity $O(kn+m)$
-        
+
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
-    
+
     Returns
     -------
     A dictionary with keys representing nodes and values representing
     their colors.
-    
+
     References
     ----------
-    .. [1] Lewis, R. (2021) A Guide to Graph Colouring: Algorithms and 
+    .. [1] Lewis, R. (2021) A Guide to Graph Colouring: Algorithms and
        Applications, 2nd Ed. Springer, ISBN: 978-3-030-81053-5.
        <https://link.springer.com/book/10.1007/978-3-030-81054-2>
-    
+
     """
+
     def partialcol():
         def domove(vpos, j):
-            # Used by partialcol to move vertex v (at U[vPos]) to color j and 
+            # Used by partialcol to move vertex v (at U[vPos]) to color j and
             # update the data structures C, T and U
             v = U[vpos]
             c[v] = j
@@ -401,22 +409,24 @@ def tabusearch(G, inputtuple, seed=None):
                     for w in G[u]:
                         C[w, j] -= 1
 
-        # First populate the data structures. 
-        # C[v, j] gives the number of neighbors of v in color j, 
+        # First populate the data structures.
+        # C[v, j] gives the number of neighbors of v in color j,
         # T is the tabu list, and U is the list of uncolored nodes.
         # "its" is the overall iterations counter from the enclosing fuction
-        C, T, U = dict(), dict(), list()
+        C, T, U = {}, {}, []
         nonlocal its
         for v in G:
             for j in range(k):
                 C[v, j] = 0
                 T[v, j] = 0
         for v in G:
-            if c[v] == -1: U.append(v)
+            if c[v] == -1:
+                U.append(v)
             for u in G[v]:
                 if c[u] != -1:
                     C[v, c[u]] += 1
-        if len(U) == 0: return 0
+        if len(U) == 0:
+            return 0
         globalbest, tabuits, t = len(U), 0, 0
         while its < maxits:
             its += 1
@@ -427,7 +437,8 @@ def tabusearch(G, inputtuple, seed=None):
                 v = U[vpos]
                 for j in range(k):
                     if C[v, j] <= bestval:
-                        if C[v, j] < bestval: numbestval = 0
+                        if C[v, j] < bestval:
+                            numbestval = 0
                         # Consider the move if it is non-tabu or leads to a new global best
                         if T[v, j] < tabuits or (C[v, j] == 0 and len(U) == globalbest):
                             # Choose between the observed best moves and stores
@@ -441,10 +452,12 @@ def tabusearch(G, inputtuple, seed=None):
             # Apply the move, update T, and determine the next tabu tenure t
             domove(vposbest, jbest)
             t = int(0.6 * len(U)) + seed.randint(0, 9)
-            if len(U) < globalbest: globalbest = len(U)
-            if globalbest == 0: break
+            if len(U) < globalbest:
+                globalbest = len(U)
+            if globalbest == 0:
+                break
         return globalbest
-    
+
     # Main tabusearch algorithm (assumes colors being used are 0,...,k-1)
     c = inputtuple[0]
     maxits = inputtuple[1]
@@ -452,16 +465,19 @@ def tabusearch(G, inputtuple, seed=None):
     # Decrement k and try to find a k colouring for this lower value of k
     k -= 1
     while its < maxits and k > 2:
-        # Select a random colour class j and mark its nodes as uncoloured 
+        # Select a random colour class j and mark its nodes as uncoloured
         # (maintaining the use of colors 0,...,k-1)
         j = seed.randint(0, k - 1)
         for v in c:
-            if c[v] == j: c[v] = -1
-            elif c[v] == k: c[v] = j
-        # Run partialcol using k colors until all nodes are colored or 
+            if c[v] == j:
+                c[v] = -1
+            elif c[v] == k:
+                c[v] = j
+        # Run partialcol using k colors until all nodes are colored or
         # maxits is exceeded
         cost = partialcol()
-        if cost == 0: bestc = dict(c)
+        if cost == 0:
+            bestc = dict(c)
         k -= 1
     return bestc
 
@@ -480,26 +496,27 @@ STRATEGIES = {
     "rlf": strategy_rlf,
 }
 
+
 @not_implemented_for("directed")
 @nx._dispatchable
 def greedy_color(G, strategy="largest_first", tabu=0, interchange=False):
-    """Colors the nodes of a graph using a greedy graph coloring algorithm 
-    and, optionally, a subsequent optimisation algorithm based on tabu search. 
-    The method assigns a color to each vertex such that neighbouring vertices 
-    always have different colors. The aim is to construct a coloring that 
-    uses as few different colors as possible. 
+    """Colors the nodes of a graph using a greedy graph coloring algorithm
+    and, optionally, a subsequent optimisation algorithm based on tabu search.
+    The method assigns a color to each vertex such that neighbouring vertices
+    always have different colors. The aim is to construct a coloring that
+    uses as few different colors as possible.
 
-    The given ``strategy`` determines the order in which nodes are to be colored 
+    The given ``strategy`` determines the order in which nodes are to be colored
     by the $O(n+m)$ "greedy algorithm" for graph colouring. If the strategies
     ``'saturation_largest_first'``, ``'DSATUR'`` or ``'rlf'`` are used, the algorithm
     is exact for bipartite, cycle, and wheel graphs (that is, solutions with
     the minimum number of colors are guaranteed).
 
     On production of a solution, an optional optimization process can also be
-    employed that seeks to further reduce the number of colours being used. This 
+    employed that seeks to further reduce the number of colours being used. This
     algorithm is based on tabu search.
 
-    The greedy strategies are described in more detail in [1]_, [2]_, and [3]_. 
+    The greedy strategies are described in more detail in [1]_, [2]_, and [3]_.
     The tabu search algorithm is described in [3]_.
 
     Parameters
@@ -508,7 +525,7 @@ def greedy_color(G, strategy="largest_first", tabu=0, interchange=False):
 
     strategy : string or function(G, colors), optional (default='largest_first')
        A function (or string representing a function) that provides
-       an ordering of the vertices that is then passed to the 
+       an ordering of the vertices that is then passed to the
        greedy algorithm. ``G`` is the graph. The function must
        return an iterable over all nodes in ``G``.
 
@@ -525,25 +542,25 @@ def greedy_color(G, strategy="largest_first", tabu=0, interchange=False):
        * ``'saturation_largest_first'`` (uses the Dsatur algorithm, complexity $O(n \lg n + m \lg m)$)
        * ``'DSATUR'`` (alias for the previous strategy)
        * ``'rlf'`` (recursive largest first algorithm, complexity $O(nm)$)
-       
+
     tabu : integer, optional (default=0)
-        Runs a tabu search algorithm for the specified number of iterations. 
-        The algorithm takes a proper colouring formed by the chosen strategy 
+        Runs a tabu search algorithm for the specified number of iterations.
+        The algorithm takes a proper colouring formed by the chosen strategy
         above and attempts to reduce the number of colors being used.
         The method is based on an iterated version of PartialCol, described in
-        [3]_. Given a proper $k$-colouring, the algorithm first "uncolours" 
-        all vertices in a randomly chosen colour class. The PartialCol 
-        algorithm (based on tabu search) is then executed, which attempts to 
+        [3]_. Given a proper $k$-colouring, the algorithm first "uncolours"
+        all vertices in a randomly chosen colour class. The PartialCol
+        algorithm (based on tabu search) is then executed, which attempts to
         reduce the cardinality of the set of uncoloured vertices.
-        If this cardinality is reduced to zero, $k$ is decremented 
+        If this cardinality is reduced to zero, $k$ is decremented
         by one, and the process is repeated. The algorithm terminates once the
-        iteration limit is exceeded. Fewer colors (but longer run times) 
+        iteration limit is exceeded. Fewer colors (but longer run times)
         occur with larger iteration limits.
 
-        Given a graph with $n$ vertices, $m$ edges, and $k$ colours, each 
-        iteration of PartialCol has complexity $O(nk + m)$. The process also 
-        uses $O(nk + m)$ memory. 
-        
+        Given a graph with $n$ vertices, $m$ edges, and $k$ colours, each
+        iteration of PartialCol has complexity $O(nk + m)$. The process also
+        uses $O(nk + m)$ memory.
+
     interchange : bool, optional (default=False)
         An alias of ``tabu`` that allows backwards compatibility with earlier
         versions. If ``interchange = True`` and ``tabu`` is unspecified, the
@@ -568,14 +585,14 @@ def greedy_color(G, strategy="largest_first", tabu=0, interchange=False):
     In general, the use of ``strategy='rlf'`` yields solutions using fewer colors
     than the other methods, though it is computationally more expensive, as seen above. If
     expense is an issue, then ``'saturation_largest_first'`` is a cheaper alternative
-    that also offers high quality solutions in most cases. 
+    that also offers high quality solutions in most cases.
 
     The subseuent use of tabu search usually allows solutions with fewer colors to
-    be identified. Larger values for ``tabusearch`` yield better results but also 
-    longer run times. 
+    be identified. Larger values for ``tabusearch`` yield better results but also
+    longer run times.
 
-    Further information on the relative performance of these algorithms can be found 
-    in [3]_. 
+    Further information on the relative performance of these algorithms can be found
+    in [3]_.
 
     Raises
     ------
@@ -587,8 +604,8 @@ def greedy_color(G, strategy="largest_first", tabu=0, interchange=False):
 
     ValueError
         If the ``tabu`` parameter is not an integer greater or equal to zero, or
-        the ``interchange`` parameter is not a Boolean. 
-        
+        the ``interchange`` parameter is not a Boolean.
+
     References
     ----------
     .. [1] Adrian Kosowski, and Krzysztof Manuszewski,
@@ -597,18 +614,18 @@ def greedy_color(G, strategy="largest_first", tabu=0, interchange=False):
     .. [2] David W. Matula, and Leland L. Beck, "Smallest-last
        ordering and clustering and graph coloring algorithms." *J. ACM* 30,
        3 (July 1983), 417–427. <https://doi.org/10.1145/2402.322385>
-    .. [3] Lewis, R. (2021) A Guide to Graph Colouring: Algorithms and 
+    .. [3] Lewis, R. (2021) A Guide to Graph Colouring: Algorithms and
        Applications, 2nd Ed. Springer, ISBN: 978-3-030-81053-5
        <https://link.springer.com/book/10.1007/978-3-030-81054-2>
-        """
+    """
     #
     # The tabusearch implementation used here is based on the C++ implementation
     # of PartialCol available at <www.rhydlewis.eu/gcol>. Both versions
-    # were programmed by the author of [3]_. 
+    # were programmed by the author of [3]_.
     #
     if len(G) == 0:
         return {}
-    
+
     # Determine the strategy provided by the caller and check the parameters
     strategy = STRATEGIES.get(strategy, strategy)
     if not callable(strategy):
@@ -621,8 +638,8 @@ def greedy_color(G, strategy="largest_first", tabu=0, interchange=False):
         raise ValueError("tabu parameter must be a positive integer.")
     if not isinstance(interchange, bool):
         raise ValueError("interchange parameter must be True or False.")
-        
-    # Determine a permutation P of G's nodes using the selected strategy, then 
+
+    # Determine a permutation P of G's nodes using the selected strategy, then
     # apply the greedy algorithm using P
     colors = {}
     P = strategy(G, colors)
@@ -634,13 +651,13 @@ def greedy_color(G, strategy="largest_first", tabu=0, interchange=False):
             if i not in C:
                 break
         colors[u] = i
-    
+
     # If interchange is True or tabu > 0, try to reduce the number of colours
     # being used using tabu search
     if tabu == 0 and interchange == True:
         maxits = len(G)
     else:
-        maxits = tabu    
+        maxits = tabu
     if maxits > 0:
         colors = tabusearch(G, (colors, maxits))
     return colors

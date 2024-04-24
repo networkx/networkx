@@ -23,15 +23,15 @@ def is_equitable(G, coloring, num_colors=None):
     """Determines if the coloring is valid and equitable for the graph G."""
     if not is_coloring(G, coloring):
         return False
-   
+
     # Get maximum degree of G. If num_colors is less or equal to this, no
     # further checks are necessary
     maxdeg = max(G.degree(node) for node in G.nodes) if len(G.nodes) > 0 else 0
     if num_colors != None and num_colors <= maxdeg:
         return True
-   
+
     # Further checks are needed to ensure there are only two color class sizes
-    # First determine number of colours per colour class    
+    # First determine number of colours per colour class
     color_set_size = defaultdict(int)
     for color in coloring.values():
         color_set_size[color] += 1
@@ -393,21 +393,21 @@ def equitable_heuristic(G, num_colors):
     # Initialise the data structures for this heuristic.
     # These are a priority queue q; the colors of each vertex c[v];
     # the set of colors adjacent to each uncolored vertex (initially empty
-    # sets); the degree d[v] of each uncolored vertex in the graph induced 
+    # sets); the degree d[v] of each uncolored vertex in the graph induced
     # by uncolored nodes; and the size of each color class.
     q = PriorityQueue()
-    c, adjcols, d = dict(), dict(), dict()
+    c, adjcols, d = {}, {}, {}
     colsize = [0 for i in range(num_colors)]
     for u in G.nodes:
         d[u] = G.degree(u)
         adjcols[u] = set()
-        q.put((0, d[u]*(-1), u))
+        q.put((0, d[u] * (-1), u))
     while len(c) < len(G):
-        # Get the uncolored vertex u with max saturation degree, breaking 
+        # Get the uncolored vertex u with max saturation degree, breaking
         # ties using the highest value for d. Remove u from q.
         _, _, u = q.get()
         if u not in c:
-            # vertex u has not yet been colored, so assign it to the feasible 
+            # vertex u has not yet been colored, so assign it to the feasible
             # color class i that currently has the fewest vertices
             i, mincolsize = None, float("inf")
             for j in range(num_colors):
@@ -422,94 +422,95 @@ def equitable_heuristic(G, num_colors):
                 )
             c[u] = i
             colsize[i] += 1
-            # Update the saturation degrees and d-values of the uncolored 
+            # Update the saturation degrees and d-values of the uncolored
             # neighbors v, and update the priority queue q
             for v in G[u]:
                 if v not in c:
                     adjcols[v].add(i)
                     d[v] -= 1
-                    q.put((len(adjcols[v])*(-1), d[v]*(-1), v))
+                    q.put((len(adjcols[v]) * (-1), d[v] * (-1), v))
     return c
+
 
 @not_implemented_for("directed")
 @nx._dispatchable
 def equitable_color(G, num_colors):
     """Provides an equitable coloring for the nodes of ``G``.
-    
-    This attempts to color the graph ``G`` using ``num_colors`` colors, where 
-    neighbors of a node cannot have the same color as the node itself, and 
-    the number of nodes in each color class is approximately equal. 
-    
-    If ``num_colors`` is greater than the maximum degree of ``G``, the 
-    algorithm described in [1]_ is used. This has a complexity of 
+
+    This attempts to color the graph ``G`` using ``num_colors`` colors, where
+    neighbors of a node cannot have the same color as the node itself, and
+    the number of nodes in each color class is approximately equal.
+
+    If ``num_colors`` is greater than the maximum degree of ``G``, the
+    algorithm described in [1]_ is used. This has a complexity of
     $O(kn^2)$ (where $k$ = ``num_colors``). It guarantees the production of a
     solution in which the difference in size between the smallest and largest
     color class is at most one.
-    
-    If ``num_colors`` is  less than or equal to the maximum degree of 
+
+    If ``num_colors`` is  less than or equal to the maximum degree of
     ``G``, then the problem of determining an equitable coloring is
     NP-hard. In this case, the heuristic described in [2]_ is used. This
-    implementation has complexity $O((n \lg n) + (nk) + (m \lg m))$. 
+    implementation has complexity $O((n \lg n) + (nk) + (m \lg m))$.
     In solutions returned by this method, neighboring vertices always receive
     different colors; however, the coloring is not guaranteed to be equitable
     even if an equitable coloring for ``G`` using this many colors exists.
-    
+
     Parameters
     ----------
     G : networkX graph
        The nodes of this graph will be colored.
-    
+
     num_colors : integer
        The number of colors to use. If this value is less or equal to the maximum
        degree of nodes in the graph, the algorithm may not be able to color all nodes
        such that neighbors always have different colors. In this case an exception
        is raised.
-    
+
     Returns
     -------
     coloring : dict()
        A dictionary with keys representing nodes and values representing
        the corresponding coloring. Colors use the integer labels 0, 1, 2, etc..
-    
+
     Examples
     --------
     >>> G = nx.cycle_graph(4)
     >>> nx.coloring.equitable_color(G, num_colors=3)
     {0: 2, 1: 1, 2: 2, 3: 0}
-    
+
     Raises
     ------
     NetworkXAlgorithmError
         If a value of ``num_colors`` is used that is too small (that is,
-        the algorithm is unable to color all nodes in ``G`` such 
+        the algorithm is unable to color all nodes in ``G`` such
         that neighbors always have different colors).
-    
+
     NetworkXNotImplemented
         If ``G`` is a directed graph or directed multigraph.
-    
+
     ValueError
-        If ``num_colors`` is not a positive integer. 
-    
+        If ``num_colors`` is not a positive integer.
+
     References
     ----------
     .. [1] Kierstead, H. A., Kostochka, A. V., Mydlarz, M., & Szemerédi, E.
        (2010). A fast algorithm for equitable coloring. Combinatorica, 30(2),
        217-224.
-    .. [2] Lewis, R. (2021) A Guide to Graph Colouring: Algorithms and 
+    .. [2] Lewis, R. (2021) A Guide to Graph Colouring: Algorithms and
        Applications, 2nd Ed. Springer, ISBN: 978-3-030-81053-5
        <https://link.springer.com/book/10.1007/978-3-030-81054-2>
-    
+
     """
     if nx.is_directed(G):
         raise nx.NetworkXNotImplemented("input graph cannot be directed.")
     if not isinstance(num_colors, int) or num_colors < 0:
         raise ValueError("num_colors must be a positive integer.")
-    
+
     # Calculate maximum degree in G
     r_ = max(G.degree(node) for node in G.nodes) if len(G.nodes) > 0 else 0
-        
-    if num_colors <=  r_:
-        # Employ the heuristic from [2] 
+
+    if num_colors <= r_:
+        # Employ the heuristic from [2]
         c = equitable_heuristic(G, num_colors)
         return c
     else:
@@ -517,61 +518,65 @@ def equitable_color(G, num_colors):
         # simplicity later.
         nodes_to_int = {}
         int_to_nodes = {}
-    
+
         for idx, node in enumerate(G.nodes):
             nodes_to_int[node] = idx
             int_to_nodes[idx] = node
-    
+
         G = nx.relabel_nodes(G, nodes_to_int, copy=True)
-            
+
         # Ensure that the number of nodes in G is a multiple of (r + 1)
         pad_graph(G, num_colors)
-    
+
         # Starting the algorithm.
         L_ = {node: [] for node in G.nodes}
-    
+
         # Arbitrary equitable allocation of colors to nodes.
         F = {node: idx % num_colors for idx, node in enumerate(G.nodes)}
         C = make_C_from_F(F)
-    
+
         # The neighborhood is empty initially.
         N = make_N_from_L_C(L_, C)
-    
+
         # Currently all nodes witness all edges.
         H = make_H_from_C_N(C, N)
-    
+
         # Start of algorithm.
         edges_seen = set()
-    
+
         for u in sorted(G.nodes):
             for v in sorted(G.neighbors(u)):
                 # Do not double count edges if (v, u) has already been seen.
                 if (v, u) in edges_seen:
                     continue
-    
+
                 edges_seen.add((u, v))
-    
+
                 L_[u].append(v)
                 L_[v].append(u)
-    
+
                 N[(u, F[v])] += 1
                 N[(v, F[u])] += 1
-    
+
                 if F[u] != F[v]:
                     # Were 'u' and 'v' witnesses for F[u] -> F[v] or F[v] -> F[u]?
                     if N[(u, F[v])] == 1:
-                        H[F[u], F[v]] -= 1  # u cannot witness an edge between F[u], F[v]
-    
+                        H[
+                            F[u], F[v]
+                        ] -= 1  # u cannot witness an edge between F[u], F[v]
+
                     if N[(v, F[u])] == 1:
-                        H[F[v], F[u]] -= 1  # v cannot witness an edge between F[v], F[u]
-    
+                        H[
+                            F[v], F[u]
+                        ] -= 1  # v cannot witness an edge between F[v], F[u]
+
             if N[(u, F[u])] != 0:
                 # Find the first color where 'u' does not have any neighbors.
                 Y = next(k for k in C if N[(u, k)] == 0)
                 X = F[u]
                 change_color(u, X, Y, N=N, H=H, F=F, C=C, L=L_)
-    
+
                 # Procedure P
                 procedure_P(V_minus=X, V_plus=Y, N=N, H=H, F=F, C=C, L=L_)
-    
+
         return {int_to_nodes[x]: F[x] for x in int_to_nodes}
