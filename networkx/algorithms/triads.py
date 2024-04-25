@@ -343,7 +343,7 @@ def all_triplets(G):
 
     warnings.warn(
         (
-            "\n\nall_triplets is deprecated and will be rmoved in v3.5.\n"
+            "\n\nall_triplets is deprecated and will be removed in v3.5.\n"
             "Use `itertools.combinations(G, 3)` instead."
         ),
         category=DeprecationWarning,

@@ -3,7 +3,8 @@ import pytest
 import networkx as nx
 
 cycle = nx.cycle_graph(5, create_using=nx.DiGraph)
-tree = nx.random_tree(10, create_using=nx.DiGraph, seed=42)
+tree = nx.DiGraph()
+tree.add_edges_from(nx.random_labeled_tree(10, seed=42).edges)
 path = nx.path_graph(5, create_using=nx.DiGraph)
 binomial = nx.binomial_tree(3, create_using=nx.DiGraph)
 HH = nx.directed_havel_hakimi_graph([1, 2, 1, 2, 2, 2], [3, 1, 0, 1, 2, 3])

@@ -76,12 +76,16 @@ def run_all_random_functions(seed):
     t(
         approx.traveling_salesman_problem,
         H,
-        method=lambda G, wt: approx.simulated_annealing_tsp(G, "greedy", wt, seed=seed),
+        method=lambda G, weight: approx.simulated_annealing_tsp(
+            G, "greedy", weight, seed=seed
+        ),
     )
     t(
         approx.traveling_salesman_problem,
         H,
-        method=lambda G, wt: approx.threshold_accepting_tsp(G, "greedy", wt, seed=seed),
+        method=lambda G, weight: approx.threshold_accepting_tsp(
+            G, "greedy", weight, seed=seed
+        ),
     )
     t(nx.betweenness_centrality, G, seed=seed)
     t(nx.edge_betweenness_centrality, G, seed=seed)
@@ -190,7 +194,7 @@ def run_all_random_functions(seed):
     t(nx.random_lobster, n, p1, p2, seed=seed)
     t(nx.random_powerlaw_tree, n, seed=seed, tries=5000)
     t(nx.random_powerlaw_tree_sequence, 10, seed=seed, tries=5000)
-    t(nx.random_tree, n, seed=seed)
+    t(nx.random_labeled_tree, n, seed=seed)
     t(nx.utils.powerlaw_sequence, n, seed=seed)
     t(nx.utils.zipf_rv, 2.3, seed=seed)
     cdist = [0.2, 0.4, 0.5, 0.7, 0.9, 1.0]

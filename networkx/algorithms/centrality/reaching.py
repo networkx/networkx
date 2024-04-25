@@ -112,7 +112,7 @@ def global_reaching_centrality(G, weight=None, normalized=True):
     # TODO This can be trivially parallelized.
     lrc = [
         centrality(G, node, paths=paths, weight=weight, normalized=normalized)
-        for node, paths in shortest_paths
+        for node, paths in shortest_paths.items()
     ]
 
     max_lrc = max(lrc)

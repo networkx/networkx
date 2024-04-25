@@ -198,7 +198,7 @@ def weisfeiler_lehman_subgraph_hashes(
     hashed node label. We can therefore say that at depth $i$ for node $u$
     we have a hash for a subgraph induced by the $i$-hop neighborhood of $u$.
 
-    The output can be used to to create general Weisfeiler-Lehman graph kernels,
+    The output can be used to create general Weisfeiler-Lehman graph kernels,
     or generate features for graphs or nodes - for example to generate 'words' in
     a graph as seen in the 'graph2vec' algorithm.
     See [1]_ & [2]_ respectively for details.

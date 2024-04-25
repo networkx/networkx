@@ -126,7 +126,7 @@ ALGORITHMS = {
 
 
 @not_implemented_for("directed")
-@nx._dispatchable(edge_attrs="weight", returns_graph=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def steiner_tree(G, terminal_nodes, weight="weight", method=None):
     r"""Return an approximation to the minimum Steiner tree of a graph.
 
@@ -164,7 +164,7 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
         Use the edge attribute specified by this string as the edge weight.
         Any edge attribute not present defaults to 1.
 
-    method : string, optional (default = 'kou')
+    method : string, optional (default = 'mehlhorn')
         The algorithm to use to approximate the Steiner tree.
         Supported options: 'kou', 'mehlhorn'.
         Other inputs produce a ValueError.
@@ -174,6 +174,14 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
     NetworkX graph
         Approximation to the minimum steiner tree of `G` induced by
         `terminal_nodes` .
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If `G` is directed.
+
+    ValueError
+        If the specified `method` is not supported.
 
     Notes
     -----
