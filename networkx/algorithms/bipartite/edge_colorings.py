@@ -213,15 +213,15 @@ def _matching_saturating_max_degree(G, top_nodes=None):
     # two parts of the bipartite graph
     part_a, part_b = nx.bipartite.sets(G, top_nodes)
 
+    top_nodes_A = part_a & max_degree_nodes
+    top_nodes_B = part_b & max_degree_nodes
+
     # make two different graphs A_major and B_major
-    A_major_nodes = (part_a & max_degree_nodes) | part_b
-    B_major_nodes = (part_b & max_degree_nodes) | part_a
+    A_major_nodes = top_nodes_A | part_b
+    B_major_nodes = top_nodes_B | part_a
 
     A_major = G.subgraph(A_major_nodes)
     B_major = G.subgraph(B_major_nodes)
-
-    top_nodes_A = top_nodes & A_major_nodes
-    top_nodes_B = top_nodes & B_major_nodes
 
     M1 = nx.bipartite.maximum_matching(A_major, top_nodes_A)
     M2 = nx.bipartite.maximum_matching(B_major, top_nodes_B)
