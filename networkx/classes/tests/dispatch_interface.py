@@ -118,41 +118,84 @@ class LoopbackDispatcher:
         elif node_attrs:
             for n, dd in G._node.items():
                 dd.update(
-                    (k, graph._node[n].get(k, v))
-                    for k, v in node_attrs.items()
-                    if v is not None or k in graph._node[n]
+                    (attr, graph._node[n].get(attr, default))
+                    for attr, default in node_attrs.items()
+                    if default is not None or attr in graph._node[n]
                 )
+
+        # tools to build datadict and keydict
+        if preserve_edge_attrs:
+
+            def G_new_datadict(old_dd):
+                return G.edge_attr_dict_factory(old_dd)
+        elif edge_attrs:
+
+            def G_new_datadict(old_dd):
+                return G.edge_attr_dict_factory(
+                    (attr, old_dd.get(attr, default))
+                    for attr, default in edge_attrs.items()
+                    if default is not None or attr in old_dd
+                )
+        else:
+
+            def G_new_datadict(old_dd):
+                return G.edge_attr_dict_factory()
+
+        if G.is_multigraph():
+
+            def G_new_d(keydict):
+                kd = G.adjlist_inner_dict_factory(
+                    (k, G_new_datadict(dd)) for k, dd in keydict.items()
+                )
+                return kd
+        else:
+            G_new_d = G_new_datadict
 
         # add edges
-        undirected = not graph.is_directed()
-        for n, nbrs in graph._adj.items():
-            Gadj_n = G._adj[n]
-            for nbr, keydict in nbrs.items():
-                if undirected and n in G._adj[nbr]:
-                    # undirected: ensure opposite directions are the same edge
-                    Gadj_n[nbr] = G._adj[nbr][n]
-                else:
-                    if not graph.is_multigraph():
-                        Gadj_n[nbr] = G.edge_attr_dict_factory()
-                    else:  # multigraph
-                        Gadj_n[nbr] = kd = G.adjlist_inner_dict_factory()
-                        kd.update((k, G.edge_attr_dict_factory()) for k in keydict)
-        if not undirected:
-            # directed: ensure opposite directions are the same edge
+        G_adj = G._adj
+        if G.is_directed():
+            for n, nbrs in graph._adj.items():
+                G_adj[n].update((nbr, G_new_d(dd)) for nbr, dd in nbrs.items())
+            # ensure same datadict for pred and adj; and pred order of graph._pred
             for n, nbrs in graph._pred.items():
-                G._pred[n].update((nbr, G._adj[nbr][n]) for nbr in nbrs)
-
-        # now add data if requested
-        if preserve_edge_attrs:
-            for e, dd in G.edges.items():
-                dd.update(graph.edges[e])
-        elif edge_attrs:
-            for e, dd in G.edges.items():
-                dd.update(
-                    (attr, graph.edges[e].get(attr, default))
-                    for attr, default in edge_attrs.items()
-                    if default is not None or attr in graph.edges[e]
+                G._pred[n].update((nbr, G_adj[nbr][n]) for nbr in nbrs)
+        else:  # undirected
+            for n, nbrs in graph._adj.items():
+                # ensure same datadict for both ways; and adj order of graph._adj
+                G_adj[n].update(
+                    (nbr, G_adj[nbr].get(n, G_new_d(dd))) for nbr, dd in nbrs.items()
                 )
+
+        #        # add edges
+        #        undirected = not graph.is_directed()
+        #        for n, nbrs in graph._adj.items():
+        #            Gadj_n = G._adj[n]
+        #            for nbr, keydict in nbrs.items():
+        #                if undirected and n in G._adj[nbr]:
+        #                    # undirected: ensure opposite directions are the same edge
+        #                    Gadj_n[nbr] = G._adj[nbr][n]
+        #                else:
+        #                    if not graph.is_multigraph():
+        #                        Gadj_n[nbr] = G.edge_attr_dict_factory()
+        #                    else:  # multigraph
+        #                        Gadj_n[nbr] = kd = G.adjlist_inner_dict_factory()
+        #                        kd.update((k, G.edge_attr_dict_factory()) for k in keydict)
+        #        if not undirected:
+        #            # directed: ensure opposite directions are the same edge
+        #            for n, nbrs in graph._pred.items():
+        #                G._pred[n].update((nbr, G._adj[nbr][n]) for nbr in nbrs)
+        #
+        #        # now add data if requested
+        #        if preserve_edge_attrs:
+        #            for e, dd in G.edges.items():
+        #                dd.update(graph.edges[e])
+        #        elif edge_attrs:
+        #            for e, dd in G.edges.items():
+        #                dd.update(
+        #                    (attr, graph.edges[e].get(attr, default))
+        #                    for attr, default in edge_attrs.items()
+        #                    if default is not None or attr in graph.edges[e]
+        #                )
         return G
 
     @staticmethod
