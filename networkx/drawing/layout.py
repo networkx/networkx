@@ -15,6 +15,7 @@ For the other layout routines, the extent is
 Warning: Most layout routines have only been tested in 2-dimensions.
 
 """
+
 import networkx as nx
 from networkx.utils import np_random_state
 
