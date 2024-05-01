@@ -206,7 +206,7 @@ def _iterated_matching_edge_coloring(G, top_nodes):
 
         # Assign colors to the edges in the matching
         for edge in matching.items():
-            if edge in coloring.keys():
+            if edge in coloring:
                 coloring[edge].append(i)
             else:
                 coloring[edge] = [i]
@@ -228,7 +228,7 @@ def _iterated_matching_edge_coloring(G, top_nodes):
     def convert_coloring(coloring1):
         coloring2 = {}
         # code to convert edge ->list to edge, key->list
-        for edge in coloring1.keys():
+        for edge in coloring1:
             u, v = edge
             e_colors = coloring1[edge]
             i = 0
