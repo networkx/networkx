@@ -6,7 +6,6 @@ __all__ = ["edge_coloring", "minimum_edge_coloring"]
 
 
 @nx.utils.not_implemented_for("directed")
-@nx.utils.not_implemented_for("multigraph")
 @nx._dispatchable(name="bipartite_edge_coloring")
 def minimum_edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
     """Returns a minimum edge coloring of the bipartite graph `G`.
@@ -28,7 +27,7 @@ def minimum_edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
     Returns
     --------
     edge_colors : dict
-        The edge coloring as a dict keyed by edges to integers
+        The edge coloring is returned as a dict keyed by edges to integers
         that represent that edge's color.
 
     References
@@ -58,6 +57,19 @@ def minimum_edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
         coloring = _iterated_matching_edge_coloring(G, top_nodes)
     else:
         coloring = _kempe_chain_bipartite_edge_coloring(G)
+
+    def _conversion(coloring):
+        newColoring = {}
+        for edge, clr in coloring.items():
+            u = edge[0]
+            v = edge[1]
+            newColoring[(u, v)] = clr
+
+        return newColoring
+
+    # In case the graph is not a multigraph, the keys, 0 for all edges, should be removed
+    if not isinstance(G, nx.MultiGraph):
+        coloring = _conversion(coloring)
 
     return coloring
 
@@ -104,7 +116,18 @@ def _kempe_chain_bipartite_edge_coloring(G):
     # dictionary of dictionary
     used_colors = {node: {} for node in G.nodes}
 
-    for u, v in G.edges:
+    if isinstance(G, nx.MultiGraph):
+        edges = G.edges(keys=True)
+    else:
+        edges = G.edges
+
+    for edge in edges:
+        if isinstance(G, nx.MultiGraph):
+            u, v, key = edge
+        else:
+            u, v = edge
+            key = 0
+
         # Get the colors of edges ending at u and v
         u_colors = used_colors[u]
         v_colors = used_colors[v]
@@ -115,30 +138,32 @@ def _kempe_chain_bipartite_edge_coloring(G):
         if available_colors:
             # Color the edge with the lowest available color
             color = min(available_colors)
-            u_colors[color] = v
-            v_colors[color] = u
-            coloring[(u, v)] = color
-            coloring[(v, u)] = color
+            u_colors[color] = (v, key)
+            v_colors[color] = (u, key)
+            coloring[(u, v, key)] = color
+            coloring[(v, u, key)] = color
         else:
             u_color = next(c for c in colors if c not in u_colors)
             v_color = next(c for c in colors if c not in v_colors)
             u1 = u
             v1 = v
+            key1 = key
             color = v_color
 
             # Find a Kempe chain and swap colors
             while True:
-                used_colors[v1][color] = u1
-                coloring[(u1, v1)] = color
-                coloring[(v1, u1)] = color
+                used_colors[v1][color] = (u1, key1)
+                coloring[(u1, v1, key1)] = color
+                coloring[(v1, u1, key1)] = color
                 if color not in used_colors[u1]:
-                    used_colors[u1][color] = v1
+                    used_colors[u1][color] = (v1, key1)
                     color = v_color if color == u_color else u_color
                     used_colors[u1].pop(color)
                     break
-                u_new = used_colors[u1][color]
-                used_colors[u1][color] = v1
+                u_new, key_new = used_colors[u1][color]
+                used_colors[u1][color] = (v1, key1)
                 v1 = u1
+                key1 = key_new
                 u1 = u_new
                 color = v_color if color == u_color else u_color
 
@@ -181,15 +206,39 @@ def _iterated_matching_edge_coloring(G, top_nodes):
 
         # Assign colors to the edges in the matching
         for edge in matching.items():
-            coloring[edge] = i
+            if edge in coloring.keys():
+                coloring[edge].append(i)
+            else:
+                coloring[edge] = [i]
 
         # Remove the edges in the matching from G1
-        G1.remove_edges_from(matching.items())
+        remove_edge_list = []
+
+        for u, v in matching.items():
+            if (v, u) not in remove_edge_list and (u, v) not in remove_edge_list:
+                remove_edge_list.append((u, v))
+
+        for edge in remove_edge_list:
+            if G1.has_edge(*edge):
+                G1.remove_edge(*edge)
 
         # Increment the color counter
         i += 1
 
-    return coloring
+    def convert_coloring(coloring1):
+        coloring2 = {}
+        # code to convert edge ->list to edge, key->list
+        for edge in coloring1.keys():
+            u, v = edge
+            e_colors = coloring1[edge]
+            i = 0
+            for c in e_colors:
+                coloring2[(u, v, i)] = c
+                i = i + 1
+
+        return coloring2
+
+    return convert_coloring(coloring)
 
 
 def _matching_saturating_max_degree(G, top_nodes=None):
