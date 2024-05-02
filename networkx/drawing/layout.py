@@ -1274,15 +1274,17 @@ def estimate_factor(n, swing, traction, speed, speed_efficiency, jitter_toleranc
 def forceatlas2_layout(
     G,
     pos=None,
+    *,
     n_iter=100,
     jitter_tolerance=1.0,
     scaling_ratio=2.0,
     gravity=1.0,
     distributed_action=False,
     strong_gravity=False,
-    adjust_sizes=False,
+    node_mass=None,
+    node_size=None,
+    weight=None,
     dissuade_hubs=False,
-    edge_weight_influence=False,
     linlog=False,
     dim=2,
 ):
@@ -1309,13 +1311,12 @@ def forceatlas2_layout(
     strong_gravity : bool
         Controls the  "pull" to  the center  of mass  of the
         plot (0,0)
-    adjust_sizes: bool
-        Prevent node overlapping in the layout
+    node_mass: None  or dict
+    Dictionary mapping the node to a mass value. Mass control the attraction of other nodes to eachother, higher mass for a given node means higher attraction. Value defaults to node degree + 1
+    node_size: None or dict (default None)
+    Dictionary mapping the node to a size. Setting a high value will prevent crowding effect and creates a halo around a node.
     dissuade_hubs : bool
         Prevent hub clustering
-    edge_weight_influence : bool
-        Generate layout with or without considering the edge
-        weights
     linlog : bool
         Use log attraction rather than linear attraction
     dim: int,
@@ -1350,20 +1351,28 @@ def forceatlas2_layout(
 
     mass = np.zeros(len(G))
     size = np.zeros(len(G))
+
+    # Only adjust for size when the users specifies size other than default (1)
+    adjust_sizes = False
+    if node_size is None:
+        node_size = {}
+    else:
+        adjust_sizes = True
+
+    if node_mass is None:
+        node_mass = {}
+
     for idx, node in enumerate(G.nodes()):
         if node in pos:
             pos_arr[idx] = pos[node].copy()
-        mass[idx] = G.nodes[node].get("mass", G.degree(node) + 1)
-        size[idx] = G.nodes[node].get("size", 1)
+        mass[idx] = node_mass.get(node, G.degree(node) + 1)
+        size[idx] = node_size.get(node, 1)
 
     n = len(G)
     gravities = np.zeros((n, dim))
     attraction = np.zeros((n, dim))
     repulsion = np.zeros((n, dim))
-    weight = None
-    if edge_weight_influence:
-        weight = "weight"
-    A = nx.adjacency_matrix(G, weight=weight).todense()
+    A = nx.to_numpy_array(G, weight=weight)
 
     speed = 1
     speed_efficiency = 1
