@@ -42,8 +42,8 @@ class NetworkXPointlessConcept(NetworkXException):
     Notes
     -----
     Null graphs and empty graphs are often used interchangeably but they
-    are well defined in NetworkX. An `empty_graph` is a graph with `n` nodes
-    and 0 edges, and a `null_graph` is a graph with 0 nodes and 0 edges.
+    are well defined in NetworkX. An ``empty_graph`` is a graph with ``n`` nodes
+    and 0 edges, and a ``null_graph`` is a graph with 0 nodes and 0 edges.
 
     References
     ----------
