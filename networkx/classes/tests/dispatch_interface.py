@@ -165,7 +165,6 @@ class LoopbackDispatcher:
                     for nbr, dd in nbrs.items()
                 )
 
-        assert False
         return G
 
     @staticmethod
