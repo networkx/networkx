@@ -10,7 +10,7 @@ def node_attribute_xy(G, attribute, nodes=None):
 
     This generator yields, for each edge in `G` incident to a node in `nodes`,
     a 2-tuple of form ``(attribute value,  attribute value)`` for the parameter
-    specified node-attribute.  for all edges in `G`.
+    specified node-attribute.
 
     Parameters
     ----------
