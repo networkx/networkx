@@ -1368,6 +1368,8 @@ class _dispatchable:
                 G1 = backend.convert_to_nx(bound.arguments["G"])
                 G2 = bound2.arguments["G"]
                 G2._adj = G1._adj
+                if G2.is_directed():
+                    G2._pred = G1._pred
                 nx._clear_cache(G2)
             elif self.name == "edmonds_karp":
                 R1 = backend.convert_to_nx(bound.arguments["residual"])

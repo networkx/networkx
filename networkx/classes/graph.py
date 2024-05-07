@@ -39,6 +39,10 @@ class _CachedPropertyResetterAdj:
         od["_adj"] = value
         if "adj" in od:
             del od["adj"]
+        if "edges" in od:
+            del od["edges"]
+        if "degree" in od:
+            del od["degree"]
 
 
 class _CachedPropertyResetterNode:

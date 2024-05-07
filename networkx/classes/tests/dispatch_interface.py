@@ -68,15 +68,13 @@ class LoopbackDispatcher:
         name=None,
         graph_name=None,
     ):
-        if name in {}:
-            #   These all work now... At least the tests pass. But do we want to remove them from being skipped?
-            # Raise if input graph changes
-            # "lexicographical_topological_sort",
-            # "topological_generations",
-            # "topological_sort",
-            # Sensitive tests (iteration order matters)
-            # "dfs_labeled_edges",
-            #        }:
+        if name in {
+            # Raise if input graph changes. See test_dag.py::test_topological_sort6
+            "lexicographical_topological_sort",
+            "topological_generations",
+            "topological_sort",
+            # Would be nice to some day avoid these cutoffs of full testing
+        }:
             return graph
         if isinstance(graph, NodeView):
             # Convert to a Graph with only nodes (no edges)
@@ -99,8 +97,7 @@ class LoopbackDispatcher:
         elif graph.__class__ in {PlanarEmbedding, LoopbackPlanarEmbedding}:
             G = LoopbackDiGraph()  # or LoopbackPlanarEmbedding
         else:
-            # It would be nice to be able to convert _AntiGraph to a regular Graph
-            #      G = nx.complement(A) turns _AntiGraph to a regular Graph... How does this help here?
+            # Would be nice to handle these better some day
             # nx.algorithms.approximation.kcomponents._AntiGraph
             # nx.algorithms.tree.branchings.MultiDiGraph_EdgeKey
             # nx.classes.tests.test_multidigraph.MultiDiGraphSubClass
@@ -143,59 +140,30 @@ class LoopbackDispatcher:
 
         if G.is_multigraph():
 
-            def G_new_d(keydict):
+            def G_new_inner(keydict):
                 kd = G.adjlist_inner_dict_factory(
                     (k, G_new_datadict(dd)) for k, dd in keydict.items()
                 )
                 return kd
         else:
-            G_new_d = G_new_datadict
+            G_new_inner = G_new_datadict
 
-        # add edges
+        # add edges keeping the same order in _adj and _pred
         G_adj = G._adj
         if G.is_directed():
             for n, nbrs in graph._adj.items():
-                G_adj[n].update((nbr, G_new_d(dd)) for nbr, dd in nbrs.items())
+                G_adj[n].update((nbr, G_new_inner(dd)) for nbr, dd in nbrs.items())
             # ensure same datadict for pred and adj; and pred order of graph._pred
+            G_pred = G._pred
             for n, nbrs in graph._pred.items():
-                G._pred[n].update((nbr, G_adj[nbr][n]) for nbr in nbrs)
+                G_pred[n].update((nbr, G_adj[nbr][n]) for nbr in nbrs)
         else:  # undirected
             for n, nbrs in graph._adj.items():
                 # ensure same datadict for both ways; and adj order of graph._adj
                 G_adj[n].update(
-                    (nbr, G_adj[nbr].get(n, G_new_d(dd))) for nbr, dd in nbrs.items()
+                    (nbr, G_adj[nbr][n] if n in G_adj[nbr] else G_new_inner(dd))
+                    for nbr, dd in nbrs.items()
                 )
-
-        #        # add edges
-        #        undirected = not graph.is_directed()
-        #        for n, nbrs in graph._adj.items():
-        #            Gadj_n = G._adj[n]
-        #            for nbr, keydict in nbrs.items():
-        #                if undirected and n in G._adj[nbr]:
-        #                    # undirected: ensure opposite directions are the same edge
-        #                    Gadj_n[nbr] = G._adj[nbr][n]
-        #                else:
-        #                    if not graph.is_multigraph():
-        #                        Gadj_n[nbr] = G.edge_attr_dict_factory()
-        #                    else:  # multigraph
-        #                        Gadj_n[nbr] = kd = G.adjlist_inner_dict_factory()
-        #                        kd.update((k, G.edge_attr_dict_factory()) for k in keydict)
-        #        if not undirected:
-        #            # directed: ensure opposite directions are the same edge
-        #            for n, nbrs in graph._pred.items():
-        #                G._pred[n].update((nbr, G._adj[nbr][n]) for nbr in nbrs)
-        #
-        #        # now add data if requested
-        #        if preserve_edge_attrs:
-        #            for e, dd in G.edges.items():
-        #                dd.update(graph.edges[e])
-        #        elif edge_attrs:
-        #            for e, dd in G.edges.items():
-        #                dd.update(
-        #                    (attr, graph.edges[e].get(attr, default))
-        #                    for attr, default in edge_attrs.items()
-        #                    if default is not None or attr in graph.edges[e]
-        #                )
         return G
 
     @staticmethod
