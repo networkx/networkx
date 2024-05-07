@@ -164,6 +164,8 @@ class LoopbackDispatcher:
                     (nbr, G_adj[nbr][n] if n in G_adj[nbr] else G_new_inner(dd))
                     for nbr, dd in nbrs.items()
                 )
+
+        assert False
         return G
 
     @staticmethod
