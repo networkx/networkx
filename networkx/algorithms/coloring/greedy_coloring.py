@@ -532,14 +532,14 @@ def greedy_color(G, strategy="largest_first", tabu=0, interchange=False):
        If ``strategy`` is a string, it must be one of the following.
        Each of these represents one of the built-in strategy functions.
 
-       * ``'largest_first'`` (vertices are ordered by degree, largest first, complexity $O(n \lg n)$)
+       * ``'largest_first'`` (vertices are ordered by degree, largest first, complexity $O(n lg n)$)
        * ``'random_sequential'`` (vertices are randomly ordered, complexity $O(n)$)
        * ``'smallest_last'``
        * ``'independent_set'``
        * ``'connected_sequential_bfs'``
        * ``'connected_sequential_dfs'``
        * ``'connected_sequential'`` (alias for the previous strategy)
-       * ``'saturation_largest_first'`` (uses the Dsatur algorithm, complexity $O(n \lg n + m \lg m)$)
+       * ``'saturation_largest_first'`` (uses the Dsatur algorithm, complexity $O(n lg n + m lg m)$)
        * ``'DSATUR'`` (alias for the previous strategy)
        * ``'rlf'`` (recursive largest first algorithm, complexity $O(nm)$)
 
