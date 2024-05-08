@@ -153,6 +153,7 @@ to add your name to the bottom of the list.
 - Sebastiano Vigna, Github: `https://github.com/vigna`
 - Aaron Zolnai-Lucas, GitHub: `aaronzo <https://github.com/aaronzo>`_, LinkedIn: `aaronzolnailucas <https://www.linkedin.com/in/aaronzolnailucas/>`_
 - Erik Welch, GitHub: `eriknw <https://github.com/eriknw>`_, LinkedIn: `eriknwelch <https://www.linkedin.com/in/eriknwelch/>`_
+- Mohamed Rezk, Github: `mohamedrezk122 <https://github.com/mohamedrezk122>`_
 
 A supplementary (but still incomplete) list of contributors is given by the
 list of names that have commits in ``networkx``'s
