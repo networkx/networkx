@@ -450,7 +450,7 @@ def equitable_color(G, num_colors):
     If ``num_colors`` is  less than or equal to the maximum degree of
     ``G``, then the problem of determining an equitable coloring is
     NP-hard. In this case, the heuristic described in [2]_ is used. This
-    implementation has complexity $O((n lg n) + (nk) + (m lg m))$.
+    implementation has complexity $O((n log n) + (nk) + (m log m))$.
     In solutions returned by this method, neighboring vertices always receive
     different colors; however, the coloring is not guaranteed to be equitable
     even if an equitable coloring for ``G`` using this many colors exists.
