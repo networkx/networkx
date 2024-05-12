@@ -1,4 +1,4 @@
-""" Functions related to Edge Coloring"""
+"""Functions related to Edge Coloring"""
 
 import networkx as nx
 

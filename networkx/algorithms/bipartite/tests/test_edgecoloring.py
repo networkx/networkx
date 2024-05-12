@@ -15,7 +15,7 @@ def _is_proper_edge_coloring(G, coloring):
 
     # iterate through each edge in the graph
 
-    if isinstance(G, nx.MultiGraph):
+    if G.is_multigraph():
         edges = G.edges(keys=True)
     else:
         edges = G.edges()
@@ -157,8 +157,7 @@ class TestEdgeColoring:
 
     def test_disconnected_exception(self, strategy):
         edges = [(1, 2), (1, 3), (3, 4), (3, 5), (5, 6), (7, 9), (8, 9)]
-        G = nx.Graph()
-        G.add_edges_from(edges)
+        G = nx.Graph(edges)
 
         # asserts that when edge_coloring() is called without top_nodes an error is raised
         if strategy == "iterated-matching":
