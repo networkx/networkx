@@ -241,7 +241,8 @@ class TestConvertPandas:
         df = nx.to_pandas_adjacency(G, dtype=np.intp)
         pd.testing.assert_frame_equal(df, dftrue)
 
-    def test_edgekey_with_multigraph(self):
+    @pytest.mark.parametrize("edge_attr", [["attr2", "attr3"], True])
+    def test_edgekey_with_multigraph(self, edge_attr):
         df = pd.DataFrame(
             {
                 "source": {"A": "N1", "B": "N2", "C": "N1", "D": "N1"},
@@ -264,7 +265,7 @@ class TestConvertPandas:
             df,
             source="source",
             target="target",
-            edge_attr=["attr2", "attr3"],
+            edge_attr=edge_attr,
             edge_key="attr1",
             create_using=nx.MultiGraph(),
         )
