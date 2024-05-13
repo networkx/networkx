@@ -68,7 +68,7 @@ def minimum_edge_coloring(G, top_nodes=None, strategy="kempe-chain"):
         return newColoring
 
     # In case the graph is not a multigraph, the keys, 0 for all edges, should be removed
-    if not isinstance(G, nx.MultiGraph):
+    if not G.is_multigraph():
         coloring = _conversion(coloring)
 
     return coloring
@@ -116,13 +116,13 @@ def _kempe_chain_bipartite_edge_coloring(G):
     # dictionary of dictionary
     used_colors = {node: {} for node in G.nodes}
 
-    if isinstance(G, nx.MultiGraph):
+    if G.is_multigraph():
         edges = G.edges(keys=True)
     else:
         edges = G.edges
 
     for edge in edges:
-        if isinstance(G, nx.MultiGraph):
+        if G.is_multigraph():
             u, v, key = edge
         else:
             u, v = edge
@@ -260,7 +260,8 @@ def _matching_saturating_max_degree(G, top_nodes=None):
     max_degree_nodes = {node for node, deg in G.degree if deg == max_degree}
 
     # two parts of the bipartite graph
-    part_a, part_b = nx.bipartite.sets(G, top_nodes)
+    part_a = G.nodes & top_nodes
+    part_b = G.nodes - part_a
 
     top_nodes_A = part_a & max_degree_nodes
     top_nodes_B = part_b & max_degree_nodes
