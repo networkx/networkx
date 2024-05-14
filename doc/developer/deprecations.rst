@@ -41,10 +41,6 @@ Todo
 
 Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 
-Version 3.4
-~~~~~~~~~~~
-* Remove ``MultiDiGraph_EdgeKey`` class from ``algorithms/tree/branchings.py``. 
-
 Version 3.5
 ~~~~~~~~~~~
 * Remove ``all_triplets`` from ``algorithms/triads.py``

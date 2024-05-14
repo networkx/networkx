@@ -470,25 +470,6 @@ def test_edge_attribute_preservation_multigraph():
     assert B[0][1][0]["otherattr2"] == 3
 
 
-# TODO remove with MultiDiGraph_EdgeKey
-def test_MultiDiGraph_EdgeKey():
-    # test if more than one edges has the same key
-    G = branchings.MultiDiGraph_EdgeKey()
-    G.add_edge(1, 2, "A")
-    with pytest.raises(Exception, match="Key 'A' is already in use."):
-        G.add_edge(3, 4, "A")
-    # test if invalid edge key was specified
-    with pytest.raises(KeyError, match="Invalid edge key 'B'"):
-        G.remove_edge_with_key("B")
-    # test remove_edge_with_key works
-    if G.remove_edge_with_key("A"):
-        assert list(G.edges(data=True)) == []
-    # test that remove_edges_from doesn't work
-    G.add_edge(1, 3, "A")
-    with pytest.raises(NotImplementedError):
-        G.remove_edges_from([(1, 3)])
-
-
 def test_edge_attribute_discard():
     # Test that edge attributes are discarded if we do not specify to keep them
     G = nx.Graph()
