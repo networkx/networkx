@@ -348,7 +348,7 @@ def from_pandas_edgelist(
     edge_attr : str or int, iterable, True, or None
         A valid column name (str or int) or iterable of column names that are
         used to retrieve items and add them to the graph as edge attributes.
-        If `True`, all of the remaining columns will be added (not including `edge_key`).
+        If `True`, all columns will be added except `source`, `target` and `edge_key`.
         If `None`, no edge attributes are added to the graph.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
