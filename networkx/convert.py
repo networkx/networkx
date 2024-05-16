@@ -90,13 +90,6 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
         except Exception as err:
             raise nx.NetworkXError("Input is not a correct NetworkX graph.") from err
 
-    # pygraphviz  agraph
-    if hasattr(data, "is_strict"):
-        try:
-            return nx.nx_agraph.from_agraph(data, create_using=create_using)
-        except Exception as err:
-            raise nx.NetworkXError("Input is not a correct pygraphviz graph.") from err
-
     # dict of dicts/lists
     if isinstance(data, dict):
         try:
@@ -112,6 +105,20 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
                 return from_dict_of_lists(data, create_using=create_using)
             except Exception as err2:
                 raise TypeError("Input is not known type.") from err2
+
+    # edgelists
+    if isinstance(data, list | tuple | nx.reportviews.EdgeViewABC | Iterator):
+        try:
+            return from_edgelist(data, create_using=create_using)
+        except:
+            pass
+
+    # pygraphviz  agraph
+    if hasattr(data, "is_strict"):
+        try:
+            return nx.nx_agraph.from_agraph(data, create_using=create_using)
+        except Exception as err:
+            raise nx.NetworkXError("Input is not a correct pygraphviz graph.") from err
 
     # Pandas DataFrame
     try:
@@ -133,7 +140,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
                     msg = "Input is not a correct Pandas DataFrame edge-list."
                     raise nx.NetworkXError(msg) from err
     except ImportError:
-        warnings.warn("pandas not found, skipping conversion test.", ImportWarning)
+        pass
 
     # numpy array
     try:
@@ -147,7 +154,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
                     f"Failed to interpret array as an adjacency matrix."
                 ) from err
     except ImportError:
-        warnings.warn("numpy not found, skipping conversion test.", ImportWarning)
+        pass
 
     # scipy sparse array - any format
     try:
@@ -161,7 +168,7 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
                     "Input is not a correct scipy sparse array type."
                 ) from err
     except ImportError:
-        warnings.warn("scipy not found, skipping conversion test.", ImportWarning)
+        pass
 
     # Note: most general check - should remain last in order of execution
     # Includes containers (e.g. list, set, dict, etc.), generators, and
@@ -202,7 +209,7 @@ def to_dict_of_lists(G, nodelist=None):
     return d
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def from_dict_of_lists(d, create_using=None):
     """Returns a graph from a dictionary of lists.
 
@@ -362,7 +369,7 @@ def to_dict_of_dicts(G, nodelist=None, edge_data=None):
     return dod
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def from_dict_of_dicts(d, create_using=None, multigraph_input=False):
     """Returns a graph from a dictionary of dictionaries.
 
@@ -467,7 +474,7 @@ def to_edgelist(G, nodelist=None):
     return G.edges(nodelist, data=True)
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def from_edgelist(edgelist, create_using=None):
     """Returns a graph from a list of edges.
 

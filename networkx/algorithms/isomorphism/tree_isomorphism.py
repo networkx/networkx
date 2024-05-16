@@ -24,7 +24,7 @@ from networkx.utils.decorators import not_implemented_for
 __all__ = ["rooted_tree_isomorphism", "tree_isomorphism"]
 
 
-@nx._dispatchable(graphs={"t1": 0, "t2": 2})
+@nx._dispatchable(graphs={"t1": 0, "t2": 2}, returns_graph=True)
 def root_trees(t1, root1, t2, root2):
     """Create a single digraph dT of free trees t1 and t2
     #   with roots root1 and root2 respectively

@@ -32,7 +32,8 @@ def test_draw():
         for function, option in itertools.product(functions, options):
             function(barbell, **option)
             plt.savefig("test.ps")
-
+    except ModuleNotFoundError:  # draw_kamada_kawai requires scipy
+        pass
     finally:
         try:
             os.unlink("test.ps")
@@ -604,6 +605,7 @@ def test_nonzero_selfloop_with_single_node():
     assert bbox.width > 0 and bbox.height > 0
     # Cleanup
     plt.delaxes(ax)
+    plt.close()
 
 
 def test_nonzero_selfloop_with_single_edge_in_edgelist():
@@ -623,6 +625,7 @@ def test_nonzero_selfloop_with_single_edge_in_edgelist():
     assert bbox.width > 0 and bbox.height > 0
     # Cleanup
     plt.delaxes(ax)
+    plt.close()
 
 
 def test_apply_alpha():
@@ -680,6 +683,7 @@ def test_draw_networkx_arrows_default_undirected(drawing_func):
     assert any(isinstance(c, mpl.collections.LineCollection) for c in ax.collections)
     assert not ax.patches
     plt.delaxes(ax)
+    plt.close()
 
 
 @pytest.mark.parametrize("drawing_func", (nx.draw, nx.draw_networkx))
@@ -694,6 +698,7 @@ def test_draw_networkx_arrows_default_directed(drawing_func):
     )
     assert ax.patches
     plt.delaxes(ax)
+    plt.close()
 
 
 def test_edgelist_kwarg_not_ignored():
@@ -704,6 +709,7 @@ def test_edgelist_kwarg_not_ignored():
     nx.draw(G, edgelist=[(0, 1), (1, 2)], ax=ax)  # Exclude self-loop from edgelist
     assert not ax.patches
     plt.delaxes(ax)
+    plt.close()
 
 
 @pytest.mark.parametrize(
@@ -715,7 +721,7 @@ def test_draw_networkx_edges_multiedge_connectionstyle(G, expected_n_edges):
     for i, (u, v) in enumerate([(0, 1), (0, 1), (0, 1), (0, 2)]):
         G.add_edge(u, v, weight=round(i / 3, 2))
     pos = {n: (n, n) for n in G}
-    # Raises on insuficient connectionstyle length
+    # Raises on insufficient connectionstyle length
     for conn_style in [
         "arc3,rad=0.1",
         ["arc3,rad=0.1", "arc3,rad=0.1"],
@@ -735,7 +741,7 @@ def test_draw_networkx_edge_labels_multiedge_connectionstyle(G, expected_n_edges
     for i, (u, v) in enumerate([(0, 1), (0, 1), (0, 1), (0, 2)]):
         G.add_edge(u, v, weight=round(i / 3, 2))
     pos = {n: (n, n) for n in G}
-    # Raises on insuficient connectionstyle length
+    # Raises on insufficient connectionstyle length
     arrows = nx.draw_networkx_edges(
         G, pos, connectionstyle=["arc3,rad=0.1", "arc3,rad=0.1", "arc3,rad=0.1"]
     )
@@ -799,6 +805,7 @@ def test_draw_networkx_edges_undirected_selfloop_colors():
         assert fap.get_path().contains_point(slp)
         assert mpl.colors.same_color(fap.get_edgecolor(), clr)
     plt.delaxes(ax)
+    plt.close()
 
 
 @pytest.mark.parametrize(
@@ -833,6 +840,7 @@ def test_user_warnings_for_unused_edge_drawing_kwargs(fap_only_kwarg):
         nx.draw_networkx_edges(G, pos, ax=ax, arrows=True, **fap_only_kwarg)
 
     plt.delaxes(ax)
+    plt.close()
 
 
 @pytest.mark.parametrize("draw_fn", (nx.draw, nx.draw_circular))
@@ -845,3 +853,27 @@ def test_no_warning_on_default_draw_arrowstyle(draw_fn):
     assert len(w) == 0
 
     plt.delaxes(ax)
+    plt.close()
+
+
+@pytest.mark.parametrize("hide_ticks", [False, True])
+@pytest.mark.parametrize(
+    "method",
+    [
+        nx.draw_networkx,
+        nx.draw_networkx_edge_labels,
+        nx.draw_networkx_edges,
+        nx.draw_networkx_labels,
+        nx.draw_networkx_nodes,
+    ],
+)
+def test_hide_ticks(method, hide_ticks):
+    G = nx.path_graph(3)
+    pos = {n: (n, n) for n in G.nodes}
+    _, ax = plt.subplots()
+    method(G, pos=pos, ax=ax, hide_ticks=hide_ticks)
+    for axis in [ax.xaxis, ax.yaxis]:
+        assert bool(axis.get_ticklabels()) != hide_ticks
+
+    plt.delaxes(ax)
+    plt.close()

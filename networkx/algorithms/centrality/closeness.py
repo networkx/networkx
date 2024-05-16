@@ -137,7 +137,7 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
 
 
 @not_implemented_for("directed")
-@nx._dispatchable
+@nx._dispatchable(mutates_input=True)
 def incremental_closeness_centrality(
     G, edge, prev_cc=None, insertion=True, wf_improved=True
 ):

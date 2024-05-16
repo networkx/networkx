@@ -156,7 +156,7 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
 
     xy = node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
     x, y = zip(*xy)
-    return sp.stats.pearsonr(x, y)[0]
+    return float(sp.stats.pearsonr(x, y)[0])
 
 
 @nx._dispatchable(node_attrs="attribute")
@@ -280,7 +280,7 @@ def attribute_ac(M):
     s = (M @ M).sum()
     t = M.trace()
     r = (t - s) / (1 - s)
-    return r
+    return float(r)
 
 
 def _numeric_ac(M, mapping):
@@ -299,4 +299,4 @@ def _numeric_ac(M, mapping):
     varb = (b[idx] * y**2).sum() - ((b[idx] * y).sum()) ** 2
     xy = np.outer(x, y)
     ab = np.outer(a[idx], b[idx])
-    return (xy * (M - ab)).sum() / np.sqrt(vara * varb)
+    return float((xy * (M - ab)).sum() / np.sqrt(vara * varb))

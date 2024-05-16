@@ -39,6 +39,11 @@ class TestBiadjacencyMatrix:
         M = bipartite.biadjacency_matrix(G, X, Y, weight="weight")
         assert M[1, 2] == 2
 
+    def test_biadjacency_matrix_empty_graph(self):
+        G = nx.empty_graph(2)
+        M = nx.bipartite.biadjacency_matrix(G, [0])
+        assert np.array_equal(M.toarray(), np.array([[0]]))
+
     def test_null_graph(self):
         with pytest.raises(nx.NetworkXError):
             bipartite.biadjacency_matrix(nx.Graph(), [])
