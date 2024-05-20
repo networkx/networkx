@@ -40,6 +40,37 @@ def trophic_levels(G, weight="weight"):
     ----------
     .. [1] Stephen Levine (1980) J. theor. Biol. 83, 195-207
     """
+
+    def bfs_reachable_from_basal(basal_nodes, graph):
+        visited = set()
+        reachable_nodes = set()  # Initialize an empty set to store reachable nodes
+        for node in basal_nodes:
+            queue = [node]
+            while queue:
+                current = queue.pop(0)
+                if current not in visited:
+                    visited.add(current)
+                    reachable_nodes.add(
+                        current
+                    )  # Add the current node to reachable_nodes
+                    for neighbor in graph.successors(current):
+                        if neighbor not in visited:
+                            queue.append(neighbor)
+        return reachable_nodes  # Return the set of reachable nodes
+
+    basal_nodes = [n for n in G if G.in_degree(n) == 0]
+    if not basal_nodes:
+        raise nx.NetworkXError(
+            "Trophic levels are only defined for graphs where every node has a path from a basal node (basal nodes are nodes with no incoming edges)."
+        )
+
+    reachable_nodes = bfs_reachable_from_basal(basal_nodes, G)
+    if len(reachable_nodes) != len(G.nodes):
+        raise nx.NetworkXError(
+            "Trophic levels are only defined for graphs where every node has a"
+            + " path from a basal node (basal nodes are nodes with no incoming edges)."
+        )
+
     import numpy as np
 
     # find adjacency matrix
