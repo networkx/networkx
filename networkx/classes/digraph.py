@@ -42,11 +42,16 @@ class _CachedPropertyResetterAdjAndSucc:
         od["_adj"] = value
         od["_succ"] = value
         # reset cached properties
-        if "adj" in od:
-            del od["adj"]
-        if "succ" in od:
-            del od["succ"]
-        for prop in ["edges", "out_edges", "degree", "out_degree", "in_degree"]:
+        props = [
+            "adj",
+            "succ",
+            "edges",
+            "out_edges",
+            "degree",
+            "out_degree",
+            "in_degree",
+        ]
+        for prop in props:
             if prop in od:
                 del od[prop]
 
@@ -72,9 +77,9 @@ class _CachedPropertyResetterPred:
     def __set__(self, obj, value):
         od = obj.__dict__
         od["_pred"] = value
-        if "pred" in od:
-            del od["pred"]
-        for prop in ["in_edges", "degree", "out_degree", "in_degree"]:
+        # reset cached properties
+        props = ["pred", "in_edges", "degree", "out_degree", "in_degree"]
+        for prop in props:
             if prop in od:
                 del od[prop]
 
