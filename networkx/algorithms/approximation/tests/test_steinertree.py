@@ -191,15 +191,10 @@ class TestSteinerTree:
             assert edges_equal(S.edges(data=True, keys=True), expected_edges)
 
     def test_remove_nonterminal_leaves(self):
-        from networkx.algorithms.approximation.steinertree import (
-            _remove_nonterminal_leaves,
-        )
+        G = nx.path_graph(10)
+        nx.approximation.steinertree._remove_nonterminal_leaves(G, [4, 5, 6])
 
-        G = nx.Graph()
-        G.add_edges_from([(1, 2), (2, 3), (3, 4), (4, 5)], weight=1)
-        _remove_nonterminal_leaves(G, [2, 3])
-
-        assert list(G.nodes) == [2, 3]  # only the terminal nodes are left
+        assert list(G) == [4, 5, 6]  # only the terminal nodes are left
 
 
 @pytest.mark.parametrize("method", ("kou", "mehlhorn"))
