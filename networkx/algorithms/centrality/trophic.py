@@ -41,14 +41,6 @@ def trophic_levels(G, weight="weight"):
     .. [1] Stephen Levine (1980) J. theor. Biol. 83, 195-207
     """
 
-    def bfs_reachable_from_basal(basal_nodes, graph):
-        reachable_nodes = {
-            node
-            for layer in nx.bfs_layers(graph, sources=basal_nodes)
-            for node in layer
-        }
-        return reachable_nodes
-
     basal_nodes = [n for n in G if G.in_degree(n) == 0]
     if not basal_nodes:
         raise nx.NetworkXError(
@@ -56,7 +48,10 @@ def trophic_levels(G, weight="weight"):
             "from a basal node (basal nodes are nodes with no incoming edges)."
         )
 
-    reachable_nodes = bfs_reachable_from_basal(basal_nodes, G)
+    reachable_nodes = {
+        node for layer in nx.bfs_layers(G, sources=basal_nodes) for node in layer
+    }
+
     if len(reachable_nodes) != len(G.nodes):
         raise nx.NetworkXError(
             "Trophic levels are only defined for graphs where every node has a path "
