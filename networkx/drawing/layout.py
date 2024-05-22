@@ -1235,8 +1235,6 @@ def arf_layout(
     return dict(zip(G.nodes(), p))
 
 
-
-
 def forceatlas2_layout(
     G,
     pos=None,
@@ -1374,7 +1372,6 @@ def forceatlas2_layout(
         max_rise = 0.5
         speed = speed + min(target_speed - speed, max_rise * speed)
         return speed, speed_efficiency
-
 
     speed = 1
     speed_efficiency = 1
