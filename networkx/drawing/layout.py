@@ -1235,47 +1235,13 @@ def arf_layout(
     return dict(zip(G.nodes(), p))
 
 
-def estimate_factor(n, swing, traction, speed, speed_efficiency, jitter_tolerance):
-    """
-    ForceAtlas2 helper function
-    Computes scaling factor for force
-    """
-    import numpy as np
-
-    # estimate jitter
-    opt_jitter = 0.05 * np.sqrt(n)
-    min_jitter = np.sqrt(opt_jitter)
-    max_jitter = 10
-    min_speed_efficiency = 0.05
-
-    other = min(max_jitter, opt_jitter * traction / n**2)
-    jitter = jitter_tolerance * max(min_jitter, other)
-
-    if swing / traction > 2.0:
-        if speed_efficiency > min_speed_efficiency:
-            speed_efficiency *= 0.5
-        jitter = max(jitter, jitter_tolerance)
-    if swing == 0:
-        target_speed = np.inf
-    else:
-        target_speed = jitter * speed_efficiency * traction / swing
-
-    if swing > jitter * traction:
-        if speed_efficiency > min_speed_efficiency:
-            speed_efficiency *= 0.7
-    elif speed < 1000:
-        speed_efficiency *= 1.3
-
-    max_rise = 0.5
-    speed = speed + min(target_speed - speed, max_rise * speed)
-    return speed, speed_efficiency
 
 
 def forceatlas2_layout(
     G,
     pos=None,
     *,
-    n_iter=100,
+    max_iter=100,
     jitter_tolerance=1.0,
     scaling_ratio=2.0,
     gravity=1.0,
@@ -1299,7 +1265,7 @@ def forceatlas2_layout(
        Netwrorkx graph
     pos: dict or None
        Optional starting positions
-    n_iter: int
+    max_iter: int
         Simulation steps
     jitter_tolerance : float
         Jitter  tolerance  for  adjusting  speed  of  layout
@@ -1374,11 +1340,47 @@ def forceatlas2_layout(
     repulsion = np.zeros((n, dim))
     A = nx.to_numpy_array(G, weight=weight)
 
+    def estimate_factor(n, swing, traction, speed, speed_efficiency, jitter_tolerance):
+        """
+        ForceAtlas2 helper function
+        Computes scaling factor for force
+        """
+        import numpy as np
+
+        # estimate jitter
+        opt_jitter = 0.05 * np.sqrt(n)
+        min_jitter = np.sqrt(opt_jitter)
+        max_jitter = 10
+        min_speed_efficiency = 0.05
+
+        other = min(max_jitter, opt_jitter * traction / n**2)
+        jitter = jitter_tolerance * max(min_jitter, other)
+
+        if swing / traction > 2.0:
+            if speed_efficiency > min_speed_efficiency:
+                speed_efficiency *= 0.5
+            jitter = max(jitter, jitter_tolerance)
+        if swing == 0:
+            target_speed = np.inf
+        else:
+            target_speed = jitter * speed_efficiency * traction / swing
+
+        if swing > jitter * traction:
+            if speed_efficiency > min_speed_efficiency:
+                speed_efficiency *= 0.7
+        elif speed < 1000:
+            speed_efficiency *= 1.3
+
+        max_rise = 0.5
+        speed = speed + min(target_speed - speed, max_rise * speed)
+        return speed, speed_efficiency
+
+
     speed = 1
     speed_efficiency = 1
     swing = 1
     traction = 1
-    for idx in range(n_iter):
+    for idx in range(max_iter):
         # compute pairwise difference
         diff = pos_arr[:, None] - pos_arr[None]
         # compute pairwise distance
