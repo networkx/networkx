@@ -56,3 +56,17 @@ networkx.egg-info/
 
 # Virtual environment directory
 networkx-dev/
+
+# Locally generated files
+test.adjlist
+test.adjlist.gz
+test.edgelist
+test.edgelist.gz
+test.gexf
+test.gml
+test.gml.gz
+test.gpickle
+test.graphml
+test.net
+test.weighted.edgelist
+fourpath.graphml
