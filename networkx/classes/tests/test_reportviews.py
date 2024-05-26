@@ -1101,6 +1101,30 @@ class TestDegreeView:
         assert dvd[2] == 2
         assert dvd[3] == 5
 
+    def test_eq(self):
+        dv = self.dview(self.G)
+        dv2 = self.dview(self.G)
+        assert dv == dv2
+        dvw = dv(weight="foo")
+        assert dv != dvw
+        dvn = dv(nbunch=[2, 3])
+        assert dv != dvn
+
+    def test_contains(self):
+        dv = self.dview(self.G)
+        for n in self.G.nodes:
+            assert n in dv
+            # Test for explicit implementation
+            assert dv.__contains__(n)
+        assert 10 not in dv
+
+    def test_contains_with_nbunch(self):
+        dv = self.dview(self.G)
+        dvn = dv(nbunch=[2, 3])
+        assert 1 not in dvn
+        assert 2 in dvn
+        assert 3 in dvn
+
     def test_len(self):
         dv = self.dview(self.G)
         assert len(dv) == 6
