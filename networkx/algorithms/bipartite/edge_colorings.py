@@ -219,8 +219,8 @@ def _iterated_matching_edge_coloring(G, top_nodes):
     # convert edge ->list to edge, key->list
     converted_coloring = {}
     for (u, v), e_colors in coloring.items():
-            for i, c in enumerate(e_colors):
-                converted_coloring[(u, v, i)] = c
+        for i, c in enumerate(e_colors):
+            converted_coloring[(u, v, i)] = c
     
     return converted_coloring
 
@@ -251,8 +251,8 @@ def _matching_saturating_max_degree(G, top_nodes=None):
     top_nodes_B = part_b & max_degree_nodes
 
     # make two different graphs A_major and B_major
-    A_major = G.subgraph(top_nodes_A|part_b)
-    B_major = G.subgraph(top_nodes_B|part_a)
+    A_major = G.subgraph(top_nodes_A | part_b)
+    B_major = G.subgraph(top_nodes_B | part_a)
 
     M1 = nx.bipartite.maximum_matching(A_major, top_nodes_A)
     M2 = nx.bipartite.maximum_matching(B_major, top_nodes_B)
