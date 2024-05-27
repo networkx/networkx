@@ -91,7 +91,7 @@ def _kempe_chain_bipartite_edge_coloring(G):
     ----------
     G : NetworkX graph
         The input bipartite graph.
-    
+
     Returns
     -------
     coloring : dict
@@ -117,7 +117,6 @@ def _kempe_chain_bipartite_edge_coloring(G):
     for edge in G.edges:
         u, v = edge[:2]
         key = edge[2] if G.is_multigraph() else 0
-
 
         # Get the colors of edges ending at u and v
         u_colors = used_colors[u]
@@ -221,7 +220,7 @@ def _iterated_matching_edge_coloring(G, top_nodes):
     for (u, v), e_colors in coloring.items():
         for i, c in enumerate(e_colors):
             converted_coloring[(u, v, i)] = c
-    
+            
     return converted_coloring
 
 
