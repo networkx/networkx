@@ -220,7 +220,7 @@ def _iterated_matching_edge_coloring(G, top_nodes):
     for (u, v), e_colors in coloring.items():
         for i, c in enumerate(e_colors):
             converted_coloring[(u, v, i)] = c
-            
+
     return converted_coloring
 
 
