@@ -91,9 +91,7 @@ def _kempe_chain_bipartite_edge_coloring(G):
     ----------
     G : NetworkX graph
         The input bipartite graph.
-    top_nodes : list
-        List of nodes that belong to one node set.
-
+    
     Returns
     -------
     coloring : dict
@@ -116,17 +114,10 @@ def _kempe_chain_bipartite_edge_coloring(G):
     # dictionary of dictionary
     used_colors = {node: {} for node in G.nodes}
 
-    if G.is_multigraph():
-        edges = G.edges(keys=True)
-    else:
-        edges = G.edges
+    for edge in G.edges:
+        u, v = edge[:2]
+        key = edge[2] if G.is_multigraph() else 0
 
-    for edge in edges:
-        if G.is_multigraph():
-            u, v, key = edge
-        else:
-            u, v = edge
-            key = 0
 
         # Get the colors of edges ending at u and v
         u_colors = used_colors[u]
@@ -194,8 +185,8 @@ def _iterated_matching_edge_coloring(G, top_nodes):
     # Dictionary to store the coloring
     coloring = {}
 
-    # Start coloring with i = 0 color
-    i = 0
+    # Start coloring with color = 0 color
+    color = 0
 
     G1 = G.copy()
 
@@ -207,9 +198,9 @@ def _iterated_matching_edge_coloring(G, top_nodes):
         # Assign colors to the edges in the matching
         for edge in matching.items():
             if edge in coloring:
-                coloring[edge].append(i)
+                coloring[edge].append(color)
             else:
-                coloring[edge] = [i]
+                coloring[edge] = [color]
 
         # Remove the edges in the matching from G1
         remove_edge_list = []
@@ -223,22 +214,15 @@ def _iterated_matching_edge_coloring(G, top_nodes):
                 G1.remove_edge(*edge)
 
         # Increment the color counter
-        i += 1
+        color += 1
 
-    def convert_coloring(coloring1):
-        coloring2 = {}
-        # code to convert edge ->list to edge, key->list
-        for edge in coloring1:
-            u, v = edge
-            e_colors = coloring1[edge]
-            i = 0
-            for c in e_colors:
-                coloring2[(u, v, i)] = c
-                i = i + 1
-
-        return coloring2
-
-    return convert_coloring(coloring)
+    # convert edge ->list to edge, key->list
+    converted_coloring = {}
+    for (u, v), e_colors in coloring.items():
+            for i, c in enumerate(e_colors):
+                converted_coloring[(u, v, i)] = c
+    
+    return converted_coloring
 
 
 def _matching_saturating_max_degree(G, top_nodes=None):
@@ -267,11 +251,8 @@ def _matching_saturating_max_degree(G, top_nodes=None):
     top_nodes_B = part_b & max_degree_nodes
 
     # make two different graphs A_major and B_major
-    A_major_nodes = top_nodes_A | part_b
-    B_major_nodes = top_nodes_B | part_a
-
-    A_major = G.subgraph(A_major_nodes)
-    B_major = G.subgraph(B_major_nodes)
+    A_major = G.subgraph(top_nodes_A|part_b)
+    B_major = G.subgraph(top_nodes_B|part_a)
 
     M1 = nx.bipartite.maximum_matching(A_major, top_nodes_A)
     M2 = nx.bipartite.maximum_matching(B_major, top_nodes_B)
