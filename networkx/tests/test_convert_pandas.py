@@ -300,6 +300,16 @@ class TestConvertPandas:
                 create_using=nx.MultiGraph(),
             )
 
+    def test_multigraph_with_edgekey_no_edgeattrs(self):
+        Gtrue = nx.MultiGraph()
+        Gtrue.add_edge(0, 1, key=0)
+        Gtrue.add_edge(0, 1, key=3)
+        df = nx.to_pandas_edgelist(Gtrue, edge_key="key")
+        expected = pd.DataFrame({"source": [0, 0], "target": [1, 1], "key": [0, 3]})
+        pd.testing.assert_frame_equal(expected, df)
+        G = nx.from_pandas_edgelist(df, edge_key="key", create_using=nx.MultiGraph)
+        assert graphs_equal(Gtrue, G)
+
 
 def test_to_pandas_adjacency_with_nodelist():
     G = nx.complete_graph(5)
