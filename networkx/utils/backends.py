@@ -7,7 +7,7 @@ installed (not imported). This allows NetworkX to dispatch (redirect) function c
 to the backend so the execution flows to the designated backend
 implementation, similar to how plugging a charger into a socket redirects the
 electricity to your phone. This design enhances flexibility and integration, making
-NetworkX more adaptable and efficient. 
+NetworkX more adaptable and efficient.
 
 There are three main ways to use a backend after the package is installed.
 You can set environment variables and run the exact same code you run for
@@ -111,7 +111,7 @@ Testing Environment Setup
 
 To enable automatic testing with your custom backend, follow these steps:
 
-1. Set Backend Environment Variables: 
+1. Set Backend Environment Variables:
     - ``NETWORKX_TEST_BACKEND`` : Setting this to your registered backend key will let
       the NetworkX's dispatch machinery automatically convert a regular NetworkX
       ``Graph``, ``DiGraph``, ``MultiGraph``, etc. to their backend equivalents, using
@@ -158,7 +158,7 @@ Conversions while running tests :
 - Convert NetworkX graphs using ``<your_dispatcher_class>.convert_from_nx(G, ...)`` into
   the backend graph.
 - Pass the backend graph objects to the backend implementation of the algorithm.
-- Convert the result back to a form expected by NetworkX tests using 
+- Convert the result back to a form expected by NetworkX tests using
   ``<your_dispatcher_class>.convert_to_nx(result, ...)``.
 
 Notes
@@ -193,6 +193,7 @@ Notes
 
 import inspect
 import itertools
+import logging
 import os
 import warnings
 from functools import partial
@@ -203,6 +204,8 @@ import networkx as nx
 from .decorators import argmap
 
 __all__ = ["_dispatchable"]
+
+_logger = logging.getLogger(__name__)
 
 
 def _do_nothing():
@@ -757,6 +760,10 @@ class _dispatchable:
                         fallback_to_nx=self._fallback_to_nx,
                     )
                 # All graphs are backend graphs--no need to convert!
+                _logger.debug(
+                    f"using backend '{graph_backend_name}' for call to `{self.name}' "
+                    f"with args: {args}, kwargs: {kwargs}"
+                )
                 return getattr(backend, self.name)(*args, **kwargs)
             # Future work: try to convert and run with other backends in backend_priority
             raise nx.NetworkXNotImplemented(
@@ -1173,6 +1180,10 @@ class _dispatchable:
             converted_args, converted_kwargs = self._convert_arguments(
                 backend_name, args, kwargs, use_cache=config.cache_converted_graphs
             )
+            _logger.debug(
+                f"using backend '{backend_name}' for call to `{self.name}' "
+                f"with args: {converted_args}, kwargs: {converted_kwargs}"
+            )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
             if fallback_to_nx:
@@ -1247,6 +1258,10 @@ class _dispatchable:
         try:
             converted_args, converted_kwargs = self._convert_arguments(
                 backend_name, args1, kwargs1, use_cache=False
+            )
+            _logger.debug(
+                f"using backend '{backend_name}' for call to `{self.name}' "
+                f"with args: {converted_args}, kwargs: {converted_kwargs}"
             )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
