@@ -1,7 +1,10 @@
 import itertools as it
 
 import networkx as nx
-from networkx.algorithms.bipartite.matching import maximum_matching, minimum_weight_full_matching
+from networkx.algorithms.bipartite.matching import (
+    maximum_matching,
+    minimum_weight_full_matching,
+)
 
 __all__ = [
     "envy_free_matching_partition",
@@ -35,28 +38,30 @@ def _M_alternating_sequence(G, M, *, top_nodes=None):
 
     Two tuples containing sets of nodes are returned - tuple(X_subsets), tuple(Y_subsets).
 
-    >>> G = nx.complete_bipartite_graph(3,3)
+    >>> G = nx.complete_bipartite_graph(3, 3)
     >>> M = nx.bipartite.hopcroft_karp_matching(G)
     >>> _M_alternating_sequence(G, M)
     ((), ())
 
-    >>> G = nx.Graph([(0,3),(0,4),(1,4),(2,4)])
-    >>> M = {0:3, 3:0, 1:4, 4:1}
+    >>> G = nx.Graph([(0, 3), (0, 4), (1, 4), (2, 4)])
+    >>> M = {0: 3, 3: 0, 1: 4, 4: 1}
     >>> _M_alternating_sequence(G, M)
     (({2}, {1}), ({4},))
 
-    >>> G = nx.Graph([(0,3),(1,3),(1,4),(2,4)])
-    >>> M = {0:3,3:0,4:1,1:4}
+    >>> G = nx.Graph([(0, 3), (1, 3), (1, 4), (2, 4)])
+    >>> M = {0: 3, 3: 0, 4: 1, 1: 4}
     >>> _M_alternating_sequence(G, M)
     (({2}, {1}, {0}), ({4}, {3}))
 
-    >>> G = nx.Graph([(0,3),(1,3),(1,4),(2,4)])
-    >>> M = {0:3,3:0,4:1,1:4}
+    >>> G = nx.Graph([(0, 3), (1, 3), (1, 4), (2, 4)])
+    >>> M = {0: 3, 3: 0, 4: 1, 1: 4}
     >>> _M_alternating_sequence(G, M)
     (({2}, {1}, {0}), ({4}, {3}))
 
-    >>> G = nx.Graph([(0,6),(1,6),(1,7),(2,6),(2,8),(3,9),(3,6),(4,8),(4,7),(5,9)])
-    >>> M = {0:6,6:0,1:7,7:1,2:8,8:2,3:9,9:3}
+    >>> G = nx.Graph(
+    ...     [(0, 6), (1, 6), (1, 7), (2, 6), (2, 8), (3, 9), (3, 6), (4, 8), (4, 7), (5, 9)]
+    ... )
+    >>> M = {0: 6, 6: 0, 1: 7, 7: 1, 2: 8, 8: 2, 3: 9, 9: 3}
     >>> _M_alternating_sequence(G, M)
     (({4, 5}, {1, 2, 3}, {0}), ({8, 9, 7}, {6}))
 
