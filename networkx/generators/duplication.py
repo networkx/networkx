@@ -13,7 +13,7 @@ __all__ = ["partial_duplication_graph", "duplication_divergence_graph"]
 
 
 @py_random_state(4)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def partial_duplication_graph(N, n, p, q, seed=None):
     """Returns a random graph using the partial duplication model.
 
@@ -76,10 +76,10 @@ def partial_duplication_graph(N, n, p, q, seed=None):
         G.add_node(new_node)
 
         # For each neighbor of u...
-        for neighbor_node in list(nx.all_neighbors(G, src_node)):
+        for nbr_node in list(nx.all_neighbors(G, src_node)):
             # Add the neighbor to v with probability p.
             if seed.random() < p:
-                G.add_edge(new_node, neighbor_node)
+                G.add_edge(new_node, nbr_node)
 
         # Join v and u with probability q.
         if seed.random() < q:
@@ -88,7 +88,7 @@ def partial_duplication_graph(N, n, p, q, seed=None):
 
 
 @py_random_state(2)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def duplication_divergence_graph(n, p, seed=None):
     """Returns an undirected graph using the duplication-divergence model.
 

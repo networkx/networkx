@@ -233,7 +233,7 @@ def generate_graphml(
 
 
 @open_file(0, mode="rb")
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False):
     """Read graph in GraphML format from path.
 
@@ -306,7 +306,7 @@ def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False)
     return glist[0]
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def parse_graphml(
     graphml_string, node_type=str, edge_key_type=int, force_multigraph=False
 ):
@@ -455,7 +455,7 @@ class GraphML:
             return self.xml_type[key]
         except KeyError as err:
             raise TypeError(
-                f"GraphML does not support type {type(key)} as data values."
+                f"GraphML does not support type {key} as data values."
             ) from err
 
 
@@ -826,7 +826,7 @@ class GraphMLWriterLxml(GraphMLWriter):
     def __str__(self):
         return object.__str__(self)
 
-    def dump(self):
+    def dump(self, stream=None):
         self._graphml.__exit__(None, None, None)
         self._xml_base.__exit__(None, None, None)
 
@@ -982,7 +982,7 @@ class GraphMLReader(GraphML):
                 node_label = None
                 # set GenericNode's configuration as shape type
                 gn = data_element.find(f"{{{self.NS_Y}}}GenericNode")
-                if gn:
+                if gn is not None:
                     data["shape_type"] = gn.get("configuration")
                 for node_type in ["GenericNode", "ShapeNode", "SVGNode", "ImageNode"]:
                     pref = f"{{{self.NS_Y}}}{node_type}/{{{self.NS_Y}}}"
@@ -1010,9 +1010,10 @@ class GraphMLReader(GraphML):
                     edge_label = data_element.find(f"{pref}EdgeLabel")
                     if edge_label is not None:
                         break
-
                 if edge_label is not None:
                     data["label"] = edge_label.text
+            elif text is None:
+                data[data_name] = ""
         return data
 
     def find_graphml_keys(self, graph_element):

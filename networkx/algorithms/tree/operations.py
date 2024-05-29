@@ -32,7 +32,7 @@ def join(rooted_trees, label_attribute=None):
 
 
 # Argument types don't match dispatching, but allow manual selection of backend
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def join_trees(rooted_trees, *, label_attribute=None, first_label=0):
     """Returns a new rooted tree made by joining `rooted_trees`
 

@@ -132,7 +132,7 @@ def node_link_data(
     return data
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def node_link_graph(
     data,
     directed=False,
@@ -179,7 +179,7 @@ def node_link_graph(
 
     Create data in node-link format by converting a graph.
 
-    >>> G = nx.Graph([('A', 'B')])
+    >>> G = nx.Graph([("A", "B")])
     >>> data = nx.node_link_data(G)
     >>> data
     {'directed': False, 'multigraph': False, 'graph': {}, 'nodes': [{'id': 'A'}, {'id': 'B'}], 'links': [{'source': 'A', 'target': 'B'}]}

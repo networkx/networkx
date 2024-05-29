@@ -18,6 +18,7 @@ __all__ = [
     "maximum_spanning_edges",
     "minimum_spanning_tree",
     "maximum_spanning_tree",
+    "number_of_spanning_trees",
     "random_spanning_tree",
     "partition_spanning_tree",
     "EdgePartition",
@@ -41,7 +42,7 @@ class EdgePartition(Enum):
 
 
 @not_implemented_for("multigraph")
-@nx._dispatch(edge_attrs="weight", preserve_edge_attrs="data")
+@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs="data")
 def boruvka_mst_edges(
     G, minimum=True, weight="weight", keys=False, data=True, ignore_nan=False
 ):
@@ -138,7 +139,7 @@ def boruvka_mst_edges(
                 forest.union(u, v)
 
 
-@nx._dispatch(
+@nx._dispatchable(
     edge_attrs={"weight": None, "partition": None}, preserve_edge_attrs="data"
 )
 def kruskal_mst_edges(
@@ -251,7 +252,7 @@ def kruskal_mst_edges(
                 subtrees.union(u, v)
 
 
-@nx._dispatch(edge_attrs="weight", preserve_edge_attrs="data")
+@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs="data")
 def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan=False):
     """Iterate over edges of Prim's algorithm min/max spanning tree.
 
@@ -367,7 +368,7 @@ ALGORITHMS = {
 
 
 @not_implemented_for("directed")
-@nx._dispatch(edge_attrs="weight", preserve_edge_attrs="data")
+@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs="data")
 def minimum_spanning_edges(
     G, algorithm="kruskal", weight="weight", keys=True, data=True, ignore_nan=False
 ):
@@ -462,7 +463,7 @@ def minimum_spanning_edges(
 
 
 @not_implemented_for("directed")
-@nx._dispatch(edge_attrs="weight", preserve_edge_attrs="data")
+@nx._dispatchable(edge_attrs="weight", preserve_edge_attrs="data")
 def maximum_spanning_edges(
     G, algorithm="kruskal", weight="weight", keys=True, data=True, ignore_nan=False
 ):
@@ -555,7 +556,7 @@ def maximum_spanning_edges(
     )
 
 
-@nx._dispatch(preserve_all_attrs=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def minimum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=False):
     """Returns a minimum spanning tree or forest on an undirected graph `G`.
 
@@ -615,7 +616,7 @@ def minimum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
     return T
 
 
-@nx._dispatch(preserve_all_attrs=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def partition_spanning_tree(
     G, minimum=True, weight="weight", partition="partition", ignore_nan=False
 ):
@@ -679,7 +680,7 @@ def partition_spanning_tree(
     return T
 
 
-@nx._dispatch(preserve_all_attrs=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=False):
     """Returns a maximum spanning tree or forest on an undirected graph `G`.
 
@@ -743,7 +744,7 @@ def maximum_spanning_tree(G, weight="weight", algorithm="kruskal", ignore_nan=Fa
 
 
 @py_random_state(3)
-@nx._dispatch(preserve_edge_attrs=True)
+@nx._dispatchable(preserve_edge_attrs=True, returns_graph=True)
 def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
     """
     Sample a random spanning tree using the edges weights of `G`.
@@ -897,14 +898,15 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
             #    itself.
             if G.number_of_edges() == 1:
                 return G.edges(data=weight).__iter__().__next__()[2]
-            # 2. There are more than two edges in the graph. Then, we can find the
+            # 2. There are no edges or two or more edges in the graph. Then, we find the
             #    total weight of the spanning trees using the formula in the
-            #    reference paper: take the weight of that edge and multiple it by
-            #    the number of spanning trees which have to include that edge. This
+            #    reference paper: take the weight of each edge and multiply it by
+            #    the number of spanning trees which include that edge. This
             #    can be accomplished by contracting the edge and finding the
             #    multiplicative total spanning tree weight if the weight of each edge
             #    is assumed to be 1, which is conveniently built into networkx already,
-            #    by calling total_spanning_tree_weight with weight=None
+            #    by calling total_spanning_tree_weight with weight=None.
+            #    Note that with no edges the returned value is just zero.
             else:
                 total = 0
                 for u, v, w in G.edges(data=weight):
@@ -912,6 +914,10 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
                         nx.contracted_edge(G, edge=(u, v), self_loops=False), None
                     )
                 return total
+
+    if G.number_of_nodes() < 2:
+        # no edges in the spanning tree
+        return nx.empty_graph(G.nodes)
 
     U = set()
     st_cached_value = 0
@@ -1021,6 +1027,7 @@ class SpanningTreeIterator:
             If `ignore_nan is True` then that edge is ignored instead.
         """
         self.G = G.copy()
+        self.G.__networkx_cache__ = None  # Disable caching
         self.weight = weight
         self.minimum = minimum
         self.ignore_nan = ignore_nan
@@ -1131,3 +1138,137 @@ class SpanningTreeIterator:
         for u, v, d in G.edges(data=True):
             if self.partition_key in d:
                 del d[self.partition_key]
+
+
+@nx._dispatchable(edge_attrs="weight")
+def number_of_spanning_trees(G, *, root=None, weight=None):
+    """Returns the number of spanning trees in `G`.
+
+    A spanning tree for an undirected graph is a tree that connects
+    all nodes in the graph. For a directed graph, the analog of a
+    spanning tree is called a (spanning) arborescence. The arborescence
+    includes a unique directed path from the `root` node to each other node.
+    The graph must be weakly connected, and the root must be a node
+    that includes all nodes as successors [3]_. Note that to avoid
+    discussing sink-roots and reverse-arborescences, we have reversed
+    the edge orientation from [3]_ and use the in-degree laplacian.
+
+    This function (when `weight` is `None`) returns the number of
+    spanning trees for an undirected graph and the number of
+    arborescences from a single root node for a directed graph.
+    When `weight` is the name of an edge attribute which holds the
+    weight value of each edge, the function returns the sum over
+    all trees of the multiplicative weight of each tree. That is,
+    the weight of the tree is the product of its edge weights.
+
+    Kirchoff's Tree Matrix Theorem states that any cofactor of the
+    Laplacian matrix of a graph is the number of spanning trees in the
+    graph. (Here we use cofactors for a diagonal entry so that the
+    cofactor becomes the determinant of the matrix with one row
+    and its matching column removed.) For a weighted Laplacian matrix,
+    the cofactor is the sum across all spanning trees of the
+    multiplicative weight of each tree. That is, the weight of each
+    tree is the product of its edge weights. The theorem is also
+    known as Kirchhoff's theorem [1]_ and the Matrix-Tree theorem [2]_.
+
+    For directed graphs, a similar theorem (Tutte's Theorem) holds with
+    the cofactor chosen to be the one with row and column removed that
+    correspond to the root. The cofactor is the number of arborescences
+    with the specified node as root. And the weighted version gives the
+    sum of the arborescence weights with root `root`. The arborescence
+    weight is the product of its edge weights.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+    root : node
+       A node in the directed graph `G` that has all nodes as descendants.
+       (This is ignored for undirected graphs.)
+
+    weight : string or None, optional (default=None)
+        The name of the edge attribute holding the edge weight.
+        If `None`, then each edge is assumed to have a weight of 1.
+
+    Returns
+    -------
+    Number
+        Undirected graphs:
+            The number of spanning trees of the graph `G`.
+            Or the sum of all spanning tree weights of the graph `G`
+            where the weight of a tree is the product of its edge weights.
+        Directed graphs:
+            The number of arborescences of `G` rooted at node `root`.
+            Or the sum of all arborescence weights of the graph `G` with
+            specified root where the weight of an arborescence is the product
+            of its edge weights.
+
+    Raises
+    ------
+    NetworkXPointlessConcept
+        If `G` does not contain any nodes.
+
+    NetworkXError
+        If the graph `G` is directed and the root node
+        is not specified or is not in G.
+
+    Examples
+    --------
+    >>> G = nx.complete_graph(5)
+    >>> round(nx.number_of_spanning_trees(G))
+    125
+
+    >>> G = nx.Graph()
+    >>> G.add_edge(1, 2, weight=2)
+    >>> G.add_edge(1, 3, weight=1)
+    >>> G.add_edge(2, 3, weight=1)
+    >>> round(nx.number_of_spanning_trees(G, weight="weight"))
+    5
+
+    Notes
+    -----
+    Self-loops are excluded. Multi-edges are contracted in one edge
+    equal to the sum of the weights.
+
+    References
+    ----------
+    .. [1] Wikipedia
+       "Kirchhoff's theorem."
+       https://en.wikipedia.org/wiki/Kirchhoff%27s_theorem
+    .. [2] Kirchhoff, G. R.
+        Über die Auflösung der Gleichungen, auf welche man
+        bei der Untersuchung der linearen Vertheilung
+        Galvanischer Ströme geführt wird
+        Annalen der Physik und Chemie, vol. 72, pp. 497-508, 1847.
+    .. [3] Margoliash, J.
+        "Matrix-Tree Theorem for Directed Graphs"
+        https://www.math.uchicago.edu/~may/VIGRE/VIGRE2010/REUPapers/Margoliash.pdf
+    """
+    import numpy as np
+
+    if len(G) == 0:
+        raise nx.NetworkXPointlessConcept("Graph G must contain at least one node.")
+
+    # undirected G
+    if not nx.is_directed(G):
+        if not nx.is_connected(G):
+            return 0
+        G_laplacian = nx.laplacian_matrix(G, weight=weight).toarray()
+        return float(np.linalg.det(G_laplacian[1:, 1:]))
+
+    # directed G
+    if root is None:
+        raise nx.NetworkXError("Input `root` must be provided when G is directed")
+    if root not in G:
+        raise nx.NetworkXError("The node root is not in the graph G.")
+    if not nx.is_weakly_connected(G):
+        return 0
+
+    # Compute directed Laplacian matrix
+    nodelist = [root] + [n for n in G if n != root]
+    A = nx.adjacency_matrix(G, nodelist=nodelist, weight=weight)
+    D = np.diag(A.sum(axis=0))
+    G_laplacian = D - A
+
+    # Compute number of spanning trees
+    return float(np.linalg.det(G_laplacian[1:, 1:]))

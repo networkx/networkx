@@ -22,9 +22,10 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
     "sphinx_gallery.gen_gallery",
-    "nb2plots",
     "texext",
     "numpydoc",
+    "matplotlib.sphinxext.plot_directive",
+    "myst_nb",
 ]
 
 # https://github.com/sphinx-gallery/sphinx-gallery
@@ -53,6 +54,7 @@ sphinx_gallery_conf = {
     "image_scrapers": ("matplotlib",),
     "matplotlib_animations": True,
     "plot_gallery": "True",
+    "reference_url": {"sphinx_gallery": None},
 }
 # Add pygraphviz png scraper, if available
 try:
@@ -76,8 +78,9 @@ source_suffix = ".rst"
 # The encoding of source files.
 source_encoding = "utf-8"
 
-# Do not include release announcement template
-exclude_patterns = ["release/release_template.rst"]
+# Items to exclude during source collection, including release announcement
+# template, build outputs, and READMEs (markdown only)
+exclude_patterns = ["release/release_template.rst", "build/*", "README.md"]
 
 # General substitutions.
 project = "NetworkX"
@@ -245,10 +248,21 @@ default_role = "obj"
 
 numpydoc_show_class_members = False
 
+plot_pre_code = """
+import networkx as nx
+import numpy as np
+np.random.seed(42)
+"""
+
+plot_formats = [("png", 100)]
+
 
 def setup(app):
     app.add_css_file("custom.css")
     app.add_js_file("copybutton.js")
+    # Workaround to prevent duplicate file warnings from sphinx w/ myst-nb.
+    # See executablebooks/MyST-NB#363
+    app.registry.source_suffix.pop(".ipynb")
 
 
 # Monkeypatch numpydoc to show "Backends" section

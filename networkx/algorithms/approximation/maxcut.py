@@ -4,9 +4,10 @@ from networkx.utils.decorators import not_implemented_for, py_random_state
 __all__ = ["randomized_partitioning", "one_exchange"]
 
 
-@not_implemented_for("directed", "multigraph")
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 @py_random_state(1)
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def randomized_partitioning(G, seed=None, p=0.5, weight=None):
     """Compute a random partitioning of the graph nodes and its cut value.
 
@@ -38,6 +39,20 @@ def randomized_partitioning(G, seed=None, p=0.5, weight=None):
 
     partition : pair of node sets
         A partitioning of the nodes that defines a minimum cut.
+
+    Examples
+    --------
+    >>> G = nx.complete_graph(5)
+    >>> cut_size, partition = nx.approximation.randomized_partitioning(G, seed=1)
+    >>> cut_size
+    6
+    >>> partition
+    ({0, 3, 4}, {1, 2})
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If the graph is directed or is a multigraph.
     """
     cut = {node for node in G.nodes() if seed.random() < p}
     cut_size = nx.algorithms.cut_size(G, cut, weight=weight)
@@ -49,9 +64,10 @@ def _swap_node_partition(cut, node):
     return cut - {node} if node in cut else cut.union({node})
 
 
-@not_implemented_for("directed", "multigraph")
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 @py_random_state(2)
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def one_exchange(G, initial_cut=None, seed=None, weight=None):
     """Compute a partitioning of the graphs nodes and the corresponding cut value.
 
@@ -84,6 +100,20 @@ def one_exchange(G, initial_cut=None, seed=None, weight=None):
 
     partition : pair of node sets
         A partitioning of the nodes that defines a maximum cut.
+
+    Examples
+    --------
+    >>> G = nx.complete_graph(5)
+    >>> curr_cut_size, partition = nx.approximation.one_exchange(G, seed=1)
+    >>> curr_cut_size
+    6
+    >>> partition
+    ({0, 2}, {1, 3, 4})
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If the graph is directed or is a multigraph.
     """
     if initial_cut is None:
         initial_cut = set()

@@ -14,7 +14,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch(node_attrs="attribute")
+@nx._dispatchable(node_attrs="attribute")
 def attribute_mixing_dict(G, attribute, nodes=None, normalized=False):
     """Returns dictionary representation of mixing matrix for attribute.
 
@@ -53,7 +53,7 @@ def attribute_mixing_dict(G, attribute, nodes=None, normalized=False):
     return mixing_dict(xy_iter, normalized=normalized)
 
 
-@nx._dispatch(node_attrs="attribute")
+@nx._dispatchable(node_attrs="attribute")
 def attribute_mixing_matrix(G, attribute, nodes=None, mapping=None, normalized=True):
     """Returns mixing matrix for attribute.
 
@@ -98,13 +98,13 @@ def attribute_mixing_matrix(G, attribute, nodes=None, mapping=None, normalized=T
     Examples
     --------
     >>> G = nx.path_graph(3)
-    >>> gender = {0: 'male', 1: 'female', 2: 'female'}
-    >>> nx.set_node_attributes(G, gender, 'gender')
-    >>> mapping = {'male': 0, 'female': 1}
-    >>> mix_mat = nx.attribute_mixing_matrix(G, 'gender', mapping=mapping)
-    >>> # mixing from male nodes to female nodes
-    >>> mix_mat[mapping['male'], mapping['female']]
-    0.25
+    >>> gender = {0: "male", 1: "female", 2: "female"}
+    >>> nx.set_node_attributes(G, gender, "gender")
+    >>> mapping = {"male": 0, "female": 1}
+    >>> mix_mat = nx.attribute_mixing_matrix(G, "gender", mapping=mapping)
+    >>> mix_mat
+    array([[0.  , 0.25],
+           [0.25, 0.5 ]])
     """
     d = attribute_mixing_dict(G, attribute, nodes)
     a = dict_to_numpy_array(d, mapping=mapping)
@@ -113,7 +113,7 @@ def attribute_mixing_matrix(G, attribute, nodes=None, mapping=None, normalized=T
     return a
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def degree_mixing_dict(G, x="out", y="in", weight=None, nodes=None, normalized=False):
     """Returns dictionary representation of mixing matrix for degree.
 
@@ -145,7 +145,7 @@ def degree_mixing_dict(G, x="out", y="in", weight=None, nodes=None, normalized=F
     return mixing_dict(xy_iter, normalized=normalized)
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def degree_mixing_matrix(
     G, x="out", y="in", weight=None, nodes=None, normalized=True, mapping=None
 ):
@@ -194,17 +194,21 @@ def degree_mixing_matrix(
     --------
     >>> G = nx.star_graph(3)
     >>> mix_mat = nx.degree_mixing_matrix(G)
-    >>> mix_mat[0, 1]  # mixing from node degree 1 to node degree 3
-    0.5
+    >>> mix_mat
+    array([[0. , 0.5],
+           [0.5, 0. ]])
 
     If you want every possible degree to appear as a row, even if no nodes
     have that degree, use `mapping` as follows,
 
     >>> max_degree = max(deg for n, deg in G.degree)
-    >>> mapping = {x: x for x in range(max_degree + 1)} # identity mapping
+    >>> mapping = {x: x for x in range(max_degree + 1)}  # identity mapping
     >>> mix_mat = nx.degree_mixing_matrix(G, mapping=mapping)
-    >>> mix_mat[3, 1]  # mixing from node degree 3 to node degree 1
-    0.5
+    >>> mix_mat
+    array([[0. , 0. , 0. , 0. ],
+           [0. , 0. , 0. , 0.5],
+           [0. , 0. , 0. , 0. ],
+           [0. , 0.5, 0. , 0. ]])
     """
     d = degree_mixing_dict(G, x=x, y=y, nodes=nodes, weight=weight)
     a = dict_to_numpy_array(d, mapping=mapping)

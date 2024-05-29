@@ -81,7 +81,7 @@ def adjacency_data(G, attrs=_attrs):
     return data
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def adjacency_graph(data, directed=False, multigraph=True, attrs=_attrs):
     """Returns graph from adjacency data format.
 

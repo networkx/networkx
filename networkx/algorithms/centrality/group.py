@@ -19,7 +19,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def group_betweenness_centrality(G, C, normalized=True, weight=None, endpoints=False):
     r"""Compute the group betweenness centrality for a group of nodes.
 
@@ -236,7 +236,7 @@ def _group_preprocessing(G, set_v, weight):
     return PB, sigma, D
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def prominent_group(
     G, k, weight=None, C=None, endpoints=False, normalized=True, greedy=False
 ):
@@ -350,6 +350,7 @@ def prominent_group(
     else:
         nodes = list(G.nodes)
     DF_tree = nx.Graph()
+    DF_tree.__networkx_cache__ = None  # Disable caching
     PB, sigma, D = _group_preprocessing(G, nodes, weight)
     betweenness = pd.DataFrame.from_dict(PB)
     if C is not None:
@@ -498,15 +499,15 @@ def _heuristic(k, root, DF_tree, D, nodes, greedy):
                         / root_node["sigma"][added_node][y]
                     )
             DF_tree.nodes[node_p]["sigma"][x][y] = root_node["sigma"][x][y] * (1 - dxvy)
-            DF_tree.nodes[node_p]["betweenness"][x][y] = (
+            DF_tree.nodes[node_p]["betweenness"].loc[y, x] = (
                 root_node["betweenness"][x][y] - root_node["betweenness"][x][y] * dxvy
             )
             if y != added_node:
-                DF_tree.nodes[node_p]["betweenness"][x][y] -= (
+                DF_tree.nodes[node_p]["betweenness"].loc[y, x] -= (
                     root_node["betweenness"][x][added_node] * dxyv
                 )
             if x != added_node:
-                DF_tree.nodes[node_p]["betweenness"][x][y] -= (
+                DF_tree.nodes[node_p]["betweenness"].loc[y, x] -= (
                     root_node["betweenness"][added_node][y] * dvxy
                 )
 
@@ -543,7 +544,7 @@ def _heuristic(k, root, DF_tree, D, nodes, greedy):
     return node_p, node_m, DF_tree
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def group_closeness_centrality(G, S, weight=None):
     r"""Compute the group closeness centrality for a group of nodes.
 
@@ -640,7 +641,7 @@ def group_closeness_centrality(G, S, weight=None):
     return closeness
 
 
-@nx._dispatch
+@nx._dispatchable
 def group_degree_centrality(G, S):
     """Compute the group degree centrality for a group of nodes.
 
@@ -692,7 +693,7 @@ def group_degree_centrality(G, S):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def group_in_degree_centrality(G, S):
     """Compute the group in-degree centrality for a group of nodes.
 
@@ -739,7 +740,7 @@ def group_in_degree_centrality(G, S):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def group_out_degree_centrality(G, S):
     """Compute the group out-degree centrality for a group of nodes.
 

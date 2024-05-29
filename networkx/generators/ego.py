@@ -6,7 +6,7 @@ __all__ = ["ego_graph"]
 import networkx as nx
 
 
-@nx._dispatch(edge_attrs="distance")
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def ego_graph(G, n, radius=1, center=True, undirected=False, distance=None):
     """Returns induced subgraph of neighbors centered at node n within
     a given radius.

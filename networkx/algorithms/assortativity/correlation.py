@@ -15,7 +15,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def degree_assortativity_coefficient(G, x="out", y="in", weight=None, nodes=None):
     """Compute degree assortativity of graph.
 
@@ -94,13 +94,13 @@ def degree_assortativity_coefficient(G, x="out", y="in", weight=None, nodes=None
     else:
         degrees = {d for _, d in G.degree(nodes, weight=weight)}
 
-    mapping = {d: i for i, d, in enumerate(degrees)}
+    mapping = {d: i for i, d in enumerate(degrees)}
     M = degree_mixing_matrix(G, x=x, y=y, nodes=nodes, weight=weight, mapping=mapping)
 
     return _numeric_ac(M, mapping=mapping)
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, nodes=None):
     """Compute degree assortativity of graph.
 
@@ -156,10 +156,10 @@ def degree_pearson_correlation_coefficient(G, x="out", y="in", weight=None, node
 
     xy = node_degree_xy(G, x=x, y=y, nodes=nodes, weight=weight)
     x, y = zip(*xy)
-    return sp.stats.pearsonr(x, y)[0]
+    return float(sp.stats.pearsonr(x, y)[0])
 
 
-@nx._dispatch(node_attrs="attribute")
+@nx._dispatchable(node_attrs="attribute")
 def attribute_assortativity_coefficient(G, attribute, nodes=None):
     """Compute assortativity for node attributes.
 
@@ -206,7 +206,7 @@ def attribute_assortativity_coefficient(G, attribute, nodes=None):
     return attribute_ac(M)
 
 
-@nx._dispatch(node_attrs="attribute")
+@nx._dispatchable(node_attrs="attribute")
 def numeric_assortativity_coefficient(G, attribute, nodes=None):
     """Compute assortativity for numerical node attributes.
 
@@ -251,7 +251,7 @@ def numeric_assortativity_coefficient(G, attribute, nodes=None):
     if nodes is None:
         nodes = G.nodes
     vals = {G.nodes[n][attribute] for n in nodes}
-    mapping = {d: i for i, d, in enumerate(vals)}
+    mapping = {d: i for i, d in enumerate(vals)}
     M = attribute_mixing_matrix(G, attribute, nodes, mapping)
     return _numeric_ac(M, mapping)
 
@@ -280,7 +280,7 @@ def attribute_ac(M):
     s = (M @ M).sum()
     t = M.trace()
     r = (t - s) / (1 - s)
-    return r
+    return float(r)
 
 
 def _numeric_ac(M, mapping):
@@ -299,4 +299,4 @@ def _numeric_ac(M, mapping):
     varb = (b[idx] * y**2).sum() - ((b[idx] * y).sum()) ** 2
     xy = np.outer(x, y)
     ab = np.outer(a[idx], b[idx])
-    return (xy * (M - ab)).sum() / np.sqrt(vara * varb)
+    return float((xy * (M - ab)).sum() / np.sqrt(vara * varb))

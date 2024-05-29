@@ -8,7 +8,7 @@ __all__ = ["katz_centrality", "katz_centrality_numpy"]
 
 
 @not_implemented_for("multigraph")
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def katz_centrality(
     G,
     alpha=0.1,
@@ -194,7 +194,7 @@ def katz_centrality(
 
 
 @not_implemented_for("multigraph")
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     r"""Compute the Katz centrality for the graph G.
 
@@ -325,6 +325,6 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     n = A.shape[0]
     centrality = np.linalg.solve(np.eye(n, n) - (alpha * A), b).squeeze()
 
-    # Normalize: rely on truediv to cast to float
+    # Normalize: rely on truediv to cast to float, then tolist to make Python numbers
     norm = np.sign(sum(centrality)) * np.linalg.norm(centrality) if normalized else 1
-    return dict(zip(nodelist, centrality / norm))
+    return dict(zip(nodelist, (centrality / norm).tolist()))

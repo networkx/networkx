@@ -29,8 +29,6 @@ http://doi.org/10.1038/srep31708
 
 """
 import networkx as nx
-from networkx.exception import NetworkXError
-from networkx.utils import not_implemented_for
 
 __all__ = [
     "core_number",
@@ -43,10 +41,10 @@ __all__ = [
 ]
 
 
-@not_implemented_for("multigraph")
-@nx._dispatch
+@nx.utils.not_implemented_for("multigraph")
+@nx._dispatchable
 def core_number(G):
-    """Returns the core number for each vertex.
+    """Returns the core number for each node.
 
     A k-core is a maximal subgraph that contains nodes of degree k or more.
 
@@ -56,7 +54,7 @@ def core_number(G):
     Parameters
     ----------
     G : NetworkX graph
-       A graph or directed graph
+       An undirected or directed graph
 
     Returns
     -------
@@ -65,16 +63,24 @@ def core_number(G):
 
     Raises
     ------
-    NetworkXError
-        The k-core is not implemented for graphs with self loops
-        or parallel edges.
+    NetworkXNotImplemented
+        If `G` is a multigraph or contains self loops.
 
     Notes
     -----
-    Not implemented for graphs with parallel edges or self loops.
-
     For directed graphs the node degree is defined to be the
     in-degree + out-degree.
+
+    Examples
+    --------
+    >>> degrees = [0, 1, 2, 2, 2, 2, 3]
+    >>> H = nx.havel_hakimi_graph(degrees)
+    >>> nx.core_number(H)
+    {0: 1, 1: 2, 2: 2, 3: 2, 4: 1, 5: 2, 6: 0}
+    >>> G = nx.DiGraph()
+    >>> G.add_edges_from([(1, 2), (2, 1), (2, 3), (2, 4), (3, 4), (4, 3)])
+    >>> nx.core_number(G)
+    {1: 2, 2: 2, 3: 2, 4: 2}
 
     References
     ----------
@@ -87,7 +93,7 @@ def core_number(G):
             "Input graph has self loops which is not permitted; "
             "Consider using G.remove_edges_from(nx.selfloop_edges(G))."
         )
-        raise NetworkXError(msg)
+        raise nx.NetworkXNotImplemented(msg)
     degrees = dict(G.degree())
     # Sort nodes by degree.
     nodes = sorted(degrees, key=degrees.get)
@@ -142,18 +148,21 @@ def _core_subgraph(G, k_filter, k=None, core=None):
     return G.subgraph(nodes).copy()
 
 
-@nx._dispatch(preserve_all_attrs=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def k_core(G, k=None, core_number=None):
     """Returns the k-core of G.
 
-    A k-core is a maximal subgraph that contains nodes of degree k or more.
+    A k-core is a maximal subgraph that contains nodes of degree `k` or more.
+
+    .. deprecated:: 3.3
+       `k_core` will not accept `MultiGraph` objects in version 3.5.
 
     Parameters
     ----------
     G : NetworkX graph
       A graph or directed graph
     k : int, optional
-      The order of the core.  If not specified return the main core.
+      The order of the core. If not specified return the main core.
     core_number : dictionary, optional
       Precomputed core numbers for the graph G.
 
@@ -164,19 +173,26 @@ def k_core(G, k=None, core_number=None):
 
     Raises
     ------
-    NetworkXError
-      The k-core is not defined for graphs with self loops or parallel edges.
+    NetworkXNotImplemented
+      The k-core is not defined for multigraphs or graphs with self loops.
 
     Notes
     -----
-    The main core is the core with the largest degree.
-
-    Not implemented for graphs with parallel edges or self loops.
+    The main core is the core with `k` as the largest core_number.
 
     For directed graphs the node degree is defined to be the
     in-degree + out-degree.
 
     Graph, node, and edge attributes are copied to the subgraph.
+
+    Examples
+    --------
+    >>> degrees = [0, 1, 2, 2, 2, 2, 3]
+    >>> H = nx.havel_hakimi_graph(degrees)
+    >>> H.degree
+    DegreeView({0: 1, 1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 0})
+    >>> nx.k_core(H).nodes
+    NodeView((1, 2, 3, 5))
 
     See Also
     --------
@@ -189,18 +205,34 @@ def k_core(G, k=None, core_number=None):
        https://arxiv.org/abs/cs.DS/0310049
     """
 
+    import warnings
+
+    if G.is_multigraph():
+        warnings.warn(
+            (
+                "\n\n`k_core` will not accept `MultiGraph` objects in version 3.5.\n"
+                "Convert it to an undirected graph instead, using::\n\n"
+                "\tG = nx.Graph(G)\n"
+            ),
+            category=DeprecationWarning,
+            stacklevel=5,
+        )
+
     def k_filter(v, k, c):
         return c[v] >= k
 
     return _core_subgraph(G, k_filter, k, core_number)
 
 
-@nx._dispatch(preserve_all_attrs=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def k_shell(G, k=None, core_number=None):
     """Returns the k-shell of G.
 
     The k-shell is the subgraph induced by nodes with core number k.
     That is, nodes in the k-core that are not in the (k+1)-core.
+
+    .. deprecated:: 3.3
+       `k_shell` will not accept `MultiGraph` objects in version 3.5.
 
     Parameters
     ----------
@@ -219,21 +251,27 @@ def k_shell(G, k=None, core_number=None):
 
     Raises
     ------
-    NetworkXError
-        The k-shell is not implemented for graphs with self loops
-        or parallel edges.
+    NetworkXNotImplemented
+        The k-shell is not implemented for multigraphs or graphs with self loops.
 
     Notes
     -----
     This is similar to k_corona but in that case only neighbors in the
     k-core are considered.
 
-    Not implemented for graphs with parallel edges or self loops.
-
     For directed graphs the node degree is defined to be the
     in-degree + out-degree.
 
     Graph, node, and edge attributes are copied to the subgraph.
+
+    Examples
+    --------
+    >>> degrees = [0, 1, 2, 2, 2, 2, 3]
+    >>> H = nx.havel_hakimi_graph(degrees)
+    >>> H.degree
+    DegreeView({0: 1, 1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 0})
+    >>> nx.k_shell(H, k=1).nodes
+    NodeView((0, 4))
 
     See Also
     --------
@@ -249,25 +287,41 @@ def k_shell(G, k=None, core_number=None):
        http://www.pnas.org/content/104/27/11150.full
     """
 
+    import warnings
+
+    if G.is_multigraph():
+        warnings.warn(
+            (
+                "\n\n`k_shell` will not accept `MultiGraph` objects in version 3.5.\n"
+                "Convert it to an undirected graph instead, using::\n\n"
+                "\tG = nx.Graph(G)\n"
+            ),
+            category=DeprecationWarning,
+            stacklevel=5,
+        )
+
     def k_filter(v, k, c):
         return c[v] == k
 
     return _core_subgraph(G, k_filter, k, core_number)
 
 
-@nx._dispatch(preserve_all_attrs=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def k_crust(G, k=None, core_number=None):
     """Returns the k-crust of G.
 
     The k-crust is the graph G with the edges of the k-core removed
     and isolated nodes found after the removal of edges are also removed.
 
+    .. deprecated:: 3.3
+       `k_crust` will not accept `MultiGraph` objects in version 3.5.
+
     Parameters
     ----------
     G : NetworkX graph
        A graph or directed graph.
     k : int, optional
-      The order of the shell.  If not specified return the main crust.
+      The order of the shell. If not specified return the main crust.
     core_number : dictionary, optional
       Precomputed core numbers for the graph G.
 
@@ -278,21 +332,27 @@ def k_crust(G, k=None, core_number=None):
 
     Raises
     ------
-    NetworkXError
-        The k-crust is not implemented for graphs with self loops
-        or parallel edges.
+    NetworkXNotImplemented
+        The k-crust is not implemented for multigraphs or graphs with self loops.
 
     Notes
     -----
     This definition of k-crust is different than the definition in [1]_.
     The k-crust in [1]_ is equivalent to the k+1 crust of this algorithm.
 
-    Not implemented for graphs with parallel edges or self loops.
-
     For directed graphs the node degree is defined to be the
     in-degree + out-degree.
 
     Graph, node, and edge attributes are copied to the subgraph.
+
+    Examples
+    --------
+    >>> degrees = [0, 1, 2, 2, 2, 2, 3]
+    >>> H = nx.havel_hakimi_graph(degrees)
+    >>> H.degree
+    DegreeView({0: 1, 1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 0})
+    >>> nx.k_crust(H, k=1).nodes
+    NodeView((0, 4, 6))
 
     See Also
     --------
@@ -305,6 +365,20 @@ def k_crust(G, k=None, core_number=None):
        and Eran Shir, PNAS  July 3, 2007   vol. 104  no. 27  11150-11154
        http://www.pnas.org/content/104/27/11150.full
     """
+
+    import warnings
+
+    if G.is_multigraph():
+        warnings.warn(
+            (
+                "\n\n`k_crust` will not accept `MultiGraph` objects in version 3.5.\n"
+                "Convert it to an undirected graph instead, using::\n\n"
+                "\tG = nx.Graph(G)\n"
+            ),
+            category=DeprecationWarning,
+            stacklevel=5,
+        )
+
     # Default for k is one less than in _core_subgraph, so just inline.
     #    Filter is c[v] <= k
     if core_number is None:
@@ -315,12 +389,15 @@ def k_crust(G, k=None, core_number=None):
     return G.subgraph(nodes).copy()
 
 
-@nx._dispatch(preserve_all_attrs=True)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def k_corona(G, k, core_number=None):
     """Returns the k-corona of G.
 
     The k-corona is the subgraph of nodes in the k-core which have
-    exactly k neighbours in the k-core.
+    exactly k neighbors in the k-core.
+
+    .. deprecated:: 3.3
+       `k_corona` will not accept `MultiGraph` objects in version 3.5.
 
     Parameters
     ----------
@@ -338,18 +415,24 @@ def k_corona(G, k, core_number=None):
 
     Raises
     ------
-    NetworkXError
-        The k-corona is not defined for graphs with self loops or
-        parallel edges.
+    NetworkXNotImplemented
+        The k-corona is not defined for multigraphs or graphs with self loops.
 
     Notes
     -----
-    Not implemented for graphs with parallel edges or self loops.
-
     For directed graphs the node degree is defined to be the
     in-degree + out-degree.
 
     Graph, node, and edge attributes are copied to the subgraph.
+
+    Examples
+    --------
+    >>> degrees = [0, 1, 2, 2, 2, 2, 3]
+    >>> H = nx.havel_hakimi_graph(degrees)
+    >>> H.degree
+    DegreeView({0: 1, 1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 0})
+    >>> nx.k_corona(H, k=2).nodes
+    NodeView((1, 2, 3, 5))
 
     See Also
     --------
@@ -364,15 +447,28 @@ def k_corona(G, k, core_number=None):
        http://link.aps.org/doi/10.1103/PhysRevE.73.056101
     """
 
+    import warnings
+
+    if G.is_multigraph():
+        warnings.warn(
+            (
+                "\n\n`k_corona` will not accept `MultiGraph` objects in version 3.5.\n"
+                "Convert it to an undirected graph instead, using::\n\n"
+                "\tG = nx.Graph(G)\n"
+            ),
+            category=DeprecationWarning,
+            stacklevel=5,
+        )
+
     def func(v, k, c):
         return c[v] == k and k == sum(1 for w in G[v] if c[w] >= k)
 
     return _core_subgraph(G, func, k, core_number)
 
 
-@not_implemented_for("directed")
-@not_implemented_for("multigraph")
-@nx._dispatch(preserve_all_attrs=True)
+@nx.utils.not_implemented_for("directed")
+@nx.utils.not_implemented_for("multigraph")
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def k_truss(G, k):
     """Returns the k-truss of `G`.
 
@@ -393,16 +489,12 @@ def k_truss(G, k):
 
     Raises
     ------
-    NetworkXError
-
-      The k-truss is not defined for graphs with self loops, directed graphs
-      and multigraphs.
+    NetworkXNotImplemented
+      If `G` is a multigraph or directed graph or if it contains self loops.
 
     Notes
     -----
     A k-clique is a (k-2)-truss and a k-truss is a (k+1)-core.
-
-    Not implemented for digraphs or graphs with parallel edges or self loops.
 
     Graph, node, and edge attributes are copied to the subgraph.
 
@@ -411,6 +503,15 @@ def k_truss(G, k):
     `k-2` triangles. A more recent paper, [1], uses a slightly different
     definition requiring that each edge belong to at least `k` triangles.
     This implementation uses the original definition of `k-2` triangles.
+
+    Examples
+    --------
+    >>> degrees = [0, 1, 2, 2, 2, 2, 3]
+    >>> H = nx.havel_hakimi_graph(degrees)
+    >>> H.degree
+    DegreeView({0: 1, 1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 0})
+    >>> nx.k_truss(H, k=2).nodes
+    NodeView((0, 1, 2, 3, 4, 5))
 
     References
     ----------
@@ -424,7 +525,7 @@ def k_truss(G, k):
             "Input graph has self loops which is not permitted; "
             "Consider using G.remove_edges_from(nx.selfloop_edges(G))."
         )
-        raise NetworkXError(msg)
+        raise nx.NetworkXNotImplemented(msg)
 
     H = G.copy()
 
@@ -447,9 +548,9 @@ def k_truss(G, k):
     return H
 
 
-@not_implemented_for("multigraph")
-@not_implemented_for("directed")
-@nx._dispatch
+@nx.utils.not_implemented_for("multigraph")
+@nx.utils.not_implemented_for("directed")
+@nx._dispatchable
 def onion_layers(G):
     """Returns the layer of each vertex in an onion decomposition of the graph.
 
@@ -460,25 +561,27 @@ def onion_layers(G):
     Parameters
     ----------
     G : NetworkX graph
-        A simple graph without self loops or parallel edges
+        An undirected graph without self loops.
 
     Returns
     -------
     od_layers : dictionary
-        A dictionary keyed by vertex to the onion layer. The layers are
+        A dictionary keyed by node to the onion layer. The layers are
         contiguous integers starting at 1.
 
     Raises
     ------
-    NetworkXError
-        The onion decomposition is not implemented for graphs with self loops
-        or parallel edges or for directed graphs.
+    NetworkXNotImplemented
+        If `G` is a multigraph or directed graph or if it contains self loops.
 
-    Notes
-    -----
-    Not implemented for graphs with parallel edges or self loops.
-
-    Not implemented for directed graphs.
+    Examples
+    --------
+    >>> degrees = [0, 1, 2, 2, 2, 2, 3]
+    >>> H = nx.havel_hakimi_graph(degrees)
+    >>> H.degree
+    DegreeView({0: 1, 1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 0})
+    >>> nx.onion_layers(H)
+    {6: 1, 0: 2, 4: 3, 1: 4, 2: 4, 3: 4, 5: 4}
 
     See Also
     --------
@@ -501,7 +604,7 @@ def onion_layers(G):
             "Input graph contains self loops which is not permitted; "
             "Consider using G.remove_edges_from(nx.selfloop_edges(G))."
         )
-        raise NetworkXError(msg)
+        raise nx.NetworkXNotImplemented(msg)
     # Dictionaries to register the k-core/onion decompositions.
     od_layers = {}
     # Adjacency list

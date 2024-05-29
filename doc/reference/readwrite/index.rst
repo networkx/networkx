@@ -9,6 +9,7 @@ Reading and writing graphs
 
    adjlist
    multiline_adjlist
+   dot
    edgelist
    gexf
    gml

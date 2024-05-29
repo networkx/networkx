@@ -10,7 +10,7 @@ __all__ = ["spanner"]
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 @py_random_state(3)
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight", returns_graph=True)
 def spanner(G, stretch, weight=None, seed=None):
     """Returns a spanner of the given graph with the given stretch.
 
@@ -136,11 +136,11 @@ def spanner(G, stretch, weight=None, seed=None):
                 # remove edges to centers with edge weight less than
                 # closest_center_weight
                 for neighbor in residual_graph.adj[v]:
-                    neighbor_cluster = clustering[neighbor]
-                    neighbor_weight = lightest_edge_weight[neighbor_cluster]
+                    nbr_cluster = clustering[neighbor]
+                    nbr_weight = lightest_edge_weight[nbr_cluster]
                     if (
-                        neighbor_cluster == closest_center
-                        or neighbor_weight < closest_center_weight
+                        nbr_cluster == closest_center
+                        or nbr_weight < closest_center_weight
                     ):
                         edges_to_remove.add((v, neighbor))
 
@@ -257,14 +257,14 @@ def _lightest_edge_dicts(residual_graph, clustering, node):
     lightest_edge_neighbor = {}
     lightest_edge_weight = {}
     for neighbor in residual_graph.adj[node]:
-        neighbor_center = clustering[neighbor]
+        nbr_center = clustering[neighbor]
         weight = residual_graph[node][neighbor]["weight"]
         if (
-            neighbor_center not in lightest_edge_weight
-            or weight < lightest_edge_weight[neighbor_center]
+            nbr_center not in lightest_edge_weight
+            or weight < lightest_edge_weight[nbr_center]
         ):
-            lightest_edge_neighbor[neighbor_center] = neighbor
-            lightest_edge_weight[neighbor_center] = weight
+            lightest_edge_neighbor[nbr_center] = neighbor
+            lightest_edge_weight[nbr_center] = weight
     return lightest_edge_neighbor, lightest_edge_weight
 
 

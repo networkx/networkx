@@ -19,13 +19,9 @@ from .utils import build_auxiliary_edge_connectivity, build_auxiliary_node_conne
 __all__ = ["edge_disjoint_paths", "node_disjoint_paths"]
 
 
-@nx._dispatch(
-    graphs={"G": 0, "auxiliary?": 5, "residual?": 6},
-    preserve_edge_attrs={
-        "auxiliary": {"capacity": float("inf")},
-        "residual": {"capacity": float("inf")},
-    },
-    preserve_graph_attrs={"residual"},
+@nx._dispatchable(
+    graphs={"G": 0, "auxiliary?": 5},
+    preserve_edge_attrs={"auxiliary": {"capacity": float("inf")}},
 )
 def edge_disjoint_paths(
     G, s, t, flow_func=None, cutoff=None, auxiliary=None, residual=None
@@ -234,11 +230,10 @@ def edge_disjoint_paths(
             paths_found += 1
 
 
-@nx._dispatch(
-    graphs={"G": 0, "auxiliary?": 5, "residual?": 6},
-    preserve_edge_attrs={"residual": {"capacity": float("inf")}},
+@nx._dispatchable(
+    graphs={"G": 0, "auxiliary?": 5},
     preserve_node_attrs={"auxiliary": {"id": None}},
-    preserve_graph_attrs={"auxiliary", "residual"},
+    preserve_graph_attrs={"auxiliary"},
 )
 def node_disjoint_paths(
     G, s, t, flow_func=None, cutoff=None, auxiliary=None, residual=None

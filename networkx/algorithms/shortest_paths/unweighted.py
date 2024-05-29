@@ -17,7 +17,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch
+@nx._dispatchable
 def single_source_shortest_path_length(G, source, cutoff=None):
     """Compute the shortest path lengths from source to all reachable nodes.
 
@@ -95,7 +95,7 @@ def _single_shortest_path_length(adj, firstlevel, cutoff):
                 return
 
 
-@nx._dispatch
+@nx._dispatchable
 def single_target_shortest_path_length(G, target, cutoff=None):
     """Compute the shortest path lengths to target from all reachable nodes.
 
@@ -135,8 +135,14 @@ def single_target_shortest_path_length(G, target, cutoff=None):
     if target not in G:
         raise nx.NodeNotFound(f"Target {target} is not in G")
 
-    msg = "single_target_shortest_path_length will return a dict starting in v3.3"
-    warnings.warn(msg, DeprecationWarning)
+    warnings.warn(
+        (
+            "\n\nsingle_target_shortest_path_length will return a dict instead of"
+            "\nan iterator in version 3.5"
+        ),
+        FutureWarning,
+        stacklevel=3,
+    )
 
     if cutoff is None:
         cutoff = float("inf")
@@ -148,7 +154,7 @@ def single_target_shortest_path_length(G, target, cutoff=None):
     return _single_shortest_path_length(adj, nextlevel, cutoff)
 
 
-@nx._dispatch
+@nx._dispatchable
 def all_pairs_shortest_path_length(G, cutoff=None):
     """Computes the shortest path lengths between all nodes in `G`.
 
@@ -193,7 +199,7 @@ def all_pairs_shortest_path_length(G, cutoff=None):
         yield (n, length(G, n, cutoff=cutoff))
 
 
-@nx._dispatch
+@nx._dispatchable
 def bidirectional_shortest_path(G, source, target):
     """Returns a list of nodes in a shortest path between source and target.
 
@@ -309,7 +315,7 @@ def _bidirectional_pred_succ(G, source, target):
     raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
 
 
-@nx._dispatch
+@nx._dispatchable
 def single_source_shortest_path(G, source, cutoff=None):
     """Compute shortest path between source
     and all other nodes reachable from source.
@@ -393,7 +399,7 @@ def _single_shortest_path(adj, firstlevel, paths, cutoff, join):
     return paths
 
 
-@nx._dispatch
+@nx._dispatchable
 def single_target_shortest_path(G, target, cutoff=None):
     """Compute shortest path to target from all nodes that reach target.
 
@@ -445,7 +451,7 @@ def single_target_shortest_path(G, target, cutoff=None):
     return dict(_single_shortest_path(adj, nextlevel, paths, cutoff, join))
 
 
-@nx._dispatch
+@nx._dispatchable
 def all_pairs_shortest_path(G, cutoff=None):
     """Compute shortest paths between all nodes.
 
@@ -485,7 +491,7 @@ def all_pairs_shortest_path(G, cutoff=None):
         yield (n, single_source_shortest_path(G, n, cutoff=cutoff))
 
 
-@nx._dispatch
+@nx._dispatchable
 def predecessor(G, source, target=None, cutoff=None, return_seen=None):
     """Returns dict of predecessors for the path from source to all nodes in G.
 

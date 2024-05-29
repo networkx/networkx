@@ -78,8 +78,8 @@ Development Workflow
          # Test your installation
          pytest --pyargs networkx
 
-   * Finally, we recommend you use a pre-commit hook, which runs black when
-     you type ``git commit``::
+   * Finally, we recommend you install pre-commit which checks
+     that your code matches formatting guidelines::
 
        pre-commit install
 
@@ -122,7 +122,7 @@ Development Workflow
 
          pre-commit run --all-files
 
-4. Submit your contribution:
+5. Submit your contribution:
 
    * Push your changes back to your fork on GitHub::
 
@@ -135,7 +135,7 @@ Development Workflow
      <http://groups.google.com/group/networkx-discuss>`_ to explain your changes or
      to ask for review.
 
-5. Review process:
+6. Review process:
 
    * Every Pull Request (PR) update triggers a set of `continuous integration
      <https://en.wikipedia.org/wiki/Continuous_integration>`_ services
@@ -165,7 +165,7 @@ Development Workflow
       issue number 1480, you could use the phrase "Fixes #1480" in the PR
       description or commit message.
 
-6. Document deprecations and API changes
+7. Document deprecations and API changes
    
    If your change introduces any API modifications including deprecations,
    please make sure the PR has the ``type: API`` label.
@@ -430,7 +430,7 @@ General guidelines for making a good gallery plot:
 * Examples should highlight a single feature/command.
 * Try to make the example as simple as possible.
 * Data needed by examples should be included in the same directory and the example script.
-* Add comments to explain things are aren't obvious from reading the code.
+* Add comments to explain things that aren't obvious from reading the code.
 * Describe the feature that you're showcasing and link to other relevant parts of the
   documentation.
 

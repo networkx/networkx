@@ -11,7 +11,7 @@ __all__ = ["current_flow_closeness_centrality", "information_centrality"]
 
 
 @not_implemented_for("directed")
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
     """Compute current-flow closeness centrality for nodes.
 
@@ -74,24 +74,22 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
         "lu": SuperLUInverseLaplacian,
         "cg": CGInverseLaplacian,
     }
-    n = G.number_of_nodes()
+    N = G.number_of_nodes()
     ordering = list(reverse_cuthill_mckee_ordering(G))
     # make a copy with integer labels according to rcm ordering
     # this could be done without a copy if we really wanted to
-    H = nx.relabel_nodes(G, dict(zip(ordering, range(n))))
-    betweenness = dict.fromkeys(H, 0.0)  # b[v]=0 for v in H
-    n = H.number_of_nodes()
-    L = nx.laplacian_matrix(H, nodelist=range(n), weight=weight).asformat("csc")
+    H = nx.relabel_nodes(G, dict(zip(ordering, range(N))))
+    betweenness = dict.fromkeys(H, 0.0)  # b[n]=0 for n in H
+    N = H.number_of_nodes()
+    L = nx.laplacian_matrix(H, nodelist=range(N), weight=weight).asformat("csc")
     L = L.astype(dtype)
     C2 = solvername[solver](L, width=1, dtype=dtype)  # initialize solver
     for v in H:
         col = C2.get_row(v)
         for w in H:
-            betweenness[v] += col[v] - 2 * col[w]
-            betweenness[w] += col[v]
-    for v in H:
-        betweenness[v] = 1 / (betweenness[v])
-    return {ordering[k]: v for k, v in betweenness.items()}
+            betweenness[v] += col.item(v) - 2 * col.item(w)
+            betweenness[w] += col.item(v)
+    return {ordering[node]: 1 / value for node, value in betweenness.items()}
 
 
 information_centrality = current_flow_closeness_centrality

@@ -10,7 +10,7 @@ from networkx.utils.decorators import not_implemented_for
 __all__ = ["closeness_centrality", "incremental_closeness_centrality"]
 
 
-@nx._dispatch(edge_attrs="distance")
+@nx._dispatchable(edge_attrs="distance")
 def closeness_centrality(G, u=None, distance=None, wf_improved=True):
     r"""Compute closeness centrality for nodes.
 
@@ -137,7 +137,7 @@ def closeness_centrality(G, u=None, distance=None, wf_improved=True):
 
 
 @not_implemented_for("directed")
-@nx._dispatch
+@nx._dispatchable(mutates_input=True)
 def incremental_closeness_centrality(
     G, edge, prev_cc=None, insertion=True, wf_improved=True
 ):

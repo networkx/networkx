@@ -11,10 +11,9 @@ from networkx.algorithms.traversal.edgedfs import FORWARD, REVERSE
 def check_independent(basis):
     if len(basis) == 0:
         return
-    try:
-        import numpy as np
-    except ImportError:
-        return
+
+    np = pytest.importorskip("numpy")
+    sp = pytest.importorskip("scipy")  # Required by incidence_matrix
 
     H = nx.Graph()
     for b in basis:
@@ -96,6 +95,10 @@ class TestCycles:
         assert len(cc) == len(ca)
         for c in cc:
             assert any(self.is_cyclic_permutation(c, rc) for rc in ca)
+
+    def test_simple_cycles_singleton(self):
+        G = nx.Graph([(0, 0)])  # self-loop
+        assert list(nx.simple_cycles(G)) == [[0]]
 
     def test_unsortable(self):
         # this test ensures that graphs whose nodes without an intrinsic
@@ -944,7 +947,7 @@ class TestGirth:
             (nx.petersen_graph(), 5),
             (nx.heawood_graph(), 6),
             (nx.pappus_graph(), 6),
-            (nx.random_tree(10, seed=42), inf),
+            (nx.random_labeled_tree(10, seed=42), inf),
             (nx.empty_graph(10), inf),
             (nx.Graph(chain(cycle_edges(range(5)), cycle_edges(range(6, 10)))), 4),
             (

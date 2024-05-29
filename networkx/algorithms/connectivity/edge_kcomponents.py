@@ -23,7 +23,7 @@ __all__ = [
 
 
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def k_edge_components(G, k):
     """Generates nodes in each maximal k-edge-connected component in G.
 
@@ -107,7 +107,7 @@ def k_edge_components(G, k):
 
 
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def k_edge_subgraphs(G, k):
     """Generates nodes in each maximal k-edge-connected subgraph in G.
 
@@ -196,7 +196,7 @@ def _k_edge_subgraphs_nodes(G, k):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable
 def bridge_components(G):
     """Finds all bridge-connected components G.
 
@@ -503,19 +503,26 @@ def _high_degree_components(G, k):
         yield from nx.connected_components(H)
 
 
-@nx._dispatch
+@nx._dispatchable(returns_graph=True)
 def general_k_edge_subgraphs(G, k):
-    """General algorithm to find all maximal k-edge-connected subgraphs in G.
+    """General algorithm to find all maximal k-edge-connected subgraphs in `G`.
 
-    Returns
-    -------
-    k_edge_subgraphs : a generator of nx.Graphs that are k-edge-subgraphs
-        Each k-edge-subgraph is a maximal set of nodes that defines a subgraph
-        of G that is k-edge-connected.
+    Parameters
+    ----------
+    G : nx.Graph
+       Graph in which all maximal k-edge-connected subgraphs will be found.
+
+    k : int
+
+    Yields
+    ------
+    k_edge_subgraphs : Graph instances that are k-edge-subgraphs
+        Each k-edge-subgraph contains a maximal set of nodes that defines a
+        subgraph of `G` that is k-edge-connected.
 
     Notes
     -----
-    Implementation of the basic algorithm from _[1].  The basic idea is to find
+    Implementation of the basic algorithm from [1]_.  The basic idea is to find
     a global minimum cut of the graph. If the cut value is at least k, then the
     graph is a k-edge-connected subgraph and can be added to the results.
     Otherwise, the cut is used to split the graph in two and the procedure is
@@ -524,7 +531,7 @@ def general_k_edge_subgraphs(G, k):
     a single node or a subgraph of G that is k-edge-connected.
 
     This implementation contains optimizations for reducing the number of calls
-    to max-flow, but there are other optimizations in _[1] that could be
+    to max-flow, but there are other optimizations in [1]_ that could be
     implemented.
 
     References
@@ -547,7 +554,7 @@ def general_k_edge_subgraphs(G, k):
     ...     (14, 101, 24),
     ... ]
     >>> G = nx.Graph(it.chain(*[pairwise(path) for path in paths]))
-    >>> sorted(map(len, k_edge_subgraphs(G, k=3)))
+    >>> sorted(len(k_sg) for k_sg in k_edge_subgraphs(G, k=3))
     [1, 1, 1, 4, 4]
     """
     if k < 1:

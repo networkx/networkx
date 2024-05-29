@@ -19,7 +19,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def caveman_graph(l, k):
     """Returns a caveman graph of `l` cliques of size `k`.
 
@@ -66,7 +66,7 @@ def caveman_graph(l, k):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def connected_caveman_graph(l, k):
     """Returns a connected caveman graph of `l` cliques of size `k`.
 
@@ -121,7 +121,7 @@ def connected_caveman_graph(l, k):
 
 
 @py_random_state(3)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def relaxed_caveman_graph(l, k, p, seed=None):
     """Returns a relaxed caveman graph.
 
@@ -173,7 +173,7 @@ def relaxed_caveman_graph(l, k, p, seed=None):
 
 
 @py_random_state(3)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
     """Returns the random partition graph with a partition of sizes.
 
@@ -252,7 +252,7 @@ def random_partition_graph(sizes, p_in, p_out, seed=None, directed=False):
 
 
 @py_random_state(4)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
     """Returns the planted l-partition graph.
 
@@ -285,7 +285,7 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
     Raises
     ------
     NetworkXError
-      If p_in,p_out are not in [0,1] or
+      If `p_in`, `p_out` are not in `[0, 1]`
 
     Examples
     --------
@@ -308,7 +308,7 @@ def planted_partition_graph(l, k, p_in, p_out, seed=None, directed=False):
 
 
 @py_random_state(6)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False, seed=None):
     """Generate a Gaussian random partition graph.
 
@@ -384,7 +384,7 @@ def gaussian_random_partition_graph(n, s, v, p_in, p_out, directed=False, seed=N
     return random_partition_graph(sizes, p_in, p_out, seed=seed, directed=directed)
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def ring_of_cliques(num_cliques, clique_size):
     """Defines a "ring of cliques" graph.
 
@@ -440,7 +440,7 @@ def ring_of_cliques(num_cliques, clique_size):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def windmill_graph(n, k):
     """Generate a windmill graph.
     A windmill graph is a graph of `n` cliques each of size `k` that are all
@@ -494,7 +494,7 @@ def windmill_graph(n, k):
 
 
 @py_random_state(3)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def stochastic_block_model(
     sizes, p, nodelist=None, seed=None, directed=False, selfloops=False, sparse=True
 ):
@@ -551,13 +551,11 @@ def stochastic_block_model(
     >>> H = nx.quotient_graph(g, g.graph["partition"], relabel=True)
     >>> for v in H.nodes(data=True):
     ...     print(round(v[1]["density"], 3))
-    ...
     0.245
     0.348
     0.405
     >>> for v in H.edges(data=True):
     ...     print(round(1.0 * v[2]["weight"] / (sizes[v[0]] * sizes[v[1]]), 3))
-    ...
     0.051
     0.022
     0.07
@@ -808,7 +806,7 @@ def _generate_communities(degree_seq, community_sizes, mu, max_iters, seed):
 
 
 @py_random_state(11)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def LFR_benchmark_graph(
     n,
     tau1,

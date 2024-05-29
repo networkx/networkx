@@ -11,7 +11,7 @@ __all__ = ["mycielskian", "mycielski_graph"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable(returns_graph=True)
 def mycielskian(G, iterations=1):
     r"""Returns the Mycielskian of a simple, undirected graph G
 
@@ -68,7 +68,7 @@ def mycielskian(G, iterations=1):
     return M
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def mycielski_graph(n):
     """Generator for the n_th Mycielski Graph.
 

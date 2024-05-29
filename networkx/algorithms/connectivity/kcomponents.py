@@ -17,7 +17,7 @@ __all__ = ["k_components"]
 
 
 @not_implemented_for("directed")
-@nx._dispatch
+@nx._dispatchable
 def k_components(G, flow_func=None):
     r"""Returns the k-component structure of a graph G.
 

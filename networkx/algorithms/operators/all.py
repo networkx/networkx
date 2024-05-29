@@ -7,7 +7,7 @@ import networkx as nx
 __all__ = ["union_all", "compose_all", "disjoint_union_all", "intersection_all"]
 
 
-@nx._dispatch(graphs="[graphs]", preserve_all_attrs=True)
+@nx._dispatchable(graphs="[graphs]", preserve_all_attrs=True, returns_graph=True)
 def union_all(graphs, rename=()):
     """Returns the union of all graphs.
 
@@ -110,7 +110,7 @@ def union_all(graphs, rename=()):
     return R
 
 
-@nx._dispatch(graphs="[graphs]", preserve_all_attrs=True)
+@nx._dispatchable(graphs="[graphs]", preserve_all_attrs=True, returns_graph=True)
 def disjoint_union_all(graphs):
     """Returns the disjoint union of all graphs.
 
@@ -164,7 +164,7 @@ def disjoint_union_all(graphs):
     return R
 
 
-@nx._dispatch(graphs="[graphs]", preserve_all_attrs=True)
+@nx._dispatchable(graphs="[graphs]", preserve_all_attrs=True, returns_graph=True)
 def compose_all(graphs):
     """Returns the composition of all graphs.
 
@@ -230,7 +230,7 @@ def compose_all(graphs):
     return R
 
 
-@nx._dispatch(graphs="[graphs]")
+@nx._dispatchable(graphs="[graphs]", returns_graph=True)
 def intersection_all(graphs):
     """Returns a new graph that contains only the nodes and the edges that exist in
     all graphs.
@@ -270,8 +270,11 @@ def intersection_all(graphs):
 
     >>> gh = nx.intersection_all([g, h])
 
-    >>> new_node_attr = {n: min(*(anyG.nodes[n].get('capacity', float('inf')) for anyG in [g, h])) for n in gh}
-    >>> nx.set_node_attributes(gh, new_node_attr, 'new_capacity')
+    >>> new_node_attr = {
+    ...     n: min(*(anyG.nodes[n].get("capacity", float("inf")) for anyG in [g, h]))
+    ...     for n in gh
+    ... }
+    >>> nx.set_node_attributes(gh, new_node_attr, "new_capacity")
     >>> gh.nodes(data=True)
     NodeDataView({0: {'new_capacity': 2}, 1: {'new_capacity': 3}})
 

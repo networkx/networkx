@@ -8,7 +8,7 @@ import networkx as nx
 __all__ = ["interval_graph"]
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def interval_graph(intervals):
     """Generates an interval graph for a list of intervals given.
 

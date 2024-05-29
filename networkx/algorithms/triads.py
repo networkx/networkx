@@ -129,7 +129,7 @@ def _tricode(G, v, u, w):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def triadic_census(G, nodelist=None):
     """Determines the triadic census of a directed graph.
 
@@ -155,7 +155,6 @@ def triadic_census(G, nodelist=None):
     >>> triadic_census = nx.triadic_census(G)
     >>> for key, value in triadic_census.items():
     ...     print(f"{key}: {value}")
-    ...
     003: 0
     012: 0
     102: 0
@@ -177,6 +176,11 @@ def triadic_census(G, nodelist=None):
     -----
     This algorithm has complexity $O(m)$ where $m$ is the number of edges in
     the graph.
+
+    For undirected graphs, the triadic census can be computed by first converting
+    the graph into a directed graph using the ``G.to_directed()`` method.
+    After this conversion, only the triad types 003, 102, 201 and 300 will be
+    present in the undirected scenario.
 
     Raises
     ------
@@ -276,7 +280,7 @@ def triadic_census(G, nodelist=None):
     return census
 
 
-@nx._dispatch
+@nx._dispatchable
 def is_triad(G):
     """Returns True if the graph G is a triad, else False.
 
@@ -307,7 +311,7 @@ def is_triad(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def all_triplets(G):
     """Returns a generator of all possible sets of 3 nodes in a DiGraph.
 
@@ -339,7 +343,7 @@ def all_triplets(G):
 
     warnings.warn(
         (
-            "\n\nall_triplets is deprecated and will be rmoved in v3.5.\n"
+            "\n\nall_triplets is deprecated and will be removed in v3.5.\n"
             "Use `itertools.combinations(G, 3)` instead."
         ),
         category=DeprecationWarning,
@@ -350,7 +354,7 @@ def all_triplets(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable(returns_graph=True)
 def all_triads(G):
     """A generator of all possible triads in G.
 
@@ -381,7 +385,7 @@ def all_triads(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def triads_by_type(G):
     """Returns a list of all triads for each triad type in a directed graph.
     There are exactly 16 different types of triads possible. Suppose 1, 2, 3 are three
@@ -422,9 +426,9 @@ def triads_by_type(G):
     --------
     >>> G = nx.DiGraph([(1, 2), (1, 3), (2, 3), (3, 1), (5, 6), (5, 4), (6, 7)])
     >>> dict = nx.triads_by_type(G)
-    >>> dict['120C'][0].edges()
+    >>> dict["120C"][0].edges()
     OutEdgeView([(1, 2), (1, 3), (2, 3), (3, 1)])
-    >>> dict['012'][0].edges()
+    >>> dict["012"][0].edges()
     OutEdgeView([(1, 2)])
 
     References
@@ -444,7 +448,7 @@ def triads_by_type(G):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def triad_type(G):
     """Returns the sociological triad type for a triad.
 
@@ -543,7 +547,7 @@ def triad_type(G):
 
 @not_implemented_for("undirected")
 @py_random_state(1)
-@nx._dispatch
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def random_triad(G, seed=None):
     """Returns a random triad from a directed graph.
 

@@ -101,7 +101,7 @@ def _generate_sparse6_bytes(G, nodes, header):
     yield b"\n"
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def from_sparse6_bytes(string):
     """Read an undirected graph in sparse6 format from string.
 
@@ -250,7 +250,7 @@ def to_sparse6_bytes(G, nodes=None, header=True):
 
 
 @open_file(0, mode="rb")
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def read_sparse6(path):
     """Read an undirected graph in sparse6 format from path.
 

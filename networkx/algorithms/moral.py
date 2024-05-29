@@ -9,7 +9,7 @@ __all__ = ["moral_graph"]
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable(returns_graph=True)
 def moral_graph(G):
     r"""Return the Moral Graph
 

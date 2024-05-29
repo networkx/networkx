@@ -18,7 +18,7 @@ __all__ = ["random_cograph"]
 
 
 @py_random_state(1)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def random_cograph(n, seed=None):
     r"""Returns a random cograph with $2 ^ n$ nodes.
 

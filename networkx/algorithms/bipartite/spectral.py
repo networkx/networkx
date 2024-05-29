@@ -6,7 +6,7 @@ import networkx as nx
 __all__ = ["spectral_bipartivity"]
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def spectral_bipartivity(G, nodes=None, weight="weight"):
     """Returns the spectral bipartivity.
 
@@ -57,12 +57,12 @@ def spectral_bipartivity(G, nodes=None, weight="weight"):
     coshA = 0.5 * (expA + expmA)
     if nodes is None:
         # return single number for entire graph
-        return coshA.diagonal().sum() / expA.diagonal().sum()
+        return float(coshA.diagonal().sum() / expA.diagonal().sum())
     else:
         # contribution for individual nodes
         index = dict(zip(nodelist, range(len(nodelist))))
         sb = {}
         for n in nodes:
             i = index[n]
-            sb[n] = coshA[i, i] / expA[i, i]
+            sb[n] = coshA.item(i, i) / expA.item(i, i)
         return sb

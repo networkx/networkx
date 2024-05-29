@@ -17,14 +17,22 @@ def test_dispatch_kwds_vs_args():
 
 
 def test_pickle():
+    count = 0
     for name, func in nx.utils.backends._registered_algorithms.items():
-        assert pickle.loads(pickle.dumps(func)) is func
+        try:
+            # Some functions can't be pickled, but it's not b/c of _dispatchable
+            pickled = pickle.dumps(func)
+        except pickle.PicklingError:
+            continue
+        assert pickle.loads(pickled) is func
+        count += 1
+    assert count > 0
     assert pickle.loads(pickle.dumps(nx.inverse_line_graph)) is nx.inverse_line_graph
 
 
 @pytest.mark.skipif(
-    "not nx._dispatch._automatic_backends "
-    "or nx._dispatch._automatic_backends[0] != 'nx-loopback'"
+    "not nx.config['backend_priority'] "
+    "or nx.config['backend_priority'][0] != 'nx-loopback'"
 )
 def test_graph_converter_needs_backend():
     # When testing, `nx.from_scipy_sparse_array` will *always* call the backend
@@ -45,9 +53,9 @@ def test_graph_converter_needs_backend():
         side_effects.append(1)  # Just to prove this was called
         return self.convert_from_nx(
             self.__getattr__("from_scipy_sparse_array")(*args, **kwargs),
-            preserve_edge_attrs=None,
-            preserve_node_attrs=None,
-            preserve_graph_attrs=None,
+            preserve_edge_attrs=True,
+            preserve_node_attrs=True,
+            preserve_graph_attrs=True,
         )
 
     @staticmethod
@@ -74,3 +82,7 @@ def test_graph_converter_needs_backend():
         del LoopbackDispatcher.from_scipy_sparse_array
     with pytest.raises(ImportError, match="Unable to load"):
         nx.from_scipy_sparse_array(A, backend="bad-backend-name")
+
+
+def test_dispatchable_are_functions():
+    assert type(nx.pagerank) is type(nx.pagerank.orig_func)

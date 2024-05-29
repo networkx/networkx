@@ -150,7 +150,7 @@ def write_adjlist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
         path.write(line.encode(encoding))
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def parse_adjlist(
     lines, comments="#", delimiter=None, create_using=None, nodetype=None
 ):
@@ -224,7 +224,7 @@ def parse_adjlist(
 
 
 @open_file(0, mode="rb")
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def read_adjlist(
     path,
     comments="#",

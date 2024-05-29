@@ -222,7 +222,7 @@ def _tracemin_fiedler(L, X, normalized, tol, method):
         # element needs to modified. Changing to infinity forces a zero in the
         # corresponding element in the solution.
         i = (A.indptr[1:] - A.indptr[:-1]).argmax()
-        A[i, i] = float("inf")
+        A[i, i] = np.inf
         solver = _LUSolver(A)
     else:
         raise nx.NetworkXError(f"Unknown linear system solver: {method}")
@@ -312,7 +312,7 @@ def _get_fiedler_func(method):
 
 @not_implemented_for("directed")
 @np_random_state(5)
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def algebraic_connectivity(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
 ):
@@ -398,17 +398,17 @@ def algebraic_connectivity(
 
     L = nx.laplacian_matrix(G)
     if L.shape[0] == 2:
-        return 2.0 * L[0, 0] if not normalized else 2.0
+        return 2.0 * float(L[0, 0]) if not normalized else 2.0
 
     find_fiedler = _get_fiedler_func(method)
     x = None if method != "lobpcg" else _rcm_estimate(G, G)
     sigma, fiedler = find_fiedler(L, x, normalized, tol, seed)
-    return sigma
+    return float(sigma)
 
 
 @not_implemented_for("directed")
 @np_random_state(5)
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def fiedler_vector(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
 ):
@@ -505,7 +505,7 @@ def fiedler_vector(
 
 
 @np_random_state(5)
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def spectral_ordering(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
 ):
@@ -588,7 +588,7 @@ def spectral_ordering(
     return order
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def spectral_bisection(
     G, weight="weight", normalized=False, tol=1e-8, method="tracemin_pcg", seed=None
 ):
@@ -653,4 +653,4 @@ def spectral_bisection(
     nodes = np.array(list(G))
     pos_vals = v >= 0
 
-    return set(nodes[~pos_vals]), set(nodes[pos_vals])
+    return set(nodes[~pos_vals].tolist()), set(nodes[pos_vals].tolist())
