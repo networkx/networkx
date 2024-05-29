@@ -12,6 +12,7 @@ __all__ = [
     "minimum_weight_envy_free_matching",
 ]
 
+
 def _M_alternating_sequence(G, M, *, top_nodes=None):
     r"""Return an M-alternating-sequence of a bipartite graph `G` with
     regard to a matching `M`.

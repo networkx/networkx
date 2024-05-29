@@ -4,6 +4,7 @@ from networkx.algorithms.bipartite.envy_free_matching import (
     minimum_weight_envy_free_matching,
 )
 
+
 def test_envy_free_matching_partition():
     # Perfect matching
     G = nx.complete_bipartite_graph(3, 3)
