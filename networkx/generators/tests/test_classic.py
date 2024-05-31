@@ -238,7 +238,13 @@ class TestGeneratorClassic:
         G = nx.dorogovtsev_goltsev_mendes_graph(1)
         assert edges_equal(G.edges(), [(0, 1), (0, 2), (1, 2)])
         assert nx.average_clustering(G) == 1.0
+        assert nx.average_shortest_path_length(G) == 1.0
         assert sorted(nx.triangles(G).values()) == [1, 1, 1]
+        G = nx.dorogovtsev_goltsev_mendes_graph(2)
+        assert nx.number_of_nodes(G) == 6
+        assert nx.number_of_edges(G) == 9
+        assert nx.average_clustering(G) == 0.75
+        assert nx.average_shortest_path_length(G) == 1.4
         G = nx.dorogovtsev_goltsev_mendes_graph(10)
         assert nx.number_of_nodes(G) == 29526
         assert nx.number_of_edges(G) == 59049
@@ -246,6 +252,7 @@ class TestGeneratorClassic:
         assert G.degree(1) == 1024
         assert G.degree(2) == 1024
 
+        pytest.raises(nx.NetworkXError, nx.dorogovtsev_goltsev_mendes_graph, -1)
         pytest.raises(
             nx.NetworkXError,
             nx.dorogovtsev_goltsev_mendes_graph,
@@ -257,6 +264,12 @@ class TestGeneratorClassic:
             nx.dorogovtsev_goltsev_mendes_graph,
             7,
             create_using=nx.MultiGraph,
+        )
+        pytest.raises(
+            nx.NetworkXError,
+            nx.dorogovtsev_goltsev_mendes_graph,
+            7,
+            create_using=nx.MultiDiGraph,
         )
 
     def test_create_using(self):
