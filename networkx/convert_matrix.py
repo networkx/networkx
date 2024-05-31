@@ -432,7 +432,11 @@ def from_pandas_edgelist(
     g = nx.empty_graph(0, create_using)
 
     if edge_attr is None:
-        g.add_edges_from(zip(df[source], df[target]))
+        if g.is_multigraph() and edge_key is not None:
+            for u, v, k in zip(df[source], df[target], df[edge_key]):
+                g.add_edge(u, v, k)
+        else:
+            g.add_edges_from(zip(df[source], df[target]))
         return g
 
     reserved_columns = [source, target]
