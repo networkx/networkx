@@ -38,6 +38,11 @@ class TestFlowClosenessCentrality:
         with pytest.raises(nx.NetworkXError):
             nx.current_flow_closeness_centrality(G)
 
+    def test_current_flow_closeness_centrality_fewer_than_3_vertices(self):
+        G = nx.path_graph(2)
+        with pytest.raises(nx.NetworkXError):
+            nx.current_flow_closeness_centrality(G)
+
 
 class TestWeightedFlowClosenessCentrality:
     pass
