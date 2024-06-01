@@ -25,27 +25,31 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
     ----------
     G : graph
       A NetworkX graph.
-      G must be simple, undirected, connected, and have at least three vertices.
 
     weight : None or string, optional (default=None)
-      If None, all edge weights are considered equal.
+      If `None`, all edge weights are considered equal.
       Otherwise holds the name of the edge attribute used as weight.
       The weight reflects the capacity or the strength of the
       edge.
 
     dtype : data type (default=float)
       Default data type for internal matrices.
-      Set to np.float32 for lower memory consumption.
+      Set to `np.float32` for lower memory consumption.
 
-    solver : string (default='lu')
+    solver : string (default="lu")
        Type of linear solver to use for computing the flow matrix.
-       Options are "full" (uses most memory), "lu" (recommended), and
-       "cg" (uses least memory).
+       Options are `"full"` (uses most memory), `"lu"` (recommended), and
+       `"cg"` (uses least memory).
 
     Returns
     -------
     nodes : dictionary
        Dictionary of nodes with current flow closeness centrality as the value.
+
+    Raises
+    ------
+    NetworkXError
+        If `G` is not connected or has fewer than three nodes.
 
     See Also
     --------
@@ -53,7 +57,8 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
 
     Notes
     -----
-    The algorithm is from Brandes [1]_.
+    The algorithm is from Brandes [1]_, and is thus only implemented for simple,
+    undirected graphs.
 
     See also [2]_ for the original definition of information centrality.
 
