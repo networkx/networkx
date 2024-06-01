@@ -492,26 +492,24 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     r"""Returns the hierarchically constructed Dorogovtsev--Goltsev--Mendes graph.
 
     The Dorogovtsev--Goltsev--Mendes [1]_ procedure deterministically produces a
-    scale-free graph with $\frac{3}{2} (3^{n-1} + 1)$ vertices
-    and $3^n$ edges for a given $n$.
+    scale-free graph with `3/2 * (3**(n-1) + 1)` vertices
+    and `3**n` edges for a given `n`.
 
-    Note that $n$ denotes the number of times the state transition is applied,
-    starting from the base graph with $n = 0$ (no transitions), as in [2]_.
-    This is different from the parameter $t = n - 1$ in [1]_.
+    Note that `n` denotes the number of times the state transition is applied,
+    starting from the base graph with `n = 0` (no transitions), as in [2]_.
+    This is different from the parameter `t = n - 1` in [1]_.
 
     .. plot::
 
-        >>> nx.draw_planar(nx.dorogovtsev_goltsev_mendes_graph(3))
+        >>> nx.draw(nx.dorogovtsev_goltsev_mendes_graph(3))
 
     Parameters
     ----------
     n : integer
        The generation number. Must be greater than or equal to 0.
 
-    create_using : NetworkX graph constructor, optional (default `nx.Graph`)
-       Graph type to be returned. Directed graphs and multigraphs are not
-       supported.
-       If this is a graph instance, it gets cleared, then populated.
+    create_using : NetworkX graph constructor, optional (default=nx.Graph)
+       Graph type to create. If graph instance, then cleared before populated.
 
     Returns
     -------
@@ -537,7 +535,7 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     References
     ----------
     .. [1] S. N. Dorogovtsev, A. V. Goltsev and J. F. F. Mendes,
-        "Pseudofractal scale-free web", Physical Review E 65, 066122, 2002.
+        "Pseudofractal scale-free web," Physical Review E 65, 066122, 2002.
         https://arxiv.org/pdf/cond-mat/0112143.pdf
     .. [2] Weisstein, Eric W. "Dorogovtsev--Goltsev--Mendes Graph."
         From MathWorld--A Wolfram Web Resource.
@@ -556,7 +554,7 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     if n == 0:
         return G
     new_node = 2  # next node to be added
-    for _ in range(1, n + 1):  # iterate over number of generations.
+    for _ in range(n):  # iterate over number of generations.
         last_generation_edges = list(G.edges())
         for last_generation_edge in last_generation_edges:
             G.add_edge(new_node, last_generation_edge[0])
