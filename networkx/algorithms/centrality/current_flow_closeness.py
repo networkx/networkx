@@ -12,6 +12,7 @@ __all__ = ["current_flow_closeness_centrality", "information_centrality"]
 
 
 @not_implemented_for("directed")
+@not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs="weight")
 def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
     """Compute current-flow closeness centrality for nodes.
@@ -24,6 +25,7 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
     ----------
     G : graph
       A NetworkX graph.
+      G must be simple, undirected, connected, and have at least three vertices.
 
     weight : None or string, optional (default=None)
       If None, all edge weights are considered equal.
@@ -31,11 +33,11 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
       The weight reflects the capacity or the strength of the
       edge.
 
-    dtype: data type (default=float)
+    dtype : data type (default=float)
       Default data type for internal matrices.
       Set to np.float32 for lower memory consumption.
 
-    solver: string (default='lu')
+    solver : string (default='lu')
        Type of linear solver to use for computing the flow matrix.
        Options are "full" (uses most memory), "lu" (recommended), and
        "cg" (uses least memory).
@@ -70,12 +72,14 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
     """
     if not nx.is_connected(G):
         raise nx.NetworkXError("Graph not connected.")
+    N = G.number_of_nodes()
+    if N < 3:
+        raise nx.NetworkXError("Graph has fewer than three vertices.")
     solvername = {
         "full": FullInverseLaplacian,
         "lu": SuperLUInverseLaplacian,
         "cg": CGInverseLaplacian,
     }
-    N = G.number_of_nodes()
     ordering = list(reverse_cuthill_mckee_ordering(G))
     # make a copy with integer labels according to rcm ordering
     # this could be done without a copy if we really wanted to
