@@ -492,12 +492,12 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     r"""Returns the hierarchically constructed Dorogovtsev--Goltsev--Mendes graph.
 
     The Dorogovtsev--Goltsev--Mendes [1]_ procedure deterministically produces a
-    scale-free graph with `3/2 * (3**(n-1) + 1)` vertices
-    and `3**n` edges for a given `n`.
+    scale-free graph with ``3/2 * (3**(n-1) + 1)`` vertices
+    and ``3**n`` edges for a given `n`.
 
     Note that `n` denotes the number of times the state transition is applied,
-    starting from the base graph with `n = 0` (no transitions), as in [2]_.
-    This is different from the parameter `t = n - 1` in [1]_.
+    starting from the base graph with ``n = 0`` (no transitions), as in [2]_.
+    This is different from the parameter ``t = n - 1`` in [1]_.
 
     .. plot::
 
