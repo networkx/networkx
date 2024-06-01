@@ -43,6 +43,27 @@ class TestFlowClosenessCentrality:
         with pytest.raises(nx.NetworkXError):
             nx.current_flow_closeness_centrality(G)
 
+    def test_current_flow_closeness_centrality_not_implemented_for(self):
+        G = nx.DiGraph()
+        G.add_edge(0, 1)
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.current_flow_closeness_centrality(G)
+
+        G = nx.MultiGraph()
+        G.add_edges_from([(0, 1), (0, 1)])
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.current_flow_closeness_centrality(G)
+
+        G = nx.MultiDiGraph()
+        G.add_edges_from([(0, 1), (0, 1)])
+        with pytest.raises(nx.NetworkXNotImplemented):
+            nx.current_flow_closeness_centrality(G)
+
+    def test_current_flow_closeness_centrality_pointless_concept(self):
+        G = nx.Graph()
+        with pytest.raises(nx.NetworkXPointlessConcept):
+            nx.current_flow_closeness_centrality(G)
+
 
 class TestWeightedFlowClosenessCentrality:
     pass
