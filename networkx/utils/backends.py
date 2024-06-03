@@ -1,4 +1,7 @@
 """
+Docs for backend users
+~~~~~~~~~~~~~~~~~~~~~~
+
 NetworkX utilizes a plugin-dispatch architecture, which means we can plug in and
 out of backends with minimal code changes. A valid NetworkX backend specifies
 `entry points <https://packaging.python.org/en/latest/specifications/entry-points>`_,
@@ -61,7 +64,7 @@ And then re-enable it by running::
     logging.disable(logging.NOTSET)
 
 How does this work?
-~~~~~~~~~~~~~~~~~~~
+-------------------
 
 You might have seen the ``@nx._dispatchable`` decorator on
 many of the NetworkX functions in the codebase. This decorator function works
@@ -106,6 +109,9 @@ They are the following:
 
 Note that the ``backend_name`` is e.g. ``parallel``, the package installed
 is ``nx-parallel``, and we use ``nx_parallel`` while importing the package.
+
+Docs for backend developers
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Creating a custom backend
 -------------------------
