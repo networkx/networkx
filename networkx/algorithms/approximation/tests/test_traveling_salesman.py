@@ -771,7 +771,7 @@ def test_asadpour_tsp():
     # than once.
     #
     # Even though we are using a fixed seed, multiple tours have been known to
-    # be returned. The first two are from the original delevopment of this test,
+    # be returned. The first two are from the original development of this test,
     # and the third one from issue #5913 on GitHub. If other tours are returned,
     # add it on the list of expected tours.
     expected_tours = [
@@ -815,15 +815,14 @@ def test_asadpour_real_world():
         ]
     )
 
-    node_map = {0: "JFK", 1: "LAX", 2: "ORD", 3: "IAH", 4: "PHX", 5: "PHL"}
+    node_list = ["JFK", "LAX", "ORD", "IAH", "PHX", "PHL"]
 
     expected_tours = [
         ["JFK", "LAX", "PHX", "ORD", "IAH", "PHL", "JFK"],
         ["JFK", "ORD", "PHX", "LAX", "IAH", "PHL", "JFK"],
     ]
 
-    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
-    nx.relabel_nodes(G, node_map, copy=False)
+    G = nx.from_numpy_array(G_array, nodelist=node_list, create_using=nx.DiGraph)
 
     tour = nx_app.traveling_salesman_problem(
         G, weight="weight", method=nx_app.asadpour_atsp, seed=37, source="JFK"
@@ -862,15 +861,14 @@ def test_asadpour_real_world_path():
         ]
     )
 
-    node_map = {0: "JFK", 1: "LAX", 2: "ORD", 3: "IAH", 4: "PHX", 5: "PHL"}
+    node_list = ["JFK", "LAX", "ORD", "IAH", "PHX", "PHL"]
 
     expected_paths = [
         ["ORD", "PHX", "LAX", "IAH", "PHL", "JFK"],
         ["JFK", "PHL", "IAH", "ORD", "PHX", "LAX"],
     ]
 
-    G = nx.from_numpy_array(G_array, create_using=nx.DiGraph)
-    nx.relabel_nodes(G, node_map, copy=False)
+    G = nx.from_numpy_array(G_array, nodelist=node_list, create_using=nx.DiGraph)
 
     path = nx_app.traveling_salesman_problem(
         G, weight="weight", cycle=False, method=nx_app.asadpour_atsp, seed=56

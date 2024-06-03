@@ -143,7 +143,11 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements/default.txt -r requirements/test.txt
-          pip install --global-option=build_ext --global-option="-I/usr/local/include/" --global-option="-L/usr/local/lib/" pygraphviz
+          pip install --no-cache-dir \
+                      --config-settings="--global-option=build_ext" \
+                      --config-settings="--global-option=-I$(brew --prefix graphviz)/include/" \
+                      --config-settings="--global-option=-L$(brew --prefix graphviz)/lib/" \
+                      pygraphviz
           pip install -r requirements/extra.txt
           pip install .
           pip list

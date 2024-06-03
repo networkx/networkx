@@ -7,7 +7,7 @@ installed (not imported). This allows NetworkX to dispatch (redirect) function c
 to the backend so the execution flows to the designated backend
 implementation, similar to how plugging a charger into a socket redirects the
 electricity to your phone. This design enhances flexibility and integration, making
-NetworkX more adaptable and efficient. 
+NetworkX more adaptable and efficient.
 
 There are three main ways to use a backend after the package is installed.
 You can set environment variables and run the exact same code you run for
@@ -262,6 +262,7 @@ How tests are run?
 
 import inspect
 import itertools
+import logging
 import os
 import warnings
 from functools import partial
@@ -272,6 +273,8 @@ import networkx as nx
 from .decorators import argmap
 
 __all__ = ["_dispatchable"]
+
+_logger = logging.getLogger(__name__)
 
 
 def _do_nothing():
@@ -814,6 +817,10 @@ class _dispatchable:
                         fallback_to_nx=self._fallback_to_nx,
                     )
                 # All graphs are backend graphs--no need to convert!
+                _logger.debug(
+                    f"using backend '{graph_backend_name}' for call to `{self.name}' "
+                    f"with args: {args}, kwargs: {kwargs}"
+                )
                 return getattr(backend, self.name)(*args, **kwargs)
             # Future work: try to convert and run with other backends in backend_priority
             raise nx.NetworkXNotImplemented(
@@ -1116,15 +1123,13 @@ class _dispatchable:
             # node_attrs: dict | None
             # preserve_edge_attrs: bool (False if edge_attrs is not None)
             # preserve_node_attrs: bool (False if node_attrs is not None)
-            # preserve_graph_attrs: bool
-            key = edge_key, node_key, graph_key = (
+            key = edge_key, node_key = (
                 frozenset(edge_attrs.items())
                 if edge_attrs is not None
                 else preserve_edge_attrs,
                 frozenset(node_attrs.items())
                 if node_attrs is not None
                 else preserve_node_attrs,
-                preserve_graph_attrs,
             )
             if cache:
                 warning_message = (
@@ -1142,8 +1147,8 @@ class _dispatchable:
                     "will correctly clear the cache to keep it consistent. "
                     "You may also use `G.__networkx_cache__.clear()` to "
                     "manually clear the cache, or set `G.__networkx_cache__` "
-                    "to None to disable caching for G. Enable or disable "
-                    "caching via `nx.config.cache_converted_graphs` config."
+                    "to None to disable caching for G. Enable or disable caching "
+                    "globally via `nx.config.cache_converted_graphs` config."
                 )
                 # Do a simple search for a cached graph with compatible data.
                 # For example, if we need a single attribute, then it's okay
@@ -1152,7 +1157,6 @@ class _dispatchable:
                 for compat_key in itertools.product(
                     (edge_key, True) if edge_key is not True else (True,),
                     (node_key, True) if node_key is not True else (True,),
-                    (graph_key, True) if graph_key is not True else (True,),
                 ):
                     if (rv := cache.get(compat_key)) is not None:
                         warnings.warn(warning_message)
@@ -1163,25 +1167,23 @@ class _dispatchable:
                     # with any edge attribute will suffice. We use the same logic
                     # below (but switched) to clear unnecessary items from the cache.
                     # Use `list(cache.items())` to be thread-safe.
-                    for (ekey, nkey, gkey), val in list(cache.items()):
+                    for (ekey, nkey), val in list(cache.items()):
                         if edge_key is False or ekey is True:
-                            pass
+                            pass  # Cache works for edge data!
                         elif (
                             edge_key is True
                             or ekey is False
                             or not edge_key.issubset(ekey)
                         ):
-                            continue
+                            continue  # Cache missing required edge data; does not work
                         if node_key is False or nkey is True:
-                            pass
+                            pass  # Cache works for node data!
                         elif (
                             node_key is True
                             or nkey is False
                             or not node_key.issubset(nkey)
                         ):
-                            continue
-                        if graph_key and not gkey:
-                            continue
+                            continue  # Cache missing required node data; does not work
                         warnings.warn(warning_message)
                         return val
 
@@ -1192,7 +1194,10 @@ class _dispatchable:
             node_attrs=node_attrs,
             preserve_edge_attrs=preserve_edge_attrs,
             preserve_node_attrs=preserve_node_attrs,
-            preserve_graph_attrs=preserve_graph_attrs,
+            # Always preserve graph attrs when we are caching b/c this should be
+            # cheap and may help prevent extra (unnecessary) conversions. Because
+            # we do this, we don't need `preserve_graph_attrs` in the cache key.
+            preserve_graph_attrs=preserve_graph_attrs or use_cache,
             name=self.name,
             graph_name=graph_name,
         )
@@ -1204,7 +1209,7 @@ class _dispatchable:
             for cur_key in list(cache):
                 if cur_key == key:
                     continue
-                ekey, nkey, gkey = cur_key
+                ekey, nkey = cur_key
                 if ekey is False or edge_key is True:
                     pass
                 elif ekey is True or edge_key is False or not ekey.issubset(edge_key):
@@ -1212,8 +1217,6 @@ class _dispatchable:
                 if nkey is False or node_key is True:
                     pass
                 elif nkey is True or node_key is False or not nkey.issubset(node_key):
-                    continue
-                if gkey and not graph_key:
                     continue
                 cache.pop(cur_key, None)  # Use pop instead of del to be thread-safe
 
@@ -1233,6 +1236,10 @@ class _dispatchable:
         try:
             converted_args, converted_kwargs = self._convert_arguments(
                 backend_name, args, kwargs, use_cache=config.cache_converted_graphs
+            )
+            _logger.debug(
+                f"using backend '{backend_name}' for call to `{self.name}' "
+                f"with args: {converted_args}, kwargs: {converted_kwargs}"
             )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
@@ -1308,6 +1315,10 @@ class _dispatchable:
         try:
             converted_args, converted_kwargs = self._convert_arguments(
                 backend_name, args1, kwargs1, use_cache=False
+            )
+            _logger.debug(
+                f"using backend '{backend_name}' for call to `{self.name}' "
+                f"with args: {converted_args}, kwargs: {converted_kwargs}"
             )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
@@ -1425,6 +1436,8 @@ class _dispatchable:
                 G1 = backend.convert_to_nx(bound.arguments["G"])
                 G2 = bound2.arguments["G"]
                 G2._adj = G1._adj
+                if G2.is_directed():
+                    G2._pred = G1._pred
                 nx._clear_cache(G2)
             elif self.name == "edmonds_karp":
                 R1 = backend.convert_to_nx(bound.arguments["residual"])
