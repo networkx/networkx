@@ -41,7 +41,28 @@ need to pass additional backend-specific arguments, for example::
 
 Here, ``get_chunks`` is not a NetworkX argument, but a nx_parallel-specific argument.
 
-How does this work? : You might have seen the ``@nx._dispatchable`` decorator on
+NetworkX also offers a very basic logging system that can help you verify if the
+backend that you specified is being implemented. This will most likely become more
+enhanced in the future. You can enable the networkx's backend logger like this::
+
+    >>> import logging
+    >>> logging.basicConfig(level=logging.DEBUG)
+    >>> nx.betweenness_centrality(G, backend="parallel", get_chunks=get_chunks)
+    DEBUG:networkx.utils.backends:using backend 'parallel' for call to `betweenness_centrality' with args: (Parallel<networkx.classes.graph.Graph object at 0x1008144d0>, None, True, None, False, <random.Random object at 0x135834c20>), kwargs: {'get_chunks': <function get_chunks at 0x1005344a0>}
+    {1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0}
+
+And you can disable all the loggers by running this::
+
+    >>> logging.disable(logging.CRITICAL)
+
+And then re-enable it by running::
+
+    >>> logging.disable(logging.NOTSET)
+
+How does this work?
+~~~~~~~~~~~~~~~~~~~
+
+You might have seen the ``@nx._dispatchable`` decorator on
 many of the NetworkX functions in the codebase. This decorator function works
 by dispatching a NetworkX function to a specified backend if available, or running
 it with NetworkX if no backend is specified or available. It checks if the specified
@@ -56,14 +77,15 @@ from a backend, it determines the priority of the backends based on the
 a backend), it checks if all graphs are from the same backend. If not, it raises a
 ``TypeError``. If a backend is specified and it matches the backend of the graphs, it
 loads the backend and calls the corresponding function on the backend along with the
-additional backend-specific ``backend_kwargs``. If no compatible backend is found or the
-function is not implemented by the backend, it raises a ``NetworkXNotImplemented``
-exception. And, if the function mutates the input graph or returns a graph, graph
-generator or loader then it tries to convert and run the function with a backend with
-automatic conversion. And it only convert and run if ``backend.should_run(...)``
-returns ``True``. If no backend is used, it falls back to running the original
-function with NetworkX. Refer the ``__call__`` method of the ``_dispatchable`` class
-for more details.
+additional backend-specific ``backend_kwargs``. After calling the function the networkx
+logger displays the ``DEBUG`` message, if the logging is enabled. If no compatible
+backend is found or the function is not implemented by the backend, it raises a
+``NetworkXNotImplemented`` exception. And, if the function mutates the input graph or
+returns a graph, graph generator or loader then it tries to convert and run the
+function with a backend with automatic conversion. And it only convert and run if
+``backend.should_run(...)`` returns ``True``. If no backend is used, it falls back to
+running the original function with NetworkX. Refer the ``__call__`` method of the
+``_dispatchable`` class for more details.
 
 The NetworkX library does not need to know that a backend exists for it
 to work. As long as the backend package creates the ``entry_point``, and
