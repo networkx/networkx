@@ -74,6 +74,7 @@ doc = [
     'pillow>=9.4',
     'texext>=0.6.7',
     'myst-nb>=1.1',
+    'intersphinx_registry',
 ]
 extra = [
     'lxml>=4.6',

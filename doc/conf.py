@@ -1,5 +1,6 @@
 import os
 from datetime import date
+from instersphinx_registry import get_intersphinx_mapping
 from sphinx_gallery.sorting import ExplicitOrder, FileNameSortKey
 from warnings import filterwarnings
 
@@ -228,19 +229,22 @@ latex_documents = [
 latex_appendices = ["tutorial"]
 
 # Intersphinx mapping
-intersphinx_mapping = {
-    "python": ("https://docs.python.org/3/", None),
-    "numpy": ("https://numpy.org/doc/stable/", None),
-    "neps": ("https://numpy.org/neps/", None),
-    "matplotlib": ("https://matplotlib.org/stable/", None),
-    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
-    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
-    "geopandas": ("https://geopandas.org/en/stable/", None),
-    "pygraphviz": ("https://pygraphviz.github.io/documentation/stable/", None),
-    "sphinx-gallery": ("https://sphinx-gallery.github.io/stable/", None),
-    "nx-guides": ("https://networkx.org/nx-guides/", None),
-    "sympy": ("https://docs.sympy.org/latest/", None),
-}
+intersphinx_mapping = get_intersphinx_mapping(
+    {
+        "python",
+        "numpy",
+        "neps",
+        "matplotlib",
+        "scipy",
+        "pandas",
+        "geopandas",
+        "pygraphviz",
+        "sphinx-gallery",
+        "nx-guides",
+        "sympy",
+    }
+)
+
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
