@@ -265,7 +265,7 @@ The following steps will help you run the tests:
         pytest --pyargs networkx
 
 How tests are run?
-~~~~~~~~~~~~~~~~~~
+------------------
 
 1. While dispatching to the backend implementation the ``_convert_and_call`` function
    is used and while testing the ``_convert_and_call_for_tests`` function is used.
