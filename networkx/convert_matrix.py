@@ -348,7 +348,7 @@ def from_pandas_edgelist(
     edge_attr : str or int, iterable, True, or None
         A valid column name (str or int) or iterable of column names that are
         used to retrieve items and add them to the graph as edge attributes.
-        If `True`, all of the remaining columns will be added.
+        If `True`, all columns will be added except `source`, `target` and `edge_key`.
         If `None`, no edge attributes are added to the graph.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
@@ -432,10 +432,16 @@ def from_pandas_edgelist(
     g = nx.empty_graph(0, create_using)
 
     if edge_attr is None:
-        g.add_edges_from(zip(df[source], df[target]))
+        if g.is_multigraph() and edge_key is not None:
+            for u, v, k in zip(df[source], df[target], df[edge_key]):
+                g.add_edge(u, v, k)
+        else:
+            g.add_edges_from(zip(df[source], df[target]))
         return g
 
     reserved_columns = [source, target]
+    if g.is_multigraph() and edge_key is not None:
+        reserved_columns.append(edge_key)
 
     # Additional columns requested
     attr_col_headings = []
