@@ -47,8 +47,9 @@ enhanced in the future. You can enable the networkx's backend logger like this::
 
     >>> import logging
     >>> logging.basicConfig(level=logging.DEBUG)
-    >>> nx.betweenness_centrality(G, backend="parallel", get_chunks=get_chunks)
-    DEBUG:networkx.utils.backends:using backend 'parallel' for call to `betweenness_centrality' with args: (Parallel<networkx.classes.graph.Graph object at 0x1008144d0>, None, True, None, False, <random.Random object at 0x135834c20>), kwargs: {'get_chunks': <function get_chunks at 0x1005344a0>}
+    >>> G = nx.Graph([(1,2),(3,4),(5,6)])
+    >>> nx.betweenness_centrality(G, backend="parallel")
+    DEBUG:networkx.utils.backends:using backend 'parallel' for call to `betweenness_centrality' with args: (Parallel<networkx.classes.graph.Graph object at 0x1008144d0>, None, True, None, False, <random.Random object at 0x135834c20>), kwargs: {}
     {1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0}
 
 And you can disable all the loggers by running this::
