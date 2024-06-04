@@ -82,6 +82,7 @@ EdgeDataView
 
     The argument `nbunch` restricts edges to those incident to nodes in nbunch.
 """
+from abc import ABC
 from collections.abc import Mapping, Set
 
 import networkx as nx
@@ -734,8 +735,15 @@ class OutMultiDegreeView(DiDegreeView):
                 yield (n, deg)
 
 
+# A base class for all edge views. Ensures all edge view and edge data view
+# objects/classes are captured by `isinstance(obj, EdgeViewABC)` and
+# `issubclass(cls, EdgeViewABC)` respectively
+class EdgeViewABC(ABC):
+    pass
+
+
 # EdgeDataViews
-class OutEdgeDataView:
+class OutEdgeDataView(EdgeViewABC):
     """EdgeDataView for outward edges of DiGraph; See EdgeDataView"""
 
     __slots__ = (
@@ -1036,7 +1044,7 @@ class InMultiEdgeDataView(OutMultiEdgeDataView):
 
 
 # EdgeViews    have set operations and no data reported
-class OutEdgeView(Set, Mapping):
+class OutEdgeView(Set, Mapping, EdgeViewABC):
     """A EdgeView class for outward edges of a DiGraph"""
 
     __slots__ = ("_adjdict", "_graph", "_nodes_nbrs")
@@ -1084,7 +1092,10 @@ class OutEdgeView(Set, Mapping):
                 f"try list(G.edges)[{e.start}:{e.stop}:{e.step}]"
             )
         u, v = e
-        return self._adjdict[u][v]
+        try:
+            return self._adjdict[u][v]
+        except KeyError as ex:  # Customize msg to indicate exception origin
+            raise KeyError(f"The edge {e} is not in the graph.")
 
     # EdgeDataView methods
     def __call__(self, nbunch=None, data=False, *, default=None):

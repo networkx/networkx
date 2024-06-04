@@ -149,11 +149,11 @@ def shortest_path(G, source=None, target=None, weight=None, method="dijkstra"):
 
             # Find paths between all pairs.
             if method == "unweighted":
-                paths = nx.all_pairs_shortest_path(G)
+                paths = dict(nx.all_pairs_shortest_path(G))
             elif method == "dijkstra":
-                paths = nx.all_pairs_dijkstra_path(G, weight=weight)
+                paths = dict(nx.all_pairs_dijkstra_path(G, weight=weight))
             else:  # method == 'bellman-ford':
-                paths = nx.all_pairs_bellman_ford_path(G, weight=weight)
+                paths = dict(nx.all_pairs_bellman_ford_path(G, weight=weight))
         else:
             # Find paths from all nodes co-accessible to the target.
             if G.is_directed():
@@ -224,7 +224,7 @@ def shortest_path_length(G, source=None, target=None, weight=None, method="dijks
 
     Returns
     -------
-    length: int or iterator
+    length: number or iterator
         If the source and target are both specified, return the length of
         the shortest path from the source to the target.
 

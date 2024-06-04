@@ -324,6 +324,7 @@ class TestResistanceDistance:
     def setup_class(cls):
         global np
         np = pytest.importorskip("numpy")
+        sp = pytest.importorskip("scipy")
 
     def setup_method(self):
         G = nx.Graph()
@@ -428,6 +429,7 @@ class TestEffectiveGraphResistance:
     def setup_class(cls):
         global np
         np = pytest.importorskip("numpy")
+        sp = pytest.importorskip("scipy")
 
     def setup_method(self):
         G = nx.Graph()
@@ -600,6 +602,7 @@ class TestKemenyConstant:
     def setup_class(cls):
         global np
         np = pytest.importorskip("numpy")
+        sp = pytest.importorskip("scipy")
 
     def setup_method(self):
         G = nx.Graph()

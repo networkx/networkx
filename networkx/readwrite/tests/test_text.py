@@ -7,7 +7,7 @@ import pytest
 import networkx as nx
 
 
-def test_forest_str_directed():
+def test_generate_network_text_forest_directed():
     # Create a directed forest with labels
     graph = nx.balanced_tree(r=2, h=2, create_using=nx.DiGraph)
     for node in graph.nodes:
@@ -38,26 +38,12 @@ def test_forest_str_directed():
     ).strip()
 
     # Basic node case
-    ret = nx.forest_str(graph, with_labels=False)
-    print(ret)
-    assert ret == node_target
+    ret = nx.generate_network_text(graph, with_labels=False)
+    assert "\n".join(ret) == node_target
 
     # Basic label case
-    ret = nx.forest_str(graph, with_labels=True)
-    print(ret)
-    assert ret == label_target
-
-    # Custom write function case
-    lines = []
-    ret = nx.forest_str(graph, write=lines.append, with_labels=False)
-    assert ret is None
-    assert lines == node_target.split("\n")
-
-    # Smoke test to ensure passing the print function works. To properly test
-    # this case we would need to capture stdout. (for potential reference
-    # implementation see :class:`ubelt.util_stream.CaptureStdout`)
-    ret = nx.forest_str(graph, write=print)
-    assert ret is None
+    ret = nx.generate_network_text(graph, with_labels=True)
+    assert "\n".join(ret) == label_target
 
 
 def test_write_network_text_empty_graph():
@@ -81,7 +67,6 @@ def test_write_network_text_within_forest_glyph():
     nx.write_network_text(g, path=write, end="")
     nx.write_network_text(g, path=write, ascii_only=True, end="")
     text = "\n".join(lines)
-    print(text)
     target = dedent(
         """
         ╟── 1
@@ -97,12 +82,11 @@ def test_write_network_text_within_forest_glyph():
     assert text == target
 
 
-def test_forest_str_directed_multi_tree():
+def test_generate_network_text_directed_multi_tree():
     tree1 = nx.balanced_tree(r=2, h=2, create_using=nx.DiGraph)
     tree2 = nx.balanced_tree(r=2, h=2, create_using=nx.DiGraph)
     forest = nx.disjoint_union_all([tree1, tree2])
-    ret = nx.forest_str(forest)
-    print(ret)
+    ret = "\n".join(nx.generate_network_text(forest))
 
     target = dedent(
         """
@@ -126,8 +110,7 @@ def test_forest_str_directed_multi_tree():
 
     tree3 = nx.balanced_tree(r=2, h=2, create_using=nx.DiGraph)
     forest = nx.disjoint_union_all([tree1, tree2, tree3])
-    ret = nx.forest_str(forest, sources=[0, 14, 7])
-    print(ret)
+    ret = "\n".join(nx.generate_network_text(forest, sources=[0, 14, 7]))
 
     target = dedent(
         """
@@ -156,8 +139,9 @@ def test_forest_str_directed_multi_tree():
     ).strip()
     assert ret == target
 
-    ret = nx.forest_str(forest, sources=[0, 14, 7], ascii_only=True)
-    print(ret)
+    ret = "\n".join(
+        nx.generate_network_text(forest, sources=[0, 14, 7], ascii_only=True)
+    )
 
     target = dedent(
         """
@@ -187,13 +171,12 @@ def test_forest_str_directed_multi_tree():
     assert ret == target
 
 
-def test_forest_str_undirected_multi_tree():
+def test_generate_network_text_undirected_multi_tree():
     tree1 = nx.balanced_tree(r=2, h=2, create_using=nx.Graph)
     tree2 = nx.balanced_tree(r=2, h=2, create_using=nx.Graph)
     tree2 = nx.relabel_nodes(tree2, {n: n + len(tree1) for n in tree2.nodes})
     forest = nx.union(tree1, tree2)
-    ret = nx.forest_str(forest, sources=[0, 7])
-    print(ret)
+    ret = "\n".join(nx.generate_network_text(forest, sources=[0, 7]))
 
     target = dedent(
         """
@@ -215,8 +198,7 @@ def test_forest_str_undirected_multi_tree():
     ).strip()
     assert ret == target
 
-    ret = nx.forest_str(forest, sources=[0, 7], ascii_only=True)
-    print(ret)
+    ret = "\n".join(nx.generate_network_text(forest, sources=[0, 7], ascii_only=True))
 
     target = dedent(
         """
@@ -239,12 +221,9 @@ def test_forest_str_undirected_multi_tree():
     assert ret == target
 
 
-def test_forest_str_undirected():
+def test_generate_network_text_forest_undirected():
     # Create a directed forest
     graph = nx.balanced_tree(r=2, h=2, create_using=nx.Graph)
-
-    # arbitrary starting point
-    nx.forest_str(graph)
 
     node_target0 = dedent(
         """
@@ -259,8 +238,7 @@ def test_forest_str_undirected():
     ).strip()
 
     # defined starting point
-    ret = nx.forest_str(graph, sources=[0])
-    print(ret)
+    ret = "\n".join(nx.generate_network_text(graph, sources=[0]))
     assert ret == node_target0
 
     # defined starting point
@@ -275,24 +253,11 @@ def test_forest_str_undirected():
             └── 6
         """
     ).strip()
-    ret = nx.forest_str(graph, sources=[2])
-    print(ret)
+    ret = "\n".join(nx.generate_network_text(graph, sources=[2]))
     assert ret == node_target2
 
 
-def test_forest_str_errors():
-    ugraph = nx.complete_graph(3, create_using=nx.Graph)
-
-    with pytest.raises(nx.NetworkXNotImplemented):
-        nx.forest_str(ugraph)
-
-    dgraph = nx.complete_graph(3, create_using=nx.DiGraph)
-
-    with pytest.raises(nx.NetworkXNotImplemented):
-        nx.forest_str(dgraph)
-
-
-def test_forest_str_overspecified_sources():
+def test_generate_network_text_overspecified_sources():
     """
     When sources are directly specified, we won't be able to determine when we
     are in the last component, so there will always be a trailing, leftmost
@@ -335,18 +300,8 @@ def test_forest_str_overspecified_sources():
         """
     ).strip()
 
-    lines = []
-    nx.forest_str(graph, write=lines.append, sources=graph.nodes)
-    got1 = "\n".join(lines)
-    print("got1: ")
-    print(got1)
-
-    lines = []
-    nx.forest_str(graph, write=lines.append)
-    got2 = "\n".join(lines)
-    print("got2: ")
-    print(got2)
-
+    got1 = "\n".join(nx.generate_network_text(graph, sources=graph.nodes))
+    got2 = "\n".join(nx.generate_network_text(graph))
     assert got1 == target1
     assert got2 == target2
 
@@ -366,7 +321,6 @@ def test_write_network_text_iterative_add_directed_edges():
         graph.add_edge(i, j)
         nx.write_network_text(graph, path=write, end="")
     text = "\n".join(lines)
-    print(text)
     # defined starting point
     target = dedent(
         """
@@ -516,7 +470,6 @@ def test_write_network_text_iterative_add_undirected_edges():
         graph.add_edge(i, j)
         nx.write_network_text(graph, path=write, end="")
     text = "\n".join(lines)
-    print(text)
     target = dedent(
         """
         --- initial state ---
@@ -624,7 +577,6 @@ def test_write_network_text_iterative_add_random_directed_edges():
         graph.add_edge(i, j)
         nx.write_network_text(graph, path=write, end="")
     text = "\n".join(lines)
-    print(text)
     target = dedent(
         """
         --- initial state ---
@@ -707,7 +659,6 @@ def test_write_network_text_nearly_forest():
     write("--- add (1, 8), (4, 2), (6, 3) ---")
     nx.write_network_text(g.to_undirected(), path=write, sources=[1], end="")
     text = "\n".join(lines)
-    print(text)
     target = dedent(
         """
         --- directed case ---
@@ -765,7 +716,6 @@ def test_write_network_text_complete_graph_ascii_only():
     write("--- undirected case ---")
     nx.write_network_text(graph.to_undirected(), path=write, ascii_only=True, end="")
     text = "\n".join(lines)
-    print(text)
     target = dedent(
         """
         --- directed case ---
@@ -801,7 +751,6 @@ def test_write_network_text_with_labels():
     write = lines.append
     nx.write_network_text(graph, path=write, with_labels=True, ascii_only=False, end="")
     text = "\n".join(lines)
-    print(text)
     # Non trees with labels can get somewhat out of hand with network text
     # because we need to immediately show every non-tree edge to the right
     target = dedent(
@@ -834,7 +783,6 @@ def test_write_network_text_complete_graphs():
         write(f"--- directed k={k} ---")
         nx.write_network_text(g, path=write, end="")
     text = "\n".join(lines)
-    print(text)
     target = dedent(
         """
         --- undirected k=0 ---
@@ -924,7 +872,6 @@ def test_write_network_text_multiple_sources():
         write(f"--- source node: {n} ---")
         nx.write_network_text(g, path=write, sources=[n], end="")
     text = "\n".join(lines)
-    print(text)
     target = dedent(
         """
         --- source node: 1 ---
@@ -988,7 +935,6 @@ def test_write_network_text_star_graph():
     write = lines.append
     nx.write_network_text(graph, path=write, end="")
     text = "\n".join(lines)
-    print(text)
     target = dedent(
         """
         ╙── 1
@@ -1008,7 +954,6 @@ def test_write_network_text_path_graph():
     write = lines.append
     nx.write_network_text(graph, path=write, end="")
     text = "\n".join(lines)
-    print(text)
     target = dedent(
         """
         ╙── 0
@@ -1025,7 +970,6 @@ def test_write_network_text_lollipop_graph():
     write = lines.append
     nx.write_network_text(graph, path=write, end="")
     text = "\n".join(lines)
-    print(text)
     target = dedent(
         """
         ╙── 5
@@ -1047,7 +991,6 @@ def test_write_network_text_wheel_graph():
     write = lines.append
     nx.write_network_text(graph, path=write, end="")
     text = "\n".join(lines)
-    print(text)
     target = dedent(
         """
         ╙── 1
@@ -1070,7 +1013,6 @@ def test_write_network_text_circular_ladder_graph():
     write = lines.append
     nx.write_network_text(graph, path=write, end="")
     text = "\n".join(lines)
-    print(text)
     target = dedent(
         """
         ╙── 0
@@ -1096,7 +1038,6 @@ def test_write_network_text_dorogovtsev_goltsev_mendes_graph():
     write = lines.append
     nx.write_network_text(graph, path=write, end="")
     text = "\n".join(lines)
-    print(text)
     target = dedent(
         """
         ╙── 15
@@ -1178,7 +1119,6 @@ def test_write_network_text_tree_max_depth():
     write("--- undirected case, max_depth=4 ---")
     nx.write_network_text(orig.to_undirected(), path=write, end="", max_depth=4)
     text = "\n".join(lines)
-    print(text)
     target = dedent(
         """
         --- directed case, max_depth=0 ---
@@ -1249,7 +1189,6 @@ def test_write_network_text_graph_max_depth():
     write("--- undirected case, max_depth=3 ---")
     nx.write_network_text(orig.to_undirected(), path=write, end="", max_depth=3)
     text = "\n".join(lines)
-    print(text)
     target = dedent(
         """
         --- directed case, max_depth=None ---
@@ -1356,7 +1295,6 @@ def test_write_network_text_clique_max_depth():
     write("--- undirected case, max_depth=3 ---")
     nx.write_network_text(orig.to_undirected(), path=write, end="", max_depth=3)
     text = "\n".join(lines)
-    print(text)
     target = dedent(
         """
         --- directed case, max_depth=None ---
@@ -1454,7 +1392,6 @@ def test_write_network_text_custom_label():
     nx.write_network_text(graph, path=write, with_labels="part", end="", max_depth=None)
 
     text = "\n".join(lines)
-    print(text)
     target = dedent(
         """
         --- when with_labels=True, uses the 'label' attr ---
@@ -1523,7 +1460,6 @@ def test_write_network_text_vertical_chains():
     )
 
     text = "\n".join(lines)
-    print(text)
     target = dedent(
         """
         --- Undirected UTF ---
@@ -1615,7 +1551,6 @@ def test_collapse_directed():
     graph.nodes[0]["collapse"] = True
     nx.write_network_text(graph, path=write, end="")
     text = "\n".join(lines)
-    print(text)
     target = dedent(
         """
         --- Original ---
@@ -1683,7 +1618,6 @@ def test_collapse_undirected():
     graph.nodes[0]["collapse"] = True
     nx.write_network_text(graph, path=write, end="", sources=[0])
     text = "\n".join(lines)
-    print(text)
     target = dedent(
         """
         --- Original ---
@@ -1804,6 +1738,5 @@ def test_network_text_round_trip(vertical_chains, ascii_only):
             assert new.nodes == graph.nodes
             assert new.edges == graph.edges
         except Exception:
-            print("ERROR in round trip with graph")
             nx.write_network_text(graph)
             raise

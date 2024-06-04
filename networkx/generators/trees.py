@@ -452,6 +452,24 @@ def random_labeled_tree(n, *, seed=None):
     ------
     NetworkXPointlessConcept
         If `n` is zero (because the null graph is not a tree).
+
+    Examples
+    --------
+    >>> G = nx.random_labeled_tree(5, seed=42)
+    >>> nx.is_tree(G)
+    True
+    >>> G.edges
+    EdgeView([(0, 1), (0, 3), (0, 2), (2, 4)])
+
+    A tree with *arbitrarily directed* edges can be created by assigning
+    generated edges to a ``DiGraph``:
+
+    >>> DG = nx.DiGraph()
+    >>> DG.add_edges_from(G.edges)
+    >>> nx.is_tree(DG)
+    True
+    >>> DG.edges
+    OutEdgeView([(0, 1), (0, 3), (0, 2), (2, 4)])
     """
     # Cannot create a Prüfer sequence unless `n` is at least two.
     if n == 0:
