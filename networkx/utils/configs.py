@@ -190,6 +190,12 @@ class NetworkXConfig(Config):
 
     Parameters
     ----------
+    backend : str or None
+        If not None, the backend to use for all dispatchable functions. This is
+        equivalent to using ``backend=`` keyword argument in all dispatchable
+        functions. Input graphs will be converted to the backend if necessary.
+        Default is None.
+
     backend_priority : list of backend names
         Enable automatic conversion of graphs to backend graphs for algorithms
         implemented by the backend. Priority is given to backends listed earlier.
@@ -220,6 +226,7 @@ class NetworkXConfig(Config):
     This is a global configuration. Use with caution when using from multiple threads.
     """
 
+    backend: str | None
     backend_priority: list[str]
     backends: Config
     cache_converted_graphs: bool
@@ -227,7 +234,10 @@ class NetworkXConfig(Config):
     def _check_config(self, key, value):
         from .backends import backends
 
-        if key == "backend_priority":
+        if key == "backend":
+            if value is not None and value not in backends:
+                raise ValueError(f"Unknown backend when setting {key!r}: {value}")
+        elif key == "backend_priority":
             if not (isinstance(value, list) and all(isinstance(x, str) for x in value)):
                 raise TypeError(
                     f"{key!r} config must be a list of backend names; got {value!r}"
@@ -254,6 +264,7 @@ class NetworkXConfig(Config):
 
 # Backend configuration will be updated in backends.py
 config = NetworkXConfig(
+    backend=None,
     backend_priority=[],
     backends=Config(),
     cache_converted_graphs=bool(os.environ.get("NETWORKX_CACHE_CONVERTED_GRAPHS", "")),

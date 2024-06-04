@@ -77,9 +77,13 @@ def test_graph_converter_needs_backend():
             type(nx.from_scipy_sparse_array(A, backend="nx-loopback")) is LoopbackGraph
         )
         assert side_effects == [1, 1]
+        nx.config.backend = "nx-loopback"  # This is like doing `backend="nx-loopback"`
+        assert type(nx.from_scipy_sparse_array(A)) is LoopbackGraph
+        assert side_effects == [1, 1, 1]
     finally:
         LoopbackDispatcher.convert_to_nx = staticmethod(orig_convert_to_nx)
         del LoopbackDispatcher.from_scipy_sparse_array
+        nx.config.backend = None
     with pytest.raises(ImportError, match="Unable to load"):
         nx.from_scipy_sparse_array(A, backend="bad-backend-name")
 
