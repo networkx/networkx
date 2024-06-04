@@ -431,7 +431,7 @@ def power(G, k):
     return H
 
 
-@not_implemented_for("multigraph")
+@not_implemented_for("multigraph", args=("G", "H"))
 @nx._dispatchable(graphs=_G_H, returns_graph=True)
 def rooted_product(G, H, root):
     """Return the rooted product of graphs G and H rooted at root in H.
@@ -470,8 +470,7 @@ def rooted_product(G, H, root):
     return R
 
 
-@not_implemented_for("directed")
-@not_implemented_for("multigraph")
+@not_implemented_for("multigraph", args=("G", "H"))
 @nx._dispatchable(graphs=_G_H, returns_graph=True)
 def corona_product(G, H):
     r"""Returns the Corona product of G and H.
@@ -535,6 +534,8 @@ def corona_product(G, H):
     return GH
 
 
+@not_implemented_for("directed", args=("G", "H"))
+@not_implemented_for("multigraph", args=("G", "H"))
 @nx._dispatchable(
     graphs=_G_H, preserve_edge_attrs=True, preserve_node_attrs=True, returns_graph=True
 )
@@ -602,15 +603,6 @@ def modular_product(G, H):
         entrance to the task of finding the nondensity of a graph." Proc. Third
         All-Union Conference on Problems of Theoretical Cybernetics. 1974.
     """
-    if G.is_directed() or H.is_directed():
-        raise nx.NetworkXNotImplemented(
-            "Modular product not implemented for directed graphs"
-        )
-    if G.is_multigraph() or H.is_multigraph():
-        raise nx.NetworkXNotImplemented(
-            "Modular product not implemented for multigraphs"
-        )
-
     GH = _init_product_graph(G, H)
     GH.add_nodes_from(_node_product(G, H))
 
