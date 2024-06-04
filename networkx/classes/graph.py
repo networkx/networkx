@@ -37,8 +37,11 @@ class _CachedPropertyResetterAdj:
     def __set__(self, obj, value):
         od = obj.__dict__
         od["_adj"] = value
-        if "adj" in od:
-            del od["adj"]
+        # reset cached properties
+        props = ["adj", "edges", "degree"]
+        for prop in props:
+            if prop in od:
+                del od[prop]
 
 
 class _CachedPropertyResetterNode:
@@ -59,6 +62,7 @@ class _CachedPropertyResetterNode:
     def __set__(self, obj, value):
         od = obj.__dict__
         od["_node"] = value
+        # reset cached properties
         if "nodes" in od:
             del od["nodes"]
 

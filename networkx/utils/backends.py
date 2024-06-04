@@ -7,33 +7,65 @@ installed (not imported). This allows NetworkX to dispatch (redirect) function c
 to the backend so the execution flows to the designated backend
 implementation, similar to how plugging a charger into a socket redirects the
 electricity to your phone. This design enhances flexibility and integration, making
-NetworkX more adaptable and efficient. 
+NetworkX more adaptable and efficient.
 
-For example, you can convert the NetworkX Graph object ``G`` into a Graph-like
-object specific to the backend and then pass that in the NetworkX function::
+There are three main ways to use a backend after the package is installed.
+You can set environment variables and run the exact same code you run for
+NetworkX. You can use a keyword argument ``backend=...`` with the NetworkX
+function. Or, you can convert the NetworkX Graph to a backend graph type and
+call a NetworkX function supported by that backend. Environment variables
+and backend keywords automatically convert your NetworkX Graph to the
+backend type. Manually converting it yourself allows you to use that same
+backend graph for more than one function call, reducing conversion time.
 
-    H = nxp.ParallelGraph(G)
-    nx.betweenness_centrality(H, k=10)
+For example, you can set an environment variable before starting python to request
+all dispatchable functions automatically dispatch to the given backend::
+
+    bash> NETWORKX_AUTOMATIC_BACKENDS=cugraph python my_networkx_script.py
 
 or you can specify the backend as a kwarg::
 
     nx.betweenness_centrality(G, k=10, backend="parallel")
 
-Also, you might have seen the ``@nx._dispatchable`` decorator on many of the NetworkX
-functions in the codebase. It is used to redirect the execution of a function to its
-backend implementation and manage all the ``backend_kwargs``. When a dispatchable
-NetworkX algorithm encounters a nx.Graph-like object with a ``__networkx_backend__``
-attribute, it will look for the associated dispatch object in the entry_points, load
-it, and dispatch the computation work to it. Currently, the following are the trusted
-backends of NetworkX:
+or you can convert the NetworkX Graph object ``G`` into a Graph-like
+object specific to the backend and then pass that in the NetworkX function::
+
+    H = nx_parallel.ParallelGraph(G)
+    nx.betweenness_centrality(H, k=10)
+
+How it works: You might have seen the ``@nx._dispatchable`` decorator on
+many of the NetworkX functions in the codebase. It decorates the function
+with code that redirects execution to the function's backend implementation.
+The code also manages any ``backend_kwargs`` you provide to the backend
+version of the function. The code looks for the environment variable or
+a ``backend`` keyword argument and if found, converts the input NetworkX
+graph to the backend format before calling the backend's version of the
+function. If no environment variable or backend keyword are found, the
+dispatching code checks the input graph object for an attribute
+called ``__networkx_backend__`` which tells it which backend provides this
+graph type. That backend's version of the function is then called.
+The backend system relies on Python ``entry_point`` system to signal
+NetworkX that a backend is installed (even if not imported yet). Thus no
+code needs to be changed between running with NetworkX and running with
+a backend to NetworkX. The attribute ``__networkx_backend__`` holds a
+string with the name of the ``entry_point``. If none of these options
+are being used, the decorator code simply calls the NetworkX function
+on the NetworkX graph as usual.
+
+The NetworkX library does not need to know that a backend exists for it
+to work. So long as the backend package creates the entry_point, and
+provides the correct interface, it will be called when the user requests
+it using one of the three approaches described above. Some backends have
+been working with the NetworkX developers to ensure smooth operation.
+They are the following::
 
 - `graphblas <https://github.com/python-graphblas/graphblas-algorithms>`_
 - `cugraph <https://github.com/rapidsai/cugraph/tree/branch-24.04/python/nx-cugraph>`_
 - `parallel <https://github.com/networkx/nx-parallel>`_
 - ``loopback`` is for testing purposes only and is not a real backend.
 
-Note that the ``backend_name`` is ``parallel`` and the package name is ``nx-parallel``, and
-we use ``nx_parallel`` while installing and importing the package.
+Note that the ``backend_name`` is e.g. ``parallel``, the package installed
+is ``nx-parallel``, and we use ``nx_parallel`` while importing the package.
 
 Creating a Custom backend
 -------------------------
@@ -74,12 +106,12 @@ Testing the Custom backend
 To test your custom backend, you can run the NetworkX test suite with your backend.
 This also ensures that the custom backend is compatible with NetworkX's API.
 
-Environment Variable Setup
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Testing Environment Setup
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To enable automatic testing with your custom backend, follow these steps:
 
-1. Set Backend Environment Variables: 
+1. Set Backend Environment Variables:
     - ``NETWORKX_TEST_BACKEND`` : Setting this to your registered backend key will let
       the NetworkX's dispatch machinery automatically convert a regular NetworkX
       ``Graph``, ``DiGraph``, ``MultiGraph``, etc. to their backend equivalents, using
@@ -126,7 +158,7 @@ Conversions while running tests :
 - Convert NetworkX graphs using ``<your_dispatcher_class>.convert_from_nx(G, ...)`` into
   the backend graph.
 - Pass the backend graph objects to the backend implementation of the algorithm.
-- Convert the result back to a form expected by NetworkX tests using 
+- Convert the result back to a form expected by NetworkX tests using
   ``<your_dispatcher_class>.convert_to_nx(result, ...)``.
 
 Notes
@@ -161,6 +193,7 @@ Notes
 
 import inspect
 import itertools
+import logging
 import os
 import warnings
 from functools import partial
@@ -171,6 +204,8 @@ import networkx as nx
 from .decorators import argmap
 
 __all__ = ["_dispatchable"]
+
+_logger = logging.getLogger(__name__)
 
 
 def _do_nothing():
@@ -196,7 +231,7 @@ def _get_backends(group, *, load_and_call=False):
     Notes
     ------
     If a backend is defined more than once, a warning is issued.
-    The `nx-loopback` backend is removed if it exists, as it is only available during testing.
+    The `nx_loopback` backend is removed if it exists, as it is only available during testing.
     A warning is displayed if an error occurs while loading a backend.
     """
     items = entry_points(group=group)
@@ -308,8 +343,22 @@ class _dispatchable:
         mutates_input=False,
         returns_graph=False,
     ):
-        """A decorator function that dispatches to ``func``'s backend implementation
-        based on the input graph types.
+        """A decorator that makes certain input graph types dispatch to ``func``'s
+        backend implementation.
+
+        Usage can be any of the following decorator forms:
+        - @_dispatchable
+        - @_dispatchable()
+        - @_dispatchable(name="override_name")
+        - @_dispatchable(graphs="graph_var_name")
+        - @_dispatchable(edge_attrs="weight")
+        - @_dispatchable(graphs={"G": 0, "H": 1}, edge_attrs={"weight": "default"})
+        with 0 and 1 giving the position in the signature function for graph objects.
+        When edge_attrs is a dict, keys are keyword names and values are defaults.
+
+        The class attributes are used to allow backends to run networkx tests.
+        For example: `PYTHONPATH=. pytest --backend graphblas --fallback-to-nx`
+        Future work: add configuration to control these.
 
         Parameters
         ----------
@@ -727,9 +776,12 @@ class _dispatchable:
                         fallback_to_nx=self._fallback_to_nx,
                     )
                 # All graphs are backend graphs--no need to convert!
-                return getattr(backend, self.name)(
-                    *args, **kwargs, **backends_kwargs.get(graph_backend_name, {})
+                kwargs.update(backends_kwargs.get(graph_backend_name, {}))
+                _logger.debug(
+                    f"using backend '{graph_backend_name}' for call to `{self.name}' "
+                    f"with args: {args}, kwargs: {kwargs}"
                 )
+                return getattr(backend, self.name)(*args, **kwargs)
             # Future work: try to convert and run with other backends in backend_priority
             raise nx.NetworkXNotImplemented(
                 f"'{self.name}' not implemented by {graph_backend_name}"
@@ -1037,15 +1089,13 @@ class _dispatchable:
             # node_attrs: dict | None
             # preserve_edge_attrs: bool (False if edge_attrs is not None)
             # preserve_node_attrs: bool (False if node_attrs is not None)
-            # preserve_graph_attrs: bool
-            key = edge_key, node_key, graph_key = (
+            key = edge_key, node_key = (
                 frozenset(edge_attrs.items())
                 if edge_attrs is not None
                 else preserve_edge_attrs,
                 frozenset(node_attrs.items())
                 if node_attrs is not None
                 else preserve_node_attrs,
-                preserve_graph_attrs,
             )
             if cache:
                 warning_message = (
@@ -1063,8 +1113,8 @@ class _dispatchable:
                     "will correctly clear the cache to keep it consistent. "
                     "You may also use `G.__networkx_cache__.clear()` to "
                     "manually clear the cache, or set `G.__networkx_cache__` "
-                    "to None to disable caching for G. Enable or disable "
-                    "caching via `nx.config.cache_converted_graphs` config."
+                    "to None to disable caching for G. Enable or disable caching "
+                    "globally via `nx.config.cache_converted_graphs` config."
                 )
                 # Do a simple search for a cached graph with compatible data.
                 # For example, if we need a single attribute, then it's okay
@@ -1073,7 +1123,6 @@ class _dispatchable:
                 for compat_key in itertools.product(
                     (edge_key, True) if edge_key is not True else (True,),
                     (node_key, True) if node_key is not True else (True,),
-                    (graph_key, True) if graph_key is not True else (True,),
                 ):
                     if (rv := cache.get(compat_key)) is not None:
                         warnings.warn(warning_message)
@@ -1084,25 +1133,23 @@ class _dispatchable:
                     # with any edge attribute will suffice. We use the same logic
                     # below (but switched) to clear unnecessary items from the cache.
                     # Use `list(cache.items())` to be thread-safe.
-                    for (ekey, nkey, gkey), val in list(cache.items()):
+                    for (ekey, nkey), val in list(cache.items()):
                         if edge_key is False or ekey is True:
-                            pass
+                            pass  # Cache works for edge data!
                         elif (
                             edge_key is True
                             or ekey is False
                             or not edge_key.issubset(ekey)
                         ):
-                            continue
+                            continue  # Cache missing required edge data; does not work
                         if node_key is False or nkey is True:
-                            pass
+                            pass  # Cache works for node data!
                         elif (
                             node_key is True
                             or nkey is False
                             or not node_key.issubset(nkey)
                         ):
-                            continue
-                        if graph_key and not gkey:
-                            continue
+                            continue  # Cache missing required node data; does not work
                         warnings.warn(warning_message)
                         return val
 
@@ -1113,7 +1160,10 @@ class _dispatchable:
             node_attrs=node_attrs,
             preserve_edge_attrs=preserve_edge_attrs,
             preserve_node_attrs=preserve_node_attrs,
-            preserve_graph_attrs=preserve_graph_attrs,
+            # Always preserve graph attrs when we are caching b/c this should be
+            # cheap and may help prevent extra (unnecessary) conversions. Because
+            # we do this, we don't need `preserve_graph_attrs` in the cache key.
+            preserve_graph_attrs=preserve_graph_attrs or use_cache,
             name=self.name,
             graph_name=graph_name,
         )
@@ -1125,7 +1175,7 @@ class _dispatchable:
             for cur_key in list(cache):
                 if cur_key == key:
                     continue
-                ekey, nkey, gkey = cur_key
+                ekey, nkey = cur_key
                 if ekey is False or edge_key is True:
                     pass
                 elif ekey is True or edge_key is False or not ekey.issubset(edge_key):
@@ -1133,8 +1183,6 @@ class _dispatchable:
                 if nkey is False or node_key is True:
                     pass
                 elif nkey is True or node_key is False or not nkey.issubset(node_key):
-                    continue
-                if gkey and not graph_key:
                     continue
                 cache.pop(cur_key, None)  # Use pop instead of del to be thread-safe
 
@@ -1159,11 +1207,12 @@ class _dispatchable:
             converted_args, converted_kwargs = self._convert_arguments(
                 backend_name, args, kwargs, use_cache=config.cache_converted_graphs
             )
-            result = getattr(backend, self.name)(
-                *converted_args,
-                **converted_kwargs,
-                **backends_kwargs.get(backend_name, {}),
+            converted_kwargs.update(backends_kwargs.get(backend_name, {}))
+            _logger.debug(
+                f"using backend '{backend_name}' for call to `{self.name}' "
+                f"with args: {converted_args}, kwargs: {converted_kwargs}"
             )
+            result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
             if fallback_to_nx:
                 return self.orig_func(*args, **kwargs)
@@ -1240,11 +1289,12 @@ class _dispatchable:
             converted_args, converted_kwargs = self._convert_arguments(
                 backend_name, args1, kwargs1, use_cache=False
             )
-            result = getattr(backend, self.name)(
-                *converted_args,
-                **converted_kwargs,
-                **backends_kwargs.get(backend_name, {}),
+            converted_kwargs.update(backends_kwargs.get(backend_name, {}))
+            _logger.debug(
+                f"using backend '{backend_name}' for call to `{self.name}' "
+                f"with args: {converted_args}, kwargs: {converted_kwargs}"
             )
+            result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
             if fallback_to_nx:
                 return self.orig_func(*args2, **kwargs2)
@@ -1360,6 +1410,8 @@ class _dispatchable:
                 G1 = backend.convert_to_nx(bound.arguments["G"])
                 G2 = bound2.arguments["G"]
                 G2._adj = G1._adj
+                if G2.is_directed():
+                    G2._pred = G1._pred
                 nx._clear_cache(G2)
             elif self.name == "edmonds_karp":
                 R1 = backend.convert_to_nx(bound.arguments["residual"])

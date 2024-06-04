@@ -128,11 +128,16 @@ class Config:
 
     def __setitem__(self, key, value):
         try:
-            setattr(self, key, value)
+            self.__setattr__(key, value)
         except AttributeError as err:
             raise KeyError(*err.args) from None
 
-    __delitem__ = __delattr__
+    def __delitem__(self, key):
+        try:
+            self.__delattr__(key)
+        except AttributeError as err:
+            raise KeyError(*err.args) from None
+
     _ipython_key_completions_ = __dir__  # config["<TAB>
 
     # Go ahead and make it a `collections.abc.Mapping`
@@ -183,8 +188,8 @@ class NetworkXConfig(Config):
     >>> nx.config.backend_priority == nx.config["backend_priority"]
     True
 
-    Config Parameters
-    -----------------
+    Parameters
+    ----------
     backend_priority : list of backend names
         Enable automatic conversion of graphs to backend graphs for algorithms
         implemented by the backend. Priority is given to backends listed earlier.

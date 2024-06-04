@@ -32,7 +32,8 @@ def test_draw():
         for function, option in itertools.product(functions, options):
             function(barbell, **option)
             plt.savefig("test.ps")
-
+    except ModuleNotFoundError:  # draw_kamada_kawai requires scipy
+        pass
     finally:
         try:
             os.unlink("test.ps")
@@ -720,7 +721,7 @@ def test_draw_networkx_edges_multiedge_connectionstyle(G, expected_n_edges):
     for i, (u, v) in enumerate([(0, 1), (0, 1), (0, 1), (0, 2)]):
         G.add_edge(u, v, weight=round(i / 3, 2))
     pos = {n: (n, n) for n in G}
-    # Raises on insuficient connectionstyle length
+    # Raises on insufficient connectionstyle length
     for conn_style in [
         "arc3,rad=0.1",
         ["arc3,rad=0.1", "arc3,rad=0.1"],
@@ -740,7 +741,7 @@ def test_draw_networkx_edge_labels_multiedge_connectionstyle(G, expected_n_edges
     for i, (u, v) in enumerate([(0, 1), (0, 1), (0, 1), (0, 2)]):
         G.add_edge(u, v, weight=round(i / 3, 2))
     pos = {n: (n, n) for n in G}
-    # Raises on insuficient connectionstyle length
+    # Raises on insufficient connectionstyle length
     arrows = nx.draw_networkx_edges(
         G, pos, connectionstyle=["arc3,rad=0.1", "arc3,rad=0.1", "arc3,rad=0.1"]
     )
