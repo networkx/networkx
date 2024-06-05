@@ -213,7 +213,7 @@ def balanced_tree(r, h, create_using=None):
 
 @nx._dispatchable(graphs=None, returns_graph=True)
 def barbell_graph(m1, m2, create_using=None):
-    """Returns the Barbell Graph: two complete graphs connected by a path.
+    """Returns the barbell graph: two complete graphs connected by a path.
 
     .. plot::
 
@@ -222,39 +222,49 @@ def barbell_graph(m1, m2, create_using=None):
     Parameters
     ----------
     m1 : int
-        Size of the left and right barbells, must be greater than 2.
+        Size of the left and right barbells.
 
     m2 : int
         Length of the path connecting the barbells.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
-       Graph type to create. If graph instance, then cleared before populated.
-       Only undirected Graphs are supported.
+        Graph type to create. If graph instance, then cleared before populated.
 
     Returns
     -------
     G : NetworkX graph
         A barbell graph.
 
+    Raises
+    ------
+    NetworkXError
+        If `m1` is less than ``2``.
+
+        If `m2` is less than ``0``.
+
+        If `create_using` is a directed graph.
+
     Notes
     -----
-
-
     Two identical complete graphs $K_{m1}$ form the left and right bells,
     and are connected by a path $P_{m2}$.
 
-    The `2*m1+m2`  nodes are numbered
-        `0, ..., m1-1` for the left barbell,
-        `m1, ..., m1+m2-1` for the path,
-        and `m1+m2, ..., 2*m1+m2-1` for the right barbell.
+    The ``2*m1+m2`` nodes are numbered
+    ``0, ..., m1-1`` for the left barbell,
+    ``m1, ..., m1+m2-1`` for the path,
+    and ``m1+m2, ..., 2*m1+m2-1`` for the right barbell.
 
-    The 3 subgraphs are joined via the edges `(m1-1, m1)` and
-    `(m1+m2-1, m1+m2)`. If `m2=0`, this is merely two complete
+    The three subgraphs are joined via the edges ``(m1-1, m1)`` and
+    ``(m1+m2-1, m1+m2)``. If ``m2=0``, this is merely two complete
     graphs joined together.
 
-    This graph is an extremal example in David Aldous
-    and Jim Fill's e-text on Random Walks on Graphs.
+    The barbell graph is an extremal example in [1]_.
 
+    References
+    ----------
+    .. [1] Aldous, D., & Fill, J. A. (2002).
+        "Reversible Markov Chains and Random Walks on Graphs."
+        Retrieved from https://www.stat.berkeley.edu/users/aldous/RWG/book.pdf.
     """
     if m1 < 2:
         raise NetworkXError("Invalid graph description, m1 should be >=2")
@@ -264,7 +274,7 @@ def barbell_graph(m1, m2, create_using=None):
     # left barbell
     G = complete_graph(m1, create_using)
     if G.is_directed():
-        raise NetworkXError("Directed Graph not supported")
+        raise NetworkXError("Directed graph not supported")
 
     # connecting path
     G.add_nodes_from(range(m1, m1 + m2 - 1))
