@@ -694,9 +694,9 @@ def ladder_graph(n, create_using=None):
 @nx._dispatchable(graphs=None, returns_graph=True)
 @nodes_or_number([0, 1])
 def lollipop_graph(m, n, create_using=None):
-    """Returns the Lollipop Graph; ``K_m`` connected to ``P_n``.
+    """Returns the lollipop graph; $K_m$ connected to $P_n$.
 
-    This is the Barbell Graph without the right barbell.
+    This is the barbell graph without the right barbell.
 
     .. plot::
 
@@ -711,23 +711,42 @@ def lollipop_graph(m, n, create_using=None):
         resulting graph may not be as desired. Make sure you have no duplicates.
 
         The nodes for `m` appear in the complete graph $K_m$ and the nodes
-        for `n` appear in the path $P_n$
+        for `n` appear in the path $P_n$.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
-       Graph type to create. If graph instance, then cleared before populated.
+        Graph type to create. If graph instance, then cleared before populated.
 
     Returns
     -------
     Networkx graph
        A complete graph with `m` nodes connected to a path of length `n`.
 
+    Raises
+    ------
+    NetworkXError
+        If ``m < 2``.
+
+        If ``n < 0``.
+
+        If `m` and/or `n` contain duplicate nodes.
+
+        If `create_using` is a directed graph.
+
+    See Also
+    --------
+    barbell_graph
+
     Notes
     -----
     The 2 subgraphs are joined via an edge ``(m-1, m)``.
     If ``n=0``, this is merely a complete graph.
 
-    (This graph is an extremal example in David Aldous and Jim
-    Fill's etext on Random Walks on Graphs.)
+    The lollipop graph is an extremal example in [1]_.
 
+    References
+    ----------
+    .. [1] Aldous, D., & Fill, J. A. (2002).
+        "Reversible Markov Chains and Random Walks on Graphs."
+        Retrieved from https://www.stat.berkeley.edu/users/aldous/RWG/book.pdf.
     """
     m, m_nodes = m
     M = len(m_nodes)
@@ -742,7 +761,7 @@ def lollipop_graph(m, n, create_using=None):
     # the ball
     G = complete_graph(m_nodes, create_using)
     if G.is_directed():
-        raise NetworkXError("Directed Graph not supported")
+        raise NetworkXError("Directed graphs not supported")
 
     # the stick
     G.add_nodes_from(n_nodes)
