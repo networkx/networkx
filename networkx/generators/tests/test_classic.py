@@ -358,30 +358,85 @@ class TestGeneratorClassic:
         assert nx.number_of_nodes(G) == len(m) + len(n)
         assert nx.number_of_edges(G) == len(m) * (len(m) - 1) / 2 + len(n)
 
-    def test_lollipop_graph_exceptions(self):
-        # Raise NetworkXError if m<2
-        pytest.raises(nx.NetworkXError, nx.lollipop_graph, -1, 2)
-        pytest.raises(nx.NetworkXError, nx.lollipop_graph, 1, 20)
-        pytest.raises(nx.NetworkXError, nx.lollipop_graph, "", 20)
-        pytest.raises(nx.NetworkXError, nx.lollipop_graph, "a", 20)
+    @pytest.mark.parametrize(
+        ("m", "n", "expectation"),
+        [
+            (-1, -1, pytest.raises(nx.NetworkXError)),  # m < 2
+            (-1, 0, pytest.raises(nx.NetworkXError)),  # m < 2
+            (-1, "", pytest.raises(nx.NetworkXError)),  # m < 2
+            (-1, 1, pytest.raises(nx.NetworkXError)),  # m < 2
+            (-1, "a", pytest.raises(nx.NetworkXError)),  # m < 2
+            (0, -1, pytest.raises(nx.NetworkXError)),  # m < 2
+            (0, 0, pytest.raises(nx.NetworkXError)),  # m < 2
+            (0, "", pytest.raises(nx.NetworkXError)),  # m < 2
+            (0, 1, pytest.raises(nx.NetworkXError)),  # m < 2
+            (0, "a", pytest.raises(nx.NetworkXError)),  # m < 2
+            ("", -1, pytest.raises(nx.NetworkXError)),  # m < 2
+            ("", 0, pytest.raises(nx.NetworkXError)),  # m < 2
+            ("", "", pytest.raises(nx.NetworkXError)),  # m < 2
+            ("", 1, pytest.raises(nx.NetworkXError)),  # m < 2
+            ("", "a", pytest.raises(nx.NetworkXError)),  # m < 2
+            (1, -1, pytest.raises(nx.NetworkXError)),  # m < 2
+            (1, 0, pytest.raises(nx.NetworkXError)),  # m < 2
+            (1, "", pytest.raises(nx.NetworkXError)),  # m < 2
+            (1, 1, pytest.raises(nx.NetworkXError)),  # m < 2
+            (1, "a", pytest.raises(nx.NetworkXError)),  # m < 2
+            ("a", -1, pytest.raises(nx.NetworkXError)),  # m < 2
+            ("a", 0, pytest.raises(nx.NetworkXError)),  # m < 2
+            ("a", "", pytest.raises(nx.NetworkXError)),  # m < 2
+            ("a", 1, pytest.raises(nx.NetworkXError)),  # m < 2
+            ("a", "a", pytest.raises(nx.NetworkXError)),  # m < 2
+            ("a", "b", pytest.raises(nx.NetworkXError)),  # m < 2
+            (2, -1, pytest.raises(nx.NetworkXError)),  # n < 0
+            (2, 0, does_not_raise()),  # ok
+            (2, "", does_not_raise()),  # ok
+            (2, 1, does_not_raise()),  # ok
+            (2, "a", does_not_raise()),  # ok
+            (2, "ab", does_not_raise()),  # ok
+            (2, "aa", pytest.raises(nx.NetworkXError)),  # duplicate node
+            ("ab", -1, pytest.raises(nx.NetworkXError)),  # n < 0
+            ("ab", 0, does_not_raise()),  # ok
+            ("ab", "", does_not_raise()),  # ok
+            ("ab", 1, does_not_raise()),  # ok
+            ("ab", "c", does_not_raise()),  # ok
+            ("ab", "a", pytest.raises(nx.NetworkXError)),  # duplicate node
+            ("aa", "b", pytest.raises(nx.NetworkXError)),  # duplicate node
+            ("aa", "bb", pytest.raises(nx.NetworkXError)),  # duplicate node
+        ],
+    )
+    def test_lollipop_graph_exceptions_m_n(self, m, n, expectation):
+        with expectation:
+            nx.lollipop_graph(m, n)
 
-        # Raise NetworkXError if n<0
-        pytest.raises(nx.NetworkXError, nx.lollipop_graph, 5, -2)
+    @pytest.mark.parametrize(
+        ("create_using", "expectation"),
+        [
+            (nx.Graph, does_not_raise()),  # ok
+            (nx.Graph([(0, 1)]), does_not_raise()),  # ok
+            (nx.DiGraph, pytest.raises(nx.NetworkXError)),  # directed
+            (nx.DiGraph([(0, 1)]), pytest.raises(nx.NetworkXError)),  # directed
+            (nx.MultiGraph, does_not_raise()),  # ok
+            (nx.MultiGraph([(0, 1)]), does_not_raise()),  # ok
+            (nx.MultiDiGraph, pytest.raises(nx.NetworkXError)),  # directed
+            (nx.MultiDiGraph([(0, 1)]), pytest.raises(nx.NetworkXError)),  # directed
+        ],
+    )
+    def test_lollipop_graph_exceptions_create_using(self, create_using, expectation):
+        with expectation:
+            nx.lollipop_graph(2, 20, create_using=create_using)
 
-        # raise NetworkXError if create_using is directed
-        with pytest.raises(nx.NetworkXError):
-            nx.lollipop_graph(2, 20, create_using=nx.DiGraph)
-        with pytest.raises(nx.NetworkXError):
-            nx.lollipop_graph(2, 20, create_using=nx.MultiDiGraph)
-
-    @pytest.mark.parametrize(("m", "n"), [(2, 0), (2, 5), (2, 10), ("ab", 20)])
+    @pytest.mark.parametrize("m", [2, "ab"])
+    @pytest.mark.parametrize("n", range(20))
     def test_lollipop_graph_same_as_path_when_m1_is_2(self, m, n):
         G = nx.lollipop_graph(m, n)
         assert is_isomorphic(G, nx.path_graph(n + 2))
 
-    def test_lollipop_graph_for_multigraph(self):
-        G = nx.lollipop_graph(5, 20)
-        MG = nx.lollipop_graph(5, 20, create_using=nx.MultiGraph)
+    @pytest.mark.parametrize("m", range(2, 6))
+    @pytest.mark.parametrize("n", [0, 5, 10, 20])
+    @pytest.mark.parametrize("create_using", [nx.MultiGraph, nx.MultiGraph([(0, 1)])])
+    def test_lollipop_graph_for_multigraph(self, m, n, create_using):
+        G = nx.lollipop_graph(m, n)
+        MG = nx.lollipop_graph(m, n, create_using=create_using)
         assert edges_equal(MG.edges(), G.edges())
 
     @pytest.mark.parametrize(
