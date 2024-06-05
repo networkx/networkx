@@ -14,6 +14,7 @@ from networkx.algorithms.flow import (
     build_residual_network,
     dinitz,
     edmonds_karp,
+    preflow_push,
     shortest_augmenting_path,
 )
 
@@ -195,15 +196,12 @@ def local_node_connectivity(
         raise nx.NetworkXError("Invalid auxiliary digraph.")
 
     kwargs = {"flow_func": flow_func, "residual": residual}
+
+    if flow_func is not preflow_push:
+        kwargs["cutoff"] = cutoff
+
     if flow_func is shortest_augmenting_path:
-        kwargs["cutoff"] = cutoff
         kwargs["two_phase"] = True
-    elif flow_func is edmonds_karp:
-        kwargs["cutoff"] = cutoff
-    elif flow_func is dinitz:
-        kwargs["cutoff"] = cutoff
-    elif flow_func is boykov_kolmogorov:
-        kwargs["cutoff"] = cutoff
 
     return nx.maximum_flow_value(H, f"{mapping[s]}B", f"{mapping[t]}A", **kwargs)
 
@@ -635,15 +633,12 @@ def local_edge_connectivity(
         H = auxiliary
 
     kwargs = {"flow_func": flow_func, "residual": residual}
+
+    if flow_func is not preflow_push:
+        kwargs["cutoff"] = cutoff
+
     if flow_func is shortest_augmenting_path:
-        kwargs["cutoff"] = cutoff
         kwargs["two_phase"] = True
-    elif flow_func is edmonds_karp:
-        kwargs["cutoff"] = cutoff
-    elif flow_func is dinitz:
-        kwargs["cutoff"] = cutoff
-    elif flow_func is boykov_kolmogorov:
-        kwargs["cutoff"] = cutoff
 
     return nx.maximum_flow_value(H, s, t, **kwargs)
 
