@@ -737,6 +737,7 @@ class TestNumberSpanningTrees:
     def setup_class(cls):
         global np
         np = pytest.importorskip("numpy")
+        sp = pytest.importorskip("scipy")
 
     def test_nst_disconnected(self):
         G = nx.empty_graph(2)
