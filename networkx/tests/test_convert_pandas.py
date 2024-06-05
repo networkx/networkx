@@ -241,7 +241,8 @@ class TestConvertPandas:
         df = nx.to_pandas_adjacency(G, dtype=np.intp)
         pd.testing.assert_frame_equal(df, dftrue)
 
-    def test_edgekey_with_multigraph(self):
+    @pytest.mark.parametrize("edge_attr", [["attr2", "attr3"], True])
+    def test_edgekey_with_multigraph(self, edge_attr):
         df = pd.DataFrame(
             {
                 "source": {"A": "N1", "B": "N2", "C": "N1", "D": "N1"},
@@ -264,7 +265,7 @@ class TestConvertPandas:
             df,
             source="source",
             target="target",
-            edge_attr=["attr2", "attr3"],
+            edge_attr=edge_attr,
             edge_key="attr1",
             create_using=nx.MultiGraph(),
         )
@@ -299,6 +300,16 @@ class TestConvertPandas:
                 create_using=nx.MultiGraph(),
             )
 
+    def test_multigraph_with_edgekey_no_edgeattrs(self):
+        Gtrue = nx.MultiGraph()
+        Gtrue.add_edge(0, 1, key=0)
+        Gtrue.add_edge(0, 1, key=3)
+        df = nx.to_pandas_edgelist(Gtrue, edge_key="key")
+        expected = pd.DataFrame({"source": [0, 0], "target": [1, 1], "key": [0, 3]})
+        pd.testing.assert_frame_equal(expected, df)
+        G = nx.from_pandas_edgelist(df, edge_key="key", create_using=nx.MultiGraph)
+        assert graphs_equal(Gtrue, G)
+
 
 def test_to_pandas_adjacency_with_nodelist():
     G = nx.complete_graph(5)
@@ -318,3 +329,21 @@ def test_to_pandas_edgelist_with_nodelist():
     df = nx.to_pandas_edgelist(G, nodelist=[1, 2])
     assert 0 not in df["source"].to_numpy()
     assert 100 not in df["weight"].to_numpy()
+
+
+def test_from_pandas_adjacency_with_index_collisions():
+    """See gh-7407"""
+    df = pd.DataFrame(
+        [
+            [0, 1, 0, 0],
+            [0, 0, 1, 0],
+            [0, 0, 0, 1],
+            [0, 0, 0, 0],
+        ],
+        index=[1010001, 2, 1, 1010002],
+        columns=[1010001, 2, 1, 1010002],
+    )
+    G = nx.from_pandas_adjacency(df, create_using=nx.DiGraph)
+    expected = nx.DiGraph([(1010001, 2), (2, 1), (1, 1010002)])
+    assert nodes_equal(G.nodes, expected.nodes)
+    assert edges_equal(G.edges, expected.edges)

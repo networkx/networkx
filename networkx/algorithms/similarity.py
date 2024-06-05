@@ -319,8 +319,12 @@ def optimal_edit_paths(
     Returns
     -------
     edit_paths : list of tuples (node_edit_path, edge_edit_path)
-        node_edit_path : list of tuples (u, v)
-        edge_edit_path : list of tuples ((u1, v1), (u2, v2))
+       - node_edit_path : list of tuples ``(u, v)`` indicating node transformations
+         between `G1` and `G2`. ``u`` is `None` for insertion, ``v`` is `None`
+         for deletion.
+       - edge_edit_path : list of tuples ``((u1, v1), (u2, v2))`` indicating edge
+         transformations between `G1` and `G2`. ``(None, (u2,v2))`` for insertion
+         and ``((u1,v1), None)`` for deletion.
 
     cost : numeric
         Optimal edit path cost (graph edit distance). When the cost
@@ -1520,7 +1524,7 @@ def _simrank_similarity_numpy(
         )
 
     if source is not None and target is not None:
-        return newsim[source, target]
+        return float(newsim[source, target])
     if source is not None:
         return newsim[source]
     return newsim
