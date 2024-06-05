@@ -29,12 +29,14 @@ def single_source_shortest_path_length(G, source, cutoff=None):
        Starting node for path
 
     cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search. Only target nodes where the shortest path to
+        this node from the source node contains <= cutoff edges will be
+        included in the returned results.
 
     Returns
     -------
     lengths : dict
-        Dict keyed by node to shortest path length to source.
+        Dict keyed by target node to shortest path length from source node.
 
     Examples
     --------
@@ -107,7 +109,9 @@ def single_target_shortest_path_length(G, target, cutoff=None):
        Target node for path
 
     cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search. Only source nodes where the shortest path
+        from this node to the target node contains <= cutoff edges will be
+        included in the returned results.
 
     Returns
     -------
@@ -328,7 +332,9 @@ def single_source_shortest_path(G, source, cutoff=None):
        Starting node for path
 
     cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search. Only target nodes where the shortest path to
+        this node from the source node contains <= cutoff edges will be
+        included in the returned results.
 
     Returns
     -------
@@ -411,12 +417,14 @@ def single_target_shortest_path(G, target, cutoff=None):
        Target node for path
 
     cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search. Only source nodes where the shortest path
+        from this node to the target node contains <= cutoff edges will be
+        included in the returned results.
 
     Returns
     -------
     paths : dictionary
-        Dictionary, keyed by target, of shortest paths.
+        Dictionary, keyed by source, of shortest paths.
 
     Examples
     --------
