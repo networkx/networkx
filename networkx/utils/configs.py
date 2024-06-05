@@ -223,6 +223,14 @@ class NetworkXConfig(Config):
     - NETWORKX_BACKEND_PRIORITY: set `backend_priority` from comma-separated names.
     - NETWORKX_CACHE_CONVERTED_GRAPHS: set `cache_converted_graphs` to True if nonempty.
 
+    ``backend`` and ``backend_priority`` configurations are similar in that they can
+    both be used to run an algorithm with a backend (converting inputs if necessary),
+    but they have important differences. ``backend_priority`` is "soft" and will only
+    use one of the specified backends if it is able to run the algorithm. This is a
+    safer option that behaves well--it doesn't raise--when backends are incomplete.
+    ``backend`` configuration is "hard" and directs all dispatchable calls to use
+    the specified backend. It will raise if the backend does not implement a function.
+
     This is a global configuration. Use with caution when using from multiple threads.
     """
 
