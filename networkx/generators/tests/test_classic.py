@@ -679,20 +679,32 @@ class TestGeneratorClassic:
         assert nodes_equal(G, H)
         assert edges_equal(G.edges(), H.edges())
 
-    def test_complete_1_partite_graph(self):
+    @pytest.mark.parametrize("n", range(10))
+    def test_complete_1_partite_graph(self, n):
         """Tests that the complete 1-partite graph is the empty graph."""
-        G = nx.complete_multipartite_graph(3)
-        H = nx.empty_graph(3)
+        G = nx.complete_multipartite_graph(n)
+        H = nx.empty_graph(n)
         assert nodes_equal(G, H)
         assert edges_equal(G.edges(), H.edges())
 
-    def test_complete_2_partite_graph(self):
+    @pytest.mark.parametrize("m", range(5))
+    @pytest.mark.parametrize("n", range(5))
+    def test_complete_2_partite_graph(self, m, n):
         """Tests that the complete 2-partite graph is the complete bipartite
         graph.
-
         """
-        G = nx.complete_multipartite_graph(2, 3)
-        H = nx.complete_bipartite_graph(2, 3)
+        G = nx.complete_multipartite_graph(m, n)
+        H = nx.complete_bipartite_graph(m, n)
+        assert nodes_equal(G, H)
+        assert edges_equal(G.edges(), H.edges())
+
+    @pytest.mark.parametrize("n", range(10))
+    def test_complete_2_partite_graph_star_graph(self, n):
+        """Tests that the complete 2-partite graph with sizes 1 and n
+        is the star graph on n + 1 nodes.
+        """
+        G = nx.complete_multipartite_graph(1, n)
+        H = nx.star_graph(n)
         assert nodes_equal(G, H)
         assert edges_equal(G.edges(), H.edges())
 
@@ -710,8 +722,30 @@ class TestGeneratorClassic:
             for u, v in itertools.product(block1, block2):
                 assert v in G[u]
                 assert G.nodes[u] != G.nodes[v]
+
+    @pytest.mark.parametrize(
+        "subsets",
+        itertools.chain.from_iterable(
+            itertools.permutations(range(-2, 2), length) for length in range(3, 5)
+        ),
+    )
+    def test_complete_multipartite_graph_negative_nodes(self, subsets):
+        """Test that the complete multipartite graph raises an error when given negative inputs."""
         with pytest.raises(nx.NetworkXError, match="Negative number of nodes"):
-            nx.complete_multipartite_graph(2, -3, 4)
+            nx.complete_multipartite_graph(*subsets)
+
+    @pytest.mark.parametrize(
+        "subsets",
+        itertools.chain.from_iterable(
+            itertools.permutations([0, 1, "", "a"], length) for length in range(3, 5)
+        ),
+    )
+    def test_complete_multipartite_graph_mixing_inputs_exceptions(self, subsets):
+        """Tests that the complete multipartite graph raises an error when mixing inputs."""
+        with pytest.raises(
+            nx.NetworkXError, match="Arguments must be all ints or all iterables"
+        ):
+            nx.complete_multipartite_graph(*subsets)
 
     def test_kneser_graph(self):
         # the petersen graph is a special case of the kneser graph when n=5 and k=2
