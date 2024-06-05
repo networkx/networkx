@@ -44,16 +44,16 @@ Development Workflow
          python -m venv networkx-dev
          # Activate it
          source networkx-dev/bin/activate
-         # Install main development and runtime dependencies of networkx
-         pip install -r requirements/default.txt -r requirements/test.txt -r requirements/developer.txt
          #
+         #
+         # Build and install networkx from source
+         # this will also intall required dependencies.
+         pip install -e .[default,test,developer]
          # (Optional) Install pygraphviz and pydot packages
          # These packages require that you have your system properly configured
          # and what that involves differs on various systems.
-         # pip install -r requirements/extra.txt
+         # pip install -e .[default,test,developer,extra]
          #
-         # Build and install networkx from source
-         pip install -e .
          # Test your installation
          pytest --pyargs networkx
 
