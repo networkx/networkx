@@ -85,57 +85,59 @@ class TestGeneratorClassic:
         t = nx.full_rary_tree(3, 20)
         assert t.order() == 20
 
-    def test_barbell_graph(self):
-        # number of nodes = 2*m1 + m2 (2 m1-complete graphs + m2-path + 2 edges)
-        # number of edges = 2*(nx.number_of_edges(m1-complete graph) + m2 + 1
-        m1 = 3
-        m2 = 5
+    @pytest.mark.parametrize("m1", range(2, 10))
+    @pytest.mark.parametrize("m2", range(10))
+    def test_barbell_graph_n_nodes_edges(self, m1, m2):
+        # number of nodes = 2*m1 + m2 (2 m1-complete graphs + m2-path)
+        # number of edges = 2*(nx.number_of_edges(m1-complete graph)) + m2 + 1
         b = nx.barbell_graph(m1, m2)
         assert nx.number_of_nodes(b) == 2 * m1 + m2
         assert nx.number_of_edges(b) == m1 * (m1 - 1) + m2 + 1
 
-        m1 = 4
-        m2 = 10
-        b = nx.barbell_graph(m1, m2)
-        assert nx.number_of_nodes(b) == 2 * m1 + m2
-        assert nx.number_of_edges(b) == m1 * (m1 - 1) + m2 + 1
+    @pytest.mark.parametrize(
+        "m1,m2,expectation",
+        [
+            (-1, -1, pytest.raises(nx.NetworkXError)),  # m1 < 2
+            (-1, 0, pytest.raises(nx.NetworkXError)),  # m1 < 2
+            (-1, 1, pytest.raises(nx.NetworkXError)),  # m1 < 2
+            (0, -1, pytest.raises(nx.NetworkXError)),  # m1 < 2
+            (0, 0, pytest.raises(nx.NetworkXError)),  # m1 < 2
+            (0, 1, pytest.raises(nx.NetworkXError)),  # m1 < 2
+            (1, -1, pytest.raises(nx.NetworkXError)),  # m1 < 2
+            (1, 0, pytest.raises(nx.NetworkXError)),  # m1 < 2
+            (1, 1, pytest.raises(nx.NetworkXError)),  # m1 < 2
+            (2, -1, pytest.raises(nx.NetworkXError)),  # m2 < 0
+            (2, 0, does_not_raise()),  # ok
+            (2, 1, does_not_raise()),  # ok
+        ],
+    )
+    def test_barbell_graph_m1_m2_exceptions(self, m1, m2, expectation):
+        with expectation:
+            nx.barbell_graph(m1, m2)
 
-        m1 = 3
-        m2 = 20
-        b = nx.barbell_graph(m1, m2)
-        assert nx.number_of_nodes(b) == 2 * m1 + m2
-        assert nx.number_of_edges(b) == m1 * (m1 - 1) + m2 + 1
+    @pytest.mark.parametrize(
+        "create_using,expectation",
+        [
+            (nx.Graph, does_not_raise()),  # ok
+            (nx.DiGraph, pytest.raises(nx.NetworkXError)),  # directed
+            (nx.MultiGraph, does_not_raise()),  # ok
+            (nx.MultiDiGraph, pytest.raises(nx.NetworkXError)),  # directed
+        ],
+    )
+    def test_barbell_graph_create_using_exceptions(self, create_using, expectation):
+        with expectation:
+            nx.barbell_graph(5, 2, create_using=create_using)
 
-        # Raise NetworkXError if m1<2
-        m1 = 1
-        m2 = 20
-        pytest.raises(nx.NetworkXError, nx.barbell_graph, m1, m2)
-
-        # Raise NetworkXError if m2<0
-        m1 = 5
-        m2 = -2
-        pytest.raises(nx.NetworkXError, nx.barbell_graph, m1, m2)
-
-        # nx.barbell_graph(2,m) = nx.path_graph(m+4)
-        m1 = 2
-        m2 = 5
-        b = nx.barbell_graph(m1, m2)
+    @pytest.mark.parametrize("m2", range(21))
+    def test_barbell_graph(self, m2):
+        # nx.barbell_graph(2, m) = nx.path_graph(m + 4)
+        b = nx.barbell_graph(2, m2)
         assert is_isomorphic(b, nx.path_graph(m2 + 4))
 
-        m1 = 2
-        m2 = 10
+    @pytest.mark.parametrize("m1", range(2, 7))
+    @pytest.mark.parametrize("m2", range(21))
+    def test_barbell_graph_multigraph(self, m1, m2):
         b = nx.barbell_graph(m1, m2)
-        assert is_isomorphic(b, nx.path_graph(m2 + 4))
-
-        m1 = 2
-        m2 = 20
-        b = nx.barbell_graph(m1, m2)
-        assert is_isomorphic(b, nx.path_graph(m2 + 4))
-
-        pytest.raises(
-            nx.NetworkXError, nx.barbell_graph, m1, m2, create_using=nx.DiGraph()
-        )
-
         mb = nx.barbell_graph(m1, m2, create_using=nx.MultiGraph())
         assert edges_equal(mb.edges(), b.edges())
 
