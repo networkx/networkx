@@ -44,6 +44,7 @@ airflow-dbt
 airflow-provider-great-expectations
 airflow-provider-xlsx
 airtrafficsim
+albumentations
 alibi
 allennlp
 allennlp-models
@@ -60,10 +61,15 @@ amset
 anchor-droplet-chip
 anchor-exp
 antarctic-plots
+apache-airflow-providers-apache-beam
+apache-airflow-providers-celery
+apache-airflow-providers-google
+apache-beam
 api2db
 aplpy
 apoc-backend
 architector
+arcjetcv
 arcos-gui
 arcos4py
 arcticdb
@@ -98,6 +104,7 @@ badger-opt
 bake
 bambi
 basal-and-bark
+basictools
 batoms
 beetlesafari
 bert_score
@@ -157,7 +164,9 @@ celery-singleton
 cellfinder-core
 cellfinder-napari
 cellhint
+cellpose
 cellpose-napari
+cenpy
 census-parquet
 cfn-lint
 chafer
@@ -167,6 +176,7 @@ chemdyg
 chemplot
 chemprop
 chgnet
+chitra
 chxtools
 ci-sdr
 classy_vision
@@ -174,6 +184,7 @@ cliffordlayers
 climada
 climada-petals
 clisops
+cloud-data-connector
 cluster_tools
 cmpitool
 cnmaps
@@ -209,6 +220,7 @@ coqui-trainer
 cox
 crowdsourcephoto
 crowsetta
+crypten
 crystalmapping
 ctgan
 cubed-xarray
@@ -220,6 +232,7 @@ cwl_runner
 cwltest
 cwltool
 cyfi
+d3rlpy
 dalex
 dall-e
 daops
@@ -228,6 +241,7 @@ darts
 dask-bigquery
 dask-geomodeling
 dask-geopandas
+dask-imread
 data-diff
 databroker-elasticsearch
 datacompy
@@ -256,11 +270,13 @@ descarteslabs
 descent
 detecto
 detectree
+detectron2
 devbio-napari
 dexp
 dftd3-python
 dftd4-python
 dgllife
+diffusers
 digdem
 digitalearth
 dingo-gw
@@ -300,6 +316,7 @@ dvc-webdav
 dvc-webhdfs
 dwave-inspector
 dwave-neal
+dwave-ocean-sdk
 dwave-tabu
 dynasor
 dynophores
@@ -309,6 +326,7 @@ earth2observe
 earthformer
 earthpy
 earthsim
+easyocr
 ecco
 echopy
 ecodata
@@ -327,6 +345,15 @@ endstate_correction
 entsoe-py
 eo-dataflow-manager
 eo-dataflow-ui
+eo-learn
+eo-learn-core
+eo-learn-coregistration
+eo-learn-features
+eo-learn-geometry
+eo-learn-io
+eo-learn-mask
+eo-learn-ml-tools
+eo-learn-visualization
 eodms-api-client
 eomaps
 eoreader
@@ -337,6 +364,7 @@ esa-climate-toolbox
 esda
 esmvalcore
 espaloma
+espnet
 espnet_model_zoo
 espsim
 ethos_penalps
@@ -350,6 +378,7 @@ facilyst
 facit
 fair-esm
 fairscale
+fairseq
 farm
 fastai
 fasttreeshap
@@ -371,6 +400,8 @@ flask_rdf
 flower
 flowermd
 flowtorch
+flytekitplugins-modin
+flytekitplugins-pandera
 fml
 fonduer
 forcefield-utilities
@@ -387,6 +418,7 @@ funcx-common
 fuzzytm
 fvgp
 gecos
+gemgis
 gempy
 genes2doe
 genno
@@ -400,6 +432,7 @@ geograpy3
 geohexviz
 geomatics
 geomesher
+geopandas
 geoplot
 georasters
 georouting
@@ -409,6 +442,7 @@ geospatial-ml
 geostatista
 geotile
 geotorch
+geoutils
 geowombat
 giddy
 gimble
@@ -455,6 +489,8 @@ gymnasium
 h3pandas
 hapi
 harlequin-bigquery
+haystack-ai
+heat
 hesperos
 heudiconv
 hextools
@@ -472,6 +508,7 @@ horovod
 hover
 hs-process
 htm-pytorch
+hummingbird-ml
 hxnfly
 hxntools
 hydride
@@ -505,6 +542,7 @@ image-quality
 imagedataextractor
 imaginairy
 imaris-ims-file-reader
+imaxt-image
 imaxt-multiscale-plugin
 imexam
 imgaug
@@ -529,6 +567,7 @@ iprpy
 ipyvolume
 iris-ued
 ironflow
+isce2
 isofit
 itallic
 itk-napari-conversion
@@ -536,6 +575,7 @@ iwopy
 ixmp
 ixmp4
 jobtastic
+jscatter
 jsf
 jupyterlab-sos
 jupyterlite-xeus
@@ -553,6 +593,7 @@ kikuchipy
 kissim
 kit4dl
 koopa-viz
+kornia
 kuti
 label-creator
 labelme
@@ -572,16 +613,19 @@ lcr_genie
 ldcpy
 lenstronomy
 libefp
+libertem
 libsemigroups_cppyy
 lidar
 lightgbm_ray
 lightly
+lightning
 lightning-bolts
 lightning-flash
 lightwood
 lime
 linear_operator
 lipyphilic
+litdata
 lixtools
 llama-index-agent-openai
 llama-index-embeddings-openai
@@ -593,6 +637,7 @@ lm_eval
 lobsterpy
 local-attention
 lonboard
+loralib
 lovely-tensors
 lpips
 lsst_dashboard
@@ -606,6 +651,7 @@ maicos
 mapshader
 marinvaders
 marslab
+matbench-genmetrics
 materials-learning-algorithms
 matgl
 matminer
@@ -644,8 +690,13 @@ misic-napari
 mlgb
 mljar-mercury
 mljar-supervised
+mmcv-recipe
+mmdet
+mmgp
 mmsegmentation
+mne
 mne-ari
+mne-bids
 mne-connectivity
 mne-faster
 mne-features
@@ -666,6 +717,7 @@ molearn
 moleculetda
 molfeat
 molgrid
+monai
 monotonicnetworks
 morphodynamics
 morphometrics-engine
@@ -678,6 +730,7 @@ movingpandas
 mp-api
 mp-pyrho
 mp_pytorch
+mp_time_split
 mpas-analysis
 mpas_tools
 mpl_qt_viz
@@ -688,6 +741,7 @@ mtpy-v2
 muler
 muon
 mup
+muscat-split
 mxtools
 nagl
 nannos
@@ -925,9 +979,11 @@ nomad-camels-driver-thorlabs-k10cr1
 nomad-camels-driver-thorlabs-mff
 nomad-camels-driver-thorlabs-tlpm
 nomad-camels-driver-trinamic-tmcm-1110
+norse
 nslsii
 numina
 nutpie
+nvidia-apex
 nystrom-attention
 nyxtools
 nzgeom
@@ -948,6 +1004,8 @@ omnisci-pytools
 omnixai
 oneat
 oneat-augmentations
+onnx2pytorch
+onnx2torch
 onstove
 opacus
 open-clip-torch
@@ -982,7 +1040,9 @@ openscm-runner
 opl
 opt_einsum_fx
 optimas
+optimum
 optimum-graphcore
+optimum-habana
 optking
 orange-spectroscopy
 orange3-associate
@@ -1005,6 +1065,7 @@ outlines
 owlrl
 oxrdflib
 pactools
+palmari
 pandamesh
 pandas-gbq
 pandera
@@ -1041,6 +1102,7 @@ pimsviewer
 pixsfm
 pixstem
 pixy
+plaid
 planetmapper
 plant-seg
 plantcv
@@ -1060,9 +1122,11 @@ prefect-ray
 pretrainedmodels
 prettymaps
 primod
+prospect
 provstore-api
 psearch
 pseudo_dojo
+psi4
 psiflow
 psiresp-split
 ptac
@@ -1094,6 +1158,7 @@ pydaily
 pydaymet
 pydrift
 pydrobert-kaldi
+pydtmc
 pyebsdindex
 pyemir
 pyfastspm
@@ -1110,11 +1175,13 @@ pygraft
 pygridmet
 pygridtools
 pyhdx
+pyheatdemand
 pyhum
 pyiem
 pyinterpolate
 pyiron
 pyiron-experimental
+pyiron_atomistics
 pyiron_dft
 pyiron_experimental
 pyiron_gpl
@@ -1143,6 +1210,7 @@ pyopenrivercam
 pyotf
 pypeit
 pypinfo
+pyposeidon
 pypots
 pyprep
 pypythia
@@ -1158,6 +1226,7 @@ pysbol3
 pyscreener
 pyshacl
 pysheds
+pysipfenn
 pystencils-reco
 pysumma
 pytask-environment
@@ -1167,8 +1236,10 @@ pytask-parallel
 pytask-r
 pytask-stata
 pytemlib
+pytensor-suite
 pytest-celery
 pythae
+python-flair
 pytim
 pytorch-3dunet
 pytorch-dp
@@ -1177,6 +1248,7 @@ pytorch-ignite
 pytorch-metric-learning
 pytorch-model-summary
 pytorch-msssim
+pytorch-pretrained-bert
 pytorch-ranger
 pytorch-tabnet
 pytorch-warmup
@@ -1187,6 +1259,7 @@ pytorch_revgrad
 pytorch_scatter
 pytorch_sparse
 pytorch_spline_conv
+pytorch_tabular
 pytorchcv
 pywwa
 pyxel-sim
@@ -1214,6 +1287,7 @@ raimitigations
 rat
 raven-wps
 ravenpy
+ray-packages
 raynest
 rdflib-jsonld
 rdflib-sqlalchemy
@@ -1230,6 +1304,8 @@ responsibleai
 responsibleai-text
 ribasim
 ritas
+riverrem
+rl_games
 robert
 rosco
 rosettasciio
@@ -1249,6 +1325,7 @@ sbol_factory
 sbpy
 scattertext
 schema-salad
+schist
 schnetpack
 scico
 scikit-allel
@@ -1262,7 +1339,9 @@ sdgym
 sdv
 seaborn-image
 searvey
+segment-anything
 segment-anything-fast
+segment-anything-hq
 segment-geospatial
 segmentation-models-pytorch
 segregation
@@ -1274,6 +1353,7 @@ sepal-ui
 serapis
 sertit
 set-calibration
+setfit
 shakenbreak
 shap
 shapash
@@ -1302,6 +1382,7 @@ snouty-viewer
 solarmach
 solo-epd-loader
 songdkl
+sorcha
 sorcha-addons
 sos-bash
 sos-julia
@@ -1365,6 +1446,7 @@ sumo
 sunkit-image
 sunkit-instruments
 sunode
+sunpy
 sunpy-soar
 sunraster
 superset
@@ -1391,10 +1473,12 @@ theseus-ai
 thinc
 tiara
 tiatoolbox
+tico
 tierpsy
 tigernet
 tile_mate
 tiledb-bioimg
+timm
 tintx
 tmmc-lnpy
 tobler
@@ -1404,11 +1488,13 @@ tootapari
 top2vec
 torch-complex
 torch-ema
+torch-fidelity
 torch-frft
 torch-hd
 torch-optimizer
 torch-runstats
 torch-scatter
+torch_em
 torchani
 torchapp
 torchbiggraph
@@ -1431,7 +1517,9 @@ torchtnt
 torchts
 torchtuples
 torchview
+torchvision
 torsiondrive
+towhee
 tpot
 trackintel
 traffic
@@ -1441,6 +1529,7 @@ transformer-smaller-training-vocab
 transformers-interpret
 triton
 ttach
+tts
 tune-sklearn
 tweetynet
 txm_sandbox
@@ -1448,6 +1537,8 @@ typhos
 tyssue
 u8darts
 uassist
+ufish
+ultralytics
 unidist-packages
 up42-py
 urbanaccess
@@ -1496,6 +1587,7 @@ xcube-sh
 xcube-smos
 xcube_geodb
 xcube_places_plugin
+xdem
 xgboost_ray
 xgeo
 ximage
@@ -1509,10 +1601,13 @@ xpdsim
 xpdtools
 xpdview
 xplique
+xraylarch
 xrf-tomo
 xrftomo
+xrtpy
 xsar
 xscen
+xtal2png
 xtb-python
 xugrid
 xyzspaces

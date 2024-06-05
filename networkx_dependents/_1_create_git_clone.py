@@ -1,16 +1,4 @@
 #!/usr/bin/env python
-# Copyright (c) 2024, NVIDIA CORPORATION.
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 import json
 import os
 import subprocess
@@ -29,6 +17,12 @@ extra_urls = {
     "Graph-Analysis-with-NetworkX": "https://github.com/KangboLu/Graph-Analysis-with-NetworkX",
     "Network-Science-with-Python": "https://github.com/PacktPublishing/Network-Science-with-Python",
     "GML2023": "https://github.com/xbresson/GML2023",
+    "network-graph-tutorial": "https://github.com/lucasdurand/network-graph-tutorial",
+    # PyPI-only
+    "dimod": "https://github.com/dwavesystems/dimod",
+    "angr": "https://github.com/angr/angr",
+    "rasa": "https://github.com/rasahq/rasa",
+    "trimesh": "https://github.com/mikedh/trimesh",
 }
 
 # Not sure how/if/whether these use networkx (TBD, skip for now)
@@ -54,6 +48,8 @@ def unlazy(d):
 
 # Manual fixes
 G.nodes["alphashape"]["payload"]["meta_yaml"]["about"]["dev_url"] = "https://github.com/bellockk/alphashape"
+G.nodes["asapdiscovery"]["payload"]["meta_yaml"]["about"]["dev_url"] = "https://github.com/asapdiscovery/asapdiscovery"
+G.nodes["asapdiscovery"]["payload"]["meta_yaml"]["about"]["home"] = "https://github.com/asapdiscovery/asapdiscovery"
 G.nodes["dagster-libs"]["payload"]["meta_yaml"]["about"]["home"] = "https://github.com/dagster-io/dagster"
 G.nodes["pomegranate"]["payload"]["meta_yaml"]["about"]["home"] = "https://github.com/jmschrei/pomegranate"
 G.nodes["sceptre"]["payload"]["meta_yaml"]["about"]["home"] = "https://github.com/Sceptre/sceptre"
@@ -62,6 +58,8 @@ G.nodes["ties20"]["payload"]["meta_yaml"]["about"]["home"] = "https://github.com
 G.nodes["awssert"]["payload"]["meta_yaml"]["about"]["home"] = "https://github.com/TSNobleSoftware/awssert"
 G.nodes["de-forcefields"]["payload"]["meta_yaml"]["about"]["dev_url"] = "https://github.com/jthorton/de-forcefields"
 G.nodes["dftd3-python"]["payload"]["meta_yaml"]["about"]["home"] = "https://github.com/dftd3/simple-dftd3"
+G.nodes["doped"]["payload"] = unlazy(G.nodes["doped"]["payload"])
+G.nodes["doped"]["payload"]["url"] = "https://github.com/SMTG-Bham/doped"
 G.nodes["dynophores"]["payload"] = unlazy(G.nodes["dynophores"]["payload"])
 G.nodes["dynophores"]["payload"]["url"] = "https://github.com/wolberlab/dynophores"
 G.nodes["earth2observe"]["payload"] = unlazy(G.nodes["earth2observe"]["payload"])
@@ -83,6 +81,7 @@ G.nodes["pyiron_example_job"]["payload"]["meta_yaml"]["about"][
     "dev_url"
 ] = "https://github.com/pyiron/pyiron_example_job"
 G.nodes["pyiron_vasp"]["payload"]["meta_yaml"]["about"]["dev_url"] = "https://github.com/pyiron/pyiron_vasp"
+G.nodes["pyquil"]["payload"]["meta_yaml"]["about"]["dev_url"] = "https://github.com/rigetti/pyquil"
 G.nodes["pytorch-dp"]["payload"]["meta_yaml"]["about"]["dev_url"] = "https://github.com/pytorch/opacus"
 G.nodes["pytorch-dp"]["payload"]["meta_yaml"]["about"]["home"] = "https://github.com/pytorch/opacus"
 G.nodes["recorder-napari"]["payload"]["meta_yaml"]["about"]["home"] = "https://pypi.org/project/recorder-napari"
@@ -225,13 +224,16 @@ for name in repo_urls:
     urls = {url for url in urls if "pypi." in url.lower()}
     names = set()
     for url in urls:
-        if url.lower().startswith("https://pypi.io/packages/source/") or url.lower().startswith(
-            "https://pypi.org/packages/source/"
+        if (
+            url.lower().startswith("https://pypi.io/packages/source/")
+            or url.lower().startswith("https://pypi.org/packages/source/")
+            or url.lower().startswith("https://pypi.python.org/packages/source/")
         ):
             names.add(url.split("/")[6])
         elif url.lower().startswith("https://pypi.io/project/") or url.lower().startswith("https://pypi.org/project/"):
             names.add(url.split("/")[4])
         else:
+            print(urls)
             raise ValueError(f"{name}: {url}")
     if names:
         if len(names) > 1:
@@ -252,24 +254,11 @@ for k, v in extra_urls.items():
         repo_urls[k] = v
         conda_to_pypi[k] = None
 
-LICENSE = """
-# Copyright (c) 2024, NVIDIA CORPORATION.
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-"""
+LICENSE = ""
 
 def write_file(repo_urls, suffix="", reverse=False):
     with open(f"_2_git_clone{suffix}.sh", "w") as f:
-        f.write("#!/usr/bin/env bash")
+        f.write("#!/usr/bin/env bash\n")
         f.write(LICENSE)
         f.write("#\n# THIS FILE IS AUTOMATICALLY GENERATED BY _1_create_git_clone.py\n")
         f.write(f"mkdir -p repos{suffix}\n")
