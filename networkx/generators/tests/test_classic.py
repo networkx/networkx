@@ -7,6 +7,7 @@ Unit tests for various classic graph generators in generators/classic.py
 """
 import itertools
 import typing
+from contextlib import nullcontext as does_not_raise
 
 import pytest
 
@@ -633,3 +634,22 @@ class TestGeneratorClassic:
         # in general the number of edges of the kneser graph is equal to
         # (n choose k) times (n-k choose k) divided by 2
         assert nx.number_of_edges(nx.kneser_graph(8, 3)) == 280
+
+    @pytest.mark.parametrize(
+        "n,k,expectation",
+        [
+            (-1, -1, pytest.raises(nx.NetworkXError)),  # n <= 0
+            (-1, 0, pytest.raises(nx.NetworkXError)),  # n <= 0
+            (-1, 1, pytest.raises(nx.NetworkXError)),  # n <= 0
+            (0, -1, pytest.raises(nx.NetworkXError)),  # n <= 0
+            (0, 0, pytest.raises(nx.NetworkXError)),  # n <= 0
+            (0, 1, pytest.raises(nx.NetworkXError)),  # n <= 0
+            (1, -1, pytest.raises(nx.NetworkXError)),  # k <= 0
+            (1, 0, pytest.raises(nx.NetworkXError)),  # k <= 0
+            (1, 1, does_not_raise()),  # ok
+            (1, 2, pytest.raises(nx.NetworkXError)),  # k > n
+        ],
+    )
+    def test_kneser_graph_raises(self, n, k, expectation):
+        with expectation:
+            nx.kneser_graph(n, k)
