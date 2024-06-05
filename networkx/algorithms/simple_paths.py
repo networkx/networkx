@@ -108,7 +108,8 @@ def all_simple_paths(G, source, target, cutoff=None):
        Single node or iterable of nodes at which to end path
 
     cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search, in terms of edges. Only paths containing
+        <= cutoff edges are returned.
 
     Returns
     -------
@@ -274,7 +275,8 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
        Single node or iterable of nodes at which to end path
 
     cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search, in terms of edges. Only paths containing
+        <= cutoff edges are returned.
 
     Returns
     -------
