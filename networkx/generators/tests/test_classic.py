@@ -592,11 +592,48 @@ class TestGeneratorClassic:
     def test_trivial_graph(self):
         assert nx.number_of_nodes(nx.trivial_graph()) == 1
 
-    def test_turan_graph(self):
-        assert nx.number_of_edges(nx.turan_graph(13, 4)) == 63
-        assert is_isomorphic(
-            nx.turan_graph(13, 4), nx.complete_multipartite_graph(3, 4, 3, 3)
+    @pytest.mark.parametrize("n", range(10, 20))
+    @pytest.mark.parametrize("r", range(1, 11))
+    def test_turan_graph(self, n, r):
+        G = nx.turan_graph(n, r)
+        s = n % r
+        assert (
+            nx.number_of_edges(G)
+            == (r - 1) * (n**2 - s**2) // (2 * r) + s * (s - 1) / 2
         )
+        assert is_isomorphic(
+            G,
+            nx.complete_multipartite_graph(
+                *((n % r) * [(n // r) + 1] + (r - (n % r)) * [n // r])
+            ),
+        )
+
+    @pytest.mark.parametrize("r", [2, 3, 4, 5, 6, 10, 12, 15, 20, 30])
+    def test_turan_graph_r_divides_n_strongly_regular(self, r):
+        G = nx.turan_graph(60, r)
+        assert nx.is_strongly_regular(G)
+
+    @pytest.mark.parametrize(
+        ("n", "r", "expectation"),
+        [
+            (-1, 1, pytest.raises(nx.NetworkXError)),  # n < 1
+            (-1, 0, pytest.raises(nx.NetworkXError)),  # n < 1
+            (-1, 1, pytest.raises(nx.NetworkXError)),  # n < 1
+            (0, -1, pytest.raises(nx.NetworkXError)),  # n < 1
+            (0, 0, pytest.raises(nx.NetworkXError)),  # n < 1
+            (0, 1, pytest.raises(nx.NetworkXError)),  # n < 1
+            (1, -1, pytest.raises(nx.NetworkXError)),  # r < 1
+            (1, 0, pytest.raises(nx.NetworkXError)),  # r < 1
+            (1, 1, does_not_raise()),  # ok
+            (1, 2, pytest.raises(nx.NetworkXError)),  # r > n
+            (2, 1, does_not_raise()),  # ok
+            (2, 2, does_not_raise()),  # ok
+            (2, 3, pytest.raises(nx.NetworkXError)),  # r > n
+        ],
+    )
+    def test_turan_graph_exceptions(self, n, r, expectation):
+        with expectation:
+            nx.turan_graph(n, r)
 
     def test_wheel_graph(self):
         for n, G in [
