@@ -23,8 +23,7 @@ jobs:
       - name: Install packages
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements/test.txt
-          python -m pip install .
+          python -m pip install .[test]
           python -m pip list
 
       - name: Test NetworkX
@@ -47,8 +46,7 @@ jobs:
       - name: Install packages
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements/default.txt -r requirements/test.txt
-          python -m pip install .
+          python -m pip install .[default,test]
           python -m pip list
 
       - name: Test for warnings at import time
@@ -70,9 +68,8 @@ jobs:
       - name: Install packages
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements/default.txt -r requirements/test.txt
+          python -m pip install .[default,test]
           python -m pip uninstall -y scipy  # All default dependencies except scipy
-          python -m pip install .
           python -m pip list
 
       - name: Test for warnings at import time
@@ -97,8 +94,7 @@ jobs:
       - name: Install packages
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r requirements/default.txt -r requirements/test.txt
-          python -m pip install .
+          python -m pip install .[default,test]
           python -m pip list
 
       - name: Test Dispatching
@@ -134,29 +130,24 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           pip install --upgrade pip
-          pip install -r requirements/default.txt -r requirements/test.txt
-          pip install -r requirements/extra.txt
-          pip install .
+          pip install .[default,test,extra]
           pip list
       - name: Install packages (macOS)
         if: runner.os == 'macOS'
         run: |
           pip install --upgrade pip
-          pip install -r requirements/default.txt -r requirements/test.txt
           pip install --no-cache-dir \
                       --config-settings="--global-option=build_ext" \
                       --config-settings="--global-option=-I$(brew --prefix graphviz)/include/" \
                       --config-settings="--global-option=-L$(brew --prefix graphviz)/lib/" \
                       pygraphviz
-          pip install -r requirements/extra.txt
-          pip install .
+          pip install .[default,test,extra]
           pip list
       - name: Install Pygraphviz packages  (windows)
         if: runner.os == 'Windows'
         run: |
           echo "C:\Program Files\Graphviz\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           python -m pip install --upgrade pip
-          python -m pip install -r requirements/default.txt -r requirements/test.txt
           python -m pip install --config-settings="--global-option=build_ext" `
               --config-settings="--global-option=-IC:\Program Files\Graphviz\include" `
               --config-settings="--global-option=-LC:\Program Files\Graphviz\lib" `
@@ -165,8 +156,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           echo "C:\Program Files\Graphviz\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-          python -m pip install -r requirements/extra.txt
-          python -m pip install .
+          python -m pip install .[default,test,extra]
           python -m pip list
 
       - name: Test NetworkX
@@ -189,8 +179,7 @@ jobs:
       - name: Install packages
         run: |
           pip install --upgrade pip
-          pip install --pre -r requirements/default.txt -r requirements/test.txt
-          pip install .
+          pip install --pre .[default,test]
           pip list
 
       - name: Test NetworkX
