@@ -1023,7 +1023,7 @@ def wheel_graph(n, create_using=None):
 
 @nx._dispatchable(graphs=None, returns_graph=True)
 def complete_multipartite_graph(*subset_sizes):
-    """Returns the complete multipartite graph with the specified subset sizes.
+    r"""Returns the complete multipartite graph with the specified subset sizes.
 
     .. plot::
 
@@ -1031,20 +1031,26 @@ def complete_multipartite_graph(*subset_sizes):
 
     Parameters
     ----------
-    subset_sizes : tuple of integers or tuple of node iterables
-       The arguments can either all be integer number of nodes or they
-       can all be iterables of nodes. If integers, they represent the
-       number of nodes in each subset of the multipartite graph.
-       If iterables, each is used to create the nodes for that subset.
-       The length of subset_sizes is the number of subsets.
+    subset_sizes : iterable of integers or iterable of node iterables
+        The arguments must either all be integers or all be node iterables.
+        If integers, they represent the number of nodes in each subset of the multipartite graph.
+        If iterables, each is used to create the nodes for that subset.
+        The length of `subset_sizes` is the number of subsets.
 
     Returns
     -------
     G : NetworkX Graph
-       Returns the complete multipartite graph with the specified subsets.
+        Returns the complete multipartite graph with the specified subsets.
 
-       For each node, the node attribute 'subset' is an integer
-       indicating which subset contains the node.
+        For each node, the node attribute ``'subset'`` is an integer
+        indicating which subset contains the node.
+
+    Raises
+    ------
+    NetworkXError
+        If any of the subset sizes are strictly negative.
+
+        If the subset sizes are not all integers or all node iterables.
 
     Examples
     --------
@@ -1070,16 +1076,19 @@ def complete_multipartite_graph(*subset_sizes):
     This function generalizes several other graph builder functions.
 
     - If no subset sizes are given, this returns the null graph.
-    - If a single subset size `n` is given, this returns the empty graph on
-      `n` nodes.
-    - If two subset sizes `m` and `n` are given, this returns the complete
-      bipartite graph on `m + n` nodes.
-    - If subset sizes `1` and `n` are given, this returns the star graph on
-      `n + 1` nodes.
+    - If a single subset size ``n`` is given, this returns the empty graph on
+      ``n`` nodes.
+    - If two subset sizes ``m`` and ``n`` are given, this returns the complete
+      bipartite graph on ``m + n`` nodes.
+    - If subset sizes ``1`` and ``n`` are given, this returns the star graph on
+      ``n + 1`` nodes.
+    - If $r-(n \mod r)$ subset sizes $\lfloor n/r \rfloor$
+      and $n \mod r$ subset sizes $\lfloor n/r \rfloor + 1$ are given,
+      this returns the Turán graph $T(n, r)$.
 
     See also
     --------
-    complete_bipartite_graph
+    null_graph, empty_graph, complete_bipartite_graph, star_graph, turan_graph
     """
     # The complete multipartite graph is an undirected simple graph.
     G = Graph()
