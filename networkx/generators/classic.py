@@ -108,8 +108,8 @@ def full_rary_tree(r, n, create_using=None):
 def kneser_graph(n, k):
     """Returns the Kneser Graph with parameters `n` and `k`.
 
-    The Kneser Graph has nodes that are k-tuples (subsets) of the integers
-    between 0 and ``n-1``. Nodes are adjacent if their corresponding sets are disjoint.
+    The Kneser Graph has nodes that are `k`-tuples (subsets) of the integers
+    between ``0`` and ``n-1``. Nodes are adjacent if their corresponding sets are disjoint.
 
     Parameters
     ----------
@@ -122,6 +122,14 @@ def kneser_graph(n, k):
     Returns
     -------
     G : NetworkX Graph
+        The Kneser graph ``K(n, k)``.
+
+    Raises
+    ------
+    NetworkXError
+        If `n` is less than or equal to ``0``.
+
+        If `k` is less than or equal to ``0`` or greater than `n`.
 
     Examples
     --------
@@ -136,7 +144,9 @@ def kneser_graph(n, k):
     if n <= 0:
         raise NetworkXError("n should be greater than zero")
     if k <= 0 or k > n:
-        raise NetworkXError("k should be greater than zero and smaller than n")
+        raise NetworkXError(
+            "k should be greater than zero and smaller than or equal to n"
+        )
 
     G = nx.Graph()
     # Create all k-subsets of [0, 1, ..., n-1]
