@@ -930,15 +930,15 @@ def trivial_graph(create_using=None):
 
 @nx._dispatchable(graphs=None, returns_graph=True)
 def turan_graph(n, r):
-    r"""Return the Turan Graph
+    r"""Return the Turán graph.
 
-    The Turan Graph is a complete multipartite graph on $n$ nodes
+    The Turán graph is a complete multipartite graph on $n$ nodes
     with $r$ disjoint subsets. That is, edges connect each node to
     every node not in its subset.
 
     Given $n$ and $r$, we create a complete multipartite graph with
-    $r-(n \mod r)$ partitions of size $n/r$, rounded down, and
-    $n \mod r$ partitions of size $n/r+1$, rounded down.
+    $r-(n \mod r)$ partitions of size $\lfloor n/r \rfloor$, and
+    $n \mod r$ partitions of size $\lfloor n/r \rfloor + 1$.
 
     .. plot::
 
@@ -950,14 +950,33 @@ def turan_graph(n, r):
         The number of nodes.
     r : int
         The number of partitions.
-        Must be less than or equal to n.
+
+    Returns
+    -------
+    T : NetworkX Graph
+        The Turán Graph $T(n, r)$.
+
+    Raises
+    ------
+    NetworkXError:
+        If $1 <= r <= n$ is not satisfied.
+
+    See Also
+    --------
+    complete_multipartite_graph
 
     Notes
     -----
-    Must satisfy $1 <= r <= n$.
-    The graph has $(r-1)(n^2)/(2r)$ edges, rounded down.
-    """
+    The Turán graph $T(n, r)$ has $\frac{(r-1)(n^2 - s^2)}{2r} + \binom{s}{2}$ edges,
+    where $s = n \mod r$ [1]_.
 
+    References
+    ----------
+    .. [1] Aigner, Martin; Ziegler, Günter M. (2018),
+        "Chapter 41: Turán's graph theorem,"
+        Proofs from THE BOOK (6th ed.), Springer-Verlag, pp. 285--289,
+        doi:10.1007/978-3-662-57265-8_41, ISBN 978-3-662-57265-8
+    """
     if not 1 <= r <= n:
         raise NetworkXError("Must satisfy 1 <= r <= n")
 
