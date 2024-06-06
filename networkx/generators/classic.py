@@ -489,7 +489,7 @@ def cycle_graph(n, create_using=None):
 
 @nx._dispatchable(graphs=None, returns_graph=True)
 def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
-    r"""Returns the hierarchically constructed Dorogovtsev--Goltsev--Mendes graph.
+    """Returns the hierarchically constructed Dorogovtsev--Goltsev--Mendes graph.
 
     The Dorogovtsev--Goltsev--Mendes [1]_ procedure deterministically produces a
     scale-free graph with ``3/2 * (3**(n-1) + 1)`` vertices
@@ -506,10 +506,10 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     Parameters
     ----------
     n : integer
-       The generation number. Must be greater than or equal to 0.
+        The generation number.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
-       Graph type to create. If graph instance, then cleared before populated.
+        Graph type to create. If graph instance, then cleared before populated.
 
     Returns
     -------
