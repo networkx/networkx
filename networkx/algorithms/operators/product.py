@@ -431,7 +431,7 @@ def power(G, k):
     return H
 
 
-@not_implemented_for("multigraph", args=("G", "H"))
+@not_implemented_for("multigraph", which_args=("G", "H"))
 @nx._dispatchable(graphs=_G_H, returns_graph=True)
 def rooted_product(G, H, root):
     r"""Return the rooted product of graphs `G` and `H` rooted at `root` in `H`.
@@ -479,7 +479,7 @@ def rooted_product(G, H, root):
     return R
 
 
-@not_implemented_for("multigraph", args=("G", "H"))
+@not_implemented_for("multigraph", which_args=("G", "H"))
 @nx._dispatchable(graphs=_G_H, returns_graph=True)
 def corona_product(G, H):
     r"""Returns the corona product of $G$ and $H$.
@@ -546,8 +546,8 @@ def corona_product(G, H):
     return GH
 
 
-@not_implemented_for("directed", args=("G", "H"))
-@not_implemented_for("multigraph", args=("G", "H"))
+@not_implemented_for("directed", which_args=("G", "H"))
+@not_implemented_for("multigraph", which_args=("G", "H"))
 @nx._dispatchable(
     graphs=_G_H, preserve_edge_attrs=True, preserve_node_attrs=True, returns_graph=True
 )

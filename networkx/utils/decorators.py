@@ -26,7 +26,7 @@ __all__ = [
 ]
 
 
-def not_implemented_for(*graph_types, args=(0,)):
+def not_implemented_for(*graph_types, which_args=0):
     """Decorator to mark algorithms as not implemented.
 
     Parameters
@@ -34,8 +34,9 @@ def not_implemented_for(*graph_types, args=(0,)):
     graph_types : container of strings
         The types of graph for which the algorithm is not implemented.
 
-    args : iterable (default=(0,))
-        Iterable of argument indices or names to apply the decorator to.
+    which_args : string or int or sequence of strings or ints (default=0)
+        If string(s), the name(s) of the argument(s) to be treated.
+        If int(s), the index/indices of the argument(s) to be treated.
 
     Returns
     -------
@@ -86,13 +87,13 @@ def not_implemented_for(*graph_types, args=(0,)):
 
 
         # apply to multiple arguments
-        @not_implemented_for("directed", args=("G", "H"))
+        @not_implemented_for("directed", which_args=("G", "H"))
         def ta_function(G, H):
             pass
 
 
         # equivalent to previous example, but using indices
-        @not_implemented_for("directed", args=(0, 1))
+        @not_implemented_for("directed", which_args=(0, 1))
         def ta_function(G, H):
             pass
     """
@@ -119,7 +120,12 @@ def not_implemented_for(*graph_types, args=(0,)):
 
         return g
 
-    return argmap(_not_implemented_for, *args)
+    try:
+        iter_wa = iter(which_args)
+    except TypeError:
+        iter_wa = (which_args,)
+
+    return argmap(_not_implemented_for, *iter_wa)
 
 
 # To handle new extensions, define a function accepting a `path` and `mode`.
