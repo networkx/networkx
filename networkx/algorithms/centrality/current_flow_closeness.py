@@ -24,32 +24,40 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
     Parameters
     ----------
     G : graph
-      A NetworkX graph.
+        A NetworkX graph.
 
     weight : None or string, optional (default=None)
-      If `None`, all edge weights are considered equal.
-      Otherwise holds the name of the edge attribute used as weight.
-      The weight reflects the capacity or the strength of the
-      edge.
+        If `None`, all edge weights are considered equal.
+        Otherwise holds the name of the edge attribute used as weight.
+        The weight reflects the capacity or the strength of the
+        edge.
 
     dtype : data type (default=float)
-      Default data type for internal matrices.
-      Set to `np.float32` for lower memory consumption.
+        Default data type for internal matrices.
+        Set to `np.float32` for lower memory consumption.
 
     solver : string (default="lu")
-       Type of linear solver to use for computing the flow matrix.
-       Options are `"full"` (uses most memory), `"lu"` (recommended), and
-       `"cg"` (uses least memory).
+        Type of linear solver to use for computing the flow matrix.
+        Options are `"full"` (uses most memory), `"lu"` (recommended), and
+        `"cg"` (uses least memory).
 
     Returns
     -------
     nodes : dictionary
-       Dictionary of nodes with current flow closeness centrality as the value.
+        Dictionary of nodes with current flow closeness centrality as the value.
 
     Raises
     ------
+    NetworkXNotImplemented
+        If `G` is directed and/or a multigraph.
+
+    NetworkXPointlessConcept
+        If `G` is the null graph.
+
     NetworkXError
-        If `G` is not connected or has fewer than three nodes.
+        If `G` has fewer than three nodes.
+
+        If `G` is not connected.
 
     See Also
     --------
@@ -67,19 +75,25 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
     .. [1] Ulrik Brandes and Daniel Fleischer,
        Centrality Measures Based on Current Flow.
        Proc. 22nd Symp. Theoretical Aspects of Computer Science (STACS '05).
-       LNCS 3404, pp. 533-544. Springer-Verlag, 2005.
+       LNCS 3404, pp. 533--544. Springer-Verlag, 2005.
        https://doi.org/10.1007/978-3-540-31856-9_44
 
     .. [2] Karen Stephenson and Marvin Zelen:
        Rethinking centrality: Methods and examples.
-       Social Networks 11(1):1-37, 1989.
+       Social Networks 11(1):1--37, 1989.
        https://doi.org/10.1016/0378-8733(89)90016-6
     """
-    if not nx.is_connected(G):
-        raise nx.NetworkXError("Graph not connected.")
     N = G.number_of_nodes()
+    if N == 0:
+        raise nx.NetworkXPointlessConcept("centrality is undefined for the null graph")
     if N < 3:
-        raise nx.NetworkXError("Graph has fewer than three vertices.")
+        raise nx.NetworkXError(
+            f"graph with {N} node{'' if N == 1 else 's'} has fewer than three nodes"
+        )
+
+    if not nx.is_connected(G):
+        raise nx.NetworkXError("graph is not connected")
+
     solvername = {
         "full": FullInverseLaplacian,
         "lu": SuperLUInverseLaplacian,
