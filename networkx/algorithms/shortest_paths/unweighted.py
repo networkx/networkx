@@ -565,7 +565,7 @@ def predecessor(G, source, target=None, cutoff=None, return_seen=None):
                     nextlevel.append(w)
                 elif seen[w] == level:  # add v to predecessor list if it
                     pred[w].append(v)  # is at the correct level
-        if cutoff is not None and cutoff <= level:
+        if cutoff and cutoff <= level:
             break
 
     if target is not None:
