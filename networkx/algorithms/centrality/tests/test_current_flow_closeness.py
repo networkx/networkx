@@ -3,6 +3,8 @@ import pytest
 pytest.importorskip("numpy")
 pytest.importorskip("scipy")
 
+from contextlib import nullcontext as does_not_raise
+
 import networkx as nx
 
 
@@ -32,36 +34,42 @@ class TestFlowClosenessCentrality:
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
-    def test_current_flow_closeness_centrality_not_connected(self):
-        G = nx.Graph()
-        G.add_nodes_from([1, 2, 3])
-        with pytest.raises(nx.NetworkXError):
-            nx.current_flow_closeness_centrality(G)
-
-    def test_current_flow_closeness_centrality_fewer_than_3_vertices(self):
-        G = nx.path_graph(2)
-        with pytest.raises(nx.NetworkXError):
-            nx.current_flow_closeness_centrality(G)
-
-    def test_current_flow_closeness_centrality_not_implemented_for(self):
-        G = nx.DiGraph()
-        G.add_edge(0, 1)
-        with pytest.raises(nx.NetworkXNotImplemented):
-            nx.current_flow_closeness_centrality(G)
-
-        G = nx.MultiGraph()
-        G.add_edges_from([(0, 1), (0, 1)])
-        with pytest.raises(nx.NetworkXNotImplemented):
-            nx.current_flow_closeness_centrality(G)
-
-        G = nx.MultiDiGraph()
-        G.add_edges_from([(0, 1), (0, 1)])
-        with pytest.raises(nx.NetworkXNotImplemented):
-            nx.current_flow_closeness_centrality(G)
-
-    def test_current_flow_closeness_centrality_pointless_concept(self):
-        G = nx.Graph()
-        with pytest.raises(nx.NetworkXPointlessConcept):
+    @pytest.mark.parametrize(
+        ("G", "expectation"),
+        [
+            (
+                nx.Graph(),
+                pytest.raises(
+                    nx.NetworkXPointlessConcept,
+                    match="centrality is undefined for the null graph",
+                ),
+            ),
+            (
+                nx.path_graph(1),
+                pytest.raises(
+                    nx.NetworkXError,
+                    match="graph with 1 node has fewer than three nodes",
+                ),
+            ),
+            (
+                nx.Graph([(0, 1)]),
+                pytest.raises(
+                    nx.NetworkXError,
+                    match="graph with 2 nodes has fewer than three nodes",
+                ),
+            ),
+            (nx.Graph([(0, 1), (1, 2)]), does_not_raise()),
+            (
+                nx.Graph([(0, 1), (2, 3)]),
+                pytest.raises(nx.NetworkXError, match="graph is not connected"),
+            ),
+            (nx.DiGraph(), pytest.raises(nx.NetworkXNotImplemented)),
+            (nx.MultiGraph(), pytest.raises(nx.NetworkXNotImplemented)),
+            (nx.MultiDiGraph(), pytest.raises(nx.NetworkXNotImplemented)),
+        ],
+    )
+    def test_current_flow_closeness_centrality_exceptions(self, G, expectation):
+        with expectation:
             nx.current_flow_closeness_centrality(G)
 
 
