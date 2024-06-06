@@ -96,6 +96,12 @@ def not_implemented_for(*graph_types, which_args=0):
         @not_implemented_for("directed", which_args=(0, 1))
         def ta_function(G, H):
             pass
+
+
+        # check only one argument
+        @not_implemented_for("directed", which_args="H")
+        def sa_function(G, H):
+            pass
     """
     if ("directed" in graph_types) and ("undirected" in graph_types):
         raise ValueError("Function not implemented on directed AND undirected graphs?")
