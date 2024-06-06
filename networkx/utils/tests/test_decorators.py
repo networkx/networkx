@@ -257,6 +257,18 @@ def test_not_implemented_decorator_one_arg(G, type, which_args, expectation):
         (
             nx.Graph(),
             nx.DiGraph(),
+            (0, 0),
+            pytest.raises(nx.NetworkXError),
+        ),
+        (
+            nx.Graph(),
+            nx.DiGraph(),
+            ("G", "G"),
+            pytest.raises(nx.NetworkXError),
+        ),
+        (
+            nx.Graph(),
+            nx.DiGraph(),
             (0, "H"),
             pytest.raises(nx.NetworkXNotImplemented),
         ),
