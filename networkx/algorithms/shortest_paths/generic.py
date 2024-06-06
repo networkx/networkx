@@ -224,7 +224,7 @@ def shortest_path_length(G, source=None, target=None, weight=None, method="dijks
 
     Returns
     -------
-    length: int or iterator
+    length: number or iterator
         If the source and target are both specified, return the length of
         the shortest path from the source to the target.
 
