@@ -1,6 +1,12 @@
 # Install pre-commit hooks via
 # pre-commit install
 
+# This continuous integration section enables
+# autoupdating the pre-commit configuration,
+# ensuring that the hook versions are kept up to date.
+ci:
+  autoupdate_schedule: monthly
+
 repos:
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: ffb6a759a979008c0e6dff86e39f4745a2d9eac4 # frozen: v3.1.0
