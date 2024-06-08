@@ -101,7 +101,7 @@ def domirank(
 
     Examples
     --------
-    >>> G = nx.path_graph(4)
+    >>> G = nx.path_graph(5)
     >>> centrality, sigma, converged = nx.domirank(G)
     >>> print([f"{node} {centrality[node]:0.2f}" for node in centrality])
     ['0 -0.54', '1 1.98', '2 -1.08', '3 1.98', '4 -0.54']
