@@ -200,7 +200,7 @@ def domirank(
         import warnings
 
         # Here we create a warning (I couldn't find a networkxwarning, only exceptions and erros), that suggests to use the iterative formulation of DomiRank rather than the analytical form.
-        if N > 5000:
+        if GAdj.shape[0] > 5000:
             warnings.warn(
                 "The system is large!!! Consider using <analytical = False> function argument for reduced computational time cost."
             )
