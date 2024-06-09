@@ -2,6 +2,9 @@ import pytest
 
 import networkx as nx
 
+pytest.importorskip("numpy")
+pytest.importorskip("scipy")
+
 
 class TestDomirank:
     def test_K5(self):
@@ -85,8 +88,8 @@ class TestDomirank:
             1: 4.496443748474121,
             2: -2.3477983474731445,
         }
-        b, _, bBool = nx.domirank(G, epsilon=1e-7)
-        assert bBool == True
+        b, _, converged = nx.domirank(G, epsilon=1e-7)
+        assert converged
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
 
@@ -94,7 +97,7 @@ class TestDomirank:
         """DomiRank centrality: P3"""
         G = nx.path_graph(3)
         b_answer = {0: -2.364804744720459, 1: 4.5204758644104, 2: -2.364804744720459}
-        b, _, bBool = nx.domirank(G, max_iter=5000)
+        b, _, converged = nx.domirank(G, max_iter=5000)
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
 
@@ -102,14 +105,15 @@ class TestDomirank:
         """DomiRank centrality: P3"""
         G = nx.path_graph(3)
         b_answer = {0: -2.346951484680176, 1: 4.495236396789551, 2: -2.346951484680176}
-        b, _, bBool = nx.domirank(G, check_step=1)
+        b, _, converged = nx.domirank(G, check_step=1)
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
 
 
 class TestDomirankDirected:
-    def __init__(self):
-        self.G = nx.DiGraph()
+    @classmethod
+    def setup_class(cls):
+        G = nx.DiGraph()
 
         edges = [
             (1, 2),
@@ -131,9 +135,9 @@ class TestDomirankDirected:
             (8, 7),
         ]
 
-        self.G.add_edges_from(edges)
-        self.G = self.G.reverse()
-        self.evc = {
+        G.add_edges_from(edges)
+        cls.G = G.reverse()
+        cls.drc = {
             1: 0.8088147044181824,
             2: 1.3506824970245361,
             3: 0.11302878707647324,
@@ -144,7 +148,7 @@ class TestDomirankDirected:
             8: 0.5775589942932129,
         }
 
-        self.evca = {
+        cls.drca = {
             1: 0.8100015022345155,
             2: 1.3502259832012713,
             3: 0.11228691263288304,
@@ -157,21 +161,36 @@ class TestDomirankDirected:
 
     def test_domirank_centrality_directed(self):
         G = self.G
-        b, _, bBool = nx.domirank(G)
-        assert bBool == True
+        b, _, converged = nx.domirank(G)
+        assert converged
         for n in sorted(G):
-            assert b[n] == pytest.approx(self.evc[n], abs=5e-3)
+            assert b[n] == pytest.approx(self.drc[n], abs=5e-3)
 
     def test_domirank_centrality_directed_analytical(self):
         G = self.G
-        b, _, bBool = nx.domirank(G, analytical=True)
-        assert bBool == True
+        b, _, converged = nx.domirank(G, analytical=True)
+        assert converged
         for n in sorted(G):
-            assert b[n] == pytest.approx(self.evca[n], abs=5e-3)
+            assert b[n] == pytest.approx(self.drca[n], abs=5e-3)
 
 
+@pytest.mark.parametrize(
+    "Network, error",
+    [
+        (nx.domirank(nx.Graph()), nx.NetworkXPointlessConcept),
+        (nx.domirank(nx.path_graph(5), sigma=-1), nx.NetworkXUnfeasible),
+        (nx.domirank(nx.path_graph(5), sigma=2), nx.NetworkXUnfeasible),
+        (
+            nx.domirank(nx.path_graph(5), sigma=-1, analytical=True),
+            nx.NetworkXUnfeasible,
+        ),
+        (nx.domirank(nx.MultiGraph()), nx.NetworkXError),
+    ],
+)
+
+# To be removed - @pytest.mark.parametrize() should modularize this and make it more
+# concise.
 class TestDomirankExceptions:
-    # Error testing
     def test_null_graph(self):
         with pytest.raises(nx.NetworkXPointlessConcept):
             G = nx.Graph()

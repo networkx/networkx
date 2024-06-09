@@ -151,9 +151,13 @@ def domirank(
     # Note, this function always uses the recursive definition
     if analytical == False:
         # If the recursive formulation is used, the sigma has to be bounded (competition parameter).
-        if sigma < 0 or sigma > 1:
+        if sigma < 0:
             raise nx.NetworkXUnfeasible(
                 "the competition parameter sigma must be positive and bounded such that sigma: [0,1]"
+            )
+        if sigma > 1:
+            raise nx.NetworkXUnfeasible(
+                "supercharging the competition parameter (sigma > 1) requires the <analytical = True> flag"
             )
         sigma = np.abs(
             sigma
