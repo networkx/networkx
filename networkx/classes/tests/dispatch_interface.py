@@ -49,7 +49,7 @@ def convert(graph):
     raise TypeError(f"Unsupported type of graph: {type(graph)}")
 
 
-class LoopbackBackendInterface:
+class LoopbackDispatcher:
     def __getattr__(self, item):
         try:
             return nx.utils.backends._registered_algorithms[item].orig_func
@@ -183,4 +183,4 @@ class LoopbackBackendInterface:
         return hasattr(self, name)
 
 
-backend_interface = LoopbackBackendInterface()
+dispatcher = LoopbackDispatcher()
