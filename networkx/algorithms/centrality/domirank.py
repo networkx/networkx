@@ -152,7 +152,7 @@ def domirank(
     if analytical == False:
         # If the recursive formulation is used, the sigma has to be bounded (competition parameter).
         if sigma < 0 or sigma > 1:
-            raise nx.NetworkXPointlessConcept(
+            raise nx.NetworkXUnfeasible(
                 "the competition parameter sigma must be positive and bounded such that sigma: [0,1]"
             )
         sigma = np.abs(
@@ -212,7 +212,7 @@ def domirank(
                 "You are supercharging the competition in the system by having sigma > 1, which is only permitted for the analytical solution!"
             )
         if sigma < 0:
-            raise nx.NetworkXPointlessConcept(
+            raise nx.NetworkXUnfeasible(
                 "the competition parameter sigma must be positive - sigma > 0."
             )
         sigma = np.abs(

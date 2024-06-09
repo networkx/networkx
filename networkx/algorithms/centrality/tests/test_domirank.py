@@ -178,17 +178,17 @@ class TestDomirankExceptions:
             nx.domirank(G)
 
     def test_lower_sigma_bounds(self):
-        with pytest.raises(nx.NetworkXPointlessConcept):
+        with pytest.raises(nx.NetworkXUnfeasible):
             G = nx.path_graph(10)
             nx.domirank(G, sigma=-1)
 
     def test_upper_sigma_bounds(self):
-        with pytest.raises(nx.NetworkXPointlessConcept):
+        with pytest.raises(nx.NetworkXUnfeasible):
             G = nx.path_graph(10)
             nx.domirank(G, sigma=2)
 
     def test_analytical_lower_sigma_bounds(self):
-        with pytest.raises(nx.NetworkXPointlessConcept):
+        with pytest.raises(nx.NetworkXUnfeasible):
             G = nx.path_graph(10)
             nx.domirank(G, sigma=-1, analytical=True)
 
