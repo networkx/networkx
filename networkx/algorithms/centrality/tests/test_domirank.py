@@ -195,22 +195,3 @@ class TestDomirankExceptions:
     def test_multigraph(self):
         with pytest.raises(nx.NetworkXException):
             nx.domirank(nx.MultiGraph())
-
-
-testclass = TestDomirank()
-testclass.test_K5()
-testclass.test_P3()
-testclass.test_P3_dt()
-testclass.test_P3_eps()
-testclass.test_P3_check_step()
-testclass.test_P3_max_iter()
-
-testclass = TestDomirankDirected()
-testclass.test_domirank_centrality_directed()
-testclass.test_domirank_centrality_directed_analytical()
-testclass = TestDomirankExceptions()
-testclass.test_null_graph()
-testclass.test_multigraph()
-testclass.test_lower_sigma_bounds()
-testclass.test_upper_sigma_bounds()
-testclass.test_analytical_lower_sigma_bounds()
