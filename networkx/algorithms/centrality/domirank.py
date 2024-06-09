@@ -135,7 +135,9 @@ def domirank(
     import numpy as np
     import scipy as sp
 
-    if type(G) == nx.classes.graph.Graph:  # check if it is a networkx Graph
+    if (
+        type(G) == nx.classes.graph.Graph or type(G) == nx.classes.digraph.DiGraph
+    ):  # check if it is a networkx Graph
         if len(G) == 0:
             raise nx.NetworkXPointlessConcept(
                 "cannot compute centrality for the null graph"
