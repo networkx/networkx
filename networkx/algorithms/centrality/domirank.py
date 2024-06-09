@@ -250,6 +250,9 @@ def _find_smallest_eigenvalue(
     ensuring convergence.
     This function outputs the smallest eigenvalue - i.e. most negative eigenvalue.
     """
+    import numpy
+    import scipy
+
     x = (minVal + maxVal) / G.sum(axis=-1).max()
     minValStored = 0
     for i in range(maxDepth):
