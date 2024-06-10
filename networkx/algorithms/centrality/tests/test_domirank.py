@@ -10,7 +10,8 @@ class TestDomirank:
     def test_K5(self):
         """DomiRank centrality: K5"""
         G = nx.complete_graph(5)
-        b, _, __ = nx.domirank(G)
+        b, _, converged = nx.domirank(G)
+        assert converged
         b_answer = {
             0: 0.7916655540466309,
             1: 0.7916655540466309,
@@ -21,7 +22,8 @@ class TestDomirank:
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
         nstart = {n: 1 for n in G}
-        b, _, __ = nx.domirank(G, analytical=True)
+        b, _, converged = nx.domirank(G, analytical=True)
+        assert converged
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
         b_answer = {
@@ -31,7 +33,8 @@ class TestDomirank:
             3: 0.791666194795491,
             4: 0.7916661947954975,
         }
-        b, _, __ = nx.domirank(G, sigma=0.5)
+        b, _, converged = nx.domirank(G, sigma=0.5)
+        assert converged
         b_answer = {
             0: 0.66666579246521,
             1: 0.66666579246521,
@@ -45,7 +48,8 @@ class TestDomirank:
     def test_P3(self):
         """DomiRank centrality: P3"""
         G = nx.path_graph(3)
-        b, _, __ = nx.domirank(G)
+        b, _, converged = nx.domirank(G)
+        assert converged
         b_answer = {
             0: -2.3477606773376465,
             1: 4.496389865875244,
@@ -55,7 +59,8 @@ class TestDomirank:
             assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
 
         b_answer = {0: -2.366595958759845, 1: 4.523026818398872, 2: -2.366595958759845}
-        b, _, __ = nx.domirank(G, analytical=True)
+        b, _, converged = nx.domirank(G, analytical=True)
+        assert converged
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
 
@@ -64,7 +69,8 @@ class TestDomirank:
             1: 0.609459638595581,
             2: 0.13808214664459229,
         }
-        b, _, __ = nx.domirank(G, sigma=0.5)
+        b, _, converged = nx.domirank(G, sigma=0.5)
+        assert converged
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
 
@@ -76,7 +82,8 @@ class TestDomirank:
             1: 4.523157596588135,
             2: -2.3666865825653076,
         }
-        b, _, __ = nx.domirank(G, dt=0.5)
+        b, _, converged = nx.domirank(G, dt=0.5)
+        assert converged
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
 
@@ -98,6 +105,7 @@ class TestDomirank:
         G = nx.path_graph(3)
         b_answer = {0: -2.364804744720459, 1: 4.5204758644104, 2: -2.364804744720459}
         b, _, converged = nx.domirank(G, max_iter=5000)
+        assert converged
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
 
@@ -106,6 +114,7 @@ class TestDomirank:
         G = nx.path_graph(3)
         b_answer = {0: -2.346951484680176, 1: 4.495236396789551, 2: -2.346951484680176}
         b, _, converged = nx.domirank(G, check_step=1)
+        assert converged
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
 

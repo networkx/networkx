@@ -3,12 +3,12 @@
 import networkx as nx
 from networkx.utils import not_implemented_for
 
-__all__ = ["domirank_centrality"]
+__all__ = ["domirank"]
 
 
+# @nx._dispatchable(edge_attrs="weight")
 @not_implemented_for("multigraph")
-@nx._dispatchable(edge_attrs="weight")
-def domirank_centrality(
+def domirank(
     G, analytical=False, sigma=0.95, dt=0.1, epsilon=1e-5, max_iter=1000, check_step=10
 ):
     r"""Compute the DomiRank centrality for the graph `G`.
