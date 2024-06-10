@@ -20,7 +20,7 @@ def domirank_centrality(
     tunes the balance of DomiRank centrality's integration of local and global topological
     information, to find nodes that are either locally or globally dominant. It is
     important to note that for the iterative formulation of DomiRank (as seen below),
-    the competition parameter is bounded: $\sigma \in [0,\frac{1}{-lambda_N}].
+    the competition parameter is bounded: $\sigma \in [0,1/(-\lambda_N)]$.
     DomiRank is defined as the stationary solution to the dynamical system:
 
     .. math::
