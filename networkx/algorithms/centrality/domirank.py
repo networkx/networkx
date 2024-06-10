@@ -25,7 +25,7 @@ def domirank(
 
     .. math::
 
-        \frac{d \Gamma_i(t)}{dt} = \sigma (d_i - \sum_j A_{ij} \Gamma_j(t)) - \Gamma_i(t),
+        \,d\Gamma_i(t)/dt = \sigma (d_i - \sum_j A_{ij} \Gamma_j(t)) - \Gamma_i(t),
 
     where $A$ is the adjacency matrix and $d_i$ is the degree of node $i$.
     Note that the definition presented here is valid for unweighted, weighted,
@@ -100,6 +100,8 @@ def domirank(
 
     Examples
     --------
+    >>> import pytest
+    >>> pytest.importorskip("scipy")
     >>> G = nx.path_graph(5)
     >>> centrality, sigma, converged = nx.domirank(G)
     >>> print([f"{node} {centrality[node]:0.2f}" for node in centrality])
