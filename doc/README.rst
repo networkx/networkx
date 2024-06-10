@@ -9,12 +9,12 @@ for both the stable and the latest (i.e., development) releases.
 Instructions
 ~~~~~~~~~~~~
 
-To install NetworkX, its dependencies and the one necessary to build
+To install NetworkX, its dependencies and the ones necessary to build
 the docs you can enter the root directory and execute::
 
     pip install .[doc]
 
-Building the example gallery additionally requires the ``extra`` and ``example``::
+Building the example gallery additionally requires the ``extra`` and ``example`` requirements::
 
     pip install .[extra,example]
 

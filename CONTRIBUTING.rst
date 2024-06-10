@@ -47,7 +47,7 @@ Development Workflow
          #
          #
          # Build and install networkx from source
-         # this will also intall required dependencies.
+         # this will also install required dependencies.
          pip install -e .[default,test,developer]
          # (Optional) Install pygraphviz and pydot packages
          # These packages require that you have your system properly configured
