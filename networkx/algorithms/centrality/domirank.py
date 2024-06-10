@@ -114,13 +114,17 @@ def domirank(
     NetworkXPointlessConcept
         If the graph `G` is the null graph.
 
-    Warning
-        If one is supercharging the competition parameter for the
-        analytical solution.
+    NetworkXUnfeasible
+        If sigma is negative (and thus outside its bounds): ``sigma < 0``.
+
+    NetworkXUnfeasible
+        If ``sigma > 1`` with the ``analytical=False`` argument.
 
     Warning
-        If one is using the analytical solution for a large system,
-        i.e. ``len(G) > 5000``, as the algorithm will be slow.
+        If supercharging the competition parameter for the analytical solution: ``sigma > 1``.
+
+    Warning
+        If one is using the analytical solution for a large system, i.e. ``len(G) > 5000``, as the algorithm will be slow.
 
     See Also
     --------
@@ -204,16 +208,16 @@ def domirank(
         # Here we create a warning (I couldn't find a networkxwarning, only exceptions and erros), that suggests to use the iterative formulation of DomiRank rather than the analytical form.
         if GAdj.shape[0] > 5000:
             warnings.warn(
-                "The system is large!!! Consider using <analytical = False> function argument for reduced computational time cost."
+                "The system is large!!! Consider using `analytical = False` function argument for reduced computational time cost."
             )
         # Here we create another warning for sigma being supercharged
         if sigma > 1:
             warnings.warn(
-                "You are supercharging the competition in the system by having sigma > 1, which is only permitted for the analytical solution!"
+                "You are supercharging the competition in the system by having `sigma > 1`, which is only permitted for the analytical solution!"
             )
         if sigma < 0:
             raise nx.NetworkXUnfeasible(
-                "the competition parameter sigma must be positive - sigma > 0."
+                "the competition parameter sigma must be positive - `sigma > 0`."
             )
         sigma = np.abs(
             sigma
