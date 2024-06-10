@@ -189,31 +189,3 @@ class TestDomirankExceptions:
     def test_domirank_exceptions(self, G, analytical, sigma, expectation):
         with expectation:
             nx.domirank(G, sigma=sigma, analytical=analytical)
-
-
-# To be removed - @pytest.mark.parametrize() should modularize this and make it more
-# concise.
-# class TestDomirankExceptions:
-#    def test_null_graph(self):
-#        with pytest.raises(nx.NetworkXPointlessConcept):
-#            G = nx.Graph()
-#            nx.domirank(G)
-#
-#    def test_lower_sigma_bounds(self):
-#        with pytest.raises(nx.NetworkXUnfeasible):
-#            G = nx.path_graph(10)
-#            nx.domirank(G, sigma=-1)
-#
-#    def test_upper_sigma_bounds(self):
-#        with pytest.raises(nx.NetworkXUnfeasible):
-#            G = nx.path_graph(10)
-#            nx.domirank(G, sigma=2)
-#
-#    def test_analytical_lower_sigma_bounds(self):
-#        with pytest.raises(nx.NetworkXUnfeasible):
-#            G = nx.path_graph(10)
-#            nx.domirank(G, sigma=-1, analytical=True)
-#
-#    def test_multigraph(self):
-#        with pytest.raises(nx.NetworkXException):
-#            nx.domirank(nx.MultiGraph())
