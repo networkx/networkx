@@ -11,7 +11,7 @@ __all__ = ["domirank"]
 def domirank(
     G, analytical=False, sigma=0.95, dt=0.1, epsilon=1e-5, max_iter=1000, check_step=10
 ):
-    r"""Compute the DomiRank centrality for the graph G.
+    r"""Compute the DomiRank centrality for the graph `G`.
 
     DomiRank centrality computes the centrality for a node by adding
     1 minus the centrality of its neighborhood. This essentially finds the
