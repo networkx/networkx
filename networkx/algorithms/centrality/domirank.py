@@ -57,7 +57,7 @@ def domirank(
     which instead of fighting for their resources/dominance, directly
     give up these resources to their neighborhood.
 
-    Finally, it is not required that the network is weakly or strongly
+    Finally, DomiRank centrality does not require the network to be weakly or strongly
     connected, and can be applied to networks with many components.
 
     Parameters
