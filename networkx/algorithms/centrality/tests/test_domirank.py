@@ -174,44 +174,46 @@ class TestDomirankDirected:
             assert b[n] == pytest.approx(self.drca[n], abs=5e-3)
 
 
-# @pytest.mark.parametrize(
-#    "Network, error",
-#    [
-#        (nx.domirank(nx.Graph()), pytest.raises(nx.NetworkXPointlessConcept)),
-#        (nx.domirank(nx.path_graph(5), sigma=-1), pytest.raises(nx.NetworkXUnfeasible)),
-#        (nx.domirank(nx.path_graph(5), sigma=2), pytest.raises(nx.NetworkXUnfeasible)),
-#        (nx.domirank(nx.MultiGraph()), pytest.raises(nx.NetworkXError)),
-#                (
-#                    nx.domirank(nx.path_graph(5), sigma=-1, analytical=True),
-#                    pytest.raises(nx.NetworkXUnfeasible), #<-- comma = linterproblem.
-#                ),
-#    ],
-# )
+class TestDomirankExceptions:
+    @pytest.mark.parametrize(
+        ("G", "analytical", "sigma", "expectation"),
+        [
+            (nx.Graph(), False, 0.95, pytest.raises(nx.NetworkXPointlessConcept)),
+            (nx.path_graph(10), False, -1, pytest.raises(nx.NetworkXUnfeasible)),
+            (nx.path_graph(10), False, 2, pytest.raises(nx.NetworkXUnfeasible)),
+            (nx.path_graph(10), True, -1, pytest.raises(nx.NetworkXUnfeasible)),
+            (nx.path_graph(10), False, 2, pytest.raises(nx.NetworkXUnfeasible)),
+            (nx.MultiGraph(), False, 0.95, pytest.raises(nx.NetworkXNotImplemented)),
+        ],
+    )
+    def test_domirank_exceptions(self, G, analytical, sigma, expectation):
+        with expectation:
+            nx.domirank(G, sigma=sigma, analytical=analytical)
 
 
 # To be removed - @pytest.mark.parametrize() should modularize this and make it more
 # concise.
-class TestDomirankExceptions:
-    def test_null_graph(self):
-        with pytest.raises(nx.NetworkXPointlessConcept):
-            G = nx.Graph()
-            nx.domirank(G)
-
-    def test_lower_sigma_bounds(self):
-        with pytest.raises(nx.NetworkXUnfeasible):
-            G = nx.path_graph(10)
-            nx.domirank(G, sigma=-1)
-
-    def test_upper_sigma_bounds(self):
-        with pytest.raises(nx.NetworkXUnfeasible):
-            G = nx.path_graph(10)
-            nx.domirank(G, sigma=2)
-
-    def test_analytical_lower_sigma_bounds(self):
-        with pytest.raises(nx.NetworkXUnfeasible):
-            G = nx.path_graph(10)
-            nx.domirank(G, sigma=-1, analytical=True)
-
-    def test_multigraph(self):
-        with pytest.raises(nx.NetworkXException):
-            nx.domirank(nx.MultiGraph())
+# class TestDomirankExceptions:
+#    def test_null_graph(self):
+#        with pytest.raises(nx.NetworkXPointlessConcept):
+#            G = nx.Graph()
+#            nx.domirank(G)
+#
+#    def test_lower_sigma_bounds(self):
+#        with pytest.raises(nx.NetworkXUnfeasible):
+#            G = nx.path_graph(10)
+#            nx.domirank(G, sigma=-1)
+#
+#    def test_upper_sigma_bounds(self):
+#        with pytest.raises(nx.NetworkXUnfeasible):
+#            G = nx.path_graph(10)
+#            nx.domirank(G, sigma=2)
+#
+#    def test_analytical_lower_sigma_bounds(self):
+#        with pytest.raises(nx.NetworkXUnfeasible):
+#            G = nx.path_graph(10)
+#            nx.domirank(G, sigma=-1, analytical=True)
+#
+#    def test_multigraph(self):
+#        with pytest.raises(nx.NetworkXException):
+#            nx.domirank(nx.MultiGraph())
