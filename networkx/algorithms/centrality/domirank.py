@@ -100,8 +100,6 @@ def domirank(
 
     Examples
     --------
-    >>> import pytest
-    >>> pytest.importorskip("scipy")
     >>> G = nx.path_graph(5)
     >>> centrality, sigma, converged = nx.domirank(G)
     >>> print([f"{node} {centrality[node]:0.2f}" for node in centrality])
