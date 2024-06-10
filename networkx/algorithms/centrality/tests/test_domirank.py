@@ -109,11 +109,11 @@ class TestDomirank:
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
 
-    def test_P3_check_step(self):
+    def test_P3_patience(self):
         """DomiRank centrality: P3"""
         G = nx.path_graph(3)
         b_answer = {0: -2.346951484680176, 1: 4.495236396789551, 2: -2.346951484680176}
-        b, _, converged = nx.domirank(G, check_step=1)
+        b, _, converged = nx.domirank(G, patience=1)
         assert converged
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=5e-3)

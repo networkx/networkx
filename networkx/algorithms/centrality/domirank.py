@@ -9,7 +9,7 @@ __all__ = ["domirank"]
 # @nx._dispatchable(edge_attrs="weight")
 @not_implemented_for("multigraph")
 def domirank(
-    G, analytical=False, sigma=0.95, dt=0.1, epsilon=1e-5, max_iter=1000, check_step=10
+    G, analytical=False, sigma=0.95, dt=0.1, epsilon=1e-5, max_iter=1000, patience=10
 ):
     r"""Compute the DomiRank centrality for the graph `G`.
 
@@ -20,7 +20,7 @@ def domirank(
     tunes the balance of DomiRank centrality's integration of local and global topological
     information, to find nodes that are either locally or globally dominant. It is
     important to note that for the iterative formulation of DomiRank (as seen below),
-    the competition parameter is bounded: $\sigma \in [0,1/(-\lambda_N)]$.
+    the competition parameter is bounded: $\sigma \in [0,1/|\lambda_N|]$.
     DomiRank centrality is defined as the stationary solution to the dynamical system:
 
     .. math::
@@ -32,7 +32,8 @@ def domirank(
     directed, and undirected networks, so in the more general case,
     a non-zero entry of the adjacency matrix $A_{ij}=w_{ij}$
     represents the existence of a link from node $i$ to node $j$
-    with a weight $w_{ij}$. In general, one will notice that important
+    with a weight $w_{ij}$. The steady state solution to this equation (DomiRank)
+    is computed using Newton Iterations. In general, one will notice that important
     nodes identified by DomiRank will be connected to a lot of other
     unimportant nodes. However, other positionally important nodes
     can also be dominated by joint-dominance of nodes, that work together
@@ -66,25 +67,28 @@ def domirank(
         A NetworkX graph.
 
     analytical: bool, optional (default=False)
-        whether the analytical or iterative formulation
+      whether the analytical or iterative formulation
       for computing DomiRank should be used.
+      It is recommended that ''analytical=False'' for
+      large networks.
 
     sigma: float, optional (default=0.95)
-     The level of competition for DomiRank.
+      The level of competition for DomiRank. Must satisfy
+      that $\sigma \in (0,1)$.
 
     dt: float, optional (default=0.1)
-     The step size for the Newton iteration.
+      The step size for the Newton iteration.
 
     epsilon: float, optional (default=1e-5)
-     The relative stopping criterion for convergence.
+      The relative stopping criterion for convergence.
 
     max_iter: integer, optional (default=50)
       Maximum number of Newton iterations allowed.
+      It is recommended that ''max_iter >= 50''.
 
-    check_step: integer, optional (default=10)
-     The number of steps between checking whether or
-     not DomiRank has converged/diverged.
-     Note, this paramter must satisfy check_step > 2.
+    patience: integer, optional (default=10)
+     The number of steps between convergence checks.
+     It is recommended that ''patience >= 10''.
 
 
     Returns
@@ -110,12 +114,10 @@ def domirank(
     NetworkXPointlessConcept
         If the graph `G` is the null graph.
 
-    NetworkXError
-        If the input for G is not a network.graph.classes.Graph object
-
     Warning
         If one is supercharging the competition parameter for the
         analytical solution.
+
     Warning
         If one is using the analytical solution for a large system,
         i.e. ``len(G) > 5000``, as the algorithm will be slow.
@@ -135,18 +137,12 @@ def domirank(
     import numpy as np
     import scipy as sp
 
-    if (
-        type(G) == nx.classes.graph.Graph or type(G) == nx.classes.digraph.DiGraph
-    ):  # check if it is a networkx Graph
-        if len(G) == 0:
-            raise nx.NetworkXPointlessConcept(
-                "cannot compute centrality for the null graph"
-            )
-        GAdj = nx.to_scipy_sparse_array(G)  # convert to scipy sparse csr array
-    else:
-        raise nx.NetworkXError(
-            "can only compute the centrality for nx.classes.graph.Graph object"
+    if len(G) == 0:
+        raise nx.NetworkXPointlessConcept(
+            "cannot compute centrality for the null graph"
         )
+    GAdj = nx.to_scipy_sparse_array(G)  # convert to scipy sparse csr array
+
     # Here we renormalize sigma with the smallest eigenvalue (most negative eigenvalue) by calling the "hidden" function _find_smallest_eigenvalue()
     # Note, this function always uses the recursive definition
     if analytical == False:
@@ -167,7 +163,7 @@ def domirank(
                 dt=dt,
                 epsilon=epsilon,
                 max_iter=max_iter,
-                check_step=check_step,
+                patience=patience,
             )
         )
         # store this to prevent more redundant calculations in the future
@@ -175,7 +171,7 @@ def domirank(
         # initalize a proportionally (to system size) small non-zero uniform vector
         Psi = np.ones(pGAdj.shape[0]).astype(np.float32) / pGAdj.shape[0]
         # initialize a zero array to store values (yes, this could be done with a smaller array with some smart indexing, but this is not computationally or memory heavy)
-        maxVals = np.zeros(int(max_iter / check_step)).astype(np.float32)
+        maxVals = np.zeros(int(max_iter / patience)).astype(np.float32)
         # ensure dt is a float
         dt = np.float32(dt)
         # start a counter
@@ -188,7 +184,7 @@ def domirank(
             # Newton iteration addition step
             Psi += tempVal.real
             # Here we do the checking to see if we are diverging
-            if i % check_step == 0:
+            if i % patience == 0:
                 if np.abs(tempVal).sum() < boundary:
                     break
                 maxVals[j] = tempVal.max()
@@ -227,7 +223,7 @@ def domirank(
                 dt=dt,
                 epsilon=epsilon,
                 max_iter=max_iter,
-                check_step=check_step,
+                patience=patience,
             )
         )
         Psi = sp.sparse.linalg.spsolve(
@@ -246,7 +242,7 @@ def _find_smallest_eigenvalue(
     dt=0.1,
     epsilon=1e-5,
     max_iter=100,
-    check_step=10,
+    patience=10,
 ):
     """
     This function is simply used to find the smallest eigenvalue, by seeing when the DomiRank algorithm diverges. It uses
@@ -263,7 +259,7 @@ def _find_smallest_eigenvalue(
         if maxVal - minVal < epsilon:
             break
         if _domirank(
-            G, sigma=x, dt=dt, epsilon=epsilon, max_iter=max_iter, check_step=check_step
+            G, sigma=x, dt=dt, epsilon=epsilon, max_iter=max_iter, patience=patience
         ):
             minVal = x
             x = (minVal + maxVal) / 2
@@ -275,7 +271,7 @@ def _find_smallest_eigenvalue(
     return -1 / finalVal
 
 
-def _domirank(G, sigma=0, dt=0.1, epsilon=1e-5, max_iter=1000, check_step=10):
+def _domirank(G, sigma=0, dt=0.1, epsilon=1e-5, max_iter=1000, patience=10):
     """
     Is used to find the smallest eigenvalue - i.e. called in the _find_smallest_eigenvalue() function.
     It only outputs a boolean.
@@ -285,14 +281,14 @@ def _domirank(G, sigma=0, dt=0.1, epsilon=1e-5, max_iter=1000, check_step=10):
 
     pGAdj = sigma * G.astype(np.float32)
     Psi = np.ones(pGAdj.shape[0]).astype(np.float32) / pGAdj.shape[0]
-    maxVals = np.zeros(int(max_iter / check_step)).astype(np.float32)
+    maxVals = np.zeros(int(max_iter / patience)).astype(np.float32)
     dt = np.float32(dt)
     j = 0
     boundary = epsilon * pGAdj.shape[0] * dt
     for i in range(max_iter):
         tempVal = ((pGAdj @ (1 - Psi)) - Psi) * dt
         Psi += tempVal.real
-        if i % check_step == 0:
+        if i % patience == 0:
             if np.abs(tempVal).sum() < boundary:
                 break
             maxVals[j] = tempVal.max()
