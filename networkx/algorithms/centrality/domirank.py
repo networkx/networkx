@@ -50,12 +50,12 @@ def domirank(
     where $I$ is the identity matrix. This analytical equation can be solved
     as a linear system.
 
-    Interestingly, DomiRank tends to have only positive values for
-    relatively low competition levels (small $\sigma$), however, as
-    the competition levels increase, negative values might emerge.
-    Nodes with negative dominance represent completely submissive nodes,
-    which instead of fighting for their resources/dominance, directly
-    give up these resources to their neighborhood.
+    DomiRank tends to have only positive values for relatively low
+    competition levels (small), however as the competition
+    levels increase, negative values might emerge. Nodes with negative
+    dominance represent completely submissive nodes, which instead
+    of fighting for their resources/dominance, directly give up these
+    resources to their neighborhood.
 
     Finally, DomiRank centrality does not require the network to be weakly or strongly
     connected, and can be applied to networks with many components.
