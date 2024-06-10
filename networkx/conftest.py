@@ -248,6 +248,7 @@ needs_scipy = [
     "algorithms/link_analysis/hits_alg.py",
     "algorithms/link_analysis/pagerank_alg.py",
     "algorithms/node_classification.py",
+    "algorithms/polynomials.py",
     "algorithms/similarity.py",
     "algorithms/tree/mst.py",
     "algorithms/walks.py",
