@@ -94,13 +94,13 @@ def domirank(
     Returns
     -------
     nodes : dictionary
-       Dictionary keyed by node with DomiRank centrality of the node as value.
+        Dictionary keyed by node with DomiRank centrality of the node as value.
 
     sigma : float
-       $\sigma$ normalized by the smallest eigenvalue.
+        $\sigma$ normalized by the smallest eigenvalue.
 
     converged: boolean
-       Whether the centrality computation converged.
+        Whether the centrality computation converged.
 
     Examples
     --------
@@ -135,8 +135,8 @@ def domirank(
     References
     ----------
     .. [1] Engsig, M., Tejedor, A., Moreno, Y. et al.
-    "DomiRank Centrality reveals structural fragility of complex networks via node dominance."
-    Nat Commun 15, 56 (2024). https://doi.org/10.1038/s41467-023-44257-0
+        "DomiRank Centrality reveals structural fragility of complex networks via node dominance."
+        Nat Commun 15, 56 (2024). https://doi.org/10.1038/s41467-023-44257-0
     """
     import numpy as np
     import scipy as sp
