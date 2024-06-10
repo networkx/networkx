@@ -35,7 +35,7 @@ def domirank_centrality(
     with a weight $w_{ij}$. In general, one will notice that important
     nodes identified by DomiRank will be connected to a lot of other
     unimportant nodes. However, other positionally important nodes
-    can also be dominanted by joint-dominance of nodes, that work together
+    can also be dominated by joint-dominance of nodes, that work together
     in order to dominate another positionally important node. This centrality
     has a lot of interesting emergent phenomena, so it is recommend to
     see [1] for more information. That being said, DomiRank can also be
