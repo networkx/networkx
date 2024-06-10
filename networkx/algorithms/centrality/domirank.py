@@ -39,7 +39,7 @@ def domirank(
     in order to dominate another positionally important node. This centrality
     has a lot of interesting emergent phenomena, so it is recommend to
     see [1] for more information. That being said, DomiRank can also be
-    expressed in its analytical form, where, the competition can now be
+    expressed in its analytical form, where the competition can now be
     supercharged - i.e. $\sigma \in [0,\inf]$. The analytical equation
     takes the form:
 
