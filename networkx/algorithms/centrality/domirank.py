@@ -33,7 +33,7 @@ def domirank(
     a non-zero entry of the adjacency matrix $A_{ij}=w_{ij}$
     represents the existence of a link from node $i$ to node $j$
     with a weight $w_{ij}$. The steady state solution to this equation (DomiRank)
-    is computed using Newton Iterations. In general, one will notice that important
+    is computed using Newto's method. In general, one will notice that important
     nodes identified by DomiRank will be connected to a lot of other
     unimportant nodes. However, other positionally important nodes
     can also be dominated by joint-dominance of nodes, that work together
@@ -67,28 +67,28 @@ def domirank(
         A NetworkX graph.
 
     analytical: bool, optional (default=False)
-      whether the analytical or iterative formulation
-      for computing DomiRank should be used.
-      It is recommended that ''analytical=False'' for
-      large networks.
+        whether the analytical or iterative formulation
+        for computing DomiRank should be used.
+        It is recommended that ''analytical=False'' for
+        large networks.
 
     sigma: float, optional (default=0.95)
-      The level of competition for DomiRank. Must satisfy
-      that $\sigma \in (0,1)$.
+        The level of competition for DomiRank. Must satisfy
+        that $\sigma \in (0,1)$.
 
     dt: float, optional (default=0.1)
-      The step size for the Newton iteration.
+        The step size for the Newton iteration.
 
     epsilon: float, optional (default=1e-5)
-      The relative stopping criterion for convergence.
+        The relative stopping criterion for convergence.
 
     max_iter: integer, optional (default=50)
-      Maximum number of Newton iterations allowed.
-      It is recommended that ''max_iter >= 50''.
+        Maximum number of Newton iterations allowed.
+        It is recommended that ''max_iter >= 50''.
 
     patience: integer, optional (default=10)
-     The number of steps between convergence checks.
-     It is recommended that ''patience >= 10''.
+        The number of steps between convergence checks.
+        It is recommended that ''patience >= 10''.
 
 
     Returns
@@ -124,7 +124,7 @@ def domirank(
 
     See Also
     --------
-    :func:`scipy.sparse.linalg.solve`
+    :func:`~networkx.algorithms.centrality.degree_centrality`
     :func:`~networkx.algorithms.link_analysis.pagerank_alg.pagerank`
     :func:`~networkx.algorithms.link_analysis.hits_alg.hits`
 
