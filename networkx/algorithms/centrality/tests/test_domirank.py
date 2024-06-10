@@ -174,19 +174,20 @@ class TestDomirankDirected:
             assert b[n] == pytest.approx(self.drca[n], abs=5e-3)
 
 
-@pytest.mark.parametrize(
-    "Network, error",
-    [
-        (nx.domirank(nx.Graph()), pytest.raises(nx.NetworkXPointlessConcept)),
-        (nx.domirank(nx.path_graph(5), sigma=-1), pytest.raises(nx.NetworkXUnfeasible)),
-        (nx.domirank(nx.path_graph(5), sigma=2), pytest.raises(nx.NetworkXUnfeasible)),
-        (nx.domirank(nx.MultiGraph()), pytest.raises(nx.NetworkXError)),
-        #        (
-        #            nx.domirank(nx.path_graph(5), sigma=-1, analytical=True),
-        #            pytest.raises(nx.NetworkXUnfeasible),
-        #        ),
-    ],
-)
+# @pytest.mark.parametrize(
+#    "Network, error",
+#    [
+#        (nx.domirank(nx.Graph()), pytest.raises(nx.NetworkXPointlessConcept)),
+#        (nx.domirank(nx.path_graph(5), sigma=-1), pytest.raises(nx.NetworkXUnfeasible)),
+#        (nx.domirank(nx.path_graph(5), sigma=2), pytest.raises(nx.NetworkXUnfeasible)),
+#        (nx.domirank(nx.MultiGraph()), pytest.raises(nx.NetworkXError)),
+#                (
+#                    nx.domirank(nx.path_graph(5), sigma=-1, analytical=True),
+#                    pytest.raises(nx.NetworkXUnfeasible), #<-- comma = linterproblem.
+#                ),
+#    ],
+# )
+
 
 # To be removed - @pytest.mark.parametrize() should modularize this and make it more
 # concise.
