@@ -13,7 +13,7 @@ def domirank_centrality(
 ):
     r"""Compute the DomiRank centrality for the graph `G`.
 
-    DomiRank centrality computes the centrality for a node by adding
+    DomiRank centrality [1]_ computes the centrality for a node by adding
     1 minus the centrality of its neighborhood. This essentially finds the
     dominance of a node in its neighborhood, where the parameter $\sigma$ determines
     the amount of competition in the system. The competition parameter $\sigma$
@@ -21,7 +21,7 @@ def domirank_centrality(
     information, to find nodes that are either locally or globally dominant. It is
     important to note that for the iterative formulation of DomiRank (as seen below),
     the competition parameter is bounded: $\sigma \in [0,1/(-\lambda_N)]$.
-    DomiRank is defined as the stationary solution to the dynamical system:
+    DomiRank centrality is defined as the stationary solution to the dynamical system:
 
     .. math::
 
@@ -38,7 +38,7 @@ def domirank_centrality(
     can also be dominated by joint-dominance of nodes, that work together
     in order to dominate another positionally important node. This centrality
     has a lot of interesting emergent phenomena, so it is recommend to
-    see [1] for more information. That being said, DomiRank can also be
+    see [1]_ for more information. That being said, DomiRank centrality can also be
     expressed in its analytical form, where the competition can now be
     supercharged - i.e. $\sigma \in [0,+\infty)$. The analytical equation
     takes the form:
