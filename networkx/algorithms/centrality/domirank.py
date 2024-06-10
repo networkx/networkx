@@ -63,10 +63,10 @@ def domirank(
     Parameters
     ----------
     G : graph
-      A networkx graph.
+        A NetworkX graph.
 
-    analytical: bool, optinal (default=False)
-      Boolean representing if the analytical or iterative formulation
+    analytical: bool, optional (default=False)
+        whether the analytical or iterative formulation
       for computing DomiRank should be used.
 
     sigma: float, optional (default=0.95)
@@ -90,13 +90,13 @@ def domirank(
     Returns
     -------
     nodes : dictionary
-       Dictionary of nodes with DomiRank centrality as the value.
+       Dictionary keyed by node with DomiRank centrality of the node as value.
 
     sigma : float
-       The input $\sigma \in [0,1]$ normalized by the smallest eigenvalue
+       $\sigma$ normalized by the smallest eigenvalue.
 
     converged: boolean
-       A boolean representing whether or not the method did not diverge.
+       Whether the centrality computation converged.
 
     Examples
     --------
@@ -108,7 +108,7 @@ def domirank(
     Raises
     ------
     NetworkXPointlessConcept
-        If the graph G is the null graph.
+        If the graph `G` is the null graph.
 
     NetworkXError
         If the input for G is not a network.graph.classes.Graph object
@@ -117,8 +117,8 @@ def domirank(
         If one is supercharging the competition parameter for the
         analytical solution.
     Warning
-        If one is using the analytical solution for a large system
-        - i.e. len(G) > 5000, as the algorithm will be slow.
+        If one is using the analytical solution for a large system,
+        i.e. ``len(G) > 5000``, as the algorithm will be slow.
 
     See Also
     --------
