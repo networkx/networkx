@@ -44,19 +44,14 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
     Returns
     -------
     nodes : dictionary
-        Dictionary of nodes with current flow closeness centrality as the value.
+        Dictionary keyed by node with current flow closeness centrality as value.
 
     Raises
     ------
     NetworkXNotImplemented
         If `G` is directed and/or a multigraph.
 
-    NetworkXPointlessConcept
-        If `G` is the null graph.
-
     NetworkXError
-        If `G` has fewer than three nodes.
-
         If `G` is not connected.
 
     See Also
@@ -85,11 +80,9 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
     """
     N = G.number_of_nodes()
     if N == 0:
-        raise nx.NetworkXPointlessConcept("centrality is undefined for the null graph")
-    if N < 3:
-        raise nx.NetworkXError(
-            f"graph with {N} node{'' if N == 1 else 's'} has fewer than three nodes"
-        )
+        return {}
+    elif N == 1:
+        return {nx.utils.arbitrary_element(G): 1.0}
 
     if not nx.is_connected(G):
         raise nx.NetworkXError("graph is not connected")
