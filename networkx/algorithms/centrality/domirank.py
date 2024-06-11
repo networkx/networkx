@@ -155,13 +155,13 @@ def domirank(
             )
         if alpha > 1:
             raise nx.NetworkXUnfeasible(
-                "supercharging the competition parameter (alpha > 1) requires the <analytical = True> flag"
+                "supercharging the competition parameter (alpha > 1) requires analytical=True"
             )
         sigma = np.abs(
             alpha
             / _find_smallest_eigenvalue(
                 GAdj,
-                maxDepth=int(max_iter / 5),
+                maxDepth=max_iter // 5,
                 dt=dt,
                 epsilon=epsilon,
                 max_iter=max_iter,
@@ -171,9 +171,9 @@ def domirank(
         # store this to prevent more redundant calculations in the future
         pGAdj = sigma * GAdj.astype(np.float32)
         # initalize a proportionally (to system size) small non-zero uniform vector
-        Psi = np.ones(pGAdj.shape[0]).astype(np.float32) / pGAdj.shape[0]
+        psi = np.ones(pGAdj.shape[0], dtype=np.float32) / pGAdj.shape[0]
         # initialize a zero array to store values (yes, this could be done with a smaller array with some smart indexing, but this is not computationally or memory heavy)
-        maxVals = np.zeros(int(max_iter / patience)).astype(np.float32)
+        maxVals = np.zeros(max_iter // patience, dtype=np.float32)
         # ensure dt is a float
         dt = np.float32(dt)
         # start a counter
@@ -249,7 +249,7 @@ def _find_smallest_eigenvalue(
     """
     This function is simply used to find the smallest eigenvalue, by seeing when the DomiRank algorithm diverges. It uses
     a kind of binary search algorithm, however, with a bias to larger eigenvalues, as finding divergence is faster than
-    ensuring convergence.
+    verifying convergence.
     This function outputs the smallest eigenvalue - i.e. most negative eigenvalue.
     """
     import numpy
