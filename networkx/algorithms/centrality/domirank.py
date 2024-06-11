@@ -20,7 +20,7 @@ def domirank(
     The competition parameter $\alpha$ tunes the balance of DomiRank centrality's
     integration of local and global topological information, to find nodes that are either
     locally or globally dominant. It is important to note that for the iterative formulation
-    of DomiRank (as seen below) the competition parameter is bounded: $\sigma \in [0,1/|\lambda_N|]$.
+    of DomiRank (as seen below) the competition parameter is bounded: $\sigma \in (0,1/|\lambda_N|]$.
     The DomiRank centrality of node $i$ is defined as the stationary solution to the dynamical system:
 
     .. math::
@@ -116,7 +116,19 @@ def domirank(
         If alpha is negative (and thus outside its bounds): ``alpha < 0``.
 
     NetworkXUnfeasible
-        If ``alpha > 1`` with the ``analytical=False`` argument.
+        If ``alpha > 1`` with the ``analytical = False`` argument.
+
+    NetworkXAlgorithmError
+        If ``patience > max_iter``.
+
+    NetworkXAlgorithmError
+        If ``patience < 5``.
+
+    NetworkXAlgorithmError
+        If dt is not in the bounds ``0 < dt < 1``.
+
+    NetworkXAlgorithmError
+        If epsilon is negative ``epsilon < 0``.
 
     Warning
         If supercharging the competition parameter for the analytical solution: ``alpha > 1``.
@@ -141,7 +153,19 @@ def domirank(
 
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
-            "cannot compute centrality for the null graph"
+            "cannot compute centrality for the null graph."
+        )
+    if patience > max_iter:
+        raise nx.NetworkXAlgorithmError("it is mandatory that `max_iter > patience`.")
+    if patience < 5:
+        raise nx.NetworkXAlgorithmError("it is mandatory that `patience >= 5`.")
+    if dt < 0 or dt > 1:
+        raise nx.NetworkXAlgorithmError(
+            "it is mandatory that dt is bounded such that: `0 < dt <= 1`."
+        )
+    if epsilon < 0:
+        raise nx.NetworkXAlgorithmError(
+            "it is mandatory that `epsilon > 0` and recommended that `epsilon = 1e-5`."
         )
     GAdj = nx.to_scipy_sparse_array(G)  # convert to scipy sparse csr array
 
@@ -156,7 +180,7 @@ def domirank(
     if alpha > 1:
         if analytical == False:
             raise nx.NetworkXUnfeasible(
-                "supercharging the competition parameter (`alpha > 1`) requires the `analytical = True` flag"
+                "supercharging the competition parameter (`alpha > 1`) requires the `analytical = True` flag."
             )
         else:
             import warnings
@@ -171,73 +195,41 @@ def domirank(
 
     # Here we renormalize alpha with the smallest eigenvalue (most negative eigenvalue) by calling the "hidden" function _find_smallest_eigenvalue()
     # Note, this function always uses the iterative definition
-    if analytical == False:
-        sigma = np.abs(
-            alpha
-            / _find_smallest_eigenvalue(
-                GAdj,
-                maxDepth=int(max_iter / 5),
-                dt=dt,
-                epsilon=epsilon,
-                max_iter=max_iter,
-                patience=patience,
-            )
+    sigma = np.abs(
+        alpha
+        / _find_smallest_eigenvalue(
+            GAdj,
+            max_depth=max_iter // 5,
+            dt=dt,
+            epsilon=epsilon,
+            max_iter=max_iter,
+            patience=patience,
         )
-        # store this to prevent more redundant calculations in the future
-        pGAdj = sigma * GAdj.astype(np.float32)
-        # initalize a proportionally (to system size) small non-zero uniform vector
-        Psi = np.ones(pGAdj.shape[0]).astype(np.float32) / pGAdj.shape[0]
-        # initialize a zero array to store values (yes, this could be done with a smaller array with some smart indexing, but this is not computationally or memory heavy)
-        maxVals = np.zeros(int(max_iter / patience)).astype(np.float32)
-        # ensure dt is a float
-        dt = np.float32(dt)
-        # start a counter
-        j = 0
-        # set up a boundary condition for stopping divergence
-        boundary = epsilon * pGAdj.shape[0] * dt
-        for i in range(max_iter):
-            # DomiRank iterative definition
-            tempVal = ((pGAdj @ (1 - Psi)) - Psi) * dt
-            # Newton iteration addition step
-            Psi += tempVal.real
-            # Here we do the checking to see if we are diverging
-            if i % patience == 0:
-                if np.abs(tempVal).sum() < boundary:
-                    break
-                maxVals[j] = tempVal.max()
-                if j >= 2:
-                    if maxVals[j] > maxVals[j - 1] and maxVals[j - 1] > maxVals[j - 2]:
-                        # If we are diverging, return the current step, but, with the argument that you have diverged.
-                        Psi = dict(zip(G, (Psi).tolist()))
-                        return Psi, sigma, False
-                j += 1
-        Psi = dict(zip(G, (Psi).tolist()))
-        return Psi, sigma, True
-    else:
-        sigma = np.abs(
-            alpha
-            / _find_smallest_eigenvalue(
-                GAdj,
-                maxDepth=int(max_iter / 5),
-                dt=dt,
-                epsilon=epsilon,
-                max_iter=max_iter,
-                patience=patience,
-            )
-        )
+    )
+    if analytical:
+        converged = None
         Psi = sp.sparse.linalg.spsolve(
             sigma * GAdj + sp.sparse.identity(GAdj.shape[0]), sigma * GAdj.sum(axis=-1)
         )
-        Psi = dict(zip(G, (Psi).tolist()))
-        return Psi, sigma, True
+    else:
+        Psi, sigma, converged = _domirank_iterative(
+            GAdj,
+            sigma=sigma,
+            dt=dt,
+            epsilon=epsilon,
+            max_iter=max_iter,
+            patience=patience,
+        )
+    Psi = dict(zip(G, (Psi).tolist()))
+    return Psi, sigma, converged
 
 
 ##### THE FUNCTIONS HEREUNDER SHOULD BE HIDDEN FUNCTIONS #####
 def _find_smallest_eigenvalue(
     G,
-    minVal=0,
-    maxVal=1,
-    maxDepth=100,
+    min_val=0,
+    max_val=1,
+    max_depth=100,
     dt=0.1,
     epsilon=1e-5,
     max_iter=100,
@@ -252,25 +244,26 @@ def _find_smallest_eigenvalue(
     import numpy
     import scipy
 
-    x = (minVal + maxVal) / G.sum(axis=-1).max()
-    minValStored = 0
-    for i in range(maxDepth):
-        if maxVal - minVal < epsilon:
+    x = (min_val + max_val) / G.sum(axis=-1).max()
+    for __ in range(max_depth):
+        if max_val - min_val < epsilon:
             break
-        if _domirank(
+        ___, ____, converged = _domirank_iterative(
             G, sigma=x, dt=dt, epsilon=epsilon, max_iter=max_iter, patience=patience
-        ):
-            minVal = x
-            x = (minVal + maxVal) / 2
-            minValStored = minVal
+        )
+        if converged:
+            min_val = x
+            x = (min_val + max_val) / 2
         else:
-            maxVal = (x + maxVal) / 2
-            x = (minVal + maxVal) / 2
-    finalVal = (maxVal + minVal) / 2
-    return -1 / finalVal
+            max_val = (x + max_val) / 2
+            x = (min_val + max_val) / 2
+    final_val = (max_val + min_val) / 2
+    return -1 / final_val
 
 
-def _domirank(G, sigma=0, dt=0.1, epsilon=1e-5, max_iter=1000, patience=10):
+def _domirank_iterative(
+    GAdj, sigma=0, dt=0.1, epsilon=1e-5, max_iter=1000, patience=10
+):
     """
     Is used to find the smallest eigenvalue - i.e. called in the _find_smallest_eigenvalue() function.
     It only outputs a boolean.
@@ -278,23 +271,31 @@ def _domirank(G, sigma=0, dt=0.1, epsilon=1e-5, max_iter=1000, patience=10):
     import numpy as np
     import scipy as sp
 
-    pGAdj = sigma * G.astype(np.float32)
-    Psi = np.ones(pGAdj.shape[0]).astype(np.float32) / pGAdj.shape[0]
-    maxVals = np.zeros(int(max_iter / patience)).astype(np.float32)
+    # store this to prevent more redundant calculations in the future
+    pGAdj = sigma * GAdj.astype(np.float32)
+    # initalize a proportionally (to system size) small non-zero uniform vector
+    Psi = np.ones(pGAdj.shape[0], dtype=np.float32) / pGAdj.shape[0]
+    # initialize a zero array to store values (yes, this could be done with a smaller array with some smart indexing, but this is not computationally or memory heavy)
+    max_vals = np.zeros(max_iter // patience).astype(np.float32)
+    # ensure dt is a float
     dt = np.float32(dt)
+    # start a counter
     j = 0
+    # set up a boundary condition for stopping divergence
     boundary = epsilon * pGAdj.shape[0] * dt
     for i in range(max_iter):
-        tempVal = ((pGAdj @ (1 - Psi)) - Psi) * dt
-        Psi += tempVal.real
+        # DomiRank iterative definition
+        temp_val = ((pGAdj @ (1 - Psi)) - Psi) * dt
+        # Newton iteration addition step
+        Psi += temp_val.real
+        # Here we do the checking to see if we are diverging
         if i % patience == 0:
-            if np.abs(tempVal).sum() < boundary:
+            if np.abs(temp_val).sum() < boundary:
                 break
-            maxVals[j] = tempVal.max()
-            if i == 0:
-                initialChange = maxVals[j]
-            if j > 0:
-                if maxVals[j] > maxVals[j - 1] and maxVals[j - 1] > maxVals[j - 2]:
-                    return False
+            max_vals[j] = temp_val.max()
+            if j >= 2:
+                if max_vals[j] > max_vals[j - 1] and max_vals[j - 1] > max_vals[j - 2]:
+                    # If we are diverging, return the current step, but, with the argument that you have diverged.
+                    return Psi, sigma, False
             j += 1
-    return True
+    return Psi, sigma, True
