@@ -758,43 +758,68 @@ def test_ancestors_descendants_undirected():
     nx.ancestors(G, 2) == nx.descendants(G, 2) == {0, 1, 3, 4}
 
 
-def test_colliders_raise():
+def test_compute_v_structures_raise():
     G = nx.Graph()
-    pytest.raises(nx.NetworkXNotImplemented, nx.colliders, G)
+    pytest.raises(nx.NetworkXNotImplemented, nx.compute_v_structures, G)
 
 
-def test_colliders():
+def test_compute_v_structures():
     edges = [(0, 1), (0, 2), (3, 2)]
     G = nx.DiGraph(edges)
 
-    colliders = set(nx.colliders(G))
-    assert len(colliders) == 1
-    assert (0, 2, 3) in colliders
+    v_structs = set(nx.compute_v_structures(G))
+    assert len(v_structs) == 1
+    assert (0, 2, 3) in v_structs
 
-    edges = [("A", "B"), ("C", "B"), ("D", "G"), ("D", "E"), ("G", "E")]
+    edges = [("A", "B"), ("C", "B"), ("B", "D"), ("D", "E"), ("G", "E")]
     G = nx.DiGraph(edges)
-    colliders = set(nx.colliders(G))
-    assert colliders == {("A", "B", "C"), ("D", "E", "G")}
+    v_structs = set(nx.compute_v_structures(G))
+    assert len(v_structs) == 2
+
+
+def test_compute_v_structures_deprecated():
+    G = nx.DiGraph()
+    with pytest.deprecated_call():
+        nx.compute_v_structures(G)
 
 
 def test_v_structures_raise():
     G = nx.Graph()
-    pytest.raises(nx.NetworkXNotImplemented, nx.v_structures, G)
+    pytest.raises(nx.NetworkXNotImplemented, nx.dag.v_structures, G)
 
 
 def test_v_structures():
     edges = [(0, 1), (0, 2), (3, 2)]
     G = nx.DiGraph(edges)
 
-    v_structs = set(nx.v_structures(G))
+    v_structs = set(nx.dag.v_structures(G))
     assert len(v_structs) == 1
     assert (0, 2, 3) in v_structs
 
     edges = [("A", "B"), ("C", "B"), ("D", "G"), ("D", "E"), ("G", "E")]
     G = nx.DiGraph(edges)
-    v_structs = set(nx.v_structures(G))
+    v_structs = set(nx.dag.v_structures(G))
     assert v_structs == {("A", "B", "C")}
 
     edges = [(0, 1), (2, 1), (0, 2)]  # adjacent parents case: issues#7385
     G = nx.DiGraph(edges)
-    assert set(nx.v_structures(G)) == set()
+    assert set(nx.dag.v_structures(G)) == set()
+
+
+def test_colliders_raise():
+    G = nx.Graph()
+    pytest.raises(nx.NetworkXNotImplemented, nx.dag.colliders, G)
+
+
+def test_colliders():
+    edges = [(0, 1), (0, 2), (3, 2)]
+    G = nx.DiGraph(edges)
+
+    colliders = set(nx.dag.colliders(G))
+    assert len(colliders) == 1
+    assert (0, 2, 3) in colliders
+
+    edges = [("A", "B"), ("C", "B"), ("D", "G"), ("D", "E"), ("G", "E")]
+    G = nx.DiGraph(edges)
+    colliders = set(nx.dag.colliders(G))
+    assert colliders == {("A", "B", "C"), ("D", "E", "G")}

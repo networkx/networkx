@@ -151,6 +151,9 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message=r"\n\nThe 'create=matrix'"
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\ncompute_v_structures"
+    )
 
 
 @pytest.fixture(autouse=True)

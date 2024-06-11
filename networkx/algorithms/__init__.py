@@ -16,7 +16,24 @@ from networkx.algorithms.covering import *
 from networkx.algorithms.cycles import *
 from networkx.algorithms.cuts import *
 from networkx.algorithms.d_separation import *
-from networkx.algorithms.dag import *
+from networkx.algorithms.dag import (
+    descendants,
+    ancestors,
+    topological_sort,
+    lexicographical_topological_sort,
+    all_topological_sorts,
+    topological_generations,
+    is_directed_acyclic_graph,
+    is_aperiodic,
+    transitive_closure,
+    transitive_closure_dag,
+    transitive_reduction,
+    antichains,
+    dag_longest_path,
+    dag_longest_path_length,
+    dag_to_branching,
+    compute_v_structures,
+)
 from networkx.algorithms.distance_measures import *
 from networkx.algorithms.distance_regular import *
 from networkx.algorithms.dominance import *
@@ -74,6 +91,7 @@ from networkx.algorithms import components
 from networkx.algorithms import connectivity
 from networkx.algorithms import community
 from networkx.algorithms import coloring
+from networkx.algorithms import dag
 from networkx.algorithms import flow
 from networkx.algorithms import isomorphism
 from networkx.algorithms import link_analysis
