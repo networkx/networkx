@@ -25,7 +25,7 @@ def domirank(
 
     .. math::
 
-        \,d\Gamma_i(t)/dt = \sigma (d_i - \sum_j A_{ij} \Gamma_j(t)) - \Gamma_i(t),
+        d\Gamma_i(t)/dt = \sigma (d_i - \sum_j A_{ij} \Gamma_j(t)) - \Gamma_i(t),
 
     where $A$ is the adjacency matrix, $\lambda_N$ its smallest eigenvalue, and $d_i$ is the degree of node $i$.
     Note that the definition presented here is valid for unweighted, weighted,
@@ -113,7 +113,7 @@ def domirank(
         If the graph `G` is the null graph.
 
     NetworkXUnfeasible
-        If alpha is negative (and thus outside its bounds): ``alpha < 0``.
+        If `alpha` is negative (and thus outside its bounds): ``alpha < 0``.
 
     NetworkXUnfeasible
         If ``alpha > 1`` with the ``analytical=False`` argument.
