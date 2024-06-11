@@ -231,7 +231,7 @@ def _get_backends(group, *, load_and_call=False):
     Notes
     ------
     If a backend is defined more than once, a warning is issued.
-    The `nx-loopback` backend is removed if it exists, as it is only available during testing.
+    The `nx_loopback` backend is removed if it exists, as it is only available during testing.
     A warning is displayed if an error occurs while loading a backend.
     """
     items = entry_points(group=group)
@@ -254,7 +254,7 @@ def _get_backends(group, *, load_and_call=False):
                 )
         else:
             rv[ep.name] = ep
-    rv.pop("nx-loopback", None)
+    rv.pop("nx_loopback", None)
     return rv
 
 

@@ -32,7 +32,7 @@ def test_pickle():
 
 @pytest.mark.skipif(
     "not nx.config['backend_priority'] "
-    "or nx.config['backend_priority'][0] != 'nx-loopback'"
+    "or nx.config['backend_priority'][0] != 'nx_loopback'"
 )
 def test_graph_converter_needs_backend():
     # When testing, `nx.from_scipy_sparse_array` will *always* call the backend
@@ -74,7 +74,7 @@ def test_graph_converter_needs_backend():
         assert type(nx.from_scipy_sparse_array(A)) is nx.Graph
         assert side_effects == [1]
         assert (
-            type(nx.from_scipy_sparse_array(A, backend="nx-loopback")) is LoopbackGraph
+            type(nx.from_scipy_sparse_array(A, backend="nx_loopback")) is LoopbackGraph
         )
         assert side_effects == [1, 1]
     finally:
@@ -86,6 +86,33 @@ def test_graph_converter_needs_backend():
 
 def test_dispatchable_are_functions():
     assert type(nx.pagerank) is type(nx.pagerank.orig_func)
+
+
+@pytest.mark.skipif("not nx.utils.backends.backends")
+def test_mixing_backend_graphs():
+    from networkx.classes.tests import dispatch_interface
+
+    G = nx.Graph()
+    G.add_edge(1, 2)
+    G.add_edge(2, 3)
+    H = nx.Graph()
+    H.add_edge(2, 3)
+    rv = nx.intersection(G, H)
+    assert set(nx.intersection(G, H)) == {2, 3}
+    G2 = dispatch_interface.convert(G)
+    H2 = dispatch_interface.convert(H)
+    if "nx_loopback" in nx.config.backend_priority:
+        # Auto-convert
+        assert set(nx.intersection(G2, H)) == {2, 3}
+        assert set(nx.intersection(G, H2)) == {2, 3}
+    elif not nx.config.backend_priority and "nx_loopback" not in nx.config.backends:
+        # G2 and H2 are backend objects for a backend that is not registered!
+        with pytest.raises(ImportError, match="Unable to load backend"):
+            nx.intersection(G2, H)
+        with pytest.raises(ImportError, match="Unable to load backend"):
+            nx.intersection(G, H2)
+    # It would be nice to test passing graphs from *different* backends,
+    # but we are not set up to do this yet.
 
 
 def test_bad_backend_name():
