@@ -21,25 +21,26 @@ def domirank(
     information, to find nodes that are either locally or globally dominant. It is
     important to note that for the iterative formulation of DomiRank (as seen below),
     the competition parameter is bounded: $\sigma \in [0,1/|\lambda_N|]$.
-    DomiRank centrality is defined as the stationary solution to the dynamical system:
+    The DomiRank centrality of node $i$ is defined as the stationary solution to the dynamical system:
 
     .. math::
 
         \,d\Gamma_i(t)/dt = \sigma (d_i - \sum_j A_{ij} \Gamma_j(t)) - \Gamma_i(t),
 
-    where $A$ is the adjacency matrix and $d_i$ is the degree of node $i$.
+    where $A$ is the adjacency matrix, $\lambda_N$ its smallest eigenvalue, and $d_i$ is the degree of node $i$.
     Note that the definition presented here is valid for unweighted, weighted,
     directed, and undirected networks, so in the more general case,
     a non-zero entry of the adjacency matrix $A_{ij}=w_{ij}$
     represents the existence of a link from node $i$ to node $j$
-    with a weight $w_{ij}$. The steady state solution to this equation (DomiRank)
-    is computed using Newto's method. In general, one will notice that important
-    nodes identified by DomiRank will be connected to a lot of other
-    unimportant nodes. However, other positionally important nodes
+    with a weight $w_{ij}$. The steady state solution to this equation
+    is computed using Newton's method. In general, one will notice that important
+    nodes identified by DomiRank will be connected to a lot of other,
+    unimportant nodes. However, positionally important nodes
     can also be dominated by joint-dominance of nodes, that work together
-    in order to dominate another positionally important node. This centrality
-    has a lot of interesting emergent phenomena, so it is recommend to
-    see [1]_ for more information. That being said, DomiRank centrality can also be
+    in order to dominate the positionally important node. This centrality
+    gives rise to many interesting emergent phenomena;
+    see [1]_ for more information. 
+    DomiRank centrality can also be
     expressed in its analytical form, where the competition can now be
     supercharged - i.e. $\sigma \in [0,+\infty)$. The analytical equation
     takes the form:
@@ -52,8 +53,8 @@ def domirank(
     as a linear system.
 
     DomiRank tends to have only positive values for relatively low
-    competition levels (small), however as the competition
-    levels increase, negative values might emerge. Nodes with negative
+    competition levels ($\sigma \to 0$). However as the competition
+    level increases, negative values might emerge. Nodes with negative
     dominance represent completely submissive nodes, which instead
     of fighting for their resources/dominance, directly give up these
     resources to their neighborhood.
@@ -67,7 +68,7 @@ def domirank(
         A NetworkX graph.
 
     analytical: bool, optional (default=False)
-        whether the analytical or iterative formulation
+        Whether the analytical or iterative formulation
         for computing DomiRank should be used.
         It is recommended that ''analytical=False'' for
         large networks.
