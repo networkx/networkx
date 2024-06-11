@@ -1,4 +1,4 @@
-"""DomiRank Centrality: By Marcus Engsig (@mengsig)"""
+r"""Compute the DomiRank centrality for the graph `G`."""
 
 import networkx as nx
 from networkx.utils import not_implemented_for
@@ -25,7 +25,7 @@ def domirank(
 
     .. math::
 
-        d\Gamma_i(t)/dt = \sigma (d_i - \sum_j A_{ij} \Gamma_j(t)) - \Gamma_i(t),
+        \,d\Gamma_i(t)/dt = \sigma (d_i - \sum_j A_{ij} \Gamma_j(t)) - \Gamma_i(t),
 
     where $A$ is the adjacency matrix, $\lambda_N$ its smallest eigenvalue, and $d_i$ is the degree of node $i$.
     Note that the definition presented here is valid for unweighted, weighted,
@@ -113,7 +113,7 @@ def domirank(
         If the graph `G` is the null graph.
 
     NetworkXUnfeasible
-        If `alpha` is negative (and thus outside its bounds): ``alpha < 0``.
+        If alpha is negative (and thus outside its bounds): ``alpha < 0``.
 
     NetworkXUnfeasible
         If ``alpha > 1`` with the ``analytical=False`` argument.
@@ -145,23 +145,38 @@ def domirank(
         )
     GAdj = nx.to_scipy_sparse_array(G)  # convert to scipy sparse csr array
 
+    # Here we create a warning (I couldn't find a networkxwarning, only exceptions and erros), that suggests to use the iterative formulation of DomiRank rather than the analytical form.
+    if GAdj.shape[0] > 5000 and analytical == True:
+        import warnings
+
+        warnings.warn(
+            "The system is large!!! Consider using `analytical = False` function argument for reduced computational time cost."
+        )
+    # Here we create another warning for alpha being supercharged
+    if alpha > 1:
+        if analytical == False:
+            raise nx.NetworkXUnfeasible(
+                "supercharging the competition parameter (`alpha > 1`) requires the `analytical = True` flag"
+            )
+        else:
+            import warnings
+
+            warnings.warn(
+                "You are supercharging the competition in the system by having `alpha > 1`, which is only permitted for the analytical solution!"
+            )
+    if alpha < 0:
+        raise nx.NetworkXUnfeasible(
+            "the competition parameter alpha must be positive - `alpha > 0`."
+        )
+
     # Here we renormalize alpha with the smallest eigenvalue (most negative eigenvalue) by calling the "hidden" function _find_smallest_eigenvalue()
-    # Note, this function always uses the recursive definition
+    # Note, this function always uses the iterative definition
     if analytical == False:
-        # If the recursive formulation is used, the alpha has to be bounded (competition parameter).
-        if alpha < 0:
-            raise nx.NetworkXUnfeasible(
-                "the competition parameter alpha must be positive and bounded such that alpha: [0,1]"
-            )
-        if alpha > 1:
-            raise nx.NetworkXUnfeasible(
-                "supercharging the competition parameter (alpha > 1) requires analytical=True"
-            )
         sigma = np.abs(
             alpha
             / _find_smallest_eigenvalue(
                 GAdj,
-                maxDepth=max_iter // 5,
+                maxDepth=int(max_iter / 5),
                 dt=dt,
                 epsilon=epsilon,
                 max_iter=max_iter,
@@ -171,9 +186,9 @@ def domirank(
         # store this to prevent more redundant calculations in the future
         pGAdj = sigma * GAdj.astype(np.float32)
         # initalize a proportionally (to system size) small non-zero uniform vector
-        psi = np.ones(pGAdj.shape[0], dtype=np.float32) / pGAdj.shape[0]
+        Psi = np.ones(pGAdj.shape[0]).astype(np.float32) / pGAdj.shape[0]
         # initialize a zero array to store values (yes, this could be done with a smaller array with some smart indexing, but this is not computationally or memory heavy)
-        maxVals = np.zeros(max_iter // patience, dtype=np.float32)
+        maxVals = np.zeros(int(max_iter / patience)).astype(np.float32)
         # ensure dt is a float
         dt = np.float32(dt)
         # start a counter
@@ -181,7 +196,7 @@ def domirank(
         # set up a boundary condition for stopping divergence
         boundary = epsilon * pGAdj.shape[0] * dt
         for i in range(max_iter):
-            # DomiRank recursive definition
+            # DomiRank iterative definition
             tempVal = ((pGAdj @ (1 - Psi)) - Psi) * dt
             # Newton iteration addition step
             Psi += tempVal.real
@@ -190,9 +205,7 @@ def domirank(
                 if np.abs(tempVal).sum() < boundary:
                     break
                 maxVals[j] = tempVal.max()
-                if i == 0:
-                    initialChange = maxVals[j]
-                if j > 0:
+                if j >= 2:
                     if maxVals[j] > maxVals[j - 1] and maxVals[j - 1] > maxVals[j - 2]:
                         # If we are diverging, return the current step, but, with the argument that you have diverged.
                         Psi = dict(zip(G, (Psi).tolist()))
@@ -201,22 +214,6 @@ def domirank(
         Psi = dict(zip(G, (Psi).tolist()))
         return Psi, sigma, True
     else:
-        import warnings
-
-        # Here we create a warning (I couldn't find a networkxwarning, only exceptions and erros), that suggests to use the iterative formulation of DomiRank rather than the analytical form.
-        if GAdj.shape[0] > 5000:
-            warnings.warn(
-                "The system is large!!! Consider using `analytical = False` function argument for reduced computational time cost."
-            )
-        # Here we create another warning for alpha being supercharged
-        if alpha > 1:
-            warnings.warn(
-                "You are supercharging the competition in the system by having `alpha > 1`, which is only permitted for the analytical solution!"
-            )
-        if alpha < 0:
-            raise nx.NetworkXUnfeasible(
-                "the competition parameter alpha must be positive - `alpha > 0`."
-            )
         sigma = np.abs(
             alpha
             / _find_smallest_eigenvalue(
