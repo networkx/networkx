@@ -31,8 +31,6 @@ __all__ = [
     "dag_longest_path_length",
     "dag_to_branching",
     "compute_v_structures",
-    "v_structures",
-    "colliders",
 ]
 
 chaini = chain.from_iterable
@@ -1290,7 +1288,7 @@ def compute_v_structures(G):
             "removed in version 3.6. Use `nx.dag.v_structures` instead.\n"
         ),
         category=DeprecationWarning,
-        stacklevel=2,
+        stacklevel=5,
     )
 
     return colliders(G)
