@@ -33,7 +33,7 @@ class TestDomirank:
             3: 0.791666194795491,
             4: 0.7916661947954975,
         }
-        b, _, converged = nx.domirank(G, sigma=0.5)
+        b, _, converged = nx.domirank(G, alpha=0.5)
         assert converged
         b_answer = {
             0: 0.66666579246521,
@@ -69,7 +69,7 @@ class TestDomirank:
             1: 0.609459638595581,
             2: 0.13808214664459229,
         }
-        b, _, converged = nx.domirank(G, sigma=0.5)
+        b, _, converged = nx.domirank(G, alpha=0.5)
         assert converged
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
@@ -185,7 +185,7 @@ class TestDomirankDirected:
 
 class TestDomirankExceptions:
     @pytest.mark.parametrize(
-        ("G", "analytical", "sigma", "expectation"),
+        ("G", "analytical", "alpha", "expectation"),
         [
             (nx.Graph(), False, 0.95, pytest.raises(nx.NetworkXPointlessConcept)),
             (nx.path_graph(10), False, -1, pytest.raises(nx.NetworkXUnfeasible)),
@@ -195,6 +195,6 @@ class TestDomirankExceptions:
             (nx.MultiGraph(), False, 0.95, pytest.raises(nx.NetworkXNotImplemented)),
         ],
     )
-    def test_domirank_exceptions(self, G, analytical, sigma, expectation):
+    def test_domirank_exceptions(self, G, analytical, alpha, expectation):
         with expectation:
-            nx.domirank(G, sigma=sigma, analytical=analytical)
+            nx.domirank(G, alpha=alpha, analytical=analytical)

@@ -9,18 +9,18 @@ __all__ = ["domirank"]
 # @nx._dispatchable(edge_attrs="weight")
 @not_implemented_for("multigraph")
 def domirank(
-    G, analytical=False, sigma=0.95, dt=0.1, epsilon=1e-5, max_iter=1000, patience=10
+    G, analytical=False, alpha=0.95, dt=0.1, epsilon=1e-5, max_iter=1000, patience=10
 ):
     r"""Compute the DomiRank centrality for the graph `G`.
 
-    DomiRank centrality [1]_ computes the centrality for a node by adding
-    1 minus the centrality of its neighborhood. This essentially finds the
-    dominance of a node in its neighborhood, where the parameter $\sigma$ determines
-    the amount of competition in the system. The competition parameter $\sigma$
-    tunes the balance of DomiRank centrality's integration of local and global topological
-    information, to find nodes that are either locally or globally dominant. It is
-    important to note that for the iterative formulation of DomiRank (as seen below),
-    the competition parameter is bounded: $\sigma \in [0,1/|\lambda_N|]$.
+    DomiRank centrality [1]_ computes the centrality for a node by aggregating
+    1 minus the centrality of each node in its neighborhood. This essentially finds the
+    dominance of a node in its neighborhood, where the parameter $\alpha$ determines
+    the amount of competition in the system by modulating $\sigma = \alpha/|\lambda_N|$.
+    The competition parameter $\alpha$ tunes the balance of DomiRank centrality's
+    integration of local and global topological information, to find nodes that are either
+    locally or globally dominant. It is important to note that for the iterative formulation
+    of DomiRank (as seen below) the competition parameter is bounded: $\sigma \in [0,1/|\lambda_N|]$.
     The DomiRank centrality of node $i$ is defined as the stationary solution to the dynamical system:
 
     .. math::
@@ -39,7 +39,7 @@ def domirank(
     can also be dominated by joint-dominance of nodes, that work together
     in order to dominate the positionally important node. This centrality
     gives rise to many interesting emergent phenomena;
-    see [1]_ for more information. 
+    see [1]_ for more information.
     DomiRank centrality can also be
     expressed in its analytical form, where the competition can now be
     supercharged - i.e. $\sigma \in [0,+\infty)$. The analytical equation
@@ -70,12 +70,9 @@ def domirank(
     analytical: bool, optional (default=False)
         Whether the analytical or iterative formulation
         for computing DomiRank should be used.
-        It is recommended that ''analytical=False'' for
-        large networks.
 
-    sigma: float, optional (default=0.95)
-        The level of competition for DomiRank. Must satisfy
-        that $\sigma \in (0,1)$.
+    alpha: float, optional (default=0.95)
+        The level of competition for DomiRank.
 
     dt: float, optional (default=0.1)
         The step size for the Newton iteration.
@@ -98,7 +95,7 @@ def domirank(
         Dictionary keyed by node with DomiRank centrality of the node as value.
 
     sigma : float
-        $\sigma$ normalized by the smallest eigenvalue.
+        $\alpha$ normalized by the smallest eigenvalue.
 
     converged: boolean
         Whether the centrality computation converged.
@@ -116,13 +113,13 @@ def domirank(
         If the graph `G` is the null graph.
 
     NetworkXUnfeasible
-        If sigma is negative (and thus outside its bounds): ``sigma < 0``.
+        If alpha is negative (and thus outside its bounds): ``alpha < 0``.
 
     NetworkXUnfeasible
-        If ``sigma > 1`` with the ``analytical=False`` argument.
+        If ``alpha > 1`` with the ``analytical=False`` argument.
 
     Warning
-        If supercharging the competition parameter for the analytical solution: ``sigma > 1``.
+        If supercharging the competition parameter for the analytical solution: ``alpha > 1``.
 
     Warning
         If one is using the analytical solution for a large system, i.e. ``len(G) > 5000``, as the algorithm will be slow.
@@ -148,20 +145,20 @@ def domirank(
         )
     GAdj = nx.to_scipy_sparse_array(G)  # convert to scipy sparse csr array
 
-    # Here we renormalize sigma with the smallest eigenvalue (most negative eigenvalue) by calling the "hidden" function _find_smallest_eigenvalue()
+    # Here we renormalize alpha with the smallest eigenvalue (most negative eigenvalue) by calling the "hidden" function _find_smallest_eigenvalue()
     # Note, this function always uses the recursive definition
     if analytical == False:
-        # If the recursive formulation is used, the sigma has to be bounded (competition parameter).
-        if sigma < 0:
+        # If the recursive formulation is used, the alpha has to be bounded (competition parameter).
+        if alpha < 0:
             raise nx.NetworkXUnfeasible(
-                "the competition parameter sigma must be positive and bounded such that sigma: [0,1]"
+                "the competition parameter alpha must be positive and bounded such that alpha: [0,1]"
             )
-        if sigma > 1:
+        if alpha > 1:
             raise nx.NetworkXUnfeasible(
-                "supercharging the competition parameter (sigma > 1) requires the <analytical = True> flag"
+                "supercharging the competition parameter (alpha > 1) requires the <analytical = True> flag"
             )
         sigma = np.abs(
-            sigma
+            alpha
             / _find_smallest_eigenvalue(
                 GAdj,
                 maxDepth=int(max_iter / 5),
@@ -211,17 +208,17 @@ def domirank(
             warnings.warn(
                 "The system is large!!! Consider using `analytical = False` function argument for reduced computational time cost."
             )
-        # Here we create another warning for sigma being supercharged
-        if sigma > 1:
+        # Here we create another warning for alpha being supercharged
+        if alpha > 1:
             warnings.warn(
-                "You are supercharging the competition in the system by having `sigma > 1`, which is only permitted for the analytical solution!"
+                "You are supercharging the competition in the system by having `alpha > 1`, which is only permitted for the analytical solution!"
             )
-        if sigma < 0:
+        if alpha < 0:
             raise nx.NetworkXUnfeasible(
-                "the competition parameter sigma must be positive - `sigma > 0`."
+                "the competition parameter alpha must be positive - `alpha > 0`."
             )
         sigma = np.abs(
-            sigma
+            alpha
             / _find_smallest_eigenvalue(
                 GAdj,
                 maxDepth=int(max_iter / 5),
