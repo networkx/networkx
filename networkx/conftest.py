@@ -221,6 +221,7 @@ needs_numpy = [
     "algorithms/centrality/laplacian.py",
     "algorithms/node_classification.py",
     "algorithms/non_randomness.py",
+    "algorithms/polynomials.py",
     "algorithms/shortest_paths/dense.py",
     "algorithms/tree/mst.py",
     "drawing/nx_latex.py",
