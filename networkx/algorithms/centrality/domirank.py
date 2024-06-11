@@ -10,12 +10,13 @@ __all__ = ["domirank"]
 @not_implemented_for("multigraph")
 def domirank(
     G,
-    comp_method="iterative",
+    method="iterative",
     alpha=0.95,
     dt=0.1,
     epsilon=1e-5,
     max_iter=1000,
     patience=10,
+    max_depth=50,
 ):
     r"""Compute the DomiRank centrality for the graph `G`.
 
@@ -31,7 +32,7 @@ def domirank(
 
     .. math::
 
-        \,d\Gamma_i(t)/dt = \sigma (d_i - \sum_j A_{ij} \Gamma_j(t)) - \Gamma_i(t),
+        d\Gamma_i(t)/dt = \sigma (d_i - \sum_j A_{ij} \Gamma_j(t)) - \Gamma_i(t),
 
     where $A$ is the adjacency matrix, $\lambda_N$ its smallest eigenvalue, and $d_i$ is the degree of node $i$.
     Note that the definition presented here is valid for unweighted, weighted,
@@ -73,8 +74,8 @@ def domirank(
     G : graph
         A NetworkX graph.
 
-    analytical: string, optional (default="iterative")
-        The {'analytical', 'iterative'} method
+    method: string, optional (default="iterative")
+        The {`"analytical"`, `"iterative"`} method
         for computing DomiRank. Note that the computational
         time cost of the 'analytical' method is large for
         non-regular graphs, but provides the true DomiRank.
@@ -96,6 +97,11 @@ def domirank(
         The number of steps between convergence checks.
         It is recommended that ''patience >= 10''.
 
+    max_depth: integer, optional (default=50)
+        The number of bisection steps to find the smallest
+        eigenvalue. Having less ''max_depth'' reduces assessment
+        accuracy of the smallest eigenvalue, but reduces compute time.
+        It is recommend that ''max_depth > 25''.
 
     Returns
     -------
@@ -105,8 +111,8 @@ def domirank(
     sigma : float
         $\alpha$ normalized by the smallest eigenvalue.
 
-    converged : boolean
-        Whether the centrality computation converged. Returns ``None`` if ``comp_method = `analytical```.
+    converged : boolean | None
+        Whether the centrality computation converged. Returns ``None`` if ``method = "analytical"``.
 
     Examples
     --------
@@ -123,23 +129,25 @@ def domirank(
     NetworkXUnfeasible
         If alpha is negative (and thus outside its bounds): ``alpha < 0``.
 
-        If ``alpha > 1`` with the ``comp_method = `iterative``` argument.
+        If ``alpha > 1`` with the ``method = "iterative"`` argument.
 
     NetworkXAlgorithmError
-        If the comp_method is not of type: {'analytical', 'iterative'}.
+        If the method is not one of type: {"analytical", "iterative"}.
 
         If ``patience > max_iter``.
 
-        If ``max_iter < 5``.
+        If ``max_iter < 1``.
 
-        If dt is not in the bounds: ``0 < dt < 1``.
+        If 'dt' does not satisfy: ``0 < dt < 1``.
 
         If epsilon is negative or equal to one: ``epsilon <= 0``.
 
-    Warning
-        If supercharging the competition parameter for the analytical solution: ``alpha > 1``.
+        If ``max_depth < 1``.
 
-        If one is using the analytical solution (comp_method=`analytical`) for a large system, i.e. ``len(G) > 5000``, as the algorithm will be slow.
+    Warning
+        If supercharging the competition parameter for the analytical solution: ``alpha > 1`` and `method = "analytical"`.
+
+        If one is using the analytical solution (`method="analytical"`) for a large graph, i.e. more than ``5000`` nodes, as the algorithm will be slow.
 
     See Also
     --------
@@ -158,46 +166,48 @@ def domirank(
 
     if len(G) == 0:
         raise nx.NetworkXPointlessConcept(
-            "cannot compute centrality for the null graph."
+            "cannot compute centrality for the null graph"
         )
     if patience > max_iter:
-        raise nx.NetworkXAlgorithmError("it is mandatory that `max_iter > patience`.")
-    if max_iter < 5:
-        raise nx.NetworkXAlgorithmError("it is mandatory that `max_iter >= 5`.")
-    if patience <= 0:
-        raise nx.NetworkXAlgorithmError("it is mandatory that `patience > 0`.")
+        raise nx.NetworkXAlgorithmError("it is mandatory that max_iter > patience")
+    if max_iter < 1:
+        raise nx.NetworkXAlgorithmError("it is mandatory that max_iter > 0")
+    if patience < 1:
+        raise nx.NetworkXAlgorithmError("it is mandatory that patience > 0")
+    if max_depth < 1:
+        raise nx.NetworkXAlgorithmError("it is mandatory that max_depth > 0")
     if dt <= 0 or dt >= 1:
         raise nx.NetworkXAlgorithmError(
-            "it is mandatory that dt is bounded such that: `0 < dt < 1`."
+            "it is mandatory that dt is bounded such that: 0 < dt < 1"
         )
     if epsilon <= 0:
         raise nx.NetworkXAlgorithmError(
-            "it is mandatory that `epsilon > 0` and recommended that `epsilon = 1e-5`."
+            "it is mandatory that epsilon > 0 and recommended that epsilon = 1e-5"
         )
     GAdj = nx.to_scipy_sparse_array(G)  # convert to scipy sparse csr array
 
     # Here we create a warning (I couldn't find a networkxwarning, only exceptions and erros), that suggests to use the iterative formulation of DomiRank rather than the analytical form.
-    if GAdj.shape[0] > 5000 and comp_method == "analytical":
+    if GAdj.shape[0] > 5000 and method == "analytical":
         import warnings
 
         warnings.warn(
-            "The system is large!!! Consider using `comp_method = `iterative`` function argument for reduced computational time cost."
+            "The system is large!!! Consider using method = iterative function argument for reduced computational time cost."
         )
     # Here we create another warning for alpha being supercharged
     if alpha > 1:
-        if comp_method == "iterative":
+        if method == "iterative":
             raise nx.NetworkXUnfeasible(
-                "supercharging the competition parameter (`alpha > 1`) requires the `comp_method = `analytical`` flag."
+                "supercharging the competition parameter (alpha > 1) requires the method = analytical flag."
             )
         else:
             import warnings
 
             warnings.warn(
-                "You are supercharging the competition in the system by having `alpha > 1`, which is only permitted for the analytical solution!"
+                "The competition parameter is supercharged (alpha > 1) - allowed as method = analytical"
             )
     if alpha < 0:
         raise nx.NetworkXUnfeasible(
-            "the competition parameter alpha must be positive - `alpha > 0`."
+            "the competition parameter alpha must be positive: alpha > 0"
         )
 
     # Here we renormalize alpha with the smallest eigenvalue (most negative eigenvalue) by calling the "hidden" function _find_smallest_eigenvalue()
@@ -206,14 +216,14 @@ def domirank(
         alpha
         / _find_smallest_eigenvalue(
             GAdj,
-            max_depth=max_iter // 5,
+            max_depth=max_depth,
             dt=dt,
             epsilon=epsilon,
             max_iter=max_iter,
             patience=patience,
         )
     )
-    match comp_method:
+    match method:
         case "analytical":
             converged = None
             psi = sp.sparse.linalg.spsolve(
@@ -231,18 +241,17 @@ def domirank(
             )
         case _:
             raise nx.NetworkXUnfeasible(
-                "The comp_method must match either `analytical` or the default `iterative` method."
+                "The method must match either `analytical` or the default `iterative` method."
             )
     psi = dict(zip(G, (psi).tolist()))
     return psi, sigma, converged
 
 
-##### THE FUNCTIONS HEREUNDER SHOULD BE HIDDEN FUNCTIONS #####
 def _find_smallest_eigenvalue(
     G,
     min_val=0,
     max_val=1,
-    max_depth=100,
+    max_depth=50,
     dt=0.1,
     epsilon=1e-5,
     max_iter=100,
@@ -254,9 +263,6 @@ def _find_smallest_eigenvalue(
     verifying convergence.
     This function outputs the smallest eigenvalue - i.e. most negative eigenvalue.
     """
-    import numpy
-    import scipy
-
     x = (min_val + max_val) / G.sum(axis=-1).max()
     for _ in range(max_depth):
         if max_val - min_val < epsilon:
@@ -275,48 +281,18 @@ def _find_smallest_eigenvalue(
 
 def _domirank_iterative(GAdj, sigma=0, dt=0.1, epsilon=1e-5, max_iter=100, patience=10):
     """
-    This function is used for the iterative computation of domirank when the comp_method = "iterative".
-    It is also used to find the smallest eigenvalue - i.e. called in the _find_smallest_eigenvalue() function.
-
-    Parameters
-    ----------
-    G : graph
-        A NetworkX graph.
-
-    sigma: float, optional (default=0.95)
-        The normalized level of competition for DomiRank.
-
-    dt: float, optional (default=0.1)
-        The step size for the Newton iteration.
-
-    epsilon: float, optional (default=1e-5)
-        The relative stopping criterion for convergence.
-
-    max_iter: integer, optional (default=100)
-        Maximum number of Newton iterations allowed.
-        It is recommended that ''max_iter >= 50''.
-
-    patience: integer, optional (default=10)
-        The number of steps between convergence checks.
-        It is recommended that ''patience >= 10''.
-
-
-    Returns
-    -------
-    psi : np.array
-        An array of the DomiRank values ordered according to the input Adjacency matrix.
-
-    converged : boolean
-        Whether the centrality computation converged.
+    This function is used for the iterative computation of DomiRank when the `method = "iterative"`.
+    It is also used to find the smallest eigenvalue - i.e. called in the `_find_smallest_eigenvalue()` function.
+    It yields a boolean indicating convergence, and an array of the DomiRank values ordered according to `G`'s adjacency matrix.
     """
     import numpy as np
     import scipy as sp
 
     # store this to prevent more redundant calculations in the future
     pGAdj = sigma * GAdj.astype(np.float32)
-    # initalize a proportionally (to system size) small non-zero uniform vector
+    # initialize a proportionally (to system size) small non-zero uniform vector
     psi = np.ones(pGAdj.shape[0], dtype=np.float32) / pGAdj.shape[0]
-    # initialize a zero array to store values (yes, this could be done with a smaller array with some smart indexing, but this is not computationally or memory heavy)
+    # initialize a zero array to store values (this could be done with a smaller array with some smart indexing, but isn't computationally or memory heavy)
     max_vals = np.zeros(max_iter // patience, dtype=np.float32)
     # ensure dt is a float
     dt = np.float32(dt)

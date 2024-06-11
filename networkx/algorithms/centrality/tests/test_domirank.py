@@ -1,3 +1,5 @@
+from contextlib import nullcontext as does_not_raise
+
 import pytest
 
 import networkx as nx
@@ -21,9 +23,8 @@ class TestDomirank:
         }
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
-        nstart = {n: 1 for n in G}
-        b, _, converged = nx.domirank(G, comp_method="analytical")
-        assert converged == None
+        b, _, converged = nx.domirank(G, method="analytical")
+        assert converged is None
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
         b_answer = {
@@ -59,8 +60,8 @@ class TestDomirank:
             assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
 
         b_answer = {0: -2.366595958759845, 1: 4.523026818398872, 2: -2.366595958759845}
-        b, _, converged = nx.domirank(G, comp_method="analytical")
-        assert converged == None
+        b, _, converged = nx.domirank(G, method="analytical")
+        assert converged is None
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
 
@@ -177,8 +178,8 @@ class TestDomirankDirected:
 
     def test_domirank_centrality_directed_analytical(self):
         G = self.G
-        b, _, converged = nx.domirank(G, comp_method="analytical")
-        assert converged == None
+        b, _, converged = nx.domirank(G, method="analytical")
+        assert converged is None
         for n in sorted(G):
             assert b[n] == pytest.approx(self.drca[n], abs=5e-3)
 
@@ -190,6 +191,14 @@ class TestDomirankGraphExceptions:
             "expectation",
         ),
         [
+            (
+                nx.barabasi_albert_graph(25, 1),
+                does_not_raise(),
+            ),
+            (
+                nx.path_graph(10),
+                does_not_raise(),
+            ),
             (
                 nx.Graph(),
                 pytest.raises(nx.NetworkXPointlessConcept),
@@ -210,32 +219,45 @@ class TestDomirankGraphExceptions:
 class TestDomirankMethodExceptions:
     @pytest.mark.parametrize(
         (
-            "comp_method",
+            "method",
             "expectation",
         ),
         [
+            (
+                "analytical",
+                does_not_raise(),
+            ),
+            (
+                "iterative",
+                does_not_raise(),
+            ),
             (
                 "ThisShouldNotWork",
                 pytest.raises(nx.NetworkXUnfeasible),
             ),
         ],
     )
-    def test_domirank_exceptions(self, comp_method, expectation):
+    def test_domirank_exceptions(self, method, expectation):
         with expectation:
             nx.domirank(
                 nx.path_graph(10),
-                comp_method=comp_method,
+                method=method,
             )
 
 
 class TestDomirankAlphaExceptions:
     @pytest.mark.parametrize(
         (
-            "comp_method",
+            "method",
             "alpha",
             "expectation",
         ),
         [
+            (
+                "analytical",
+                2,
+                does_not_raise(),
+            ),
             (
                 "iterative",
                 -1,
@@ -253,12 +275,12 @@ class TestDomirankAlphaExceptions:
             ),
         ],
     )
-    def test_domirank_exceptions(self, comp_method, alpha, expectation):
+    def test_domirank_exceptions(self, method, alpha, expectation):
         with expectation:
             nx.domirank(
                 nx.path_graph(10),
                 alpha=alpha,
-                comp_method=comp_method,
+                method=method,
             )
 
 
@@ -267,32 +289,49 @@ class TestDomirankIterExceptions:
         (
             "max_iter",
             "patience",
+            "max_depth",
             "expectation",
         ),
         [
             (
                 1000,
-                10000,
-                pytest.raises(nx.NetworkXAlgorithmError),
+                10,
+                50,
+                does_not_raise(),
             ),
             (
-                3,
-                1,
+                1000,
+                10000,
+                25,
                 pytest.raises(nx.NetworkXAlgorithmError),
             ),
             (
                 1000,
                 0,
+                0,
+                pytest.raises(nx.NetworkXAlgorithmError),
+            ),
+            (
+                1000,
+                0,
+                25,
+                pytest.raises(nx.NetworkXAlgorithmError),
+            ),
+            (
+                3,
+                1,
+                -1,
                 pytest.raises(nx.NetworkXAlgorithmError),
             ),
         ],
     )
-    def test_domirank_exceptions(self, max_iter, patience, expectation):
+    def test_domirank_exceptions(self, max_iter, patience, max_depth, expectation):
         with expectation:
             nx.domirank(
                 nx.path_graph(10),
                 max_iter=max_iter,
                 patience=patience,
+                max_depth=max_depth,
             )
 
 
@@ -304,6 +343,11 @@ class TestDomirankConvergeParamsExceptions:
             "expectation",
         ),
         [
+            (
+                0.1,
+                1e-5,
+                does_not_raise(),
+            ),
             (
                 1.1,
                 1e-5,
