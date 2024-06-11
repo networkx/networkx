@@ -286,7 +286,6 @@ def _domirank_iterative(GAdj, sigma=0, dt=0.1, epsilon=1e-5, max_iter=100, patie
     It yields a boolean indicating convergence, and an array of the DomiRank values ordered according to `G`'s adjacency matrix.
     """
     import numpy as np
-    import scipy as sp
 
     # store this to prevent more redundant calculations in the future
     pGAdj = sigma * GAdj.astype(np.float32)
