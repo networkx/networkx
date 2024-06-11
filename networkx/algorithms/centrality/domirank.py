@@ -98,7 +98,7 @@ def domirank(
         $\alpha$ normalized by the smallest eigenvalue.
 
     converged: boolean
-        Whether the centrality computation converged.
+        Whether the centrality computation converged. Returns ``None`` if ``analytical = True``.
 
     Examples
     --------
