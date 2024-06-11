@@ -75,9 +75,9 @@ def domirank(
         A NetworkX graph.
 
     method: string, optional (default="iterative")
-        The {`"analytical"`, `"iterative"`} method
+        The {``"analytical"``, ``"iterative"``} method
         for computing DomiRank. Note that the computational
-        time cost of the 'analytical' method is large for
+        time cost of the analytical method is large for
         non-regular graphs, but provides the true DomiRank.
 
     alpha: float, optional (default=0.95)
@@ -99,9 +99,9 @@ def domirank(
 
     max_depth: integer, optional (default=50)
         The number of bisection steps to find the smallest
-        eigenvalue. Having less ''max_depth'' reduces assessment
-        accuracy of the smallest eigenvalue, but reduces compute time.
-        It is recommend that ''max_depth > 25''.
+        eigenvalue. Having lower 'max_depth' reduces the
+        accuracy of the smallest eigenvalue computation, but improves performance.
+        It is recommended that ''max_depth > 25''.
 
     Returns
     -------
@@ -127,12 +127,12 @@ def domirank(
         If the graph `G` is the null graph.
 
     NetworkXUnfeasible
-        If alpha is negative (and thus outside its bounds): ``alpha < 0``.
+        If `alpha` is negative (and thus outside its bounds): ``alpha < 0``.
 
-        If ``alpha > 1`` with the ``method = "iterative"`` argument.
+        If ``alpha > 1`` when ``method = "iterative"``.
 
     NetworkXAlgorithmError
-        If the method is not one of type: {"analytical", "iterative"}.
+        If the method is not one of {``"analytical"``, ``"iterative"``}.
 
         If ``patience > max_iter``.
 
@@ -140,14 +140,14 @@ def domirank(
 
         If 'dt' does not satisfy: ``0 < dt < 1``.
 
-        If epsilon is negative or equal to one: ``epsilon <= 0``.
+        If `epsilon` is not greater than zero: ``epsilon <= 0``.
 
         If ``max_depth < 1``.
 
     Warning
-        If supercharging the competition parameter for the analytical solution: ``alpha > 1`` and `method = "analytical"`.
+        If supercharging the competition parameter for the analytical solution: ``alpha > 1`` and ``method = "analytical"``.
 
-        If one is using the analytical solution (`method="analytical"`) for a large graph, i.e. more than ``5000`` nodes, as the algorithm will be slow.
+        If ``method="analytical"`` for a large graph, i.e. more than ``5000`` nodes, as the algorithm will be slow.
 
     See Also
     --------
@@ -171,14 +171,14 @@ def domirank(
     if patience > max_iter:
         raise nx.NetworkXAlgorithmError("it is mandatory that max_iter > patience")
     if max_iter < 1:
-        raise nx.NetworkXAlgorithmError("it is mandatory that max_iter > 0")
+        raise nx.NetworkXAlgorithmError("it is mandatory that max_iter >= 1")
     if patience < 1:
-        raise nx.NetworkXAlgorithmError("it is mandatory that patience > 0")
+        raise nx.NetworkXAlgorithmError("it is mandatory that patience >= 1")
     if max_depth < 1:
-        raise nx.NetworkXAlgorithmError("it is mandatory that max_depth > 0")
+        raise nx.NetworkXAlgorithmError("it is mandatory that max_depth >= 1")
     if dt <= 0 or dt >= 1:
         raise nx.NetworkXAlgorithmError(
-            "it is mandatory that dt is bounded such that: 0 < dt < 1"
+            "it is mandatory that dt be bounded such that: 0 < dt < 1"
         )
     if epsilon <= 0:
         raise nx.NetworkXAlgorithmError(
@@ -187,27 +187,27 @@ def domirank(
     GAdj = nx.to_scipy_sparse_array(G)  # convert to scipy sparse csr array
 
     # Here we create a warning (I couldn't find a networkxwarning, only exceptions and erros), that suggests to use the iterative formulation of DomiRank rather than the analytical form.
-    if GAdj.shape[0] > 5000 and method == "analytical":
-        import warnings
-
-        warnings.warn(
-            "The system is large!!! Consider using method = iterative function argument for reduced computational time cost."
-        )
     # Here we create another warning for alpha being supercharged
     if alpha > 1:
         if method == "iterative":
             raise nx.NetworkXUnfeasible(
-                "supercharging the competition parameter (alpha > 1) requires the method = analytical flag."
+                "supercharging the competition parameter (alpha > 1) requires the method = 'analytical' argument"
             )
         else:
             import warnings
 
             warnings.warn(
-                "The competition parameter is supercharged (alpha > 1) - allowed as method = analytical"
+                "The competition parameter is supercharged (alpha > 1); this is only allowed because method = 'analytical'"
             )
     if alpha < 0:
         raise nx.NetworkXUnfeasible(
             "the competition parameter alpha must be positive: alpha > 0"
+        )
+        if GAdj.shape[0] > 5000 and method == "analytical":
+        import warnings
+
+        warnings.warn(
+            "consider using method = 'iterative' for large systems"
         )
 
     # Here we renormalize alpha with the smallest eigenvalue (most negative eigenvalue) by calling the "hidden" function _find_smallest_eigenvalue()
@@ -241,7 +241,7 @@ def domirank(
             )
         case _:
             raise nx.NetworkXUnfeasible(
-                "The method must match either `analytical` or the default `iterative` method."
+                "method must be one of {'iterative', 'analytical'}"
             )
     psi = dict(zip(G, (psi).tolist()))
     return psi, sigma, converged
@@ -281,7 +281,7 @@ def _find_smallest_eigenvalue(
 
 def _domirank_iterative(GAdj, sigma=0, dt=0.1, epsilon=1e-5, max_iter=100, patience=10):
     """
-    This function is used for the iterative computation of DomiRank when the `method = "iterative"`.
+    This function is used for the iterative computation of DomiRank when `method = "iterative"`.
     It is also used to find the smallest eigenvalue - i.e. called in the `_find_smallest_eigenvalue()` function.
     It yields a boolean indicating convergence, and an array of the DomiRank values ordered according to `G`'s adjacency matrix.
     """
