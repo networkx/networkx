@@ -1309,8 +1309,6 @@ class _dispatchable:
                 "girvan_newman",
                 "k_clique_communities",
                 "kosaraju_strongly_connected_components",
-                "node_attribute_xy",
-                "node_degree_xy",
                 "node_disjoint_paths",
                 "optimize_edit_paths",
                 "optimize_graph_edit_distance",
