@@ -1322,7 +1322,8 @@ def v_structures(G):
     Examples
     --------
     >>> G = nx.DiGraph([(1, 2), (0, 4), (3, 1), (2, 4), (0, 5), (4, 5), (1, 5)])
-    >>> assert nx.is_directed_acyclic_graph(G)
+    >>> nx.is_directed_acyclic_graph(G)
+    True
     >>> list(nx.dag.v_structures(G))
     [(0, 4, 2), (0, 5, 1), (4, 5, 1)]
 
@@ -1381,7 +1382,8 @@ def colliders(G):
     Examples
     --------
     >>> G = nx.DiGraph([(1, 2), (0, 4), (3, 1), (2, 4), (0, 5), (4, 5), (1, 5)])
-    >>> assert nx.is_directed_acyclic_graph(G)
+    >>> nx.is_directed_acyclic_graph(G)
+    True
     >>> list(nx.dag.colliders(G))
     [(0, 4, 2), (0, 5, 4), (0, 5, 1), (4, 5, 1)]
 
