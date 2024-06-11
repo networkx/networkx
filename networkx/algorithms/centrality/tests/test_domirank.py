@@ -22,7 +22,7 @@ class TestDomirank:
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
         nstart = {n: 1 for n in G}
-        b, _, converged = nx.domirank(G, analytical=True)
+        b, _, converged = nx.domirank(G, comp_method="analytical")
         assert converged == None
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
@@ -59,7 +59,7 @@ class TestDomirank:
             assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
 
         b_answer = {0: -2.366595958759845, 1: 4.523026818398872, 2: -2.366595958759845}
-        b, _, converged = nx.domirank(G, analytical=True)
+        b, _, converged = nx.domirank(G, comp_method="analytical")
         assert converged == None
         for n in sorted(G):
             assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
@@ -177,7 +177,7 @@ class TestDomirankDirected:
 
     def test_domirank_centrality_directed_analytical(self):
         G = self.G
-        b, _, converged = nx.domirank(G, analytical=True)
+        b, _, converged = nx.domirank(G, comp_method="analytical")
         assert converged == None
         for n in sorted(G):
             assert b[n] == pytest.approx(self.drca[n], abs=5e-3)
@@ -187,7 +187,7 @@ class TestDomirankExceptions:
     @pytest.mark.parametrize(
         (
             "G",
-            "analytical",
+            "comp_method",
             "alpha",
             "dt",
             "epsilon",
@@ -198,7 +198,7 @@ class TestDomirankExceptions:
         [
             (
                 nx.Graph(),
-                False,
+                "iterative",
                 0.95,
                 0.1,
                 1e-5,
@@ -208,7 +208,7 @@ class TestDomirankExceptions:
             ),
             (
                 nx.path_graph(10),
-                False,
+                "iterative",
                 -1,
                 0.1,
                 1e-5,
@@ -218,7 +218,7 @@ class TestDomirankExceptions:
             ),
             (
                 nx.path_graph(10),
-                False,
+                "iterative",
                 2,
                 0.1,
                 1e-5,
@@ -228,7 +228,7 @@ class TestDomirankExceptions:
             ),
             (
                 nx.path_graph(10),
-                True,
+                "analytical",
                 -1,
                 0.1,
                 1e-5,
@@ -238,7 +238,7 @@ class TestDomirankExceptions:
             ),
             (
                 nx.path_graph(10),
-                False,
+                "iterative",
                 2,
                 0.1,
                 1e-5,
@@ -248,7 +248,7 @@ class TestDomirankExceptions:
             ),
             (
                 nx.path_graph(10),
-                False,
+                "iterative",
                 2,
                 0.1,
                 1e-5,
@@ -258,7 +258,7 @@ class TestDomirankExceptions:
             ),
             (
                 nx.path_graph(10),
-                False,
+                "iterative",
                 2,
                 0.1,
                 1e-5,
@@ -268,7 +268,7 @@ class TestDomirankExceptions:
             ),
             (
                 nx.path_graph(10),
-                False,
+                "iterative",
                 2,
                 1.1,
                 1e-5,
@@ -278,7 +278,7 @@ class TestDomirankExceptions:
             ),
             (
                 nx.path_graph(10),
-                False,
+                "iterative",
                 2,
                 -0.1,
                 1e-5,
@@ -288,7 +288,7 @@ class TestDomirankExceptions:
             ),
             (
                 nx.path_graph(10),
-                False,
+                "iterative",
                 2,
                 0.1,
                 -1,
@@ -297,8 +297,18 @@ class TestDomirankExceptions:
                 pytest.raises(nx.NetworkXAlgorithmError),
             ),
             (
+                nx.path_graph(10),
+                "thisShouldNotWork",
+                -1,
+                0.1,
+                1e-5,
+                1000,
+                10,
+                pytest.raises(nx.NetworkXUnfeasible),
+            ),
+            (
                 nx.MultiGraph(),
-                False,
+                "iterative",
                 0.95,
                 0.1,
                 1e-5,
@@ -309,13 +319,13 @@ class TestDomirankExceptions:
         ],
     )
     def test_domirank_exceptions(
-        self, G, analytical, alpha, dt, epsilon, max_iter, patience, expectation
+        self, G, comp_method, alpha, dt, epsilon, max_iter, patience, expectation
     ):
         with expectation:
             nx.domirank(
                 G,
                 alpha=alpha,
-                analytical=analytical,
+                comp_method=comp_method,
                 dt=dt,
                 epsilon=epsilon,
                 max_iter=max_iter,

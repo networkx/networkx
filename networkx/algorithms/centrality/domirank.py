@@ -9,7 +9,13 @@ __all__ = ["domirank"]
 # @nx._dispatchable(edge_attrs="weight")
 @not_implemented_for("multigraph")
 def domirank(
-    G, analytical=False, alpha=0.95, dt=0.1, epsilon=1e-5, max_iter=1000, patience=10
+    G,
+    comp_method="iterative",
+    alpha=0.95,
+    dt=0.1,
+    epsilon=1e-5,
+    max_iter=1000,
+    patience=10,
 ):
     r"""Compute the DomiRank centrality for the graph `G`.
 
@@ -67,9 +73,11 @@ def domirank(
     G : graph
         A NetworkX graph.
 
-    analytical: bool, optional (default=False)
-        Whether the analytical or iterative formulation
-        for computing DomiRank should be used.
+    analytical: string, optional (default="iterative")
+        The {'analytical', 'iterative'} method
+        for computing DomiRank. Note that the computational
+        time cost of the 'analytical' method is large for
+        non-regular graphs, but provides the true DomiRank.
 
     alpha: float, optional (default=0.95)
         The level of competition for DomiRank.
@@ -80,7 +88,7 @@ def domirank(
     epsilon: float, optional (default=1e-5)
         The relative stopping criterion for convergence.
 
-    max_iter: integer, optional (default=50)
+    max_iter: integer, optional (default=100)
         Maximum number of Newton iterations allowed.
         It is recommended that ''max_iter >= 50''.
 
@@ -97,8 +105,8 @@ def domirank(
     sigma : float
         $\alpha$ normalized by the smallest eigenvalue.
 
-    converged: boolean
-        Whether the centrality computation converged. Returns ``None`` if ``analytical = True``.
+    converged : boolean
+        Whether the centrality computation converged. Returns ``None`` if ``comp_method = `analytical```.
 
     Examples
     --------
@@ -115,26 +123,23 @@ def domirank(
     NetworkXUnfeasible
         If alpha is negative (and thus outside its bounds): ``alpha < 0``.
 
-    NetworkXUnfeasible
-        If ``alpha > 1`` with the ``analytical = False`` argument.
+        If ``alpha > 1`` with the ``comp_method = `iterative``` argument.
 
     NetworkXAlgorithmError
+        If the comp_method is not of type: {'analytical', 'iterative'}.
+
         If ``patience > max_iter``.
 
-    NetworkXAlgorithmError
-        If ``patience < 5``.
+        If ``max_iter < 5``.
 
-    NetworkXAlgorithmError
-        If dt is not in the bounds ``0 < dt < 1``.
+        If dt is not in the bounds: ``0 < dt < 1``.
 
-    NetworkXAlgorithmError
-        If epsilon is negative ``epsilon < 0``.
+        If epsilon is negative or equal to one: ``epsilon <= 0``.
 
     Warning
         If supercharging the competition parameter for the analytical solution: ``alpha > 1``.
 
-    Warning
-        If one is using the analytical solution for a large system, i.e. ``len(G) > 5000``, as the algorithm will be slow.
+        If one is using the analytical solution (comp_method=`analytical`) for a large system, i.e. ``len(G) > 5000``, as the algorithm will be slow.
 
     See Also
     --------
@@ -157,30 +162,32 @@ def domirank(
         )
     if patience > max_iter:
         raise nx.NetworkXAlgorithmError("it is mandatory that `max_iter > patience`.")
-    if patience < 5:
-        raise nx.NetworkXAlgorithmError("it is mandatory that `patience >= 5`.")
-    if dt < 0 or dt > 1:
+    if max_iter < 5:
+        raise nx.NetworkXAlgorithmError("it is mandatory that `max_iter >= 5`.")
+    if patience <= 0:
+        raise nx.NetworkXAlgorithmError("it is mandatory that `patience > 0`.")
+    if dt <= 0 or dt >= 1:
         raise nx.NetworkXAlgorithmError(
-            "it is mandatory that dt is bounded such that: `0 < dt <= 1`."
+            "it is mandatory that dt is bounded such that: `0 < dt < 1`."
         )
-    if epsilon < 0:
+    if epsilon <= 0:
         raise nx.NetworkXAlgorithmError(
             "it is mandatory that `epsilon > 0` and recommended that `epsilon = 1e-5`."
         )
     GAdj = nx.to_scipy_sparse_array(G)  # convert to scipy sparse csr array
 
     # Here we create a warning (I couldn't find a networkxwarning, only exceptions and erros), that suggests to use the iterative formulation of DomiRank rather than the analytical form.
-    if GAdj.shape[0] > 5000 and analytical == True:
+    if GAdj.shape[0] > 5000 and comp_method == "analytical":
         import warnings
 
         warnings.warn(
-            "The system is large!!! Consider using `analytical = False` function argument for reduced computational time cost."
+            "The system is large!!! Consider using `comp_method = `iterative`` function argument for reduced computational time cost."
         )
     # Here we create another warning for alpha being supercharged
     if alpha > 1:
-        if analytical == False:
+        if comp_method == "iterative":
             raise nx.NetworkXUnfeasible(
-                "supercharging the competition parameter (`alpha > 1`) requires the `analytical = True` flag."
+                "supercharging the competition parameter (`alpha > 1`) requires the `comp_method = `analytical`` flag."
             )
         else:
             import warnings
@@ -206,22 +213,28 @@ def domirank(
             patience=patience,
         )
     )
-    if analytical:
-        converged = None
-        Psi = sp.sparse.linalg.spsolve(
-            sigma * GAdj + sp.sparse.identity(GAdj.shape[0]), sigma * GAdj.sum(axis=-1)
-        )
-    else:
-        Psi, sigma, converged = _domirank_iterative(
-            GAdj,
-            sigma=sigma,
-            dt=dt,
-            epsilon=epsilon,
-            max_iter=max_iter,
-            patience=patience,
-        )
-    Psi = dict(zip(G, (Psi).tolist()))
-    return Psi, sigma, converged
+    match comp_method:
+        case "analytical":
+            converged = None
+            psi = sp.sparse.linalg.spsolve(
+                sigma * GAdj + sp.sparse.identity(GAdj.shape[0]),
+                sigma * GAdj.sum(axis=-1),
+            )
+        case "iterative":
+            psi, converged = _domirank_iterative(
+                GAdj,
+                sigma=sigma,
+                dt=dt,
+                epsilon=epsilon,
+                max_iter=max_iter,
+                patience=patience,
+            )
+        case _:
+            raise nx.NetworkXUnfeasible(
+                "The comp_method must match either `analytical` or the default `iterative` method."
+            )
+    psi = dict(zip(G, (psi).tolist()))
+    return psi, sigma, converged
 
 
 ##### THE FUNCTIONS HEREUNDER SHOULD BE HIDDEN FUNCTIONS #####
@@ -245,28 +258,56 @@ def _find_smallest_eigenvalue(
     import scipy
 
     x = (min_val + max_val) / G.sum(axis=-1).max()
-    for __ in range(max_depth):
+    for _ in range(max_depth):
         if max_val - min_val < epsilon:
             break
-        ___, ____, converged = _domirank_iterative(
+        _, converged = _domirank_iterative(
             G, sigma=x, dt=dt, epsilon=epsilon, max_iter=max_iter, patience=patience
         )
         if converged:
             min_val = x
-            x = (min_val + max_val) / 2
         else:
             max_val = (x + max_val) / 2
-            x = (min_val + max_val) / 2
+        x = (min_val + max_val) / 2
     final_val = (max_val + min_val) / 2
     return -1 / final_val
 
 
-def _domirank_iterative(
-    GAdj, sigma=0, dt=0.1, epsilon=1e-5, max_iter=1000, patience=10
-):
+def _domirank_iterative(GAdj, sigma=0, dt=0.1, epsilon=1e-5, max_iter=100, patience=10):
     """
-    Is used to find the smallest eigenvalue - i.e. called in the _find_smallest_eigenvalue() function.
-    It only outputs a boolean.
+    This function is used for the iterative computation of domirank when the comp_method = "iterative".
+    It is also used to find the smallest eigenvalue - i.e. called in the _find_smallest_eigenvalue() function.
+
+    Parameters
+    ----------
+    G : graph
+        A NetworkX graph.
+
+    sigma: float, optional (default=0.95)
+        The normalized level of competition for DomiRank.
+
+    dt: float, optional (default=0.1)
+        The step size for the Newton iteration.
+
+    epsilon: float, optional (default=1e-5)
+        The relative stopping criterion for convergence.
+
+    max_iter: integer, optional (default=100)
+        Maximum number of Newton iterations allowed.
+        It is recommended that ''max_iter >= 50''.
+
+    patience: integer, optional (default=10)
+        The number of steps between convergence checks.
+        It is recommended that ''patience >= 10''.
+
+
+    Returns
+    -------
+    psi : np.array
+        An array of the DomiRank values ordered according to the input Adjacency matrix.
+
+    converged : boolean
+        Whether the centrality computation converged.
     """
     import numpy as np
     import scipy as sp
@@ -274,9 +315,9 @@ def _domirank_iterative(
     # store this to prevent more redundant calculations in the future
     pGAdj = sigma * GAdj.astype(np.float32)
     # initalize a proportionally (to system size) small non-zero uniform vector
-    Psi = np.ones(pGAdj.shape[0], dtype=np.float32) / pGAdj.shape[0]
+    psi = np.ones(pGAdj.shape[0], dtype=np.float32) / pGAdj.shape[0]
     # initialize a zero array to store values (yes, this could be done with a smaller array with some smart indexing, but this is not computationally or memory heavy)
-    max_vals = np.zeros(max_iter // patience).astype(np.float32)
+    max_vals = np.zeros(max_iter // patience, dtype=np.float32)
     # ensure dt is a float
     dt = np.float32(dt)
     # start a counter
@@ -285,9 +326,9 @@ def _domirank_iterative(
     boundary = epsilon * pGAdj.shape[0] * dt
     for i in range(max_iter):
         # DomiRank iterative definition
-        temp_val = ((pGAdj @ (1 - Psi)) - Psi) * dt
+        temp_val = ((pGAdj @ (1 - psi)) - psi) * dt
         # Newton iteration addition step
-        Psi += temp_val.real
+        psi += temp_val.real
         # Here we do the checking to see if we are diverging
         if i % patience == 0:
             if np.abs(temp_val).sum() < boundary:
@@ -296,6 +337,6 @@ def _domirank_iterative(
             if j >= 2:
                 if max_vals[j] > max_vals[j - 1] and max_vals[j - 1] > max_vals[j - 2]:
                     # If we are diverging, return the current step, but, with the argument that you have diverged.
-                    return Psi, sigma, False
+                    return psi, False
             j += 1
-    return Psi, sigma, True
+    return psi, True
