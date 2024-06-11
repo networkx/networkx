@@ -86,3 +86,9 @@ def test_graph_converter_needs_backend():
 
 def test_dispatchable_are_functions():
     assert type(nx.pagerank) is type(nx.pagerank.orig_func)
+
+
+def test_bad_backend_name():
+    """Using `backend=` raises with unknown backend even if there are no backends."""
+    with pytest.raises(ImportError, match="Unable to load"):
+        nx.null_graph(backend="this_backend_does_not_exist")
