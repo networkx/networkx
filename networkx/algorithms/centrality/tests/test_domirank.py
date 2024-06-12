@@ -24,8 +24,10 @@ class TestDomirank:
         }
         for n in sorted(G):
             assert i[n] == pytest.approx(answer[n], abs=5e-3) == a[n]
-        b, _, converged = nx.domirank(G, alpha=0.5)
-        assert converged
+
+        b, _, iterative_converged = nx.domirank(G, method="iterative", alpha=0.5)
+        a, _, analytical_converged = nx.domirank(G, method="analytical", alpha=0.5)
+        assert iterative_converged and analytical_converged is None
         b_answer = {
             0: 0.66666579246521,
             1: 0.66666579246521,
@@ -34,7 +36,7 @@ class TestDomirank:
             4: 0.66666579246521,
         }
         for n in sorted(G):
-            assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
+            assert b[n] == pytest.approx(b_answer[n], abs=5e-3) == a[n]
 
     def test_P3(self):
         """DomiRank centrality: P3"""
