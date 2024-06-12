@@ -12,9 +12,10 @@ class TestDomirank:
     def test_K5(self):
         """DomiRank centrality: K5"""
         G = nx.complete_graph(5)
-        b, _, converged = nx.domirank(G)
-        assert converged
-        b_answer = {
+        i, _, iterative_converged = nx.domirank(G, method="iterative")
+        a, _, analytical_converged = nx.domirank(G, method="analytical")
+        assert iterative_converged and analytical_converged is None
+        answer = {
             0: 0.7916655540466309,
             1: 0.7916655540466309,
             2: 0.7916655540466309,
@@ -22,18 +23,7 @@ class TestDomirank:
             4: 0.7916655540466308,
         }
         for n in sorted(G):
-            assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
-        b, _, converged = nx.domirank(G, method="analytical")
-        assert converged is None
-        for n in sorted(G):
-            assert b[n] == pytest.approx(b_answer[n], abs=5e-3)
-        b_answer = {
-            0: 0.7916661947954937,
-            1: 0.7916661947954933,
-            2: 0.7916661947954919,
-            3: 0.791666194795491,
-            4: 0.7916661947954975,
-        }
+            assert i[n] == pytest.approx(answer[n], abs=5e-3) == a[n]
         b, _, converged = nx.domirank(G, alpha=0.5)
         assert converged
         b_answer = {
@@ -149,6 +139,36 @@ class TestDomirankDirected:
             8: -0.3470142938948988,
             9: 1.4782096886790972,
         }
+        cls.G_weighted = cls.G.copy()
+        counter = 0
+        number_of_edges = len(cls.G_weighted.edges())
+        for i, j, w in cls.G_weighted.edges(data=True):
+            counter += 1
+            w["weight"] = counter / number_of_edges
+        cls.drcw = {
+            0: 0.017124131321907043,
+            1: 3.0307206948131452e-18,
+            2: 0.08629344403743744,
+            3: 0.58540278673172,
+            4: 0.5559653043746948,
+            5: 0.14745399355888367,
+            6: 0.580001950263977,
+            7: 0.6754786968231201,
+            8: 0.8270763754844666,
+            9: 2.3496170043945312,
+        }
+        cls.drcwa = {
+            0: 0.017126419063866822,
+            1: 0.0,
+            2: 0.08628814481433485,
+            3: 0.5853591453037238,
+            4: 0.556035199974221,
+            5: 0.1474122206518499,
+            6: 0.5800646950099848,
+            7: 0.6755510836751828,
+            8: 0.826982274634672,
+            9: 2.3495809294540613,
+        }
 
     def test_domirank_centrality_directed(self):
         G = self.G
@@ -163,6 +183,20 @@ class TestDomirankDirected:
         assert converged is None
         for n in sorted(G):
             assert b[n] == pytest.approx(self.drca[n], abs=5e-3)
+
+    def test_domirank_centrality_directed_weighted(self):
+        G = self.G_weighted
+        b, _, converged = nx.domirank(G)
+        assert converged
+        for n in sorted(G):
+            assert b[n] == pytest.approx(self.drcw[n], abs=5e-3)
+
+    def test_domirank_centrality_directed_analytical_weighted(self):
+        G = self.G_weighted
+        b, _, converged = nx.domirank(G, method="analytical")
+        assert converged is None
+        for n in sorted(G):
+            assert b[n] == pytest.approx(self.drcwa[n], abs=5e-3)
 
 
 class TestDomirankGraphExceptions:
