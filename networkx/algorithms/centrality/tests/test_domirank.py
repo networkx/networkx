@@ -282,7 +282,7 @@ class TestDomirankIterExceptions:
             ),
             (
                 1000,
-                10000,
+                500,
                 25,
                 pytest.raises(nx.NetworkXAlgorithmError),
             ),
@@ -299,7 +299,7 @@ class TestDomirankIterExceptions:
                 pytest.raises(nx.NetworkXAlgorithmError),
             ),
             (
-                3,
+                5,
                 1,
                 -1,
                 pytest.raises(nx.NetworkXAlgorithmError),

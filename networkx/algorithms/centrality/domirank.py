@@ -134,7 +134,7 @@ def domirank(
     NetworkXAlgorithmError
         If the method is not one of {``"analytical"``, ``"iterative"``}.
 
-        If ``patience > max_iter``.
+        If ``patience > max_iter/3``.
 
         If ``max_iter < 1``.
 
@@ -168,7 +168,7 @@ def domirank(
         raise nx.NetworkXPointlessConcept(
             "cannot compute centrality for the null graph"
         )
-    if patience > max_iter:
+    if patience > max_iter // 3:
         raise nx.NetworkXAlgorithmError("it is mandatory that max_iter > patience")
     if max_iter < 1:
         raise nx.NetworkXAlgorithmError("it is mandatory that max_iter >= 1")
@@ -203,12 +203,10 @@ def domirank(
         raise nx.NetworkXUnfeasible(
             "the competition parameter alpha must be positive: alpha > 0"
         )
-        if GAdj.shape[0] > 5000 and method == "analytical":
+    if GAdj.shape[0] > 5000 and method == "analytical":
         import warnings
 
-        warnings.warn(
-            "consider using method = 'iterative' for large systems"
-        )
+        warnings.warn("consider using method = 'iterative' for large systems")
 
     # Here we renormalize alpha with the smallest eigenvalue (most negative eigenvalue) by calling the "hidden" function _find_smallest_eigenvalue()
     # Note, this function always uses the iterative definition
