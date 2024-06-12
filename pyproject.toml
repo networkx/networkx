@@ -51,7 +51,7 @@ Documentation = 'https://networkx.org/documentation/stable/'
 "Source Code" = 'https://github.com/networkx/networkx'
 
 [project.entry-points."networkx.backends"]
-nx-loopback = 'networkx.classes.tests.dispatch_interface:dispatcher'
+nx-loopback = 'networkx.classes.tests.dispatch_interface:backend_interface'
 
 [project.optional-dependencies]
 default = [
@@ -74,10 +74,11 @@ doc = [
     'pillow>=9.4',
     'texext>=0.6.7',
     'myst-nb>=1.1',
+    'intersphinx_registry',
 ]
 extra = [
     'lxml>=4.6',
-    'pygraphviz>=1.12',
+    'pygraphviz>=1.13',
     'pydot>=2.0',
     'sympy>=1.10',
 ]
