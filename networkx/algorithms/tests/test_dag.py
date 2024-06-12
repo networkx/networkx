@@ -760,7 +760,8 @@ def test_ancestors_descendants_undirected():
 
 def test_compute_v_structures_raise():
     G = nx.Graph()
-    pytest.raises(nx.NetworkXNotImplemented, nx.compute_v_structures, G)
+    with pytest.raises(nx.NetworkXNotImplemented, match="for undirected type"):
+        nx.compute_v_structures(G)
 
 
 def test_compute_v_structures():
@@ -785,7 +786,8 @@ def test_compute_v_structures_deprecated():
 
 def test_v_structures_raise():
     G = nx.Graph()
-    pytest.raises(nx.NetworkXNotImplemented, nx.dag.v_structures, G)
+    with pytest.raises(nx.NetworkXNotImplemented, match="for undirected type"):
+        nx.dag.v_structures(G)
 
 
 def test_v_structures():
@@ -808,7 +810,8 @@ def test_v_structures():
 
 def test_colliders_raise():
     G = nx.Graph()
-    pytest.raises(nx.NetworkXNotImplemented, nx.dag.colliders, G)
+    with pytest.raises(nx.NetworkXNotImplemented, match="for undirected type"):
+        nx.dag.colliders(G)
 
 
 def test_colliders():

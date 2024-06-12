@@ -1233,7 +1233,7 @@ def compute_v_structures(G):
 
     .. deprecated:: 3.4
        `compute_v_structures` actually yields colliders. It will be removed in
-       version 3.6. Use `nx.dag.v_structures` instead.
+       version 3.6. Use `nx.dag.v_structures` or `nx.dag.colliders` instead.
 
     Parameters
     ----------
@@ -1285,7 +1285,8 @@ def compute_v_structures(G):
     warnings.warn(
         (
             "\n\n`compute_v_structures` actually yields colliders. It will be\n"
-            "removed in version 3.6. Use `nx.dag.v_structures` instead.\n"
+            "removed in version 3.6. Use `nx.dag.v_structures` or `nx.dag.colliders`\n"
+            "instead.\n"
         ),
         category=DeprecationWarning,
         stacklevel=5,
