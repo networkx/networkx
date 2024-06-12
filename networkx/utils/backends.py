@@ -49,19 +49,16 @@ backend that you specified is being implemented. This will most likely become mo
 enhanced in the future. You can enable the networkx's backend logger like this::
 
     import logging
-    logging.basicConfig(level=logging.DEBUG)
-    nx.betweenness_centrality(G, backend="parallel")
-    # Output
-    # DEBUG:networkx.utils.backends:using backend 'parallel' for call to `betweenness_centrality' with args: (Parallel<networkx.classes.graph.Graph object at 0x1008144d0>, None, True, None, False, <random.Random object at 0x135834c20>), kwargs: {}
-    # {1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0}
+    nxl = logging.getLogger("networkx")
+    nxl.addHandler(logging.StreamHandler())
+    nxl.setLevel(logging.DEBUG)
 
-And you can disable all the loggers by running this::
+And you can disable it by running this::
 
-    logging.disable(logging.CRITICAL)
+    nxl.setLevel(logging.CRITICAL)
 
-And then re-enable it by running::
-
-    logging.disable(logging.NOTSET)
+Refer `this <https://docs.python.org/3/library/logging.html>`_ to know more about
+the logging facilities in Python.
 
 How does this work?
 -------------------
@@ -154,12 +151,13 @@ Creating a custom backend
 
     3. ``should_run`` (Optional): 
           A backend may also define ``should_run(name, args, kwargs)``
-          that is similar to ``can_run``, but answers whether the backend *should* be run
-          (converting if necessary). Like ``can_run``, it receives the original arguments
-          so it can decide whether it should be run by inspecting the arguments.
-          ``can_run`` runs before ``should_run``, so ``should_run`` may assume ``can_run``
-          is True. If not implemented by the backend, ``can_run`` and ``should_run`` are
-          assumed to always return True if the backend implements the algorithm.
+          that is similar to ``can_run``, but answers whether the backend *should* be run.
+          ``should_run`` is only run when performing backend graph conversions. Like
+          ``can_run``, it receives the original arguments so it can decide whether it
+          should be run by inspecting the arguments. ``can_run`` runs before
+          ``should_run``, so ``should_run`` may assume ``can_run`` is True. If not
+          implemented by the backend, ``can_run``and ``should_run`` are assumed to
+          always return True if the backend implements the algorithm.
 
     4. ``on_start_tests`` (Optional): 
           A special ``on_start_tests(items)`` function may be defined by the backend.
