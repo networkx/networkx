@@ -134,7 +134,7 @@ def domirank(
     NetworkXAlgorithmError
         If the method is not one of {``"analytical"``, ``"iterative"``}.
 
-        If ``patience > max_iter/3``.
+        If ``patience > max_iter // 3``.
 
         If ``max_iter < 1``.
 
@@ -169,7 +169,7 @@ def domirank(
             "cannot compute centrality for the null graph"
         )
     if patience > max_iter // 3:
-        raise nx.NetworkXAlgorithmError("it is mandatory that max_iter > patience")
+        raise nx.NetworkXAlgorithmError("it is mandatory that max_iter > 3 * patience")
     if max_iter < 1:
         raise nx.NetworkXAlgorithmError("it is mandatory that max_iter >= 1")
     if patience < 1:
