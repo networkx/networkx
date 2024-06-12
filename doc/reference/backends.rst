@@ -2,9 +2,9 @@
 Backends and Configs
 ********************
 
-   Backends let you execute an alternative backend implementation instead of NetworkX's
-   pure Python dictionaries implementation. Configs provides library level storage
-   of configuration settings that otherwise might come from environment variables.
+Backends let you execute an alternative backend implementation instead of NetworkX's
+pure Python dictionaries implementation. Configs provides library level storage
+of configuration settings that otherwise might come from environment variables.
 
 .. note:: Both NetworkX backend and config systems are new and and actively developed,
    with frequent updates and improvements. While the backend user interface is unlikely
