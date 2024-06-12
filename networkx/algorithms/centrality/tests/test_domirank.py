@@ -142,7 +142,7 @@ class TestDomirankDirected:
         cls.G_weighted = cls.G.copy()
         counter = 0
         number_of_edges = len(cls.G_weighted.edges())
-        for i, j, w in cls.G_weighted.edges(data=True):
+        for _, _, w in cls.G_weighted.edges(data=True):
             counter += 1
             w["weight"] = counter / number_of_edges
         cls.drcw = {
