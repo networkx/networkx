@@ -1,582 +1,840 @@
-"""
-Equitable coloring of graphs with bounded degree.
+"""Greedy coloring test suite.
+
 """
 
-from collections import defaultdict
-from queue import PriorityQueue
+import itertools
+
+import pytest
 
 import networkx as nx
-from networkx.utils import not_implemented_for
 
-__all__ = ["equitable_color"]
-
-
-@nx._dispatchable
-def is_coloring(G, coloring):
-    """Determine if the coloring is a valid coloring for the graph G."""
-    # Verify that the coloring is valid.
-    return all(coloring[s] != coloring[d] for s, d in G.edges)
-
-
-@nx._dispatchable
-def is_equitable(G, coloring, num_colors=None):
-    """Determines if the coloring is valid and equitable for the graph G."""
-
-    if not is_coloring(G, coloring):
-        return False
-
-    # Get maximum degree of G. If num_colors is less or equal to this, no
-    # further checks are necessary
-    maxdeg = max(G.degree(node) for node in G.nodes) if len(G.nodes) > 0 else 0
-    if num_colors != None and num_colors <= maxdeg:
-        return True
-
-    # Verify whether it is equitable.
-    color_set_size = defaultdict(int)
-    for color in coloring.values():
-        color_set_size[color] += 1
-
-    if num_colors is not None:
-        for color in range(num_colors):
-            if color not in color_set_size:
-                # These colors do not have any vertices attached to them.
-                color_set_size[color] = 0
-
-    # If there are more than 2 distinct values, the coloring cannot be equitable
-    all_set_sizes = set(color_set_size.values())
-    if len(all_set_sizes) == 0 and num_colors is None:  # Was an empty graph
-        return True
-    elif len(all_set_sizes) == 1:
-        return True
-    elif len(all_set_sizes) == 2:
-        a, b = list(all_set_sizes)
-        return abs(a - b) <= 1
-    else:  # len(all_set_sizes) > 2:
-        return False
-
-
-def make_C_from_F(F):
-    C = defaultdict(list)
-    for node, color in F.items():
-        C[color].append(node)
-
-    return C
-
-
-def make_N_from_L_C(L, C):
-    nodes = L.keys()
-    colors = C.keys()
-    return {
-        (node, color): sum(1 for v in L[node] if v in C[color])
-        for node in nodes
-        for color in colors
-    }
-
-
-def make_H_from_C_N(C, N):
-    return {
-        (c1, c2): sum(1 for node in C[c1] if N[(node, c2)] == 0) for c1 in C for c2 in C
-    }
-
-
-def change_color(u, X, Y, N, H, F, C, L):
-    """Change the color of 'u' from X to Y and update N, H, F, C."""
-    assert F[u] == X and X != Y
-
-    # Change the class of 'u' from X to Y
-    F[u] = Y
-
-    for k in C:
-        # 'u' witnesses an edge from k -> Y instead of from k -> X now.
-        if N[u, k] == 0:
-            H[(X, k)] -= 1
-            H[(Y, k)] += 1
-
-    for v in L[u]:
-        # 'v' has lost a neighbor in X and gained one in Y
-        N[(v, X)] -= 1
-        N[(v, Y)] += 1
-
-        if N[(v, X)] == 0:
-            # 'v' witnesses F[v] -> X
-            H[(F[v], X)] += 1
-
-        if N[(v, Y)] == 1:
-            # 'v' no longer witnesses F[v] -> Y
-            H[(F[v], Y)] -= 1
-
-    C[X].remove(u)
-    C[Y].append(u)
-
-
-def move_witnesses(src_color, dst_color, N, H, F, C, T_cal, L):
-    """Move witness along a path from src_color to dst_color."""
-    X = src_color
-    while X != dst_color:
-        Y = T_cal[X]
-        # Move _any_ witness from X to Y = T_cal[X]
-        w = next(x for x in C[X] if N[(x, Y)] == 0)
-        change_color(w, X, Y, N=N, H=H, F=F, C=C, L=L)
-        X = Y
-
-
-@nx._dispatchable(mutates_input=True)
-def pad_graph(G, num_colors):
-    """Add a disconnected complete clique K_p such that the number of nodes in
-    the graph becomes a multiple of `num_colors`.
-
-    Assumes that the graph's nodes are labelled using integers.
-
-    Returns the number of nodes with each color.
-    """
-
-    n_ = len(G)
-    r = num_colors - 1
-
-    # Ensure that the number of nodes in G is a multiple of (r + 1)
-    s = n_ // (r + 1)
-    if n_ != s * (r + 1):
-        p = (r + 1) - n_ % (r + 1)
-        s += 1
-
-        # Complete graph K_p between (imaginary) nodes [n_, ... , n_ + p]
-        K = nx.relabel_nodes(nx.complete_graph(p), {idx: idx + n_ for idx in range(p)})
-        G.add_edges_from(K.edges)
-
-    return s
-
-
-def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
-    """Procedure P as described in the paper."""
-
-    if excluded_colors is None:
-        excluded_colors = set()
-
-    A_cal = set()
-    T_cal = {}
-    R_cal = []
-
-    # BFS to determine A_cal, i.e. colors reachable from V-
-    reachable = [V_minus]
-    marked = set(reachable)
-    idx = 0
-
-    while idx < len(reachable):
-        pop = reachable[idx]
-        idx += 1
-
-        A_cal.add(pop)
-        R_cal.append(pop)
-
-        # TODO: Checking whether a color has been visited can be made faster by
-        # using a look-up table instead of testing for membership in a set by a
-        # logarithmic factor.
-        next_layer = []
-        for k in C:
-            if (
-                H[(k, pop)] > 0
-                and k not in A_cal
-                and k not in excluded_colors
-                and k not in marked
-            ):
-                next_layer.append(k)
-
-        for dst in next_layer:
-            # Record that `dst` can reach `pop`
-            T_cal[dst] = pop
-
-        marked.update(next_layer)
-        reachable.extend(next_layer)
-
-    # Variables for the algorithm
-    b = len(C) - len(A_cal)
-
-    if V_plus in A_cal:
-        # Easy case: V+ is in A_cal
-        # Move one node from V+ to V- using T_cal to find the parents.
-        move_witnesses(V_plus, V_minus, N=N, H=H, F=F, C=C, T_cal=T_cal, L=L)
-    else:
-        # If there is a solo edge, we can resolve the situation by
-        # moving witnesses from B to A, making G[A] equitable and then
-        # recursively balancing G[B - w] with a different V_minus and
-        # but the same V_plus.
-
-        A_0 = set()
-        A_cal_0 = set()
-        num_terminal_sets_found = 0
-        made_equitable = False
-
-        for W_1 in R_cal[::-1]:
-            for v in C[W_1]:
-                X = None
-
-                for U in C:
-                    if N[(v, U)] == 0 and U in A_cal and U != W_1:
-                        X = U
-
-                # v does not witness an edge in H[A_cal]
-                if X is None:
-                    continue
-
-                for U in C:
-                    # Note: Departing from the paper here.
-                    if N[(v, U)] >= 1 and U not in A_cal:
-                        X_prime = U
-                        w = v
-
-                        try:
-                            # Finding the solo neighbor of w in X_prime
-                            y = next(
-                                node
-                                for node in L[w]
-                                if F[node] == X_prime and N[(node, W_1)] == 1
-                            )
-                        except StopIteration:
-                            pass
-                        else:
-                            W = W_1
-
-                            # Move w from W to X, now X has one extra node.
-                            change_color(w, W, X, N=N, H=H, F=F, C=C, L=L)
-
-                            # Move witness from X to V_minus, making the coloring
-                            # equitable.
-                            move_witnesses(
-                                src_color=X,
-                                dst_color=V_minus,
-                                N=N,
-                                H=H,
-                                F=F,
-                                C=C,
-                                T_cal=T_cal,
-                                L=L,
-                            )
-
-                            # Move y from X_prime to W, making W the correct size.
-                            change_color(y, X_prime, W, N=N, H=H, F=F, C=C, L=L)
-
-                            # Then call the procedure on G[B - y]
-                            procedure_P(
-                                V_minus=X_prime,
-                                V_plus=V_plus,
-                                N=N,
-                                H=H,
-                                C=C,
-                                F=F,
-                                L=L,
-                                excluded_colors=excluded_colors.union(A_cal),
-                            )
-                            made_equitable = True
-                            break
-
-                if made_equitable:
-                    break
-            else:
-                # No node in W_1 was found such that
-                # it had a solo-neighbor.
-                A_cal_0.add(W_1)
-                A_0.update(C[W_1])
-                num_terminal_sets_found += 1
-
-            if num_terminal_sets_found == b:
-                # Otherwise, construct the maximal independent set and find
-                # a pair of z_1, z_2 as in Case II.
-
-                # BFS to determine B_cal': the set of colors reachable from V+
-                B_cal_prime = set()
-                T_cal_prime = {}
-
-                reachable = [V_plus]
-                marked = set(reachable)
-                idx = 0
-                while idx < len(reachable):
-                    pop = reachable[idx]
-                    idx += 1
-
-                    B_cal_prime.add(pop)
-
-                    # No need to check for excluded_colors here because
-                    # they only exclude colors from A_cal
-                    next_layer = [
-                        k
-                        for k in C
-                        if H[(pop, k)] > 0 and k not in B_cal_prime and k not in marked
-                    ]
-
-                    for dst in next_layer:
-                        T_cal_prime[pop] = dst
-
-                    marked.update(next_layer)
-                    reachable.extend(next_layer)
-
-                # Construct the independent set of G[B']
-                I_set = set()
-                I_covered = set()
-                W_covering = {}
-
-                B_prime = [node for k in B_cal_prime for node in C[k]]
-
-                # Add the nodes in V_plus to I first.
-                for z in C[V_plus] + B_prime:
-                    if z in I_covered or F[z] not in B_cal_prime:
-                        continue
-
-                    I_set.add(z)
-                    I_covered.add(z)
-                    I_covered.update(list(L[z]))
-
-                    for w in L[z]:
-                        if F[w] in A_cal_0 and N[(z, F[w])] == 1:
-                            if w not in W_covering:
-                                W_covering[w] = z
-                            else:
-                                # Found z1, z2 which have the same solo
-                                # neighbor in some W
-                                z_1 = W_covering[w]
-                                # z_2 = z
-
-                                Z = F[z_1]
-                                W = F[w]
-
-                                # shift nodes along W, V-
-                                move_witnesses(
-                                    W, V_minus, N=N, H=H, F=F, C=C, T_cal=T_cal, L=L
-                                )
-
-                                # shift nodes along V+ to Z
-                                move_witnesses(
-                                    V_plus,
-                                    Z,
-                                    N=N,
-                                    H=H,
-                                    F=F,
-                                    C=C,
-                                    T_cal=T_cal_prime,
-                                    L=L,
-                                )
-
-                                # change color of z_1 to W
-                                change_color(z_1, Z, W, N=N, H=H, F=F, C=C, L=L)
-
-                                # change color of w to some color in B_cal
-                                W_plus = next(
-                                    k for k in C if N[(w, k)] == 0 and k not in A_cal
-                                )
-                                change_color(w, W, W_plus, N=N, H=H, F=F, C=C, L=L)
-
-                                # recurse with G[B \cup W*]
-                                excluded_colors.update(
-                                    [k for k in C if k != W and k not in B_cal_prime]
-                                )
-                                procedure_P(
-                                    V_minus=W,
-                                    V_plus=W_plus,
-                                    N=N,
-                                    H=H,
-                                    C=C,
-                                    F=F,
-                                    L=L,
-                                    excluded_colors=excluded_colors,
-                                )
-
-                                made_equitable = True
-                                break
-
-                    if made_equitable:
-                        break
-                else:
-                    assert False, (
-                        "Must find a w which is the solo neighbor "
-                        "of two vertices in B_cal_prime."
-                    )
-
-            if made_equitable:
-                break
-
-
-@nx._dispatchable
-def equitable_heuristic(G, num_colors):
-    # First initialise the data structures for this heuristic.
-    # These are a priority queue q; the colors of each vertex c[v];
-    # the set of colors adjacent to each uncolored vertex (initially empty
-    # sets); the degree d[v] of each uncolored vertex in the graph induced
-    # by uncolored nodes; and the size of each color class.
-    q = PriorityQueue()
-    c, adjcols, d = {}, {}, {}
-    colsize = [0 for i in range(num_colors)]
-    for u in G.nodes:
-        d[u] = G.degree(u)
-        adjcols[u] = set()
-        q.put((0, d[u] * (-1), u))
-    while len(c) < len(G):
-        # Get the uncolored vertex u with max saturation degree, breaking
-        # ties using the highest value for d. Remove u from q.
-        _, _, u = q.get()
-        if u not in c:
-            # vertex u has not yet been colored, so assign it to the feasible
-            # color class i that currently has the fewest vertices
-            i, mincolsize = None, float("inf")
-            for j in range(num_colors):
-                if j not in adjcols[u] and colsize[j] < mincolsize:
-                    i = j
-                    mincolsize = colsize[i]
-            if i == None:
-                raise nx.NetworkXAlgorithmError(
-                    f"Unable to determine a coloring for this graph using "
-                    f"{num_colors} colors. Try increasing the value for the "
-                    f"variable `num_colors`"
-                )
-            c[u] = i
-            colsize[i] += 1
-            # Update the saturation degrees and d-values of the uncolored
-            # neighbors v, and update the priority queue q
-            for v in G[u]:
-                if v not in c:
-                    adjcols[v].add(i)
-                    d[v] -= 1
-                    q.put((len(adjcols[v]) * (-1), d[v] * (-1), v))
-    return c
-
-
-@not_implemented_for("directed")
-@nx._dispatchable
-def equitable_color(G, num_colors):
-    """Provides an equitable coloring for nodes of the graph ``G``.
-
-    Attempts to color a graph using ``num_colors`` colors, where no neighbors of
-    a node can have same color as the node itself and the number of nodes with
-    each color is approximately equal.
-
-    If ``num_colors`` is greater than the maximum degree of ``G``, the
-    algorithm described in [1]_ is used. This has a complexity of
-    $O(kn^2)$ (where $k$ = ``num_colors``) and guarantees the production of a
-    solution in which the difference in size between the smallest and largest
-    color class is at most one.
-
-    If ``num_colors`` is  less than or equal to the maximum degree of
-    ``G``, then the problem of determining an equitable coloring is
-    NP-hard. In this case, the heuristic described in [2]_ is used. This
-    implementation has complexity $O((n lg n) + (nk) + (m lg m))$.
-    In solutions returned by this method, neighboring vertices always receive
-    different colors; however, the coloring is not guaranteed to be equitable,
-    even if an equitable coloring for ``G`` using this many colors exists.
-
-    Parameters
-    ----------
-    G : networkX graph
-       The nodes of this graph will be colored.
-
-    num_colors : number of colors to use
-       The number of colors to use. If this value is less than or equal to the maximum
-       degree of nodes in the graph, the algorithm may not be able to color all nodes
-       such that neighbors always have different colors. In this case an exception
-       is raised.
-
-    Returns
-    -------
-    A dictionary with keys representing nodes and values representing the
-    corresponding coloring.
-
-    Examples
-    --------
-    >>> G = nx.cycle_graph(4)
-    >>> nx.coloring.equitable_color(G, num_colors=3)  # doctest: +SKIP
-    {0: 2, 1: 1, 2: 2, 3: 0}
-
-    Raises
-    ------
-    NetworkXAlgorithmError
-        If a value of ``num_colors`` is used that is too small (that is,
-        the algorithm is unable to color all nodes in ``G`` such
-        that all neighbors have different colors).
-
-    References
-    ----------
-    .. [1] Kierstead, H. A., Kostochka, A. V., Mydlarz, M., & Szemerédi, E.
-        (2010). A fast algorithm for equitable coloring. Combinatorica, 30(2),
-        217-224.
-    .. [2] Lewis, R. (2021) A Guide to Graph Colouring: Algorithms and
-        Applications, 2nd Ed. Springer, ISBN: 978-3-030-81053-5
-        <https://link.springer.com/book/10.1007/978-3-030-81054-2>
-    """
-
-    # Map nodes to integers for simplicity later.
-    nodes_to_int = {}
-    int_to_nodes = {}
-
-    for idx, node in enumerate(G.nodes):
-        nodes_to_int[node] = idx
-        int_to_nodes[idx] = node
-
-    G = nx.relabel_nodes(G, nodes_to_int, copy=True)
-
-    # Basic graph statistics and sanity check.
-    if len(G.nodes) > 0:
-        r_ = max(G.degree(node) for node in G.nodes)
-    else:
-        r_ = 0
-
-    if num_colors <= r_:
-        # Employ the heuristic algorithm of [2]
-        return equitable_heuristic(G, num_colors)
-
-    # num_colors > max degree r_, so employ the exact algorithm of [1]
-    if r_ >= num_colors:
-        raise nx.NetworkXAlgorithmError(
-            f"Graph has maximum degree {r_}, needs "
-            f"{r_ + 1} (> {num_colors}) colors for guaranteed coloring."
+is_coloring = nx.algorithms.coloring.equitable_coloring.is_coloring
+is_equitable = nx.algorithms.coloring.equitable_coloring.is_equitable
+
+
+ALL_STRATEGIES = [
+    "largest_first",
+    "random_sequential",
+    "smallest_last",
+    "independent_set",
+    "connected_sequential_bfs",
+    "connected_sequential_dfs",
+    "connected_sequential",
+    "saturation_largest_first",
+    "DSATUR",
+    "rlf",
+]
+
+# List of strategies where interchange=True results in an error
+INTERCHANGE_INVALID = ["independent_set", "saturation_largest_first", "DSATUR", "rlf"]
+
+
+class TestColoring:
+    def test_basic_cases(self):
+        def check_basic_case(graph_func, n_nodes, strategy, interchange, tabu):
+            graph = graph_func()
+            coloring = nx.coloring.greedy_color(
+                graph, strategy=strategy, interchange=interchange, tabu=tabu
+            )
+            assert verify_length(coloring, n_nodes)
+            assert verify_coloring(graph, coloring)
+
+        for graph_func, n_nodes in BASIC_TEST_CASES.items():
+            for interchange in [True, False]:
+                for strategy in ALL_STRATEGIES:
+                    for tabu in [0, 100, 1000]:
+                        check_basic_case(graph_func, n_nodes, strategy, False, tabu)
+                        if strategy not in INTERCHANGE_INVALID:
+                            check_basic_case(graph_func, n_nodes, strategy, True, tabu)
+
+    def test_special_cases(self):
+        def check_special_case(strategy, graph_func, interchange, colors):
+            graph = graph_func()
+            coloring = nx.coloring.greedy_color(
+                graph, strategy=strategy, interchange=interchange
+            )
+            if not hasattr(colors, "__len__"):
+                colors = [colors]
+            assert any(verify_length(coloring, n_colors) for n_colors in colors)
+            assert verify_coloring(graph, coloring)
+
+        for strategy, arglist in SPECIAL_TEST_CASES.items():
+            for args in arglist:
+                check_special_case(strategy, args[0], args[1], args[2])
+
+    def test_interchange_invalid(self):
+        graph = one_node_graph()
+        for strategy in INTERCHANGE_INVALID:
+            pytest.raises(
+                nx.NetworkXPointlessConcept,
+                nx.coloring.greedy_color,
+                graph,
+                strategy=strategy,
+                interchange=True,
+            )
+
+    def test_bad_inputs(self):
+        graph = one_node_graph()
+        pytest.raises(
+            nx.NetworkXError,
+            nx.coloring.greedy_color,
+            graph,
+            strategy="invalid strategy",
         )
 
-    # Ensure that the number of nodes in G is a multiple of (r + 1)
-    pad_graph(G, num_colors)
+    def test_strategy_as_function(self):
+        graph = lf_shc()
+        colors_1 = nx.coloring.greedy_color(graph, "largest_first")
+        colors_2 = nx.coloring.greedy_color(graph, nx.coloring.strategy_largest_first)
+        assert colors_1 == colors_2
 
-    # Starting the algorithm.
-    # L = {node: list(G.neighbors(node)) for node in G.nodes}
-    L_ = {node: [] for node in G.nodes}
+    def test_seed_argument(self):
+        graph = lf_shc()
+        rs = nx.coloring.strategy_random_sequential
+        c1 = nx.coloring.greedy_color(graph, lambda g, c: rs(g, c, seed=1))
+        for u, v in graph.edges:
+            assert c1[u] != c1[v]
 
-    # Arbitrary equitable allocation of colors to nodes.
-    F = {node: idx % num_colors for idx, node in enumerate(G.nodes)}
+    def test_is_coloring(self):
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        coloring = {0: 0, 1: 1, 2: 0}
+        assert is_coloring(G, coloring)
 
-    C = make_C_from_F(F)
+        coloring[0] = 1
+        assert not is_coloring(G, coloring)
+        assert not is_equitable(G, coloring)
 
-    # The neighborhood is empty initially.
-    N = make_N_from_L_C(L_, C)
+    def test_is_equitable(self):
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (1, 2)])
+        coloring = {0: 0, 1: 1, 2: 0}
+        assert is_equitable(G, coloring)
 
-    # Currently all nodes witness all edges.
-    H = make_H_from_C_N(C, N)
+        G.add_edges_from([(2, 3), (2, 4), (2, 5)])
+        coloring[3] = 1
+        coloring[4] = 1
+        coloring[5] = 1
+        assert is_coloring(G, coloring)
+        assert not is_equitable(G, coloring)
 
-    # Start of algorithm.
-    edges_seen = set()
+    def test_num_colors(self):
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (0, 2), (0, 3)])
+        pytest.raises(nx.NetworkXAlgorithmError, nx.coloring.equitable_color, G, 1)
+        for k in range(2, 5):
+            coloring = nx.coloring.equitable_color(G, k)
+            assert is_equitable(G, coloring, k)
 
-    for u in sorted(G.nodes):
-        for v in sorted(G.neighbors(u)):
-            # Do not double count edges if (v, u) has already been seen.
-            if (v, u) in edges_seen:
-                continue
+    def test_equitable_directed(self):
+        graph = nx.DiGraph()
+        graph.add_nodes_from([1, 2, 3, 4, 5, 6])
+        graph.add_edges_from([(6, 1), (1, 4), (4, 3), (3, 2), (2, 5)])
+        pytest.raises(
+            nx.NetworkXNotImplemented,
+            nx.coloring.equitable_color,
+            graph,
+            num_colors=max_degree(graph),
+        )
 
-            edges_seen.add((u, v))
+    def test_equitable_multidirected(self):
+        graph = nx.MultiDiGraph()
+        graph.add_nodes_from([1, 2, 3, 4, 5, 6])
+        graph.add_edges_from([(6, 1), (6, 1), (1, 4), (4, 3), (3, 2), (2, 5)])
+        pytest.raises(
+            nx.NetworkXNotImplemented,
+            nx.coloring.equitable_color,
+            graph,
+            num_colors=max_degree(graph),
+        )
 
-            L_[u].append(v)
-            L_[v].append(u)
+    def test_equitable_color(self):
+        G = nx.fast_gnp_random_graph(n=10, p=0.2, seed=42)
+        coloring = nx.coloring.equitable_color(G, max_degree(G) + 1)
+        assert is_equitable(G, coloring)
+        coloring = nx.coloring.equitable_color(G, max_degree(G))
+        assert is_equitable(G, coloring)
 
-            N[(u, F[v])] += 1
-            N[(v, F[u])] += 1
+    def test_equitable_color_empty(self):
+        G = nx.empty_graph()
+        coloring = nx.coloring.equitable_color(G, max_degree(G) + 1)
+        assert is_equitable(G, coloring)
 
-            if F[u] != F[v]:
-                # Were 'u' and 'v' witnesses for F[u] -> F[v] or F[v] -> F[u]?
-                if N[(u, F[v])] == 1:
-                    H[F[u], F[v]] -= 1  # u cannot witness an edge between F[u], F[v]
+    def test_equitable_color_large(self):
+        G = nx.fast_gnp_random_graph(100, 0.1, seed=42)
+        coloring = nx.coloring.equitable_color(G, max_degree(G) + 1)
+        assert is_equitable(G, coloring, num_colors=max_degree(G) + 1)
+        coloring = nx.coloring.equitable_color(G, max_degree(G))
+        assert is_equitable(G, coloring, num_colors=max_degree(G))
 
-                if N[(v, F[u])] == 1:
-                    H[F[v], F[u]] -= 1  # v cannot witness an edge between F[v], F[u]
+    def test_equitable_color_large_differing_num_colors(self):
+        G = nx.fast_gnp_random_graph(100, 0.5, seed=42)
+        for k in range(20):
+            pytest.raises(nx.NetworkXAlgorithmError, nx.coloring.equitable_color, G, k)
+        for k in range(20, 110):
+            coloring = nx.coloring.equitable_color(G, k)
+            assert is_equitable(G, coloring, k)
 
-        if N[(u, F[u])] != 0:
-            # Find the first color where 'u' does not have any neighbors.
-            Y = next(k for k in C if N[(u, k)] == 0)
-            X = F[u]
-            change_color(u, X, Y, N=N, H=H, F=F, C=C, L=L_)
+    def test_case_V_plus_not_in_A_cal(self):
+        # Hand crafted case to avoid the easy case.
+        L = {
+            0: [2, 5],
+            1: [3, 4],
+            2: [0, 8],
+            3: [1, 7],
+            4: [1, 6],
+            5: [0, 6],
+            6: [4, 5],
+            7: [3],
+            8: [2],
+        }
 
-            # Procedure P
-            procedure_P(V_minus=X, V_plus=Y, N=N, H=H, F=F, C=C, L=L_)
+        F = {
+            # Color 0
+            0: 0,
+            1: 0,
+            # Color 1
+            2: 1,
+            3: 1,
+            4: 1,
+            5: 1,
+            # Color 2
+            6: 2,
+            7: 2,
+            8: 2,
+        }
 
-    return {int_to_nodes[x]: F[x] for x in int_to_nodes}
+        C = nx.algorithms.coloring.equitable_coloring.make_C_from_F(F)
+        N = nx.algorithms.coloring.equitable_coloring.make_N_from_L_C(L, C)
+        H = nx.algorithms.coloring.equitable_coloring.make_H_from_C_N(C, N)
+
+        nx.algorithms.coloring.equitable_coloring.procedure_P(
+            V_minus=0, V_plus=1, N=N, H=H, F=F, C=C, L=L
+        )
+        check_state(L=L, N=N, H=H, F=F, C=C)
+
+    def test_cast_no_solo(self):
+        L = {
+            0: [8, 9],
+            1: [10, 11],
+            2: [8],
+            3: [9],
+            4: [10, 11],
+            5: [8],
+            6: [9],
+            7: [10, 11],
+            8: [0, 2, 5],
+            9: [0, 3, 6],
+            10: [1, 4, 7],
+            11: [1, 4, 7],
+        }
+
+        F = {0: 0, 1: 0, 2: 2, 3: 2, 4: 2, 5: 3, 6: 3, 7: 3, 8: 1, 9: 1, 10: 1, 11: 1}
+
+        C = nx.algorithms.coloring.equitable_coloring.make_C_from_F(F)
+        N = nx.algorithms.coloring.equitable_coloring.make_N_from_L_C(L, C)
+        H = nx.algorithms.coloring.equitable_coloring.make_H_from_C_N(C, N)
+
+        nx.algorithms.coloring.equitable_coloring.procedure_P(
+            V_minus=0, V_plus=1, N=N, H=H, F=F, C=C, L=L
+        )
+        check_state(L=L, N=N, H=H, F=F, C=C)
+
+    def test_hard_prob(self):
+        # Tests for two levels of recursion.
+        num_colors, s = 5, 5
+
+        G = nx.Graph()
+        G.add_edges_from(
+            [
+                (0, 10),
+                (0, 11),
+                (0, 12),
+                (0, 23),
+                (10, 4),
+                (10, 9),
+                (10, 20),
+                (11, 4),
+                (11, 8),
+                (11, 16),
+                (12, 9),
+                (12, 22),
+                (12, 23),
+                (23, 7),
+                (1, 17),
+                (1, 18),
+                (1, 19),
+                (1, 24),
+                (17, 5),
+                (17, 13),
+                (17, 22),
+                (18, 5),
+                (19, 5),
+                (19, 6),
+                (19, 8),
+                (24, 7),
+                (24, 16),
+                (2, 4),
+                (2, 13),
+                (2, 14),
+                (2, 15),
+                (4, 6),
+                (13, 5),
+                (13, 21),
+                (14, 6),
+                (14, 15),
+                (15, 6),
+                (15, 21),
+                (3, 16),
+                (3, 20),
+                (3, 21),
+                (3, 22),
+                (16, 8),
+                (20, 8),
+                (21, 9),
+                (22, 7),
+            ]
+        )
+        F = {node: node // s for node in range(num_colors * s)}
+        F[s - 1] = num_colors - 1
+
+        params = make_params_from_graph(G=G, F=F)
+
+        nx.algorithms.coloring.equitable_coloring.procedure_P(
+            V_minus=0, V_plus=num_colors - 1, **params
+        )
+        check_state(**params)
+
+    def test_hardest_prob(self):
+        # Tests for two levels of recursion.
+        num_colors, s = 10, 4
+
+        G = nx.Graph()
+        G.add_edges_from(
+            [
+                (0, 19),
+                (0, 24),
+                (0, 29),
+                (0, 30),
+                (0, 35),
+                (19, 3),
+                (19, 7),
+                (19, 9),
+                (19, 15),
+                (19, 21),
+                (19, 24),
+                (19, 30),
+                (19, 38),
+                (24, 5),
+                (24, 11),
+                (24, 13),
+                (24, 20),
+                (24, 30),
+                (24, 37),
+                (24, 38),
+                (29, 6),
+                (29, 10),
+                (29, 13),
+                (29, 15),
+                (29, 16),
+                (29, 17),
+                (29, 20),
+                (29, 26),
+                (30, 6),
+                (30, 10),
+                (30, 15),
+                (30, 22),
+                (30, 23),
+                (30, 39),
+                (35, 6),
+                (35, 9),
+                (35, 14),
+                (35, 18),
+                (35, 22),
+                (35, 23),
+                (35, 25),
+                (35, 27),
+                (1, 20),
+                (1, 26),
+                (1, 31),
+                (1, 34),
+                (1, 38),
+                (20, 4),
+                (20, 8),
+                (20, 14),
+                (20, 18),
+                (20, 28),
+                (20, 33),
+                (26, 7),
+                (26, 10),
+                (26, 14),
+                (26, 18),
+                (26, 21),
+                (26, 32),
+                (26, 39),
+                (31, 5),
+                (31, 8),
+                (31, 13),
+                (31, 16),
+                (31, 17),
+                (31, 21),
+                (31, 25),
+                (31, 27),
+                (34, 7),
+                (34, 8),
+                (34, 13),
+                (34, 18),
+                (34, 22),
+                (34, 23),
+                (34, 25),
+                (34, 27),
+                (38, 4),
+                (38, 9),
+                (38, 12),
+                (38, 14),
+                (38, 21),
+                (38, 27),
+                (2, 3),
+                (2, 18),
+                (2, 21),
+                (2, 28),
+                (2, 32),
+                (2, 33),
+                (2, 36),
+                (2, 37),
+                (2, 39),
+                (3, 5),
+                (3, 9),
+                (3, 13),
+                (3, 22),
+                (3, 23),
+                (3, 25),
+                (3, 27),
+                (18, 6),
+                (18, 11),
+                (18, 15),
+                (18, 39),
+                (21, 4),
+                (21, 10),
+                (21, 14),
+                (21, 36),
+                (28, 6),
+                (28, 10),
+                (28, 14),
+                (28, 16),
+                (28, 17),
+                (28, 25),
+                (28, 27),
+                (32, 5),
+                (32, 10),
+                (32, 12),
+                (32, 16),
+                (32, 17),
+                (32, 22),
+                (32, 23),
+                (33, 7),
+                (33, 10),
+                (33, 12),
+                (33, 16),
+                (33, 17),
+                (33, 25),
+                (33, 27),
+                (36, 5),
+                (36, 8),
+                (36, 15),
+                (36, 16),
+                (36, 17),
+                (36, 25),
+                (36, 27),
+                (37, 5),
+                (37, 11),
+                (37, 15),
+                (37, 16),
+                (37, 17),
+                (37, 22),
+                (37, 23),
+                (39, 7),
+                (39, 8),
+                (39, 15),
+                (39, 22),
+                (39, 23),
+            ]
+        )
+        F = {node: node // s for node in range(num_colors * s)}
+        F[s - 1] = num_colors - 1  # V- = 0, V+ = num_colors - 1
+
+        params = make_params_from_graph(G=G, F=F)
+
+        nx.algorithms.coloring.equitable_coloring.procedure_P(
+            V_minus=0, V_plus=num_colors - 1, **params
+        )
+        check_state(**params)
+
+    def test_strategy_saturation_largest_first(self):
+        for G, _, _ in SPECIAL_TEST_CASES["saturation_largest_first"]:
+            G = G()
+            coloring = nx.coloring.greedy_color(G, strategy="saturation_largest_first")
+            assert verify_coloring(G, coloring)
+
+
+#  ############################  Utility functions ############################
+def verify_coloring(graph, coloring):
+    for node in graph.nodes():
+        if node not in coloring:
+            return False
+
+        color = coloring[node]
+        for neighbor in graph.neighbors(node):
+            if coloring[neighbor] == color:
+                return False
+
+    return True
+
+
+def verify_length(coloring, expected):
+    coloring = dict_to_sets(coloring)
+    return len(coloring) == expected
+
+
+def dict_to_sets(colors):
+    if len(colors) == 0:
+        return []
+
+    k = max(colors.values()) + 1
+    sets = [set() for _ in range(k)]
+
+    for node, color in colors.items():
+        sets[color].add(node)
+
+    return sets
+
+
+#  ############################  Graph Generation ############################
+
+
+def empty_graph():
+    return nx.Graph()
+
+
+def one_node_graph():
+    graph = nx.Graph()
+    graph.add_nodes_from([1])
+    return graph
+
+
+def two_node_graph():
+    graph = nx.Graph()
+    graph.add_nodes_from([1, 2])
+    graph.add_edges_from([(1, 2)])
+    return graph
+
+
+def three_node_clique():
+    graph = nx.Graph()
+    graph.add_nodes_from([1, 2, 3])
+    graph.add_edges_from([(1, 2), (1, 3), (2, 3)])
+    return graph
+
+
+def disconnected():
+    graph = nx.Graph()
+    graph.add_edges_from([(1, 2), (2, 3), (4, 5), (5, 6)])
+    return graph
+
+
+def rs_shc():
+    graph = nx.Graph()
+    graph.add_nodes_from([1, 2, 3, 4])
+    graph.add_edges_from([(1, 2), (2, 3), (3, 4)])
+    return graph
+
+
+def slf_shc():
+    graph = nx.Graph()
+    graph.add_nodes_from([1, 2, 3, 4, 5, 6, 7])
+    graph.add_edges_from(
+        [(1, 2), (1, 5), (1, 6), (2, 3), (2, 7), (3, 4), (3, 7), (4, 5), (4, 6), (5, 6)]
+    )
+    return graph
+
+
+def slf_hc():
+    graph = nx.Graph()
+    graph.add_nodes_from([1, 2, 3, 4, 5, 6, 7, 8])
+    graph.add_edges_from(
+        [
+            (1, 2),
+            (1, 3),
+            (1, 4),
+            (1, 5),
+            (2, 3),
+            (2, 4),
+            (2, 6),
+            (5, 7),
+            (5, 8),
+            (6, 7),
+            (6, 8),
+            (7, 8),
+        ]
+    )
+    return graph
+
+
+def lf_shc():
+    graph = nx.Graph()
+    graph.add_nodes_from([1, 2, 3, 4, 5, 6])
+    graph.add_edges_from([(6, 1), (1, 4), (4, 3), (3, 2), (2, 5)])
+    return graph
+
+
+def lf_hc():
+    graph = nx.Graph()
+    graph.add_nodes_from([1, 2, 3, 4, 5, 6, 7])
+    graph.add_edges_from(
+        [
+            (1, 7),
+            (1, 6),
+            (1, 3),
+            (1, 4),
+            (7, 2),
+            (2, 6),
+            (2, 3),
+            (2, 5),
+            (5, 3),
+            (5, 4),
+            (4, 3),
+        ]
+    )
+    return graph
+
+
+def sl_shc():
+    graph = nx.Graph()
+    graph.add_nodes_from([1, 2, 3, 4, 5, 6])
+    graph.add_edges_from(
+        [(1, 2), (1, 3), (2, 3), (1, 4), (2, 5), (3, 6), (4, 5), (4, 6), (5, 6)]
+    )
+    return graph
+
+
+def sl_hc():
+    graph = nx.Graph()
+    graph.add_nodes_from([1, 2, 3, 4, 5, 6, 7, 8])
+    graph.add_edges_from(
+        [
+            (1, 2),
+            (1, 3),
+            (1, 5),
+            (1, 7),
+            (2, 3),
+            (2, 4),
+            (2, 8),
+            (8, 4),
+            (8, 6),
+            (8, 7),
+            (7, 5),
+            (7, 6),
+            (3, 4),
+            (4, 6),
+            (6, 5),
+            (5, 3),
+        ]
+    )
+    return graph
+
+
+def gis_shc():
+    graph = nx.Graph()
+    graph.add_nodes_from([1, 2, 3, 4])
+    graph.add_edges_from([(1, 2), (2, 3), (3, 4)])
+    return graph
+
+
+def gis_hc():
+    graph = nx.Graph()
+    graph.add_nodes_from([1, 2, 3, 4, 5, 6])
+    graph.add_edges_from([(1, 5), (2, 5), (3, 6), (4, 6), (5, 6)])
+    return graph
+
+
+def cs_shc():
+    graph = nx.Graph()
+    graph.add_nodes_from([1, 2, 3, 4, 5])
+    graph.add_edges_from([(1, 2), (1, 5), (2, 3), (2, 4), (2, 5), (3, 4), (4, 5)])
+    return graph
+
+
+def rsi_shc():
+    graph = nx.Graph()
+    graph.add_nodes_from([1, 2, 3, 4, 5, 6])
+    graph.add_edges_from(
+        [(1, 2), (1, 5), (1, 6), (2, 3), (3, 4), (4, 5), (4, 6), (5, 6)]
+    )
+    return graph
+
+
+def lfi_shc():
+    graph = nx.Graph()
+    graph.add_nodes_from([1, 2, 3, 4, 5, 6, 7])
+    graph.add_edges_from(
+        [(1, 2), (1, 5), (1, 6), (2, 3), (2, 7), (3, 4), (3, 7), (4, 5), (4, 6), (5, 6)]
+    )
+    return graph
+
+
+def lfi_hc():
+    graph = nx.Graph()
+    graph.add_nodes_from([1, 2, 3, 4, 5, 6, 7, 8, 9])
+    graph.add_edges_from(
+        [
+            (1, 2),
+            (1, 5),
+            (1, 6),
+            (1, 7),
+            (2, 3),
+            (2, 8),
+            (2, 9),
+            (3, 4),
+            (3, 8),
+            (3, 9),
+            (4, 5),
+            (4, 6),
+            (4, 7),
+            (5, 6),
+        ]
+    )
+    return graph
+
+
+def sli_shc():
+    graph = nx.Graph()
+    graph.add_nodes_from([1, 2, 3, 4, 5, 6, 7])
+    graph.add_edges_from(
+        [
+            (1, 2),
+            (1, 3),
+            (1, 5),
+            (1, 7),
+            (2, 3),
+            (2, 6),
+            (3, 4),
+            (4, 5),
+            (4, 6),
+            (5, 7),
+            (6, 7),
+        ]
+    )
+    return graph
+
+
+def sli_hc():
+    graph = nx.Graph()
+    graph.add_nodes_from([1, 2, 3, 4, 5, 6, 7, 8, 9])
+    graph.add_edges_from(
+        [
+            (1, 2),
+            (1, 3),
+            (1, 4),
+            (1, 5),
+            (2, 3),
+            (2, 7),
+            (2, 8),
+            (2, 9),
+            (3, 6),
+            (3, 7),
+            (3, 9),
+            (4, 5),
+            (4, 6),
+            (4, 8),
+            (4, 9),
+            (5, 6),
+            (5, 7),
+            (5, 8),
+            (6, 7),
+            (6, 9),
+            (7, 8),
+            (8, 9),
+        ]
+    )
+    return graph
+
+
+# --------------------------------------------------------------------------
+# Basic tests for all strategies
+# For each basic graph function, specify the number of expected colors.
+BASIC_TEST_CASES = {
+    empty_graph: 0,
+    one_node_graph: 1,
+    two_node_graph: 2,
+    disconnected: 2,
+    three_node_clique: 3,
+}
+
+
+# --------------------------------------------------------------------------
+# Special test cases. Each strategy has a list of tuples of the form
+# (graph function, interchange, valid # of colors)
+SPECIAL_TEST_CASES = {
+    "random_sequential": [
+        (rs_shc, False, (2, 3)),
+        (rs_shc, True, 2),
+        (rsi_shc, True, (3, 4)),
+    ],
+    "saturation_largest_first": [(slf_shc, False, (3, 4)), (slf_hc, False, 4)],
+    "largest_first": [
+        (lf_shc, False, (2, 3)),
+        (lf_hc, False, 4),
+        (lf_shc, True, 2),
+        (lf_hc, True, 3),
+        (lfi_shc, True, (3, 4)),
+        (lfi_hc, True, 4),
+    ],
+    "smallest_last": [
+        (sl_shc, False, (3, 4)),
+        (sl_hc, False, 5),
+        (sl_shc, True, 3),
+        (sl_hc, True, 4),
+        (sli_shc, True, (3, 4)),
+        (sli_hc, True, 5),
+    ],
+    "independent_set": [(gis_shc, False, (2, 3)), (gis_hc, False, 3)],
+    "connected_sequential": [(cs_shc, False, (3, 4)), (cs_shc, True, 3)],
+    "connected_sequential_dfs": [(cs_shc, False, (3, 4))],
+}
+
+
+# --------------------------------------------------------------------------
+# Helper functions to test
+# (graph function, interchange, valid # of colors)
+
+
+def check_state(L, N, H, F, C):
+    s = len(C[0])
+    num_colors = len(C.keys())
+
+    assert all(u in L[v] for u in L for v in L[u])
+    assert all(F[u] != F[v] for u in L for v in L[u])
+    assert all(len(L[u]) < num_colors for u in L)
+    assert all(len(C[x]) == s for x in C)
+    assert all(H[(c1, c2)] >= 0 for c1 in C for c2 in C)
+    assert all(N[(u, F[u])] == 0 for u in F)
+
+
+def max_degree(G):
+    """Get the maximum degree of any node in G."""
+    return max(G.degree(node) for node in G.nodes) if len(G.nodes) > 0 else 0
+
+
+def make_params_from_graph(G, F):
+    """Returns {N, L, H, C} from the given graph."""
+    num_nodes = len(G)
+    L = {u: [] for u in range(num_nodes)}
+    for u, v in G.edges:
+        L[u].append(v)
+        L[v].append(u)
+
+    C = nx.algorithms.coloring.equitable_coloring.make_C_from_F(F)
+    N = nx.algorithms.coloring.equitable_coloring.make_N_from_L_C(L, C)
+    H = nx.algorithms.coloring.equitable_coloring.make_H_from_C_N(C, N)
+
+    return {"N": N, "F": F, "C": C, "H": H, "L": L}
