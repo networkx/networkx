@@ -153,13 +153,13 @@ def weighted_projected_graph(B, nodes, ratio=False):
     >>> from networkx.algorithms import bipartite
     >>> B = nx.path_graph(4)
     >>> G = bipartite.weighted_projected_graph(B, [1, 3])
-    >>> list(G)
+    >>> sorted(list(G))
     [1, 3]
     >>> list(G.edges(data=True))
-    [(1, 3, {'weight': 1})]
+    [(3, 1, {'weight': 1})]
     >>> G = bipartite.weighted_projected_graph(B, [1, 3], ratio=True)
     >>> list(G.edges(data=True))
-    [(1, 3, {'weight': 0.5})]
+    [(3, 1, {'weight': 0.5})]
 
     Notes
     -----
@@ -189,33 +189,65 @@ def weighted_projected_graph(B, nodes, ratio=False):
         Networks". In Carrington, P. and Scott, J. (eds) The Sage Handbook
         of Social Network Analysis. Sage Publications.
     """
-    if B.is_directed():
-        pred = B.pred
-        G = nx.DiGraph()
-    else:
-        pred = B.adj
-        G = nx.Graph()
-    G.graph.update(B.graph)
-    G.add_nodes_from((n, B.nodes[n]) for n in nodes)
-    n_top = len(B) - len(nodes)
 
-    if n_top < 1:
+    # Get a list of nodes and top_nodes for the adjacency matrix function.
+    nodes = list(nodes)
+    top_nodes = [node for node in B.nodes() if node not in nodes]
+
+    # Check that there are no duplicate nodes in 'nodes' or that 'nodes' isn't larger than the graph node set.
+    if len(top_nodes) + len(nodes) != B.number_of_nodes():
         raise NetworkXAlgorithmError(
             f"the size of the nodes to project onto ({len(nodes)}) is >= the graph size ({len(B)}).\n"
             "They are either not a valid bipartite partition or contain duplicates"
         )
 
-    for u in nodes:
-        unbrs = set(B[u])
-        nbrs2 = {n for nbr in unbrs for n in B[nbr]} - {u}
-        for v in nbrs2:
-            vnbrs = set(pred[v])
-            common = unbrs & vnbrs
-            if not ratio:
-                weight = len(common)
-            else:
-                weight = len(common) / n_top
-            G.add_edge(u, v, weight=weight)
+    if not B.is_directed():
+        # Get the biadjacency matrix.
+        adj = nx.bipartite.biadjacency_matrix(
+            B, row_order=nodes, column_order=top_nodes
+        )
+        # Create a graph to return for the projections.
+        G = nx.Graph()
+        G.add_nodes_from(nodes)
+        node_labels = dict(enumerate(nodes))
+        # Get the projection matrix.
+        projected_adj = adj @ adj.T
+        # Remove the self-edges created by the matrix multiplication.
+        projected_adj.setdiag(0)
+
+    else:
+        # Get the adjacency matrix for multiplication.
+        all_nodes = list(B)
+        adj = nx.adjacency_matrix(B, nodelist=all_nodes)
+        node_labels = dict(enumerate(all_nodes))
+
+        # Create new graph.
+        G = nx.DiGraph()
+        G.add_nodes_from(nodes)
+
+        # Remove connections within the node set provided.
+        node_indices = [
+            node_index
+            for node_index in node_labels.keys()
+            if node_labels[node_index] in nodes
+        ]
+        for node_index in node_indices:
+            for other_node_index in node_indices:
+                if node_index != other_node_index:
+                    adj[node_index, other_node_index] = 0
+
+        projected_adj = adj @ adj
+
+    projected_adj = projected_adj.toarray()
+    if ratio:
+        # Change the weights to be the be the ratio of the number of paths between nodes in the set 'nodes' to the size of the other nodes in the graph.
+        projected_adj = projected_adj / len(top_nodes)
+    # Convert back to a NetworkX graph.
+    G = nx.from_numpy_array(projected_adj)
+    # Restore the original node labels.
+    nx.relabel_nodes(G, node_labels, copy=False)
+    # Remove nodes not in the 'nodes' argument from the projection graph.
+    G.remove_nodes_from(top_nodes)
     return G
 
 
