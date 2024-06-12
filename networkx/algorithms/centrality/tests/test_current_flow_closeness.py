@@ -13,40 +13,44 @@ class TestFlowClosenessCentrality:
         """Current-flow closeness centrality: K4"""
         G = nx.complete_graph(4)
         b = nx.current_flow_closeness_centrality(G)
-        b_answer = {0: 2.0 / 3, 1: 2.0 / 3, 2: 2.0 / 3, 3: 2.0 / 3}
+        m = nx.current_flow_closeness_centrality(nx.MultiGraph(G))
+        answer = {0: 2.0 / 3, 1: 2.0 / 3, 2: 2.0 / 3, 3: 2.0 / 3}
         for n in sorted(G):
-            assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
+            assert b[n] == pytest.approx(answer[n], abs=1e-7) == m[n]
 
     def test_P4(self):
         """Current-flow closeness centrality: P4"""
         G = nx.path_graph(4)
         b = nx.current_flow_closeness_centrality(G)
-        b_answer = {0: 1.0 / 6, 1: 1.0 / 4, 2: 1.0 / 4, 3: 1.0 / 6}
+        m = nx.current_flow_closeness_centrality(nx.MultiGraph(G))
+        answer = {0: 1.0 / 6, 1: 1.0 / 4, 2: 1.0 / 4, 3: 1.0 / 6}
         for n in sorted(G):
-            assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
+            assert b[n] == pytest.approx(answer[n], abs=1e-7) == m[n]
 
     def test_star(self):
         """Current-flow closeness centrality: star"""
         G = nx.Graph()
         nx.add_star(G, ["a", "b", "c", "d"])
         b = nx.current_flow_closeness_centrality(G)
-        b_answer = {"a": 1.0 / 3, "b": 0.6 / 3, "c": 0.6 / 3, "d": 0.6 / 3}
+        m = nx.current_flow_closeness_centrality(nx.MultiGraph(G))
+        answer = {"a": 1.0 / 3, "b": 0.6 / 3, "c": 0.6 / 3, "d": 0.6 / 3}
         for n in sorted(G):
-            assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
+            assert b[n] == pytest.approx(answer[n], abs=1e-7) == m[n]
 
     @pytest.mark.parametrize(
-        ("G", "result"),
+        ("G", "answer"),
         [
             (nx.Graph(), {}),
             (nx.path_graph(1), {0: 1.0}),
             (nx.path_graph(2), {0: 1.0, 1: 1.0}),
         ],
     )
-    def test_small(self, G, result):
+    def test_small(self, G, answer):
         """Current-flow closeness centrality: small graphs"""
         b = nx.current_flow_closeness_centrality(G)
+        m = nx.current_flow_closeness_centrality(nx.MultiGraph(G))
         for n in sorted(G):
-            assert b[n] == pytest.approx(result[n], abs=1e-7)
+            assert b[n] == pytest.approx(answer[n], abs=1e-7) == m[n]
 
     @pytest.mark.parametrize(
         ("G", "expectation", "msg"),
@@ -55,13 +59,13 @@ class TestFlowClosenessCentrality:
             (nx.DiGraph(), nx.NetworkXNotImplemented, "not implemented for directed"),
             (
                 nx.MultiGraph(),
-                nx.NetworkXNotImplemented,
-                "not implemented for multigraph",
+                does_not_raise(),
+                None,
             ),
             (
                 nx.MultiDiGraph(),
                 nx.NetworkXNotImplemented,
-                "not implemented for multigraph",
+                "not implemented for directed",
             ),
         ],
     )

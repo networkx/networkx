@@ -12,7 +12,6 @@ __all__ = ["current_flow_closeness_centrality", "information_centrality"]
 
 
 @not_implemented_for("directed")
-@not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs="weight")
 def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
     """Compute current-flow closeness centrality for nodes.
@@ -49,7 +48,7 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
     Raises
     ------
     NetworkXNotImplemented
-        If `G` is directed and/or a multigraph.
+        If `G` is directed.
 
     NetworkXError
         If `G` is not connected.
@@ -60,8 +59,13 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
 
     Notes
     -----
-    The algorithm is from Brandes [1]_, and is thus only implemented for simple,
-    undirected graphs.
+    The algorithm is based on Brandes and Fleischer [1]_
+    and is only implemented for undirected graphs.
+    Our implementation differs from the original in the following ways:
+
+    - for the null graph, it outputs an empty dictionary;
+    - for a graph with one node, it defines the centrality to be ``1.0``;
+    - it allows multigraphs, handling multiedges by summing their weights.
 
     See also [2]_ for the original definition of information centrality.
 
@@ -97,7 +101,6 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
     # this could be done without a copy if we really wanted to
     H = nx.relabel_nodes(G, dict(zip(ordering, range(N))))
     betweenness = dict.fromkeys(H, 0.0)  # b[n]=0 for n in H
-    N = H.number_of_nodes()
     L = nx.laplacian_matrix(H, nodelist=range(N), weight=weight).asformat("csc")
     L = L.astype(dtype)
     C2 = solvername[solver](L, width=1, dtype=dtype)  # initialize solver
