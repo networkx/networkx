@@ -44,7 +44,7 @@ def current_flow_closeness_centrality(G, weight=None, dtype=float, solver="lu"):
     Returns
     -------
     nodes : dictionary
-        Dictionary keyed by node with current flow closeness centrality as value.
+        Dictionary keyed by node with current-flow closeness centrality as value.
 
     Raises
     ------
