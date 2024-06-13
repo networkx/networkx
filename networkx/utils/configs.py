@@ -221,6 +221,7 @@ class NetworkXConfig(Config):
 
     - NETWORKX_BACKEND_PRIORITY: set `backend_priority` from comma-separated names.
     - NETWORKX_CACHE_CONVERTED_GRAPHS: set `cache_converted_graphs` to True if nonempty.
+    - NETWORKX_WARNINGS: set `warnings` from comma-separated names.
 
     This is a global configuration. Use with caution when using from multiple threads.
     """
