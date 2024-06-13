@@ -770,7 +770,7 @@ class _dispatchable:
                         f"with args: {args}, kwargs: {kwargs}"
                     )
                     return getattr(backend, self.name)(*args, **kwargs)
-                except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
+                except NotImplementedError as exc:
                     # Future work: fallback to other backends in backend_priority.
                     # First step will be to support falling back to networkx, since
                     # we can already convert from backends to networkx. Supporting
@@ -783,7 +783,7 @@ class _dispatchable:
                     )
                     raise
             # Future work: try to convert and run with other backends in backend_priority
-            raise nx.NetworkXNotImplemented(
+            raise NotImplementedError(
                 f"'{self.name}' not implemented by {graph_backend_name}. "
                 "In the future, this may try to fall back to other backends in "
                 "`nx.config.backend_priority`."
@@ -831,7 +831,7 @@ class _dispatchable:
                             kwargs,
                             fallback_to_nx=self._fallback_to_nx,
                         )
-                    except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
+                    except NotImplementedError as exc:
                         _logger.debug(
                             f"Backend {backend_name!r} raised {type(exc).__name__} "
                             f"when calling `{self.name}`. Trying next backend..."
@@ -1210,7 +1210,7 @@ class _dispatchable:
                 f"with args: {converted_args}, kwargs: {converted_kwargs}"
             )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
-        except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
+        except NotImplementedError as exc:
             if fallback_to_nx:
                 return self.orig_func(*args, **kwargs)
             raise
@@ -1289,7 +1289,7 @@ class _dispatchable:
                 f"with args: {converted_args}, kwargs: {converted_kwargs}"
             )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
-        except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
+        except NotImplementedError as exc:
             if fallback_to_nx:
                 return self.orig_func(*args2, **kwargs2)
             import pytest
