@@ -211,7 +211,7 @@ class NetworkXConfig(Config):
         Default is False.
 
     warnings : set of strings
-        Control which warnings from NetworkX are emitted. Valid fields:
+        Control which warnings from NetworkX are emitted. Valid elements:
 
         - `"cache"`: when a cached value is used from ``G.__networkx_cache__``.
 
