@@ -256,5 +256,7 @@ class NetworkXConfig(Config):
 config = NetworkXConfig(
     backend_priority=[],
     backends=Config(),
-    cache_converted_graphs=bool(os.environ.get("NETWORKX_CACHE_CONVERTED_GRAPHS", True)),
+    cache_converted_graphs=bool(
+        os.environ.get("NETWORKX_CACHE_CONVERTED_GRAPHS", True)
+    ),
 )
