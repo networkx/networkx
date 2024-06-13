@@ -1036,7 +1036,7 @@ def geometric_soft_configuration_graph(
     nx.set_node_attributes(G, thetas, "theta")
     nx.set_node_attributes(G, kappas, "kappa")
 
-    # Map hidden degrees into the radial coordiantes
+    # Map hidden degrees into the radial coordinates
     zeta = 1 if beta > 1 else 1 / beta
     kappa_min = min(kappas.values())
     R_c = 2 * max(1, beta) / (beta * zeta)
