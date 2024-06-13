@@ -27,11 +27,20 @@ def test_factories():
     for Graph in (nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph):
         # print("testing class: ", Graph.__name__)
         class MyGraph(Graph):
-            node_dict_factory = mydict1
-            adjlist_outer_dict_factory = mydict2
-            adjlist_inner_dict_factory = mydict3
-            edge_key_dict_factory = mydict4
-            edge_attr_dict_factory = mydict5
+            def node_dict_factory(self):
+                return mydict1()
+
+            def adjlist_outer_dict_factory(self):
+                return mydict2()
+
+            def adjlist_inner_dict_factory(self):
+                return mydict3()
+
+            def edge_key_dict_factory(self):
+                return mydict4()
+
+            def edge_attr_dict_factory(self):
+                return mydict5()
 
         G = MyGraph()
         assert isinstance(G._node, mydict1)
