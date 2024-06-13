@@ -1091,7 +1091,9 @@ class _dispatchable:
                     "You may also use `G.__networkx_cache__.clear()` to "
                     "manually clear the cache, or set `G.__networkx_cache__` "
                     "to None to disable caching for G. Enable or disable caching "
-                    "globally via `nx.config.cache_converted_graphs` config."
+                    "globally via `nx.config.cache_converted_graphs` config.\n\n"
+                    "To disable this warning:\n\n"
+                    '    >>> nx.config.warnings.discard("cache")\n'
                 )
                 # Do a simple search for a cached graph with compatible data.
                 # For example, if we need a single attribute, then it's okay
@@ -1102,7 +1104,8 @@ class _dispatchable:
                     (node_key, True) if node_key is not True else (True,),
                 ):
                     if (rv := cache.get(compat_key)) is not None:
-                        warnings.warn(warning_message)
+                        if "cache" in config.warnings:
+                            warnings.warn(warning_message)
                         return rv
                 if edge_key is not True and node_key is not True:
                     # Iterate over the items in `cache` to see if any are compatible.
@@ -1127,7 +1130,8 @@ class _dispatchable:
                             or not node_key.issubset(nkey)
                         ):
                             continue  # Cache missing required node data; does not work
-                        warnings.warn(warning_message)
+                        if "cache" in config.warnings:
+                            warnings.warn(warning_message)
                         return val
 
         backend = _load_backend(backend_name)

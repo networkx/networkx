@@ -130,6 +130,10 @@ def test_nxconfig():
         nx.config.backends = Config(this_almost_certainly_is_not_a_backend=Config())
     with pytest.raises(TypeError, match="must be True or False"):
         nx.config.cache_converted_graphs = "bad value"
+    with pytest.raises(TypeError, match="must be a set of "):
+        nx.config.warnings = 7
+    with pytest.raises(ValueError, match="Unknown warning "):
+        nx.config.warnings = {"bad value"}
 
 
 def test_not_strict():
