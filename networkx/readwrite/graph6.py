@@ -177,7 +177,10 @@ def to_graph6_bytes(G, nodes=None, header=True):
 
     """
     if nodes is not None:
-        G = G.subgraph(nodes)
+        H = G.__class__()
+        H.add_nodes_from(nodes)
+        H.add_edges_from((u, v) for (u, v) in G.edges() if u in H if v in H)
+        G = H
     H = nx.convert_node_labels_to_integers(G)
     nodes = sorted(H.nodes())
     return b"".join(_generate_graph6_bytes(H, nodes, header))
@@ -366,7 +369,10 @@ def write_graph6_file(G, f, nodes=None, header=True):
 
     """
     if nodes is not None:
-        G = G.subgraph(nodes)
+        H = G.__class__()
+        H.add_nodes_from(nodes)
+        H.add_edges_from((u, v) for (u, v) in G.edges() if u in H if v in H)
+        G = H
     H = nx.convert_node_labels_to_integers(G)
     nodes = sorted(H.nodes())
     for b in _generate_graph6_bytes(H, nodes, header):
