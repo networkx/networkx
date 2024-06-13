@@ -307,6 +307,8 @@ class Graph:
     True
     """
 
+    __networkx_backend__ = "networkx"
+
     _adj = _CachedPropertyResetterAdj()
     _node = _CachedPropertyResetterNode()
 

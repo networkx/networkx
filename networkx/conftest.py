@@ -49,6 +49,7 @@ def pytest_configure(config):
     backends = entry_points(name="nx-loopback", group="networkx.backends")
     if backends:
         networkx.utils.backends.backends["nx-loopback"] = next(iter(backends))
+        networkx.utils.backends.backend_info["nx-loopback"] = {}
     else:
         warnings.warn(
             "\n\n             WARNING: Mixed NetworkX configuration! \n\n"
