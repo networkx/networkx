@@ -51,7 +51,7 @@ Documentation = 'https://networkx.org/documentation/stable/'
 "Source Code" = 'https://github.com/networkx/networkx'
 
 [project.entry-points."networkx.backends"]
-nx-loopback = 'networkx.classes.tests.dispatch_interface:dispatcher'
+nx-loopback = 'networkx.classes.tests.dispatch_interface:backend_interface'
 
 [project.optional-dependencies]
 default = [
