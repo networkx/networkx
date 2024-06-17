@@ -272,7 +272,7 @@ class TestDomirankAlphaExceptions:
         [
             (
                 "analytical",
-                2,
+                1.5,
                 does_not_raise(),
             ),
             (
