@@ -14,11 +14,12 @@ class ExampleConfig(Config):
     x: int
     y: str
 
-    def _check_config(self, key, value):
+    def _on_setattr(self, key, value):
         if key == "x" and value <= 0:
             raise ValueError("x must be positive")
         if key == "y" and not isinstance(value, str):
             raise TypeError("y must be a str")
+        return value
 
 
 class EmptyConfig(Config):

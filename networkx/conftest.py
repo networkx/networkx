@@ -59,7 +59,8 @@ def pytest_configure(config):
             "        Make sure python finds the networkx repo you are testing\n\n"
         )
     if backend:
-        networkx.config["backend_priority"] = [backend]
+        networkx.config.backend_priority.algos = [backend]
+        networkx.config.backend_priority.generators = [backend]
         fallback_to_nx = config.getoption("--fallback-to-nx")
         if not fallback_to_nx:
             fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
@@ -70,7 +71,7 @@ def pytest_collection_modifyitems(config, items):
     # Setting this to True here allows tests to be set up before dispatching
     # any function call to a backend.
     networkx.utils.backends._dispatchable._is_testing = True
-    if backend_priority := networkx.config["backend_priority"]:
+    if backend_priority := networkx.config.backend_priority.algos:
         # Allow pluggable backends to add markers to tests (such as skip or xfail)
         # when running in auto-conversion test mode
         backend = networkx.utils.backends.backends[backend_priority[0]].load()

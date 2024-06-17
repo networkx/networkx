@@ -261,18 +261,47 @@ def _get_backends(group, *, load_and_call=False):
 backends = _get_backends("networkx.backends")
 backend_info = _get_backends("networkx.backend_info", load_and_call=True)
 
+# Load and cache backends on-demand
+_loaded_backends = {}  # type: ignore[var-annotated]
+_registered_algorithms = {}
+
 # We must import from config after defining `backends` above
 from .configs import Config, config
 
+
 # Get default configuration from environment variables at import time
-config.backend_priority = [
-    x.strip()
-    for x in os.environ.get(
-        "NETWORKX_BACKEND_PRIORITY",
-        os.environ.get("NETWORKX_AUTOMATIC_BACKENDS", ""),
-    ).split(",")
-    if x.strip()
-]
+def _comma_sep_to_list(string):
+    return [stripped for x in string.strip().split(",") if (stripped := x.strip())]
+
+
+def _finish_init_of_backends_and_config():
+    # TODO: document what this is all about
+    _default_backend_priority = _comma_sep_to_list(
+        os.environ.get(
+            "NETWORKX_BACKEND_PRIORITY",
+            os.environ.get("NETWORKX_AUTOMATIC_BACKENDS", ""),
+        )
+    )
+    priorities = {
+        key[26:].lower(): val
+        for key, val in os.environ.items()
+        if key.startswith("NETWORKX_BACKEND_PRIORITY_")
+    }
+    backend_priority = config.backend_priority
+    backend_priority.algos = (
+        _comma_sep_to_list(priorities.pop("algos"))
+        if "algos" in priorities
+        else list(_default_backend_priority)
+    )
+    backend_priority.generators = (
+        _comma_sep_to_list(priorities.pop("generators"))
+        if "generators" in priorities
+        else list(_default_backend_priority)
+    )
+    for key in sorted(priorities):
+        backend_priority[key] = _comma_sep_to_list(priorities[key])
+
+
 # Initialize default configuration for backends
 config.backends = Config(
     **{
@@ -285,9 +314,6 @@ config.backends = Config(
     }
 )
 type(config.backends).__doc__ = "All installed NetworkX backends and their configs."
-
-# Load and cache backends on-demand
-_loaded_backends = {}  # type: ignore[var-annotated]
 
 
 def _always_run(name, args, kwargs):
@@ -303,9 +329,6 @@ def _load_backend(backend_name):
     if not hasattr(rv, "should_run"):
         rv.should_run = _always_run
     return rv
-
-
-_registered_algorithms = {}
 
 
 class _dispatchable:
@@ -664,7 +687,7 @@ class _dispatchable:
 
         # Alternative to the above that does not check duplicated args or missing required graphs.
         # graphs_resolved = {
-        #     val
+        #     gname: val
         #     for gname, pos in self.graphs.items()
         #     if (val := args[pos] if pos < len(args) else kwargs.get(gname)) is not None
         # }
@@ -708,7 +731,12 @@ class _dispatchable:
                     for g in graphs_resolved.values()
                 }
 
-        backend_priority = config.backend_priority
+        backend_priority = config.backend_priority.get(
+            self.name,
+            config.backend_priority.generators
+            if self._returns_graph
+            else config.backend_priority.algos,
+        )
         if self._is_testing and backend_priority and backend_name is None:
             # Special path if we are running networkx tests with a backend.
             # This even runs for (and handles) functions that mutate input graphs.
@@ -777,29 +805,23 @@ class _dispatchable:
             )
 
         # Only networkx graphs; try to convert and run with a backend with automatic
-        # conversion, but don't do this by default for graph generators or loaders,
-        # or if the functions mutates an input graph or returns a graph.
-        # Only convert and run if `backend.should_run(...)` returns True.
+        # conversion, but don't do this by default if the functions mutates an input
+        # graph. Only convert and run if `backend.should_run(...)` returns True.
         if (
-            not self._returns_graph
-            and (
-                not self.mutates_input
-                or isinstance(self.mutates_input, dict)
-                # If `mutates_input` begins with "not ", then assume the argument is boolean,
-                # otherwise treat it as a node or edge attribute if it's not None.
-                and any(
-                    not (
-                        args[arg_pos]
-                        if len(args) > arg_pos
-                        else kwargs.get(arg_name[4:], True)
-                    )
-                    if arg_name.startswith("not ")
-                    else (
-                        args[arg_pos] if len(args) > arg_pos else kwargs.get(arg_name)
-                    )
-                    is not None
-                    for arg_name, arg_pos in self.mutates_input.items()
+            not self.mutates_input
+            or isinstance(self.mutates_input, dict)
+            # If `mutates_input` begins with "not ", then assume the argument is boolean,
+            # otherwise treat it as a node or edge attribute if it's not None.
+            and any(
+                not (
+                    args[arg_pos]
+                    if len(args) > arg_pos
+                    else kwargs.get(arg_name[4:], True)
                 )
+                if arg_name.startswith("not ")
+                else (args[arg_pos] if len(args) > arg_pos else kwargs.get(arg_name))
+                is not None
+                for arg_name, arg_pos in self.mutates_input.items()
             )
         ):
             # Should we warn or log if we don't convert b/c the input will be mutated?
