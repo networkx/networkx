@@ -492,7 +492,7 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     """Returns the hierarchically constructed Dorogovtsev--Goltsev--Mendes graph.
 
     The Dorogovtsev--Goltsev--Mendes [1]_ procedure deterministically produces a
-    scale-free graph with ``3/2 * (3**(n-1) + 1)`` vertices
+    scale-free graph with ``3/2 * (3**(n-1) + 1)`` nodes
     and ``3**n`` edges for a given `n`.
 
     Note that `n` denotes the number of times the state transition is applied,
@@ -546,9 +546,9 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
 
     G = empty_graph(0, create_using)
     if G.is_directed():
-        raise NetworkXError("Directed graph not supported")
+        raise NetworkXError("directed graph not supported")
     if G.is_multigraph():
-        raise NetworkXError("Multigraph not supported")
+        raise NetworkXError("multigraph not supported")
 
     G.add_edge(0, 1)
     if n == 0:
