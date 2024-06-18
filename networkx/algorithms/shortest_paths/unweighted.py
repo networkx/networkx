@@ -168,7 +168,7 @@ def all_pairs_shortest_path_length(G, cutoff=None):
 
     cutoff : integer, optional
         Depth at which to stop the search. Only paths of length at most
-        `cutoff` are returned.
+        `cutoff` (i.e. paths containing <= `cutoff` edges) are returned.
 
     Returns
     -------
@@ -468,8 +468,8 @@ def all_pairs_shortest_path(G, cutoff=None):
     G : NetworkX graph
 
     cutoff : integer, optional
-        Depth at which to stop the search. Only paths of length at most
-        `cutoff` are returned.
+        Depth at which to stop the search. Only paths containing at most
+        `cutoff` edges are returned.
 
     Returns
     -------
