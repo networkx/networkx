@@ -16,7 +16,8 @@ class TestFlowClosenessCentrality:
         m = nx.current_flow_closeness_centrality(nx.MultiGraph(G))
         answer = {0: 2.0 / 3, 1: 2.0 / 3, 2: 2.0 / 3, 3: 2.0 / 3}
         for n in sorted(G):
-            assert b[n] == pytest.approx(answer[n], abs=1e-7) == m[n]
+            assert b[n] == pytest.approx(answer[n], abs=1e-7)
+            assert m[n] == pytest.approx(answer[n], abs=1e-7)
 
     def test_P4(self):
         """Current-flow closeness centrality: P4"""
@@ -25,7 +26,8 @@ class TestFlowClosenessCentrality:
         m = nx.current_flow_closeness_centrality(nx.MultiGraph(G))
         answer = {0: 1.0 / 6, 1: 1.0 / 4, 2: 1.0 / 4, 3: 1.0 / 6}
         for n in sorted(G):
-            assert b[n] == pytest.approx(answer[n], abs=1e-7) == m[n]
+            assert b[n] == pytest.approx(answer[n], abs=1e-7)
+            assert m[n] == pytest.approx(answer[n], abs=1e-7)
 
     def test_star(self):
         """Current-flow closeness centrality: star"""
@@ -35,7 +37,8 @@ class TestFlowClosenessCentrality:
         m = nx.current_flow_closeness_centrality(nx.MultiGraph(G))
         answer = {"a": 1.0 / 3, "b": 0.6 / 3, "c": 0.6 / 3, "d": 0.6 / 3}
         for n in sorted(G):
-            assert b[n] == pytest.approx(answer[n], abs=1e-7) == m[n]
+            assert b[n] == pytest.approx(answer[n], abs=1e-7)
+            assert m[n] == pytest.approx(answer[n], abs=1e-7)
 
     @pytest.mark.parametrize(
         ("G", "answer"),
@@ -45,12 +48,13 @@ class TestFlowClosenessCentrality:
             (nx.path_graph(2), {0: 1.0, 1: 1.0}),
         ],
     )
-    def test_small(self, G, answer):
-        """Current-flow closeness centrality: small graphs"""
+    def test_cfcc_fewer_than_three_nodes(self, G, answer):
+        """Current-flow closeness centrality: graphs with fewer than three nodes"""
         b = nx.current_flow_closeness_centrality(G)
         m = nx.current_flow_closeness_centrality(nx.MultiGraph(G))
         for n in sorted(G):
-            assert b[n] == pytest.approx(answer[n], abs=1e-7) == m[n]
+            assert b[n] == pytest.approx(answer[n], abs=1e-7)
+            assert m[n] == pytest.approx(answer[n], abs=1e-7)
 
     @pytest.mark.parametrize(
         ("G", "expectation", "msg"),
@@ -69,8 +73,8 @@ class TestFlowClosenessCentrality:
             ),
         ],
     )
-    def test_cfcc_type_exceptions(self, G, expectation, msg):
-        """Current-flow closeness centrality: type exceptions"""
+    def test_cfcc_graph_type_exceptions(self, G, expectation, msg):
+        """Current-flow closeness centrality: graph type exceptions"""
         if msg is not None:
             with pytest.raises(expectation, match=msg):
                 nx.current_flow_closeness_centrality(G)
