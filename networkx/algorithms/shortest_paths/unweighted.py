@@ -30,7 +30,7 @@ def single_source_shortest_path_length(G, source, cutoff=None):
 
     cutoff : integer, optional
         Depth to stop the search. Only target nodes where the shortest path to
-        this node from the source node contains <= cutoff edges will be
+        this node from the source node contains <= `cutoff` edges will be
         included in the returned results.
 
     Returns
@@ -110,7 +110,7 @@ def single_target_shortest_path_length(G, target, cutoff=None):
 
     cutoff : integer, optional
         Depth to stop the search. Only source nodes where the shortest path
-        from this node to the target node contains <= cutoff edges will be
+        from this node to the target node contains <= `cutoff` edges will be
         included in the returned results.
 
     Returns
@@ -333,7 +333,7 @@ def single_source_shortest_path(G, source, cutoff=None):
 
     cutoff : integer, optional
         Depth to stop the search. Only target nodes where the shortest path to
-        this node from the source node contains <= cutoff edges will be
+        this node from the source node contains <= `cutoff` edges will be
         included in the returned results.
 
     Returns
@@ -418,7 +418,7 @@ def single_target_shortest_path(G, target, cutoff=None):
 
     cutoff : integer, optional
         Depth to stop the search. Only source nodes where the shortest path
-        from this node to the target node contains <= cutoff edges will be
+        from this node to the target node contains <= `cutoff` edges will be
         included in the returned results.
 
     Returns
@@ -515,7 +515,8 @@ def predecessor(G, source, target=None, cutoff=None, return_seen=None):
        source and target are returned
 
     cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search. Only paths of length <= `cutoff` are
+        returned.
 
     return_seen : bool, optional (default=None)
         Whether to return a dictionary, keyed by node, of the level (number of
