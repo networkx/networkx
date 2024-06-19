@@ -1209,7 +1209,7 @@ class _dispatchable:
             pytest.xfail(msg)
 
         from collections.abc import Iterable, Iterator, Mapping
-        from copy import copy
+        from copy import copy, deepcopy
         from io import BufferedReader, BytesIO, StringIO, TextIOWrapper
         from itertools import tee
         from random import Random
@@ -1226,10 +1226,10 @@ class _dispatchable:
         else:
             args1, args2 = zip(
                 *(
-                    (arg, copy(arg))
-                    if isinstance(
-                        arg, BytesIO | StringIO | Random | Generator | RandomState
-                    )
+                    (arg, deepcopy(arg))
+                    if isinstance(arg, RandomState)
+                    else (arg, copy(arg))
+                    if isinstance(arg, BytesIO | StringIO | Random | Generator)
                     else tee(arg)
                     if isinstance(arg, Iterator)
                     and not isinstance(arg, BufferedReader | TextIOWrapper)
@@ -1242,10 +1242,10 @@ class _dispatchable:
         else:
             kwargs1, kwargs2 = zip(
                 *(
-                    ((k, v), (k, copy(v)))
-                    if isinstance(
-                        v, BytesIO | StringIO | Random | Generator | RandomState
-                    )
+                    ((k, v), (k, deepcopy(v)))
+                    if isinstance(v, RandomState)
+                    else ((k, v), (k, copy(v)))
+                    if isinstance(v, BytesIO | StringIO | Random | Generator)
                     else ((k, (teed := tee(v))[0]), (k, teed[1]))
                     if isinstance(v, Iterator)
                     and not isinstance(v, BufferedReader | TextIOWrapper)
