@@ -7,7 +7,7 @@ jobs:
     name: Run CircleCI image artifact redirector
     steps:
       - name: GitHub Action step
-        uses: larsoner/circleci-artifacts-redirector-action@master
+        uses: scientific-python/circleci-artifacts-redirector-action@4e13a10d89177f4bfc8007a7064bdbeda848d8d1 # v1.0.0
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           api-token: ${{ secrets.CIRCLECI_ARTIFACT_REDIRECTOR_TOKEN }}
@@ -19,7 +19,7 @@ jobs:
     name: Run CircleCI documentation artifact redirector
     steps:
       - name: GitHub Action step
-        uses: larsoner/circleci-artifacts-redirector-action@master
+        uses: scientific-python/circleci-artifacts-redirector-action@4e13a10d89177f4bfc8007a7064bdbeda848d8d1 # v1.0.0
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           api-token: ${{ secrets.CIRCLECI_ARTIFACT_REDIRECTOR_TOKEN }}

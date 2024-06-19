@@ -1,5 +1,5 @@
 osmnx>=1.2
-momepy>=0.5
+momepy>=0.8.0a2
 contextily>=1.2
 seaborn>=0.12
 cairocffi>=1.4
