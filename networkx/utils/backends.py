@@ -36,7 +36,7 @@ object specific to the backend and then pass that in the NetworkX function::
     H = nx_parallel.ParallelGraph(G)
     nx.betweenness_centrality(H, k=10)
 
-The first approach is useful when you don't want to change your nx code and just want
+The first approach is useful when you don't want to change your NetworkX code and just want
 to run your code on different backend(s). The second approach comes in handy when you
 need to pass additional backend-specific arguments, for example::
 
