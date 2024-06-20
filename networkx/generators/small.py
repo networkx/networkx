@@ -27,6 +27,7 @@ __all__ = [
     "truncated_cube_graph",
     "truncated_tetrahedron_graph",
     "tutte_graph",
+    "lemke_graph",
 ]
 
 from functools import wraps
@@ -991,3 +992,49 @@ def tutte_graph(create_using=None):
     )
     G.name = "Tutte's Graph"
     return G
+
+
+def lemke_graph():
+    """Lemke graph
+
+    Smallest Lemke graph consistsng of 8 nodes with 13 edges
+    which originally appeared in  Lemke and Kleitman 1989. A
+    Lemke  graph  is a  graph  that  does not  satisify  the
+    two-pebbling property. Given  a simple, connected graph,
+    a  pebbling configuration  is a  function that  maps its
+    vertset to  the non-negative integers. A  pebbling move,
+    between adjacent  vertices removes  two pebles  from one
+    vertex and adds one peble to  the other. A vertex $r$ is
+    said  to  be reachable  from  a  configuration if  there
+    exists a sequence of pebbling moves that places at least
+    one  pebble  on  $r$.  A configuration  is  said  to  be
+    solvable  is  every  vertex   is  reachable.  Lastly,  a
+    pebbling  number $\pi(G)$  of graph  $G$ is  the minimum
+    integer such  that every configuration size  $\pi(G)$ on
+    $G$  is  solveable.  A  graph  $G$ is  said  to  have  a
+    two-pebbling property if for any configuration with more
+    $\2 \pi(G)$, $q$  pebbles can be moved to  any vertex of
+    $G$.
+
+    Examples
+    --------
+    >> nx.draw(nx.lemke_graph())
+
+    """
+
+    el = [
+        (0, 1),
+        (1, 2),
+        (2, 3),
+        (3, 4),
+        (4, 5),
+        (5, 6),
+        (6, 0),
+        (7, 6),
+        (7, 4),
+        (7, 2),
+        (6, 4),
+        (5, 2),
+        (3, 6),
+    ]
+    return nx.from_edgelist(el)
