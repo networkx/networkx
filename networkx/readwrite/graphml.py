@@ -86,7 +86,7 @@ def write_graphml_xml(
        For example, if edges have both int and float 'weight' attributes,
        we infer in GraphML that both are floats.
     named_key_ids : bool (optional)
-       If True use attr.name as value for key elements' id attribute.
+       If True use attr.name as value for node and edge data elements' key attribute.
     edge_id_from_attribute : dict key (optional)
         If provided, the graphml edge id is set by looking up the corresponding
         edge data attribute keyed by this parameter. If `None` or the key does not exist in edge data,
@@ -95,7 +95,23 @@ def write_graphml_xml(
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> nx.write_graphml(G, "test.graphml")
+    >>> nx.write_graphml(G, "fourpath.graphml")
+
+    By default, key attributes in node and edge data tag are in the format of "d%i" (e.g. "d0").
+
+    If `named_key_ids` is True, the keys keep the same name as attr.name (e.g. "eid").
+
+    For example
+
+    >>> G = nx.path_graph(4)
+    >>> nx.set_edge_attributes(G, {e: str(e) for e in G.edges}, "eid")
+    >>> nx.write_graphml(G, "fourpath.graphml", named_key_ids=True)
+
+    The optional parameter `edge_id_from_attribute` allows the selection of an edge data attribute to be edge id.
+
+    >>> G = nx.path_graph(4)
+    >>> nx.set_edge_attributes(G, {e: str(e) for e in G.edges}, "eid")
+    >>> nx.write_graphml(G, "fourpath.graphml", edge_id_from_attribute="eid")
 
     Notes
     -----
@@ -144,7 +160,7 @@ def write_graphml_lxml(
        For example, if edges have both int and float 'weight' attributes,
        we infer in GraphML that both are floats.
     named_key_ids : bool (optional)
-       If True use attr.name as value for key elements' id attribute.
+       If True use attr.name as value for node and edge data elements' key attribute.
     edge_id_from_attribute : dict key (optional)
         If provided, the graphml edge id is set by looking up the corresponding
         edge data attribute keyed by this parameter. If `None` or the key does not exist in edge data,
@@ -153,7 +169,23 @@ def write_graphml_lxml(
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> nx.write_graphml_lxml(G, "fourpath.graphml")
+    >>> nx.write_graphml(G, "fourpath.graphml")
+
+    By default, key attributes in node and edge data tag are in the format of "d%i" (e.g. "d0").
+
+    If `named_key_ids` is True, the keys keep the same name as attr.name (e.g. "eid").
+
+    For example
+
+    >>> G = nx.path_graph(4)
+    >>> nx.set_edge_attributes(G, {e: str(e) for e in G.edges}, "eid")
+    >>> nx.write_graphml(G, "fourpath.graphml", named_key_ids=True)
+
+    The optional parameter `edge_id_from_attribute` allows the selection of an edge data attribute to be edge id.
+
+    >>> G = nx.path_graph(4)
+    >>> nx.set_edge_attributes(G, {e: str(e) for e in G.edges}, "eid")
+    >>> nx.write_graphml(G, "fourpath.graphml", edge_id_from_attribute="eid")
 
     Notes
     -----
@@ -203,7 +235,7 @@ def generate_graphml(
     prettyprint : bool (optional)
        If True use line breaks and indenting in output XML.
     named_key_ids : bool (optional)
-       If True use attr.name as value for key elements' id attribute.
+       If True use attr.name as value for node and edge data elements' key attribute.
     edge_id_from_attribute : dict key (optional)
         If provided, the graphml edge id is set by looking up the corresponding
         edge data attribute keyed by this parameter. If `None` or the key does not exist in edge data,
@@ -212,9 +244,27 @@ def generate_graphml(
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> linefeed = chr(10)  # linefeed = \n
-    >>> s = linefeed.join(nx.generate_graphml(G))
+    >>> linefeed = chr(10)  # linefeed = \\n
+    >>> s = linefeed.join(nx.generate_graphml(G)) \n
     >>> for line in nx.generate_graphml(G):  # doctest: +SKIP
+    ...     print(line)
+
+    By default, key elements in node and edge data tag are in the format of "d%i" (e.g. "d0").
+
+    If `named_key_ids` is True, the keys keep the same name as attr.name (e.g. "eid").
+
+    For example
+
+    >>> G = nx.path_graph(4)
+    >>> nx.set_edge_attributes(G, {e: str(e) for e in G.edges}, "eid")
+    >>> for line in nx.generate_graphml(G, named_key_ids=True): # doctest: +SKIP
+    ...     print(line)
+
+    The optional parameter `edge_id_from_attribute` allows the selection of an edge data attribute to be edge id.
+
+    >>> G = nx.path_graph(4)
+    >>> nx.set_edge_attributes(G, {e: str(e) for e in G.edges}, "eid")
+    >>> for line in nx.generate_graphml(G , edge_id_from_attribute="eid"): # doctest: +SKIP
     ...     print(line)
 
     Notes
@@ -339,7 +389,7 @@ def parse_graphml(
     Examples
     --------
     >>> G = nx.path_graph(4)
-    >>> linefeed = chr(10)  # linefeed = \n
+    >>> linefeed = chr(10)  # linefeed = \\n
     >>> s = linefeed.join(nx.generate_graphml(G))
     >>> H = nx.parse_graphml(s)
 
