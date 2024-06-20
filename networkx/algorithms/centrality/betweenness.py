@@ -242,7 +242,7 @@ def edge_betweenness_centrality(G, k=None, normalized=True, weight=None, seed=No
     for n in G:  # remove nodes to only return edges
         del betweenness[n]
     betweenness = _rescale_e(
-        betweenness, len(G), normalized=normalized, directed=G.is_directed()
+        betweenness, len(G), normalized=normalized, directed=G.is_directed(), k=k
     )
     if G.is_multigraph():
         betweenness = _add_edge_keys(G, betweenness, weight=weight)

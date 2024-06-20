@@ -563,6 +563,26 @@ class TestEdgeBetweennessCentrality:
         for n in sorted(G.edges()):
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
+    def test_samples_K5(self):
+        """Edge betweenness centrality: K5"""
+        G = nx.complete_graph(5)
+        b_answer = nx.edge_betweenness_centrality(G, weight=None, normalized=False)
+        b_sample = nx.edge_betweenness_centrality(
+            G, weight=None, k=G.number_of_nodes(), normalized=False
+        )
+        for n in sorted(G.edges()):
+            assert b_sample[n] == pytest.approx(b_answer[n], abs=1e-7)
+
+    def test_samples_normalized_K5(self):
+        """Edge betweenness centrality: K5"""
+        G = nx.complete_graph(5)
+        b_answer = nx.edge_betweenness_centrality(G, weight=None, normalized=True)
+        b_sample = nx.edge_betweenness_centrality(
+            G, weight=None, k=G.number_of_nodes(), normalized=True
+        )
+        for n in sorted(G.edges()):
+            assert b_sample[n] == pytest.approx(b_answer[n], abs=1e-7)
+
     def test_normalized_K5(self):
         """Edge betweenness centrality: K5"""
         G = nx.complete_graph(5)
