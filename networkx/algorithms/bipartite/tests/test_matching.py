@@ -5,6 +5,7 @@ import pytest
 
 import networkx as nx
 from networkx.algorithms.bipartite.matching import (
+    dulmage_mendelsohn_decomposition,
     eppstein_matching,
     hopcroft_karp_matching,
     maximum_matching,
@@ -324,3 +325,328 @@ class TestMinimumWeightFullMatching:
         G.add_edge(1, 3, mass=2)
         matching = minimum_weight_full_matching(G, weight="mass")
         assert matching == {0: 3, 1: 2, 2: 1, 3: 0}
+
+
+class TestDulmageMendelsohnDecomposition:
+    def test_pothen_fan_example(self):
+        """Test the graph shown in Figure 1 of "Computing the block triangular
+        form of a sparse matrix", Pothen and Fan, ACM Trans. Math. Softw., 1990.
+        """
+        G = nx.Graph()
+        NL = 12
+        NR = 11
+        left_nodes = list(range(NL))
+        right_nodes = list(range(NL, NL + NR))
+
+        G.add_nodes_from(left_nodes, bipartite=0)
+        G.add_nodes_from(right_nodes, bipartite=1)
+
+        edges = [
+            (0, 0),
+            (0, 1),
+            (0, 2),
+            (0, 3),
+            (0, 4),
+            (0, 5),
+            (1, 3),
+            (1, 4),
+            (1, 6),
+            (1, 7),
+            (1, 9),
+            (2, 0),
+            (2, 2),
+            (2, 4),
+            (3, 5),
+            (3, 6),
+            (3, 10),
+            (4, 5),
+            (4, 6),
+            (4, 8),
+            (5, 7),
+            (5, 8),
+            (6, 7),
+            (6, 8),
+            (6, 9),
+            (7, 9),
+            (7, 10),
+            (8, 10),
+            (9, 9),
+            (10, 9),
+            (10, 10),
+            (11, 10),
+        ]
+        # Edges above are labeled as in Pothen & Fan paper. Need to
+        # convert into our space of nodes
+        edges = [(i, j + NL) for i, j in edges]
+        G.add_edges_from(edges)
+
+        reachable_top, reachable_bot, unreachable = dulmage_mendelsohn_decomposition(
+            G, left_nodes
+        )
+        # Here we switch from left/right to top/bot for consistency with
+        # function terminology
+        top_set = set(left_nodes)
+        top_reachable_from_top = [n for n in reachable_top if n in top_set]
+        bot_reachable_from_top = [n for n in reachable_top if n not in top_set]
+        bot_reachable_from_bot = [n for n in reachable_bot if n not in top_set]
+        top_reachable_from_bot = [n for n in reachable_bot if n in top_set]
+        top_unreachable = [n for n in unreachable if n in top_set]
+        bot_unreachable = [n for n in unreachable if n not in top_set]
+
+        assert top_reachable_from_top == [7, 8, 9, 10, 11]
+        assert top_unreachable == [3, 4, 5, 6]
+        assert top_reachable_from_bot == [0, 1, 2]
+        assert bot_reachable_from_top == [21, 22]
+        assert bot_unreachable == [17, 18, 19, 20]
+        assert bot_reachable_from_bot == [12, 13, 14, 15, 16]
+
+    def test_bunus_fritzson_simple_example(self):
+        """
+        Test graph shown in Figure 11 of "Automatic static analysis of
+        equation-based components", Bunus and Fritzson, Simulation (2004).
+        """
+        n_eq = 7
+        n_var = 7
+        top_nodes = [f"eq{i}" for i in range(1, n_eq + 1)]
+        bot_nodes = [f"var{i}" for i in range(1, n_var + 1)]
+
+        G = nx.Graph()
+        G.add_nodes_from(top_nodes)
+        G.add_nodes_from(bot_nodes)
+
+        edges = [
+            ("eq1", "var1"),
+            ("eq2", "var1"),
+            ("eq2", "var2"),
+            ("eq3", "var1"),
+            ("eq3", "var2"),
+            ("eq4", "var2"),
+            ("eq4", "var3"),
+            ("eq4", "var4"),
+            ("eq5", "var4"),
+            ("eq5", "var5"),
+            ("eq6", "var3"),
+            ("eq6", "var4"),
+            ("eq6", "var5"),
+            ("eq7", "var5"),
+            ("eq7", "var6"),
+            ("eq7", "var7"),
+        ]
+        G.add_edges_from(edges)
+
+        reachable_top, reachable_bot, unreachable = dulmage_mendelsohn_decomposition(
+            G, top_nodes
+        )
+
+        pred_reachable_top = {"eq1", "eq2", "eq3", "var1", "var2"}
+        pred_reachable_bot = {"eq7", "var6", "var7"}
+        pred_unreachable = {"eq4", "eq5", "eq6", "var3", "var4", "var5"}
+
+        assert set(reachable_top) == pred_reachable_top
+        assert set(reachable_bot) == pred_reachable_bot
+        assert set(unreachable) == pred_unreachable
+
+    def test_bunus_fritzson_circuit_example(self):
+        """Test graph shown in Figure 15 of "Automatic static analysis of
+        equation-based components", Bunus and Fritzson, Simulation (2004).
+        """
+        n_eq = 15
+        n_var = 14
+        left_nodes = [f"eq{i}" for i in range(1, n_eq + 1)]
+        right_nodes = [f"var{i}" for i in range(1, n_var + 1)]
+        G = nx.Graph()
+        G.add_nodes_from(left_nodes)
+        G.add_nodes_from(right_nodes)
+
+        edges = [
+            ("eq1", "var1"),
+            ("eq1", "var3"),
+            ("eq1", "var5"),
+            ("eq2", "var2"),
+            ("eq2", "var4"),
+            ("eq3", "var2"),
+            ("eq3", "var6"),
+            ("eq4", "var5"),
+            ("eq4", "var6"),
+            ("eq5", "var6"),
+            ("eq6", "var7"),
+            ("eq6", "var9"),
+            ("eq6", "var11"),
+            ("eq7", "var8"),
+            ("eq7", "var10"),
+            ("eq8", "var8"),
+            ("eq8", "var12"),
+            ("eq9", "var11"),
+            ("eq10", "var13"),
+            ("eq11", "var1"),
+            ("eq11", "var7"),
+            ("eq12", "var2"),
+            ("eq12", "var8"),
+            ("eq13", "var3"),
+            ("eq13", "var9"),
+            ("eq14", "var9"),
+            ("eq14", "var13"),
+            ("eq15", "var4"),
+            ("eq15", "var10"),
+            ("eq15", "var14"),
+        ]
+        G.add_edges_from(edges)
+
+        reach_left, reach_right, unreachable = dulmage_mendelsohn_decomposition(
+            G, left_nodes
+        )
+
+        pred_reachable_left = {
+            "eq1",
+            "eq4",
+            "eq5",
+            "eq6",
+            "eq9",
+            "eq10",
+            "eq11",
+            "eq13",
+            "eq14",
+            "var1",
+            "var3",
+            "var5",
+            "var6",
+            "var7",
+            "var9",
+            "var11",
+            "var13",
+        }
+        pred_unreachable = {
+            "eq2",
+            "eq3",
+            "eq7",
+            "eq8",
+            "eq12",
+            "eq15",
+            "var2",
+            "var4",
+            "var8",
+            "var10",
+            "var12",
+            "var14",
+        }
+
+        assert set(reach_left) == pred_reachable_left
+        assert set(reach_right) == set()
+        assert set(unreachable) == pred_unreachable
+
+    def test_pyomo_example(self):
+        """Test the bipartite graph of variables and constraints from the Pyomo
+        example of the Dulmage-Mendelsohn partition, accessed at
+        https://pyomo.readthedocs.io/en/stable/contributed_packages/incidence/tutorial.dm.html
+        on June 17, 2023.
+        """
+        varnames = [
+            "x[1]",
+            "x[2]",
+            "x[3]",
+            "flow[1]",
+            "flow[2]",
+            "flow[3]",
+            "total_flow",
+            "density",
+        ]
+        connames = [
+            "sum_eqn",
+            "holdup_eqn[1]",
+            "holdup_eqn[2]",
+            "holdup_eqn[3]",
+            "density_eqn",
+            "flow_eqn[1]",
+            "flow_eqn[2]",
+            "flow_eqn[3]",
+        ]
+        G = nx.Graph()
+        G.add_nodes_from(varnames)
+        G.add_nodes_from(connames)
+
+        edges = [
+            ("sum_eqn", "x[1]"),
+            ("sum_eqn", "x[2]"),
+            ("sum_eqn", "x[3]"),
+            ("holdup_eqn[1]", "x[1]"),
+            ("holdup_eqn[1]", "density"),
+            ("holdup_eqn[2]", "x[2]"),
+            ("holdup_eqn[2]", "density"),
+            ("holdup_eqn[3]", "x[3]"),
+            ("holdup_eqn[3]", "density"),
+            ("density_eqn", "density"),
+            ("density_eqn", "x[1]"),
+            ("density_eqn", "x[2]"),
+            ("density_eqn", "x[3]"),
+            ("flow_eqn[1]", "x[1]"),
+            ("flow_eqn[1]", "flow[1]"),
+            ("flow_eqn[1]", "total_flow"),
+            ("flow_eqn[2]", "x[2]"),
+            ("flow_eqn[2]", "flow[2]"),
+            ("flow_eqn[2]", "total_flow"),
+            ("flow_eqn[3]", "x[3]"),
+            ("flow_eqn[3]", "flow[3]"),
+            ("flow_eqn[3]", "total_flow"),
+        ]
+        G.add_edges_from(edges)
+
+        reach_from_con, reach_from_var, unreachable = dulmage_mendelsohn_decomposition(
+            G, connames
+        )
+
+        pred_reachable_from_con = {
+            "x[1]",
+            "x[2]",
+            "x[3]",
+            "density",
+            "sum_eqn",
+            "holdup_eqn[1]",
+            "holdup_eqn[2]",
+            "holdup_eqn[3]",
+            "density_eqn",
+        }
+        pred_reachable_from_var = {
+            "flow[1]",
+            "flow[2]",
+            "flow[3]",
+            "total_flow",
+            "flow_eqn[1]",
+            "flow_eqn[2]",
+            "flow_eqn[3]",
+        }
+
+        assert set(reach_from_con) == pred_reachable_from_con
+        assert set(reach_from_var) == pred_reachable_from_var
+        assert set(unreachable) == set()
+
+    def test_graph_not_bipartite(self):
+        G = nx.Graph()
+        G.add_nodes_from(range(3))
+        G.add_edges_from([(0, 1), (0, 2), (1, 2)])
+        top_nodes = [0, 1]
+
+        msg = "Provided graph is not bipartite"
+        with pytest.raises(nx.NetworkXError, match=msg):
+            dulmage_mendelsohn_decomposition(G, top_nodes)
+
+    def test_invalid_bipartite_set(self):
+        G = nx.Graph()
+        G.add_nodes_from(range(3))
+        G.add_edges_from([(0, 1), (0, 2)])
+        top_nodes = [0, 2]
+        msg = "Provided nodes are not a valid bipartite set"
+        with pytest.raises(nx.NetworkXError, match=msg):
+            dulmage_mendelsohn_decomposition(G, top_nodes)
+
+    def test_matching_provided(self):
+        G = nx.Graph()
+        G.add_nodes_from(range(3))
+        G.add_edges_from([(0, 1), (0, 2)])
+        top_nodes = [0]
+        matching = {0: 1, 1: 0}
+        reach_from_top, reach_from_bot, unreach = dulmage_mendelsohn_decomposition(
+            G, top_nodes, matching=matching
+        )
+        assert len(reach_from_top) == 0
+        assert set(reach_from_bot) == {0, 1, 2}
+        assert len(unreach) == 0

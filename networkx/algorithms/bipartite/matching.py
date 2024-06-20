@@ -40,6 +40,7 @@ import collections
 import itertools
 
 import networkx as nx
+from networkx.algorithms.bipartite import is_bipartite, is_bipartite_node_set
 from networkx.algorithms.bipartite import sets as bipartite_sets
 from networkx.algorithms.bipartite.matrix import biadjacency_matrix
 
@@ -49,6 +50,7 @@ __all__ = [
     "eppstein_matching",
     "to_vertex_cover",
     "minimum_weight_full_matching",
+    "dulmage_mendelsohn_decomposition",
 ]
 
 INFINITY = float("inf")
@@ -587,3 +589,83 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     # add the ones from right to left as well.
     d.update({v: u for u, v in d.items()})
     return d
+
+
+def dulmage_mendelsohn_decomposition(G, top_nodes, *, matching=None):
+    """Return a partition of the nodes of ``G`` into the subsets defined by
+    the Dulmage-Mendelsohn decomposition
+
+    The Dulmage-Mendelsohn decomposition [1]_ partitions nodes of a bipartite
+    graph into unique subsets that determine all nodes that can possibly be
+    unmatched in some maximum matching. The subsets are defined in terms of
+    the bipartite sets of the graph. They are:
+
+    - The unmatched nodes in one set, and all nodes reachable from them via an
+      alternating path
+    - The unmatched nodes in the other set, and all nodes reachable from them
+      via an alternating path
+    - The nodes that are unreachable via alternating path from any unmatched
+      node
+
+    Unmatched nodes and alternating paths are defined with respect to a
+    particular maximum matching. However, the subsets are independent of the
+    matching used to compute them.
+
+    In contrast to the other functions in this module, ``top_nodes`` is a
+    required argument, even if there is only one possible bipartition. This
+    is so there is never ambiguity about which set of nodes each "reachable"
+    subset is reachable from.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+
+        Bipartite graph to which the decomposition is applied
+
+    top_nodes : container
+
+        Contains the nodes in one bipartite set of ``G``
+
+    Returns
+    -------
+    reachable_from_top : set
+
+        Set of nodes reachable by an alternating path from unmatched top nodes
+
+    reachable_from_bot : set
+
+        Set of nodes reachable by an alternating path from unmatched bottom
+        nodes
+
+    unreachable : set
+
+        Set of nodes that are not reachable by an alternating path from
+        unmatched nodes
+
+    Raises
+    ------
+    NetworkXError
+
+        If the provided graph is not bipartite or the provided top nodes
+        are not a valid bipartite set
+
+    References
+    ----------
+    .. [1] Dulmage and Mendelsohn. "Coverings of Bipartite Graphs". Can. J. Math.,
+        1958.
+
+    """
+    if not is_bipartite(G):
+        raise nx.NetworkXError("Provided graph is not bipartite")
+    elif not is_bipartite_node_set(G, top_nodes):
+        raise nx.NetworkXError("Provided nodes are not a valid bipartite set")
+    if matching is None:
+        matching = maximum_matching(G, top_nodes=top_nodes)
+    top_set = set(top_nodes)
+    bot_set = G.nodes - top_set
+    unmatched_top = top_set - matching.keys()
+    unmatched_bot = bot_set - matching.keys()
+    reachable_from_top = _connected_by_alternating_paths(G, matching, unmatched_top)
+    reachable_from_bot = _connected_by_alternating_paths(G, matching, unmatched_bot)
+    unreachable = G.nodes - reachable_from_top - reachable_from_bot
+    return reachable_from_top, reachable_from_bot, unreachable
