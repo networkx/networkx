@@ -15,6 +15,7 @@ from networkx.algorithms.approximation.connectivity import *
 from networkx.algorithms.approximation.distance_measures import *
 from networkx.algorithms.approximation.dominating_set import *
 from networkx.algorithms.approximation.kcomponents import *
+from networkx.algorithms.approximation.kcutsets import *
 from networkx.algorithms.approximation.matching import *
 from networkx.algorithms.approximation.ramsey import *
 from networkx.algorithms.approximation.steinertree import *

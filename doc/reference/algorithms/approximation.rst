@@ -46,6 +46,16 @@ Clustering
    average_clustering
 
 
+Cuts
+----
+.. automodule:: networkx.algorithms.approximation.kcutsets
+.. autosummary::
+   :toctree: generated/
+
+   minimum_multiway_cut
+   minimum_k_cut
+
+
 Distance Measures
 -----------------
 .. automodule:: networkx.algorithms.approximation.distance_measures
