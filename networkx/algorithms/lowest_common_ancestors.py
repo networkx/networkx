@@ -10,6 +10,7 @@ __all__ = [
     "all_pairs_lowest_common_ancestor",
     "tree_all_pairs_lowest_common_ancestor",
     "lowest_common_ancestor",
+    "all_lowest_common_ancestor",
 ]
 
 
@@ -266,3 +267,96 @@ def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
             parent = arbitrary_element(G.pred[node])
             uf.union(parent, node)
             ancestors[uf[parent]] = parent
+
+
+@not_implemented_for("undirected")
+@not_implemented_for("multigraph")
+def all_lowest_common_ancestor(G, node1, node2):
+    """Returns all the lowest common ancestors of the provided node1 and node2
+    Parameters
+    ----------
+    G : NetworkX directed graph
+    node1: first node
+    node2: second node
+    Yields
+    ------
+    ((node1, node2), all_lca) : 2-tuple
+        Where all_lca is the list of all least common ancestor of node1 and node2.
+        Note that for the default case, the order of the node pair is not considered,
+        e.g. you will not get both ``(a, b)`` and ``(b, a)``
+    Raises
+    ------
+    NetworkXPointlessConcept
+        If `G` is null.
+    NetworkXError
+        If `G` is not a DAG.
+    Examples
+    --------
+    The default behavior is to yield all the lowest common ancestor for the given nodes in `G`:
+    # >>> G = nx.DiGraph()
+    # >>> G.add_edges_from({(0,1),(1,4),(1,6),(0,2),(3,6),(2,4),(2,6),(2,3),(6,5),(6,7),(7,8)})
+    # >>> print(nx.all_lowest_common_ancestor(G,4,7))
+    {[1,2]}
+    Notes
+    -----
+    Only defined on non-null directed acyclic graphs.
+    See Also
+    --------
+    lowest_common_ancestor
+    """
+
+    if not nx.is_directed_acyclic_graph(G):
+        raise nx.NetworkXError("LCA only defined on directed acyclic graphs.")
+    if len(G) == 0:
+        raise nx.NetworkXPointlessConcept("LCA meaningless on null graphs.")
+
+    #  Defined a dictionary for marking color of all nodes
+    color = {}
+    for n in G:
+        # 0 represents white color
+        color[n] = 0
+
+    # defined a queue
+    queue = []
+    # stored direct ancestors of node1 in the queue
+    for ancestor in G.predecessors(node1):
+        queue.append(ancestor)
+
+    # did breadth first search to color all the ancestors of node1 as red (1)
+    while len(queue) != 0:
+        node = queue.pop()
+        color[node] = 1
+        for ancestor in G.predecessors(node):
+            queue.append(ancestor)
+
+    # stored direct ancestors of node2
+    for ancestor in G.predecessors(node2):
+        queue.append(ancestor)
+
+    # did breadth first search to color all the ancestors of node2 as red who were white and color those ancestors which
+    # were red already were colored black (2)
+    while len(queue) != 0:
+        node = queue.pop()
+        if color[node] == 1:  # if its already colored red then it will be colored black
+            color[node] = 2
+        elif color[node] == 0:  # if its white colored then it will be colored red
+            color[node] = 1
+
+        for ancestor in G.predecessors(node):
+            queue.append(ancestor)
+
+    # now we need to create a subgraph of only black colored nodes
+    nodes_in_subgraph = []
+    for node in color:
+        if color[node] == 2:
+            nodes_in_subgraph.append(node)
+
+    sub_graph = G.subgraph(nodes_in_subgraph)
+
+    # in the subgraph whose nodes had outdegree 0 are the lowest common ancestors of node1 and node 2
+    all_LCA = []
+    for node, out_deg in sub_graph.out_degree:
+        if out_deg == 0:
+            all_LCA.append(node)
+
+    return all_LCA
