@@ -228,7 +228,8 @@ class GraphMatcher:
             # If T1_inout and T2_inout were both empty....
             # P(s) = (N_1 - M_1) x {min (N_2 - M_2)}
             # if not (T1_inout or T2_inout):  # as suggested by  [2], incorrect
-            if 1:  # as inferred from [1], correct
+            # if 1:  # as inferred from [1], correct
+            if not T2_inout:
                 # First we determine the candidate node for G2
                 other_node = min(G2_nodes - set(self.core_2), key=min_key)
                 for node in self.G1:
@@ -582,7 +583,8 @@ class DiGraphMatcher(GraphMatcher):
             # P(s) = (N_1 - M_1) x {min (N_2 - M_2)}
 
             # elif not (T1_in or T2_in):   # as suggested by  [2], incorrect
-            else:  # as inferred from [1], correct
+            # else:  # as inferred from [1], correct
+            elif not (T2_out or T2_in):
                 node_2 = min(G2_nodes - set(self.core_2), key=min_key)
                 for node_1 in G1_nodes:
                     if node_1 not in self.core_1:
