@@ -1,6 +1,7 @@
 """
 Shortest path algorithms for unweighted graphs.
 """
+import operator
 import warnings
 
 import networkx as nx
@@ -355,15 +356,11 @@ def single_source_shortest_path(G, source, cutoff=None):
     """
     if source not in G:
         raise nx.NodeNotFound(f"Source {source} not in G")
-
-    def join(p1, p2):
-        return p1 + p2
-
     if cutoff is None:
         cutoff = float("inf")
-    nextlevel = {source: 1}  # list of nodes to check at next level
+    nextlevel = [source]  # list of nodes to check at next level
     paths = {source: [source]}  # paths dictionary  (paths to key from source)
-    return dict(_single_shortest_path(G.adj, nextlevel, paths, cutoff, join))
+    return dict(_single_shortest_path(G._adj, nextlevel, paths, cutoff, operator.add))
 
 
 def _single_shortest_path(adj, firstlevel, paths, cutoff, join):
@@ -374,8 +371,8 @@ def _single_shortest_path(adj, firstlevel, paths, cutoff, join):
     ----------
         adj : dict
             Adjacency dict or view
-        firstlevel : dict
-            starting nodes, e.g. {source: 1} or {target: 1}
+        firstlevel : list
+            starting nodes, e.g. [source] or [target]
         paths : dict
             paths for starting nodes, e.g. {source: [source]}
         cutoff : int or float
@@ -385,16 +382,19 @@ def _single_shortest_path(adj, firstlevel, paths, cutoff, join):
             list inputs `p1` and `p2`, and returns a list. Usually returns
             `p1 + p2` (forward from source) or `p2 + p1` (backward from target)
     """
-    level = 0  # the current level
+    level = 0
     nextlevel = firstlevel
+    n = len(adj)
     while nextlevel and cutoff > level:
         thislevel = nextlevel
-        nextlevel = {}
+        nextlevel = []
         for v in thislevel:
             for w in adj[v]:
                 if w not in paths:
                     paths[w] = join(paths[v], [w])
-                    nextlevel[w] = 1
+                    nextlevel.append(w)
+            if len(paths) == n:
+                return paths
         level += 1
     return paths
 
@@ -443,10 +443,10 @@ def single_target_shortest_path(G, target, cutoff=None):
         return p2 + p1
 
     # handle undirected graphs
-    adj = G.pred if G.is_directed() else G.adj
+    adj = G._pred if G.is_directed() else G._adj
     if cutoff is None:
         cutoff = float("inf")
-    nextlevel = {target: 1}  # list of nodes to check at next level
+    nextlevel = [target]  # list of nodes to check at next level
     paths = {target: [target]}  # paths dictionary  (paths to key from source)
     return dict(_single_shortest_path(adj, nextlevel, paths, cutoff, join))
 
