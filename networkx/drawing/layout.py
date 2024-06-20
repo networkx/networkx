@@ -1252,45 +1252,52 @@ def forceatlas2_layout(
     linlog=False,
     dim=2,
 ):
-    """Forceatlas2 layout for networkx
+    """ForceAtlas2 Layout for NetworkX
 
-    See [1] for more info on the parameters
+    This function  applies the ForceAtlas2  layout algorithm
+    to a NetworkX graph, positioning the nodes in a way that
+    visually  represents the  structure  of  the graph.  The
+    algorithm  uses  physical  simulation  to  minimize  the
+    energy  of  the system,  resulting  in  a more  readable
+    layout.
 
-    [1]: https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0098679&type=printable
+    For more information on the algorithm and parameters, see the original publication:
+    https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0098679&type=printable
+
     Parameters
     ----------
     G : nx.Graph
-       Netwrorkx graph
-    pos: dict or None
-       Optional starting positions
-    max_iter: int
-        Simulation steps
+        A NetworkX graph to be laid out.
+    pos : dict or None, optional
+        Initial positions of the nodes. If None, random initial positions are used.
+    max_iter : int
+        Number of iterations for the layout optimization.
     jitter_tolerance : float
-        Jitter  tolerance  for  adjusting  speed  of  layout
-        generation
+        Controls the tolerance for adjusting the speed of layout generation.
     scaling_ratio : float
-        Controls  force scaling  constants k_attraction  and
-        k_repulsion
-    distributed_action : bool
+        Determines the scaling of attraction and repulsion forces.
+    distributed_attraction : bool
+        Distributes the attraction force evenly among nodes.
     strong_gravity : bool
-        Controls the  "pull" to  the center  of mass  of the
-        plot (0,0)
-    node_mass: None  or dict
-    Dictionary mapping the node to a mass value. Mass control the attraction of other nodes to eachother, higher mass for a given node means higher attraction. Value defaults to node degree + 1
-    node_size: None or dict (default None)
-    Dictionary mapping the node to a size. Setting a high value will prevent crowding effect and creates a halo around a node.
+        Applies a strong gravitational pull towards the center.
+    node_mass : dict or None, optional
+        Maps nodes to their masses, influencing the attraction to other nodes.
+    node_size : dict or None, optional
+        Maps nodes to their sizes, preventing crowding by creating a halo effect.
     dissuade_hubs : bool
-        Prevent hub clustering
+        Prevents the clustering of hub nodes.
     linlog : bool
-        Use log attraction rather than linear attraction
-    dim: int,
-       Sets the dimensions of the layout. This parameter is ignored if pos is given.
+        Uses logarithmic attraction instead of linear.
+    dim : int
+        Sets the dimensions for the layout. Ignored if `pos` is provided.
 
     Examples
     --------
     >>> import networkx as nx
     >>> G = nx.florentine_families_graph()
-    >>> nx.draw(G, pos=nx.forceatlas2_layout(G))
+    >>> pos = nx.forceatlas2_layout(G)
+    >>> nx.draw(G, pos=pos)
+
     """
     import numpy as np
 
@@ -1339,9 +1346,38 @@ def forceatlas2_layout(
     A = nx.to_numpy_array(G, weight=weight)
 
     def estimate_factor(n, swing, traction, speed, speed_efficiency, jitter_tolerance):
-        """
-        ForceAtlas2 helper function
-        Computes scaling factor for force
+        """Computes the scaling factor for the force in the ForceAtlas2 layout algorithm.
+
+        This   helper  function   adjusts   the  speed   and
+        efficiency  of the  layout generation  based on  the
+        current state of  the system, such as  the number of
+        nodes, current swing, and traction forces.
+
+        Parameters
+        ----------
+        n : int
+            Number of nodes in the graph.
+        swing : float
+            The current swing, representing the oscillation of the nodes.
+        traction : float
+            The current traction force, representing the attraction between nodes.
+        speed : float
+            The current speed of the layout generation.
+        speed_efficiency : float
+            The efficiency of the current speed, influencing how fast the layout converges.
+        jitter_tolerance : float
+            The tolerance for jitter, affecting how much speed adjustment is allowed.
+
+        Returns
+        -------
+        tuple
+            A tuple containing the updated speed and speed efficiency.
+
+        Notes
+        -----
+        This function is a part of the ForceAtlas2 layout algorithm and is used to dynamically adjust the
+        layout parameters to achieve an optimal and stable visualization.
+
         """
         import numpy as np
 
