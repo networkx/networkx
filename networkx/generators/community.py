@@ -1058,9 +1058,19 @@ def LFR_benchmark_graph(
     G.add_nodes_from(range(n))
     for c in communities:
         for u in c:
-            while G.degree(u) < round(deg_seq[u] * (1 - mu)):
+            in_neigh = set(G.neighbors(u)).intersection(c)
+
+            while len(in_neigh) < round(deg_seq[u] * (1 - mu)):
                 v = seed.choice(list(c))
                 G.add_edge(u, v)
+                in_neigh.add(v)
+
+            # If number of edges is greater than (number of nodes outside community plus in-community edges), there are not enough out-community nodes available for connecting.
+            if deg_seq[u] > n - len(c) + len(in_neigh):
+                msg = "Could not add edges; try decreasing max_degree"
+                raise nx.exception.ExceededMaxIterations(msg)
+
+            # Choose nodes
             while G.degree(u) < deg_seq[u]:
                 v = seed.choice(range(n))
                 if v not in c:
