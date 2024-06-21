@@ -158,8 +158,8 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements/default.txt -r requirements/test.txt
           python -m pip install --config-settings="--global-option=build_ext" `
-              --config-settings="--global-option="-IC:\Program Files\Graphviz\include" `
-              --config-settings="--global-option="-LC:\Program Files\Graphviz\lib" `
+              --config-settings="--global-option=-IC:\Program Files\Graphviz\include" `
+              --config-settings="--global-option=-LC:\Program Files\Graphviz\lib" `
               pygraphviz
       - name: Install packages (windows)
         if: runner.os == 'Windows'
