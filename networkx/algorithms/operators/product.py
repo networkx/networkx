@@ -1,6 +1,7 @@
 """
 Graph products.
 """
+
 from itertools import product
 
 import networkx as nx
@@ -291,10 +292,16 @@ def strong_product(G, H):
 
     The strong product $P$ of the graphs $G$ and $H$ has a node set that
     is the Cartesian product of the node sets, $V(P)=V(G) \times V(H)$.
-    $P$ has an edge $((u,v), (x,y))$ if and only if
-    $u==v$ and $(x,y)$ is an edge in $H$, or
-    $x==y$ and $(u,v)$ is an edge in $G$, or
-    $(u,v)$ is an edge in $G$ and $(x,y)$ is an edge in $H$.
+    $P$ has an edge $((u,x), (v,y))$ if any of the following conditions
+    are met:
+    - $u==v$ and $(x,y)$ is an edge in $H$, or
+    - $x==y$ and $(u,v)$ is an edge in $G$, or
+    - $(u,v)$ is an edge in $G$ and $(x,y)$ is an edge in $H$.
+
+    In other words, two nodes $(u, x)$ and $(v, y)$ are adjacent in $P$ if:
+    - $u==v$ and $x$ and $y$ are adjacent in $H$, or
+    - $x==y$ and $u$ and $v$ are adjacent in $G$, or
+    - $u$ and $v$ are adjacent in $G$ and $x$ and $y$ are adjacent in $H$.
 
     Parameters
     ----------
