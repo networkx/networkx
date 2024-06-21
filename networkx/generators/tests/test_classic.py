@@ -593,7 +593,7 @@ class TestGeneratorClassic:
         assert nx.number_of_nodes(nx.trivial_graph()) == 1
 
     @pytest.mark.parametrize("n", (10, 20))
-    @pytest.mark.parametrize("r", (1, 11))
+    @pytest.mark.parametrize("r", (1, 10))
     def test_turan_graph(self, n, r):
         G = nx.turan_graph(n, r)
         s = n % r
