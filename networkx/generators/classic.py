@@ -958,8 +958,8 @@ def turan_graph(n, r):
 
     Raises
     ------
-    NetworkXError:
-        If $1 <= r <= n$ is not satisfied.
+    NetworkXError
+        If ``1 <= r <= n`` is not satisfied.
 
     See Also
     --------

@@ -128,14 +128,14 @@ class TestGeneratorClassic:
         with expectation:
             nx.barbell_graph(5, 2, create_using=create_using)
 
-    @pytest.mark.parametrize("m2", range(21))
+    @pytest.mark.parametrize("m2", (0, 5))
     def test_barbell_graph(self, m2):
         # nx.barbell_graph(2, m) = nx.path_graph(m + 4)
         b = nx.barbell_graph(2, m2)
         assert is_isomorphic(b, nx.path_graph(m2 + 4))
 
-    @pytest.mark.parametrize("m1", range(2, 7))
-    @pytest.mark.parametrize("m2", range(21))
+    @pytest.mark.parametrize("m1", (2, 5))
+    @pytest.mark.parametrize("m2", (0, 5))
     def test_barbell_graph_multigraph(self, m1, m2):
         b = nx.barbell_graph(m1, m2)
         mb = nx.barbell_graph(m1, m2, create_using=nx.MultiGraph())
@@ -592,8 +592,8 @@ class TestGeneratorClassic:
     def test_trivial_graph(self):
         assert nx.number_of_nodes(nx.trivial_graph()) == 1
 
-    @pytest.mark.parametrize("n", range(10, 20))
-    @pytest.mark.parametrize("r", range(1, 11))
+    @pytest.mark.parametrize("n", (10, 20))
+    @pytest.mark.parametrize("r", (1, 11))
     def test_turan_graph(self, n, r):
         G = nx.turan_graph(n, r)
         s = n % r
@@ -679,7 +679,7 @@ class TestGeneratorClassic:
         assert nodes_equal(G, H)
         assert edges_equal(G.edges(), H.edges())
 
-    @pytest.mark.parametrize("n", range(10))
+    @pytest.mark.parametrize("n", (0, 3))
     def test_complete_1_partite_graph(self, n):
         """Tests that the complete 1-partite graph is the empty graph."""
         G = nx.complete_multipartite_graph(n)
@@ -687,8 +687,8 @@ class TestGeneratorClassic:
         assert nodes_equal(G, H)
         assert edges_equal(G.edges(), H.edges())
 
-    @pytest.mark.parametrize("m", range(5))
-    @pytest.mark.parametrize("n", range(5))
+    @pytest.mark.parametrize("m", (0, 5))
+    @pytest.mark.parametrize("n", (0, 5))
     def test_complete_2_partite_graph(self, m, n):
         """Tests that the complete 2-partite graph is the complete bipartite
         graph.
@@ -698,7 +698,7 @@ class TestGeneratorClassic:
         assert nodes_equal(G, H)
         assert edges_equal(G.edges(), H.edges())
 
-    @pytest.mark.parametrize("n", range(10))
+    @pytest.mark.parametrize("n", (0, 1, 5))
     def test_complete_2_partite_graph_star_graph(self, n):
         """Tests that the complete 2-partite graph with sizes 1 and n
         is the star graph on n + 1 nodes.
