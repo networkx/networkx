@@ -151,7 +151,7 @@ jobs:
           pip install -r requirements/extra.txt
           pip install .
           pip list
-      - name: Install packages (windows)
+      - name: Install Pygraphviz packages  (windows)
         if: runner.os == 'Windows'
         run: |
           echo "C:\Program Files\Graphviz\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
@@ -161,6 +161,10 @@ jobs:
                                 --global-option="-IC:\Program Files\Graphviz\include" `
                                 --global-option="-LC:\Program Files\Graphviz\lib" `
                                 pygraphviz
+      - name: Install packages (windows)
+        if: runner.os == 'Windows'
+        run: |
+          echo "C:\Program Files\Graphviz\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           python -m pip install -r requirements/extra.txt
           python -m pip install .
           python -m pip list
