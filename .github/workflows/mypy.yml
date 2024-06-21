@@ -24,8 +24,7 @@ jobs:
       - name: Install packages
         run: |
           pip install --upgrade pip
-          pip install -r requirements/developer.txt
-          pip install -e .
+          pip install -e .[developer]
           pip list
 
       - name: run mypy
