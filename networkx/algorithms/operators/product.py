@@ -295,8 +295,8 @@ def strong_product(G, H):
     $P$ has an edge $((u,x), (v,y))$ if any of the following conditions
     are met:
 
-    - $u==v$ and $(x,y)$ is an edge in $H$
-    - $x==y$ and $(u,v)$ is an edge in $G$
+    - $u=v$ and $(x,y)$ is an edge in $H$
+    - $x=y$ and $(u,v)$ is an edge in $G$
     - $(u,v)$ is an edge in $G$ and $(x,y)$ is an edge in $H$
 
     Parameters
