@@ -1,4 +1,7 @@
 """
+Docs for backend users
+~~~~~~~~~~~~~~~~~~~~~~
+
 NetworkX utilizes a plugin-dispatch architecture, which means we can plug in and
 out of backends with minimal code changes. A valid NetworkX backend specifies
 `entry points <https://packaging.python.org/en/latest/specifications/entry-points>`_,
@@ -33,162 +36,255 @@ object specific to the backend and then pass that in the NetworkX function::
     H = nx_parallel.ParallelGraph(G)
     nx.betweenness_centrality(H, k=10)
 
-How it works: You might have seen the ``@nx._dispatchable`` decorator on
-many of the NetworkX functions in the codebase. It decorates the function
-with code that redirects execution to the function's backend implementation.
-The code also manages any ``backend_kwargs`` you provide to the backend
-version of the function. The code looks for the environment variable or
-a ``backend`` keyword argument and if found, converts the input NetworkX
-graph to the backend format before calling the backend's version of the
-function. If no environment variable or backend keyword are found, the
-dispatching code checks the input graph object for an attribute
-called ``__networkx_backend__`` which tells it which backend provides this
-graph type. That backend's version of the function is then called.
-The backend system relies on Python ``entry_point`` system to signal
-NetworkX that a backend is installed (even if not imported yet). Thus no
-code needs to be changed between running with NetworkX and running with
-a backend to NetworkX. The attribute ``__networkx_backend__`` holds a
-string with the name of the ``entry_point``. If none of these options
-are being used, the decorator code simply calls the NetworkX function
-on the NetworkX graph as usual.
+The first approach is useful when you don't want to change your NetworkX code and just want
+to run your code on different backend(s). The second approach comes in handy when you
+need to pass additional backend-specific arguments, for example::
+
+    nx.betweenness_centrality(G, k=10, backend="parallel", get_chunks=get_chunks)
+
+Here, ``get_chunks`` is not a NetworkX argument, but a nx_parallel-specific argument.
+
+NetworkX also offers a very basic logging system that can help you verify if the
+backend that you specified is being implemented. This will most likely become more
+enhanced in the future. You can enable the networkx's backend logger like this::
+
+    import logging
+    nxl = logging.getLogger("networkx")
+    nxl.addHandler(logging.StreamHandler())
+    nxl.setLevel(logging.DEBUG)
+
+And you can disable it by running this::
+
+    nxl.setLevel(logging.CRITICAL)
+
+Refer `this <https://docs.python.org/3/library/logging.html>`_ to know more about
+the logging facilities in Python.
+
+How does this work?
+-------------------
+
+You might have seen the ``@nx._dispatchable`` decorator on
+many of the NetworkX functions in the codebase. This decorator function works
+by dispatching a NetworkX function to a specified backend if available, or running
+it with NetworkX if no backend is specified or available. It checks if the specified
+backend is valid and installed. If not, it raises an ``ImportError``. It also
+resolves the graph arguments from the provided ``args`` and ``kwargs``, handling cases
+where graphs are passed as positional arguments or keyword arguments. It then checks if
+any of the resolved graphs are from a backend by checking if they have a
+``__networkx_backend__`` attribute. The attribute ``__networkx_backend__`` holds a
+string with the name of the ``entry_point`` (more on them later). If there are graphs
+from a backend, it determines the priority of the backends based on the
+``backend_priority`` configuration. If there are dispatchable graphs (i.e., graphs from
+a backend), it checks if all graphs are from the same backend. If not, it raises a
+``TypeError``. If a backend is specified and it matches the backend of the graphs, it
+loads the backend and calls the corresponding function on the backend along with the
+additional backend-specific ``backend_kwargs``. After calling the function the networkx
+logger displays the ``DEBUG`` message, if the logging is enabled. If no compatible
+backend is found or the function is not implemented by the backend, it raises a
+``NetworkXNotImplemented`` exception. And, if the function mutates the input graph or
+returns a graph, graph generator or loader then it tries to convert and run the
+function with a backend with automatic conversion. And it only convert and run if
+``backend.should_run(...)`` returns ``True``. If no backend is used, it falls back to
+running the original function with NetworkX. Refer the ``__call__`` method of the
+``_dispatchable`` class for more details.
 
 The NetworkX library does not need to know that a backend exists for it
-to work. So long as the backend package creates the entry_point, and
+to work. As long as the backend package creates the ``entry_point``, and
 provides the correct interface, it will be called when the user requests
 it using one of the three approaches described above. Some backends have
 been working with the NetworkX developers to ensure smooth operation.
-They are the following::
+They are the following:
 
-- `graphblas <https://github.com/python-graphblas/graphblas-algorithms>`_
-- `cugraph <https://github.com/rapidsai/cugraph/tree/branch-24.04/python/nx-cugraph>`_
-- `parallel <https://github.com/networkx/nx-parallel>`_
-- ``loopback`` is for testing purposes only and is not a real backend.
+- `graphblas <https://github.com/python-graphblas/graphblas-algorithms>`_:
+    OpenMP-enabled sparse linear algebra backend.
+- `cugraph <https://github.com/rapidsai/cugraph/tree/branch-24.04/python/nx-cugraph>`_:
+    GPU-accelerated backend.
+- `parallel <https://github.com/networkx/nx-parallel>`_:
+    Parallel backend for NetworkX algorithms.
+- `loopback <https://github.com/networkx/networkx/blob/main/pyproject.toml#L53>`_:
+    It's for testing purposes only and is not a real backend.
 
 Note that the ``backend_name`` is e.g. ``parallel``, the package installed
 is ``nx-parallel``, and we use ``nx_parallel`` while importing the package.
 
-Creating a Custom backend
+Docs for backend developers
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Creating a custom backend
 -------------------------
 
-1.  To be a valid backend that is discoverable by NetworkX, your package must
-    register an `entry-point <https://packaging.python.org/en/latest/specifications/entry-points/#entry-points>`_
+1.  Defining a ``BackendInterface`` object:
+
+    Note that the ``BackendInterface`` doesn't need to must be a class. It can be an
+    instance of a class, or a module as well. You can define the following methods or
+    functions in your backend's ``BackendInterface`` object.:
+
+    1. ``convert_from_nx`` and ``convert_to_nx`` methods or functions are required for
+       backend dispatching to work. The arguments to ``convert_from_nx`` are:
+
+       - ``G`` : NetworkX Graph
+       - ``edge_attrs`` : dict, optional
+            Dictionary mapping edge attributes to default values if missing in ``G``.
+            If None, then no edge attributes will be converted and default may be 1.
+       - ``node_attrs``: dict, optional
+            Dictionary mapping node attributes to default values if missing in ``G``.
+            If None, then no node attributes will be converted.
+       - ``preserve_edge_attrs`` : bool
+            Whether to preserve all edge attributes.
+       - ``preserve_node_attrs`` : bool
+            Whether to preserve all node attributes.
+       - ``preserve_graph_attrs`` : bool
+            Whether to preserve all graph attributes.
+       - ``preserve_all_attrs`` : bool
+            Whether to preserve all graph, node, and edge attributes.
+       - ``name`` : str
+            The name of the algorithm.
+       - ``graph_name`` : str
+            The name of the graph argument being converted.
+
+    2. ``can_run`` (Optional): 
+          If your backend only partially implements an algorithm, you can define
+          a ``can_run(name, args, kwargs)`` function in your ``BackendInterface`` object that
+          returns True or False indicating whether the backend can run the algorithm with
+          the given arguments or not. Instead of a boolean you can also return a string
+          message to inform the user why that algorithm can't be run.
+
+    3. ``should_run`` (Optional): 
+          A backend may also define ``should_run(name, args, kwargs)``
+          that is similar to ``can_run``, but answers whether the backend *should* be run.
+          ``should_run`` is only run when performing backend graph conversions. Like
+          ``can_run``, it receives the original arguments so it can decide whether it
+          should be run by inspecting the arguments. ``can_run`` runs before
+          ``should_run``, so ``should_run`` may assume ``can_run`` is True. If not
+          implemented by the backend, ``can_run``and ``should_run`` are assumed to
+          always return True if the backend implements the algorithm.
+
+    4. ``on_start_tests`` (Optional): 
+          A special ``on_start_tests(items)`` function may be defined by the backend.
+          It will be called with the list of NetworkX tests discovered. Each item
+          is a test object that can be marked as xfail if the backend does not support
+          the test using ``item.add_marker(pytest.mark.xfail(reason=...))``.
+
+2.  Adding entry points
+
+    To be discoverable by NetworkX, your package must register an 
+    `entry-point <https://packaging.python.org/en/latest/specifications/entry-points>`_
     ``networkx.backends`` in the package's metadata, with a `key pointing to your
     dispatch object <https://packaging.python.org/en/latest/guides/creating-and-discovering-plugins/#using-package-metadata>`_ .
     For example, if you are using ``setuptools`` to manage your backend package,
     you can `add the following to your pyproject.toml file <https://setuptools.pypa.io/en/latest/userguide/entry_point.html>`_::
 
         [project.entry-points."networkx.backends"]
-        backend_name = "your_dispatcher_class"
+        backend_name = "your_backend_interface_object"
 
     You can also add the ``backend_info`` entry-point. It points towards the ``get_info``
     function that returns all the backend information, which is then used to build the
     "Additional Backend Implementation" box at the end of algorithm's documentation
-    page (e.g. `nx-cugraph's get_info function <https://github.com/rapidsai/cugraph/blob/branch-24.04/python/nx-cugraph/_nx_cugraph/__init__.py>`_)::
+    page. Note that the `get_info` function shouldn't import your backend package.::
 
         [project.entry-points."networkx.backend_info"]
         backend_name = "your_get_info_function"
 
-    Note that this would only work if your backend is a trusted backend of NetworkX,
-    and is present in the `.circleci/config.yml` and
-    `.github/workflows/deploy-docs.yml` files in the NetworkX repository.
+    The ``get_info`` should return a dictionary with following key-value pairs:
+        - ``backend_name`` : str or None
+            It is the name passed in the ``backend`` kwarg.
+        - ``project`` : str or None
+            The name of your backend project.
+        - ``package`` : str or None
+            The name of your backend package.
+        - ``url`` : str or None
+            This is the url to either your backend's codebase or documentation, and
+            will be displayed as a hyperlink to the ``backend_name``, in the
+            "Additional backend implementations" section.
+        - ``short_summary`` : str or None
+            One line summary of your backend which will be displayed in the
+            "Additional backend implementations" section.
+        - ``functions`` : dict or None
+            A dictionary mapping function names to a dictionary of information 
+            about the function. The information can include the following keys:
 
-2.  The backend must create an ``nx.Graph``-like object which contains an attribute
-    ``__networkx_backend__`` with a value of the entry point name::
+            - ``url`` : str or None
+              The url to ``function``'s source code or documentation.
+            - ``additional_docs`` : str or None
+              A short description or note about the backend function's
+              implementation.
+            - ``additional_parameters`` : dict or None
+              A dictionary mapping additional parameters headers to their
+              short descriptions. For example::
+
+                  "additional_parameters": {
+                      'param1 : str, function (default = "chunks")' : "...",
+                      'param2 : int' : "...",
+                  }
+
+            If any of these keys are not present, the corresponding information
+            will not be displayed in the "Additional backend implementations"
+            section on NetworkX docs website.
+
+        Note that your backend's docs would only appear on the official NetworkX docs only
+        if your backend is a trusted backend of NetworkX, and is present in the
+        `.circleci/config.yml` and `.github/workflows/deploy-docs.yml` files in the
+        NetworkX repository.
+
+3.  Defining a Backend Graph class
+
+    The backend must create an object with an attribute ``__networkx_backend__`` that holds 
+    a string with the entry point name::
 
         class BackendGraph:
             __networkx_backend__ = "backend_name"
             ...
 
+    A backend graph instance may have a ``G.__networkx_cache__`` dict to enable
+    caching, and care should be taken to clear the cache when appropriate.
 
 Testing the Custom backend
 --------------------------
 
-To test your custom backend, you can run the NetworkX test suite with your backend.
+To test your custom backend, you can run the NetworkX test suite on your backend.
 This also ensures that the custom backend is compatible with NetworkX's API.
+The following steps will help you run the tests:
 
-Testing Environment Setup
-~~~~~~~~~~~~~~~~~~~~~~~~~
-
-To enable automatic testing with your custom backend, follow these steps:
-
-1. Set Backend Environment Variables:
-    - ``NETWORKX_TEST_BACKEND`` : Setting this to your registered backend key will let
-      the NetworkX's dispatch machinery automatically convert a regular NetworkX
+1. Setting Backend Environment Variables: 
+    - ``NETWORKX_TEST_BACKEND`` : Setting this to your backend's ``backend_name`` will
+      let NetworkX's dispatch machinery to automatically convert a regular NetworkX
       ``Graph``, ``DiGraph``, ``MultiGraph``, etc. to their backend equivalents, using
-      ``your_dispatcher_class.convert_from_nx(G, ...)`` function.
+      ``your_backend_interface_object.convert_from_nx(G, ...)`` function.
     - ``NETWORKX_FALLBACK_TO_NX`` (default=False) : Setting this variable to `True` will
       instruct tests to use a NetworkX ``Graph`` for algorithms not implemented by your
       custom backend. Setting this to `False` will only run the tests for algorithms
       implemented by your custom backend and tests for other algorithms will ``xfail``.
 
-2. Defining ``convert_from_nx`` and ``convert_to_nx`` methods:
-    The arguments to ``convert_from_nx`` are:
+2. Running Tests:
+    You can invoke NetworkX tests for your custom backend with the following commands::
 
-    - ``G`` : NetworkX Graph
-    - ``edge_attrs`` : dict, optional
-        Dictionary mapping edge attributes to default values if missing in ``G``.
-        If None, then no edge attributes will be converted and default may be 1.
-    - ``node_attrs``: dict, optional
-        Dictionary mapping node attributes to default values if missing in ``G``.
-        If None, then no node attributes will be converted.
-    - ``preserve_edge_attrs`` : bool
-        Whether to preserve all edge attributes.
-    - ``preserve_node_attrs`` : bool
-        Whether to preserve all node attributes.
-    - ``preserve_graph_attrs`` : bool
-        Whether to preserve all graph attributes.
-    - ``preserve_all_attrs`` : bool
-        Whether to preserve all graph, node, and edge attributes.
-    - ``name`` : str
-        The name of the algorithm.
-    - ``graph_name`` : str
-        The name of the graph argument being converted.
+        NETWORKX_TEST_BACKEND=<backend_name>
+        NETWORKX_FALLBACK_TO_NX=True # or False
+        pytest --pyargs networkx
 
-Running Tests
-~~~~~~~~~~~~~
+How tests are run?
+------------------
 
-You can invoke NetworkX tests for your custom backend with the following commands::
+1. While dispatching to the backend implementation the ``_convert_and_call`` function
+   is used and while testing the ``_convert_and_call_for_tests`` function is used.
+   Other than testing it also checks for functions that return numpy scalars, and
+   for functions that return graphs it runs the backend implementation and the
+   networkx implementation and then converts the backend graph into a NetworkX graph
+   and then compares them, and returns the networkx graph. This can be regarded as
+   (pragmatic) technical debt. We may replace these checks in the future.
 
-    NETWORKX_TEST_BACKEND=<backend_name>
-    NETWORKX_FALLBACK_TO_NX=True # or False
-    pytest --pyargs networkx
+2. Conversions while running tests:
+    - Convert NetworkX graphs using ``<your_backend_interface_object>.convert_from_nx(G, ...)`` into
+      the backend graph.
+    - Pass the backend graph objects to the backend implementation of the algorithm.
+    - Convert the result back to a form expected by NetworkX tests using 
+      ``<your_backend_interface_object>.convert_to_nx(result, ...)``.
+    - For nx-loopback, the graph is copied using the dispatchable metadata
 
-Conversions while running tests :
-
-- Convert NetworkX graphs using ``<your_dispatcher_class>.convert_from_nx(G, ...)`` into
-  the backend graph.
-- Pass the backend graph objects to the backend implementation of the algorithm.
-- Convert the result back to a form expected by NetworkX tests using
-  ``<your_dispatcher_class>.convert_to_nx(result, ...)``.
-
-Notes
-~~~~~
-
--   Dispatchable algorithms that are not implemented by the backend
-    will cause a ``pytest.xfail``, giving some indication that not all
-    tests are running, while avoiding causing an explicit failure.
-
--   If a backend only partially implements some algorithms, it can define
-    a ``can_run(name, args, kwargs)`` function that returns True or False
-    indicating whether it can run the algorithm with the given arguments.
-    It may also return a string indicating why the algorithm can't be run;
-    this string may be used in the future to give helpful info to the user.
-
--   A backend may also define ``should_run(name, args, kwargs)`` that is similar
-    to ``can_run``, but answers whether the backend *should* be run (converting
-    if necessary). Like ``can_run``, it receives the original arguments so it
-    can decide whether it should be run by inspecting the arguments. ``can_run``
-    runs before ``should_run``, so ``should_run`` may assume ``can_run`` is True.
-    If not implemented by the backend, ``can_run`` and ``should_run`` are
-    assumed to always return True if the backend implements the algorithm.
-
--   A special ``on_start_tests(items)`` function may be defined by the backend.
-    It will be called with the list of NetworkX tests discovered. Each item
-    is a test object that can be marked as xfail if the backend does not support
-    the test using ``item.add_marker(pytest.mark.xfail(reason=...))``.
-
--   A backend graph instance may have a ``G.__networkx_cache__`` dict to enable
-    caching, and care should be taken to clear the cache when appropriate.
+3. Dispatchable algorithms that are not implemented by the backend
+   will cause a ``pytest.xfail``, when the ``NETWORKX_FALLBACK_TO_NX``
+   environment variable is set to ``False``, giving some indication that
+   not all tests are running, while avoiding causing an explicit failure.
 """
 
 import inspect
@@ -309,19 +405,6 @@ _registered_algorithms = {}
 
 
 class _dispatchable:
-    """Allow any of the following decorator forms:
-    - @_dispatchable
-    - @_dispatchable()
-    - @_dispatchable(name="override_name")
-    - @_dispatchable(graphs="graph")
-    - @_dispatchable(edge_attrs="weight")
-    - @_dispatchable(graphs={"G": 0, "H": 1}, edge_attrs={"weight": "default"})
-
-    These class attributes are currently used to allow backends to run networkx tests.
-    For example: `PYTHONPATH=. pytest --backend graphblas --fallback-to-nx`
-    Future work: add configuration to control these.
-    """
-
     _is_testing = False
     _fallback_to_nx = (
         os.environ.get("NETWORKX_FALLBACK_TO_NX", "true").strip().lower() == "true"
@@ -342,22 +425,23 @@ class _dispatchable:
         mutates_input=False,
         returns_graph=False,
     ):
-        """A decorator that makes certain input graph types dispatch to ``func``'s
-        backend implementation.
+        """A decorator function that is used to redirect the execution of ``func``
+        function to its backend implementation.
 
-        Usage can be any of the following decorator forms:
-        - @_dispatchable
-        - @_dispatchable()
-        - @_dispatchable(name="override_name")
-        - @_dispatchable(graphs="graph_var_name")
-        - @_dispatchable(edge_attrs="weight")
-        - @_dispatchable(graphs={"G": 0, "H": 1}, edge_attrs={"weight": "default"})
-        with 0 and 1 giving the position in the signature function for graph objects.
-        When edge_attrs is a dict, keys are keyword names and values are defaults.
+        This decorator function dispatches to
+        a different backend implementation based on the input graph types, and it also
+        manages all the ``backend_kwargs``. Usage can be any of the following decorator
+        forms:
 
-        The class attributes are used to allow backends to run networkx tests.
-        For example: `PYTHONPATH=. pytest --backend graphblas --fallback-to-nx`
-        Future work: add configuration to control these.
+        - ``@_dispatchable``
+        - ``@_dispatchable()``
+        - ``@_dispatchable(name="override_name")``
+        - ``@_dispatchable(graphs="graph_var_name")``
+        - ``@_dispatchable(edge_attrs="weight")``
+        - ``@_dispatchable(graphs={"G": 0, "H": 1}, edge_attrs={"weight": "default"})``
+            with 0 and 1 giving the position in the signature function for graph
+            objects. When ``edge_attrs`` is a dict, keys are keyword names and values
+            are defaults.
 
         Parameters
         ----------
@@ -379,12 +463,12 @@ class _dispatchable:
             If a string, the parameter name of the graph, which must be the first
             argument of the wrapped function. If more than one graph is required
             for the algorithm (or if the graph is not the first argument), provide
-            a dict of parameter name to argument position for each graph argument.
-            For example, ``@_dispatchable(graphs={"G": 0, "auxiliary?": 4})``
+            a dict keyed to argument names with argument position as values for each
+            graph argument. For example, ``@_dispatchable(graphs={"G": 0, "auxiliary?": 4})``
             indicates the 0th parameter ``G`` of the function is a required graph,
-            and the 4th parameter ``auxiliary`` is an optional graph.
-            To indicate an argument is a list of graphs, do e.g. ``"[graphs]"``.
-            Use ``graphs=None`` if *no* arguments are NetworkX graphs such as for
+            and the 4th parameter ``auxiliary?`` is an optional graph.
+            To indicate that an argument is a list of graphs, do ``"[graphs]"``.
+            Use ``graphs=None``, if *no* arguments are NetworkX graphs such as for
             graph generators, readers, and conversion functions.
 
         edge_attrs : str or dict, optional
@@ -421,8 +505,8 @@ class _dispatchable:
             This overrides all the other preserve_*_attrs.
 
         mutates_input : bool or dict, default False
-            For bool, whether the functions mutates an input graph argument.
-            For dict of ``{arg_name: arg_pos}``, arguments that indicates whether an
+            For bool, whether the function mutates an input graph argument.
+            For dict of ``{arg_name: arg_pos}``, arguments that indicate whether an
             input graph will be mutated, and ``arg_name`` may begin with ``"not "``
             to negate the logic (for example, this is used by ``copy=`` arguments).
             By default, dispatching doesn't convert input graphs to a different
