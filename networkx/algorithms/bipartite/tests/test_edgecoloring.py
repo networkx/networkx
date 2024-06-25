@@ -34,12 +34,18 @@ def _is_proper_edge_coloring(G, coloring):
 
             assert e1 in coloring, f"Edge {e1} not in coloring."
             assert e2 in coloring, f"Edge {e2} not in coloring."
-            assert coloring[e1] == coloring[e2], f"Colors of {e1} and {e2} do not match."
-            
+            assert (
+                coloring[e1] == coloring[e2]
+            ), f"Colors of {e1} and {e2} do not match."
+
             color = coloring[e1]
 
-            assert color not in node_colors[u], f"Color {color} already used at node {u}."
-            assert color not in node_colors[v], f"Color {color} already used at node {v}."
+            assert (
+                color not in node_colors[u]
+            ), f"Color {color} already used at node {u}."
+            assert (
+                color not in node_colors[v]
+            ), f"Color {color} already used at node {v}."
 
             # add the edge color to the dictionary at each node
             node_colors[u].add(color)
@@ -49,14 +55,15 @@ def _is_proper_edge_coloring(G, coloring):
         # Check that the number of colors used is equal to the maximum degree
         max_degree = max(G.degree(), key=lambda x: x[1])[1]
         used_colors = set(coloring.values())
-        assert len(used_colors) == max_degree , f"Number of used colors ({len(used_colors)}) does not equal the maximum degree ({max_degree})."
+        assert (
+            len(used_colors) == max_degree
+        ), f"Number of used colors ({len(used_colors)}) does not equal the maximum degree ({max_degree})."
 
         return True
-    
+
     except AssertionError as e:
         print(e)
         return False
-
 
 
 @pytest.mark.parametrize("strategy", ["iterated-matching", "kempe_chain"])
@@ -70,7 +77,6 @@ class TestEdgeColoring:
 
         # Check that no node has two edges with the same color
         assert _is_proper_edge_coloring(G, coloring)
-
 
     def test_cube_graph(self, strategy):
         # Create a cube graph
@@ -95,7 +101,6 @@ class TestEdgeColoring:
         # Check that no node has two edges with the same color
         assert _is_proper_edge_coloring(G, coloring)
 
-        
     def test_even_cycle(self, strategy):
         # Create a an even cycle graph
         edge_list = [(1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 1)]
@@ -105,8 +110,6 @@ class TestEdgeColoring:
 
         # Check that no node has two edges with the same color
         assert _is_proper_edge_coloring(G, coloring)
-
-       
 
     def test_disconnected_graph(self, strategy):
         edges = [(1, 2), (1, 3), (3, 4), (3, 5), (5, 6), (7, 9), (8, 9)]
@@ -118,8 +121,6 @@ class TestEdgeColoring:
         # Check that no node has two edges with the same color
         assert _is_proper_edge_coloring(G, coloring)
 
-       
-
     def test_complete_graph_1(self, strategy):
         G = nx.complete_bipartite_graph(4, 6)
         coloring = edge_coloring(G, strategy=strategy)
@@ -127,16 +128,12 @@ class TestEdgeColoring:
         # Check that no node has two edges with the same color
         assert _is_proper_edge_coloring(G, coloring)
 
-        
-
     def test_complete_balanced_graph(self, strategy):
         G = nx.complete_bipartite_graph(5, 5)
         coloring = edge_coloring(G, strategy=strategy)
 
         # Check that no node has two edges with the same color
         assert _is_proper_edge_coloring(G, coloring)
-
-        
 
     def test_disconnected_exception(self, strategy):
         edges = [(1, 2), (1, 3), (3, 4), (3, 5), (5, 6), (7, 9), (8, 9)]
@@ -150,8 +147,6 @@ class TestEdgeColoring:
             coloring = edge_coloring(G, strategy=strategy)
             # Check that no node has two edges with the same color
             assert _is_proper_edge_coloring(G, coloring)
-
-            
 
     def test_digraphs(self, strategy):
         edges = [(1, 2), (3, 4), (5, 6)]
@@ -178,7 +173,6 @@ class TestEdgeColoringMultiGraphs:
         # Check that no node has two edges with the same color
         assert _is_proper_edge_coloring(G, coloring)
 
-        
     def test_cube_graph(self, strategy):
         # Create a simple bipartite graph
         G = nx.MultiGraph()
@@ -227,8 +221,6 @@ class TestEdgeColoringMultiGraphs:
         # Check that no node has two edges with the same color
         assert _is_proper_edge_coloring(G, coloring)
 
-        
-
     def test_disconnected(self, strategy):
         # Create a simple bipartite multigraph
         G = nx.MultiGraph()
@@ -250,8 +242,6 @@ class TestEdgeColoringMultiGraphs:
 
         # Check that no node has two edges with the same color
         assert _is_proper_edge_coloring(G, coloring)
-
-        
 
     def test_disconnected_error(self, strategy):
         # Create a simple bipartite disconnected multigraph
