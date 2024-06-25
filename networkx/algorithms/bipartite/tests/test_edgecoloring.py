@@ -13,7 +13,6 @@ def _is_proper_edge_coloring(G, coloring):
     Also verifies that the number of used colors equals the maximum degree of the graph.
     """
     try:
-
         node_colors = defaultdict(set)
 
         # iterate through each edge in the graph
