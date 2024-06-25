@@ -11,27 +11,45 @@ def _is_proper_edge_coloring(G, coloring):
     """Checks through each node and saves the colors at each node to find out
     if there is any conflict
     """
-    node_colors = defaultdict(set)
+    try:
+        node_colors = defaultdict(set)
 
-    # iterate through each edge in the graph
-    for u, v in G.edges():
-        if (u, v) not in coloring:
-            return False
-        if (v, u) not in coloring:
-            return False
-        if coloring[(u, v)] != coloring[(v, u)]:
-            return False
-        else:
+        # iterate through each edge in the graph
+        for u, v in G.edges():
+            assert (u, v) in coloring, f"Edge {(u, v)} not in coloring."
+            assert (v, u) in coloring, f"Edge {(v, u)} not in coloring."
+            assert (
+                coloring[(u, v)] == coloring[(v, u)]
+            ), f"Colors of {(u, v)} and {(v, u)} do not match."
+
             color = coloring[(u, v)]
 
-        if color in node_colors[u] or color in node_colors[v]:
-            return False
+            assert (
+                color not in node_colors[u]
+            ), f"Color {color} already used at node {u}."
+            assert (
+                color not in node_colors[v]
+            ), f"Color {color} already used at node {v}."
 
-        # add the edge color to the dictionary at each node
-        node_colors[u].add(color)
-        node_colors[v].add(color)
+            # add the edge color to the dictionary at each node
+            node_colors[u].add(color)
+            node_colors[v].add(color)
 
-    return True
+        # Calculate the maximum degree of the graph
+        max_degree = max(G.degree(), key=lambda x: x[1])[1]
+
+        # Calculate the number of used colors
+        used_colors = set(coloring.values())
+
+        # Verify that the number of used colors is at most (maximum degree + 1)
+        assert (
+            len(used_colors) <= (max_degree + 1)
+        ), f"Number of used colors ({len(used_colors)}) exceeds (maximum degree + 1) ({max_degree + 1})."
+
+        return True
+    except AssertionError as e:
+        print(e)
+        return False
 
 
 class TestEdgeColoring:
@@ -44,11 +62,6 @@ class TestEdgeColoring:
         # Check that no vertex has two edges with the same color
         assert _is_proper_edge_coloring(G, coloring)
 
-        # Check that the number of colors used is equal to (maximum degree + 1)
-        max_degree = max(G.degree(), key=lambda x: x[1])[1]
-        used_colors = set(coloring.values())
-        assert len(used_colors) <= (max_degree + 1)
-
     def test_odd_graph(self):
         n = 3
         G = nx.kneser_graph(2 * n - 1, n - 1)
@@ -56,11 +69,6 @@ class TestEdgeColoring:
 
         # Check that no vertex has two edges with the same color
         assert _is_proper_edge_coloring(G, coloring)
-
-        # Check that the number of colors used is equal to (maximum degree + 1)
-        max_degree = max(G.degree(), key=lambda x: x[1])[1]
-        used_colors = set(coloring.values())
-        assert len(used_colors) <= (max_degree + 1)
 
     def test_13(self):
         # Create a graph
@@ -112,11 +120,6 @@ class TestEdgeColoring:
         # Check that no vertex has two edges with the same color
         assert _is_proper_edge_coloring(G, coloring)
 
-        # Check that the number of colors used is equal to (maximum degree + 1)
-        max_degree = max(G.degree(), key=lambda x: x[1])[1]
-        used_colors = set(coloring.values())
-        assert len(used_colors) <= (max_degree + 1)
-
     def test_disconnected_graph(self):
         # Create a graph
         G = nx.Graph()
@@ -129,8 +132,3 @@ class TestEdgeColoring:
 
         # Check that no vertex has two edges with the same color
         assert _is_proper_edge_coloring(G, coloring)
-
-        # Check that the number of colors used is equal to (maximum degree + 1)
-        max_degree = max(G.degree(), key=lambda x: x[1])[1]
-        used_colors = set(coloring.values())
-        assert len(used_colors) <= (max_degree + 1)
