@@ -1273,7 +1273,7 @@ def compute_v_structures(G):
 
     References
     ----------
-    .. [1]  `Pearl's PRIMER,<http://bayes.cs.ucla.edu/PRIMER/primer-ch2.pdf>`_
+    .. [1]  `Pearl's PRIMER <https://bayes.cs.ucla.edu/PRIMER/primer-ch2.pdf>`_
             Ch-2 page 50: v-structures def.
     .. [2] A Hyttinen, P.O. Hoyer, F. Eberhardt, M J ̈arvisalo, (2013)
            "Discovering cyclic causal models with latent variables:
@@ -1342,7 +1342,7 @@ def v_structures(G):
 
     References
     ----------
-    .. [1]  `Pearl's PRIMER,<http://bayes.cs.ucla.edu/PRIMER/primer-ch2.pdf>`_
+    .. [1]  `Pearl's PRIMER <https://bayes.cs.ucla.edu/PRIMER/primer-ch2.pdf>`_
             Ch-2 page 50: v-structures def.
     .. [2] A Hyttinen, P.O. Hoyer, F. Eberhardt, M J ̈arvisalo, (2013)
            "Discovering cyclic causal models with latent variables:
