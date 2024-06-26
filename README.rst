@@ -3,8 +3,8 @@ NetworkX
 
 
 .. image::
-    https://github.com/networkx/networkx/workflows/test/badge.svg?
-    :target: https://github.com/networkx/networkx/actions
+    https://github.com/networkx/networkx/workflows/test/badge.svg?branch=main
+    :target: https://github.com/networkx/networkx/actions?query=workflow%3Atest
 
 .. image::
     https://codecov.io/gh/networkx/networkx/branch/main/graph/badge.svg?
@@ -24,7 +24,7 @@ NetworkX
 
 .. image::
     https://img.shields.io/github/labels/networkx/networkx/good%20first%20issue?color=green&label=contribute
-    :target: https://github.com/networkx/networkx/issues?q=is%3Aopen+is%3Aissue+label%3A%22Good+First+Issue%22
+    :target: https://github.com/networkx/networkx/contribute
 
 
 NetworkX is a Python package for the creation, manipulation,
