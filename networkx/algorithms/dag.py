@@ -1266,8 +1266,8 @@ def compute_v_structures(G):
 
     Notes
     -----
-    This function was written to be used on DAGs. But it works on cyclic graphs
-    too and since colliders are referred to in the cyclic causal graph literature
+    This function was written to be used on DAGs, however it works on cyclic graphs
+    too. Since colliders are referred to in the cyclic causal graph literature
     [2]_ we allow cyclic graphs in this function. It is suggested that you test if
     your input graph is acyclic as in the example if you want that property.
 
@@ -1309,7 +1309,7 @@ def v_structures(G):
     Parameters
     ----------
     G : graph
-        A networkx `DiGraph`.
+        A networkx `~networkx.DiGraph`.
 
     Yields
     ------
@@ -1335,8 +1335,8 @@ def v_structures(G):
 
     Notes
     -----
-    This function was written to be used on DAGs. But it works on cyclic graphs
-    too and since colliders are referred to in the cyclic causal graph literature
+    This function was written to be used on DAGs, however it works on cyclic graphs
+    too. Since colliders are referred to in the cyclic causal graph literature
     [2]_ we allow cyclic graphs in this function. It is suggested that you test if
     your input graph is acyclic as in the example if you want that property.
 
@@ -1369,7 +1369,7 @@ def colliders(G):
     Parameters
     ----------
     G : graph
-        A networkx `DiGraph`.
+        A networkx `~networkx.DiGraph`.
 
     Yields
     ------
@@ -1395,8 +1395,8 @@ def colliders(G):
 
     Notes
     -----
-    This function was written to be used on DAGs. But it works on cyclic graphs
-    too and since colliders are referred to in the cyclic causal graph literature
+    This function was written to be used on DAGs, however it works on cyclic graphs
+    too. Since colliders are referred to in the cyclic causal graph literature
     [2]_ we allow cyclic graphs in this function. It is suggested that you test if
     your input graph is acyclic as in the example if you want that property.
 
