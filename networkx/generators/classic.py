@@ -535,9 +535,9 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     References
     ----------
     .. [1] S. N. Dorogovtsev, A. V. Goltsev and J. F. F. Mendes,
-        "Pseudofractal scale-free web," Physical Review E 65, 066122, 2002.
+        "Pseudofractal scale-free web", Physical Review E 65, 066122, 2002.
         https://arxiv.org/pdf/cond-mat/0112143.pdf
-    .. [2] Weisstein, Eric W. "Dorogovtsev--Goltsev--Mendes Graph."
+    .. [2] Weisstein, Eric W. "Dorogovtsev--Goltsev--Mendes Graph".
         From MathWorld--A Wolfram Web Resource.
         https://mathworld.wolfram.com/Dorogovtsev-Goltsev-MendesGraph.html
     """
