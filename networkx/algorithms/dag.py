@@ -1226,19 +1226,20 @@ def dag_to_branching(G):
 def compute_v_structures(G):
     """Yields 3-node tuples that represent the v-structures in `G`.
 
+    .. deprecated:: 3.4
+
+       `compute_v_structures` actually yields colliders. It will be removed in
+       version 3.6. Use `nx.dag.v_structures` or `nx.dag.colliders` instead.
+
     Colliders are triples in the directed acyclic graph (DAG) where two parent nodes
     point to the same child node. V-structures are colliders where the two parent
     nodes are not adjacent. In a causal graph setting, the parents do not directly
     depend on each other, but conditioning on the child node provides an association.
 
-    .. deprecated:: 3.4
-       `compute_v_structures` actually yields colliders. It will be removed in
-       version 3.6. Use `nx.dag.v_structures` or `nx.dag.colliders` instead.
-
     Parameters
     ----------
     G : graph
-        A networkx `DiGraph`.
+        A networkx `~networkx.DiGraph`.
 
     Yields
     ------
