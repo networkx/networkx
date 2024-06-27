@@ -715,6 +715,7 @@ class _dispatchable:
         """Returns the result of the original function, or the backend function if
         the backend is specified and that backend implements `func`."""
 
+        kwargs.update(config.backend_kwargs)
         if not backends:
             # Fast path if no backends are installed
             return self.orig_func(*args, **kwargs)

@@ -288,7 +288,7 @@ class NetworkXConfig(Config):
         return cfg
 
     @property
-    def extra_kwargs(self):
+    def backend_kwargs(self):
         return self.__class__._cur_kwargs
 
     def _check_config(self, key, value):
