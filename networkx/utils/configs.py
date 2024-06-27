@@ -265,6 +265,17 @@ class NetworkXConfig(Config):
     backends: Config
     cache_converted_graphs: bool
 
+    def __new__(cls, **kwargs):
+        cfg = super().__new__(cls, **kwargs)
+        cfg.__class__._prev_kwargs = None
+        cfg.__class__._cur_kwargs = {}
+        cfg.__class__._kwargs_stack = []
+        return cfg
+
+    @property
+    def extra_kwargs(self):
+        return self.__class__._cur_kwargs
+
     def _check_config(self, key, value):
         from .backends import backends
 
@@ -291,6 +302,26 @@ class NetworkXConfig(Config):
         elif key == "cache_converted_graphs":
             if not isinstance(value, bool):
                 raise TypeError(f"{key!r} config must be True or False; got {value!r}")
+
+    # Let config as context manager collect kwargs to use in dispatchable functions
+    def __call__(self, **kwargs):
+        config_kwargs = {key: val for key, val in kwargs.items() if key in self}
+        super(self.__class__, self).__call__(**config_kwargs)
+        extra_kwargs = {key: val for key, val in kwargs.items() if key not in self}
+        prev = self.__class__._cur_kwargs
+        self.__class__._prev_kwargs = prev
+        self.__class__._cur_kwargs = dict(prev, **extra_kwargs)
+        return self
+
+    def __enter__(self):
+        super(self.__class__, self).__enter__()
+        self.__class__._kwargs_stack.append(self.__class__._prev_kwargs)
+        self.__class__._prev_kwargs = None
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        super(self.__class__, self).__exit__(exc_type, exc_value, traceback)
+        self.__class__._cur_kwargs = self.__class__._kwargs_stack.pop()
 
 
 # Backend configuration will be updated in backends.py
