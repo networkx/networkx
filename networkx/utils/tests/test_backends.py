@@ -77,7 +77,7 @@ def test_graph_converter_needs_backend():
             type(nx.from_scipy_sparse_array(A, backend="nx_loopback")) is LoopbackGraph
         )
         assert side_effects == [1, 1]
-        nx.config.backend = "nx-loopback"  # This is like doing `backend="nx-loopback"`
+        nx.config.backend = "nx_loopback"  # This is like doing `backend="nx_loopback"`
         assert type(nx.from_scipy_sparse_array(A)) is LoopbackGraph
         assert side_effects == [1, 1, 1]
     finally:

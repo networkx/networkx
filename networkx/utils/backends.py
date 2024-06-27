@@ -279,7 +279,7 @@ How tests are run?
     - Pass the backend graph objects to the backend implementation of the algorithm.
     - Convert the result back to a form expected by NetworkX tests using 
       ``<your_backend_interface_object>.convert_to_nx(result, ...)``.
-    - For nx-loopback, the graph is copied using the dispatchable metadata
+    - For nx_loopback, the graph is copied using the dispatchable metadata
 
 3. Dispatchable algorithms that are not implemented by the backend
    will cause a ``pytest.xfail``, when the ``NETWORKX_FALLBACK_TO_NX``
