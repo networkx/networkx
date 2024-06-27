@@ -191,16 +191,20 @@ class Config:
         return self
 
     def __enter__(self):
+        if self.__class__._prev is None:
+            raise RuntimeError(
+                "Config being used as a context manager without config items being set. "
+                "Set config items via keyword arguments when calling the config object. "
+                "For example, using config as a context manager should be like:\n\n"
+                '    >>> with cfg(breakfast="spam"):\n'
+                "    ...     ...  # Do stuff\n"
+            )
         self.__class__._context_stack.append(self.__class__._prev)
         self.__class__._prev = None
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
         prev = self.__class__._context_stack.pop()
-        if not prev:
-            # Be defensive. This branch may occur from `with cfg:` (forgot to call)
-            self.__class__._prev = None
-            return
         for key, val in prev.items():
             setattr(self, key, val)
 

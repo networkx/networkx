@@ -200,9 +200,9 @@ def test_context():
         with cfg(x=3) as c2:
             assert c2 == cfg
             assert cfg.x == 3
-            with cfg as c3:  # Forgot to call `cfg(...)`
-                assert c3 == cfg
-                assert cfg.x == 3
+            with pytest.raises(RuntimeError, match="context manager without"):
+                with cfg as c3:  # Forgot to call `cfg(...)`
+                    pass
             assert cfg.x == 3
         assert cfg.x == 2
     assert cfg.x == 1
@@ -219,6 +219,7 @@ def test_context():
     assert cfg.x == 1
     # Cheat again; there was no preceding `cfg(...)` call this time
     assert cfg._prev is None
-    with cfg:
-        assert cfg.x == 1
+    with pytest.raises(RuntimeError, match="context manager without"):
+        with cfg:
+            pass
     assert cfg.x == 1
