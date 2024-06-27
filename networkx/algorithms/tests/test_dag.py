@@ -760,7 +760,8 @@ def test_ancestors_descendants_undirected():
 
 def test_compute_v_structures_raise():
     G = nx.Graph()
-    pytest.raises(nx.NetworkXNotImplemented, nx.compute_v_structures, G)
+    with pytest.raises(nx.NetworkXNotImplemented, match="for undirected type"):
+        nx.compute_v_structures(G)
 
 
 def test_compute_v_structures():
@@ -775,3 +776,53 @@ def test_compute_v_structures():
     G = nx.DiGraph(edges)
     v_structs = set(nx.compute_v_structures(G))
     assert len(v_structs) == 2
+
+
+def test_compute_v_structures_deprecated():
+    G = nx.DiGraph()
+    with pytest.deprecated_call():
+        nx.compute_v_structures(G)
+
+
+def test_v_structures_raise():
+    G = nx.Graph()
+    with pytest.raises(nx.NetworkXNotImplemented, match="for undirected type"):
+        nx.dag.v_structures(G)
+
+
+def test_v_structures():
+    edges = [(0, 1), (0, 2), (3, 2)]
+    G = nx.DiGraph(edges)
+
+    v_structs = set(nx.dag.v_structures(G))
+    assert len(v_structs) == 1
+    assert (0, 2, 3) in v_structs
+
+    edges = [("A", "B"), ("C", "B"), ("D", "G"), ("D", "E"), ("G", "E")]
+    G = nx.DiGraph(edges)
+    v_structs = set(nx.dag.v_structures(G))
+    assert v_structs == {("A", "B", "C")}
+
+    edges = [(0, 1), (2, 1), (0, 2)]  # adjacent parents case: issues#7385
+    G = nx.DiGraph(edges)
+    assert set(nx.dag.v_structures(G)) == set()
+
+
+def test_colliders_raise():
+    G = nx.Graph()
+    with pytest.raises(nx.NetworkXNotImplemented, match="for undirected type"):
+        nx.dag.colliders(G)
+
+
+def test_colliders():
+    edges = [(0, 1), (0, 2), (3, 2)]
+    G = nx.DiGraph(edges)
+
+    colliders = set(nx.dag.colliders(G))
+    assert len(colliders) == 1
+    assert (0, 2, 3) in colliders
+
+    edges = [("A", "B"), ("C", "B"), ("D", "G"), ("D", "E"), ("G", "E")]
+    G = nx.DiGraph(edges)
+    colliders = set(nx.dag.colliders(G))
+    assert colliders == {("A", "B", "C"), ("D", "E", "G")}
