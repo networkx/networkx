@@ -720,7 +720,7 @@ class _dispatchable:
             return self.orig_func(*args, **kwargs)
 
         # Use `backend_name` in this function instead of `backend`
-        backend_name = backend
+        backend_name = backend if backend is not None else config.backend
         if backend_name is not None and backend_name not in backends:
             raise ImportError(f"Unable to load backend: {backend_name}")
 
