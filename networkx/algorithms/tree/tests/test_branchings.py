@@ -634,7 +634,7 @@ def test_arborescence_iterator_initial_partition():
 
 def test_branchings_with_default_weights():
     """
-    Tests that various brancing algorithms work on graphs without weights.
+    Tests that various branching algorithms work on graphs without weights.
     For more information, see issue #7279.
     """
     graph = nx.erdos_renyi_graph(10, p=0.2, directed=True, seed=123)

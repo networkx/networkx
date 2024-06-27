@@ -128,6 +128,8 @@ def test_nxconfig():
         nx.config.backends = Config(plausible_backend_name={})
     with pytest.raises(ValueError, match="Unknown backend when setting"):
         nx.config.backends = Config(this_almost_certainly_is_not_a_backend=Config())
+    with pytest.raises(TypeError, match="must be True or False"):
+        nx.config.cache_converted_graphs = "bad value"
 
 
 def test_not_strict():
@@ -167,6 +169,10 @@ def test_not_strict():
     del cfg["y"]
     assert len(cfg) == 0
     assert list(cfg) == []
+    with pytest.raises(AttributeError, match="y"):
+        del cfg.y
+    with pytest.raises(KeyError, match="y"):
+        del cfg["y"]
     with pytest.raises(TypeError, match="missing 1 required keyword-only"):
         FlexibleConfig()
     # Be strict when first creating the config object

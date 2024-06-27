@@ -100,9 +100,6 @@ def set_warnings():
         message="\n\nshortest_path",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\nforest_str is deprecated"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nrandom_tree"
     )
     warnings.filterwarnings(
@@ -153,6 +150,9 @@ def set_warnings():
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message=r"\n\nThe 'create=matrix'"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\ncompute_v_structures"
     )
 
 
@@ -220,15 +220,17 @@ collect_ignore = []
 needs_numpy = [
     "algorithms/approximation/traveling_salesman.py",
     "algorithms/centrality/current_flow_closeness.py",
+    "algorithms/centrality/laplacian.py",
     "algorithms/node_classification.py",
     "algorithms/non_randomness.py",
+    "algorithms/polynomials.py",
     "algorithms/shortest_paths/dense.py",
     "algorithms/tree/mst.py",
+    "drawing/nx_latex.py",
     "generators/expanders.py",
     "linalg/bethehessianmatrix.py",
     "linalg/laplacianmatrix.py",
     "utils/misc.py",
-    "algorithms/centrality/laplacian.py",
 ]
 needs_scipy = [
     "algorithms/approximation/traveling_salesman.py",
@@ -241,27 +243,33 @@ needs_scipy = [
     "algorithms/centrality/current_flow_betweenness_subset.py",
     "algorithms/centrality/eigenvector.py",
     "algorithms/centrality/katz.py",
+    "algorithms/centrality/laplacian.py",
     "algorithms/centrality/second_order.py",
     "algorithms/centrality/subgraph_alg.py",
     "algorithms/communicability_alg.py",
+    "algorithms/community/divisive.py",
+    "algorithms/distance_measures.py",
     "algorithms/link_analysis/hits_alg.py",
     "algorithms/link_analysis/pagerank_alg.py",
     "algorithms/node_classification.py",
     "algorithms/similarity.py",
+    "algorithms/tree/mst.py",
+    "algorithms/walks.py",
     "convert_matrix.py",
     "drawing/layout.py",
+    "drawing/nx_pylab.py",
     "generators/spectral_graph_forge.py",
     "generators/expanders.py",
     "linalg/algebraicconnectivity.py",
     "linalg/attrmatrix.py",
     "linalg/bethehessianmatrix.py",
     "linalg/graphmatrix.py",
+    "linalg/laplacianmatrix.py",
     "linalg/modularitymatrix.py",
     "linalg/spectrum.py",
     "utils/rcm.py",
-    "algorithms/centrality/laplacian.py",
 ]
-needs_matplotlib = ["drawing/nx_pylab.py"]
+needs_matplotlib = ["drawing/nx_pylab.py", "generators/classic.py"]
 needs_pandas = ["convert_matrix.py"]
 needs_pygraphviz = ["drawing/nx_agraph.py"]
 needs_pydot = ["drawing/nx_pydot.py"]
