@@ -41,7 +41,7 @@ def test_graph_converter_needs_backend():
     # If not testing, then calling `nx.from_scipy_sparse_array` w/o `backend=` will
     # always call the original version. `backend=` is *required* to call the backend.
     from networkx.classes.tests.dispatch_interface import (
-        LoopbackDispatcher,
+        LoopbackBackendInterface,
         LoopbackGraph,
     )
 
@@ -64,10 +64,10 @@ def test_graph_converter_needs_backend():
             return obj
         return nx.Graph(obj)
 
-    # *This mutates LoopbackDispatcher!*
-    orig_convert_to_nx = LoopbackDispatcher.convert_to_nx
-    LoopbackDispatcher.convert_to_nx = convert_to_nx
-    LoopbackDispatcher.from_scipy_sparse_array = from_scipy_sparse_array
+    # *This mutates LoopbackBackendInterface!*
+    orig_convert_to_nx = LoopbackBackendInterface.convert_to_nx
+    LoopbackBackendInterface.convert_to_nx = convert_to_nx
+    LoopbackBackendInterface.from_scipy_sparse_array = from_scipy_sparse_array
 
     try:
         assert side_effects == []
@@ -81,8 +81,8 @@ def test_graph_converter_needs_backend():
         assert type(nx.from_scipy_sparse_array(A)) is LoopbackGraph
         assert side_effects == [1, 1, 1]
     finally:
-        LoopbackDispatcher.convert_to_nx = staticmethod(orig_convert_to_nx)
-        del LoopbackDispatcher.from_scipy_sparse_array
+        LoopbackBackendInterface.convert_to_nx = staticmethod(orig_convert_to_nx)
+        del LoopbackBackendInterface.from_scipy_sparse_array
         nx.config.backend = None
     with pytest.raises(ImportError, match="Unable to load"):
         nx.from_scipy_sparse_array(A, backend="bad-backend-name")
