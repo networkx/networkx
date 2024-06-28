@@ -40,9 +40,8 @@ class TestImmediateDominators:
 
     def test_irreducible1(self):
         """
-        .. [1]  Cooper, Keith D., Harvey, Timothy J. and Kennedy, Ken.
-                "A simple, fast dominance algorithm." (2006).
-                https://hdl.handle.net/1911/96345
+        Graph taken from figure 2 of "A simple, fast dominance algorithm." (2006).
+        https://hdl.handle.net/1911/96345
         """
         edges = [(1, 2), (2, 1), (3, 2), (4, 1), (5, 3), (5, 4)]
         G = nx.DiGraph(edges)
