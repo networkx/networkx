@@ -154,7 +154,7 @@ def effective_size(G, nodes=None, weight=None):
         for v in nodes:
             # Effective size is not defined for isolated nodes, including nodes
             # with only self-edges
-            if (len(G[v]) == 0) or (set(G[v]) == {v}):
+            if all(u == v for u in G[v]):
                 effective_size[v] = float("nan")
                 continue
             E = nx.ego_graph(G, v, center=False, undirected=True)
@@ -163,7 +163,7 @@ def effective_size(G, nodes=None, weight=None):
         for v in nodes:
             # Effective size is not defined for isolated nodes, including nodes
             # with only self-edges
-            if (len(G[v]) == 0) or (set(G[v]) == {v}):
+            if all(u == v for u in G[v]):
                 effective_size[v] = float("nan")
                 continue
             effective_size[v] = sum(
