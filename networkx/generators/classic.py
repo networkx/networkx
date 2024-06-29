@@ -550,16 +550,17 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
     if G.is_multigraph():
         raise NetworkXError("multigraph not supported")
 
-    G.add_edge(0, 1)
-    if n == 0:
-        return G
+    edges = [(0, 1)]
     new_node = 2  # next node to be added
     for _ in range(n):  # iterate over number of generations.
-        last_generation_edges = list(G.edges())
-        for last_generation_edge in last_generation_edges:
-            G.add_edge(new_node, last_generation_edge[0])
-            G.add_edge(new_node, last_generation_edge[1])
+        this_generation_edges = []
+        for u, v in edges:
+            this_generation_edges.append((new_node, u))
+            this_generation_edges.append((new_node, v))
             new_node += 1
+        edges.extend(this_generation_edges)
+
+    G.add_edges_from(edges)
     return G
 
 
