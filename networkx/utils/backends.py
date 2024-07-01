@@ -44,6 +44,9 @@ need to pass additional backend-specific arguments, for example::
 
 Here, ``get_chunks`` is not a NetworkX argument, but a nx_parallel-specific argument.
 
+Note that ``"networkx"`` is the backend name for NetworkX. Hence, you may pass
+``backend="networkx"`` to use the default implementation (converting if necessary).
+
 NetworkX also offers a very basic logging system that can help you verify if the
 backend that you specified is being implemented. This will most likely become more
 enhanced in the future. You can enable the networkx's backend logger like this::

@@ -77,11 +77,48 @@ def test_graph_converter_needs_backend():
             type(nx.from_scipy_sparse_array(A, backend="nx-loopback")) is LoopbackGraph
         )
         assert side_effects == [1, 1]
+        # backend="networkx" is default implementation
+        assert type(nx.from_scipy_sparse_array(A, backend="networkx")) is nx.Graph
+        assert side_effects == [1, 1]
     finally:
         LoopbackBackendInterface.convert_to_nx = staticmethod(orig_convert_to_nx)
         del LoopbackBackendInterface.from_scipy_sparse_array
     with pytest.raises(ImportError, match="Unable to load"):
         nx.from_scipy_sparse_array(A, backend="bad-backend-name")
+
+
+@pytest.mark.skipif(
+    "not nx.config['backend_priority'] "
+    "or nx.config['backend_priority'][0] != 'nx-loopback'"
+)
+def test_networkx_backend():
+    """Test using `backend="networkx"` in a dispatchable function."""
+    # (Implementing this test is harder than it should be)
+    from networkx.classes.tests.dispatch_interface import (
+        LoopbackBackendInterface,
+        LoopbackGraph,
+    )
+
+    G = LoopbackGraph()
+    G.add_edges_from([(0, 1), (1, 2), (1, 3), (2, 4)])
+
+    @staticmethod
+    def convert_to_nx(obj, *, name=None):
+        if isinstance(obj, LoopbackGraph):
+            new_graph = nx.Graph()
+            new_graph.__dict__.update(obj.__dict__)
+            return new_graph
+        return obj
+
+    # *This mutates LoopbackBackendInterface!*
+    # This uses the same trick as in the previous test.
+    orig_convert_to_nx = LoopbackBackendInterface.convert_to_nx
+    LoopbackBackendInterface.convert_to_nx = convert_to_nx
+    try:
+        G2 = nx.ego_graph(G, 0, backend="networkx")
+        assert type(G2) is nx.Graph
+    finally:
+        LoopbackBackendInterface.convert_to_nx = staticmethod(orig_convert_to_nx)
 
 
 def test_dispatchable_are_functions():
