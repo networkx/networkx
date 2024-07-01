@@ -26,7 +26,7 @@ all dispatchable functions automatically dispatch to the given backend::
 
     bash> NETWORKX_AUTOMATIC_BACKENDS=cugraph python my_networkx_script.py
 
-or you can specify the backend as a kwarg::
+or you can specify the backend as a keyword argument::
 
     nx.betweenness_centrality(G, k=10, backend="parallel")
 
@@ -43,6 +43,17 @@ need to pass additional backend-specific arguments, for example::
     nx.betweenness_centrality(G, k=10, backend="parallel", get_chunks=get_chunks)
 
 Here, ``get_chunks`` is not a NetworkX argument, but a nx_parallel-specific argument.
+
+It is possible to provide backend-specific arguments via ``<backend>_kwargs`` keyword
+arguments that will only be used for those specific backends and ignored otherwise.
+Keyword arguments may be given for multiple backends at the same time such as
+``foo_kwargs={...}, bar_kwargs={...}`` for backends ``foo`` and ``bar``. The backends
+used in this way do not need to be installed; extra ``*_kwargs=`` keywords will be ignored.
+This makes it easier to write more flexible and compatible code that is backend-aware--we
+may customize usage of a backend--but agnostic about what is actually installed and used.
+Here is the previous example updated to use ``get_chunks`` only when using nx-parallel::
+
+    nx.betweenness_centrality(G, k=10, parallel_kwargs={"get_chunks": get_chunks})
 
 NetworkX also offers a very basic logging system that can help you verify if the
 backend that you specified is being implemented. This will most likely become more
