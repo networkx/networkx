@@ -275,29 +275,25 @@ class NetworkXConfig(Config):
     This is a global configuration. Use with caution when using from multiple threads.
     """
 
-    backend: str | None
+    # backend: str | None
     backend_priority: list[str]
+    backend_kwargs: dict
     backends: Config
     cache_converted_graphs: bool
 
     def __new__(cls, **kwargs):
         cfg = super().__new__(cls, **kwargs)
         cfg.__class__._prev_kwargs = None
-        cfg.__class__._cur_kwargs = {}
         cfg.__class__._kwargs_stack = []
         return cfg
-
-    @property
-    def backend_kwargs(self):
-        return self.__class__._cur_kwargs
 
     def _check_config(self, key, value):
         from .backends import backends
 
-        if key == "backend":
-            if value is not None and value not in backends:
-                raise ValueError(f"Unknown backend when setting {key!r}: {value}")
-        elif key == "backend_priority":
+        # if key == "backend":
+        #     if value is not None and value not in backends:
+        #         raise ValueError(f"Unknown backend when setting {key!r}: {value}")
+        if key == "backend_priority":
             if not (isinstance(value, list) and all(isinstance(x, str) for x in value)):
                 raise TypeError(
                     f"{key!r} config must be a list of backend names; got {value!r}"
@@ -317,6 +313,13 @@ class NetworkXConfig(Config):
             if missing := {x for x in value if x not in backends}:
                 missing = ", ".join(map(repr, sorted(missing)))
                 raise ValueError(f"Unknown backend when setting {key!r}: {missing}")
+        elif key == "backend_kwargs":
+            if not isinstance(value, dict):
+                raise TypeError(f"{key!r} config must be a dict; got {value!r}")
+            if "backend" in value:
+                backend = value["backend"]
+                if backend is not None and backend not in backends:
+                    raise ValueError(f"Unknown backend when setting {key!r}: {backend}")
         elif key == "cache_converted_graphs":
             if not isinstance(value, bool):
                 raise TypeError(f"{key!r} config must be True or False; got {value!r}")
@@ -324,11 +327,15 @@ class NetworkXConfig(Config):
     # Let config as context manager collect kwargs to use in dispatchable functions
     def __call__(self, **kwargs):
         config_kwargs = {key: val for key, val in kwargs.items() if key in self}
-        super(self.__class__, self).__call__(**config_kwargs)
         extra_kwargs = {key: val for key, val in kwargs.items() if key not in self}
-        prev = self.__class__._cur_kwargs
+        if d := config_kwargs.pop("backend_kwargs", None):
+            extra_kwargs.update(d)
+        prev = self.backend_kwargs
+        backend_kwargs = dict(prev, **extra_kwargs)
+        if backend_kwargs:
+            config_kwargs["backend_kwargs"] = backend_kwargs
+        super(self.__class__, self).__call__(**config_kwargs)
         self.__class__._prev_kwargs = prev
-        self.__class__._cur_kwargs = dict(prev, **extra_kwargs)
         return self
 
     def __enter__(self):
@@ -339,13 +346,14 @@ class NetworkXConfig(Config):
 
     def __exit__(self, exc_type, exc_value, traceback):
         super(self.__class__, self).__exit__(exc_type, exc_value, traceback)
-        self.__class__._cur_kwargs = self.__class__._kwargs_stack.pop()
+        self.backend_kwargs = self.__class__._kwargs_stack.pop()
 
 
 # Backend configuration will be updated in backends.py
 config = NetworkXConfig(
-    backend=None,
+    # backend=None,
     backend_priority=[],
     backends=Config(),
+    backend_kwargs={},
     cache_converted_graphs=bool(os.environ.get("NETWORKX_CACHE_CONVERTED_GRAPHS", "")),
 )
