@@ -1160,7 +1160,9 @@ class _dispatchable:
             )
             if cache:
                 warning_message = (
-                    f"Using cached graph for {backend_name!r} backend in "
+                    "Note: conversions to backend graphs are saved to cache "
+                    "(`G.__networkx_cache__` on the original graph) by default."
+                    f"\n\nUsing cached graph for {backend_name!r} backend in "
                     f"call to {self.name}.\n\nFor the cache to be consistent "
                     "(i.e., correct), the input graph must not have been "
                     "manually mutated since the cached graph was created. "
