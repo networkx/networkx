@@ -254,11 +254,11 @@ class TestGeneratorClassic:
         assert G.degree(1) == 1024
         assert G.degree(2) == 1024
 
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.NetworkXError, match=r"n must be greater than"):
             nx.dorogovtsev_goltsev_mendes_graph(-1)
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.NetworkXError, match=r"directed graph not supported"):
             nx.dorogovtsev_goltsev_mendes_graph(7, create_using=nx.DiGraph)
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.NetworkXError, match=r"multigraph not supported"):
             nx.dorogovtsev_goltsev_mendes_graph(7, create_using=nx.MultiGraph)
         with pytest.raises(nx.NetworkXError):
             nx.dorogovtsev_goltsev_mendes_graph(7, create_using=nx.MultiDiGraph)
