@@ -813,15 +813,17 @@ def test_colliders_raise():
         nx.dag.colliders(G)
 
 
-def test_colliders():
-    edges = [(0, 1), (0, 2), (3, 2)]
-    G = nx.DiGraph(edges)
-
+@pytest.mark.parametrize(
+    ("edgelist", "expected"),
+    (
+        ([(0, 1), (0, 2), (3, 2)], {(0, 2, 3)}),
+        (
+            [("A", "B"), ("C", "B"), ("D", "G"), ("D", "E"), ("G", "E")],
+            {("A", "B", "C"), ("D", "E", "G")},
+        ),
+    ),
+)
+def test_colliders(edgelist, expected):
+    G = nx.DiGraph(edgelist)
     colliders = set(nx.dag.colliders(G))
-    assert len(colliders) == 1
-    assert (0, 2, 3) in colliders
-
-    edges = [("A", "B"), ("C", "B"), ("D", "G"), ("D", "E"), ("G", "E")]
-    G = nx.DiGraph(edges)
-    colliders = set(nx.dag.colliders(G))
-    assert colliders == {("A", "B", "C"), ("D", "E", "G")}
+    assert colliders == expected
