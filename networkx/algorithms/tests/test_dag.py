@@ -790,22 +790,21 @@ def test_v_structures_raise():
         nx.dag.v_structures(G)
 
 
-def test_v_structures():
-    edges = [(0, 1), (0, 2), (3, 2)]
-    G = nx.DiGraph(edges)
-
+@pytest.mark.parametrize(
+    ("edgelist", "expected"),
+    (
+        ([(0, 1), (0, 2), (3, 2)], {(0, 2, 3)}),
+        (
+            [("A", "B"), ("C", "B"), ("D", "G"), ("D", "E"), ("G", "E")],
+            {("A", "B", "C")},
+        ),
+        ([(0, 1), (2, 1), (0, 2)], set()),
+    ),
+)
+def test_v_structures(edgelist, expected):
+    G = nx.DiGraph(edgelist)
     v_structs = set(nx.dag.v_structures(G))
-    assert len(v_structs) == 1
-    assert (0, 2, 3) in v_structs
-
-    edges = [("A", "B"), ("C", "B"), ("D", "G"), ("D", "E"), ("G", "E")]
-    G = nx.DiGraph(edges)
-    v_structs = set(nx.dag.v_structures(G))
-    assert v_structs == {("A", "B", "C")}
-
-    edges = [(0, 1), (2, 1), (0, 2)]  # adjacent parents case: issues#7385
-    G = nx.DiGraph(edges)
-    assert set(nx.dag.v_structures(G)) == set()
+    assert v_structs == expected
 
 
 def test_colliders_raise():
