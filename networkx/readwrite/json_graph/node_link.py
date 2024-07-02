@@ -175,7 +175,7 @@ def node_link_graph(
         A string that provides the 'key' attribute name for storing NetworkX-internal graph data.
     link : string
         A string that provides the 'link' attribute name for storing NetworkX-internal graph data.
-    link : string
+    nodes : string
         A string that provides the 'nodes' attribute name for storing NetworkX-internal graph data.
 
     Returns
