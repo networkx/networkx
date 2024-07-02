@@ -798,7 +798,7 @@ def test_v_structures_raise():
             [("A", "B"), ("C", "B"), ("D", "G"), ("D", "E"), ("G", "E")],
             {("A", "B", "C")},
         ),
-        ([(0, 1), (2, 1), (0, 2)], set()),
+        ([(0, 1), (2, 1), (0, 2)], set()),  # adjacent parents case: see gh-7385
     ),
 )
 def test_v_structures(edgelist, expected):
