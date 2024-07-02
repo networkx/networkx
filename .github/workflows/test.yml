@@ -29,7 +29,7 @@ jobs:
 
       - name: Test NetworkX
         run: |
-          pytest --durations=10 --pyargs networkx
+          pytest --doctest-modules --durations=10 --pyargs networkx
 
   default:
     runs-on: ${{ matrix.os }}-latest
