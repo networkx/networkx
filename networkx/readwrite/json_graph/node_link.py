@@ -5,16 +5,6 @@ import networkx as nx
 __all__ = ["node_link_data", "node_link_graph"]
 
 
-_attrs = {
-    "source": "source",
-    "target": "target",
-    "name": "id",
-    "key": "key",
-    "link": "links",
-    "nodes": "nodes",
-}
-
-
 def _to_tuple(x):
     """Converts lists to tuples, including nested lists.
 
