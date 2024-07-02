@@ -63,10 +63,15 @@ def node_link_data(
 
     Examples
     --------
+    >>> from pprint import pprint
     >>> G = nx.Graph([("A", "B")])
     >>> data1 = nx.node_link_data(G)
-    >>> data1
-    {'directed': False, 'multigraph': False, 'graph': {}, 'nodes': [{'id': 'A'}, {'id': 'B'}], 'links': [{'source': 'A', 'target': 'B'}]}
+    >>> pprint(data1)
+    {'directed': False,
+     'graph': {},
+     'links': [{'source': 'A', 'target': 'B'}],
+     'multigraph': False,
+     'nodes': [{'id': 'A'}, {'id': 'B'}]}
 
     To serialize with JSON
 
@@ -88,8 +93,12 @@ def node_link_data(
     >>> data2 = nx.node_link_data(
     ...     H, link="edges", source="from", target="to", nodes="vertices"
     ... )
-    >>> data2
-    {'directed': True, 'multigraph': False, 'graph': {}, 'vertices': [{'id': 0}, {'id': 1}], 'edges': [{'from': 1, 'to': 0}]}
+    >>> pprint(data2)
+    {'directed': True,
+     'edges': [{'from': 1, 'to': 0}],
+     'graph': {},
+     'multigraph': False,
+     'vertices': [{'id': 0}, {'id': 1}]}
 
     Notes
     -----
@@ -178,10 +187,15 @@ def node_link_graph(
 
     Create data in node-link format by converting a graph.
 
+    >>> from pprint import pprint
     >>> G = nx.Graph([("A", "B")])
     >>> data = nx.node_link_data(G)
-    >>> data
-    {'directed': False, 'multigraph': False, 'graph': {}, 'nodes': [{'id': 'A'}, {'id': 'B'}], 'links': [{'source': 'A', 'target': 'B'}]}
+    >>> pprint(data)
+    {'directed': False,
+     'graph': {},
+     'links': [{'source': 'A', 'target': 'B'}],
+     'multigraph': False,
+     'nodes': [{'id': 'A'}, {'id': 'B'}]}
 
     Revert data in node-link format to a graph.
 
@@ -192,8 +206,8 @@ def node_link_graph(
     To serialize and deserialize a graph with JSON,
 
     >>> import json
-    >>> d = json.dumps(node_link_data(G))
-    >>> H = node_link_graph(json.loads(d))
+    >>> d = json.dumps(nx.node_link_data(G))
+    >>> H = nx.node_link_graph(json.loads(d))
     >>> print(G.edges, H.edges)
     [('A', 'B')] [('A', 'B')]
 
