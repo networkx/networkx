@@ -188,8 +188,7 @@ class Config:
 
     # Allow to be used as context manager
     def __call__(self, **kwargs):
-        for key, val in kwargs.items():
-            self._check_config(key, val)
+        kwargs = {key: self._on_setattr(key, val) for key, val in kwargs.items()}
         prev = dict(self)
         for key, val in kwargs.items():
             setattr(self, key, val)
