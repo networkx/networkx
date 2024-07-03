@@ -45,7 +45,6 @@ Version 3.4
 ~~~~~~~~~~~
 * Remove ``MultiDiGraph_EdgeKey`` class from ``algorithms/tree/branchings.py``. 
 * Remove ``Edmonds`` class from ``algorithms/tree/branchings.py``.
-* Remove ``normalized`` kwarg from ``algorithms.s_metric``
 * Remove renamed function ``join()`` in ``algorithms/tree/operations.py`` and
   in ``doc/reference/algorithms/trees.rst``
 
