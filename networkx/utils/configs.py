@@ -1,6 +1,7 @@
 import collections
 import os
 import typing
+import warnings
 from dataclasses import dataclass
 
 __all__ = ["Config", "config"]
@@ -235,16 +236,17 @@ class BackendPriorities(Config, strict=False):
         from .backends import _registered_algorithms, backends
 
         if key in {"algos", "generators"}:
-            if not (isinstance(value, list) and all(isinstance(x, str) for x in value)):
-                raise TypeError(
-                    f"{key!r} config must be a list of backend names; got {value!r}"
-                )
-            if missing := {x for x in value if x not in backends}:
-                missing = ", ".join(map(repr, sorted(missing)))
-                raise ValueError(f"Unknown backend when setting {key!r}: {missing}")
+            pass
         elif key not in _registered_algorithms:
             # TODO: give more informative error message
             raise AttributeError(f"Invalid config name: {key!r}")
+        if not (isinstance(value, list) and all(isinstance(x, str) for x in value)):
+            raise TypeError(
+                f"{key!r} config must be a list of backend names; got {value!r}"
+            )
+        if missing := {x for x in value if x not in backends}:
+            missing = ", ".join(map(repr, sorted(missing)))
+            raise ValueError(f"Unknown backend when setting {key!r}: {missing}")
         return value
 
     def _on_delattr(self, key):
@@ -301,9 +303,19 @@ class NetworkXConfig(Config):
         from .backends import backends
 
         if key == "backend_priority":
-            if not isinstance(value, BackendPriorities):
+            if isinstance(value, list):
+                # Deprecation to handle old behavior and warn that API has changed
+                warnings.warn("Write me!")
+                self.backend_priority.algos = value
+                value = self.backend_priority
+            elif isinstance(value, dict):
+                kwargs = value
+                value = BackendPriorities(algos=[], generators=[])
+                for key, val in kwargs.items():
+                    setattr(value, key, val)
+            elif not isinstance(value, BackendPriorities):
                 raise TypeError(
-                    f"{key!r} config must be a list of backend names; got {value!r}"
+                    f"{key!r} config must be a dict of lists of backend names; got {value!r}"
                 )
         elif key == "backends":
             if not (
