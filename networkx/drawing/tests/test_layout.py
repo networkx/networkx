@@ -396,10 +396,10 @@ class TestLayout:
         assert np.allclose(np.diff(dist), 0, atol=1e-3)
 
     def test_forceatlas2_layout(self):
-        # check whether imporatial pos input still returns a proper position
+        # check whether partial pos input still returns a full proper position
         G = self.Gs
         pos = nx.random_layout(G)
-        del pos[list(G.nodes())[0]]
+        del pos[next(iter(G))]
         pos = nx.forceatlas2_layout(G, pos=pos)
         assert len(pos) == len(G)
 

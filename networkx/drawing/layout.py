@@ -1483,7 +1483,6 @@ def forceatlas2_layout(
 
         pos_arr += update * factor[:, None]
         if abs((update * factor[:, None]).sum()) < 1e-10:
-            print(f"Breaking after {idx}")
             break
 
     return {node: pos_arr[idx] for idx, node in enumerate(G.nodes())}
