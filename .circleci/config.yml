@@ -4,7 +4,7 @@ version: 2.1
 jobs:
   documentation:
     docker:
-      - image: cimg/python:3.10
+      - image: cimg/python:3.12
 
     steps:
       - checkout
@@ -12,17 +12,17 @@ jobs:
       - run:
           name: Update apt-get
           command: |
-            sudo apt-get update
+            sudo apt update
 
       - run:
           name: Install Graphviz
           command: |
-            sudo apt-get install graphviz libgraphviz-dev
+            sudo apt install graphviz libgraphviz-dev
 
       - run:
           name: Install pysal dependencies
           command: |
-            sudo apt-get install libspatialindex-dev
+            sudo apt install libspatialindex-dev
 
       - restore_cache:
           keys:
@@ -72,7 +72,7 @@ jobs:
 
   image:
     docker:
-      - image: cimg/python:3.10
+      - image: cimg/python:3.12
 
     steps:
       - checkout
