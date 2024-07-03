@@ -1930,7 +1930,6 @@ def all_pairs_bellman_ford_path(G, weight="weight"):
 
     """
     path = single_source_bellman_ford_path
-    # TODO This can be trivially parallelized.
     for n in G:
         yield (n, path(G, n, weight=weight))
 
