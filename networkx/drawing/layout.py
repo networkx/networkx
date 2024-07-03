@@ -1252,17 +1252,12 @@ def forceatlas2_layout(
     linlog=False,
     dim=2,
 ):
-    """ForceAtlas2 Layout for NetworkX
+    """Position nodes using the ForceAtlas2 force-directed layout algorithm.
 
-    This function  applies the ForceAtlas2  layout algorithm
-    to a NetworkX graph, positioning the nodes in a way that
-    visually  represents the  structure  of  the graph.  The
-    algorithm  uses  physical  simulation  to  minimize  the
-    energy  of  the system,  resulting  in  a more  readable
-    layout.
-
-    For more information on the algorithm and parameters, see the original publication:
-    https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0098679&type=printable
+    This function applies the ForceAtlas2 layout algorithm [1]_ to a NetworkX graph,
+    positioning the nodes in a way that visually represents the structure of the graph.
+    The algorithm uses physical simulation to minimize the energy of the system,
+    resulting in a more readable layout.
 
     Parameters
     ----------
@@ -1298,6 +1293,12 @@ def forceatlas2_layout(
     >>> pos = nx.forceatlas2_layout(G)
     >>> nx.draw(G, pos=pos)
 
+    References
+    ----------
+    .. [1] Jacomy, M., Venturini, T., Heymann, S., & Bastian, M. (2014).
+           ForceAtlas2, a continuous graph layout algorithm for handy network
+           visualization designed for the Gephi software. PloS one, 9(6), e98679.
+           https://doi.org/10.1371/journal.pone.0098679
     """
     import numpy as np
 
