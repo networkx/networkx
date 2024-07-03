@@ -167,9 +167,7 @@ networkx = ['tests/*.py']
 "networkx.readwrite.json_graph" = ['tests/*.py']
 "networkx.utils" = ['tests/*.py']
 
-[tool.ruff]
-line-length = 88
-target-version = 'py310'
+[tool.ruff.lint]
 select = [
     'I',
     'UP',
@@ -186,7 +184,7 @@ select = [
     'SIM2',
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ['I']
 "examples/*.py" = ['I']
 "doc/*.py" = ['I']
