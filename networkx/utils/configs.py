@@ -41,6 +41,14 @@ class Config:
     >>> cfg["spam"]
     42
 
+    For convenience, it can also set configs within a context with the "with" statement:
+
+    >>> with cfg(spam=3):
+    ...     print("spam (in context):", cfg.spam)
+    spam (in context): 3
+    >>> print("spam (after context):", cfg.spam)
+    spam (after context): 42
+
     Subclasses may also define ``_on_setattr`` (as done in the example above)
     to ensure the value being assigned is valid:
 
@@ -82,6 +90,8 @@ class Config:
         if not cls._strict:
             cls.__repr__ = _flexible_repr
         cls._orig_class = orig_class  # Save original class so we can pickle
+        cls._prev = None  # Stage previous configs to enable use as context manager
+        cls._context_stack = []  # Stack of previous configs when used as context
         instance = object.__new__(cls)
         instance.__init__(**kwargs)
         return instance
@@ -102,6 +112,7 @@ class Config:
             raise AttributeError(f"Invalid config name: {key!r}")
         value = self._on_setattr(key, value)
         object.__setattr__(self, key, value)
+        self.__class__._prev = None
 
     def __delattr__(self, key):
         if self._strict:
@@ -110,6 +121,7 @@ class Config:
             )
         self._on_delattr(key)
         object.__delattr__(self, key)
+        self.__class__._prev = None
 
     # Be a `collection.abc.Collection`
     def __contains__(self, key):
@@ -173,6 +185,34 @@ class Config:
     @staticmethod
     def _deserialize(cls, kwargs):
         return cls(**kwargs)
+
+    # Allow to be used as context manager
+    def __call__(self, **kwargs):
+        for key, val in kwargs.items():
+            self._check_config(key, val)
+        prev = dict(self)
+        for key, val in kwargs.items():
+            setattr(self, key, val)
+        self.__class__._prev = prev
+        return self
+
+    def __enter__(self):
+        if self.__class__._prev is None:
+            raise RuntimeError(
+                "Config being used as a context manager without config items being set. "
+                "Set config items via keyword arguments when calling the config object. "
+                "For example, using config as a context manager should be like:\n\n"
+                '    >>> with cfg(breakfast="spam"):\n'
+                "    ...     ...  # Do stuff\n"
+            )
+        self.__class__._context_stack.append(self.__class__._prev)
+        self.__class__._prev = None
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        prev = self.__class__._context_stack.pop()
+        for key, val in prev.items():
+            setattr(self, key, val)
 
 
 def _flexible_repr(self):
