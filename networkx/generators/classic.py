@@ -509,7 +509,7 @@ def dorogovtsev_goltsev_mendes_graph(n, create_using=None):
         The generation number.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
-        Graph type to create. If graph instance, then cleared before populated.
+        Graph type to create. Directed graphs and multigraphs are not supported.
 
     Returns
     -------
