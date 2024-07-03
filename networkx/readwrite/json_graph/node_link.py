@@ -1,4 +1,4 @@
-from itertools import chain, count
+from itertools import count
 
 import networkx as nx
 
@@ -11,6 +11,7 @@ _attrs = {
     "name": "id",
     "key": "key",
     "link": "links",
+    "nodes": "nodes",
 }
 
 
@@ -39,6 +40,7 @@ def node_link_data(
     name="id",
     key="key",
     link="links",
+    nodes="nodes",
 ):
     """Returns data in node-link format that is suitable for JSON serialization
     and use in JavaScript documents.
@@ -56,6 +58,8 @@ def node_link_data(
         A string that provides the 'key' attribute name for storing NetworkX-internal graph data.
     link : string
         A string that provides the 'link' attribute name for storing NetworkX-internal graph data.
+    nodes : string
+        A string that provides the 'nodes' attribute name for storing NetworkX-internal graph data.
 
     Returns
     -------
@@ -91,9 +95,11 @@ def node_link_data(
     be specified as keyword options.
 
     >>> H = nx.gn_graph(2)
-    >>> data2 = nx.node_link_data(H, link="edges", source="from", target="to")
+    >>> data2 = nx.node_link_data(
+    ...     H, link="edges", source="from", target="to", nodes="vertices"
+    ... )
     >>> data2
-    {'directed': True, 'multigraph': False, 'graph': {}, 'nodes': [{'id': 0}, {'id': 1}], 'edges': [{'from': 1, 'to': 0}]}
+    {'directed': True, 'multigraph': False, 'graph': {}, 'vertices': [{'id': 0}, {'id': 1}], 'edges': [{'from': 1, 'to': 0}]}
 
     Notes
     -----
@@ -120,7 +126,7 @@ def node_link_data(
         "directed": G.is_directed(),
         "multigraph": multigraph,
         "graph": G.graph,
-        "nodes": [{**G.nodes[n], name: n} for n in G],
+        nodes: [{**G.nodes[n], name: n} for n in G],
     }
     if multigraph:
         data[link] = [
@@ -143,6 +149,7 @@ def node_link_graph(
     name="id",
     key="key",
     link="links",
+    nodes="nodes",
 ):
     """Returns graph from node-link data format.
     Useful for de-serialization from JSON.
@@ -168,6 +175,8 @@ def node_link_graph(
         A string that provides the 'key' attribute name for storing NetworkX-internal graph data.
     link : string
         A string that provides the 'link' attribute name for storing NetworkX-internal graph data.
+    nodes : string
+        A string that provides the 'nodes' attribute name for storing NetworkX-internal graph data.
 
     Returns
     -------
@@ -223,7 +232,7 @@ def node_link_graph(
     key = None if not multigraph else key
     graph.graph = data.get("graph", {})
     c = count()
-    for d in data["nodes"]:
+    for d in data[nodes]:
         node = _to_tuple(d.get(name, next(c)))
         nodedata = {str(k): v for k, v in d.items() if k != name}
         graph.add_node(node, **nodedata)
