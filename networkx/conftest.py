@@ -100,9 +100,6 @@ def set_warnings():
         message="\n\nshortest_path",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nrandom_tree"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="Edmonds has been deprecated"
     )
     warnings.filterwarnings(
