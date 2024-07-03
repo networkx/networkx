@@ -269,7 +269,7 @@ class NetworkXConfig(Config):
     but they have important differences. ``backend_priority`` is "best effort" and will only
     use one of the specified backends if it is able to run the algorithm. This is a
     safer option that behaves well--it doesn't raise--when backends are incomplete.
-    ``backend`` configuration is "hard" and directs all dispatchable calls to use
+    ``backend`` configuration is "strict" and directs all dispatchable calls to use
     the specified backend. It will raise if the backend does not implement a function.
 
     This is a global configuration. Use with caution when using from multiple threads.
