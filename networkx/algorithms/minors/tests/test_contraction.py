@@ -1,4 +1,5 @@
 """Unit tests for the :mod:`networkx.algorithms.minors.contraction` module."""
+
 import pytest
 
 import networkx as nx

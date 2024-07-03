@@ -9,7 +9,7 @@ repos:
         files: \.(html|md|toml|yml|yaml)
         args: [--prose-wrap=preserve]
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 1dc9eb131c2ea4816c708e4d85820d2cc8542683  # frozen: v0.5.0
+    rev: 1dc9eb131c2ea4816c708e4d85820d2cc8542683 # frozen: v0.5.0
     hooks:
       - id: ruff
         args:

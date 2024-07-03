@@ -1,6 +1,7 @@
 """
 Shortest path algorithms for unweighted graphs.
 """
+
 import warnings
 
 import networkx as nx

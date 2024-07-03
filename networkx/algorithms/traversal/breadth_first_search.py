@@ -1,4 +1,5 @@
 """Basic algorithms for breadth-first searching the nodes of a graph."""
+
 from collections import deque
 
 import networkx as nx

@@ -142,14 +142,14 @@ Creating a custom backend
        - ``graph_name`` : str
             The name of the graph argument being converted.
 
-    2. ``can_run`` (Optional): 
+    2. ``can_run`` (Optional):
           If your backend only partially implements an algorithm, you can define
           a ``can_run(name, args, kwargs)`` function in your ``BackendInterface`` object that
           returns True or False indicating whether the backend can run the algorithm with
           the given arguments or not. Instead of a boolean you can also return a string
           message to inform the user why that algorithm can't be run.
 
-    3. ``should_run`` (Optional): 
+    3. ``should_run`` (Optional):
           A backend may also define ``should_run(name, args, kwargs)``
           that is similar to ``can_run``, but answers whether the backend *should* be run.
           ``should_run`` is only run when performing backend graph conversions. Like
@@ -159,7 +159,7 @@ Creating a custom backend
           implemented by the backend, ``can_run``and ``should_run`` are assumed to
           always return True if the backend implements the algorithm.
 
-    4. ``on_start_tests`` (Optional): 
+    4. ``on_start_tests`` (Optional):
           A special ``on_start_tests(items)`` function may be defined by the backend.
           It will be called with the list of NetworkX tests discovered. Each item
           is a test object that can be marked as xfail if the backend does not support
@@ -167,7 +167,7 @@ Creating a custom backend
 
 2.  Adding entry points
 
-    To be discoverable by NetworkX, your package must register an 
+    To be discoverable by NetworkX, your package must register an
     `entry-point <https://packaging.python.org/en/latest/specifications/entry-points>`_
     ``networkx.backends`` in the package's metadata, with a `key pointing to your
     dispatch object <https://packaging.python.org/en/latest/guides/creating-and-discovering-plugins/#using-package-metadata>`_ .
@@ -200,7 +200,7 @@ Creating a custom backend
             One line summary of your backend which will be displayed in the
             "Additional backend implementations" section.
         - ``functions`` : dict or None
-            A dictionary mapping function names to a dictionary of information 
+            A dictionary mapping function names to a dictionary of information
             about the function. The information can include the following keys:
 
             - ``url`` : str or None
@@ -228,7 +228,7 @@ Creating a custom backend
 
 3.  Defining a Backend Graph class
 
-    The backend must create an object with an attribute ``__networkx_backend__`` that holds 
+    The backend must create an object with an attribute ``__networkx_backend__`` that holds
     a string with the entry point name::
 
         class BackendGraph:
@@ -245,7 +245,7 @@ To test your custom backend, you can run the NetworkX test suite on your backend
 This also ensures that the custom backend is compatible with NetworkX's API.
 The following steps will help you run the tests:
 
-1. Setting Backend Environment Variables: 
+1. Setting Backend Environment Variables:
     - ``NETWORKX_TEST_BACKEND`` : Setting this to your backend's ``backend_name`` will
       let NetworkX's dispatch machinery to automatically convert a regular NetworkX
       ``Graph``, ``DiGraph``, ``MultiGraph``, etc. to their backend equivalents, using
@@ -277,7 +277,7 @@ How tests are run?
     - Convert NetworkX graphs using ``<your_backend_interface_object>.convert_from_nx(G, ...)`` into
       the backend graph.
     - Pass the backend graph objects to the backend implementation of the algorithm.
-    - Convert the result back to a form expected by NetworkX tests using 
+    - Convert the result back to a form expected by NetworkX tests using
       ``<your_backend_interface_object>.convert_to_nx(result, ...)``.
     - For nx-loopback, the graph is copied using the dispatchable metadata
 

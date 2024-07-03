@@ -20,6 +20,7 @@ To access the functions in this module, you must access them through the
 .. _tournament graph: https://en.wikipedia.org/wiki/Tournament_%28graph_theory%29
 
 """
+
 from itertools import combinations
 
 import networkx as nx

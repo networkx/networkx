@@ -1,4 +1,5 @@
 """Operations on trees."""
+
 from functools import partial
 from itertools import accumulate, chain
 
