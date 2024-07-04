@@ -231,7 +231,7 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     Parameters
     ----------
     G : graph
-      A networkx graph.
+        A connected NetworkX graph.
 
     max_iter : integer, optional (default=50)
       Maximum number of Arnoldi update iterations allowed.
@@ -299,20 +299,17 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     [7]_.
 
     Normally, the Perron--Frobenius theorem [8]_ [9]_ ensures
-    that there is only a line of eigenvectors for the largest eigenvalue
-    (it cannot be less than a line because
-    any multiple of an eigenvector is also an eigenvector).
-    We usually select a unique eigenvector by choosing
-    a unit vector with first nonzero element positive.
+    that there is only a line of eigenvectors for the largest eigenvalue.
+    This makes uniquely selecting the eigenvector straightforward.
     However, the Perron-Frobenius theorem does not hold
-    when the network is disconnected
-    (or equivalently, when the adjacency matrix is reducible),
-    in which case there is an entire plane (or more) of eigenvectors for the largest eigenvalue
-    and the computed eigenvectors reflect one of many correct eigenvectors.
+    when the network is disconnected (or equivalently, when the adjacency matrix is reducible).
+    In that case, there is an entire plane (or more) of eigenvectors for the largest eigenvalue,
+    and the computed eigenvectors reflect one of many correct eigenvector choices.
     Depending on the method used, round-off error can affect
     which of the infinitely many choices of eigenvector may be reported.
     This can lead to inconsistent results for the same disconnected graph.
     For this reason, disconnected graphs are not accepted by this function.
+    For directed graphs, the equivalent condition is strong connectivity.
 
     References
     ----------
@@ -361,7 +358,8 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
         raise nx.NetworkXPointlessConcept(
             "cannot compute centrality for the null graph"
         )
-    if not nx.is_connected(G):
+    connectivity_func = nx.is_strongly_connected if G.is_directed() else nx.is_connected
+    if not connectivity_func(G):
         msg = "`eigenvector_centrality_numpy` does not give consistent results for disconnected graphs"
         raise nx.AmbiguousSolution(msg)
     M = nx.to_scipy_sparse_array(G, nodelist=list(G), weight=weight, dtype=float)
