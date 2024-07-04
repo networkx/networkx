@@ -1,6 +1,7 @@
 """
-    Unit tests for bipartite edgelists.
+Unit tests for bipartite edgelists.
 """
+
 import io
 
 import pytest

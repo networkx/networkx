@@ -2231,7 +2231,9 @@ def find_negative_cycle(G, source, weight="weight"):
     Examples
     --------
     >>> G = nx.DiGraph()
-    >>> G.add_weighted_edges_from([(0, 1, 2), (1, 2, 2), (2, 0, 1), (1, 4, 2), (4, 0, -5)])
+    >>> G.add_weighted_edges_from(
+    ...     [(0, 1, 2), (1, 2, 2), (2, 0, 1), (1, 4, 2), (4, 0, -5)]
+    ... )
     >>> nx.find_negative_cycle(G, 0)
     [4, 0, 1, 4]
 

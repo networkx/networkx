@@ -1,4 +1,5 @@
 """Functions for computing eigenvector centrality."""
+
 import math
 
 import networkx as nx

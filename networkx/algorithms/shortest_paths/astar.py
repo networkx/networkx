@@ -1,5 +1,5 @@
-"""Shortest paths and path lengths using the A* ("A star") algorithm.
-"""
+"""Shortest paths and path lengths using the A* ("A star") algorithm."""
+
 from heapq import heappop, heappush
 from itertools import count
 
