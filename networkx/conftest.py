@@ -139,7 +139,7 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message=r"\n\nThe 'create=matrix'"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\ncompute_v_structures"
+        "ignore", category=DeprecationWarning, message="\n\n\`compute_v_structures"
     )
 
 
