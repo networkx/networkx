@@ -11,6 +11,7 @@ General guidelines for writing good tests:
   and add the module to the relevant entries below.
 
 """
+
 import os
 import sys
 import warnings
@@ -98,9 +99,6 @@ def set_warnings():
         "ignore",
         category=FutureWarning,
         message="\n\nshortest_path",
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="Edmonds has been deprecated"
     )
     warnings.filterwarnings(
         "ignore",
