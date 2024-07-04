@@ -99,7 +99,6 @@ class LoopbackBackendInterface:
         else:
             # Would be nice to handle these better some day
             # nx.algorithms.approximation.kcomponents._AntiGraph
-            # nx.algorithms.tree.branchings.MultiDiGraph_EdgeKey
             # nx.classes.tests.test_multidigraph.MultiDiGraphSubClass
             # nx.classes.tests.test_multigraph.MultiGraphSubClass
             G = graph.__class__()

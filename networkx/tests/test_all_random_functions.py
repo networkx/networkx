@@ -94,7 +94,6 @@ def run_all_random_functions(seed):
     t(nx.algorithms.community.kernighan_lin_bisection, G, seed=seed)
     # nx.algorithms.community.asyn_lpa_communities(G, seed=seed)
     t(nx.algorithms.tree.greedy_branching, G, seed=seed)
-    t(nx.algorithms.tree.Edmonds, G, seed=seed)
     # print('done with graph argument functions')
 
     t(nx.spectral_graph_forge, G, alpha, seed=seed)
