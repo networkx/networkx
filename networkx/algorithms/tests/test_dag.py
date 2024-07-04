@@ -793,7 +793,10 @@ def test_v_structures_raise():
 @pytest.mark.parametrize(
     ("edgelist", "expected"),
     (
-        ([(0, 1), (0, 2), (3, 2)], {(0, 2, 3)}),
+        (
+            [(0, 1), (0, 2), (3, 2)],
+            {(0, 2, 3)},
+        ),
         (
             [("A", "B"), ("C", "B"), ("D", "G"), ("D", "E"), ("G", "E")],
             {("A", "B", "C")},
@@ -816,7 +819,10 @@ def test_colliders_raise():
 @pytest.mark.parametrize(
     ("edgelist", "expected"),
     (
-        ([(0, 1), (0, 2), (3, 2)], {(0, 2, 3)}),
+        (
+            [(0, 1), (0, 2), (3, 2)],
+            {(0, 2, 3)},
+        ),
         (
             [("A", "B"), ("C", "B"), ("D", "G"), ("D", "E"), ("G", "E")],
             {("A", "B", "C"), ("D", "E", "G")},
