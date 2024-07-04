@@ -269,6 +269,9 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
         converged eigenvalues and eigenvectors can be found as
         eigenvalues and eigenvectors attributes of the exception object.
 
+    AmbiguousSolution
+        If `G` is not connected.
+
     See Also
     --------
     :func:`scipy.sparse.linalg.eigs`
@@ -294,6 +297,22 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     :func:`SciPy sparse eigenvalue solver<scipy.sparse.linalg.eigs>` (ARPACK)
     to find the largest eigenvalue/eigenvector pair using Arnoldi iterations
     [7]_.
+
+    Normally, the Perron--Frobenius theorem [8]_ [9]_ ensures
+    that there is only a line of eigenvectors for the largest eigenvalue
+    (it cannot be less than a line because
+    any multiple of an eigenvector is also an eigenvector).
+    We usually select a unique eigenvector by choosing
+    a unit vector with first nonzero element positive.
+    However, the Perron-Frobenius theorem does not hold
+    when the network is disconnected
+    (or equivalently, when the adjacency matrix is reducible),
+    in which case there is an entire plane (or more) of eigenvectors for the largest eigenvalue
+    and the computed eigenvectors reflect one of many correct eigenvectors.
+    Depending on the method used, round-off error can affect
+    which of the infinitely many choices of eigenvector may be reported.
+    This can lead to inconsistent results for the same disconnected graph.
+    For this reason, disconnected graphs are not accepted by this function.
 
     References
     ----------
@@ -325,6 +344,15 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
 
     .. [7] Arnoldi iteration:: https://en.wikipedia.org/wiki/Arnoldi_iteration
 
+    .. [8] Perron, Oskar.
+        "Zur Theorie der Matrices".
+        Mathematische Annalen 64 (1907): 248--263.
+        https://eudml.org/doc/158317
+
+    .. [9] Frobenius, Georg.
+        "Über Matrizen aus nicht negativen Elementen".
+        Sitzungsberichte der Königlich Preussischen Akademie der Wissenschaften (1912): 456--477.
+        https://www.e-rara.ch/doi/10.3931/e-rara-18865
     """
     import numpy as np
     import scipy as sp
@@ -333,6 +361,9 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
         raise nx.NetworkXPointlessConcept(
             "cannot compute centrality for the null graph"
         )
+    if not nx.is_connected(G):
+        msg = "`eigenvector_centrality_numpy` does not give consistent results for disconnected graphs"
+        raise nx.AmbiguousSolution(msg)
     M = nx.to_scipy_sparse_array(G, nodelist=list(G), weight=weight, dtype=float)
     _, eigenvector = sp.sparse.linalg.eigs(
         M.T, k=1, which="LR", maxiter=max_iter, tol=tol
