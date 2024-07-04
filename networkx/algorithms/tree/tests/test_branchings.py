@@ -470,21 +470,6 @@ def test_edge_attribute_preservation_multigraph():
     assert B[0][1][0]["otherattr2"] == 3
 
 
-# TODO remove with Edmonds
-def test_Edmond_kind():
-    G = nx.MultiGraph()
-
-    edgelist = [
-        (0, 1, [("weight", 5), ("otherattr", 1), ("otherattr2", 3)]),
-        (0, 2, [("weight", 5), ("otherattr", 2), ("otherattr2", 2)]),
-        (1, 2, [("weight", 6), ("otherattr", 3), ("otherattr2", 1)]),
-    ]
-    G.add_edges_from(edgelist * 2)  # Make sure we have duplicate edge paths
-    ed = branchings.Edmonds(G)
-    with pytest.raises(nx.NetworkXException, match="Unknown value for `kind`."):
-        ed.find_optimum(kind="lol", preserve_attrs=True)
-
-
 # TODO remove with MultiDiGraph_EdgeKey
 def test_MultiDiGraph_EdgeKey():
     # test if more than one edges has the same key

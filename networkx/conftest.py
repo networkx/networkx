@@ -11,6 +11,7 @@ General guidelines for writing good tests:
   and add the module to the relevant entries below.
 
 """
+
 import os
 import sys
 import warnings
@@ -100,9 +101,6 @@ def set_warnings():
         message="\n\nshortest_path",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="Edmonds has been deprecated"
-    )
-    warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
         message="MultiDiGraph_EdgeKey has been deprecated",
@@ -139,7 +137,7 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message=r"\n\nThe 'create=matrix'"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\ncompute_v_structures"
+        "ignore", category=DeprecationWarning, message="\n\n\`compute_v_structures"
     )
 
 
