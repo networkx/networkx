@@ -196,7 +196,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
 
 @nx._dispatchable(edge_attrs="weight")
 def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
-    r"""Compute the eigenvector centrality for the graph G.
+    r"""Compute the eigenvector centrality for the graph `G`.
 
     Eigenvector centrality computes the centrality for a node by adding
     the centrality of its predecessors. The centrality for node $i$ is the
@@ -208,7 +208,7 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
 
          \lambda x^T = x^T A,
 
-    where $A$ is the adjacency matrix of the graph G. By definition of
+    where $A$ is the adjacency matrix of the graph `G`. By definition of
     row-column product, the equation above is equivalent to
 
     .. math::
@@ -220,37 +220,42 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     $\lambda$. In the case of undirected graphs, $x$ also solves the familiar
     right-eigenvector equation $Ax = \lambda x$.
 
-    By virtue of the Perron–Frobenius theorem [1]_, if G is strongly
-    connected there is a unique eigenvector $x$, and all its entries
+    By virtue of the Perron--Frobenius theorem [1]_, if `G` is (strongly)
+    connected, there is a unique eigenvector $x$, and all its entries
     are strictly positive.
 
-    If G is not strongly connected there might be several left
+    However, if `G` is not (strongly) connected, there might be several left
     eigenvectors associated with $\lambda$, and some of their elements
     might be zero.
+    Depending on the method used to choose eigenvectors, round-off error can affect
+    which of the infinitely many eigenvectors is reported.
+    This can lead to inconsistent results for the same graph,
+    which the underlying implementation is not robust to.
+    For this reason, only (strongly) connected graphs are accepted.
 
     Parameters
     ----------
     G : graph
         A connected NetworkX graph.
 
+    weight : None or string, optional (default=None)
+        If ``None``, all edge weights are considered equal. Otherwise holds the
+        name of the edge attribute used as weight. In this measure the
+        weight is interpreted as the connection strength.
+
     max_iter : integer, optional (default=50)
-      Maximum number of Arnoldi update iterations allowed.
+        Maximum number of Arnoldi update iterations allowed.
 
     tol : float, optional (default=0)
-      Relative accuracy for eigenvalues (stopping criterion).
-      The default value of 0 implies machine precision.
-
-    weight : None or string, optional (default=None)
-      If None, all edge weights are considered equal. Otherwise holds the
-      name of the edge attribute used as weight. In this measure the
-      weight is interpreted as the connection strength.
+        Relative accuracy for eigenvalues (stopping criterion).
+        The default value of 0 implies machine precision.
 
     Returns
     -------
-    nodes : dictionary
-       Dictionary of nodes with eigenvector centrality as the value. The
-       associated vector has unit Euclidean norm and the values are
-       nonegative.
+    nodes : dict of nodes
+        Dictionary of nodes with eigenvector centrality as the value. The
+        associated vector has unit Euclidean norm and the values are
+        nonnegative.
 
     Examples
     --------
@@ -262,7 +267,7 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     Raises
     ------
     NetworkXPointlessConcept
-        If the graph G is the null graph.
+        If the graph `G` is the null graph.
 
     ArpackNoConvergence
         When the requested convergence is not obtained. The currently
@@ -298,58 +303,38 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     to find the largest eigenvalue/eigenvector pair using Arnoldi iterations
     [7]_.
 
-    Normally, the Perron--Frobenius theorem [8]_ [9]_ ensures
-    that there is only a line of eigenvectors for the largest eigenvalue.
-    This makes uniquely selecting the eigenvector straightforward.
-    However, the Perron-Frobenius theorem does not hold
-    when the network is disconnected (or equivalently, when the adjacency matrix is reducible).
-    In that case, there is an entire plane (or more) of eigenvectors for the largest eigenvalue,
-    and the computed eigenvectors reflect one of many correct eigenvector choices.
-    Depending on the method used, round-off error can affect
-    which of the infinitely many choices of eigenvector may be reported.
-    This can lead to inconsistent results for the same disconnected graph.
-    For this reason, disconnected graphs are not accepted by this function.
-    For directed graphs, the equivalent condition is strong connectivity.
-
     References
     ----------
     .. [1] Abraham Berman and Robert J. Plemmons.
-       "Nonnegative Matrices in the Mathematical Sciences."
-       Classics in Applied Mathematics. SIAM, 1994.
+        "Nonnegative Matrices in the Mathematical Sciences".
+        Classics in Applied Mathematics. SIAM, 1994.
 
     .. [2] Edmund Landau.
-       "Zur relativen Wertbemessung der Turnierresultate."
-       Deutsches Wochenschach, 11:366–369, 1895.
+        "Zur relativen Wertbemessung der Turnierresultate".
+        Deutsches Wochenschach, 11:366--369, 1895.
 
     .. [3] Teh-Hsing Wei.
-       "The Algebraic Foundations of Ranking Theory."
-       PhD thesis, University of Cambridge, 1952.
+        "The Algebraic Foundations of Ranking Theory".
+        PhD thesis, University of Cambridge, 1952.
 
     .. [4] Maurice G. Kendall.
-       "Further contributions to the theory of paired comparisons."
-       Biometrics, 11(1):43–62, 1955.
-       https://www.jstor.org/stable/3001479
+        "Further contributions to the theory of paired comparisons".
+        Biometrics, 11(1):43--62, 1955.
+        https://www.jstor.org/stable/3001479
 
-    .. [5] Claude Berge
-       "Théorie des graphes et ses applications."
-       Dunod, Paris, France, 1958.
+    .. [5] Claude Berge.
+        "Théorie des graphes et ses applications".
+        Dunod, Paris, France, 1958.
 
     .. [6] Phillip Bonacich.
-       "Technique for analyzing overlapping memberships."
-       Sociological Methodology, 4:176–185, 1972.
-       https://www.jstor.org/stable/270732
+        "Technique for analyzing overlapping memberships".
+        Sociological Methodology, 4:176--185, 1972.
+        https://www.jstor.org/stable/270732
 
-    .. [7] Arnoldi iteration:: https://en.wikipedia.org/wiki/Arnoldi_iteration
-
-    .. [8] Perron, Oskar.
-        "Zur Theorie der Matrices".
-        Mathematische Annalen 64 (1907): 248--263.
-        https://eudml.org/doc/158317
-
-    .. [9] Frobenius, Georg.
-        "Über Matrizen aus nicht negativen Elementen".
-        Sitzungsberichte der Königlich Preussischen Akademie der Wissenschaften (1912): 456--477.
-        https://www.e-rara.ch/doi/10.3931/e-rara-18865
+    .. [7] Arnoldi, W. E. (1951).
+        "The principle of minimized iterations in the solution of the matrix eigenvalue problem".
+        Quarterly of Applied Mathematics. 9 (1): 17--29.
+        https://doi.org/10.1090/qam/42792
     """
     import numpy as np
     import scipy as sp
@@ -359,7 +344,7 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
             "cannot compute centrality for the null graph"
         )
     connectivity_func = nx.is_strongly_connected if G.is_directed() else nx.is_connected
-    if not connectivity_func(G):
+    if not connectivity_func(G):  # See gh-6888.
         msg = "`eigenvector_centrality_numpy` does not give consistent results for disconnected graphs"
         raise nx.AmbiguousSolution(msg)
     M = nx.to_scipy_sparse_array(G, nodelist=list(G), weight=weight, dtype=float)

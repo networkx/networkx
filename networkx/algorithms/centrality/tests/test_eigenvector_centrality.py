@@ -167,7 +167,6 @@ class TestEigenvectorCentralityExceptions:
         with pytest.raises(nx.NetworkXException):
             nx.eigenvector_centrality_numpy(nx.Graph())
 
-    # `eigenvector_centrality` raises `AmbiguousSolution` for disconnected graphs; gh-6888.
     @pytest.mark.parametrize(
         "G",
         [
