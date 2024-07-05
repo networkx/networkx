@@ -214,7 +214,6 @@ def is_valid_degree_sequence_erdos_gallai(deg_sequence):
 
     Notes
     -----
-
     This implementation uses an equivalent form of the Erdős-Gallai criterion.
     Worst-case run time is $O(n)$ where $n$ is the length of the sequence.
 

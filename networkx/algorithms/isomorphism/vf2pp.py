@@ -29,7 +29,6 @@ branches early in the process.
 
 Examples
 --------
-
 Suppose G1 and G2 are Isomorphic Graphs. Verification is as follows:
 
 Without node labels:

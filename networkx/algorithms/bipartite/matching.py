@@ -226,7 +226,6 @@ def eppstein_matching(G, top_nodes=None):
 
     See Also
     --------
-
     hopcroft_karp_matching
 
     """

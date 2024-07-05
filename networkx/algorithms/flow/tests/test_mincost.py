@@ -230,8 +230,8 @@ class TestMinCostFlow:
         """Combinatorial Optimization: Algorithms and Complexity,
         Papadimitriou Steiglitz at page 140 has an example, 7.1, but that
         admits multiple solutions, so I alter it a bit. From ticket #430
-        by mfrasca."""
-
+        by mfrasca.
+        """
         G = nx.DiGraph()
         G.add_edge("s", "a")
         G["s"]["a"].update({0: 2, 1: 4})
@@ -304,7 +304,8 @@ class TestMinCostFlow:
 
     def test_digon(self):
         """Check if digons are handled properly. Taken from ticket
-        #618 by arv."""
+        #618 by arv.
+        """
         nodes = [(1, {}), (2, {"demand": -4}), (3, {"demand": 4})]
         edges = [
             (1, 2, {"capacity": 3, "weight": 600000}),
@@ -329,7 +330,8 @@ class TestMinCostFlow:
 
     def test_deadend(self):
         """Check if one-node cycles are handled properly. Taken from ticket
-        #2906 from @sshraven."""
+        #2906 from @sshraven.
+        """
         G = nx.DiGraph()
 
         G.add_nodes_from(range(5), demand=0)
@@ -341,7 +343,8 @@ class TestMinCostFlow:
 
     def test_infinite_capacity_neg_digon(self):
         """An infinite capacity negative cost digon results in an unbounded
-        instance."""
+        instance.
+        """
         nodes = [(1, {}), (2, {"demand": -4}), (3, {"demand": 4})]
         edges = [
             (1, 2, {"weight": -600}),
@@ -356,7 +359,8 @@ class TestMinCostFlow:
 
     def test_finite_capacity_neg_digon(self):
         """The digon should receive the maximum amount of flow it can handle.
-        Taken from ticket #749 by @chuongdo."""
+        Taken from ticket #749 by @chuongdo.
+        """
         G = nx.DiGraph()
         G.add_edge("a", "b", capacity=1, weight=-1)
         G.add_edge("b", "a", capacity=1, weight=-1)

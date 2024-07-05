@@ -12,7 +12,6 @@ from networkx.generators.joint_degree_seq import (
 
 def test_is_valid_joint_degree():
     """Tests for conditions that invalidate a joint degree dict"""
-
     # valid joint degree that satisfies all five conditions
     joint_degrees = {
         1: {4: 1},

@@ -31,7 +31,6 @@ def could_be_isomorphic(G1, G2):
     involving that node.
 
     """
-
     # Check global properties
     if G1.order() != G2.order():
         return False

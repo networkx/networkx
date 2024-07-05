@@ -236,7 +236,7 @@ def capacity_scaling(
     -----
     This algorithm does not work if edge weights are floating-point numbers.
 
-    See also
+    See Also
     --------
     :meth:`network_simplex`
 

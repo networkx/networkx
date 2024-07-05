@@ -63,17 +63,17 @@ class TestConvertScipy:
         assert nx.is_isomorphic(G, GI)
 
     def test_shape(self):
-        "Conversion from non-square sparse array."
+        """Conversion from non-square sparse array."""
         A = sp.sparse.lil_array([[1, 2, 3], [4, 5, 6]])
         pytest.raises(nx.NetworkXError, nx.from_scipy_sparse_array, A)
 
     def test_identity_graph_matrix(self):
-        "Conversion from graph to sparse matrix to graph."
+        """Conversion from graph to sparse matrix to graph."""
         A = nx.to_scipy_sparse_array(self.G1)
         self.identity_conversion(self.G1, A, nx.Graph())
 
     def test_identity_digraph_matrix(self):
-        "Conversion from digraph to sparse matrix to digraph."
+        """Conversion from digraph to sparse matrix to digraph."""
         A = nx.to_scipy_sparse_array(self.G2)
         self.identity_conversion(self.G2, A, nx.DiGraph())
 

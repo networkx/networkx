@@ -274,7 +274,6 @@ def maybe_regular_expander(n, d, *, create_using=None, max_tries=100, seed=None)
        https://arxiv.org/abs/cs/0405020
 
     """
-
     import numpy as np
 
     if n < 1:
@@ -377,7 +376,6 @@ def is_regular_expander(G, *, epsilon=0):
     .. [3] Ramanujan graphs, https://en.wikipedia.org/wiki/Ramanujan_graph
 
     """
-
     import numpy as np
     from scipy.sparse.linalg import eigsh
 

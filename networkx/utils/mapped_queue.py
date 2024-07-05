@@ -108,7 +108,6 @@ class MappedQueue:
 
     Examples
     --------
-
     A `MappedQueue` can be created empty, or optionally, given a dictionary
     of initial elements and priorities.  The methods `push`, `pop`,
     `remove`, and `update` operate on the queue.

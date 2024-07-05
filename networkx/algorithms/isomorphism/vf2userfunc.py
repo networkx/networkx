@@ -163,7 +163,6 @@ class DiGraphMatcher(vf2.DiGraphMatcher):
 
     def semantic_feasibility(self, G1_node, G2_node):
         """Returns True if mapping G1_node to G2_node is semantically feasible."""
-
         # Test node_match and also test edge_match on successors
         feasible = _semantic_feasibility(self, G1_node, G2_node)
         if not feasible:

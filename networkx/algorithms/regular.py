@@ -109,7 +109,6 @@ def k_factor(G, k, matching_weight="weight"):
        Meijer, Henk, Yurai Núñez-Rodríguez, and David Rappaport,
        Information processing letters, 2009.
     """
-
     from networkx.algorithms.matching import is_perfect_matching, max_weight_matching
 
     class LargeKGadget:

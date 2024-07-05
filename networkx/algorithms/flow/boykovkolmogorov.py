@@ -75,7 +75,7 @@ def boykov_kolmogorov(
         feasible flow on the graph is unbounded above and the function
         raises a NetworkXUnbounded.
 
-    See also
+    See Also
     --------
     :meth:`maximum_flow`
     :meth:`minimum_cut`

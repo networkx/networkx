@@ -182,8 +182,8 @@ class TestEdgelist:
 
     def test_parse_edgelist(self):
         """Tests for conditions specific to
-        parse_edge_list method"""
-
+        parse_edge_list method
+        """
         # ignore strings of length less than 2
         lines = ["1 2", "2 3", "3 1", "4", " "]
         G = bipartite.parse_edgelist(lines, nodetype=int)

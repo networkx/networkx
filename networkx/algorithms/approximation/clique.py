@@ -230,9 +230,8 @@ def large_clique_size(G):
        *Internet Mathematics* 11.4-5 (2015): 421--448.
        <https://doi.org/10.1080/15427951.2014.986778>
 
-    See also
+    See Also
     --------
-
     :func:`networkx.algorithms.approximation.clique.max_clique`
         A function that returns an approximate maximum clique with a
         guarantee on the approximation ratio.

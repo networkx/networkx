@@ -28,7 +28,7 @@ class AtlasView(Mapping):
     outer level is read-only.
 
     See Also
-    ========
+    --------
     AdjacencyView: View into dict-of-dict-of-dict
     MultiAdjacencyView: View into dict-of-dict-of-dict-of-dict
     """
@@ -71,7 +71,7 @@ class AdjacencyView(AtlasView):
     outer levels are read-only.
 
     See Also
-    ========
+    --------
     AtlasView: View into dict-of-dict
     MultiAdjacencyView: View into dict-of-dict-of-dict-of-dict
     """
@@ -93,7 +93,7 @@ class MultiAdjacencyView(AdjacencyView):
     outer levels are read-only.
 
     See Also
-    ========
+    --------
     AtlasView: View into dict-of-dict
     AdjacencyView: View into dict-of-dict-of-dict
     """
@@ -116,7 +116,7 @@ class UnionAtlas(Mapping):
     pairs and is read-write. But the outer level is read-only.
 
     See Also
-    ========
+    --------
     UnionAdjacency: View into dict-of-dict-of-dict
     UnionMultiAdjacency: View into dict-of-dict-of-dict-of-dict
     """
@@ -175,7 +175,7 @@ class UnionAdjacency(Mapping):
     The keys for the two dicts should be the same
 
     See Also
-    ========
+    --------
     UnionAtlas: View into dict-of-dict
     UnionMultiAdjacency: View into dict-of-dict-of-dict-of-dict
     """
@@ -223,7 +223,7 @@ class UnionMultiInner(UnionAtlas):
     The inner level of dict is read-write. But the outer levels are read-only.
 
     See Also
-    ========
+    --------
     UnionAtlas: View into dict-of-dict
     UnionAdjacency:  View into dict-of-dict-of-dict
     UnionMultiAdjacency:  View into dict-of-dict-of-dict-of-dict
@@ -253,7 +253,7 @@ class UnionMultiAdjacency(UnionAdjacency):
     The inner level of dict is read-write. But the outer levels are read-only.
 
     See Also
-    ========
+    --------
     UnionAtlas:  View into dict-of-dict
     UnionMultiInner:  View into dict-of-dict-of-dict
     """
@@ -271,7 +271,7 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
     nodes that meet the criteria defined by ``NODE_OK``.
 
     See Also
-    ========
+    --------
     FilterAdjacency
     FilterMultiInner
     FilterMultiAdjacency
@@ -319,7 +319,7 @@ class FilterAdjacency(Mapping):  # edgedict
     respectively.
 
     See Also
-    ========
+    --------
     FilterAtlas
     FilterMultiInner
     FilterMultiAdjacency
@@ -372,7 +372,7 @@ class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
     and edges that meet specific criteria defined by ``NODE_OK`` and ``EDGE_OK``.
 
     See Also
-    ========
+    --------
     FilterAtlas
     FilterAdjacency
     FilterMultiAdjacency
@@ -415,7 +415,7 @@ class FilterMultiAdjacency(FilterAdjacency):  # multiedgedict
     defined by ``NODE_OK`` and ``EDGE_OK``, respectively.
 
     See Also
-    ========
+    --------
     FilterAtlas
     FilterAdjacency
     FilterMultiInner

@@ -107,7 +107,7 @@ def graph_atlas(i):
         A list of :class:`~networkx.Graph` objects, the one at index *i*
         corresponding to the graph *i* in the Graph Atlas.
 
-    See also
+    See Also
     --------
     graph_atlas_g
 
@@ -151,7 +151,7 @@ def graph_atlas_g():
         A list of :class:`~networkx.Graph` objects, the one at index *i*
         corresponding to the graph *i* in the Graph Atlas.
 
-    See also
+    See Also
     --------
     graph_atlas
 

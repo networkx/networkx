@@ -361,7 +361,8 @@ class TestWeightedBetweennessCentrality:
 
     def test_florentine_families_graph(self):
         """Weighted betweenness centrality:
-        Florentine families graph"""
+        Florentine families graph
+        """
         G = nx.florentine_families_graph()
         b_answer = {
             "Acciaiuoli": 0.000,

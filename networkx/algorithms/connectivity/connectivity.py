@@ -165,7 +165,7 @@ def local_node_connectivity(
     This is equal to the local node connectivity because the value of
     a maximum s-t-flow is equal to the capacity of a minimum s-t-cut.
 
-    See also
+    See Also
     --------
     :meth:`local_edge_connectivity`
     :meth:`node_connectivity`
@@ -282,7 +282,7 @@ def node_connectivity(G, s=None, t=None, flow_func=None):
     :meth:`local_node_connectivity`. This implementation is based
     on algorithm 11 in [1]_.
 
-    See also
+    See Also
     --------
     :meth:`local_node_connectivity`
     :meth:`edge_connectivity`
@@ -360,7 +360,6 @@ def average_node_connectivity(G, flow_func=None):
 
     Parameters
     ----------
-
     G : NetworkX graph
         Undirected graph
 
@@ -379,7 +378,7 @@ def average_node_connectivity(G, flow_func=None):
     K : float
         Average node connectivity
 
-    See also
+    See Also
     --------
     :meth:`local_node_connectivity`
     :meth:`node_connectivity`
@@ -445,7 +444,7 @@ def all_pairs_node_connectivity(G, nbunch=None, flow_func=None):
         A dictionary with node connectivity between all pairs of nodes
         in G, or in nbunch if provided.
 
-    See also
+    See Also
     --------
     :meth:`local_node_connectivity`
     :meth:`edge_connectivity`
@@ -608,7 +607,7 @@ def local_edge_connectivity(
     connectivity because the value of a maximum s-t-flow is equal to the
     capacity of a minimum s-t-cut (Ford and Fulkerson theorem).
 
-    See also
+    See Also
     --------
     :meth:`edge_connectivity`
     :meth:`local_node_connectivity`
@@ -726,7 +725,7 @@ def edge_connectivity(G, s=None, t=None, flow_func=None, cutoff=None):
     For directed graphs, the algorithm does n calls to the maximum
     flow function. This is an implementation of algorithm 8 in [1]_ .
 
-    See also
+    See Also
     --------
     :meth:`local_edge_connectivity`
     :meth:`local_node_connectivity`

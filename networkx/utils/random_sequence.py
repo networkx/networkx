@@ -96,7 +96,6 @@ def zipf_rv(alpha, xmin=1, seed=None):
 
 def cumulative_distribution(distribution):
     """Returns normalized cumulative distribution from discrete distribution."""
-
     cdf = [0.0]
     psum = sum(distribution)
     for i in range(len(distribution)):

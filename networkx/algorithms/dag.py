@@ -66,7 +66,7 @@ def descendants(G, source):
     >>> sorted(nx.descendants(DG, 2) | {2})
     [2, 3, 4]
 
-    See also
+    See Also
     --------
     ancestors
     """
@@ -103,7 +103,7 @@ def ancestors(G, source):
     >>> sorted(nx.ancestors(DG, 2) | {2})
     [0, 1, 2]
 
-    See also
+    See Also
     --------
     descendants
     """
@@ -156,7 +156,7 @@ def is_directed_acyclic_graph(G):
         >>> nx.is_directed_acyclic_graph(G)
         True
 
-    See also
+    See Also
     --------
     topological_sort
     """
@@ -208,7 +208,7 @@ def topological_generations(G):
     max-path-distance from the node to the farthest leaf node. That value can
     be obtained with this function using `enumerate(topological_generations(G))`.
 
-    See also
+    See Also
     --------
     topological_sort
     """
@@ -297,7 +297,7 @@ def topological_sort(G):
     This algorithm is based on a description and proof in
     "Introduction to Algorithms: A Creative Approach" [1]_ .
 
-    See also
+    See Also
     --------
     is_directed_acyclic_graph, lexicographical_topological_sort
 
@@ -398,7 +398,7 @@ def lexicographical_topological_sort(G, key=None):
     This algorithm is based on a description and proof in
     "Introduction to Algorithms: A Creative Approach" [1]_ .
 
-    See also
+    See Also
     --------
     topological_sort
 
@@ -1009,7 +1009,7 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
     >>> nx.dag_longest_path(DG, topo_order=[0, 2, 1])
     [0, 2]
 
-    See also
+    See Also
     --------
     dag_longest_path_length
 
@@ -1090,7 +1090,7 @@ def dag_longest_path_length(G, weight="weight", default_weight=1):
     >>> nx.dag_longest_path_length(DG, weight="cost")
     42
 
-    See also
+    See Also
     --------
     dag_longest_path
     """

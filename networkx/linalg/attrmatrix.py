@@ -82,7 +82,6 @@ def _edge_value(G, edge_attr):
         return a value from G[u][v] that depends on `edge_attr`.
 
     """
-
     if edge_attr is None:
         # topological count of edges
 

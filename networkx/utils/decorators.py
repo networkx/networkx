@@ -369,7 +369,6 @@ def py_random_state(random_state_argument):
     --------
     np_random_state
     """
-
     return argmap(create_py_random_state, random_state_argument)
 
 
@@ -754,7 +753,6 @@ class argmap:
 
         References
         ----------
-
         [1] https://github.com/networkx/networkx/issues/4732
 
         """
@@ -959,7 +957,6 @@ class argmap:
             via their indices. The compile method then turns the argument
             tuple into a list so that the arguments can be modified.
         """
-
         # first, we check if f is already argmapped -- if that's the case,
         # build up the function recursively.
         # > mapblock is generally a list of function calls of the sort
@@ -1169,7 +1166,7 @@ class argmap:
 
     @staticmethod
     def _flatten(nestlist, visited):
-        """flattens a recursive list of lists that doesn't have cyclic references
+        """Flattens a recursive list of lists that doesn't have cyclic references
 
         Parameters
         ----------
@@ -1217,7 +1214,6 @@ class argmap:
 
         Examples
         --------
-
             argmap._indent(*["try:", "try:", "pass#", "finally:", "pass#", "#",
                              "finally:", "pass#"])
 

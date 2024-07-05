@@ -301,7 +301,6 @@ def partition_quality(G, partition):
            *Physical Reports*, Volume 486, Issue 3--5 pp. 75--174
            <https://arxiv.org/abs/0906.0612>
     """
-
     node_community = {}
     for i, community in enumerate(partition):
         for node in community:

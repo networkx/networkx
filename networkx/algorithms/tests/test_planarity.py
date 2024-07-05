@@ -30,7 +30,6 @@ class TestLRPlanarity:
             If set to None only counter example or embedding are verified.
 
         """
-
         # obtain results of planarity check
         is_planar_lr, result = nx.check_planarity(G, True)
         is_planar_lr_rec, result_rec = check_planarity_recursive(G, True)
@@ -310,7 +309,6 @@ def check_embedding(G, embedding):
         - Every half edge has its matching opposite half edge
         - No intersections of edges (checked by Euler's formula)
     """
-
     if not isinstance(embedding, nx.PlanarEmbedding):
         raise nx.NetworkXException("Bad embedding. Not of type nx.PlanarEmbedding")
 

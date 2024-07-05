@@ -280,7 +280,6 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
 
     Raises
     ------
-
     NetworkXError
 
        If the input graph is not connected, or if the graph has fewer than four
@@ -288,7 +287,6 @@ def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
 
     Notes
     -----
-
     The initial graph `G` must be connected, and the resulting graph is
     connected. The graph `G` is modified in place.
 

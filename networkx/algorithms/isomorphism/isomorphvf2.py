@@ -31,7 +31,6 @@ considered in the matching of G1 and G2.
 
 Examples
 --------
-
 Suppose G1 and G2 are isomorphic graphs. Verification is as follows:
 
 >>> from networkx.algorithms import isomorphism
@@ -129,7 +128,6 @@ See Also
 
 Notes
 -----
-
 The implementation handles both directed and undirected graphs as well
 as multigraphs.
 
@@ -206,7 +204,6 @@ class GraphMatcher:
 
     def candidate_pairs_iter(self):
         """Iterator over candidate pairs of nodes in G1 and G2."""
-
         # All computations are done using the current state!
 
         G1_nodes = self.G1_nodes
@@ -244,7 +241,6 @@ class GraphMatcher:
         If only subclassing GraphMatcher, a redefinition is not necessary.
 
         """
-
         # core_1[n] contains the index of the node paired with n, which is m,
         #           provided n is in the mapping.
         # core_2[m] contains the index of the node paired with m, which is n,
@@ -270,7 +266,6 @@ class GraphMatcher:
 
     def is_isomorphic(self):
         """Returns True if G1 and G2 are isomorphic graphs."""
-
         # Let's do two very quick checks!
         # QUESTION: Should we call faster_graph_could_be_isomorphic(G1,G2)?
         # For now, I just copy the code.
@@ -405,7 +400,6 @@ class GraphMatcher:
         The addition is allowable if the inclusion of the candidate pair does
         not make it impossible for an isomorphism/monomorphism to be found.
         """
-
         # The VF2 algorithm was designed to work with graphs having, at most,
         # one edge connecting any two nodes.  This is not the case when
         # dealing with an MultiGraphs.
@@ -545,7 +539,6 @@ class DiGraphMatcher(GraphMatcher):
 
     def candidate_pairs_iter(self):
         """Iterator over candidate pairs of nodes in G1 and G2."""
-
         # All computations are done using the current state!
 
         G1_nodes = self.G1_nodes
@@ -596,7 +589,6 @@ class DiGraphMatcher(GraphMatcher):
         This method should be redefined if using something other than DiGMState.
         If only subclassing GraphMatcher, a redefinition is not necessary.
         """
-
         # core_1[n] contains the index of the node paired with n, which is m,
         #           provided n is in the mapping.
         # core_2[m] contains the index of the node paired with m, which is n,
@@ -632,7 +624,6 @@ class DiGraphMatcher(GraphMatcher):
         The addition is allowable if the inclusion of the candidate pair does
         not make it impossible for an isomorphism/monomorphism to be found.
         """
-
         # The VF2 algorithm was designed to work with graphs having, at most,
         # one edge connecting any two nodes.  This is not the case when
         # dealing with an MultiGraphs.
@@ -1050,7 +1041,6 @@ class DiGMState:
 
     def restore(self):
         """Deletes the DiGMState object and restores the class variables."""
-
         # First we remove the node that was added from the core vectors.
         # Watch out! G1_node == 0 should evaluate to True.
         if self.G1_node is not None and self.G2_node is not None:

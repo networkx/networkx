@@ -622,7 +622,7 @@ def contracted_edge(G, edge, self_loops=True, copy=True):
     >>> nx.is_isomorphic(M, C4)
     True
 
-    See also
+    See Also
     --------
     contracted_nodes
     quotient_graph

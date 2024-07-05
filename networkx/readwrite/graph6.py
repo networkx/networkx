@@ -102,7 +102,8 @@ def from_graph6_bytes(bytes_in):
 
     def bits():
         """Returns sequence of individual bits from 6-bit-per-value
-        list of data values."""
+        list of data values.
+        """
         for d in data:
             for i in [5, 4, 3, 2, 1, 0]:
                 yield (d >> i) & 1
@@ -378,7 +379,8 @@ def data_to_n(data):
     """Read initial one-, four- or eight-unit value from graph6
     integer sequence.
 
-    Return (value, rest of seq.)"""
+    Return (value, rest of seq.)
+    """
     if data[0] <= 62:
         return data[0], data[1:]
     if data[1] <= 62:

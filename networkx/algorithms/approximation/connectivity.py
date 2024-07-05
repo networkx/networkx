@@ -28,7 +28,6 @@ def local_node_connectivity(G, source, target, cutoff=None):
 
     Parameters
     ----------
-
     G : NetworkX graph
 
     source : node
@@ -68,7 +67,7 @@ def local_node_connectivity(G, source, target, cutoff=None):
     Note that the authors propose a further refinement, losing accuracy and
     gaining speed, which is not implemented yet.
 
-    See also
+    See Also
     --------
     all_pairs_node_connectivity
     node_connectivity
@@ -160,7 +159,7 @@ def node_connectivity(G, s=None, t=None):
     to two different node independent paths. Thus it only guarantees an
     strict lower bound on node connectivity.
 
-    See also
+    See Also
     --------
     all_pairs_node_connectivity
     local_node_connectivity
@@ -300,7 +299,6 @@ def _bidirectional_shortest_path(G, source, target, exclude):
 
     Parameters
     ----------
-
     G : NetworkX graph
 
     source : node

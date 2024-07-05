@@ -228,8 +228,6 @@ def barbell_graph(m1, m2, create_using=None):
 
     Notes
     -----
-
-
     Two identical complete graphs $K_{m1}$ form the left and right bells,
     and are connected by a path $P_{m2}$.
 
@@ -932,7 +930,6 @@ def turan_graph(n, r):
     Must satisfy $1 <= r <= n$.
     The graph has $(r-1)(n^2)/(2r)$ edges, rounded down.
     """
-
     if not 1 <= r <= n:
         raise NetworkXError("Must satisfy 1 <= r <= n")
 
@@ -1033,7 +1030,7 @@ def complete_multipartite_graph(*subset_sizes):
     - If subset sizes `1` and `n` are given, this returns the star graph on
       `n + 1` nodes.
 
-    See also
+    See Also
     --------
     complete_bipartite_graph
     """

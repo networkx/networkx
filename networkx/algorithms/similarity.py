@@ -740,7 +740,8 @@ def optimize_edit_paths(
 
     def match_edges(u, v, pending_g, pending_h, Ce, matched_uv=None):
         """
-        Parameters:
+        Parameters
+        ----------
             u, v: matched vertices, u=None or v=None for
                deletion/insertion
             pending_g, pending_h: lists of edges not yet mapped
@@ -750,7 +751,8 @@ def optimize_edit_paths(
                     mappings u<->v, u=None or v=None for
                     deletion/insertion
 
-        Returns:
+        Returns
+        -------
             list of (i, j): indices of edge mappings g<->h
             localCe: local CostMatrix of edge mappings
                 (basically submatrix of Ce at cross of rows i, cols j)
@@ -842,7 +844,8 @@ def optimize_edit_paths(
         matched_uv, pending_u, pending_v, Cv, pending_g, pending_h, Ce, matched_cost
     ):
         """
-        Parameters:
+        Parameters
+        ----------
             matched_uv: partial vertex edit path
                 list of tuples (u, v) of vertex mappings u<->v,
                 u=None or v=None for deletion/insertion
@@ -852,7 +855,8 @@ def optimize_edit_paths(
             Ce: CostMatrix of pending edge mappings
             matched_cost: cost of partial edit path
 
-        Returns:
+        Returns
+        -------
             sequence of
                 (i, j): indices of vertex mapping u<->v
                 Cv_ij: reduced CostMatrix of pending vertex mappings
@@ -949,7 +953,8 @@ def optimize_edit_paths(
         matched_cost,
     ):
         """
-        Parameters:
+        Parameters
+        ----------
             matched_uv: partial vertex edit path
                 list of tuples (u, v) of vertex mappings u<->v,
                 u=None or v=None for deletion/insertion
@@ -962,7 +967,8 @@ def optimize_edit_paths(
             Ce: CostMatrix of pending edge mappings
             matched_cost: cost of partial edit path
 
-        Returns:
+        Returns
+        -------
             sequence of (vertex_path, edge_path, cost)
                 vertex_path: complete vertex edit path
                     list of tuples (u, v) of vertex mappings u<->v,

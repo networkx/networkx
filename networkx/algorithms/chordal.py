@@ -24,7 +24,8 @@ __all__ = [
 
 class NetworkXTreewidthBoundExceeded(nx.NetworkXException):
     """Exception raised when a treewidth bound has been provided and it has
-    been exceeded"""
+    been exceeded
+    """
 
 
 @not_implemented_for("directed")

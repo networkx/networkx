@@ -19,7 +19,6 @@ def is_coloring(G, coloring):
 @nx._dispatchable
 def is_equitable(G, coloring, num_colors=None):
     """Determines if the coloring is valid and equitable for the graph G."""
-
     if not is_coloring(G, coloring):
         return False
 
@@ -121,7 +120,6 @@ def pad_graph(G, num_colors):
 
     Returns the number of nodes with each color.
     """
-
     n_ = len(G)
     r = num_colors - 1
 
@@ -140,7 +138,6 @@ def pad_graph(G, num_colors):
 
 def procedure_P(V_minus, V_plus, N, H, F, C, L, excluded_colors=None):
     """Procedure P as described in the paper."""
-
     if excluded_colors is None:
         excluded_colors = set()
 
@@ -427,7 +424,6 @@ def equitable_color(G, num_colors):
         (2010). A fast algorithm for equitable coloring. Combinatorica, 30(2),
         217-224.
     """
-
     # Map nodes to integers for simplicity later.
     nodes_to_int = {}
     int_to_nodes = {}

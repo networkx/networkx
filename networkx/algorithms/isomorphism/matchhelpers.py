@@ -314,7 +314,6 @@ def generic_multiedge_match(attr, default, op):
     >>> nm = generic_node_match(["weight", "color"], [1.0, "red"], [isclose, eq])
 
     """
-
     # This is slow, but generic.
     # We must test every possible isomorphism between the edges.
     if isinstance(attr, str):

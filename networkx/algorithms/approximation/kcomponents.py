@@ -82,7 +82,7 @@ def k_components(G, min_density=0.95):
     complement graph data structure, it behaves as if it were the dense
     version.
 
-    See also
+    See Also
     --------
     k_components
 

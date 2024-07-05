@@ -48,9 +48,8 @@ def caveman_graph(l, k):
     --------
     >>> G = nx.caveman_graph(3, 3)
 
-    See also
+    See Also
     --------
-
     connected_caveman_graph
 
     References

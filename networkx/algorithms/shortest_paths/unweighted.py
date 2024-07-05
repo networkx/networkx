@@ -67,6 +67,7 @@ def _single_shortest_path_length(adj, firstlevel, cutoff):
     """Yields (node, level) in a breadth first search
 
     Shortest Path Length helper function
+
     Parameters
     ----------
         adj : dict
@@ -239,7 +240,6 @@ def bidirectional_shortest_path(G, source, target):
     -----
     This algorithm is used by shortest_path(G, source, target).
     """
-
     if source not in G or target not in G:
         msg = f"Either source {source} or target {target} is not in G"
         raise nx.NodeNotFound(msg)
@@ -371,6 +371,7 @@ def _single_shortest_path(adj, firstlevel, paths, cutoff, join):
     """Returns shortest paths
 
     Shortest Path helper function
+
     Parameters
     ----------
         adj : dict

@@ -141,8 +141,8 @@ def lowest_common_ancestor(G, node1, node2, default=None):
 
     See Also
     --------
-    all_pairs_lowest_common_ancestor"""
-
+    all_pairs_lowest_common_ancestor
+    """
     ans = list(all_pairs_lowest_common_ancestor(G, pairs=[(node1, node2)]))
     if ans:
         assert len(ans) == 1

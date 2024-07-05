@@ -53,7 +53,6 @@ def mycielskian(G, iterations=1):
     Graph, node, and edge data are not necessarily propagated to the new graph.
 
     """
-
     M = nx.convert_node_labels_to_integers(G)
 
     for i in range(iterations):
@@ -99,7 +98,6 @@ def mycielski_graph(n):
     The remaining graphs are generated using the Mycielski operation.
 
     """
-
     if n < 1:
         raise nx.NetworkXError("must satisfy n >= 1")
 

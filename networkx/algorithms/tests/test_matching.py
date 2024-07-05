@@ -160,7 +160,6 @@ class TestMaxWeightMatching:
 
     def test_nested_s_blossom(self):
         """Create nested S-blossom, use for augmentation:"""
-
         G = nx.Graph()
         G.add_weighted_edges_from(
             [

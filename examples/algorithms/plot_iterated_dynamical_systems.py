@@ -90,8 +90,8 @@ p = 3
 
 def digitsrep(n, b=10):
     """Return list of digits comprising n represented in base b.
-    n must be a nonnegative integer"""
-
+    n must be a nonnegative integer
+    """
     if n <= 0:
         return [0]
 

@@ -51,7 +51,6 @@ def is_valid_joint_degree(joint_degrees):
        prescribed joint degree distribution", Journal of Experimental
        Algorithmics, 2012.
     """
-
     degree_count = {}
     for k in joint_degrees:
         if k > 0:
@@ -107,7 +106,6 @@ def _neighbor_switch(G, w, unsat, h_node_residual, avoid_node_id=None):
     .. [1] M. Gjoka, B. Tillman, A. Markopoulou, "Construction of Simple
        Graphs with a Target Joint Degree Matrix and Beyond", IEEE Infocom, '15
     """
-
     if (avoid_node_id is None) or (h_node_residual[avoid_node_id] > 1):
         # select unsaturated node w_prime that has the same degree as w
         w_prime = next(iter(unsat))
@@ -199,7 +197,6 @@ def joint_degree_graph(joint_degrees, seed=None):
     >>> G = nx.joint_degree_graph(joint_degrees)
     >>>
     """
-
     if not is_valid_joint_degree(joint_degrees):
         msg = "Input joint degree dict not realizable as a simple graph"
         raise nx.NetworkXError(msg)

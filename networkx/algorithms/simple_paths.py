@@ -287,7 +287,6 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
 
     Examples
     --------
-
     Print the simple path edges of a Graph::
 
         >>> g = nx.Graph([(1, 2), (2, 4), (1, 3), (3, 4)])
@@ -453,7 +452,6 @@ def shortest_simple_paths(G, source, target, weight=None):
 
     Examples
     --------
-
     >>> G = nx.cycle_graph(7)
     >>> paths = list(nx.shortest_simple_paths(G, 0, 3))
     >>> print(paths)

@@ -90,7 +90,6 @@ class TestVF2GraphDB:
     @staticmethod
     def create_graph(filename):
         """Creates a Graph instance from the filename."""
-
         # The file is assumed to be in the format from the VF2 graph database.
         # Each file is composed of 16-bit numbers (unsigned short int).
         # So we will want to read 2 bytes at a time.

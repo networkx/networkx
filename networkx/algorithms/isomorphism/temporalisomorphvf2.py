@@ -35,7 +35,6 @@ adjacent interactions occur up to a day apart.
 
 Examples
 --------
-
 Examples will be provided when the datetime type has been incorporated.
 
 
@@ -47,7 +46,6 @@ included here.
 
 References
 ----------
-
 [1] Redmond, U. and Cunningham, P. Temporal subgraph isomorphism. In:
 The 2013 IEEE/ACM International Conference on Advances in Social
 Networks Analysis and Mining (ASONAM). Niagara Falls, Canada; 2013:
@@ -60,7 +58,6 @@ For a discussion of the literature on temporal networks:
 
 Notes
 -----
-
 Handles directed and undirected graphs and graphs with parallel edges.
 
 """

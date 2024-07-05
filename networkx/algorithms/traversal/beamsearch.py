@@ -61,7 +61,6 @@ def bfs_beam_edges(G, source, value, width=None):
     >>> list(nx.bfs_beam_edges(G, source=0, value=centrality.get, width=3))
     [(0, 2), (0, 1), (0, 8), (2, 32), (1, 13), (8, 33)]
     """
-
     if width is None:
         width = len(G)
 

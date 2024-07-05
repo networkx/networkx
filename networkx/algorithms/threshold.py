@@ -82,7 +82,9 @@ def creation_sequence(degree_sequence, with_labels=False, compact=False):
     If compact==True:
     Returns the creation sequence in a compact form that is the number
     of 'i's and 'd's alternating.
-    Examples:
+
+    Examples
+    --------
     [1,2,2,3] represents d,i,i,d,d,i,i,i
     [3,1,2] represents d,d,d,i,d,d
 
@@ -260,7 +262,9 @@ def weights_to_creation_sequence(
     If compact==True:
     Returns the creation sequence in a compact form that is the number
     of 'i's and 'd's alternating.
-    Examples:
+
+    Examples
+    --------
     [1,2,2,3] represents d,i,i,d,d,i,i,i
     [3,1,2] represents d,d,d,i,d,d
 

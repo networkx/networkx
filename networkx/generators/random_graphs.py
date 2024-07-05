@@ -258,7 +258,7 @@ def gnm_random_graph(n, m, seed=None, directed=False):
     directed : bool, optional (default=False)
         If True return a directed graph
 
-    See also
+    See Also
     --------
     dense_gnm_random_graph
 
@@ -519,7 +519,6 @@ def random_regular_graph(d, n, seed=None):
 
     Raises
     ------
-
     NetworkXError
         If $n \times d$ is odd or $d$ is greater than or equal to $n$.
 
@@ -659,7 +658,6 @@ def barabasi_albert_graph(n, m, seed=None, initial_graph=None):
     .. [1] A. L. Barabási and R. Albert "Emergence of scaling in
        random networks", Science 286, pp 509-512, 1999.
     """
-
     if m < 1 or m >= n:
         raise nx.NetworkXError(
             f"Barabási–Albert network must have m >= 1 and m < n, m = {m}, n = {n}"
@@ -737,7 +735,6 @@ def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial_graph=None):
     ----------
     .. [1] N. Moshiri "The dual-Barabasi-Albert model", arXiv:1810.10538.
     """
-
     if m1 < 1 or m1 >= n:
         raise nx.NetworkXError(
             f"Dual Barabási–Albert must have m1 >= 1 and m1 < n, m1 = {m1}, n = {n}"
@@ -1003,7 +1000,6 @@ def powerlaw_cluster_graph(n, m, p, seed=None):
        "Growing scale-free networks with tunable clustering",
        Phys. Rev. E, 65, 026107, 2002.
     """
-
     if m < 1 or n < m:
         raise nx.NetworkXError(f"NetworkXError must have m>1 and m<n, m={m},n={n}")
 

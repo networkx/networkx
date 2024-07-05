@@ -283,7 +283,8 @@ def test_zero_capacity_edges():
 
 def test_digon():
     """Check if digons are handled properly. Taken from ticket
-    #618 by arv."""
+    #618 by arv.
+    """
     nodes = [(1, {}), (2, {"demand": -4}), (3, {"demand": 4})]
     edges = [
         (1, 2, {"capacity": 3, "weight": 600000}),
@@ -300,7 +301,8 @@ def test_digon():
 
 def test_deadend():
     """Check if one-node cycles are handled properly. Taken from ticket
-    #2906 from @sshraven."""
+    #2906 from @sshraven.
+    """
     G = nx.DiGraph()
 
     G.add_nodes_from(range(5), demand=0)
@@ -313,7 +315,8 @@ def test_deadend():
 
 def test_infinite_capacity_neg_digon():
     """An infinite capacity negative cost digon results in an unbounded
-    instance."""
+    instance.
+    """
     nodes = [(1, {}), (2, {"demand": -4}), (3, {"demand": 4})]
     edges = [
         (1, 2, {"weight": -600}),

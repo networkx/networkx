@@ -65,7 +65,6 @@ def hnm_harary_graph(n, m, create_using=None):
     .. [2] Harary, F. "The Maximum Connectivity of a Graph."
        Proc. Nat. Acad. Sci. USA 48, 1142-1146, 1962.
     """
-
     if n < 1:
         raise NetworkXError("The number of nodes must be >= 1!")
     if m < n - 1:
@@ -156,7 +155,6 @@ def hkn_harary_graph(k, n, create_using=None):
     .. [2] Harary, F. "The Maximum Connectivity of a Graph."
       Proc. Nat. Acad. Sci. USA 48, 1142-1146, 1962.
     """
-
     if k < 1:
         raise NetworkXError("The node connectivity must be >= 1!")
     if n < k + 1:

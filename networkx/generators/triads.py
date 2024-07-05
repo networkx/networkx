@@ -78,7 +78,7 @@ def triad_graph(triad_name):
     ValueError
         If `triad_name` is not the name of a triad.
 
-    See also
+    See Also
     --------
     triadic_census
 

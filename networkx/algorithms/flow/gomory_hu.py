@@ -120,7 +120,7 @@ def gomory_hu_tree(G, capacity="capacity", flow_func=None):
     Gomory-Hu trees, which does not require node contractions and has
     the same computational complexity than the original method.
 
-    See also
+    See Also
     --------
     :func:`minimum_cut`
     :func:`maximum_flow`

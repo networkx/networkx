@@ -72,7 +72,7 @@ def dinitz(G, s, t, capacity="capacity", residual=None, value_only=False, cutoff
         feasible flow on the graph is unbounded above and the function
         raises a NetworkXUnbounded.
 
-    See also
+    See Also
     --------
     :meth:`maximum_flow`
     :meth:`minimum_cut`

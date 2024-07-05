@@ -188,7 +188,7 @@ def triadic_census(G, nodelist=None):
         If `nodelist` contains duplicate nodes or nodes not in `G`.
         If you want to ignore this you can preprocess with `set(nodelist) & G.nodes`
 
-    See also
+    See Also
     --------
     triad_graph
 

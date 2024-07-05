@@ -205,7 +205,6 @@ def from_pandas_adjacency(df, create_using=None):
     >>> print(G)
     Graph named 'Graph from pandas adjacency matrix' with 2 nodes and 3 edges
     """
-
     try:
         df = df[df.index]
     except Exception as err:

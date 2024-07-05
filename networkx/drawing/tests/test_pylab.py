@@ -84,8 +84,8 @@ def test_arrows():
 @pytest.mark.parametrize("edgelist", (None, [(0, 1)]))
 def test_single_edge_color_undirected(edge_color, expected, edgelist):
     """Tests ways of specifying all edges have a single color for edges
-    drawn with a LineCollection"""
-
+    drawn with a LineCollection
+    """
     G = nx.path_graph(3)
     drawn_edges = nx.draw_networkx_edges(
         G, pos=nx.random_layout(G), edgelist=edgelist, edge_color=edge_color
@@ -110,8 +110,8 @@ def test_single_edge_color_undirected(edge_color, expected, edgelist):
 @pytest.mark.parametrize("edgelist", (None, [(0, 1)]))
 def test_single_edge_color_directed(edge_color, expected, edgelist):
     """Tests ways of specifying all edges have a single color for edges drawn
-    with FancyArrowPatches"""
-
+    with FancyArrowPatches
+    """
     G = nx.path_graph(3, create_using=nx.DiGraph)
     drawn_edges = nx.draw_networkx_edges(
         G, pos=nx.random_layout(G), edgelist=edgelist, edge_color=edge_color
@@ -122,7 +122,8 @@ def test_single_edge_color_directed(edge_color, expected, edgelist):
 
 def test_edge_color_tuple_interpretation():
     """If edge_color is a sequence with the same length as edgelist, then each
-    value in edge_color is mapped onto each edge via colormap."""
+    value in edge_color is mapped onto each edge via colormap.
+    """
     G = nx.path_graph(6, create_using=nx.DiGraph)
     pos = {n: (n, n) for n in range(len(G))}
 
@@ -179,7 +180,8 @@ def test_edge_color_tuple_interpretation():
 
 def test_fewer_edge_colors_than_num_edges_directed():
     """Test that the edge colors are cycled when there are fewer specified
-    colors than edges."""
+    colors than edges.
+    """
     G = barbell.to_directed()
     pos = nx.random_layout(barbell)
     edgecolors = ("r", "g", "b")
@@ -190,7 +192,8 @@ def test_fewer_edge_colors_than_num_edges_directed():
 
 def test_more_edge_colors_than_num_edges_directed():
     """Test that extra edge colors are ignored when there are more specified
-    colors than edges."""
+    colors than edges.
+    """
     G = nx.path_graph(4, create_using=nx.DiGraph)  # 3 edges
     pos = nx.random_layout(barbell)
     edgecolors = ("r", "g", "b", "c")  # 4 edge colors
@@ -231,7 +234,8 @@ def test_edge_color_string_with_global_alpha_directed():
 @pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
 def test_edge_width_default_value(graph_type):
     """Test the default linewidth for edges drawn either via LineCollection or
-    FancyArrowPatches."""
+    FancyArrowPatches.
+    """
     G = nx.path_graph(2, create_using=graph_type)
     pos = {n: (n, n) for n in range(len(G))}
     drawn_edges = nx.draw_networkx_edges(G, pos)
@@ -290,7 +294,8 @@ def test_edge_width_sequence(edgelist):
 
 def test_edge_color_with_edge_vmin_vmax():
     """Test that edge_vmin and edge_vmax properly set the dynamic range of the
-    color map when num edges == len(edge_colors)."""
+    color map when num edges == len(edge_colors).
+    """
     G = nx.path_graph(3, create_using=nx.DiGraph)
     pos = nx.random_layout(G)
     # Extract colors from the original (unscaled) colormap
@@ -327,8 +332,8 @@ def test_directed_edges_linestyle_default():
 def test_directed_edges_linestyle_single_value(style):
     """Tests support for specifying linestyles with a single value to be applied to
     all edges in ``draw_networkx_edges`` for FancyArrowPatch outputs
-    (e.g. directed edges)."""
-
+    (e.g. directed edges).
+    """
     G = nx.path_graph(4, create_using=nx.DiGraph)  # Graph with 3 edges
     pos = {n: (n, n) for n in range(len(G))}
 
@@ -351,8 +356,8 @@ def test_directed_edges_linestyle_single_value(style):
 )
 def test_directed_edges_linestyle_sequence(style_seq):
     """Tests support for specifying linestyles with sequences in
-    ``draw_networkx_edges`` for FancyArrowPatch outputs (e.g. directed edges)."""
-
+    ``draw_networkx_edges`` for FancyArrowPatch outputs (e.g. directed edges).
+    """
     G = nx.path_graph(4, create_using=nx.DiGraph)  # Graph with 3 edges
     pos = {n: (n, n) for n in range(len(G))}
 
@@ -774,7 +779,8 @@ def test_draw_networkx_edge_label_multiedge():
 
 def test_draw_networkx_edge_label_empty_dict():
     """Regression test for draw_networkx_edge_labels with empty dict. See
-    gh-5372."""
+    gh-5372.
+    """
     G = nx.path_graph(3)
     pos = {n: (n, n) for n in G.nodes}
     assert nx.draw_networkx_edge_labels(G, pos, edge_labels={}) == {}
@@ -782,7 +788,8 @@ def test_draw_networkx_edge_label_empty_dict():
 
 def test_draw_networkx_edges_undirected_selfloop_colors():
     """When an edgelist is supplied along with a sequence of colors, check that
-    the self-loops have the correct colors."""
+    the self-loops have the correct colors.
+    """
     fig, ax = plt.subplots()
     # Edge list and corresponding colors
     edgelist = [(1, 3), (1, 2), (2, 3), (1, 1), (3, 3), (2, 2)]
@@ -822,7 +829,8 @@ def test_draw_networkx_edges_undirected_selfloop_colors():
 def test_user_warnings_for_unused_edge_drawing_kwargs(fap_only_kwarg):
     """Users should get a warning when they specify a non-default value for
     one of the kwargs that applies only to edges drawn with FancyArrowPatches,
-    but FancyArrowPatches aren't being used under the hood."""
+    but FancyArrowPatches aren't being used under the hood.
+    """
     G = nx.path_graph(3)
     pos = {n: (n, n) for n in G}
     fig, ax = plt.subplots()

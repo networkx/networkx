@@ -80,7 +80,7 @@ def k_components(G, flow_func=None):
     This implementation also uses some heuristics (see [3]_ for details)
     to speed up the computation.
 
-    See also
+    See Also
     --------
     node_connectivity
     all_node_cuts

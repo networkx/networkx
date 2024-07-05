@@ -290,7 +290,6 @@ def articulation_points(G):
 
     Examples
     --------
-
     >>> G = nx.barbell_graph(4, 2)
     >>> print(nx.is_biconnected(G))
     False

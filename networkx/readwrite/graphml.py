@@ -451,7 +451,8 @@ class GraphML:
     def get_xml_type(self, key):
         """Wrapper around the xml_type dict that raises a more informative
         exception message when a user attempts to use data of a type not
-        supported by GraphML."""
+        supported by GraphML.
+        """
         try:
             return self.xml_type[key]
         except KeyError as err:

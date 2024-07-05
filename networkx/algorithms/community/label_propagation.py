@@ -63,7 +63,6 @@ def fast_label_propagation_communities(G, *, weight=None, seed=None):
        fast label propagation." Scientific Reports 13 (2023): 2701.
        https://doi.org/10.1038/s41598-023-29610-z
     """
-
     # Queue of nodes to be processed.
     nodes_queue = deque(G)
     seed.shuffle(nodes_queue)
@@ -107,7 +106,6 @@ def _fast_label_count(G, comms, node, weight=None):
 
     Returns a dictionary keyed by label to the frequency of that label.
     """
-
     if weight is None:
         # Unweighted (un)directed simple graph.
         if not G.is_multigraph():
@@ -188,7 +186,6 @@ def asyn_lpa_communities(G, weight=None, seed=None):
            linear time algorithm to detect community structures in large-scale
            networks." Physical Review E 76.3 (2007): 036106.
     """
-
     labels = {n: i for i, n in enumerate(G)}
     cont = True
 

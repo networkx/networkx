@@ -19,7 +19,6 @@ def uniform_int_from_avg(a, m, seed):
     X = X1 + X2; X1~U(a,floor(b)), X2~B(p)
     E[X] = E[X1] + E[X2] = (floor(b)+a)/2 + (b-floor(b))/2 = (b+a)/2 = m
     """
-
     from math import floor
 
     assert m >= a
@@ -51,7 +50,6 @@ def choose_pref_attach(degs, seed):
     v: object
         A key of degs or None if degs is empty
     """
-
     if len(degs) == 0:
         return None
     s = sum(degs.values())
@@ -92,7 +90,6 @@ class AS_graph_generator:
         BGP: The Role of Topology Growth," in IEEE Journal on Selected Areas
         in Communications, vol. 28, no. 8, pp. 1250-1261, October 2010.
         """
-
         self.seed = seed
         self.n_t = min(n, round(self.seed.random() * 2 + 4))  # num of T nodes
         self.n_m = round(0.15 * n)  # number of M nodes
@@ -119,7 +116,6 @@ class AS_graph_generator:
         G: Networkx Graph
             Core network
         """
-
         self.G = nx.Graph()
         for i in range(self.n_t):
             self.G.add_node(i, type="T")
@@ -145,7 +141,6 @@ class AS_graph_generator:
         Pick a node from node_list with preferential attachment
         computed only on their peer degree
         """
-
         d = {}
         for n in node_list:
             d[n] = self.G.nodes[n]["peers"]
@@ -157,13 +152,11 @@ class AS_graph_generator:
         Pick a node from node_list with preferential attachment
         computed on their degree
         """
-
         degs = dict(self.G.degree(node_list))
         return choose_pref_attach(degs, self.seed)
 
     def add_customer(self, i, j):
         """Keep the dictionaries 'customers' and 'providers' consistent."""
-
         self.customers[j].add(i)
         self.providers[i].add(j)
         for z in self.providers[j]:
@@ -193,7 +186,6 @@ class AS_graph_generator:
         i: object
             Identifier of the new node
         """
-
         regs = 1  # regions in which node resides
         if self.seed.random() < reg2prob:  # node is in two regions
             regs = 2
@@ -246,7 +238,6 @@ class AS_graph_generator:
         -------
         success: boolean
         """
-
         # candidates are of type 'M' and are not customers of m
         node_options = self.nodes["M"].difference(self.customers[m])
         # candidates are not providers of m
@@ -286,7 +277,6 @@ class AS_graph_generator:
         -------
         success: boolean
         """
-
         node_options = set()
         for r in self.regions:  # options include nodes in the same region(s)
             if cp in self.regions[r]:
@@ -324,7 +314,6 @@ class AS_graph_generator:
         rn: integer
             Number of regions
         """
-
         self.regions = {}
         for i in range(rn):
             self.regions["REG" + str(i)] = set()
@@ -369,7 +358,6 @@ class AS_graph_generator:
         BGP: The Role of Topology Growth," in IEEE Journal on Selected Areas
         in Communications, vol. 28, no. 8, pp. 1250-1261, October 2010.
         """
-
         self.graph_regions(5)
         self.customers = {}
         self.providers = {}
@@ -435,7 +423,6 @@ def random_internet_as_graph(n, seed=None):
        BGP: The Role of Topology Growth," in IEEE Journal on Selected Areas
        in Communications, vol. 28, no. 8, pp. 1250-1261, October 2010.
     """
-
     GG = AS_graph_generator(n, seed)
     G = GG.generate()
     return G

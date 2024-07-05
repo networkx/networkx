@@ -1800,7 +1800,6 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
 
     Parameters
     ----------
-
     colors : color string or array of floats (default='r')
         Color of element. Can be a single color format string,
         or a sequence of colors with the same length as nodelist.
@@ -1827,7 +1826,6 @@ def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
 
     Returns
     -------
-
     rgba_colors : numpy ndarray
         Array containing RGBA format values for each of the node colours.
 

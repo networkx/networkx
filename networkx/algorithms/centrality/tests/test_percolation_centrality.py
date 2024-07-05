@@ -32,7 +32,7 @@ def example1b_G():
 
 
 def test_percolation_example1a():
-    """percolation centrality: example 1a"""
+    """Percolation centrality: example 1a"""
     G = example1a_G()
     p = nx.percolation_centrality(G)
     p_answer = {4: 0.625, 6: 0.667}
@@ -41,7 +41,7 @@ def test_percolation_example1a():
 
 
 def test_percolation_example1b():
-    """percolation centrality: example 1a"""
+    """Percolation centrality: example 1a"""
     G = example1b_G()
     p = nx.percolation_centrality(G)
     p_answer = {4: 0.825, 6: 0.4}
@@ -50,8 +50,9 @@ def test_percolation_example1b():
 
 
 def test_converge_to_betweenness():
-    """percolation centrality: should converge to betweenness
-    centrality when all nodes are percolated the same"""
+    """Percolation centrality: should converge to betweenness
+    centrality when all nodes are percolated the same
+    """
     # taken from betweenness test test_florentine_families_graph
     G = nx.florentine_families_graph()
     b_answer = {

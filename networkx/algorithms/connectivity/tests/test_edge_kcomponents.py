@@ -13,7 +13,7 @@ from networkx.utils import pairwise
 
 
 def fset(list_of_sets):
-    """allows == to be used for list of sets"""
+    """Allows == to be used for list of sets"""
     return set(map(frozenset, list_of_sets))
 
 

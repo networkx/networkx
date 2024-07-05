@@ -424,7 +424,6 @@ def make_bi_connected(embedding, starting_node, outgoing_node, edges_counted):
     face_nodes: list
         A list of all nodes at the border of this face
     """
-
     # Check if the face has already been calculated
     if (starting_node, outgoing_node) in edges_counted:
         # This face was already counted

@@ -214,7 +214,6 @@ def is_strongly_regular(G):
 
     Examples
     --------
-
     The cycle graph on five vertices is strongly regular. It is
     two-regular, each pair of adjacent vertices has no shared neighbors,
     and each pair of nonadjacent vertices has one shared neighbor::

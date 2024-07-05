@@ -273,7 +273,8 @@ class TestKruskal(MultigraphMSTTestBase):
     def test_key_data_bool(self):
         """Tests that the keys and data values are included in
         MST edges based on whether keys and data parameters are
-        true or false"""
+        true or false
+        """
         G = nx.MultiGraph()
         G.add_edge(1, 2, key=1, weight=2)
         G.add_edge(1, 2, key=2, weight=3)
@@ -330,7 +331,8 @@ class TestPrim(MultigraphMSTTestBase):
 
     def test_ignore_nan(self):
         """Tests that the edges with NaN weights are ignored or
-        raise an Error based on ignore_nan is true or false"""
+        raise an Error based on ignore_nan is true or false
+        """
         H = nx.MultiGraph()
         H.add_edge(1, 2, key=1, weight=float("nan"))
         H.add_edge(1, 2, key=2, weight=3)

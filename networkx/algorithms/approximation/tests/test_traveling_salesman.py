@@ -882,7 +882,6 @@ def test_asadpour_disconnected_graph():
     Test that the proper exception is raised when asadpour_atsp is given an
     disconnected graph.
     """
-
     G = nx.complete_graph(4, create_using=nx.DiGraph)
     # have to set edge weights so that if the exception is not raised, the
     # function will complete and we will fail the test
@@ -897,7 +896,6 @@ def test_asadpour_incomplete_graph():
     Test that the proper exception is raised when asadpour_atsp is given an
     incomplete graph
     """
-
     G = nx.complete_graph(4, create_using=nx.DiGraph)
     # have to set edge weights so that if the exception is not raised, the
     # function will complete and we will fail the test

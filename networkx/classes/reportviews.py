@@ -296,7 +296,7 @@ class NodeDataView(Set):
     That is, they use `G.nodes` instead of `G.nodes(data='foo')`.
 
     Parameters
-    ==========
+    ----------
     graph : NetworkX graph-like class
     data : bool or string (default=False)
     default : object (default=None)
@@ -389,7 +389,7 @@ class DiDegreeView:
     and weight (use edge weights to compute degree).
 
     Parameters
-    ==========
+    ----------
     graph : NetworkX graph-like class
     nbunch : node, container of nodes, or None meaning all nodes (default=None)
     weight : bool or string (default=None)
@@ -489,7 +489,7 @@ class DegreeView(DiDegreeView):
     view creates a view with different arguments `nbunch` or `weight`.
 
     Parameters
-    ==========
+    ----------
     graph : NetworkX graph-like class
     nbunch : node, container of nodes, or None meaning all nodes (default=None)
     weight : string or None (default=None)
@@ -1213,7 +1213,7 @@ class EdgeView(OutEdgeView):
     For Multigraphs, if `keys is True`, replace `u, v` with `u, v, key` above.
 
     Parameters
-    ==========
+    ----------
     graph : NetworkX graph-like class
     nbunch : (default= all nodes in graph) only report edges with these nodes
     keys : (only for MultiGraph. default=False) report edge key in tuple
@@ -1221,7 +1221,7 @@ class EdgeView(OutEdgeView):
     default : object (default=None)
 
     Examples
-    ========
+    --------
     >>> G = nx.path_graph(4)
     >>> EV = G.edges()
     >>> (2, 3) in EV

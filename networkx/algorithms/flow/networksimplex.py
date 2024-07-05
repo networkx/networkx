@@ -403,7 +403,7 @@ def network_simplex(G, demand="demand", capacity="capacity", weight="weight"):
     multiplying the relevant edge attributes by a convenient
     constant factor (eg 100).
 
-    See also
+    See Also
     --------
     cost_of_flow, max_flow_min_cost, min_cost_flow, min_cost_flow_cost
 

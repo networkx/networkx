@@ -275,7 +275,8 @@ class TestNavigableSmallWorldGraph:
         result in more edges than a navigable_small_world graph with r >= 1
         (for 0 < q << n).
 
-        N.B. this is probabilistic, so this test may not hold for all seeds."""
+        N.B. this is probabilistic, so this test may not hold for all seeds.
+        """
         G1 = nx.navigable_small_world_graph(7, q=3, r=0.5, seed=seed)
         G2 = nx.navigable_small_world_graph(7, q=3, r=1, seed=seed)
         G3 = nx.navigable_small_world_graph(7, q=3, r=2, seed=seed)

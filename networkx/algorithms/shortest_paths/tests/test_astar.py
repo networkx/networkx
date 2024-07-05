@@ -235,14 +235,16 @@ class TestAStar:
 
     def test_astar_NetworkXNoPath(self):
         """Tests that exception is raised when there exists no
-        path between source and target"""
+        path between source and target
+        """
         G = nx.gnp_random_graph(10, 0.2, seed=10)
         with pytest.raises(nx.NetworkXNoPath):
             nx.astar_path(G, 4, 9)
 
     def test_astar_NodeNotFound(self):
         """Tests that exception is raised when either
-        source or target is not in graph"""
+        source or target is not in graph
+        """
         G = nx.gnp_random_graph(10, 0.2, seed=10)
         with pytest.raises(nx.NodeNotFound):
             nx.astar_path_length(G, 11, 9)

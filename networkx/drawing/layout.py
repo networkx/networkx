@@ -310,7 +310,6 @@ def bipartite_layout(
     try to minimize edge crossings.
 
     """
-
     import numpy as np
 
     if align not in ("vertical", "horizontal"):
@@ -1161,6 +1160,7 @@ def arf_layout(
         Max iterations before termination of the algorithm.
 
     References
+    ----------
     .. [1] "Self-Organization Applied to Dynamic Network Layout", M. Geipel,
             International Journal of Modern Physics C, 2007, Vol 18, No 10, pp. 1537-1549.
             https://doi.org/10.1142/S0129183107011558 https://arxiv.org/abs/0704.1748

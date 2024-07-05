@@ -129,7 +129,7 @@ def weisfeiler_lehman_graph_hash(
        Graph Kernels. Journal of Machine Learning Research. 2011.
        http://www.jmlr.org/papers/volume12/shervashidze11a/shervashidze11a.pdf
 
-    See also
+    See Also
     --------
     weisfeiler_lehman_subgraph_hashes
     """
@@ -289,7 +289,7 @@ def weisfeiler_lehman_subgraph_hashes(
        Distributed Representations of Graphs. arXiv. 2017
        https://arxiv.org/pdf/1707.05005.pdf
 
-    See also
+    See Also
     --------
     weisfeiler_lehman_graph_hash
     """

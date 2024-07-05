@@ -70,7 +70,7 @@ def minimum_st_edge_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     cutset : set
         Set of edges that, if removed from the graph, will disconnect it.
 
-    See also
+    See Also
     --------
     :meth:`minimum_cut`
     :meth:`minimum_node_cut`
@@ -264,7 +264,7 @@ def minimum_st_node_cut(G, s, t, flow_func=None, auxiliary=None, residual=None):
     and undirected graphs. This implementation is based on algorithm 11
     in [1]_.
 
-    See also
+    See Also
     --------
     :meth:`minimum_node_cut`
     :meth:`minimum_edge_cut`
@@ -377,7 +377,7 @@ def minimum_node_cut(G, s=None, t=None, flow_func=None):
     and undirected graphs. This implementation is based on algorithm 11
     in [1]_.
 
-    See also
+    See Also
     --------
     :meth:`minimum_st_node_cut`
     :meth:`minimum_cut`
@@ -526,7 +526,7 @@ def minimum_edge_cut(G, s=None, t=None, flow_func=None):
     connected and returns an empty set if it is weakly connected.
     It is an implementation of algorithm 8 in [1]_.
 
-    See also
+    See Also
     --------
     :meth:`minimum_st_edge_cut`
     :meth:`minimum_node_cut`

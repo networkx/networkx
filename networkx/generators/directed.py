@@ -377,7 +377,7 @@ def random_uniform_k_out_graph(n, k, self_loops=True, with_replacement=True, see
         If `with_replacement` is False and `k` is greater than
         `n`.
 
-    See also
+    See Also
     --------
     random_k_out_graph
 

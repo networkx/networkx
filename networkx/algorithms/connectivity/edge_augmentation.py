@@ -340,7 +340,7 @@ def partial_k_edge_augmentation(G, k, avail, weight=None):
     """
 
     def _edges_between_disjoint(H, only1, only2):
-        """finds edges between disjoint nodes"""
+        """Finds edges between disjoint nodes"""
         only1_adj = {u: set(H.adj[u]) for u in only1}
         for u, neighbs in only1_adj.items():
             # Find the neighbors of u in only1 that are also in only2
@@ -911,7 +911,6 @@ def weighted_bridge_augmentation(G, avail, weight=None):
     >>> sorted(weighted_bridge_augmentation(G, avail=avail))
     [(1, 5), (2, 5), (4, 5)]
     """
-
     if weight is None:
         weight = "weight"
 
@@ -1152,7 +1151,7 @@ def complement_edges(G):
 
 
 def _compat_shuffle(rng, input):
-    """wrapper around rng.shuffle for python 2 compatibility reasons"""
+    """Wrapper around rng.shuffle for python 2 compatibility reasons"""
     rng.shuffle(input)
 
 

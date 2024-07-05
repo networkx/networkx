@@ -34,7 +34,6 @@ def is_planar(G):
     check_planarity :
         Check if graph is planar *and* return a `PlanarEmbedding` instance if True.
     """
-
     return check_planarity(G, counterexample=False)[0]
 
 
@@ -84,7 +83,7 @@ def check_planarity(G, counterexample=False):
     A counterexample is only generated if the corresponding parameter is set,
     because the complexity of the counterexample generation is higher.
 
-    See also
+    See Also
     --------
     is_planar :
         Check for planarity without creating a `PlanarEmbedding` or counterexample.
@@ -100,7 +99,6 @@ def check_planarity(G, counterexample=False):
         Lecture Notes Series on Computing: Volume 12
         2004
     """
-
     planarity_state = LRPlanarity(G)
     embedding = planarity_state.lr_planarity()
     if embedding is None:
@@ -172,7 +170,6 @@ def get_counterexample(G):
 @nx._dispatchable(returns_graph=True)
 def get_counterexample_recursive(G):
     """Recursive version of :meth:`get_counterexample`."""
-
     # copy graph
     G = nx.Graph(G)
 
@@ -826,7 +823,6 @@ class PlanarEmbedding(nx.DiGraph):
 
     Examples
     --------
-
     Create an embedding of a star graph (compare `nx.star_graph(3)`):
 
     >>> G = nx.PlanarEmbedding()
@@ -1038,7 +1034,6 @@ class PlanarEmbedding(nx.DiGraph):
         --------
         connect_components
         """
-
         succs = self._succ.get(start_node)
         if succs:
             # there is already some edge out of start_node

@@ -234,7 +234,6 @@ def _hits_numpy(G, normalized=True):
 def _hits_scipy(G, max_iter=100, tol=1.0e-6, nstart=None, normalized=True):
     """Returns HITS hubs and authorities values for nodes.
 
-
     The HITS algorithm computes two numbers for a node.
     Authorities estimates the node value based on the incoming links.
     Hubs estimates the node value based on outgoing links.

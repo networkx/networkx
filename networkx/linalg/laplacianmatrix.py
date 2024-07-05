@@ -178,7 +178,6 @@ def normalized_laplacian_matrix(G, nodelist=None, weight="weight"):
 
     Examples
     --------
-
     >>> import numpy as np
     >>> edges = [
     ...     (1, 2),

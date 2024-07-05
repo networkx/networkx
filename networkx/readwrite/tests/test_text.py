@@ -561,7 +561,6 @@ def test_write_network_text_iterative_add_random_directed_edges():
     """
     Walk through the cases going from a disconnected to fully connected graph
     """
-
     rng = random.Random(724466096)
     graph = nx.DiGraph()
     graph.add_nodes_from([1, 2, 3, 4, 5])

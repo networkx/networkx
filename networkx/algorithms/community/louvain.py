@@ -1,5 +1,6 @@
 """Function for detecting communities based on Louvain Community Detection
-Algorithm"""
+Algorithm
+"""
 
 import itertools
 from collections import defaultdict, deque
@@ -119,7 +120,6 @@ def louvain_communities(
     --------
     louvain_partitions
     """
-
     partitions = louvain_partitions(G, weight, resolution, threshold, seed)
     if max_level is not None:
         if max_level <= 0:
@@ -188,7 +188,6 @@ def louvain_partitions(
     --------
     louvain_communities
     """
-
     partition = [{u} for u in G.nodes()]
     if nx.is_empty(G):
         yield partition

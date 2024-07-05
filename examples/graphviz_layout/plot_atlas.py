@@ -23,7 +23,6 @@ GraphMatcher = nx.isomorphism.vf2userfunc.GraphMatcher
 
 def atlas6():
     """Return the atlas of all connected graphs with at most 6 nodes"""
-
     Atlas = nx.graph_atlas_g()[3:209]  # 0, 1, 2 => no edges. 208 is last 6 node graph
     U = nx.Graph()  # graph for union of all graphs in atlas
     for G in Atlas:

@@ -42,7 +42,6 @@ def nonisomorphic_trees(order, create="graph"):
        - ``create="graph"``: yields a list of `networkx.Graph` instances
        - ``create="matrix"``: yields a list of list-of-lists representing adjacency matrices
     """
-
     if order < 2:
         raise ValueError
     # start at the path graph rooted at its center
@@ -94,7 +93,6 @@ def number_of_nonisomorphic_trees(order):
 
 def _next_rooted_tree(predecessor, p=None):
     """One iteration of the Beyer-Hedetniemi algorithm."""
-
     if p is None:
         p = len(predecessor) - 1
         while predecessor[p] == 1:
@@ -113,8 +111,8 @@ def _next_rooted_tree(predecessor, p=None):
 
 def _next_tree(candidate):
     """One iteration of the Wright, Richmond, Odlyzko and McKay
-    algorithm."""
-
+    algorithm.
+    """
     # valid representation of a free tree if:
     # there are at least two vertices at layer 1
     # (this is always the case because we start at the path graph)
@@ -153,8 +151,8 @@ def _next_tree(candidate):
 def _split_tree(layout):
     """Returns a tuple of two layouts, one containing the left
     subtree of the root vertex, and one containing the original tree
-    with the left subtree removed."""
-
+    with the left subtree removed.
+    """
     one_found = False
     m = None
     for i in range(len(layout)):
@@ -175,8 +173,8 @@ def _split_tree(layout):
 
 def _layout_to_matrix(layout):
     """Create the adjacency matrix for the tree specified by the
-    given layout (level sequence)."""
-
+    given layout (level sequence).
+    """
     result = [[0] * len(layout) for i in range(len(layout))]
     stack = []
     for i in range(len(layout)):
@@ -195,7 +193,8 @@ def _layout_to_matrix(layout):
 
 def _layout_to_graph(layout):
     """Create a NetworkX Graph for the tree specified by the
-    given layout(level sequence)"""
+    given layout(level sequence)
+    """
     G = nx.Graph()
     stack = []
     for i in range(len(layout)):

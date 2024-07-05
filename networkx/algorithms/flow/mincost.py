@@ -69,7 +69,7 @@ def min_cost_flow_cost(G, demand="demand", capacity="capacity", weight="weight")
         negative cost and infinite capacity. Then, the cost of a flow
         satisfying all demands is unbounded below.
 
-    See also
+    See Also
     --------
     cost_of_flow, max_flow_min_cost, min_cost_flow, network_simplex
 
@@ -162,7 +162,7 @@ def min_cost_flow(G, demand="demand", capacity="capacity", weight="weight"):
         negative cost and infinite capacity. Then, the cost of a flow
         satisfying all demands is unbounded below.
 
-    See also
+    See Also
     --------
     cost_of_flow, max_flow_min_cost, min_cost_flow_cost, network_simplex
 
@@ -222,7 +222,7 @@ def cost_of_flow(G, flowDict, weight="weight"):
         The total cost of the flow. This is given by the sum over all
         edges of the product of the edge's flow and the edge's weight.
 
-    See also
+    See Also
     --------
     max_flow_min_cost, min_cost_flow, min_cost_flow_cost, network_simplex
 
@@ -303,7 +303,7 @@ def max_flow_min_cost(G, s, t, capacity="capacity", weight="weight"):
         negative cost and infinite capacity. Then, the cost of a flow
         is unbounded below.
 
-    See also
+    See Also
     --------
     cost_of_flow, min_cost_flow, min_cost_flow_cost, network_simplex
 

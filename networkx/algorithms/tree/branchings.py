@@ -223,7 +223,6 @@ def maximum_branching(
         d : keyword arguments, optional
             Other attributes to store on the new edge.
         """
-
         if key in edge_index:
             uu, vv, _ = edge_index[key]
             if (u != uu) or (v != vv):

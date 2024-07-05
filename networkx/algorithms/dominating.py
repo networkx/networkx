@@ -33,7 +33,7 @@ def dominating_set(G, start_with=None):
     This function is an implementation of algorithm 7 in [2]_ which
     finds some dominating set, not necessarily the smallest one.
 
-    See also
+    See Also
     --------
     is_dominating_set
 
@@ -81,7 +81,7 @@ def is_dominating_set(G, nbunch):
     nbunch : iterable
         An iterable of nodes in the graph `G`.
 
-    See also
+    See Also
     --------
     dominating_set
 

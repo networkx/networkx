@@ -87,7 +87,7 @@ class TestCore:
             nx.core_number(G)
 
     def test_directed_core_number(self):
-        """core number had a bug for directed graphs found in issue #1959"""
+        """Core number had a bug for directed graphs found in issue #1959"""
         # small example where too timid edge removal can make cn[2] = 3
         G = nx.DiGraph()
         edges = [(1, 2), (2, 1), (2, 3), (2, 4), (3, 4), (4, 3)]

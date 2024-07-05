@@ -832,7 +832,6 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
         A copy of `G` which has had all edges not in `V` removed and all edges
         in `U` contracted.
         """
-
         # The result is a MultiGraph version of G so that parallel edges are
         # allowed during edge contraction
         result = nx.MultiGraph(incoming_graph_data=G)

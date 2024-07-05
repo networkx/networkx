@@ -40,7 +40,6 @@ def number_of_walks(G, walk_length):
 
     Examples
     --------
-
     >>> G = nx.Graph([(0, 1), (1, 2)])
     >>> walks = nx.number_of_walks(G, 2)
     >>> walks

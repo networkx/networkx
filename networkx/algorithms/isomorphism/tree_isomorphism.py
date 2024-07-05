@@ -35,7 +35,6 @@ def root_trees(t1, root1, t2, root2):
     # t1 is numbers from 1 ... n
     # t2 is numbered from n+1 to 2n
     """
-
     dT = nx.DiGraph()
 
     newroot1 = 1  # left root will be 1
@@ -144,7 +143,6 @@ def rooted_tree_isomorphism(t1, root1, t2, root2):
 
         If `t1` and `t2` are not isomorphic, then it returns the empty list.
     """
-
     assert nx.is_tree(t1)
     assert nx.is_tree(t2)
 
@@ -245,7 +243,6 @@ def tree_isomorphism(t1, t2):
     -----
     This runs in O(n*log(n)) time for trees with n nodes.
     """
-
     assert nx.is_tree(t1)
     assert nx.is_tree(t2)
 

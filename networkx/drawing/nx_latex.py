@@ -40,7 +40,7 @@ to the single TikZ "path" that draws all nodes (and no edges). The default edge
 options are applied to a TikZ "scope" which contains a path for each edge.
 
 Examples
-========
+--------
 >>> G = nx.path_graph(3)
 >>> nx.write_latex(G, "just_my_figure.tex", as_document=True)
 >>> nx.write_latex(G, "my_figure.tex", caption="A path graph", latex_label="fig1")
@@ -158,7 +158,7 @@ def to_latex_raw(
     without any enclosing environment.
 
     Parameters
-    ==========
+    ----------
     G : NetworkX graph
         The NetworkX graph to be drawn
     pos : string or dict (default "pos")
@@ -201,12 +201,12 @@ def to_latex_raw(
         Or a dict keyed by edge to a string holding the label options for that edge.
 
     Returns
-    =======
+    -------
     latex_code : string
        The text string which draws the desired graph(s) when compiled by LaTeX.
 
     See Also
-    ========
+    --------
     to_latex
     write_latex
     """
@@ -344,7 +344,7 @@ def to_latex(
     or ``\\input`` statements.
 
     Parameters
-    ==========
+    ----------
     Gbunch : NetworkX graph or iterable of NetworkX graphs
         The NetworkX graph to be drawn or an iterable of graphs
         to be drawn inside subfigures of a single figure.
@@ -413,12 +413,12 @@ def to_latex(
         The size is the vertical size of each row of subfigures as a fraction.
 
     Returns
-    =======
+    -------
     latex_code : string
         The text string which draws the desired graph(s) when compiled by LaTeX.
 
     See Also
-    ========
+    --------
     write_latex
     to_latex_raw
     """
@@ -566,7 +566,7 @@ def write_latex(Gbunch, path, **options):
                 The size is the vertical size of each row of subfigures as a fraction.
 
     See Also
-    ========
+    --------
     to_latex
     """
     path.write(to_latex(Gbunch, **options))

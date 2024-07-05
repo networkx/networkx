@@ -76,7 +76,7 @@ def all_node_cuts(G, k=None, flow_func=None):
     node and the target node of the local maximum flow computation to make
     sure that we will not find that minimum cut again.
 
-    See also
+    See Also
     --------
     node_connectivity
     edmonds_karp
