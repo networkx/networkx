@@ -23,9 +23,7 @@ __all__ = [
 
 @py_random_state(2)
 def powerlaw_sequence(n, exponent=2.0, seed=None):
-    """
-    Return sample sequence of length n from a power law distribution.
-    """
+    """Return sample sequence of length n from a power law distribution."""
     return [seed.paretovariate(exponent - 1) for i in range(n)]
 
 
@@ -96,7 +94,6 @@ def zipf_rv(alpha, xmin=1, seed=None):
 
 def cumulative_distribution(distribution):
     """Returns normalized cumulative distribution from discrete distribution."""
-
     cdf = [0.0]
     psum = sum(distribution)
     for i in range(len(distribution)):

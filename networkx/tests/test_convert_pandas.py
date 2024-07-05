@@ -332,7 +332,7 @@ def test_to_pandas_edgelist_with_nodelist():
 
 
 def test_from_pandas_adjacency_with_index_collisions():
-    """See gh-7407"""
+    """See gh-7407."""
     df = pd.DataFrame(
         [
             [0, 1, 0, 0],

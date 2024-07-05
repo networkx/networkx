@@ -1,6 +1,4 @@
-"""
-Kanevsky all minimum node k cutsets algorithm.
-"""
+"""Kanevsky all minimum node k cutsets algorithm."""
 
 import copy
 from collections import defaultdict
@@ -76,7 +74,7 @@ def all_node_cuts(G, k=None, flow_func=None):
     node and the target node of the local maximum flow computation to make
     sure that we will not find that minimum cut again.
 
-    See also
+    See Also
     --------
     node_connectivity
     edmonds_karp
@@ -225,7 +223,7 @@ def all_node_cuts(G, k=None, flow_func=None):
 
 
 def _is_separating_set(G, cut):
-    """Assumes that the input graph is connected"""
+    """Assumes that the input graph is connected."""
     if len(cut) == len(G) - 1:
         return True
 

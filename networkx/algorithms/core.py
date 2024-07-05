@@ -205,7 +205,6 @@ def k_core(G, k=None, core_number=None):
        Vladimir Batagelj and Matjaz Zaversnik,  2003.
        https://arxiv.org/abs/cs.DS/0310049
     """
-
     import warnings
 
     if G.is_multigraph():
@@ -287,7 +286,6 @@ def k_shell(G, k=None, core_number=None):
        and Eran Shir, PNAS  July 3, 2007   vol. 104  no. 27  11150-11154
        http://www.pnas.org/content/104/27/11150.full
     """
-
     import warnings
 
     if G.is_multigraph():
@@ -366,7 +364,6 @@ def k_crust(G, k=None, core_number=None):
        and Eran Shir, PNAS  July 3, 2007   vol. 104  no. 27  11150-11154
        http://www.pnas.org/content/104/27/11150.full
     """
-
     import warnings
 
     if G.is_multigraph():
@@ -447,7 +444,6 @@ def k_corona(G, k, core_number=None):
        Phys. Rev. E 73, 056101 (2006)
        http://link.aps.org/doi/10.1103/PhysRevE.73.056101
     """
-
     import warnings
 
     if G.is_multigraph():

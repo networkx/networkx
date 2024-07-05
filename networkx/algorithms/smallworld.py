@@ -317,7 +317,7 @@ def sigma(G, niter=100, nrand=10, seed=None):
 @py_random_state(3)
 @nx._dispatchable
 def omega(G, niter=5, nrand=10, seed=None):
-    """Returns the small-world coefficient (omega) of a graph
+    """Returns the small-world coefficient (omega) of a graph.
 
     The small-world coefficient of a graph G is:
 

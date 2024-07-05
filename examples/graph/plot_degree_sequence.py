@@ -1,6 +1,6 @@
 """
 ===============
-Degree Sequence
+Degree Sequence.
 ===============
 
 Random graph from given degree sequence.

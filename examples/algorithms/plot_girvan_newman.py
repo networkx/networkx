@@ -1,6 +1,6 @@
 """
 =======================================
-Community Detection using Girvan-Newman
+Community Detection using Girvan-Newman.
 =======================================
 
 This example shows the detection of communities in the Zachary Karate

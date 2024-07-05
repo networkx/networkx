@@ -1,6 +1,6 @@
 """
 =========
-Ego Graph
+Ego Graph.
 =========
 
 Example using the NetworkX ego_graph() function to return the main egonet of

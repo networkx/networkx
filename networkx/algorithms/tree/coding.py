@@ -68,7 +68,7 @@ def to_nested_tuple(T, root, canonical_form=False):
     This function is *not* the inverse of :func:`from_nested_tuple`; the
     only guarantee is that the rooted trees are isomorphic.
 
-    See also
+    See Also
     --------
     from_nested_tuple
     to_prufer_sequence
@@ -162,7 +162,7 @@ def from_nested_tuple(sequence, sensible_relabeling=False):
     This function is *not* the inverse of :func:`to_nested_tuple`; the
     only guarantee is that the rooted trees are isomorphic.
 
-    See also
+    See Also
     --------
     to_nested_tuple
     from_prufer_sequence
@@ -259,7 +259,7 @@ def to_prufer_sequence(T):
     This implementation is from [1]_ and has a running time of
     $O(n)$.
 
-    See also
+    See Also
     --------
     to_nested_tuple
     from_prufer_sequence
@@ -361,7 +361,7 @@ def from_prufer_sequence(sequence):
            *Journal of Software Engineering and Applications* 2.02 (2009): 111.
            <https://doi.org/10.4236/jsea.2009.22016>
 
-    See also
+    See Also
     --------
     from_nested_tuple
     to_prufer_sequence

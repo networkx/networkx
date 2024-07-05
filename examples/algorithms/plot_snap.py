@@ -1,6 +1,6 @@
 """
 ==================
-SNAP Graph Summary
+SNAP Graph Summary.
 ==================
 An example of summarizing a graph based on node attributes and edge attributes
 using the Summarization by Grouping Nodes on Attributes and Pairwise

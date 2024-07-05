@@ -237,7 +237,7 @@ def subgraph_view(G, *, filter_node=no_filter, filter_edge=no_filter):
 
 @not_implemented_for("undirected")
 def reverse_view(G):
-    """View of `G` with edge directions reversed
+    """View of `G` with edge directions reversed.
 
     `reverse_view` returns a read-only view of the input graph where
     edge directions are reversed.

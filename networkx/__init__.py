@@ -1,5 +1,5 @@
 """
-NetworkX
+NetworkX.
 ========
 
 NetworkX is a Python package for the creation, manipulation, and study of the

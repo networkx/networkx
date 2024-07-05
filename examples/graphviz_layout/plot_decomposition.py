@@ -1,6 +1,6 @@
 """
 =============
-Decomposition
+Decomposition.
 =============
 
 Example of creating a junction tree from a directed graph.

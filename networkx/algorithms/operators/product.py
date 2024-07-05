@@ -1,6 +1,4 @@
-"""
-Graph products.
-"""
+"""Graph products."""
 
 from itertools import product
 

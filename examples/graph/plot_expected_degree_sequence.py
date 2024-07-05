@@ -1,6 +1,6 @@
 """
 ========================
-Expected Degree Sequence
+Expected Degree Sequence.
 ========================
 
 Random graph from given degree sequence.

@@ -12,7 +12,7 @@ from networkx import (
 
 class TestFlowBetweennessCentrality:
     def test_K4_normalized(self):
-        """Betweenness centrality: K4"""
+        """Betweenness centrality: K4."""
         G = nx.complete_graph(4)
         b = nx.current_flow_betweenness_centrality_subset(
             G, list(G), list(G), normalized=True
@@ -22,7 +22,7 @@ class TestFlowBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_K4(self):
-        """Betweenness centrality: K4"""
+        """Betweenness centrality: K4."""
         G = nx.complete_graph(4)
         b = nx.current_flow_betweenness_centrality_subset(
             G, list(G), list(G), normalized=True
@@ -53,7 +53,7 @@ class TestFlowBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_P4_normalized(self):
-        """Betweenness centrality: P4 normalized"""
+        """Betweenness centrality: P4 normalized."""
         G = nx.path_graph(4)
         b = nx.current_flow_betweenness_centrality_subset(
             G, list(G), list(G), normalized=True
@@ -63,7 +63,7 @@ class TestFlowBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_P4(self):
-        """Betweenness centrality: P4"""
+        """Betweenness centrality: P4."""
         G = nx.path_graph(4)
         b = nx.current_flow_betweenness_centrality_subset(
             G, list(G), list(G), normalized=True
@@ -73,7 +73,7 @@ class TestFlowBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_star(self):
-        """Betweenness centrality: star"""
+        """Betweenness centrality: star."""
         G = nx.Graph()
         nx.add_star(G, ["a", "b", "c", "d"])
         b = nx.current_flow_betweenness_centrality_subset(
@@ -90,7 +90,7 @@ class TestFlowBetweennessCentrality:
 
 class TestEdgeFlowBetweennessCentrality:
     def test_K4_normalized(self):
-        """Betweenness centrality: K4"""
+        """Betweenness centrality: K4."""
         G = nx.complete_graph(4)
         b = edge_current_flow_subset(G, list(G), list(G), normalized=True)
         b_answer = edge_current_flow(G, normalized=True)
@@ -99,7 +99,7 @@ class TestEdgeFlowBetweennessCentrality:
             assert v1 == pytest.approx(v2, abs=1e-7)
 
     def test_K4(self):
-        """Betweenness centrality: K4"""
+        """Betweenness centrality: K4."""
         G = nx.complete_graph(4)
         b = edge_current_flow_subset(G, list(G), list(G), normalized=False)
         b_answer = edge_current_flow(G, normalized=False)
@@ -129,7 +129,7 @@ class TestEdgeFlowBetweennessCentrality:
             assert v1 == pytest.approx(v2, abs=1e-7)
 
     def test_C4(self):
-        """Edge betweenness centrality: C4"""
+        """Edge betweenness centrality: C4."""
         G = nx.cycle_graph(4)
         b = edge_current_flow_subset(G, list(G), list(G), normalized=True)
         b_answer = edge_current_flow(G, normalized=True)
@@ -138,7 +138,7 @@ class TestEdgeFlowBetweennessCentrality:
             assert v1 == pytest.approx(v2, abs=1e-7)
 
     def test_P4(self):
-        """Edge betweenness centrality: P4"""
+        """Edge betweenness centrality: P4."""
         G = nx.path_graph(4)
         b = edge_current_flow_subset(G, list(G), list(G), normalized=True)
         b_answer = edge_current_flow(G, normalized=True)

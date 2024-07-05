@@ -1,6 +1,6 @@
 """
 =================
-Labels And Colors
+Labels And Colors.
 =================
 
 Use `nodelist` and `edgelist` to apply custom coloring and labels to various

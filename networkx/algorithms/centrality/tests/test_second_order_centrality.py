@@ -1,6 +1,4 @@
-"""
-Tests for second order centrality.
-"""
+"""Tests for second order centrality."""
 
 import pytest
 
@@ -42,7 +40,7 @@ def test_weight_attribute():
 
 
 def test_one_node_graph():
-    """Second order centrality: single node"""
+    """Second order centrality: single node."""
     G = nx.Graph()
     G.add_node(0)
     G.add_edge(0, 0)
@@ -50,7 +48,7 @@ def test_one_node_graph():
 
 
 def test_P3():
-    """Second order centrality: line graph, as defined in paper"""
+    """Second order centrality: line graph, as defined in paper."""
     G = nx.path_graph(3)
     b_answer = {0: 3.741, 1: 1.414, 2: 3.741}
 
@@ -61,7 +59,7 @@ def test_P3():
 
 
 def test_K3():
-    """Second order centrality: complete graph, as defined in paper"""
+    """Second order centrality: complete graph, as defined in paper."""
     G = nx.complete_graph(3)
     b_answer = {0: 1.414, 1: 1.414, 2: 1.414}
 
@@ -72,7 +70,7 @@ def test_K3():
 
 
 def test_ring_graph():
-    """Second order centrality: ring graph, as defined in paper"""
+    """Second order centrality: ring graph, as defined in paper."""
     G = nx.cycle_graph(5)
     b_answer = {0: 4.472, 1: 4.472, 2: 4.472, 3: 4.472, 4: 4.472}
 

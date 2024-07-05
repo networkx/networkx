@@ -8,9 +8,7 @@ from networkx.generators.harary_graph import hkn_harary_graph, hnm_harary_graph
 
 
 class TestHararyGraph:
-    """
-    Suppose n nodes, m >= n-1 edges, d = 2m // n, r = 2m % n
-    """
+    """Suppose n nodes, m >= n-1 edges, d = 2m // n, r = 2m % n."""
 
     def test_hnm_harary_graph(self):
         # When d is even and r = 0, the hnm_harary_graph(n,m) is

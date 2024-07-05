@@ -1,6 +1,4 @@
-"""
-Tests for closeness centrality.
-"""
+"""Tests for closeness centrality."""
 
 import pytest
 

@@ -1,6 +1,4 @@
-"""
-Ego graph.
-"""
+"""Ego graph."""
 
 __all__ = ["ego_graph"]
 

@@ -562,7 +562,7 @@ def _num_rooted_trees(n, cache_trees):
 
 
 def _select_jd_trees(n, cache_trees, seed):
-    """Returns a pair $(j,d)$ with a specific probability
+    """Returns a pair $(j,d)$ with a specific probability.
 
     Given $n$, returns a pair of positive integers $(j,d)$ with the probability
     specified in formula (5) of Chapter 29 of [1]_.
@@ -654,7 +654,7 @@ def _random_unlabeled_rooted_tree(n, cache_trees, seed):
 @py_random_state("seed")
 @nx._dispatchable(graphs=None, returns_graph=True)
 def random_unlabeled_rooted_tree(n, *, number_of_trees=None, seed=None):
-    """Returns a number of unlabeled rooted trees uniformly at random
+    """Returns a number of unlabeled rooted trees uniformly at random.
 
     Returns one or more (depending on `number_of_trees`)
     unlabeled rooted trees with `n` nodes drawn uniformly
@@ -754,7 +754,7 @@ def _num_rooted_forests(n, q, cache_forests):
 
 
 def _select_jd_forests(n, q, cache_forests, seed):
-    """Given `n` and `q`, returns a pair of positive integers $(j,d)$
+    r"""Given `n` and `q`, returns a pair of positive integers $(j,d)$
     such that $j\\leq d$, with probability satisfying (F1) of [1]_.
 
     Parameters

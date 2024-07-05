@@ -1,7 +1,4 @@
-"""
-Various small and named graphs, together with some compact generators.
-
-"""
+"""Various small and named graphs, together with some compact generators."""
 
 __all__ = [
     "LCF_graph",
@@ -144,7 +141,7 @@ def LCF_graph(n, shift_list, repeats, create_using=None):
 @nx._dispatchable(graphs=None, returns_graph=True)
 def bull_graph(create_using=None):
     """
-    Returns the Bull Graph
+    Returns the Bull Graph.
 
     The Bull Graph has 5 nodes and 5 edges. It is a planar undirected
     graph in the form of a triangle with two disjoint pendant edges [1]_
@@ -178,7 +175,7 @@ def bull_graph(create_using=None):
 @nx._dispatchable(graphs=None, returns_graph=True)
 def chvatal_graph(create_using=None):
     """
-    Returns the Chvátal Graph
+    Returns the Chvátal Graph.
 
     The Chvátal Graph is an undirected graph with 12 nodes and 24 edges [1]_.
     It has 370 distinct (directed) Hamiltonian cycles, giving a unique generalized
@@ -223,7 +220,7 @@ def chvatal_graph(create_using=None):
 @nx._dispatchable(graphs=None, returns_graph=True)
 def cubical_graph(create_using=None):
     """
-    Returns the 3-regular Platonic Cubical Graph
+    Returns the 3-regular Platonic Cubical Graph.
 
     The skeleton of the cube (the nodes and edges) form a graph, with 8
     nodes, and 12 edges. It is a special case of the hypercube graph.
@@ -266,7 +263,7 @@ def cubical_graph(create_using=None):
 @nx._dispatchable(graphs=None, returns_graph=True)
 def desargues_graph(create_using=None):
     """
-    Returns the Desargues Graph
+    Returns the Desargues Graph.
 
     The Desargues Graph is a non-planar, distance-transitive cubic graph
     with 20 nodes and 30 edges [1]_.
@@ -297,7 +294,7 @@ def desargues_graph(create_using=None):
 @nx._dispatchable(graphs=None, returns_graph=True)
 def diamond_graph(create_using=None):
     """
-    Returns the Diamond graph
+    Returns the Diamond graph.
 
     The Diamond Graph is  planar undirected graph with 4 nodes and 5 edges.
     It is also sometimes known as the double triangle graph or kite graph [1]_.
@@ -482,7 +479,7 @@ def hoffman_singleton_graph():
 @nx._dispatchable(graphs=None, returns_graph=True)
 def house_graph(create_using=None):
     """
-    Returns the House graph (square with triangle on top)
+    Returns the House graph (square with triangle on top).
 
     The house graph is a simple undirected graph with
     5 nodes and 6 edges [1]_.

@@ -139,8 +139,8 @@ def min_fill_in_heuristic(graph):
     turning the neighborhood of the chosen node into clique is as small as
     possible. This algorithm chooses the nodes using the Minimum Fill-In
     heuristic. The running time of the algorithm is :math:`O(V^3)` and it uses
-    additional constant memory."""
-
+    additional constant memory.
+    """
     if len(graph) == 0:
         return None
 
@@ -191,7 +191,6 @@ def treewidth_decomp(G, heuristic=min_fill_in_heuristic):
     Treewidth decomposition : (int, Graph) tuple
         2-tuple with treewidth and the corresponding decomposed tree.
     """
-
     # make dict-of-sets structure
     graph = {n: set(G[n]) - {n} for n in G}
 

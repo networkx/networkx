@@ -1,6 +1,4 @@
-"""
-Vitality measures.
-"""
+"""Vitality measures."""
 
 from functools import partial
 
@@ -31,7 +29,7 @@ def closeness_vitality(G, node=None, weight=None, wiener_index=None):
         returned. Otherwise, a dictionary mapping each node to its
         closeness vitality will be returned.
 
-    Other parameters
+    Other Parameters
     ----------------
     wiener_index : number
         If you have already computed the Wiener index of the graph

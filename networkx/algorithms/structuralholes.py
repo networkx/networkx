@@ -113,7 +113,7 @@ def effective_size(G, nodes=None, weight=None):
     >>> esize = nx.effective_size(G)
     >>> efficiency = {n: v / G.degree(n) for n, v in esize.items()}
 
-    See also
+    See Also
     --------
     constraint
 
@@ -198,7 +198,7 @@ def constraint(G, nodes=None, weight=None):
     dict
         Dictionary with nodes as keys and the constraint on the node as values.
 
-    See also
+    See Also
     --------
     local_constraint
 
@@ -263,7 +263,7 @@ def local_constraint(G, u, v, weight=None):
     float
         The constraint of the node ``v`` in the graph ``G``.
 
-    See also
+    See Also
     --------
     constraint
 

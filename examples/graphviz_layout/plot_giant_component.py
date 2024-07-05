@@ -1,6 +1,6 @@
 """
 ===============
-Giant Component
+Giant Component.
 ===============
 
 This example illustrates the sudden appearance of a

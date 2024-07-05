@@ -274,7 +274,6 @@ def maybe_regular_expander(n, d, *, create_using=None, max_tries=100, seed=None)
        https://arxiv.org/abs/cs/0405020
 
     """
-
     import numpy as np
 
     if n < 1:
@@ -333,7 +332,7 @@ def maybe_regular_expander(n, d, *, create_using=None, max_tries=100, seed=None)
 @nx.utils.not_implemented_for("multigraph")
 @nx._dispatchable(preserve_edge_attrs={"G": {"weight": 1}})
 def is_regular_expander(G, *, epsilon=0):
-    r"""Determines whether the graph G is a regular expander. [1]_
+    r"""Determines whether the graph G is a regular expander. [1]_.
 
     An expander graph is a sparse graph with strong connectivity properties.
 
@@ -377,7 +376,6 @@ def is_regular_expander(G, *, epsilon=0):
     .. [3] Ramanujan graphs, https://en.wikipedia.org/wiki/Ramanujan_graph
 
     """
-
     import numpy as np
     from scipy.sparse.linalg import eigsh
 

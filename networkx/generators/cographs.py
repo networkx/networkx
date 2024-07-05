@@ -1,4 +1,4 @@
-r"""Generators for cographs
+r"""Generators for cographs.
 
 A cograph is a graph containing no path on four vertices.
 Cographs or $P_4$-free graphs can be obtained from a single vertex

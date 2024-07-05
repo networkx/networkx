@@ -1,6 +1,6 @@
 """
 ==========
-Unix Email
+Unix Email.
 ==========
 
 Create a directed graph, allowing multiple edges and self loops, from a unix

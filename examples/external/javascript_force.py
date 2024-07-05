@@ -1,6 +1,6 @@
 """
 ==========
-JavaScript
+JavaScript.
 ==========
 
 Example of writing JSON format graph data and using the D3 JavaScript library

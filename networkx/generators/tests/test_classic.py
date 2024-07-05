@@ -1,6 +1,6 @@
 """
 ====================
-Generators - Classic
+Generators - Classic.
 ====================
 
 Unit tests for various classic graph generators in generators/classic.py

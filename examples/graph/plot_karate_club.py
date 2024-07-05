@@ -1,6 +1,6 @@
 """
 ===========
-Karate Club
+Karate Club.
 ===========
 
 Zachary's Karate Club graph

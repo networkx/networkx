@@ -1,6 +1,4 @@
-"""
-Unit tests for dedensification and graph summarization
-"""
+"""Unit tests for dedensification and graph summarization."""
 
 import pytest
 
@@ -42,9 +40,7 @@ class TestDirectedDedensification:
         return compressed_graph
 
     def test_empty(self):
-        """
-        Verify that an empty directed graph results in no compressor nodes
-        """
+        """Verify that an empty directed graph results in no compressor nodes."""
         G = nx.DiGraph()
         compressed_graph, c_nodes = nx.dedensify(G, threshold=2)
         assert c_nodes == set()
@@ -52,7 +48,7 @@ class TestDirectedDedensification:
     @staticmethod
     def densify(G, compressor_nodes, copy=True):
         """
-        Reconstructs the original graph from a dedensified, directed graph
+        Reconstructs the original graph from a dedensified, directed graph.
 
         Parameters
         ----------
@@ -89,7 +85,7 @@ class TestDirectedDedensification:
     def test_dedensify_edges(self):
         """
         Verifies that dedensify produced the correct edges to/from compressor
-        nodes in a directed graph
+        nodes in a directed graph.
         """
         G = self.build_original_graph()
         compressed_G = self.build_compressed_graph()
@@ -105,7 +101,7 @@ class TestDirectedDedensification:
     def test_dedensify_edge_count(self):
         """
         Verifies that dedensify produced the correct number of compressor nodes
-        in a directed graph
+        in a directed graph.
         """
         G = self.build_original_graph()
         original_edge_count = len(G.edges())
@@ -118,7 +114,7 @@ class TestDirectedDedensification:
     def test_densify_edges(self):
         """
         Verifies that densification produces the correct edges from the
-        original directed graph
+        original directed graph.
         """
         compressed_G = self.build_compressed_graph()
         original_graph = self.densify(compressed_G, self.c_nodes, copy=True)
@@ -129,7 +125,7 @@ class TestDirectedDedensification:
     def test_densify_edge_count(self):
         """
         Verifies that densification produces the correct number of edges in the
-        original directed graph
+        original directed graph.
         """
         compressed_G = self.build_compressed_graph()
         compressed_edge_count = len(compressed_G.edges())
@@ -142,9 +138,7 @@ class TestDirectedDedensification:
 
 class TestUnDirectedDedensification:
     def build_original_graph(self):
-        """
-        Builds graph shown in the original research paper
-        """
+        """Builds graph shown in the original research paper."""
         original_matrix = [
             ("1", "CB"),
             ("2", "ABC"),
@@ -161,9 +155,7 @@ class TestUnDirectedDedensification:
         return graph
 
     def test_empty(self):
-        """
-        Verify that an empty undirected graph results in no compressor nodes
-        """
+        """Verify that an empty undirected graph results in no compressor nodes."""
         G = nx.Graph()
         compressed_G, c_nodes = nx.dedensify(G, threshold=2)
         assert c_nodes == set()
@@ -192,7 +184,7 @@ class TestUnDirectedDedensification:
     def test_dedensify_edges(self):
         """
         Verifies that dedensify produced correct compressor nodes and the
-        correct edges to/from the compressor nodes in an undirected graph
+        correct edges to/from the compressor nodes in an undirected graph.
         """
         G = self.build_original_graph()
         c_G, c_nodes = nx.dedensify(G, threshold=2)
@@ -208,7 +200,7 @@ class TestUnDirectedDedensification:
     def test_dedensify_edge_count(self):
         """
         Verifies that dedensify produced the correct number of edges in an
-        undirected graph
+        undirected graph.
         """
         G = self.build_original_graph()
         c_G, c_nodes = nx.dedensify(G, threshold=2, copy=True)

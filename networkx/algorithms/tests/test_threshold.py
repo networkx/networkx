@@ -1,5 +1,5 @@
 """
-Threshold Graphs
+Threshold Graphs.
 ================
 """
 

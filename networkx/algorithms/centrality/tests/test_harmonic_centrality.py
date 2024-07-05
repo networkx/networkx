@@ -1,6 +1,4 @@
-"""
-Tests for degree centrality.
-"""
+"""Tests for degree centrality."""
 
 import pytest
 

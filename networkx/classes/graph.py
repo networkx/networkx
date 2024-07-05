@@ -21,7 +21,7 @@ __all__ = ["Graph"]
 
 
 class _CachedPropertyResetterAdj:
-    """Data Descriptor class for _adj that resets ``adj`` cached_property when needed
+    """Data Descriptor class for _adj that resets ``adj`` cached_property when needed.
 
     This assumes that the ``cached_property`` ``G.adj`` should be reset whenever
     ``G._adj`` is set to a new value.
@@ -46,7 +46,7 @@ class _CachedPropertyResetterAdj:
 
 
 class _CachedPropertyResetterNode:
-    """Data Descriptor class for _node that resets ``nodes`` cached_property when needed
+    """Data Descriptor class for _node that resets ``nodes`` cached_property when needed.
 
     This assumes that the ``cached_property`` ``G.node`` should be reset whenever
     ``G._node`` is set to a new value.
@@ -1052,7 +1052,7 @@ class Graph:
         nx._clear_cache(self)
 
     def add_weighted_edges_from(self, ebunch_to_add, weight="weight", **attr):
-        """Add weighted edges in `ebunch_to_add` with specified weight attr
+        """Add weighted edges in `ebunch_to_add` with specified weight attr.
 
         Parameters
         ----------

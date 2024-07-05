@@ -1,6 +1,6 @@
 """
 ========================
-OpenStreetMap with OSMnx
+OpenStreetMap with OSMnx.
 ========================
 
 This example shows how to use OSMnx to download and model a street network

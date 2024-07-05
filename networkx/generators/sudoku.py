@@ -1,4 +1,4 @@
-"""Generator for Sudoku graphs
+"""Generator for Sudoku graphs.
 
 This module gives a generator for n-Sudoku graphs. It can be used to develop
 algorithms for solving or generating Sudoku puzzles.
@@ -90,7 +90,6 @@ def sudoku_graph(n=3):
     .. [3] Wikipedia contributors. "Glossary of Sudoku." Wikipedia, The Free
        Encyclopedia, 3 Dec. 2019. Web. 22 Dec. 2019.
     """
-
     if n < 0:
         raise NetworkXError("The order must be greater than or equal to zero.")
 

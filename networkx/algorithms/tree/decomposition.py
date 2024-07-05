@@ -60,7 +60,6 @@ def junction_tree(G):
        conference on Uncertainty in artificial intelligence (UAI’94).
        Morgan Kaufmann Publishers Inc., San Francisco, CA, USA, 360–366.
     """
-
     clique_graph = nx.Graph()
 
     if G.is_directed():

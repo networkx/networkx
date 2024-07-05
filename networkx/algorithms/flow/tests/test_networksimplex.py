@@ -37,7 +37,7 @@ def simple_no_flow_graph():
 
 
 def get_flowcost_from_flowdict(G, flowDict):
-    """Returns flow cost calculated from flow dictionary"""
+    """Returns flow cost calculated from flow dictionary."""
     flowCost = 0
     for u in flowDict:
         for v in flowDict[u]:
@@ -92,9 +92,7 @@ def test_sum_demands_not_zero(simple_no_flow_graph):
 
 
 def test_google_or_tools_example():
-    """
-    https://developers.google.com/optimization/flow/mincostflow
-    """
+    """https://developers.google.com/optimization/flow/mincostflow."""
     G = nx.DiGraph()
     start_nodes = [0, 0, 1, 1, 1, 2, 2, 3, 4]
     end_nodes = [1, 2, 2, 3, 4, 3, 4, 4, 2]
@@ -117,9 +115,7 @@ def test_google_or_tools_example():
 
 
 def test_google_or_tools_example2():
-    """
-    https://developers.google.com/optimization/flow/mincostflow
-    """
+    """https://developers.google.com/optimization/flow/mincostflow."""
     G = nx.DiGraph()
     start_nodes = [0, 0, 1, 1, 1, 2, 2, 3, 4, 3]
     end_nodes = [1, 2, 2, 3, 4, 3, 4, 4, 2, 5]
@@ -283,7 +279,8 @@ def test_zero_capacity_edges():
 
 def test_digon():
     """Check if digons are handled properly. Taken from ticket
-    #618 by arv."""
+    #618 by arv.
+    """
     nodes = [(1, {}), (2, {"demand": -4}), (3, {"demand": 4})]
     edges = [
         (1, 2, {"capacity": 3, "weight": 600000}),
@@ -300,7 +297,8 @@ def test_digon():
 
 def test_deadend():
     """Check if one-node cycles are handled properly. Taken from ticket
-    #2906 from @sshraven."""
+    #2906 from @sshraven.
+    """
     G = nx.DiGraph()
 
     G.add_nodes_from(range(5), demand=0)
@@ -313,7 +311,8 @@ def test_deadend():
 
 def test_infinite_capacity_neg_digon():
     """An infinite capacity negative cost digon results in an unbounded
-    instance."""
+    instance.
+    """
     nodes = [(1, {}), (2, {"demand": -4}), (3, {"demand": 4})]
     edges = [
         (1, 2, {"weight": -600}),

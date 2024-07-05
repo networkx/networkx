@@ -11,7 +11,7 @@ import networkx as nx
 
 class TestEigenvectorCentrality:
     def test_K5(self):
-        """Eigenvector centrality: K5"""
+        """Eigenvector centrality: K5."""
         G = nx.complete_graph(5)
         b = nx.eigenvector_centrality(G)
         v = math.sqrt(1 / 5.0)
@@ -28,7 +28,7 @@ class TestEigenvectorCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-3)
 
     def test_P3(self):
-        """Eigenvector centrality: P3"""
+        """Eigenvector centrality: P3."""
         G = nx.path_graph(3)
         b_answer = {0: 0.5, 1: 0.7071, 2: 0.5}
         b = nx.eigenvector_centrality_numpy(G)
@@ -39,7 +39,7 @@ class TestEigenvectorCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-4)
 
     def test_P3_unweighted(self):
-        """Eigenvector centrality: P3"""
+        """Eigenvector centrality: P3."""
         G = nx.path_graph(3)
         b_answer = {0: 0.5, 1: 0.7071, 2: 0.5}
         b = nx.eigenvector_centrality_numpy(G, weight=None)

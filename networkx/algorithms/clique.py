@@ -651,7 +651,8 @@ class MaxWeightClique:
 
     def greedily_find_independent_set(self, P):
         """Greedily find an independent set of nodes from a set of
-        nodes P."""
+        nodes P.
+        """
         independent_set = []
         P = P[:]
         while P:
@@ -749,7 +750,6 @@ def max_weight_clique(G, weight="weight"):
            for the Maximum Weight Independent Set Problem.  Technical Report,
            Texas A&M University (2016).
     """
-
     mwc = MaxWeightClique(G, weight)
     mwc.find_max_weight_clique()
     return mwc.incumbent_nodes, mwc.incumbent_weight

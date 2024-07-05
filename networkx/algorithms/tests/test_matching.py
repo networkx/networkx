@@ -15,7 +15,7 @@ class TestMaxWeightMatching:
     """
 
     def test_trivial1(self):
-        """Empty graph"""
+        """Empty graph."""
         G = nx.Graph()
         assert nx.max_weight_matching(G) == set()
         assert nx.min_weight_matching(G) == set()
@@ -160,7 +160,6 @@ class TestMaxWeightMatching:
 
     def test_nested_s_blossom(self):
         """Create nested S-blossom, use for augmentation:"""
-
         G = nx.Graph()
         G.add_weighted_edges_from(
             [
@@ -331,7 +330,7 @@ class TestMaxWeightMatching:
         assert edges_equal(nx.min_weight_matching(G), answer)
 
     def test_nasty_blossom_augmenting(self):
-        """Create nested blossom, relabel as T in more than one way"""
+        """Create nested blossom, relabel as T in more than one way."""
         # expand outer blossom such that inner blossom ends up on an
         # augmenting path:
         G = nx.Graph()

@@ -1,6 +1,4 @@
-"""
-Time Series Graphs
-"""
+"""Time Series Graphs."""
 
 import itertools
 
@@ -52,7 +50,6 @@ def visibility_graph(series):
            National Academy of Sciences 105, no. 13 (2008): 4972-4975.
            https://www.pnas.org/doi/10.1073/pnas.0709247105
     """
-
     # Sequential values are always connected
     G = nx.path_graph(len(series))
     nx.set_node_attributes(G, dict(enumerate(series)), "value")

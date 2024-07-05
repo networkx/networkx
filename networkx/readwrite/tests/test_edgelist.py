@@ -1,6 +1,4 @@
-"""
-Unit tests for edgelists.
-"""
+"""Unit tests for edgelists."""
 
 import io
 import textwrap

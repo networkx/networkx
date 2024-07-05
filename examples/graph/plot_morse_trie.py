@@ -1,6 +1,6 @@
 """
 ==========
-Morse Trie
+Morse Trie.
 ==========
 
 A prefix tree (aka a "trie") representing the Morse encoding of the alphabet.

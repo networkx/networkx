@@ -53,7 +53,6 @@ def _assign_random_weights(G, seed=None):
 
     Parameters
     ----------
-
     G : NetworkX graph
         The original graph for which the spanner was constructed.
 

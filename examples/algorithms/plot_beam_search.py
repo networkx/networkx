@@ -1,6 +1,6 @@
 """
 ===========
-Beam Search
+Beam Search.
 ===========
 
 Beam search with dynamic beam width.

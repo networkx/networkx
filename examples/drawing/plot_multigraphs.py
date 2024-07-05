@@ -1,6 +1,6 @@
 """
 ======================================
-Plotting MultiDiGraph Edges and Labels
+Plotting MultiDiGraph Edges and Labels.
 ======================================
 
 This example shows how to plot edges and labels for a MultiDiGraph class object.

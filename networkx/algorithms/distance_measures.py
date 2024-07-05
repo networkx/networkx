@@ -17,7 +17,7 @@ __all__ = [
 
 
 def _extrema_bounding(G, compute="diameter", weight=None):
-    """Compute requested extreme distance metric of undirected graph G
+    """Compute requested extreme distance metric of undirected graph G.
 
     Computation is based on smart lower and upper bounds, and in practice
     linear in the number of nodes, rather than quadratic (except for some

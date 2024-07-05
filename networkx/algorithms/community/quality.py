@@ -22,7 +22,7 @@ class NotAPartition(NetworkXError):
 
 
 def _require_partition(G, partition):
-    """Decorator to check that a valid partition is input to a function
+    """Decorator to check that a valid partition is input to a function.
 
     Raises :exc:`networkx.NetworkXError` if the partition is not valid.
 
@@ -301,7 +301,6 @@ def partition_quality(G, partition):
            *Physical Reports*, Volume 486, Issue 3--5 pp. 75--174
            <https://arxiv.org/abs/0906.0612>
     """
-
     node_community = {}
     for i, community in enumerate(partition):
         for node in community:

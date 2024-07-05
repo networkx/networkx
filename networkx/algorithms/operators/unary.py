@@ -1,4 +1,4 @@
-"""Unary operations on graphs"""
+"""Unary operations on graphs."""
 
 import networkx as nx
 

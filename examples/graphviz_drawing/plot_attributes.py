@@ -1,7 +1,6 @@
 """
 Attributes
-==========
-
+----------
 Example illustrating how attributes of nodes, edges, and graphs are handled
 during conversion to/from `~pygraphviz.AGraph`.
 """

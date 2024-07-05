@@ -1,6 +1,6 @@
 """
 ===========
-Eigenvalues
+Eigenvalues.
 ===========
 
 Create an G{n,m} random graph and compute the eigenvalues.

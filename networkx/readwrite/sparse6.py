@@ -57,7 +57,7 @@ def _generate_sparse6_bytes(G, nodes, header):
         k += 1
 
     def enc(x):
-        """Big endian k-bit encoding of x"""
+        """Big endian k-bit encoding of x."""
         return [1 if (x & 1 << (k - 1 - i)) else 0 for i in range(k)]
 
     edges = sorted((max(u, v), min(u, v)) for u, v in G.edges())
@@ -201,7 +201,7 @@ def from_sparse6_bytes(string):
 
 
 def to_sparse6_bytes(G, nodes=None, header=True):
-    """Convert an undirected graph to bytes in sparse6 format.
+    r"""Convert an undirected graph to bytes in sparse6 format.
 
     Parameters
     ----------
@@ -253,7 +253,7 @@ def to_sparse6_bytes(G, nodes=None, header=True):
 @open_file(0, mode="rb")
 @nx._dispatchable(graphs=None, returns_graph=True)
 def read_sparse6(path):
-    """Read an undirected graph in sparse6 format from path.
+    r"""Read an undirected graph in sparse6 format from path.
 
     Parameters
     ----------
@@ -317,7 +317,7 @@ def read_sparse6(path):
 @not_implemented_for("directed")
 @open_file(1, mode="wb")
 def write_sparse6(G, path, nodes=None, header=True):
-    """Write graph G to given path in sparse6 format.
+    r"""Write graph G to given path in sparse6 format.
 
     Parameters
     ----------

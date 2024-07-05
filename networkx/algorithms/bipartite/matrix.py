@@ -1,6 +1,6 @@
 """
 ====================
-Biadjacency matrices
+Biadjacency matrices.
 ====================
 """
 

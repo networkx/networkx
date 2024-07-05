@@ -169,6 +169,7 @@ networkx = ['tests/*.py']
 
 [tool.ruff.lint]
 select = [
+    "D",
     'I',
     'UP',
     'C4',
@@ -183,6 +184,9 @@ select = [
     'SIM118',
     'SIM2',
 ]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ['I']

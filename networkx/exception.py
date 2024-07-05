@@ -1,7 +1,7 @@
 """
 **********
 Exceptions
-**********
+**********.
 
 Base exceptions and errors for NetworkX.
 """
@@ -29,7 +29,7 @@ class NetworkXException(Exception):
 
 
 class NetworkXError(NetworkXException):
-    """Exception for a serious error in NetworkX"""
+    """Exception for a serious error in NetworkX."""
 
 
 class NetworkXPointlessConcept(NetworkXException):
@@ -60,17 +60,20 @@ class NetworkXAlgorithmError(NetworkXException):
 
 class NetworkXUnfeasible(NetworkXAlgorithmError):
     """Exception raised by algorithms trying to solve a problem
-    instance that has no feasible solution."""
+    instance that has no feasible solution.
+    """
 
 
 class NetworkXNoPath(NetworkXUnfeasible):
     """Exception for algorithms that should return a path when running
-    on graphs where such a path does not exist."""
+    on graphs where such a path does not exist.
+    """
 
 
 class NetworkXNoCycle(NetworkXUnfeasible):
     """Exception for algorithms that should return a cycle when running
-    on graphs where such a cycle does not exist."""
+    on graphs where such a cycle does not exist.
+    """
 
 
 class HasACycle(NetworkXException):
@@ -82,7 +85,8 @@ class HasACycle(NetworkXException):
 
 class NetworkXUnbounded(NetworkXAlgorithmError):
     """Exception raised by algorithms trying to solve a maximization
-    or a minimization problem instance that is unbounded."""
+    or a minimization problem instance that is unbounded.
+    """
 
 
 class NetworkXNotImplemented(NetworkXException):
@@ -90,7 +94,7 @@ class NetworkXNotImplemented(NetworkXException):
 
 
 class NodeNotFound(NetworkXException):
-    """Exception raised if requested node is not present in the graph"""
+    """Exception raised if requested node is not present in the graph."""
 
 
 class AmbiguousSolution(NetworkXException):

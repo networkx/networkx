@@ -1,6 +1,6 @@
 """
 ========================
-Cycle finding algorithms
+Cycle finding algorithms.
 ========================
 """
 
@@ -194,7 +194,6 @@ def simple_cycles(G, length_bound=None):
     cycle_basis
     chordless_cycles
     """
-
     if length_bound is not None:
         if length_bound == 0:
             return
@@ -238,7 +237,7 @@ def simple_cycles(G, length_bound=None):
 
 
 def _directed_cycle_search(G, length_bound):
-    """A dispatch function for `simple_cycles` for directed graphs.
+    r"""A dispatch function for `simple_cycles` for directed graphs.
 
     We generate all cycles of G through binary partition.
 
@@ -271,7 +270,6 @@ def _directed_cycle_search(G, length_bound):
     list of nodes
        Each cycle is represented by a list of nodes along the cycle.
     """
-
     scc = nx.strongly_connected_components
     components = [c for c in scc(G) if len(c) >= 2]
     while components:
@@ -288,7 +286,7 @@ def _directed_cycle_search(G, length_bound):
 
 
 def _undirected_cycle_search(G, length_bound):
-    """A dispatch function for `simple_cycles` for undirected graphs.
+    r"""A dispatch function for `simple_cycles` for undirected graphs.
 
     We generate all cycles of G through binary partition.
 
@@ -321,7 +319,6 @@ def _undirected_cycle_search(G, length_bound):
     list of nodes
        Each cycle is represented by a list of nodes along the cycle.
     """
-
     bcc = nx.biconnected_components
     components = [c for c in bcc(G) if len(c) >= 3]
     while components:
@@ -376,7 +373,6 @@ def _johnson_cycle_search(G, path):
        https://doi.org/10.1137/0204007
 
     """
-
     G = _NeighborhoodCache(G)
     blocked = set(path)
     B = defaultdict(set)  # graph portions that yield no elementary circuit
@@ -564,7 +560,6 @@ def chordless_cycles(G, length_bound=None):
     --------
     simple_cycles
     """
-
     if length_bound is not None:
         if length_bound == 0:
             return
@@ -1037,7 +1032,7 @@ def find_cycle(G, source=None, orientation=None):
 @not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs="weight")
 def minimum_cycle_basis(G, weight=None):
-    """Returns a minimum weight cycle basis for G
+    """Returns a minimum weight cycle basis for G.
 
     Minimum weight means a cycle basis for which the total weight
     (length for unweighted graphs) of all the cycles is minimum.
@@ -1062,7 +1057,8 @@ def minimum_cycle_basis(G, weight=None):
     >>> nx.minimum_cycle_basis(G)
     [[5, 4, 3, 0], [3, 2, 1, 0]]
 
-    References:
+    References
+    ----------
         [1] Kavitha, Telikepalli, et al. "An O(m^2n) Algorithm for
         Minimum Cycle Basis of Graphs."
         http://link.springer.com/article/10.1007/s00453-007-9064-z

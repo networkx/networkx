@@ -1,6 +1,6 @@
 """
 ==================
-Words/Ladder Graph
+Words/Ladder Graph.
 ==================
 
 Generate  an undirected graph over the 5757 5-letter words in the datafile
@@ -47,7 +47,7 @@ def generate_graph(words):
 
 
 def words_graph():
-    """Return the words example graph from the Stanford GraphBase"""
+    """Return the words example graph from the Stanford GraphBase."""
     fh = gzip.open("words_dat.txt.gz", "r")
     words = set()
     for line in fh.readlines():

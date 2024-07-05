@@ -1,6 +1,6 @@
 """
 ======
-igraph
+igraph.
 ======
 
 igraph (https://igraph.org/) is a popular network analysis package that

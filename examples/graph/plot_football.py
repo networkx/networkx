@@ -1,6 +1,6 @@
 """
 ========
-Football
+Football.
 ========
 
 Load football network in GML format and compute some network statistics.

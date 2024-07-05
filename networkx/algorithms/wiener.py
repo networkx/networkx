@@ -96,7 +96,7 @@ def wiener_index(G, weight=None):
 @nx.utils.not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs="weight")
 def schultz_index(G, weight=None):
-    r"""Returns the Schultz Index (of the first kind) of `G`
+    r"""Returns the Schultz Index (of the first kind) of `G`.
 
     The *Schultz Index* [3]_ of a graph is the sum over all node pairs of
     distances times the sum of degrees. Consider an undirected graph `G`.

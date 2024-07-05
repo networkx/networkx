@@ -51,7 +51,7 @@ def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
         two-tuple as described above. Otherwise, it returns only the maximum
         locally `(k, l)`-connected subgraph.
 
-    See also
+    See Also
     --------
     is_kl_connected
 
@@ -146,7 +146,7 @@ def is_kl_connected(G, k, l, low_memory=False):
     bool
         Whether the graph is locally `(k, l)`-connected subgraph.
 
-    See also
+    See Also
     --------
     kl_connected_subgraph
 

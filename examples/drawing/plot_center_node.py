@@ -1,6 +1,6 @@
 """
 ====================
-Custom Node Position
+Custom Node Position.
 ====================
 
 Draw a graph with node(s) located at user-defined positions.

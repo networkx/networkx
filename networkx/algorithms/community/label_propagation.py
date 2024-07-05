@@ -1,6 +1,4 @@
-"""
-Label propagation community detection algorithms.
-"""
+"""Label propagation community detection algorithms."""
 
 from collections import Counter, defaultdict, deque
 
@@ -63,7 +61,6 @@ def fast_label_propagation_communities(G, *, weight=None, seed=None):
        fast label propagation." Scientific Reports 13 (2023): 2701.
        https://doi.org/10.1038/s41598-023-29610-z
     """
-
     # Queue of nodes to be processed.
     nodes_queue = deque(G)
     seed.shuffle(nodes_queue)
@@ -107,7 +104,6 @@ def _fast_label_count(G, comms, node, weight=None):
 
     Returns a dictionary keyed by label to the frequency of that label.
     """
-
     if weight is None:
         # Unweighted (un)directed simple graph.
         if not G.is_multigraph():
@@ -188,7 +184,6 @@ def asyn_lpa_communities(G, weight=None, seed=None):
            linear time algorithm to detect community structures in large-scale
            networks." Physical Review E 76.3 (2007): 036106.
     """
-
     labels = {n: i for i, n in enumerate(G)}
     cont = True
 
@@ -236,7 +231,7 @@ def asyn_lpa_communities(G, weight=None, seed=None):
 @not_implemented_for("directed")
 @nx._dispatchable
 def label_propagation_communities(G):
-    """Generates community sets determined by label propagation
+    """Generates community sets determined by label propagation.
 
     Finds communities in `G` using a semi-synchronous label propagation
     method [1]_. This method combines the advantages of both the synchronous
@@ -324,7 +319,7 @@ def _most_frequent_labels(node, labeling, G):
 
 
 def _update_label(node, labeling, G):
-    """Updates the label of a node using the Prec-Max tie breaking algorithm
+    """Updates the label of a node using the Prec-Max tie breaking algorithm.
 
     The algorithm is explained in: 'Community Detection via Semi-Synchronous
     Label Propagation Algorithms' Cordasco and Gargano, 2011

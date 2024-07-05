@@ -6,9 +6,7 @@ import networkx as nx
 
 
 def test_example_tree_broadcast():
-    """
-    Test the BROADCAST algorithm on the example in the paper titled: "Information Dissemination in Trees"
-    """
+    """Test the BROADCAST algorithm on the example in the paper titled: "Information Dissemination in Trees"."""
     edge_list = [
         (0, 1),
         (1, 2),

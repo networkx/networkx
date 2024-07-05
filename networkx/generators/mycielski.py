@@ -13,7 +13,7 @@ __all__ = ["mycielskian", "mycielski_graph"]
 @not_implemented_for("multigraph")
 @nx._dispatchable(returns_graph=True)
 def mycielskian(G, iterations=1):
-    r"""Returns the Mycielskian of a simple, undirected graph G
+    r"""Returns the Mycielskian of a simple, undirected graph G.
 
     The Mycielskian of graph preserves a graph's triangle free
     property while increasing the chromatic number by 1.
@@ -53,7 +53,6 @@ def mycielskian(G, iterations=1):
     Graph, node, and edge data are not necessarily propagated to the new graph.
 
     """
-
     M = nx.convert_node_labels_to_integers(G)
 
     for i in range(iterations):
@@ -99,7 +98,6 @@ def mycielski_graph(n):
     The remaining graphs are generated using the Mycielski operation.
 
     """
-
     if n < 1:
         raise nx.NetworkXError("must satisfy n >= 1")
 

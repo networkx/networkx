@@ -20,7 +20,7 @@ class TestLRPlanarity:
 
     @staticmethod
     def check_graph(G, is_planar=None):
-        """Raises an exception if the lr_planarity check returns a wrong result
+        """Raises an exception if the lr_planarity check returns a wrong result.
 
         Parameters
         ----------
@@ -30,7 +30,6 @@ class TestLRPlanarity:
             If set to None only counter example or embedding are verified.
 
         """
-
         # obtain results of planarity check
         is_planar_lr, result = nx.check_planarity(G, True)
         is_planar_lr_rec, result_rec = check_planarity_recursive(G, True)
@@ -293,7 +292,7 @@ class TestLRPlanarity:
 
 
 def check_embedding(G, embedding):
-    """Raises an exception if the combinatorial embedding is not correct
+    """Raises an exception if the combinatorial embedding is not correct.
 
     Parameters
     ----------
@@ -310,7 +309,6 @@ def check_embedding(G, embedding):
         - Every half edge has its matching opposite half edge
         - No intersections of edges (checked by Euler's formula)
     """
-
     if not isinstance(embedding, nx.PlanarEmbedding):
         raise nx.NetworkXException("Bad embedding. Not of type nx.PlanarEmbedding")
 

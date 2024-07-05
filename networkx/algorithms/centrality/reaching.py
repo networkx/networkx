@@ -73,7 +73,7 @@ def global_reaching_centrality(G, weight=None, normalized=True):
     >>> nx.global_reaching_centrality(G)
     0.75
 
-    See also
+    See Also
     --------
     local_reaching_centrality
 
@@ -167,7 +167,7 @@ def local_reaching_centrality(G, v, paths=None, weight=None, normalized=True):
     >>> nx.local_reaching_centrality(G, 3)
     0.5
 
-    See also
+    See Also
     --------
     global_reaching_centrality
 

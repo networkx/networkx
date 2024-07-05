@@ -1,7 +1,7 @@
 """
 *****
 Pydot
-*****
+*****.
 
 Import and export NetworkX graphs in Graphviz dot format using pydot.
 
@@ -105,7 +105,6 @@ def from_pydot(P):
     >>> G = nx.Graph(nx.nx_pydot.from_pydot(A))
 
     """
-
     if P.get_strict(None):  # pydot bug: get_strict() shouldn't take argument
         multiedges = False
     else:

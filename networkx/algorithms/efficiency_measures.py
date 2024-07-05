@@ -39,7 +39,7 @@ def efficiency(G, u, v):
     -----
     Edge weights are ignored when computing the shortest path distances.
 
-    See also
+    See Also
     --------
     local_efficiency
     global_efficiency
@@ -89,7 +89,7 @@ def global_efficiency(G):
     -----
     Edge weights are ignored when computing the shortest path distances.
 
-    See also
+    See Also
     --------
     local_efficiency
 
@@ -151,7 +151,7 @@ def local_efficiency(G):
     -----
     Edge weights are ignored when computing the shortest path distances.
 
-    See also
+    See Also
     --------
     global_efficiency
 

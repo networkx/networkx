@@ -1,6 +1,6 @@
 """
 ==========================
-Bipartite Graph Algorithms
+Bipartite Graph Algorithms.
 ==========================
 """
 

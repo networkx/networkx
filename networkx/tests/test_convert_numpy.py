@@ -37,12 +37,12 @@ class TestConvertNumpyArray:
         self.assert_equal(G, GI)
 
     def test_shape(self):
-        "Conversion from non-square array."
+        """Conversion from non-square array."""
         A = np.array([[1, 2, 3], [4, 5, 6]])
         pytest.raises(nx.NetworkXError, nx.from_numpy_array, A)
 
     def test_identity_graph_array(self):
-        "Conversion from graph to array to graph."
+        """Conversion from graph to array to graph."""
         A = nx.to_numpy_array(self.G1)
         self.identity_conversion(self.G1, A, nx.Graph())
 
@@ -302,7 +302,8 @@ def test_to_numpy_array_multiweight_reduction(func, expected):
 )
 def test_to_numpy_array_structured_dtype_attrs_from_fields(G, expected):
     """When `dtype` is structured (i.e. has names) and `weight` is None, use
-    the named fields of the dtype to look up edge attributes."""
+    the named fields of the dtype to look up edge attributes.
+    """
     G.add_edge(0, 1, weight=10, cost=5.0)
     dtype = np.dtype([("weight", int), ("cost", int)])
     A = nx.to_numpy_array(G, dtype=dtype, weight=None)
@@ -366,7 +367,8 @@ def test_to_numpy_array_structured_dtype_scalar_nonedge(G):
 @pytest.mark.parametrize("G", (nx.Graph(), nx.DiGraph()))
 def test_to_numpy_array_structured_dtype_nonedge_ary(G):
     """Similar to the scalar case, except has a different non-edge value for
-    each named field."""
+    each named field.
+    """
     G.add_edge(0, 1, weight=10)
     dtype = np.dtype([("weight", float), ("cost", float)])
     nonedges = np.array([(0, np.inf)], dtype=dtype)
@@ -379,7 +381,8 @@ def test_to_numpy_array_structured_dtype_nonedge_ary(G):
 
 def test_to_numpy_array_structured_dtype_with_weight_raises():
     """Using both a structured dtype (with named fields) and specifying a `weight`
-    parameter is ambiguous."""
+    parameter is ambiguous.
+    """
     G = nx.path_graph(3)
     dtype = np.dtype([("weight", int), ("cost", int)])
     exception_msg = "Specifying `weight` not supported for structured dtypes"

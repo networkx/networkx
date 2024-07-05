@@ -1,6 +1,6 @@
 """
 ==================
-Spectral Embedding
+Spectral Embedding.
 ==================
 
 The spectral layout positions the nodes of the graph based on the

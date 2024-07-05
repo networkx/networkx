@@ -1,4 +1,4 @@
-"""Benchmarks for a certain set of algorithms"""
+"""Benchmarks for a certain set of algorithms."""
 
 import networkx as nx
 from benchmarks.utils import fetch_drug_interaction_network

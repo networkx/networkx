@@ -1,6 +1,4 @@
-"""
-Maximum flow (and minimum cut) algorithms on capacitated graphs.
-"""
+"""Maximum flow (and minimum cut) algorithms on capacitated graphs."""
 
 import networkx as nx
 
@@ -75,7 +73,7 @@ def maximum_flow(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
         feasible flow on the graph is unbounded above and the function
         raises a NetworkXUnbounded.
 
-    See also
+    See Also
     --------
     :meth:`maximum_flow_value`
     :meth:`minimum_cut`
@@ -218,7 +216,7 @@ def maximum_flow_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwa
         feasible flow on the graph is unbounded above and the function
         raises a NetworkXUnbounded.
 
-    See also
+    See Also
     --------
     :meth:`maximum_flow`
     :meth:`minimum_cut`
@@ -358,7 +356,7 @@ def minimum_cut(flowG, _s, _t, capacity="capacity", flow_func=None, **kwargs):
         If the graph has a path of infinite capacity, all cuts have
         infinite capacity and the function raises a NetworkXError.
 
-    See also
+    See Also
     --------
     :meth:`maximum_flow`
     :meth:`maximum_flow_value`
@@ -519,7 +517,7 @@ def minimum_cut_value(flowG, _s, _t, capacity="capacity", flow_func=None, **kwar
         If the graph has a path of infinite capacity, all cuts have
         infinite capacity and the function raises a NetworkXError.
 
-    See also
+    See Also
     --------
     :meth:`maximum_flow`
     :meth:`maximum_flow_value`

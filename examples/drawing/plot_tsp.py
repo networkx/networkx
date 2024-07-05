@@ -1,6 +1,6 @@
 """
 ==========================
-Traveling Salesman Problem
+Traveling Salesman Problem.
 ==========================
 
 This is an example of a drawing solution of the traveling salesman problem

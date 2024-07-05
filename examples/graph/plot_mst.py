@@ -1,6 +1,6 @@
 """
 =====================
-Minimum Spanning Tree
+Minimum Spanning Tree.
 =====================
 
 A minimum spanning tree (MST) is a subset of edges in a weighted,

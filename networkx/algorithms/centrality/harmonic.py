@@ -64,7 +64,6 @@ def harmonic_centrality(G, nbunch=None, distance=None, sources=None):
     .. [1] Boldi, Paolo, and Sebastiano Vigna. "Axioms for centrality."
            Internet Mathematics 10.3-4 (2014): 222-262.
     """
-
     nbunch = set(G.nbunch_iter(nbunch)) if nbunch is not None else set(G.nodes)
     sources = set(G.nbunch_iter(sources)) if sources is not None else G.nodes
 

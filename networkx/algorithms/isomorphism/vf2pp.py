@@ -1,7 +1,7 @@
 """
 ***************
 VF2++ Algorithm
-***************
+***************.
 
 An implementation of the VF2++ algorithm [1]_ for Graph Isomorphism testing.
 
@@ -29,7 +29,6 @@ branches early in the process.
 
 Examples
 --------
-
 Suppose G1 and G2 are Isomorphic Graphs. Verification is as follows:
 
 Without node labels:
@@ -294,7 +293,7 @@ def _precheck_label_properties(graph_params):
 
 
 def _initialize_parameters(G1, G2, G2_degree, node_label=None, default_label=-1):
-    """Initializes all the necessary parameters for VF2++
+    """Initializes all the necessary parameters for VF2++.
 
     Parameters
     ----------

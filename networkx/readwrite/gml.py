@@ -60,7 +60,7 @@ def escape(text):
 
 
 def unescape(text):
-    """Replace XML character references with the referenced characters"""
+    """Replace XML character references with the referenced characters."""
 
     def fixup(m):
         text = m.group(0)

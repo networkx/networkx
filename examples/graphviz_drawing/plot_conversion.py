@@ -1,5 +1,5 @@
 """
-Conversion
+Conversion.
 ----------
 
 An example showing how to use the interface to the

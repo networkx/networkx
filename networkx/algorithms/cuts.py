@@ -106,7 +106,7 @@ def volume(G, S, weight=None):
         The volume of the set of nodes represented by `S` in the graph
         `G`.
 
-    See also
+    See Also
     --------
     conductance
     cut_size
@@ -156,7 +156,7 @@ def normalized_cut_size(G, S, T=None, weight=None):
     In a multigraph, the cut size is the total weight of edges including
     multiplicity.
 
-    See also
+    See Also
     --------
     conductance
     cut_size
@@ -204,7 +204,7 @@ def conductance(G, S, T=None, weight=None):
     number
         The conductance between the two sets `S` and `T`.
 
-    See also
+    See Also
     --------
     cut_size
     edge_expansion
@@ -252,7 +252,7 @@ def edge_expansion(G, S, T=None, weight=None):
     number
         The edge expansion between the two sets `S` and `T`.
 
-    See also
+    See Also
     --------
     boundary_expansion
     mixing_expansion
@@ -299,7 +299,7 @@ def mixing_expansion(G, S, T=None, weight=None):
     number
         The mixing expansion between the two sets `S` and `T`.
 
-    See also
+    See Also
     --------
     boundary_expansion
     edge_expansion
@@ -340,7 +340,7 @@ def node_expansion(G, S):
     number
         The node expansion of the set `S`.
 
-    See also
+    See Also
     --------
     boundary_expansion
     edge_expansion
@@ -380,7 +380,7 @@ def boundary_expansion(G, S):
     number
         The boundary expansion of the set `S`.
 
-    See also
+    See Also
     --------
     edge_expansion
     mixing_expansion

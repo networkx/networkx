@@ -1,6 +1,6 @@
 """
 =====
-Roget
+Roget.
 =====
 
 Build a directed graph of 1022 categories and 5075 cross-references as defined

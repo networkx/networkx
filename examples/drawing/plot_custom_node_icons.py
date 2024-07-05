@@ -1,6 +1,6 @@
 """
 =================
-Custom node icons
+Custom node icons.
 =================
 
 Example of using custom icons to represent nodes with matplotlib.

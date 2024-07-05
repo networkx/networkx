@@ -1,7 +1,4 @@
-"""
-Tests for maximal (not maximum) independent sets.
-
-"""
+"""Tests for maximal (not maximum) independent sets."""
 
 import random
 
@@ -17,7 +14,7 @@ def test_random_seed():
 
 @pytest.mark.parametrize("graph", [nx.complete_graph(5), nx.complete_graph(55)])
 def test_K5(graph):
-    """Maximal independent set for complete graphs"""
+    """Maximal independent set for complete graphs."""
     assert all(nx.maximal_independent_set(graph, [n]) == [n] for n in graph)
 
 
@@ -53,7 +50,8 @@ def test_bipartite():
 
 def test_random_graphs():
     """Generate 5 random graphs of different types and sizes and
-    make sure that all sets are independent and maximal."""
+    make sure that all sets are independent and maximal.
+    """
     for i in range(0, 50, 10):
         G = nx.erdos_renyi_graph(i * 10 + 1, random.random())
         IS = nx.maximal_independent_set(G)

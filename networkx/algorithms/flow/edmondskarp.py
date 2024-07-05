@@ -1,6 +1,4 @@
-"""
-Edmonds-Karp algorithm for maximum flow problems.
-"""
+"""Edmonds-Karp algorithm for maximum flow problems."""
 
 import networkx as nx
 from networkx.algorithms.flow.utils import build_residual_network
@@ -180,7 +178,7 @@ def edmonds_karp(
         feasible flow on the graph is unbounded above and the function
         raises a NetworkXUnbounded.
 
-    See also
+    See Also
     --------
     :meth:`maximum_flow`
     :meth:`minimum_cut`

@@ -16,7 +16,7 @@ __all__ = [
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def maximum_independent_set(G):
-    """Returns an approximate maximum independent set.
+    r"""Returns an approximate maximum independent set.
 
     Independent set or stable set is a set of vertices in a graph, no two of
     which are adjacent. That is, it is a set I of vertices such that for every
@@ -73,7 +73,7 @@ def maximum_independent_set(G):
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def max_clique(G):
-    r"""Find the Maximum Clique
+    r"""Find the Maximum Clique.
 
     Finds the $O(|V|/(log|V|)^2)$ apx of maximum clique/independent set
     in the worst case.
@@ -230,9 +230,8 @@ def large_clique_size(G):
        *Internet Mathematics* 11.4-5 (2015): 421--448.
        <https://doi.org/10.1080/15427951.2014.986778>
 
-    See also
+    See Also
     --------
-
     :func:`networkx.algorithms.approximation.clique.max_clique`
         A function that returns an approximate maximum clique with a
         guarantee on the approximation ratio.

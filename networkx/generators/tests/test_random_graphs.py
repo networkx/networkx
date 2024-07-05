@@ -139,7 +139,7 @@ class TestGeneratorsRandom:
             """
             A tree is a caterpillar iff all nodes of degree >=3 are surrounded
             by at most two nodes of degree two or greater.
-            ref: http://mathworld.wolfram.com/CaterpillarGraph.html
+            ref: http://mathworld.wolfram.com/CaterpillarGraph.html.
             """
             deg_over_3 = [n for n in g if g.degree(n) >= 3]
             for n in deg_over_3:
@@ -152,7 +152,7 @@ class TestGeneratorsRandom:
             """
             A tree is a lobster if it has the property that the removal of leaf
             nodes leaves a caterpillar graph (Gallian 2007)
-            ref: http://mathworld.wolfram.com/LobsterGraph.html
+            ref: http://mathworld.wolfram.com/LobsterGraph.html.
             """
             non_leafs = [n for n in g if g.degree(n) > 1]
             return is_caterpillar(g.subgraph(non_leafs))

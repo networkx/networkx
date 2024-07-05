@@ -1,5 +1,5 @@
 """
-Recognition Tests
+Recognition Tests.
 =================
 
 A *forest* is an acyclic, undirected graph, and a *tree* is a connected forest.

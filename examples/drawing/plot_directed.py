@@ -1,6 +1,6 @@
 """
 ==============
-Directed Graph
+Directed Graph.
 ==============
 
 Draw a graph with directed edges using a colormap and different node sizes.

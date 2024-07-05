@@ -1,6 +1,4 @@
-"""
-Stoer-Wagner minimum cut algorithm.
-"""
+"""Stoer-Wagner minimum cut algorithm."""
 
 from itertools import islice
 

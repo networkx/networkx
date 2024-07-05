@@ -33,7 +33,7 @@ __all__ = ["tutte_polynomial", "chromatic_polynomial"]
 @not_implemented_for("directed")
 @nx._dispatchable
 def tutte_polynomial(G):
-    r"""Returns the Tutte polynomial of `G`
+    r"""Returns the Tutte polynomial of `G`.
 
     This function computes the Tutte polynomial via an iterative version of
     the deletion-contraction algorithm.
@@ -183,7 +183,7 @@ def tutte_polynomial(G):
 @not_implemented_for("directed")
 @nx._dispatchable
 def chromatic_polynomial(G):
-    r"""Returns the chromatic polynomial of `G`
+    r"""Returns the chromatic polynomial of `G`.
 
     This function computes the chromatic polynomial via an iterative version of
     the deletion-contraction algorithm.

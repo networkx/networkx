@@ -1,6 +1,4 @@
-"""
-Threshold Graphs - Creation, manipulation and identification.
-"""
+"""Threshold Graphs - Creation, manipulation and identification."""
 
 from math import sqrt
 
@@ -82,7 +80,9 @@ def creation_sequence(degree_sequence, with_labels=False, compact=False):
     If compact==True:
     Returns the creation sequence in a compact form that is the number
     of 'i's and 'd's alternating.
-    Examples:
+
+    Examples
+    --------
     [1,2,2,3] represents d,i,i,d,d,i,i,i
     [3,1,2] represents d,d,d,i,d,d
 
@@ -260,7 +260,9 @@ def weights_to_creation_sequence(
     If compact==True:
     Returns the creation sequence in a compact form that is the number
     of 'i's and 'd's alternating.
-    Examples:
+
+    Examples
+    --------
     [1,2,2,3] represents d,i,i,d,d,i,i,i
     [3,1,2] represents d,d,d,i,d,d
 
@@ -459,10 +461,7 @@ def triangles(creation_sequence):
 
 
 def triangle_sequence(creation_sequence):
-    """
-    Return triangle sequence for the given threshold graph creation sequence.
-
-    """
+    """Return triangle sequence for the given threshold graph creation sequence."""
     cs = creation_sequence
     seq = []
     dr = cs.count("d")  # number of d's to the right of the current pos
@@ -487,9 +486,7 @@ def triangle_sequence(creation_sequence):
 
 
 def cluster_sequence(creation_sequence):
-    """
-    Return cluster sequence for the given threshold graph creation sequence.
-    """
+    """Return cluster sequence for the given threshold graph creation sequence."""
     triseq = triangle_sequence(creation_sequence)
     degseq = degree_sequence(creation_sequence)
     cseq = []
@@ -506,7 +503,7 @@ def cluster_sequence(creation_sequence):
 def degree_sequence(creation_sequence):
     """
     Return degree sequence for the threshold graph with the given
-    creation sequence
+    creation sequence.
     """
     cs = creation_sequence  # alias
     seq = []
@@ -533,9 +530,7 @@ def density(creation_sequence):
 
 
 def degree_correlation(creation_sequence):
-    """
-    Return the degree-degree correlation over all edges.
-    """
+    """Return the degree-degree correlation over all edges."""
     cs = creation_sequence
     s1 = 0  # deg_i*deg_j
     s2 = 0  # deg_i^2+deg_j^2

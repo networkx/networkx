@@ -1,5 +1,5 @@
 """
-Atlas
+Atlas.
 =====
 
 An example showing how to write first 20 graphs from the graph atlas as

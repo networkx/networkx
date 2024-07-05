@@ -1,6 +1,6 @@
 """
 =====================
-Krackhardt Centrality
+Krackhardt Centrality.
 =====================
 
 Centrality measures of Krackhardt social network.

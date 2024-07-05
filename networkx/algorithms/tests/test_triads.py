@@ -48,7 +48,7 @@ def test_triadic_census():
 
 
 def test_is_triad():
-    """Tests the is_triad function"""
+    """Tests the is_triad function."""
     G = nx.karate_club_graph()
     G = G.to_directed()
     for i in range(100):
@@ -148,7 +148,7 @@ def test_triads_by_type():
 
 
 def test_random_triad():
-    """Tests the random_triad function"""
+    """Tests the random_triad function."""
     G = nx.karate_club_graph()
     G = G.to_directed()
     for i in range(100):

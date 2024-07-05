@@ -447,7 +447,6 @@ def dfs_labeled_edges(G, source=None, depth_limit=None, *, sort_neighbors=None):
 
     Examples
     --------
-
     The labels reveal the complete transcript of the depth-first search
     algorithm in more detail than, for example, :func:`dfs_edges`::
 

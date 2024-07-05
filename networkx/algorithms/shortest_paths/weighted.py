@@ -1,6 +1,4 @@
-"""
-Shortest path algorithms for weighted graphs.
-"""
+"""Shortest path algorithms for weighted graphs."""
 
 from collections import deque
 from heapq import heappop, heappush
@@ -784,7 +782,7 @@ def _dijkstra(G, source, weight, pred=None, paths=None, cutoff=None, target=None
 def _dijkstra_multisource(
     G, sources, weight, pred=None, paths=None, cutoff=None, target=None
 ):
-    """Uses Dijkstra's algorithm to find shortest weighted paths
+    """Uses Dijkstra's algorithm to find shortest weighted paths.
 
     Parameters
     ----------
@@ -1279,7 +1277,7 @@ def _bellman_ford(
     target=None,
     heuristic=True,
 ):
-    """Calls relaxation loop for Bellman–Ford algorithm and builds paths
+    """Calls relaxation loop for Bellman–Ford algorithm and builds paths.
 
     This is an implementation of the SPFA variant.
     See https://en.wikipedia.org/wiki/Shortest_Path_Faster_Algorithm

@@ -3,7 +3,7 @@ from networkx.algorithms import bipartite
 
 
 class TestMinEdgeCover:
-    """Tests for :func:`networkx.algorithms.bipartite.min_edge_cover`"""
+    """Tests for :func:`networkx.algorithms.bipartite.min_edge_cover`."""
 
     def test_empty_graph(self):
         G = nx.Graph()

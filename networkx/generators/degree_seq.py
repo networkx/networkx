@@ -36,7 +36,6 @@ def _to_stublist(degree_sequence):
 
     Examples
     --------
-
     >>> degree_sequence = [1, 2, 3]
     >>> _to_stublist(degree_sequence)
     [0, 1, 1, 2, 2, 2]

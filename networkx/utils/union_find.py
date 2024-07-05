@@ -1,6 +1,4 @@
-"""
-Union-find data structure.
-"""
+"""Union-find data structure."""
 
 from networkx.utils import groups
 
@@ -45,7 +43,6 @@ class UnionFind:
 
     def __getitem__(self, object):
         """Find and return the name of the set containing the object."""
-
         # check for previously unknown object
         if object not in self.parents:
             self.parents[object] = object

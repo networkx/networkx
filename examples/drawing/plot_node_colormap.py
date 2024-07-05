@@ -1,6 +1,6 @@
 """
 =============
-Node Colormap
+Node Colormap.
 =============
 
 Draw a graph with matplotlib, color by degree.

@@ -82,7 +82,7 @@ def edge_disjoint_paths(
     NetworkXError
         If source or target are not in the graph G.
 
-    See also
+    See Also
     --------
     :meth:`node_disjoint_paths`
     :meth:`edge_connectivity`
@@ -348,7 +348,7 @@ def node_disjoint_paths(
     and undirected graphs, and can use all flow algorithms from NetworkX flow
     package.
 
-    See also
+    See Also
     --------
     :meth:`edge_disjoint_paths`
     :meth:`node_connectivity`
@@ -399,7 +399,7 @@ def node_disjoint_paths(
 
 def _unique_everseen(iterable):
     # Adapted from https://docs.python.org/3/library/itertools.html examples
-    "List unique elements, preserving order. Remember all elements ever seen."
+    """List unique elements, preserving order. Remember all elements ever seen."""
     # unique_everseen('AAAABBBCCDAABBB') --> A B C D
     seen = set()
     seen_add = seen.add

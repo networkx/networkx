@@ -235,7 +235,8 @@ class TestDAGLCA:
     def assert_lca_dicts_same(self, d1, d2, G=None):
         """Checks if d1 and d2 contain the same pairs and
         have a node at the same distance from root for each.
-        If G is None use self.DG."""
+        If G is None use self.DG.
+        """
         if G is None:
             G = self.DG
             root_distance = self.root_distance
@@ -413,7 +414,8 @@ class TestMultiDiGraph_DAGLCA(TestDAGLCA):
 
 def test_all_pairs_lca_self_ancestors():
     """Self-ancestors should always be the node itself, i.e. lca of (0, 0) is 0.
-    See gh-4458."""
+    See gh-4458.
+    """
     # DAG for test - note order of node/edge addition is relevant
     G = nx.DiGraph()
     G.add_nodes_from(range(5))

@@ -1,6 +1,4 @@
-"""
-Greedy graph coloring using various strategies.
-"""
+"""Greedy graph coloring using various strategies."""
 
 import itertools
 from collections import defaultdict, deque
@@ -440,7 +438,7 @@ class _AdjEntry:
 
 
 def _greedy_coloring_with_interchange(G, nodes):
-    """Return a coloring for `original_graph` using interchange approach
+    """Return a coloring for `original_graph` using interchange approach.
 
     This procedure is an adaption of the algorithm described by [1]_,
     and is an implementation of coloring with interchange. Please be

@@ -68,7 +68,7 @@ __all__ = ["dedensify", "snap_aggregation"]
 
 @nx._dispatchable(mutates_input={"not copy": 3}, returns_graph=True)
 def dedensify(G, threshold, prefix=None, copy=True):
-    """Compresses neighborhoods around high-degree nodes
+    """Compresses neighborhoods around high-degree nodes.
 
     Reduces the number of edges to high-degree nodes by adding compressor nodes
     that summarize multiple edges of the same type to high-degree nodes (nodes
@@ -226,7 +226,7 @@ def _snap_build_graph(
     superedge_attribute,
 ):
     """
-    Build the summary graph from the data structures produced in the SNAP aggregation algorithm
+    Build the summary graph from the data structures produced in the SNAP aggregation algorithm.
 
     Used in the SNAP aggregation algorithm to build the output summary graph and supernode
     lookup dictionary.  This process uses the original graph and the data structures to
@@ -358,7 +358,7 @@ def _snap_eligible_group(G, groups, group_lookup, edge_types):
 
 def _snap_split(groups, neighbor_info, group_lookup, group_id):
     """
-    Splits a group based on edge types and updates the groups accordingly
+    Splits a group based on edge types and updates the groups accordingly.
 
     Splits the group with the given group_id based on the edge types
     of the nodes so that each new grouping will all have the same

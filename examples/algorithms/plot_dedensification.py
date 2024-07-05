@@ -1,6 +1,6 @@
 """
 ===============
-Dedensification
+Dedensification.
 ===============
 
 Examples of dedensification of a graph.  Dedensification retains the structural

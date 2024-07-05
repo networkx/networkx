@@ -18,7 +18,6 @@ class TestPydot:
         Validate :mod:`pydot`-based usage of the passed NetworkX graph with the
         passed basename of an external GraphViz command (e.g., `dot`, `neato`).
         """
-
         # Set the name of this graph to... "G". Failing to do so will
         # subsequently trip an assertion expecting this name.
         G.graph["name"] = "G"

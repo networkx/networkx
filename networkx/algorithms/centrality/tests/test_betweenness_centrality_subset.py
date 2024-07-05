@@ -5,7 +5,7 @@ import networkx as nx
 
 class TestSubsetBetweennessCentrality:
     def test_K5(self):
-        """Betweenness Centrality Subset: K5"""
+        """Betweenness Centrality Subset: K5."""
         G = nx.complete_graph(5)
         b = nx.betweenness_centrality_subset(
             G, sources=[0], targets=[1, 3], weight=None
@@ -15,7 +15,7 @@ class TestSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_P5_directed(self):
-        """Betweenness Centrality Subset: P5 directed"""
+        """Betweenness Centrality Subset: P5 directed."""
         G = nx.DiGraph()
         nx.add_path(G, range(5))
         b_answer = {0: 0, 1: 1, 2: 1, 3: 0, 4: 0, 5: 0}
@@ -24,7 +24,7 @@ class TestSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_P5(self):
-        """Betweenness Centrality Subset: P5"""
+        """Betweenness Centrality Subset: P5."""
         G = nx.Graph()
         nx.add_path(G, range(5))
         b_answer = {0: 0, 1: 0.5, 2: 0.5, 3: 0, 4: 0, 5: 0}
@@ -33,7 +33,7 @@ class TestSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_P5_multiple_target(self):
-        """Betweenness Centrality Subset: P5 multiple target"""
+        """Betweenness Centrality Subset: P5 multiple target."""
         G = nx.Graph()
         nx.add_path(G, range(5))
         b_answer = {0: 0, 1: 1, 2: 1, 3: 0.5, 4: 0, 5: 0}
@@ -44,7 +44,7 @@ class TestSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_box(self):
-        """Betweenness Centrality Subset: box"""
+        """Betweenness Centrality Subset: box."""
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3)])
         b_answer = {0: 0, 1: 0.25, 2: 0.25, 3: 0}
@@ -53,7 +53,7 @@ class TestSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_box_and_path(self):
-        """Betweenness Centrality Subset: box and path"""
+        """Betweenness Centrality Subset: box and path."""
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3), (3, 4), (4, 5)])
         b_answer = {0: 0, 1: 0.5, 2: 0.5, 3: 0.5, 4: 0, 5: 0}
@@ -64,7 +64,7 @@ class TestSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_box_and_path2(self):
-        """Betweenness Centrality Subset: box and path multiple target"""
+        """Betweenness Centrality Subset: box and path multiple target."""
         G = nx.Graph()
         G.add_edges_from([(0, 1), (1, 2), (2, 3), (1, 20), (20, 3), (3, 4)])
         b_answer = {0: 0, 1: 1.0, 2: 0.5, 20: 0.5, 3: 0.5, 4: 0}
@@ -75,7 +75,7 @@ class TestSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_diamond_multi_path(self):
-        """Betweenness Centrality Subset: Diamond Multi Path"""
+        """Betweenness Centrality Subset: Diamond Multi Path."""
         G = nx.Graph()
         G.add_edges_from(
             [
@@ -131,7 +131,7 @@ class TestSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_normalized_P5_directed(self):
-        """Betweenness Centrality Subset: Normalized Directed P5"""
+        """Betweenness Centrality Subset: Normalized Directed P5."""
         G = nx.DiGraph()
         nx.add_path(G, range(5))
         b_answer = {0: 0, 1: 1.0 / 12.0, 2: 1.0 / 12.0, 3: 0, 4: 0, 5: 0}
@@ -142,7 +142,7 @@ class TestSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_weighted_graph(self):
-        """Betweenness Centrality Subset: Weighted Graph"""
+        """Betweenness Centrality Subset: Weighted Graph."""
         G = nx.DiGraph()
         G.add_edge(0, 1, weight=3)
         G.add_edge(0, 2, weight=2)
@@ -164,7 +164,7 @@ class TestSubsetBetweennessCentrality:
 
 class TestEdgeSubsetBetweennessCentrality:
     def test_K5(self):
-        """Edge betweenness subset centrality: K5"""
+        """Edge betweenness subset centrality: K5."""
         G = nx.complete_graph(5)
         b = nx.edge_betweenness_centrality_subset(
             G, sources=[0], targets=[1, 3], weight=None
@@ -175,7 +175,7 @@ class TestEdgeSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_P5_directed(self):
-        """Edge betweenness subset centrality: P5 directed"""
+        """Edge betweenness subset centrality: P5 directed."""
         G = nx.DiGraph()
         nx.add_path(G, range(5))
         b_answer = dict.fromkeys(G.edges(), 0)
@@ -187,7 +187,7 @@ class TestEdgeSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_P5(self):
-        """Edge betweenness subset centrality: P5"""
+        """Edge betweenness subset centrality: P5."""
         G = nx.Graph()
         nx.add_path(G, range(5))
         b_answer = dict.fromkeys(G.edges(), 0)
@@ -199,7 +199,7 @@ class TestEdgeSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_P5_multiple_target(self):
-        """Edge betweenness subset centrality: P5 multiple target"""
+        """Edge betweenness subset centrality: P5 multiple target."""
         G = nx.Graph()
         nx.add_path(G, range(5))
         b_answer = dict.fromkeys(G.edges(), 0)
@@ -212,7 +212,7 @@ class TestEdgeSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_box(self):
-        """Edge betweenness subset centrality: box"""
+        """Edge betweenness subset centrality: box."""
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3)])
         b_answer = dict.fromkeys(G.edges(), 0)
@@ -225,7 +225,7 @@ class TestEdgeSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_box_and_path(self):
-        """Edge betweenness subset centrality: box and path"""
+        """Edge betweenness subset centrality: box and path."""
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (1, 3), (2, 3), (3, 4), (4, 5)])
         b_answer = dict.fromkeys(G.edges(), 0)
@@ -239,7 +239,7 @@ class TestEdgeSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_box_and_path2(self):
-        """Edge betweenness subset centrality: box and path multiple target"""
+        """Edge betweenness subset centrality: box and path multiple target."""
         G = nx.Graph()
         G.add_edges_from([(0, 1), (1, 2), (2, 3), (1, 20), (20, 3), (3, 4)])
         b_answer = dict.fromkeys(G.edges(), 0)
@@ -254,7 +254,7 @@ class TestEdgeSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_diamond_multi_path(self):
-        """Edge betweenness subset centrality: Diamond Multi Path"""
+        """Edge betweenness subset centrality: Diamond Multi Path."""
         G = nx.Graph()
         G.add_edges_from(
             [
@@ -294,7 +294,7 @@ class TestEdgeSubsetBetweennessCentrality:
     def test_normalized_p1(self):
         """
         Edge betweenness subset centrality: P1
-        if n <= 1: no normalization b=0 for all nodes
+        if n <= 1: no normalization b=0 for all nodes.
         """
         G = nx.Graph()
         nx.add_path(G, range(1))
@@ -306,7 +306,7 @@ class TestEdgeSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_normalized_P5_directed(self):
-        """Edge betweenness subset centrality: Normalized Directed P5"""
+        """Edge betweenness subset centrality: Normalized Directed P5."""
         G = nx.DiGraph()
         nx.add_path(G, range(5))
         b_answer = dict.fromkeys(G.edges(), 0)
@@ -318,7 +318,7 @@ class TestEdgeSubsetBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_weighted_graph(self):
-        """Edge betweenness subset centrality: Weighted Graph"""
+        """Edge betweenness subset centrality: Weighted Graph."""
         G = nx.DiGraph()
         G.add_edge(0, 1, weight=3)
         G.add_edge(0, 2, weight=2)

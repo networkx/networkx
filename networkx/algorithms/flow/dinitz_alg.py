@@ -1,6 +1,4 @@
-"""
-Dinitz' algorithm for maximum flow problems.
-"""
+"""Dinitz' algorithm for maximum flow problems."""
 
 from collections import deque
 
@@ -72,7 +70,7 @@ def dinitz(G, s, t, capacity="capacity", residual=None, value_only=False, cutoff
         feasible flow on the graph is unbounded above and the function
         raises a NetworkXUnbounded.
 
-    See also
+    See Also
     --------
     :meth:`maximum_flow`
     :meth:`minimum_cut`
@@ -190,7 +188,7 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
 
     def depth_first_search(parents):
         # DFS to find all the shortest augmenting paths
-        """Build a path using DFS starting from the sink"""
+        """Build a path using DFS starting from the sink."""
         total_flow = 0
         u = t
         # path also functions as a stack

@@ -171,7 +171,7 @@ def biconnected_component_edges(G):
 @nx._dispatchable
 def biconnected_components(G):
     """Returns a generator of sets of nodes, one set for each biconnected
-    component of the graph
+    component of the graph.
 
     Biconnected components are maximal subgraphs such that the removal of a
     node (and all edges incident on that node) will not disconnect the
@@ -290,7 +290,6 @@ def articulation_points(G):
 
     Examples
     --------
-
     >>> G = nx.barbell_graph(4, 2)
     >>> print(nx.is_biconnected(G))
     False

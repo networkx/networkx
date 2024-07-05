@@ -96,7 +96,8 @@ def make_list_of_ints(sequence):
 
 def dict_to_numpy_array(d, mapping=None):
     """Convert a dictionary of dictionaries to a numpy array
-    with optional mapping."""
+    with optional mapping.
+    """
     try:
         return _dict_to_numpy_array2(d, mapping)
     except (AttributeError, TypeError):
@@ -214,7 +215,7 @@ def arbitrary_element(iterable):
 
 # Recipe from the itertools documentation.
 def pairwise(iterable, cyclic=False):
-    "s -> (s0, s1), (s1, s2), (s2, s3), ..."
+    """S -> (s0, s1), (s1, s2), (s2, s3), ..."""
     a, b = tee(iterable)
     first = next(b, None)
     if cyclic is True:
@@ -275,7 +276,7 @@ def create_random_state(random_state=None):
 
 
 class PythonRandomViaNumpyBits(random.Random):
-    """Provide the random.random algorithms using a numpy.random bit generator
+    """Provide the random.random algorithms using a numpy.random bit generator.
 
     The intent is to allow people to contribute code that uses Python's random
     library, but still allow users to provide a single easily controlled random
@@ -327,7 +328,7 @@ class PythonRandomViaNumpyBits(random.Random):
         self._rng.__setstate__(state)
 
     def seed(self, *args, **kwds):
-        "Do nothing override method."
+        """Do nothing override method."""
         raise NotImplementedError("seed() not implemented in PythonRandomViaNumpyBits")
 
 

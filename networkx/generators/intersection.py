@@ -1,6 +1,4 @@
-"""
-Generators for random intersection graphs.
-"""
+"""Generators for random intersection graphs."""
 
 import networkx as nx
 from networkx.utils import py_random_state

@@ -1,6 +1,6 @@
 """
 ===================
-Multipartite Layout
+Multipartite Layout.
 ===================
 """
 

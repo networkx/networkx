@@ -34,7 +34,6 @@ def is_planar(G):
     check_planarity :
         Check if graph is planar *and* return a `PlanarEmbedding` instance if True.
     """
-
     return check_planarity(G, counterexample=False)[0]
 
 
@@ -84,7 +83,7 @@ def check_planarity(G, counterexample=False):
     A counterexample is only generated if the corresponding parameter is set,
     because the complexity of the counterexample generation is higher.
 
-    See also
+    See Also
     --------
     is_planar :
         Check for planarity without creating a `PlanarEmbedding` or counterexample.
@@ -100,7 +99,6 @@ def check_planarity(G, counterexample=False):
         Lecture Notes Series on Computing: Volume 12
         2004
     """
-
     planarity_state = LRPlanarity(G)
     embedding = planarity_state.lr_planarity()
     if embedding is None:
@@ -172,7 +170,6 @@ def get_counterexample(G):
 @nx._dispatchable(returns_graph=True)
 def get_counterexample_recursive(G):
     """Recursive version of :meth:`get_counterexample`."""
-
     # copy graph
     G = nx.Graph(G)
 
@@ -205,15 +202,15 @@ class Interval:
         self.high = high
 
     def empty(self):
-        """Check if the interval is empty"""
+        """Check if the interval is empty."""
         return self.low is None and self.high is None
 
     def copy(self):
-        """Returns a copy of this interval"""
+        """Returns a copy of this interval."""
         return Interval(self.low, self.high)
 
     def conflicting(self, b, planarity_state):
-        """Returns True if interval I conflicts with edge b"""
+        """Returns True if interval I conflicts with edge b."""
         return (
             not self.empty()
             and planarity_state.lowpt[self.high] > planarity_state.lowpt[b]
@@ -232,13 +229,13 @@ class ConflictPair:
         self.right = right
 
     def swap(self):
-        """Swap left and right intervals"""
+        """Swap left and right intervals."""
         temp = self.left
         self.left = self.right
         self.right = temp
 
     def lowest(self, planarity_state):
-        """Returns the lowest lowpoint of a conflict pair"""
+        """Returns the lowest lowpoint of a conflict pair."""
         if self.left.empty():
             return planarity_state.lowpt[self.right.low]
         if self.right.empty():
@@ -826,7 +823,6 @@ class PlanarEmbedding(nx.DiGraph):
 
     Examples
     --------
-
     Create an embedding of a star graph (compare `nx.star_graph(3)`):
 
     >>> G = nx.PlanarEmbedding()
@@ -862,7 +858,7 @@ class PlanarEmbedding(nx.DiGraph):
         self.add_weighted_edges_from = self.__forbidden
 
     def __forbidden(self, *args, **kwargs):
-        """Forbidden operation
+        """Forbidden operation.
 
         Any edge additions to a PlanarEmbedding should be done using
         method `add_half_edge`.
@@ -1038,7 +1034,6 @@ class PlanarEmbedding(nx.DiGraph):
         --------
         connect_components
         """
-
         succs = self._succ.get(start_node)
         if succs:
             # there is already some edge out of start_node

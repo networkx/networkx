@@ -1,7 +1,7 @@
 """
 *****************************
 Time-respecting VF2 Algorithm
-*****************************
+*****************************.
 
 An extension of the VF2 algorithm for time-respecting graph isomorphism
 testing in temporal graphs.
@@ -35,7 +35,6 @@ adjacent interactions occur up to a day apart.
 
 Examples
 --------
-
 Examples will be provided when the datetime type has been incorporated.
 
 
@@ -47,7 +46,6 @@ included here.
 
 References
 ----------
-
 [1] Redmond, U. and Cunningham, P. Temporal subgraph isomorphism. In:
 The 2013 IEEE/ACM International Conference on Advances in Social
 Networks Analysis and Mining (ASONAM). Niagara Falls, Canada; 2013:
@@ -60,7 +58,6 @@ For a discussion of the literature on temporal networks:
 
 Notes
 -----
-
 Handles directed and undirected graphs and graphs with parallel edges.
 
 """
@@ -116,9 +113,7 @@ class TimeRespectingGraphMatcher(GraphMatcher):
         return not dates or max(dates) - min(dates) <= self.delta
 
     def two_hop(self, Gx, core_x, Gx_node, neighbors):
-        """
-        Paths of length 2 from Gx_node should be time-respecting.
-        """
+        """Paths of length 2 from Gx_node should be time-respecting."""
         return all(
             self.one_hop(Gx, v, [n for n in Gx[v] if n in core_x] + [Gx_node])
             for v in neighbors
@@ -167,9 +162,7 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         super().__init__(G1, G2)
 
     def get_pred_dates(self, Gx, Gx_node, core_x, pred):
-        """
-        Get the dates of edges from predecessors.
-        """
+        """Get the dates of edges from predecessors."""
         pred_dates = []
         if isinstance(Gx, nx.DiGraph):  # Graph G[u][v] returns the data dictionary.
             for n in pred:
@@ -183,9 +176,7 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         return pred_dates
 
     def get_succ_dates(self, Gx, Gx_node, core_x, succ):
-        """
-        Get the dates of edges to successors.
-        """
+        """Get the dates of edges to successors."""
         succ_dates = []
         if isinstance(Gx, nx.DiGraph):  # Graph G[u][v] returns the data dictionary.
             for n in succ:
@@ -199,9 +190,7 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         return succ_dates
 
     def one_hop(self, Gx, Gx_node, core_x, pred, succ):
-        """
-        The ego node.
-        """
+        """The ego node."""
         pred_dates = self.get_pred_dates(Gx, Gx_node, core_x, pred)
         succ_dates = self.get_succ_dates(Gx, Gx_node, core_x, succ)
         return self.test_one(pred_dates, succ_dates) and self.test_two(
@@ -209,9 +198,7 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         )
 
     def two_hop_pred(self, Gx, Gx_node, core_x, pred):
-        """
-        The predecessors of the ego node.
-        """
+        """The predecessors of the ego node."""
         return all(
             self.one_hop(
                 Gx,
@@ -224,9 +211,7 @@ class TimeRespectingDiGraphMatcher(DiGraphMatcher):
         )
 
     def two_hop_succ(self, Gx, Gx_node, core_x, succ):
-        """
-        The successors of the ego node.
-        """
+        """The successors of the ego node."""
         return all(
             self.one_hop(
                 Gx,

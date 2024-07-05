@@ -1,4 +1,4 @@
-"""Original NetworkX graph tests"""
+"""Original NetworkX graph tests."""
 
 import networkx
 import networkx as nx

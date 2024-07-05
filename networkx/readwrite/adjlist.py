@@ -90,7 +90,6 @@ def generate_adjlist(G, delimiter=" "):
 def write_adjlist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
     """Write graph G in single-line adjacency-list format to path.
 
-
     Parameters
     ----------
     G : NetworkX graph

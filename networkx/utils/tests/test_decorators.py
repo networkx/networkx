@@ -414,7 +414,7 @@ class TestArgmap:
 
     def test_signature_destroying_intermediate_decorator(self):
         def add_one_to_first_bad_decorator(f):
-            """Bad because it doesn't wrap the f signature (clobbers it)"""
+            """Bad because it doesn't wrap the f signature (clobbers it)."""
 
             def decorated(a, *args, **kwargs):
                 return f(a + 1, *args, **kwargs)

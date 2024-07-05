@@ -1,5 +1,5 @@
 """
-ego graph
+ego graph.
 ---------
 """
 

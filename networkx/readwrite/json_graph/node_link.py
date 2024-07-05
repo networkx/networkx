@@ -184,7 +184,6 @@ def node_link_graph(
 
     Examples
     --------
-
     Create data in node-link format by converting a graph.
 
     >>> from pprint import pprint

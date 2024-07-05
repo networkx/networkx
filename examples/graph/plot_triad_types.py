@@ -1,6 +1,6 @@
 """
 ======
-Triads
+Triads.
 ======
 According to the paper by Snijders, T. (2012). “Transitivity and triads.”
 University of Oxford, there are 16 Triad Types possible. This plot shows

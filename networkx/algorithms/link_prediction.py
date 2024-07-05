@@ -1,6 +1,4 @@
-"""
-Link prediction algorithms.
-"""
+"""Link prediction algorithms."""
 
 from math import log
 
@@ -320,7 +318,6 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
            Sci Rep 10, 364 (2020).
            https://doi.org/10.1038/s41598-019-57304-y
     """
-
     # When alpha == 1, the CCPA score simplifies to the number of common neighbors.
     if alpha == 1:
 

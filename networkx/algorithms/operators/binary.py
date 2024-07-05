@@ -1,6 +1,4 @@
-"""
-Operations on graphs including union, intersection, difference.
-"""
+"""Operations on graphs including union, intersection, difference."""
 
 import networkx as nx
 

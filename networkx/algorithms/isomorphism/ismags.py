@@ -1,5 +1,5 @@
 """
-ISMAGS Algorithm
+ISMAGS Algorithm.
 ================
 
 Provides a Python implementation of the ISMAGS algorithm. [1]_
@@ -440,7 +440,7 @@ class ISMAGS:
         return comparer
 
     def find_isomorphisms(self, symmetry=True):
-        """Find all subgraph isomorphisms between subgraph and graph
+        """Find all subgraph isomorphisms between subgraph and graph.
 
         Finds isomorphisms where :attr:`subgraph` <= :attr:`graph`.
 
@@ -671,9 +671,7 @@ class ISMAGS:
         return self.find_isomorphisms(symmetry)
 
     def _find_nodecolor_candidates(self):
-        """
-        Per node in subgraph find all nodes in graph that have the same color.
-        """
+        """Per node in subgraph find all nodes in graph that have the same color."""
         candidates = defaultdict(set)
         for sgn in self.subgraph.nodes:
             sgn_color = self._sgn_colors[sgn]
@@ -689,9 +687,7 @@ class ISMAGS:
 
     @staticmethod
     def _make_constraints(cosets):
-        """
-        Turn cosets into constraints.
-        """
+        """Turn cosets into constraints."""
         constraints = []
         for node_i, node_ts in cosets.items():
             for node_t in node_ts:
@@ -818,9 +814,7 @@ class ISMAGS:
         return g_edges
 
     def _map_nodes(self, sgn, candidates, constraints, mapping=None, to_be_mapped=None):
-        """
-        Find all subgraph isomorphisms honoring constraints.
-        """
+        """Find all subgraph isomorphisms honoring constraints."""
         if mapping is None:
             mapping = {}
         else:
@@ -895,9 +889,7 @@ class ISMAGS:
             # del mapping[sgn]
 
     def _largest_common_subgraph(self, candidates, constraints, to_be_mapped=None):
-        """
-        Find all largest common subgraphs honoring constraints.
-        """
+        """Find all largest common subgraphs honoring constraints."""
         if to_be_mapped is None:
             to_be_mapped = {frozenset(self.subgraph.nodes)}
 

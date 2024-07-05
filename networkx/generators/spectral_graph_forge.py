@@ -1,4 +1,4 @@
-"""Generates graphs with a given eigenvector structure"""
+"""Generates graphs with a given eigenvector structure."""
 
 import networkx as nx
 from networkx.utils import np_random_state
@@ -9,7 +9,7 @@ __all__ = ["spectral_graph_forge"]
 @np_random_state(3)
 @nx._dispatchable(returns_graph=True)
 def spectral_graph_forge(G, alpha, transformation="identity", seed=None):
-    """Returns a random simple graph with spectrum resembling that of `G`
+    """Returns a random simple graph with spectrum resembling that of `G`.
 
     This algorithm, called Spectral Graph Forge (SGF), computes the
     eigenvectors of a given graph adjacency matrix, filters them and

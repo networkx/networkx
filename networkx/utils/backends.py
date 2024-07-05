@@ -1,5 +1,5 @@
 """
-Docs for backend users
+Docs for backend users.
 ~~~~~~~~~~~~~~~~~~~~~~
 
 NetworkX utilizes a plugin-dispatch architecture, which means we can plug in and
@@ -313,19 +313,19 @@ def _get_backends(group, *, load_and_call=False):
     Retrieve NetworkX ``backends`` and ``backend_info`` from the entry points.
 
     Parameters
-    -----------
+    ----------
     group : str
         The entry_point to be retrieved.
     load_and_call : bool, optional
         If True, load and call the backend. Defaults to False.
 
     Returns
-    --------
+    -------
     dict
         A dictionary mapping backend names to their respective backend objects.
 
     Notes
-    ------
+    -----
     If a backend is defined more than once, a warning is issued.
     The `nx-loopback` backend is removed if it exists, as it is only available during testing.
     A warning is displayed if an error occurs while loading a backend.
@@ -659,8 +659,8 @@ class _dispatchable:
     def __doc__(self):
         """If the cached documentation exists, it is returned.
         Otherwise, the documentation is generated using _make_doc() method,
-        cached, and then returned."""
-
+        cached, and then returned.
+        """
         if (rv := self._cached_doc) is not None:
             return rv
         rv = self._cached_doc = self._make_doc()
@@ -669,16 +669,16 @@ class _dispatchable:
     @__doc__.setter
     def __doc__(self, val):
         """Sets the original documentation to the given value and resets the
-        cached documentation."""
-
+        cached documentation.
+        """
         self._orig_doc = val
         self._cached_doc = None
 
     @property
     def __signature__(self):
         """Return the signature of the original function, with the addition of
-        the `backend` and `backend_kwargs` parameters."""
-
+        the `backend` and `backend_kwargs` parameters.
+        """
         if self._sig is None:
             sig = inspect.signature(self.orig_func)
             # `backend` is now a reserved argument used by dispatching.
@@ -713,8 +713,8 @@ class _dispatchable:
 
     def __call__(self, /, *args, backend=None, **kwargs):
         """Returns the result of the original function, or the backend function if
-        the backend is specified and that backend implements `func`."""
-
+        the backend is specified and that backend implements `func`.
+        """
         if not backends:
             # Fast path if no backends are installed
             return self.orig_func(*args, **kwargs)
@@ -899,7 +899,7 @@ class _dispatchable:
         return self.orig_func(*args, **kwargs)
 
     def _can_backend_run(self, backend_name, /, *args, **kwargs):
-        """Can the specified backend run this algorithm with these arguments?"""
+        """Can the specified backend run this algorithm with these arguments?."""
         backend = _load_backend(backend_name)
         # `backend.can_run` and `backend.should_run` may return strings that describe
         # why they can't or shouldn't be run. We plan to use the strings in the future.
@@ -910,7 +910,7 @@ class _dispatchable:
         )
 
     def _should_backend_run(self, backend_name, /, *args, **kwargs):
-        """Can/should the specified backend run this algorithm with these arguments?"""
+        """Can/should the specified backend run this algorithm with these arguments?."""
         backend = _load_backend(backend_name)
         # `backend.can_run` and `backend.should_run` may return strings that describe
         # why they can't or shouldn't be run. We plan to use the strings in the future.
@@ -1561,8 +1561,8 @@ class _dispatchable:
 
     def _make_doc(self):
         """Generate the backends section at the end for functions having an alternate
-        backend implementation(s) using the `backend_info` entry-point."""
-
+        backend implementation(s) using the `backend_info` entry-point.
+        """
         if not self.backends:
             return self._orig_doc
         lines = [

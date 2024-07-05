@@ -1,6 +1,4 @@
-"""
-Functions for constructing matrix-like objects from graph attributes.
-"""
+"""Functions for constructing matrix-like objects from graph attributes."""
 
 import networkx as nx
 
@@ -82,7 +80,6 @@ def _edge_value(G, edge_attr):
         return a value from G[u][v] that depends on `edge_attr`.
 
     """
-
     if edge_attr is None:
         # topological count of edges
 

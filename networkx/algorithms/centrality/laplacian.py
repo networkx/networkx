@@ -1,6 +1,4 @@
-"""
-Laplacian centrality measures.
-"""
+"""Laplacian centrality measures."""
 
 import networkx as nx
 

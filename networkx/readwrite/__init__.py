@@ -1,7 +1,4 @@
-"""
-A package for reading and writing graphs in various formats.
-
-"""
+"""A package for reading and writing graphs in various formats."""
 
 from networkx.readwrite.adjlist import *
 from networkx.readwrite.multiline_adjlist import *

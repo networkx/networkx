@@ -27,7 +27,7 @@ __all__ = [
 
 
 def not_implemented_for(*graph_types):
-    """Decorator to mark algorithms as not implemented
+    """Decorator to mark algorithms as not implemented.
 
     Parameters
     ----------
@@ -369,12 +369,11 @@ def py_random_state(random_state_argument):
     --------
     np_random_state
     """
-
     return argmap(create_py_random_state, random_state_argument)
 
 
 class argmap:
-    """A decorator to apply a map to arguments before calling the function
+    """A decorator to apply a map to arguments before calling the function.
 
     This class provides a decorator that maps (transforms) arguments of the function
     before the function is called. Thus for example, we have similar code
@@ -719,7 +718,7 @@ class argmap:
 
     @staticmethod
     def _lazy_compile(func):
-        """Compile the source of a wrapped function
+        """Compile the source of a wrapped function.
 
         Assemble and compile the decorated function, and intrusively replace its
         code with the compiled version's.  The thinly wrapped function becomes
@@ -754,7 +753,6 @@ class argmap:
 
         References
         ----------
-
         [1] https://github.com/networkx/networkx/issues/4732
 
         """
@@ -830,7 +828,7 @@ class argmap:
 
     @classmethod
     def _count(cls):
-        """Maintain a globally-unique identifier for function names and "file" names
+        """Maintain a globally-unique identifier for function names and "file" names.
 
         Note that this counter is a class method reporting a class variable
         so the count is unique within a Python session. It could differ from
@@ -853,7 +851,7 @@ class argmap:
 
     @classmethod
     def _name(cls, f):
-        """Mangle the name of a function to be unique but somewhat human-readable
+        """Mangle the name of a function to be unique but somewhat human-readable.
 
         The names are unique within a Python session and set using `_count`.
 
@@ -959,7 +957,6 @@ class argmap:
             via their indices. The compile method then turns the argument
             tuple into a list so that the arguments can be modified.
         """
-
         # first, we check if f is already argmapped -- if that's the case,
         # build up the function recursively.
         # > mapblock is generally a list of function calls of the sort
@@ -1063,7 +1060,7 @@ class argmap:
 
     @classmethod
     def signature(cls, f):
-        r"""Construct a Signature object describing `f`
+        r"""Construct a Signature object describing `f`.
 
         Compute a Signature so that we can write a function wrapping f with
         the same signature and call-type.
@@ -1169,7 +1166,7 @@ class argmap:
 
     @staticmethod
     def _flatten(nestlist, visited):
-        """flattens a recursive list of lists that doesn't have cyclic references
+        """Flattens a recursive list of lists that doesn't have cyclic references.
 
         Parameters
         ----------
@@ -1199,7 +1196,7 @@ class argmap:
 
     @staticmethod
     def _indent(*lines):
-        """Indent list of code lines to make executable Python code
+        """Indent list of code lines to make executable Python code.
 
         Indents a tree-recursive list of strings, following the rule that one
         space is added to the tab after a line that ends in a colon, and one is
@@ -1217,7 +1214,6 @@ class argmap:
 
         Examples
         --------
-
             argmap._indent(*["try:", "try:", "pass#", "finally:", "pass#", "#",
                              "finally:", "pass#"])
 
