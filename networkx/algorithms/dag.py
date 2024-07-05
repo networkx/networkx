@@ -667,7 +667,7 @@ def is_aperiodic(G):
 
 @nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def transitive_closure(G, reflexive=False):
-    """Returns transitive closure of a graph
+    """Returns transitive closure of a graph.
 
     The transitive closure of G = (V,E) is a graph G+ = (V,E+) such that
     for all v, w in V there is an edge (v, w) in E+ if and only if there
@@ -817,7 +817,7 @@ def transitive_closure_dag(G, topo_order=None):
 @not_implemented_for("undirected")
 @nx._dispatchable(returns_graph=True)
 def transitive_reduction(G):
-    """Returns transitive reduction of a directed graph
+    """Returns transitive reduction of a directed graph.
 
     The transitive reduction of G = (V,E) is a graph G- = (V,E-) such that
     for all v,w in V there is an edge (v,w) in E- if and only if (v,w) is
@@ -1055,7 +1055,7 @@ def dag_longest_path(G, weight="weight", default_weight=1, topo_order=None):
 @not_implemented_for("undirected")
 @nx._dispatchable(edge_attrs={"weight": "default_weight"})
 def dag_longest_path_length(G, weight="weight", default_weight=1):
-    """Returns the longest path length in a DAG
+    """Returns the longest path length in a DAG.
 
     Parameters
     ----------

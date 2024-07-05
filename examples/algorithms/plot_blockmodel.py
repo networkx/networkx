@@ -1,6 +1,6 @@
 """
 ==========
-Blockmodel
+Blockmodel.
 ==========
 
 Example of creating a block model using the quotient_graph function in NX.  Data
@@ -31,7 +31,7 @@ from scipy.spatial import distance
 
 
 def create_hc(G):
-    """Creates hierarchical cluster of graph G from distance matrix"""
+    """Creates hierarchical cluster of graph G from distance matrix."""
     path_length = nx.all_pairs_shortest_path_length(G)
     distances = np.zeros((len(G), len(G)))
     for u, p in path_length:

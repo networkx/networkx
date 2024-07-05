@@ -311,7 +311,7 @@ def inverse_line_graph(G):
 
 
 def _triangles(G, e):
-    """Return list of all triangles containing edge e"""
+    """Return list of all triangles containing edge e."""
     u, v = e
     if u not in G:
         raise nx.NetworkXError(f"Vertex {u} not in graph")
@@ -325,7 +325,7 @@ def _triangles(G, e):
 
 
 def _odd_triangle(G, T):
-    """Test whether T is an odd triangle in G
+    """Test whether T is an odd triangle in G.
 
     Parameters
     ----------
@@ -365,7 +365,7 @@ def _odd_triangle(G, T):
 
 
 def _find_partition(G, starting_cell):
-    """Find a partition of the vertices of G into cells of complete graphs
+    """Find a partition of the vertices of G into cells of complete graphs.
 
     Parameters
     ----------
@@ -410,7 +410,7 @@ def _find_partition(G, starting_cell):
 
 
 def _select_starting_cell(G, starting_edge=None):
-    """Select a cell to initiate _find_partition
+    """Select a cell to initiate _find_partition.
 
     Parameters
     ----------

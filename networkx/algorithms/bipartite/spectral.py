@@ -1,6 +1,4 @@
-"""
-Spectral bipartivity measure.
-"""
+"""Spectral bipartivity measure."""
 
 import networkx as nx
 

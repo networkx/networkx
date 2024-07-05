@@ -1,6 +1,4 @@
-"""
-Closeness centrality measures.
-"""
+"""Closeness centrality measures."""
 
 import functools
 

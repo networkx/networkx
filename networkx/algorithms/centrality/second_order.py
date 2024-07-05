@@ -1,4 +1,4 @@
-"""Copyright (c) 2015 – Thomson Licensing, SAS
+"""Copyright (c) 2015 – Thomson Licensing, SAS.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted (subject to the limitations in the

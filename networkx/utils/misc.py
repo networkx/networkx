@@ -276,7 +276,7 @@ def create_random_state(random_state=None):
 
 
 class PythonRandomViaNumpyBits(random.Random):
-    """Provide the random.random algorithms using a numpy.random bit generator
+    """Provide the random.random algorithms using a numpy.random bit generator.
 
     The intent is to allow people to contribute code that uses Python's random
     library, but still allow users to provide a single easily controlled random

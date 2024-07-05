@@ -1,6 +1,4 @@
-"""
-Maximum flow (and minimum cut) algorithms on capacitated graphs.
-"""
+"""Maximum flow (and minimum cut) algorithms on capacitated graphs."""
 
 import networkx as nx
 

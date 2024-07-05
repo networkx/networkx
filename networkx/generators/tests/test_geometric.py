@@ -12,7 +12,7 @@ def l1dist(x, y):
 
 
 class TestRandomGeometricGraph:
-    """Unit tests for :func:`~networkx.random_geometric_graph`"""
+    """Unit tests for :func:`~networkx.random_geometric_graph`."""
 
     def test_number_of_nodes(self):
         G = nx.random_geometric_graph(50, 0.25, seed=42)
@@ -69,7 +69,7 @@ class TestRandomGeometricGraph:
 
 
 class TestSoftRandomGeometricGraph:
-    """Unit tests for :func:`~networkx.soft_random_geometric_graph`"""
+    """Unit tests for :func:`~networkx.soft_random_geometric_graph`."""
 
     def test_number_of_nodes(self):
         G = nx.soft_random_geometric_graph(50, 0.25, seed=42)
@@ -117,7 +117,7 @@ class TestSoftRandomGeometricGraph:
 
     def test_p_dist_default(self):
         """Tests default p_dict = 0.5 returns graph with edge count <= RGG with
-        same n, radius, dim and positions
+        same n, radius, dim and positions.
         """
         nodes = 50
         dim = 2
@@ -127,7 +127,7 @@ class TestSoftRandomGeometricGraph:
         assert len(SRGG.edges()) <= len(RGG.edges())
 
     def test_p_dist_zero(self):
-        """Tests if p_dict = 0 returns disconnected graph with 0 edges"""
+        """Tests if p_dict = 0 returns disconnected graph with 0 edges."""
 
         def p_dist(dist):
             return 0
@@ -158,7 +158,7 @@ def join(G, u, v, theta, alpha, metric):
 
 
 class TestGeographicalThresholdGraph:
-    """Unit tests for :func:`~networkx.geographical_threshold_graph`"""
+    """Unit tests for :func:`~networkx.geographical_threshold_graph`."""
 
     def test_number_of_nodes(self):
         G = nx.geographical_threshold_graph(50, 100, seed=42)
@@ -194,7 +194,7 @@ class TestGeographicalThresholdGraph:
                 assert not join(G, u, v, 10, -2, l1dist)
 
     def test_p_dist_zero(self):
-        """Tests if p_dict = 0 returns disconnected graph with 0 edges"""
+        """Tests if p_dict = 0 returns disconnected graph with 0 edges."""
 
         def p_dist(dist):
             return 0
@@ -262,7 +262,7 @@ class TestNavigableSmallWorldGraph:
             nx.navigable_small_world_graph(5, p=1, q=0, r=-1, dim=1)
 
     def test_r_between_0_and_1(self):
-        """Smoke test for radius in range [0, 1]"""
+        """Smoke test for radius in range [0, 1]."""
         # q=0 means no long-range connections
         G = nx.navigable_small_world_graph(3, p=1, q=0, r=0.5, dim=2, seed=42)
         expected = nx.grid_2d_graph(3, 3, create_using=nx.DiGraph)
@@ -285,7 +285,7 @@ class TestNavigableSmallWorldGraph:
 
 
 class TestThresholdedRandomGeometricGraph:
-    """Unit tests for :func:`~networkx.thresholded_random_geometric_graph`"""
+    """Unit tests for :func:`~networkx.thresholded_random_geometric_graph`."""
 
     def test_number_of_nodes(self):
         G = nx.thresholded_random_geometric_graph(50, 0.2, 0.1, seed=42)

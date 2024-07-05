@@ -1,6 +1,4 @@
-"""
-Flow based connectivity algorithms
-"""
+"""Flow based connectivity algorithms."""
 
 import itertools
 from operator import itemgetter

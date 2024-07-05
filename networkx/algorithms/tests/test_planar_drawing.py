@@ -117,7 +117,7 @@ def check_triangulation(embedding, expected_embedding):
 
 
 def check_embedding_data(embedding_data):
-    """Checks that the planar embedding of the input is correct"""
+    """Checks that the planar embedding of the input is correct."""
     embedding = nx.PlanarEmbedding()
     embedding.set_data(embedding_data)
     pos_fully = nx.combinatorial_embedding_to_pos(embedding, False)
@@ -198,7 +198,7 @@ def check_edge_intersections(G, pos):
 
 
 class Vector:
-    """Compare vectors by their angle without loss of precision
+    """Compare vectors by their angle without loss of precision.
 
     All vectors in direction [0, 1] are the smallest.
     The vectors grow in clockwise direction.
@@ -244,7 +244,7 @@ class Vector:
 
 
 def planar_drawing_conforms_to_embedding(embedding, pos):
-    """Checks if pos conforms to the planar embedding
+    """Checks if pos conforms to the planar embedding.
 
     Returns true iff the neighbors are actually oriented in the orientation
     specified of the embedding

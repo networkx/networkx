@@ -347,7 +347,7 @@ def quotient_graph(
 def _quotient_graph(
     G, partition, edge_relation, node_data, edge_data, weight, relabel, create_using
 ):
-    """Construct the quotient graph assuming input has been checked"""
+    """Construct the quotient graph assuming input has been checked."""
     if create_using is None:
         H = G.__class__()
     else:

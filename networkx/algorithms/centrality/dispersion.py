@@ -55,7 +55,7 @@ def dispersion(G, u=None, v=None, normalized=True, alpha=1.0, b=0.0, c=0.0):
     """
 
     def _dispersion(G_u, u, v):
-        """Dispersion for all nodes 'v' in a ego network G_u of node 'u'"""
+        """Dispersion for all nodes 'v' in a ego network G_u of node 'u'."""
         u_nbrs = set(G_u[u])
         ST = {n for n in G_u[v] if n in u_nbrs}
         set_uv = {u, v}

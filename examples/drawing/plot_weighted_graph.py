@@ -1,6 +1,6 @@
 """
 ==============
-Weighted Graph
+Weighted Graph.
 ==============
 
 An example using Graph as a weighted network.

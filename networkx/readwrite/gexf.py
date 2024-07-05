@@ -89,7 +89,7 @@ def write_gexf(G, path, encoding="utf-8", prettyprint=True, version="1.2draft"):
 
 
 def generate_gexf(G, encoding="utf-8", prettyprint=True, version="1.2draft"):
-    """Generate lines of GEXF format representation of G.
+    r"""Generate lines of GEXF format representation of G.
 
     "GEXF (Graph Exchange XML Format) is a language for describing
     complex networks structures, their associated data and dynamics" [1]_.

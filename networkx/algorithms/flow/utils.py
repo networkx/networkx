@@ -1,6 +1,4 @@
-"""
-Utility classes and functions for network flow algorithms.
-"""
+"""Utility classes and functions for network flow algorithms."""
 
 from collections import deque
 

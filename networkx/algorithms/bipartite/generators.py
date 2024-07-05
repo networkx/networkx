@@ -1,6 +1,4 @@
-"""
-Generators and functions for bipartite graphs.
-"""
+"""Generators and functions for bipartite graphs."""
 
 import math
 import numbers

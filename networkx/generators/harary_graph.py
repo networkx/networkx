@@ -1,4 +1,4 @@
-"""Generators for Harary graphs
+"""Generators for Harary graphs.
 
 This module gives two generators for the Harary graph, which was
 introduced by the famous mathematician Frank Harary in his 1962 work [H]_.

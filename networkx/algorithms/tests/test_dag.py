@@ -535,7 +535,7 @@ class TestDAG:
         """
         Check the case of two or more nodes with same key value.
         Want to avoid exception raised due to comparing nodes directly.
-        See Issue #3493
+        See Issue #3493.
         """
 
         class Test_Node:

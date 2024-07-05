@@ -273,7 +273,7 @@ class TestKruskal(MultigraphMSTTestBase):
     def test_key_data_bool(self):
         """Tests that the keys and data values are included in
         MST edges based on whether keys and data parameters are
-        true or false
+        true or false.
         """
         G = nx.MultiGraph()
         G.add_edge(1, 2, key=1, weight=2)
@@ -331,7 +331,7 @@ class TestPrim(MultigraphMSTTestBase):
 
     def test_ignore_nan(self):
         """Tests that the edges with NaN weights are ignored or
-        raise an Error based on ignore_nan is true or false
+        raise an Error based on ignore_nan is true or false.
         """
         H = nx.MultiGraph()
         H.add_edge(1, 2, key=1, weight=float("nan"))
@@ -368,7 +368,7 @@ class TestSpanningTreeIterator:
     """
     Tests the spanning tree iterator on the example graph in the 2005 Sörensen
     and Janssens paper An Algorithm to Generate all Spanning Trees of a Graph in
-    Order of Increasing Cost
+    Order of Increasing Cost.
     """
 
     def setup_method(self):
@@ -437,9 +437,7 @@ class TestSpanningTreeIterator:
         ]
 
     def test_minimum_spanning_tree_iterator(self):
-        """
-        Tests that the spanning trees are correctly returned in increasing order
-        """
+        """Tests that the spanning trees are correctly returned in increasing order."""
         tree_index = 0
         for tree in nx.SpanningTreeIterator(self.G):
             actual = sorted(tree.edges(data=True))
@@ -447,9 +445,7 @@ class TestSpanningTreeIterator:
             tree_index += 1
 
     def test_maximum_spanning_tree_iterator(self):
-        """
-        Tests that the spanning trees are correctly returned in decreasing order
-        """
+        """Tests that the spanning trees are correctly returned in decreasing order."""
         tree_index = 7
         for tree in nx.SpanningTreeIterator(self.G, minimum=False):
             actual = sorted(tree.edges(data=True))
@@ -458,9 +454,7 @@ class TestSpanningTreeIterator:
 
 
 def test_random_spanning_tree_multiplicative_small():
-    """
-    Using a fixed seed, sample one tree for repeatability.
-    """
+    """Using a fixed seed, sample one tree for repeatability."""
     from math import exp
 
     pytest.importorskip("scipy")
@@ -493,9 +487,7 @@ def test_random_spanning_tree_multiplicative_small():
 
 @pytest.mark.slow
 def test_random_spanning_tree_multiplicative_large():
-    """
-    Sample many trees from the distribution created in the last test
-    """
+    """Sample many trees from the distribution created in the last test."""
     from math import exp
     from random import Random
 
@@ -584,9 +576,7 @@ def test_random_spanning_tree_multiplicative_large():
 
 
 def test_random_spanning_tree_additive_small():
-    """
-    Sample a single spanning tree from the additive method.
-    """
+    """Sample a single spanning tree from the additive method."""
     pytest.importorskip("scipy")
 
     edges = {
@@ -619,9 +609,7 @@ def test_random_spanning_tree_additive_small():
 
 @pytest.mark.slow
 def test_random_spanning_tree_additive_large():
-    """
-    Sample many spanning trees from the additive method.
-    """
+    """Sample many spanning trees from the additive method."""
     from random import Random
 
     pytest.importorskip("numpy")

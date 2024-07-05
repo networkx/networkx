@@ -1,6 +1,6 @@
 """
 =========================
-Napoleon Russian Campaign
+Napoleon Russian Campaign.
 =========================
 
 Minard's data from Napoleon's 1812-1813  Russian Campaign.

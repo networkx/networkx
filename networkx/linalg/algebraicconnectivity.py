@@ -1,6 +1,4 @@
-"""
-Algebraic connectivity and Fiedler vectors of undirected graphs.
-"""
+"""Algebraic connectivity and Fiedler vectors of undirected graphs."""
 
 from functools import partial
 

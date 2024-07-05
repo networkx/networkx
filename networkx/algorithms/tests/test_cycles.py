@@ -79,7 +79,7 @@ class TestCycles:
         assert cbG == cbH
 
     def test_cycle_basis_self_loop(self):
-        """Tests the function for graphs with self loops"""
+        """Tests the function for graphs with self loops."""
         G = nx.Graph()
         nx.add_cycle(G, [0, 1, 2, 3])
         nx.add_cycle(G, [0, 0, 6, 2])

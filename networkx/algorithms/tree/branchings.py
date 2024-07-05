@@ -370,7 +370,7 @@ def maximum_branching(
 
     def edmonds_step_I2(v, desired_edge, level):
         """
-        Perform step I2 from Edmonds' paper
+        Perform step I2 from Edmonds' paper.
 
         First, check if the last step I1 created a cycle. If it did not, do nothing.
         If it did, store the cycle for later reference and contract it.
@@ -856,7 +856,7 @@ class ArborescenceIterator:
 
     def __init__(self, G, weight="weight", minimum=True, init_partition=None):
         """
-        Initialize the iterator
+        Initialize the iterator.
 
         Parameters
         ----------
@@ -1032,9 +1032,7 @@ class ArborescenceIterator:
                         d[self.partition_key] = nx.EdgePartition.EXCLUDED
 
     def _clear_partition(self, G):
-        """
-        Removes partition data from the graph
-        """
+        """Removes partition data from the graph."""
         for u, v, d in G.edges(data=True):
             if self.partition_key in d:
                 del d[self.partition_key]

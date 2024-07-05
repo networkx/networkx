@@ -1,6 +1,4 @@
-"""
-Text-based visual representations of graphs
-"""
+"""Text-based visual representations of graphs."""
 
 import sys
 import warnings
@@ -79,7 +77,7 @@ def generate_network_text(
     ascii_only=False,
     vertical_chains=False,
 ):
-    """Generate lines in the "network text" format
+    """Generate lines in the "network text" format.
 
     This works via a depth-first traversal of the graph and writing a line for
     each unique node encountered. Non-tree edges are written to the right of
@@ -431,7 +429,7 @@ def write_network_text(
     end="\n",
     vertical_chains=False,
 ):
-    """Creates a nice text representation of a graph
+    """Creates a nice text representation of a graph.
 
     This works via a depth-first traversal of the graph and writing a line for
     each unique node encountered. Non-tree edges are written to the right of
@@ -609,9 +607,7 @@ def write_network_text(
 
 
 def _find_sources(graph):
-    """
-    Determine a minimal set of nodes such that the entire graph is reachable
-    """
+    """Determine a minimal set of nodes such that the entire graph is reachable."""
     # For each connected part of the graph, choose at least
     # one node as a starting point, preferably without a parent
     if graph.is_directed():

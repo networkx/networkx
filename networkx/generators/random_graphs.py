@@ -1,7 +1,4 @@
-"""
-Generators for random graphs.
-
-"""
+"""Generators for random graphs."""
 
 import itertools
 import math
@@ -623,7 +620,7 @@ def _random_subset(seq, m, rng):
 @py_random_state(2)
 @nx._dispatchable(graphs=None, returns_graph=True)
 def barabasi_albert_graph(n, m, seed=None, initial_graph=None):
-    """Returns a random graph using Barabási–Albert preferential attachment
+    """Returns a random graph using Barabási–Albert preferential attachment.
 
     A graph of $n$ nodes is grown by attaching new nodes each with $m$
     edges that are preferentially attached to existing nodes with high degree.
@@ -695,7 +692,7 @@ def barabasi_albert_graph(n, m, seed=None, initial_graph=None):
 @py_random_state(4)
 @nx._dispatchable(graphs=None, returns_graph=True)
 def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial_graph=None):
-    """Returns a random graph using dual Barabási–Albert preferential attachment
+    """Returns a random graph using dual Barabási–Albert preferential attachment.
 
     A graph of $n$ nodes is grown by attaching new nodes each with either $m_1$
     edges (with probability $p$) or $m_2$ edges (with probability $1-p$) that

@@ -1,4 +1,4 @@
-"""Test trophic levels, trophic differences and trophic coherence"""
+"""Test trophic levels, trophic differences and trophic coherence."""
 
 import pytest
 
@@ -9,7 +9,7 @@ import networkx as nx
 
 
 def test_trophic_levels():
-    """Trivial example"""
+    """Trivial example."""
     G = nx.DiGraph()
     G.add_edge("a", "b")
     G.add_edge("b", "c")
@@ -20,7 +20,7 @@ def test_trophic_levels():
 
 def test_trophic_levels_levine():
     """Example from Figure 5 in Stephen Levine (1980) J. theor. Biol. 83,
-    195-207
+    195-207.
     """
     S = nx.DiGraph()
     S.add_edge(1, 2, weight=1.0)
@@ -146,7 +146,7 @@ def test_trophic_levels_even_more_complex():
 
 
 def test_trophic_levels_singular_matrix():
-    """Should raise an error with graphs with only non-basal nodes"""
+    """Should raise an error with graphs with only non-basal nodes."""
     matrix = np.identity(4)
     G = nx.from_numpy_array(matrix, create_using=nx.DiGraph)
     with pytest.raises(nx.NetworkXError) as e:

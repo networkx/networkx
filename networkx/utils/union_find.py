@@ -1,6 +1,4 @@
-"""
-Union-find data structure.
-"""
+"""Union-find data structure."""
 
 from networkx.utils import groups
 

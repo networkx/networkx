@@ -1,6 +1,6 @@
 """
 =============================
-Graphs from geographic points
+Graphs from geographic points.
 =============================
 
 This example shows how to build a graph from a set of points

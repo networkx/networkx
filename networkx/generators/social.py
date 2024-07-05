@@ -1,6 +1,4 @@
-"""
-Famous social networks.
-"""
+"""Famous social networks."""
 
 import networkx as nx
 

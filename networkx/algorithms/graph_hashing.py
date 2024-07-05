@@ -300,7 +300,7 @@ def weisfeiler_lehman_subgraph_hashes(
         in the graph.
         Computes a dictionary with labels for each node.
         Appends the new hashed label to the dictionary of subgraph hashes
-        originating from and indexed by each node in G
+        originating from and indexed by each node in G.
         """
         new_labels = {}
         for node in G.nodes():

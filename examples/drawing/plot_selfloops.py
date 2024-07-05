@@ -1,6 +1,6 @@
 """
 ==========
-Self-loops
+Self-loops.
 ==========
 
 A self-loop is an edge that originates from and terminates the same node.

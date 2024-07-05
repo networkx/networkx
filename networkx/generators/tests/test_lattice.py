@@ -9,7 +9,7 @@ from networkx.utils import edges_equal
 
 
 class TestGrid2DGraph:
-    """Unit tests for :func:`networkx.generators.lattice.grid_2d_graph`"""
+    """Unit tests for :func:`networkx.generators.lattice.grid_2d_graph`."""
 
     def test_number_of_vertices(self):
         m, n = 5, 6
@@ -87,13 +87,13 @@ class TestGrid2DGraph:
 
 
 class TestGridGraph:
-    """Unit tests for :func:`networkx.generators.lattice.grid_graph`"""
+    """Unit tests for :func:`networkx.generators.lattice.grid_graph`."""
 
     def test_grid_graph(self):
         """grid_graph([n,m]) is a connected simple graph with the
         following properties:
         number_of_nodes = n*m
-        degree_histogram = [0,0,4,2*(n+m)-8,(n-2)*(m-2)]
+        degree_histogram = [0,0,4,2*(n+m)-8,(n-2)*(m-2)].
         """
         for n, m in [(3, 5), (5, 3), (4, 5), (5, 4)]:
             dim = [n, m]
@@ -131,7 +131,7 @@ class TestGridGraph:
 
 
 class TestHypercubeGraph:
-    """Unit tests for :func:`networkx.generators.lattice.hypercube_graph`"""
+    """Unit tests for :func:`networkx.generators.lattice.hypercube_graph`."""
 
     def test_special_cases(self):
         for n, H in [
@@ -151,7 +151,7 @@ class TestHypercubeGraph:
 
 
 class TestTriangularLatticeGraph:
-    """Tests for :func:`networkx.generators.lattice.triangular_lattice_graph`"""
+    """Tests for :func:`networkx.generators.lattice.triangular_lattice_graph`."""
 
     def test_lattice_points(self):
         """Tests that the graph is really a triangular lattice."""
@@ -198,7 +198,7 @@ class TestTriangularLatticeGraph:
 
 
 class TestHexagonalLatticeGraph:
-    """Tests for :func:`networkx.generators.lattice.hexagonal_lattice_graph`"""
+    """Tests for :func:`networkx.generators.lattice.hexagonal_lattice_graph`."""
 
     def test_lattice_points(self):
         """Tests that the graph is really a hexagonal lattice."""

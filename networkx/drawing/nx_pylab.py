@@ -1,7 +1,7 @@
 """
 **********
 Matplotlib
-**********
+**********.
 
 Draw networks with matplotlib.
 
@@ -483,7 +483,7 @@ def draw_networkx_nodes(
 
 
 class FancyArrowFactory:
-    """Draw arrows with `matplotlib.patches.FancyarrowPatch`"""
+    """Draw arrows with `matplotlib.patches.FancyarrowPatch`."""
 
     class ConnectionStyleFactory:
         def __init__(self, connectionstyles, selfloop_height, ax=None):
@@ -1327,7 +1327,7 @@ def draw_networkx_edge_labels(
             It omits the second part of the method where path is converted
                 to polygon based on width
             The transform is taken from ax, not the object, as the object
-                has not been added yet, and doesn't have transform
+                has not been added yet, and doesn't have transform.
             """
             dpi_cor = arrow._dpi_cor
             # trans_data = arrow.get_transform()

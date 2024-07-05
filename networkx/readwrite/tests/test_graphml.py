@@ -510,7 +510,7 @@ class TestReadGraphML(BaseGraphML):
     def test_preserve_multi_edge_data(self):
         """
         Test that data and keys of edges are preserved on consequent
-        write and reads
+        write and reads.
         """
         G = nx.MultiGraph()
         G.add_node(1)
@@ -1473,7 +1473,7 @@ class TestXMLGraphML(TestWriteGraphML):
 
 def test_exception_for_unsupported_datatype_node_attr():
     """Test that a detailed exception is raised when an attribute is of a type
-    not supported by GraphML, e.g. a list
+    not supported by GraphML, e.g. a list.
     """
     pytest.importorskip("lxml.etree")
     # node attribute
@@ -1486,7 +1486,7 @@ def test_exception_for_unsupported_datatype_node_attr():
 
 def test_exception_for_unsupported_datatype_edge_attr():
     """Test that a detailed exception is raised when an attribute is of a type
-    not supported by GraphML, e.g. a list
+    not supported by GraphML, e.g. a list.
     """
     pytest.importorskip("lxml.etree")
     # edge attribute
@@ -1499,7 +1499,7 @@ def test_exception_for_unsupported_datatype_edge_attr():
 
 def test_exception_for_unsupported_datatype_graph_attr():
     """Test that a detailed exception is raised when an attribute is of a type
-    not supported by GraphML, e.g. a list
+    not supported by GraphML, e.g. a list.
     """
     pytest.importorskip("lxml.etree")
     # graph attribute

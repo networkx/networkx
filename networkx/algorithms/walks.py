@@ -7,7 +7,7 @@ __all__ = ["number_of_walks"]
 
 @nx._dispatchable
 def number_of_walks(G, walk_length):
-    """Returns the number of walks connecting each pair of nodes in `G`
+    """Returns the number of walks connecting each pair of nodes in `G`.
 
     A *walk* is a sequence of nodes in which each adjacent pair of nodes
     in the sequence is adjacent in the graph. A walk can repeat the same

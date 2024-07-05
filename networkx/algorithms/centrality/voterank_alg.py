@@ -7,7 +7,7 @@ __all__ = ["voterank"]
 
 @nx._dispatchable
 def voterank(G, number_of_nodes=None):
-    """Select a list of influential nodes in a graph using VoteRank algorithm
+    """Select a list of influential nodes in a graph using VoteRank algorithm.
 
     VoteRank [1]_ computes a ranking of the nodes in a graph G based on a
     voting scheme. With VoteRank, all nodes vote for each of its in-neighbors

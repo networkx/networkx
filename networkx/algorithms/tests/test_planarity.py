@@ -20,7 +20,7 @@ class TestLRPlanarity:
 
     @staticmethod
     def check_graph(G, is_planar=None):
-        """Raises an exception if the lr_planarity check returns a wrong result
+        """Raises an exception if the lr_planarity check returns a wrong result.
 
         Parameters
         ----------
@@ -292,7 +292,7 @@ class TestLRPlanarity:
 
 
 def check_embedding(G, embedding):
-    """Raises an exception if the combinatorial embedding is not correct
+    """Raises an exception if the combinatorial embedding is not correct.
 
     Parameters
     ----------

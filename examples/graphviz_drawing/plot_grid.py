@@ -1,5 +1,5 @@
 """
-2D Grid
+2D Grid.
 =======
 
 Illustrate `~networkx.drawing.nx_agraph.write_dot` in conjunction with the

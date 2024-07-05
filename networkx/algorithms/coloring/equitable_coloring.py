@@ -1,6 +1,4 @@
-"""
-Equitable coloring of graphs with bounded degree.
-"""
+"""Equitable coloring of graphs with bounded degree."""
 
 from collections import defaultdict
 

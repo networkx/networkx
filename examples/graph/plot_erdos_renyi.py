@@ -1,6 +1,6 @@
 """
 ===========
-Erdos Renyi
+Erdos Renyi.
 ===========
 
 Create an G{n,m} random graph with n nodes and m edges

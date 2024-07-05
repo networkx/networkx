@@ -13,13 +13,13 @@ from networkx.utils import pairwise
 
 
 def fset(list_of_sets):
-    """Allows == to be used for list of sets"""
+    """Allows == to be used for list of sets."""
     return set(map(frozenset, list_of_sets))
 
 
 def _assert_subgraph_edge_connectivity(G, ccs_subgraph, k):
     """
-    tests properties of k-edge-connected subgraphs
+    tests properties of k-edge-connected subgraphs.
 
     the actual edge connectivity should be no less than k unless the cc is a
     single node.
@@ -55,7 +55,7 @@ def _all_pairs_connectivity(G, cc, k, memo):
 
 def _assert_local_cc_edge_connectivity(G, ccs_local, k, memo):
     """
-    tests properties of k-edge-connected components
+    tests properties of k-edge-connected components.
 
     the local edge connectivity between each pair of nodes in the original
     graph should be no less than k unless the cc is a single node.

@@ -1,5 +1,5 @@
 """
-Docs for backend users
+Docs for backend users.
 ~~~~~~~~~~~~~~~~~~~~~~
 
 NetworkX utilizes a plugin-dispatch architecture, which means we can plug in and
@@ -899,7 +899,7 @@ class _dispatchable:
         return self.orig_func(*args, **kwargs)
 
     def _can_backend_run(self, backend_name, /, *args, **kwargs):
-        """Can the specified backend run this algorithm with these arguments?"""
+        """Can the specified backend run this algorithm with these arguments?."""
         backend = _load_backend(backend_name)
         # `backend.can_run` and `backend.should_run` may return strings that describe
         # why they can't or shouldn't be run. We plan to use the strings in the future.
@@ -910,7 +910,7 @@ class _dispatchable:
         )
 
     def _should_backend_run(self, backend_name, /, *args, **kwargs):
-        """Can/should the specified backend run this algorithm with these arguments?"""
+        """Can/should the specified backend run this algorithm with these arguments?."""
         backend = _load_backend(backend_name)
         # `backend.can_run` and `backend.should_run` may return strings that describe
         # why they can't or shouldn't be run. We plan to use the strings in the future.

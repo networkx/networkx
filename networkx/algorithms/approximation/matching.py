@@ -1,7 +1,7 @@
 """
 **************
 Graph Matching
-**************
+**************.
 
 Given a graph G = (V,E), a matching M in G is a set of pairwise non-adjacent
 edges; that is, no two edges share a common vertex.

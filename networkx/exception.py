@@ -1,7 +1,7 @@
 """
 **********
 Exceptions
-**********
+**********.
 
 Base exceptions and errors for NetworkX.
 """
@@ -29,7 +29,7 @@ class NetworkXException(Exception):
 
 
 class NetworkXError(NetworkXException):
-    """Exception for a serious error in NetworkX"""
+    """Exception for a serious error in NetworkX."""
 
 
 class NetworkXPointlessConcept(NetworkXException):
@@ -94,7 +94,7 @@ class NetworkXNotImplemented(NetworkXException):
 
 
 class NodeNotFound(NetworkXException):
-    """Exception raised if requested node is not present in the graph"""
+    """Exception raised if requested node is not present in the graph."""
 
 
 class AmbiguousSolution(NetworkXException):

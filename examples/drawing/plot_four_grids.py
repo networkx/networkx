@@ -1,6 +1,6 @@
 """
 ==========
-Four Grids
+Four Grids.
 ==========
 
 Draw a 4x4 graph with matplotlib.

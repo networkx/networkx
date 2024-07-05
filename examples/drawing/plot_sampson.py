@@ -1,6 +1,6 @@
 """
 =======
-Sampson
+Sampson.
 =======
 
 Sampson's monastery data.

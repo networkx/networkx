@@ -6,7 +6,7 @@ __all__ = ["combinatorial_embedding_to_pos"]
 
 
 def combinatorial_embedding_to_pos(embedding, fully_triangulate=False):
-    """Assigns every node a (x, y) position based on the given embedding
+    """Assigns every node a (x, y) position based on the given embedding.
 
     The algorithm iteratively inserts nodes of the input graph in a certain
     order and rearranges previously inserted nodes so that the planar drawing
@@ -138,7 +138,7 @@ def set_position(parent, tree, remaining_nodes, delta_x, y_coordinate, pos):
 
 
 def get_canonical_ordering(embedding, outer_face):
-    """Returns a canonical ordering of the nodes
+    """Returns a canonical ordering of the nodes.
 
     The canonical ordering of nodes (v1, ..., vn) must fulfill the following
     conditions:
@@ -305,7 +305,7 @@ def get_canonical_ordering(embedding, outer_face):
 
 
 def triangulate_face(embedding, v1, v2):
-    """Triangulates the face given by half edge (v, w)
+    """Triangulates the face given by half edge (v, w).
 
     Parameters
     ----------
@@ -403,7 +403,7 @@ def triangulate_embedding(embedding, fully_triangulate=True):
 
 
 def make_bi_connected(embedding, starting_node, outgoing_node, edges_counted):
-    """Triangulate a face and make it 2-connected
+    """Triangulate a face and make it 2-connected.
 
     This method also adds all edges on the face to `edges_counted`.
 

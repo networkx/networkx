@@ -2,7 +2,7 @@ import networkx as nx
 
 
 def small_ego_G():
-    """The sample network from https://arxiv.org/pdf/1310.6753v1.pdf"""
+    """The sample network from https://arxiv.org/pdf/1310.6753v1.pdf."""
     edges = [
         ("a", "b"),
         ("a", "c"),
@@ -41,7 +41,7 @@ def small_ego_G():
 
 class TestDispersion:
     def test_article(self):
-        """Our algorithm matches article's"""
+        """Our algorithm matches article's."""
         G = small_ego_G()
         disp_uh = nx.dispersion(G, "u", "h", normalized=False)
         disp_ub = nx.dispersion(G, "u", "b", normalized=False)
@@ -49,7 +49,7 @@ class TestDispersion:
         assert disp_ub == 1
 
     def test_results_length(self):
-        """There is a result for every node"""
+        """There is a result for every node."""
         G = small_ego_G()
         disp = nx.dispersion(G)
         disp_Gu = nx.dispersion(G, "u")

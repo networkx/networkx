@@ -1,7 +1,7 @@
 """
 *****
 Pydot
-*****
+*****.
 
 Import and export NetworkX graphs in Graphviz dot format using pydot.
 

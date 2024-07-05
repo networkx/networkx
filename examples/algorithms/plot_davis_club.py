@@ -1,6 +1,6 @@
 """
 ==========
-Davis Club
+Davis Club.
 ==========
 
 Davis Southern Club Women

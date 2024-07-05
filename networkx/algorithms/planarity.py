@@ -202,15 +202,15 @@ class Interval:
         self.high = high
 
     def empty(self):
-        """Check if the interval is empty"""
+        """Check if the interval is empty."""
         return self.low is None and self.high is None
 
     def copy(self):
-        """Returns a copy of this interval"""
+        """Returns a copy of this interval."""
         return Interval(self.low, self.high)
 
     def conflicting(self, b, planarity_state):
-        """Returns True if interval I conflicts with edge b"""
+        """Returns True if interval I conflicts with edge b."""
         return (
             not self.empty()
             and planarity_state.lowpt[self.high] > planarity_state.lowpt[b]
@@ -229,13 +229,13 @@ class ConflictPair:
         self.right = right
 
     def swap(self):
-        """Swap left and right intervals"""
+        """Swap left and right intervals."""
         temp = self.left
         self.left = self.right
         self.right = temp
 
     def lowest(self, planarity_state):
-        """Returns the lowest lowpoint of a conflict pair"""
+        """Returns the lowest lowpoint of a conflict pair."""
         if self.left.empty():
             return planarity_state.lowpt[self.right.low]
         if self.right.empty():
@@ -858,7 +858,7 @@ class PlanarEmbedding(nx.DiGraph):
         self.add_weighted_edges_from = self.__forbidden
 
     def __forbidden(self, *args, **kwargs):
-        """Forbidden operation
+        """Forbidden operation.
 
         Any edge additions to a PlanarEmbedding should be done using
         method `add_half_edge`.

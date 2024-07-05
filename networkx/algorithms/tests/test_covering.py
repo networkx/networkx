@@ -4,7 +4,7 @@ import networkx as nx
 
 
 class TestMinEdgeCover:
-    """Tests for :func:`networkx.algorithms.min_edge_cover`"""
+    """Tests for :func:`networkx.algorithms.min_edge_cover`."""
 
     def test_empty_graph(self):
         G = nx.Graph()
@@ -65,7 +65,7 @@ class TestMinEdgeCover:
 
 
 class TestIsEdgeCover:
-    """Tests for :func:`networkx.algorithms.is_edge_cover`"""
+    """Tests for :func:`networkx.algorithms.is_edge_cover`."""
 
     def test_empty_graph(self):
         G = nx.Graph()

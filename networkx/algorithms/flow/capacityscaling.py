@@ -1,6 +1,4 @@
-"""
-Capacity scaling minimum cost flow algorithm.
-"""
+"""Capacity scaling minimum cost flow algorithm."""
 
 __all__ = ["capacity_scaling"]
 

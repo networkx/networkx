@@ -1,6 +1,6 @@
 """
 ===========
-Lanl Routes
+Lanl Routes.
 ===========
 
 Routes to LANL from 186 sites on the Internet.
@@ -17,7 +17,7 @@ import networkx as nx
 
 
 def lanl_graph():
-    """Return the lanl internet view graph from lanl.edges"""
+    """Return the lanl internet view graph from lanl.edges."""
     try:
         fh = open("lanl_routes.edgelist")
     except OSError:

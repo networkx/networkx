@@ -400,9 +400,7 @@ def test_TSP_incomplete_graph_short_path():
 
 
 def test_held_karp_ascent():
-    """
-    Test the Held-Karp relaxation with the ascent method
-    """
+    """Test the Held-Karp relaxation with the ascent method."""
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
     np = pytest.importorskip("numpy")
@@ -438,7 +436,7 @@ def test_ascent_fractional_solution():
     """
     Test the ascent method using a modified version of Figure 2 on page 1140
     in 'The Traveling Salesman Problem and Minimum Spanning Trees' by Held and
-    Karp
+    Karp.
     """
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
@@ -494,7 +492,7 @@ def test_ascent_fractional_solution():
 def test_ascent_method_asymmetric():
     """
     Tests the ascent method using a truly asymmetric graph for which the
-    solution has been brute forced
+    solution has been brute forced.
     """
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
@@ -529,7 +527,7 @@ def test_ascent_method_asymmetric():
 def test_ascent_method_asymmetric_2():
     """
     Tests the ascent method using a truly asymmetric graph for which the
-    solution has been brute forced
+    solution has been brute forced.
     """
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
@@ -608,7 +606,7 @@ def test_held_karp_ascent_asymmetric_3():
 def test_held_karp_ascent_fractional_asymmetric():
     """
     Tests the ascent method using a truly asymmetric graph with a fractional
-    solution for which the solution has been brute forced
+    solution for which the solution has been brute forced.
     """
     import networkx.algorithms.approximation.traveling_salesman as tsp
 
@@ -894,7 +892,7 @@ def test_asadpour_disconnected_graph():
 def test_asadpour_incomplete_graph():
     """
     Test that the proper exception is raised when asadpour_atsp is given an
-    incomplete graph
+    incomplete graph.
     """
     G = nx.complete_graph(4, create_using=nx.DiGraph)
     # have to set edge weights so that if the exception is not raised, the
@@ -906,9 +904,7 @@ def test_asadpour_incomplete_graph():
 
 
 def test_asadpour_empty_graph():
-    """
-    Test the asadpour_atsp function with an empty graph
-    """
+    """Test the asadpour_atsp function with an empty graph."""
     G = nx.DiGraph()
 
     pytest.raises(nx.NetworkXError, nx_app.asadpour_atsp, G)
@@ -951,9 +947,7 @@ def test_asadpour_integral_held_karp():
 
 
 def test_directed_tsp_impossible():
-    """
-    Test the asadpour algorithm with a graph without a hamiltonian circuit
-    """
+    """Test the asadpour algorithm with a graph without a hamiltonian circuit."""
     pytest.importorskip("numpy")
 
     # In this graph, once we leave node 0 we cannot return

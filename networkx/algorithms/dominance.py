@@ -1,6 +1,4 @@
-"""
-Dominance algorithms.
-"""
+"""Dominance algorithms."""
 
 from functools import reduce
 

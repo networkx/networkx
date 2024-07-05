@@ -1,6 +1,6 @@
 """
 ========================
-Cycle finding algorithms
+Cycle finding algorithms.
 ========================
 """
 
@@ -237,7 +237,7 @@ def simple_cycles(G, length_bound=None):
 
 
 def _directed_cycle_search(G, length_bound):
-    """A dispatch function for `simple_cycles` for directed graphs.
+    r"""A dispatch function for `simple_cycles` for directed graphs.
 
     We generate all cycles of G through binary partition.
 
@@ -286,7 +286,7 @@ def _directed_cycle_search(G, length_bound):
 
 
 def _undirected_cycle_search(G, length_bound):
-    """A dispatch function for `simple_cycles` for undirected graphs.
+    r"""A dispatch function for `simple_cycles` for undirected graphs.
 
     We generate all cycles of G through binary partition.
 
@@ -1032,7 +1032,7 @@ def find_cycle(G, source=None, orientation=None):
 @not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs="weight")
 def minimum_cycle_basis(G, weight=None):
-    """Returns a minimum weight cycle basis for G
+    """Returns a minimum weight cycle basis for G.
 
     Minimum weight means a cycle basis for which the total weight
     (length for unweighted graphs) of all the cycles is minimum.

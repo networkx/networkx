@@ -1,6 +1,4 @@
-"""
-Eigenvalue spectrum of graphs.
-"""
+"""Eigenvalue spectrum of graphs."""
 
 import networkx as nx
 
@@ -15,7 +13,7 @@ __all__ = [
 
 @nx._dispatchable(edge_attrs="weight")
 def laplacian_spectrum(G, weight="weight"):
-    """Returns eigenvalues of the Laplacian of G
+    """Returns eigenvalues of the Laplacian of G.
 
     Parameters
     ----------
@@ -59,7 +57,7 @@ def laplacian_spectrum(G, weight="weight"):
 
 @nx._dispatchable(edge_attrs="weight")
 def normalized_laplacian_spectrum(G, weight="weight"):
-    """Return eigenvalues of the normalized Laplacian of G
+    """Return eigenvalues of the normalized Laplacian of G.
 
     Parameters
     ----------

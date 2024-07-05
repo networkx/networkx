@@ -59,7 +59,7 @@ def maximal_matching(G):
 
 
 def matching_dict_to_set(matching):
-    """Converts matching dict format to matching set format
+    """Converts matching dict format to matching set format.
 
     Converts a dictionary representing a matching (as returned by
     :func:`max_weight_matching`) to a set representing a matching (as
@@ -85,7 +85,7 @@ def matching_dict_to_set(matching):
 
 @nx._dispatchable
 def is_matching(G, matching):
-    """Return True if ``matching`` is a valid matching of ``G``
+    """Return True if ``matching`` is a valid matching of ``G``.
 
     A *matching* in a graph is a set of edges in which no two distinct
     edges share a common endpoint. Each node is incident to at most one
@@ -146,7 +146,7 @@ def is_matching(G, matching):
 
 @nx._dispatchable
 def is_maximal_matching(G, matching):
-    """Return True if ``matching`` is a maximal matching of ``G``
+    """Return True if ``matching`` is a maximal matching of ``G``.
 
     A *maximal matching* in a graph is a matching in which adding any
     edge would cause the set to no longer be a valid matching.
@@ -208,7 +208,7 @@ def is_maximal_matching(G, matching):
 
 @nx._dispatchable
 def is_perfect_matching(G, matching):
-    """Return True if ``matching`` is a perfect matching for ``G``
+    """Return True if ``matching`` is a perfect matching for ``G``.
 
     A *perfect matching* in a graph is a matching in which exactly one edge
     is incident upon each vertex.

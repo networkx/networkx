@@ -714,7 +714,7 @@ def test_selfloops_removal(graph_type):
 @pytest.mark.parametrize("graph_type", [nx.MultiGraph, nx.MultiDiGraph])
 def test_selfloops_removal_multi(graph_type):
     """Test removing selfloops behavior vis-a-vis altering a dict while iterating.
-    cf. gh-4068
+    cf. gh-4068.
     """
     G = nx.complete_graph(3, create_using=graph_type)
     # Defaults - see gh-4080

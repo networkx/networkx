@@ -1,6 +1,6 @@
 """
 ===========
-Print Graph
+Print Graph.
 ===========
 
 Example subclass of the Graph class.

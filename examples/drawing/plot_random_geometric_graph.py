@@ -1,6 +1,6 @@
 """
 ======================
-Random Geometric Graph
+Random Geometric Graph.
 ======================
 
 Example

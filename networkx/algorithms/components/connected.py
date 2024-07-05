@@ -197,7 +197,7 @@ def node_connected_component(G, n):
 
 
 def _plain_bfs(G, source):
-    """A fast BFS node generator"""
+    """A fast BFS node generator."""
     adj = G._adj
     n = len(adj)
     seen = {source}

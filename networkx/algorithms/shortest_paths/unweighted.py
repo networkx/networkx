@@ -1,6 +1,4 @@
-"""
-Shortest path algorithms for unweighted graphs.
-"""
+"""Shortest path algorithms for unweighted graphs."""
 
 import warnings
 
@@ -64,7 +62,7 @@ def single_source_shortest_path_length(G, source, cutoff=None):
 
 
 def _single_shortest_path_length(adj, firstlevel, cutoff):
-    """Yields (node, level) in a breadth first search
+    """Yields (node, level) in a breadth first search.
 
     Shortest Path Length helper function
 
@@ -368,7 +366,7 @@ def single_source_shortest_path(G, source, cutoff=None):
 
 
 def _single_shortest_path(adj, firstlevel, paths, cutoff, join):
-    """Returns shortest paths
+    """Returns shortest paths.
 
     Shortest Path helper function
 

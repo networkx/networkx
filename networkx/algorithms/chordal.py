@@ -24,7 +24,7 @@ __all__ = [
 
 class NetworkXTreewidthBoundExceeded(nx.NetworkXException):
     """Exception raised when a treewidth bound has been provided and it has
-    been exceeded
+    been exceeded.
     """
 
 
@@ -373,7 +373,7 @@ def _find_chordality_breaker(G, s=None, treewidth_bound=sys.maxsize):
 @not_implemented_for("directed")
 @nx._dispatchable(returns_graph=True)
 def complete_to_chordal_graph(G):
-    """Return a copy of G completed to a chordal graph
+    """Return a copy of G completed to a chordal graph.
 
     Adds edges to a copy of G to create a chordal graph. A graph G=(V,E) is
     called chordal if for each cycle with length bigger than 3, there exist

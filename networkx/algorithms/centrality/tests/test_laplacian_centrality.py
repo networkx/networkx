@@ -13,7 +13,7 @@ def test_laplacian_centrality_null_graph():
 
 
 def test_laplacian_centrality_single_node():
-    """See gh-6571"""
+    """See gh-6571."""
     G = nx.empty_graph(1)
     assert nx.laplacian_centrality(G, normalized=False) == {0: 0}
     with pytest.raises(ZeroDivisionError):
@@ -21,7 +21,7 @@ def test_laplacian_centrality_single_node():
 
 
 def test_laplacian_centrality_unconnected_nodes():
-    """laplacian_centrality on a unconnected node graph should return 0
+    """laplacian_centrality on a unconnected node graph should return 0.
 
     For graphs without edges, the Laplacian energy is 0 and is unchanged with
     node removal, so::

@@ -1,6 +1,4 @@
-"""
-Minimum cost flow algorithms on directed connected graphs.
-"""
+"""Minimum cost flow algorithms on directed connected graphs."""
 
 __all__ = ["network_simplex"]
 
@@ -84,9 +82,7 @@ class _DataEssentialsAndFunctions:
         self._spanning_tree_initialized = True  # True only if all the assignments pass
 
     def find_apex(self, p, q):
-        """
-        Find the lowest common ancestor of nodes p and q in the spanning tree.
-        """
+        """Find the lowest common ancestor of nodes p and q in the spanning tree."""
         size_p = self.subtree_size[p]
         size_q = self.subtree_size[q]
         while True:
@@ -106,9 +102,7 @@ class _DataEssentialsAndFunctions:
                     return p
 
     def trace_path(self, p, w):
-        """
-        Returns the nodes and edges on the path from node p to its ancestor w.
-        """
+        """Returns the nodes and edges on the path from node p to its ancestor w."""
         Wn = [p]
         We = []
         while p != w:
@@ -137,9 +131,7 @@ class _DataEssentialsAndFunctions:
         return Wn, We
 
     def augment_flow(self, Wn, We, f):
-        """
-        Augment f units of flow along a cycle represented by Wn and We.
-        """
+        """Augment f units of flow along a cycle represented by Wn and We."""
         for i, p in zip(We, Wn):
             if self.edge_sources[i] == p:
                 self.edge_flow[i] += f
@@ -147,9 +139,7 @@ class _DataEssentialsAndFunctions:
                 self.edge_flow[i] -= f
 
     def trace_subtree(self, p):
-        """
-        Yield the nodes in the subtree rooted at a node p.
-        """
+        """Yield the nodes in the subtree rooted at a node p."""
         yield p
         l = self.last_descendent_dft[p]
         while p != l:
@@ -157,9 +147,7 @@ class _DataEssentialsAndFunctions:
             yield p
 
     def remove_edge(self, s, t):
-        """
-        Remove an edge (s, t) where parent[t] == s from the spanning tree.
-        """
+        """Remove an edge (s, t) where parent[t] == s from the spanning tree."""
         size_t = self.subtree_size[t]
         prev_t = self.prev_node_dft[t]
         last_t = self.last_descendent_dft[t]
@@ -181,9 +169,7 @@ class _DataEssentialsAndFunctions:
             s = self.parent[s]
 
     def make_root(self, q):
-        """
-        Make a node q the root of its containing subtree.
-        """
+        """Make a node q the root of its containing subtree."""
         ancestors = []
         while q is not None:
             ancestors.append(q)
@@ -219,9 +205,7 @@ class _DataEssentialsAndFunctions:
             self.last_descendent_dft[q] = last_p
 
     def add_edge(self, i, p, q):
-        """
-        Add an edge (p, q) to the spanning tree where q is the root of a subtree.
-        """
+        """Add an edge (p, q) to the spanning tree where q is the root of a subtree."""
         last_p = self.last_descendent_dft[p]
         next_last_p = self.next_node_dft[last_p]
         size_q = self.subtree_size[q]

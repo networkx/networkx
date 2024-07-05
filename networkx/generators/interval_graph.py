@@ -1,6 +1,4 @@
-"""
-Generators for interval graph.
-"""
+"""Generators for interval graph."""
 
 from collections.abc import Sequence
 

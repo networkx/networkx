@@ -1,5 +1,5 @@
 """
-Testing
+Testing.
 =======
 
 General guidelines for writing good tests:

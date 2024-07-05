@@ -1,4 +1,4 @@
-"""Generators - Directed Graphs
+"""Generators - Directed Graphs.
 ----------------------------
 """
 

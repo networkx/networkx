@@ -1,6 +1,6 @@
 """
 ==============
-Cluster Layout
+Cluster Layout.
 ==============
 
 This example illustrates how to combine multiple layouts to visualize node

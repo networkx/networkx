@@ -1,6 +1,4 @@
-"""
-Flow based cut algorithms
-"""
+"""Flow based cut algorithms."""
 
 import itertools
 

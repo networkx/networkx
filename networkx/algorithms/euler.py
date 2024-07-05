@@ -1,6 +1,4 @@
-"""
-Eulerian circuits and graphs.
-"""
+"""Eulerian circuits and graphs."""
 
 from itertools import combinations
 

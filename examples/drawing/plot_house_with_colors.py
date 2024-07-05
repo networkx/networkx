@@ -1,6 +1,6 @@
 """
 =================
-House With Colors
+House With Colors.
 =================
 
 Draw a graph with matplotlib.

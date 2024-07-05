@@ -1,6 +1,4 @@
-"""
-Highest-label preflow-push algorithm for maximum flow problems.
-"""
+"""Highest-label preflow-push algorithm for maximum flow problems."""
 
 from collections import deque
 from itertools import islice

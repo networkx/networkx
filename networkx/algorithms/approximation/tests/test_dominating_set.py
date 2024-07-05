@@ -40,7 +40,7 @@ class TestMinWeightDominatingSet:
         assert min_weighted_dominating_set(G) == {9}
 
     def test_null_graph(self):
-        """Tests that the unique dominating set for the null graph is an empty set"""
+        """Tests that the unique dominating set for the null graph is an empty set."""
         G = nx.Graph()
         assert min_weighted_dominating_set(G) == set()
 

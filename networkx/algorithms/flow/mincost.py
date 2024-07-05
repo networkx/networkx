@@ -1,6 +1,4 @@
-"""
-Minimum cost flow algorithms on directed connected graphs.
-"""
+"""Minimum cost flow algorithms on directed connected graphs."""
 
 __all__ = ["min_cost_flow_cost", "min_cost_flow", "cost_of_flow", "max_flow_min_cost"]
 

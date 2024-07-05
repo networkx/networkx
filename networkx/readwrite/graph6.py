@@ -134,7 +134,7 @@ def from_graph6_bytes(bytes_in):
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def to_graph6_bytes(G, nodes=None, header=True):
-    """Convert a simple undirected graph to bytes in graph6 format.
+    r"""Convert a simple undirected graph to bytes in graph6 format.
 
     Parameters
     ----------
@@ -188,7 +188,7 @@ def to_graph6_bytes(G, nodes=None, header=True):
 @open_file(0, mode="rb")
 @nx._dispatchable(graphs=None, returns_graph=True)
 def read_graph6(path):
-    """Read simple undirected graphs in graph6 format from path.
+    r"""Read simple undirected graphs in graph6 format from path.
 
     Parameters
     ----------
@@ -253,7 +253,7 @@ def read_graph6(path):
 @not_implemented_for("multigraph")
 @open_file(1, mode="wb")
 def write_graph6(G, path, nodes=None, header=True):
-    """Write a simple undirected graph to a path in graph6 format.
+    r"""Write a simple undirected graph to a path in graph6 format.
 
     Parameters
     ----------
@@ -313,7 +313,7 @@ def write_graph6(G, path, nodes=None, header=True):
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
 def write_graph6_file(G, f, nodes=None, header=True):
-    """Write a simple undirected graph to a file-like object in graph6 format.
+    r"""Write a simple undirected graph to a file-like object in graph6 format.
 
     Parameters
     ----------

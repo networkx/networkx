@@ -37,7 +37,7 @@ def simple_no_flow_graph():
 
 
 def get_flowcost_from_flowdict(G, flowDict):
-    """Returns flow cost calculated from flow dictionary"""
+    """Returns flow cost calculated from flow dictionary."""
     flowCost = 0
     for u in flowDict:
         for v in flowDict[u]:
@@ -92,9 +92,7 @@ def test_sum_demands_not_zero(simple_no_flow_graph):
 
 
 def test_google_or_tools_example():
-    """
-    https://developers.google.com/optimization/flow/mincostflow
-    """
+    """https://developers.google.com/optimization/flow/mincostflow."""
     G = nx.DiGraph()
     start_nodes = [0, 0, 1, 1, 1, 2, 2, 3, 4]
     end_nodes = [1, 2, 2, 3, 4, 3, 4, 4, 2]
@@ -117,9 +115,7 @@ def test_google_or_tools_example():
 
 
 def test_google_or_tools_example2():
-    """
-    https://developers.google.com/optimization/flow/mincostflow
-    """
+    """https://developers.google.com/optimization/flow/mincostflow."""
     G = nx.DiGraph()
     start_nodes = [0, 0, 1, 1, 1, 2, 2, 3, 4, 3]
     end_nodes = [1, 2, 2, 3, 4, 3, 4, 4, 2, 5]

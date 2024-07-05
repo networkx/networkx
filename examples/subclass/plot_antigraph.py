@@ -1,6 +1,6 @@
 """
 =========
-Antigraph
+Antigraph.
 =========
 
 Complement graph class for small footprint when working on dense graphs.

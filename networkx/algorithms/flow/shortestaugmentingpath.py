@@ -1,6 +1,4 @@
-"""
-Shortest augmenting path algorithm for maximum flow problems.
-"""
+"""Shortest augmenting path algorithm for maximum flow problems."""
 
 from collections import deque
 

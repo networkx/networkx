@@ -41,11 +41,11 @@ def is_tree_decomp(graph, decomp):
 
 
 class TestTreewidthMinDegree:
-    """Unit tests for the min_degree function"""
+    """Unit tests for the min_degree function."""
 
     @classmethod
     def setup_class(cls):
-        """Setup for different kinds of trees"""
+        """Setup for different kinds of trees."""
         cls.complete = nx.Graph()
         cls.complete.add_edge(1, 2)
         cls.complete.add_edge(2, 3)
@@ -91,13 +91,13 @@ class TestTreewidthMinDegree:
         cls.deterministic_graph.add_edge(8, 9)  # deg(8) = 4
 
     def test_petersen_graph(self):
-        """Test Petersen graph tree decomposition result"""
+        """Test Petersen graph tree decomposition result."""
         G = nx.petersen_graph()
         _, decomp = treewidth_min_degree(G)
         is_tree_decomp(G, decomp)
 
     def test_small_tree_treewidth(self):
-        """Test small tree
+        """Test small tree.
 
         Test if the computed treewidth of the known self.small_tree is 2.
         As we know which value we can expect from our heuristic, values other
@@ -111,7 +111,7 @@ class TestTreewidthMinDegree:
         assert treewidth == 2
 
     def test_heuristic_abort(self):
-        """Test heuristic abort condition for fully connected graph"""
+        """Test heuristic abort condition for fully connected graph."""
         graph = {}
         for u in self.complete:
             graph[u] = set()
@@ -127,7 +127,7 @@ class TestTreewidthMinDegree:
             assert False
 
     def test_empty_graph(self):
-        """Test empty graph"""
+        """Test empty graph."""
         G = nx.Graph()
         _, _ = treewidth_min_degree(G)
 
@@ -143,7 +143,7 @@ class TestTreewidthMinDegree:
         treewidth_min_degree(G)
 
     def test_heuristic_first_steps(self):
-        """Test first steps of min_degree heuristic"""
+        """Test first steps of min_degree heuristic."""
         graph = {
             n: set(self.deterministic_graph[n]) - {n} for n in self.deterministic_graph
         }
@@ -178,7 +178,7 @@ class TestTreewidthMinFillIn:
 
     @classmethod
     def setup_class(cls):
-        """Setup for different kinds of trees"""
+        """Setup for different kinds of trees."""
         cls.complete = nx.Graph()
         cls.complete.add_edge(1, 2)
         cls.complete.add_edge(2, 3)
@@ -206,13 +206,13 @@ class TestTreewidthMinFillIn:
         cls.deterministic_graph.add_edge(5, 6)
 
     def test_petersen_graph(self):
-        """Test Petersen graph tree decomposition result"""
+        """Test Petersen graph tree decomposition result."""
         G = nx.petersen_graph()
         _, decomp = treewidth_min_fill_in(G)
         is_tree_decomp(G, decomp)
 
     def test_small_tree_treewidth(self):
-        """Test if the computed treewidth of the known self.small_tree is 2"""
+        """Test if the computed treewidth of the known self.small_tree is 2."""
         G = self.small_tree
         # the order of removal should be [1,2,4]3[5,6,7]
         # (with [] denoting any order of the containing nodes)
@@ -221,7 +221,7 @@ class TestTreewidthMinFillIn:
         assert treewidth == 2
 
     def test_heuristic_abort(self):
-        """Test if min_fill_in returns None for fully connected graph"""
+        """Test if min_fill_in returns None for fully connected graph."""
         graph = {}
         for u in self.complete:
             graph[u] = set()
@@ -235,7 +235,7 @@ class TestTreewidthMinFillIn:
             assert False
 
     def test_empty_graph(self):
-        """Test empty graph"""
+        """Test empty graph."""
         G = nx.Graph()
         _, _ = treewidth_min_fill_in(G)
 
@@ -251,7 +251,7 @@ class TestTreewidthMinFillIn:
         treewidth_min_fill_in(G)
 
     def test_heuristic_first_steps(self):
-        """Test first steps of min_fill_in heuristic"""
+        """Test first steps of min_fill_in heuristic."""
         graph = {
             n: set(self.deterministic_graph[n]) - {n} for n in self.deterministic_graph
         }

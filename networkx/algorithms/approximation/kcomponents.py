@@ -1,4 +1,4 @@
-"""Fast approximation for k-component structure"""
+"""Fast approximation for k-component structure."""
 
 import itertools
 from collections import defaultdict
@@ -244,7 +244,7 @@ class _AntiGraph(nx.Graph):
             raise NetworkXError(f"The node {n} is not in the graph.") from err
 
     class AntiAtlasView(Mapping):
-        """An adjacency inner dict for AntiGraph"""
+        """An adjacency inner dict for AntiGraph."""
 
         def __init__(self, graph, node):
             self._graph = graph
@@ -264,7 +264,7 @@ class _AntiGraph(nx.Graph):
             raise KeyError(nbr)
 
     class AntiAdjacencyView(AntiAtlasView):
-        """An adjacency outer dict for AntiGraph"""
+        """An adjacency outer dict for AntiGraph."""
 
         def __init__(self, graph):
             self._graph = graph
@@ -286,7 +286,7 @@ class _AntiGraph(nx.Graph):
         return self.AntiAdjacencyView(self)
 
     def subgraph(self, nodes):
-        """This subgraph method returns a full AntiGraph. Not a View"""
+        """This subgraph method returns a full AntiGraph. Not a View."""
         nodes = set(nodes)
         G = _AntiGraph()
         G.add_nodes_from(nodes)

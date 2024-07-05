@@ -22,7 +22,7 @@ class NotAPartition(NetworkXError):
 
 
 def _require_partition(G, partition):
-    """Decorator to check that a valid partition is input to a function
+    """Decorator to check that a valid partition is input to a function.
 
     Raises :exc:`networkx.NetworkXError` if the partition is not valid.
 

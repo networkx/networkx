@@ -1,6 +1,6 @@
 """
 ====================
-Graphs from Polygons
+Graphs from Polygons.
 ====================
 
 This example shows how to build a graph from a set of polygons

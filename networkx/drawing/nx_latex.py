@@ -1,7 +1,7 @@
 r"""
 *****
 LaTeX
-*****
+*****.
 
 Export NetworkX graphs in LaTeX format using the TikZ library within TeX/LaTeX.
 Usually, you will want the drawing to appear in a figure environment so
@@ -152,7 +152,7 @@ def to_latex_raw(
     edge_label="label",
     edge_label_options="edge_label_options",
 ):
-    """Return a string of the LaTeX/TikZ code to draw `G`
+    """Return a string of the LaTeX/TikZ code to draw `G`.
 
     This function produces just the code for the tikzpicture
     without any enclosing environment.
@@ -331,7 +331,7 @@ def to_latex(
     figure_wrapper=_FIG_WRAPPER,
     subfigure_wrapper=_SUBFIG_WRAPPER,
 ):
-    """Return latex code to draw the graph(s) in `Gbunch`
+    r"""Return latex code to draw the graph(s) in `Gbunch`.
 
     The TikZ drawing utility in LaTeX is used to draw the graph(s).
     If `Gbunch` is a graph, it is drawn in a figure environment.

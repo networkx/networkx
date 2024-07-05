@@ -1,6 +1,6 @@
 """
 =======================
-Maximum Independent Set
+Maximum Independent Set.
 =======================
 
 An independent set is a set of vertices in a graph where no two vertices in the

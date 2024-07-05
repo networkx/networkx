@@ -1,6 +1,6 @@
 """
 ============
-Simple graph
+Simple graph.
 ============
 
 Draw simple graph with manual layout.

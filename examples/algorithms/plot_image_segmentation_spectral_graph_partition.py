@@ -1,6 +1,6 @@
 """
 ==================================================
-Image Segmentation via Spectral Graph Partitioning
+Image Segmentation via Spectral Graph Partitioning.
 ==================================================
 
 Example of partitioning a undirected graph obtained by ``k-neighbors``

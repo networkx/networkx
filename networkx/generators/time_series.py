@@ -1,6 +1,4 @@
-"""
-Time Series Graphs
-"""
+"""Time Series Graphs."""
 
 import itertools
 

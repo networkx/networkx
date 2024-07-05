@@ -74,7 +74,7 @@ def is_k_regular(G, k):
 @not_implemented_for("multigraph")
 @nx._dispatchable(preserve_edge_attrs=True, returns_graph=True)
 def k_factor(G, k, matching_weight="weight"):
-    """Compute a k-factor of G
+    """Compute a k-factor of G.
 
     A k-factor of a graph is a spanning k-regular subgraph.
     A spanning k-regular subgraph of G is a subgraph that contains

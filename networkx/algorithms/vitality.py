@@ -1,6 +1,4 @@
-"""
-Vitality measures.
-"""
+"""Vitality measures."""
 
 from functools import partial
 

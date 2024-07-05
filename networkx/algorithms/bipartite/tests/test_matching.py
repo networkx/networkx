@@ -146,7 +146,7 @@ class TestMatching:
             match = hopcroft_karp_matching(self.disconnected_graph)
 
     def test_issue_2127(self):
-        """Test from issue 2127"""
+        """Test from issue 2127."""
         # Build the example DAG
         G = nx.DiGraph()
         G.add_edge("A", "C")
@@ -206,7 +206,7 @@ class TestMatching:
 
 
 def test_eppstein_matching():
-    """Test in accordance to issue #1927"""
+    """Test in accordance to issue #1927."""
     G = nx.Graph()
     G.add_nodes_from(["a", 2, 3, 4], bipartite=0)
     G.add_nodes_from([1, "b", "c"], bipartite=1)

@@ -152,7 +152,7 @@ def test_all_simple_paths_cutoff():
 
 
 def test_all_simple_paths_on_non_trivial_graph():
-    """You may need to draw this graph to make sure it is reasonable"""
+    """You may need to draw this graph to make sure it is reasonable."""
     G = nx.path_graph(5, create_using=nx.DiGraph())
     G.add_edges_from([(0, 5), (1, 5), (1, 3), (5, 4), (4, 2), (4, 3)])
     paths = nx.all_simple_paths(G, 1, [2, 3])
@@ -352,7 +352,7 @@ def test_all_simple_edge_paths_cutoff():
 
 
 def test_all_simple_edge_paths_on_non_trivial_graph():
-    """You may need to draw this graph to make sure it is reasonable"""
+    """You may need to draw this graph to make sure it is reasonable."""
     G = nx.path_graph(5, create_using=nx.DiGraph())
     G.add_edges_from([(0, 5), (1, 5), (1, 3), (5, 4), (4, 2), (4, 3)])
     paths = nx.all_simple_edge_paths(G, 1, [2, 3])

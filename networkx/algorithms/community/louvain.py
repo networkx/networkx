@@ -1,5 +1,5 @@
 """Function for detecting communities based on Louvain Community Detection
-Algorithm
+Algorithm.
 """
 
 import itertools
@@ -134,7 +134,7 @@ def louvain_communities(
 def louvain_partitions(
     G, weight="weight", resolution=1, threshold=0.0000001, seed=None
 ):
-    """Yields partitions for each level of the Louvain Community Detection Algorithm
+    """Yields partitions for each level of the Louvain Community Detection Algorithm.
 
     Louvain Community Detection Algorithm is a simple method to extract the community
     structure of a network. This is a heuristic method based on modularity optimization. [1]_
@@ -222,7 +222,7 @@ def louvain_partitions(
 
 
 def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
-    """Calculate one level of the Louvain partitions tree
+    """Calculate one level of the Louvain partitions tree.
 
     Parameters
     ----------
@@ -347,7 +347,7 @@ def _neighbor_weights(nbrs, node2com):
 
 
 def _gen_graph(G, partition):
-    """Generate a new graph based on the partitions of a given graph"""
+    """Generate a new graph based on the partitions of a given graph."""
     H = G.__class__()
     node2com = {}
     for i, part in enumerate(partition):
@@ -367,7 +367,7 @@ def _gen_graph(G, partition):
 
 
 def _convert_multigraph(G, weight, is_directed):
-    """Convert a Multigraph to normal Graph"""
+    """Convert a Multigraph to normal Graph."""
     if is_directed:
         H = nx.DiGraph()
     else:

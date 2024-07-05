@@ -1,6 +1,6 @@
 """
 =======================
-Distance-regular graphs
+Distance-regular graphs.
 =======================
 """
 

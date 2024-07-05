@@ -1,4 +1,4 @@
-"""Fast approximation for node connectivity"""
+"""Fast approximation for node connectivity."""
 
 import itertools
 from operator import itemgetter

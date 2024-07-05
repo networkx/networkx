@@ -11,7 +11,7 @@ __all__ = ["join_trees"]
 # Argument types don't match dispatching, but allow manual selection of backend
 @nx._dispatchable(graphs=None, returns_graph=True)
 def join_trees(rooted_trees, *, label_attribute=None, first_label=0):
-    """Returns a new rooted tree made by joining `rooted_trees`
+    """Returns a new rooted tree made by joining `rooted_trees`.
 
     Constructs a new tree by joining each tree in `rooted_trees`.
     A new root node is added and connected to each of the roots

@@ -1,6 +1,4 @@
-"""
-Link prediction algorithms.
-"""
+"""Link prediction algorithms."""
 
 from math import log
 

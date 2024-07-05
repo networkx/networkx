@@ -29,7 +29,7 @@ def root_trees(t1, root1, t2, root2):
     """Create a single digraph dT of free trees t1 and t2
     #   with roots root1 and root2 respectively
     # rename the nodes with consecutive integers
-    # so that all nodes get a unique name between both trees
+    # so that all nodes get a unique name between both trees.
 
     # our new "fake" root node is 0
     # t1 is numbers from 1 ... n

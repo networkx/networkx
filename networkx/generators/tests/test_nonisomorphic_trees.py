@@ -1,6 +1,4 @@
-"""
-Unit tests for WROM algorithm generator in generators/nonisomorphic_trees.py
-"""
+"""Unit tests for WROM algorithm generator in generators/nonisomorphic_trees.py."""
 
 import pytest
 

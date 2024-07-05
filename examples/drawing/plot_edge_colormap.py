@@ -1,6 +1,6 @@
 """
 =============
-Edge Colormap
+Edge Colormap.
 =============
 
 Draw a graph with matplotlib, color edges.

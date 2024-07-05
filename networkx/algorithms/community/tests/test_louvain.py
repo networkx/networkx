@@ -104,7 +104,7 @@ def test_directed_selfloops():
 def test_directed_partition():
     """
     Test 2 cases that were looping infinitely
-    from issues #5175 and #5704
+    from issues #5175 and #5704.
     """
     G = nx.DiGraph()
     H = nx.DiGraph()

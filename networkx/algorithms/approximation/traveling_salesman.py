@@ -1,6 +1,6 @@
 """
 =================================
-Travelling Salesman Problem (TSP)
+Travelling Salesman Problem (TSP).
 =================================
 
 Implementation of approximate algorithms
@@ -127,7 +127,7 @@ def move_one_node(soln, seed):
 @not_implemented_for("directed")
 @nx._dispatchable(edge_attrs="weight")
 def christofides(G, weight="weight", tree=None):
-    """Approximate a solution of the traveling salesman problem
+    """Approximate a solution of the traveling salesman problem.
 
     Compute a 3/2-approximation of the traveling salesman problem
     in a complete undirected graph using Christofides [1]_ algorithm.
@@ -186,7 +186,7 @@ def christofides(G, weight="weight", tree=None):
 
 
 def _shortcutting(circuit):
-    """Remove duplicate nodes in the path"""
+    """Remove duplicate nodes in the path."""
     nodes = []
     for u, v in circuit:
         if v in nodes:
@@ -202,7 +202,7 @@ def _shortcutting(circuit):
 def traveling_salesman_problem(
     G, weight="weight", nodes=None, cycle=True, method=None, **kwargs
 ):
-    """Find the shortest path in `G` connecting specified nodes
+    """Find the shortest path in `G` connecting specified nodes.
 
     This function allows approximate solution to the traveling salesman
     problem on networks that are not complete graphs and/or where the
@@ -357,7 +357,7 @@ def traveling_salesman_problem(
 @py_random_state(2)
 @nx._dispatchable(edge_attrs="weight", mutates_input=True)
 def asadpour_atsp(G, weight="weight", seed=None, source=None):
-    """
+    r"""
     Returns an approximate solution to the traveling salesman problem.
 
     This approximate solution is one of the best known approximations for the
@@ -512,7 +512,7 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
 @nx._dispatchable(edge_attrs="weight", mutates_input=True, returns_graph=True)
 def held_karp_ascent(G, weight="weight"):
     """
-    Minimizes the Held-Karp relaxation of the TSP for `G`
+    Minimizes the Held-Karp relaxation of the TSP for `G`.
 
     Solves the Held-Karp relaxation of the input complete digraph and scales
     the output solution for use in the Asadpour [1]_ ASTP algorithm.

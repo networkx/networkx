@@ -1,6 +1,4 @@
-"""
-Utilities for connectivity package
-"""
+"""Utilities for connectivity package."""
 
 import networkx as nx
 
@@ -62,7 +60,7 @@ def build_auxiliary_node_connectivity(G):
 
 @nx._dispatchable(returns_graph=True)
 def build_auxiliary_edge_connectivity(G):
-    """Auxiliary digraph for computing flow based edge connectivity
+    """Auxiliary digraph for computing flow based edge connectivity.
 
     If the input graph is undirected, we replace each edge (`u`,`v`) with
     two reciprocal arcs (`u`, `v`) and (`v`, `u`) and then we set the attribute

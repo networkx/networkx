@@ -1,6 +1,6 @@
 """
 ======================================
-Delaunay graphs from geographic points
+Delaunay graphs from geographic points.
 ======================================
 
 This example shows how to build a delaunay graph (plus its dual,

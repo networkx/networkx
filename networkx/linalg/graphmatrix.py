@@ -1,6 +1,4 @@
-"""
-Adjacency matrix and incidence matrix of graphs.
-"""
+"""Adjacency matrix and incidence matrix of graphs."""
 
 import networkx as nx
 

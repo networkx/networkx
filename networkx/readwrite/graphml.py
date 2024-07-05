@@ -69,7 +69,7 @@ def write_graphml_xml(
     named_key_ids=False,
     edge_id_from_attribute=None,
 ):
-    """Write G in GraphML XML format to path
+    """Write G in GraphML XML format to path.
 
     Parameters
     ----------
@@ -124,7 +124,7 @@ def write_graphml_lxml(
     named_key_ids=False,
     edge_id_from_attribute=None,
 ):
-    """Write G in GraphML XML format to path
+    """Write G in GraphML XML format to path.
 
     This function uses the LXML framework and should be faster than
     the version using the xml library.
@@ -193,7 +193,7 @@ def generate_graphml(
     named_key_ids=False,
     edge_id_from_attribute=None,
 ):
-    """Generate GraphML lines for G
+    r"""Generate GraphML lines for G.
 
     Parameters
     ----------
@@ -311,7 +311,7 @@ def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False)
 def parse_graphml(
     graphml_string, node_type=str, edge_key_type=int, force_multigraph=False
 ):
-    """Read graph in GraphML format from string.
+    r"""Read graph in GraphML format from string.
 
     Parameters
     ----------
@@ -617,9 +617,7 @@ class GraphMLWriter(GraphML):
                 graph_element.append(edge_element)
 
     def add_graph_element(self, G):
-        """
-        Serialize graph G in GraphML to the stream.
-        """
+        """Serialize graph G in GraphML to the stream."""
         if G.is_directed():
             default_edge_type = "directed"
         else:
@@ -748,9 +746,7 @@ class GraphMLWriterLxml(GraphMLWriter):
             self.add_graph_element(graph)
 
     def add_graph_element(self, G):
-        """
-        Serialize graph G in GraphML to the stream.
-        """
+        """Serialize graph G in GraphML to the stream."""
         if G.is_directed():
             default_edge_type = "directed"
         else:

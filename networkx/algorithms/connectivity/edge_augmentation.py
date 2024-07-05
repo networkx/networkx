@@ -1,5 +1,5 @@
 """
-Algorithms for finding k-edge-augmentations
+Algorithms for finding k-edge-augmentations.
 
 A k-edge-augmentation is a set of edges, that once added to a graph, ensures
 that the graph is k-edge-connected; i.e. the graph cannot be disconnected
@@ -340,7 +340,7 @@ def partial_k_edge_augmentation(G, k, avail, weight=None):
     """
 
     def _edges_between_disjoint(H, only1, only2):
-        """Finds edges between disjoint nodes"""
+        """Finds edges between disjoint nodes."""
         only1_adj = {u: set(H.adj[u]) for u in only1}
         for u, neighbs in only1_adj.items():
             # Find the neighbors of u in only1 that are also in only2
@@ -497,12 +497,12 @@ def bridge_augmentation(G, avail=None, weight=None):
 
 
 def _ordered(u, v):
-    """Returns the nodes in an undirected edge in lower-triangular order"""
+    """Returns the nodes in an undirected edge in lower-triangular order."""
     return (u, v) if u < v else (v, u)
 
 
 def _unpack_available_edges(avail, weight=None, G=None):
-    """Helper to separate avail into edges and corresponding weights"""
+    """Helper to separate avail into edges and corresponding weights."""
     if weight is None:
         weight = "weight"
     if isinstance(avail, dict):
@@ -1018,7 +1018,7 @@ def weighted_bridge_augmentation(G, avail, weight=None):
 
 def _minimum_rooted_branching(D, root):
     """Helper function to compute a minimum rooted branching (aka rooted
-    arborescence)
+    arborescence).
 
     Before the branching can be computed, the directed graph must be rooted by
     removing the predecessors of root.
@@ -1114,7 +1114,7 @@ def collapse(G, grouped_nodes):
 
 @nx._dispatchable
 def complement_edges(G):
-    """Returns only the edges in the complement of G
+    """Returns only the edges in the complement of G.
 
     Parameters
     ----------
@@ -1151,7 +1151,7 @@ def complement_edges(G):
 
 
 def _compat_shuffle(rng, input):
-    """Wrapper around rng.shuffle for python 2 compatibility reasons"""
+    """Wrapper around rng.shuffle for python 2 compatibility reasons."""
     rng.shuffle(input)
 
 
@@ -1160,7 +1160,7 @@ def _compat_shuffle(rng, input):
 @py_random_state(4)
 @nx._dispatchable
 def greedy_k_edge_augmentation(G, k, avail=None, weight=None, seed=None):
-    """Greedy algorithm for finding a k-edge-augmentation
+    """Greedy algorithm for finding a k-edge-augmentation.
 
     Parameters
     ----------

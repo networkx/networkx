@@ -1,6 +1,6 @@
 """
 ===========
-Simple Path
+Simple Path.
 ===========
 
 Draw a graph with matplotlib.

@@ -1,6 +1,6 @@
 """
 ================
-Basic matplotlib
+Basic matplotlib.
 ================
 
 A basic example of 3D Graph visualization using `mpl_toolkits.mplot_3d`.

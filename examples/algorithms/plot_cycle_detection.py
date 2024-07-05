@@ -1,6 +1,6 @@
 """
 ===============
-Cycle Detection
+Cycle Detection.
 ===============
 
 This example demonstrates the use of ``nx.find_cycle`` to find a single,

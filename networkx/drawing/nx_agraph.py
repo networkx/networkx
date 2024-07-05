@@ -1,7 +1,7 @@
 """
 ***************
 Graphviz AGraph
-***************
+***************.
 
 Interface to pygraphviz AGraph class.
 

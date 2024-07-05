@@ -13,7 +13,7 @@ __all__ = ["mycielskian", "mycielski_graph"]
 @not_implemented_for("multigraph")
 @nx._dispatchable(returns_graph=True)
 def mycielskian(G, iterations=1):
-    r"""Returns the Mycielskian of a simple, undirected graph G
+    r"""Returns the Mycielskian of a simple, undirected graph G.
 
     The Mycielskian of graph preserves a graph's triangle free
     property while increasing the chromatic number by 1.

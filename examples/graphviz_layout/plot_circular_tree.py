@@ -1,6 +1,6 @@
 """
 =============
-Circular Tree
+Circular Tree.
 =============
 
 This example needs Graphviz and PyGraphviz.

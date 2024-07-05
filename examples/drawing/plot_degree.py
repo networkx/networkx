@@ -1,6 +1,6 @@
 """
 ===============
-Degree Analysis
+Degree Analysis.
 ===============
 
 This example shows several ways to visualize the distribution of the degree of

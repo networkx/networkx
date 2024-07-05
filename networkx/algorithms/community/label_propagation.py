@@ -1,6 +1,4 @@
-"""
-Label propagation community detection algorithms.
-"""
+"""Label propagation community detection algorithms."""
 
 from collections import Counter, defaultdict, deque
 
@@ -233,7 +231,7 @@ def asyn_lpa_communities(G, weight=None, seed=None):
 @not_implemented_for("directed")
 @nx._dispatchable
 def label_propagation_communities(G):
-    """Generates community sets determined by label propagation
+    """Generates community sets determined by label propagation.
 
     Finds communities in `G` using a semi-synchronous label propagation
     method [1]_. This method combines the advantages of both the synchronous
@@ -321,7 +319,7 @@ def _most_frequent_labels(node, labeling, G):
 
 
 def _update_label(node, labeling, G):
-    """Updates the label of a node using the Prec-Max tie breaking algorithm
+    """Updates the label of a node using the Prec-Max tie breaking algorithm.
 
     The algorithm is explained in: 'Community Detection via Semi-Synchronous
     Label Propagation Algorithms' Cordasco and Gargano, 2011

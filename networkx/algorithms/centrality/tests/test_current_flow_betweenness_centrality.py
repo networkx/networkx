@@ -10,7 +10,7 @@ pytest.importorskip("scipy")
 
 class TestFlowBetweennessCentrality:
     def test_K4_normalized(self):
-        """Betweenness centrality: K4"""
+        """Betweenness centrality: K4."""
         G = nx.complete_graph(4)
         b = nx.current_flow_betweenness_centrality(G, normalized=True)
         b_answer = {0: 0.25, 1: 0.25, 2: 0.25, 3: 0.25}
@@ -30,7 +30,7 @@ class TestFlowBetweennessCentrality:
             assert b[n] == pytest.approx(wb_answer[n], abs=1e-7)
 
     def test_K4(self):
-        """Betweenness centrality: K4"""
+        """Betweenness centrality: K4."""
         G = nx.complete_graph(4)
         for solver in ["full", "lu", "cg"]:
             b = nx.current_flow_betweenness_centrality(
@@ -41,7 +41,7 @@ class TestFlowBetweennessCentrality:
                 assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_P4_normalized(self):
-        """Betweenness centrality: P4 normalized"""
+        """Betweenness centrality: P4 normalized."""
         G = nx.path_graph(4)
         b = nx.current_flow_betweenness_centrality(G, normalized=True)
         b_answer = {0: 0, 1: 2.0 / 3, 2: 2.0 / 3, 3: 0}
@@ -49,7 +49,7 @@ class TestFlowBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_P4(self):
-        """Betweenness centrality: P4"""
+        """Betweenness centrality: P4."""
         G = nx.path_graph(4)
         b = nx.current_flow_betweenness_centrality(G, normalized=False)
         b_answer = {0: 0, 1: 2, 2: 2, 3: 0}
@@ -57,7 +57,7 @@ class TestFlowBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_star(self):
-        """Betweenness centrality: star"""
+        """Betweenness centrality: star."""
         G = nx.Graph()
         nx.add_star(G, ["a", "b", "c", "d"])
         b = nx.current_flow_betweenness_centrality(G, normalized=True)
@@ -66,7 +66,7 @@ class TestFlowBetweennessCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_solvers2(self):
-        """Betweenness centrality: alternate solvers"""
+        """Betweenness centrality: alternate solvers."""
         G = nx.complete_graph(4)
         for solver in ["full", "lu", "cg"]:
             b = nx.current_flow_betweenness_centrality(
@@ -79,7 +79,7 @@ class TestFlowBetweennessCentrality:
 
 class TestApproximateFlowBetweennessCentrality:
     def test_K4_normalized(self):
-        """Approximate current-flow betweenness centrality: K4 normalized"""
+        """Approximate current-flow betweenness centrality: K4 normalized."""
         G = nx.complete_graph(4)
         b = nx.current_flow_betweenness_centrality(G, normalized=True)
         epsilon = 0.1
@@ -88,7 +88,7 @@ class TestApproximateFlowBetweennessCentrality:
             np.testing.assert_allclose(b[n], ba[n], atol=epsilon)
 
     def test_K4(self):
-        """Approximate current-flow betweenness centrality: K4"""
+        """Approximate current-flow betweenness centrality: K4."""
         G = nx.complete_graph(4)
         b = nx.current_flow_betweenness_centrality(G, normalized=False)
         epsilon = 0.1
@@ -97,7 +97,7 @@ class TestApproximateFlowBetweennessCentrality:
             np.testing.assert_allclose(b[n], ba[n], atol=epsilon * len(G) ** 2)
 
     def test_star(self):
-        """Approximate current-flow betweenness centrality: star"""
+        """Approximate current-flow betweenness centrality: star."""
         G = nx.Graph()
         nx.add_star(G, ["a", "b", "c", "d"])
         b = nx.current_flow_betweenness_centrality(G, normalized=True)
@@ -107,7 +107,7 @@ class TestApproximateFlowBetweennessCentrality:
             np.testing.assert_allclose(b[n], ba[n], atol=epsilon)
 
     def test_grid(self):
-        """Approximate current-flow betweenness centrality: 2d grid"""
+        """Approximate current-flow betweenness centrality: 2d grid."""
         G = nx.grid_2d_graph(4, 4)
         b = nx.current_flow_betweenness_centrality(G, normalized=True)
         epsilon = 0.1
@@ -123,7 +123,7 @@ class TestApproximateFlowBetweennessCentrality:
             np.testing.assert_allclose(b[n], b_answer[n], atol=0.1)
 
     def test_solvers(self):
-        """Approximate current-flow betweenness centrality: solvers"""
+        """Approximate current-flow betweenness centrality: solvers."""
         G = nx.complete_graph(4)
         epsilon = 0.1
         for solver in ["full", "lu", "cg"]:
@@ -146,7 +146,7 @@ class TestWeightedFlowBetweennessCentrality:
 
 class TestEdgeFlowBetweennessCentrality:
     def test_K4(self):
-        """Edge flow betweenness centrality: K4"""
+        """Edge flow betweenness centrality: K4."""
         G = nx.complete_graph(4)
         b = edge_current_flow(G, normalized=True)
         b_answer = dict.fromkeys(G.edges(), 0.25)
@@ -155,7 +155,7 @@ class TestEdgeFlowBetweennessCentrality:
             assert v1 == pytest.approx(v2, abs=1e-7)
 
     def test_K4_normalized(self):
-        """Edge flow betweenness centrality: K4"""
+        """Edge flow betweenness centrality: K4."""
         G = nx.complete_graph(4)
         b = edge_current_flow(G, normalized=False)
         b_answer = dict.fromkeys(G.edges(), 0.75)
@@ -164,7 +164,7 @@ class TestEdgeFlowBetweennessCentrality:
             assert v1 == pytest.approx(v2, abs=1e-7)
 
     def test_C4(self):
-        """Edge flow betweenness centrality: C4"""
+        """Edge flow betweenness centrality: C4."""
         G = nx.cycle_graph(4)
         b = edge_current_flow(G, normalized=False)
         b_answer = {(0, 1): 1.25, (0, 3): 1.25, (1, 2): 1.25, (2, 3): 1.25}
@@ -173,7 +173,7 @@ class TestEdgeFlowBetweennessCentrality:
             assert v1 == pytest.approx(v2, abs=1e-7)
 
     def test_P4(self):
-        """Edge betweenness centrality: P4"""
+        """Edge betweenness centrality: P4."""
         G = nx.path_graph(4)
         b = edge_current_flow(G, normalized=False)
         b_answer = {(0, 1): 1.5, (1, 2): 2.0, (2, 3): 1.5}

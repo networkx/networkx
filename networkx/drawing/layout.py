@@ -1,7 +1,7 @@
 """
 ******
 Layout
-******
+******.
 
 Node positioning algorithms for graph drawing.
 
@@ -1130,7 +1130,7 @@ def arf_layout(
     dt=1e-3,
     max_iter=1000,
 ):
-    """Arf layout for networkx
+    """Arf layout for networkx.
 
     The attractive and repulsive forces (arf) layout [1]
     improves the spring layout in three ways. First, it
@@ -1275,7 +1275,7 @@ def rescale_layout(pos, scale=1):
 
 
 def rescale_layout_dict(pos, scale=1):
-    """Return a dictionary of scaled positions keyed by node
+    """Return a dictionary of scaled positions keyed by node.
 
     Parameters
     ----------

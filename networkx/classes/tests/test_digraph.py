@@ -199,7 +199,7 @@ class BaseAttrDiGraphTester(BaseDiGraphTester, BaseAttrGraphTester):
 
 
 class TestDiGraph(BaseAttrDiGraphTester, _TestGraph):
-    """Tests specific to dict-of-dict-of-dict digraph data structure"""
+    """Tests specific to dict-of-dict-of-dict digraph data structure."""
 
     def setup_method(self):
         self.Graph = nx.DiGraph

@@ -1,6 +1,4 @@
-"""
-Dinitz' algorithm for maximum flow problems.
-"""
+"""Dinitz' algorithm for maximum flow problems."""
 
 from collections import deque
 
@@ -190,7 +188,7 @@ def dinitz_impl(G, s, t, capacity, residual, cutoff):
 
     def depth_first_search(parents):
         # DFS to find all the shortest augmenting paths
-        """Build a path using DFS starting from the sink"""
+        """Build a path using DFS starting from the sink."""
         total_flow = 0
         u = t
         # path also functions as a stack

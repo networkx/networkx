@@ -582,7 +582,7 @@ class BaseAttrGraphTester(BaseGraphTester):
 
 
 class TestGraph(BaseAttrGraphTester):
-    """Tests specific to dict-of-dict-of-dict graph data structure"""
+    """Tests specific to dict-of-dict-of-dict graph data structure."""
 
     def setup_method(self):
         self.Graph = nx.Graph

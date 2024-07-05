@@ -1,6 +1,6 @@
 """
 ======================
-Betweenness Centrality
+Betweenness Centrality.
 ======================
 
 Betweenness centrality measures of positive gene functional associations

@@ -1,4 +1,4 @@
-"""Generator for Sudoku graphs
+"""Generator for Sudoku graphs.
 
 This module gives a generator for n-Sudoku graphs. It can be used to develop
 algorithms for solving or generating Sudoku puzzles.

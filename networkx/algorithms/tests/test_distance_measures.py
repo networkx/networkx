@@ -514,7 +514,7 @@ class TestBarycenter:
     """Test :func:`networkx.algorithms.distance_measures.barycenter`."""
 
     def barycenter_as_subgraph(self, g, **kwargs):
-        """Return the subgraph induced on the barycenter of g"""
+        """Return the subgraph induced on the barycenter of g."""
         b = nx.barycenter(g, **kwargs)
         assert isinstance(b, list)
         assert set(b) <= set(g)

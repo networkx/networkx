@@ -43,7 +43,7 @@ class TestNodeBoundary:
         assert nx.node_boundary(K10, [1, 2, 3], [3, 4, 5]) == {4, 5}
 
     def test_petersen(self):
-        """Check boundaries in the petersen graph
+        """Check boundaries in the petersen graph.
 
         cheeger(G,k)=min(|bdy(S)|/|S| for |S|=k, 0<k<=|V(G)|/2)
 

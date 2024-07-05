@@ -1,6 +1,6 @@
 """
 ===========
-Knuth Miles
+Knuth Miles.
 ===========
 
 `miles_graph()` returns an undirected graph over 128 US cities. The

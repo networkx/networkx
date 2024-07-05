@@ -1,6 +1,6 @@
 """
 ================
-Rainbow Coloring
+Rainbow Coloring.
 ================
 
 Generate a complete graph with 13 nodes in a circular layout with the

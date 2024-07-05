@@ -7,7 +7,7 @@ import networkx as nx
 
 class TestKatzCentrality:
     def test_K5(self):
-        """Katz centrality: K5"""
+        """Katz centrality: K5."""
         G = nx.complete_graph(5)
         alpha = 0.1
         b = nx.katz_centrality(G, alpha)
@@ -21,7 +21,7 @@ class TestKatzCentrality:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-7)
 
     def test_P3(self):
-        """Katz centrality: P3"""
+        """Katz centrality: P3."""
         alpha = 0.1
         G = nx.path_graph(3)
         b_answer = {0: 0.5598852584152165, 1: 0.6107839182711449, 2: 0.5598852584152162}
@@ -119,7 +119,7 @@ class TestKatzCentralityNumpy:
         pytest.importorskip("scipy")
 
     def test_K5(self):
-        """Katz centrality: K5"""
+        """Katz centrality: K5."""
         G = nx.complete_graph(5)
         alpha = 0.1
         b = nx.katz_centrality(G, alpha)
@@ -132,7 +132,7 @@ class TestKatzCentralityNumpy:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-3)
 
     def test_P3(self):
-        """Katz centrality: P3"""
+        """Katz centrality: P3."""
         alpha = 0.1
         G = nx.path_graph(3)
         b_answer = {0: 0.5598852584152165, 1: 0.6107839182711449, 2: 0.5598852584152162}
@@ -218,7 +218,7 @@ class TestKatzCentralityNumpy:
             nx.katz_centrality_numpy(G, 0.1, beta="foo")
 
     def test_K5_unweighted(self):
-        """Katz centrality: K5"""
+        """Katz centrality: K5."""
         G = nx.complete_graph(5)
         alpha = 0.1
         b = nx.katz_centrality(G, alpha, weight=None)
@@ -231,7 +231,7 @@ class TestKatzCentralityNumpy:
             assert b[n] == pytest.approx(b_answer[n], abs=1e-3)
 
     def test_P3_unweighted(self):
-        """Katz centrality: P3"""
+        """Katz centrality: P3."""
         alpha = 0.1
         G = nx.path_graph(3)
         b_answer = {0: 0.5598852584152165, 1: 0.6107839182711449, 2: 0.5598852584152162}

@@ -430,7 +430,7 @@ def test_undirected_edge_contraction():
 
 
 def test_multigraph_edge_contraction():
-    """Tests for edge contraction in a multigraph"""
+    """Tests for edge contraction in a multigraph."""
     G = nx.cycle_graph(4)
     actual = nx.contracted_edge(G, (0, 1, 0))
     expected = nx.complete_graph(3)

@@ -84,7 +84,7 @@ def test_arrows():
 @pytest.mark.parametrize("edgelist", (None, [(0, 1)]))
 def test_single_edge_color_undirected(edge_color, expected, edgelist):
     """Tests ways of specifying all edges have a single color for edges
-    drawn with a LineCollection
+    drawn with a LineCollection.
     """
     G = nx.path_graph(3)
     drawn_edges = nx.draw_networkx_edges(
@@ -110,7 +110,7 @@ def test_single_edge_color_undirected(edge_color, expected, edgelist):
 @pytest.mark.parametrize("edgelist", (None, [(0, 1)]))
 def test_single_edge_color_directed(edge_color, expected, edgelist):
     """Tests ways of specifying all edges have a single color for edges drawn
-    with FancyArrowPatches
+    with FancyArrowPatches.
     """
     G = nx.path_graph(3, create_using=nx.DiGraph)
     drawn_edges = nx.draw_networkx_edges(
@@ -651,7 +651,7 @@ def test_draw_edges_toggling_with_arrows_kwarg():
     type of object to use for drawing edges:
       - ``arrows=None`` -> default (FancyArrowPatches for directed, else LineCollection)
       - ``arrows=True`` -> FancyArrowPatches
-      - ``arrows=False`` -> LineCollection
+      - ``arrows=False`` -> LineCollection.
     """
     import matplotlib.collections
     import matplotlib.patches
@@ -723,7 +723,7 @@ def test_edgelist_kwarg_not_ignored():
     ([nx.DiGraph(), 2], [nx.MultiGraph(), 4], [nx.MultiDiGraph(), 4]),
 )
 def test_draw_networkx_edges_multiedge_connectionstyle(G, expected_n_edges):
-    """Draws edges correctly for 3 types of graphs and checks for valid length"""
+    """Draws edges correctly for 3 types of graphs and checks for valid length."""
     for i, (u, v) in enumerate([(0, 1), (0, 1), (0, 1), (0, 2)]):
         G.add_edge(u, v, weight=round(i / 3, 2))
     pos = {n: (n, n) for n in G}
@@ -743,7 +743,7 @@ def test_draw_networkx_edges_multiedge_connectionstyle(G, expected_n_edges):
     ([nx.DiGraph(), 2], [nx.MultiGraph(), 4], [nx.MultiDiGraph(), 4]),
 )
 def test_draw_networkx_edge_labels_multiedge_connectionstyle(G, expected_n_edges):
-    """Draws labels correctly for 3 types of graphs and checks for valid length and class names"""
+    """Draws labels correctly for 3 types of graphs and checks for valid length and class names."""
     for i, (u, v) in enumerate([(0, 1), (0, 1), (0, 1), (0, 2)]):
         G.add_edge(u, v, weight=round(i / 3, 2))
     pos = {n: (n, n) for n in G}

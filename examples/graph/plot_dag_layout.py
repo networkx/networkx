@@ -1,6 +1,6 @@
 """
 ========================
-DAG - Topological Layout
+DAG - Topological Layout.
 ========================
 
 This example combines the `topological_generations` generator with

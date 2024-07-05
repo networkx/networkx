@@ -1,6 +1,4 @@
-"""
-Functions for constructing matrix-like objects from graph attributes.
-"""
+"""Functions for constructing matrix-like objects from graph attributes."""
 
 import networkx as nx
 

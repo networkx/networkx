@@ -1,6 +1,6 @@
 """
 ===============
-Greedy Coloring
+Greedy Coloring.
 ===============
 
 We attempt to color a graph using as few colors as possible, where no neighbors

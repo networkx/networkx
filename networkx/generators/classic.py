@@ -790,7 +790,7 @@ def path_graph(n, create_using=None):
 @nx._dispatchable(graphs=None, returns_graph=True)
 @nodes_or_number(0)
 def star_graph(n, create_using=None):
-    """Return the star graph
+    """Return the star graph.
 
     The star graph consists of one center node connected to n outer nodes.
 
@@ -903,7 +903,7 @@ def trivial_graph(create_using=None):
 
 @nx._dispatchable(graphs=None, returns_graph=True)
 def turan_graph(n, r):
-    r"""Return the Turan Graph
+    r"""Return the Turan Graph.
 
     The Turan Graph is a complete multipartite graph on $n$ nodes
     with $r$ disjoint subsets. That is, edges connect each node to
@@ -941,7 +941,7 @@ def turan_graph(n, r):
 @nx._dispatchable(graphs=None, returns_graph=True)
 @nodes_or_number(0)
 def wheel_graph(n, create_using=None):
-    """Return the wheel graph
+    """Return the wheel graph.
 
     The wheel graph consists of a hub node connected to a cycle of (n-1) nodes.
 

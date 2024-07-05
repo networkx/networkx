@@ -7,9 +7,7 @@ from networkx.generators import directed
 
 
 def test_empty_graph_hash():
-    """
-    empty graphs should give hashes regardless of other params
-    """
+    """Empty graphs should give hashes regardless of other params."""
     G1 = nx.empty_graph()
     G2 = nx.empty_graph()
 
@@ -49,7 +47,7 @@ def test_reversed():
     """
     A directed graph with no bi-directional edges should yield different a graph hash
     to the same graph taken with edge directions reversed if there are no hash collisions.
-    Here we test a cycle graph which is the minimal counterexample
+    Here we test a cycle graph which is the minimal counterexample.
     """
     G = nx.cycle_graph(5, create_using=nx.DiGraph)
     nx.set_node_attributes(G, {n: str(n) for n in G.nodes()}, name="label")
@@ -65,7 +63,7 @@ def test_reversed():
 def test_isomorphic():
     """
     graph hashes should be invariant to node-relabeling (when the output is reindexed
-    by the same mapping)
+    by the same mapping).
     """
     n, r = 100, 10
     p = 1.0 / r
@@ -84,7 +82,7 @@ def test_isomorphic_edge_attr():
     Isomorphic graphs with differing edge attributes should yield different graph
     hashes if the 'edge_attr' argument is supplied and populated in the graph,
     and there are no hash collisions.
-    The output should still be invariant to node-relabeling
+    The output should still be invariant to node-relabeling.
     """
     n, r = 100, 10
     p = 1.0 / r
@@ -123,7 +121,7 @@ def test_isomorphic_edge_attr():
 def test_missing_edge_attr():
     """
     If the 'edge_attr' argument is supplied but is missing from an edge in the graph,
-    we should raise a KeyError
+    we should raise a KeyError.
     """
     G = nx.Graph()
     G.add_edges_from([(1, 2, {"edge_attr1": "a"}), (1, 3, {})])
@@ -135,7 +133,7 @@ def test_isomorphic_node_attr():
     Isomorphic graphs with differing node attributes should yield different graph
     hashes if the 'node_attr' argument is supplied and populated in the graph, and
     there are no hash collisions.
-    The output should still be invariant to node-relabeling
+    The output should still be invariant to node-relabeling.
     """
     n, r = 100, 10
     p = 1.0 / r
@@ -174,7 +172,7 @@ def test_isomorphic_node_attr():
 def test_missing_node_attr():
     """
     If the 'node_attr' argument is supplied but is missing from a node in the graph,
-    we should raise a KeyError
+    we should raise a KeyError.
     """
     G = nx.Graph()
     G.add_nodes_from([(1, {"node_attr1": "a"}), (2, {})])
@@ -187,7 +185,7 @@ def test_isomorphic_edge_attr_and_node_attr():
     Isomorphic graphs with differing node attributes should yield different graph
     hashes if the 'node_attr' and 'edge_attr' argument is supplied and populated in
     the graph, and there are no hash collisions.
-    The output should still be invariant to node-relabeling
+    The output should still be invariant to node-relabeling.
     """
     n, r = 100, 10
     p = 1.0 / r
@@ -235,7 +233,7 @@ def test_isomorphic_edge_attr_and_node_attr():
 def test_digest_size():
     """
     The hash string lengths should be as expected for a variety of graphs and
-    digest sizes
+    digest sizes.
     """
     n, r = 100, 10
     p = 1.0 / r
@@ -265,7 +263,7 @@ def hexdigest_sizes_correct(a, digest_size):
     """
     returns True if all hex digest sizes are the expected length in a node:subgraph-hashes
     dictionary. Hex digest string length == 2 * bytes digest length since each pair of hex
-    digits encodes 1 byte (https://docs.python.org/3/library/hashlib.html)
+    digits encodes 1 byte (https://docs.python.org/3/library/hashlib.html).
     """
     hexdigest_size = digest_size * 2
     list_digest_sizes_correct = lambda l: all(len(x) == hexdigest_size for x in l)
@@ -274,7 +272,7 @@ def hexdigest_sizes_correct(a, digest_size):
 
 def test_empty_graph_subgraph_hash():
     """ "
-    empty graphs should give empty dict subgraph hashes regardless of other params
+    empty graphs should give empty dict subgraph hashes regardless of other params.
     """
     G = nx.empty_graph()
 
@@ -311,7 +309,7 @@ def test_reversed_subgraph_hash():
     """
     A directed graph with no bi-directional edges should yield different subgraph hashes
     to the same graph taken with edge directions reversed if there are no hash collisions.
-    Here we test a cycle graph which is the minimal counterexample
+    Here we test a cycle graph which is the minimal counterexample.
     """
     G = nx.cycle_graph(5, create_using=nx.DiGraph)
     nx.set_node_attributes(G, {n: str(n) for n in G.nodes()}, name="label")
@@ -346,7 +344,7 @@ def test_isomorphic_edge_attr_subgraph_hash():
     Isomorphic graphs with differing edge attributes should yield different subgraph
     hashes if the 'edge_attr' argument is supplied and populated in the graph, and
     all hashes don't collide.
-    The output should still be invariant to node-relabeling
+    The output should still be invariant to node-relabeling.
     """
     n, r = 100, 10
     p = 1.0 / r
@@ -389,7 +387,7 @@ def test_isomorphic_edge_attr_subgraph_hash():
 def test_missing_edge_attr_subgraph_hash():
     """
     If the 'edge_attr' argument is supplied but is missing from an edge in the graph,
-    we should raise a KeyError
+    we should raise a KeyError.
     """
     G = nx.Graph()
     G.add_edges_from([(1, 2, {"edge_attr1": "a"}), (1, 3, {})])
@@ -403,7 +401,7 @@ def test_isomorphic_node_attr_subgraph_hash():
     Isomorphic graphs with differing node attributes should yield different subgraph
     hashes if the 'node_attr' argument is supplied and populated in the graph, and
     all hashes don't collide.
-    The output should still be invariant to node-relabeling
+    The output should still be invariant to node-relabeling.
     """
     n, r = 100, 10
     p = 1.0 / r
@@ -446,7 +444,7 @@ def test_isomorphic_node_attr_subgraph_hash():
 def test_missing_node_attr_subgraph_hash():
     """
     If the 'node_attr' argument is supplied but is missing from a node in the graph,
-    we should raise a KeyError
+    we should raise a KeyError.
     """
     G = nx.Graph()
     G.add_nodes_from([(1, {"node_attr1": "a"}), (2, {})])
@@ -461,7 +459,7 @@ def test_isomorphic_edge_attr_and_node_attr_subgraph_hash():
     Isomorphic graphs with differing node attributes should yield different subgraph
     hashes if the 'node_attr' and 'edge_attr' argument is supplied and populated in
     the graph, and all hashes don't collide
-    The output should still be invariant to node-relabeling
+    The output should still be invariant to node-relabeling.
     """
     n, r = 100, 10
     p = 1.0 / r
@@ -514,7 +512,7 @@ def test_iteration_depth():
     """
     All nodes should have the correct number of subgraph hashes in the output when
     using degree as initial node labels
-    Subsequent iteration depths for the same graph should be additive for each node
+    Subsequent iteration depths for the same graph should be additive for each node.
     """
     n, r = 100, 10
     p = 1.0 / r
@@ -539,7 +537,7 @@ def test_iteration_depth_edge_attr():
     All nodes should have the correct number of subgraph hashes in the output when
     setting initial node labels empty and using an edge attribute when aggregating
     neighborhoods.
-    Subsequent iteration depths for the same graph should be additive for each node
+    Subsequent iteration depths for the same graph should be additive for each node.
     """
     n, r = 100, 10
     p = 1.0 / r
@@ -572,7 +570,7 @@ def test_iteration_depth_node_attr():
     """
     All nodes should have the correct number of subgraph hashes in the output when
     setting initial node labels to an attribute.
-    Subsequent iteration depths for the same graph should be additive for each node
+    Subsequent iteration depths for the same graph should be additive for each node.
     """
     n, r = 100, 10
     p = 1.0 / r
@@ -606,7 +604,7 @@ def test_iteration_depth_node_edge_attr():
     All nodes should have the correct number of subgraph hashes in the output when
     setting initial node labels to an attribute and also using an edge attribute when
     aggregating neighborhoods.
-    Subsequent iteration depths for the same graph should be additive for each node
+    Subsequent iteration depths for the same graph should be additive for each node.
     """
     n, r = 100, 10
     p = 1.0 / r
@@ -641,7 +639,7 @@ def test_iteration_depth_node_edge_attr():
 def test_digest_size_subgraph_hash():
     """
     The hash string lengths should be as expected for a variety of graphs and
-    digest sizes
+    digest sizes.
     """
     n, r = 100, 10
     p = 1.0 / r
@@ -658,9 +656,7 @@ def test_digest_size_subgraph_hash():
 
 
 def test_initial_node_labels_subgraph_hash():
-    """
-    Including the hashed initial label prepends an extra hash to the lists
-    """
+    """Including the hashed initial label prepends an extra hash to the lists."""
     G = nx.path_graph(5)
     nx.set_node_attributes(G, {i: int(0 < i < 4) for i in G}, "label")
     # initial node labels:

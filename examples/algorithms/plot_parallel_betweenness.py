@@ -1,6 +1,6 @@
 """
 ====================
-Parallel Betweenness
+Parallel Betweenness.
 ====================
 
 Example of parallel implementation of betweenness centrality using the
@@ -26,7 +26,7 @@ import networkx as nx
 
 
 def chunks(l, n):
-    """Divide a list of nodes `l` in `n` chunks"""
+    """Divide a list of nodes `l` in `n` chunks."""
     l_c = iter(l)
     while 1:
         x = tuple(itertools.islice(l_c, n))
@@ -36,7 +36,7 @@ def chunks(l, n):
 
 
 def betweenness_centrality_parallel(G, processes=None):
-    """Parallel betweenness centrality  function"""
+    """Parallel betweenness centrality  function."""
     p = Pool(processes=processes)
     node_divisor = len(p._pool) * 4
     node_chunks = list(chunks(G.nodes(), G.order() // node_divisor))

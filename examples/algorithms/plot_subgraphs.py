@@ -1,6 +1,6 @@
 """
 =========
-Subgraphs
+Subgraphs.
 =========
 Example of partitioning a directed graph with nodes labeled as
 supported and unsupported nodes into a list of subgraphs

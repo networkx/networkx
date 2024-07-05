@@ -419,9 +419,7 @@ class TestLayout:
             assert (s_vpos[k] == v).all()
 
     def test_arf_layout_partial_input_test(self):
-        """
-        Checks whether partial pos input still returns a proper position.
-        """
+        """Checks whether partial pos input still returns a proper position."""
         G = self.Gs
         node = nx.utils.arbitrary_element(G)
         pos = nx.circular_layout(G)
@@ -430,9 +428,7 @@ class TestLayout:
         assert len(pos) == len(G)
 
     def test_arf_layout_negative_a_check(self):
-        """
-        Checks input parameters correctly raises errors. For example,  `a` should be larger than 1
-        """
+        """Checks input parameters correctly raises errors. For example,  `a` should be larger than 1."""
         G = self.Gs
         pytest.raises(ValueError, nx.arf_layout, G=G, a=-1)
 
@@ -451,7 +447,7 @@ def test_multipartite_layout_nonnumeric_partition_labels():
 
 def test_multipartite_layout_layer_order():
     """Return the layers in sorted order if the layers of the multipartite
-    graph are sortable. See gh-5691
+    graph are sortable. See gh-5691.
     """
     G = nx.Graph()
     node_group = dict(zip(("a", "b", "c", "d", "e"), (2, 3, 1, 2, 4)))
@@ -478,7 +474,7 @@ def test_multipartite_layout_layer_order():
 
 
 def _num_nodes_per_bfs_layer(pos):
-    """Helper function to extract the number of nodes in each layer of bfs_layout"""
+    """Helper function to extract the number of nodes in each layer of bfs_layout."""
     x = np.array(list(pos.values()))[:, 0]  # node positions in layered dimension
     _, layer_count = np.unique(x, return_counts=True)
     return layer_count

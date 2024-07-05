@@ -116,7 +116,7 @@ __all__ = [
 
 # NodeViews
 class NodeView(Mapping, Set):
-    """A NodeView class to act as G.nodes for a NetworkX Graph
+    """A NodeView class to act as G.nodes for a NetworkX Graph.
 
     Set operations act on the nodes without considering data.
     Iteration is over nodes. Node data can be looked up like a dict.
@@ -285,7 +285,7 @@ class NodeView(Mapping, Set):
 
 
 class NodeDataView(Set):
-    """A DataView class for nodes of a NetworkX Graph
+    """A DataView class for nodes of a NetworkX Graph.
 
     The main use for this class is to iterate through node-data pairs.
     The data can be the entire data-dictionary for each node, or it
@@ -381,7 +381,7 @@ class NodeDataView(Set):
 
 # DegreeViews
 class DiDegreeView:
-    """A View class for degree of nodes in a NetworkX Graph
+    """A View class for degree of nodes in a NetworkX Graph.
 
     The functionality is like dict.items() with (node, degree) pairs.
     Additional functionality includes read-only lookup of node degree,
@@ -476,7 +476,7 @@ class DiDegreeView:
 
 
 class DegreeView(DiDegreeView):
-    """A DegreeView class to act as G.degree for a NetworkX Graph
+    """A DegreeView class to act as G.degree for a NetworkX Graph.
 
     Typical usage focuses on iteration over `(node, degree)` pairs.
     The degree is by default the number of edges incident to the node.
@@ -544,7 +544,7 @@ class DegreeView(DiDegreeView):
 
 
 class OutDegreeView(DiDegreeView):
-    """A DegreeView class to report out_degree for a DiGraph; See DegreeView"""
+    """A DegreeView class to report out_degree for a DiGraph; See DegreeView."""
 
     def __getitem__(self, n):
         weight = self._weight
@@ -567,7 +567,7 @@ class OutDegreeView(DiDegreeView):
 
 
 class InDegreeView(DiDegreeView):
-    """A DegreeView class to report in_degree for a DiGraph; See DegreeView"""
+    """A DegreeView class to report in_degree for a DiGraph; See DegreeView."""
 
     def __getitem__(self, n):
         weight = self._weight
@@ -590,7 +590,7 @@ class InDegreeView(DiDegreeView):
 
 
 class MultiDegreeView(DiDegreeView):
-    """A DegreeView class for undirected multigraphs; See DegreeView"""
+    """A DegreeView class for undirected multigraphs; See DegreeView."""
 
     def __getitem__(self, n):
         weight = self._weight
@@ -630,7 +630,7 @@ class MultiDegreeView(DiDegreeView):
 
 
 class DiMultiDegreeView(DiDegreeView):
-    """A DegreeView class for MultiDiGraph; See DegreeView"""
+    """A DegreeView class for MultiDiGraph; See DegreeView."""
 
     def __getitem__(self, n):
         weight = self._weight
@@ -675,7 +675,7 @@ class DiMultiDegreeView(DiDegreeView):
 
 
 class InMultiDegreeView(DiDegreeView):
-    """A DegreeView class for inward degree of MultiDiGraph; See DegreeView"""
+    """A DegreeView class for inward degree of MultiDiGraph; See DegreeView."""
 
     def __getitem__(self, n):
         weight = self._weight
@@ -706,7 +706,7 @@ class InMultiDegreeView(DiDegreeView):
 
 
 class OutMultiDegreeView(DiDegreeView):
-    """A DegreeView class for outward degree of MultiDiGraph; See DegreeView"""
+    """A DegreeView class for outward degree of MultiDiGraph; See DegreeView."""
 
     def __getitem__(self, n):
         weight = self._weight
@@ -745,7 +745,7 @@ class EdgeViewABC(ABC):
 
 # EdgeDataViews
 class OutEdgeDataView(EdgeViewABC):
-    """EdgeDataView for outward edges of DiGraph; See EdgeDataView"""
+    """EdgeDataView for outward edges of DiGraph; See EdgeDataView."""
 
     __slots__ = (
         "_viewer",
@@ -820,7 +820,7 @@ class OutEdgeDataView(EdgeViewABC):
 
 
 class EdgeDataView(OutEdgeDataView):
-    """A EdgeDataView class for edges of Graph
+    """A EdgeDataView class for edges of Graph.
 
     This view is primarily used to iterate over the edges reporting
     edges as node-tuples with edge data optionally reported. The
@@ -874,7 +874,7 @@ class EdgeDataView(OutEdgeDataView):
 
 
 class InEdgeDataView(OutEdgeDataView):
-    """An EdgeDataView class for outward edges of DiGraph; See EdgeDataView"""
+    """An EdgeDataView class for outward edges of DiGraph; See EdgeDataView."""
 
     __slots__ = ()
 
@@ -897,7 +897,7 @@ class InEdgeDataView(OutEdgeDataView):
 
 
 class OutMultiEdgeDataView(OutEdgeDataView):
-    """An EdgeDataView for outward edges of MultiDiGraph; See EdgeDataView"""
+    """An EdgeDataView for outward edges of MultiDiGraph; See EdgeDataView."""
 
     __slots__ = ("keys",)
 
@@ -981,7 +981,7 @@ class OutMultiEdgeDataView(OutEdgeDataView):
 
 
 class MultiEdgeDataView(OutMultiEdgeDataView):
-    """An EdgeDataView class for edges of MultiGraph; See EdgeDataView"""
+    """An EdgeDataView class for edges of MultiGraph; See EdgeDataView."""
 
     __slots__ = ()
 
@@ -1017,7 +1017,7 @@ class MultiEdgeDataView(OutMultiEdgeDataView):
 
 
 class InMultiEdgeDataView(OutMultiEdgeDataView):
-    """An EdgeDataView for inward edges of MultiDiGraph; See EdgeDataView"""
+    """An EdgeDataView for inward edges of MultiDiGraph; See EdgeDataView."""
 
     __slots__ = ()
 
@@ -1046,7 +1046,7 @@ class InMultiEdgeDataView(OutMultiEdgeDataView):
 
 # EdgeViews    have set operations and no data reported
 class OutEdgeView(Set, Mapping, EdgeViewABC):
-    """A EdgeView class for outward edges of a DiGraph"""
+    """A EdgeView class for outward edges of a DiGraph."""
 
     __slots__ = ("_adjdict", "_graph", "_nodes_nbrs")
 
@@ -1193,7 +1193,7 @@ class OutEdgeView(Set, Mapping, EdgeViewABC):
 
 
 class EdgeView(OutEdgeView):
-    """A EdgeView class for edges of a Graph
+    """A EdgeView class for edges of a Graph.
 
     This densely packed View allows iteration over edges, data lookup
     like a dict and set operations on edges represented by node-tuples.
@@ -1289,7 +1289,7 @@ class EdgeView(OutEdgeView):
 
 
 class InEdgeView(OutEdgeView):
-    """A EdgeView class for inward edges of a DiGraph"""
+    """A EdgeView class for inward edges of a DiGraph."""
 
     __slots__ = ()
 
@@ -1328,7 +1328,7 @@ class InEdgeView(OutEdgeView):
 
 
 class OutMultiEdgeView(OutEdgeView):
-    """A EdgeView class for outward edges of a MultiDiGraph"""
+    """A EdgeView class for outward edges of a MultiDiGraph."""
 
     __slots__ = ()
 
@@ -1380,7 +1380,7 @@ class OutMultiEdgeView(OutEdgeView):
 
 
 class MultiEdgeView(OutMultiEdgeView):
-    """A EdgeView class for edges of a MultiGraph"""
+    """A EdgeView class for edges of a MultiGraph."""
 
     __slots__ = ()
 
@@ -1401,7 +1401,7 @@ class MultiEdgeView(OutMultiEdgeView):
 
 
 class InMultiEdgeView(OutMultiEdgeView):
-    """A EdgeView class for inward edges of a MultiDiGraph"""
+    """A EdgeView class for inward edges of a MultiDiGraph."""
 
     __slots__ = ()
 

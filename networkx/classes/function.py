@@ -164,7 +164,7 @@ def is_directed(G):
 
 
 def frozen(*args, **kwargs):
-    """Dummy method for raising errors when trying to modify frozen graphs"""
+    """Dummy method for raising errors when trying to modify frozen graphs."""
     raise nx.NetworkXError("Frozen graph can't be modified")
 
 
@@ -666,7 +666,7 @@ def set_node_attributes(G, values, name=None):
 
 
 def get_node_attributes(G, name, default=None):
-    """Get node attributes from graph
+    """Get node attributes from graph.
 
     Parameters
     ----------
@@ -840,7 +840,7 @@ def set_edge_attributes(G, values, name=None):
 
 
 def get_edge_attributes(G, name, default=None):
-    """Get edge attributes from graph
+    """Get edge attributes from graph.
 
     Parameters
     ----------
@@ -1297,7 +1297,7 @@ def is_path(G, path):
 
 
 def path_weight(G, path, weight):
-    """Returns total cost associated with specified path and weight
+    """Returns total cost associated with specified path and weight.
 
     Parameters
     ----------

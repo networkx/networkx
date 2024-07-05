@@ -31,7 +31,7 @@ __all__ = ["harmonic_function", "local_and_global_consistency"]
 @nx.utils.not_implemented_for("directed")
 @nx._dispatchable(node_attrs="label_name")
 def harmonic_function(G, max_iter=30, label_name="label"):
-    """Node classification by Harmonic function
+    """Node classification by Harmonic function.
 
     Function for computing Harmonic function algorithm by Zhu et al.
 
@@ -108,7 +108,7 @@ def harmonic_function(G, max_iter=30, label_name="label"):
 @nx.utils.not_implemented_for("directed")
 @nx._dispatchable(node_attrs="label_name")
 def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label"):
-    """Node classification by Local and Global Consistency
+    """Node classification by Local and Global Consistency.
 
     Function for computing Local and global consistency algorithm by Zhou et al.
 
@@ -184,7 +184,7 @@ def local_and_global_consistency(G, alpha=0.99, max_iter=30, label_name="label")
 
 
 def _get_label_info(G, label_name):
-    """Get and return information of labels from the input graph
+    """Get and return information of labels from the input graph.
 
     Parameters
     ----------

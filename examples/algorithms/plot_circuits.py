@@ -1,6 +1,6 @@
 """
 ========
-Circuits
+Circuits.
 ========
 
 Convert a Boolean circuit to an equivalent Boolean formula.

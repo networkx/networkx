@@ -1,7 +1,7 @@
 """
 *************
 VF2 Algorithm
-*************
+*************.
 
 An implementation of VF2 algorithm for graph isomorphism testing.
 

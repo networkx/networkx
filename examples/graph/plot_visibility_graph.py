@@ -1,6 +1,6 @@
 """
 ================
-Visibility Graph
+Visibility Graph.
 ================
 
 Visibility Graph constructed from a time series

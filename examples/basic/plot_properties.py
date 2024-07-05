@@ -1,6 +1,6 @@
 """
 ==========
-Properties
+Properties.
 ==========
 
 Compute some network properties for the lollipop graph.

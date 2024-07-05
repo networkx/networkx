@@ -1,4 +1,4 @@
-"""Generates graphs resembling the Internet Autonomous System network"""
+"""Generates graphs resembling the Internet Autonomous System network."""
 
 import networkx as nx
 from networkx.utils import py_random_state
@@ -387,7 +387,7 @@ class AS_graph_generator:
 @py_random_state(1)
 @nx._dispatchable(graphs=None, returns_graph=True)
 def random_internet_as_graph(n, seed=None):
-    """Generates a random undirected graph resembling the Internet AS network
+    """Generates a random undirected graph resembling the Internet AS network.
 
     Parameters
     ----------

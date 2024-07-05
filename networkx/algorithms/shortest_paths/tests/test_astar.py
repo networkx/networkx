@@ -23,7 +23,7 @@ class TestAStar:
         cls.XG.add_weighted_edges_from(edges)
 
     def test_multiple_optimal_paths(self):
-        """Tests that A* algorithm finds any of multiple optimal paths"""
+        """Tests that A* algorithm finds any of multiple optimal paths."""
         heuristic_values = {"a": 1.35, "b": 1.18, "c": 0.67, "d": 0}
 
         def h(u, v):
@@ -235,7 +235,7 @@ class TestAStar:
 
     def test_astar_NetworkXNoPath(self):
         """Tests that exception is raised when there exists no
-        path between source and target
+        path between source and target.
         """
         G = nx.gnp_random_graph(10, 0.2, seed=10)
         with pytest.raises(nx.NetworkXNoPath):
@@ -243,7 +243,7 @@ class TestAStar:
 
     def test_astar_NodeNotFound(self):
         """Tests that exception is raised when either
-        source or target is not in graph
+        source or target is not in graph.
         """
         G = nx.gnp_random_graph(10, 0.2, seed=10)
         with pytest.raises(nx.NodeNotFound):

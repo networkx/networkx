@@ -1,7 +1,4 @@
-"""
-Algorithms for calculating min/max spanning trees/forests.
-
-"""
+"""Algorithms for calculating min/max spanning trees/forests."""
 
 from dataclasses import dataclass, field
 from enum import Enum
@@ -1008,7 +1005,7 @@ class SpanningTreeIterator:
 
     def __init__(self, G, weight="weight", minimum=True, ignore_nan=False):
         """
-        Initialize the iterator
+        Initialize the iterator.
 
         Parameters
         ----------
@@ -1132,9 +1129,7 @@ class SpanningTreeIterator:
                 d[self.partition_key] = EdgePartition.OPEN
 
     def _clear_partition(self, G):
-        """
-        Removes partition data from the graph
-        """
+        """Removes partition data from the graph."""
         for u, v, d in G.edges(data=True):
             if self.partition_key in d:
                 del d[self.partition_key]

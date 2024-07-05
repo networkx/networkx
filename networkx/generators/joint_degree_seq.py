@@ -1,4 +1,4 @@
-"""Generate graphs with a given joint degree and directed joint degree"""
+"""Generate graphs with a given joint degree and directed joint degree."""
 
 import networkx as nx
 from networkx.utils import py_random_state
@@ -284,7 +284,7 @@ def joint_degree_graph(joint_degrees, seed=None):
 
 @nx._dispatchable(graphs=None)
 def is_valid_directed_joint_degree(in_degrees, out_degrees, nkk):
-    """Checks whether the given directed joint degree input is realizable
+    """Checks whether the given directed joint degree input is realizable.
 
     Parameters
     ----------

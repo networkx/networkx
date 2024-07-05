@@ -1,4 +1,4 @@
-"""Functions for generating grid graphs and lattices
+"""Functions for generating grid graphs and lattices.
 
 The :func:`grid_2d_graph`, :func:`triangular_lattice_graph`, and
 :func:`hexagonal_lattice_graph` functions correspond to the three

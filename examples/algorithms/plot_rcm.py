@@ -1,6 +1,6 @@
 """
 ======================
-Reverse Cuthill--McKee
+Reverse Cuthill--McKee.
 ======================
 
 Cuthill-McKee ordering of matrices

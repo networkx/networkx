@@ -1,6 +1,4 @@
-"""
-Functions for identifying isolate (degree zero) nodes.
-"""
+"""Functions for identifying isolate (degree zero) nodes."""
 
 import networkx as nx
 

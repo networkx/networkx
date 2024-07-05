@@ -195,9 +195,7 @@ def test_cyclic_graphs_raise_error():
 
 
 def test_invalid_nodes_raise_error(asia_graph):
-    """
-    Test that graphs that have invalid nodes passed in raise errors.
-    """
+    """Test that graphs that have invalid nodes passed in raise errors."""
     # Check both set and node arguments
     with pytest.raises(nx.NodeNotFound):
         nx.is_d_separator(asia_graph, {0}, {1}, {2})
@@ -214,9 +212,7 @@ def test_invalid_nodes_raise_error(asia_graph):
 
 
 def test_nondisjoint_node_sets_raise_error(collider_graph):
-    """
-    Test that error is raised when node sets aren't disjoint.
-    """
+    """Test that error is raised when node sets aren't disjoint."""
     with pytest.raises(nx.NetworkXError):
         nx.is_d_separator(collider_graph, 0, 1, 0)
     with pytest.raises(nx.NetworkXError):

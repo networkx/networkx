@@ -144,7 +144,7 @@ def has_bridges(G, root=None):
 @not_implemented_for("directed")
 @nx._dispatchable(edge_attrs="weight")
 def local_bridges(G, with_span=True, weight=None):
-    """Iterate over local bridges of `G` optionally computing the span
+    """Iterate over local bridges of `G` optionally computing the span.
 
     A *local bridge* is an edge whose endpoints have no common neighbors.
     That is, the edge is not part of a triangle in the graph.

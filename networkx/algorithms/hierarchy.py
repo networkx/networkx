@@ -1,6 +1,4 @@
-"""
-Flow Hierarchy.
-"""
+"""Flow Hierarchy."""
 
 import networkx as nx
 

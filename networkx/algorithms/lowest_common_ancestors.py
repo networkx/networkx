@@ -17,7 +17,7 @@ __all__ = [
 @not_implemented_for("undirected")
 @nx._dispatchable
 def all_pairs_lowest_common_ancestor(G, pairs=None):
-    """Return the lowest common ancestor of all pairs or the provided pairs
+    """Return the lowest common ancestor of all pairs or the provided pairs.
 
     Parameters
     ----------

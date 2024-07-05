@@ -1,6 +1,6 @@
 """
 ==================
-Find Shortest Path
+Find Shortest Path.
 ==================
 
 Finding the shortest path between 2 nodes of a given graph

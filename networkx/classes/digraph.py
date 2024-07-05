@@ -20,7 +20,7 @@ __all__ = ["DiGraph"]
 
 
 class _CachedPropertyResetterAdjAndSucc:
-    """Data Descriptor class that syncs and resets cached properties adj and succ
+    """Data Descriptor class that syncs and resets cached properties adj and succ.
 
     The cached properties `adj` and `succ` are reset whenever `_adj` or `_succ`
     are set to new objects. In addition, the attributes `_succ` and `_adj`
@@ -58,7 +58,7 @@ class _CachedPropertyResetterAdjAndSucc:
 
 
 class _CachedPropertyResetterPred:
-    """Data Descriptor class for _pred that resets ``pred`` cached_property when needed
+    """Data Descriptor class for _pred that resets ``pred`` cached_property when needed.
 
     This assumes that the ``cached_property`` ``G.pred`` should be reset whenever
     ``G._pred`` is set to a new value.
@@ -1158,7 +1158,7 @@ class DiGraph(Graph):
 
     @cached_property
     def out_degree(self):
-        """An OutDegreeView for (node, out_degree)
+        """An OutDegreeView for (node, out_degree).
 
         The node out_degree is the number of edges pointing out of the node.
         The weighted node degree is the sum of the edge weights for

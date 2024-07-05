@@ -1,6 +1,6 @@
 """
 =============
-Chess Masters
+Chess Masters.
 =============
 
 An example of the MultiDiGraph class.
