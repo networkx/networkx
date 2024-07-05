@@ -173,6 +173,7 @@ extend-select = [
   "I",        # isort
 #  "ARG",      # flake8-unused-arguments
   "C4",       # flake8-comprehensions
+#  "D",        # pydocstyle (see tool.ruff.lint.pydocstyle below)
   "EM",       # flake8-errmsg
   "ICN",      # flake8-import-conventions
 #  "G",        # flake8-logging-format
@@ -213,6 +214,10 @@ ignore = [
   "PYI",      # flake8-pyi
   "NPY002",   # Replace legacy `np.random.random` call with `np.random.Generator`
 ]
+
+# Need to select D above
+#[tool.ruff.lint.pydocstyle]
+#convention = "numpy"
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ['I']
