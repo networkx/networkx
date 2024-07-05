@@ -8,12 +8,6 @@ ci:
   autoupdate_schedule: monthly
 
 repos:
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: ffb6a759a979008c0e6dff86e39f4745a2d9eac4 # frozen: v3.1.0
-    hooks:
-      - id: prettier
-        files: \.(html|md|toml|yml|yaml)
-        args: [--prose-wrap=preserve]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: 1dc9eb131c2ea4816c708e4d85820d2cc8542683 # frozen: v0.5.0
     hooks:
@@ -28,3 +22,38 @@ repos:
         language: system
         entry: python tools/generate_requirements.py
         files: "pyproject.toml|requirements/.*\\.txt|tools/generate_requirements.py"
+
+      - id: enforce_prettier_version
+        name: enforce_prettier_version
+        description: >-
+          This is a sanity check and fixer that makes sure that
+          the `prettier` version in this file remains matching the
+          corresponding request in the `# enforce_version` comment.
+        # Using Python here because using
+        # shell test does not always work in CIs:
+        entry: >-
+          python -c 'import pathlib, re, sys;
+          pre_commit_config = pathlib.Path(sys.argv[1]);
+          cfg_txt = pre_commit_config.read_text();
+          new_cfg_txt = re.sub(
+          r"(?P<spaces>\s+)rev:\s(?:\b[0-9a-f]{40}\b\s#\sfrozen:\sv\d+\.\d+\.\d+([^\s]*))\s{0,2}"
+          r"#\senforce_version:\s(?P<enforced_version>\b[0-9a-f]{40}\b\s#\sfrozen:\sv\d+\.\d+\.\d+)"
+          r"[ \t\f\v]*",
+          r"\g<spaces>rev: \g<enforced_version>  "
+          r"# enforce_version: \g<enforced_version>",
+          cfg_txt,
+          );
+          cfg_txt != new_cfg_txt and pre_commit_config.write_text(new_cfg_txt)
+          '
+        pass_filenames: true
+        language: system
+        files: >-
+          ^\.pre-commit-config\.ya?ml$
+        types:
+          - yaml
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: ffb6a759a979008c0e6dff86e39f4745a2d9eac4 # frozen: v3.1.0  # enforce_version: ffb6a759a979008c0e6dff86e39f4745a2d9eac4 # frozen: v3.1.0
+    hooks:
+      - id: prettier
+        files: \.(html|md|toml|yml|yaml)
+        args: [--prose-wrap=preserve]
