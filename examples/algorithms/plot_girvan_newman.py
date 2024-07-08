@@ -6,8 +6,8 @@ Community Detection using Girvan-Newman
 This example shows the detection of communities in the Zachary Karate
 Club dataset using the Girvan-Newman method.
 
-We plot the change in modularity as important edges are removed. 
-Graph is coloured and plotted based on community detection when number 
+We plot the change in modularity as important edges are removed.
+Graph is coloured and plotted based on community detection when number
 of iterations are 1 and 4 respectively.
 """
 

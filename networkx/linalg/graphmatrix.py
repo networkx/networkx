@@ -1,6 +1,7 @@
 """
 Adjacency matrix and incidence matrix of graphs.
 """
+
 import networkx as nx
 
 __all__ = ["incidence_matrix", "adjacency_matrix"]

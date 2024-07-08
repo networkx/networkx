@@ -12,6 +12,7 @@ All 3D plots use the 3D spectral layout.
 See :ref:`sphx_glr_auto_examples_3d_drawing` for recipes to create 3D animations
 from these visualizations.
 """
+
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -75,7 +76,7 @@ sc = SpectralClustering(
     n_jobs=-1,
 )
 clusters = sc.fit(X)
-cluster_affinity_matrix = clusters.affinity_matrix_.H
+cluster_affinity_matrix = clusters.affinity_matrix_.getH()
 
 pred_labels = clusters.labels_.astype(int)
 G = nx.from_scipy_sparse_array(cluster_affinity_matrix)
