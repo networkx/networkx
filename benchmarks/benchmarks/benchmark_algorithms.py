@@ -31,6 +31,11 @@ class AlgorithmBenchmarks:
         # underlying shortest path methods
         _ = nx.betweenness_centrality(self.graphs_dict[graph])
 
+    def time_eigenvector_centrality_numpy(self, graph):
+        # Added to ensure the connectivity check doesn't affect
+        # performance too much (see gh-6888, gh-7549).
+        _ = nx.eigenvector_centrality_numpy(self.graphs_dict[graph])
+
     def time_greedy_modularity_communities(self, graph):
         _ = community.greedy_modularity_communities(self.graphs_dict[graph])
 
