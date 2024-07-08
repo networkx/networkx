@@ -8,13 +8,14 @@ repos:
       - id: prettier
         files: \.(html|md|toml|yml|yaml)
         args: [--prose-wrap=preserve]
+
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: 1dc9eb131c2ea4816c708e4d85820d2cc8542683 # frozen: v0.5.0
     hooks:
       - id: ruff
-        args:
-          - --fix
+        args: ["--fix", "--show-fixes", "--exit-non-zero-on-fix"]
       - id: ruff-format
+
   - repo: local
     hooks:
       - id: generate_requirements.py
