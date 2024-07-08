@@ -186,12 +186,11 @@ extend-select = [
 #  "RET",      # flake8-return
 #  "RUF",      # Ruff-specific
 #  "SIM",      # flake8-simplify
-   "SIM101",
-   "SIM109",
-   "SIM110",
-   "SIM111",
-   "SIM118",
-   "SIM2",
+  "SIM101",
+  "SIM109",
+  "SIM110",
+  "SIM118",
+  "SIM2",
 #  "T20",      # flake8-print
   "UP",       # pyupgrade
   "YTT",      # flake8-2020
