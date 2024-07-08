@@ -167,6 +167,9 @@ networkx = ['tests/*.py']
 "networkx.readwrite.json_graph" = ['tests/*.py']
 "networkx.utils" = ['tests/*.py']
 
+[tool.changelist]
+ignored_user_logins = ["dependabot[bot]", "pre-commit-ci[bot]", "web-flow"]
+
 [tool.ruff.lint]
 extend-select = [
 #  "B",        # flake8-bugbear
