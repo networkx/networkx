@@ -2,6 +2,7 @@
 Algorithms for calculating min/max spanning trees/forests.
 
 """
+
 from dataclasses import dataclass, field
 from enum import Enum
 from heapq import heappop, heappush
@@ -1130,9 +1131,11 @@ class SpanningTreeIterator:
         partition_key = self.partition_key
         G = self.G
 
-        edges = G.edges(keys=True, data=True) if G.is_multigraph() else G.edges(data=True)
+        edges = (
+            G.edges(keys=True, data=True) if G.is_multigraph() else G.edges(data=True)
+        )
         for *e, d in edges:
-            d[partition_key] = partition_dict.get(e, EdgePartition.OPEN)
+            d[partition_key] = partition_dict.get(tuple(e), EdgePartition.OPEN)
 
     def _clear_partition(self, G):
         """

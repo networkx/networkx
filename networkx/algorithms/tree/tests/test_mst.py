@@ -3,6 +3,7 @@
 import pytest
 
 import networkx as nx
+from networkx.algorithms.tree.recognition import is_tree
 from networkx.utils import edges_equal, nodes_equal
 
 
@@ -455,6 +456,68 @@ class TestSpanningTreeIterator:
             tree_index -= 1
 
 
+class TestSpanningTreeMultiGraphIterator:
+    """
+    Uses the same graph as the above class but with an added edge of twice the weight.
+    """
+
+    def setup_method(self):
+        # New graph
+        edges = [
+            (0, 1, 5),
+            (0, 1, 10),
+            (1, 2, 4),
+            (1, 2, 8),
+            (1, 4, 6),
+            (1, 4, 12),
+            (2, 3, 5),
+            (2, 3, 10),
+            (2, 4, 7),
+            (2, 4, 14),
+            (3, 4, 3),
+            (3, 4, 6),
+        ]
+        self.G = nx.MultiGraph()
+        self.G.add_weighted_edges_from(edges)
+
+        # There are 128 trees. I'd rather not list all 128 here, and computing them
+        # on such a small graph actually doesn't take that long.
+        from itertools import combinations
+
+        self.spanning_trees = []
+        for e in combinations(self.G.edges, 4):
+            tree = self.G.edge_subgraph(e)
+            if is_tree(tree):
+                self.spanning_trees.append(sorted(tree.edges(keys=True, data=True)))
+
+    def test_minimum_spanning_tree_iterator_multigraph(self):
+        """
+        Tests that the spanning trees are correctly returned in increasing order
+        """
+        tree_index = 0
+        last_weight = 0
+        for tree in nx.SpanningTreeIterator(self.G):
+            actual = sorted(tree.edges(keys=True, data=True))
+            weight = sum([e[3]["weight"] for e in actual])
+            assert actual in self.spanning_trees
+            assert weight >= last_weight
+            tree_index += 1
+
+    def test_maximum_spanning_tree_iterator_multigraph(self):
+        """
+        Tests that the spanning trees are correctly returned in decreasing order
+        """
+        tree_index = 127
+        # Maximum weight tree is 46
+        last_weight = 50
+        for tree in nx.SpanningTreeIterator(self.G, minimum=False):
+            actual = sorted(tree.edges(keys=True, data=True))
+            weight = sum([e[3]["weight"] for e in actual])
+            assert actual in self.spanning_trees
+            assert weight <= last_weight
+            tree_index -= 1
+
+
 def test_random_spanning_tree_multiplicative_small():
     """
     Using a fixed seed, sample one tree for repeatability.
@@ -559,7 +622,7 @@ def test_random_spanning_tree_multiplicative_large():
     rng = Random(37)
     for _ in range(sample_size):
         sampled_tree = nx.random_spanning_tree(G, "lambda_key", seed=rng)
-        assert nx.is_tree(sampled_tree)
+        assert is_tree(sampled_tree)
 
         for t in tree_expected:
             if nx.utils.edges_equal(t.edges, sampled_tree.edges):
@@ -686,7 +749,7 @@ def test_random_spanning_tree_additive_large():
         sampled_tree = nx.random_spanning_tree(
             G, "weight", multiplicative=False, seed=rng
         )
-        assert nx.is_tree(sampled_tree)
+        assert is_tree(sampled_tree)
 
         for t in tree_expected:
             if nx.utils.edges_equal(t.edges, sampled_tree.edges):
