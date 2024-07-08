@@ -1,4 +1,5 @@
 """Base class for directed graphs."""
+
 from copy import deepcopy
 from functools import cached_property
 
@@ -25,6 +26,9 @@ class _CachedPropertyResetterAdjAndSucc:
     are set to new objects. In addition, the attributes `_succ` and `_adj`
     are synced so these two names point to the same object.
 
+    Warning: most of the time, when ``G._adj`` is set, ``G._pred`` should also
+    be set to maintain a valid data structure. They share datadicts.
+
     This object sits on a class and ensures that any instance of that
     class clears its cached properties "succ" and "adj" whenever the
     underlying instance attributes "_succ" or "_adj" are set to a new object.
@@ -39,10 +43,18 @@ class _CachedPropertyResetterAdjAndSucc:
         od["_adj"] = value
         od["_succ"] = value
         # reset cached properties
-        if "adj" in od:
-            del od["adj"]
-        if "succ" in od:
-            del od["succ"]
+        props = [
+            "adj",
+            "succ",
+            "edges",
+            "out_edges",
+            "degree",
+            "out_degree",
+            "in_degree",
+        ]
+        for prop in props:
+            if prop in od:
+                del od[prop]
 
 
 class _CachedPropertyResetterPred:
@@ -50,6 +62,9 @@ class _CachedPropertyResetterPred:
 
     This assumes that the ``cached_property`` ``G.pred`` should be reset whenever
     ``G._pred`` is set to a new value.
+
+    Warning: most of the time, when ``G._pred`` is set, ``G._adj`` should also
+    be set to maintain a valid data structure. They share datadicts.
 
     This object sits on a class and ensures that any instance of that
     class clears its cached property "pred" whenever the underlying
@@ -63,8 +78,11 @@ class _CachedPropertyResetterPred:
     def __set__(self, obj, value):
         od = obj.__dict__
         od["_pred"] = value
-        if "pred" in od:
-            del od["pred"]
+        # reset cached properties
+        props = ["pred", "in_edges", "degree", "out_degree", "in_degree"]
+        for prop in props:
+            if prop in od:
+                del od[prop]
 
 
 class DiGraph(Graph):

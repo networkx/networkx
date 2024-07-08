@@ -1,4 +1,5 @@
 """Unit tests for the :mod:`~networkx.algorithms.tree.coding` module."""
+
 from itertools import product
 
 import pytest

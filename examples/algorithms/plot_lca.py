@@ -5,12 +5,13 @@ Lowest Common Ancestors
 
 Compute and visualize LCA for node pairs
 
-In a randomly generated directed tree, the lowest common 
-ancestors are computed for certain node pairs. These node 
-pairs and their LCA are then visualized with a chosen 
+In a randomly generated directed tree, the lowest common
+ancestors are computed for certain node pairs. These node
+pairs and their LCA are then visualized with a chosen
 color scheme.
 
 """
+
 import networkx as nx
 import matplotlib.pyplot as plt
 

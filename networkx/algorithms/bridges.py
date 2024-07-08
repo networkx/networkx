@@ -1,4 +1,5 @@
 """Bridge-finding algorithms."""
+
 from itertools import chain
 
 import networkx as nx
@@ -70,7 +71,6 @@ def bridges(G, root=None):
     H = nx.Graph(G) if multigraph else G
     chains = nx.chain_decomposition(H, root=root)
     chain_edges = set(chain.from_iterable(chains))
-    H_copy = H.copy()
     if root is not None:
         H = H.subgraph(nx.node_connected_component(H, root)).copy()
     for u, v in H.edges():
