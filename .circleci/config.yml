@@ -53,7 +53,7 @@ jobs:
           name: Install
           command: |
             source venv/bin/activate
-            pip install -e '.[default,test,extra,example,doc]' --no-deps
+            pip install -e '.[default,test,extra,example,doc]'
 
       - run:
           name: Build docs
