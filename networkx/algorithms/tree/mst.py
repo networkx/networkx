@@ -1130,7 +1130,6 @@ class SpanningTreeIterator:
         partition_key = self.partition_key
         G = self.G
 
-        # Iterate over edges with for multi-graphs
         edges = G.edges(keys=True, data=True) if G.is_multigraph() else G.edges(data=True)
         for *e, d in edges:
             d[partition_key] = partition_dict.get(e, EdgePartition.OPEN)
