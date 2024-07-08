@@ -306,35 +306,35 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     References
     ----------
     .. [1] Abraham Berman and Robert J. Plemmons.
-        "Nonnegative Matrices in the Mathematical Sciences".
-        Classics in Applied Mathematics. SIAM, 1994.
+       "Nonnegative Matrices in the Mathematical Sciences".
+       Classics in Applied Mathematics. SIAM, 1994.
 
     .. [2] Edmund Landau.
-        "Zur relativen Wertbemessung der Turnierresultate".
-        Deutsches Wochenschach, 11:366--369, 1895.
+       "Zur relativen Wertbemessung der Turnierresultate".
+       Deutsches Wochenschach, 11:366--369, 1895.
 
     .. [3] Teh-Hsing Wei.
-        "The Algebraic Foundations of Ranking Theory".
-        PhD thesis, University of Cambridge, 1952.
+       "The Algebraic Foundations of Ranking Theory".
+       PhD thesis, University of Cambridge, 1952.
 
     .. [4] Maurice G. Kendall.
-        "Further contributions to the theory of paired comparisons".
-        Biometrics, 11(1):43--62, 1955.
-        https://www.jstor.org/stable/3001479
+       "Further contributions to the theory of paired comparisons".
+       Biometrics, 11(1):43--62, 1955.
+       https://www.jstor.org/stable/3001479
 
     .. [5] Claude Berge.
-        "Théorie des graphes et ses applications".
-        Dunod, Paris, France, 1958.
+       "Théorie des graphes et ses applications".
+       Dunod, Paris, France, 1958.
 
     .. [6] Phillip Bonacich.
-        "Technique for analyzing overlapping memberships".
-        Sociological Methodology, 4:176--185, 1972.
-        https://www.jstor.org/stable/270732
+       "Technique for analyzing overlapping memberships".
+       Sociological Methodology, 4:176--185, 1972.
+       https://www.jstor.org/stable/270732
 
     .. [7] Arnoldi, W. E. (1951).
-        "The principle of minimized iterations in the solution of the matrix eigenvalue problem".
-        Quarterly of Applied Mathematics. 9 (1): 17--29.
-        https://doi.org/10.1090/qam/42792
+       "The principle of minimized iterations in the solution of the matrix eigenvalue problem".
+       Quarterly of Applied Mathematics. 9 (1): 17--29.
+       https://doi.org/10.1090/qam/42792
     """
     import numpy as np
     import scipy as sp
