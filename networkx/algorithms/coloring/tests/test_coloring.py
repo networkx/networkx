@@ -1,6 +1,4 @@
-"""Greedy coloring test suite.
-
-"""
+"""Greedy coloring test suite."""
 
 import itertools
 

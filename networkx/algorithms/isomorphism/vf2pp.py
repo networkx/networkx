@@ -47,8 +47,14 @@ With node labels:
 >>> G1 = nx.path_graph(4)
 >>> G2 = nx.path_graph(4)
 >>> mapped = {1: 1, 2: 2, 3: 3, 0: 0}
->>> nx.set_node_attributes(G1, dict(zip(G1, ["blue", "red", "green", "yellow"])), "label")
->>> nx.set_node_attributes(G2, dict(zip([mapped[u] for u in G1], ["blue", "red", "green", "yellow"])), "label")
+>>> nx.set_node_attributes(
+...     G1, dict(zip(G1, ["blue", "red", "green", "yellow"])), "label"
+... )
+>>> nx.set_node_attributes(
+...     G2,
+...     dict(zip([mapped[u] for u in G1], ["blue", "red", "green", "yellow"])),
+...     "label",
+... )
 >>> nx.vf2pp_is_isomorphic(G1, G2, node_label="label")
 True
 >>> nx.vf2pp_isomorphism(G1, G2, node_label="label")
@@ -61,6 +67,7 @@ References
    https://doi.org/10.1016/j.dam.2018.02.018
 
 """
+
 import collections
 
 import networkx as nx

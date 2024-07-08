@@ -16,6 +16,7 @@ See Also
  - :func:`matplotlib.pyplot.scatter`
  - :obj:`matplotlib.patches.FancyArrowPatch`
 """
+
 import collections
 import itertools
 from numbers import Number

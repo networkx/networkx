@@ -1,6 +1,7 @@
 """
 Graph isomorphism functions.
 """
+
 import networkx as nx
 from networkx.exception import NetworkXError
 

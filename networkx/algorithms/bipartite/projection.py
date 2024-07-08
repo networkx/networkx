@@ -1,4 +1,5 @@
 """One-mode (unipartite) projections of bipartite graphs."""
+
 import networkx as nx
 from networkx.exception import NetworkXAlgorithmError
 from networkx.utils import not_implemented_for
@@ -473,10 +474,14 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
     >>> print(list(G.edges(data=True)))
     [(0, 1, {'weight': 2})]
     >>> # To specify a custom weight function use the weight_function parameter
-    >>> G = bipartite.generic_weighted_projected_graph(B, [0, 1], weight_function=jaccard)
+    >>> G = bipartite.generic_weighted_projected_graph(
+    ...     B, [0, 1], weight_function=jaccard
+    ... )
     >>> print(list(G.edges(data=True)))
     [(0, 1, {'weight': 1.0})]
-    >>> G = bipartite.generic_weighted_projected_graph(B, [0, 1], weight_function=my_weight)
+    >>> G = bipartite.generic_weighted_projected_graph(
+    ...     B, [0, 1], weight_function=my_weight
+    ... )
     >>> print(list(G.edges(data=True)))
     [(0, 1, {'weight': 10})]
 

@@ -10,14 +10,8 @@ __all__ = ["Config", "config"]
 class Config:
     """The base class for NetworkX configuration.
 
-    There are two ways to use this to create configurations. The first is to
-    simply pass the initial configuration as keyword arguments to ``Config``:
-
-    >>> cfg = Config(eggs=1, spam=5)
-    >>> cfg
-    Config(eggs=1, spam=5)
-
-    The second--and preferred--way is to subclass ``Config`` with docs and annotations.
+    There are two ways to use this to create configurations. The recommended way
+    is to subclass ``Config`` with docs and annotations.
 
     >>> class MyConfig(Config):
     ...     '''Breakfast!'''
@@ -29,6 +23,13 @@ class Config:
     ...         assert isinstance(value, int) and value >= 0
     >>> cfg = MyConfig(eggs=1, spam=5)
 
+    Another way is to simply pass the initial configuration as keyword arguments to
+    the ``Config`` instance:
+
+    >>> cfg1 = Config(eggs=1, spam=5)
+    >>> cfg1
+    Config(eggs=1, spam=5)
+
     Once defined, config items may be modified, but can't be added or deleted by default.
     ``Config`` is a ``Mapping``, and can get and set configs via attributes or brackets:
 
@@ -38,6 +39,14 @@ class Config:
     >>> cfg["spam"] = 42
     >>> cfg["spam"]
     42
+
+    For convenience, it can also set configs within a context with the "with" statement:
+
+    >>> with cfg(spam=3):
+    ...     print("spam (in context):", cfg.spam)
+    spam (in context): 3
+    >>> print("spam (after context):", cfg.spam)
+    spam (after context): 42
 
     Subclasses may also define ``_check_config`` (as done in the example above)
     to ensure the value being assigned is valid:
@@ -80,6 +89,8 @@ class Config:
         if not cls._strict:
             cls.__repr__ = _flexible_repr
         cls._orig_class = orig_class  # Save original class so we can pickle
+        cls._prev = None  # Stage previous configs to enable use as context manager
+        cls._context_stack = []  # Stack of previous configs when used as context
         instance = object.__new__(cls)
         instance.__init__(**kwargs)
         return instance
@@ -96,6 +107,7 @@ class Config:
             raise AttributeError(f"Invalid config name: {key!r}")
         self._check_config(key, value)
         object.__setattr__(self, key, value)
+        self.__class__._prev = None
 
     def __delattr__(self, key):
         if self._strict:
@@ -103,6 +115,7 @@ class Config:
                 f"Configuration items can't be deleted (can't delete {key!r})."
             )
         object.__delattr__(self, key)
+        self.__class__._prev = None
 
     # Be a `collection.abc.Collection`
     def __contains__(self, key):
@@ -167,6 +180,34 @@ class Config:
     def _deserialize(cls, kwargs):
         return cls(**kwargs)
 
+    # Allow to be used as context manager
+    def __call__(self, **kwargs):
+        for key, val in kwargs.items():
+            self._check_config(key, val)
+        prev = dict(self)
+        for key, val in kwargs.items():
+            setattr(self, key, val)
+        self.__class__._prev = prev
+        return self
+
+    def __enter__(self):
+        if self.__class__._prev is None:
+            raise RuntimeError(
+                "Config being used as a context manager without config items being set. "
+                "Set config items via keyword arguments when calling the config object. "
+                "For example, using config as a context manager should be like:\n\n"
+                '    >>> with cfg(breakfast="spam"):\n'
+                "    ...     ...  # Do stuff\n"
+            )
+        self.__class__._context_stack.append(self.__class__._prev)
+        self.__class__._prev = None
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        prev = self.__class__._context_stack.pop()
+        for key, val in prev.items():
+            setattr(self, key, val)
+
 
 def _flexible_repr(self):
     return (
@@ -214,8 +255,8 @@ class NetworkXConfig(Config):
     -----
     Environment variables may be used to control some default configurations:
 
-    - NETWORKX_BACKEND_PRIORITY: set `backend_priority` from comma-separated names.
-    - NETWORKX_CACHE_CONVERTED_GRAPHS: set `cache_converted_graphs` to True if nonempty.
+    - ``NETWORKX_BACKEND_PRIORITY``: set ``backend_priority`` from comma-separated names.
+    - ``NETWORKX_CACHE_CONVERTED_GRAPHS``: set ``cache_converted_graphs`` to True if nonempty.
 
     This is a global configuration. Use with caution when using from multiple threads.
     """

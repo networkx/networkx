@@ -10,6 +10,7 @@ The approach used here can be generalized to visualize hierarchical clustering
 e.g. clusters-of-clusters of nodes by combining layouts with varying scale
 factors.
 """
+
 import networkx as nx
 import matplotlib.pyplot as plt
 

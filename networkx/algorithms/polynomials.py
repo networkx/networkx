@@ -21,6 +21,7 @@ x**4 - 6*x**2 - 8*x - 3
 .. [1] Y. Shi, M. Dehmer, X. Li, I. Gutman,
    "Graph Polynomials"
 """
+
 from collections import deque
 
 import networkx as nx
