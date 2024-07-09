@@ -127,7 +127,7 @@ And you can disable it by running this::
 
     nxl.setLevel(logging.CRITICAL)
 
-Refer `this <https://docs.python.org/3/library/logging.html>`_ to learn more about
+Refer to `this <https://docs.python.org/3/library/logging.html>`_ to learn more about
 the logging facilities in Python.
 
 You can see which currently installed backends implement a function by looking
