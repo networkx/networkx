@@ -1,6 +1,7 @@
 """
 Generators and functions for bipartite graphs.
 """
+
 import math
 import numbers
 from functools import reduce

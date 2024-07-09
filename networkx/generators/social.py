@@ -1,6 +1,7 @@
 """
 Famous social networks.
 """
+
 import networkx as nx
 
 __all__ = [

@@ -1,6 +1,7 @@
 """
 Vitality measures.
 """
+
 from functools import partial
 
 import networkx as nx

@@ -19,6 +19,7 @@ See Also
  - Graphviz:      https://www.graphviz.org
  - DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
+
 from locale import getpreferredencoding
 
 import networkx as nx

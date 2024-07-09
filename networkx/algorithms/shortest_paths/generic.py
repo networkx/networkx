@@ -4,6 +4,7 @@ Compute the shortest paths and path lengths between nodes in the graph.
 These algorithms work with undirected and directed graphs.
 
 """
+
 import warnings
 
 import networkx as nx

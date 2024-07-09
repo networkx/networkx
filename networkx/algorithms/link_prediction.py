@@ -2,7 +2,6 @@
 Link prediction algorithms.
 """
 
-
 from math import log
 
 import networkx as nx

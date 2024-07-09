@@ -1,6 +1,7 @@
 """
 Subraph centrality and communicability betweenness.
 """
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 

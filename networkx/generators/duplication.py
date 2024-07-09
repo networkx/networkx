@@ -5,6 +5,7 @@ nodes and (partially) duplicate their edges. These functions are
 generally inspired by biological networks.
 
 """
+
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import py_random_state

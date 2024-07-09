@@ -2,7 +2,7 @@
 Conversion
 ----------
 
-An example showing how to use the interface to the 
+An example showing how to use the interface to the
 `pygraphviz.AGraph` class to convert to and from graphviz.
 """
 

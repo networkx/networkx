@@ -5,6 +5,7 @@ Weighted Graph
 
 An example using Graph as a weighted network.
 """
+
 import matplotlib.pyplot as plt
 import networkx as nx
 

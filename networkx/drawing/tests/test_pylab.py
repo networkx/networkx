@@ -1,4 +1,5 @@
 """Unit tests for matplotlib drawing functions."""
+
 import itertools
 import os
 import warnings

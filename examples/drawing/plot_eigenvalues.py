@@ -5,6 +5,7 @@ Eigenvalues
 
 Create an G{n,m} random graph and compute the eigenvalues.
 """
+
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy.linalg

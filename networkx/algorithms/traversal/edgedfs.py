@@ -6,6 +6,7 @@ Depth First Search on Edges
 Algorithms for a depth-first traversal of edges in a graph.
 
 """
+
 import networkx as nx
 
 FORWARD = "forward"

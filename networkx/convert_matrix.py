@@ -745,7 +745,9 @@ def from_scipy_sparse_array(
     as the number of parallel edges joining those two vertices:
 
     >>> A = sp.sparse.csr_array([[1, 1], [1, 2]])
-    >>> G = nx.from_scipy_sparse_array(A, parallel_edges=True, create_using=nx.MultiGraph)
+    >>> G = nx.from_scipy_sparse_array(
+    ...     A, parallel_edges=True, create_using=nx.MultiGraph
+    ... )
     >>> G[1][1]
     AtlasView({0: {'weight': 1}, 1: {'weight': 1}})
 

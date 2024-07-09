@@ -1,6 +1,7 @@
 """
 Flow Hierarchy.
 """
+
 import networkx as nx
 
 __all__ = ["flow_hierarchy"]

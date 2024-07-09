@@ -23,6 +23,7 @@ the chain is tricky and much harder with restricted_views than
 with induced subgraphs.
 Often it is easiest to use .copy() to avoid chains.
 """
+
 import networkx as nx
 from networkx.classes.coreviews import (
     FilterAdjacency,

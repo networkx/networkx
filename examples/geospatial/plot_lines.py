@@ -24,7 +24,6 @@ primal graph and then dual graph. Furthermore, we will use PySAL to
 illustrate an alternative way of creating raw dual graph.
 """
 
-
 import geopandas
 import matplotlib.pyplot as plt
 import momepy

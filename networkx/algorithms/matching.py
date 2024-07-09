@@ -1,4 +1,5 @@
 """Functions for computing and verifying matchings in a graph."""
+
 from collections import Counter
 from itertools import combinations, repeat
 

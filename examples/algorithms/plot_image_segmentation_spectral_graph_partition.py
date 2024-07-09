@@ -12,6 +12,7 @@ All 3D plots use the 3D spectral layout.
 See :ref:`sphx_glr_auto_examples_3d_drawing` for recipes to create 3D animations
 from these visualizations.
 """
+
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt

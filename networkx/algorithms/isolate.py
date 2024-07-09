@@ -1,6 +1,7 @@
 """
 Functions for identifying isolate (degree zero) nodes.
 """
+
 import networkx as nx
 
 __all__ = ["is_isolate", "isolates", "number_of_isolates"]

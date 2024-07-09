@@ -1,4 +1,5 @@
 """Unit tests for the :mod:`networkx.generators.random_graphs` module."""
+
 import pytest
 
 import networkx as nx

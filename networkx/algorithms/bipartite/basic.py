@@ -3,6 +3,7 @@
 Bipartite Graph Algorithms
 ==========================
 """
+
 import networkx as nx
 from networkx.algorithms.components import connected_components
 from networkx.exception import AmbiguousSolution

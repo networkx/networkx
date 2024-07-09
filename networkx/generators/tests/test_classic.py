@@ -5,6 +5,7 @@ Generators - Classic
 
 Unit tests for various classic graph generators in generators/classic.py
 """
+
 import itertools
 import typing
 

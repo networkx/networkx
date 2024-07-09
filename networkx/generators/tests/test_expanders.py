@@ -1,6 +1,4 @@
-"""Unit tests for the :mod:`networkx.generators.expanders` module.
-
-"""
+"""Unit tests for the :mod:`networkx.generators.expanders` module."""
 
 import pytest
 

@@ -14,6 +14,7 @@ For more information, see the Wikipedia article on small-world network [1]_.
 .. [1] Small-world network:: https://en.wikipedia.org/wiki/Small-world_network
 
 """
+
 import networkx as nx
 from networkx.utils import not_implemented_for, py_random_state
 

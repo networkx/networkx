@@ -6,6 +6,7 @@ Breadth First Search on Edges
 Algorithms for a breadth-first traversal of edges in a graph.
 
 """
+
 from collections import deque
 
 import networkx as nx

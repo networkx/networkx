@@ -1,4 +1,5 @@
 """Weakly connected components."""
+
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
@@ -36,7 +37,10 @@ def weakly_connected_components(G):
 
     >>> G = nx.path_graph(4, create_using=nx.DiGraph())
     >>> nx.add_path(G, [10, 11, 12])
-    >>> [len(c) for c in sorted(nx.weakly_connected_components(G), key=len, reverse=True)]
+    >>> [
+    ...     len(c)
+    ...     for c in sorted(nx.weakly_connected_components(G), key=len, reverse=True)
+    ... ]
     [4, 3]
 
     If you only want the largest component, it's more efficient to

@@ -1,5 +1,5 @@
 """
-    Tests for VF2 isomorphism algorithm.
+Tests for VF2 isomorphism algorithm.
 """
 
 import importlib.resources

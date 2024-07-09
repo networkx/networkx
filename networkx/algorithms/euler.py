@@ -1,6 +1,7 @@
 """
 Eulerian circuits and graphs.
 """
+
 from itertools import combinations
 
 import networkx as nx

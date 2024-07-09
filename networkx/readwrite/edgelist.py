@@ -247,7 +247,7 @@ def parse_edgelist(
             if not line:
                 continue
         # split line, should have 2 or more
-        s = line.strip().split(delimiter)
+        s = line.rstrip("\n").split(delimiter)
         if len(s) < 2:
             continue
         u = s.pop(0)

@@ -1,6 +1,5 @@
 """Unit tests for the :mod:`networkx.algorithms.approximation.clique` module."""
 
-
 import networkx as nx
 from networkx.algorithms.approximation import (
     clique_removal,

@@ -246,7 +246,7 @@ def parse_multiline_adjlist(
         if not line:
             continue
         try:
-            (u, deg) = line.strip().split(delimiter)
+            (u, deg) = line.rstrip("\n").split(delimiter)
             deg = int(deg)
         except BaseException as err:
             raise TypeError(f"Failed to read node and degree on line ({line})") from err
@@ -270,7 +270,7 @@ def parse_multiline_adjlist(
                     line = line[:p]
                 if line:
                     break
-            vlist = line.strip().split(delimiter)
+            vlist = line.rstrip("\n").split(delimiter)
             numb = len(vlist)
             if numb < 1:
                 continue  # isolated node

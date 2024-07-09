@@ -1,6 +1,7 @@
 """
 Moody and White algorithm for k-components
 """
+
 from collections import defaultdict
 from itertools import combinations
 from operator import itemgetter

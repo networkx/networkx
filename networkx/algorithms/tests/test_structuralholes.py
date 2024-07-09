@@ -1,4 +1,5 @@
 """Unit tests for the :mod:`networkx.algorithms.structuralholes` module."""
+
 import math
 
 import pytest

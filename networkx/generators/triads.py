@@ -6,6 +6,7 @@
 digraphs on three nodes.
 
 """
+
 import networkx as nx
 from networkx.classes import DiGraph
 

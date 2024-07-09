@@ -4,9 +4,9 @@ Graphs from Polygons
 ====================
 
 This example shows how to build a graph from a set of polygons
-using PySAL and geopandas. We'll focus on the Queen contiguity 
-graph, but constructors are also provided for Rook contiguity, 
-as well as other kinds of graphs from the polygon centroids. 
+using PySAL and geopandas. We'll focus on the Queen contiguity
+graph, but constructors are also provided for Rook contiguity,
+as well as other kinds of graphs from the polygon centroids.
 """
 
 from libpysal import weights

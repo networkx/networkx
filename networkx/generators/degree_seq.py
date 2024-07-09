@@ -1,5 +1,4 @@
-"""Generate graphs with a given degree sequence or expected degree sequence.
-"""
+"""Generate graphs with a given degree sequence or expected degree sequence."""
 
 import heapq
 import math

@@ -1,6 +1,5 @@
-""" Provides a function for computing the extendability of a graph which is
+"""Provides a function for computing the extendability of a graph which is
 undirected, simple, connected and bipartite and contains at least one perfect matching."""
-
 
 import networkx as nx
 from networkx.utils import not_implemented_for

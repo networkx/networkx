@@ -1,6 +1,5 @@
-"""Unit tests for the :mod:`networkx.generators.duplication` module.
+"""Unit tests for the :mod:`networkx.generators.duplication` module."""
 
-"""
 import pytest
 
 from networkx.exception import NetworkXError

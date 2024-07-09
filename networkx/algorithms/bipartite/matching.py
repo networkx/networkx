@@ -36,6 +36,7 @@ the smaller of the two partitions, and for which the sum of the weights of the
 edges included in the matching is minimal.
 
 """
+
 import collections
 import itertools
 

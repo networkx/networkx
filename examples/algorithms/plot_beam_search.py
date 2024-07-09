@@ -8,6 +8,7 @@ Beam search with dynamic beam width.
 The progressive widening beam search repeatedly executes a beam search
 with increasing beam width until the target node is found.
 """
+
 import math
 
 import matplotlib.pyplot as plt

@@ -1,4 +1,4 @@
-""" Functions related to graph covers."""
+"""Functions related to graph covers."""
 
 from functools import partial
 from itertools import chain

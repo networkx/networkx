@@ -12,6 +12,7 @@ These data were collected by Davis et al. in the 1930s.
 They represent observed attendance at 14 social events by 18 Southern women.
 The graph is bipartite (clubs, women).
 """
+
 import matplotlib.pyplot as plt
 import networkx as nx
 from networkx.algorithms import bipartite

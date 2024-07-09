@@ -8,6 +8,7 @@ A letter can be encoded by tracing the path from the corresponding node in the
 tree to the root node, reversing the order of the symbols encountered along
 the path.
 """
+
 import networkx as nx
 
 # Unicode characters to represent the dots/dashes (or dits/dahs) of Morse code
