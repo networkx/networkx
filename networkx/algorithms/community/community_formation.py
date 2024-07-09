@@ -1,7 +1,7 @@
 """
 Implementation of the Social Aware Assignment of Passengers in Ridesharing
 
-The social aware assignment problem belongs to the field of community formation, which is an important research branch 
+The social aware assignment problem belongs to the field of community formation, which is an important research branch
 within multiagent systems. It analyses the outcome that results when a set of agents is partitioned into communities.
 Actually, Match_And_Merge model is a special case of simple Additively Separable Hedonic Games (ASHGs).
 
@@ -14,6 +14,7 @@ which is written by Victor Kushnir.
 Also, an online web page was built for running the algorithm:
 https://victoku1.pythonanywhere.com/
 """
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 
