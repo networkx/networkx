@@ -229,7 +229,7 @@ def to_pydot(N):
         n = str(n)
         if _check_colon_quotes(n):
             raise ValueError(
-                f'Node {n} name should not contain ":" unless they are quoted with \'.'
+                f'Node {n} name should not contain ":" unless they are quoted with "".'
                 "For example the string 'attribute:data1' should be written as '\"attribute:data1\"'."
                 "Please refer https://github.com/pydot/pydot/issues/258"
             )
@@ -237,7 +237,7 @@ def to_pydot(N):
         for k, v in str_nodedata.items():
             if _check_colon_quotes(k) or _check_colon_quotes(v):
                 raise ValueError(
-                    f'Node {n} Data {{ {k}:{v} }} should not contain ":" unless they are quoted with \'.'
+                    f'Node {n} Data {{ {k}:{v} }} should not contain ":" unless they are quoted with "".'
                     "For example the string 'attribute:data1' should be written as '\"attribute:data1\"'."
                     "Please refer https://github.com/pydot/pydot/issues/258"
                 )
@@ -250,22 +250,22 @@ def to_pydot(N):
             u, v = str(u), str(v)
             if _check_colon_quotes(u):
                 raise ValueError(
-                    f'Node {u} name should not contain ":" unless they are quoted with \'.'
-                    "For example the string 'attribute:data1' should be written as '\"attribute:data1\"'."
-                    "Please refer https://github.com/pydot/pydot/issues/258"
+                    f'Node {u} name should not contain ":" unless they are quoted with "".'
+                    " For example the string 'attribute:data1' should be written as '\"attribute:data1\"'."
+                    " Please refer https://github.com/pydot/pydot/issues/258"
                 )
             if _check_colon_quotes(v):
                 raise ValueError(
-                    f'Node {v} name should not contain ":" unless they are quoted with \'.'
-                    "For example the string 'attribute:data1' should be written as '\"attribute:data1\"'."
-                    "Please refer https://github.com/pydot/pydot/issues/258"
+                    f'Node {v} name should not contain ":" unless they are quoted with "".'
+                    " For example the string 'attribute:data1' should be written as '\"attribute:data1\"'."
+                    " Please refer https://github.com/pydot/pydot/issues/258"
                 )
             for k, val in str_edgedata.items():
                 if _check_colon_quotes(k) or _check_colon_quotes(val):
                     raise ValueError(
-                        f'Edge ({u},{v}) Data {{ {k}:{val} }} should not contain ":" unless they are quoted with \'.'
-                        "For example the string 'attribute:data1' should be written as '\"attribute:data1\"'."
-                        "Please refer https://github.com/pydot/pydot/issues/258"
+                        f'Edge ({u},{v}) Data {{ {k}:{val} }} should not contain ":" unless they are quoted with "".'
+                        " For example the string 'attribute:data1' should be written as '\"attribute:data1\"'."
+                        " Please refer https://github.com/pydot/pydot/issues/258"
                     )
 
             edge = pydot.Edge(u, v, key=str(key), **str_edgedata)
@@ -277,22 +277,22 @@ def to_pydot(N):
             u, v = str(u), str(v)
             if _check_colon_quotes(u):
                 raise ValueError(
-                    f'Node {u} name should not contain ":" unless they are quoted with \'.'
-                    "For example the string 'attribute:data1' should be written as '\"attribute:data1\"'."
-                    "Please refer https://github.com/pydot/pydot/issues/258"
+                    f'Node {u} name should not contain ":" unless they are quoted with "".'
+                    " For example the string 'attribute:data1' should be written as '\"attribute:data1\"'."
+                    " Please refer https://github.com/pydot/pydot/issues/258"
                 )
             if _check_colon_quotes(v):
                 raise ValueError(
-                    f'Node {v} name should not contain ":" unless they are quoted with \'.'
-                    "For example the string 'attribute:data1' should be written as '\"attribute:data1\"'."
-                    "Please refer https://github.com/pydot/pydot/issues/258"
+                    f'Node {v} name should not contain ":" unless they are quoted with "".'
+                    " For example the string 'attribute:data1' should be written as '\"attribute:data1\"'."
+                    " Please refer https://github.com/pydot/pydot/issues/258"
                 )
             for k, val in str_edgedata.items():
                 if _check_colon_quotes(k) or _check_colon_quotes(val):
                     raise ValueError(
-                        f'Edge ({u},{v}) Data {{ {k}:{val} }} should not contain ":" unless they are quoted with \'.'
-                        "For example the string 'attribute:data1' should be written as '\"attribute:data1\"'."
-                        "Please refer https://github.com/pydot/pydot/issues/258"
+                        f'Edge ({u},{v}) Data {{ {k}:{val} }} should not contain ":" unless they are quoted with "".'
+                        " For example the string 'attribute:data1' should be written as '\"attribute:data1\"'."
+                        " Please refer https://github.com/pydot/pydot/issues/258"
                     )
             edge = pydot.Edge(u, v, **str_edgedata)
             P.add_edge(edge)
