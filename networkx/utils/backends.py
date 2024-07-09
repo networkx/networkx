@@ -44,22 +44,6 @@ need to pass additional backend-specific arguments, for example::
 
 Here, ``get_chunks`` is not a NetworkX argument, but a nx_parallel-specific argument.
 
-NetworkX also offers a very basic logging system that can help you verify if the
-backend that you specified is being implemented. This will most likely become more
-enhanced in the future. You can enable the networkx's backend logger like this::
-
-    import logging
-    nxl = logging.getLogger("networkx")
-    nxl.addHandler(logging.StreamHandler())
-    nxl.setLevel(logging.DEBUG)
-
-And you can disable it by running this::
-
-    nxl.setLevel(logging.CRITICAL)
-
-Refer `this <https://docs.python.org/3/library/logging.html>`_ to know more about
-the logging facilities in Python.
-
 How does this work?
 -------------------
 
@@ -79,7 +63,8 @@ a backend), it checks if all graphs are from the same backend. If not, it raises
 ``TypeError``. If a backend is specified and it matches the backend of the graphs, it
 loads the backend and calls the corresponding function on the backend along with the
 additional backend-specific ``backend_kwargs``. After calling the function the networkx
-logger displays the ``DEBUG`` message, if the logging is enabled. If no compatible
+logger displays the ``DEBUG`` message, if the logging is enabled
+(see :ref:`Introspection <introspect>` below). If no compatible
 backend is found or the function is not implemented by the backend, it raises a
 ``NetworkXNotImplemented`` exception. And, if the function mutates the input graph or
 returns a graph, graph generator or loader then it tries to convert and run the
@@ -106,6 +91,65 @@ They are the following:
 
 Note that the ``backend_name`` is e.g. ``parallel``, the package installed
 is ``nx-parallel``, and we use ``nx_parallel`` while importing the package.
+
+.. _introspect:
+
+Introspection
+-------------
+Introspection techniques aim to demystify dispatching and conversion behaviors.
+They should help answer questions such as:
+
+- What happened (and why)?
+- What *will* happen (and why)?
+- Which backends implement a function?
+- What are the backend-specific arguments?
+- Where was time spent (including conversions)?
+- What is in the cache and how much memory is it using?
+
+We strive to make NetworkX backends easy to use, and we want them to "just work"
+for most users. Nevertheless, NetworkX dispatching should be transparent to allow
+for greater understanding, debug-ability, and customization. After all, NetworkX
+dispatching is extremely flexible and can support advanced workflows with multiple
+backends and fine-tuned configuration. It can support your needs as they evolve.
+
+Introspection capabilities are currently limited, but we are working to improve them.
+
+The primary way to see what the dispatch machinery is doing is by enabling logging.
+This can help you verify that the backend you specified is being used.
+You can enable networkx's backend logger to print to ``sys.stderr`` like this::
+
+    import logging
+    nxl = logging.getLogger("networkx")
+    nxl.addHandler(logging.StreamHandler())
+    nxl.setLevel(logging.DEBUG)
+
+And you can disable it by running this::
+
+    nxl.setLevel(logging.CRITICAL)
+
+Refer `this <https://docs.python.org/3/library/logging.html>`_ to learn more about
+the logging facilities in Python.
+
+You can see which currently installed backends implement a function by looking
+the ``.backends`` attribute, which is a set of backend names::
+
+    >>> nx.betweenness_centrality.backends
+    {'parallel'}
+
+The function docstring will also show which installed backends support it
+along with any backend-specific notes and keyword arguments::
+
+    >>> help(nx.betweenness_centrality)
+    ...
+    Backends
+    --------
+    parallel : Parallel backend for NetworkX algorithms
+      The parallel computation is implemented by dividing the nodes into chunks
+      and computing betweenness centrality for each chunk concurrently.
+    ...
+
+The NetworkX documentation website also includes info about common backends in function references.
+For example, see :doc:`betweenness centrality <reference/algorithms/generated/networkx.algorithms.centrality.betweenness_centrality>`.
 
 Docs for backend developers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
