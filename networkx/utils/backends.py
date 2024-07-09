@@ -116,7 +116,7 @@ Introspection capabilities are currently limited, but we are working to improve 
 
 The primary way to see what the dispatch machinery is doing is by enabling logging.
 This can help you verify that the backend you specified is being used.
-You can enable networkx's backend logger to print to ``sys.stderr`` like this::
+You can enable NetworkX's backend logger to print to ``sys.stderr`` like this::
 
     import logging
     nxl = logging.getLogger("networkx")
