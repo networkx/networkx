@@ -2,6 +2,7 @@
 Testing the :mod:`networkx.algorithms.community.community_formation` module.
 
 Which is the implementation of the Social Aware Assignment of Passengers in Ridesharing
+
 The social aware assignment problem belongs to the field of community formation, which is an important research branch 
 within multiagent systems. It analyses the outcome that results when a set of agents is partitioned into communities.
 Actually, Match_And_Merge model is a special case of simple Additively Separable Hedonic Games (ASHGs).
