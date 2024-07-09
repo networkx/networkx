@@ -49,7 +49,7 @@ def convert(graph):
     raise TypeError(f"Unsupported type of graph: {type(graph)}")
 
 
-class LoopbackDispatcher:
+class LoopbackBackendInterface:
     def __getattr__(self, item):
         try:
             return nx.utils.backends._registered_algorithms[item].orig_func
@@ -99,7 +99,6 @@ class LoopbackDispatcher:
         else:
             # Would be nice to handle these better some day
             # nx.algorithms.approximation.kcomponents._AntiGraph
-            # nx.algorithms.tree.branchings.MultiDiGraph_EdgeKey
             # nx.classes.tests.test_multidigraph.MultiDiGraphSubClass
             # nx.classes.tests.test_multigraph.MultiGraphSubClass
             G = graph.__class__()
@@ -183,4 +182,4 @@ class LoopbackDispatcher:
         return hasattr(self, name)
 
 
-dispatcher = LoopbackDispatcher()
+backend_interface = LoopbackBackendInterface()
