@@ -130,8 +130,8 @@ And you can disable it by running this::
 Refer to `this <https://docs.python.org/3/library/logging.html>`_ to learn more about
 the logging facilities in Python.
 
-You can see which currently installed backends implement a function by looking
-at the ``.backends`` attribute, which is a set of backend names::
+You can see which backends--that are currently installed--implement a function by
+looking at the ``.backends`` attribute, which is a set of backend names. For example::
 
     >>> nx.betweenness_centrality.backends  # doctest: +SKIP
     {'parallel'}
@@ -149,7 +149,7 @@ along with any backend-specific notes and keyword arguments::
     ...
 
 The NetworkX documentation website also includes info about common backends in function references.
-For example, see :doc:`betweenness centrality <reference/algorithms/generated/networkx.algorithms.centrality.betweenness_centrality>`.
+For example, see `betweenness centrality <https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.centrality.betweenness_centrality.html>`_.
 
 Docs for backend developers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
