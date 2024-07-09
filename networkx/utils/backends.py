@@ -149,7 +149,7 @@ along with any backend-specific notes and keyword arguments::
     ...
 
 The NetworkX documentation website also includes info about common backends in function references.
-For example, see `betweenness centrality <https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.centrality.betweenness_centrality.html>`_.
+For example, see :func:`~networkx.algorithms.centrality.betweenness_centrality`.
 
 Docs for backend developers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
