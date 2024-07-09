@@ -131,7 +131,7 @@ Refer to `this <https://docs.python.org/3/library/logging.html>`_ to learn more 
 the logging facilities in Python.
 
 You can see which currently installed backends implement a function by looking
-the ``.backends`` attribute, which is a set of backend names::
+at the ``.backends`` attribute, which is a set of backend names::
 
     >>> nx.betweenness_centrality.backends  # doctest: +SKIP
     {'parallel'}
