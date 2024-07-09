@@ -343,8 +343,8 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
         raise nx.NetworkXPointlessConcept(
             "cannot compute centrality for the null graph"
         )
-    connected = nx.is_strongly_connected if G.is_directed() else nx.is_connected
-    if not connected(G):  # See gh-6888.
+    connected = nx.is_strongly_connected(G) if G.is_directed() else nx.is_connected(G)
+    if not connected:  # See gh-6888.
         raise nx.AmbiguousSolution(
             "`eigenvector_centrality_numpy` does not give consistent results for disconnected graphs"
         )
