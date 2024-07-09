@@ -3,7 +3,6 @@
 import pytest
 
 import networkx as nx
-from networkx.algorithms.tree.recognition import is_tree
 from networkx.utils import edges_equal, nodes_equal
 
 
@@ -487,7 +486,7 @@ class TestSpanningTreeMultiGraphIterator:
         self.spanning_trees = []
         for e in combinations(self.G.edges, 4):
             tree = self.G.edge_subgraph(e)
-            if is_tree(tree):
+            if nx.is_tree(tree):
                 self.spanning_trees.append(sorted(tree.edges(keys=True, data=True)))
 
     def test_minimum_spanning_tree_iterator_multigraph(self):
@@ -622,7 +621,7 @@ def test_random_spanning_tree_multiplicative_large():
     rng = Random(37)
     for _ in range(sample_size):
         sampled_tree = nx.random_spanning_tree(G, "lambda_key", seed=rng)
-        assert is_tree(sampled_tree)
+        assert nx.is_tree(sampled_tree)
 
         for t in tree_expected:
             if nx.utils.edges_equal(t.edges, sampled_tree.edges):
@@ -749,7 +748,7 @@ def test_random_spanning_tree_additive_large():
         sampled_tree = nx.random_spanning_tree(
             G, "weight", multiplicative=False, seed=rng
         )
-        assert is_tree(sampled_tree)
+        assert nx.is_tree(sampled_tree)
 
         for t in tree_expected:
             if nx.utils.edges_equal(t.edges, sampled_tree.edges):
