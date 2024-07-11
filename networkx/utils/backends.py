@@ -148,7 +148,7 @@ along with any backend-specific notes and keyword arguments::
       and computing betweenness centrality for each chunk concurrently.
     ...
 
-The NetworkX documentation website also includes info about common backends in function references.
+The NetworkX documentation website also includes info about the trusted backends of NetworkX in function references.
 For example, see :func:`~networkx.algorithms.shortest_paths.weighted.all_pairs_bellman_ford_path_length`.
 
 Docs for backend developers
