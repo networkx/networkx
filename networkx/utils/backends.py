@@ -96,7 +96,7 @@ is ``nx-parallel``, and we use ``nx_parallel`` while importing the package.
 
 Introspection
 -------------
-Introspection techniques aim to demystify dispatching and conversion behaviors.
+Introspection techniques aim to demystify dispatching and backend graph conversion behaviors.
 They should help answer questions such as:
 
 - What happened (and why)?
