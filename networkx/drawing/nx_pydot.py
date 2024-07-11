@@ -227,18 +227,20 @@ def to_pydot(N):
         str_nodedata = {str(k): str(v) for k, v in nodedata.items()}
         # Explicitly catch nodes with ":" in node names or nodedata.
         n = str(n)
-        raise_error = _check_colon_quotes(n) or (
-            any(
-                (_check_colon_quotes(k) or _check_colon_quotes(v))
-                for k, v in str_nodedata.items()
-            )
-        )
-        if raise_error:
+        if _check_colon_quotes(n):
             raise ValueError(
-                f'Node names and attributes should not contain ":" unless they are quoted with "".\
-                For example the string \'attribute:data1\' should be written as \'"attribute:data1"\'.\
-                Please refer https://github.com/pydot/pydot/issues/258'
+                f'Node {n} name should not contain ":" unless they are quoted with "".'
+                "For example the string 'attribute:data1' should be written as '\"attribute:data1\"'."
+                "Please refer https://github.com/pydot/pydot/issues/258"
             )
+
+        for k, v in str_nodedata.items():
+            if _check_colon_quotes(k) or _check_colon_quotes(v):
+                raise ValueError(
+                    f'Node {n} Data {{ {k}:{v} }} should not contain ":" unless they are quoted with "".'
+                    "For example the string 'attribute:data1' should be written as '\"attribute:data1\"'."
+                    "Please refer https://github.com/pydot/pydot/issues/258"
+                )
         p = pydot.Node(n, **str_nodedata)
         P.add_node(p)
 
@@ -246,22 +248,26 @@ def to_pydot(N):
         for u, v, key, edgedata in N.edges(data=True, keys=True):
             str_edgedata = {str(k): str(v) for k, v in edgedata.items() if k != "key"}
             u, v = str(u), str(v)
-            raise_error = (
-                _check_colon_quotes(u)
-                or _check_colon_quotes(v)
-                or (
-                    any(
-                        (_check_colon_quotes(k) or _check_colon_quotes(val))
-                        for k, val in str_edgedata.items()
-                    )
-                )
-            )
-            if raise_error:
+            if _check_colon_quotes(u):
                 raise ValueError(
-                    f'Node names and attributes should not contain ":" unless they are quoted with "".\
-                    For example the string \'attribute:data1\' should be written as \'"attribute:data1"\'.\
-                    Please refer https://github.com/pydot/pydot/issues/258'
+                    f'Node {u} name should not contain ":" unless they are quoted with "".'
+                    " For example the string 'attribute:data1' should be written as '\"attribute:data1\"'."
+                    " Please refer https://github.com/pydot/pydot/issues/258"
                 )
+            if _check_colon_quotes(v):
+                raise ValueError(
+                    f'Node {v} name should not contain ":" unless they are quoted with "".'
+                    " For example the string 'attribute:data1' should be written as '\"attribute:data1\"'."
+                    " Please refer https://github.com/pydot/pydot/issues/258"
+                )
+            for k, val in str_edgedata.items():
+                if _check_colon_quotes(k) or _check_colon_quotes(val):
+                    raise ValueError(
+                        f'Edge ({u},{v}) Data {{ {k}:{val} }} should not contain ":" unless they are quoted with "".'
+                        " For example the string 'attribute:data1' should be written as '\"attribute:data1\"'."
+                        " Please refer https://github.com/pydot/pydot/issues/258"
+                    )
+
             edge = pydot.Edge(u, v, key=str(key), **str_edgedata)
             P.add_edge(edge)
 
@@ -269,22 +275,25 @@ def to_pydot(N):
         for u, v, edgedata in N.edges(data=True):
             str_edgedata = {str(k): str(v) for k, v in edgedata.items()}
             u, v = str(u), str(v)
-            raise_error = (
-                _check_colon_quotes(u)
-                or _check_colon_quotes(v)
-                or (
-                    any(
-                        (_check_colon_quotes(k) or _check_colon_quotes(val))
-                        for k, val in str_edgedata.items()
-                    )
-                )
-            )
-            if raise_error:
+            if _check_colon_quotes(u):
                 raise ValueError(
-                    f'Node names and attributes should not contain ":" unless they are quoted with "".\
-                    For example the string \'attribute:data1\' should be written as \'"attribute:data1"\'.\
-                    Please refer https://github.com/pydot/pydot/issues/258'
+                    f'Node {u} name should not contain ":" unless they are quoted with "".'
+                    " For example the string 'attribute:data1' should be written as '\"attribute:data1\"'."
+                    " Please refer https://github.com/pydot/pydot/issues/258"
                 )
+            if _check_colon_quotes(v):
+                raise ValueError(
+                    f'Node {v} name should not contain ":" unless they are quoted with "".'
+                    " For example the string 'attribute:data1' should be written as '\"attribute:data1\"'."
+                    " Please refer https://github.com/pydot/pydot/issues/258"
+                )
+            for k, val in str_edgedata.items():
+                if _check_colon_quotes(k) or _check_colon_quotes(val):
+                    raise ValueError(
+                        f'Edge ({u},{v}) Data {{ {k}:{val} }} should not contain ":" unless they are quoted with "".'
+                        " For example the string 'attribute:data1' should be written as '\"attribute:data1\"'."
+                        " Please refer https://github.com/pydot/pydot/issues/258"
+                    )
             edge = pydot.Edge(u, v, **str_edgedata)
             P.add_edge(edge)
     return P
