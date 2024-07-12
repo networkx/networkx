@@ -130,8 +130,7 @@ And you can disable it by running this::
 Refer to `this <https://docs.python.org/3/library/logging.html>`_ to learn more about
 the logging facilities in Python.
 
-You can see which backends--that are currently installed--implement a function by
-looking at the ``.backends`` attribute, which is a set of backend names. For example::
+By looking up the ``.backends`` attribute, you can get the set of all currently installed backends that implement a particular function. For example::
 
     >>> nx.betweenness_centrality.backends  # doctest: +SKIP
     {'parallel'}
