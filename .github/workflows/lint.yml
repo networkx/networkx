@@ -24,7 +24,7 @@ jobs:
       - name: Install packages
         run: |
           pip install --upgrade pip
-          pip install -r requirements/developer.txt
+          pip install .[developer]
           pip list
 
       - name: Lint
