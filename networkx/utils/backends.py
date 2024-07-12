@@ -145,7 +145,7 @@ We plan to make it easier to answer questions such as:
 Transparency is essential to allow for greater understanding, debug-ability,
 and customization. After all, NetworkX dispatching is extremely flexible and can
 support advanced workflows with multiple backends and fine-tuned configuration,
-but introspection is necessary to inform _when_ and _how_ to evolve your workflow
+but introspection is necessary to inform *when* and *how* to evolve your workflow
 to meet your needs. If you have suggestions for how to improve introspection, please
 `let us know <https://github.com/networkx/networkx/issues/new>`_!
 
