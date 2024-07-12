@@ -97,22 +97,6 @@ is ``nx-parallel``, and we use ``nx_parallel`` while importing the package.
 Introspection
 -------------
 Introspection techniques aim to demystify dispatching and backend graph conversion behaviors.
-They should help answer questions such as:
-
-- What happened (and why)?
-- What *will* happen (and why)?
-- Which backends implement a function?
-- What are the backend-specific arguments?
-- Where was time spent (including conversions)?
-- What is in the cache and how much memory is it using?
-
-We strive to make NetworkX backends easy to use, and we want them to "just work"
-for most users. Nevertheless, NetworkX dispatching should be transparent to allow
-for greater understanding, debug-ability, and customization. After all, NetworkX
-dispatching is extremely flexible and can support advanced workflows with multiple
-backends and fine-tuned configuration. It can support your needs as they evolve.
-
-Introspection capabilities are currently limited, but we are working to improve them.
 
 The primary way to see what the dispatch machinery is doing is by enabling logging.
 This can help you verify that the backend you specified is being used.
@@ -127,10 +111,10 @@ And you can disable it by running this::
 
     nxl.setLevel(logging.CRITICAL)
 
-Refer to `this <https://docs.python.org/3/library/logging.html>`_ to learn more about
-the logging facilities in Python.
+Refer to :external+python:mod:`logging` to learn more about the logging facilities in Python.
 
-By looking up the ``.backends`` attribute, you can get the set of all currently installed backends that implement a particular function. For example::
+By looking at the ``.backends`` attribute, you can get the set of all currently
+installed backends that implement a particular function. For example::
 
     >>> nx.betweenness_centrality.backends  # doctest: +SKIP
     {'parallel'}
@@ -149,6 +133,21 @@ along with any backend-specific notes and keyword arguments::
 
 The NetworkX documentation website also includes info about trusted backends of NetworkX in function references.
 For example, see :func:`~networkx.algorithms.shortest_paths.weighted.all_pairs_bellman_ford_path_length`.
+
+Introspection capabilities are currently limited, but we are working to improve them.
+We plan to make it easier to answer questions such as:
+
+- What happened (and why)?
+- What *will* happen (and why)?
+- Where was time spent (including conversions)?
+- What is in the cache and how much memory is it using?
+
+Transparency is essential to allow for greater understanding, debug-ability,
+and customization. After all, NetworkX dispatching is extremely flexible and can
+support advanced workflows with multiple backends and fine-tuned configuration,
+but introspection is necessary to inform _when_ and _how_ to evolve your workflow
+to meet your needs. If you have suggestions for how to improve introspection, please
+`let us know <https://github.com/networkx/networkx/issues/new>`_!
 
 Docs for backend developers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
