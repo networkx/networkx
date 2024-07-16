@@ -60,4 +60,4 @@ Version 3.6
 ~~~~~~~~~~~
 * Remove ``compute_v_structures`` from ``algorithms/dag.py``.
 * Remove ``link`` kwarg from ``readwrite/json_graph/node_link.py``;
-  Change ``edges`` default value to ``links``.
+  Change ``edges`` default value to ``edges``.

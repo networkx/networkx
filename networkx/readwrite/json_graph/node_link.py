@@ -49,11 +49,11 @@ def node_link_data(
     key : string
         A string that provides the 'key' attribute name for storing NetworkX-internal graph data.
     edges : string
-        A string that provides the 'link' attribute name for storing NetworkX-internal graph data.
+        A string that provides the 'edges' attribute name for storing NetworkX-internal graph data.
     nodes : string
         A string that provides the 'nodes' attribute name for storing NetworkX-internal graph data.
     link : string
-        (Deprecated, use 'edges') A string that provides the 'link' attribute name for storing NetworkX-internal graph data.
+        (Deprecated, use 'edges') A string that provides the 'edges' attribute name for storing NetworkX-internal graph data.
 
     Returns
     -------
@@ -73,7 +73,7 @@ def node_link_data(
     >>> pprint(data1)
     {'directed': False,
      'graph': {},
-     'links': [{'source': 'A', 'target': 'B'}],
+     'edges': [{'source': 'A', 'target': 'B'}],
      'multigraph': False,
      'nodes': [{'id': 'A'}, {'id': 'B'}]}
 
@@ -82,24 +82,24 @@ def node_link_data(
     >>> import json
     >>> s1 = json.dumps(data1)
     >>> s1
-    '{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "A"}, {"id": "B"}], "links": [{"source": "A", "target": "B"}]}'
+    '{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "A"}, {"id": "B"}], "edges": [{"source": "A", "target": "B"}]}'
 
     A graph can also be serialized by passing `node_link_data` as an encoder function. The two methods are equivalent.
 
     >>> s1 = json.dumps(G, default=nx.node_link_data)
     >>> s1
-    '{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "A"}, {"id": "B"}], "links": [{"source": "A", "target": "B"}]}'
+    '{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "A"}, {"id": "B"}], "edges": [{"source": "A", "target": "B"}]}'
 
     The attribute names for storing NetworkX-internal graph data can
     be specified as keyword options.
 
     >>> H = nx.gn_graph(2)
     >>> data2 = nx.node_link_data(
-    ...     H, edges="edges", source="from", target="to", nodes="vertices"
+    ...     H, edges="links", source="from", target="to", nodes="vertices"
     ... )
     >>> pprint(data2)
     {'directed': True,
-     'edges': [{'from': 1, 'to': 0}],
+     'links': [{'from': 1, 'to': 0}],
      'graph': {},
      'multigraph': False,
      'vertices': [{'id': 0}, {'id': 1}]}
@@ -131,7 +131,7 @@ def node_link_data(
             edges = link
     else:
         if edges is None:
-            edges = "links"
+            edges = "edges"
     multigraph = G.is_multigraph()
 
     # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
@@ -191,11 +191,11 @@ def node_link_graph(
     key : string
         A string that provides the 'key' attribute name for storing NetworkX-internal graph data.
     edges : string
-        A string that provides the 'link' attribute name for storing NetworkX-internal graph data.
+        A string that provides the 'edges' attribute name for storing NetworkX-internal graph data.
     nodes : string
         A string that provides the 'nodes' attribute name for storing NetworkX-internal graph data.
     link : string
-        (Deprecated, use 'edges') A string that provides the 'link' attribute name for storing NetworkX-internal graph data.
+        (Deprecated, use 'edges') A string that provides the 'edges' attribute name for storing NetworkX-internal graph data.
 
     Returns
     -------
@@ -213,7 +213,7 @@ def node_link_graph(
     >>> pprint(data)
     {'directed': False,
      'graph': {},
-     'links': [{'source': 'A', 'target': 'B'}],
+     'edges': [{'source': 'A', 'target': 'B'}],
      'multigraph': False,
      'nodes': [{'id': 'A'}, {'id': 'B'}]}
 
@@ -255,7 +255,7 @@ def node_link_graph(
             edges = link
     else:
         if edges is None:
-            edges = "links"
+            edges = "edges"
     multigraph = data.get("multigraph", multigraph)
     directed = data.get("directed", directed)
     if multigraph:
