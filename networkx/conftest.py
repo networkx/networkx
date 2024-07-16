@@ -134,6 +134,9 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\n`compute_v_structures"
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="Keyword argument 'link'"
+    )
 
 
 @pytest.fixture(autouse=True)
