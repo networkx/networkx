@@ -199,6 +199,10 @@ Creating a custom backend
         - ``short_summary`` : str or None
             One line summary of your backend which will be displayed in the
             "Additional backend implementations" section.
+        - ``default_config`` : dict
+            A dictionary mapping the backend config parameters to their default values.
+            This is used to automatically initialise the default configs for all the
+            installed backends at the time of networkx's import. You can use ``nx.config`` to know more!
         - ``functions`` : dict or None
             A dictionary mapping function names to a dictionary of information
             about the function. The information can include the following keys:
