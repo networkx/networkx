@@ -1078,30 +1078,32 @@ def draw_networkx_labels(
         Node-keys in labels should appear as keys in `pos`.
         If needed use: `{n:lab for n,lab in labels.items() if n in pos}`
 
-    font_size : int (default=12)
-        Font size for text labels
+    font_size : int or dictionary of nodes to ints (default=12)
+        Font size for text labels.
 
-    font_color : color (default='k' black)
+    font_color : color or dictionary of nodes to colors (default='k' black)
         Font color string. Color can be string or rgb (or rgba) tuple of
         floats from 0-1.
 
-    font_weight : string (default='normal')
-        Font weight
+    font_weight : string or dictionary of nodes to strings (default='normal')
+        Font weight.
 
-    font_family : string (default='sans-serif')
-        Font family
+    font_family : string or dictionary of nodes to strings (default='sans-serif')
+        Font family.
 
-    alpha : float or None (default=None)
-        The text transparency
+    alpha : float or None or dictionary of nodes to floats (default=None)
+        The text transparency.
 
     bbox : Matplotlib bbox, (default is Matplotlib's ax.text default)
         Specify text box properties (e.g. shape, color etc.) for node labels.
 
-    horizontalalignment : string (default='center')
-        Horizontal alignment {'center', 'right', 'left'}
+    horizontalalignment : string or array of strings (default='center')
+        Horizontal alignment {'center', 'right', 'left'}. If an array is
+        specified it must be the same length as `nodelist`.
 
     verticalalignment : string (default='center')
-        Vertical alignment {'center', 'top', 'bottom', 'baseline', 'center_baseline'}
+        Vertical alignment {'center', 'top', 'bottom', 'baseline', 'center_baseline'}.
+        If an array is specified it must be the same length as `nodelist`.
 
     ax : Matplotlib Axes object, optional
         Draw the graph in the specified Matplotlib axes.
@@ -1143,6 +1145,25 @@ def draw_networkx_labels(
     if labels is None:
         labels = {n: n for n in G.nodes()}
 
+    individual_params = set()
+
+    def check_individual_params(p_value, p_name):
+        if isinstance(p_value, dict):
+            if len(p_value) != len(labels):
+                raise ValueError(f"{p_name} must have the same length as labels.")
+            individual_params.add(p_name)
+
+    def get_param_value(node, p_value, p_name):
+        if p_name in individual_params:
+            return p_value[node]
+        return p_value
+
+    check_individual_params(font_size, "font_size")
+    check_individual_params(font_color, "font_color")
+    check_individual_params(font_weight, "font_weight")
+    check_individual_params(font_family, "font_family")
+    check_individual_params(alpha, "alpha")
+
     text_items = {}  # there is no text collection so we'll fake one
     for n, label in labels.items():
         (x, y) = pos[n]
@@ -1152,11 +1173,11 @@ def draw_networkx_labels(
             x,
             y,
             label,
-            size=font_size,
-            color=font_color,
-            family=font_family,
-            weight=font_weight,
-            alpha=alpha,
+            size=get_param_value(n, font_size, "font_size"),
+            color=get_param_value(n, font_color, "font_color"),
+            family=get_param_value(n, font_family, "font_family"),
+            weight=get_param_value(n, font_weight, "font_weight"),
+            alpha=get_param_value(n, alpha, "alpha"),
             horizontalalignment=horizontalalignment,
             verticalalignment=verticalalignment,
             transform=ax.transData,
