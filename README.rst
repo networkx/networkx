@@ -71,7 +71,7 @@ Install with all optional dependencies:
     $ pip install networkx[all]
 
 For additional details,
-please see the `installation guide <https://networkx.org/documentation/latest/install.html>`_.
+please see the `installation guide <https://networkx.org/documentation/stable/install.html>`_.
 
 Bugs
 ----
