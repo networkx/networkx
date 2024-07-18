@@ -243,7 +243,7 @@ Creating a custom backend
             "Additional backend implementations" section.
         - ``default_config`` : dict
             A dictionary mapping the backend config parameter names to their default values.
-            This is used to automatically initialise the default configs for all the
+            This is used to automatically initialize the default configs for all the
             installed backends at the time of networkx's import.
 
             .. seealso:: `~networkx.utils.configs.Config`
@@ -894,8 +894,11 @@ class _dispatchable:
                     )
                 # All graphs are backend graphs--no need to convert!
                 _logger.debug(
-                    f"using backend '{graph_backend_name}' for call to `{self.name}' "
-                    f"with args: {args}, kwargs: {kwargs}"
+                    "Using backend '%s' for call to `%s' with args: %s, kwargs: %s",
+                    graph_backend_name,
+                    self.name,
+                    args,
+                    kwargs,
                 )
                 return getattr(backend, self.name)(*args, **kwargs)
             # Future work: try to convert and run with other backends in backend_priority
@@ -951,25 +954,62 @@ class _dispatchable:
         """Can the specified backend run this algorithm with these arguments?"""
         backend = _load_backend(backend_name)
         # `backend.can_run` and `backend.should_run` may return strings that describe
-        # why they can't or shouldn't be run. We plan to use the strings in the future.
-        return (
-            hasattr(backend, self.name)
-            and (can_run := backend.can_run(self.name, args, kwargs))
-            and not isinstance(can_run, str)
-        )
+        # why they can't or shouldn't be run.
+        if not hasattr(backend, self.name):
+            _logger.debug(
+                "Backend '%s' does not implement `%s'", backend_name, self.name
+            )
+            return False
+        can_run = backend.can_run(self.name, args, kwargs)
+        if isinstance(can_run, str):
+            _logger.debug(
+                "Backend '%s' can't run `%s' with args: %s, kwargs: %s, because: %s",
+                backend_name,
+                self.name,
+                args,
+                kwargs,
+                can_run,
+            )
+            return False
+        if not can_run:
+            _logger.debug(
+                "Backend '%s' can't run `%s' with args: %s, kwargs: %s",
+                backend_name,
+                self.name,
+                args,
+                kwargs,
+            )
+            return False
+        return True
 
     def _should_backend_run(self, backend_name, /, *args, **kwargs):
         """Can/should the specified backend run this algorithm with these arguments?"""
-        backend = _load_backend(backend_name)
         # `backend.can_run` and `backend.should_run` may return strings that describe
-        # why they can't or shouldn't be run. We plan to use the strings in the future.
-        return (
-            hasattr(backend, self.name)
-            and (can_run := backend.can_run(self.name, args, kwargs))
-            and not isinstance(can_run, str)
-            and (should_run := backend.should_run(self.name, args, kwargs))
-            and not isinstance(should_run, str)
-        )
+        # why they can't or shouldn't be run.
+        if not self._can_backend_run(backend_name, *args, **kwargs):
+            return False
+        backend = _load_backend(backend_name)
+        should_run = backend.should_run(self.name, args, kwargs)
+        if isinstance(should_run, str):
+            _logger.debug(
+                "Backend '%s' shouldn't run `%s' with args: %s, kwargs: %s, because: %s",
+                backend_name,
+                self.name,
+                args,
+                kwargs,
+                should_run,
+            )
+            return False
+        if not should_run:
+            _logger.debug(
+                "Backend '%s' shouldn't run `%s' with args: %s, kwargs: %s",
+                backend_name,
+                self.name,
+                args,
+                kwargs,
+            )
+            return False
+        return True
 
     def _convert_arguments(self, backend_name, args, kwargs, *, use_cache):
         """Convert graph arguments to the specified backend.
@@ -1314,8 +1354,11 @@ class _dispatchable:
                 backend_name, args, kwargs, use_cache=config.cache_converted_graphs
             )
             _logger.debug(
-                f"using backend '{backend_name}' for call to `{self.name}' "
-                f"with args: {converted_args}, kwargs: {converted_kwargs}"
+                "Using backend '%s' for call to `%s' with args: %s, kwargs: %s",
+                backend_name,
+                self.name,
+                converted_args,
+                converted_kwargs,
             )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
@@ -1393,8 +1436,11 @@ class _dispatchable:
                 backend_name, args1, kwargs1, use_cache=False
             )
             _logger.debug(
-                f"using backend '{backend_name}' for call to `{self.name}' "
-                f"with args: {converted_args}, kwargs: {converted_kwargs}"
+                "Using backend '%s' for call to `%s' with args: %s, kwargs: %s",
+                backend_name,
+                self.name,
+                converted_args,
+                converted_kwargs,
             )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
