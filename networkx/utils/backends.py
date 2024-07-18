@@ -1276,6 +1276,13 @@ class _dispatchable:
                 ):
                     if (rv := cache.get(compat_key)) is not None:
                         warnings.warn(warning_message)
+                        _logger.debug(
+                            "Using cached converted graph (from 'networkx' to '%s' backend) "
+                            "in call to `%s' for '%s' argument",
+                            backend_name,
+                            self.name,
+                            graph_name,
+                        )
                         return rv
                 if edge_key is not True and node_key is not True:
                     # Iterate over the items in `cache` to see if any are compatible.
@@ -1301,6 +1308,13 @@ class _dispatchable:
                         ):
                             continue  # Cache missing required node data; does not work
                         warnings.warn(warning_message)
+                        _logger.debug(
+                            "Using cached converted graph (from 'networkx' to '%s' backend) "
+                            "in call to `%s' for '%s' argument",
+                            backend_name,
+                            self.name,
+                            graph_name,
+                        )
                         return val
 
         backend = _load_backend(backend_name)
@@ -1335,6 +1349,13 @@ class _dispatchable:
                 elif nkey is True or node_key is False or not nkey.issubset(node_key):
                     continue
                 cache.pop(cur_key, None)  # Use pop instead of del to be thread-safe
+            _logger.debug(
+                "Caching converted graph (from 'networkx' to '%s' backend) "
+                "in call to `%s' for '%s' argument",
+                backend_name,
+                self.name,
+                graph_name,
+            )
 
         return rv
 
