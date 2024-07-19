@@ -1351,6 +1351,14 @@ class _dispatchable:
         # Don't log in `_can_backend_run` here to avoid duplicating info in the exception
         if not self._can_backend_run(backend_name, args, kwargs, log=fallback_to_nx):
             if fallback_to_nx:
+                _logger.debug(
+                    "Falling back to use 'networkx' instead of '%s' backend "
+                    "for call to `%s' with args: %s, kwargs: %s",
+                    backend_name,
+                    self.name,
+                    args,
+                    kwargs,
+                )
                 return self.orig_func(*args, **kwargs)
             msg = f"'{self.name}' not implemented by {backend_name}"
             if hasattr(backend, self.name):
@@ -1371,6 +1379,12 @@ class _dispatchable:
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
             if fallback_to_nx:
+                _logger.debug(
+                    "Graph conversion failed; falling back to use 'networkx' instead "
+                    "of '%s' backend for call to `%s'",
+                    backend_name,
+                    self.name,
+                )
                 return self.orig_func(*args, **kwargs)
             raise
 
@@ -1383,6 +1397,15 @@ class _dispatchable:
         backend = _load_backend(backend_name)
         if not self._can_backend_run(backend_name, args, kwargs):
             if fallback_to_nx or not self.graphs:
+                if fallback_to_nx:
+                    _logger.debug(
+                        "Falling back to use 'networkx' instead of '%s' backend "
+                        "for call to `%s' with args: %s, kwargs: %s",
+                        backend_name,
+                        self.name,
+                        args,
+                        kwargs,
+                    )
                 return self.orig_func(*args, **kwargs)
 
             import pytest
@@ -1453,6 +1476,12 @@ class _dispatchable:
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
             if fallback_to_nx:
+                _logger.debug(
+                    "Graph conversion failed; falling back to use 'networkx' instead "
+                    "of '%s' backend for call to `%s'",
+                    backend_name,
+                    self.name,
+                )
                 return self.orig_func(*args2, **kwargs2)
             import pytest
 
