@@ -940,7 +940,7 @@ class _dispatchable:
         ):
             # Should we warn or log if we don't convert b/c the input will be mutated?
             for backend_name in backend_priority:
-                if self._should_backend_run(backend_name, *args, **kwargs):
+                if self._should_backend_run(backend_name, args, kwargs):
                     return self._convert_and_call(
                         backend_name,
                         args,
@@ -950,47 +950,49 @@ class _dispatchable:
         # Default: run with networkx on networkx inputs
         return self.orig_func(*args, **kwargs)
 
-    def _can_backend_run(self, backend_name, /, *args, **kwargs):
+    def _can_backend_run(self, backend_name, args, kwargs, *, log=True):
         """Can the specified backend run this algorithm with these arguments?"""
         backend = _load_backend(backend_name)
         # `backend.can_run` and `backend.should_run` may return strings that describe
         # why they can't or shouldn't be run.
         if not hasattr(backend, self.name):
-            _logger.debug(
-                "Backend '%s' does not implement `%s'", backend_name, self.name
-            )
+            if log:
+                _logger.debug(
+                    "Backend '%s' does not implement `%s'", backend_name, self.name
+                )
             return False
         can_run = backend.can_run(self.name, args, kwargs)
         if isinstance(can_run, str) or not can_run:
-            reason = f", because: {can_run}" if isinstance(can_run, str) else ""
-            _logger.debug(
+            if log:
+                reason = f", because: {can_run}" if isinstance(can_run, str) else ""
+                _logger.debug(
                     "Backend '%s' can't run `%s` with args: %s, kwargs: %s%s",
                     backend_name,
                     self.name,
                     args,
                     kwargs,
-                    reason
-            )
+                    reason,
+                )
             return False
         return True
 
-    def _should_backend_run(self, backend_name, /, *args, **kwargs):
+    def _should_backend_run(self, backend_name, args, kwargs):
         """Can/should the specified backend run this algorithm with these arguments?"""
         # `backend.can_run` and `backend.should_run` may return strings that describe
         # why they can't or shouldn't be run.
-        if not self._can_backend_run(backend_name, *args, **kwargs):
+        if not self._can_backend_run(backend_name, args, kwargs):
             return False
         backend = _load_backend(backend_name)
         should_run = backend.should_run(self.name, args, kwargs)
         if isinstance(should_run, str) or not should_run:
             reason = f", because: {should_run}" if isinstance(should_run, str) else ""
             _logger.debug(
-                    "Backend '%s' shouldn't run `%s` with args: %s, kwargs: %s%s",
-                    backend_name,
-                    self.name,
-                    args,
-                    kwargs,
-                    reason
+                "Backend '%s' shouldn't run `%s` with args: %s, kwargs: %s%s",
+                backend_name,
+                self.name,
+                args,
+                kwargs,
+                reason,
             )
             return False
         return True
@@ -1346,7 +1348,8 @@ class _dispatchable:
     def _convert_and_call(self, backend_name, args, kwargs, *, fallback_to_nx=False):
         """Call this dispatchable function with a backend, converting graphs if necessary."""
         backend = _load_backend(backend_name)
-        if not self._can_backend_run(backend_name, *args, **kwargs):
+        # Don't log in `_can_backend_run` here to avoid duplicating info in the exception
+        if not self._can_backend_run(backend_name, args, kwargs, log=fallback_to_nx):
             if fallback_to_nx:
                 return self.orig_func(*args, **kwargs)
             msg = f"'{self.name}' not implemented by {backend_name}"
@@ -1378,7 +1381,7 @@ class _dispatchable:
     ):
         """Call this dispatchable function with a backend; for use with testing."""
         backend = _load_backend(backend_name)
-        if not self._can_backend_run(backend_name, *args, **kwargs):
+        if not self._can_backend_run(backend_name, args, kwargs):
             if fallback_to_nx or not self.graphs:
                 return self.orig_func(*args, **kwargs)
 
