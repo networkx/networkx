@@ -990,23 +990,15 @@ class _dispatchable:
             return False
         backend = _load_backend(backend_name)
         should_run = backend.should_run(self.name, args, kwargs)
-        if isinstance(should_run, str):
+        if isinstance(should_run, str) or not should_run:
+            reason = f", because: {should_run}" if isinstance(should_run, str) else ""
             _logger.debug(
-                "Backend '%s' shouldn't run `%s' with args: %s, kwargs: %s, because: %s",
-                backend_name,
-                self.name,
-                args,
-                kwargs,
-                should_run,
-            )
-            return False
-        if not should_run:
-            _logger.debug(
-                "Backend '%s' shouldn't run `%s' with args: %s, kwargs: %s",
-                backend_name,
-                self.name,
-                args,
-                kwargs,
+                    "Backend '%s' shouldn't run `%s` with args: %s, kwargs: %s%s",
+                    backend_name,
+                    self.name,
+                    args,
+                    kwargs,
+                    reason
             )
             return False
         return True
