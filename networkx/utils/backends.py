@@ -961,23 +961,15 @@ class _dispatchable:
             )
             return False
         can_run = backend.can_run(self.name, args, kwargs)
-        if isinstance(can_run, str):
+        if isinstance(can_run, str) or not can_run:
+            reason = f", because: {can_run}" if isinstance(can_run, str) else ""
             _logger.debug(
-                "Backend '%s' can't run `%s' with args: %s, kwargs: %s, because: %s",
-                backend_name,
-                self.name,
-                args,
-                kwargs,
-                can_run,
-            )
-            return False
-        if not can_run:
-            _logger.debug(
-                "Backend '%s' can't run `%s' with args: %s, kwargs: %s",
-                backend_name,
-                self.name,
-                args,
-                kwargs,
+                    "Backend '%s' can't run `%s` with args: %s, kwargs: %s%s",
+                    backend_name,
+                    self.name,
+                    args,
+                    kwargs,
+                    reason
             )
             return False
         return True
