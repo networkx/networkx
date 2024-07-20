@@ -1461,6 +1461,30 @@ def draw_networkx_edge_labels(
         ax=ax,
     )
 
+    individual_params = {}
+
+    def check_individual_params(p_value, p_name):
+        # TODO should this be list or array (as in a numpy array)?
+        if isinstance(p_value, list):
+            if len(p_value) != len(edgelist):
+                raise ValueError(f"{p_name} must have the same length as edgelist.")
+            individual_params[p_name] = p_value.iter()
+
+    # Don't need to pass in an edge because these are lists, not dicts
+    def get_param_value(p_value, p_name):
+        if p_name in individual_params:
+            return next(individual_params[p_name])
+        return p_value
+
+    check_individual_params(font_size, "font_size")
+    check_individual_params(font_color, "font_color")
+    check_individual_params(font_weight, "font_weight")
+    check_individual_params(alpha, "alpha")
+    check_individual_params(horizontalalignment, "horizontalalignment")
+    check_individual_params(verticalalignment, "verticalalignment")
+    check_individual_params(rotate, "rotate")
+    check_individual_params(label_pos, "label_pos")
+
     text_items = {}
     for i, (edge, label) in enumerate(zip(edgelist, labels)):
         if not isinstance(label, str):
@@ -1478,13 +1502,17 @@ def draw_networkx_edge_labels(
                 x,
                 y,
                 label,
-                size=font_size,
-                color=font_color,
-                family=font_family,
-                weight=font_weight,
-                alpha=alpha,
-                horizontalalignment=horizontalalignment,
-                verticalalignment=verticalalignment,
+                size=get_param_value(font_size, "font_size"),
+                color=get_param_value(font_color, "font_color"),
+                family=get_param_value(font_family, "font_family"),
+                weight=get_param_value(font_weight, "font_weight"),
+                alpha=get_param_value(alpha, "alpha"),
+                horizontalalignment=get_param_value(
+                    horizontalalignment, "horizontalalignment"
+                ),
+                verticalalignment=get_param_value(
+                    verticalalignment, "verticalalignment"
+                ),
                 rotation=0,
                 transform=ax.transData,
                 bbox=bbox,
@@ -1495,19 +1523,23 @@ def draw_networkx_edge_labels(
             text_items[edge] = CurvedArrowText(
                 arrow,
                 label,
-                size=font_size,
-                color=font_color,
-                family=font_family,
-                weight=font_weight,
-                alpha=alpha,
-                horizontalalignment=horizontalalignment,
-                verticalalignment=verticalalignment,
+                size=get_param_value(font_size, "font_size"),
+                color=get_param_value(font_color, "font_color"),
+                family=get_param_value(font_family, "font_family"),
+                weight=get_param_value(font_weight, "font_weight"),
+                alpha=get_param_value(alpha, "alpha"),
+                horizontalalignment=get_param_value(
+                    horizontalalignment, "horizontalalignment"
+                ),
+                verticalalignment=get_param_value(
+                    verticalalignment, "verticalalignment"
+                ),
                 transform=ax.transData,
                 bbox=bbox,
                 zorder=1,
                 clip_on=clip_on,
-                label_pos=label_pos,
-                labels_horizontal=not rotate,
+                label_pos=get_param_value(label_pos, "label_pos"),
+                labels_horizontal=not get_param_value(rotate, "rotate"),
                 ax=ax,
             )
 
