@@ -448,20 +448,25 @@ def draw_networkx_nodes(
         node_color = apply_alpha(node_color, alpha, nodelist, cmap, vmin, vmax)
         alpha = None
 
-    node_collection = ax.scatter(
-        xy[:, 0],
-        xy[:, 1],
-        s=node_size,
-        c=node_color,
-        marker=node_shape,
-        cmap=cmap,
-        vmin=vmin,
-        vmax=vmax,
-        alpha=alpha,
-        linewidths=linewidths,
-        edgecolors=edgecolors,
-        label=label,
-    )
+    # Convert to one element np.array if needed
+    if not isinstance(node_shape, np.array):
+        node_shape = np.array(node_shape)
+
+    for shape in np.unique(node_shape):
+        node_collection = ax.scatter(
+            xy[node_shape == shape, 0],
+            xy[:, 1],
+            s=node_size,
+            c=node_color,
+            marker=shape,
+            cmap=cmap,
+            vmin=vmin,
+            vmax=vmax,
+            alpha=alpha,
+            linewidths=linewidths,
+            edgecolors=edgecolors,
+            label=label,
+        )
     if hide_ticks:
         ax.tick_params(
             axis="both",
@@ -479,7 +484,8 @@ def draw_networkx_nodes(
             ax.margins(margins)
 
     node_collection.set_zorder(2)
-    return node_collection
+    # return node_collection
+    return ax
 
 
 class FancyArrowFactory:
