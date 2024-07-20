@@ -449,13 +449,13 @@ def draw_networkx_nodes(
         alpha = None
 
     # Convert to one element np.array if needed
-    if not isinstance(node_shape, np.array):
-        node_shape = np.array(node_shape)
+    if not isinstance(node_shape, np.ndarray):
+        node_shape = np.asarray([node_shape for _ in range(len(nodelist))])
 
     for shape in np.unique(node_shape):
         node_collection = ax.scatter(
             xy[node_shape == shape, 0],
-            xy[:, 1],
+            xy[node_shape == shape, 1],
             s=node_size,
             c=node_color,
             marker=shape,
