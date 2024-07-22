@@ -607,6 +607,24 @@ class FancyArrowFactory:
         (x1, y1), (x2, y2) = self.edge_pos[i]
         shrink_source = 0  # space from source to tail
         shrink_target = 0  # space from  head to target
+        if (
+            self.np.iterable(self.min_source_margin)
+            and not isinstance(self.min_source_margin, str)
+            and not isinstance(self.min_source_margin, tuple)
+        ):
+            min_source_margin = self.min_source_margin[i]
+        else:
+            min_source_margin = self.min_source_margin
+
+        if (
+            self.np.iterable(self.min_target_margin)
+            and not isinstance(self.min_target_margin, str)
+            and not isinstance(self.min_target_margin, tuple)
+        ):
+            min_target_margin = self.min_target_margin[i]
+        else:
+            min_target_margin = self.min_target_margin
+
         if self.np.iterable(self.node_size):  # many node sizes
             source, target = self.edgelist[i][:2]
             source_node_size = self.node_size[self.nodelist.index(source)]
@@ -616,8 +634,8 @@ class FancyArrowFactory:
         else:
             shrink_source = self.to_marker_edge(self.node_size, self.node_shape)
             shrink_target = shrink_source
-        shrink_source = max(shrink_source, self.min_source_margin)
-        shrink_target = max(shrink_target, self.min_target_margin)
+        shrink_source = max(shrink_source, min_source_margin)
+        shrink_target = max(shrink_target, min_target_margin)
 
         # scale factor of arrow head
         if isinstance(self.arrowsize, list):
@@ -658,10 +676,20 @@ class FancyArrowFactory:
             )
         else:
             connectionstyle = self.connectionstyle_factory.curved(self.edge_indices[i])
+
+        if (
+            self.np.iterable(self.arrowstyle)
+            and not isinstance(self.arrowstyle, str)
+            and not isinstance(self.arrowstyle, tuple)
+        ):
+            arrowstyle = self.arrowstyle[i]
+        else:
+            arrowstyle = self.arrowstyle
+
         return self.mpl.patches.FancyArrowPatch(
             (x1, y1),
             (x2, y2),
-            arrowstyle=self.arrowstyle,
+            arrowstyle=arrowstyle,
             shrinkA=shrink_source,
             shrinkB=shrink_target,
             mutation_scale=mutation_scale,
