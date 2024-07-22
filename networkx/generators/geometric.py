@@ -1,5 +1,4 @@
-"""Generators for geometric graphs.
-"""
+"""Generators for geometric graphs."""
 
 import math
 from bisect import bisect_left
@@ -955,7 +954,9 @@ def geometric_soft_configuration_graph(
     --------
     Generate a network with specified parameters:
 
-    >>> G = nx.geometric_soft_configuration_graph(beta=1.5, n=100, gamma=2.7, mean_degree=5)
+    >>> G = nx.geometric_soft_configuration_graph(
+    ...     beta=1.5, n=100, gamma=2.7, mean_degree=5
+    ... )
 
     Create a geometric soft configuration graph with 100 nodes. The $\beta$ parameter
     is set to 1.5 and the exponent of the powerlaw distribution of the hidden

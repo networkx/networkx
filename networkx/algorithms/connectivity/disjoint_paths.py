@@ -1,4 +1,5 @@
 """Flow based node and edge disjoint paths."""
+
 import networkx as nx
 
 # Define the default maximum flow function to use for the underlying
