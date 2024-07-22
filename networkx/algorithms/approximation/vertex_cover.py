@@ -7,6 +7,7 @@ is incident to at least one node in the subset.
 .. |vertex cover| replace:: *vertex cover*
 
 """
+
 import networkx as nx
 
 __all__ = ["min_weighted_vertex_cover"]
