@@ -1,4 +1,5 @@
 """Bridge-finding algorithms."""
+
 from itertools import chain
 
 import networkx as nx

@@ -1,4 +1,5 @@
 """Unit tests for the :mod:`networkx.algorithms.centrality.reaching` module."""
+
 import pytest
 
 import networkx as nx

@@ -1,6 +1,7 @@
 """
 Generators for interval graph.
 """
+
 from collections.abc import Sequence
 
 import networkx as nx

@@ -1,5 +1,5 @@
-"""Maximum flow algorithms test suite.
-"""
+"""Maximum flow algorithms test suite."""
+
 import pytest
 
 import networkx as nx
