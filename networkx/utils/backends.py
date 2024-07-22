@@ -767,13 +767,13 @@ class _dispatchable:
         if not backends:
             # Fast path if no backends are installed
             if backend is not None:
-                raise ImportError(f"{backend} backend is not installed")
+                raise ImportError(f"'{backend}' backend is not installed")
             return self.orig_func(*args, **kwargs)
 
         # Use `backend_name` in this function instead of `backend`
         backend_name = backend
         if backend_name is not None and backend_name not in backends:
-            raise ImportError(f"Unable to load backend: {backend_name}")
+            raise ImportError(f"'{backend_name}' backend is not installed")
 
         graphs_resolved = {}
         for gname, pos in self.graphs.items():
@@ -872,7 +872,7 @@ class _dispatchable:
                     f"to the specified backend {backend_name!r}."
                 )
             if graph_backend_name not in backends:
-                raise ImportError(f"Unable to load backend: {graph_backend_name}")
+                raise ImportError(f"'{graph_backend_name}' backend is not installed")
             if (
                 "networkx" in graph_backend_names
                 and graph_backend_name not in backend_priority

@@ -80,7 +80,7 @@ def test_graph_converter_needs_backend():
     finally:
         LoopbackBackendInterface.convert_to_nx = staticmethod(orig_convert_to_nx)
         del LoopbackBackendInterface.from_scipy_sparse_array
-    with pytest.raises(ImportError, match="Unable to load"):
+    with pytest.raises(ImportError, match="backend is not installed"):
         nx.from_scipy_sparse_array(A, backend="bad-backend-name")
 
 
@@ -107,9 +107,9 @@ def test_mixing_backend_graphs():
         assert set(nx.intersection(G, H2)) == {2, 3}
     elif not nx.config.backend_priority and "nx_loopback" not in nx.config.backends:
         # G2 and H2 are backend objects for a backend that is not registered!
-        with pytest.raises(ImportError, match="Unable to load backend"):
+        with pytest.raises(ImportError, match="backend is not installed"):
             nx.intersection(G2, H)
-        with pytest.raises(ImportError, match="Unable to load backend"):
+        with pytest.raises(ImportError, match="backend is not installed"):
             nx.intersection(G, H2)
     # It would be nice to test passing graphs from *different* backends,
     # but we are not set up to do this yet.
@@ -118,6 +118,6 @@ def test_mixing_backend_graphs():
 def test_bad_backend_name():
     """Using `backend=` raises with unknown backend even if there are no backends."""
     with pytest.raises(
-        ImportError, match="this_backend_does_not_exist backend is not installed"
+        ImportError, match="'this_backend_does_not_exist' backend is not installed"
     ):
         nx.null_graph(backend="this_backend_does_not_exist")
