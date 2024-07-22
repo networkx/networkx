@@ -247,8 +247,12 @@ def weisfeiler_lehman_subgraph_hashes(
     >>> G1.add_edges_from([(1, 2), (2, 3), (2, 4), (3, 5), (4, 6), (5, 7), (6, 7)])
     >>> G2 = nx.Graph()
     >>> G2.add_edges_from([(1, 3), (2, 3), (1, 6), (1, 5), (4, 6)])
-    >>> g1_hashes = nx.weisfeiler_lehman_subgraph_hashes(G1, iterations=3, digest_size=8)
-    >>> g2_hashes = nx.weisfeiler_lehman_subgraph_hashes(G2, iterations=3, digest_size=8)
+    >>> g1_hashes = nx.weisfeiler_lehman_subgraph_hashes(
+    ...     G1, iterations=3, digest_size=8
+    ... )
+    >>> g2_hashes = nx.weisfeiler_lehman_subgraph_hashes(
+    ...     G2, iterations=3, digest_size=8
+    ... )
 
     Even though G1 and G2 are not isomorphic (they have different numbers of edges),
     the hash sequence of depth 3 for node 1 in G1 and node 5 in G2 are similar:

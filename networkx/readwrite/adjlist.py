@@ -201,7 +201,7 @@ def parse_adjlist(
             line = line[:p]
         if not len(line):
             continue
-        vlist = line.strip().split(delimiter)
+        vlist = line.rstrip("\n").split(delimiter)
         u = vlist.pop(0)
         # convert types
         if nodetype is not None:
