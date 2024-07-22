@@ -1,5 +1,4 @@
-"""Functional interface to graph methods and assorted utilities.
-"""
+"""Functional interface to graph methods and assorted utilities."""
 
 from collections import Counter
 from itertools import chain

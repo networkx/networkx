@@ -41,19 +41,6 @@ Todo
 
 Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 
-Version 3.4
-~~~~~~~~~~~
-* Remove the ``random_tree`` function from ``generators/trees.py``. Replace
-  existing usages with ``random_labeled_tree``.
-* Remove the ``sort_neighbors`` input parameter from ``generic_bfs_edges``.
-* Remove ``MultiDiGraph_EdgeKey`` class from ``algorithms/tree/branchings.py``. 
-* Remove ``Edmonds`` class from ``algorithms/tree/branchings.py``.
-* Remove ``normalized`` kwarg from ``algorithms.s_metric``
-* Remove renamed function ``join()`` in ``algorithms/tree/operations.py`` and
-  in ``doc/reference/algorithms/trees.rst``
-* Remove ``strongly_connected_components_recursive`` from
-  ``algorithms/components/strongly_connected.py``
-
 Version 3.5
 ~~~~~~~~~~~
 * Remove ``all_triplets`` from ``algorithms/triads.py``
