@@ -1,4 +1,4 @@
-""" This module provides the functions for node classification problem.
+"""This module provides the functions for node classification problem.
 
 The functions in this module are not imported
 into the top level `networkx` namespace.
@@ -22,6 +22,7 @@ Zhu, X., Ghahramani, Z., & Lafferty, J. (2003, August).
 Semi-supervised learning using gaussian fields and harmonic functions.
 In ICML (Vol. 3, pp. 912-919).
 """
+
 import networkx as nx
 
 __all__ = ["harmonic_function", "local_and_global_consistency"]

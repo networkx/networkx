@@ -249,7 +249,7 @@ class NetworkXConfig(Config):
         example, ``G[u][v][k] = val`` changes the graph, but does not clear the cache.
         Using methods such as ``G.add_edge(u, v, weight=val)`` will clear the cache to
         keep it consistent. ``G.__networkx_cache__.clear()`` manually clears the cache.
-        Default is False.
+        Default is True.
 
     warnings : set of strings
         Control which warnings from NetworkX are emitted. Valid elements:
@@ -316,7 +316,9 @@ class NetworkXConfig(Config):
 config = NetworkXConfig(
     backend_priority=[],
     backends=Config(),
-    cache_converted_graphs=bool(os.environ.get("NETWORKX_CACHE_CONVERTED_GRAPHS", "")),
+    cache_converted_graphs=bool(
+        os.environ.get("NETWORKX_CACHE_CONVERTED_GRAPHS", True)
+    ),
     warnings={
         x.strip()
         for x in os.environ.get("NETWORKX_WARNINGS", "cache").split(",")

@@ -1,5 +1,5 @@
-"""Connectivity and cut algorithms
-"""
+"""Connectivity and cut algorithms"""
+
 from .connectivity import *
 from .cuts import *
 from .edge_augmentation import *
