@@ -1,4 +1,5 @@
 """Unit tests for the chain decomposition functions."""
+
 from itertools import cycle, islice
 
 import pytest

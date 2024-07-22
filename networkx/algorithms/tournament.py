@@ -20,6 +20,7 @@ To access the functions in this module, you must access them through the
 .. _tournament graph: https://en.wikipedia.org/wiki/Tournament_%28graph_theory%29
 
 """
+
 from itertools import combinations
 
 import networkx as nx
@@ -326,7 +327,6 @@ def is_reachable(G, s, t):
         out-neighbors of `v`), and the nodes at distance two.
 
         """
-        # TODO This is trivially parallelizable.
         return {
             x for x in G if x == v or x in G[v] or any(is_path(G, [v, z, x]) for z in G)
         }
@@ -339,10 +339,8 @@ def is_reachable(G, s, t):
         *u* to *v*.
 
         """
-        # TODO This is trivially parallelizable.
         return all(v in G[u] for u in set(G) - nodes for v in nodes)
 
-    # TODO This is trivially parallelizable.
     neighborhoods = [two_neighborhood(G, v) for v in G]
     return all(not (is_closed(G, S) and s in S and t not in S) for S in neighborhoods)
 
@@ -402,5 +400,4 @@ def is_strongly_connected(G):
            <http://eccc.hpi-web.de/report/2001/092/>
 
     """
-    # TODO This is trivially parallelizable.
     return all(is_reachable(G, u, v) for u in G for v in G)
