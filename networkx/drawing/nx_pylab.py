@@ -791,13 +791,13 @@ def draw_networkx_edges(
 
         Note: Arrowheads will be the same color as edges.
 
-    arrowstyle : str (default='-\|>' for directed graphs)
+    arrowstyle : str or list of strs (default='-\|>' for directed graphs)
         For directed graphs and `arrows==True` defaults to '-\|>',
         For undirected graphs default to '-'.
 
         See `matplotlib.patches.ArrowStyle` for more options.
 
-    arrowsize : int (default=10)
+    arrowsize : int or list of ints(default=10)
         For directed graphs, choose the size of the arrow head's length and
         width. See `matplotlib.patches.FancyArrowPatch` for attribute
         `mutation_scale` for more info.
@@ -823,10 +823,10 @@ def draw_networkx_edges(
     label : None or string
         Label for legend
 
-    min_source_margin : int (default=0)
+    min_source_margin : int or list of ints (default=0)
         The minimum margin (gap) at the beginning of the edge at the source.
 
-    min_target_margin : int (default=0)
+    min_target_margin : int or list of ints (default=0)
         The minimum margin (gap) at the end of the edge at the target.
 
     hide_ticks : bool, optional
