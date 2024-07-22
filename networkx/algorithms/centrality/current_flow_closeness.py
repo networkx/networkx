@@ -1,4 +1,5 @@
 """Current-flow closeness centrality measures."""
+
 import networkx as nx
 from networkx.algorithms.centrality.flow_matrix import (
     CGInverseLaplacian,

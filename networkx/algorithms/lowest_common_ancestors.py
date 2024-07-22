@@ -1,4 +1,5 @@
 """Algorithms for finding the lowest common ancestor of trees and DAGs."""
+
 from collections import defaultdict
 from collections.abc import Mapping, Set
 from itertools import combinations_with_replacement

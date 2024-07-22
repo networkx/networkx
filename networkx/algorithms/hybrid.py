@@ -3,6 +3,7 @@ Provides functions for finding and testing for locally `(k, l)`-connected
 graphs.
 
 """
+
 import copy
 
 import networkx as nx

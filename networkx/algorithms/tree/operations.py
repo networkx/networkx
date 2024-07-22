@@ -1,34 +1,11 @@
 """Operations on trees."""
+
 from functools import partial
 from itertools import accumulate, chain
 
 import networkx as nx
 
-__all__ = ["join", "join_trees"]
-
-
-def join(rooted_trees, label_attribute=None):
-    """A deprecated name for `join_trees`
-
-    Returns a new rooted tree with a root node joined with the roots
-    of each of the given rooted trees.
-
-    .. deprecated:: 3.2
-
-       `join` is deprecated in NetworkX v3.2 and will be removed in v3.4.
-       It has been renamed join_trees with the same syntax/interface.
-
-    """
-    import warnings
-
-    warnings.warn(
-        "The function `join` is deprecated and is renamed `join_trees`.\n"
-        "The ``join`` function itself will be removed in v3.4",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-
-    return join_trees(rooted_trees, label_attribute=label_attribute)
+__all__ = ["join_trees"]
 
 
 # Argument types don't match dispatching, but allow manual selection of backend
@@ -86,7 +63,7 @@ def join_trees(rooted_trees, *, label_attribute=None, first_label=0):
         >>> h = 4
         >>> left = nx.balanced_tree(2, h)
         >>> right = nx.balanced_tree(2, h)
-        >>> joined_tree = nx.join([(left, 0), (right, 0)])
+        >>> joined_tree = nx.join_trees([(left, 0), (right, 0)])
         >>> nx.is_isomorphic(joined_tree, nx.balanced_tree(2, h + 1))
         True
 
