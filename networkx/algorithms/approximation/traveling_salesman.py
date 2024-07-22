@@ -33,6 +33,7 @@ important in operations research and theoretical computer science.
 
 http://en.wikipedia.org/wiki/Travelling_salesman_problem
 """
+
 import math
 
 import networkx as nx
@@ -422,7 +423,9 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     >>> import networkx.algorithms.approximation as approx
     >>> G = nx.complete_graph(3, create_using=nx.DiGraph)
     >>> nx.set_edge_attributes(
-    ...     G, {(0, 1): 2, (1, 2): 2, (2, 0): 2, (0, 2): 1, (2, 1): 1, (1, 0): 1}, "weight"
+    ...     G,
+    ...     {(0, 1): 2, (1, 2): 2, (2, 0): 2, (0, 2): 1, (2, 1): 1, (1, 0): 1},
+    ...     "weight",
     ... )
     >>> tour = approx.asadpour_atsp(G, source=0)
     >>> tour

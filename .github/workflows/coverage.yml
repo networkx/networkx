@@ -13,9 +13,10 @@ concurrency:
 jobs:
   report:
     runs-on: ubuntu-22.04
+    timeout-minutes: 30
     strategy:
       matrix:
-        python-version: ["3.10"]
+        python-version: ["3.12"]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}

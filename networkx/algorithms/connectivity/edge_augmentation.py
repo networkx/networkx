@@ -12,6 +12,7 @@ See Also
 :mod:`edge_kcomponents` : algorithms for finding k-edge-connected components
 :mod:`connectivity` : algorithms for determining edge connectivity.
 """
+
 import itertools as it
 import math
 from collections import defaultdict, namedtuple
