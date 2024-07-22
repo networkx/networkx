@@ -767,7 +767,7 @@ class _dispatchable:
         if not backends:
             # Fast path if no backends are installed
             if backend is not None:
-                raise ImportError(f"Unable to load backend: {backend}")
+                raise ImportError(f"{backend} backend is not installed")
             return self.orig_func(*args, **kwargs)
 
         # Use `backend_name` in this function instead of `backend`
