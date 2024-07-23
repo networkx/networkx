@@ -44,22 +44,6 @@ need to pass additional backend-specific arguments, for example::
 
 Here, ``get_chunks`` is not a NetworkX argument, but a nx_parallel-specific argument.
 
-NetworkX also offers a very basic logging system that can help you verify if the
-backend that you specified is being implemented. This will most likely become more
-enhanced in the future. You can enable the networkx's backend logger like this::
-
-    import logging
-    nxl = logging.getLogger("networkx")
-    nxl.addHandler(logging.StreamHandler())
-    nxl.setLevel(logging.DEBUG)
-
-And you can disable it by running this::
-
-    nxl.setLevel(logging.CRITICAL)
-
-Refer `this <https://docs.python.org/3/library/logging.html>`_ to know more about
-the logging facilities in Python.
-
 How does this work?
 -------------------
 
@@ -79,7 +63,8 @@ a backend), it checks if all graphs are from the same backend. If not, it raises
 ``TypeError``. If a backend is specified and it matches the backend of the graphs, it
 loads the backend and calls the corresponding function on the backend along with the
 additional backend-specific ``backend_kwargs``. After calling the function the networkx
-logger displays the ``DEBUG`` message, if the logging is enabled. If no compatible
+logger displays the ``DEBUG`` message, if the logging is enabled
+(see :ref:`Introspection <introspect>` below). If no compatible
 backend is found or the function is not implemented by the backend, it raises a
 ``NetworkXNotImplemented`` exception. And, if the function mutates the input graph or
 returns a graph, graph generator or loader then it tries to convert and run the
@@ -106,6 +91,63 @@ They are the following:
 
 Note that the ``backend_name`` is e.g. ``parallel``, the package installed
 is ``nx-parallel``, and we use ``nx_parallel`` while importing the package.
+
+.. _introspect:
+
+Introspection
+-------------
+Introspection techniques aim to demystify dispatching and backend graph conversion behaviors.
+
+The primary way to see what the dispatch machinery is doing is by enabling logging.
+This can help you verify that the backend you specified is being used.
+You can enable NetworkX's backend logger to print to ``sys.stderr`` like this::
+
+    import logging
+    nxl = logging.getLogger("networkx")
+    nxl.addHandler(logging.StreamHandler())
+    nxl.setLevel(logging.DEBUG)
+
+And you can disable it by running this::
+
+    nxl.setLevel(logging.CRITICAL)
+
+Refer to :external+python:mod:`logging` to learn more about the logging facilities in Python.
+
+By looking at the ``.backends`` attribute, you can get the set of all currently
+installed backends that implement a particular function. For example::
+
+    >>> nx.betweenness_centrality.backends  # doctest: +SKIP
+    {'parallel'}
+
+The function docstring will also show which installed backends support it
+along with any backend-specific notes and keyword arguments::
+
+    >>> help(nx.betweenness_centrality)  # doctest: +SKIP
+    ...
+    Backends
+    --------
+    parallel : Parallel backend for NetworkX algorithms
+      The parallel computation is implemented by dividing the nodes into chunks
+      and computing betweenness centrality for each chunk concurrently.
+    ...
+
+The NetworkX documentation website also includes info about trusted backends of NetworkX in function references.
+For example, see :func:`~networkx.algorithms.shortest_paths.weighted.all_pairs_bellman_ford_path_length`.
+
+Introspection capabilities are currently limited, but we are working to improve them.
+We plan to make it easier to answer questions such as:
+
+- What happened (and why)?
+- What *will* happen (and why)?
+- Where was time spent (including conversions)?
+- What is in the cache and how much memory is it using?
+
+Transparency is essential to allow for greater understanding, debug-ability,
+and customization. After all, NetworkX dispatching is extremely flexible and can
+support advanced workflows with multiple backends and fine-tuned configuration,
+but introspection is necessary to inform *when* and *how* to evolve your workflow
+to meet your needs. If you have suggestions for how to improve introspection, please
+`let us know <https://github.com/networkx/networkx/issues/new>`_!
 
 Docs for backend developers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -199,6 +241,13 @@ Creating a custom backend
         - ``short_summary`` : str or None
             One line summary of your backend which will be displayed in the
             "Additional backend implementations" section.
+        - ``default_config`` : dict
+            A dictionary mapping the backend config parameter names to their default values.
+            This is used to automatically initialise the default configs for all the
+            installed backends at the time of networkx's import.
+
+            .. seealso:: `~networkx.utils.configs.Config`
+
         - ``functions`` : dict or None
             A dictionary mapping function names to a dictionary of information
             about the function. The information can include the following keys:
