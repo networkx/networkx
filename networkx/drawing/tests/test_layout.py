@@ -381,7 +381,8 @@ class TestLayout:
 
     def test_spiral_layout_equidistant(self):
         G = nx.path_graph(10)
-        pos = nx.spiral_layout(G, equidistant=True)
+        nx.spiral_layout(G, equidistant=True, attribute="pos")
+        pos = nx.get_node_attributes(G, "pos")
         # Extract individual node positions as an array
         p = np.array(list(pos.values()))
         # Elementwise-distance between node positions
@@ -488,7 +489,8 @@ def test_bfs_layout_complete_graph(n):
     """The complete graph should result in two layers: the starting node and
     a second layer containing all neighbors."""
     G = nx.complete_graph(n)
-    pos = nx.bfs_layout(G, start=0)
+    nx.bfs_layout(G, start=0, attribute="pos")
+    pos = nx.get_node_attributes(G, "pos")
     assert np.array_equal(_num_nodes_per_bfs_layer(pos), [1, n - 1])
 
 
