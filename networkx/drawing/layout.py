@@ -1306,10 +1306,9 @@ def forceatlas2_layout(
     if pos is None:
         pos = nx.random_layout(G, dim=dim)
     else:
-        dim = len(next(iter(pos.values())))
+        dim = len(nx.utils.arbitrary_element(pos.values()))
 
     # default node positions proportional to the input dimensions
-    # (if it exists)
     max_dim = 1
     min_dim = 0
     # check if we have a valid pos else just return (empty graph)

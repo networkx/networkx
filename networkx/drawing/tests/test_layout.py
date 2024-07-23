@@ -398,8 +398,9 @@ class TestLayout:
     def test_forceatlas2_layout(self):
         # check whether partial pos input still returns a full proper position
         G = self.Gs
-        pos = nx.random_layout(G)
-        del pos[next(iter(G))]
+        node = nx.utils.arbitrary_element(G)
+        pos = nx.circular_layout(G)
+        del pos[node]
         pos = nx.forceatlas2_layout(G, pos=pos)
         assert len(pos) == len(G)
 
