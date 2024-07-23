@@ -1,4 +1,5 @@
 """Unit tests for layout functions."""
+
 import pytest
 
 import networkx as nx

@@ -1,5 +1,4 @@
-r""" Computation of graph non-randomness
-"""
+r"""Computation of graph non-randomness"""
 
 import math
 

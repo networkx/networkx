@@ -48,7 +48,7 @@ sphinx_gallery_conf = {
             "../examples/subclass",
         ]
     ),
-    "within_subsection_order": FileNameSortKey,
+    "within_subsection_order": "FileNameSortKey",
     # path where to save gallery generated examples
     "gallery_dirs": "auto_examples",
     "backreferences_dir": "modules/generated",

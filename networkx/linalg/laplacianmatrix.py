@@ -3,10 +3,11 @@
 All calculations here are done using the out-degree. For Laplacians using
 in-degree, use `G.reverse(copy=False)` instead of `G` and take the transpose.
 
-The `laplacian_matrix` function provides an unnormalized matrix, 
-while `normalized_laplacian_matrix`, `directed_laplacian_matrix`, 
+The `laplacian_matrix` function provides an unnormalized matrix,
+while `normalized_laplacian_matrix`, `directed_laplacian_matrix`,
 and `directed_combinatorial_laplacian_matrix` are all normalized.
 """
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 

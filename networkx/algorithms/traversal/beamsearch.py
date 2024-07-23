@@ -1,4 +1,5 @@
 """Basic algorithms for breadth-first searching the nodes of a graph."""
+
 import networkx as nx
 
 __all__ = ["bfs_beam_edges"]
