@@ -730,7 +730,9 @@ def barabasi_albert_graph(n, m, seed=None, initial_graph=None, create_using=None
 
 @py_random_state(4)
 @nx._dispatchable(graphs=None, returns_graph=True)
-def dual_barabasi_albert_graph(n, m1, m2, p, seed=None, initial_graph=None, create_using=None):
+def dual_barabasi_albert_graph(
+    n, m1, m2, p, seed=None, initial_graph=None, create_using=None
+):
     """Returns a random graph using dual Barabási–Albert preferential attachment
 
     A graph of $n$ nodes is grown by attaching new nodes each with either $m_1$
@@ -1303,7 +1305,9 @@ def random_powerlaw_tree_sequence(n, gamma=3, seed=None, tries=100):
 
 @py_random_state(3)
 @nx._dispatchable(graphs=None, returns_graph=True)
-def random_kernel_graph(n, kernel_integral, kernel_root=None, seed=None, create_using=None):
+def random_kernel_graph(
+    n, kernel_integral, kernel_root=None, seed=None, create_using=None
+):
     r"""Returns an random graph based on the specified kernel.
 
     The algorithm chooses each of the $[n(n-1)]/2$ possible edges with
