@@ -415,7 +415,9 @@ def test_labels_and_colors():
     labels[5] = r"$\beta$"
     labels[6] = r"$\gamma$"
     labels[7] = r"$\delta$"
+    colors = {n: "k" if n % 2 == 0 else "r" for n in range(8)}
     nx.draw_networkx_labels(G, pos, labels, font_size=16)
+    nx.draw_networkx_labels(G, pos, labels, font_size=16, font_color=colors)
     nx.draw_networkx_edge_labels(G, pos, edge_labels=None, rotate=False)
     nx.draw_networkx_edge_labels(G, pos, edge_labels={(4, 5): "4-5"})
     # plt.show()
