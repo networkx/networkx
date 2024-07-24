@@ -131,9 +131,9 @@ def test_nxconfig():
     with pytest.raises(TypeError, match="must be True or False"):
         nx.config.cache_converted_graphs = "bad value"
     with pytest.raises(TypeError, match="must be a set of "):
-        nx.config.warnings = 7
+        nx.config.warnings_to_ignore = 7
     with pytest.raises(ValueError, match="Unknown warning "):
-        nx.config.warnings = {"bad value"}
+        nx.config.warnings_to_ignore = {"bad value"}
 
 
 def test_not_strict():
