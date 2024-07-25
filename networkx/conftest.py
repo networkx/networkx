@@ -11,6 +11,7 @@ General guidelines for writing good tests:
   and add the module to the relevant entries below.
 
 """
+
 import os
 import sys
 import warnings
@@ -100,28 +101,7 @@ def set_warnings():
         message="\n\nshortest_path",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nrandom_tree"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="Edmonds has been deprecated"
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="MultiDiGraph_EdgeKey has been deprecated",
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nThe `normalized`"
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="The function `join` is deprecated",
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="\n\nstrongly_connected_components_recursive",
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nall_triplets"
@@ -150,6 +130,9 @@ def set_warnings():
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message=r"\n\nThe 'create=matrix'"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\n`compute_v_structures"
     )
 
 
@@ -220,6 +203,7 @@ needs_numpy = [
     "algorithms/centrality/laplacian.py",
     "algorithms/node_classification.py",
     "algorithms/non_randomness.py",
+    "algorithms/polynomials.py",
     "algorithms/shortest_paths/dense.py",
     "algorithms/tree/mst.py",
     "drawing/nx_latex.py",

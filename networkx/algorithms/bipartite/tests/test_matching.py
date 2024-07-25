@@ -1,4 +1,5 @@
 """Unit tests for the :mod:`networkx.algorithms.bipartite.matching` module."""
+
 import itertools
 
 import pytest
