@@ -331,7 +331,7 @@ How tests are run?
     - Pass the backend graph objects to the backend implementation of the algorithm.
     - Convert the result back to a form expected by NetworkX tests using
       ``<your_backend_interface_object>.convert_to_nx(result, ...)``.
-    - For nx-loopback, the graph is copied using the dispatchable metadata
+    - For nx_loopback, the graph is copied using the dispatchable metadata
 
 3. Dispatchable algorithms that are not implemented by the backend
    will cause a ``pytest.xfail``, when the ``NETWORKX_FALLBACK_TO_NX``
@@ -379,7 +379,7 @@ def _get_backends(group, *, load_and_call=False):
     Notes
     ------
     If a backend is defined more than once, a warning is issued.
-    The `nx-loopback` backend is removed if it exists, as it is only available during testing.
+    The `nx_loopback` backend is removed if it exists, as it is only available during testing.
     A warning is displayed if an error occurs while loading a backend.
     """
     items = entry_points(group=group)
@@ -402,7 +402,7 @@ def _get_backends(group, *, load_and_call=False):
                 )
         else:
             rv[ep.name] = ep
-    rv.pop("nx-loopback", None)
+    rv.pop("nx_loopback", None)
     return rv
 
 
@@ -774,12 +774,14 @@ class _dispatchable:
 
         if not backends:
             # Fast path if no backends are installed
+            if backend is not None:
+                raise ImportError(f"'{backend}' backend is not installed")
             return self.orig_func(*args, **kwargs)
 
         # Use `backend_name` in this function instead of `backend`
         backend_name = backend
         if backend_name is not None and backend_name not in backend_info:
-            raise ImportError(f"Unable to load backend: {backend_name}")
+            raise ImportError(f"'{backend_name}' backend is not installed")
 
         graphs_resolved = {}
         for gname, pos in self.graphs.items():
@@ -805,7 +807,7 @@ class _dispatchable:
 
         # Alternative to the above that does not check duplicated args or missing required graphs.
         # graphs_resolved = {
-        #     graph
+        #     gname: graph
         #     for gname, pos in self.graphs.items()
         #     if (graph := args[pos] if pos < len(args) else kwargs.get(gname)) is not None
         # }
@@ -877,7 +879,7 @@ class _dispatchable:
                     "may become possible in future releases."
                 )
             if graph_backend_name not in backends:
-                raise ImportError(f"Unable to load backend: {graph_backend_name}")
+                raise ImportError(f"'{graph_backend_name}' backend is not installed")
             if (
                 "networkx" in graph_backend_names
                 and graph_backend_name not in backend_priority
