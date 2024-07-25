@@ -1440,9 +1440,8 @@ def forceatlas2_layout(
         d2 = distance**2
         # remove self-interaction
         np.fill_diagonal(tmp, 0)
-        np.fill_diagonal(d2, 0)
+        np.fill_diagonal(d2, 1)
         factor = (tmp / d2) * scaling_ratio
-        np.fill_diagonal(factor, 0)
         repulsion = np.einsum("ijk, ij -> ik", diff, factor)
 
         # gravity
