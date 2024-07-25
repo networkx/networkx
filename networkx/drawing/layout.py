@@ -1131,6 +1131,8 @@ def arf_layout(
     etol=1e-6,
     dt=1e-3,
     max_iter=1000,
+    *,
+    seed=None,
 ):
     """Arf layout for networkx
 
@@ -1302,23 +1304,22 @@ def forceatlas2_layout(
     """
     import numpy as np
 
+    if len(G) == 0:
+        return {}
     # parse optional pos positions
     if pos is None:
         pos = nx.random_layout(G, dim=dim)
+        pos_arr = np.array(list(pos.values()))
     else:
-        dim = len(nx.utils.arbitrary_element(pos.values()))
-
-    # default node positions proportional to the input dimensions
-    max_dim = 1
-    min_dim = 0
-    # check if we have a valid pos else just return (empty graph)
-    if pos:
-        max_dim = np.array([max(i) for i in pos.values()]).max()
-        min_dim = np.array([min(i) for i in pos.values()]).min()
-    else:
-        return pos
-
-    pos_arr = np.random.rand(len(G), dim) * max_dim - min_dim
+        # set default node interval within the initial pos values
+        pos_init = np.array(list(pos.values()))
+        max_pos = pos_init.max(axis=0)
+        min_pos = pos_init.min(axis=0)
+        dim = max_pos.size
+        pos_arr = min_pos + np.random.rand(len(G), dim) * (max_pos - min_pos)
+        for idx, node in enumerate(G):
+            if node in pos:
+                pos_arr[idx] = pos[node].copy()
 
     mass = np.zeros(len(G))
     size = np.zeros(len(G))
@@ -1333,9 +1334,7 @@ def forceatlas2_layout(
     if node_mass is None:
         node_mass = {}
 
-    for idx, node in enumerate(G.nodes()):
-        if node in pos:
-            pos_arr[idx] = pos[node].copy()
+    for idx, node in enumerate(G):
         mass[idx] = node_mass.get(node, G.degree(node) + 1)
         size[idx] = node_size.get(node, 1)
 
