@@ -421,6 +421,7 @@ def spring_layout(
         Dimension of layout.
 
     seed : int, RandomState instance or None  optional (default=None)
+        Used only for the initial positions in the algorithm.
         Set the random state for deterministic node layouts.
         If int, `seed` is the seed used by the random number generator,
         if numpy.random.RandomState instance, `seed` is the random
@@ -1123,6 +1124,7 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     return pos
 
 
+@np_random_state("seed")
 def arf_layout(
     G,
     pos=None,
@@ -1162,6 +1164,13 @@ def arf_layout(
         Time step for force differential equation simulations.
     max_iter : int
         Max iterations before termination of the algorithm.
+    seed : int, RandomState instance or None  optional (default=None)
+        Set the random state for deterministic node layouts.
+        If int, `seed` is the seed used by the random number generator,
+        if numpy.random.RandomState instance, `seed` is the random
+        number generator,
+        if None, the random number generator is the RandomState instance used
+        by numpy.random.
 
     References
     .. [1] "Self-Organization Applied to Dynamic Network Layout", M. Geipel,
@@ -1187,7 +1196,7 @@ def arf_layout(
         msg = "The parameter a should be larger than 1"
         raise ValueError(msg)
 
-    pos_tmp = nx.random_layout(G)
+    pos_tmp = nx.random_layout(G, seed=seed)
     if pos is None:
         pos = pos_tmp
     else:
@@ -1237,6 +1246,7 @@ def arf_layout(
     return dict(zip(G.nodes(), p))
 
 
+@np_random_state("seed")
 def forceatlas2_layout(
     G,
     pos=None,
@@ -1252,6 +1262,7 @@ def forceatlas2_layout(
     weight=None,
     dissuade_hubs=False,
     linlog=False,
+    seed=None,
     dim=2,
 ):
     """Position nodes using the ForceAtlas2 force-directed layout algorithm.
@@ -1285,6 +1296,14 @@ def forceatlas2_layout(
         Prevents the clustering of hub nodes.
     linlog : bool (default: False)
         Uses logarithmic attraction instead of linear.
+    seed : int, RandomState instance or None  optional (default=None)
+        Used only for the initial positions in the algorithm.
+        Set the random state for deterministic node layouts.
+        If int, `seed` is the seed used by the random number generator,
+        if numpy.random.RandomState instance, `seed` is the random
+        number generator,
+        if None, the random number generator is the RandomState instance used
+        by numpy.random.
     dim : int (default: 2)
         Sets the dimensions for the layout. Ignored if `pos` is provided.
 
@@ -1308,7 +1327,7 @@ def forceatlas2_layout(
         return {}
     # parse optional pos positions
     if pos is None:
-        pos = nx.random_layout(G, dim=dim)
+        pos = nx.random_layout(G, dim=dim, seed=seed)
         pos_arr = np.array(list(pos.values()))
     else:
         # set default node interval within the initial pos values
@@ -1316,7 +1335,7 @@ def forceatlas2_layout(
         max_pos = pos_init.max(axis=0)
         min_pos = pos_init.min(axis=0)
         dim = max_pos.size
-        pos_arr = min_pos + np.random.rand(len(G), dim) * (max_pos - min_pos)
+        pos_arr = min_pos + seed.rand(len(G), dim) * (max_pos - min_pos)
         for idx, node in enumerate(G):
             if node in pos:
                 pos_arr[idx] = pos[node].copy()

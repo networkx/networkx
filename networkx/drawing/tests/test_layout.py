@@ -396,7 +396,7 @@ class TestLayout:
         dist = np.linalg.norm(p[1:] - p[:-1], axis=1)
         assert np.allclose(np.diff(dist), 0, atol=1e-3)
 
-    def test_forceatlas2_layout(self):
+    def test_forceatlas2_layout_partial_input_test(self):
         # check whether partial pos input still returns a full proper position
         G = self.Gs
         node = nx.utils.arbitrary_element(G)
@@ -436,9 +436,7 @@ class TestLayout:
             assert (s_vpos[k] == v).all()
 
     def test_arf_layout_partial_input_test(self):
-        """
-        Checks whether partial pos input still returns a proper position.
-        """
+        # Checks whether partial pos input still returns a proper position.
         G = self.Gs
         node = nx.utils.arbitrary_element(G)
         pos = nx.circular_layout(G)
@@ -452,6 +450,13 @@ class TestLayout:
         """
         G = self.Gs
         pytest.raises(ValueError, nx.arf_layout, G=G, a=-1)
+
+    def test_snoke_seed_input(self):
+        G = self.Gs
+        nx.random_layout(G, seed=42)
+        nx.spring_layout(G, seed=42)
+        nx.arf_layout(G, seed=42)
+        nx.forceatlas2_layout(G, seed=42)
 
 
 def test_multipartite_layout_nonnumeric_partition_labels():
