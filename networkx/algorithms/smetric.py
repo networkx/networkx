@@ -3,7 +3,7 @@ import networkx as nx
 __all__ = ["s_metric"]
 
 
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def s_metric(G):
     """Returns the s-metric [1]_ of graph.
 

@@ -110,7 +110,7 @@ def ancestors(G, source):
     return {child for parent, child in nx.bfs_edges(G, source, reverse=True)}
 
 
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def has_cycle(G):
     """Decides whether the directed graph has a cycle."""
     try:
@@ -122,7 +122,7 @@ def has_cycle(G):
         return False
 
 
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def is_directed_acyclic_graph(G):
     """Returns True if the graph `G` is a directed acyclic graph (DAG) or
     False if not.
@@ -572,7 +572,7 @@ def all_topological_sorts(G):
             break
 
 
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def is_aperiodic(G):
     """Returns True if `G` is aperiodic.
 

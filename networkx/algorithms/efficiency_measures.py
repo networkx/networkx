@@ -60,7 +60,7 @@ def efficiency(G, u, v):
 
 
 @not_implemented_for("directed")
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def global_efficiency(G):
     """Returns the average global efficiency of the graph.
 
@@ -121,7 +121,7 @@ def global_efficiency(G):
 
 
 @not_implemented_for("directed")
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def local_efficiency(G):
     """Returns the average local efficiency of the graph.
 
