@@ -10,6 +10,7 @@ For more information, see the `graph6`_ homepage.
 .. _graph6: http://users.cecs.anu.edu.au/~bdm/data/formats.html
 
 """
+
 from itertools import islice
 
 import networkx as nx

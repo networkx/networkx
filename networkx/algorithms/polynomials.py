@@ -12,8 +12,8 @@ matrix of a graph. Consider the complete graph ``K_4``:
 >>> import sympy
 >>> x = sympy.Symbol("x")
 >>> G = nx.complete_graph(4)
->>> A = nx.adjacency_matrix(G)
->>> M = sympy.SparseMatrix(A.todense())
+>>> A = nx.to_numpy_array(G, dtype=int)
+>>> M = sympy.SparseMatrix(A)
 >>> M.charpoly(x).as_expr()
 x**4 - 6*x**2 - 8*x - 3
 
@@ -21,6 +21,7 @@ x**4 - 6*x**2 - 8*x - 3
 .. [1] Y. Shi, M. Dehmer, X. Li, I. Gutman,
    "Graph Polynomials"
 """
+
 from collections import deque
 
 import networkx as nx

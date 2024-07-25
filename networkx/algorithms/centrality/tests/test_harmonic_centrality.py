@@ -1,6 +1,7 @@
 """
 Tests for degree centrality.
 """
+
 import pytest
 
 import networkx as nx

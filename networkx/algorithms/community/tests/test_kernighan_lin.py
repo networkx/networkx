@@ -1,6 +1,7 @@
 """Unit tests for the :mod:`networkx.algorithms.community.kernighan_lin`
 module.
 """
+
 from itertools import permutations
 
 import pytest
