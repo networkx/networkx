@@ -451,7 +451,7 @@ class TestLayout:
         G = self.Gs
         pytest.raises(ValueError, nx.arf_layout, G=G, a=-1)
 
-    def test_snoke_seed_input(self):
+    def test_smoke_seed_input(self):
         G = self.Gs
         nx.random_layout(G, seed=42)
         nx.spring_layout(G, seed=42)
