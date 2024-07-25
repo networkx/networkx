@@ -46,11 +46,9 @@ def pytest_configure(config):
     backend = config.getoption("--backend")
     if backend is None:
         backend = os.environ.get("NETWORKX_TEST_BACKEND")
-    # nx_loopback backend is only available when testing
-    backends = entry_points(name="nx_loopback", group="networkx.backends")
-    if backends:
-        networkx.utils.backends.backends["nx_loopback"] = next(iter(backends))
-    else:
+    # nx_loopback backend is only available when testing with a backend
+    loopback_ep = entry_points(name="nx_loopback", group="networkx.backends")
+    if not loopback_ep:
         warnings.warn(
             "\n\n             WARNING: Mixed NetworkX configuration! \n\n"
             "        This environment has mixed configuration for networkx.\n"
@@ -60,7 +58,12 @@ def pytest_configure(config):
             "        Make sure python finds the networkx repo you are testing\n\n"
         )
     if backend:
+        networkx.utils.backends.backends["nx_loopback"] = loopback_ep["nx_loopback"]
         networkx.config["backend_priority"] = [backend]
+        networkx.config.backends = networkx.utils.Config(
+            nx_loopback=networkx.utils.Config(),
+            **networkx.config.backends,
+        )
         fallback_to_nx = config.getoption("--fallback-to-nx")
         if not fallback_to_nx:
             fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
