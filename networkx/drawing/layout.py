@@ -1265,25 +1265,25 @@ def forceatlas2_layout(
         A NetworkX graph to be laid out.
     pos : dict or None, optional
         Initial positions of the nodes. If None, random initial positions are used.
-    max_iter : int
+    max_iter : int (default: 100)
         Number of iterations for the layout optimization.
-    jitter_tolerance : float
+    jitter_tolerance : float (default: 1.0)
         Controls the tolerance for adjusting the speed of layout generation.
-    scaling_ratio : float
+    scaling_ratio : float (default: 2.0)
         Determines the scaling of attraction and repulsion forces.
-    distributed_attraction : bool
+    distributed_attraction : bool (default: False)
         Distributes the attraction force evenly among nodes.
-    strong_gravity : bool
+    strong_gravity : bool (default: False)
         Applies a strong gravitational pull towards the center.
     node_mass : dict or None, optional
         Maps nodes to their masses, influencing the attraction to other nodes.
     node_size : dict or None, optional
         Maps nodes to their sizes, preventing crowding by creating a halo effect.
-    dissuade_hubs : bool
+    dissuade_hubs : bool (default: False)
         Prevents the clustering of hub nodes.
-    linlog : bool
+    linlog : bool (default: False)
         Uses logarithmic attraction instead of linear.
-    dim : int
+    dim : int (default: 2)
         Sets the dimensions for the layout. Ignored if `pos` is provided.
 
     Examples
