@@ -1502,7 +1502,7 @@ def forceatlas2_layout(
         if abs((update * factor[:, None]).sum()) < 1e-10:
             break
 
-    return {node: pos for node, pos in zip(G, pos_arr)}
+    return dict(zip(G, pos_arr))
 
 
 def rescale_layout(pos, scale=1):
