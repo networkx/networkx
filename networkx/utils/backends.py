@@ -764,6 +764,9 @@ class _dispatchable:
         """Returns the result of the original function, or the backend function if
         the backend is specified and that backend implements `func`."""
 
+        if config.backend_kwargs:
+            # Prioritize **kwargs over **config.backend_kwargs
+            kwargs = {**config.backend_kwargs, **kwargs}
         if not backends:
             # Fast path if no backends are installed
             if backend is not None:
@@ -771,7 +774,9 @@ class _dispatchable:
             return self.orig_func(*args, **kwargs)
 
         # Use `backend_name` in this function instead of `backend`
-        backend_name = backend
+        backend_name = (
+            backend if backend is not None else config.backend_kwargs.get("backend")
+        )
         if backend_name is not None and backend_name not in backends:
             raise ImportError(f"'{backend_name}' backend is not installed")
 
