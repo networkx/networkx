@@ -1430,7 +1430,6 @@ class _dispatchable:
                 "biconnected_component_edges",
                 "biconnected_components",
                 "bridge_components",
-                "compute_v_structures",
                 "connected_components",
                 "dfs_labeled_edges",
                 "edge_disjoint_paths",
