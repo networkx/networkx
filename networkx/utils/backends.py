@@ -1409,7 +1409,7 @@ class _dispatchable:
                 exc.args[0] if exc.args else f"{self.name} raised {type(exc).__name__}"
             )
 
-        if self.__doc__ and backend_name == "nx-loopback":
+        if self.__doc__ and backend_name == "nx_loopback":
             # Checks below will test whether these `should_be_*` sets are correct
             should_be_returns = set()
             should_be_yields_has_returns = {
