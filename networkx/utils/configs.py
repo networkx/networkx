@@ -301,7 +301,7 @@ class NetworkXConfig(Config):
     cache_converted_graphs: bool
 
     def _on_setattr(self, key, value):
-        from .backends import backends
+        from .backends import backend_info
 
         if key == "backend_priority":
             if isinstance(value, list):

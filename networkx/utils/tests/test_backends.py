@@ -88,8 +88,8 @@ def test_graph_converter_needs_backend():
 
 
 @pytest.mark.skipif(
-    "not nx.config['backend_priority'] "
-    "or nx.config['backend_priority'][0] != 'nx_loopback'"
+    "not nx.config.backend_priority.algos "
+    "or nx.config.backend_priority.algos[0] != 'nx_loopback'"
 )
 def test_networkx_backend():
     """Test using `backend="networkx"` in a dispatchable function."""
