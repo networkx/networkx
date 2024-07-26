@@ -60,7 +60,8 @@ def pytest_configure(config):
     if backend:
         networkx.utils.backends.backends["nx_loopback"] = loopback_ep["nx_loopback"]
         networkx.utils.backends.backend_info["nx_loopback"] = {}
-        networkx.config["backend_priority"] = [backend]
+        networkx.config.backend_priority.algos = [backend]
+        networkx.config.backend_priority.generators = [backend]
         networkx.config.backends = networkx.utils.Config(
             nx_loopback=networkx.utils.Config(),
             **networkx.config.backends,
@@ -75,7 +76,7 @@ def pytest_collection_modifyitems(config, items):
     # Setting this to True here allows tests to be set up before dispatching
     # any function call to a backend.
     networkx.utils.backends._dispatchable._is_testing = True
-    if backend_priority := networkx.config["backend_priority"]:
+    if backend_priority := networkx.config.backend_priority.algos:
         # Allow pluggable backends to add markers to tests (such as skip or xfail)
         # when running in auto-conversion test mode
         backend = networkx.utils.backends.backends[backend_priority[0]].load()

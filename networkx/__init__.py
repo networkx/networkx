@@ -47,3 +47,8 @@ from networkx.linalg import *
 
 from networkx import drawing
 from networkx.drawing import *
+
+from networkx.utils.backends import _finish_init_of_backends_and_config
+
+_finish_init_of_backends_and_config()
+del _finish_init_of_backends_and_config
