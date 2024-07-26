@@ -44,6 +44,9 @@ need to pass additional backend-specific arguments, for example::
 
 Here, ``get_chunks`` is not a NetworkX argument, but a nx_parallel-specific argument.
 
+Note that ``"networkx"`` is the backend name for NetworkX. Hence, you may pass
+``backend="networkx"`` to use the default implementation (converting if necessary).
+
 How does this work?
 -------------------
 
@@ -403,8 +406,12 @@ def _get_backends(group, *, load_and_call=False):
     return rv
 
 
+# Note: "networkx" will be in `backend_info`, but not `backends` or `config.backends`.
+# It is valid to use "networkx"` as backend argument and in `config.backend_priority`.
 backends = _get_backends("networkx.backends")
 backend_info = _get_backends("networkx.backend_info", load_and_call=True)
+# Ensure all backends are in `backend_info`
+backend_info.update((backend, {}) for backend in backends.keys() - backend_info.keys())
 
 # We must import from config after defining `backends` above
 from .configs import Config, config
@@ -429,6 +436,7 @@ config.backends = Config(
         for backend, info in backend_info.items()
     }
 )
+backend_info["networkx"] = {}
 type(config.backends).__doc__ = "All installed NetworkX backends and their configs."
 
 # Load and cache backends on-demand
@@ -772,7 +780,7 @@ class _dispatchable:
 
         # Use `backend_name` in this function instead of `backend`
         backend_name = backend
-        if backend_name is not None and backend_name not in backends:
+        if backend_name is not None and backend_name not in backend_info:
             raise ImportError(f"'{backend_name}' backend is not installed")
 
         graphs_resolved = {}
@@ -780,28 +788,28 @@ class _dispatchable:
             if pos < len(args):
                 if gname in kwargs:
                     raise TypeError(f"{self.name}() got multiple values for {gname!r}")
-                val = args[pos]
+                graph = args[pos]
             elif gname in kwargs:
-                val = kwargs[gname]
+                graph = kwargs[gname]
             elif gname not in self.optional_graphs:
                 raise TypeError(
                     f"{self.name}() missing required graph argument: {gname}"
                 )
             else:
                 continue
-            if val is None:
+            if graph is None:
                 if gname not in self.optional_graphs:
                     raise TypeError(
                         f"{self.name}() required graph argument {gname!r} is None; must be a graph"
                     )
             else:
-                graphs_resolved[gname] = val
+                graphs_resolved[gname] = graph
 
         # Alternative to the above that does not check duplicated args or missing required graphs.
         # graphs_resolved = {
-        #     val
+        #     gname: graph
         #     for gname, pos in self.graphs.items()
-        #     if (val := args[pos] if pos < len(args) else kwargs.get(gname)) is not None
+        #     if (graph := args[pos] if pos < len(args) else kwargs.get(gname)) is not None
         # }
 
         # Check if any graph comes from a backend
@@ -809,39 +817,28 @@ class _dispatchable:
             # Make sure we don't lose values by consuming an iterator
             args = list(args)
             for gname in self.list_graphs & graphs_resolved.keys():
-                val = list(graphs_resolved[gname])
-                graphs_resolved[gname] = val
+                list_of_graphs = list(graphs_resolved[gname])
+                graphs_resolved[gname] = list_of_graphs
                 if gname in kwargs:
-                    kwargs[gname] = val
+                    kwargs[gname] = list_of_graphs
                 else:
-                    args[self.graphs[gname]] = val
+                    args[self.graphs[gname]] = list_of_graphs
 
-            has_backends = any(
-                hasattr(g, "__networkx_backend__")
-                if gname not in self.list_graphs
-                else any(hasattr(g2, "__networkx_backend__") for g2 in g)
+            graph_backend_names = {
+                getattr(g, "__networkx_backend__", None)
                 for gname, g in graphs_resolved.items()
-            )
-            if has_backends:
-                graph_backend_names = {
-                    getattr(g, "__networkx_backend__", "networkx")
-                    for gname, g in graphs_resolved.items()
-                    if gname not in self.list_graphs
-                }
-                for gname in self.list_graphs & graphs_resolved.keys():
-                    graph_backend_names.update(
-                        getattr(g, "__networkx_backend__", "networkx")
-                        for g in graphs_resolved[gname]
-                    )
+                if gname not in self.list_graphs
+            }
+            for gname in self.list_graphs & graphs_resolved.keys():
+                graph_backend_names.update(
+                    getattr(g, "__networkx_backend__", None)
+                    for g in graphs_resolved[gname]
+                )
         else:
-            has_backends = any(
-                hasattr(g, "__networkx_backend__") for g in graphs_resolved.values()
-            )
-            if has_backends:
-                graph_backend_names = {
-                    getattr(g, "__networkx_backend__", "networkx")
-                    for g in graphs_resolved.values()
-                }
+            graph_backend_names = {
+                getattr(g, "__networkx_backend__", None)
+                for g in graphs_resolved.values()
+            }
 
         backend_priority = config.backend_priority
         if self._is_testing and backend_priority and backend_name is None:
@@ -854,22 +851,32 @@ class _dispatchable:
                 fallback_to_nx=self._fallback_to_nx,
             )
 
-        if has_backends:
+        if other_backend_names := graph_backend_names - {"networkx", None}:
             # Dispatchable graphs found! Dispatch to backend function.
             # We don't handle calls with different backend graphs yet,
             # but we may be able to convert additional networkx graphs.
-            backend_names = graph_backend_names - {"networkx"}
-            if len(backend_names) != 1:
+            if backend_name == "networkx":
+                # Convert backend graphs to networkx graphs
+                converted_args, converted_kwargs = self._convert_arguments(
+                    "networkx", args, kwargs, use_cache=config.cache_converted_graphs
+                )
+                return self.orig_func(*converted_args, **converted_kwargs)
+
+            if len(other_backend_names) != 1:
                 # Future work: convert between backends and run if multiple backends found
                 raise TypeError(
-                    f"{self.name}() graphs must all be from the same backend, found {backend_names}"
+                    f"{self.name}() graphs must all be from the same backend, found "
+                    f"{other_backend_names}. Automatic conversions between backends "
+                    "may become possible in future releases."
                 )
-            [graph_backend_name] = backend_names
+            [graph_backend_name] = other_backend_names
             if backend_name is not None and backend_name != graph_backend_name:
                 # Future work: convert between backends to `backend_name` backend
                 raise TypeError(
-                    f"{self.name}() is unable to convert graph from backend {graph_backend_name!r} "
-                    f"to the specified backend {backend_name!r}."
+                    f"{self.name}() is unable to convert graph from backend "
+                    f"{graph_backend_name!r} to the specified backend "
+                    f"{backend_name!r}. Automatic conversions between backends "
+                    "may become possible in future releases."
                 )
             if graph_backend_name not in backends:
                 raise ImportError(f"'{graph_backend_name}' backend is not installed")
@@ -879,9 +886,11 @@ class _dispatchable:
             ):
                 # Not configured to convert networkx graphs to this backend
                 raise TypeError(
-                    f"Unable to convert inputs and run {self.name}. "
-                    f"{self.name}() has networkx and {graph_backend_name} graphs, but NetworkX is not "
-                    f"configured to automatically convert graphs from networkx to {graph_backend_name}."
+                    f"Unable to convert inputs and run {self.name}. {self.name}() has "
+                    f"networkx and {graph_backend_name} graphs, but NetworkX is not "
+                    "configured to automatically convert graphs from networkx to "
+                    f"{graph_backend_name}. To enable automatic conversions, set:\n\n"
+                    f'    >>> nx.config.backend_priority = ["{graph_backend_name}"]'
                 )
             backend = _load_backend(graph_backend_name)
             if hasattr(backend, self.name):
@@ -902,11 +911,15 @@ class _dispatchable:
                 return getattr(backend, self.name)(*args, **kwargs)
             # Future work: try to convert and run with other backends in backend_priority
             raise nx.NetworkXNotImplemented(
-                f"'{self.name}' not implemented by {graph_backend_name}"
+                f"'{self.name}' not implemented by {graph_backend_name}. Automatic "
+                "conversions between backends may become possible in future releases."
             )
 
         # If backend was explicitly given by the user, so we need to use it no matter what
         if backend_name is not None:
+            if backend_name == "networkx":
+                # No conversions necessary here
+                return self.orig_func(*args, **kwargs)
             return self._convert_and_call(
                 backend_name, args, kwargs, fallback_to_nx=False
             )
@@ -939,6 +952,9 @@ class _dispatchable:
         ):
             # Should we warn or log if we don't convert b/c the input will be mutated?
             for backend_name in backend_priority:
+                if backend_name == "networkx":
+                    # Assume (for now) that networkx can and should run anything
+                    break
                 if self._should_backend_run(backend_name, *args, **kwargs):
                     return self._convert_and_call(
                         backend_name,
@@ -986,10 +1002,17 @@ class _dispatchable:
             bound_kwargs = bound.kwargs
             del bound_kwargs["backend"]
             return bound.args, bound_kwargs
+        if backend_name == "networkx":
+            # `backend_interface.convert_from_nx` preserves everything
+            preserve_edge_attrs = preserve_node_attrs = preserve_graph_attrs = True
+        else:
+            preserve_edge_attrs = self.preserve_edge_attrs
+            preserve_node_attrs = self.preserve_node_attrs
+            preserve_graph_attrs = self.preserve_graph_attrs
+            edge_attrs = self.edge_attrs
+            node_attrs = self.node_attrs
         # Convert graphs into backend graph-like object
         # Include the edge and/or node labels if provided to the algorithm
-        preserve_edge_attrs = self.preserve_edge_attrs
-        edge_attrs = self.edge_attrs
         if preserve_edge_attrs is False:
             # e.g. `preserve_edge_attrs=False`
             pass
@@ -1056,8 +1079,6 @@ class _dispatchable:
                 if (edge_attr := bound.arguments[key]) is not None
             }
 
-        preserve_node_attrs = self.preserve_node_attrs
-        node_attrs = self.node_attrs
         if preserve_node_attrs is False:
             # e.g. `preserve_node_attrs=False`
             pass
@@ -1117,8 +1138,6 @@ class _dispatchable:
                 if (node_attr := bound.arguments[key]) is not None
             }
 
-        preserve_graph_attrs = self.preserve_graph_attrs
-
         # It should be safe to assume that we either have networkx graphs or backend graphs.
         # Future work: allow conversions between backends.
         for gname in self.graphs:
@@ -1135,7 +1154,7 @@ class _dispatchable:
                         graph_name=gname,
                         use_cache=use_cache,
                     )
-                    if getattr(g, "__networkx_backend__", "networkx") == "networkx"
+                    if getattr(g, "__networkx_backend__", "networkx") != backend_name
                     else g
                     for g in bound.arguments[gname]
                 ]
@@ -1163,7 +1182,7 @@ class _dispatchable:
                     preserve_graph = gname in preserve_graph_attrs
                 else:
                     preserve_graph = preserve_graph_attrs
-                if getattr(graph, "__networkx_backend__", "networkx") == "networkx":
+                if getattr(graph, "__networkx_backend__", "networkx") != backend_name:
                     bound.arguments[gname] = self._convert_graph(
                         backend_name,
                         graph,
@@ -1265,20 +1284,24 @@ class _dispatchable:
                         warnings.warn(warning_message)
                         return val
 
-        backend = _load_backend(backend_name)
-        rv = backend.convert_from_nx(
-            graph,
-            edge_attrs=edge_attrs,
-            node_attrs=node_attrs,
-            preserve_edge_attrs=preserve_edge_attrs,
-            preserve_node_attrs=preserve_node_attrs,
-            # Always preserve graph attrs when we are caching b/c this should be
-            # cheap and may help prevent extra (unnecessary) conversions. Because
-            # we do this, we don't need `preserve_graph_attrs` in the cache key.
-            preserve_graph_attrs=preserve_graph_attrs or use_cache,
-            name=self.name,
-            graph_name=graph_name,
-        )
+        if backend_name == "networkx":
+            backend = _load_backend(graph.__networkx_backend__)
+            rv = backend.convert_to_nx(graph)
+        else:
+            backend = _load_backend(backend_name)
+            rv = backend.convert_from_nx(
+                graph,
+                edge_attrs=edge_attrs,
+                node_attrs=node_attrs,
+                preserve_edge_attrs=preserve_edge_attrs,
+                preserve_node_attrs=preserve_node_attrs,
+                # Always preserve graph attrs when we are caching b/c this should be
+                # cheap and may help prevent extra (unnecessary) conversions. Because
+                # we do this, we don't need `preserve_graph_attrs` in the cache key.
+                preserve_graph_attrs=preserve_graph_attrs or use_cache,
+                name=self.name,
+                graph_name=graph_name,
+            )
         if use_cache and nx_cache is not None:
             # Remove old cached items that are no longer necessary since they
             # are dominated/subsumed/outdated by what was just calculated.
