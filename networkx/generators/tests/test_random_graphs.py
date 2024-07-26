@@ -370,7 +370,14 @@ def test_connected_watts_strogatz_zero_tries():
         (nx.random_lobster, {"n": 40, "p1": 0.1, "p2": 0.2}),
         (nx.random_shell_graph, {"constructor": [(10, 20, 0.8), (20, 40, 0.8)]}),
         (nx.random_powerlaw_tree, {"n": 10, "seed": 14, "tries": 1}),
-        (nx.random_kernel_graph, {"n": 10, "kernel_integral": lambda u, w, z: z - w}),
+        (
+            nx.random_kernel_graph,
+            {
+                "n": 10,
+                "kernel_integral": lambda u, w, z: z - w,
+                "kernel_root": lambda u, w, r: r + w,
+            },
+        ),
     ],
 )
 def test_create_using(generator, kwargs):
