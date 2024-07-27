@@ -898,6 +898,19 @@ class _dispatchable:
                     f"with args: {args}, kwargs: {kwargs}"
                 )
                 return getattr(backend, self.name)(*args, **kwargs)
+
+            # At this point, no backends are available to handle the call with
+            # the input graph types, but if the input graphs are compatible with
+            # networkx.Graph instances, fall back to networkx.
+            _logger.debug("no backends are available to handle the call to "
+                          f"`{self.name}` with graph types {graph_backend_names}")
+            if all([isinstance(g, nx.Graph) for g in graphs_resolved.values()]):
+                _logger.debug(
+                    f"falling back to backend 'networkx' for call to `{self.name}' "
+                    f"with args: {args}, kwargs: {kwargs}"
+                )
+                return self.orig_func(*args, **kwargs)
+
             # Future work: try to convert and run with other backends in backend_priority
             raise nx.NetworkXNotImplemented(
                 f"'{self.name}' not implemented by {graph_backend_name}"
@@ -909,12 +922,19 @@ class _dispatchable:
                 backend_name, args, kwargs, fallback_to_nx=False
             )
 
-        # Only networkx graphs; try to convert and run with a backend with automatic
-        # conversion, but don't do this by default for graph generators or loaders,
-        # or if the functions mutates an input graph or returns a graph.
-        # Only convert and run if `backend.should_run(...)` returns True.
+        # Only networkx graphs; try to convert and run with a backend with
+        # automatic conversion, but don't do this by default for graph
+        # generators or loaders if they may return non-NetworkX graphs, or if
+        # the functions mutates an input graph or returns a graph.  Only
+        # convert and run if `backend.should_run(...)` returns True.
+        returns_incompatible_graph = (
+            self._returns_graph
+            and backend_name is not None
+            and not self._backend_func_returns_networkx_compatible_graph(backend_name)
+        )
+
         if (
-            not self._returns_graph
+            not returns_incompatible_graph
             and (
                 not self.mutates_input
                 or isinstance(self.mutates_input, dict)
@@ -946,6 +966,18 @@ class _dispatchable:
                     )
         # Default: run with networkx on networkx inputs
         return self.orig_func(*args, **kwargs)
+
+    def _backend_func_returns_networkx_compatible_graph(self, backend_name):
+        """Returns True if the backend function returns a graph that is compatible with
+        a networkx.Graph (isinstance(G, nx.Graph) == True).
+        """
+        backend = _load_backend(backend_name)
+        func = getattr(backend, self.name)
+        return (
+            (func is not None)
+            and hasattr(func, "returns_networkx_compatible_graph")
+            and func.returns_networkx_compatible_graph
+        )
 
     def _can_backend_run(self, backend_name, /, *args, **kwargs):
         """Can the specified backend run this algorithm with these arguments?"""
