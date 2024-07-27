@@ -970,8 +970,11 @@ class _dispatchable:
         return self.orig_func(*args, **kwargs)
 
     def _backend_func_returns_networkx_compatible_graph(self, backend_name):
-        """Returns True if the backend function returns a graph that is compatible with
-        a networkx.Graph (isinstance(G, nx.Graph) == True).
+        """Returns True if the backend function returns a graph that is considered
+        compatible with a networkx.Graph. This means the backend graph must:
+        1) be a subclass of nx.Graph (isinstance(G, nx.Graph) == True), and
+        2) have an attr named "returns_networkx_compatible_graph" which evaluates
+        to True.
         """
         backend = _load_backend(backend_name)
         func = getattr(backend, self.name)
