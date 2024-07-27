@@ -926,9 +926,9 @@ class _dispatchable:
 
         # Only networkx graphs; try to convert and run with a backend with
         # automatic conversion, but don't do this by default for graph
-        # generators or loaders if they may return non-NetworkX graphs, or if
-        # the functions mutates an input graph or returns a graph.  Only
-        # convert and run if `backend.should_run(...)` returns True.
+        # generators or loaders if they are not known to return networkx.Graph
+        # compatible graphs, or if the function mutates an input graph.
+        # Only convert and run if `backend.should_run(...)` returns True.
         returns_incompatible_graph = (
             self._returns_graph
             and backend_name is not None
