@@ -904,9 +904,11 @@ class _dispatchable:
             # At this point, no backends are available to handle the call with
             # the input graph types, but if the input graphs are compatible with
             # networkx.Graph instances, fall back to networkx.
-            _logger.debug("no backends are available to handle the call to "
-                          f"`{self.name}` with graph types {graph_backend_names}")
-            if all([isinstance(g, nx.Graph) for g in graphs_resolved.values()]):
+            _logger.debug(
+                "no backends are available to handle the call to "
+                f"`{self.name}` with graph types {graph_backend_names}"
+            )
+            if all(isinstance(g, nx.Graph) for g in graphs_resolved.values()):
                 _logger.debug(
                     f"falling back to backend 'networkx' for call to `{self.name}' "
                     f"with args: {args}, kwargs: {kwargs}"
