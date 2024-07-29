@@ -2,7 +2,7 @@
 
 # A full test of all dispatchable algorithms is performed by
 # modifying the pytest invocation and setting an environment variable
-# NETWORKX_TEST_BACKEND=nx-loopback pytest
+# NETWORKX_TEST_BACKEND=nx_loopback pytest
 # This is comprehensive, but only tests the `test_override_dispatch`
 # function in networkx.classes.backends.
 
@@ -16,23 +16,23 @@ from networkx.classes.reportviews import NodeView
 
 
 class LoopbackGraph(Graph):
-    __networkx_backend__ = "nx-loopback"
+    __networkx_backend__ = "nx_loopback"
 
 
 class LoopbackDiGraph(DiGraph):
-    __networkx_backend__ = "nx-loopback"
+    __networkx_backend__ = "nx_loopback"
 
 
 class LoopbackMultiGraph(MultiGraph):
-    __networkx_backend__ = "nx-loopback"
+    __networkx_backend__ = "nx_loopback"
 
 
 class LoopbackMultiDiGraph(MultiDiGraph):
-    __networkx_backend__ = "nx-loopback"
+    __networkx_backend__ = "nx_loopback"
 
 
 class LoopbackPlanarEmbedding(PlanarEmbedding):
-    __networkx_backend__ = "nx-loopback"
+    __networkx_backend__ = "nx_loopback"
 
 
 def convert(graph):
