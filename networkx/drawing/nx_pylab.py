@@ -49,6 +49,187 @@ __all__ = [
 ]
 
 
+def new_draw(
+    G,
+    canvas=None,
+    /,
+    pos=spring_layout,
+    node_visible="visible",
+    node_color="color",
+    node_size="size",
+    node_label="label",
+    node_shape="shape",
+    node_alpha="alpha",
+    node_border_width="border_width",
+    node_border_color="border_color",
+    edge_visible="visible",
+    edge_color="color",
+    edge_label="label",
+    edge_style="style",
+    edge_alpha="alpha",
+    arrowstyle="arrow",
+    arrowsize="arrow_size",
+    edge_curvature="curve",
+    edge_source_margin="source_margin",
+    edge_target_margin="target_margin",
+    hide_ticks=True,
+):
+    """Draw the graph G.
+
+    Draw the graph as a collection of nodes connected by edges.
+    The exact details of what the graph looks like are controled by the below
+    attributes.
+
+    Parameters
+    ----------
+    G : graph
+        A networkx graph
+
+    canvas : Matplotlib Axes object, optional
+        Draw the graph in specified Matplotlib axes
+
+        TODO update this to be backing agnostic!
+
+    pos : string of function, default spring_layout
+        A string naming the node attribute which stores the position of nodes as
+        a tuple. If a function, that function is called with the input graph to compute the
+        position of each node. This function should return a dict of nodes to positions, like
+        the build in Networkx layout functions.
+
+    node_visible : string or bool, default visible
+        A string naming the node attribute which stores if a node should be drawn.
+        If `True`, all nodes will be visible while if `False` no nodes will be visible.
+        If incomplete, nodes missing this attribute will be shown by default.
+
+    node_color : string, default "color"
+        A string naming the node attribute which stores the color of each node.
+        Visible nodes without this attribute will use '#1f78b4' as a default.
+
+    node_size : string, default "size"
+        A string naming the node attribute which stores the size of each node.
+        Visible nodes without this attribute will use a default size of 300.
+
+    node_label : string, default "label"
+        A string naming the node attribute which stores the label of each node.
+        The values of this attribute can be a string, True (in which case the name of the
+        node is used), False or None in which case no label is added to the node or a dict.
+
+        If a dict is specified, these keys are read to further control the label:
+        - label : The text of the label, default name of the node
+        - size : Font size of the label, default 12
+        - color : Font color of the label, default black
+        - family : Font family of the label, default "sans-serif"
+        - weight : Font weight of the label, default "normal"
+        - alpha : Alpha value of the label, default 1.0
+        - background_color : The background color of the bounding box, default None.
+        - background_alpha : The alpha value of the bounding box, default None.
+        - border_size : The size of the border of the bounding box, default None.
+        - border_color : The color of the border of the bounding box, default None.
+        - h_align : The horizontal alignment of the label, one of "left", "center", "right", default "center"
+        - v_align : The vertical alignment of the label, one of "top", "center", "bottom", default "center"
+
+        Visible nodes without this attribute will not have a label.
+
+    node_shape : string, default "shape"
+        A string naming the node attribute which stores the label of each node.
+        The values of this attribute are expected to be one of the matplotlib shapes,
+        one of 'so^>v<dph8'. Visible nodes without this attribute will use 'o'.
+
+    node_alpha : string, default "alpha"
+        A string naming the node attribute which stores the alpha of each node.
+        The values of this attribute are expected to be floats between 0.0 and 1.0.
+        Visible nodes without this attribute will be treated as having a value of 1.0.
+
+    node_border_width : string, default "border_width"
+        A string naming the node attribute which stores the width of the border of the node.
+        The values of this attribute are expected to be numeric. Visible nodes without
+        this attribute will use the assumed default of 1.0.
+
+    node_border_color : string, default "border_color"
+        A string naming the node attribute which stores the color of the border of the node.
+        Visible nodes missing this attribute will use the final node_color value.
+
+    edge_visible : string or bool, default "visible"
+        A string nameing the edge attribute which stores if an edge should be drawn.
+        If `True`, all edges will be drawn while if `False` no edges will be visible.
+        If incomplete, edges missing this attribute will be shown by default. Values
+        of this attribute are expected to be booleans.
+
+    edge_width : string or int, default "width"
+        A string nameing the edge attribute which stores the width of each edge.
+        Visible edges without this attribute will use a default width of 1.0.
+
+    edge_color : string or color, default "color"
+        A string nameing the edge attribute which stores of color of each edge.
+        Visible edges without this attribute will be drawn black. Each color can be
+        a string or rgb (or rgba) tuple of floats from 0.0 to 1.0.
+
+    edge_label : string, default "label"
+        A string naming the edge attribute which stores the label of each edge.
+        The values of this attribute can be a string, number or False or None. In
+        the latter two cases, no edge label is displayed.
+
+        If a dict is specified, these keys are read to further control the label:
+        - label : The text of the label, if the name of another edge attribute, the value of that attribute.
+        - size : Font size of the label, default 12
+        - color : Font color of the label, default black
+        - family : Font family of the label, default "sans-serif"
+        - weight : Font weight of the label, default "normal"
+        - alpha : Alpha value of the label, default 1.0
+        - background_color : The background color of the bounding box, default None.
+        - background_alpha : The alpha value of the bounding box, default None.
+        - border_size : The size of the border of the bounding box, default None.
+        - border_color : The color of the border of the bounding box, default None.
+        - h_align : The horizontal alignment of the label, one of "left", "center", "right", default "center"
+        - v_align : The vertical alignment of the label, one of "top", "center", "bottom", default "center"
+        - rotate : Weather or note to rotate labels to lie parallel to the edge, default True.
+
+    edge_style : string, default "style"
+        A string naming the edge attribute which stores the style of each edge.
+        Visible edges without this attribute will be drawn solid. Values of this
+        attribute can be line styles, e.g. '-', '--', '-.' or ':' or words like 'solid'
+        or 'dashed'. If not edge in the graph have this attribute and it is a non-default
+        value, assume that it describes the edge style for all edges in the graph.
+
+    edge_alpha : string or float, default "alpha"
+        A string naming the edge attribute which stores the alpha value of each edge.
+        Visible edges without this attribute will use an alpha value of 1.0.
+
+    arrorstyle : string, default "arrow"
+        A string naming the edge attribute which stores the type of arrowhead to use for
+        each edge. Visible edges without this attribute will use '-' for undirected graphs
+        and '-|>' for directed graphs.
+
+        See `matplotlib.patches.ArrorStyle` for more options
+
+    arrowsize : string or int, default "arrow_size"
+        A string naming the edge attribute which stores the size of the arrowhead for each
+        edge. Visible edges without this attribute will use a default value of 10.
+
+    edge_curvature : string, default "curve"
+       A string naming the edge attribute which stores the curvature and connection style
+       of each edge. Visible edges without this attribute will use "arc3" as a default
+       value, resulting an a straight line between the two nodes. Curvature can be given
+       as 'arc3,rad=0.2' to specify both the style and radius of curvature.
+
+       Please see `matplotlib.patches.ConnectionStyle` and `matplotlib.patches.FancyArrowPatch`
+       for more information.
+
+    edge_source_margin : string or int, default "source_margin"
+        A string naming the edge attribute which stores the minimum margin (gap) between
+        the source node and the start of the edge. Visible edges without this attribute will
+        use a default value of 0.
+
+    edge_target_margin : string or int, default "target_margin"
+        A string naming the edge attribute which stores the minimumm margin (gap) between
+        the target node and the end of the edge. Visible edges without this attribute will use a
+        default value of 0.
+
+    hide_ticks : bool, default True
+        Weather to remove the ticks from the axes of the matplotlib object.
+    """
+
+
 def draw(G, pos=None, ax=None, **kwds):
     """Draw the graph G with Matplotlib.
 
