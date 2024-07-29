@@ -1,4 +1,5 @@
 """Generators for classes of graphs used in studying social networks."""
+
 import itertools
 import math
 

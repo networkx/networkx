@@ -8,6 +8,7 @@ applied to unrooted trees. Furthermore, there is a bijection from Prüfer
 sequences to labeled trees.
 
 """
+
 from collections import Counter
 from itertools import chain
 
