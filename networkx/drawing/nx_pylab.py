@@ -228,6 +228,23 @@ def new_draw(
     hide_ticks : bool, default True
         Weather to remove the ticks from the axes of the matplotlib object.
     """
+    from collections import Counter
+
+    def process_arg(G, arg, default):
+        attr = nx.get_node_attributes(G, arg, default)
+        return attr, Counter(attr.values())
+
+    if isinstance(node_visible, bool):
+        if node_visible:
+            visible_nodes = G.nodes()
+        else:
+            visible_nodes = []
+    else:
+        visible_nodes = [
+            n for n, v in nx.get_node_attributes(G, node_visible, True) if v
+        ]
+
+    node_subgraph = G.subgraph(visible_nodes)
 
 
 def draw(G, pos=None, ax=None, **kwds):
