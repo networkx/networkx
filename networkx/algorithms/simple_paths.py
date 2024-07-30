@@ -915,8 +915,11 @@ def _bidirectional_dijkstra(
 
         for w in neighs[dir](v):
             # wt(v, w, d) for forward and wt(w, v, d) for back direction
-            cost = (wt(v, w, G.get_edge_data(v, w)) if dir == 0 else
-                    wt(w, v, G.get_edge_data(w, v)))
+            cost = (
+                wt(v, w, G.get_edge_data(v, w))
+                if dir == 0
+                else wt(w, v, G.get_edge_data(w, v))
+            )
             if cost is None:
                 continue
             vwLength = dists[dir][v] + cost
