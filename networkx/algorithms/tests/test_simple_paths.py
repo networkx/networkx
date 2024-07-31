@@ -509,6 +509,17 @@ def test_shortest_simple_paths_with_weight_function():
     assert list(paths) == [[0, 1, 2, 3]]
 
 
+def test_shortest_simple_paths_with_none_weight_function():
+    def cost(u, v, x):
+        delta = abs(u - v)
+        # ignore interior edges
+        return 1 if (delta == 1 or delta == 4) else None
+
+    G = nx.complete_graph(5)
+    paths = nx.shortest_simple_paths(G, 0, 2, weight=cost)
+    assert list(paths) == [[0, 1, 2], [0, 4, 3, 2]]
+
+
 def test_Greg_Bernstein():
     g1 = nx.Graph()
     g1.add_nodes_from(["N0", "N1", "N2", "N3", "N4"])
