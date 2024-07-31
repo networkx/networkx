@@ -781,11 +781,19 @@ class _dispatchable:
             backends_kwargs = {}
             for k, v in kwargs.items():
                 if k.endswith("_kwargs"):
-                    backends_kwargs[k[:-7]] = v
+                    backend_name = k[:-7]  # len("_kwargs") == 7
+                    backends_kwargs[backend_name] = v
+                    if backend_name not in backends:
+                        _logger.debug(
+                            "`%s_kwargs=` keyword argument passed to `%s', but '%s' "
+                            "backend is not installed. Ignoring.",
+                            backend_name,
+                            self.name,
+                            backend_name,
+                        )
                 else:
                     new_kwargs[k] = v
             kwargs = new_kwargs
-            # Should we warn or log if `backends_kwargs` has backends that are not installed?
         else:
             backends_kwargs = kwargs
 
