@@ -914,15 +914,14 @@ def _bidirectional_dijkstra(
             return (finaldist, finalpath)
 
         for w in neighs[dir](v):
-            # wt(v, w, d) for forward and wt(w, v, d) for back direction
-            cost = (
-                wt(v, w, G.get_edge_data(v, w))
-                if dir == 0
-                else wt(w, v, G.get_edge_data(w, v))
-            )
-            if cost is None:
+            if dir == 0:  # forward
+                minweight = wt(v, w, G.get_edge_data(v, w))
+            else:  # back, must remember to change v,w->w,v
+                minweight = wt(w, v, G.get_edge_data(w, v))
+            if minweight is None:
                 continue
-            vwLength = dists[dir][v] + cost
+            vwLength = dists[dir][v] + minweight
+
             if w in dists[dir]:
                 if vwLength < dists[dir][w]:
                     raise ValueError("Contradictory paths found: negative weights?")
