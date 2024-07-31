@@ -68,7 +68,7 @@ Install with all optional dependencies:
 
 .. code:: shell
 
-    $ pip install networkx[all]
+    $ pip install networkx[default]
 
 For additional details,
 please see the `installation guide <https://networkx.org/documentation/stable/install.html>`_.
