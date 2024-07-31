@@ -79,9 +79,11 @@ def pytest_collection_modifyitems(config, items):
     if backend_priority := networkx.config.backend_priority.algos:
         # Allow pluggable backends to add markers to tests (such as skip or xfail)
         # when running in auto-conversion test mode
-        backend = networkx.utils.backends.backends[backend_priority[0]].load()
-        if hasattr(backend, "on_start_tests"):
-            getattr(backend, "on_start_tests")(items)
+        backend_name = backend_priority[0]
+        if backend_name != "networkx":
+            backend = networkx.utils.backends.backends[backend_name].load()
+            if hasattr(backend, "on_start_tests"):
+                getattr(backend, "on_start_tests")(items)
 
     if config.getoption("--runslow"):
         # --runslow given in cli: do not skip slow tests
