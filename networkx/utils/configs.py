@@ -233,7 +233,7 @@ class BackendPriorities(Config, strict=False):
     generators: list[str]
 
     def _on_setattr(self, key, value):
-        from .backends import _registered_algorithms, backends
+        from .backends import _registered_algorithms, backend_info
 
         if key in {"algos", "generators"}:
             pass
@@ -244,7 +244,7 @@ class BackendPriorities(Config, strict=False):
             raise TypeError(
                 f"{key!r} config must be a list of backend names; got {value!r}"
             )
-        if missing := {x for x in value if x not in backends}:
+        if missing := {x for x in value if x not in backend_info}:
             missing = ", ".join(map(repr, sorted(missing)))
             raise ValueError(f"Unknown backend when setting {key!r}: {missing}")
         return value

@@ -431,7 +431,7 @@ def _finish_init_of_backends_and_config():
     _default_backend_priority = _comma_sep_to_list(
         os.environ.get(
             "NETWORKX_BACKEND_PRIORITY",
-            os.environ.get("NETWORKX_AUTOMATIC_BACKENDS", ""),
+            os.environ.get("NETWORKX_AUTOMATIC_BACKENDS", "networkx"),
         )
     )
     priorities = {
@@ -487,7 +487,7 @@ def _load_backend(backend_name):
 class _dispatchable:
     _is_testing = False
     _fallback_to_nx = (
-        os.environ.get("NETWORKX_FALLBACK_TO_NX", "true").strip().lower() == "true"
+        os.environ.get("NETWORKX_FALLBACK_TO_NX", "").strip().lower() == "true"
     )
 
     def __new__(
@@ -885,11 +885,11 @@ class _dispatchable:
             # but we may be able to convert additional networkx graphs.
             if backend_name == "networkx":
                 # Convert backend graphs to networkx graphs
-                converted_args, converted_kwargs = self._convert_arguments(
-                    "networkx", args, kwargs, use_cache=config.cache_converted_graphs
+                return self._convert_and_call_networkx(
+                    args,
+                    kwargs,
+                    use_cache=config.cache_converted_graphs,
                 )
-                return self.orig_func(*converted_args, **converted_kwargs)
-
             if len(other_backend_names) != 1:
                 # Future work: convert between backends and run if multiple backends found
                 raise TypeError(
@@ -909,19 +909,44 @@ class _dispatchable:
             if graph_backend_name not in backends:
                 raise ImportError(f"'{graph_backend_name}' backend is not installed")
             if (
-                "networkx" in graph_backend_names
+                backend_name is None
+                and "networkx" in graph_backend_names
                 and graph_backend_name not in backend_priority
             ):
                 # Not configured to convert networkx graphs to this backend
-                raise TypeError(
+                cfg = "generators" if self._returns_graph else "algos"
+                msg = (
                     f"Unable to convert inputs and run {self.name}. {self.name}() has "
                     f"networkx and {graph_backend_name} graphs, but NetworkX is not "
                     "configured to automatically convert graphs from networkx to "
-                    f"{graph_backend_name}. To enable automatic conversions, set:\n\n"
-                    f'    >>> nx.config.backend_priority = ["{graph_backend_name}"]'
+                    f"{graph_backend_name}. To enable automatic conversions, set e.g.:\n\n"
+                    f'    >>> nx.config.backend_priority.{cfg} = ["{graph_backend_name}"]'
                 )
+                if "networkx" in backend_priority:
+                    # But we *are* configured to fall back to networkx. This may be
+                    # an unusual and surprising case, and there is a good chance this
+                    # behavior isn't what the user wants, so proactively suggest how
+                    # to use the configuration better.
+                    _logger.debug(msg)
+                    return self._convert_and_call_networkx(
+                        args,
+                        kwargs,
+                        use_cache=config.cache_converted_graphs,
+                    )
+                # Similarly, let's proactively guide the user with a good error message
+                raise TypeError(msg)
+
+            # Once we are here, these assertions are true. We have backend graphs,
+            # and "networkx" is not a primary backend to run with.
+            #
+            # assert backend_name is None or backend_name == graph_backend_name
+            # assert backend_name != "networkx"
+            # assert graph_backend_name != "networkx"
+
             backend = _load_backend(graph_backend_name)
-            if hasattr(backend, self.name):
+            if self._can_backend_run(
+                graph_backend_name, args, kwargs, log=backend_name is None
+            ):
                 try:
                     if "networkx" in graph_backend_names:
                         # We need to convert networkx graphs to backend graphs.
@@ -930,7 +955,6 @@ class _dispatchable:
                             graph_backend_name,
                             args,
                             kwargs,
-                            fallback_to_nx=self._fallback_to_nx,
                         )
                     # All graphs are backend graphs--no need to convert!
                     _logger.debug(
@@ -941,23 +965,48 @@ class _dispatchable:
                         kwargs,
                     )
                     return getattr(backend, self.name)(*args, **kwargs)
-                except NotImplementedError as exc:
+                except NotImplementedError:
                     # Future work: fallback to other backends in backend_priority.
-                    # First step will be to support falling back to networkx, since
+                    # Right now, we only support falling back to networkx, since
                     # we can already convert from backends to networkx. Supporting
                     # fallback to other backends listed in `backend_priority` will
                     # require backend-to-backend conversions.
                     _logger.debug(
-                        f"Backend {backend_name!r} raised {type(exc).__name__} when "
-                        f"calling `{self.name}`. In the future, this may try to fall"
-                        "back to other backends in `nx.config.backend_priority`."
+                        "Backend '%s' raised NotImplementedError when calling `%s`.",
+                        graph_backend_name,
+                        self.name,
                     )
-                    raise
-            # Future work: try to convert and run with other backends in backend_priority
-            raise NotImplementedError(
-                f"'{self.name}' not implemented by {graph_backend_name}. "
-                "In the future, this may try to fall back to other backends in "
-                "`nx.config.backend_priority`."
+                    if backend_name is not None or "networkx" not in backend_priority:
+                        raise
+                    return self._convert_and_call_networkx(
+                        args,
+                        kwargs,
+                        use_cache=config.cache_converted_graphs,
+                    )
+            # Future work: try to convert and run with other backends in backend_priority.
+            # Right now, we can only fall back to networkx if configured to do so.
+            if backend_name is not None:
+                raise NotImplementedError(
+                    f"`{self.name}' is not implemented by '{backend_name}' backend."
+                )
+            if "networkx" not in backend_priority:
+                cfg = "generators" if self._returns_graph else "algos"
+                raise NotImplementedError(
+                    f"`{self.name}' is not implemented by '{graph_backend_name}' "
+                    "backend, and NetworkX is not configured to automatically "
+                    "convert to and run with networkx. To enable automatic conversions "
+                    "from backend graphs to networkx graphs, add 'networkx' to "
+                    "`nx.config.backend_priority.{cfg}` list of backend names."
+                )
+            _logger.debug(
+                f"`%s' is not implemented by '%s' backend.",
+                self.name,
+                graph_backend_name,
+            )
+            return self._convert_and_call_networkx(
+                args,
+                kwargs,
+                use_cache=config.cache_converted_graphs,
             )
 
         # If backend was explicitly given by the user, so we need to use it no matter what
@@ -965,9 +1014,7 @@ class _dispatchable:
             if backend_name == "networkx":
                 # No conversions necessary here
                 return self.orig_func(*args, **kwargs)
-            return self._convert_and_call(
-                backend_name, args, kwargs, fallback_to_nx=False
-            )
+            return self._convert_and_call(backend_name, args, kwargs)
 
         # Only networkx graphs; try to convert and run with a backend with automatic
         # conversion, but don't do this by default if the functions mutates an input
@@ -996,16 +1043,13 @@ class _dispatchable:
                     break
                 if self._should_backend_run(backend_name, args, kwargs):
                     try:
-                        return self._convert_and_call(
-                            backend_name,
-                            args,
-                            kwargs,
-                            fallback_to_nx=self._fallback_to_nx,
-                        )
+                        return self._convert_and_call(backend_name, args, kwargs)
                     except NotImplementedError as exc:
                         _logger.debug(
-                            f"Backend {backend_name!r} raised {type(exc).__name__} "
-                            f"when calling `{self.name}`. Trying next backend..."
+                            f"Backend '%s' raised NotImplementedError "
+                            f"when calling `%s'. Trying next backend...",
+                            backend_name,
+                            self.name,
                         )
         # Default: run with networkx on networkx inputs
         return self.orig_func(*args, **kwargs)
@@ -1412,50 +1456,39 @@ class _dispatchable:
 
         return rv
 
-    def _convert_and_call(self, backend_name, args, kwargs, *, fallback_to_nx=False):
+    def _convert_and_call_networkx(self, args, kwargs, *, use_cache):
+        _logger.debug(
+            "Converting input graphs to networkx graphs to run with the default "
+            "networkx implementation of `%s'",
+            self.name,
+        )
+        converted_args, converted_kwargs = self._convert_arguments(
+            "networkx", args, kwargs, use_cache=config.cache_converted_graphs
+        )
+        return self.orig_func(*converted_args, **converted_kwargs)
+
+    def _convert_and_call(self, backend_name, args, kwargs):
         """Call this dispatchable function with a backend, converting graphs if necessary."""
         backend = _load_backend(backend_name)
-        # Don't log in `_can_backend_run` here to avoid duplicating info in the exception
-        if not self._can_backend_run(backend_name, args, kwargs, log=fallback_to_nx):
-            if fallback_to_nx:
-                _logger.debug(
-                    "Falling back to use 'networkx' instead of '%s' backend "
-                    "for call to `%s' with args: %s, kwargs: %s",
-                    backend_name,
-                    self.name,
-                    args,
-                    kwargs,
-                )
-                return self.orig_func(*args, **kwargs)
-            msg = f"'{self.name}' not implemented by {backend_name}"
-            if hasattr(backend, self.name):
-                msg += " with the given arguments"
-            raise RuntimeError(msg)
-
         try:
             converted_args, converted_kwargs = self._convert_arguments(
                 backend_name, args, kwargs, use_cache=config.cache_converted_graphs
             )
+        except NotImplementedError:
             _logger.debug(
-                "Using backend '%s' for call to `%s' with args: %s, kwargs: %s",
+                "Failed to convert graphs from 'networkx' to '%s' backend for call to `%s'",
                 backend_name,
                 self.name,
-                converted_args,
-                converted_kwargs,
             )
-            result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
-        except NotImplementedError as exc:
-            if fallback_to_nx:
-                _logger.debug(
-                    "Graph conversion failed; falling back to use 'networkx' instead "
-                    "of '%s' backend for call to `%s'",
-                    backend_name,
-                    self.name,
-                )
-                return self.orig_func(*args, **kwargs)
             raise
-
-        return result
+        _logger.debug(
+            "Using backend '%s' for call to `%s' with args: %s, kwargs: %s",
+            backend_name,
+            self.name,
+            converted_args,
+            converted_kwargs,
+        )
+        return getattr(backend, self.name)(*converted_args, **converted_kwargs)
 
     def _convert_and_call_for_tests(
         self, backend_name, args, kwargs, *, fallback_to_nx=False
