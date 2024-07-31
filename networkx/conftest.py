@@ -75,12 +75,12 @@ def pytest_configure(config):
 def pytest_collection_modifyitems(config, items):
     # Setting this to True here allows tests to be set up before dispatching
     # any function call to a backend.
-    networkx.utils.backends._dispatchable._is_testing = True
     if backend_priority := networkx.config.backend_priority.algos:
         # Allow pluggable backends to add markers to tests (such as skip or xfail)
         # when running in auto-conversion test mode
         backend_name = backend_priority[0]
         if backend_name != "networkx":
+            networkx.utils.backends._dispatchable._is_testing = True
             backend = networkx.utils.backends.backends[backend_name].load()
             if hasattr(backend, "on_start_tests"):
                 getattr(backend, "on_start_tests")(items)

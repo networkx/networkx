@@ -800,7 +800,6 @@ class _dispatchable:
             if backend is not None:
                 raise ImportError(f"'{backend}' backend is not installed")
             return self.orig_func(*args, **kwargs)
-        raise RuntimeError(backends)  # XXX: investigating
 
         # Use `backend_name` in this function instead of `backend`
         backend_name = backend
