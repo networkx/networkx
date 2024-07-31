@@ -22,17 +22,13 @@ import itertools
 from numbers import Number
 
 import networkx as nx
-from networkx.drawing.layout import (
-    circular_layout,
-    kamada_kawai_layout,
-    planar_layout,
-    random_layout,
-    shell_layout,
-    spectral_layout,
-    spring_layout,
-)
+from networkx.drawing.layout import (circular_layout, kamada_kawai_layout,
+                                     planar_layout, random_layout,
+                                     shell_layout, spectral_layout,
+                                     spring_layout)
 
 __all__ = [
+    "new_draw",
     "draw",
     "draw_networkx",
     "draw_networkx_nodes",
@@ -229,11 +225,73 @@ def new_draw(
         Weather to remove the ticks from the axes of the matplotlib object.
     """
     from collections import Counter
+    from collections.abc import Iterable
 
-    def process_arg(G, arg, default):
-        attr = nx.get_node_attributes(G, arg, default)
-        return attr, Counter(attr.values())
+    import matplotlib as mpl
+    import matplotlib.pyplot as plt
+    import numpy as np
 
+    defaults = {
+        "pos": None,
+        "node_visible": True,
+        "node_color": "#1f78b4",
+        "node_size": 300,
+        "node_label": {
+            "size": 12,
+            "color": "#000000",
+            "family": "sans-serif",
+            "weight": "normal",
+            "alpha": 1.0,
+            "background_color": None,
+            "background_alpha": None,
+            "border_size": None,
+            "border_color": None,
+            "h_align": "center",
+            "v_align": "center",
+        },
+        "node_shape": "o",
+        "node_alpha": 1.0,
+        "node_border_width": 1.0,
+        "node_border_color": "face",
+        "edge_visible": True,
+        "edge_width": 1.0,
+        "edge_color": "#000000",
+        "edge_label": {
+            "size": 12,
+            "color": "#000000",
+            "family": "sans-serif",
+            "weight": "normal",
+            "alpha": 1.0,
+            "background_color": None,
+            "background_alpha": None,
+            "border_size": None,
+            "border_color": None,
+            "h_align": "center",
+            "v_align": "center",
+        },
+        "edge_style": "-",
+        "edge_alpha": 1.0,
+        "arrowstyle": "-|>" if G.is_directed() else "-",
+        "arrowsize": 10 if G.is_directed() else 0,
+        "edge_curvature": "arc3",
+        "edge_source_margin": 0,
+        "edge_target_margin": 0,
+    }
+
+    if canvas is None:
+        canvas = plt.gca()
+
+    if hide_ticks:
+        canvas.tick_params(
+            axis="both",
+            which="both",
+            bottom=False,
+            left=False,
+            labelbottom=False,
+            labelleft=False,
+        )
+
+    ### Draw the nodes first
     if isinstance(node_visible, bool):
         if node_visible:
             visible_nodes = G.nodes()
@@ -241,10 +299,114 @@ def new_draw(
             visible_nodes = []
     else:
         visible_nodes = [
-            n for n, v in nx.get_node_attributes(G, node_visible, True) if v
+            n for n, v in nx.get_node_attributes(G, node_visible, True).items() if v
         ]
 
     node_subgraph = G.subgraph(visible_nodes)
+
+    if callable(pos):
+        # TODO refactor this once layouts can store directly on the graph
+        nx.set_node_attributes(
+            node_subgraph, pos(G), "new_draw's position attribute name"
+        )
+        pos = "new_draw's position attribute name"
+
+    # I hope that the order-perserving nature of dicts in python 3.7+
+    # means that G.nodes() will always return the same order.
+
+    def property_sequence(seq, attr, default=None):
+        """Return a sequence of attribute values for the given sequence, using default if not None"""
+
+        # The inner function isn't my first choice here, but if I use a regular try-except
+        # around the asarray call I can't seem to isolate which node is problematic for
+        # the error message.
+        def error(n, attr, default):
+            if default is None:
+                raise nx.NetworkXError(
+                    f"Node {n} is missing required attribute: {attr}"
+                )
+            else:
+                return False
+
+        return np.asarray(
+            [
+                (
+                    node_subgraph.nodes[n][attr]
+                    if attr in node_subgraph.nodes[n] or error(n, attr, default)
+                    else default
+                )
+                for n in seq
+            ]
+        )
+
+    def compute_colors(color, alpha):
+        if isinstance(color, str):
+            rgba = mpl.colors.colorConverter.to_rgba(color)
+            if rgba[3] > alpha:
+                return (rgba[0], rgba[1], rgba[2], alpha)
+            return rgba
+
+        if isinstance(color, np.ndarray) and len(color) == 3:
+            return (color[0], color[1], color[2], alpha)
+
+        if isinstance(color, np.ndarray) and len(color) == 4:
+            return color
+
+        raise ValueError(f"Invalid format for color: {color}")
+
+    # Each shape requires a new scatter object since they can't have different
+    # shapes.
+    for shape in Counter(
+        nx.get_node_attributes(
+            node_subgraph, node_shape, defaults["node_shape"]
+        ).values()
+    ):
+        # Filter position just on this shape.
+        nodes_with_shape = [
+            n
+            for n, s in G.nodes(data=node_shape)
+            if s == shape or (s == None and shape == defaults["node_shape"])
+        ]
+        # There are two property sequences to create before hand.
+        # 1. position, since it is used for x and y parameters to scatter
+        # 2. edgecolor, since the spaeical 'face' parameter value can only be
+        #    be passed in as the sole string, not part of a list of strings.
+        position = property_sequence(nodes_with_shape, pos)
+        color = np.asarray(
+            [
+                compute_colors(c, a)
+                for c, a in zip(
+                    property_sequence(
+                        nodes_with_shape, node_color, defaults["node_color"]
+                    ),
+                    property_sequence(
+                        nodes_with_shape, node_alpha, defaults["node_alpha"]
+                    ),
+                )
+            ]
+        )
+        print(f"{color=}")
+        border_color = np.asarray(
+            [
+                (
+                    node_subgraph.nodes[n][node_border_color]
+                    if node_border_color in node_subgraph.nodes[n]
+                    else color[i]
+                )
+                for i, n in enumerate(nodes_with_shape)
+            ]
+        )
+        canvas.scatter(
+            position[:, 0],
+            position[:, 1],
+            s=property_sequence(nodes_with_shape, node_size, defaults["node_size"]),
+            c=color,
+            marker=shape,
+            linewidths=property_sequence(
+                nodes_with_shape, node_border_width, defaults["node_border_width"]
+            ),
+            edgecolors=border_color,
+        )
 
 
 def draw(G, pos=None, ax=None, **kwds):
