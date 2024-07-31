@@ -48,27 +48,28 @@ __all__ = [
 def new_draw(
     G,
     canvas=None,
-    /,
-    pos=spring_layout,
-    node_visible="visible",
-    node_color="color",
-    node_size="size",
-    node_label="label",
-    node_shape="shape",
-    node_alpha="alpha",
-    node_border_width="border_width",
-    node_border_color="border_color",
-    edge_visible="visible",
-    edge_color="color",
-    edge_label="label",
-    edge_style="style",
-    edge_alpha="alpha",
-    arrowstyle="arrow",
-    arrowsize="arrow_size",
-    edge_curvature="curve",
-    edge_source_margin="source_margin",
-    edge_target_margin="target_margin",
-    hide_ticks=True,
+    **kwargs,
+    # /,
+    # pos=spring_layout,
+    # node_visible="visible",
+    # node_color="color",
+    # node_size="size",
+    # node_label="label",
+    # node_shape="shape",
+    # node_alpha="alpha",
+    # node_border_width="border_width",
+    # node_border_color="border_color",
+    # edge_visible="visible",
+    # edge_color="color",
+    # edge_label="label",
+    # edge_style="style",
+    # edge_alpha="alpha",
+    # arrowstyle="arrow",
+    # arrowsize="arrow_size",
+    # edge_curvature="curve",
+    # edge_source_margin="source_margin",
+    # edge_target_margin="target_margin",
+    # hide_ticks=True,
 ):
     """Draw the graph G.
 
@@ -101,14 +102,14 @@ def new_draw(
         A string naming the node attribute which stores the color of each node.
         Visible nodes without this attribute will use '#1f78b4' as a default.
 
-    node_size : string, default "size"
+    node_size : string or number, default "size"
         A string naming the node attribute which stores the size of each node.
         Visible nodes without this attribute will use a default size of 300.
 
-    node_label : string, default "label"
+    node_label : string or bool, default "label"
         A string naming the node attribute which stores the label of each node.
         The values of this attribute can be a string, True (in which case the name of the
-        node is used), False or None in which case no label is added to the node or a dict.
+        node is used) or False in which case no label is added to the node or a dict.
 
         If a dict is specified, these keys are read to further control the label:
         - label : The text of the label, default name of the node
@@ -117,14 +118,11 @@ def new_draw(
         - family : Font family of the label, default "sans-serif"
         - weight : Font weight of the label, default "normal"
         - alpha : Alpha value of the label, default 1.0
-        - background_color : The background color of the bounding box, default None.
-        - background_alpha : The alpha value of the bounding box, default None.
-        - border_size : The size of the border of the bounding box, default None.
-        - border_color : The color of the border of the bounding box, default None.
         - h_align : The horizontal alignment of the label, one of "left", "center", "right", default "center"
         - v_align : The vertical alignment of the label, one of "top", "center", "bottom", default "center"
+        - bbox : A dict of parameters for `matplotlib.patches.FancyBboxPatch`.
 
-        Visible nodes without this attribute will not have a label.
+        Visible nodes without this attribute will be treated as if the value was True.
 
     node_shape : string, default "shape"
         A string naming the node attribute which stores the label of each node.
@@ -172,12 +170,9 @@ def new_draw(
         - family : Font family of the label, default "sans-serif"
         - weight : Font weight of the label, default "normal"
         - alpha : Alpha value of the label, default 1.0
-        - background_color : The background color of the bounding box, default None.
-        - background_alpha : The alpha value of the bounding box, default None.
-        - border_size : The size of the border of the bounding box, default None.
-        - border_color : The color of the border of the bounding box, default None.
         - h_align : The horizontal alignment of the label, one of "left", "center", "right", default "center"
         - v_align : The vertical alignment of the label, one of "top", "center", "bottom", default "center"
+        - bbox : A dict of parameters for `matplotlib.patches.FancyBboxPatch`.
         - rotate : Weather or note to rotate labels to lie parallel to the edge, default True.
 
     edge_style : string, default "style"
@@ -244,10 +239,9 @@ def new_draw(
             "alpha": 1.0,
             "background_color": None,
             "background_alpha": None,
-            "border_size": None,
-            "border_color": None,
             "h_align": "center",
             "v_align": "center",
+            "bbox": None,
         },
         "node_shape": "o",
         "node_alpha": 1.0,
@@ -278,10 +272,17 @@ def new_draw(
         "edge_target_margin": 0,
     }
 
+    # Check arguments
+    for kwarg in kwargs:
+        if kwarg not in defaults:
+            raise nx.NetworkXError(
+                f"Unrecongized visualization keyword argument: {kwarg}"
+            )
+
     if canvas is None:
         canvas = plt.gca()
 
-    if hide_ticks:
+    if "hide_ticks" not in kwargs or kwargs["hide_ticks"]:
         canvas.tick_params(
             axis="both",
             which="both",
@@ -292,6 +293,7 @@ def new_draw(
         )
 
     ### Draw the nodes first
+    node_visible = kwargs.get("node_visible", "visible")
     if isinstance(node_visible, bool):
         if node_visible:
             visible_nodes = G.nodes()
@@ -304,6 +306,7 @@ def new_draw(
 
     node_subgraph = G.subgraph(visible_nodes)
 
+    pos = kwargs.get("pos", spring_layout)
     if callable(pos):
         # TODO refactor this once layouts can store directly on the graph
         nx.set_node_attributes(
@@ -316,6 +319,15 @@ def new_draw(
 
     def property_sequence(seq, attr, default=None):
         """Return a sequence of attribute values for the given sequence, using default if not None"""
+
+        # If the attr isn't actually a graph attr, but was explicitly passed as an argument it must be a
+        # user-default value. Allow None to be used to tell draw to skip attributes which are on the graph
+        if (
+            attr is not None
+            and nx.get_node_attributes(node_subgraph, attr) == {}
+            and attr in kwargs.values()
+        ):
+            return np.asarray([attr for _ in seq])
 
         # The inner function isn't my first choice here, but if I use a regular try-except
         # around the asarray call I can't seem to isolate which node is problematic for
@@ -342,7 +354,9 @@ def new_draw(
     def compute_colors(color, alpha):
         if isinstance(color, str):
             rgba = mpl.colors.colorConverter.to_rgba(color)
-            if rgba[3] > alpha:
+            if (
+                alpha != defaults["node_alpha"]
+            ):  # Using a non-default alpha value overrides any alpha value in the color
                 return (rgba[0], rgba[1], rgba[2], alpha)
             return rgba
 
@@ -356,6 +370,7 @@ def new_draw(
 
     # Each shape requires a new scatter object since they can't have different
     # shapes.
+    node_shape = kwargs.get("node_shape", "shape")
     for shape in Counter(
         nx.get_node_attributes(
             node_subgraph, node_shape, defaults["node_shape"]
@@ -377,15 +392,19 @@ def new_draw(
                 compute_colors(c, a)
                 for c, a in zip(
                     property_sequence(
-                        nodes_with_shape, node_color, defaults["node_color"]
+                        nodes_with_shape,
+                        kwargs.get("node_color", "color"),
+                        defaults["node_color"],
                     ),
                     property_sequence(
-                        nodes_with_shape, node_alpha, defaults["node_alpha"]
+                        nodes_with_shape,
+                        kwargs.get("node_alpha", "alpha"),
+                        defaults["node_alpha"],
                     ),
                 )
             ]
         )
-        print(f"{color=}")
+        node_border_color = kwargs.get("node_border_color", "border_color")
         border_color = np.asarray(
             [
                 (
@@ -399,14 +418,51 @@ def new_draw(
         canvas.scatter(
             position[:, 0],
             position[:, 1],
-            s=property_sequence(nodes_with_shape, node_size, defaults["node_size"]),
+            s=property_sequence(
+                nodes_with_shape, kwargs.get("node_size", "size"), defaults["node_size"]
+            ),
             c=color,
             marker=shape,
             linewidths=property_sequence(
-                nodes_with_shape, node_border_width, defaults["node_border_width"]
+                nodes_with_shape,
+                kwargs.get("node_border_width", "border_width"),
+                defaults["node_border_width"],
             ),
             edgecolors=border_color,
         )
+
+    ### Draw node labels
+    node_label = kwargs.get("node_label", "label")
+    # Plot labels if node_label is not None and not False
+    if node_label is not None and node_label != False:
+        for n, l in node_subgraph.nodes(data=node_label):
+            if l is False:
+                continue
+
+            # We work with label dicts down here...
+            if not isinstance(l, dict):
+                l = {"label": l if l is not None else n}
+
+            l_text = l.get("label", n)
+            if not isinstance(l_text, str):
+                l_text = str(l_text)
+
+            x, y = node_subgraph.nodes[n][pos]
+            canvas.text(
+                x,
+                y,
+                l_text,
+                size=l.get("size", defaults["node_label"]["size"]),
+                color=l.get("color", defaults["node_label"]["color"]),
+                family=l.get("family", defaults["node_label"]["family"]),
+                weight=l.get("weight", defaults["node_label"]["weight"]),
+                horizontalalignment=l.get("h_align", defaults["node_label"]["h_align"]),
+                verticalalignment=l.get("v_align", defaults["node_label"]["v_align"]),
+                transform=canvas.transData,
+                bbox=l.get("bbox", defaults["node_label"]["bbox"]),
+            )
+
+    ### Draw edges
 
 
 def draw(G, pos=None, ax=None, **kwds):
