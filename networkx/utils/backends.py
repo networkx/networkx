@@ -878,7 +878,7 @@ class _dispatchable:
                     f"{backend_name!r}. Automatic conversions between backends "
                     "may become possible in future releases."
                 )
-            if graph_backend_name not in backends:
+            if graph_backend_name not in backend_info:
                 raise ImportError(f"'{graph_backend_name}' backend is not installed")
             if (
                 "networkx" in graph_backend_names
