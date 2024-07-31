@@ -797,7 +797,7 @@ class _dispatchable:
 
         if not backends:
             # Fast path if no backends are installed
-            if backend is not None:
+            if backend is not None and backend != "networkx":
                 raise ImportError(f"'{backend}' backend is not installed")
             return self.orig_func(*args, **kwargs)
 
