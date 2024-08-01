@@ -1,4 +1,5 @@
 """Unit tests for the :mod:`networkx.algorithms.coloring.edge_coloring` module."""
+
 from collections import defaultdict
 
 import pytest
