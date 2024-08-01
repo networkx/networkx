@@ -1211,7 +1211,10 @@ class _dispatchable:
             )
             if cache:
                 warning_message = (
-                    f"Using cached graph for {backend_name!r} backend in "
+                    "Note: conversions to backend graphs are saved to cache "
+                    "(`G.__networkx_cache__` on the original graph) by default."
+                    "\n\nThis warning means the cached graph is being used "
+                    f"for the {backend_name!r} backend in the "
                     f"call to {self.name}.\n\nFor the cache to be consistent "
                     "(i.e., correct), the input graph must not have been "
                     "manually mutated since the cached graph was created. "
@@ -1226,7 +1229,9 @@ class _dispatchable:
                     "You may also use `G.__networkx_cache__.clear()` to "
                     "manually clear the cache, or set `G.__networkx_cache__` "
                     "to None to disable caching for G. Enable or disable caching "
-                    "globally via `nx.config.cache_converted_graphs` config."
+                    "globally via `nx.config.cache_converted_graphs` config.\n\n"
+                    "To disable this warning:\n\n"
+                    '    >>> nx.config.warnings_to_ignore.add("cache")\n'
                 )
                 # Do a simple search for a cached graph with compatible data.
                 # For example, if we need a single attribute, then it's okay
@@ -1237,7 +1242,8 @@ class _dispatchable:
                     (node_key, True) if node_key is not True else (True,),
                 ):
                     if (rv := cache.get(compat_key)) is not None:
-                        warnings.warn(warning_message)
+                        if "cache" not in config.warnings_to_ignore:
+                            warnings.warn(warning_message)
                         return rv
                 if edge_key is not True and node_key is not True:
                     # Iterate over the items in `cache` to see if any are compatible.
@@ -1262,7 +1268,8 @@ class _dispatchable:
                             or not node_key.issubset(nkey)
                         ):
                             continue  # Cache missing required node data; does not work
-                        warnings.warn(warning_message)
+                        if "cache" not in config.warnings_to_ignore:
+                            warnings.warn(warning_message)
                         return val
 
         backend = _load_backend(backend_name)
