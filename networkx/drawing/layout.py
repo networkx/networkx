@@ -1431,7 +1431,7 @@ def forceatlas2_layout(
     speed_efficiency = 1
     swing = 1
     traction = 1
-    for idx in range(max_iter):
+    for _ in range(max_iter):
         # compute pairwise difference
         diff = pos_arr[:, None] - pos_arr[None]
         # compute pairwise distance
