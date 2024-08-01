@@ -1,6 +1,7 @@
 """
 Generators and functions for bipartite graphs.
 """
+
 import math
 import numbers
 from functools import reduce
@@ -62,7 +63,7 @@ def complete_bipartite_graph(n1, n2, create_using=None):
     if len(G) != len(top) + len(bottom):
         raise nx.NetworkXError("Inputs n1 and n2 must contain distinct nodes")
     G.add_edges_from((u, v) for u in top for v in bottom)
-    G.graph["name"] = f"complete_bipartite_graph({n1}, {n2})"
+    G.graph["name"] = f"complete_bipartite_graph({len(top)}, {len(bottom)})"
     return G
 
 

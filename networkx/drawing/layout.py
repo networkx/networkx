@@ -15,6 +15,7 @@ For the other layout routines, the extent is
 Warning: Most layout routines have only been tested in 2-dimensions.
 
 """
+
 import networkx as nx
 from networkx.utils import np_random_state
 
@@ -938,7 +939,7 @@ def planar_layout(G, scale=1, center=None, dim=2):
             raise nx.NetworkXException("G is not planar.")
     pos = nx.combinatorial_embedding_to_pos(embedding)
     node_list = list(embedding)
-    pos = np.row_stack([pos[x] for x in node_list])
+    pos = np.vstack([pos[x] for x in node_list])
     pos = pos.astype(np.float64)
     pos = rescale_layout(pos, scale=scale) + center
     return dict(zip(node_list, pos))

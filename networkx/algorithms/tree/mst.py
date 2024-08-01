@@ -2,6 +2,7 @@
 Algorithms for calculating min/max spanning trees/forests.
 
 """
+
 from dataclasses import dataclass, field
 from enum import Enum
 from heapq import heappop, heappush
@@ -1027,6 +1028,7 @@ class SpanningTreeIterator:
             If `ignore_nan is True` then that edge is ignored instead.
         """
         self.G = G.copy()
+        self.G.__networkx_cache__ = None  # Disable caching
         self.weight = weight
         self.minimum = minimum
         self.ignore_nan = ignore_nan
@@ -1124,19 +1126,28 @@ class SpanningTreeIterator:
             A Partition dataclass describing a partition on the edges of the
             graph.
         """
-        for u, v, d in self.G.edges(data=True):
-            if (u, v) in partition.partition_dict:
-                d[self.partition_key] = partition.partition_dict[(u, v)]
-            else:
-                d[self.partition_key] = EdgePartition.OPEN
+
+        partition_dict = partition.partition_dict
+        partition_key = self.partition_key
+        G = self.G
+
+        edges = (
+            G.edges(keys=True, data=True) if G.is_multigraph() else G.edges(data=True)
+        )
+        for *e, d in edges:
+            d[partition_key] = partition_dict.get(tuple(e), EdgePartition.OPEN)
 
     def _clear_partition(self, G):
         """
         Removes partition data from the graph
         """
-        for u, v, d in G.edges(data=True):
-            if self.partition_key in d:
-                del d[self.partition_key]
+        partition_key = self.partition_key
+        edges = (
+            G.edges(keys=True, data=True) if G.is_multigraph() else G.edges(data=True)
+        )
+        for *e, d in edges:
+            if partition_key in d:
+                del d[partition_key]
 
 
 @nx._dispatchable(edge_attrs="weight")
