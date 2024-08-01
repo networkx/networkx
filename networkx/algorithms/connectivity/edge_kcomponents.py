@@ -8,6 +8,7 @@ A k-edge-connected subgraph (k-edge-subgraph) is a maximal set of nodes in G,
 such that the subgraph of G defined by the nodes has an edge-connectivity at
 least k.
 """
+
 import itertools as it
 from functools import partial
 
@@ -503,7 +504,7 @@ def _high_degree_components(G, k):
         yield from nx.connected_components(H)
 
 
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def general_k_edge_subgraphs(G, k):
     """General algorithm to find all maximal k-edge-connected subgraphs in `G`.
 

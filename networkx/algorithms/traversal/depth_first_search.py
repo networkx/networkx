@@ -1,4 +1,5 @@
 """Basic algorithms for depth-first searching the nodes of a graph."""
+
 from collections import defaultdict
 
 import networkx as nx
@@ -111,7 +112,7 @@ def dfs_edges(G, source=None, depth_limit=None, *, sort_neighbors=None):
                 depth_now -= 1
 
 
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def dfs_tree(G, source=None, depth_limit=None, *, sort_neighbors=None):
     """Returns oriented tree constructed from a depth-first-search from source.
 

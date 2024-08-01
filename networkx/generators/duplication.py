@@ -5,6 +5,7 @@ nodes and (partially) duplicate their edges. These functions are
 generally inspired by biological networks.
 
 """
+
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.utils import py_random_state
@@ -13,7 +14,7 @@ __all__ = ["partial_duplication_graph", "duplication_divergence_graph"]
 
 
 @py_random_state(4)
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def partial_duplication_graph(N, n, p, q, seed=None):
     """Returns a random graph using the partial duplication model.
 
@@ -88,7 +89,7 @@ def partial_duplication_graph(N, n, p, q, seed=None):
 
 
 @py_random_state(2)
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def duplication_divergence_graph(n, p, seed=None):
     """Returns an undirected graph using the duplication-divergence model.
 

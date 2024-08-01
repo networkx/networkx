@@ -1,10 +1,11 @@
 """Unary operations on graphs"""
+
 import networkx as nx
 
 __all__ = ["complement", "reverse"]
 
 
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def complement(G):
     """Returns the graph complement of G.
 
@@ -40,7 +41,7 @@ def complement(G):
     return R
 
 
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def reverse(G, copy=True):
     """Returns the reverse directed graph of G.
 

@@ -1,6 +1,7 @@
 """
 Shortest path algorithms for unweighted graphs.
 """
+
 import warnings
 
 import networkx as nx
@@ -117,7 +118,7 @@ def single_target_shortest_path_length(G, target, cutoff=None):
     Examples
     --------
     >>> G = nx.path_graph(5, create_using=nx.DiGraph())
-    >>> length = nx.single_target_shortest_path_length(G, 4)
+    >>> length = dict(nx.single_target_shortest_path_length(G, 4))
     >>> length[0]
     4
     >>> for node in range(5):
@@ -151,7 +152,7 @@ def single_target_shortest_path_length(G, target, cutoff=None):
     nextlevel = [target]
     # for version 3.3 we will return a dict like this:
     # return dict(_single_shortest_path_length(adj, nextlevel, cutoff))
-    return dict(_single_shortest_path_length(adj, nextlevel, cutoff))
+    return _single_shortest_path_length(adj, nextlevel, cutoff)
 
 
 @nx._dispatchable
@@ -239,9 +240,11 @@ def bidirectional_shortest_path(G, source, target):
     This algorithm is used by shortest_path(G, source, target).
     """
 
-    if source not in G or target not in G:
-        msg = f"Either source {source} or target {target} is not in G"
-        raise nx.NodeNotFound(msg)
+    if source not in G:
+        raise nx.NodeNotFound(f"Source {source} is not in G")
+
+    if target not in G:
+        raise nx.NodeNotFound(f"Target {target} is not in G")
 
     # call helper to do the real work
     results = _bidirectional_pred_succ(G, source, target)

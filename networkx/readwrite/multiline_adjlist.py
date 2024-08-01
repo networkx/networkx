@@ -191,7 +191,7 @@ def write_multiline_adjlist(G, path, delimiter=" ", comments="#", encoding="utf-
         path.write(multiline.encode(encoding))
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def parse_multiline_adjlist(
     lines, comments="#", delimiter=None, create_using=None, nodetype=None, edgetype=None
 ):
@@ -246,7 +246,7 @@ def parse_multiline_adjlist(
         if not line:
             continue
         try:
-            (u, deg) = line.strip().split(delimiter)
+            (u, deg) = line.rstrip("\n").split(delimiter)
             deg = int(deg)
         except BaseException as err:
             raise TypeError(f"Failed to read node and degree on line ({line})") from err
@@ -270,7 +270,7 @@ def parse_multiline_adjlist(
                     line = line[:p]
                 if line:
                     break
-            vlist = line.strip().split(delimiter)
+            vlist = line.rstrip("\n").split(delimiter)
             numb = len(vlist)
             if numb < 1:
                 continue  # isolated node
@@ -301,7 +301,7 @@ def parse_multiline_adjlist(
 
 
 @open_file(0, mode="rb")
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def read_multiline_adjlist(
     path,
     comments="#",

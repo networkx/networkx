@@ -1,6 +1,7 @@
 """
 Eulerian circuits and graphs.
 """
+
 from itertools import combinations
 
 import networkx as nx
@@ -386,7 +387,7 @@ def eulerian_path(G, source=None, keys=False):
 
 
 @not_implemented_for("directed")
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def eulerize(G):
     """Transforms a graph into an Eulerian graph.
 

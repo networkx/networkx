@@ -4,7 +4,7 @@ The Wiener Index is a topological measure of a graph
 related to the distance between nodes and their degree.
 The Schultz Index and Gutman Index are similar measures.
 They are used categorize molecules via the network of
-atoms connected by chemical bonds. The indices are 
+atoms connected by chemical bonds. The indices are
 correlated with functional aspects of the molecules.
 
 References
@@ -94,6 +94,7 @@ def wiener_index(G, weight=None):
 
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
+@nx._dispatchable(edge_attrs="weight")
 def schultz_index(G, weight=None):
     r"""Returns the Schultz Index (of the first kind) of `G`
 
@@ -161,6 +162,7 @@ def schultz_index(G, weight=None):
 
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
+@nx._dispatchable(edge_attrs="weight")
 def gutman_index(G, weight=None):
     r"""Returns the Gutman Index for the graph `G`.
 

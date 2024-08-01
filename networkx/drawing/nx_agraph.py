@@ -17,6 +17,7 @@ See Also
  - Graphviz:      https://www.graphviz.org
  - DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
+
 import os
 import tempfile
 
@@ -33,7 +34,7 @@ __all__ = [
 ]
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def from_agraph(A, create_using=None):
     """Returns a NetworkX Graph or DiGraph from a PyGraphviz graph.
 
@@ -203,7 +204,7 @@ def write_dot(G, path):
     return
 
 
-@nx._dispatchable(name="agraph_read_dot", graphs=None)
+@nx._dispatchable(name="agraph_read_dot", graphs=None, returns_graph=True)
 def read_dot(path):
     """Returns a NetworkX graph from a dot file on path.
 

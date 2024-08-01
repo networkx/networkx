@@ -40,6 +40,7 @@ http://graphml.graphdrawing.org/specification.html for the specification and
 http://graphml.graphdrawing.org/primer/graphml-primer.html
 for examples.
 """
+
 import warnings
 from collections import defaultdict
 
@@ -233,7 +234,7 @@ def generate_graphml(
 
 
 @open_file(0, mode="rb")
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False):
     """Read graph in GraphML format from path.
 
@@ -306,7 +307,7 @@ def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False)
     return glist[0]
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def parse_graphml(
     graphml_string, node_type=str, edge_key_type=int, force_multigraph=False
 ):
@@ -982,7 +983,7 @@ class GraphMLReader(GraphML):
                 node_label = None
                 # set GenericNode's configuration as shape type
                 gn = data_element.find(f"{{{self.NS_Y}}}GenericNode")
-                if gn:
+                if gn is not None:
                     data["shape_type"] = gn.get("configuration")
                 for node_type in ["GenericNode", "ShapeNode", "SVGNode", "ImageNode"]:
                     pref = f"{{{self.NS_Y}}}{node_type}/{{{self.NS_Y}}}"
@@ -1010,9 +1011,10 @@ class GraphMLReader(GraphML):
                     edge_label = data_element.find(f"{pref}EdgeLabel")
                     if edge_label is not None:
                         break
-
                 if edge_label is not None:
                     data["label"] = edge_label.text
+            elif text is None:
+                data[data_name] = ""
         return data
 
     def find_graphml_keys(self, graph_element):

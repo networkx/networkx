@@ -1,6 +1,7 @@
 """
 Operations on graphs including union, intersection, difference.
 """
+
 import networkx as nx
 
 __all__ = [
@@ -15,7 +16,7 @@ __all__ = [
 _G_H = {"G": 0, "H": 1}
 
 
-@nx._dispatchable(graphs=_G_H, preserve_all_attrs=True)
+@nx._dispatchable(graphs=_G_H, preserve_all_attrs=True, returns_graph=True)
 def union(G, H, rename=()):
     """Combine graphs G and H. The names of nodes must be unique.
 
@@ -71,7 +72,7 @@ def union(G, H, rename=()):
     return nx.union_all([G, H], rename)
 
 
-@nx._dispatchable(graphs=_G_H, preserve_all_attrs=True)
+@nx._dispatchable(graphs=_G_H, preserve_all_attrs=True, returns_graph=True)
 def disjoint_union(G, H):
     """Combine graphs G and H. The nodes are assumed to be unique (disjoint).
 
@@ -125,7 +126,7 @@ def disjoint_union(G, H):
     return nx.disjoint_union_all([G, H])
 
 
-@nx._dispatchable(graphs=_G_H)
+@nx._dispatchable(graphs=_G_H, returns_graph=True)
 def intersection(G, H):
     """Returns a new graph that contains only the nodes and the edges that exist in
     both G and H.
@@ -170,7 +171,7 @@ def intersection(G, H):
     return nx.intersection_all([G, H])
 
 
-@nx._dispatchable(graphs=_G_H)
+@nx._dispatchable(graphs=_G_H, returns_graph=True)
 def difference(G, H):
     """Returns a new graph that contains the edges that exist in G but not in H.
 
@@ -225,7 +226,7 @@ def difference(G, H):
     return R
 
 
-@nx._dispatchable(graphs=_G_H)
+@nx._dispatchable(graphs=_G_H, returns_graph=True)
 def symmetric_difference(G, H):
     """Returns new graph with edges that exist in either G or H but not both.
 
@@ -288,7 +289,7 @@ def symmetric_difference(G, H):
     return R
 
 
-@nx._dispatchable(graphs=_G_H, preserve_all_attrs=True)
+@nx._dispatchable(graphs=_G_H, preserve_all_attrs=True, returns_graph=True)
 def compose(G, H):
     """Compose graph G with H by combining nodes and edges into a single graph.
 
@@ -345,7 +346,8 @@ def compose(G, H):
     Normally, color attribute values of nodes of GcomposeH come from H. We can workaround this as follows:
 
     >>> node_data = {
-    ...     n: G.nodes[n]["color"] + " " + H.nodes[n]["color"] for n in G.nodes & H.nodes
+    ...     n: G.nodes[n]["color"] + " " + H.nodes[n]["color"]
+    ...     for n in G.nodes & H.nodes
     ... }
     >>> nx.set_node_attributes(GcomposeH, node_data, "color")
     >>> print(GcomposeH.nodes[0]["color"])
@@ -369,7 +371,7 @@ def compose(G, H):
     return nx.compose_all([G, H])
 
 
-@nx._dispatchable(graphs=_G_H, preserve_all_attrs=True)
+@nx._dispatchable(graphs=_G_H, preserve_all_attrs=True, returns_graph=True)
 def full_join(G, H, rename=(None, None)):
     """Returns the full join of graphs G and H.
 

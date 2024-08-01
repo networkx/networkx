@@ -12,6 +12,7 @@ See Also
 :mod:`edge_kcomponents` : algorithms for finding k-edge-connected components
 :mod:`connectivity` : algorithms for determining edge connectivity.
 """
+
 import itertools as it
 import math
 from collections import defaultdict, namedtuple
@@ -1040,7 +1041,7 @@ def _minimum_rooted_branching(D, root):
     return A
 
 
-@nx._dispatchable
+@nx._dispatchable(returns_graph=True)
 def collapse(G, grouped_nodes):
     """Collapses each group of nodes into a single node.
 

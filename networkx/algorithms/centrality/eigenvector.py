@@ -1,4 +1,5 @@
 """Functions for computing eigenvector centrality."""
+
 import math
 
 import networkx as nx
@@ -338,4 +339,4 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     )
     largest = eigenvector.flatten().real
     norm = np.sign(largest.sum()) * sp.linalg.norm(largest)
-    return dict(zip(G, largest / norm))
+    return dict(zip(G, (largest / norm).tolist()))

@@ -10,6 +10,7 @@ incident to an endpoint of at least one edge in *F*.
 .. _edge dominating set: https://en.wikipedia.org/wiki/Edge_dominating_set
 
 """
+
 import networkx as nx
 
 from ...utils import not_implemented_for
@@ -42,6 +43,17 @@ def min_weighted_dominating_set(G, weight=None):
         w(V)) w(V^*)`, where `w(V)` denotes the sum of the weights of
         each node in the graph and `w(V^*)` denotes the sum of the
         weights of each node in the minimum weight dominating set.
+
+    Examples
+    --------
+    >>> G = nx.Graph([(0, 1), (0, 4), (1, 4), (1, 2), (2, 3), (3, 4), (2, 5)])
+    >>> nx.approximation.min_weighted_dominating_set(G)
+    {1, 2, 4}
+
+    Raises
+    ------
+    NetworkXNotImplemented
+        If G is directed.
 
     Notes
     -----
@@ -114,6 +126,17 @@ def min_edge_dominating_set(G):
     -------
     min_edge_dominating_set : set
       Returns a set of dominating edges whose size is no more than 2 * OPT.
+
+    Examples
+    --------
+    >>> G = nx.petersen_graph()
+    >>> nx.approximation.min_edge_dominating_set(G)
+    {(0, 1), (4, 9), (6, 8), (5, 7), (2, 3)}
+
+    Raises
+    ------
+    ValueError
+        If the input graph `G` is empty.
 
     Notes
     -----

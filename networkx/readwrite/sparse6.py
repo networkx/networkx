@@ -11,6 +11,7 @@ For more information, see the `sparse6`_ homepage.
 .. _sparse6: https://users.cecs.anu.edu.au/~bdm/data/formats.html
 
 """
+
 import networkx as nx
 from networkx.exception import NetworkXError
 from networkx.readwrite.graph6 import data_to_n, n_to_data
@@ -101,7 +102,7 @@ def _generate_sparse6_bytes(G, nodes, header):
     yield b"\n"
 
 
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def from_sparse6_bytes(string):
     """Read an undirected graph in sparse6 format from string.
 
@@ -250,7 +251,7 @@ def to_sparse6_bytes(G, nodes=None, header=True):
 
 
 @open_file(0, mode="rb")
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def read_sparse6(path):
     """Read an undirected graph in sparse6 format from path.
 

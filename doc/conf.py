@@ -1,6 +1,7 @@
 import os
 from datetime import date
 from sphinx_gallery.sorting import ExplicitOrder, FileNameSortKey
+from intersphinx_registry import get_intersphinx_mapping
 from warnings import filterwarnings
 
 filterwarnings(
@@ -22,10 +23,10 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
     "sphinx_gallery.gen_gallery",
-    "nb2plots",
     "texext",
     "numpydoc",
     "matplotlib.sphinxext.plot_directive",
+    "myst_nb",
 ]
 
 # https://github.com/sphinx-gallery/sphinx-gallery
@@ -47,13 +48,14 @@ sphinx_gallery_conf = {
             "../examples/subclass",
         ]
     ),
-    "within_subsection_order": FileNameSortKey,
+    "within_subsection_order": "FileNameSortKey",
     # path where to save gallery generated examples
     "gallery_dirs": "auto_examples",
     "backreferences_dir": "modules/generated",
     "image_scrapers": ("matplotlib",),
     "matplotlib_animations": True,
     "plot_gallery": "True",
+    "reference_url": {"sphinx_gallery": None},
 }
 # Add pygraphviz png scraper, if available
 try:
@@ -77,8 +79,9 @@ source_suffix = ".rst"
 # The encoding of source files.
 source_encoding = "utf-8"
 
-# Do not include release announcement template
-exclude_patterns = ["release/release_template.rst"]
+# Items to exclude during source collection, including release announcement
+# template, build outputs, and READMEs (markdown only)
+exclude_patterns = ["release/release_template.rst", "build/*", "README.md"]
 
 # General substitutions.
 project = "NetworkX"
@@ -226,19 +229,22 @@ latex_documents = [
 latex_appendices = ["tutorial"]
 
 # Intersphinx mapping
-intersphinx_mapping = {
-    "python": ("https://docs.python.org/3/", None),
-    "numpy": ("https://numpy.org/doc/stable/", None),
-    "neps": ("https://numpy.org/neps/", None),
-    "matplotlib": ("https://matplotlib.org/stable/", None),
-    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
-    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
-    "geopandas": ("https://geopandas.org/en/stable/", None),
-    "pygraphviz": ("https://pygraphviz.github.io/documentation/stable/", None),
-    "sphinx-gallery": ("https://sphinx-gallery.github.io/stable/", None),
-    "nx-guides": ("https://networkx.org/nx-guides/", None),
-    "sympy": ("https://docs.sympy.org/latest/", None),
-}
+
+intersphinx_mapping = get_intersphinx_mapping(
+    packages={
+        "python",
+        "numpy",
+        "neps",
+        "matplotlib",
+        "scipy",
+        "pandas",
+        "geopandas",
+        "pygraphviz",
+        "sphinx-gallery",
+        "sympy",
+        "nx-guides",
+    }
+)
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -258,6 +264,9 @@ plot_formats = [("png", 100)]
 def setup(app):
     app.add_css_file("custom.css")
     app.add_js_file("copybutton.js")
+    # Workaround to prevent duplicate file warnings from sphinx w/ myst-nb.
+    # See executablebooks/MyST-NB#363
+    app.registry.source_suffix.pop(".ipynb")
 
 
 # Monkeypatch numpydoc to show "Backends" section

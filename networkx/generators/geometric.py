@@ -1,5 +1,4 @@
-"""Generators for geometric graphs.
-"""
+"""Generators for geometric graphs."""
 
 import math
 from bisect import bisect_left
@@ -113,7 +112,7 @@ def _geometric_edges(G, radius, p, pos_name):
 
 
 @py_random_state(5)
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def random_geometric_graph(
     n, radius, dim=2, pos=None, p=2, seed=None, *, pos_name="pos"
 ):
@@ -207,7 +206,7 @@ def random_geometric_graph(
 
 
 @py_random_state(6)
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def soft_random_geometric_graph(
     n, radius, dim=2, pos=None, p=2, p_dist=None, seed=None, *, pos_name="pos"
 ):
@@ -337,7 +336,7 @@ def soft_random_geometric_graph(
 
 
 @py_random_state(7)
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def geographical_threshold_graph(
     n,
     theta,
@@ -504,7 +503,7 @@ def geographical_threshold_graph(
 
 
 @py_random_state(6)
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def waxman_graph(
     n,
     beta=0.4,
@@ -637,7 +636,7 @@ def waxman_graph(
 
 
 @py_random_state(5)
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
     r"""Returns a navigable small-world graph.
 
@@ -710,7 +709,7 @@ def navigable_small_world_graph(n, p=1, q=1, r=2, dim=2, seed=None):
 
 
 @py_random_state(7)
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def thresholded_random_geometric_graph(
     n,
     radius,
@@ -850,7 +849,7 @@ def thresholded_random_geometric_graph(
 
 
 @py_random_state(5)
-@nx._dispatchable(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def geometric_soft_configuration_graph(
     *, beta, n=None, gamma=None, mean_degree=None, kappas=None, seed=None
 ):
@@ -955,7 +954,9 @@ def geometric_soft_configuration_graph(
     --------
     Generate a network with specified parameters:
 
-    >>> G = nx.geometric_soft_configuration_graph(beta=1.5, n=100, gamma=2.7, mean_degree=5)
+    >>> G = nx.geometric_soft_configuration_graph(
+    ...     beta=1.5, n=100, gamma=2.7, mean_degree=5
+    ... )
 
     Create a geometric soft configuration graph with 100 nodes. The $\beta$ parameter
     is set to 1.5 and the exponent of the powerlaw distribution of the hidden
@@ -1036,7 +1037,7 @@ def geometric_soft_configuration_graph(
     nx.set_node_attributes(G, thetas, "theta")
     nx.set_node_attributes(G, kappas, "kappa")
 
-    # Map hidden degrees into the radial coordiantes
+    # Map hidden degrees into the radial coordinates
     zeta = 1 if beta > 1 else 1 / beta
     kappa_min = min(kappas.values())
     R_c = 2 * max(1, beta) / (beta * zeta)
