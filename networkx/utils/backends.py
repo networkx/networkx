@@ -1015,11 +1015,10 @@ class _dispatchable:
                         )
                     # All graphs are backend graphs--no need to convert!
                     _logger.debug(
-                        "Using backend '%s' for call to `%s' with args: %s, kwargs: %s",
+                        "Using backend '%s' for call to `%s' with arguments: %s",
                         graph_backend_name,
                         self.name,
-                        args,
-                        kwargs,
+                        _LazyArgsRepr(self, args, kwargs),
                     )
                     return getattr(backend, self.name)(*args, **kwargs)
                 except NotImplementedError as exc:
@@ -1125,10 +1124,9 @@ class _dispatchable:
                 else:
                     _logger.debug("Trying next backend...")
             _logger.debug(
-                "Using default 'networkx' for call to `%s' with args: %s, kwargs: %s",
+                "Using default 'networkx' for call to `%s' with arguments: %s",
                 self.name,
-                args,
-                kwargs,
+                _LazyArgsRepr(self, args, kwargs),
             )
         # Default: run with networkx on networkx inputs
         return self.orig_func(*args, **kwargs)
@@ -1177,11 +1175,10 @@ class _dispatchable:
             if log:
                 reason = f", because: {can_run}" if isinstance(can_run, str) else ""
                 _logger.debug(
-                    "Backend '%s' can't run `%s` with args: %s, kwargs: %s%s",
+                    "Backend '%s' can't run `%s` with arguments: %s%s",
                     backend_name,
                     self.name,
-                    args,
-                    kwargs,
+                    _LazyArgsRepr(self, args, kwargs),
                     reason,
                 )
             return False
@@ -1198,11 +1195,10 @@ class _dispatchable:
         if isinstance(should_run, str) or not should_run:
             reason = f", because: {should_run}" if isinstance(should_run, str) else ""
             _logger.debug(
-                "Backend '%s' shouldn't run `%s` with args: %s, kwargs: %s%s",
+                "Backend '%s' shouldn't run `%s` with arguments: %s%s",
                 backend_name,
                 self.name,
-                args,
-                kwargs,
+                _LazyArgsRepr(self, args, kwargs),
                 reason,
             )
             return False
@@ -1589,11 +1585,10 @@ class _dispatchable:
             )
             raise
         _logger.debug(
-            "Using backend '%s' for call to `%s' with args: %s, kwargs: %s",
+            "Using backend '%s' for call to `%s' with arguments: %s",
             backend_name,
             self.name,
-            converted_args,
-            converted_kwargs,
+            _LazyArgsRepr(self, converted_args, converted_kwargs),
         )
         return getattr(backend, self.name)(*converted_args, **converted_kwargs)
 
@@ -1607,11 +1602,10 @@ class _dispatchable:
                 if fallback_to_nx:
                     _logger.debug(
                         "Falling back to use 'networkx' instead of '%s' backend "
-                        "for call to `%s' with args: %s, kwargs: %s",
+                        "for call to `%s' with arguments: %s",
                         backend_name,
                         self.name,
-                        args,
-                        kwargs,
+                        _LazyArgsRepr(self, args, kwargs),
                     )
                 return self.orig_func(*args, **kwargs)
 
@@ -1674,11 +1668,10 @@ class _dispatchable:
                 backend_name, args1, kwargs1, use_cache=False
             )
             _logger.debug(
-                "Using backend '%s' for call to `%s' with args: %s, kwargs: %s",
+                "Using backend '%s' for call to `%s' with arguments: %s",
                 backend_name,
                 self.name,
-                converted_args,
-                converted_kwargs,
+                _LazyArgsRepr(self, converted_args, converted_kwargs),
             )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except NotImplementedError as exc:
@@ -1965,6 +1958,23 @@ class _dispatchable:
 
 def _restore_dispatchable(name):
     return _registered_algorithms[name]
+
+
+class _LazyArgsRepr:
+    """Simple wrapper to display arguments of dispatchable functions in logging calls."""
+
+    def __init__(self, func, args, kwargs):
+        self.func = func
+        self.args = args
+        self.kwargs = kwargs
+        self.value = None
+
+    def __repr__(self):
+        if self.value is None:
+            bound = self.func.__signature__.bind_partial(*self.args, **self.kwargs)
+            inner = ", ".join(f"{key}={val!r}" for key, val in bound.arguments.items())
+            self.value = f"({inner})"
+        return self.value
 
 
 if os.environ.get("_NETWORKX_BUILDING_DOCS_"):
