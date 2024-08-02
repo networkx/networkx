@@ -22,6 +22,7 @@ import itertools
 from numbers import Number
 
 import networkx as nx
+from networkx.classes.function import edge_subgraph
 from networkx.drawing.layout import (circular_layout, kamada_kawai_layout,
                                      planar_layout, random_layout,
                                      shell_layout, spectral_layout,
@@ -317,7 +318,7 @@ def new_draw(
     # I hope that the order-perserving nature of dicts in python 3.7+
     # means that G.nodes() will always return the same order.
 
-    def property_sequence(seq, attr, default=None):
+    def node_property_sequence(seq, attr, default=None):
         """Return a sequence of attribute values for the given sequence, using default if not None"""
 
         # If the attr isn't actually a graph attr, but was explicitly passed as an argument it must be a
@@ -386,17 +387,17 @@ def new_draw(
         # 1. position, since it is used for x and y parameters to scatter
         # 2. edgecolor, since the spaeical 'face' parameter value can only be
         #    be passed in as the sole string, not part of a list of strings.
-        position = property_sequence(nodes_with_shape, pos)
+        position = node_property_sequence(nodes_with_shape, pos)
         color = np.asarray(
             [
                 compute_colors(c, a)
                 for c, a in zip(
-                    property_sequence(
+                    node_property_sequence(
                         nodes_with_shape,
                         kwargs.get("node_color", "color"),
                         defaults["node_color"],
                     ),
-                    property_sequence(
+                    node_property_sequence(
                         nodes_with_shape,
                         kwargs.get("node_alpha", "alpha"),
                         defaults["node_alpha"],
@@ -418,17 +419,18 @@ def new_draw(
         canvas.scatter(
             position[:, 0],
             position[:, 1],
-            s=property_sequence(
+            s=node_property_sequence(
                 nodes_with_shape, kwargs.get("node_size", "size"), defaults["node_size"]
             ),
             c=color,
             marker=shape,
-            linewidths=property_sequence(
+            linewidths=node_property_sequence(
                 nodes_with_shape,
                 kwargs.get("node_border_width", "border_width"),
                 defaults["node_border_width"],
             ),
             edgecolors=border_color,
+            zorder=2,
         )
 
     ### Draw node labels
@@ -463,6 +465,247 @@ def new_draw(
             )
 
     ### Draw edges
+
+    edge_visible = kwargs.get("edge_visible", "visible")
+    if isinstance(edge_visible, bool):
+        if edge_visible:
+            visible_edges = G.edges()
+        else:
+            visible_edges = []
+    else:
+        visible_edges = [
+            e for e, v in nx.get_edge_attributes(G, edge_visible, True).items() if v
+        ]
+
+    edge_subgraph = G.edge_subgraph(visible_edges)
+
+    # Find which edges can be plotted as a line collection
+    #
+    # Non-default values for these attributes require fancy arrow patches:
+    # - any arrow style (including the default -|> for directed graphs)
+    # - arrow size (by extension of style)
+    # - connection style
+    # - min_source_margin
+    # - min_target_margin
+
+    def collection_compatible(e):
+        edge_attrs = edge_subgraph.edges[e]
+        return (
+            edge_attrs.get(
+                kwargs.get("arrowstyle", "arrowstyle"), defaults["arrowstyle"]
+            )
+            == "-"
+            and edge_attrs.get(
+                kwargs.get("edge_curvature", "curvature"),
+                defaults["edge_curvature"],
+            )
+            == "arc3"
+            and edge_attrs.get(
+                kwargs.get("min_source_margin", "source_margin"),
+                defaults["edge_source_margin"],
+            )
+            == 0
+            and edge_attrs.get(
+                kwargs.get("min_target_margin", "target_margin"),
+                defaults["edge_target_margin"],
+            )
+            == 0
+        )
+
+    collection_edges = [e for e in edge_subgraph.edges() if collection_compatible(e)]
+    print(f"{collection_edges=}")
+    non_collection_edges = [
+        e for e in edge_subgraph.edges() if not collection_compatible(e)
+    ]
+    print(f"{non_collection_edges=}")
+
+    # Only plot a line collection if needed
+    if len(collection_edges) > 0:
+
+        def edge_property_sequence(seq, attr, default=None):
+            """Return a sequence of edge attribute values for the given sequence, using default if not None"""
+
+            if (
+                attr is not None
+                and nx.get_edge_attributes(edge_subgraph, attr) == {}
+                and attr in kwargs.values()
+            ):
+                return np.asarray([attr for _ in seq])
+
+            def error(e, attr, default):
+                if default is None:
+                    raise nx.NetworkXError(
+                        f"Edge {e} is missing required attribute: {attr}"
+                    )
+                else:
+                    return False
+
+            return np.asarray(
+                [
+                    (
+                        edge_subgraph.edges[e][attr]
+                        if attr in edge_subgraph.edges[e] or error(e, attr, default)
+                        else default
+                    )
+                    for e in seq
+                ]
+            )
+
+        edge_position = np.asarray(
+            [
+                (edge_subgraph.nodes[u][pos], edge_subgraph.nodes[v][pos])
+                for u, v in collection_edges
+            ]
+        )
+
+        edge_collection = mpl.collections.LineCollection(
+            edge_position,
+            colors=edge_property_sequence(
+                collection_edges,
+                kwargs.get("edge_color", "color"),
+                defaults["edge_color"],
+            ),
+            linewidths=edge_property_sequence(
+                collection_edges,
+                kwargs.get("edge_width", "width"),
+                defaults["edge_width"],
+            ),
+            linestyle=edge_property_sequence(
+                collection_edges,
+                kwargs.get("edge_style", "style"),
+                defaults["edge_style"],
+            ),
+            alpha=edge_property_sequence(
+                collection_edges,
+                kwargs.get("edge_alpha", "alpha"),
+                defaults["edge_alpha"],
+            ),
+            antialiaseds=(1,),
+            zorder=1,
+        )
+        canvas.add_collection(edge_collection)
+
+    if len(non_collection_edges) > 0:
+
+        def get_edge_attr(e, attr, default=None):
+            """Return the final edge attribute value, using default if not None"""
+
+            if (
+                attr is not None
+                and nx.get_edge_attributes(edge_subgraph, attr) == {}
+                and attr in kwargs.values()
+            ):
+                return attr
+
+            def error(e, attr, default):
+                if default is None:
+                    raise nx.NetworkXError(
+                        f"Edge {e} is missing required attribute: {attr}"
+                    )
+                else:
+                    return False
+
+            return (
+                edge_subgraph.edges[e][attr]
+                if attr in edge_subgraph.edges[e] or error(e, attr, default)
+                else default
+            )
+
+        def get_node_attr(n, attr, default=None):
+            """Return the final node attribute value, using default if not None"""
+
+            if (
+                attr is not None
+                and nx.get_node_attributes(edge_subgraph, attr) == {}
+                and attr in kwargs.values()
+            ):
+                return attr
+
+            def error(n, attr, default):
+                if default is None:
+                    raise nx.NetworkXError(
+                        f"Node {n} is missing required attribute: {attr}"
+                    )
+                else:
+                    return False
+
+            return (
+                edge_subgraph.edges[n][attr]
+                if attr in edge_subgraph.nodes[n] or error(n, attr, default)
+                else default
+            )
+
+        def to_marker_edge(size, marker):
+            if marker in "s^>v<d":
+                return np.sqrt(2 * size) / 2
+            else:
+                return np.sqrt(size) / 2
+
+        for e in non_collection_edges:
+            source_margin = to_marker_edge(
+                get_node_attr(
+                    e[0], kwargs.get("node_size", "size"), defaults["node_size"]
+                ),
+                get_node_attr(
+                    e[0], kwargs.get("node_shape", "shape"), defaults["node_shape"]
+                ),
+            )
+            source_margin = max(
+                source_margin,
+                get_edge_attr(
+                    e,
+                    kwargs.get("edge_source_margin", "source_margin"),
+                    defaults["edge_source_margin"],
+                ),
+            )
+
+            target_margin = to_marker_edge(
+                get_node_attr(
+                    e[1], kwargs.get("node_size", "size"), defaults["node_size"]
+                ),
+                get_node_attr(
+                    e[1], kwargs.get("node_shape", "shape"), defaults["node_shape"]
+                ),
+            )
+            target_margin = max(
+                target_margin,
+                get_edge_attr(
+                    e,
+                    kwargs.get("edge_target_margin", "target_margin"),
+                    defaults["edge_target_margin"],
+                ),
+            )
+            canvas.add_patch(
+                mpl.patches.FancyArrowPatch(
+                    edge_subgraph.nodes[e[0]][pos],
+                    edge_subgraph.nodes[e[1]][pos],
+                    arrowstyle=get_edge_attr(
+                        e,
+                        kwargs.get("arrowstyle", "arrowstyle"),
+                        defaults["arrowstyle"],
+                    ),
+                    connectionstyle=get_edge_attr(
+                        e,
+                        kwargs.get("edge_curvature", "curvature"),
+                        defaults["edge_curvature"],
+                    ),
+                    color=get_edge_attr(
+                        e, kwargs.get("edge_color", "color"), defaults["edge_color"]
+                    ),
+                    linestyle=get_edge_attr(
+                        e, kwargs.get("edge_style", "style"), defaults["edge_style"]
+                    ),
+                    linewidth=get_edge_attr(
+                        e, kwargs.get("edge_width", "width"), defaults["edge_width"]
+                    ),
+                    mutation_scale=get_edge_attr(
+                        e, kwargs.get("arrowsize", "arrowsize"), defaults["arrowsize"]
+                    ),
+                    shrinkA=source_margin,
+                    shrinkB=source_margin,
+                    zorder=1,
+                )
+            )
 
 
 def draw(G, pos=None, ax=None, **kwds):
