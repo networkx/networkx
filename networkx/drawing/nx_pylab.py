@@ -23,10 +23,15 @@ from numbers import Number
 
 import networkx as nx
 from networkx.classes.function import edge_subgraph
-from networkx.drawing.layout import (circular_layout, kamada_kawai_layout,
-                                     planar_layout, random_layout,
-                                     shell_layout, spectral_layout,
-                                     spring_layout)
+from networkx.drawing.layout import (
+    circular_layout,
+    kamada_kawai_layout,
+    planar_layout,
+    random_layout,
+    shell_layout,
+    spectral_layout,
+    spring_layout,
+)
 
 __all__ = [
     "new_draw",
@@ -1270,6 +1275,7 @@ class FancyArrowFactory:
             shrink_source = self.to_marker_edge(self.node_size, self.node_shape)
             shrink_target = shrink_source
         shrink_source = max(shrink_source, self.min_source_margin)
+
         shrink_target = max(shrink_target, self.min_target_margin)
 
         # scale factor of arrow head
