@@ -515,14 +515,14 @@ def new_draw(
                 defaults["edge_target_margin"],
             )
             == 0
+            # Self-loops will use fancy arrow patches
+            and e[0] != e[1]
         )
 
     collection_edges = [e for e in edge_subgraph.edges() if collection_compatible(e)]
-    print(f"{collection_edges=}")
     non_collection_edges = [
         e for e in edge_subgraph.edges() if not collection_compatible(e)
     ]
-    print(f"{non_collection_edges=}")
 
     # Only plot a line collection if needed
     if len(collection_edges) > 0:
@@ -640,6 +640,48 @@ def new_draw(
                 else default
             )
 
+        # Taken from ConnectionStyleFactory
+        def self_loop(edge_index, node_size):
+            def self_loop_connection(posA, posB, *args, **kwargs):
+                if not np.all(posA == posB):
+                    raise nx.NetworkXError(
+                        "`self_loop` connection style method"
+                        "is only to be used for self-loops"
+                    )
+                # this is called with _screen space_ values
+                # so convert back to data space
+                data_loc = canvas.transData.inverted().transform(posA)
+                # Scale self loop based on the size of the base node
+                v_shift = canvas.transData.inverted().transform((node_size, 0))[0] * 0.7
+                h_shift = v_shift * 0.5
+                # put the top of the loop first so arrow is not hidden by node
+                path = np.asarray(
+                    [
+                        # 1
+                        [0, v_shift],
+                        # 4 4 4
+                        [h_shift, v_shift],
+                        [h_shift, 0],
+                        [0, 0],
+                        # 4 4 4
+                        [-h_shift, 0],
+                        [-h_shift, v_shift],
+                        [0, v_shift],
+                    ]
+                )
+                # Rotate self loop 90 deg. if more than 1
+                # This will allow for maximum of 4 visible self loops
+                if edge_index % 4:
+                    x, y = path.T
+                    for _ in range(edge_index % 4):
+                        x, y = y, -x
+                    path = np.array([x, y]).T
+                return mpl.path.Path(
+                    canvas.transData.transform(data_loc + path), [1, 4, 4, 4, 4, 4, 4]
+                )
+
+            return self_loop_connection
+
         def to_marker_edge(size, marker):
             if marker in "s^>v<d":
                 return np.sqrt(2 * size) / 2
@@ -689,10 +731,21 @@ def new_draw(
                         kwargs.get("arrowstyle", "arrowstyle"),
                         defaults["arrowstyle"],
                     ),
-                    connectionstyle=get_edge_attr(
-                        e,
-                        kwargs.get("edge_curvature", "curvature"),
-                        defaults["edge_curvature"],
+                    connectionstyle=(
+                        get_edge_attr(
+                            e,
+                            kwargs.get("edge_curvature", "curvature"),
+                            defaults["edge_curvature"],
+                        )
+                        if e[0] != e[1]
+                        else self_loop(
+                            0,
+                            get_node_attr(
+                                e[0],
+                                kwargs.get("node_size", "size"),
+                                defaults["node_size"],
+                            ),
+                        )
                     ),
                     color=get_edge_attr(
                         e, kwargs.get("edge_color", "color"), defaults["edge_color"]
