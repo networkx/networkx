@@ -501,7 +501,7 @@ def new_draw(
             )
             == "-"
             and edge_attrs.get(
-                kwargs.get("edge_curvature", "curvature"),
+                kwargs.get("edge_curvature", "curve"),
                 defaults["edge_curvature"],
             )
             == "arc3"
@@ -519,10 +519,16 @@ def new_draw(
             and e[0] != e[1]
         )
 
-    collection_edges = [e for e in edge_subgraph.edges() if collection_compatible(e)]
-    non_collection_edges = [
-        e for e in edge_subgraph.edges() if not collection_compatible(e)
-    ]
+    collection_edges = (
+        [e for e in edge_subgraph.edges(keys=True) if collection_compatible(e)]
+        if edge_subgraph.is_multigraph()
+        else [e for e in edge_subgraph.edges() if collection_compatible(e)]
+    )
+    non_collection_edges = (
+        [e for e in edge_subgraph.edges(keys=True) if not collection_compatible(e)]
+        if edge_subgraph.is_multigraph()
+        else [e for e in edge_subgraph.edges() if not collection_compatible(e)]
+    )
 
     # Only plot a line collection if needed
     if len(collection_edges) > 0:
@@ -652,7 +658,8 @@ def new_draw(
                 # so convert back to data space
                 data_loc = canvas.transData.inverted().transform(posA)
                 # Scale self loop based on the size of the base node
-                v_shift = canvas.transData.inverted().transform((node_size, 0))[0] * 0.7
+                # Size of nodes are given in points ** 2 and each point is 1/72 of an inch
+                v_shift = np.sqrt(node_size) / 72
                 h_shift = v_shift * 0.5
                 # put the top of the loop first so arrow is not hidden by node
                 path = np.asarray(
@@ -734,12 +741,12 @@ def new_draw(
                     connectionstyle=(
                         get_edge_attr(
                             e,
-                            kwargs.get("edge_curvature", "curvature"),
+                            kwargs.get("edge_curvature", "curve"),
                             defaults["edge_curvature"],
                         )
                         if e[0] != e[1]
                         else self_loop(
-                            0,
+                            0 if len(e) == 2 else e[2] % 4,
                             get_node_attr(
                                 e[0],
                                 kwargs.get("node_size", "size"),
