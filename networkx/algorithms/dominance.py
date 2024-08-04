@@ -50,9 +50,9 @@ def immediate_dominators(G, start):
 
     References
     ----------
-    .. [1] K. D. Cooper, T. J. Harvey, and K. Kennedy.
-           A simple, fast dominance algorithm.
-           Software Practice & Experience, 4:110, 2001.
+    .. [1] Cooper, Keith D., Harvey, Timothy J. and Kennedy, Ken.
+           "A simple, fast dominance algorithm." (2006).
+           https://hdl.handle.net/1911/96345
     """
     if start not in G:
         raise nx.NetworkXError("start is not in G")
@@ -118,9 +118,9 @@ def dominance_frontiers(G, start):
 
     References
     ----------
-    .. [1] K. D. Cooper, T. J. Harvey, and K. Kennedy.
-           A simple, fast dominance algorithm.
-           Software Practice & Experience, 4:110, 2001.
+    .. [1] Cooper, Keith D., Harvey, Timothy J. and Kennedy, Ken.
+           "A simple, fast dominance algorithm." (2006).
+           https://hdl.handle.net/1911/96345
     """
     idom = nx.immediate_dominators(G, start)
 
