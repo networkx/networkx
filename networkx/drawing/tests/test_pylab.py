@@ -17,6 +17,68 @@ import networkx as nx
 
 barbell = nx.barbell_graph(4, 6)
 
+defaults = {
+    "pos": None,
+    "node_visible": True,
+    "node_color": "#1f78b4",
+    "node_size": 300,
+    "node_label": {
+        "size": 12,
+        "color": "#000000",
+        "family": "sans-serif",
+        "weight": "normal",
+        "alpha": 1.0,
+        "background_color": None,
+        "background_alpha": None,
+        "h_align": "center",
+        "v_align": "center",
+        "bbox": None,
+    },
+    "node_shape": "o",
+    "node_alpha": 1.0,
+    "node_border_width": 1.0,
+    "node_border_color": "face",
+    "edge_visible": True,
+    "edge_width": 1.0,
+    "edge_color": "#000000",
+    "edge_label": {
+        "size": 12,
+        "color": "#000000",
+        "family": "sans-serif",
+        "weight": "normal",
+        "alpha": 1.0,
+        "bbox": {"boxstyle": "round", "ec": (1.0, 1.0, 1.0), "fc": (1.0, 1.0, 1.0)},
+        "h_align": "center",
+        "v_align": "center",
+        "pos": 0.5,
+        "rotate": True,
+    },
+    "edge_style": "-",
+    "edge_alpha": 1.0,
+    # These are for undirected-graphs. Directed graphs shouls use "-|>" and 10, respectively
+    "arrowstyle": "-",
+    "arrowsize": 0,
+    "edge_curvature": "arc3",
+    "edge_source_margin": 0,
+    "edge_target_margin": 0,
+}
+
+
+@pytest.mark.parametrize(
+    ("param_name", "param_value", "expected"),
+    (
+        ("node_color", None, defaults["node_color"]),
+        ("node_color", "#FF0000", "red"),
+        ("node_color", "color", "lime"),
+    ),
+)
+def test_new_draw_arg_handling(param_name, param_value, expected):
+    G = nx.path_graph(4)
+    nx.set_node_attributes(G, "#00FF00", "color")
+    canvas = plt.figure().add_subplot(111)
+    nx.new_draw(G, canvas=canvas, **{param_name: param_value})
+    assert mpl.colors.same_color(canvas.get_children()[0].get_edgecolors()[0], expected)
+
 
 def test_draw():
     try:
