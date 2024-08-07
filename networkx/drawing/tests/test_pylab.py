@@ -72,12 +72,93 @@ defaults = {
         ("node_color", "color", "lime"),
     ),
 )
-def test_new_draw_arg_handling(param_name, param_value, expected):
+def test_new_draw_arg_handling_node_color(param_name, param_value, expected):
     G = nx.path_graph(4)
     nx.set_node_attributes(G, "#00FF00", "color")
     canvas = plt.figure().add_subplot(111)
     nx.new_draw(G, canvas=canvas, **{param_name: param_value})
     assert mpl.colors.same_color(canvas.get_children()[0].get_edgecolors()[0], expected)
+
+
+@pytest.mark.parametrize(
+    ("param_value", "expected"),
+    (
+        (None, (1, 1, 1, 1)),  # default value
+        (0.5, (0.5, 0.5, 0.5, 0.5)),
+        ("n_alpha", (1.0, 1 / 2, 1 / 3, 0.25)),
+    ),
+)
+def test_new_draw_arg_handling_node_alpha(param_value, expected):
+    G = nx.path_graph(4)
+    nx.set_node_attributes(G, {n: 1 / (n + 1) for n in G.nodes()}, "n_alpha")
+    canvas = plt.figure().add_subplot(111)
+    nx.new_draw(G, canvas=canvas, node_alpha=param_value)
+    assert all(
+        canvas.get_children()[0].get_fc()[:, 3] == expected
+    )  # Extract just the alpha from the node colors
+
+
+def test_new_draw_node_position():
+    G = nx.path_graph(4)
+    nx.set_node_attributes(G, {n: (n, n) for n in G.nodes()}, "pos")
+    canvas = plt.figure().add_subplot(111)
+    nx.new_draw(G, canvas=canvas, pos="pos")
+    assert np.all(
+        canvas.get_children()[0].get_offsets().data == [[0, 0], [1, 1], [2, 2], [3, 3]]
+    )
+
+
+@pytest.mark.mpl_image_compare
+def test_new_draw_house_with_colors():
+    """
+    Originally, I wanted to use the exact samge image as test_house_with_colors.
+    But I can't seem to find the correct value for the margins to get the figures
+    to line up perfectly. To the human eye, these visualizations are basically the
+    same.
+    """
+    G = nx.house_graph()
+    fig, ax = plt.subplots()
+    nx.set_node_attributes(
+        G, {0: (0, 0), 1: (1, 0), 2: (0, 1), 3: (1, 1), 4: (0.5, 2.0)}, "pos"
+    )
+    nx.set_node_attributes(
+        G,
+        {
+            n: {
+                "size": 3000 if n != 4 else 2000,
+                "color": "tab:blue" if n != 4 else "tab:orange",
+            }
+            for n in G.nodes()
+        },
+    )
+    nx.new_draw(
+        G,
+        pos="pos",
+        edge_alpha=0.5,
+        edge_width=6,
+        node_label=None,
+        node_border_color="k",
+    )
+    ax.margins(0.17)
+    plt.tight_layout()
+    plt.axis("off")
+    return fig
+
+
+def test_new_draw_line_collection():
+    G = nx.karate_club_graph()
+    nx.set_edge_attributes(
+        G, {(u, v): "-|>" if (u + v) % 2 else "-" for u, v in G.edges()}, "arrowstyle"
+    )
+    canvas = plt.figure().add_subplot(111)
+    nx.new_draw(G, canvas=canvas, arrowsize=10)
+    # There should only be one line collection in any given visualization
+    lc = [
+        l
+        for l in canvas.get_children()
+        if isinstance(l, mpl.collections.LineCollection)
+    ][0]
+    assert len(lc.get_paths()) == sum([1 for u, v in G.edges() if (u + v) % 2])
 
 
 def test_draw():

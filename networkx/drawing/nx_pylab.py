@@ -308,6 +308,7 @@ def new_draw(
         "edge_curvature": "arc3",
         "edge_source_margin": 0,
         "edge_target_margin": 0,
+        "hide_ticks": True,
     }
 
     # Check arguments
@@ -320,7 +321,7 @@ def new_draw(
     if canvas is None:
         canvas = plt.gca()
 
-    if "hide_ticks" not in kwargs or kwargs["hide_ticks"]:
+    if kwargs.get("hide_ticks", defaults["hide_ticks"]):
         canvas.tick_params(
             axis="both",
             which="both",
@@ -473,12 +474,13 @@ def new_draw(
             else default
         )
 
-    def get_node_attr(n, attr, default=None):
+    def get_node_attr(n, attr, default=None, use_edge_subgraph=True):
         """Return the final node attribute value, using default if not None"""
+        subgraph = edge_subgraph if use_edge_subgraph else node_subgraph
 
         if (
             attr is not None
-            and nx.get_node_attributes(edge_subgraph, attr) == {}
+            and nx.get_node_attributes(subgraph, attr) == {}
             and attr in kwargs.values()
         ):
             return attr
@@ -492,8 +494,8 @@ def new_draw(
                 return False
 
         return (
-            edge_subgraph.edges[n][attr]
-            if attr in edge_subgraph.nodes[n] or error(n, attr, default)
+            subgraph.nodes[n][attr]
+            if attr in subgraph.nodes[n] or error(n, attr, default)
             else default
         )
 
@@ -767,8 +769,13 @@ def new_draw(
         border_color = np.asarray(
             [
                 (
-                    node_subgraph.nodes[n][node_border_color]
-                    if node_border_color in node_subgraph.nodes[n]
+                    c
+                    if (
+                        c := get_node_attr(
+                            n, node_border_color, defaults["node_border_color"], False
+                        )
+                    )
+                    != "face"
                     else color[i]
                 )
                 for i, n in enumerate(nodes_with_shape)
