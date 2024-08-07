@@ -22,10 +22,15 @@ import itertools
 from numbers import Number
 
 import networkx as nx
-from networkx.drawing.layout import (circular_layout, kamada_kawai_layout,
-                                     planar_layout, random_layout,
-                                     shell_layout, spectral_layout,
-                                     spring_layout)
+from networkx.drawing.layout import (
+    circular_layout,
+    kamada_kawai_layout,
+    planar_layout,
+    random_layout,
+    shell_layout,
+    spectral_layout,
+    spring_layout,
+)
 
 __all__ = [
     "new_draw",
@@ -337,7 +342,7 @@ def new_draw(
         if (
             attr is not None
             and nx.get_node_attributes(node_subgraph, attr) == {}
-            and any([attr == v for k, v in kwargs.items() if "node" in k])
+            and any(attr == v for k, v in kwargs.items() if "node" in k)
         ):
             return np.asarray([attr for _ in seq])
 
@@ -421,7 +426,7 @@ def new_draw(
         if (
             attr is not None
             and nx.get_edge_attributes(edge_subgraph, attr) == {}
-            and any([attr == v for k, v in kwargs.items() if "edge" in k])
+            and any(attr == v for k, v in kwargs.items() if "edge" in k)
         ):
             return np.asarray([attr for _ in seq])
 
