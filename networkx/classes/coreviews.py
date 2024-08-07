@@ -296,7 +296,7 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
         except AttributeError:
             node_ok_shorter = False
         if node_ok_shorter:
-            return (n for n in self.NODE_OK.nodes if n in self._atlas)
+            return (n for n in self._atlas if n in self.NODE_OK.nodes)
         return (n for n in self._atlas if self.NODE_OK(n))
 
     def __getitem__(self, key):
