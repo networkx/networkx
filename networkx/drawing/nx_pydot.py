@@ -409,8 +409,7 @@ def pydot_layout(G, prog="neato", root=None):
                 For example the string \'attribute:data1\' should be written as \'"attribute:data1"\'.\
                 Please refer https://github.com/pydot/pydot/issues/258'
             )
-        pydot_node = pydot.Node(str_n).get_name()
-        node = Q.get_node(pydot_node)
+        node = Q.get_node(pydot.quote_id_if_necessary(str_n))
 
         if isinstance(node, list):
             node = node[0]
