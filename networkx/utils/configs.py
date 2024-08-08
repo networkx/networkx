@@ -1,6 +1,7 @@
 import collections
 import os
 import typing
+import warnings
 from dataclasses import dataclass
 
 __all__ = ["Config", "config"]
@@ -19,8 +20,9 @@ class Config:
     ...     eggs: int
     ...     spam: int
     ...
-    ...     def _check_config(self, key, value):
+    ...     def _on_setattr(self, key, value):
     ...         assert isinstance(value, int) and value >= 0
+    ...         return value
     >>> cfg = MyConfig(eggs=1, spam=5)
 
     Another way is to simply pass the initial configuration as keyword arguments to
@@ -48,7 +50,7 @@ class Config:
     >>> print("spam (after context):", cfg.spam)
     spam (after context): 42
 
-    Subclasses may also define ``_check_config`` (as done in the example above)
+    Subclasses may also define ``_on_setattr`` (as done in the example above)
     to ensure the value being assigned is valid:
 
     >>> cfg.spam = -1
@@ -95,8 +97,12 @@ class Config:
         instance.__init__(**kwargs)
         return instance
 
-    def _check_config(self, key, value):
-        """Check whether config value is valid. This is useful for subclasses."""
+    def _on_setattr(self, key, value):
+        """Process config value and check whether it is valid. Useful for subclasses."""
+        return value
+
+    def _on_delattr(self, key):
+        """Callback for when a config item is being deleted. Useful for subclasses."""
 
     # Control behavior of attributes
     def __dir__(self):
@@ -105,7 +111,7 @@ class Config:
     def __setattr__(self, key, value):
         if self._strict and key not in self.__dataclass_fields__:
             raise AttributeError(f"Invalid config name: {key!r}")
-        self._check_config(key, value)
+        value = self._on_setattr(key, value)
         object.__setattr__(self, key, value)
         self.__class__._prev = None
 
@@ -114,6 +120,7 @@ class Config:
             raise TypeError(
                 f"Configuration items can't be deleted (can't delete {key!r})."
             )
+        self._on_delattr(key)
         object.__delattr__(self, key)
         self.__class__._prev = None
 
@@ -182,8 +189,7 @@ class Config:
 
     # Allow to be used as context manager
     def __call__(self, **kwargs):
-        for key, val in kwargs.items():
-            self._check_config(key, val)
+        kwargs = {key: self._on_setattr(key, val) for key, val in kwargs.items()}
         prev = dict(self)
         for key, val in kwargs.items():
             setattr(self, key, val)
@@ -221,6 +227,33 @@ def _flexible_repr(self):
 collections.abc.Mapping.register(Config)
 
 
+class BackendPriorities(Config, strict=False):
+    # TODO: document me
+    algos: list[str]
+    generators: list[str]
+
+    def _on_setattr(self, key, value):
+        from .backends import _registered_algorithms, backend_info
+
+        if key in {"algos", "generators"}:
+            pass
+        elif key not in _registered_algorithms:
+            # TODO: give more informative error message
+            raise AttributeError(f"Invalid config name: {key!r}")
+        if not (isinstance(value, list) and all(isinstance(x, str) for x in value)):
+            raise TypeError(
+                f"{key!r} config must be a list of backend names; got {value!r}"
+            )
+        if missing := {x for x in value if x not in backend_info}:
+            missing = ", ".join(map(repr, sorted(missing)))
+            raise ValueError(f"Unknown backend when setting {key!r}: {missing}")
+        return value
+
+    def _on_delattr(self, key):
+        if key in {"algos", "generators"}:
+            raise TypeError(f"{key!r} configuration item can't be deleted.")
+
+
 class NetworkXConfig(Config):
     """Configuration for NetworkX that controls behaviors such as how to use backends.
 
@@ -232,9 +265,11 @@ class NetworkXConfig(Config):
     Parameters
     ----------
     backend_priority : list of backend names
+        TODO: update this documentation!
         Enable automatic conversion of graphs to backend graphs for algorithms
         implemented by the backend. Priority is given to backends listed earlier.
-        Default is empty list.
+        If ``"networkx"`` backend name is given priority, then input graphs from
+        backends will be converted to networkx graphs. Default is empty list.
 
     backends : Config mapping of backend names to backend Config
         The keys of the Config mapping are names of all installed NetworkX backends,
@@ -261,21 +296,27 @@ class NetworkXConfig(Config):
     This is a global configuration. Use with caution when using from multiple threads.
     """
 
-    backend_priority: list[str]
+    backend_priority: BackendPriorities
+    backend_fallback: BackendPriorities
     backends: Config
     cache_converted_graphs: bool
 
-    def _check_config(self, key, value):
-        from .backends import backends
+    def _on_setattr(self, key, value):
+        from .backends import backend_info
 
-        if key == "backend_priority":
-            if not (isinstance(value, list) and all(isinstance(x, str) for x in value)):
+        if key in {"backend_priority", "backend_fallback"}:
+            if isinstance(value, list):
+                getattr(self, key).algos = value
+                value = getattr(self, key)
+            elif isinstance(value, dict):
+                kwargs = value
+                value = BackendPriorities(algos=[], generators=[])
+                for key, val in kwargs.items():
+                    setattr(value, key, val)
+            elif not isinstance(value, BackendPriorities):
                 raise TypeError(
-                    f"{key!r} config must be a list of backend names; got {value!r}"
+                    f"{key!r} config must be a dict of lists of backend names; got {value!r}"
                 )
-            if missing := {x for x in value if x not in backends}:
-                missing = ", ".join(map(repr, sorted(missing)))
-                raise ValueError(f"Unknown backend when setting {key!r}: {missing}")
         elif key == "backends":
             if not (
                 isinstance(value, Config)
@@ -285,17 +326,25 @@ class NetworkXConfig(Config):
                 raise TypeError(
                     f"{key!r} config must be a Config of backend configs; got {value!r}"
                 )
-            if missing := {x for x in value if x not in backends}:
+            if missing := {x for x in value if x not in backend_info}:
                 missing = ", ".join(map(repr, sorted(missing)))
                 raise ValueError(f"Unknown backend when setting {key!r}: {missing}")
         elif key == "cache_converted_graphs":
             if not isinstance(value, bool):
                 raise TypeError(f"{key!r} config must be True or False; got {value!r}")
+        return value
 
 
 # Backend configuration will be updated in backends.py
 config = NetworkXConfig(
-    backend_priority=[],
+    backend_priority=BackendPriorities(
+        algos=[],
+        generators=[],
+    ),
+    backend_fallback=BackendPriorities(
+        algos=[],
+        generators=[],
+    ),
     backends=Config(),
     cache_converted_graphs=bool(
         os.environ.get("NETWORKX_CACHE_CONVERTED_GRAPHS", True)
