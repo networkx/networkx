@@ -297,18 +297,17 @@ class NetworkXConfig(Config):
     """
 
     backend_priority: BackendPriorities
+    backend_fallback: BackendPriorities
     backends: Config
     cache_converted_graphs: bool
 
     def _on_setattr(self, key, value):
         from .backends import backend_info
 
-        if key == "backend_priority":
+        if key in {"backend_priority", "backend_fallback"}:
             if isinstance(value, list):
-                # Deprecation to handle old behavior and warn that API has changed
-                warnings.warn("Write me!")
-                self.backend_priority.algos = value
-                value = self.backend_priority
+                getattr(self, key).algos = value
+                value = getattr(self, key)
             elif isinstance(value, dict):
                 kwargs = value
                 value = BackendPriorities(algos=[], generators=[])
@@ -339,6 +338,10 @@ class NetworkXConfig(Config):
 # Backend configuration will be updated in backends.py
 config = NetworkXConfig(
     backend_priority=BackendPriorities(
+        algos=[],
+        generators=[],
+    ),
+    backend_fallback=BackendPriorities(
         algos=[],
         generators=[],
     ),
