@@ -59,6 +59,7 @@ def pytest_configure(config):
         )
     if backend:
         networkx.utils.backends.backends["nx_loopback"] = loopback_ep["nx_loopback"]
+        networkx.utils.backends.backend_info["nx_loopback"] = {}
         networkx.config["backend_priority"] = [backend]
         networkx.config.backends = networkx.utils.Config(
             nx_loopback=networkx.utils.Config(),
