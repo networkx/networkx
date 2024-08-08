@@ -159,13 +159,25 @@ class TestEigenvectorCentralityExceptions:
         with pytest.raises(nx.NetworkXException):
             nx.eigenvector_centrality_numpy(nx.MultiGraph())
 
-    def test_empty(self):
+    def test_null(self):
         with pytest.raises(nx.NetworkXException):
             nx.eigenvector_centrality(nx.Graph())
 
-    def test_empty_numpy(self):
+    def test_null_numpy(self):
         with pytest.raises(nx.NetworkXException):
             nx.eigenvector_centrality_numpy(nx.Graph())
+
+    @pytest.mark.parametrize(
+        "G",
+        [
+            nx.empty_graph(3),
+            nx.DiGraph([(0, 1), (1, 2)]),
+        ],
+    )
+    def test_disconnected_numpy(self, G):
+        msg = "does not give consistent results for disconnected"
+        with pytest.raises(nx.AmbiguousSolution, match=msg):
+            nx.eigenvector_centrality_numpy(G)
 
     def test_zero_nstart(self):
         G = nx.Graph([(1, 2), (1, 3), (2, 3)])
