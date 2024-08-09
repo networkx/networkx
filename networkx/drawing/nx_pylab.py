@@ -346,7 +346,7 @@ def new_draw(
             and nx.get_node_attributes(node_subgraph, attr) == {}
             and any(attr == v for k, v in kwargs.items() if "node" in k)
         ):
-            return np.asarray([attr for _ in seq])
+            return [attr for _ in seq]
 
         # The inner function isn't my first choice here, but if I use a regular try-except
         # around the asarray call I can't seem to isolate which node is problematic for
@@ -359,16 +359,14 @@ def new_draw(
             else:
                 return False
 
-        return np.asarray(
-            [
-                (
-                    node_subgraph.nodes[n][attr]
-                    if attr in node_subgraph.nodes[n] or error(n, attr, default)
-                    else default
-                )
-                for n in seq
-            ]
-        )
+        return [
+            (
+                node_subgraph.nodes[n][attr]
+                if attr in node_subgraph.nodes[n] or error(n, attr, default)
+                else default
+            )
+            for n in seq
+        ]
 
     def compute_colors(color, alpha):
         if isinstance(color, str):
@@ -379,10 +377,10 @@ def new_draw(
                 return (rgba[0], rgba[1], rgba[2], alpha)
             return rgba
 
-        if isinstance(color, np.ndarray) and len(color) == 3:
+        if isinstance(color, tuple) and len(color) == 3:
             return (color[0], color[1], color[2], alpha)
 
-        if isinstance(color, np.ndarray) and len(color) == 4:
+        if isinstance(color, tuple) and len(color) == 4:
             return color
 
         raise ValueError(f"Invalid format for color: {color}")
@@ -430,7 +428,7 @@ def new_draw(
             and nx.get_edge_attributes(edge_subgraph, attr) == {}
             and any(attr == v for k, v in kwargs.items() if "edge" in k)
         ):
-            return np.asarray([attr for _ in seq])
+            return [attr for _ in seq]
 
         def error(e, attr, default):
             if default is None:
@@ -440,16 +438,14 @@ def new_draw(
             else:
                 return False
 
-        return np.asarray(
-            [
-                (
-                    edge_subgraph.edges[e][attr]
-                    if attr in edge_subgraph.edges[e] or error(e, attr, default)
-                    else default
-                )
-                for e in seq
-            ]
-        )
+        return [
+            (
+                edge_subgraph.edges[e][attr]
+                if attr in edge_subgraph.edges[e] or error(e, attr, default)
+                else default
+            )
+            for e in seq
+        ]
 
     def get_edge_attr(e, attr, default=None):
         """Return the final edge attribute value, using default if not None"""
@@ -724,13 +720,16 @@ def new_draw(
 
     pos = kwargs.get("pos", defaults["pos"])
 
-    if nx.get_node_attributes(G, pos) == {}:
-        pos = spring_layout
-
     if callable(pos):
         # TODO refactor this once layouts can store directly on the graph
+        # TODO remove this attribute before exiting the function
         nx.set_node_attributes(
             node_subgraph, pos(G), "new_draw's position attribute name"
+        )
+        pos = "new_draw's position attribute name"
+    elif nx.get_node_attributes(G, pos) == {}:
+        nx.set_node_attributes(
+            node_subgraph, nx.spring_layout(G), "new_draw's position attribute name"
         )
         pos = "new_draw's position attribute name"
 
@@ -752,7 +751,7 @@ def new_draw(
         # 1. position, since it is used for x and y parameters to scatter
         # 2. edgecolor, since the spaeical 'face' parameter value can only be
         #    be passed in as the sole string, not part of a list of strings.
-        position = node_property_sequence(nodes_with_shape, pos)
+        position = np.asarray(node_property_sequence(nodes_with_shape, pos))
         color = np.asarray(
             [
                 compute_colors(c, a)

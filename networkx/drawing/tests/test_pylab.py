@@ -6,6 +6,8 @@ import warnings
 
 import pytest
 
+from networkx.classes.function import is_directed
+
 mpl = pytest.importorskip("matplotlib")
 np = pytest.importorskip("numpy")
 mpl.use("PS")
@@ -225,7 +227,6 @@ def test_new_draw_labels_and_colors():
 
     plt.tight_layout()
     plt.axis("off")
-    plt.show()
     return fig
 
 
@@ -303,6 +304,103 @@ def test_new_draw_shortest_path():
     plt.tight_layout()
     plt.axis("off")
     return fig
+
+
+@pytest.mark.parametrize(
+    ("edge_color", "expected"),
+    (
+        (None, "black"),
+        ("r", "red"),
+        ((1.0, 1.0, 0.0), "yellow"),
+        ((0, 1, 0, 1), "lime"),
+        ("color", "blue"),
+        ("#0000FF", "blue"),
+    ),
+)
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+def test_new_draw_edge_single_color(edge_color, expected, graph_type):
+    G = nx.path_graph(3, create_using=graph_type)
+    nx.set_edge_attributes(G, "#0000FF", "color")
+    canvas = plt.figure().add_subplot(111)
+    nx.new_draw(G, edge_color=edge_color, canvas=canvas)
+    if G.is_directed():
+        colors = [
+            f.get_fc()
+            for f in canvas.get_children()
+            if isinstance(f, mpl.patches.FancyArrowPatch)
+        ]
+    else:
+        colors = [
+            l
+            for l in canvas.collections
+            if isinstance(l, mpl.collections.LineCollection)
+        ][0].get_colors()
+    assert all(mpl.colors.same_color(c, expected) for c in colors)
+
+
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+def test_new_draw_edge_multiple_colors(graph_type):
+    G = nx.path_graph(3, create_using=graph_type)
+    nx.set_edge_attributes(G, {(0, 1): "#FF0000", (1, 2): (0, 0, 1)}, "color")
+    ax = plt.figure().add_subplot(111)
+    nx.new_draw(G, canvas=ax)
+    expected = ["red", "blue"]
+    if G.is_directed():
+        colors = [
+            f.get_fc()
+            for f in ax.get_children()
+            if isinstance(f, mpl.patches.FancyArrowPatch)
+        ]
+    else:
+        colors = [
+            l for l in ax.collections if isinstance(l, mpl.collections.LineCollection)
+        ][0].get_colors()
+    assert mpl.colors.same_color(colors, expected)
+
+
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+def test_new_draw_edge_position(graph_type):
+    G = nx.path_graph(3, create_using=graph_type)
+    nx.set_node_attributes(G, {n: (n, n) for n in G.nodes()}, "pos")
+    ax = plt.figure().add_subplot(111)
+    nx.new_draw(G, canvas=ax)
+    if G.is_directed():
+        end_points = [
+            (f.get_path().vertices[0, :], f.get_path().vertices[-2, :])
+            for f in ax.get_children()
+            if isinstance(f, mpl.patches.FancyArrowPatch)
+        ]
+    else:
+        line_collection = [
+            l for l in ax.collections if isinstance(l, mpl.collections.LineCollection)
+        ][0]
+        end_points = [
+            (p.vertices[0, :], p.vertices[-1, :]) for p in line_collection.get_paths()
+        ]
+    expected = [((0, 0), (1, 1)), ((1, 1), (2, 2))]
+    # Use the threshold to account for slight shifts in FancyArrowPatch margins to
+    # avoid covering the arrow head with the node.
+    threshold = 0.03
+    for a, e in zip(end_points, expected):
+        act_start, act_end = a
+        exp_start, exp_end = e
+        assert all(abs(act_start - exp_start) < (threshold, threshold)) and all(
+            abs(act_end - exp_end) < (threshold, threshold)
+        )
+
+
+def test_new_draw_position_function():
+    G = nx.karate_club_graph()
+    fixed_layout = lambda G: nx.spring_layout(G, seed=314159)
+    pos = fixed_layout(G)
+    ax = plt.figure().add_subplot(111)
+    nx.new_draw(G, pos=fixed_layout, canvas=ax)
+    # rebuild the position dictionary from the canvas
+    act_pos = {
+        n: tuple(p) for n, p in zip(G.nodes(), ax.get_children()[0].get_offsets().data)
+    }
+    for n in G.nodes():
+        assert all(pos[n] == act_pos[n])
 
 
 def test_draw():
