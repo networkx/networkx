@@ -17,6 +17,293 @@ import networkx as nx
 
 barbell = nx.barbell_graph(4, 6)
 
+defaults = {
+    "pos": None,
+    "node_visible": True,
+    "node_color": "#1f78b4",
+    "node_size": 300,
+    "node_label": {
+        "size": 12,
+        "color": "#000000",
+        "family": "sans-serif",
+        "weight": "normal",
+        "alpha": 1.0,
+        "background_color": None,
+        "background_alpha": None,
+        "h_align": "center",
+        "v_align": "center",
+        "bbox": None,
+    },
+    "node_shape": "o",
+    "node_alpha": 1.0,
+    "node_border_width": 1.0,
+    "node_border_color": "face",
+    "edge_visible": True,
+    "edge_width": 1.0,
+    "edge_color": "#000000",
+    "edge_label": {
+        "size": 12,
+        "color": "#000000",
+        "family": "sans-serif",
+        "weight": "normal",
+        "alpha": 1.0,
+        "bbox": {"boxstyle": "round", "ec": (1.0, 1.0, 1.0), "fc": (1.0, 1.0, 1.0)},
+        "h_align": "center",
+        "v_align": "center",
+        "pos": 0.5,
+        "rotate": True,
+    },
+    "edge_style": "-",
+    "edge_alpha": 1.0,
+    # These are for undirected-graphs. Directed graphs shouls use "-|>" and 10, respectively
+    "arrowstyle": "-",
+    "arrowsize": 0,
+    "edge_curvature": "arc3",
+    "edge_source_margin": 0,
+    "edge_target_margin": 0,
+}
+
+
+@pytest.mark.parametrize(
+    ("param_name", "param_value", "expected"),
+    (
+        ("node_color", None, defaults["node_color"]),
+        ("node_color", "#FF0000", "red"),
+        ("node_color", "color", "lime"),
+    ),
+)
+def test_new_draw_arg_handling_node_color(param_name, param_value, expected):
+    G = nx.path_graph(4)
+    nx.set_node_attributes(G, "#00FF00", "color")
+    canvas = plt.figure().add_subplot(111)
+    nx.new_draw(G, canvas=canvas, **{param_name: param_value})
+    assert mpl.colors.same_color(canvas.get_children()[0].get_edgecolors()[0], expected)
+
+
+@pytest.mark.parametrize(
+    ("param_value", "expected"),
+    (
+        (None, (1, 1, 1, 1)),  # default value
+        (0.5, (0.5, 0.5, 0.5, 0.5)),
+        ("n_alpha", (1.0, 1 / 2, 1 / 3, 0.25)),
+    ),
+)
+def test_new_draw_arg_handling_node_alpha(param_value, expected):
+    G = nx.path_graph(4)
+    nx.set_node_attributes(G, {n: 1 / (n + 1) for n in G.nodes()}, "n_alpha")
+    canvas = plt.figure().add_subplot(111)
+    nx.new_draw(G, canvas=canvas, node_alpha=param_value)
+    assert all(
+        canvas.get_children()[0].get_fc()[:, 3] == expected
+    )  # Extract just the alpha from the node colors
+
+
+def test_new_draw_node_position():
+    G = nx.path_graph(4)
+    nx.set_node_attributes(G, {n: (n, n) for n in G.nodes()}, "pos")
+    canvas = plt.figure().add_subplot(111)
+    nx.new_draw(G, canvas=canvas, pos="pos")
+    assert np.all(
+        canvas.get_children()[0].get_offsets().data == [[0, 0], [1, 1], [2, 2], [3, 3]]
+    )
+
+
+@pytest.mark.mpl_image_compare
+def test_new_draw_house_with_colors():
+    """
+    Originally, I wanted to use the exact samge image as test_house_with_colors.
+    But I can't seem to find the correct value for the margins to get the figures
+    to line up perfectly. To the human eye, these visualizations are basically the
+    same.
+    """
+    G = nx.house_graph()
+    fig, ax = plt.subplots()
+    nx.set_node_attributes(
+        G, {0: (0, 0), 1: (1, 0), 2: (0, 1), 3: (1, 1), 4: (0.5, 2.0)}, "pos"
+    )
+    nx.set_node_attributes(
+        G,
+        {
+            n: {
+                "size": 3000 if n != 4 else 2000,
+                "color": "tab:blue" if n != 4 else "tab:orange",
+            }
+            for n in G.nodes()
+        },
+    )
+    nx.new_draw(
+        G,
+        pos="pos",
+        edge_alpha=0.5,
+        edge_width=6,
+        node_label=None,
+        node_border_color="k",
+    )
+    ax.margins(0.17)
+    plt.tight_layout()
+    plt.axis("off")
+    return fig
+
+
+def test_new_draw_line_collection():
+    G = nx.karate_club_graph()
+    nx.set_edge_attributes(
+        G, {(u, v): "-|>" if (u + v) % 2 else "-" for u, v in G.edges()}, "arrowstyle"
+    )
+    canvas = plt.figure().add_subplot(111)
+    nx.new_draw(G, canvas=canvas, arrowsize=10)
+    # There should only be one line collection in any given visualization
+    lc = [
+        l
+        for l in canvas.get_children()
+        if isinstance(l, mpl.collections.LineCollection)
+    ][0]
+    assert len(lc.get_paths()) == sum([1 for u, v in G.edges() if (u + v) % 2])
+
+
+@pytest.mark.mpl_image_compare
+def test_new_draw_labels_and_colors():
+    """See 'Labels and Colors' gallery example"""
+    fig, ax = plt.subplots()
+    G = nx.cubical_graph()
+    pos = nx.spring_layout(G, seed=3113794652)  # positions for all nodes
+    nx.set_node_attributes(G, pos, "pos")  # Will not be needed after PR 7571
+    labels = iter(
+        [
+            r"$a$",
+            r"$b$",
+            r"$c$",
+            r"$d$",
+            r"$\alpha$",
+            r"$\beta$",
+            r"$\gamma$",
+            r"$\delta$",
+        ]
+    )
+    nx.set_node_attributes(
+        G,
+        {
+            n: {
+                "size": 800,
+                "alpha": 0.9,
+                "color": "tab:red" if n < 4 else "tab:blue",
+                "label": {"label": next(labels), "size": 22, "color": "whitesmoke"},
+            }
+            for n in G.nodes()
+        },
+    )
+
+    nx.new_draw(G, pos="pos", edge_color="tab:grey")
+
+    # The tricky bit is the highlighted colors for the edges
+    edgelist = [(0, 1), (1, 2), (2, 3), (0, 3)]
+    nx.set_edge_attributes(
+        G,
+        {
+            (u, v): {
+                "width": 8,
+                "alpha": 0.5,
+                "color": "tab:red",
+                "visible": (u, v) in edgelist,
+            }
+            for u, v in G.edges()
+        },
+    )
+    nx.new_draw(G, pos="pos", node_visible=False)
+    edgelist = [(4, 5), (5, 6), (6, 7), (4, 7)]
+    nx.set_edge_attributes(
+        G,
+        {
+            (u, v): {
+                "color": "tab:blue",
+                "visible": (u, v) in edgelist,
+            }
+            for u, v in G.edges()
+        },
+    )
+    nx.new_draw(G, pos="pos", node_visible=False)
+
+    plt.tight_layout()
+    plt.axis("off")
+    plt.show()
+    return fig
+
+
+@pytest.mark.mpl_image_compare
+def test_new_draw_complex():
+    import itertools as it
+
+    fig, ax = plt.subplots()
+    G = nx.MultiDiGraph()
+    nodes = "ABC"
+    prod = list(it.product(nodes, repeat=2)) * 4
+    G = nx.MultiDiGraph()
+    for i, (u, v) in enumerate(prod):
+        G.add_edge(u, v, w=round(i / 3, 2))
+    nx.set_node_attributes(G, nx.spring_layout(G, seed=3113794652), "pos")
+    csi = it.cycle([f"arc3,rad={r}" for r in it.accumulate([0.15] * 4)])
+    nx.set_edge_attributes(G, {e: next(csi) for e in G.edges(keys=True)}, "curve")
+    nx.set_edge_attributes(
+        G,
+        {
+            tuple(e): {"label": w, "bbox": {"alpha": 0}}
+            for *e, w in G.edges(keys=True, data="w")
+        },
+        "label",
+    )
+    nx.apply_matplotlib_colors(G, "w", "color", mpl.colormaps["inferno"], nodes=False)
+    nx.new_draw(G, canvas=ax, pos="pos")
+
+    plt.tight_layout()
+    plt.axis("off")
+    return fig
+
+
+@pytest.mark.mpl_image_compare
+def test_new_draw_shortest_path():
+    fig, ax = plt.subplots()
+    G = nx.Graph()
+    G.add_nodes_from(["A", "B", "C", "D", "E", "F", "G", "H"])
+    G.add_edge("A", "B", weight=4)
+    G.add_edge("A", "H", weight=8)
+    G.add_edge("B", "C", weight=8)
+    G.add_edge("B", "H", weight=11)
+    G.add_edge("C", "D", weight=7)
+    G.add_edge("C", "F", weight=4)
+    G.add_edge("C", "I", weight=2)
+    G.add_edge("D", "E", weight=9)
+    G.add_edge("D", "F", weight=14)
+    G.add_edge("E", "F", weight=10)
+    G.add_edge("F", "G", weight=2)
+    G.add_edge("G", "H", weight=1)
+    G.add_edge("G", "I", weight=6)
+    G.add_edge("H", "I", weight=7)
+
+    # Find the shortest path from node A to node E
+    path = nx.shortest_path(G, "A", "E", weight="weight")
+
+    # Create a list of edges in the shortest path
+    path_edges = list(zip(path, path[1:]))
+    nx.set_node_attributes(G, nx.spring_layout(G, seed=37), "pos")
+    nx.set_edge_attributes(
+        G,
+        {
+            (u, v): {
+                "color": (
+                    "red"
+                    if (u, v) in path_edges or tuple(reversed((u, v))) in path_edges
+                    else "black"
+                ),
+                "label": {"label": d["weight"], "rotate": False},
+            }
+            for u, v, d in G.edges(data=True)
+        },
+    )
+    nx.new_draw(G, canvas=ax)
+    plt.tight_layout()
+    plt.axis("off")
+    return fig
+
 
 def test_draw():
     try:
