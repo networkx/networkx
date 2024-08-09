@@ -907,13 +907,13 @@ class _dispatchable:
                         backend_name,
                         args,
                         kwargs,
-                        extra_message="TODO: can't fall back",
+                        extra_message="TODO1: can't fall back",
                     )
                 raise NotImplementedError(
                     f"`{self.name}' is not implemented by `backend='{backend_name}'` backend."
                 )
             if self._can_convert(backend_name, graph_backend_names):
-                if self._can_backend_run(backend_name, args, kwargs, log=False):
+                if self._can_backend_run(backend_name, args, kwargs):  # , log=False):
                     if self._will_call_mutate_input(args, kwargs):
                         _logger.debug(
                             "`%s' will mutate an input graph. This prevents automatic conversion "
@@ -927,7 +927,7 @@ class _dispatchable:
                         graph_backend_names,
                         args,
                         kwargs,
-                        extra_message="TODO: can't fall back",
+                        extra_message="TODO2: can't fall back",
                     )
                 raise NotImplementedError(
                     f"`{self.name}' is not implemented by `backend='{backend_name}'` backend."
@@ -960,7 +960,7 @@ class _dispatchable:
                         backend_name,
                         args,
                         kwargs,
-                        extra_message="TODO: can't use backend_priority, b/c mutates input",
+                        extra_message="TODO3: can't use backend_priority, b/c mutates input",
                     )
                 raise RuntimeError(
                     f"Unable to convert input graphs to run with '{backend_name}' "
@@ -968,7 +968,7 @@ class _dispatchable:
                     f"specify a backend to use by passing e.g. `backend='{backend_name}'` "
                     "keyword, but this may change behavior by not mutating inputs."
                 )
-            raise RuntimeError("TODO: mutates input w/ multiple backend graphs")
+            raise RuntimeError("TODO4: mutates input w/ multiple backend graphs")
 
         backend_fallback = config.backend_fallback.get(
             self.name,
@@ -1014,25 +1014,23 @@ class _dispatchable:
                 try_order,
             )
 
-        backends_attempted = {}  # {backend_name: tried_to_run}
-        for backend_name in try_order:
-            if backends_attempted:
+        backends_to_try_again = []
+        for is_not_first, backend_name in enumerate(try_order):
+            if is_not_first:
                 _logger.debug("Trying next backend: '%s'", backend_name)
             try:
                 if not graph_backend_names or graph_backend_names == {backend_name}:
-                    # Mark as attempted, b/c we don't want to attempt again if `can_run` is False
-                    backends_attempted[backend_name] = True
                     if self._can_backend_run(backend_name, args, kwargs):
                         return self._call_with_backend(backend_name, args, kwargs)
                 elif self._can_convert(
                     backend_name, graph_backend_names
-                ) and self._should_backend_run(backend_name, args, kwargs):
-                    backends_attempted[backend_name] = True
-                    return self._convert_and_call(
-                        backend_name, graph_backend_names, args, kwargs
-                    )
-                else:
-                    backends_attempted[backend_name] = False
+                ) and self._can_backend_run(backend_name, args, kwargs):
+                    if self._should_backend_run(backend_name, args, kwargs):
+                        return self._convert_and_call(
+                            backend_name, graph_backend_names, args, kwargs
+                        )
+                    # `should_run` is False, but `can_run` is True, so try again later
+                    backends_to_try_again.append(backend_name)
             except NotImplementedError:
                 _logger.debug(
                     "Backend '%s' raised NotImplementedError when calling `%s'",
@@ -1040,27 +1038,44 @@ class _dispatchable:
                     self.name,
                 )
 
-        # TODO: we are about to fail. Should we relax to check `can_run` instead of `should_run`?
-        for backend_name in try_order:
-            if backends_attempted[backend_name]:
-                continue
-            if self._can_convert(
-                backend_name, graph_backend_names
-            ) and self._can_backend_run(backend_name, args, kwargs, log=False):
-                try:
-                    return self._convert_and_call(
-                        backend_name, graph_backend_names, args, kwargs
-                    )
-                except NotImplementedError:
-                    _logger.debug(
-                        "Backend '%s' raised NotImplementedError when calling `%s'",
-                        backend_name,
-                        self.name,
-                    )
+        # We are about to fail. Let's try backends with can_run=True and should_run=False
+        for backend_name in backends_to_try_again:
+            try:
+                _logger.debug(
+                    "Trying backend: '%s' (ignoring `should_run=False`)", backend_name
+                )
+                return self._convert_and_call(
+                    backend_name, graph_backend_names, args, kwargs
+                )
+            except NotImplementedError:
+                _logger.debug(
+                    "Backend '%s' raised NotImplementedError when calling `%s'",
+                    backend_name,
+                    self.name,
+                )
 
         if len(unspecified_backends := graph_backend_names - seen) > 1:
-            raise TypeError("TODO")
-        raise NotImplementedError("TODO")
+            raise TypeError(
+                f"Unable to convert inputs from {graph_backend_names} backends and "
+                f"run `{self.name}'. NetworkX is configured to automatically convert "
+                f"to {try_order} backends. To remedy this, you may enable automatic "
+                f"conversion to {unspecified_backends} backends by adding them to "
+                "`nx.config.backend_priority` or `nx.config.backend_fallback`, or you "
+                f"may specify a backend to use with the `backend=` keyword argument."
+            )
+        if not try_order:
+            raise TypeError(
+                f"`{self.name}' is not configured to run with any backend! "
+                "Perhaps consider consider adding backends (such as 'networkx') "
+                "to `nx.config.backend_fallback`."
+            )
+        raise NotImplementedError(
+            f"`{self.name}' is not implemented by {try_order} backends. To remedy "
+            "this, you may enable automatic conversion to more backends (including "
+            "'networkx') by adding them to `nx.config.backend_priority` or "
+            "`nx.config.backend_fallback`, or you may specify a backend to use with "
+            "the `backend=` keyword argument."
+        )
 
     def _will_call_mutate_input(self, args, kwargs):
         return (mutates_input := self.mutates_input) and (
@@ -1123,13 +1138,14 @@ class _dispatchable:
         return True
 
     def _should_backend_run(self, backend_name, args, kwargs):
-        """Can/should the specified backend run this algorithm with these arguments?"""
+        """Should the specified backend run this algorithm with these arguments?
+
+        Note that this does not check ``backend.can_run``.
+        """
         # `backend.can_run` and `backend.should_run` may return strings that describe
         # why they can't or shouldn't be run.
         if backend_name == "networkx":
             return True
-        if not self._can_backend_run(backend_name, args, kwargs):
-            return False
         backend = _load_backend(backend_name)
         should_run = backend.should_run(self.name, args, kwargs)
         if isinstance(should_run, str) or not should_run:
