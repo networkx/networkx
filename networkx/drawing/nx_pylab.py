@@ -125,11 +125,12 @@ def new_draw(
 
         TODO update this to be backing agnostic!
 
-    pos : string of function, default spring_layout
+    pos : string or function, default "pos"
         A string naming the node attribute which stores the position of nodes as
         a tuple. If a function, that function is called with the input graph to compute the
         position of each node. This function should return a dict of nodes to positions, like
-        the build in Networkx layout functions.
+        the build in Networkx layout functions. If the attribute exists on none of the nodes
+        in the graph, a layout will be calculated using a spring layout.
 
     node_visible : string or bool, default visible
         A string naming the node attribute which stores if a node should be drawn.
@@ -266,7 +267,7 @@ def new_draw(
     import numpy as np
 
     defaults = {
-        "pos": None,
+        "pos": "pos",
         "node_visible": True,
         "node_color": "#1f78b4",
         "node_size": 300,
@@ -721,7 +722,11 @@ def new_draw(
 
     node_subgraph = G.subgraph(visible_nodes)
 
-    pos = kwargs.get("pos", spring_layout)
+    pos = kwargs.get("pos", defaults["pos"])
+
+    if nx.get_node_attributes(G, pos) == {}:
+        pos = spring_layout
+
     if callable(pos):
         # TODO refactor this once layouts can store directly on the graph
         nx.set_node_attributes(
