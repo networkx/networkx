@@ -5,6 +5,7 @@ import os
 import warnings
 
 import pytest
+from matplotlib import collections
 
 from networkx.classes.function import is_directed
 
@@ -80,6 +81,7 @@ def test_new_draw_arg_handling_node_color(param_name, param_value, expected):
     canvas = plt.figure().add_subplot(111)
     nx.new_draw(G, canvas=canvas, **{param_name: param_value})
     assert mpl.colors.same_color(canvas.get_children()[0].get_edgecolors()[0], expected)
+    plt.close()
 
 
 @pytest.mark.parametrize(
@@ -98,6 +100,7 @@ def test_new_draw_arg_handling_node_alpha(param_value, expected):
     assert all(
         canvas.get_children()[0].get_fc()[:, 3] == expected
     )  # Extract just the alpha from the node colors
+    plt.close()
 
 
 def test_new_draw_node_position():
@@ -108,6 +111,7 @@ def test_new_draw_node_position():
     assert np.all(
         canvas.get_children()[0].get_offsets().data == [[0, 0], [1, 1], [2, 2], [3, 3]]
     )
+    plt.close()
 
 
 @pytest.mark.mpl_image_compare
@@ -161,6 +165,7 @@ def test_new_draw_line_collection():
         if isinstance(l, mpl.collections.LineCollection)
     ][0]
     assert len(lc.get_paths()) == sum([1 for u, v in G.edges() if (u + v) % 2])
+    plt.close()
 
 
 @pytest.mark.mpl_image_compare
@@ -336,6 +341,7 @@ def test_new_draw_edge_single_color(edge_color, expected, graph_type):
             if isinstance(l, mpl.collections.LineCollection)
         ][0].get_colors()
     assert all(mpl.colors.same_color(c, expected) for c in colors)
+    plt.close()
 
 
 @pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
@@ -356,6 +362,7 @@ def test_new_draw_edge_multiple_colors(graph_type):
             l for l in ax.collections if isinstance(l, mpl.collections.LineCollection)
         ][0].get_colors()
     assert mpl.colors.same_color(colors, expected)
+    plt.close()
 
 
 @pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
@@ -387,6 +394,7 @@ def test_new_draw_edge_position(graph_type):
         assert all(abs(act_start - exp_start) < (threshold, threshold)) and all(
             abs(act_end - exp_end) < (threshold, threshold)
         )
+    plt.close()
 
 
 def test_new_draw_position_function():
@@ -401,6 +409,154 @@ def test_new_draw_position_function():
     }
     for n in G.nodes():
         assert all(pos[n] == act_pos[n])
+    plt.close()
+
+
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+def test_new_draw_edge_colormaps(graph_type):
+    G = nx.path_graph(3, create_using=graph_type)
+    nx.set_edge_attributes(G, {(0, 1): 0, (1, 2): 1}, "weight")
+    cmap = mpl.colormaps["plasma"]
+    nx.apply_matplotlib_colors(G, "weight", "color", cmap, nodes=False)
+    canvas = plt.figure().add_subplot(111)
+    nx.new_draw(G, canvas=canvas)
+    mapper = mpl.cm.ScalarMappable(cmap=cmap)
+    mapper.set_clim(0, 1)
+    expected = [mapper.to_rgba(0), mapper.to_rgba(1)]
+    if G.is_directed():
+        colors = [
+            f.get_facecolor()
+            for f in canvas.get_children()
+            if isinstance(f, mpl.patches.FancyArrowPatch)
+        ]
+    else:
+        colors = [
+            l
+            for l in canvas.collections
+            if isinstance(l, mpl.collections.LineCollection)
+        ][0].get_colors()
+    assert mpl.colors.same_color(expected[0], G.edges[0, 1]["color"])
+    assert mpl.colors.same_color(expected[1], G.edges[1, 2]["color"])
+    assert mpl.colors.same_color(expected, colors)
+    plt.close()
+
+
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+def test_new_draw_node_colormaps(graph_type):
+    G = nx.path_graph(3, create_using=graph_type)
+    nx.set_node_attributes(G, {0: 0, 1: 0.5, 2: 1}, "weight")
+    cmap = mpl.colormaps["plasma"]
+    nx.apply_matplotlib_colors(G, "weight", "color", cmap)
+    canvas = plt.figure().add_subplot(111)
+    nx.new_draw(G, canvas=canvas)
+    mapper = mpl.cm.ScalarMappable(cmap=cmap)
+    mapper.set_clim(0, 1)
+    expected = [mapper.to_rgba(0), mapper.to_rgba(0.5), mapper.to_rgba(1)]
+    colors = [
+        s for s in canvas.collections if isinstance(s, mpl.collections.PathCollection)
+    ][0].get_edgecolors()
+    assert mpl.colors.same_color(expected[0], G.nodes[0]["color"])
+    assert mpl.colors.same_color(expected[1], G.nodes[1]["color"])
+    assert mpl.colors.same_color(expected[2], G.nodes[2]["color"])
+    assert mpl.colors.same_color(expected, colors)
+    plt.close()
+
+
+@pytest.mark.parametrize(
+    ("param_value", "expected"),
+    (
+        (None, [defaults["edge_width"], defaults["edge_width"]]),
+        (5, [5, 5]),
+        ("width", [5, 10]),
+    ),
+)
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+def test_new_draw_edge_width(param_value, expected, graph_type):
+    G = nx.path_graph(3, create_using=graph_type)
+    nx.set_edge_attributes(G, {(0, 1): 5, (1, 2): 10}, "width")
+    canvas = plt.figure().add_subplot(111)
+    nx.new_draw(G, edge_width=param_value, canvas=canvas)
+    if G.is_directed():
+        widths = [
+            f.get_linewidth()
+            for f in canvas.get_children()
+            if isinstance(f, mpl.patches.FancyArrowPatch)
+        ]
+    else:
+        widths = list(
+            [
+                l
+                for l in canvas.collections
+                if isinstance(l, mpl.collections.LineCollection)
+            ][0].get_linewidths()
+        )
+    assert widths == expected
+
+
+@pytest.mark.parametrize(
+    ("param_value", "expected"),
+    (
+        (None, [defaults["edge_style"], defaults["edge_style"]]),
+        (":", [":", ":"]),
+        ("style", ["-", ":"]),
+    ),
+)
+@pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
+def test_new_draw_edge_style(param_value, expected, graph_type):
+    G = nx.path_graph(3, create_using=graph_type)
+    nx.set_edge_attributes(G, {(0, 1): "-", (1, 2): ":"}, "style")
+    canvas = plt.figure().add_subplot(111)
+    nx.new_draw(G, edge_style=param_value, canvas=canvas)
+    if G.is_directed():
+        styles = [
+            f.get_linestyle()
+            for f in canvas.get_children()
+            if isinstance(f, mpl.patches.FancyArrowPatch)
+        ]
+    else:
+        # Convert back from tuple description to character form
+        linestyles = {(0, None): "-", (0, (1, 1.65)): ":"}
+        styles = [
+            linestyles[(s[0], tuple(s[1]) if s[1] is not None else None)]
+            for s in [
+                l
+                for l in canvas.collections
+                if isinstance(l, mpl.collections.LineCollection)
+            ][0].get_linestyles()
+        ]
+    assert styles == expected
+    plt.close()
+
+
+def test_new_draw_node_labels():
+    G = nx.path_graph(4)
+    canvas = plt.figure().add_subplot(111)
+    nx.new_draw(G, canvas=canvas, node_label={"size": 20})
+    labels = [t for t in canvas.get_children() if isinstance(t, mpl.text.Text)]
+    for n, l in zip(G.nodes(), labels):
+        assert l.get_text() == str(n)
+        assert l.get_size() == 20.0
+    plt.close()
+
+
+def test_new_draw_edge_labels():
+    G = nx.path_graph(4)
+    canvas = plt.figure().add_subplot(111)
+    # While we can pass in dicts for edge label defaults without errors,
+    # this isn't helpful unless we want one label for all edges.
+    nx.set_edge_attributes(G, {(u, v): {"label": u + v} for u, v in G.edges()})
+    nx.new_draw(G, canvas=canvas, edge_label={"color": "r"}, node_label=None)
+    labels = [t for t in canvas.get_children() if isinstance(t, mpl.text.Text)]
+    print(labels)
+    for e, l in zip(G.edges(), labels):
+        assert l.get_text() == str(e[0] + e[1])
+        assert l.get_color() == "r"
+
+
+def test_new_draw_empty_graph():
+    G = nx.empty_graph()
+    # Just checking that no exceptions are thrown
+    nx.new_draw(G)
 
 
 def test_draw():

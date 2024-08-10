@@ -806,6 +806,11 @@ def new_draw(
     node_label = kwargs.get("node_label", "label")
     # Plot labels if node_label is not None and not False
     if node_label is not None and node_label != False:
+        default_dict = {}
+        if isinstance(node_label, dict):
+            default_dict = node_label
+            node_label = None
+
         for n, l in node_subgraph.nodes(data=node_label):
             if l is False:
                 continue
@@ -818,6 +823,7 @@ def new_draw(
             if not isinstance(l_text, str):
                 l_text = str(l_text)
 
+            l.update(default_dict)
             x, y = node_subgraph.nodes[n][pos]
             canvas.text(
                 x,
@@ -903,6 +909,12 @@ def new_draw(
 
     ### Draw edge labels
     edge_label = kwargs.get("edge_label", "label")
+    default_dict = {}
+    if isinstance(edge_label, dict):
+        default_dict = edge_label
+        # Restore the default label attribute key of 'label'
+        edge_label = "label"
+
     # Handle multigraphs
     edge_label_data = (
         edge_subgraph.edges(data=edge_label, keys=True)
@@ -919,6 +931,7 @@ def new_draw(
             if not isinstance(l, dict):
                 l = {"label": l}
 
+            l.update(default_dict)
             l_text = l.get("label")
             if not isinstance(l_text, str):
                 l_text = str(l_text)
