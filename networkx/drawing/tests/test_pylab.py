@@ -610,6 +610,105 @@ def test_new_draw_arrow_size():
     plt.close()
 
 
+def test_new_draw_mismatched_edge_position():
+    """
+    This test ensures that a error is raised for incomplete position data.
+    """
+    G = nx.path_graph(5)
+    # Notice that there is no position for node 4
+    nx.set_node_attributes(G, {0: (0, 0), 1: (1, 1), 2: (2, 2), 3: (3, 3)}, "pos")
+    # But that's not a problem since we don't want to show node 4, right?
+    nx.set_node_attributes(G, {n: n < 4 for n in G.nodes()}, "visible")
+    # However, if we try to visualize every edge (including 3 -> 4)...
+    # That's a problem since node 4 doesn't have a position
+    with pytest.raises(nx.NetworkXError):
+        nx.new_draw(G)
+
+
+# NOTE: parametrizing on marker to test both branches of internal
+# to_marker_edge function
+@pytest.mark.parametrize("node_shape", ("o", "s"))
+def test_new_draw_edge_margins(node_shape):
+    """
+    Test that there is a wider gap between the node and the start of an
+    incident edge when min_source_margin is specified.
+
+    This test checks that the use os min_{source/target}_margin edge
+    attributes result is shorter (more padding) between the edges and
+    source and target nodes.
+
+
+    As a crude visual example, let 's' and 't' represent source and target
+    nodes, respectively:
+
+       Default:
+       s-----------------------------t
+
+       With margins:
+       s   -----------------------   t
+
+    """
+    ax = plt.figure().add_subplot(111)
+    G = nx.DiGraph([(0, 1)])
+    nx.set_node_attributes(G, {0: (0, 0), 1: (1, 1)}, "pos")
+    # Get the default patches from the regular visualization
+    nx.new_draw(G, canvas=ax, node_shape=node_shape)
+    default_arrow = [
+        f for f in ax.get_children() if isinstance(f, mpl.patches.FancyArrowPatch)
+    ][0]
+    default_extent = default_arrow.get_extents().corners()[::2, 0]
+    # Now plot again with margins
+    ax = plt.figure().add_subplot(111)
+    nx.new_draw(
+        G,
+        canvas=ax,
+        edge_source_margin=100,
+        edge_target_margin=100,
+        node_shape=node_shape,
+    )
+    padded_arrow = [
+        f for f in ax.get_children() if isinstance(f, mpl.patches.FancyArrowPatch)
+    ][0]
+    padded_extent = padded_arrow.get_extents().corners()[::2, 0]
+
+    # With padding, the left-most extent of the edge should be further to the right
+    assert padded_extent[0] > default_extent[0]
+    # And the rightmost extent of the edge, further to the left
+    assert padded_extent[1] < default_extent[1]
+    plt.close()
+
+
+@pytest.mark.parametrize("ticks", [False, True])
+def test_new_draw_hide_ticks(ticks):
+    G = nx.path_graph(3)
+    nx.set_node_attributes(G, {n: (n, n) for n in G.nodes()}, "pos")
+    ax = plt.axes()
+    nx.new_draw(G, hide_ticks=ticks)
+    for axis in [ax.xaxis, ax.yaxis]:
+        assert bool(axis.get_ticklabels()) != ticks
+
+    plt.close()
+
+
+def test_new_draw_self_loop():
+    ax = plt.axes()
+    G = nx.DiGraph()
+    G.add_node(0)
+    G.add_edge(0, 0)
+    nx.set_node_attributes(G, {0: (0, 0)}, "pos")
+    nx.new_draw(G, canvas=ax)
+    arrow = [
+        f for f in ax.get_children() if isinstance(f, mpl.patches.FancyArrowPatch)
+    ][0]
+    bbox = arrow.get_extents()
+    print(bbox.width)
+    print(bbox.height)
+    assert bbox.width > 0 and bbox.height > 0
+
+    plt.delaxes(ax)
+    plt.close()
+
+
 def test_draw():
     try:
         functions = [
