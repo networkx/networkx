@@ -5,7 +5,6 @@ import os
 import warnings
 
 import pytest
-from matplotlib import collections
 
 from networkx.classes.function import is_directed
 
