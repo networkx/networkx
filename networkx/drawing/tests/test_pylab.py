@@ -6,8 +6,6 @@ import warnings
 
 import pytest
 
-from networkx.classes.function import is_directed
-
 mpl = pytest.importorskip("matplotlib")
 np = pytest.importorskip("numpy")
 mpl.use("PS")
@@ -247,7 +245,7 @@ def test_new_draw_complex():
         G.add_edge(u, v, w=round(i / 3, 2))
     nx.set_node_attributes(G, nx.spring_layout(G, seed=3113794652), "pos")
     csi = it.cycle([f"arc3,rad={r}" for r in it.accumulate([0.15] * 4)])
-    nx.set_edge_attributes(G, {e: next(csi) for e in G.edges(keys=True)}, "curve")
+    nx.set_edge_attributes(G, {e: next(csi) for e in G.edges(keys=True)}, "curvature")
     nx.set_edge_attributes(
         G,
         {
@@ -550,12 +548,66 @@ def test_new_draw_edge_labels():
     for e, l in zip(G.edges(), labels):
         assert l.get_text() == str(e[0] + e[1])
         assert l.get_color() == "r"
+    plt.close()
 
 
+@pytest.mark.mpl_image_compare
 def test_new_draw_empty_graph():
     G = nx.empty_graph()
-    # Just checking that no exceptions are thrown
-    nx.new_draw(G)
+    fig, ax = plt.subplots()
+    nx.new_draw(G, canvas=ax)
+    plt.tight_layout()
+    plt.axis("off")
+    return fig
+
+
+def test_new_draw_multigraph_non_integer_keys():
+    G = nx.MultiGraph()
+    G.add_nodes_from(["A", "B", "C", "D"])
+    G.add_edges_from(
+        [
+            ("A", "B", "0"),
+            ("A", "B", "1"),
+            ("B", "C", "-1"),
+            ("B", "C", "1"),
+            ("C", "D", "-1"),
+            ("C", "D", "0"),
+        ]
+    )
+    nx.set_edge_attributes(
+        G, {e: f"arc3,rad={0.2 * int(e[2])}" for e in G.edges(keys=True)}, "curvature"
+    )
+    canvas = plt.figure().add_subplot(111)
+    nx.new_draw(G, canvas=canvas)
+    rads = [
+        f.get_connectionstyle().rad
+        for f in canvas.get_children()
+        if isinstance(f, mpl.patches.FancyArrowPatch)
+    ]
+    assert rads == [0.0, 0.2, -0.2, 0.2, -0.2, 0.0]
+    plt.close()
+
+
+def test_new_draw_raises_for_bad_arg():
+    G = nx.karate_club_graph()
+    with pytest.raises(nx.NetworkXError):
+        nx.new_draw(G, bad_arg="bad_arg")
+        plt.close()
+
+
+def test_new_draw_arrow_size():
+    G = nx.path_graph(4, create_using=nx.DiGraph)
+    nx.set_edge_attributes(
+        G, {(u, v): (u + v + 2) ** 2 for u, v in G.edges()}, "arrowsize"
+    )
+    ax = plt.axes()
+    nx.new_draw(G, canvas=ax)
+    assert [9, 25, 49] == [
+        f.get_mutation_scale()
+        for f in ax.get_children()
+        if isinstance(f, mpl.patches.FancyArrowPatch)
+    ]
+    plt.close()
 
 
 def test_draw():

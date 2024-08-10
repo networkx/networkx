@@ -237,7 +237,7 @@ def new_draw(
         A string naming the edge attribute which stores the size of the arrowhead for each
         edge. Visible edges without this attribute will use a default value of 10.
 
-    edge_curvature : string, default "curve"
+    edge_curvature : string, default "curvature"
        A string naming the edge attribute which stores the curvature and connection style
        of each edge. Visible edges without this attribute will use "arc3" as a default
        value, resulting an a straight line between the two nodes. Curvature can be given
@@ -395,23 +395,23 @@ def new_draw(
     # - min_target_margin
 
     def collection_compatible(e):
-        edge_attrs = edge_subgraph.edges[e]
         return (
-            edge_attrs.get(
-                kwargs.get("arrowstyle", "arrowstyle"), defaults["arrowstyle"]
+            get_edge_attr(
+                e, kwargs.get("arrowstyle", "arrowstyle"), defaults["arrowstyle"]
             )
             == "-"
-            and edge_attrs.get(
-                kwargs.get("edge_curvature", "curve"),
-                defaults["edge_curvature"],
+            and get_edge_attr(
+                e, kwargs.get("edge_curvature", "curvature"), defaults["edge_curvature"]
             )
             == "arc3"
-            and edge_attrs.get(
+            and get_edge_attr(
+                e,
                 kwargs.get("min_source_margin", "source_margin"),
                 defaults["edge_source_margin"],
             )
             == 0
-            and edge_attrs.get(
+            and get_edge_attr(
+                e,
                 kwargs.get("min_target_margin", "target_margin"),
                 defaults["edge_target_margin"],
             )
@@ -586,7 +586,7 @@ def new_draw(
             connectionstyle=(
                 get_edge_attr(
                     e,
-                    kwargs.get("edge_curvature", "curve"),
+                    kwargs.get("edge_curvature", "curvature"),
                     defaults["edge_curvature"],
                 )
                 if e[0] != e[1]
@@ -867,7 +867,7 @@ def new_draw(
     edge_position = np.asarray(
         [
             (edge_subgraph.nodes[u][pos], edge_subgraph.nodes[v][pos])
-            for u, v in collection_edges
+            for u, v, *_ in collection_edges
         ]
     )
 
