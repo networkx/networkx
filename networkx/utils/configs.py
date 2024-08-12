@@ -264,12 +264,16 @@ class NetworkXConfig(Config):
 
     Parameters
     ----------
-    backend_priority : list of backend names
+    backend_priority : list of backend names or dict or BackendPriorities
         TODO: update this documentation!
         Enable automatic conversion of graphs to backend graphs for algorithms
         implemented by the backend. Priority is given to backends listed earlier.
         If ``"networkx"`` backend name is given priority, then input graphs from
         backends will be converted to networkx graphs. Default is empty list.
+
+    backend_fallback : list of backend names or dict or BackendPriorities
+        This has the same structure as ``backend_priority``. TODO: moar!
+        Default is ``["networkx"]`` to enable fallback to default implementation.
 
     backends : Config mapping of backend names to backend Config
         The keys of the Config mapping are names of all installed NetworkX backends,
