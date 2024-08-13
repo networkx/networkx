@@ -54,6 +54,37 @@ __all__ = [
 def apply_matplotlib_colors(
     G, src_attr, dest_attr, map, vmin=None, vmax=None, nodes=True
 ):
+    """
+    Apply colors from a matplotlib colormap to a graph.
+
+    Reads values from the `src_attr` and use a matplotlib colormap
+    to produce a color. Write the color to `dest_attr`.
+
+    Parameters
+    ----------
+    G : nx.Graph
+        The graph to read and compute colors for.
+
+    src_attr : str or other attribute name
+        The name of the attribute to read from the graph.
+
+    dest_attr : str or other attribute name
+        The name of the attribute to write to on the graph.
+
+    map : matplotlib.colormap
+        The matplotlib colormap to use.
+
+    vmin : float, default None
+        The minimum value for scaling the colormap. If `None`, find the
+        minimum value of `src_attr`.
+
+    vmax : float, default None
+        The maximum value for scaling the colormap. If `None`, find the
+        maximum value of `src_attr`.
+
+    nodes : bool, default True
+        Whether the attribute names are edge attributes or node attributes.
+    """
     import matplotlib as mpl
 
     if nodes:
@@ -87,33 +118,86 @@ def new_draw(
     G,
     canvas=None,
     **kwargs,
-    # /,
-    # pos=spring_layout,
-    # node_visible="visible",
-    # node_color="color",
-    # node_size="size",
-    # node_label="label",
-    # node_shape="shape",
-    # node_alpha="alpha",
-    # node_border_width="border_width",
-    # node_border_color="border_color",
-    # edge_visible="visible",
-    # edge_color="color",
-    # edge_label="label",
-    # edge_style="style",
-    # edge_alpha="alpha",
-    # arrowstyle="arrow",
-    # arrowsize="arrow_size",
-    # edge_curvature="curve",
-    # edge_source_margin="source_margin",
-    # edge_target_margin="target_margin",
-    # hide_ticks=True,
 ):
     """Draw the graph G.
 
     Draw the graph as a collection of nodes connected by edges.
     The exact details of what the graph looks like are controled by the below
-    attributes.
+    attributes. All nodes and nodes at the end of visible edges must have a
+    position set, but nearly all other node and edge attributes are options and
+    nodes or edges missing the attribute will use the default listed below. A more
+    complete discription of each parameter is given below this summary.
+
+    .. list-table:: Default Visualization Attributes
+        :widths: 25 25 50
+        :header-rows: 1
+
+    * - Parameter
+      - Default Attribute
+      - Default Value
+    * - pos
+      - `"pos"`
+      - If there is not position, a layout will be calculated with `nx.spring_layout`.
+    * - node_visible
+      - `"visible"`
+      - True
+    * - node_color
+      - `"color"`
+      - #1f78b4
+    * - node_size
+      - `"size"`
+      - 300
+    * - node_label
+      - `"label"`
+      - Dict discribing label
+        black text without bounding box.
+        Default label is node name.
+    * - node_shape
+      - `"shape"`
+      - "o"
+    * - node_alpha
+      - `"alpha"`
+      - 1.0
+    * - node_border_width
+      - `"border_width"`
+      - 1.0
+    * - node_border_color
+      - `"border_color"`
+      - Matching node_color
+    * - edge_visible
+      - `"visible"`
+      - True
+    * - edge_width
+      - `"width"`
+      - 1.0
+    * - edge_color
+      - `"color"`
+      - Black (#000000)
+    * - edge_label
+      - `"label"`
+      - Dict discribing label
+        black text with white bounding box
+    * - edge_style
+      - `"style"`
+      - "-"
+    * - edge_alpha
+      - `"alpha"`
+      - 1.0
+    * - arrowstyle
+      - `"arrowstyle"`
+      - "-|>" if `G` is directed else "-"
+    * - arrowsize
+      - `"arrowsize"`
+      - 10 if `G` is directed else 0
+    * - edge_curvature
+      - `"curvature"`
+      - arc3
+    * - edge_source_margin
+      - `"source_margin"`
+      - 0
+    * - edge_target_margin
+      - `"target_margin"`
+      - 0
 
     Parameters
     ----------
@@ -258,9 +342,21 @@ def new_draw(
 
     hide_ticks : bool, default True
         Weather to remove the ticks from the axes of the matplotlib object.
+
+    Raises
+    ------
+    NetworkXError : If a node or edge is missing a required parameter such as `pos` or
+        if `new_draw` receives an argument not listed above.
+
+    ValueError : If a node or edge has an invalid color format, i.e. not a color string,
+        rgb tuple or rgba tuple.
+
+    Returns
+    -------
+    G : The input graph. This is potentially useful for dispatching visualization
+        functions.
     """
     from collections import Counter
-    from collections.abc import Iterable
 
     import matplotlib as mpl
     import matplotlib.pyplot as plt
@@ -1002,6 +1098,10 @@ def new_draw(
                 zorder=1,
                 ax=canvas,
             )
+
+    # TODO remove pos if it's the default value. Wait for github PR 7569
+
+    return G
 
 
 def draw(G, pos=None, ax=None, **kwds):
