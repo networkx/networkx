@@ -149,9 +149,19 @@ def new_draw(
           - 300
         * - node_label
           - `"label"`
-          - Dict discribing label
-            black text without bounding box.
-            Default label is node name.
+          - Dict describing the node label. Defaults create a black text with
+            the node name as the label. The diction respects these keys and defaults:
+
+            * size : 12
+            * color : black
+            * family : sans serif
+            * weight : normal
+            * alpha : 1.0
+            * h_align : center
+            * v_align : center
+            * bbox : Dict describing a `matplotlib.patches.FancyBboxPatch`.
+              Default is None.
+
         * - node_shape
           - `"shape"`
           - "o"
@@ -175,8 +185,21 @@ def new_draw(
           - Black (#000000)
         * - edge_label
           - `"label"`
-          - Dict discribing label
-            black text with white bounding box
+          - Dict describing the edge label. Defaults create black text with a
+            white bounding box. The dictionary respects these keys and defaults:
+
+            * size : 12
+            * color : black
+            * family : sans serif
+            * weight : normal
+            * alpha : 1.0
+            * bbox : Dict describing a `matplotlib.patches.FancyBboxPatch`.
+              Default {"boxstyle": "round", "ec": (1.0, 1.0, 1.0), "fc": (1.0, 1.0, 1.0)}
+            * h_align : "center"
+            * v_align : "center"
+            * pos : 0.5
+            * rotate : True
+
         * - edge_style
           - `"style"`
           - "-"
@@ -310,12 +333,12 @@ def new_draw(
         A string naming the edge attribute which stores the alpha value of each edge.
         Visible edges without this attribute will use an alpha value of 1.0.
 
-    arrorstyle : string, default "arrow"
+    arrowstyle : string, default "arrow"
         A string naming the edge attribute which stores the type of arrowhead to use for
-        each edge. Visible edges without this attribute will use '-' for undirected graphs
-        and '-|>' for directed graphs.
+        each edge. Visible edges without this attribute will use "-" for undirected graphs
+        and "-|>" for directed graphs.
 
-        See `matplotlib.patches.ArrorStyle` for more options
+        See `matplotlib.patches.ArrowStyle` for more options
 
     arrowsize : string or int, default "arrow_size"
         A string naming the edge attribute which stores the size of the arrowhead for each
@@ -375,8 +398,6 @@ def new_draw(
             "family": "sans-serif",
             "weight": "normal",
             "alpha": 1.0,
-            "background_color": None,
-            "background_alpha": None,
             "h_align": "center",
             "v_align": "center",
             "bbox": None,
