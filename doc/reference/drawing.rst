@@ -34,6 +34,7 @@ Matplotlib
    :toctree: generated/
 
    new_draw
+   apply_matplotlib_colors
    draw
    draw_networkx
    draw_networkx_nodes

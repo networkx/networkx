@@ -132,72 +132,72 @@ def new_draw(
         :widths: 25 25 50
         :header-rows: 1
 
-    * - Parameter
-      - Default Attribute
-      - Default Value
-    * - pos
-      - `"pos"`
-      - If there is not position, a layout will be calculated with `nx.spring_layout`.
-    * - node_visible
-      - `"visible"`
-      - True
-    * - node_color
-      - `"color"`
-      - #1f78b4
-    * - node_size
-      - `"size"`
-      - 300
-    * - node_label
-      - `"label"`
-      - Dict discribing label
-        black text without bounding box.
-        Default label is node name.
-    * - node_shape
-      - `"shape"`
-      - "o"
-    * - node_alpha
-      - `"alpha"`
-      - 1.0
-    * - node_border_width
-      - `"border_width"`
-      - 1.0
-    * - node_border_color
-      - `"border_color"`
-      - Matching node_color
-    * - edge_visible
-      - `"visible"`
-      - True
-    * - edge_width
-      - `"width"`
-      - 1.0
-    * - edge_color
-      - `"color"`
-      - Black (#000000)
-    * - edge_label
-      - `"label"`
-      - Dict discribing label
-        black text with white bounding box
-    * - edge_style
-      - `"style"`
-      - "-"
-    * - edge_alpha
-      - `"alpha"`
-      - 1.0
-    * - arrowstyle
-      - `"arrowstyle"`
-      - "-|>" if `G` is directed else "-"
-    * - arrowsize
-      - `"arrowsize"`
-      - 10 if `G` is directed else 0
-    * - edge_curvature
-      - `"curvature"`
-      - arc3
-    * - edge_source_margin
-      - `"source_margin"`
-      - 0
-    * - edge_target_margin
-      - `"target_margin"`
-      - 0
+        * - Parameter
+          - Default Attribute
+          - Default Value
+        * - pos
+          - `"pos"`
+          - If there is not position, a layout will be calculated with `nx.spring_layout`.
+        * - node_visible
+          - `"visible"`
+          - True
+        * - node_color
+          - `"color"`
+          - #1f78b4
+        * - node_size
+          - `"size"`
+          - 300
+        * - node_label
+          - `"label"`
+          - Dict discribing label
+            black text without bounding box.
+            Default label is node name.
+        * - node_shape
+          - `"shape"`
+          - "o"
+        * - node_alpha
+          - `"alpha"`
+          - 1.0
+        * - node_border_width
+          - `"border_width"`
+          - 1.0
+        * - node_border_color
+          - `"border_color"`
+          - Matching node_color
+        * - edge_visible
+          - `"visible"`
+          - True
+        * - edge_width
+          - `"width"`
+          - 1.0
+        * - edge_color
+          - `"color"`
+          - Black (#000000)
+        * - edge_label
+          - `"label"`
+          - Dict discribing label
+            black text with white bounding box
+        * - edge_style
+          - `"style"`
+          - "-"
+        * - edge_alpha
+          - `"alpha"`
+          - 1.0
+        * - arrowstyle
+          - `"arrowstyle"`
+          - "-|>" if `G` is directed else "-"
+        * - arrowsize
+          - `"arrowsize"`
+          - 10 if `G` is directed else 0
+        * - edge_curvature
+          - `"curvature"`
+          - arc3
+        * - edge_source_margin
+          - `"source_margin"`
+          - 0
+        * - edge_target_margin
+          - `"target_margin"`
+          - 0
 
     Parameters
     ----------
@@ -206,8 +206,6 @@ def new_draw(
 
     canvas : Matplotlib Axes object, optional
         Draw the graph in specified Matplotlib axes
-
-        TODO update this to be backing agnostic!
 
     pos : string or function, default "pos"
         A string naming the node attribute which stores the position of nodes as
@@ -235,15 +233,16 @@ def new_draw(
         node is used) or False in which case no label is added to the node or a dict.
 
         If a dict is specified, these keys are read to further control the label:
-        - label : The text of the label, default name of the node
-        - size : Font size of the label, default 12
-        - color : Font color of the label, default black
-        - family : Font family of the label, default "sans-serif"
-        - weight : Font weight of the label, default "normal"
-        - alpha : Alpha value of the label, default 1.0
-        - h_align : The horizontal alignment of the label, one of "left", "center", "right", default "center"
-        - v_align : The vertical alignment of the label, one of "top", "center", "bottom", default "center"
-        - bbox : A dict of parameters for `matplotlib.patches.FancyBboxPatch`.
+
+        * label : The text of the label, default name of the node
+        * size : Font size of the label, default 12
+        * color : Font color of the label, default black
+        * family : Font family of the label, default "sans-serif"
+        * weight : Font weight of the label, default "normal"
+        * alpha : Alpha value of the label, default 1.0
+        * h_align : The horizontal alignment of the label, one of "left", "center", "right", default "center"
+        * v_align : The vertical alignment of the label, one of "top", "center", "bottom", default "center"
+        * bbox : A dict of parameters for `matplotlib.patches.FancyBboxPatch`.
 
         Visible nodes without this attribute will be treated as if the value was True.
 
@@ -287,17 +286,18 @@ def new_draw(
         the latter two cases, no edge label is displayed.
 
         If a dict is specified, these keys are read to further control the label:
-        - label : The text of the label, if the name of another edge attribute, the value of that attribute.
-        - size : Font size of the label, default 12
-        - color : Font color of the label, default black
-        - family : Font family of the label, default "sans-serif"
-        - weight : Font weight of the label, default "normal"
-        - alpha : Alpha value of the label, default 1.0
-        - h_align : The horizontal alignment of the label, one of "left", "center", "right", default "center"
-        - v_align : The vertical alignment of the label, one of "top", "center", "bottom", default "center"
-        - bbox : A dict of parameters for `matplotlib.patches.FancyBboxPatch`.
-        - rotate : Weather or note to rotate labels to lie parallel to the edge, default True.
-        - pos : A float between 0.0 and 1.0 describing where between the source and target to place the label, default 0.5.
+
+        * label : The text of the label, if the name of another edge attribute, the value of that attribute.
+        * size : Font size of the label, default 12
+        * color : Font color of the label, default black
+        * family : Font family of the label, default "sans-serif"
+        * weight : Font weight of the label, default "normal"
+        * alpha : Alpha value of the label, default 1.0
+        * h_align : The horizontal alignment of the label, one of "left", "center", "right", default "center"
+        * v_align : The vertical alignment of the label, one of "top", "center", "bottom", default "center"
+        * bbox : A dict of parameters for `matplotlib.patches.FancyBboxPatch`.
+        * rotate : Weather or note to rotate labels to lie parallel to the edge, default True.
+        * pos : A float between 0.0 and 1.0 describing where between the source and target to place the label, default 0.5.
 
     edge_style : string, default "style"
         A string naming the edge attribute which stores the style of each edge.
@@ -345,16 +345,18 @@ def new_draw(
 
     Raises
     ------
-    NetworkXError : If a node or edge is missing a required parameter such as `pos` or
+    NetworkXError
+        If a node or edge is missing a required parameter such as `pos` or
         if `new_draw` receives an argument not listed above.
 
-    ValueError : If a node or edge has an invalid color format, i.e. not a color string,
+    ValueError
+        If a node or edge has an invalid color format, i.e. not a color string,
         rgb tuple or rgba tuple.
 
     Returns
     -------
-    G : The input graph. This is potentially useful for dispatching visualization
-        functions.
+    The input graph. This is potentially useful for dispatching visualization
+    functions.
     """
     from collections import Counter
 
