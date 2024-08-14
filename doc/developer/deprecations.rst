@@ -59,3 +59,10 @@ Version 3.5
 Version 3.6
 ~~~~~~~~~~~
 * Remove ``compute_v_structures`` from ``algorithms/dag.py``.
+* Remove ``draw_networkx`` from ``drawing/nx_pylab.py``.
+* Remove ``draw_networkx_nodes`` from ``drawing/nx_pylab.py``.
+* Remove ``draw_networkx_edges`` from ``drawing/nx_pylab.py``.
+* Remove ``draw_networkx_labels`` from ``drawing/nx_pylab.py``.
+* Remove ``draw_networkx_edge_labels`` from ``drawing/nx_pylab.py``.
+* Rename ``new_draw`` to ``draw`` and remove the current ``draw`` implementation in ``drawing/nx_pylab.py``. 
+* Update ``draw_<layout>`` to be compatible with new draw API.
