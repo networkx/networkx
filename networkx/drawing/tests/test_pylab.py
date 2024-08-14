@@ -507,6 +507,58 @@ def test_alpha_iter():
     nx.draw_networkx_nodes(barbell, pos, alpha=alpha)
 
 
+def test_multiple_node_shapes():
+    G = nx.path_graph(4)
+    ax = plt.figure().add_subplot(111)
+    nx.draw(G, node_shape=["o", "h", "s", "^"], ax=ax)
+    scatters = [
+        s for s in ax.get_children() if isinstance(s, mpl.collections.PathCollection)
+    ]
+    assert len(scatters) == 4
+
+
+def test_individualized_font_attributes():
+    G = nx.karate_club_graph()
+    ax = plt.figure().add_subplot(111)
+    nx.draw(
+        G,
+        ax=ax,
+        font_color={n: "k" if n % 2 else "r" for n in G.nodes()},
+        font_size={n: int(n / (34 / 15) + 5) for n in G.nodes()},
+    )
+    for n, t in zip(
+        G.nodes(),
+        [
+            t
+            for t in ax.get_children()
+            if isinstance(t, mpl.text.Text) and len(t.get_text()) > 0
+        ],
+    ):
+        expected = "black" if n % 2 else "red"
+
+        assert mpl.colors.same_color(t.get_color(), expected)
+        assert int(n / (34 / 15) + 5) == t.get_size()
+
+
+def test_individualized_edge_attributes():
+    G = nx.karate_club_graph()
+    ax = plt.figure().add_subplot(111)
+    arrowstyles = ["-|>" if (u + v) % 2 == 0 else "-[" for u, v in G.edges()]
+    arrowsizes = [10 * (u % 2 + v % 2) + 10 for u, v in G.edges()]
+    nx.draw(G, ax=ax, arrows=True, arrowstyle=arrowstyles, arrowsize=arrowsizes)
+    arrows = [
+        f for f in ax.get_children() if isinstance(f, mpl.patches.FancyArrowPatch)
+    ]
+    for e, a in zip(G.edges(), arrows):
+        assert a.get_mutation_scale() == 10 * (e[0] % 2 + e[1] % 2) + 10
+        expected = (
+            mpl.patches.ArrowStyle.BracketB
+            if sum(e) % 2
+            else mpl.patches.ArrowStyle.CurveFilledB
+        )
+        assert isinstance(a.get_arrowstyle(), expected)
+
+
 def test_error_invalid_kwds():
     with pytest.raises(ValueError, match="Received invalid argument"):
         nx.draw(barbell, foo="bar")
