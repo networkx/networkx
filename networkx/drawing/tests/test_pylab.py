@@ -6,6 +6,9 @@ import warnings
 
 import pytest
 
+# Ignore the numerous Deprecation warnings in the nx_pylab module right now
+pytestmark = pytest.mark.filterwarnings("ignore", category=DeprecationWarning)
+
 mpl = pytest.importorskip("matplotlib")
 np = pytest.importorskip("numpy")
 mpl.use("PS")
@@ -1529,6 +1532,7 @@ def test_user_warnings_for_unused_edge_drawing_kwargs(fap_only_kwarg):
     with warnings.catch_warnings():
         # Escalate warnings -> errors so tests fail if warnings are raised
         warnings.simplefilter("error")
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
         nx.draw_networkx_edges(G, pos, ax=ax, arrows=True, **fap_only_kwarg)
 
     plt.delaxes(ax)

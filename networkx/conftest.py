@@ -137,6 +137,32 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\n`compute_v_structures"
     )
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message="The signature of nx.draw will be changed",
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="draw_networkx"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="draw_networkx_nodes"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="draw_networkx_edges"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="draw_networkx_labels"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="draw_networkx_edge_labels"
+    )
+    # I hope this will catch all draw_* function deprecation warnings
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message="The interpretation of parameters for draw_",
+    )
 
 
 @pytest.fixture(autouse=True)
