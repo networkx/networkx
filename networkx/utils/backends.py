@@ -465,7 +465,7 @@ _registered_algorithms = {}
 class _dispatchable:
     _is_testing = False
     _fallback_to_nx = (
-        os.environ.get("NETWORKX_FALLBACK_TO_NX", "true").strip().lower() == "true"
+        os.environ.get("NETWORKX_FALLBACK_TO_NX", "false").strip().lower() == "true"
     )
     _use_backend_class = (
         os.environ.get("NETWORKX_USE_BACKEND_CLASS", "false").strip().lower() == "true"
