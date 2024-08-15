@@ -311,6 +311,15 @@ The following steps will help you run the tests:
         NETWORKX_FALLBACK_TO_NX=True # or False
         pytest --pyargs networkx
 
+3. Testing backend graph classes:
+    You can also test that backend graph classes are compatible as NetworkX graphs.
+    Using pytest with ``--use-backend-class`` or ``NETWORKX_USE_BACKEND_CLASS=True``
+    environment variable makes ``nx.Graph()`` create a backend graph. When testing
+    dispatchable functions with this option enabled, the original NetworkX function
+    will be used::
+
+        pytest --backend=<backend_name> --use-backend-class networkx/classes/
+
 How tests are run?
 ------------------
 
@@ -457,6 +466,9 @@ class _dispatchable:
     _is_testing = False
     _fallback_to_nx = (
         os.environ.get("NETWORKX_FALLBACK_TO_NX", "true").strip().lower() == "true"
+    )
+    _use_backend_class = (
+        os.environ.get("NETWORKX_USE_BACKEND_CLASS", "true").strip().lower() == "true"
     )
 
     def __new__(
@@ -1332,6 +1344,10 @@ class _dispatchable:
     ):
         """Call this dispatchable function with a backend; for use with testing."""
         backend = _load_backend(backend_name)
+        if self._use_backend_class:
+            # Call the default networkx implementation if we are testing backend graphs
+            return self.orig_func(*args, **kwargs)
+
         if not self._can_backend_run(backend_name, *args, **kwargs):
             if fallback_to_nx or not self.graphs:
                 return self.orig_func(*args, **kwargs)
@@ -1499,6 +1515,7 @@ class _dispatchable:
             "minimum_spanning_arborescence",
             "recursive_simple_cycles",
             "connected_double_edge_swap",
+            "directed_edge_swap",
         }:
             # Special-case algorithms that mutate input graphs
             bound = self.__signature__.bind(*converted_args, **converted_kwargs)
@@ -1510,6 +1527,7 @@ class _dispatchable:
                 "minimum_spanning_arborescence",
                 "recursive_simple_cycles",
                 "connected_double_edge_swap",
+                "directed_edge_swap",
             }:
                 G1 = backend.convert_to_nx(bound.arguments["G"])
                 G2 = bound2.arguments["G"]
@@ -1555,6 +1573,8 @@ class _dispatchable:
                 G1 = backend.convert_to_nx(bound.arguments["G"])
                 G2 = bound2.arguments["G"]
                 if G1 is G2:
+                    if self.name in {"incremental_closeness_centrality"}:
+                        return result
                     return G2
                 G2._node.clear()
                 G2._node.update(G1._node)

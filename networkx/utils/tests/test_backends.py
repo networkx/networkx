@@ -45,6 +45,9 @@ def test_graph_converter_needs_backend():
         LoopbackGraph,
     )
 
+    if type(nx.Graph()) is LoopbackGraph:
+        pytest.xfail("This test does not work when using --use-backend-class")
+
     A = sp.sparse.coo_array([[0, 3, 2], [3, 0, 1], [2, 1, 0]])
 
     side_effects = []
