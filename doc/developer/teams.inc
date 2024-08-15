@@ -435,6 +435,23 @@ Steering Council
 .. raw:: html
 
    <div class="team-member">
+     <a href="https://github.com/boothby" class="team-member-name">
+        <div class="team-member-photo">
+           <img
+             src="https://avatars.githubusercontent.com/u/569654?u=c29b79275293c22fa3c56a06ed04e004465ef331&v=4&s=40"
+             loading="lazy"
+             alt="Avatar picture of @boothby"
+           />
+        </div>
+        Kelly Boothby
+     </a>
+     <div class="team-member-handle">@boothby</div>
+   </div>
+
+
+.. raw:: html
+
+   <div class="team-member">
      <a href="https://github.com/rossbar" class="team-member-name">
         <div class="team-member-photo">
            <img
