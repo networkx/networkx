@@ -76,6 +76,15 @@ doc = [
     'myst-nb>=1.1',
     'intersphinx_registry',
 ]
+example = [
+    'osmnx>=1.9',
+    'momepy>=0.7.2',
+    'contextily>=1.6',
+    'seaborn>=0.13',
+    'cairocffi>=1.7',
+    'igraph>=0.11',
+    'scikit-learn>=1.5',
+]
 extra = [
     'lxml>=4.6',
     'pygraphviz>=1.13',
