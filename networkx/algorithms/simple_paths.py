@@ -429,7 +429,10 @@ def shortest_simple_paths(G, source, target, weight=None):
         If it is a function, the weight of an edge is the value returned
         by the function. The function must accept exactly three positional
         arguments: the two endpoints of an edge and the dictionary of edge
-        attributes for that edge. The function must return a number.
+        attributes for that edge. The function must return a number or None.
+        The weight function can be used to hide edges by returning None.
+        So ``weight = lambda u, v, d: 1 if d['color']=="red" else None``
+        will find the shortest red path.
 
         If None all edges are considered to have unit weight. Default
         value None.
@@ -756,19 +759,24 @@ def _bidirectional_dijkstra(
     G : NetworkX graph
 
     source : node
-       Starting node.
+        Starting node.
 
     target : node
-       Ending node.
+        Ending node.
 
     weight: string, function, optional (default='weight')
-       Edge data key or weight function corresponding to the edge weight
+        Edge data key or weight function corresponding to the edge weight
+        If this is a function, the weight of an edge is the value
+        returned by the function. The function must accept exactly three
+        positional arguments: the two endpoints of an edge and the
+        dictionary of edge attributes for that edge. The function must
+        return a number or None to indicate a hidden edge.
 
     ignore_nodes : container of nodes
-       nodes to ignore, optional
+        nodes to ignore, optional
 
     ignore_edges : container of edges
-       edges to ignore, optional
+        edges to ignore, optional
 
     Returns
     -------
