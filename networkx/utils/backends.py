@@ -973,20 +973,29 @@ class _dispatchable:
             and not isinstance(should_run, str)
         )
 
-    def _convert_arguments(self, backend_name, args, kwargs, *, use_cache):
-        """Convert graph arguments to the specified backend.
+    def _get_convert_kwargs(self, args, kwargs, *, bound=None):
+        """Get the keyword arguments to use for ``backend_interface.convert_from_nx``.
+
+        This translates e.g. ``self.edge_attrs`` to ``edge_attrs=`` used in
+        ``convert_from_nx`` given the arguments passed to this function.
+
+        Parameters
+        ----------
+        args : tuple of arguments
+        kwargs : dict of keyword arguments
+        bound : inspect.BoundArguments, optional
+            The signature with arguments `args`, `kwargs`, and defaults bound to it.
 
         Returns
         -------
-        args tuple and kwargs dict
+        dict
+             A dictionary with ``edge_attrs``, ``node_attrs``, ``preserve_edge_attrs``,
+            ``preserve_node_attrs``, and ``preserve_graph_attrs`` items.
         """
-        bound = self.__signature__.bind(*args, **kwargs)
-        bound.apply_defaults()
-        if not self.graphs:
-            bound_kwargs = bound.kwargs
-            del bound_kwargs["backend"]
-            return bound.args, bound_kwargs
-        # Convert graphs into backend graph-like object
+        if bound is None:
+            bound = self.__signature__.bind(*args, **kwargs)
+            bound.apply_defaults()
+
         # Include the edge and/or node labels if provided to the algorithm
         preserve_edge_attrs = self.preserve_edge_attrs
         edge_attrs = self.edge_attrs
@@ -1116,8 +1125,30 @@ class _dispatchable:
                 for key, val in node_attrs.items()
                 if (node_attr := bound.arguments[key]) is not None
             }
+        return {
+            "edge_attrs": edge_attrs,
+            "node_attrs": node_attrs,
+            "preserve_edge_attrs": preserve_edge_attrs,
+            "preserve_node_attrs": preserve_node_attrs,
+            "preserve_graph_attrs": self.preserve_graph_attrs,
+        }
 
-        preserve_graph_attrs = self.preserve_graph_attrs
+    def _convert_arguments(self, backend_name, args, kwargs, *, use_cache):
+        """Convert graph arguments to the specified backend.
+
+        Returns
+        -------
+        args tuple and kwargs dict
+        """
+        bound = self.__signature__.bind(*args, **kwargs)
+        bound.apply_defaults()
+        if not self.graphs:
+            bound_kwargs = bound.kwargs
+            del bound_kwargs["backend"]
+            return bound.args, bound_kwargs
+
+        # Convert graphs into backend graph-like object
+        convert_kwargs = self._get_convert_kwargs(args, kwargs, bound=bound)
 
         # It should be safe to assume that we either have networkx graphs or backend graphs.
         # Future work: allow conversions between backends.
@@ -1127,13 +1158,9 @@ class _dispatchable:
                     self._convert_graph(
                         backend_name,
                         g,
-                        edge_attrs=edge_attrs,
-                        node_attrs=node_attrs,
-                        preserve_edge_attrs=preserve_edge_attrs,
-                        preserve_node_attrs=preserve_node_attrs,
-                        preserve_graph_attrs=preserve_graph_attrs,
                         graph_name=gname,
                         use_cache=use_cache,
+                        **convert_kwargs,
                     )
                     if getattr(g, "__networkx_backend__", "networkx") == "networkx"
                     else g
@@ -1147,22 +1174,22 @@ class _dispatchable:
                     raise TypeError(
                         f"Missing required graph argument `{gname}` in {self.name} function"
                     )
-                if isinstance(preserve_edge_attrs, dict):
+
+                preserve_edges = convert_kwargs["preserve_edge_attrs"]
+                if isinstance(preserve_edges, dict):
+                    edges = preserve_edges.get(gname, convert_kwargs["edge_attrs"])
                     preserve_edges = False
-                    edges = preserve_edge_attrs.get(gname, edge_attrs)
                 else:
-                    preserve_edges = preserve_edge_attrs
-                    edges = edge_attrs
-                if isinstance(preserve_node_attrs, dict):
+                    edges = convert_kwargs["edge_attrs"]
+                preserve_nodes = convert_kwargs["preserve_node_attrs"]
+                if isinstance(preserve_nodes, dict):
+                    nodes = preserve_nodes.get(gname, convert_kwargs["node_attrs"])
                     preserve_nodes = False
-                    nodes = preserve_node_attrs.get(gname, node_attrs)
                 else:
-                    preserve_nodes = preserve_node_attrs
-                    nodes = node_attrs
-                if isinstance(preserve_graph_attrs, set):
-                    preserve_graph = gname in preserve_graph_attrs
-                else:
-                    preserve_graph = preserve_graph_attrs
+                    nodes = convert_kwargs["node_attrs"]
+                preserve_graph = convert_kwargs["preserve_graph_attrs"]
+                if isinstance(preserve_graph, set):
+                    preserve_graph = gname in preserve_graph
                 if getattr(graph, "__networkx_backend__", "networkx") == "networkx":
                     bound.arguments[gname] = self._convert_graph(
                         backend_name,
