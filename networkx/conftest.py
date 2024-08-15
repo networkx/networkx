@@ -61,7 +61,7 @@ def pytest_configure(config):
         networkx.utils.backends.backends["nx_loopback"] = loopback_ep["nx_loopback"]
         networkx.utils.backends.backend_info["nx_loopback"] = {}
         networkx.config.backend_priority.algos = [backend]
-        networkx.config.backend_priority.generators = [backend]
+        networkx.config.backend_priority.generators = []
         networkx.config.backends = networkx.utils.Config(
             nx_loopback=networkx.utils.Config(),
             **networkx.config.backends,
