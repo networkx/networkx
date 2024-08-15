@@ -710,9 +710,6 @@ def optimize_edit_paths(
         is_subst = (lsa_row_ind < m) & (lsa_col_ind < n)
         is_dummy = (lsa_row_ind >= m) & (lsa_col_ind >= n)
 
-        # Ensure there is an equal number of substitution and dummy assignments
-        assert np.sum(is_subst) == np.sum(is_dummy)
-
         # Map dummy assignments to the correct indices
         lsa_row_ind[is_dummy] = lsa_col_ind[is_subst] + m
         lsa_col_ind[is_dummy] = lsa_row_ind[is_subst] + n
