@@ -2323,7 +2323,7 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
     Raises
     ------
     NodeNotFound
-        If either `source` or `target` is not in `G`.
+        If `source` or `target` is not in `G`.
 
     NetworkXNoPath
         If no path exists between source and target.
@@ -2365,9 +2365,11 @@ def bidirectional_dijkstra(G, source, target, weight="weight"):
     shortest_path
     shortest_path_length
     """
-    if source not in G or target not in G:
-        msg = f"Either source {source} or target {target} is not in G"
-        raise nx.NodeNotFound(msg)
+    if source not in G:
+        raise nx.NodeNotFound(f"Source {source} is not in G")
+
+    if target not in G:
+        raise nx.NodeNotFound(f"Target {target} is not in G")
 
     if source == target:
         return (0, [source])
