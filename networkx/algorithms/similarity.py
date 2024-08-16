@@ -706,14 +706,13 @@ def optimize_edit_paths(
         # Fixup dummy assignments:
         # each substitution i<->j should have dummy assignment m+j<->n+i
         # NOTE: fast reduce of Cv relies on it
-        # assert len(lsa_row_ind) == len(lsa_col_ind)
-        indexes = zip(range(len(lsa_row_ind)), lsa_row_ind, lsa_col_ind)
-        subst_ind = [k for k, i, j in indexes if i < m and j < n]
-        indexes = zip(range(len(lsa_row_ind)), lsa_row_ind, lsa_col_ind)
-        dummy_ind = [k for k, i, j in indexes if i >= m and j >= n]
-        # assert len(subst_ind) == len(dummy_ind)
-        lsa_row_ind[dummy_ind] = lsa_col_ind[subst_ind] + m
-        lsa_col_ind[dummy_ind] = lsa_row_ind[subst_ind] + n
+        # Create masks for substitution and dummy indices
+        is_subst = (lsa_row_ind < m) & (lsa_col_ind < n)
+        is_dummy = (lsa_row_ind >= m) & (lsa_col_ind >= n)
+
+        # Map dummy assignments to the correct indices
+        lsa_row_ind[is_dummy] = lsa_col_ind[is_subst] + m
+        lsa_col_ind[is_dummy] = lsa_row_ind[is_subst] + n
 
         return CostMatrix(
             C, lsa_row_ind, lsa_col_ind, C[lsa_row_ind, lsa_col_ind].sum()
