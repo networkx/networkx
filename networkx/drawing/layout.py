@@ -1406,6 +1406,7 @@ def forceatlas2_layout(
     linlog=False,
     seed=None,
     dim=2,
+    attribute=None,
 ):
     """Position nodes using the ForceAtlas2 force-directed layout algorithm.
 
@@ -1448,6 +1449,12 @@ def forceatlas2_layout(
         by numpy.random.
     dim : int (default: 2)
         Sets the dimensions for the layout. Ignored if `pos` is provided.
+    attribute : str, default None
+        If non-None, the position of each node will be stored on the graph as
+        an attribute named `attribute` which can be accessed with
+        `G.nodes[...][attribute]`. The function still returns the dictionary.
+
+    .. Warning:: In future releases, `attribute` will default to `pos`.
 
     Examples
     --------
@@ -1644,7 +1651,11 @@ def forceatlas2_layout(
         if abs((update * factor[:, None]).sum()) < 1e-10:
             break
 
-    return dict(zip(G, pos_arr))
+    pos = dict(zip(G, pos_arr))
+    if attribute is not None:
+        nx.set_node_attributes(G, pos, attribute)
+
+    return pos
 
 
 def rescale_layout(pos, scale=1, attribute=None):
