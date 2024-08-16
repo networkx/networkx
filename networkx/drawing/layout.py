@@ -1245,7 +1245,16 @@ def multipartite_layout(
 
 
 def arf_layout(
-    G, pos=None, scaling=1, a=1.1, etol=1e-6, dt=1e-3, max_iter=1000, attribute=None
+    G,
+    pos=None,
+    scaling=1,
+    a=1.1,
+    etol=1e-6,
+    dt=1e-3,
+    max_iter=1000,
+    *,
+    seed=None,
+    attribute=None,
 ):
     """Arf layout for networkx
 
