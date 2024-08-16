@@ -728,6 +728,22 @@ def test_remove_node_attributes(graph_type):
     assert G.nodes[1][other_attr] == other_vals
     assert G.nodes[2][other_attr] == other_vals
 
+    # Test removing on a subset of nodes
+    G = nx.path_graph(3, create_using=graph_type)
+    nx.set_node_attributes(
+        G,
+        {
+            n: {attr: vals, other_attr: other_vals, third_attr: third_vals}
+            for n in G.nodes()
+        },
+    )
+    nx.remove_node_attributes(G, attr, other_attr, nbunch=[0, 1])
+    assert attr not in G.nodes[0] and other_attr not in G.nodes[0]
+    assert attr not in G.nodes[1] and other_attr not in G.nodes[1]
+    assert attr in G.nodes[2] and other_attr in G.nodes[2]
+    assert third_attr in G.nodes[0] and G.nodes[0][third_attr] == third_vals
+    assert third_attr in G.nodes[1] and G.nodes[1][third_attr] == third_vals
+
 
 @pytest.mark.parametrize("graph_type", (nx.Graph, nx.DiGraph))
 def test_remove_edge_attributes(graph_type):
@@ -783,6 +799,19 @@ def test_remove_edge_attributes(graph_type):
     nx.remove_edge_attributes(G, other_attr)
     assert other_attr not in G[0][1] and G[0][1][attr] == vals
     assert other_attr not in G[1][2]
+
+    # Test removing subset of edge attributes
+    G = nx.path_graph(3, create_using=graph_type)
+    nx.set_edge_attributes(
+        G,
+        {
+            (u, v): {attr: vals, other_attr: other_vals, third_attr: third_vals}
+            for u, v in G.edges()
+        },
+    )
+    nx.remove_edge_attributes(G, other_attr, third_attr, ebunch=[(0, 1)])
+    assert other_attr not in G[0][1] and third_attr not in G[0][1]
+    assert other_attr in G[1][2] and third_attr in G[1][2]
 
 
 @pytest.mark.parametrize("graph_type", (nx.MultiGraph, nx.MultiDiGraph))
@@ -857,6 +886,22 @@ def test_remove_multi_edge_attributes(graph_type):
     assert other_attr not in G[0][1][0] and G[0][1][0][attr] == vals
     assert other_attr not in G[1][2][0]
     assert other_attr not in G[1][2][1]
+
+    # Test removing subset of edge attributes
+    G = nx.path_graph(3, create_using=graph_type)
+    G.add_edge(1, 2)
+    nx.set_edge_attributes(
+        G,
+        {
+            (0, 1, 0): {attr: vals, other_attr: other_vals},
+            (1, 2, 0): {attr: vals, other_attr: other_vals},
+            (1, 2, 1): {attr: vals, other_attr: other_vals},
+        },
+    )
+    nx.remove_edge_attributes(G, attr, ebunch=[(0, 1, 0), (1, 2, 0)])
+    assert attr not in G[0][1][0] and other_attr in G[0][1][0]
+    assert attr not in G[1][2][0] and other_attr in G[1][2][0]
+    assert attr in G[1][2][1] and other_attr in G[1][2][1]
 
 
 def test_is_empty():

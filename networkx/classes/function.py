@@ -703,7 +703,7 @@ def get_node_attributes(G, name, default=None):
     return {n: d[name] for n, d in G.nodes.items() if name in d}
 
 
-def remove_node_attributes(G, *attr_names):
+def remove_node_attributes(G, *attr_names, nbunch=None):
     """Remove node attributes from all nodes in the graph.
 
     Parameters
@@ -712,6 +712,9 @@ def remove_node_attributes(G, *attr_names):
 
     *attr_names : List of Strings
         The attribute names to remove from the graph.
+
+    nbunch : List of Nodes
+        Remove the node attributes only from the nodes in this list.
 
     Examples
     --------
@@ -723,12 +726,17 @@ def remove_node_attributes(G, *attr_names):
     >>> nx.get_node_attributes(G, "color")
     {}
     """
+
+    if nbunch is None:
+        nbunch = G.nodes()
+
     for attr in attr_names:
-        for _, d in G.nodes(data=True):
-            try:
-                del d[attr]
-            except KeyError:
-                pass
+        for n, d in G.nodes(data=True):
+            if n in nbunch:
+                try:
+                    del d[attr]
+                except KeyError:
+                    pass
 
 
 def set_edge_attributes(G, values, name=None):
@@ -911,7 +919,7 @@ def get_edge_attributes(G, name, default=None):
     return {x[:-1]: x[-1][name] for x in edges if name in x[-1]}
 
 
-def remove_edge_attributes(G, *attr_names):
+def remove_edge_attributes(G, *attr_names, ebunch=None):
     """Remove edge attributes from all edges in the graph.
 
     Parameters
@@ -931,15 +939,19 @@ def remove_edge_attributes(G, *attr_names):
     >>> nx.get_edge_attributes(G, "weight")
     {}
     """
+    if ebunch is None:
+        ebunch = G.edges(keys=True) if G.is_multigraph() else G.edges()
+
     for attr in attr_names:
         edges = (
             G.edges(keys=True, data=True) if G.is_multigraph() else G.edges(data=True)
         )
         for *e, d in edges:
-            try:
-                del d[attr]
-            except KeyError:
-                pass
+            if tuple(e) in ebunch:
+                try:
+                    del d[attr]
+                except KeyError:
+                    pass
 
 
 def all_neighbors(graph, node):
