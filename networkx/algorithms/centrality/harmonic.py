@@ -75,7 +75,7 @@ def harmonic_centrality(G, nbunch=None, distance=None, sources=None):
         transposed = True
         nbunch, sources = sources, nbunch
         if nx.is_directed(G):
-            G = nx.reverse(G)
+            G = nx.reverse(G, copy=False)
 
     spl = partial(nx.shortest_path_length, G, weight=distance)
     for v in sources:
