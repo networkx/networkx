@@ -1165,7 +1165,7 @@ def _min_cycle(G, orth, weight):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatchable
+@nx._dispatchable(auto_cache=True)
 def girth(G):
     """Returns the girth of the graph.
 
