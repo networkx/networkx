@@ -79,7 +79,7 @@ doc = [
 extra = [
     'lxml>=4.6',
     'pygraphviz>=1.13',
-    'pydot>=2.0',
+    'pydot>=3.0',
     'sympy>=1.10',
 ]
 test = [
