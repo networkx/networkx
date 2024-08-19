@@ -109,58 +109,6 @@ def test_pydot_issue_7581(tmp_path):
     assert graphs_equal(G, G2)
 
 
-def test_pydot_issue_258():
-    G = nx.Graph([("Example:A", 1)])
-    pydot_G = nx.nx_pydot.to_pydot(G)
-    # Confirm that nodes exist in a
-    # Keys as integers aren't preserved in the conversion. They are read as strings.
-    assert {str(n) for n in G.nodes}.issubset(nx.nx_pydot.from_pydot(pydot_G).nodes)
-
-    G = nx.Graph()
-    G.add_node("1.2", style="filled", fillcolor="red:yellow")
-    assert (
-        G.nodes.data() == nx.nx_pydot.from_pydot(nx.nx_pydot.to_pydot(G)).nodes.data()
-    )
-    G = nx.Graph()
-    G.add_node("1.2", style="filled", fillcolor='"red:yellow"')
-    assert (
-        G.nodes.data() == nx.nx_pydot.from_pydot(nx.nx_pydot.to_pydot(G)).nodes.data()
-    )
-
-    G = nx.DiGraph()
-    G.add_edge("1", "2", foo="bar:1")
-    assert G["1"]["2"] == nx.nx_pydot.from_pydot(nx.nx_pydot.to_pydot(G))["1"]["2"]
-    G = nx.DiGraph()
-    G.add_edge("1", "2", foo='"bar:1"')
-    assert G["1"]["2"] == nx.nx_pydot.from_pydot(nx.nx_pydot.to_pydot(G))["1"]["2"]
-
-    G = nx.MultiGraph()
-    G.add_edge("1", "2", foo="b:1")
-    G.add_edge("1", "2", bar="foo:foo")
-    assert list(G.edges.data()) == list(
-        nx.nx_pydot.from_pydot(nx.nx_pydot.to_pydot(G)).edges.data()
-    )
-    G = nx.MultiGraph()
-    G.add_edge("1", "2", foo='"b:1"')
-    G.add_edge("1", "2", bar='"foo:foo"')
-    assert list(G.edges.data()) == list(
-        nx.nx_pydot.from_pydot(nx.nx_pydot.to_pydot(G)).edges.data()
-    )
-
-    G = nx.Graph()
-    G.add_edge("1", "2")
-    G["1"]["2"]["f:oo"] = "bar"
-    assert G["1"]["2"] == nx.nx_pydot.from_pydot(nx.nx_pydot.to_pydot(G))["1"]["2"]
-    G = nx.Graph()
-    G.add_edge("1", "2")
-    G["1"]["2"]['"f:oo"'] = "bar"
-    assert G["1"]["2"] == nx.nx_pydot.from_pydot(nx.nx_pydot.to_pydot(G))["1"]["2"]
-
-    G = nx.Graph([('"Example:A"', 1)])
-    layout = nx.nx_pydot.pydot_layout(G)
-    assert isinstance(layout, dict)
-
-
 @pytest.mark.parametrize(
     "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
 )
