@@ -67,10 +67,12 @@ a backend), it checks if all graphs are from the same backend. If not, it raises
 loads the backend and calls the corresponding function on the backend along with the
 additional backend-specific ``backend_kwargs``. After calling the function the networkx
 logger displays the ``DEBUG`` message, if the logging is enabled
-(see :ref:`Introspection <introspect>` below). If no compatible
-backend is found or the function is not implemented by the backend, it raises a
-``NetworkXNotImplemented`` exception. And, if the function mutates the input graph or
-returns a graph, graph generator or loader then it tries to convert and run the
+(see :ref:`Introspection <introspect>` below). If no compatible backend is found
+or the function is not implemented by the backend, it will fall back to run with
+default networkx implementation or raise a ``NetworkXNotImplemented`` exception.
+Fallback behavior is controlled by the ``backend_fallback`` configuration, which
+defaults to falling back to networkx. And, if the function mutates the input graph
+or returns a graph, graph generator or loader then it tries to convert and run the
 function with a backend with automatic conversion. And it only convert and run if
 ``backend.should_run(...)`` returns ``True``. If no backend is used, it falls back to
 running the original function with NetworkX. Refer the ``__call__`` method of the
@@ -408,6 +410,7 @@ def _get_backends(group, *, load_and_call=False):
 
 # Note: "networkx" will be in `backend_info`, but not `backends` or `config.backends`.
 # It is valid to use "networkx"` as backend argument and in `config.backend_priority`.
+# We may make "networkx" a "proper" backend and have it in `backends` and `config.backends`.
 backends = _get_backends("networkx.backends")
 backend_info = _get_backends("networkx.backend_info", load_and_call=True)
 # Ensure all backends are in `backend_info`
@@ -427,7 +430,12 @@ def _comma_sep_to_list(string):
 
 
 def _finish_init_of_backends_and_config():
-    # TODO: document what this is all about
+    """Initialize ``nx.config.backend_priority`` and ``nx.config.backend_fallback``.
+
+    This gets default values from environment variables (see ``nx.config`` for details).
+    This function is run at the very end of importing networkx. It is run at this time
+    for predictability and cleanliness, but it may be fine to run this function whenever.
+    """
     # NETWORKX_BACKEND_PRIORITY is the same as NETWORKX_BACKEND_PRIORITY_ALGOS
     priorities = {
         key[26:].lower(): val
@@ -929,13 +937,24 @@ class _dispatchable:
                             self.name,
                             backend_name,
                         )
-                    return self._convert_and_call(
+                        mutations = []
+                    else:
+                        mutations = None
+                    rv = self._convert_and_call(
                         backend_name,
                         graph_backend_names,
                         args,
                         kwargs,
                         extra_message=extra_message,
+                        mutations=mutations,
                     )
+                    if mutations:
+                        for cache, key in mutations:
+                            # If the call mutates inputs, then remove all inputs gotten
+                            # from cache. We do this after all conversions (and call) so
+                            # that a graph can be gotten from a cache multiple times.
+                            cache.pop(key, None)
+                    return rv
                 raise NotImplementedError(
                     f"`{self.name}' is not implemented by '{backend_name}' backend. {blurb}"
                 )
@@ -950,10 +969,6 @@ class _dispatchable:
                 f"specified with the `backend='{backend_name}'` keyword argument. "
                 f"{blurb}"
             )
-
-        # TODO: properly handle caching when input is mutated.
-        # For example, if we use a cached graph, then we should remove it from
-        # the cache; also, don't save converted graph to cache.
 
         if self._will_call_mutate_input(args, kwargs):
             # Do not automatically convert if a call will mutate inputs, because doing
@@ -1232,7 +1247,7 @@ class _dispatchable:
             return False
         return True
 
-    def _convert_arguments(self, backend_name, args, kwargs, *, use_cache):
+    def _convert_arguments(self, backend_name, args, kwargs, *, use_cache, mutations):
         """Convert graph arguments to the specified backend.
 
         Returns
@@ -1396,6 +1411,7 @@ class _dispatchable:
                         preserve_graph_attrs=preserve_graph_attrs,
                         graph_name=gname,
                         use_cache=use_cache,
+                        mutations=mutations,
                     )
                     if getattr(g, "__networkx_backend__", "networkx") != backend_name
                     else g
@@ -1436,6 +1452,7 @@ class _dispatchable:
                         preserve_graph_attrs=preserve_graph,
                         graph_name=gname,
                         use_cache=use_cache,
+                        mutations=mutations,
                     )
         bound_kwargs = bound.kwargs
         del bound_kwargs["backend"]
@@ -1453,6 +1470,7 @@ class _dispatchable:
         preserve_graph_attrs,
         graph_name,
         use_cache,
+        mutations,
     ):
         if (
             use_cache
@@ -1507,6 +1525,10 @@ class _dispatchable:
                             self.name,
                             graph_name,
                         )
+                        if mutations is not None:
+                            # Remove this item from the cache (after all conversions) if
+                            # the call to this dispatchable function will mutate an input.
+                            mutations.append((cache, compat_key))
                         return rv
                 if edge_key is not True and node_key is not True:
                     # Iterate over the items in `cache` to see if any are compatible.
@@ -1539,6 +1561,10 @@ class _dispatchable:
                             self.name,
                             graph_name,
                         )
+                        if mutations is not None:
+                            # Remove this item from the cache (after all conversions) if
+                            # the call to this dispatchable function will mutate an input.
+                            mutations.append((cache, (ekey, nkey)))
                         return val
 
         if backend_name == "networkx":
@@ -1559,10 +1585,11 @@ class _dispatchable:
                 name=self.name,
                 graph_name=graph_name,
             )
-        if use_cache and nx_cache is not None:
+        if use_cache and nx_cache is not None and mutations is None:
             # Remove old cached items that are no longer necessary since they
             # are dominated/subsumed/outdated by what was just calculated.
             # This uses the same logic as above, but with keys switched.
+            # Also, don't update the cache here if the call will mutate an input.
             cache[key] = rv  # Set at beginning to be thread-safe
             for cur_key in list(cache):
                 if cur_key == key:
@@ -1606,9 +1633,28 @@ class _dispatchable:
             raise
 
     def _convert_and_call(
-        self, backend_name, input_backend_names, args, kwargs, *, extra_message=None
+        self,
+        backend_name,
+        input_backend_names,
+        args,
+        kwargs,
+        *,
+        extra_message=None,
+        mutations=None,
     ):
-        """Call this dispatchable function with a backend after converting inputs."""
+        """Call this dispatchable function with a backend after converting inputs.
+
+        Parameters
+        ----------
+        backend_name : str
+        input_backend_names : set[str]
+        args : arguments tuple
+        kwargs : keywords dict
+        extra_message : str, optional
+            Additional message to log if NotImplementedError is raised by backend.
+        mutations : list, optional
+            Used to clear objects gotten from cache if inputs will be mutated.
+        """
         if backend_name == "networkx":
             func = self.orig_func
         else:
@@ -1626,7 +1672,11 @@ class _dispatchable:
         )
         try:
             converted_args, converted_kwargs = self._convert_arguments(
-                backend_name, args, kwargs, use_cache=config.cache_converted_graphs
+                backend_name,
+                args,
+                kwargs,
+                use_cache=config.cache_converted_graphs,
+                mutations=mutations,
             )
         except NotImplementedError as exc:
             _logger.debug(
@@ -1725,7 +1775,7 @@ class _dispatchable:
             kwargs2 = dict(kwargs2)
         try:
             converted_args, converted_kwargs = self._convert_arguments(
-                backend_name, args1, kwargs1, use_cache=False
+                backend_name, args1, kwargs1, use_cache=False, mutations=None
             )
             _logger.debug(
                 "Using backend '%s' for call to `%s' with arguments: %s",

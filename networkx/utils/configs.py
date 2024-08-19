@@ -228,7 +228,24 @@ collections.abc.Mapping.register(Config)
 
 
 class BackendPriorities(Config, strict=False):
-    # TODO: document me
+    """Configuration to control automatic conversion to and calling of backends.
+
+    Priority is given to backends listed earlier. ``nx.config.backend_priority`` and
+    ``nx.config.backend_fallback`` are instances of this class.
+
+    Parameters
+    ----------
+    algos : list of backend names
+        This controls "algorithms" such as ``nx.pagerank`` that don't return a graph.
+    generators : list of backend names
+        This controls "generators" such as ``nx.from_pandas_edgelist`` that return a graph.
+    kwargs : variadic keyword arguments of function name to list of backend names
+        This allows each function to be configured separately and will override the config
+        in ``algos`` or ``generators`` if present. The dispatchable function name may be
+        gotten from the ``.name`` attribute such as ``nx.pagerank.name`` (it's typically
+        the same as the name of the function).
+    """
+
     algos: list[str]
     generators: list[str]
 
@@ -238,8 +255,10 @@ class BackendPriorities(Config, strict=False):
         if key in {"algos", "generators"}:
             pass
         elif key not in _registered_algorithms:
-            # TODO: give more informative error message
-            raise AttributeError(f"Invalid config name: {key!r}")
+            raise AttributeError(
+                f"Invalid config name: {key!r}. Expected 'algos', 'generators', or a name "
+                "of a dispatchable function (e.g. `.name` attribute of the function)."
+            )
         if not (isinstance(value, list) and all(isinstance(x, str) for x in value)):
             raise TypeError(
                 f"{key!r} config must be a list of backend names; got {value!r}"
@@ -265,14 +284,21 @@ class NetworkXConfig(Config):
     Parameters
     ----------
     backend_priority : list of backend names or dict or BackendPriorities
-        TODO: update this documentation!
-        Enable automatic conversion of graphs to backend graphs for algorithms
+        Enable automatic conversion of graphs to backend graphs for functions
         implemented by the backend. Priority is given to backends listed earlier.
-        If ``"networkx"`` backend name is given priority, then input graphs from
-        backends will be converted to networkx graphs. Default is empty list.
+        This is a nested configuration with keys ``algos``, ``generators``, and,
+        optionally, function names. Setting this value to a list of backend names
+        will set ``nx.config.backend_priority.algos``. For more information, see
+        ``help(nx.config.backend_priority)``. Default is empty list.
 
     backend_fallback : list of backend names or dict or BackendPriorities
-        This has the same structure as ``backend_priority``. TODO: moar!
+        Enable automatic conversion and fallback to backends when functions aren't
+        implemented by input backends or backends listed in ``backend_priority``.
+        This config is lower priority than ``backend_priority`` and the backend of
+        input graphs. This has the same structure as ``backend_priority`` and has
+        keys ``algos``, ``generators``, and, optionally, function names. Setting this
+        value to a list of backend names will set ``nx.config.backend_fallback.algos``.
+        For more information, see ``help(nx.config.backend_fallback)``.
         Default is ``["networkx"]`` to enable fallback to default implementation.
 
     backends : Config mapping of backend names to backend Config
@@ -294,8 +320,15 @@ class NetworkXConfig(Config):
     -----
     Environment variables may be used to control some default configurations:
 
-    - ``NETWORKX_BACKEND_PRIORITY``: set ``backend_priority`` from comma-separated names.
+    - ``NETWORKX_BACKEND_PRIORITY``: set ``backend_priority.algos`` from comma-separated names.
+    - ``NETWORKX_BACKEND_FALLBACK``: set ``backend_fallback.algos`` from comma-separated names.
     - ``NETWORKX_CACHE_CONVERTED_GRAPHS``: set ``cache_converted_graphs`` to True if nonempty.
+
+    and can be used for finer control of ``backend_priority`` and ``backend_fallback`` such as:
+
+    - ``NETWORKX_BACKEND_PRIORITY_PAGERANK``: set ``backend_priority.pagerank`` from comma-separated names.
+    - ``NETWORKX_BACKEND_FALLBACK_GENERATORS``: set ``backend_fallback.generators`` from comma-separated names.
+    - ``NETWORKX_BACKEND_PRIORITY_ALGOS``: same as ``NETWORKX_BACKEND_PRIORITY`` to set ``backend_priority.algos`.
 
     This is a global configuration. Use with caution when using from multiple threads.
     """
