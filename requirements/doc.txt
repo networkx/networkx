@@ -3,7 +3,7 @@
 sphinx>=7.3
 pydata-sphinx-theme>=0.15
 sphinx-gallery>=0.16
-numpydoc>=1.7
+numpydoc>=1.8.0
 pillow>=9.4
 texext>=0.6.7
 myst-nb>=1.1
