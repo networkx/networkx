@@ -24,6 +24,7 @@ from numbers import Number
 import networkx as nx
 from networkx.drawing.layout import (
     circular_layout,
+    forceatlas2_layout,
     kamada_kawai_layout,
     planar_layout,
     random_layout,
@@ -48,6 +49,7 @@ __all__ = [
     "draw_spring",
     "draw_planar",
     "draw_shell",
+    "draw_forceatlas2",
 ]
 
 
@@ -2982,6 +2984,26 @@ def draw_planar(G, **kwargs):
     )
 
     draw(G, planar_layout(G), **kwargs)
+
+
+def draw_forceatlas2(G, **kwargs):
+    """Draw a networkx graph with forceatlas2 layout.
+
+    This is a convenience function equivalent to::
+
+       nx.draw(G, pos=nx.forceatlas2_layout(G), **kwargs)
+
+    Parameters
+    ----------
+    G : graph
+       A networkx graph
+
+    kwargs : optional keywords
+       See networkx.draw_networkx() for a description of optional keywords,
+       with the exception of the pos parameter which is not used by this
+       function.
+    """
+    draw(G, forceatlas2_layout(G), **kwargs)
 
 
 def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):
