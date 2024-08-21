@@ -466,10 +466,11 @@ def new_draw(
     # I hope that the order-perserving nature of dicts in python 3.7+
     # means that G.nodes() will always return the same order.
     def node_property_sequence(seq, attr, default=None):
-        """Return a sequence of attribute values for the given sequence, using default if not None"""
+        """Return a list of attribute values for `seq`, using `default` if needed"""
 
-        # If the attr isn't actually a graph attr, but was explicitly passed as an argument it must be a
-        # user-default value. Allow None to be used to tell draw to skip attributes which are on the graph
+        # If `attr` is not a graph attr and was explicitly passed as an argument
+        # it must be a user-default value. Allow attr=None to tell draw to skip
+        # attributes which are on the graph
         if (
             attr is not None
             and nx.get_node_attributes(node_subgraph, attr) == {}
