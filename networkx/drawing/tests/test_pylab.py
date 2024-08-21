@@ -712,6 +712,17 @@ def test_new_draw_self_loop():
     plt.close()
 
 
+def test_new_draw_remove_pos_attr():
+    """
+    If the pos attribute isn't provided or is a function, new_draw computes the layout
+    and adds it to the graph. We need to ensure that this new attribute is removed from
+    the returned graph.
+    """
+    G = nx.karate_club_graph()
+    nx.new_draw(G)
+    assert nx.get_node_attributes(G, "new_draw's position attribute name") == {}
+
+
 def test_draw():
     try:
         functions = [

@@ -850,20 +850,19 @@ def new_draw(
 
     pos = kwargs.get("pos", defaults["pos"])
 
+    default_new_draw_pos_attr = "new_draw's position attribute name"
     if callable(pos):
         # TODO refactor this once layouts can store directly on the graph
         # TODO remove this attribute before exiting the function
         nx.set_node_attributes(
-            node_subgraph, pos(node_subgraph), "new_draw's position attribute name"
+            node_subgraph, pos(node_subgraph), default_new_draw_pos_attr
         )
-        pos = "new_draw's position attribute name"
+        pos = default_new_draw_pos_attr
     elif nx.get_node_attributes(G, pos) == {}:
         nx.set_node_attributes(
-            node_subgraph,
-            nx.spring_layout(node_subgraph),
-            "new_draw's position attribute name",
+            node_subgraph, nx.spring_layout(node_subgraph), default_new_draw_pos_attr
         )
-        pos = "new_draw's position attribute name"
+        pos = default_new_draw_pos_attr
 
     # Each shape requires a new scatter object since they can't have different
     # shapes.
@@ -1132,7 +1131,9 @@ def new_draw(
                 ax=canvas,
             )
 
-    # TODO remove pos if it's the default value. Wait for github PR 7569
+    # If we had to add an attribute, remove it here
+    if pos == default_new_draw_pos_attr:
+        nx.remove_node_attributes(G, default_new_draw_pos_attr)
 
     return G
 
