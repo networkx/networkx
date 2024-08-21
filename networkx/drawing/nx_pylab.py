@@ -1197,7 +1197,9 @@ def draw(G, pos=None, ax=None, **kwds):
     import warnings
 
     warnings.warn(
-        "The signature of nx.draw will be changed in v3.6.\nThe new draw function is correctly avalible as nx.new_draw.\nThat function will replace this one in v3.6.",
+        "The signature of nx.draw will be changed in v3.6.\n"
+        "The new draw function is available as nx.new_draw.\n"
+        "That function will replace this one in v3.6.",
         category=DeprecationWarning,
         stacklevel=3,
     )
