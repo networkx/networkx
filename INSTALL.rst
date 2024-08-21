@@ -74,6 +74,22 @@ Then, if you want to update ``networkx`` at any time, in the same directory do::
 
     $ git pull
 
+Backends
+--------
+
+NetworkX has the ability to dispatch function calls to separately-installed
+third-party backends. NetworkX backends let users experience improved
+performance and/or additional functionality without changing their NetworkX
+Python code. Examples include backends that provide algorithm acceleration
+using GPUs, parallel processing, graph database integration, and more.
+
+While NetworkX is a pure-Python implementation with minimal to no dependencies,
+backends may be written in other languages and require specialized hardware
+and/or OS support, additional software dependencies, or even separate services.
+Installation instructions vary based on the backend, and additional information
+can be found from the individual backend project pages listed in the NetworkX
+Backend Gallery.
+
 Extra packages
 --------------
 
