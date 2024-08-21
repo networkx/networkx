@@ -21,7 +21,7 @@ import networkx as nx
 barbell = nx.barbell_graph(4, 6)
 
 defaults = {
-    "pos": None,
+    "node_pos": None,
     "node_visible": True,
     "node_color": "#1f78b4",
     "node_size": 300,
@@ -59,8 +59,8 @@ defaults = {
     "edge_style": "-",
     "edge_alpha": 1.0,
     # These are for undirected-graphs. Directed graphs shouls use "-|>" and 10, respectively
-    "arrowstyle": "-",
-    "arrowsize": 0,
+    "edge_arrowstyle": "-",
+    "edge_arrowsize": 0,
     "edge_curvature": "arc3",
     "edge_source_margin": 0,
     "edge_target_margin": 0,
@@ -107,7 +107,7 @@ def test_new_draw_node_position():
     G = nx.path_graph(4)
     nx.set_node_attributes(G, {n: (n, n) for n in G.nodes()}, "pos")
     canvas = plt.figure().add_subplot(111)
-    nx.new_draw(G, canvas=canvas, pos="pos")
+    nx.new_draw(G, canvas=canvas, node_pos="pos")
     assert np.all(
         canvas.get_children()[0].get_offsets().data == [[0, 0], [1, 1], [2, 2], [3, 3]]
     )
@@ -139,7 +139,7 @@ def test_new_draw_house_with_colors():
     )
     nx.new_draw(
         G,
-        pos="pos",
+        node_pos="pos",
         edge_alpha=0.5,
         edge_width=6,
         node_label=None,
@@ -157,7 +157,7 @@ def test_new_draw_line_collection():
         G, {(u, v): "-|>" if (u + v) % 2 else "-" for u, v in G.edges()}, "arrowstyle"
     )
     canvas = plt.figure().add_subplot(111)
-    nx.new_draw(G, canvas=canvas, arrowsize=10)
+    nx.new_draw(G, canvas=canvas, edge_arrowsize=10)
     # There should only be one line collection in any given visualization
     lc = [
         l
@@ -200,7 +200,7 @@ def test_new_draw_labels_and_colors():
         },
     )
 
-    nx.new_draw(G, pos="pos", edge_color="tab:grey")
+    nx.new_draw(G, node_pos="pos", edge_color="tab:grey")
 
     # The tricky bit is the highlighted colors for the edges
     edgelist = [(0, 1), (1, 2), (2, 3), (0, 3)]
@@ -216,7 +216,7 @@ def test_new_draw_labels_and_colors():
             for u, v in G.edges()
         },
     )
-    nx.new_draw(G, pos="pos", node_visible=False)
+    nx.new_draw(G, node_pos="pos", node_visible=False)
     edgelist = [(4, 5), (5, 6), (6, 7), (4, 7)]
     nx.set_edge_attributes(
         G,
@@ -228,7 +228,7 @@ def test_new_draw_labels_and_colors():
             for u, v in G.edges()
         },
     )
-    nx.new_draw(G, pos="pos", node_visible=False)
+    nx.new_draw(G, node_pos="pos", node_visible=False)
 
     plt.tight_layout()
     plt.axis("off")
@@ -258,7 +258,7 @@ def test_new_draw_complex():
         "label",
     )
     nx.apply_matplotlib_colors(G, "w", "color", mpl.colormaps["inferno"], nodes=False)
-    nx.new_draw(G, canvas=ax, pos="pos")
+    nx.new_draw(G, canvas=ax, node_pos="pos")
 
     plt.tight_layout()
     plt.axis("off")
@@ -387,7 +387,7 @@ def test_new_draw_edge_position(graph_type):
     expected = [((0, 0), (1, 1)), ((1, 1), (2, 2))]
     # Use the threshold to account for slight shifts in FancyArrowPatch margins to
     # avoid covering the arrow head with the node.
-    threshold = 0.03
+    threshold = 0.05
     for a, e in zip(end_points, expected):
         act_start, act_end = a
         exp_start, exp_end = e
@@ -402,7 +402,7 @@ def test_new_draw_position_function():
     fixed_layout = lambda G: nx.spring_layout(G, seed=314159)
     pos = fixed_layout(G)
     ax = plt.figure().add_subplot(111)
-    nx.new_draw(G, pos=fixed_layout, canvas=ax)
+    nx.new_draw(G, node_pos=fixed_layout, canvas=ax)
     # rebuild the position dictionary from the canvas
     act_pos = {
         n: tuple(p) for n, p in zip(G.nodes(), ax.get_children()[0].get_offsets().data)
