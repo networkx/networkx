@@ -103,6 +103,12 @@ class TestClosenessCentrality:
         for n in [0, 1]:
             assert c[n] == pytest.approx(d[n], abs=1e-3)
 
+    def test_cycle_c4_directed_subset(self):
+        c = harmonic_centrality(self.C4_directed, nbunch=[0, 1])
+        d = 1.833
+        for n in [0, 1]:
+            assert c[n] == pytest.approx(d, abs=1e-3)
+
     def test_p3_harmonic_subset(self):
         c = harmonic_centrality(self.P3, sources=[0, 1])
         d = {0: 1, 1: 1, 2: 1.5}
