@@ -355,13 +355,13 @@ def new_draw(
        value, resulting an a straight line between the two nodes. Curvature can be given
        as 'arc3,rad=0.2' to specify both the style and radius of curvature.
 
-       Please see `matplotlib.patches.ConnectionStyle` and 
+       Please see `matplotlib.patches.ConnectionStyle` and
        `matplotlib.patches.FancyArrowPatch` for more information.
 
     edge_source_margin : string or int, default "source_margin"
         A string naming the edge attribute which stores the minimum margin (gap) between
         the source node and the start of the edge. Visible edges without this attribute
-        will use a default value of 0. 
+        will use a default value of 0.
 
     edge_target_margin : string or int, default "target_margin"
         A string naming the edge attribute which stores the minimumm margin (gap) between
@@ -873,8 +873,8 @@ def new_draw(
                 lbl = {"label": lbl if lbl is not None else n}
 
             lbl_text = lbl.get("label", n)
-            if not isinstance(l_text, str):
-                l_text = str(l_text)
+            if not isinstance(lbl_text, str):
+                lbl_text = str(lbl_text)
 
             lbl.update(default_dict)
             x, y = node_subgraph.nodes[n][pos]
@@ -886,7 +886,9 @@ def new_draw(
                 color=lbl.get("color", defaults["node_label"]["color"]),
                 family=lbl.get("family", defaults["node_label"]["family"]),
                 weight=lbl.get("weight", defaults["node_label"]["weight"]),
-                horizontalalignment=lbl.get("h_align", defaults["node_label"]["h_align"]),
+                horizontalalignment=lbl.get(
+                    "h_align", defaults["node_label"]["h_align"]
+                ),
                 verticalalignment=lbl.get("v_align", defaults["node_label"]["v_align"]),
                 transform=canvas.transData,
                 bbox=lbl.get("bbox", defaults["node_label"]["bbox"]),
@@ -969,12 +971,12 @@ def new_draw(
                 continue
 
             if not isinstance(lbl, dict):
-                lbl = {"label": l}
+                lbl = {"label": lbl}
 
             lbl.update(default_dict)
-            l_text = lbl.get("label")
-            if not isinstance(l_text, str):
-                l_text = str(l_text)
+            lbl_text = lbl.get("label")
+            if not isinstance(lbl_text, str):
+                lbl_text = str(lbl_text)
 
             # In the old code, every non-self-loop is placed via a fancy arrow patch
             # Only compute a new fancy arrow if needed by caching the results from
@@ -994,38 +996,40 @@ def new_draw(
                 canvas.text(
                     x,
                     y,
-                    l_text,
-                    size=l.get("size", defaults["edge_label"]["size"]),
-                    color=l.get("color", defaults["edge_label"]["color"]),
-                    family=l.get("family", defaults["edge_label"]["family"]),
-                    weight=l.get("weight", defaults["edge_label"]["weight"]),
-                    alpha=l.get("alpha", defaults["edge_label"]["alpha"]),
-                    horizontalalignment=l.get(
+                    lbl_text,
+                    size=lbl.get("size", defaults["edge_label"]["size"]),
+                    color=lbl.get("color", defaults["edge_label"]["color"]),
+                    family=lbl.get("family", defaults["edge_label"]["family"]),
+                    weight=lbl.get("weight", defaults["edge_label"]["weight"]),
+                    alpha=lbl.get("alpha", defaults["edge_label"]["alpha"]),
+                    horizontalalignment=lbl.get(
                         "h_align", defaults["edge_label"]["h_align"]
                     ),
-                    verticalalignment=l.get(
+                    verticalalignment=lbl.get(
                         "v_align", defaults["edge_label"]["v_align"]
                     ),
                     rotation=0,
                     transform=canvas.transData,
-                    bbox=l.get("bbox", defaults["edge_label"]["bbox"]),
+                    bbox=lbl.get("bbox", defaults["edge_label"]["bbox"]),
                     zorder=1,
                 )
                 continue
 
             CurvedArrowText(
                 arrow,
-                l_text,
-                size=l.get("size", defaults["edge_label"]["size"]),
-                color=l.get("color", defaults["edge_label"]["color"]),
-                family=l.get("family", defaults["edge_label"]["family"]),
-                weight=l.get("weight", defaults["edge_label"]["weight"]),
-                alpha=l.get("alpha", defaults["edge_label"]["alpha"]),
-                bbox=l.get("bbox", defaults["edge_label"]["bbox"]),
-                horizontalalignment=l.get("h_align", defaults["edge_label"]["h_align"]),
-                verticalalignment=l.get("v_align", defaults["edge_label"]["v_align"]),
-                label_pos=l.get("pos", defaults["edge_label"]["pos"]),
-                labels_horizontal=l.get("rotate", defaults["edge_label"]["rotate"]),
+                lbl_text,
+                size=lbl.get("size", defaults["edge_label"]["size"]),
+                color=lbl.get("color", defaults["edge_label"]["color"]),
+                family=lbl.get("family", defaults["edge_label"]["family"]),
+                weight=lbl.get("weight", defaults["edge_label"]["weight"]),
+                alpha=lbl.get("alpha", defaults["edge_label"]["alpha"]),
+                bbox=lbl.get("bbox", defaults["edge_label"]["bbox"]),
+                horizontalalignment=lbl.get(
+                    "h_align", defaults["edge_label"]["h_align"]
+                ),
+                verticalalignment=lbl.get("v_align", defaults["edge_label"]["v_align"]),
+                label_pos=lbl.get("pos", defaults["edge_label"]["pos"]),
+                labels_horizontal=lbl.get("rotate", defaults["edge_label"]["rotate"]),
                 transform=canvas.transData,
                 zorder=1,
                 ax=canvas,
