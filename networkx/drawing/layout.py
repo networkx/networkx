@@ -1658,7 +1658,7 @@ def forceatlas2_layout(
     return pos
 
 
-def rescale_layout(pos, scale=1, attribute=None):
+def rescale_layout(pos, scale=1):
     """Returns scaled position array to (-scale, scale) in all axes.
 
     The function acts on NumPy arrays which hold position information.
