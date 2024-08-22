@@ -980,12 +980,12 @@ class _dispatchable:
                 "by passing e.g. `backend='networkx'` keyword, but this may also "
                 "change behavior by not mutating inputs."
             )
-            msg_template = (
-                f"Backend '{backend_name}' does not implement `{self.name}'%s. "
-                f"This call will mutate an input, so automatic {blurb}"
-            )
             if len(graph_backend_names) == 1:
                 [backend_name] = graph_backend_names
+                msg_template = (
+                    f"Backend '{backend_name}' does not implement `{self.name}'%s. "
+                    f"This call will mutate an input, so automatic {blurb}"
+                )
                 # `can_run` is only used for better log and error messages
                 if self._can_backend_run(backend_name, args, kwargs):
                     return self._call_with_backend(
