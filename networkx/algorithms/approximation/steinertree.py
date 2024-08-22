@@ -113,30 +113,24 @@ def _kou_steiner_tree(G, terminal_nodes, weight):
 
 
 def _remove_nonterminal_leaves(G, terminals):
-    terminals_set = set(terminals)
-    self_looped_nodes = {n for n in G if n in G[n] and len(set(G[n])) == 2}
-    degree_1_not_looped = {n for n in G if (G.degree(n) == 1) and (n not in G[n])}
-    nonterminal_leaves = (self_looped_nodes | degree_1_not_looped) - terminals_set
+    terminal_set = set(terminals)
+    leaves = {
+        n
+        for n in G.nodes()
+        if len(list(G.neighbors(n))) - list(G.neighbors(n)).count(n) == 1
+    }
+    nonterminal_leaves = leaves - terminal_set
 
     while nonterminal_leaves:
-        possible_nonterminal_leaves = set()
-        for n in nonterminal_leaves:
-            possible_nonterminal_leaves = possible_nonterminal_leaves | set(
-                G.neighbors(n)
-            ) - {n}
-        possible_nonterminal_leaves = possible_nonterminal_leaves - terminals_set
+        nbrs = ([nbr for nbr in G.neighbors(n) if n != nbr] for n in nonterminal_leaves)
+        possible_nonterminal_leaves = set().union(*nbrs) - terminal_set
         G.remove_nodes_from(nonterminal_leaves)
-        self_looped_nodes = {
+        leaves = {
             n
             for n in possible_nonterminal_leaves
-            if (n in G[n]) and (len(set(G[n])) == 2)
+            if len(list(G.neighbors(n))) - list(G.neighbors(n)).count(n) == 1
         }
-        degree_1_not_looped = {
-            n
-            for n in possible_nonterminal_leaves
-            if (G.degree(n) == 1) and (n not in G[n])
-        }
-        nonterminal_leaves = (self_looped_nodes | degree_1_not_looped) - terminals_set
+        nonterminal_leaves = leaves - terminal_set
 
 
 ALGORITHMS = {
