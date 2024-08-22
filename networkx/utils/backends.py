@@ -973,7 +973,7 @@ class _dispatchable:
             and not isinstance(should_run, str)
         )
 
-    def _get_convert_kwargs(self, args, kwargs, *, bound=None):
+    def _get_convert_kwargs(self, backend_name, args, kwargs, *, bound=None):
         """Get the keyword arguments to use for ``backend_interface.convert_from_nx``.
 
         This translates e.g. ``self.edge_attrs`` to ``edge_attrs=`` used in
@@ -996,9 +996,16 @@ class _dispatchable:
             bound = self.__signature__.bind(*args, **kwargs)
             bound.apply_defaults()
 
+        if backend_name == "networkx":
+            # `backend_interface.convert_from_nx` preserves everything
+            preserve_edge_attrs = preserve_node_attrs = True
+        else:
+            preserve_edge_attrs = self.preserve_edge_attrs
+            preserve_node_attrs = self.preserve_node_attrs
+            edge_attrs = self.edge_attrs
+            node_attrs = self.node_attrs
+
         # Include the edge and/or node labels if provided to the algorithm
-        preserve_edge_attrs = self.preserve_edge_attrs
-        edge_attrs = self.edge_attrs
         if preserve_edge_attrs is False:
             # e.g. `preserve_edge_attrs=False`
             pass
@@ -1065,8 +1072,6 @@ class _dispatchable:
                 if (edge_attr := bound.arguments[key]) is not None
             }
 
-        preserve_node_attrs = self.preserve_node_attrs
-        node_attrs = self.node_attrs
         if preserve_node_attrs is False:
             # e.g. `preserve_node_attrs=False`
             pass
@@ -1148,7 +1153,9 @@ class _dispatchable:
             return bound.args, bound_kwargs
 
         # Convert graphs into backend graph-like object
-        convert_kwargs = self._get_convert_kwargs(args, kwargs, bound=bound)
+        convert_kwargs = self._get_convert_kwargs(
+            backend_name, args, kwargs, bound=bound
+        )
 
         # It should be safe to assume that we either have networkx graphs or backend graphs.
         # Future work: allow conversions between backends.
