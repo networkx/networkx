@@ -152,7 +152,7 @@ def new_draw(
         * - node_label
           - `"label"`
           - Dict describing the node label. Defaults create a black text with
-            the node name as the label. The diction respects these keys and defaults:
+            the node name as the label. The dict respects these keys and defaults:
 
             * size : 12
             * color : black
@@ -233,11 +233,10 @@ def new_draw(
         Draw the graph in specified Matplotlib axes
 
     pos : string or function, default "pos"
-        A string naming the node attribute which stores the position of nodes as
-        a tuple. If a function, that function is called with the input graph to compute the
-        position of each node. This function should return a dict of nodes to positions, like
-        the build in Networkx layout functions. If the attribute exists on none of the nodes
-        in the graph, a layout will be calculated using a spring layout.
+        A string naming the node attribute storing the position of nodes as a tuple.
+        Or a function to be called with input `G` to obtain the layout as a dict keyed
+        by node to position tuple like the NetworkX layout functions.
+        If no nodes in the graph have the attribute, a spring layout is calculated.
 
     node_visible : string or bool, default visible
         A string naming the node attribute which stores if a node should be drawn.
@@ -254,19 +253,21 @@ def new_draw(
 
     node_label : string or bool, default "label"
         A string naming the node attribute which stores the label of each node.
-        The values of this attribute can be a string, True (in which case the name of the
-        node is used) or False in which case no label is added to the node or a dict.
+        The attribute value can be a string, False (no label for that node),
+        True (the node is the label) or a dict keyed by node to the label.
 
         If a dict is specified, these keys are read to further control the label:
 
-        * label : The text of the label, default name of the node
-        * size : Font size of the label, default 12
-        * color : Font color of the label, default black
-        * family : Font family of the label, default "sans-serif"
-        * weight : Font weight of the label, default "normal"
-        * alpha : Alpha value of the label, default 1.0
-        * h_align : The horizontal alignment of the label, one of "left", "center", "right", default "center"
-        * v_align : The vertical alignment of the label, one of "top", "center", "bottom", default "center"
+        * label : The text of the label; default: name of the node
+        * size : Font size of the label; default: 12
+        * color : Font color of the label; default: black
+        * family : Font family of the label; default: "sans-serif"
+        * weight : Font weight of the label; default: "normal"
+        * alpha : Alpha value of the label; default: 1.0
+        * h_align : The horizontal alignment of the label.
+            one of "left", "center", "right"; default: "center"
+        * v_align : The vertical alignment of the label.
+            one of "top", "center", "bottom"; default: "center"
         * bbox : A dict of parameters for `matplotlib.patches.FancyBboxPatch`.
 
         Visible nodes without this attribute will be treated as if the value was True.
@@ -279,15 +280,15 @@ def new_draw(
     node_alpha : string, default "alpha"
         A string naming the node attribute which stores the alpha of each node.
         The values of this attribute are expected to be floats between 0.0 and 1.0.
-        Visible nodes without this attribute will be treated as having a value of 1.0.
+        Visible nodes without this attribute will be treated as if the value was 1.0.
 
     node_border_width : string, default "border_width"
-        A string naming the node attribute which stores the width of the border of the node.
+        A string naming the node attribute storing the width of the border of the node.
         The values of this attribute are expected to be numeric. Visible nodes without
         this attribute will use the assumed default of 1.0.
 
     node_border_color : string, default "border_color"
-        A string naming the node attribute which stores the color of the border of the node.
+        A string naming the node attribute which storing the color of the border of the node.
         Visible nodes missing this attribute will use the final node_color value.
 
     edge_visible : string or bool, default "visible"
@@ -312,23 +313,25 @@ def new_draw(
 
         If a dict is specified, these keys are read to further control the label:
 
-        * label : The text of the label, if the name of another edge attribute, the value of that attribute.
-        * size : Font size of the label, default 12
-        * color : Font color of the label, default black
-        * family : Font family of the label, default "sans-serif"
-        * weight : Font weight of the label, default "normal"
-        * alpha : Alpha value of the label, default 1.0
-        * h_align : The horizontal alignment of the label, one of "left", "center", "right", default "center"
-        * v_align : The vertical alignment of the label, one of "top", "center", "bottom", default "center"
+        * label : The text of the label, or the name of an edge attribute holding the label.
+        * size : Font size of the label; default: 12
+        * color : Font color of the label; default: black
+        * family : Font family of the label; default: "sans-serif"
+        * weight : Font weight of the label; default: "normal"
+        * alpha : Alpha value of the label; default: 1.0
+        * h_align : The horizontal alignment of the label.
+            one of "left", "center", "right"; default: "center"
+        * v_align : The vertical alignment of the label.
+            one of "top", "center", "bottom"; default: "center"
         * bbox : A dict of parameters for `matplotlib.patches.FancyBboxPatch`.
-        * rotate : Weather or note to rotate labels to lie parallel to the edge, default True.
-        * pos : A float between 0.0 and 1.0 describing where between the source and target to place the label, default 0.5.
+        * rotate : Whether to rotate labels to lie parallel to the edge, default: True.
+        * pos : A float showing how far along the edge to put the label; default: 0.5.
 
     edge_style : string, default "style"
         A string naming the edge attribute which stores the style of each edge.
         Visible edges without this attribute will be drawn solid. Values of this
         attribute can be line styles, e.g. '-', '--', '-.' or ':' or words like 'solid'
-        or 'dashed'. If not edge in the graph have this attribute and it is a non-default
+        or 'dashed'. If no edge in the graph has this attribute and it is a non-default
         value, assume that it describes the edge style for all edges in the graph.
 
     edge_alpha : string or float, default "alpha"
@@ -337,7 +340,7 @@ def new_draw(
 
     arrowstyle : string, default "arrow"
         A string naming the edge attribute which stores the type of arrowhead to use for
-        each edge. Visible edges without this attribute will use "-" for undirected graphs
+        each edge. Visible edges without this attribute use "-" for undirected graphs
         and "-|>" for directed graphs.
 
         See `matplotlib.patches.ArrowStyle` for more options
@@ -347,23 +350,23 @@ def new_draw(
         edge. Visible edges without this attribute will use a default value of 10.
 
     edge_curvature : string, default "curvature"
-       A string naming the edge attribute which stores the curvature and connection style
+       A string naming the edge attribute storing the curvature and connection style
        of each edge. Visible edges without this attribute will use "arc3" as a default
        value, resulting an a straight line between the two nodes. Curvature can be given
        as 'arc3,rad=0.2' to specify both the style and radius of curvature.
 
-       Please see `matplotlib.patches.ConnectionStyle` and `matplotlib.patches.FancyArrowPatch`
-       for more information.
+       Please see `matplotlib.patches.ConnectionStyle` and 
+       `matplotlib.patches.FancyArrowPatch` for more information.
 
     edge_source_margin : string or int, default "source_margin"
         A string naming the edge attribute which stores the minimum margin (gap) between
-        the source node and the start of the edge. Visible edges without this attribute will
-        use a default value of 0.
+        the source node and the start of the edge. Visible edges without this attribute
+        will use a default value of 0. 
 
     edge_target_margin : string or int, default "target_margin"
         A string naming the edge attribute which stores the minimumm margin (gap) between
-        the target node and the end of the edge. Visible edges without this attribute will use a
-        default value of 0.
+        the target node and the end of the edge. Visible edges without this attribute
+        will use a default value of 0.
 
     hide_ticks : bool, default True
         Weather to remove the ticks from the axes of the matplotlib object.
@@ -386,7 +389,8 @@ def new_draw(
     import warnings
 
     warnings.warn(
-        "The new_draw function is temporary, designed to exposue the new visualization API\nbefore it replaces the current nx.draw implementation.",
+        "The new_draw function is temporary. It exposes the new visualization API\n"
+        "and will replace the current nx.draw implementation.",
         category=DeprecationWarning,
         stacklevel=3,
     )
@@ -492,9 +496,8 @@ def new_draw(
     def compute_colors(color, alpha):
         if isinstance(color, str):
             rgba = mpl.colors.colorConverter.to_rgba(color)
-            if (
-                alpha != defaults["node_alpha"]
-            ):  # Using a non-default alpha value overrides any alpha value in the color
+            # Using a non-default alpha value overrides any alpha value in the color
+            if alpha != defaults["node_alpha"]:
                 return (rgba[0], rgba[1], rgba[2], alpha)
             return rgba
 
@@ -526,7 +529,7 @@ def new_draw(
         )
 
     def edge_property_sequence(seq, attr):
-        """Return a sequence of edge attribute values for the given sequence, using default if not None"""
+        """Return a list of attribute values for `seq`, using a default if needed"""
 
         param_name = f"edge_{attr}"
         default = defaults[param_name]
@@ -861,32 +864,32 @@ def new_draw(
             default_dict = node_label
             node_label = None
 
-        for n, l in node_subgraph.nodes(data=node_label):
-            if l is False:
+        for n, lbl in node_subgraph.nodes(data=node_label):
+            if lbl is False:
                 continue
 
             # We work with label dicts down here...
-            if not isinstance(l, dict):
-                l = {"label": l if l is not None else n}
+            if not isinstance(lbl, dict):
+                lbl = {"label": lbl if lbl is not None else n}
 
-            l_text = l.get("label", n)
+            lbl_text = lbl.get("label", n)
             if not isinstance(l_text, str):
                 l_text = str(l_text)
 
-            l.update(default_dict)
+            lbl.update(default_dict)
             x, y = node_subgraph.nodes[n][pos]
             canvas.text(
                 x,
                 y,
-                l_text,
-                size=l.get("size", defaults["node_label"]["size"]),
-                color=l.get("color", defaults["node_label"]["color"]),
-                family=l.get("family", defaults["node_label"]["family"]),
-                weight=l.get("weight", defaults["node_label"]["weight"]),
-                horizontalalignment=l.get("h_align", defaults["node_label"]["h_align"]),
-                verticalalignment=l.get("v_align", defaults["node_label"]["v_align"]),
+                lbl_text,
+                size=lbl.get("size", defaults["node_label"]["size"]),
+                color=lbl.get("color", defaults["node_label"]["color"]),
+                family=lbl.get("family", defaults["node_label"]["family"]),
+                weight=lbl.get("weight", defaults["node_label"]["weight"]),
+                horizontalalignment=lbl.get("h_align", defaults["node_label"]["h_align"]),
+                verticalalignment=lbl.get("v_align", defaults["node_label"]["v_align"]),
                 transform=canvas.transData,
-                bbox=l.get("bbox", defaults["node_label"]["bbox"]),
+                bbox=lbl.get("bbox", defaults["node_label"]["bbox"]),
             )
 
     ### Draw edges
@@ -959,17 +962,17 @@ def new_draw(
         else edge_subgraph.edges(data=edge_label)
     )
     if edge_label is not None and edge_label != False:
-        for *e, l in edge_label_data:
+        for *e, lbl in edge_label_data:
             e = tuple(e)
             # I'm not sure how I want to handle None here... For now it means no label
-            if l is False or l is None:
+            if lbl is False or lbl is None:
                 continue
 
-            if not isinstance(l, dict):
-                l = {"label": l}
+            if not isinstance(lbl, dict):
+                lbl = {"label": l}
 
-            l.update(default_dict)
-            l_text = l.get("label")
+            lbl.update(default_dict)
+            l_text = lbl.get("label")
             if not isinstance(l_text, str):
                 l_text = str(l_text)
 
@@ -1277,7 +1280,8 @@ def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
     import warnings
 
     warnings.warn(
-        "draw_networkx is deprecated and will be removed in v3.6.\nUse the new visualization API, nx.new_draw or nx.draw after v3.6.",
+        "draw_networkx is deprecated and will be removed in v3.6.\n"
+        "Use the new visualization API: nx.new_draw or after v3.6, nx.draw.",
         category=DeprecationWarning,
         stacklevel=3,
     )
@@ -1430,7 +1434,8 @@ def draw_networkx_nodes(
     import warnings
 
     warnings.warn(
-        "draw_networkx_nodes is deprecated and will be removed in v3.6.\nUse the new visualization API, nx.new_draw or nx.draw after v3.6.",
+        "draw_networkx_nodes is deprecated and will be removed in v3.6.\n"
+        "Use the new visualization API: nx.new_draw or after v3.6, nx.draw.",
         category=DeprecationWarning,
         stacklevel=3,
     )
@@ -1874,7 +1879,8 @@ def draw_networkx_edges(
     import warnings
 
     warnings.warn(
-        "draw_networkx_edges is deprecated and will be removed in v3.6.\nUse the new visualization API, nx.new_draw or nx.draw after v3.6.",
+        "draw_networkx_edges is deprecated and will be removed in v3.6.\n"
+        "Use the new visualization API: nx.new_draw or after v3.6, nx.draw.",
         category=DeprecationWarning,
         stacklevel=3,
     )
@@ -2157,7 +2163,8 @@ def draw_networkx_labels(
     import warnings
 
     warnings.warn(
-        "draw_networkx_labels is deprecated and will be removed in v3.6.\nUse the new visualization API, nx.new_draw or nx.draw after v3.6.",
+        "draw_networkx_labels is deprecated and will be removed in v3.6.\n"
+        "Use the new visualization API: nx.new_draw or after v3.6, nx.draw.",
         category=DeprecationWarning,
         stacklevel=3,
     )
@@ -2321,7 +2328,8 @@ def draw_networkx_edge_labels(
     import warnings
 
     warnings.warn(
-        "draw_networkx_edge_labels is deprecated and will be removed in v3.6.\nUse the new visualization API, nx.new_draw or nx.draw after v3.6.",
+        "draw_networkx_edge_labels is deprecated and will be removed in v3.6.\n"
+        "Use the new visualization API: nx.new_draw or after v3.6, nx.draw.",
         category=DeprecationWarning,
         stacklevel=3,
     )
@@ -2577,7 +2585,8 @@ def draw_circular(G, **kwargs):
     import warnings
 
     warnings.warn(
-        "The interpretation of parameters for draw_circular will change in v3.6.\nPlease refer to nx.new_draw to see how the signature of this method will be changing.",
+        "The interpretation of parameters for draw_circular will change in v3.6.\n"
+        "Please refer to nx.new_draw to see how the function signature is changing.",
         category=DeprecationWarning,
         stacklevel=3,
     )
@@ -2625,7 +2634,8 @@ def draw_kamada_kawai(G, **kwargs):
     import warnings
 
     warnings.warn(
-        "The interpretation of parameters for draw_kamada_kawai will change in v3.6.\nPlease refer to nx.new_draw to see how the signature of this method will be changing.",
+        "The use of parameters for draw_kamada_kawai will change in v3.6.\n"
+        "Please refer to nx.new_draw to see how the function signature is changing.",
         category=DeprecationWarning,
         stacklevel=3,
     )
@@ -2672,7 +2682,8 @@ def draw_random(G, **kwargs):
     import warnings
 
     warnings.warn(
-        "The interpretation of parameters for draw_random will change in v3.6.\nPlease refer to nx.new_draw to see how the signature of this method will be changing.",
+        "The interpretation of parameters for draw_random will change in v3.6.\n"
+        "Please refer to nx.new_draw to see how the function signature is changing.",
         category=DeprecationWarning,
         stacklevel=3,
     )
@@ -2722,7 +2733,8 @@ def draw_spectral(G, **kwargs):
     import warnings
 
     warnings.warn(
-        "The interpretation of parameters for draw_spectral will change in v3.6.\nPlease refer to nx.new_draw to see how the signature of this method will be changing.",
+        "The interpretation of parameters for draw_spectral will change in v3.6.\n"
+        "Please refer to nx.new_draw to see how the function signature is changing.",
         category=DeprecationWarning,
         stacklevel=3,
     )
@@ -2773,7 +2785,8 @@ def draw_spring(G, **kwargs):
     import warnings
 
     warnings.warn(
-        "The interpretation of parameters for draw_spring will change in v3.6.\nPlease refer to nx.new_draw to see how the signature of this method will be changing.",
+        "The interpretation of parameters for draw_spring will change in v3.6.\n"
+        "Please refer to nx.new_draw to see how the function signature is changing.",
         category=DeprecationWarning,
         stacklevel=3,
     )
@@ -2826,7 +2839,8 @@ def draw_shell(G, nlist=None, **kwargs):
     import warnings
 
     warnings.warn(
-        "The interpretation of parameters for draw_shell will change in v3.6.\nPlease refer to nx.new_draw to see how the signature of this method will be changing.",
+        "The interpretation of parameters for draw_shell will change in v3.6.\n"
+        "Please refer to nx.new_draw to see how the function signature is changing.",
         category=DeprecationWarning,
         stacklevel=3,
     )
@@ -2878,7 +2892,8 @@ def draw_planar(G, **kwargs):
     import warnings
 
     warnings.warn(
-        "The interpretation of parameters for draw_planar will change in v3.6.\nPlease refer to nx.new_draw to see how the signature of this method will be changing.",
+        "The interpretation of parameters for draw_planar will change in v3.6.\n"
+        "Please refer to nx.new_draw to see how the function signature is changing.",
         category=DeprecationWarning,
         stacklevel=3,
     )
