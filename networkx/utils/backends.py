@@ -2000,12 +2000,14 @@ def _restore_dispatchable(name):
 
 
 def _get_cache_key(
+    *,
     edge_attrs,
     node_attrs,
     preserve_edge_attrs,
     preserve_node_attrs,
     preserve_graph_attrs,
 ):
+    """Return key used by networkx caching given arguments for ``convert_from_nx``."""
     # edge_attrs: dict | None
     # node_attrs: dict | None
     # preserve_edge_attrs: bool (False if edge_attrs is not None)
@@ -2020,7 +2022,31 @@ def _get_cache_key(
     )
 
 
-def _get_from_cache(cache, key, *, mutations=None):
+def _get_from_cache(cache, key, *, backend_name=None, mutations=None):
+    """Search the networkx cache for a graph that is compatible with ``key``.
+
+    Parameters
+    ----------
+    cache : dict
+        If ``backend_name`` is given, then this is treated as ``G.__networkx_cache__``,
+        but if ``backend_name`` is None, then this is treated as the resolved inner
+        cache such as ``G.__networkx_cache__["backends"][backend_name]``.
+    key : tuple
+        Cache key from ``_get_cache_key``.
+    backend_name : str, optional
+        Name of the backend to control how ``cache`` is interpreted.
+    mutations : list, optional
+        Used internally to clear objects gotten from cache if inputs will be mutated.
+
+    Returns
+    -------
+    tuple or None
+        The key of the compatible graph found in the cache.
+    graph or None
+        A compatible graph or None.
+    """
+    if backend_name is not None:
+        cache = cache.get("backends", {}).get(backend_name, {})
     if not cache:
         return None, None
 
@@ -2062,7 +2088,28 @@ def _get_from_cache(cache, key, *, mutations=None):
     return None, None
 
 
-def _set_to_cache(cache, key, val):
+def _set_to_cache(cache, key, val, *, backend_name=None):
+    """Set a backend graph to the cache, and remove unnecessary cached items.
+
+    Parameters
+    ----------
+    cache : dict
+        If ``backend_name`` is given, then this is treated as ``G.__networkx_cache__``,
+        but if ``backend_name`` is None, then this is treated as the resolved inner
+        cache such as ``G.__networkx_cache__["backends"][backend_name]``.
+    key : tuple
+        Cache key from ``_get_cache_key``.
+    val : graph
+    backend_name : str, optional
+        Name of the backend to control how ``cache`` is interpreted.
+
+    Returns
+    -------
+    dict
+        The items that were removed from the cache.
+    """
+    if backend_name is not None:
+        cache = cache.setdefault("backends", {}).setdefault(backend_name, {})
     # Remove old cached items that are no longer necessary since they
     # are dominated/subsumed/outdated by what was just calculated.
     # This uses the same logic as above, but with keys switched.
