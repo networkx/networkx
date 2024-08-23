@@ -11,7 +11,9 @@ __all__ = ["stochastic_graph"]
 
 
 @not_implemented_for("undirected")
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(
+    edge_attrs="weight", mutates_input={"not copy": 1}, returns_graph=True
+)
 def stochastic_graph(G, copy=True, weight="weight"):
     """Returns a right-stochastic representation of directed graph `G`.
 
@@ -48,4 +50,5 @@ def stochastic_graph(G, copy=True, weight="weight"):
             d[weight] = 0
         else:
             d[weight] = d.get(weight, 1) / degree[u]
+    nx._clear_cache(G)
     return G

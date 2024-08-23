@@ -1,6 +1,7 @@
 """
 Famous social networks.
 """
+
 import networkx as nx
 
 __all__ = [
@@ -11,7 +12,7 @@ __all__ = [
 ]
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def karate_club_graph():
     """Returns Zachary's Karate Club graph.
 
@@ -93,7 +94,7 @@ def karate_club_graph():
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def davis_southern_women_graph():
     """Returns Davis Southern women social network.
 
@@ -244,7 +245,7 @@ def davis_southern_women_graph():
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def florentine_families_graph():
     """Returns Florentine families graph.
 
@@ -278,7 +279,7 @@ def florentine_families_graph():
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def les_miserables_graph():
     """Returns coappearance network of characters in the novel Les Miserables.
 

@@ -21,7 +21,7 @@ __all__ = [
 
 
 @py_random_state(3)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def gn_graph(n, kernel=None, create_using=None, seed=None):
     """Returns the growing network (GN) digraph with `n` nodes.
 
@@ -54,7 +54,7 @@ def gn_graph(n, kernel=None, create_using=None, seed=None):
 
     To specify an attachment kernel, use the `kernel` keyword argument::
 
-    >>> D = nx.gn_graph(10, kernel=lambda x: x ** 1.5)  # A_k = k^1.5
+    >>> D = nx.gn_graph(10, kernel=lambda x: x**1.5)  # A_k = k^1.5
 
     References
     ----------
@@ -89,7 +89,7 @@ def gn_graph(n, kernel=None, create_using=None, seed=None):
 
 
 @py_random_state(3)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def gnr_graph(n, p, create_using=None, seed=None):
     """Returns the growing network with redirection (GNR) digraph with `n`
     nodes and redirection probability `p`.
@@ -143,7 +143,7 @@ def gnr_graph(n, p, create_using=None, seed=None):
 
 
 @py_random_state(2)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def gnc_graph(n, create_using=None, seed=None):
     """Returns the growing network with copying (GNC) digraph with `n` nodes.
 
@@ -183,7 +183,7 @@ def gnc_graph(n, create_using=None, seed=None):
 
 
 @py_random_state(6)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def scale_free_graph(
     n,
     alpha=0.41,
@@ -334,7 +334,7 @@ def scale_free_graph(
 
 
 @py_random_state(4)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def random_uniform_k_out_graph(n, k, self_loops=True, with_replacement=True, seed=None):
     """Returns a random `k`-out graph with uniform attachment.
 
@@ -415,7 +415,7 @@ def random_uniform_k_out_graph(n, k, self_loops=True, with_replacement=True, see
 
 
 @py_random_state(4)
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def random_k_out_graph(n, k, alpha, self_loops=True, seed=None):
     """Returns a random `k`-out graph with preferential attachment.
 

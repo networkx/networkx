@@ -1,3 +1,5 @@
+import pytest
+
 import networkx as nx
 from networkx.algorithms import isomorphism as iso
 
@@ -38,3 +40,9 @@ class TestIsomorph:
     def test_is_isomorphic(self):
         assert iso.is_isomorphic(self.G1, self.G2)
         assert not iso.is_isomorphic(self.G1, self.G4)
+        assert iso.is_isomorphic(self.G1.to_directed(), self.G2.to_directed())
+        assert not iso.is_isomorphic(self.G1.to_directed(), self.G4.to_directed())
+        with pytest.raises(
+            nx.NetworkXError, match="Graphs G1 and G2 are not of the same type."
+        ):
+            iso.is_isomorphic(self.G1.to_directed(), self.G1)

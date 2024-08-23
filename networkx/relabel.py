@@ -3,7 +3,9 @@ import networkx as nx
 __all__ = ["convert_node_labels_to_integers", "relabel_nodes"]
 
 
-@nx._dispatch(preserve_all_attrs=True)
+@nx._dispatchable(
+    preserve_all_attrs=True, mutates_input={"not copy": 2}, returns_graph=True
+)
 def relabel_nodes(G, mapping, copy=True):
     """Relabel the nodes of the graph G according to a given mapping.
 
@@ -65,7 +67,7 @@ def relabel_nodes(G, mapping, copy=True):
     A mapping can also be given as a function:
 
     >>> G = nx.path_graph(3)
-    >>> H = nx.relabel_nodes(G, lambda x: x ** 2)
+    >>> H = nx.relabel_nodes(G, lambda x: x**2)
     >>> list(H)
     [0, 1, 4]
 
@@ -221,9 +223,7 @@ def _relabel_copy(G, mapping):
     return H
 
 
-@nx._dispatch(
-    preserve_edge_attrs=True, preserve_node_attrs=True, preserve_graph_attrs=True
-)
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
 def convert_node_labels_to_integers(
     G, first_label=0, ordering="default", label_attribute=None
 ):

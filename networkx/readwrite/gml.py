@@ -17,7 +17,7 @@ interact with different languages and even different Python versions.
 Re-importing from gml is also a concern.
 
 Without specifying a `stringizer`/`destringizer`, the code is capable of
-writing `int`/`float`/`str`/`dict`/`list` data as required by the GML 
+writing `int`/`float`/`str`/`dict`/`list` data as required by the GML
 specification.  For writing other data types, and for reading data other
 than `str` you need to explicitly supply a `stringizer`/`destringizer`.
 
@@ -27,6 +27,7 @@ For additional documentation on the GML file format, please see the
 Several example graphs in GML format may be found on Mark Newman's
 `Network data page <http://www-personal.umich.edu/~mejn/netdata/>`_.
 """
+
 import html.entities as htmlentitydefs
 import re
 import warnings
@@ -112,7 +113,7 @@ def literal_destringizer(rep):
 
 
 @open_file(0, mode="rb")
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def read_gml(path, label="label", destringizer=None):
     """Read graph in GML format from `path`.
 
@@ -195,7 +196,7 @@ def read_gml(path, label="label", destringizer=None):
     return G
 
 
-@nx._dispatch(graphs=None)
+@nx._dispatchable(graphs=None, returns_graph=True)
 def parse_gml(lines, label="label", destringizer=None):
     """Parse GML graph from a string or iterable.
 

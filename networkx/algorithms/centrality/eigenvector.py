@@ -1,4 +1,5 @@
 """Functions for computing eigenvector centrality."""
+
 import math
 
 import networkx as nx
@@ -8,7 +9,7 @@ __all__ = ["eigenvector_centrality", "eigenvector_centrality_numpy"]
 
 
 @not_implemented_for("multigraph")
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None):
     r"""Compute the eigenvector centrality for the graph G.
 
@@ -193,7 +194,7 @@ def eigenvector_centrality(G, max_iter=100, tol=1.0e-6, nstart=None, weight=None
     raise nx.PowerIterationFailedConvergence(max_iter)
 
 
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     r"""Compute the eigenvector centrality for the graph G.
 
@@ -338,4 +339,4 @@ def eigenvector_centrality_numpy(G, weight=None, max_iter=50, tol=0):
     )
     largest = eigenvector.flatten().real
     norm = np.sign(largest.sum()) * sp.linalg.norm(largest)
-    return dict(zip(G, largest / norm))
+    return dict(zip(G, (largest / norm).tolist()))

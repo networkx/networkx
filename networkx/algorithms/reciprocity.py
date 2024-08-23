@@ -1,4 +1,5 @@
 """Algorithms to calculate reciprocity in a directed graph."""
+
 import networkx as nx
 from networkx import NetworkXError
 
@@ -8,7 +9,7 @@ __all__ = ["reciprocity", "overall_reciprocity"]
 
 
 @not_implemented_for("undirected", "multigraph")
-@nx._dispatch
+@nx._dispatchable
 def reciprocity(G, nodes=None):
     r"""Compute the reciprocity in a directed graph.
 
@@ -76,7 +77,7 @@ def _reciprocity_iter(G, nodes):
 
 
 @not_implemented_for("undirected", "multigraph")
-@nx._dispatch
+@nx._dispatchable
 def overall_reciprocity(G):
     """Compute the reciprocity for the whole graph.
 

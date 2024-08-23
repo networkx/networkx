@@ -22,4 +22,5 @@ Reference
    randomness
    exceptions
    utils
+   backends
    glossary

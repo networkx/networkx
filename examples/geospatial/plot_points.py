@@ -7,7 +7,7 @@ This example shows how to build a graph from a set of points
 using PySAL and geopandas. In this example, we'll use the famous
 set of cholera cases at the Broad Street Pump, recorded by John Snow in 1853.
 The methods shown here can also work directly with polygonal data using their
-centroids as representative points. 
+centroids as representative points.
 """
 
 from libpysal import weights, examples
@@ -51,7 +51,10 @@ positions = dict(zip(knn_graph.nodes, coordinates))
 f, ax = plt.subplots(1, 2, figsize=(8, 4))
 for i, facet in enumerate(ax):
     cases.plot(marker=".", color="orangered", ax=facet)
-    add_basemap(facet)
+    try:  # For issues with downloading/parsing basemaps in CI
+        add_basemap(facet)
+    except:
+        pass
     facet.set_title(("KNN-3", "50-meter Distance Band")[i])
     facet.axis("off")
 nx.draw(knn_graph, positions, ax=ax[0], node_size=5, node_color="b")

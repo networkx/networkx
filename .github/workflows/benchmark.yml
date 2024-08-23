@@ -1,0 +1,117 @@
+### Inspired from https://github.com/scikit-image/scikit-image/blob/main/.github/workflows/benchmarks.yml
+
+name: Benchmark PR
+on:
+  pull_request:
+    types: [labeled, synchronize]
+
+jobs:
+  ## This code below is to make sure a new commit on a PR with the label
+  ## retriggers the benchmark, otherwise the label needs to be removed and
+  ## applied again to run the benchmark.
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.check.outputs.result }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/github-script@v7
+        name: Check for benchmark label and new commit
+        id: check
+        with:
+          script: |
+            const { owner, repo, number: pull_number } = context.issue;
+
+            // Check for label
+            const { data: pullRequest } = await github.rest.pulls.get({ owner, repo, pull_number });
+            if (!pullRequest.labels.some(({ name }) => name === 'run:benchmark')) {
+              return false;
+            }
+
+            // Check for repo name and organization name
+            const { data: repository } = await github.rest.repos.get({ owner, repo });
+            return repository.name === 'networkx' && repository.owner.login === 'networkx';
+  benchmark:
+    needs: check
+    if: ${{ needs.check.outputs.result == 'true' }}
+    # if: contains(github.event.pull_request.labels.*.name, 'run:benchmark') || ${{ github.event.label.name == 'run:benchmark' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Setup some dependencies
+        shell: bash -l {0}
+        run: |
+          sudo apt-get update -y && sudo apt-get install -y ccache
+          # Make gcc/gxx symlinks first in path
+          sudo /usr/sbin/update-ccache-symlinks
+          echo "/usr/lib/ccache" >> $GITHUB_PATH
+
+      - name: "Prepare ccache"
+        id: prepare-ccache
+        shell: bash -l {0}
+        run: |
+          echo "key=benchmark-$RUNNER_OS" >> $GITHUB_OUTPUT
+          echo "timestamp=$(date +%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
+          ccache -p
+          ccache -z
+
+      - name: "Restore ccache"
+        uses: actions/cache@v4
+        with:
+          path: .ccache
+          key: ccache-${{ secrets.CACHE_VERSION }}-${{ steps.prepare-ccache.outputs.key }}-${{ steps.prepare-ccache.outputs.timestamp }}
+          restore-keys: |
+            ccache-${{ secrets.CACHE_VERSION }}-${{ steps.prepare-ccache.outputs.key }}-
+
+      - name: Install packages
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements/default.txt
+          pip install .
+          pip list
+
+      - name: Run benchmarks
+        shell: bash -l {0}
+        id: benchmark
+        env:
+          ASV_FACTOR: 1.5
+          ASV_SKIP_SLOW: 1
+        run: |
+          set -x
+          python -m pip install asv virtualenv packaging
+          cd benchmarks/
+
+          # ID this runner
+          python -m asv machine --yes --conf asv.conf.json
+
+          echo "Baseline:  ${{ github.event.pull_request.base.sha }} (${{ github.event.pull_request.base.label }})"
+
+          echo "Contender: ${GITHUB_SHA} (${{ github.event.pull_request.head.label }})"
+
+          # Run benchmarks for current commit against base
+          ASV_OPTIONS="--split --show-stderr --factor $ASV_FACTOR --conf asv.conf.json"
+          python -m asv continuous $ASV_OPTIONS ${{ github.event.pull_request.base.sha }} ${GITHUB_SHA} \
+              | sed "/Traceback \|failed$\|PERFORMANCE DECREASED/ s/^/::error::/" \
+              | tee benchmarks.log
+
+          # Report and export results for subsequent steps
+          if grep "Traceback \|failed\|PERFORMANCE DECREASED" benchmarks.log > /dev/null ; then
+             exit 1
+          fi
+
+      - name: "Check ccache performance"
+        shell: bash -l {0}
+        run: ccache -s
+        if: always()
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: asv-benchmark-results-${{ runner.os }}
+          path: benchmarks.log

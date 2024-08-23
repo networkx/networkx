@@ -7,12 +7,13 @@ is incident to at least one node in the subset.
 .. |vertex cover| replace:: *vertex cover*
 
 """
+
 import networkx as nx
 
 __all__ = ["min_weighted_vertex_cover"]
 
 
-@nx._dispatch(node_attrs="weight")
+@nx._dispatchable(node_attrs="weight")
 def min_weighted_vertex_cover(G, weight=None):
     r"""Returns an approximate minimum weighted vertex cover.
 

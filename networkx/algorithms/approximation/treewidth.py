@@ -41,7 +41,7 @@ __all__ = ["treewidth_min_degree", "treewidth_min_fill_in"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable(returns_graph=True)
 def treewidth_min_degree(G):
     """Returns a treewidth decomposition using the Minimum Degree heuristic.
 
@@ -65,12 +65,12 @@ def treewidth_min_degree(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch
+@nx._dispatchable(returns_graph=True)
 def treewidth_min_fill_in(G):
     """Returns a treewidth decomposition using the Minimum Fill-in heuristic.
 
     The heuristic chooses a node from the graph, where the number of edges
-    added turning the neighbourhood of the chosen node into clique is as
+    added turning the neighborhood of the chosen node into clique is as
     small as possible.
 
     Parameters
@@ -89,7 +89,7 @@ class MinDegreeHeuristic:
     """Implements the Minimum Degree heuristic.
 
     The heuristic chooses the nodes according to their degree
-    (number of neighbours), i.e., first the node with the lowest degree is
+    (number of neighbors), i.e., first the node with the lowest degree is
     chosen, then the graph is updated and the corresponding node is
     removed. Next, a new node with the lowest degree is chosen, and so on.
     """
@@ -136,7 +136,7 @@ def min_fill_in_heuristic(graph):
     """Implements the Minimum Degree heuristic.
 
     Returns the node from the graph, where the number of edges added when
-    turning the neighbourhood of the chosen node into clique is as small as
+    turning the neighborhood of the chosen node into clique is as small as
     possible. This algorithm chooses the nodes using the Minimum Fill-In
     heuristic. The running time of the algorithm is :math:`O(V^3)` and it uses
     additional constant memory."""
@@ -177,7 +177,7 @@ def min_fill_in_heuristic(graph):
     return min_fill_in_node
 
 
-@nx._dispatch
+@nx._dispatchable(returns_graph=True)
 def treewidth_decomp(G, heuristic=min_fill_in_heuristic):
     """Returns a treewidth decomposition using the passed heuristic.
 
@@ -201,7 +201,7 @@ def treewidth_decomp(G, heuristic=min_fill_in_heuristic):
     # get first node from heuristic
     elim_node = heuristic(graph)
     while elim_node is not None:
-        # connect all neighbours with each other
+        # connect all neighbors with each other
         nbrs = graph[elim_node]
         for u, v in itertools.permutations(nbrs, 2):
             if v not in graph[u]:

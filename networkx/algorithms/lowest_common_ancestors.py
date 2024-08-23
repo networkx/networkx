@@ -1,4 +1,5 @@
 """Algorithms for finding the lowest common ancestor of trees and DAGs."""
+
 from collections import defaultdict
 from collections.abc import Mapping, Set
 from itertools import combinations_with_replacement
@@ -14,7 +15,7 @@ __all__ = [
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def all_pairs_lowest_common_ancestor(G, pairs=None):
     """Return the lowest common ancestor of all pairs or the provided pairs
 
@@ -112,7 +113,7 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def lowest_common_ancestor(G, node1, node2, default=None):
     """Compute the lowest common ancestor of the given pair of nodes.
 
@@ -150,7 +151,7 @@ def lowest_common_ancestor(G, node1, node2, default=None):
 
 
 @not_implemented_for("undirected")
-@nx._dispatch
+@nx._dispatchable
 def tree_all_pairs_lowest_common_ancestor(G, root=None, pairs=None):
     r"""Yield the lowest common ancestor for sets of pairs in a tree.
 

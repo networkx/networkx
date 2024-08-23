@@ -1,7 +1,6 @@
 """
-    Unit tests for VoteRank.
+Unit tests for VoteRank.
 """
-
 
 import networkx as nx
 

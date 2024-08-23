@@ -1,5 +1,5 @@
 """
-    Tests for ISMAGS isomorphism algorithm.
+Tests for ISMAGS isomorphism algorithm.
 """
 
 import pytest

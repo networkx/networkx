@@ -1,5 +1,4 @@
-r""" Computation of graph non-randomness
-"""
+r"""Computation of graph non-randomness"""
 
 import math
 
@@ -11,7 +10,7 @@ __all__ = ["non_randomness"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
-@nx._dispatch(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight")
 def non_randomness(G, k=None, weight="weight"):
     """Compute the non-randomness of graph G.
 
@@ -51,13 +50,13 @@ def non_randomness(G, k=None, weight="weight"):
     NetworkXException
         if the input graph is not connected.
     NetworkXError
-        if the input graph contains self-loops.
+        if the input graph contains self-loops or if graph has no edges.
 
     Examples
     --------
     >>> G = nx.karate_club_graph()
     >>> nr, nr_rd = nx.non_randomness(G, 2)
-    >>> nr, nr_rd = nx.non_randomness(G, 2, 'weight')
+    >>> nr, nr_rd = nx.non_randomness(G, 2, "weight")
 
     Notes
     -----
@@ -74,6 +73,9 @@ def non_randomness(G, k=None, weight="weight"):
     """
     import numpy as np
 
+    # corner case: graph has no edges
+    if nx.is_empty(G):
+        raise nx.NetworkXError("non_randomness not applicable to empty graphs")
     if not nx.is_connected(G):
         raise nx.NetworkXException("Non connected graph.")
     if len(list(nx.selfloop_edges(G))) > 0:
@@ -84,7 +86,7 @@ def non_randomness(G, k=None, weight="weight"):
 
     # eq. 4.4
     eigenvalues = np.linalg.eigvals(nx.to_numpy_array(G, weight=weight))
-    nr = np.real(np.sum(eigenvalues[:k]))
+    nr = float(np.real(np.sum(eigenvalues[:k])))
 
     n = G.number_of_nodes()
     m = G.number_of_edges()

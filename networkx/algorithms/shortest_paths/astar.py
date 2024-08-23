@@ -1,5 +1,5 @@
-"""Shortest paths and path lengths using the A* ("A star") algorithm.
-"""
+"""Shortest paths and path lengths using the A* ("A star") algorithm."""
+
 from heapq import heappop, heappush
 from itertools import count
 
@@ -9,8 +9,8 @@ from networkx.algorithms.shortest_paths.weighted import _weight_function
 __all__ = ["astar_path", "astar_path_length"]
 
 
-@nx._dispatch(edge_attrs="weight", preserve_node_attrs="heuristic")
-def astar_path(G, source, target, heuristic=None, weight="weight"):
+@nx._dispatchable(edge_attrs="weight", preserve_node_attrs="heuristic")
+def astar_path(G, source, target, heuristic=None, weight="weight", *, cutoff=None):
     """Returns a list of nodes in a shortest path between source and target
     using the A* ("A-star") algorithm.
 
@@ -49,6 +49,15 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
        dictionary of edge attributes for that edge. The function must
        return a number or None to indicate a hidden edge.
 
+    cutoff : float, optional
+       If this is provided, the search will be bounded to this value. I.e. if
+       the evaluation function surpasses this value for a node n, the node will not
+       be expanded further and will be ignored. More formally, let h'(n) be the
+       heuristic function, and g(n) be the cost of reaching n from the source node. Then,
+       if g(n) + h'(n) > cutoff, the node will not be explored further.
+       Note that if the heuristic is inadmissible, it is possible that paths
+       are ignored even though they satisfy the cutoff.
+
     Raises
     ------
     NetworkXNoPath
@@ -82,9 +91,11 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
     shortest_path, dijkstra_path
 
     """
-    if source not in G or target not in G:
-        msg = f"Either source {source} or target {target} is not in G"
-        raise nx.NodeNotFound(msg)
+    if source not in G:
+        raise nx.NodeNotFound(f"Source {source} is not in G")
+
+    if target not in G:
+        raise nx.NodeNotFound(f"Target {target} is not in G")
 
     if heuristic is None:
         # The default heuristic is h=0 - same as Dijkstra's algorithm
@@ -152,14 +163,20 @@ def astar_path(G, source, target, heuristic=None, weight="weight"):
                     continue
             else:
                 h = heuristic(neighbor, target)
+
+            if cutoff and ncost + h > cutoff:
+                continue
+
             enqueued[neighbor] = ncost, h
             push(queue, (ncost + h, next(c), neighbor, ncost, curnode))
 
     raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
 
 
-@nx._dispatch(edge_attrs="weight", preserve_node_attrs="heuristic")
-def astar_path_length(G, source, target, heuristic=None, weight="weight"):
+@nx._dispatchable(edge_attrs="weight", preserve_node_attrs="heuristic")
+def astar_path_length(
+    G, source, target, heuristic=None, weight="weight", *, cutoff=None
+):
     """Returns the length of the shortest path between source and target using
     the A* ("A-star") algorithm.
 
@@ -195,6 +212,16 @@ def astar_path_length(G, source, target, heuristic=None, weight="weight"):
        positional arguments: the two endpoints of an edge and the
        dictionary of edge attributes for that edge. The function must
        return a number or None to indicate a hidden edge.
+
+    cutoff : float, optional
+       If this is provided, the search will be bounded to this value. I.e. if
+       the evaluation function surpasses this value for a node n, the node will not
+       be expanded further and will be ignored. More formally, let h'(n) be the
+       heuristic function, and g(n) be the cost of reaching n from the source node. Then,
+       if g(n) + h'(n) > cutoff, the node will not be explored further.
+       Note that if the heuristic is inadmissible, it is possible that paths
+       are ignored even though they satisfy the cutoff.
+
     Raises
     ------
     NetworkXNoPath
@@ -210,5 +237,5 @@ def astar_path_length(G, source, target, heuristic=None, weight="weight"):
         raise nx.NodeNotFound(msg)
 
     weight = _weight_function(G, weight)
-    path = astar_path(G, source, target, heuristic, weight)
+    path = astar_path(G, source, target, heuristic, weight, cutoff=cutoff)
     return sum(weight(u, v, G[u][v]) for u, v in zip(path[:-1], path[1:]))

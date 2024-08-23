@@ -596,8 +596,12 @@ class TestEdgeView:
         assert ev[0, 1] == {"foo": "bar"}
 
         # slicing
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.NetworkXError, match=".*does not support slicing"):
             G.edges[0:5]
+
+        # Invalid edge
+        with pytest.raises(KeyError, match=r".*edge.*is not in the graph."):
+            G.edges[0, 9]
 
     def test_call(self):
         ev = self.eview(self.G)
@@ -1421,3 +1425,11 @@ def test_cache_dict_get_set_state(graph):
     # Raises error if the cached properties and views do not work
     pickle.loads(pickle.dumps(G, -1))
     deepcopy(G)
+
+
+def test_edge_views_inherit_from_EdgeViewABC():
+    all_edge_view_classes = (v for v in dir(nx.reportviews) if "Edge" in v)
+    for eview_class in all_edge_view_classes:
+        assert issubclass(
+            getattr(nx.reportviews, eview_class), nx.reportviews.EdgeViewABC
+        )
