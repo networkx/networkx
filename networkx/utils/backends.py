@@ -980,12 +980,12 @@ class _dispatchable:
                 "by passing e.g. `backend='networkx'` keyword, but this may also "
                 "change behavior by not mutating inputs."
             )
-            msg_template = (
-                f"Backend '{backend_name}' does not implement `{self.name}'%s. "
-                f"This call will mutate an input, so automatic {blurb}"
-            )
             if len(graph_backend_names) == 1:
                 [backend_name] = graph_backend_names
+                msg_template = (
+                    f"Backend '{backend_name}' does not implement `{self.name}'%s. "
+                    f"This call will mutate an input, so automatic {blurb}"
+                )
                 # `can_run` is only used for better log and error messages
                 if self._can_backend_run(backend_name, args, kwargs):
                     return self._call_with_backend(
@@ -1477,20 +1477,16 @@ class _dispatchable:
             and (nx_cache := getattr(graph, "__networkx_cache__", None)) is not None
         ):
             cache = nx_cache.setdefault("backends", {}).setdefault(backend_name, {})
-            # edge_attrs: dict | None
-            # node_attrs: dict | None
-            # preserve_edge_attrs: bool (False if edge_attrs is not None)
-            # preserve_node_attrs: bool (False if node_attrs is not None)
-            key = edge_key, node_key = (
-                frozenset(edge_attrs.items())
-                if edge_attrs is not None
-                else preserve_edge_attrs,
-                frozenset(node_attrs.items())
-                if node_attrs is not None
-                else preserve_node_attrs,
+            key = _get_cache_key(
+                edge_attrs=edge_attrs,
+                node_attrs=node_attrs,
+                preserve_edge_attrs=preserve_edge_attrs,
+                preserve_node_attrs=preserve_node_attrs,
+                preserve_graph_attrs=preserve_graph_attrs,
             )
-            if cache:
-                warning_message = (
+            compat_key, rv = _get_from_cache(cache, key, mutations=mutations)
+            if rv is not None:
+                warnings.warn(
                     f"Using cached graph for {backend_name!r} backend in "
                     f"call to {self.name}.\n\nFor the cache to be consistent "
                     "(i.e., correct), the input graph must not have been "
@@ -1508,64 +1504,14 @@ class _dispatchable:
                     "to None to disable caching for G. Enable or disable caching "
                     "globally via `nx.config.cache_converted_graphs` config."
                 )
-                # Do a simple search for a cached graph with compatible data.
-                # For example, if we need a single attribute, then it's okay
-                # to use a cached graph that preserved all attributes.
-                # This looks for an exact match first.
-                for compat_key in itertools.product(
-                    (edge_key, True) if edge_key is not True else (True,),
-                    (node_key, True) if node_key is not True else (True,),
-                ):
-                    if (rv := cache.get(compat_key)) is not None:
-                        warnings.warn(warning_message)
-                        _logger.debug(
-                            "Using cached converted graph (from 'networkx' to '%s' backend) "
-                            "in call to `%s' for '%s' argument",
-                            backend_name,
-                            self.name,
-                            graph_name,
-                        )
-                        if mutations is not None:
-                            # Remove this item from the cache (after all conversions) if
-                            # the call to this dispatchable function will mutate an input.
-                            mutations.append((cache, compat_key))
-                        return rv
-                if edge_key is not True and node_key is not True:
-                    # Iterate over the items in `cache` to see if any are compatible.
-                    # For example, if no edge attributes are needed, then a graph
-                    # with any edge attribute will suffice. We use the same logic
-                    # below (but switched) to clear unnecessary items from the cache.
-                    # Use `list(cache.items())` to be thread-safe.
-                    for (ekey, nkey), val in list(cache.items()):
-                        if edge_key is False or ekey is True:
-                            pass  # Cache works for edge data!
-                        elif (
-                            edge_key is True
-                            or ekey is False
-                            or not edge_key.issubset(ekey)
-                        ):
-                            continue  # Cache missing required edge data; does not work
-                        if node_key is False or nkey is True:
-                            pass  # Cache works for node data!
-                        elif (
-                            node_key is True
-                            or nkey is False
-                            or not node_key.issubset(nkey)
-                        ):
-                            continue  # Cache missing required node data; does not work
-                        warnings.warn(warning_message)
-                        _logger.debug(
-                            "Using cached converted graph (from 'networkx' to '%s' backend) "
-                            "in call to `%s' for '%s' argument",
-                            backend_name,
-                            self.name,
-                            graph_name,
-                        )
-                        if mutations is not None:
-                            # Remove this item from the cache (after all conversions) if
-                            # the call to this dispatchable function will mutate an input.
-                            mutations.append((cache, (ekey, nkey)))
-                        return val
+                _logger.debug(
+                    "Using cached converted graph (from 'networkx' to '%s' backend) "
+                    "in call to `%s' for '%s' argument",
+                    backend_name,
+                    self.name,
+                    graph_name,
+                )
+                return rv
 
         if backend_name == "networkx":
             backend = _load_backend(graph.__networkx_backend__)
@@ -1586,24 +1532,7 @@ class _dispatchable:
                 graph_name=graph_name,
             )
         if use_cache and nx_cache is not None and mutations is None:
-            # Remove old cached items that are no longer necessary since they
-            # are dominated/subsumed/outdated by what was just calculated.
-            # This uses the same logic as above, but with keys switched.
-            # Also, don't update the cache here if the call will mutate an input.
-            cache[key] = rv  # Set at beginning to be thread-safe
-            for cur_key in list(cache):
-                if cur_key == key:
-                    continue
-                ekey, nkey = cur_key
-                if ekey is False or edge_key is True:
-                    pass
-                elif ekey is True or edge_key is False or not ekey.issubset(edge_key):
-                    continue
-                if nkey is False or node_key is True:
-                    pass
-                elif nkey is True or node_key is False or not nkey.issubset(node_key):
-                    continue
-                cache.pop(cur_key, None)  # Use pop instead of del to be thread-safe
+            _set_to_cache(cache, key, rv)
             _logger.debug(
                 "Caching converted graph (from 'networkx' to '%s' backend) "
                 "in call to `%s' for '%s' argument",
@@ -2068,6 +1997,95 @@ class _dispatchable:
 
 def _restore_dispatchable(name):
     return _registered_algorithms[name]
+
+
+def _get_cache_key(
+    edge_attrs,
+    node_attrs,
+    preserve_edge_attrs,
+    preserve_node_attrs,
+    preserve_graph_attrs,
+):
+    # edge_attrs: dict | None
+    # node_attrs: dict | None
+    # preserve_edge_attrs: bool (False if edge_attrs is not None)
+    # preserve_node_attrs: bool (False if node_attrs is not None)
+    return (
+        frozenset(edge_attrs.items())
+        if edge_attrs is not None
+        else preserve_edge_attrs,
+        frozenset(node_attrs.items())
+        if node_attrs is not None
+        else preserve_node_attrs,
+    )
+
+
+def _get_from_cache(cache, key, *, mutations=None):
+    if not cache:
+        return None, None
+
+    # Do a simple search for a cached graph with compatible data.
+    # For example, if we need a single attribute, then it's okay
+    # to use a cached graph that preserved all attributes.
+    # This looks for an exact match first.
+    edge_key, node_key = key
+    for compat_key in itertools.product(
+        (edge_key, True) if edge_key is not True else (True,),
+        (node_key, True) if node_key is not True else (True,),
+    ):
+        if (rv := cache.get(compat_key)) is not None:
+            if mutations is not None:
+                # Remove this item from the cache (after all conversions) if
+                # the call to this dispatchable function will mutate an input.
+                mutations.append((cache, compat_key))
+            return compat_key, rv
+    if edge_key is not True and node_key is not True:
+        # Iterate over the items in `cache` to see if any are compatible.
+        # For example, if no edge attributes are needed, then a graph
+        # with any edge attribute will suffice. We use the same logic
+        # below (but switched) to clear unnecessary items from the cache.
+        # Use `list(cache.items())` to be thread-safe.
+        for (ekey, nkey), val in list(cache.items()):
+            if edge_key is False or ekey is True:
+                pass  # Cache works for edge data!
+            elif edge_key is True or ekey is False or not edge_key.issubset(ekey):
+                continue  # Cache missing required edge data; does not work
+            if node_key is False or nkey is True:
+                pass  # Cache works for node data!
+            elif node_key is True or nkey is False or not node_key.issubset(nkey):
+                continue  # Cache missing required node data; does not work
+            if mutations is not None:
+                # Remove this item from the cache (after all conversions) if
+                # the call to this dispatchable function will mutate an input.
+                mutations.append((cache, (ekey, nkey)))
+            return (ekey, nkey), val
+    return None, None
+
+
+def _set_to_cache(cache, key, val):
+    # Remove old cached items that are no longer necessary since they
+    # are dominated/subsumed/outdated by what was just calculated.
+    # This uses the same logic as above, but with keys switched.
+    # Also, don't update the cache here if the call will mutate an input.
+    removed = {}
+    edge_key, node_key = key
+    cache[key] = val  # Set at beginning to be thread-safe
+    for cur_key in list(cache):
+        if cur_key == key:
+            continue
+        ekey, nkey = cur_key
+        if ekey is False or edge_key is True:
+            pass
+        elif ekey is True or edge_key is False or not ekey.issubset(edge_key):
+            continue
+        if nkey is False or node_key is True:
+            pass
+        elif nkey is True or node_key is False or not nkey.issubset(node_key):
+            continue
+        # Use pop instead of del to try to be thread-safe
+        if (val := cache.pop(cur_key, None)) is not None:
+            removed[cur_key] = val
+    return removed
 
 
 class _LazyArgsRepr:
