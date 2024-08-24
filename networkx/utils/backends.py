@@ -1505,8 +1505,9 @@ class _dispatchable:
                     "globally via `nx.config.cache_converted_graphs` config."
                 )
                 _logger.debug(
-                    "Using cached converted graph (from 'networkx' to '%s' backend) "
+                    "Using cached converted graph (from '%s' to '%s' backend) "
                     "in call to `%s' for '%s' argument",
+                    getattr(graph, "__networkx_backend__", None),
                     backend_name,
                     self.name,
                     graph_name,
@@ -1514,6 +1515,20 @@ class _dispatchable:
                 return rv
 
         if backend_name == "networkx":
+            # Perhaps we should check that "__networkx_backend__" attribute exists
+            # and return the original object if not.
+            if not hasattr(graph, "__networkx_backend__"):
+                _logger.debug(
+                    "Unable to convert input to 'networkx' backend in call to `%s' for "
+                    "'%s argument, because it is not from a backend (i.e., it does not "
+                    "have `G.__networkx_backend__` attribute). Using the original "
+                    "object: %s",
+                    self.name,
+                    graph_name,
+                    graph,
+                )
+                # This may fail, but let it fail in the networkx function
+                return graph
             backend = _load_backend(graph.__networkx_backend__)
             rv = backend.convert_to_nx(graph)
         else:
@@ -1534,8 +1549,9 @@ class _dispatchable:
         if use_cache and nx_cache is not None and mutations is None:
             _set_to_cache(cache, key, rv)
             _logger.debug(
-                "Caching converted graph (from 'networkx' to '%s' backend) "
+                "Caching converted graph (from '%s' to '%s' backend) "
                 "in call to `%s' for '%s' argument",
+                getattr(graph, "__networkx_backend__", None),
                 backend_name,
                 self.name,
                 graph_name,
