@@ -856,7 +856,12 @@ class _dispatchable:
                 }
 
         backend_priority = config.backend_priority
-        if self._is_testing and backend_priority and backend_name is None:
+        if (
+            self._is_testing
+            and not self._use_backend_class
+            and backend_priority
+            and backend_name is None
+        ):
             # Special path if we are running networkx tests with a backend.
             # This even runs for (and handles) functions that mutate input graphs.
             return self._convert_and_call_for_tests(
