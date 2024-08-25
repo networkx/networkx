@@ -254,7 +254,7 @@ Creating a custom backend
             "Additional backend implementations" section.
         - ``default_config`` : dict
             A dictionary mapping the backend config parameter names to their default values.
-            This is used to automatically initialise the default configs for all the
+            This is used to automatically initialize the default configs for all the
             installed backends at the time of networkx's import.
 
             .. seealso:: `~networkx.utils.configs.Config`
@@ -932,8 +932,11 @@ class _dispatchable:
                 # All graphs are backend graphs--no need to convert!
                 kwargs.update(backends_kwargs.get(graph_backend_name, {}))
                 _logger.debug(
-                    f"using backend '{graph_backend_name}' for call to `{self.name}' "
-                    f"with args: {args}, kwargs: {kwargs}"
+                    "Using backend '%s' for call to `%s' with args: %s, kwargs: %s",
+                    graph_backend_name,
+                    self.name,
+                    args,
+                    kwargs,
                 )
                 return getattr(backend, self.name)(*args, **kwargs)
             # Future work: try to convert and run with other backends in backend_priority
@@ -977,9 +980,8 @@ class _dispatchable:
             for backend_name in backend_priority:
                 if self._should_backend_run(
                     backend_name,
-                    *args,
-                    **kwargs,
-                    **backends_kwargs.get(backend_name, {}),
+                    args,
+                    {**kwargs, **backends_kwargs.get(backend_name, {})},
                 ):
                     return self._convert_and_call(
                         backend_name,
@@ -991,29 +993,52 @@ class _dispatchable:
         # Default: run with networkx on networkx inputs
         return self.orig_func(*args, **kwargs)
 
-    def _can_backend_run(self, backend_name, /, *args, **kwargs):
+    def _can_backend_run(self, backend_name, args, kwargs, *, log=True):
         """Can the specified backend run this algorithm with these arguments?"""
         backend = _load_backend(backend_name)
         # `backend.can_run` and `backend.should_run` may return strings that describe
-        # why they can't or shouldn't be run. We plan to use the strings in the future.
-        return (
-            hasattr(backend, self.name)
-            and (can_run := backend.can_run(self.name, args, kwargs))
-            and not isinstance(can_run, str)
-        )
+        # why they can't or shouldn't be run.
+        if not hasattr(backend, self.name):
+            if log:
+                _logger.debug(
+                    "Backend '%s' does not implement `%s'", backend_name, self.name
+                )
+            return False
+        can_run = backend.can_run(self.name, args, kwargs)
+        if isinstance(can_run, str) or not can_run:
+            if log:
+                reason = f", because: {can_run}" if isinstance(can_run, str) else ""
+                _logger.debug(
+                    "Backend '%s' can't run `%s` with args: %s, kwargs: %s%s",
+                    backend_name,
+                    self.name,
+                    args,
+                    kwargs,
+                    reason,
+                )
+            return False
+        return True
 
-    def _should_backend_run(self, backend_name, /, *args, **kwargs):
+    def _should_backend_run(self, backend_name, args, kwargs):
         """Can/should the specified backend run this algorithm with these arguments?"""
-        backend = _load_backend(backend_name)
         # `backend.can_run` and `backend.should_run` may return strings that describe
-        # why they can't or shouldn't be run. We plan to use the strings in the future.
-        return (
-            hasattr(backend, self.name)
-            and (can_run := backend.can_run(self.name, args, kwargs))
-            and not isinstance(can_run, str)
-            and (should_run := backend.should_run(self.name, args, kwargs))
-            and not isinstance(should_run, str)
-        )
+        # why they can't or shouldn't be run.
+        if not self._can_backend_run(backend_name, args, kwargs):
+            return False
+        backend = _load_backend(backend_name)
+        should_run = backend.should_run(self.name, args, kwargs)
+        if isinstance(should_run, str) or not should_run:
+            reason = f", because: {should_run}" if isinstance(should_run, str) else ""
+            _logger.debug(
+                "Backend '%s' shouldn't run `%s` with args: %s, kwargs: %s%s",
+                backend_name,
+                self.name,
+                args,
+                kwargs,
+                reason,
+            )
+            return False
+        return True
 
     def _convert_arguments(self, backend_name, args, kwargs, *, use_cache):
         """Convert graph arguments to the specified backend.
@@ -1280,6 +1305,13 @@ class _dispatchable:
                 ):
                     if (rv := cache.get(compat_key)) is not None:
                         warnings.warn(warning_message)
+                        _logger.debug(
+                            "Using cached converted graph (from 'networkx' to '%s' backend) "
+                            "in call to `%s' for '%s' argument",
+                            backend_name,
+                            self.name,
+                            graph_name,
+                        )
                         return rv
                 if edge_key is not True and node_key is not True:
                     # Iterate over the items in `cache` to see if any are compatible.
@@ -1305,6 +1337,13 @@ class _dispatchable:
                         ):
                             continue  # Cache missing required node data; does not work
                         warnings.warn(warning_message)
+                        _logger.debug(
+                            "Using cached converted graph (from 'networkx' to '%s' backend) "
+                            "in call to `%s' for '%s' argument",
+                            backend_name,
+                            self.name,
+                            graph_name,
+                        )
                         return val
 
         backend = _load_backend(backend_name)
@@ -1339,6 +1378,13 @@ class _dispatchable:
                 elif nkey is True or node_key is False or not nkey.issubset(node_key):
                     continue
                 cache.pop(cur_key, None)  # Use pop instead of del to be thread-safe
+            _logger.debug(
+                "Caching converted graph (from 'networkx' to '%s' backend) "
+                "in call to `%s' for '%s' argument",
+                backend_name,
+                self.name,
+                graph_name,
+            )
 
         return rv
 
@@ -1348,9 +1394,21 @@ class _dispatchable:
         """Call this dispatchable function with a backend, converting graphs if necessary."""
         backend = _load_backend(backend_name)
         if not self._can_backend_run(
-            backend_name, *args, **kwargs, **backends_kwargs.get(backend_name, {})
+            backend_name,
+            args,
+            {**kwargs, **backends_kwargs.get(backend_name, {})},
+            # Don't log in `_can_backend_run` here to avoid duplicating info in the exception
+            log=fallback_to_nx,
         ):
             if fallback_to_nx:
+                _logger.debug(
+                    "Falling back to use 'networkx' instead of '%s' backend "
+                    "for call to `%s' with args: %s, kwargs: %s",
+                    backend_name,
+                    self.name,
+                    args,
+                    kwargs,
+                )
                 return self.orig_func(*args, **kwargs)
             msg = f"'{self.name}' not implemented by {backend_name}"
             if hasattr(backend, self.name):
@@ -1363,12 +1421,21 @@ class _dispatchable:
             )
             converted_kwargs.update(backends_kwargs.get(backend_name, {}))
             _logger.debug(
-                f"using backend '{backend_name}' for call to `{self.name}' "
-                f"with args: {converted_args}, kwargs: {converted_kwargs}"
+                "Using backend '%s' for call to `%s' with args: %s, kwargs: %s",
+                backend_name,
+                self.name,
+                converted_args,
+                converted_kwargs,
             )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
             if fallback_to_nx:
+                _logger.debug(
+                    "Graph conversion failed; falling back to use 'networkx' instead "
+                    "of '%s' backend for call to `%s'",
+                    backend_name,
+                    self.name,
+                )
                 return self.orig_func(*args, **kwargs)
             raise
 
@@ -1380,9 +1447,20 @@ class _dispatchable:
         """Call this dispatchable function with a backend; for use with testing."""
         backend = _load_backend(backend_name)
         if not self._can_backend_run(
-            backend_name, *args, **kwargs, **backends_kwargs.get(backend_name, {})
+            backend_name,
+            args,
+            {**kwargs, **backends_kwargs.get(backend_name, {})},
         ):
             if fallback_to_nx or not self.graphs:
+                if fallback_to_nx:
+                    _logger.debug(
+                        "Falling back to use 'networkx' instead of '%s' backend "
+                        "for call to `%s' with args: %s, kwargs: %s",
+                        backend_name,
+                        self.name,
+                        args,
+                        kwargs,
+                    )
                 return self.orig_func(*args, **kwargs)
 
             import pytest
@@ -1445,12 +1523,21 @@ class _dispatchable:
             )
             converted_kwargs.update(backends_kwargs.get(backend_name, {}))
             _logger.debug(
-                f"using backend '{backend_name}' for call to `{self.name}' "
-                f"with args: {converted_args}, kwargs: {converted_kwargs}"
+                "Using backend '%s' for call to `%s' with args: %s, kwargs: %s",
+                backend_name,
+                self.name,
+                converted_args,
+                converted_kwargs,
             )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
         except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
             if fallback_to_nx:
+                _logger.debug(
+                    "Graph conversion failed; falling back to use 'networkx' instead "
+                    "of '%s' backend for call to `%s'",
+                    backend_name,
+                    self.name,
+                )
                 return self.orig_func(*args2, **kwargs2)
             import pytest
 
