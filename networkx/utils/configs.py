@@ -230,8 +230,7 @@ collections.abc.Mapping.register(Config)
 class BackendPriorities(Config, strict=False):
     """Configuration to control automatic conversion to and calling of backends.
 
-    Priority is given to backends listed earlier. ``nx.config.backend_priority`` and
-    ``nx.config.backend_fallback`` are instances of this class.
+    Priority is given to backends listed earlier.
 
     Parameters
     ----------
@@ -291,16 +290,6 @@ class NetworkXConfig(Config):
         will set ``nx.config.backend_priority.algos``. For more information, see
         ``help(nx.config.backend_priority)``. Default is empty list.
 
-    backend_fallback : list of backend names or dict or BackendPriorities
-        Enable automatic conversion and fallback to backends when functions aren't
-        implemented by input backends or backends listed in ``backend_priority``.
-        This config is lower priority than ``backend_priority`` and the backend of
-        input graphs. This has the same structure as ``backend_priority`` and has
-        keys ``algos``, ``generators``, and, optionally, function names. Setting this
-        value to a list of backend names will set ``nx.config.backend_fallback.algos``.
-        For more information, see ``help(nx.config.backend_fallback)``.
-        Default is ``["networkx"]`` to enable fallback to default implementation.
-
     backends : Config mapping of backend names to backend Config
         The keys of the Config mapping are names of all installed NetworkX backends,
         and the values are their configurations as Config mappings.
@@ -321,27 +310,24 @@ class NetworkXConfig(Config):
     Environment variables may be used to control some default configurations:
 
     - ``NETWORKX_BACKEND_PRIORITY``: set ``backend_priority.algos`` from comma-separated names.
-    - ``NETWORKX_BACKEND_FALLBACK``: set ``backend_fallback.algos`` from comma-separated names.
     - ``NETWORKX_CACHE_CONVERTED_GRAPHS``: set ``cache_converted_graphs`` to True if nonempty.
 
-    and can be used for finer control of ``backend_priority`` and ``backend_fallback`` such as:
+    and can be used for finer control of ``backend_priority`` such as:
 
     - ``NETWORKX_BACKEND_PRIORITY_PAGERANK``: set ``backend_priority.pagerank`` from comma-separated names.
-    - ``NETWORKX_BACKEND_FALLBACK_GENERATORS``: set ``backend_fallback.generators`` from comma-separated names.
     - ``NETWORKX_BACKEND_PRIORITY_ALGOS``: same as ``NETWORKX_BACKEND_PRIORITY`` to set ``backend_priority.algos`.
 
     This is a global configuration. Use with caution when using from multiple threads.
     """
 
     backend_priority: BackendPriorities
-    backend_fallback: BackendPriorities
     backends: Config
     cache_converted_graphs: bool
 
     def _on_setattr(self, key, value):
         from .backends import backend_info
 
-        if key in {"backend_priority", "backend_fallback"}:
+        if key == "backend_priority":
             if isinstance(value, list):
                 getattr(self, key).algos = value
                 value = getattr(self, key)
@@ -375,10 +361,6 @@ class NetworkXConfig(Config):
 # Backend configuration will be updated in backends.py
 config = NetworkXConfig(
     backend_priority=BackendPriorities(
-        algos=[],
-        generators=[],
-    ),
-    backend_fallback=BackendPriorities(
         algos=[],
         generators=[],
     ),

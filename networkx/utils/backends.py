@@ -70,8 +70,7 @@ logger displays the ``DEBUG`` message, if the logging is enabled
 (see :ref:`Introspection <introspect>` below). If no compatible backend is found
 or the function is not implemented by the backend, it will fall back to run with
 default networkx implementation or raise a ``NetworkXNotImplemented`` exception.
-Fallback behavior is controlled by the ``backend_fallback`` configuration, which
-defaults to falling back to networkx. And, if the function mutates the input graph
+And, if the function mutates the input graph
 or returns a graph, graph generator or loader then it tries to convert and run the
 function with a backend with automatic conversion. And it only convert and run if
 ``backend.should_run(...)`` returns ``True``. If no backend is used, it falls back to
@@ -430,7 +429,7 @@ def _comma_sep_to_list(string):
 
 
 def _finish_init_of_backends_and_config():
-    """Initialize ``nx.config.backend_priority`` and ``nx.config.backend_fallback``.
+    """Initialize ``nx.config.backend_priority``.
 
     This gets default values from environment variables (see ``nx.config`` for details).
     This function is run at the very end of importing networkx. It is run at this time
@@ -456,24 +455,6 @@ def _finish_init_of_backends_and_config():
     backend_priority.generators = _comma_sep_to_list(priorities.pop("generators", ""))
     for key in sorted(priorities):
         backend_priority[key] = _comma_sep_to_list(priorities[key])
-
-    # NETWORKX_BACKEND_FALLBACK is the same as NETWORKX_BACKEND_FALLBACK_ALGOS
-    fallbacks = {
-        key[26:].lower(): val
-        for key, val in os.environ.items()
-        if key.startswith("NETWORKX_BACKEND_FALLBACK_")
-    }
-    backend_fallback = config.backend_fallback
-    backend_fallback.algos = (
-        _comma_sep_to_list(fallbacks.pop("algos"))
-        if "algos" in fallbacks
-        else _comma_sep_to_list(os.environ.get("NETWORKX_BACKEND_FALLBACK", "networkx"))
-    )
-    backend_fallback.generators = _comma_sep_to_list(
-        fallbacks.pop("generators", "networkx")
-    )
-    for key in sorted(fallbacks):
-        backend_fallback[key] = _comma_sep_to_list(fallbacks[key])
 
 
 # Initialize default configuration for backends
@@ -930,8 +911,8 @@ class _dispatchable:
                     if self._will_call_mutate_input(args, kwargs):
                         _logger.debug(
                             "`%s' will mutate an input graph. This prevents automatic conversion "
-                            "to, and use of, backends listed in `nx.config.backend_priority` "
-                            "and `nx.config.backend_fallback`. Using backend specified by the "
+                            "to, and use of, backends listed in `nx.config.backend_priority`. "
+                            "Using backend specified by the "
                             "`backend='%s'` keyword argument. This may change behavior by not "
                             "mutating inputs.",
                             self.name,
@@ -1000,12 +981,8 @@ class _dispatchable:
                 f"from multiple backends: {graph_backend_names}. Automatic {blurb}"
             )
 
-        backend_fallback = config.backend_fallback.get(
-            self.name,
-            config.backend_fallback.generators
-            if self._returns_graph
-            else config.backend_fallback.algos,
-        )
+        # This may become configurable
+        backend_fallback = ["networkx"]
 
         # Let's determine the order of backends we should try according
         # to `backend_priority`, `backend_fallback`, and input backends.
@@ -1080,8 +1057,8 @@ class _dispatchable:
             # to be converted to, and run with, the unspecified backend.
             _logger.debug(
                 "Call to `%s' has inputs from multiple backends, %s, that "
-                "have no priority set in `nx.config.backend_priority` or "
-                "`nx.config.backend_fallback`, so automatic conversions to "
+                "have no priority set in `nx.config.backend_priority`, "
+                "so automatic conversions to "
                 "these backends will not be attempted.",
                 self.name,
                 group3,
@@ -1148,21 +1125,14 @@ class _dispatchable:
                 f"run `{self.name}'. NetworkX is configured to automatically convert "
                 f"to {try_order} backends. To remedy this, you may enable automatic "
                 f"conversion to {unspecified_backends} backends by adding them to "
-                "`nx.config.backend_priority` or `nx.config.backend_fallback`, or you "
+                "`nx.config.backend_priority`, or you "
                 "may specify a backend to use with the `backend=` keyword argument."
-            )
-        if not try_order:
-            raise TypeError(
-                f"`{self.name}' is not configured to run with any backend! "
-                "Perhaps consider adding backends (such as 'networkx') "
-                "to `nx.config.backend_fallback`. You may also specify a backend "
-                "to use with the `backend=` keyword argument."
             )
         raise NotImplementedError(
             f"`{self.name}' is not implemented by {try_order} backends. To remedy "
             "this, you may enable automatic conversion to more backends (including "
-            "'networkx') by adding them to `nx.config.backend_priority` or "
-            "`nx.config.backend_fallback`, or you may specify a backend to use with "
+            "'networkx') by adding them to `nx.config.backend_priority`, "
+            "or you may specify a backend to use with "
             "the `backend=` keyword argument."
         )
 
