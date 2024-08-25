@@ -930,7 +930,8 @@ class _dispatchable:
                         fallback_to_nx=self._fallback_to_nx,
                     )
                 # All graphs are backend graphs--no need to convert!
-                kwargs.update(backends_kwargs.get(graph_backend_name, {}))
+                if graph_backend_name in backends_kwargs:
+                    kwargs.update(backends_kwargs[graph_backend_name])
                 _logger.debug(
                     "Using backend '%s' for call to `%s' with args: %s, kwargs: %s",
                     graph_backend_name,
@@ -981,7 +982,9 @@ class _dispatchable:
                 if self._should_backend_run(
                     backend_name,
                     args,
-                    {**kwargs, **backends_kwargs.get(backend_name, {})},
+                    kwargs
+                    if backend_name not in backends_kwargs
+                    else {**kwargs, **backends_kwargs[backend_name]},
                 ):
                     return self._convert_and_call(
                         backend_name,
@@ -1396,7 +1399,9 @@ class _dispatchable:
         if not self._can_backend_run(
             backend_name,
             args,
-            {**kwargs, **backends_kwargs.get(backend_name, {})},
+            kwargs
+            if backend_name not in backends_kwargs
+            else {**kwargs, **backends_kwargs[backend_name]},
             # Don't log in `_can_backend_run` here to avoid duplicating info in the exception
             log=fallback_to_nx,
         ):
@@ -1419,7 +1424,8 @@ class _dispatchable:
             converted_args, converted_kwargs = self._convert_arguments(
                 backend_name, args, kwargs, use_cache=config.cache_converted_graphs
             )
-            converted_kwargs.update(backends_kwargs.get(backend_name, {}))
+            if backend_name in backends_kwargs:
+                converted_kwargs.update(backends_kwargs[backend_name])
             _logger.debug(
                 "Using backend '%s' for call to `%s' with args: %s, kwargs: %s",
                 backend_name,
@@ -1449,7 +1455,9 @@ class _dispatchable:
         if not self._can_backend_run(
             backend_name,
             args,
-            {**kwargs, **backends_kwargs.get(backend_name, {})},
+            kwargs
+            if backend_name not in backends_kwargs
+            else {**kwargs, **backends_kwargs[backend_name]},
         ):
             if fallback_to_nx or not self.graphs:
                 if fallback_to_nx:
@@ -1521,7 +1529,8 @@ class _dispatchable:
             converted_args, converted_kwargs = self._convert_arguments(
                 backend_name, args1, kwargs1, use_cache=False
             )
-            converted_kwargs.update(backends_kwargs.get(backend_name, {}))
+            if backend_name in backends_kwargs:
+                converted_kwargs.update(backends_kwargs[backend_name])
             _logger.debug(
                 "Using backend '%s' for call to `%s' with args: %s, kwargs: %s",
                 backend_name,
