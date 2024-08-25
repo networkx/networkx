@@ -113,10 +113,17 @@ def _kou_steiner_tree(G, terminal_nodes, weight):
 
 
 def _remove_nonterminal_leaves(G, terminals):
+    """Remove non-terminal leaves iteratively."""
     terminals_set = set(terminals)
-    for n in list(G.nodes):
-        if n not in terminals_set and G.degree(n) == 1:
-            G.remove_node(n)
+    while True:
+        non_terminal_leaves = [
+            n for n in G.nodes if n not in terminals_set and G.degree(n) == 1
+        ]
+        if not non_terminal_leaves:
+            break
+        G.remove_nodes_from(non_terminal_leaves)
+        if len(G.nodes) == 1:  # If only one node left, exit loop
+            break
 
 
 ALGORITHMS = {
@@ -217,4 +224,8 @@ def steiner_tree(G, terminal_nodes, weight="weight", method=None):
             (u, v, min(G[u][v], key=lambda k: G[u][v][k][weight])) for u, v in edges
         )
     T = G.edge_subgraph(edges)
+
+    # Remove non-terminal leaves from the generated tree
+    _remove_nonterminal_leaves(T, terminal_nodes)
+
     return T
