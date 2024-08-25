@@ -22,9 +22,7 @@ jobs:
       - name: Install packages
         run: |
           pip install --upgrade pip
-          pip install -U --pre --extra-index-url https://pypi.org/simple -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple -r requirements/default.txt
-          pip install --pre -r requirements/test.txt
-          pip install .
+          pip install -U --pre --extra-index-url https://pypi.org/simple -i https://pypi.anaconda.org/scientific-python-nightly-wheels/simple -r .[test,default]
           pip list
 
       - name: Test NetworkX
