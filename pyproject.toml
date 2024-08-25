@@ -70,16 +70,25 @@ doc = [
     'sphinx>=7.3',
     'pydata-sphinx-theme>=0.15',
     'sphinx-gallery>=0.16',
-    'numpydoc>=1.7',
+    'numpydoc>=1.8.0',
     'pillow>=9.4',
     'texext>=0.6.7',
     'myst-nb>=1.1',
     'intersphinx_registry',
 ]
+example = [
+    'osmnx>=1.9',
+    'momepy>=0.7.2',
+    'contextily>=1.6',
+    'seaborn>=0.13',
+    'cairocffi>=1.7',
+    'igraph>=0.11',
+    'scikit-learn>=1.5',
+]
 extra = [
     'lxml>=4.6',
     'pygraphviz>=1.13',
-    'pydot>=2.0',
+    'pydot>=3.0.1',
     'sympy>=1.10',
 ]
 test = [
