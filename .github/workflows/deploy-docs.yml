@@ -27,11 +27,8 @@ jobs:
       - name: Install packages
         run: |
           pip install --upgrade pip
-          pip install -r requirements/default.txt -r requirements/test.txt
-          pip install -r requirements/extra.txt
           pip install -r requirements/example.txt
-          pip install -U -r requirements/doc.txt
-          pip install .
+          pip install --upgrade .[default,tests,extra,doc]
           # Install trusted backends, but not their dependencies.
           # We only need to use the "networkx.backend_info" entry-point.
           # This is the nightly wheel for nx-cugraph.
