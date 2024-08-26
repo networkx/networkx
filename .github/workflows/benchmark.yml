@@ -72,8 +72,7 @@ jobs:
       - name: Install packages
         run: |
           pip install --upgrade pip
-          pip install -r requirements/default.txt
-          pip install .
+          pip install .[default]
           pip list
 
       - name: Run benchmarks

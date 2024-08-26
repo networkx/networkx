@@ -34,10 +34,6 @@ jobs:
             python3 -m venv venv
             source venv/bin/activate
             pip install --upgrade pip
-            pip install -r requirements/default.txt -r requirements/test.txt
-            pip install -r requirements/extra.txt
-            pip install -r requirements/example.txt
-            pip install -r requirements/doc.txt
             # Install trusted backends, but not their dependencies.
             # We only need to use the "networkx.backend_info" entry-point.
             # This is the nightly wheel for nx-cugraph.
@@ -57,7 +53,7 @@ jobs:
           name: Install
           command: |
             source venv/bin/activate
-            pip install -e . --no-deps
+            pip install -e '.[default,test,extra,example,doc]'
 
       - run:
           name: Build docs
@@ -83,7 +79,6 @@ jobs:
             python -m venv venv
             source venv/bin/activate
             pip install --upgrade pip
-            pip install -r requirements/default.txt -r requirements/test.txt
             pip install pytest-mpl  # NOTE: specified here to avoid confusing conda
             pip list
 
@@ -91,7 +86,7 @@ jobs:
           name: Install
           command: |
             source venv/bin/activate
-            pip install -e .
+            pip install -e .[default,test]
 
       - run:
           name: Test NetworkX drawing
