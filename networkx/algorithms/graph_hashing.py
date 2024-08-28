@@ -161,6 +161,7 @@ def weisfeiler_lehman_graph_hash(
     return _hash_label(str(tuple(subgraph_hash_counts)), digest_size)
 
 
+@nx.utils.not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs={"edge_attr": None}, node_attrs="node_attr")
 def weisfeiler_lehman_subgraph_hashes(
     G,
