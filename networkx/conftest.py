@@ -137,6 +137,11 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\n`compute_v_structures"
     )
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message="store_pos_as will default to 'pos'",
+    )
 
 
 @pytest.fixture(autouse=True)

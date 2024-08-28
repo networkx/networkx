@@ -59,3 +59,17 @@ Version 3.5
 Version 3.6
 ~~~~~~~~~~~
 * Remove ``compute_v_structures`` from ``algorithms/dag.py``.
+* Change default value of ``store_pos_as`` from ``None`` to ``"pos"`` for 
+  - ``bipartite_layout``
+  - ``circular_layout``
+  - ``forceatlas2_layout``
+  - ``kamada_kawai_layout``
+  - ``random_layout``
+  - ``shell_layout``
+  - ``spectral_layout``
+  - ``planar_layout``
+  - ``fruchterman_reingold_layout``
+  - ``spiral_layout``
+  - ``bfs_layout``
+  - ``arf_layout``
+  In ``drawing/layouts.py

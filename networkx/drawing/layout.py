@@ -106,7 +106,16 @@ def random_layout(G, center=None, dim=2, seed=None, store_pos_as=None):
     >>> pos = nx.random_layout(G)
 
     """
+    import warnings
+
     import numpy as np
+
+    warnings.warn(
+        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
+        "This behavior can be suppressed with store_pos_as=None.",
+        category=DeprecationWarning,
+        stacklevel=3,
+    )
 
     G, center = _process_params(G, center, dim)
     pos = seed.rand(len(G), dim) + center
@@ -167,7 +176,16 @@ def circular_layout(G, scale=1, center=None, dim=2, store_pos_as=None):
     try to minimize edge crossings.
 
     """
+    import warnings
+
     import numpy as np
+
+    warnings.warn(
+        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
+        "This behavior can be suppressed with store_pos_as=None.",
+        category=DeprecationWarning,
+        stacklevel=3,
+    )
 
     if dim < 2:
         raise ValueError("cannot handle dimensions < 2")
@@ -253,7 +271,16 @@ def shell_layout(
     try to minimize edge crossings.
 
     """
+    import warnings
+
     import numpy as np
+
+    warnings.warn(
+        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
+        "This behavior can be suppressed with store_pos_as=None.",
+        category=DeprecationWarning,
+        stacklevel=3,
+    )
 
     if dim != 2:
         raise ValueError("can only handle 2 dimensions")
@@ -355,7 +382,16 @@ def bipartite_layout(
 
     """
 
+    import warnings
+
     import numpy as np
+
+    warnings.warn(
+        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
+        "This behavior can be suppressed with store_pos_as=None.",
+        category=DeprecationWarning,
+        stacklevel=3,
+    )
 
     if align not in ("vertical", "horizontal"):
         msg = "align must be either vertical or horizontal."
@@ -497,7 +533,16 @@ def spring_layout(
     # The same using longer but equivalent function name
     >>> pos = nx.fruchterman_reingold_layout(G)
     """
+    import warnings
+
     import numpy as np
+
+    warnings.warn(
+        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
+        "This behavior can be suppressed with store_pos_as=None.",
+        category=DeprecationWarning,
+        stacklevel=3,
+    )
 
     G, center = _process_params(G, center, dim)
 
@@ -758,7 +803,16 @@ def kamada_kawai_layout(
     >>> G = nx.path_graph(4)
     >>> pos = nx.kamada_kawai_layout(G)
     """
+    import warnings
+
     import numpy as np
+
+    warnings.warn(
+        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
+        "This behavior can be suppressed with store_pos_as=None.",
+        category=DeprecationWarning,
+        stacklevel=3,
+    )
 
     G, center = _process_params(G, center, dim)
     nNodes = len(G)
@@ -896,7 +950,16 @@ def spectral_layout(G, weight="weight", scale=1, center=None, dim=2, store_pos_a
     eigenvalue solver (ARPACK).
     """
     # handle some special cases that break the eigensolvers
+    import warnings
+
     import numpy as np
+
+    warnings.warn(
+        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
+        "This behavior can be suppressed with store_pos_as=None.",
+        category=DeprecationWarning,
+        stacklevel=3,
+    )
 
     G, center = _process_params(G, center, dim)
 
@@ -1022,7 +1085,16 @@ def planar_layout(G, scale=1, center=None, dim=2, store_pos_as=None):
     >>> G = nx.path_graph(4)
     >>> pos = nx.planar_layout(G)
     """
+    import warnings
+
     import numpy as np
+
+    warnings.warn(
+        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
+        "This behavior can be suppressed with store_pos_as=None.",
+        category=DeprecationWarning,
+        stacklevel=3,
+    )
 
     if dim != 2:
         raise ValueError("can only handle 2 dimensions")
@@ -1113,7 +1185,16 @@ def spiral_layout(
     This algorithm currently only works in two dimensions.
 
     """
+    import warnings
+
     import numpy as np
+
+    warnings.warn(
+        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
+        "This behavior can be suppressed with store_pos_as=None.",
+        category=DeprecationWarning,
+        stacklevel=3,
+    )
 
     if dim != 2:
         raise ValueError("can only handle 2 dimensions")
@@ -1209,7 +1290,16 @@ def multipartite_layout(
     have subset_key data, they will be placed in the corresponding layers.
 
     """
+    import warnings
+
     import numpy as np
+
+    warnings.warn(
+        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
+        "This behavior can be suppressed with store_pos_as=None.",
+        category=DeprecationWarning,
+        stacklevel=3,
+    )
 
     if align not in ("vertical", "horizontal"):
         msg = "align must be either vertical or horizontal."
@@ -1344,6 +1434,13 @@ def arf_layout(
 
     """
     import warnings
+
+    warnings.warn(
+        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
+        "This behavior can be suppressed with store_pos_as=None.",
+        category=DeprecationWarning,
+        stacklevel=3,
+    )
 
     import numpy as np
 
@@ -1489,6 +1586,15 @@ def forceatlas2_layout(
            visualization designed for the Gephi software. PloS one, 9(6), e98679.
            https://doi.org/10.1371/journal.pone.0098679
     """
+    import warnings
+
+    warnings.warn(
+        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
+        "This behavior can be suppressed with store_pos_as=None.",
+        category=DeprecationWarning,
+        stacklevel=3,
+    )
+
     import numpy as np
 
     if len(G) == 0:
@@ -1799,6 +1905,15 @@ def bfs_layout(G, start, *, align="vertical", scale=1, center=None, store_pos_as
     try to minimize edge crossings.
 
     """
+    import warnings
+
+    warnings.warn(
+        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
+        "This behavior can be suppressed with store_pos_as=None.",
+        category=DeprecationWarning,
+        stacklevel=3,
+    )
+
     G, center = _process_params(G, center, 2)
 
     # Compute layers with BFS
