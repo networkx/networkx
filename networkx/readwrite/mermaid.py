@@ -36,6 +36,55 @@ import networkx as nx
 from networkx.utils import open_file
 
 
+def _mermaid_id_generator():
+    """Generate a safe id for Mermaid nodes
+
+    Mermaid requires its node identifiers to have a safe identifier,
+    anything string of ASCII letters is fine.
+
+    This generators gives us a sequence of such identifiers.
+    It goes from "A" to "ZZ", giving us 676 identifiers.
+    """
+    import itertools
+    import string
+
+    # create a list with all ASCII uppercase letters
+    letters = list(string.ascii_uppercase)
+
+    # this first empty element, is a hack to allow single letter identifiers
+    prefix_list = [""]
+    prefix_list.extend(letters)
+    letter_sets = [prefix_list, letters]
+
+    # idea from https://stackoverflow.com/questions/798854
+    for letters_combination in itertools.product(*letter_sets):
+        yield "".join(letters_combination)
+
+
+def _handle_ids(given_id, mapping, ids_generator):
+    """Assign a unique identifier for a, possible, complex node name
+
+    Mermaid requires simple identifiers for its nodes.
+    """
+    if given_id in mapping:
+        return
+
+    _safe_id = next(ids_generator)
+    mapping[given_id] = _safe_id
+
+
+def _format_node_id(given_id, mapping):
+    """Give a final text representation of a node.
+
+    If it is a simple identifier use it as such, otherwise use the safe id
+    that got assigned to it.
+    """
+    if isinstance(given_id, int) or given_id == mapping[given_id]:
+        return given_id
+
+    return f'{mapping[given_id]}["{given_id}"]'
+
+
 def generate_mermaid(G):
     """Generate a single line of the graph G in mermaid flowchart format.
 
@@ -67,8 +116,15 @@ def generate_mermaid(G):
     --------
     write_mermaid, read_mermaid
     """
+    ids_mapping = {}
+    ids_generator = _mermaid_id_generator()
+
     for u, v in G.edges(data=False):
-        yield f"{u} --> {v}"
+        _handle_ids(u, ids_mapping, ids_generator)
+        _handle_ids(v, ids_mapping, ids_generator)
+        final_u = _format_node_id(u, ids_mapping)
+        final_v = _format_node_id(v, ids_mapping)
+        yield f"{final_u} --> {final_v}"
 
 
 @open_file(1, mode="wb")

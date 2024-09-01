@@ -22,10 +22,22 @@ basic_chart = textwrap.dedent(
 def test_write_mermaid_basic():
     fh = io.BytesIO()
     G = nx.Graph()
-    G.add_edges_from([(1, 2), (2, 3)])
+    G.add_edges_from([("A", "B"), ("B", "C")])
     nx.write_mermaid(G, fh)
     fh.seek(0)
-    assert fh.read() == b"flowchart\n    1 --> 2\n    2 --> 3\n"
+    assert fh.read() == b"flowchart\n    A --> B\n    B --> C\n"
+
+
+def test_write_mermaid_spaces_in_names():
+    fh = io.BytesIO()
+    G = nx.Graph()
+    G.add_edges_from([("start node", "middle node"), ("middle node", "final node")])
+    nx.write_mermaid(G, fh)
+    fh.seek(0)
+    assert (
+        fh.read()
+        == b'flowchart\n    A["start node"] --> B["middle node"]\n    B["middle node"] --> C["final node"]\n'
+    )
 
 
 def test_read_mermaid_basic():
