@@ -28,6 +28,8 @@ For example, a directed graph might be formatted::
 __all__ = [
     "generate_mermaid",
     "write_mermaid",
+    "parse_mermaid",
+    "read_mermaid",
 ]
 
 import networkx as nx
@@ -100,3 +102,80 @@ def write_mermaid(G, path, encoding="utf-8"):
     for line in generate_mermaid(G):
         line = f"    {line}\n"
         path.write(line.encode(encoding))
+
+
+@nx._dispatchable(graphs=None, returns_graph=True)
+def parse_mermaid(lines):
+    """Parse lines of a mermaid flowchart representation of a graph.
+
+    Parameters
+    ----------
+    lines : list or iterator of strings
+        Input data in mermaid flowchart format
+
+    Returns
+    -------
+    G: NetworkX Graph
+        The graph corresponding to lines
+
+    Examples
+    --------
+    Mermaid flowchart:
+
+    >>> lines = ["flowchart", "A --> B", "A --> C", "B --> C"]
+    >>> G = nx.parse_mermaid(lines)
+    >>> list(G)
+    ['A', 'B', 'C']
+    >>> list(G.edges())
+    [('A', 'B'), ('A', 'C'), ('B', 'C')]
+    """
+    G = nx.empty_graph(0)
+    skip_lines = True
+    for line in lines:
+        if "flowchart" in line:
+            skip_lines = False
+            continue
+        if skip_lines:
+            continue
+        if "-->" in line:
+            parts = line.strip().split(" ")
+            u = parts[0]
+            v = parts[-1]
+            G.add_edge(u, v)
+    return G
+
+
+@open_file(0, mode="rb")
+@nx._dispatchable(graphs=None, returns_graph=True)
+def read_mermaid(path, encoding="utf-8"):
+    """Read a graph from a list of edges.
+
+    Parameters
+    ----------
+    path : file or string
+       File or filename to read. If a file is provided, it must be
+       opened in 'rb' mode.
+       Filenames ending in .gz or .bz2 will be uncompressed.
+    encoding: string, optional
+       Specify which encoding to use when reading file.
+
+    Returns
+    -------
+    G : graph
+       A networkx Graph
+
+    Examples
+    --------
+    >>> nx.write_mermaid(nx.path_graph(4), "test.mermaid")
+    >>> G = nx.read_mermaid("test.mermaid")
+
+    >>> fh = open("test.mermaid", "rb")
+    >>> G = nx.read_mermaid(fh)
+    >>> fh.close()
+
+    See Also
+    --------
+    write_mermaid
+    """
+    lines = (line if isinstance(line, str) else line.decode(encoding) for line in path)
+    return parse_mermaid(lines)
