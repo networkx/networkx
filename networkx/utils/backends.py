@@ -1120,11 +1120,12 @@ class _dispatchable:
                         )
                     # `should_run` is False, but `can_run` is True, so try again later
                     backends_to_try_again.append(backend_name)
-            except NotImplementedError:
+            except NotImplementedError as exc:
                 _logger.debug(
-                    "Backend '%s' raised NotImplementedError when calling `%s'",
+                    "Backend '%s' raised when calling `%s': %s",
                     backend_name,
                     self.name,
+                    exc,
                 )
 
         # We are about to fail. Let's try backends with can_run=True and should_run=False.
@@ -1137,11 +1138,12 @@ class _dispatchable:
                 return self._convert_and_call(
                     backend_name, graph_backend_names, args, kwargs
                 )
-            except NotImplementedError:
+            except NotImplementedError as exc:
                 _logger.debug(
-                    "Backend '%s' raised NotImplementedError when calling `%s'",
+                    "Backend '%s' raised when calling `%s': %s",
                     backend_name,
                     self.name,
+                    exc,
                 )
         # As a final effort, we could try to convert and run with `group3` backends
         # that we discarded when `len(group3) > 1`, but let's not consider doing
@@ -1572,6 +1574,12 @@ class _dispatchable:
             return getattr(backend, self.name)(*args, **kwargs)
         except NotImplementedError as exc:
             if extra_message is not None:
+                _logger.debug(
+                    "Backend '%s' raised when calling `%s': %s",
+                    backend_name,
+                    self.name,
+                    exc,
+                )
                 raise NotImplementedError(extra_message) from exc
             raise
 
@@ -1622,11 +1630,15 @@ class _dispatchable:
                 mutations=mutations,
             )
         except NotImplementedError as exc:
+            # Only log the exception if we are adding an extra message
+            # because we don't want to lose any information.
             _logger.debug(
-                "Failed to convert graphs from %s to '%s' backend for call to `%s'",
+                "Failed to convert graphs from %s to '%s' backend for call to `%s'"
+                + ("" if extra_message is None else ": %s"),
                 input_backend_names,
                 backend_name,
                 self.name,
+                *(() if extra_message is None else (exc,)),
             )
             if extra_message is not None:
                 raise NotImplementedError(extra_message) from exc
@@ -1642,6 +1654,12 @@ class _dispatchable:
             return func(*converted_args, **converted_kwargs)
         except NotImplementedError as exc:
             if extra_message is not None:
+                _logger.debug(
+                    "Backend '%s' raised when calling `%s': %s",
+                    backend_name,
+                    self.name,
+                    exc,
+                )
                 raise NotImplementedError(extra_message) from exc
             raise
 
