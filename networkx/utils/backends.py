@@ -984,6 +984,33 @@ class _dispatchable:
         # This may become configurable
         backend_fallback = ["networkx"]
 
+        # ##########################
+        # # How this behaves today #
+        # ##########################
+        #
+        # The prose below describes the implementation and a *possible* way to
+        # generalize "networkx" as "just another backend". The code is structured
+        # to perhaps someday support backend-to-backend conversions (including
+        # simply passing objects from one backend directly to another backend;
+        # the dispatch machinery does not necessarily need to perform conversions),
+        # but since backend-to-backend matching is not yet supported, the following
+        # code is merely a convenient way to implement dispatch behaviors that have
+        # been developed since NetworkX 3.0 and to include falling back to the
+        # default NetworkX implementation.
+        #
+        # The current behavior (ignoring mutations) can be explained simply:
+        #
+        # 1. If backend is specified by `backend=` keyword, use it (done above).
+        # 2. If input is from a backend other than "networkx", try to use it,
+        #    then fall back to default "networkx" implementation.
+        #      - Note: raise if input is from multiple non-networkx backends.
+        # 3. If input is from "networkx" (or no backend), try to use a backend from
+        #    `backend_priority` before using default "networkx" implementation.
+        #
+        # ################################################
+        # # How this is implemented and may work someday #
+        # ################################################
+        #
         # Let's determine the order of backends we should try according
         # to `backend_priority`, `backend_fallback`, and input backends.
         # There are two† dimensions of priorities to consider:
@@ -1100,7 +1127,8 @@ class _dispatchable:
                     self.name,
                 )
 
-        # We are about to fail. Let's try backends with can_run=True and should_run=False
+        # We are about to fail. Let's try backends with can_run=True and should_run=False.
+        # This is unlikely to help today since we try to run with "networkx" before this.
         for backend_name in backends_to_try_again:
             _logger.debug(
                 "Trying backend: '%s' (ignoring `should_run=False`)", backend_name
