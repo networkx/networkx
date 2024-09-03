@@ -953,13 +953,21 @@ class _dispatchable:
 
         if self._will_call_mutate_input(args, kwargs):
             # Do not automatically convert if a call will mutate inputs, because doing
-            # so would change behavior. Hence, we must fail if there are multiple input
-            # backends or if the input backend does not implement the function.
+            # so would change behavior. Hence, we should fail if there are multiple input
+            # backends or if the input backend does not implement the function. However,
+            # we offer a way for backends to circumvent this if they do not implement
+            # this function: we will fall back to the default "networkx" implementation
+            # without using conversions if all input graphs are subclasses of `nx.Graph`.
             blurb = (
                 "conversions between backends (if configured) will not be attempted, "
                 "because this may change behavior. You may specify a backend to use "
                 "by passing e.g. `backend='networkx'` keyword, but this may also "
                 "change behavior by not mutating inputs."
+            )
+            fallback_blurb = (
+                "This call will mutate inputs, so fall back to 'networkx' "
+                "backend (without converting) since all input graphs are "
+                "instances of nx.Graph and are hopefully compatible.",
             )
             if len(graph_backend_names) == 1:
                 [backend_name] = graph_backend_names
@@ -968,18 +976,51 @@ class _dispatchable:
                     f"This call will mutate an input, so automatic {blurb}"
                 )
                 # `can_run` is only used for better log and error messages
-                if self._can_backend_run(backend_name, args, kwargs):
-                    return self._call_with_backend(
-                        backend_name,
-                        args,
-                        kwargs,
-                        extra_message=msg_template % " with these arguments",
-                    )
-                raise NotImplementedError(msg_template % "")
-            raise RuntimeError(
-                f"`{self.name}' will mutate an input, but it was called with inputs "
-                f"from multiple backends: {graph_backend_names}. Automatic {blurb}"
-            )
+                try:
+                    if self._can_backend_run(backend_name, args, kwargs):
+                        return self._call_with_backend(
+                            backend_name,
+                            args,
+                            kwargs,
+                            extra_message=msg_template % " with these arguments",
+                        )
+                except NotImplementedError as exc:
+                    if all(isinstance(g, nx.Graph) for g in graphs_resolved.values()):
+                        _logger.debug(
+                            "Backend '%s' raised when calling `%s': %s. %s",
+                            backend_name,
+                            self.name,
+                            exc,
+                            fallback_blurb,
+                        )
+                    else:
+                        raise
+                else:
+                    if all(isinstance(g, nx.Graph) for g in graphs_resolved.values()):
+                        _logger.debug(
+                            "Backend '%s' can't run `%s'. %s",
+                            backend_name,
+                            self.name,
+                            fallback_blurb,
+                        )
+                    else:
+                        raise NotImplementedError(msg_template % "")
+            elif all(isinstance(g, nx.Graph) for g in graphs_resolved.values()):
+                _logger.debug(
+                    "`%s' was called with inputs from multiple backends: %s. %s",
+                    self.name,
+                    graph_backend_names,
+                    fallback_blurb,
+                )
+            else:
+                raise RuntimeError(
+                    f"`{self.name}' will mutate an input, but it was called with inputs "
+                    f"from multiple backends: {graph_backend_names}. Automatic {blurb}"
+                )
+            # At this point, no backends are available to handle the call with
+            # the input graph types, but if the input graphs are compatible
+            # nx.Graph instances, fall back to networkx without converting.
+            return self.orig_func(*args, **kwargs)
 
         # This may become configurable
         backend_fallback = ["networkx"]
