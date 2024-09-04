@@ -53,7 +53,12 @@ def node_link_data(
     nodes : string
         A string that provides the 'nodes' attribute name for storing NetworkX-internal graph data.
     link : string
-        (Deprecated, use 'edges') A string that provides the 'edges' attribute name for storing NetworkX-internal graph data.
+        .. deprecated:: 3.4
+
+           The `link` argument is deprecated and will be removed in version `3.6`.
+           Use the `edges` keyword instead.
+
+        A string that provides the 'edges' attribute name for storing NetworkX-internal graph data.
 
     Returns
     -------
@@ -169,6 +174,7 @@ def node_link_graph(
     link=None,
 ):
     """Returns graph from node-link data format.
+
     Useful for de-serialization from JSON.
 
     Parameters
@@ -195,7 +201,12 @@ def node_link_graph(
     nodes : string
         A string that provides the 'nodes' attribute name for storing NetworkX-internal graph data.
     link : string
-        (Deprecated, use 'edges') A string that provides the 'edges' attribute name for storing NetworkX-internal graph data.
+        .. deprecated:: 3.4
+
+           The `link` argument is deprecated and will be removed in version `3.6`.
+           Use the `edges` keyword instead.
+
+        A string that provides the 'edges' attribute name for storing NetworkX-internal graph data.
 
     Returns
     -------
