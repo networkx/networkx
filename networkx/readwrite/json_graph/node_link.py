@@ -124,19 +124,24 @@ def node_link_data(
     --------
     node_link_graph, adjacency_data, tree_data
     """
+    # TODO: Remove between the lines when `link` deprecation expires
+    # -------------------------------------------------------------
     if link is not None:
+        warnings.warn(
+            "Keyword argument 'link' is deprecated; use 'edges' instead",
+            DeprecationWarning,
+        )
         if edges is not None:
             raise ValueError(
                 "Both 'edges' and 'link' are specified. Use 'edges', 'link' will be remove in a future release"
             )
         else:
-            warnings.warn(
-                "Keyword argument 'link' is deprecated; use 'edges", DeprecationWarning
-            )
             edges = link
     else:
         if edges is None:
             edges = "edges"
+    # ------------------------------------------------------------
+
     multigraph = G.is_multigraph()
 
     # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
@@ -254,19 +259,24 @@ def node_link_graph(
     --------
     node_link_data, adjacency_data, tree_data
     """
+    # TODO: Remove between the lines when `link` deprecation expires
+    # -------------------------------------------------------------
     if link is not None:
+        warnings.warn(
+            "Keyword argument 'link' is deprecated; use 'edges' instead",
+            DeprecationWarning,
+        )
         if edges is not None:
             raise ValueError(
                 "Both 'edges' and 'link' are specified. Use 'edges', 'link' will be remove in a future release"
             )
         else:
-            warnings.warn(
-                "Keyword argument 'link' is deprecated; use 'edges", DeprecationWarning
-            )
             edges = link
     else:
         if edges is None:
             edges = "edges"
+    # -------------------------------------------------------------
+
     multigraph = data.get("multigraph", multigraph)
     directed = data.get("directed", directed)
     if multigraph:
