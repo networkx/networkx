@@ -1,5 +1,4 @@
-"""Functional interface to graph methods and assorted utilities.
-"""
+"""Functional interface to graph methods and assorted utilities."""
 
 from collections import Counter
 from itertools import chain
@@ -31,8 +30,10 @@ __all__ = [
     "create_empty_copy",
     "set_node_attributes",
     "get_node_attributes",
+    "remove_node_attributes",
     "set_edge_attributes",
     "get_edge_attributes",
+    "remove_edge_attributes",
     "all_neighbors",
     "non_neighbors",
     "non_edges",
@@ -702,6 +703,42 @@ def get_node_attributes(G, name, default=None):
     return {n: d[name] for n, d in G.nodes.items() if name in d}
 
 
+def remove_node_attributes(G, *attr_names, nbunch=None):
+    """Remove node attributes from all nodes in the graph.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+
+    *attr_names : List of Strings
+        The attribute names to remove from the graph.
+
+    nbunch : List of Nodes
+        Remove the node attributes only from the nodes in this list.
+
+    Examples
+    --------
+    >>> G = nx.Graph()
+    >>> G.add_nodes_from([1, 2, 3], color="blue")
+    >>> nx.get_node_attributes(G, "color")
+    {1: 'blue', 2: 'blue', 3: 'blue'}
+    >>> nx.remove_node_attributes(G, "color")
+    >>> nx.get_node_attributes(G, "color")
+    {}
+    """
+
+    if nbunch is None:
+        nbunch = G.nodes()
+
+    for attr in attr_names:
+        for n, d in G.nodes(data=True):
+            if n in nbunch:
+                try:
+                    del d[attr]
+                except KeyError:
+                    pass
+
+
 def set_edge_attributes(G, values, name=None):
     """Sets edge attributes from a given value or dictionary of values.
 
@@ -880,6 +917,41 @@ def get_edge_attributes(G, name, default=None):
     if default is not None:
         return {x[:-1]: x[-1].get(name, default) for x in edges}
     return {x[:-1]: x[-1][name] for x in edges if name in x[-1]}
+
+
+def remove_edge_attributes(G, *attr_names, ebunch=None):
+    """Remove edge attributes from all edges in the graph.
+
+    Parameters
+    ----------
+    G : NetworkX Graph
+
+    *attr_names : List of Strings
+        The attribute names to remove from the graph.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(3)
+    >>> nx.set_edge_attributes(G, {(u, v): u + v for u, v in G.edges()}, name="weight")
+    >>> nx.get_edge_attributes(G, "weight")
+    {(0, 1): 1, (1, 2): 3}
+    >>> remove_edge_attributes(G, "weight")
+    >>> nx.get_edge_attributes(G, "weight")
+    {}
+    """
+    if ebunch is None:
+        ebunch = G.edges(keys=True) if G.is_multigraph() else G.edges()
+
+    for attr in attr_names:
+        edges = (
+            G.edges(keys=True, data=True) if G.is_multigraph() else G.edges(data=True)
+        )
+        for *e, d in edges:
+            if tuple(e) in ebunch:
+                try:
+                    del d[attr]
+                except KeyError:
+                    pass
 
 
 def all_neighbors(graph, node):

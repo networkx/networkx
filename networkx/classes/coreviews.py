@@ -2,6 +2,7 @@
 These ``Views`` often restrict element access, with either the entire view or
 layers of nested mappings being read-only.
 """
+
 from collections.abc import Mapping
 
 __all__ = [

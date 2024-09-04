@@ -282,7 +282,7 @@ class PythonRandomViaNumpyBits(random.Random):
     bit-stream for all work with NetworkX. This implementation is based on helpful
     comments and code from Robert Kern on NumPy's GitHub Issue #24458.
 
-    This implementation supercedes that of `PythonRandomInterface` which rewrote
+    This implementation supersedes that of `PythonRandomInterface` which rewrote
     methods to account for subtle differences in API between `random` and
     `numpy.random`. Instead this subclasses `random.Random` and overwrites
     the methods `random`, `getrandbits`, `getstate`, `setstate` and `seed`.

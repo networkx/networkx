@@ -1,6 +1,7 @@
 """
 Greedy graph coloring using various strategies.
 """
+
 import itertools
 from collections import defaultdict, deque
 

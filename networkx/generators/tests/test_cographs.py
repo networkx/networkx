@@ -1,6 +1,4 @@
-"""Unit tests for the :mod:`networkx.generators.cographs` module.
-
-"""
+"""Unit tests for the :mod:`networkx.generators.cographs` module."""
 
 import networkx as nx
 

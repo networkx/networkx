@@ -1,4 +1,5 @@
 """Connected components."""
+
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
@@ -61,9 +62,10 @@ def connected_components(G):
 
     """
     seen = set()
+    n = len(G)
     for v in G:
         if v not in seen:
-            c = _plain_bfs(G, v)
+            c = _plain_bfs(G, n, v)
             seen.update(c)
             yield c
 
@@ -147,11 +149,12 @@ def is_connected(G):
     For undirected graphs only.
 
     """
-    if len(G) == 0:
+    n = len(G)
+    if n == 0:
         raise nx.NetworkXPointlessConcept(
             "Connectivity is undefined for the null graph."
         )
-    return sum(1 for node in _plain_bfs(G, arbitrary_element(G))) == len(G)
+    return sum(1 for node in _plain_bfs(G, n, arbitrary_element(G))) == len(G)
 
 
 @not_implemented_for("directed")
@@ -192,13 +195,12 @@ def node_connected_component(G, n):
     For undirected graphs only.
 
     """
-    return _plain_bfs(G, n)
+    return _plain_bfs(G, len(G), n)
 
 
-def _plain_bfs(G, source):
+def _plain_bfs(G, n, source):
     """A fast BFS node generator"""
     adj = G._adj
-    n = len(adj)
     seen = {source}
     nextlevel = [source]
     while nextlevel:
