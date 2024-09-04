@@ -77,8 +77,8 @@ def node_link_data(
     >>> data1 = nx.node_link_data(G)
     >>> pprint(data1)
     {'directed': False,
-     'graph': {},
      'edges': [{'source': 'A', 'target': 'B'}],
+     'graph': {},
      'multigraph': False,
      'nodes': [{'id': 'A'}, {'id': 'B'}]}
 
@@ -104,8 +104,8 @@ def node_link_data(
     ... )
     >>> pprint(data2)
     {'directed': True,
-     'links': [{'from': 1, 'to': 0}],
      'graph': {},
+     'links': [{'from': 1, 'to': 0}],
      'multigraph': False,
      'vertices': [{'id': 0}, {'id': 1}]}
 
@@ -223,8 +223,8 @@ def node_link_graph(
     >>> data = nx.node_link_data(G)
     >>> pprint(data)
     {'directed': False,
-     'graph': {},
      'edges': [{'source': 'A', 'target': 'B'}],
+     'graph': {},
      'multigraph': False,
      'nodes': [{'id': 'A'}, {'id': 'B'}]}
 
