@@ -183,20 +183,34 @@ def all_pairs_shortest_path_length(G, cutoff=None):
 
     Examples
     --------
-    >>> G = nx.path_graph(5)
-    >>> length = dict(nx.all_pairs_shortest_path_length(G))
-    >>> for node in [0, 1, 2, 3, 4]:
-    ...     print(f"1 - {node}: {length[1][node]}")
-    1 - 0: 1
-    1 - 1: 0
-    1 - 2: 1
-    1 - 3: 2
-    1 - 4: 3
-    >>> length[3][2]
-    1
-    >>> length[2][2]
-    0
+    Find the lengths of the shortest paths from 1 to all other nodes::
 
+        >>> G = nx.path_graph(5)
+        >>> length = dict(nx.all_pairs_shortest_path_length(G))
+        >>> for node in [0, 1, 2, 3, 4]:
+        ...     print(f"1 - {node}: {length[1][node]}")
+        1 - 0: 1
+        1 - 1: 0
+        1 - 2: 1
+        1 - 3: 2
+        1 - 4: 3
+        >>> length[3][2]
+        1
+        >>> length[2][2]
+        0
+
+    Only generate shortest paths with lengths less than or equal to the
+    `cutoff` keyword argument::
+
+        >>> length_c2 = dict(nx.all_pairs_shortest_path_length(G, cutoff=2))
+        >>> for node in [0, 1, 2, 3, 4]:
+        ...     nlen = length_c2[1][node] if node in length_c2[1] else "N/A"
+        ...     print(f"1 - {node}: {nlen}")
+        1 - 0: 1
+        1 - 1: 0
+        1 - 2: 1
+        1 - 3: 2
+        1 - 4: N/A
     """
     length = single_source_shortest_path_length
     # TODO This can be trivially parallelized.
