@@ -196,7 +196,7 @@ class TestSteinerTree:
 
     def test_remove_nonterminal_leaves(self):
         G = nx.path_graph(10)
-        nx.approximation.steinertree._remove_nonterminal_leaves(G, [4, 5, 6])
+        _remove_nonterminal_leaves(G, [4, 5, 6])
 
         assert list(G) == [4, 5, 6]  # only the terminal nodes are left
 
@@ -261,5 +261,5 @@ def test_steiner_tree_non_terminal_leaves_multigraph_self_loop_edges():
     # Remove non-terminal leaves
     _remove_nonterminal_leaves(G, [4, 5, 6, 7])
 
-    # The terminal nodes should be left
-    assert list(G) == [4, 5, 6, 7]  # only the terminal nodes are left
+    # Only the terminal nodes should be left
+    assert list(G) == [4, 5, 6, 7]
