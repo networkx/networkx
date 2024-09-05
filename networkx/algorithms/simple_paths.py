@@ -326,6 +326,14 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
         >>> len(paths)
         1
 
+    You can use the ``cutoff`` parameter to only generate paths with length
+    less than or equal to this value:
+
+        >>> g = nx.Graph([(1, 2), (2, 4), (1, 3), (3, 4), (1, 4)])
+        >>> sorted(nx.all_simple_edge_paths(g, 1, 4, cutoff=2))
+        [[(1, 2), (2, 4)], [(1, 3), (3, 4)], [(1, 4)]]
+        >>> sorted(nx.all_simple_edge_paths(g, 1, 4, cutoff=1))
+        [[(1, 4)]]
 
     Notes
     -----
