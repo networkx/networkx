@@ -242,11 +242,7 @@ def test_steiner_tree_remove_non_terminal_leaves_self_loop_edges():
     G = nx.path_graph(10)
 
     # Add self loops to the terminal nodes
-    G.add_edge(2, 2)
-    G.add_edge(3, 3)
-    G.add_edge(4, 4)
-    G.add_edge(7, 7)
-    G.add_edge(8, 8)
+    G.add_edges_from([(2, 2), (3, 3), (4, 4), (7, 7), (8, 8)])
 
     # Remove non-terminal leaves
     _remove_nonterminal_leaves(G, [4, 5, 6, 7])
@@ -260,12 +256,7 @@ def test_steiner_tree_non_terminal_leaves_multigraph_self_loop_edges():
     # behaves in the case where a non-terminal leaf has a self loop edge
     G = nx.MultiGraph()
     G.add_edges_from([(i, i + 1) for i in range(10)])
-
-    G.add_edge(2, 2)
-    G.add_edge(3, 3)
-    G.add_edge(4, 4)
-    G.add_edge(4, 4)
-    G.add_edge(7, 7)
+    G.add_edges_from([(2, 2), (3, 3), (4, 4), (4, 4), (7, 7)])
 
     # Remove non-terminal leaves
     _remove_nonterminal_leaves(G, [4, 5, 6, 7])
