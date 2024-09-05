@@ -118,14 +118,14 @@ def _remove_nonterminal_leaves(G, terminals):
     nonterminal_leaves = leaves - terminal_set
 
     while nonterminal_leaves:
-        nbrs = ([nbr for nbr in G.neighbors(n) if n != nbr] for n in nonterminal_leaves)
-        possible_nonterminal_leaves = set().union(*nbrs) - terminal_set
+        # Limit search for candidate non-terminal nodes to neighbors of current
+        # non-terminal nodes
+        candidate_leaves = set.union(*(set(G[n]) for n in nonterminal_leaves))
+        candidate_leaves -= (nonterminal_leaves | terminal_set)
+        # Remove current set of non-terminal nodes
         G.remove_nodes_from(nonterminal_leaves)
-        leaves = {
-            n
-            for n in possible_nonterminal_leaves
-            if len(list(G.neighbors(n))) - list(G.neighbors(n)).count(n) == 1
-        }
+        # Find any new non-terminal nodes from the set of candidates
+        leaves = {n for n in candidate_leaves if len(set(G[n]) - {n}) == 1}
         nonterminal_leaves = leaves - terminal_set
 
 
