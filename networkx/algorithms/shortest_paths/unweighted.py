@@ -183,7 +183,7 @@ def all_pairs_shortest_path_length(G, cutoff=None):
 
     Examples
     --------
-    Find the lengths of the shortest paths from 1 to all other nodes::
+    Find pairwise shortest path lengths::
 
         >>> G = nx.path_graph(5)
         >>> length = dict(nx.all_pairs_shortest_path_length(G))
@@ -360,10 +360,19 @@ def single_source_shortest_path(G, source, cutoff=None):
 
     Examples
     --------
-    >>> G = nx.path_graph(5)
-    >>> path = nx.single_source_shortest_path(G, 0)
-    >>> path[4]
-    [0, 1, 2, 3, 4]
+    Find shortest paths::
+
+        >>> G = nx.path_graph(5)
+        >>> path = nx.single_source_shortest_path(G, 0)
+        >>> path
+        {0: [0], 1: [0, 1], 2: [0, 1, 2], 3: [0, 1, 2, 3], 4: [0, 1, 2, 3, 4]}
+
+    Only consider paths with lengths less than or equal to the `cutoff` keyword
+    argument::
+
+        >>> path_c2 = nx.single_source_shortest_path(G, 0, cutoff=2)
+        >>> path_c2
+        {0: [0], 1: [0, 1], 2: [0, 1, 2]}
 
     Notes
     -----
@@ -445,10 +454,19 @@ def single_target_shortest_path(G, target, cutoff=None):
 
     Examples
     --------
-    >>> G = nx.path_graph(5, create_using=nx.DiGraph())
-    >>> path = nx.single_target_shortest_path(G, 4)
-    >>> path[0]
-    [0, 1, 2, 3, 4]
+    Find shortest paths::
+
+        >>> G = nx.path_graph(5, create_using=nx.DiGraph())
+        >>> path = nx.single_target_shortest_path(G, 4)
+        >>> path
+        {4: [4], 3: [3, 4], 2: [2, 3, 4], 1: [1, 2, 3, 4], 0: [0, 1, 2, 3, 4]}
+
+    Only consider paths with lengths less than or equal to the `cutoff` keyword
+    argument::
+
+        >>> path_c2 = nx.single_target_shortest_path(G, 4, cutoff=2)
+        >>> path_c2
+        {4: [4], 3: [3, 4], 2: [2, 3, 4]}
 
     Notes
     -----
