@@ -923,6 +923,102 @@ class DiGraphMatcher(GraphMatcher):
         # Otherwise, this node pair is syntactically feasible!
         return True
 
+    def subgraph_is_isomorphic(self):
+        """Returns `True` if a subgraph of ``G1`` is isomorphic to ``G2``.
+
+        Examples
+        --------
+        When creating the `DiGraphMatcher`, the order of the arguments is important
+
+        >>> G = nx.DiGraph([(1, 2), (2, 1), (2, 3), (3, 2)])
+        >>> H = nx.DiGraph(nx.path_graph(5))
+
+        Check whether a subgraph of G is isomorphic to H:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(G, H)
+        >>> isomatcher.subgraph_is_isomorphic()
+        False
+
+        Check whether as subgraph of H is isomorphic to G:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(H, G)
+        >>> isomatcher.subgraph_is_isomorphic()
+        True
+        """
+        return super().subgraph_is_isomorphic()
+
+    def subgraph_is_monomorphic(self):
+        """Returns `True` if a subgraph of ``G1`` is monomorphic to ``G2``.
+
+        Examples
+        --------
+        When creating the `DiGraphMatcher`, the order of the arguments is important.
+
+        >>> G = nx.DiGraph([(0, 1), (2, 1), (3, 2)])
+        >>> H = nx.DiGraph([(0, 1), (1, 2), (2, 3), (3, 2)])
+
+        Check whether a subgraph of G is monomorphic to H:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(G, H)
+        >>> isomatcher.subgraph_is_monomorphic()
+        False
+
+        Check whether as subgraph of H is isomorphic to G:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(H, G)
+        >>> isomatcher.subgraph_is_monomorphic()
+        True
+        """
+        return super().subgraph_is_monomorphic()
+
+    def subgraph_isomorphisms_iter(self):
+        """Generator over isomorphisms between a subgraph of ``G1`` and ``G2``.
+
+        Examples
+        --------
+        When creating the `DiGraphMatcher`, the order of the arguments is important
+
+        >>> G = nx.DiGraph([(1, 2), (2, 1), (2, 3), (3, 2)])
+        >>> H = nx.DiGraph(nx.path_graph(5))
+
+        Yield isomorphic mappings between ``H`` and subgraphs of ``G``:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(G, H)
+        >>> list(isomatcher.subgraph_isomorphisms_iter())
+        []
+
+        Check whether as subgraph of H is isomorphic to G:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(H, G)
+        >>> next(isomatcher.subgraph_isomorphisms_iter())
+        {0: 1, 1: 2, 2: 3}
+        """
+        return super().subgraph_isomorphisms_iter()
+
+    def subgraph_monomorphisms_iter(self):
+        """Generator over monomorphisms between a subgraph of ``G1`` and ``G2``.
+
+        Examples
+        --------
+        When creating the `DiGraphMatcher`, the order of the arguments is important.
+
+        >>> G = nx.DiGraph([(0, 1), (2, 1), (3, 2)])
+        >>> H = nx.DiGraph([(0, 1), (1, 2), (2, 3), (3, 2)])
+
+        Check whether a subgraph of G is monomorphic to H:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(G, H)
+        >>> list(isomatcher.subgraph_monomorphisms_iter())
+        []
+
+        Check whether as subgraph of H is isomorphic to G:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(H, G)
+        >>> next(isomatcher.subgraph_monomorphisms_iter())
+        {3: 0, 2: 1, 1: 2, 0: 3}
+        """
+        return super().subgraph_monomorphisms_iter()
+
 
 class GMState:
     """Internal representation of state for the GraphMatcher class.
