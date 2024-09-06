@@ -419,8 +419,6 @@ class GraphMatcher:
         except StopIteration:
             return False
 
-    #    subgraph_is_isomorphic.__doc__ += "\n" + subgraph.replace('\n','\n'+indent)
-
     def subgraph_isomorphisms_iter(self):
         """Generator over isomorphisms between a subgraph of ``G1`` and ``G2``.
 
@@ -475,8 +473,6 @@ class GraphMatcher:
         self.test = "mono"
         self.initialize()
         yield from self.match()
-
-    #    subgraph_isomorphisms_iter.__doc__ += "\n" + subgraph.replace('\n','\n'+indent)
 
     def syntactic_feasibility(self, G1_node, G2_node):
         """Returns True if adding (G1_node, G2_node) is syntactically feasible.
