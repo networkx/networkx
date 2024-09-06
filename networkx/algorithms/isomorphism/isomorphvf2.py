@@ -392,7 +392,27 @@ class GraphMatcher:
             return False
 
     def subgraph_is_monomorphic(self):
-        """Returns True if a subgraph of G1 is monomorphic to G2."""
+        """Returns `True` if a subgraph of ``G1`` is monomorphic to ``G2``.
+
+        Examples
+        --------
+        When creating the `GraphMatcher`, the order of the arguments is important.
+
+        >>> G = nx.Graph([(0, 1), (1, 2)])
+        >>> H = nx.Graph([(0, 1), (1, 2), (0, 2)])
+
+        Check whether a subgraph of G is monomorphic to H:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(G, H)
+        >>> isomatcher.subgraph_is_monomorphic()
+        False
+
+        Check whether as subgraph of H is isomorphic to G:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(H, G)
+        >>> isomatcher.subgraph_is_monomorphic()
+        True
+        """
         try:
             x = next(self.subgraph_monomorphisms_iter())
             return True
@@ -430,7 +450,27 @@ class GraphMatcher:
         yield from self.match()
 
     def subgraph_monomorphisms_iter(self):
-        """Generator over monomorphisms between a subgraph of G1 and G2."""
+        """Generator over monomorphisms between a subgraph of ``G1`` and ``G2``.
+
+        Examples
+        --------
+        When creating the `GraphMatcher`, the order of the arguments is important.
+
+        >>> G = nx.Graph([(0, 1), (1, 2)])
+        >>> H = nx.Graph([(0, 1), (1, 2), (0, 2)])
+
+        Yield monomorphic mappings between ``H`` and subgraphs of ``G``:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(G, H)
+        >>> list(isomatcher.subgraph_monomorphisms_iter())
+        []
+
+        Yield monomorphic mappings  between ``G`` and subgraphs of ``H``:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(H, G)
+        >>> next(isomatcher.subgraph_monomorphisms_iter())
+        {0: 0, 1: 1, 2: 2}
+        """
         # Declare that we are looking for graph-subgraph monomorphism.
         self.test = "mono"
         self.initialize()
