@@ -50,8 +50,8 @@ GM.mapping stores the isomorphism mapping from G1 to G2.
 Suppose G1 and G2 are isomorphic directed graphs.
 Verification is as follows:
 
->>> G1 = nx.path_graph(4, create_using=nx.DiGraph())
->>> G2 = nx.path_graph(4, create_using=nx.DiGraph())
+>>> G1 = nx.path_graph(4, create_using=nx.DiGraph)
+>>> G2 = nx.path_graph(4, create_using=nx.DiGraph)
 >>> DiGM = isomorphism.DiGraphMatcher(G1, G2)
 >>> DiGM.is_isomorphic()
 True
@@ -68,15 +68,15 @@ Subgraph Isomorphism
 Graph theory literature can be ambiguous about the meaning of the
 above statement, and we seek to clarify it now.
 
-In the VF2 literature, a mapping `M` is said to be a graph-subgraph
-isomorphism iff `M` is an isomorphism between `G2` and a subgraph of `G1`.
-Thus, to say that `G1` and `G2` are graph-subgraph isomorphic is to say
-that a subgraph of `G1` is isomorphic to `G2`.
+In the VF2 literature, a mapping ``M`` is said to be a graph-subgraph
+isomorphism iff ``M`` is an isomorphism between ``G2`` and a subgraph of ``G1``.
+Thus, to say that ``G1`` and ``G2`` are graph-subgraph isomorphic is to say
+that a subgraph of ``G1`` is isomorphic to ``G2``.
 
-Other literature uses the phrase 'subgraph isomorphic' as in '`G1` does
-not have a subgraph isomorphic to `G2`'.  Another use is as an in adverb
-for isomorphic.  Thus, to say that `G1` and `G2` are subgraph isomorphic
-is to say that a subgraph of `G1` is isomorphic to `G2`.
+Other literature uses the phrase 'subgraph isomorphic' as in '``G1`` does
+not have a subgraph isomorphic to ``G2``'.  Another use is as an in adverb
+for isomorphic.  Thus, to say that ``G1`` and ``G2`` are subgraph isomorphic
+is to say that a subgraph of ``G1`` is isomorphic to ``G2``.
 
 Finally, the term 'subgraph' can have multiple meanings. In this
 context, 'subgraph' always means a 'node-induced subgraph'. Edge-induced
@@ -86,26 +86,26 @@ able to perform the check by making use of
 subgraphs which are not induced, the term 'monomorphism' is preferred
 over 'isomorphism'.
 
-Let ``G = (N, E)`` be a graph with a set of nodes `N` and set of edges `E`.
+Let ``G = (N, E)`` be a graph with a set of nodes ``N`` and set of edges ``E``.
 
 If ``G' = (N', E')`` is a subgraph, then:
-    `N'` is a subset of `N` and
-    `E'` is a subset of `E`.
+    ``N'`` is a subset of ``N`` and
+    ``E'`` is a subset of ``E``.
 
 If ``G' = (N', E')`` is a node-induced subgraph, then:
-    `N'` is a subset of `N` and
-    `E'` is the subset of edges in `E` relating nodes in `N'`.
+    ``N'`` is a subset of ``N`` and
+    ``E'`` is the subset of edges in ``E`` relating nodes in ``N'``.
 
-If `G' = (N', E')` is an edge-induced subgraph, then:
-    `N'` is the subset of nodes in `N` related by edges in `E'` and
-    `E'` is a subset of `E`.
+If ``G' = (N', E')`` is an edge-induced subgraph, then:
+    ``N'`` is the subset of nodes in ``N`` related by edges in ``E'`` and
+    ``E'`` is a subset of ``E``.
 
-If `G' = (N', E')` is a monomorphism, then:
-    `N'` is a subset of `N` and
-    `E'` is a subset of the set of edges in `E` relating nodes in `N'`.
+If ``G' = (N', E')`` is a monomorphism, then:
+    ``N'`` is a subset of ``N`` and
+    ``E'`` is a subset of the set of edges in ``E`` relating nodes in ``N'``.
 
-Note that if `G'` is a node-induced subgraph of `G`, then it is always a
-subgraph monomorphism of `G`, but the opposite is not always true, as a
+Note that if ``G'`` is a node-induced subgraph of ``G``, then it is always a
+subgraph monomorphism of ``G``, but the opposite is not always true, as a
 monomorphism can have fewer edges.
 
 References
