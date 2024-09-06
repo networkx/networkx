@@ -117,8 +117,8 @@ class TestNodeLink:
         G.add_node(q)
         G.add_edge("A", q)
         data = node_link_data(G)
-        assert data["links"][0]["source"] == "A"
-        assert data["links"][0]["target"] == q
+        assert data["edges"][0]["source"] == "A"
+        assert data["edges"][0]["target"] == q
         H = node_link_graph(data)
         assert nx.is_isomorphic(G, H)
 
