@@ -364,7 +364,27 @@ class GraphMatcher:
         return True
 
     def subgraph_is_isomorphic(self):
-        """Returns True if a subgraph of G1 is isomorphic to G2."""
+        """Returns `True` if a subgraph of ``G1`` is isomorphic to ``G2``.
+
+        Examples
+        --------
+        When creating the `GraphMatcher`, the order of the arguments is important
+
+        >>> G = nx.Graph([(0, 1), (1, 2), (0, 2)])
+        >>> H = nx.Graph([(0, 1), (1, 2), (0, 2), (1, 3), (0, 4)])
+
+        Check whether a subgraph of G is isomorphic to H:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(G, H)
+        >>> isomatcher.subgraph_is_isomorphic()
+        False
+
+        Check whether as subgraph of H is isomorphic to G:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(H, G)
+        >>> isomatcher.subgraph_is_isomorphic()
+        True
+        """
         try:
             x = next(self.subgraph_isomorphisms_iter())
             return True
@@ -382,7 +402,28 @@ class GraphMatcher:
     #    subgraph_is_isomorphic.__doc__ += "\n" + subgraph.replace('\n','\n'+indent)
 
     def subgraph_isomorphisms_iter(self):
-        """Generator over isomorphisms between a subgraph of G1 and G2."""
+        """Generator over isomorphisms between a subgraph of ``G1`` and ``G2``.
+
+        Examples
+        --------
+        When creating the `GraphMatcher`, the order of the arguments is important
+
+        >>> G = nx.Graph([(0, 1), (1, 2), (0, 2)])
+        >>> H = nx.Graph([(0, 1), (1, 2), (0, 2), (1, 3), (0, 4)])
+
+        Yield isomorphic mappings between ``H`` and subgraphs of ``G``:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(G, H)
+        >>> list(isomatcher.subgraph_isomorphisms_iter())
+        []
+
+        Yield isomorphic mappings  between ``G`` and subgraphs of ``H``:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(H, G)
+        >>> next(isomatcher.subgraph_isomorphisms_iter())
+        {0: 0, 1: 1, 2: 2}
+
+        """
         # Declare that we are looking for graph-subgraph isomorphism.
         self.test = "subgraph"
         self.initialize()
