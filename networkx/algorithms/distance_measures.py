@@ -386,6 +386,7 @@ def diameter(G, e=None, usebounds=False, weight=None):
         e = eccentricity(G, weight=weight)
     return max(e.values())
 
+
 @nx._dispatchable
 def harmonic_diameter(G, sp=None):
     """Returns the harmonic diameter of the graph G.
