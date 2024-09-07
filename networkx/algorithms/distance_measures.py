@@ -396,7 +396,9 @@ def harmonic_diameter(G, sp=None):
 
     Note that in [1] the harmonic diameter is called "connectivity length":
     however, "harmonic diameter" is a more standard name from the
-    theory of metric spaces.
+    theory of metric spaces. The name "harmonic mean distance" is perhaps
+    a more descriptive name, but is not used in the literature, so we use the
+    name "harmonic diameter" here.
 
     Parameters
     ----------
