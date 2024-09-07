@@ -1,5 +1,5 @@
-"""Modularity matrix of graphs.
-"""
+"""Modularity matrix of graphs."""
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -8,6 +8,7 @@ __all__ = ["modularity_matrix", "directed_modularity_matrix"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable(edge_attrs="weight")
 def modularity_matrix(G, nodelist=None, weight=None):
     r"""Returns the modularity matrix of G.
 
@@ -76,6 +77,7 @@ def modularity_matrix(G, nodelist=None, weight=None):
 
 @not_implemented_for("undirected")
 @not_implemented_for("multigraph")
+@nx._dispatchable(edge_attrs="weight")
 def directed_modularity_matrix(G, nodelist=None, weight=None):
     """Returns the directed modularity matrix of G.
 

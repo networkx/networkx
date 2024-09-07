@@ -455,6 +455,68 @@ class TestSpanningTreeIterator:
             tree_index -= 1
 
 
+class TestSpanningTreeMultiGraphIterator:
+    """
+    Uses the same graph as the above class but with an added edge of twice the weight.
+    """
+
+    def setup_method(self):
+        # New graph
+        edges = [
+            (0, 1, 5),
+            (0, 1, 10),
+            (1, 2, 4),
+            (1, 2, 8),
+            (1, 4, 6),
+            (1, 4, 12),
+            (2, 3, 5),
+            (2, 3, 10),
+            (2, 4, 7),
+            (2, 4, 14),
+            (3, 4, 3),
+            (3, 4, 6),
+        ]
+        self.G = nx.MultiGraph()
+        self.G.add_weighted_edges_from(edges)
+
+        # There are 128 trees. I'd rather not list all 128 here, and computing them
+        # on such a small graph actually doesn't take that long.
+        from itertools import combinations
+
+        self.spanning_trees = []
+        for e in combinations(self.G.edges, 4):
+            tree = self.G.edge_subgraph(e)
+            if nx.is_tree(tree):
+                self.spanning_trees.append(sorted(tree.edges(keys=True, data=True)))
+
+    def test_minimum_spanning_tree_iterator_multigraph(self):
+        """
+        Tests that the spanning trees are correctly returned in increasing order
+        """
+        tree_index = 0
+        last_weight = 0
+        for tree in nx.SpanningTreeIterator(self.G):
+            actual = sorted(tree.edges(keys=True, data=True))
+            weight = sum([e[3]["weight"] for e in actual])
+            assert actual in self.spanning_trees
+            assert weight >= last_weight
+            tree_index += 1
+
+    def test_maximum_spanning_tree_iterator_multigraph(self):
+        """
+        Tests that the spanning trees are correctly returned in decreasing order
+        """
+        tree_index = 127
+        # Maximum weight tree is 46
+        last_weight = 50
+        for tree in nx.SpanningTreeIterator(self.G, minimum=False):
+            actual = sorted(tree.edges(keys=True, data=True))
+            weight = sum([e[3]["weight"] for e in actual])
+            assert actual in self.spanning_trees
+            assert weight <= last_weight
+            tree_index -= 1
+
+
 def test_random_spanning_tree_multiplicative_small():
     """
     Using a fixed seed, sample one tree for repeatability.
@@ -706,3 +768,151 @@ def test_random_spanning_tree_additive_large():
     # Assert that p is greater than the significance level so that we do not
     # reject the null hypothesis
     assert not p < 0.05
+
+
+def test_random_spanning_tree_empty_graph():
+    G = nx.Graph()
+    rst = nx.tree.random_spanning_tree(G)
+    assert len(rst.nodes) == 0
+    assert len(rst.edges) == 0
+
+
+def test_random_spanning_tree_single_node_graph():
+    G = nx.Graph()
+    G.add_node(0)
+    rst = nx.tree.random_spanning_tree(G)
+    assert len(rst.nodes) == 1
+    assert len(rst.edges) == 0
+
+
+def test_random_spanning_tree_single_node_loop():
+    G = nx.Graph()
+    G.add_node(0)
+    G.add_edge(0, 0)
+    rst = nx.tree.random_spanning_tree(G)
+    assert len(rst.nodes) == 1
+    assert len(rst.edges) == 0
+
+
+class TestNumberSpanningTrees:
+    @classmethod
+    def setup_class(cls):
+        global np
+        np = pytest.importorskip("numpy")
+        sp = pytest.importorskip("scipy")
+
+    def test_nst_disconnected(self):
+        G = nx.empty_graph(2)
+        assert np.isclose(nx.number_of_spanning_trees(G), 0)
+
+    def test_nst_no_nodes(self):
+        G = nx.Graph()
+        with pytest.raises(nx.NetworkXPointlessConcept):
+            nx.number_of_spanning_trees(G)
+
+    def test_nst_weight(self):
+        G = nx.Graph()
+        G.add_edge(1, 2, weight=1)
+        G.add_edge(1, 3, weight=1)
+        G.add_edge(2, 3, weight=2)
+        # weights are ignored
+        assert np.isclose(nx.number_of_spanning_trees(G), 3)
+        # including weight
+        assert np.isclose(nx.number_of_spanning_trees(G, weight="weight"), 5)
+
+    def test_nst_negative_weight(self):
+        G = nx.Graph()
+        G.add_edge(1, 2, weight=1)
+        G.add_edge(1, 3, weight=-1)
+        G.add_edge(2, 3, weight=-2)
+        # weights are ignored
+        assert np.isclose(nx.number_of_spanning_trees(G), 3)
+        # including weight
+        assert np.isclose(nx.number_of_spanning_trees(G, weight="weight"), -1)
+
+    def test_nst_selfloop(self):
+        # self-loops are ignored
+        G = nx.complete_graph(3)
+        G.add_edge(1, 1)
+        assert np.isclose(nx.number_of_spanning_trees(G), 3)
+
+    def test_nst_multigraph(self):
+        G = nx.MultiGraph()
+        G.add_edge(1, 2)
+        G.add_edge(1, 2)
+        G.add_edge(1, 3)
+        G.add_edge(2, 3)
+        assert np.isclose(nx.number_of_spanning_trees(G), 5)
+
+    def test_nst_complete_graph(self):
+        # this is known as Cayley's formula
+        N = 5
+        G = nx.complete_graph(N)
+        assert np.isclose(nx.number_of_spanning_trees(G), N ** (N - 2))
+
+    def test_nst_path_graph(self):
+        G = nx.path_graph(5)
+        assert np.isclose(nx.number_of_spanning_trees(G), 1)
+
+    def test_nst_cycle_graph(self):
+        G = nx.cycle_graph(5)
+        assert np.isclose(nx.number_of_spanning_trees(G), 5)
+
+    def test_nst_directed_noroot(self):
+        G = nx.empty_graph(3, create_using=nx.MultiDiGraph)
+        with pytest.raises(nx.NetworkXError):
+            nx.number_of_spanning_trees(G)
+
+    def test_nst_directed_root_not_exist(self):
+        G = nx.empty_graph(3, create_using=nx.MultiDiGraph)
+        with pytest.raises(nx.NetworkXError):
+            nx.number_of_spanning_trees(G, root=42)
+
+    def test_nst_directed_not_weak_connected(self):
+        G = nx.DiGraph()
+        G.add_edge(1, 2)
+        G.add_edge(3, 4)
+        assert np.isclose(nx.number_of_spanning_trees(G, root=1), 0)
+
+    def test_nst_directed_cycle_graph(self):
+        G = nx.DiGraph()
+        G = nx.cycle_graph(7, G)
+        assert np.isclose(nx.number_of_spanning_trees(G, root=0), 1)
+
+    def test_nst_directed_complete_graph(self):
+        G = nx.DiGraph()
+        G = nx.complete_graph(7, G)
+        assert np.isclose(nx.number_of_spanning_trees(G, root=0), 7**5)
+
+    def test_nst_directed_multi(self):
+        G = nx.MultiDiGraph()
+        G = nx.cycle_graph(3, G)
+        G.add_edge(1, 2)
+        assert np.isclose(nx.number_of_spanning_trees(G, root=0), 2)
+
+    def test_nst_directed_selfloop(self):
+        G = nx.MultiDiGraph()
+        G = nx.cycle_graph(3, G)
+        G.add_edge(1, 1)
+        assert np.isclose(nx.number_of_spanning_trees(G, root=0), 1)
+
+    def test_nst_directed_weak_connected(self):
+        G = nx.MultiDiGraph()
+        G = nx.cycle_graph(3, G)
+        G.remove_edge(1, 2)
+        assert np.isclose(nx.number_of_spanning_trees(G, root=0), 0)
+
+    def test_nst_directed_weighted(self):
+        # from root=1:
+        # arborescence 1: 1->2, 1->3, weight=2*1
+        # arborescence 2: 1->2, 2->3, weight=2*3
+        G = nx.DiGraph()
+        G.add_edge(1, 2, weight=2)
+        G.add_edge(1, 3, weight=1)
+        G.add_edge(2, 3, weight=3)
+        Nst = nx.number_of_spanning_trees(G, root=1, weight="weight")
+        assert np.isclose(Nst, 8)
+        Nst = nx.number_of_spanning_trees(G, root=2, weight="weight")
+        assert np.isclose(Nst, 0)
+        Nst = nx.number_of_spanning_trees(G, root=3, weight="weight")
+        assert np.isclose(Nst, 0)

@@ -1,6 +1,7 @@
 """
 Eulerian circuits and graphs.
 """
+
 from itertools import combinations
 
 import networkx as nx
@@ -17,6 +18,7 @@ __all__ = [
 ]
 
 
+@nx._dispatchable
 def is_eulerian(G):
     """Returns True if and only if `G` is Eulerian.
 
@@ -68,6 +70,7 @@ def is_eulerian(G):
     return all(d % 2 == 0 for v, d in G.degree()) and nx.is_connected(G)
 
 
+@nx._dispatchable
 def is_semieulerian(G):
     """Return True iff `G` is semi-Eulerian.
 
@@ -152,6 +155,7 @@ def _multigraph_eulerian_circuit(G, source):
             G.remove_edge(current_vertex, next_vertex, next_key)
 
 
+@nx._dispatchable
 def eulerian_circuit(G, source=None, keys=False):
     """Returns an iterator over the edges of an Eulerian circuit in `G`.
 
@@ -232,6 +236,7 @@ def eulerian_circuit(G, source=None, keys=False):
         yield from _simplegraph_eulerian_circuit(G, source)
 
 
+@nx._dispatchable
 def has_eulerian_path(G, source=None):
     """Return True iff `G` has an Eulerian path.
 
@@ -326,6 +331,7 @@ def has_eulerian_path(G, source=None):
         return sum(d % 2 == 1 for v, d in G.degree()) == 2 and nx.is_connected(G)
 
 
+@nx._dispatchable
 def eulerian_path(G, source=None, keys=False):
     """Return an iterator over the edges of an Eulerian path in `G`.
 
@@ -381,6 +387,7 @@ def eulerian_path(G, source=None, keys=False):
 
 
 @not_implemented_for("directed")
+@nx._dispatchable(returns_graph=True)
 def eulerize(G):
     """Transforms a graph into an Eulerian graph.
 

@@ -1,6 +1,5 @@
 """Unit tests for pydot drawing functions."""
-import os
-import tempfile
+
 from io import StringIO
 
 import pytest
@@ -11,9 +10,10 @@ from networkx.utils import graphs_equal
 pydot = pytest.importorskip("pydot")
 
 
-@pytest.mark.xfail
 class TestPydot:
-    def pydot_checks(self, G, prog):
+    @pytest.mark.parametrize("G", (nx.Graph(), nx.DiGraph()))
+    @pytest.mark.parametrize("prog", ("neato", "dot"))
+    def test_pydot(self, G, prog, tmp_path):
         """
         Validate :mod:`pydot`-based usage of the passed NetworkX graph with the
         passed basename of an external GraphViz command (e.g., `dot`, `neato`).
@@ -40,7 +40,7 @@ class TestPydot:
         # Validate the original and resulting graphs to be the same.
         assert graphs_equal(G, G2)
 
-        fd, fname = tempfile.mkstemp()
+        fname = tmp_path / "out.dot"
 
         # Serialize this "pydot.Dot" instance to a temporary file in dot format
         P.write_raw(fname)
@@ -79,15 +79,6 @@ class TestPydot:
         # Validate the original and resulting graphs to be the same.
         assert graphs_equal(G, Hin)
 
-        os.close(fd)
-        os.unlink(fname)
-
-    def test_undirected(self):
-        self.pydot_checks(nx.Graph(), prog="neato")
-
-    def test_directed(self):
-        self.pydot_checks(nx.DiGraph(), prog="dot")
-
     def test_read_write(self):
         G = nx.MultiGraph()
         G.graph["name"] = "G"
@@ -99,58 +90,23 @@ class TestPydot:
         assert graphs_equal(G, H)
 
 
-def test_pydot_issue_258():
-    G = nx.Graph([("Example:A", 1)])
-    with pytest.raises(ValueError):
-        nx.nx_pydot.to_pydot(G)
-    with pytest.raises(ValueError):
-        nx.nx_pydot.pydot_layout(G)
+def test_pydot_issue_7581(tmp_path):
+    """Validate that `nx_pydot.pydot_layout` handles nodes
+    with characters like "\n", " ".
 
+    Those characters cause `pydot` to escape and quote them on output,
+    which caused #7581.
+    """
     G = nx.Graph()
-    G.add_node("1.2", style="filled", fillcolor="red:yellow")
-    with pytest.raises(ValueError):
-        nx.nx_pydot.to_pydot(G)
-    G.remove_node("1.2")
-    G.add_node("1.2", style="filled", fillcolor='"red:yellow"')
-    assert (
-        G.nodes.data() == nx.nx_pydot.from_pydot(nx.nx_pydot.to_pydot(G)).nodes.data()
-    )
+    G.add_edges_from([("A\nbig test", "B"), ("A\nbig test", "C"), ("B", "C")])
 
-    G = nx.DiGraph()
-    G.add_edge("1", "2", foo="bar:1")
-    with pytest.raises(ValueError):
-        nx.nx_pydot.to_pydot(G)
-    G = nx.DiGraph()
-    G.add_edge("1", "2", foo='"bar:1"')
-    assert G["1"]["2"] == nx.nx_pydot.from_pydot(nx.nx_pydot.to_pydot(G))["1"]["2"]
+    graph_layout = nx.nx_pydot.pydot_layout(G, prog="dot")
+    assert isinstance(graph_layout, dict)
 
-    G = nx.MultiGraph()
-    G.add_edge("1", "2", foo="b:1")
-    G.add_edge("1", "2", bar="foo:foo")
-    with pytest.raises(ValueError):
-        nx.nx_pydot.to_pydot(G)
-    G = nx.MultiGraph()
-    G.add_edge("1", "2", foo='"b:1"')
-    G.add_edge("1", "2", bar='"foo:foo"')
-    # Keys as integers aren't preserved in the conversion. They are read as strings.
-    assert [attr for _, _, attr in G.edges.data()] == [
-        attr
-        for _, _, attr in nx.nx_pydot.from_pydot(nx.nx_pydot.to_pydot(G)).edges.data()
-    ]
-
-    G = nx.Graph()
-    G.add_edge("1", "2")
-    G["1"]["2"]["f:oo"] = "bar"
-    with pytest.raises(ValueError):
-        nx.nx_pydot.to_pydot(G)
-    G = nx.Graph()
-    G.add_edge("1", "2")
-    G["1"]["2"]['"f:oo"'] = "bar"
-    assert G["1"]["2"] == nx.nx_pydot.from_pydot(nx.nx_pydot.to_pydot(G))["1"]["2"]
-
-    G = nx.Graph([('"Example:A"', 1)])
-    layout = nx.nx_pydot.pydot_layout(G)
-    assert isinstance(layout, dict)
+    # Convert the graph to pydot and back into a graph. There should be no difference.
+    P = nx.nx_pydot.to_pydot(G)
+    G2 = nx.Graph(nx.nx_pydot.from_pydot(P))
+    assert graphs_equal(G, G2)
 
 
 @pytest.mark.parametrize(
@@ -177,7 +133,7 @@ def test_hashable_pydot(graph_type):
     )
 
 
-def test_pydot_numrical_name():
+def test_pydot_numerical_name():
     G = nx.Graph()
     G.add_edges_from([("A", "B"), (0, 1)])
     graph_layout = nx.nx_pydot.pydot_layout(G, prog="dot")

@@ -3,6 +3,7 @@ Provides functions for finding and testing for locally `(k, l)`-connected
 graphs.
 
 """
+
 import copy
 
 import networkx as nx
@@ -10,6 +11,7 @@ import networkx as nx
 __all__ = ["kl_connected_subgraph", "is_kl_connected"]
 
 
+@nx._dispatchable(returns_graph=True)
 def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
     """Returns the maximum locally `(k, l)`-connected subgraph of `G`.
 
@@ -114,6 +116,7 @@ def kl_connected_subgraph(G, k, l, low_memory=False, same_as_graph=False):
     return H
 
 
+@nx._dispatchable
 def is_kl_connected(G, k, l, low_memory=False):
     """Returns True if and only if `G` is locally `(k, l)`-connected.
 

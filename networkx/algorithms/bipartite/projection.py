@@ -1,4 +1,5 @@
 """One-mode (unipartite) projections of bipartite graphs."""
+
 import networkx as nx
 from networkx.exception import NetworkXAlgorithmError
 from networkx.utils import not_implemented_for
@@ -12,6 +13,9 @@ __all__ = [
 ]
 
 
+@nx._dispatchable(
+    graphs="B", preserve_node_attrs=True, preserve_graph_attrs=True, returns_graph=True
+)
 def projected_graph(B, nodes, multigraph=False):
     r"""Returns the projection of B onto one of its node sets.
 
@@ -116,6 +120,7 @@ def projected_graph(B, nodes, multigraph=False):
 
 
 @not_implemented_for("multigraph")
+@nx._dispatchable(graphs="B", returns_graph=True)
 def weighted_projected_graph(B, nodes, ratio=False):
     r"""Returns a weighted projection of B onto one of its node sets.
 
@@ -216,6 +221,7 @@ def weighted_projected_graph(B, nodes, ratio=False):
 
 
 @not_implemented_for("multigraph")
+@nx._dispatchable(graphs="B", returns_graph=True)
 def collaboration_weighted_projected_graph(B, nodes):
     r"""Newman's weighted projection of B onto one of its node sets.
 
@@ -260,7 +266,6 @@ def collaboration_weighted_projected_graph(B, nodes):
     [0, 2, 4, 5]
     >>> for edge in sorted(G.edges(data=True)):
     ...     print(edge)
-    ...
     (0, 2, {'weight': 0.5})
     (0, 5, {'weight': 0.5})
     (2, 4, {'weight': 1.0})
@@ -310,6 +315,7 @@ def collaboration_weighted_projected_graph(B, nodes):
 
 
 @not_implemented_for("multigraph")
+@nx._dispatchable(graphs="B", returns_graph=True)
 def overlap_weighted_projected_graph(B, nodes, jaccard=True):
     r"""Overlap weighted projection of B onto one of its node sets.
 
@@ -409,6 +415,7 @@ def overlap_weighted_projected_graph(B, nodes, jaccard=True):
 
 
 @not_implemented_for("multigraph")
+@nx._dispatchable(graphs="B", preserve_all_attrs=True, returns_graph=True)
 def generic_weighted_projected_graph(B, nodes, weight_function=None):
     r"""Weighted projection of B with a user-specified weight function.
 
@@ -446,22 +453,18 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None):
     ...     unbrs = set(G[u])
     ...     vnbrs = set(G[v])
     ...     return float(len(unbrs & vnbrs)) / len(unbrs | vnbrs)
-    ...
     >>> def my_weight(G, u, v, weight="weight"):
     ...     w = 0
     ...     for nbr in set(G[u]) & set(G[v]):
     ...         w += G[u][nbr].get(weight, 1) + G[v][nbr].get(weight, 1)
     ...     return w
-    ...
     >>> # A complete bipartite graph with 4 nodes and 4 edges
     >>> B = nx.complete_bipartite_graph(2, 2)
     >>> # Add some arbitrary weight to the edges
     >>> for i, (u, v) in enumerate(B.edges()):
     ...     B.edges[u, v]["weight"] = i + 1
-    ...
     >>> for edge in B.edges(data=True):
     ...     print(edge)
-    ...
     (0, 2, {'weight': 1})
     (0, 3, {'weight': 2})
     (1, 2, {'weight': 3})

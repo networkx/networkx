@@ -75,7 +75,7 @@ G = miles_graph()
 print("Loaded miles_dat.txt containing 128 cities.")
 print(G)
 
-# make new graph of cites, edge if less then 300 miles between them
+# make new graph of cites, edge if less than 300 miles between them
 H = nx.Graph()
 for v in G:
     H.add_node(v)

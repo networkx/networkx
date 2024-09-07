@@ -207,7 +207,7 @@ The listed alternatives are not mutually exclusive.
      NetworkXError: NodeView does not support slicing. Try list(G.nodes)[0:10].
 
 - Instead of changing the behavior of ``__getitem__`` we can implement a new
-  method, something like ``G.nodes.head(x)`` (insipired by pandas) which
+  method, something like ``G.nodes.head(x)`` (inspired by pandas) which
   returns the first x nodes.
   This approach could be expanded to using a ``slice`` object directly but
   interfacing it with an independent ``slice`` method of G.nodes and G.edges

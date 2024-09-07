@@ -1,5 +1,5 @@
 ************
-Wiener index
+Wiener Index
 ************
 
 .. automodule:: networkx.algorithms.wiener
@@ -7,3 +7,5 @@ Wiener index
    :toctree: generated/
 
    wiener_index
+   schultz_index
+   gutman_index

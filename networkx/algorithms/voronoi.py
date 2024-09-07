@@ -1,10 +1,12 @@
 """Functions for computing the Voronoi cells of a graph."""
+
 import networkx as nx
 from networkx.utils import groups
 
 __all__ = ["voronoi_cells"]
 
 
+@nx._dispatchable(edge_attrs="weight")
 def voronoi_cells(G, center_nodes, weight="weight"):
     """Returns the Voronoi cells centered at `center_nodes` with respect
     to the shortest-path distance metric.

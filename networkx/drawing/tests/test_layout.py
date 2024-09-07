@@ -1,4 +1,5 @@
 """Unit tests for layout functions."""
+
 import pytest
 
 import networkx as nx
@@ -55,6 +56,7 @@ class TestLayout:
         nx.circular_layout(G)
         nx.planar_layout(G)
         nx.spring_layout(G)
+        nx.forceatlas2_layout(G)
         nx.fruchterman_reingold_layout(G)
         nx.fruchterman_reingold_layout(self.bigG)
         nx.spectral_layout(G)
@@ -74,6 +76,7 @@ class TestLayout:
         nx.circular_layout(G)
         nx.planar_layout(G)
         nx.spring_layout(G)
+        nx.forceatlas2_layout(G)
         nx.fruchterman_reingold_layout(G)
         nx.spectral_layout(G)
         nx.shell_layout(G)
@@ -173,6 +176,10 @@ class TestLayout:
         vpos = nx.shell_layout(G, [[0], [1, 2], [3]], rotate=0)
         assert np.linalg.norm(vpos[3]) <= 1  # ensure node 3 fits (#3753)
 
+    def test_smoke_initial_pos_forceatlas2(self):
+        pos = nx.circular_layout(self.Gi)
+        npos = nx.forceatlas2_layout(self.Gi, pos=pos)
+
     def test_smoke_initial_pos_fruchterman_reingold(self):
         pos = nx.circular_layout(self.Gi)
         npos = nx.fruchterman_reingold_layout(self.Gi, pos=pos)
@@ -247,6 +254,8 @@ class TestLayout:
         vpos = nx.multipartite_layout(G, center=(1, 1))
         assert vpos == {}
         vpos = nx.kamada_kawai_layout(G, center=(1, 1))
+        assert vpos == {}
+        vpos = nx.forceatlas2_layout(G)
         assert vpos == {}
         vpos = nx.arf_layout(G)
         assert vpos == {}
@@ -387,6 +396,15 @@ class TestLayout:
         dist = np.linalg.norm(p[1:] - p[:-1], axis=1)
         assert np.allclose(np.diff(dist), 0, atol=1e-3)
 
+    def test_forceatlas2_layout_partial_input_test(self):
+        # check whether partial pos input still returns a full proper position
+        G = self.Gs
+        node = nx.utils.arbitrary_element(G)
+        pos = nx.circular_layout(G)
+        del pos[node]
+        pos = nx.forceatlas2_layout(G, pos=pos)
+        assert len(pos) == len(G)
+
     def test_rescale_layout_dict(self):
         G = nx.empty_graph()
         vpos = nx.random_layout(G, center=(1, 1))
@@ -418,9 +436,7 @@ class TestLayout:
             assert (s_vpos[k] == v).all()
 
     def test_arf_layout_partial_input_test(self):
-        """
-        Checks whether partial pos input still returns a proper position.
-        """
+        # Checks whether partial pos input still returns a proper position.
         G = self.Gs
         node = nx.utils.arbitrary_element(G)
         pos = nx.circular_layout(G)
@@ -434,6 +450,13 @@ class TestLayout:
         """
         G = self.Gs
         pytest.raises(ValueError, nx.arf_layout, G=G, a=-1)
+
+    def test_smoke_seed_input(self):
+        G = self.Gs
+        nx.random_layout(G, seed=42)
+        nx.spring_layout(G, seed=42)
+        nx.arf_layout(G, seed=42)
+        nx.forceatlas2_layout(G, seed=42)
 
 
 def test_multipartite_layout_nonnumeric_partition_labels():
@@ -452,11 +475,17 @@ def test_multipartite_layout_layer_order():
     """Return the layers in sorted order if the layers of the multipartite
     graph are sortable. See gh-5691"""
     G = nx.Graph()
-    for node, layer in zip(("a", "b", "c", "d", "e"), (2, 3, 1, 2, 4)):
+    node_group = dict(zip(("a", "b", "c", "d", "e"), (2, 3, 1, 2, 4)))
+    for node, layer in node_group.items():
         G.add_node(node, subset=layer)
 
     # Horizontal alignment, therefore y-coord determines layers
     pos = nx.multipartite_layout(G, align="horizontal")
+
+    layers = nx.utils.groups(node_group)
+    pos_from_layers = nx.multipartite_layout(G, align="horizontal", subset_key=layers)
+    for (n1, p1), (n2, p2) in zip(pos.items(), pos_from_layers.items()):
+        assert n1 == n2 and (p1 == p2).all()
 
     # Nodes "a" and "d" are in the same layer
     assert pos["a"][-1] == pos["d"][-1]
@@ -467,3 +496,43 @@ def test_multipartite_layout_layer_order():
     G.nodes["a"]["subset"] = "layer_0"  # Can't sort mixed strs/ints
     pos_nosort = nx.multipartite_layout(G)  # smoke test: this should not raise
     assert pos_nosort.keys() == pos.keys()
+
+
+def _num_nodes_per_bfs_layer(pos):
+    """Helper function to extract the number of nodes in each layer of bfs_layout"""
+    x = np.array(list(pos.values()))[:, 0]  # node positions in layered dimension
+    _, layer_count = np.unique(x, return_counts=True)
+    return layer_count
+
+
+@pytest.mark.parametrize("n", range(2, 7))
+def test_bfs_layout_complete_graph(n):
+    """The complete graph should result in two layers: the starting node and
+    a second layer containing all neighbors."""
+    G = nx.complete_graph(n)
+    pos = nx.bfs_layout(G, start=0)
+    assert np.array_equal(_num_nodes_per_bfs_layer(pos), [1, n - 1])
+
+
+def test_bfs_layout_barbell():
+    G = nx.barbell_graph(5, 3)
+    # Start in one of the "bells"
+    pos = nx.bfs_layout(G, start=0)
+    # start, bell-1, [1] * len(bar)+1, bell-1
+    expected_nodes_per_layer = [1, 4, 1, 1, 1, 1, 4]
+    assert np.array_equal(_num_nodes_per_bfs_layer(pos), expected_nodes_per_layer)
+    # Start in the other "bell" - expect same layer pattern
+    pos = nx.bfs_layout(G, start=12)
+    assert np.array_equal(_num_nodes_per_bfs_layer(pos), expected_nodes_per_layer)
+    # Starting in the center of the bar, expect layers to be symmetric
+    pos = nx.bfs_layout(G, start=6)
+    # Expected layers: {6 (start)}, {5, 7}, {4, 8}, {8 nodes from remainder of bells}
+    expected_nodes_per_layer = [1, 2, 2, 8]
+    assert np.array_equal(_num_nodes_per_bfs_layer(pos), expected_nodes_per_layer)
+
+
+def test_bfs_layout_disconnected():
+    G = nx.complete_graph(5)
+    G.add_edges_from([(10, 11), (11, 12)])
+    with pytest.raises(nx.NetworkXError, match="bfs_layout didn't include all nodes"):
+        nx.bfs_layout(G, start=0)

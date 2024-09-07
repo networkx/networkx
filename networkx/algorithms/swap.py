@@ -1,5 +1,4 @@
-"""Swap edges in a graph.
-"""
+"""Swap edges in a graph."""
 
 import math
 
@@ -9,8 +8,9 @@ from networkx.utils import py_random_state
 __all__ = ["double_edge_swap", "connected_double_edge_swap", "directed_edge_swap"]
 
 
-@py_random_state(3)
 @nx.utils.not_implemented_for("undirected")
+@py_random_state(3)
+@nx._dispatchable(mutates_input=True, returns_graph=True)
 def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
     """Swap three edges in a directed graph while keeping the node degrees fixed.
 
@@ -55,6 +55,8 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
     Does not enforce any connectivity constraints.
 
     The graph G is modified in place.
+
+    A later swap is allowed to undo a previous swap.
 
     References
     ----------
@@ -130,6 +132,7 @@ def directed_edge_swap(G, *, nswap=1, max_tries=100, seed=None):
 
 
 @py_random_state(3)
+@nx._dispatchable(mutates_input=True, returns_graph=True)
 def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
     """Swap two edges in the graph while keeping the node degrees fixed.
 
@@ -227,6 +230,7 @@ def double_edge_swap(G, nswap=1, max_tries=100, seed=None):
 
 
 @py_random_state(3)
+@nx._dispatchable(mutates_input=True)
 def connected_double_edge_swap(G, nswap=1, _window_threshold=3, seed=None):
     """Attempts the specified number of double-edge swaps in the graph `G`.
 

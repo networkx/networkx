@@ -288,6 +288,7 @@ def preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq, value_on
     return R
 
 
+@nx._dispatchable(edge_attrs={"capacity": float("inf")}, returns_graph=True)
 def preflow_push(
     G, s, t, capacity="capacity", residual=None, global_relabel_freq=1, value_only=False
 ):
@@ -420,4 +421,5 @@ def preflow_push(
     """
     R = preflow_push_impl(G, s, t, capacity, residual, global_relabel_freq, value_only)
     R.graph["algorithm"] = "preflow_push"
+    nx._clear_cache(R)
     return R

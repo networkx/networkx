@@ -1,5 +1,5 @@
-""" Fast approximation for k-component structure
-"""
+"""Fast approximation for k-component structure"""
+
 import itertools
 from collections import defaultdict
 from collections.abc import Mapping
@@ -14,6 +14,7 @@ __all__ = ["k_components"]
 
 
 @not_implemented_for("directed")
+@nx._dispatchable(name="approximate_k_components")
 def k_components(G, min_density=0.95):
     r"""Returns the approximate k-component structure of a graph G.
 

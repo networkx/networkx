@@ -1,6 +1,7 @@
 """
 Vitality measures.
 """
+
 from functools import partial
 
 import networkx as nx
@@ -8,6 +9,7 @@ import networkx as nx
 __all__ = ["closeness_vitality"]
 
 
+@nx._dispatchable(edge_attrs="weight")
 def closeness_vitality(G, node=None, weight=None, wiener_index=None):
     """Returns the closeness vitality for nodes in the graph.
 
@@ -71,5 +73,4 @@ def closeness_vitality(G, node=None, weight=None, wiener_index=None):
         after = nx.wiener_index(G.subgraph(set(G) - {node}), weight=weight)
         return wiener_index - after
     vitality = partial(closeness_vitality, G, weight=weight, wiener_index=wiener_index)
-    # TODO This can be trivially parallelized.
     return {v: vitality(node=v) for v in G}

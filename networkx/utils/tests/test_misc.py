@@ -6,6 +6,7 @@ import pytest
 import networkx as nx
 from networkx.utils import (
     PythonRandomInterface,
+    PythonRandomViaNumpyBits,
     arbitrary_element,
     create_py_random_state,
     create_random_state,
@@ -184,21 +185,31 @@ def test_create_py_random_state():
     rs = np.random.RandomState
     rng = np.random.default_rng(1000)
     rng_explicit = np.random.Generator(np.random.SFC64())
-    nprs = PythonRandomInterface
+    old_nprs = PythonRandomInterface
+    nprs = PythonRandomViaNumpyBits
     assert isinstance(create_py_random_state(np.random), nprs)
-    assert isinstance(create_py_random_state(rs(1)), nprs)
+    assert isinstance(create_py_random_state(rs(1)), old_nprs)
     assert isinstance(create_py_random_state(rng), nprs)
     assert isinstance(create_py_random_state(rng_explicit), nprs)
     # test default rng input
-    assert isinstance(PythonRandomInterface(), nprs)
+    assert isinstance(PythonRandomInterface(), old_nprs)
+    assert isinstance(PythonRandomViaNumpyBits(), nprs)
+
+    # VeryLargeIntegers Smoke test (they raise error for np.random)
+    int64max = 9223372036854775807  # from np.iinfo(np.int64).max
+    for r in (rng, rs(1)):
+        prs = create_py_random_state(r)
+        prs.randrange(3, int64max + 5)
+        prs.randint(3, int64max + 5)
 
 
 def test_PythonRandomInterface_RandomState():
     np = pytest.importorskip("numpy")
 
+    seed = 42
     rs = np.random.RandomState
-    rng = PythonRandomInterface(rs(42))
-    rs42 = rs(42)
+    rng = PythonRandomInterface(rs(seed))
+    rs42 = rs(seed)
 
     # make sure these functions are same as expected outcome
     assert rng.randrange(3, 5) == rs42.randint(3, 5)
@@ -219,8 +230,9 @@ def test_PythonRandomInterface_RandomState():
 def test_PythonRandomInterface_Generator():
     np = pytest.importorskip("numpy")
 
-    rng = np.random.default_rng(42)
-    pri = PythonRandomInterface(np.random.default_rng(42))
+    seed = 42
+    rng = np.random.default_rng(seed)
+    pri = PythonRandomInterface(np.random.default_rng(seed))
 
     # make sure these functions are same as expected outcome
     assert pri.randrange(3, 5) == rng.integers(3, 5)
@@ -247,7 +259,8 @@ def test_arbitrary_element(iterable_type, expected):
 
 
 @pytest.mark.parametrize(
-    "iterator", ((i for i in range(3)), iter([1, 2, 3]))  # generator
+    "iterator",
+    ((i for i in range(3)), iter([1, 2, 3])),  # generator
 )
 def test_arbitrary_element_raises(iterator):
     """Value error is raised when input is an iterator."""

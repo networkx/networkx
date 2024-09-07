@@ -57,6 +57,7 @@ Visualization API with Matplotlib
   as well as code in the form of PR(s) which implement (part of) that API with tests.
 
 - Interested Mentors: `@dschult <https://github.com/dschult/>`__,
+  `@rossbar <https://github.com/rossbar/>`__
 
 - Expected time commitment: This project will be a full time 10 week project (~350 hrs).
 
@@ -77,11 +78,44 @@ Incorporate a Python library for ISMAGs isomorphism calculations
   with code to do that incorporation.
 
 - Interested Mentors: `@dschult <https://github.com/dschult/>`__,
+  `@rossbar <https://github.com/rossbar/>`__
 
 - Expected time commitment: This project will be a full time 10 week project (~350 hrs).
 
+Centrality Atlas
+----------------
+
+- Abstract: The goal of this project would be to produce a comprehensive review
+  of network centrality measures.
+  Centrality is a central concept in network science and has many applications
+  across domains. NetworkX provides many functions for measuring
+  various types of :doc:`network centrality</reference/algorithms/centrality>`.
+  The individual centrality functions are typically well-described by their
+  docstrings (though there's always room for improvement!); however, there
+  currently is no big-picture overview of centrality.
+  Furthermore, many of the centrality measures are closely related, but there is
+  no documentation that describes these relationships.
+
+- Recommended Skills: Python, literature review, technical writing
+
+- Expected Outcome: An executable document that provides an overview and applications
+  of network centrality measures. Potential outputs include (but are not limited
+  to): an article for ``nx-guides`` (see above) and/or an example gallery for centrality
+  measures.
+
+- Interested Mentors: `@dschult <https://github.com/dschult/>`__,
+  `@rossbar <https://github.com/rossbar/>`__
+
+- Expected time commitment: Variable, though a high-quality review article would
+  be expected to take several months of dedicated research (~350 hours).
+
 Completed Projects
 ==================
+
+- `Revisiting and expanding nx-parallel`_
+    - Program: Google Summer of Code 2024
+    - Contributor: `@Schefflera-Arboricola <https://github.com/Schefflera-Arboricola>`__
+    - Link to Proposal: `GSoC 2024: Revisiting and expanding nx-parallel <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2024-Revisiting-and-expanding-nx-parallel.pdf>`_
 
 - `VF2++ algorithm for graph isomorphism`_
     - Program: Google Summer of Code 2022
@@ -116,6 +150,7 @@ Completed Projects
     - Contributor: `@MridulS <https://github.com/MridulS/>`__
     - Link to Proposal: `GSoC 2015: NetworkX 2.0 API <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2015-NetworkX-2.0-api.md>`__
 
+.. _`Revisiting and expanding nx-parallel`: https://github.com/Schefflera-Arboricola/blogs/tree/main/networkx/GSoC24
 .. _`VF2++ algorithm for graph isomorphism`: https://github.com/networkx/networkx/pull/5788
 .. _`Louvain community detection algorithm`: https://github.com/networkx/networkx/pull/4929
 .. _`Asadpour algorithm for directed travelling salesman problem`: https://github.com/networkx/networkx/pull/4740

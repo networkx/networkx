@@ -36,6 +36,7 @@ the smaller of the two partitions, and for which the sum of the weights of the
 edges included in the matching is minimal.
 
 """
+
 import collections
 import itertools
 
@@ -54,6 +55,7 @@ __all__ = [
 INFINITY = float("inf")
 
 
+@nx._dispatchable
 def hopcroft_karp_matching(G, top_nodes=None):
     """Returns the maximum cardinality matching of the bipartite graph `G`.
 
@@ -180,6 +182,7 @@ def hopcroft_karp_matching(G, top_nodes=None):
     return dict(itertools.chain(leftmatches.items(), rightmatches.items()))
 
 
+@nx._dispatchable
 def eppstein_matching(G, top_nodes=None):
     """Returns the maximum cardinality matching of the bipartite graph `G`.
 
@@ -418,6 +421,7 @@ def _connected_by_alternating_paths(G, matching, targets):
     }
 
 
+@nx._dispatchable
 def to_vertex_cover(G, matching, top_nodes=None):
     """Returns the minimum vertex cover corresponding to the given maximum
     matching of the bipartite graph `G`.
@@ -498,6 +502,7 @@ def to_vertex_cover(G, matching, top_nodes=None):
 maximum_matching = hopcroft_karp_matching
 
 
+@nx._dispatchable(edge_attrs="weight")
 def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     r"""Returns a minimum weight full matching of the bipartite graph `G`.
 
@@ -531,6 +536,7 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     weight : string, optional (default='weight')
 
        The edge data key used to provide each value in the matrix.
+       If None, then each edge has weight 1.
 
     Returns
     -------
@@ -568,7 +574,7 @@ def minimum_weight_full_matching(G, top_nodes=None, weight="weight"):
     left, right = nx.bipartite.sets(G, top_nodes)
     U = list(left)
     V = list(right)
-    # We explicitly create the biadjancency matrix having infinities
+    # We explicitly create the biadjacency matrix having infinities
     # where edges are missing (as opposed to zeros, which is what one would
     # get by using toarray on the sparse matrix).
     weights_sparse = biadjacency_matrix(

@@ -1,6 +1,7 @@
 """
 Unit tests for dedensification and graph summarization
 """
+
 import pytest
 
 import networkx as nx
@@ -103,7 +104,7 @@ class TestDirectedDedensification:
 
     def test_dedensify_edge_count(self):
         """
-        Verifies that dedensify produced the correct number of comrpessor nodes
+        Verifies that dedensify produced the correct number of compressor nodes
         in a directed graph
         """
         G = self.build_original_graph()
@@ -255,7 +256,7 @@ class AbstractSNAP:
 
         label_mapping = {}
         for index, node in enumerate(node_labels):
-            label = "Supernode-%s" % index
+            label = f"Supernode-{index}"
             label_mapping[node] = label
 
         return nx.relabel_nodes(G, label_mapping)

@@ -11,8 +11,11 @@ General guidelines for writing good tests:
   and add the module to the relevant entries below.
 
 """
+
+import os
 import sys
 import warnings
+from importlib.metadata import entry_points
 
 import pytest
 
@@ -23,16 +26,60 @@ def pytest_addoption(parser):
     parser.addoption(
         "--runslow", action="store_true", default=False, help="run slow tests"
     )
+    parser.addoption(
+        "--backend",
+        action="store",
+        default=None,
+        help="Run tests with a backend by auto-converting nx graphs to backend graphs",
+    )
+    parser.addoption(
+        "--fallback-to-nx",
+        action="store_true",
+        default=False,
+        help="Run nx function if a backend doesn't implement a dispatchable function"
+        " (use with --backend)",
+    )
 
 
 def pytest_configure(config):
     config.addinivalue_line("markers", "slow: mark test as slow to run")
+    backend = config.getoption("--backend")
+    if backend is None:
+        backend = os.environ.get("NETWORKX_TEST_BACKEND")
+    # nx_loopback backend is only available when testing with a backend
+    loopback_ep = entry_points(name="nx_loopback", group="networkx.backends")
+    if not loopback_ep:
+        warnings.warn(
+            "\n\n             WARNING: Mixed NetworkX configuration! \n\n"
+            "        This environment has mixed configuration for networkx.\n"
+            "        The test object nx_loopback is not configured correctly.\n"
+            "        You should not be seeing this message.\n"
+            "        Try `pip install -e .`, or change your PYTHONPATH\n"
+            "        Make sure python finds the networkx repo you are testing\n\n"
+        )
+    if backend:
+        networkx.utils.backends.backends["nx_loopback"] = loopback_ep["nx_loopback"]
+        networkx.config["backend_priority"] = [backend]
+        networkx.config.backends = networkx.utils.Config(
+            nx_loopback=networkx.utils.Config(),
+            **networkx.config.backends,
+        )
+        fallback_to_nx = config.getoption("--fallback-to-nx")
+        if not fallback_to_nx:
+            fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
+        networkx.utils.backends._dispatchable._fallback_to_nx = bool(fallback_to_nx)
 
 
 def pytest_collection_modifyitems(config, items):
-    # Allow pluggable backends to add markers to tests when
-    # running in auto-conversion test mode
-    networkx.classes.backends._mark_tests(items)
+    # Setting this to True here allows tests to be set up before dispatching
+    # any function call to a backend.
+    networkx.utils.backends._dispatchable._is_testing = True
+    if backend_priority := networkx.config["backend_priority"]:
+        # Allow pluggable backends to add markers to tests (such as skip or xfail)
+        # when running in auto-conversion test mode
+        backend = networkx.utils.backends.backends[backend_priority[0]].load()
+        if hasattr(backend, "on_start_tests"):
+            getattr(backend, "on_start_tests")(items)
 
     if config.getoption("--runslow"):
         # --runslow given in cli: do not skip slow tests
@@ -48,38 +95,50 @@ def pytest_collection_modifyitems(config, items):
 def set_warnings():
     warnings.filterwarnings(
         "ignore",
-        category=DeprecationWarning,
-        message="literal_stringizer is deprecated",
+        category=FutureWarning,
+        message="\n\nsingle_target_shortest_path_length",
     )
     warnings.filterwarnings(
         "ignore",
-        category=DeprecationWarning,
-        message="literal_destringizer is deprecated",
-    )
-    # create_using for scale_free_graph
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="The create_using argument"
+        category=FutureWarning,
+        message="\n\nshortest_path",
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="nx.nx_pydot"
+        "ignore", category=DeprecationWarning, message="\n\nThe `normalized`"
     )
     warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="\n\nThe `attrs` keyword argument of node_link",
+        "ignore", category=DeprecationWarning, message="\n\nall_triplets"
     )
     warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="single_target_shortest_path_length will",
+        "ignore", category=DeprecationWarning, message="\n\nrandom_triad"
     )
     warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message="shortest_path for all_pairs",
+        "ignore", category=DeprecationWarning, message="minimal_d_separator"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\nforest_str is deprecated"
+        "ignore", category=DeprecationWarning, message="d_separated"
+    )
+    warnings.filterwarnings("ignore", category=DeprecationWarning, message="\n\nk_core")
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nk_shell"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nk_crust"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\nk_corona"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\ntotal_spanning_tree_weight"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message=r"\n\nThe 'create=matrix'"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="\n\n`compute_v_structures"
+    )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="Keyword argument 'link'"
     )
 
 
@@ -147,13 +206,17 @@ collect_ignore = []
 needs_numpy = [
     "algorithms/approximation/traveling_salesman.py",
     "algorithms/centrality/current_flow_closeness.py",
+    "algorithms/centrality/laplacian.py",
     "algorithms/node_classification.py",
     "algorithms/non_randomness.py",
+    "algorithms/polynomials.py",
     "algorithms/shortest_paths/dense.py",
+    "algorithms/tree/mst.py",
+    "drawing/nx_latex.py",
+    "generators/expanders.py",
     "linalg/bethehessianmatrix.py",
     "linalg/laplacianmatrix.py",
     "utils/misc.py",
-    "algorithms/centrality/laplacian.py",
 ]
 needs_scipy = [
     "algorithms/approximation/traveling_salesman.py",
@@ -166,26 +229,33 @@ needs_scipy = [
     "algorithms/centrality/current_flow_betweenness_subset.py",
     "algorithms/centrality/eigenvector.py",
     "algorithms/centrality/katz.py",
+    "algorithms/centrality/laplacian.py",
     "algorithms/centrality/second_order.py",
     "algorithms/centrality/subgraph_alg.py",
     "algorithms/communicability_alg.py",
+    "algorithms/community/divisive.py",
+    "algorithms/distance_measures.py",
     "algorithms/link_analysis/hits_alg.py",
     "algorithms/link_analysis/pagerank_alg.py",
     "algorithms/node_classification.py",
     "algorithms/similarity.py",
+    "algorithms/tree/mst.py",
+    "algorithms/walks.py",
     "convert_matrix.py",
     "drawing/layout.py",
+    "drawing/nx_pylab.py",
     "generators/spectral_graph_forge.py",
+    "generators/expanders.py",
     "linalg/algebraicconnectivity.py",
     "linalg/attrmatrix.py",
     "linalg/bethehessianmatrix.py",
     "linalg/graphmatrix.py",
+    "linalg/laplacianmatrix.py",
     "linalg/modularitymatrix.py",
     "linalg/spectrum.py",
     "utils/rcm.py",
-    "algorithms/centrality/laplacian.py",
 ]
-needs_matplotlib = ["drawing/nx_pylab.py"]
+needs_matplotlib = ["drawing/nx_pylab.py", "generators/classic.py"]
 needs_pandas = ["convert_matrix.py"]
 needs_pygraphviz = ["drawing/nx_agraph.py"]
 needs_pydot = ["drawing/nx_pydot.py"]

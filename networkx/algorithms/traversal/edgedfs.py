@@ -6,6 +6,7 @@ Depth First Search on Edges
 Algorithms for a depth-first traversal of edges in a graph.
 
 """
+
 import networkx as nx
 
 FORWARD = "forward"
@@ -14,6 +15,7 @@ REVERSE = "reverse"
 __all__ = ["edge_dfs"]
 
 
+@nx._dispatchable
 def edge_dfs(G, source=None, orientation=None):
     """A directed, depth-first-search of edges in `G`, beginning at `source`.
 

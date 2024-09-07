@@ -1,6 +1,7 @@
 """Functions which help end users define customize node_match and
 edge_match functions to use during isomorphism checks.
 """
+
 import math
 import types
 from itertools import permutations
@@ -293,7 +294,7 @@ def generic_multiedge_match(attr, default, op):
         to compare.
     default : value | list
         The default value for the edge attribute, or a list of
-        default values for the dgeattributes.
+        default values for the edgeattributes.
     op : callable | list
         The operator to use when comparing attribute values, or a list
         of operators to use when comparing values for each attribute.
@@ -311,7 +312,6 @@ def generic_multiedge_match(attr, default, op):
     >>> nm = generic_node_match("weight", 1.0, isclose)
     >>> nm = generic_node_match("color", "red", eq)
     >>> nm = generic_node_match(["weight", "color"], [1.0, "red"], [isclose, eq])
-    ...
 
     """
 

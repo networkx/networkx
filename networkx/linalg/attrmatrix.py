@@ -1,6 +1,8 @@
 """
-    Functions for constructing matrix-like objects from graph attributes.
+Functions for constructing matrix-like objects from graph attributes.
 """
+
+import networkx as nx
 
 __all__ = ["attr_matrix", "attr_sparse_matrix"]
 
@@ -141,6 +143,7 @@ def _edge_value(G, edge_attr):
     return value
 
 
+@nx._dispatchable(edge_attrs={"edge_attr": None}, node_attrs="node_attr")
 def attr_matrix(
     G,
     edge_attr=None,
@@ -304,6 +307,7 @@ def attr_matrix(
         return M
 
 
+@nx._dispatchable(edge_attrs={"edge_attr": None}, node_attrs="node_attr")
 def attr_sparse_matrix(
     G, edge_attr=None, node_attr=None, normalized=False, rc_order=None, dtype=None
 ):

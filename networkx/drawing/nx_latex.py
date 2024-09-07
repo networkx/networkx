@@ -126,6 +126,7 @@ TikZ:          https://tikz.dev/
 
 TikZ options details:   https://tikz.dev/tikz-actions
 """
+
 import numbers
 import os
 
@@ -439,7 +440,7 @@ def to_latex(
         size = 1 / n_rows
 
         N = len(Gbunch)
-        if isinstance(pos, (str, dict)):
+        if isinstance(pos, str | dict):
             pos = [pos] * N
         if sub_captions is None:
             sub_captions = [""] * N

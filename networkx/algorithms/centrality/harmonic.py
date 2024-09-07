@@ -1,4 +1,5 @@
 """Functions for computing the harmonic centrality of a graph."""
+
 from functools import partial
 
 import networkx as nx
@@ -6,6 +7,7 @@ import networkx as nx
 __all__ = ["harmonic_centrality"]
 
 
+@nx._dispatchable(edge_attrs="distance")
 def harmonic_centrality(G, nbunch=None, distance=None, sources=None):
     r"""Compute harmonic centrality for nodes.
 
@@ -63,17 +65,25 @@ def harmonic_centrality(G, nbunch=None, distance=None, sources=None):
            Internet Mathematics 10.3-4 (2014): 222-262.
     """
 
-    nbunch = set(G.nbunch_iter(nbunch)) if nbunch is not None else set(G.nodes)
-    sources = set(G.nbunch_iter(sources)) if sources is not None else G.nodes
+    nbunch = set(G.nbunch_iter(nbunch) if nbunch is not None else G.nodes)
+    sources = set(G.nbunch_iter(sources) if sources is not None else G.nodes)
+
+    centrality = {u: 0 for u in nbunch}
+
+    transposed = False
+    if len(nbunch) < len(sources):
+        transposed = True
+        nbunch, sources = sources, nbunch
+        if nx.is_directed(G):
+            G = nx.reverse(G, copy=False)
 
     spl = partial(nx.shortest_path_length, G, weight=distance)
-    centrality = {u: 0 for u in nbunch}
     for v in sources:
         dist = spl(v)
         for u in nbunch.intersection(dist):
             d = dist[u]
             if d == 0:  # handle u == v and edges with 0 weight
                 continue
-            centrality[u] += 1 / d
+            centrality[v if transposed else u] += 1 / d
 
     return centrality

@@ -11,6 +11,8 @@ Distance Measures
    diameter
    harmonic_diameter
    eccentricity
+   effective_graph_resistance
+   kemeny_constant
    periphery
    radius
    resistance_distance

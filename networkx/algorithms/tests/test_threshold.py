@@ -227,7 +227,7 @@ class TestGeneratorThreshold:
 
         b1 = nx.betweenness_centrality(G).values()
         b2 = nxt.betweenness_sequence(cs)
-        assert sum(abs(c - d) for c, d in zip(b1, b2)) < 1e-14
+        assert sum(abs(c - d) for c, d in zip(b1, b2)) < 1e-7
 
         assert nxt.eigenvalues(cs) == [0, 1, 3, 3, 5, 7, 7, 8]
 

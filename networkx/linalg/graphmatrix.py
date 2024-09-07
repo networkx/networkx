@@ -1,13 +1,15 @@
 """
 Adjacency matrix and incidence matrix of graphs.
 """
+
 import networkx as nx
 
 __all__ = ["incidence_matrix", "adjacency_matrix"]
 
 
+@nx._dispatchable(edge_attrs="weight")
 def incidence_matrix(
-    G, nodelist=None, edgelist=None, oriented=False, weight=None, dtype=None
+    G, nodelist=None, edgelist=None, oriented=False, weight=None, *, dtype=None
 ):
     """Returns incidence matrix of G.
 
@@ -103,6 +105,7 @@ def incidence_matrix(
     return A.asformat("csc")
 
 
+@nx._dispatchable(edge_attrs="weight")
 def adjacency_matrix(G, nodelist=None, dtype=None, weight="weight"):
     """Returns adjacency matrix of G.
 

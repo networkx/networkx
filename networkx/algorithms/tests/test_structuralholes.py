@@ -1,4 +1,5 @@
 """Unit tests for the :mod:`networkx.algorithms.structuralholes` module."""
+
 import math
 
 import pytest
@@ -52,7 +53,7 @@ class TestStructuralHoles:
             ("G", "C"): 10,
         }
 
-    # This additionally tests the @nx._dispatch mechanism, treating
+    # This additionally tests the @nx._dispatchable mechanism, treating
     # nx.mutual_weight as if it were a re-implementation from another package
     @pytest.mark.parametrize("wrapper", [lambda x: x, dispatch_interface.convert])
     def test_constraint_directed(self, wrapper):
