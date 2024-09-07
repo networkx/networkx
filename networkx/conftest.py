@@ -138,6 +138,9 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="\n\n`compute_v_structures"
     )
     warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="Keyword argument 'link'"
+    )
+    warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
         message="The signature of nx.draw will be changed",
