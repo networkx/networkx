@@ -379,7 +379,7 @@ class GraphMatcher:
         >>> isomatcher.subgraph_is_isomorphic()
         False
 
-        Check whether as subgraph of H is isomorphic to G:
+        Check whether a subgraph of H is isomorphic to G:
 
         >>> isomatcher = nx.isomorphism.GraphMatcher(H, G)
         >>> isomatcher.subgraph_is_isomorphic()
@@ -407,7 +407,7 @@ class GraphMatcher:
         >>> isomatcher.subgraph_is_monomorphic()
         False
 
-        Check whether as subgraph of H is isomorphic to G:
+        Check whether a subgraph of H is isomorphic to G:
 
         >>> isomatcher = nx.isomorphism.GraphMatcher(H, G)
         >>> isomatcher.subgraph_is_monomorphic()
@@ -939,7 +939,7 @@ class DiGraphMatcher(GraphMatcher):
         >>> isomatcher.subgraph_is_isomorphic()
         False
 
-        Check whether as subgraph of H is isomorphic to G:
+        Check whether a subgraph of H is isomorphic to G:
 
         >>> isomatcher = nx.isomorphism.DiGraphMatcher(H, G)
         >>> isomatcher.subgraph_is_isomorphic()
@@ -963,7 +963,7 @@ class DiGraphMatcher(GraphMatcher):
         >>> isomatcher.subgraph_is_monomorphic()
         False
 
-        Check whether as subgraph of H is isomorphic to G:
+        Check whether a subgraph of H is isomorphic to G:
 
         >>> isomatcher = nx.isomorphism.DiGraphMatcher(H, G)
         >>> isomatcher.subgraph_is_monomorphic()
@@ -987,7 +987,7 @@ class DiGraphMatcher(GraphMatcher):
         >>> list(isomatcher.subgraph_isomorphisms_iter())
         []
 
-        Check whether as subgraph of H is isomorphic to G:
+        Check whether a subgraph of H is isomorphic to G:
 
         >>> isomatcher = nx.isomorphism.DiGraphMatcher(H, G)
         >>> next(isomatcher.subgraph_isomorphisms_iter())
@@ -1011,7 +1011,7 @@ class DiGraphMatcher(GraphMatcher):
         >>> list(isomatcher.subgraph_monomorphisms_iter())
         []
 
-        Check whether as subgraph of H is isomorphic to G:
+        Check whether a subgraph of H is isomorphic to G:
 
         >>> isomatcher = nx.isomorphism.DiGraphMatcher(H, G)
         >>> next(isomatcher.subgraph_monomorphisms_iter())
