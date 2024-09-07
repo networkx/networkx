@@ -214,9 +214,8 @@ def from_pandas_adjacency(df, create_using=None):
         raise nx.NetworkXError("Columns must match Indices.", msg) from err
 
     A = df.values
-    G = from_numpy_array(A, create_using=create_using)
+    G = from_numpy_array(A, create_using=create_using, nodelist=df.columns)
 
-    nx.relabel.relabel_nodes(G, dict(enumerate(df.columns)), copy=False)
     return G
 
 
@@ -349,7 +348,7 @@ def from_pandas_edgelist(
     edge_attr : str or int, iterable, True, or None
         A valid column name (str or int) or iterable of column names that are
         used to retrieve items and add them to the graph as edge attributes.
-        If `True`, all of the remaining columns will be added.
+        If `True`, all columns will be added except `source`, `target` and `edge_key`.
         If `None`, no edge attributes are added to the graph.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
@@ -433,10 +432,16 @@ def from_pandas_edgelist(
     g = nx.empty_graph(0, create_using)
 
     if edge_attr is None:
-        g.add_edges_from(zip(df[source], df[target]))
+        if g.is_multigraph() and edge_key is not None:
+            for u, v, k in zip(df[source], df[target], df[edge_key]):
+                g.add_edge(u, v, k)
+        else:
+            g.add_edges_from(zip(df[source], df[target]))
         return g
 
     reserved_columns = [source, target]
+    if g.is_multigraph() and edge_key is not None:
+        reserved_columns.append(edge_key)
 
     # Additional columns requested
     attr_col_headings = []
@@ -740,7 +745,9 @@ def from_scipy_sparse_array(
     as the number of parallel edges joining those two vertices:
 
     >>> A = sp.sparse.csr_array([[1, 1], [1, 2]])
-    >>> G = nx.from_scipy_sparse_array(A, parallel_edges=True, create_using=nx.MultiGraph)
+    >>> G = nx.from_scipy_sparse_array(
+    ...     A, parallel_edges=True, create_using=nx.MultiGraph
+    ... )
     >>> G[1][1]
     AtlasView({0: {'weight': 1}, 1: {'weight': 1}})
 
@@ -1022,7 +1029,9 @@ def to_numpy_array(
 
 
 @nx._dispatchable(graphs=None, returns_graph=True)
-def from_numpy_array(A, parallel_edges=False, create_using=None, edge_attr="weight"):
+def from_numpy_array(
+    A, parallel_edges=False, create_using=None, edge_attr="weight", *, nodelist=None
+):
     """Returns a graph from a 2D NumPy array.
 
     The 2D NumPy array is interpreted as an adjacency matrix for the graph.
@@ -1045,6 +1054,11 @@ def from_numpy_array(A, parallel_edges=False, create_using=None, edge_attr="weig
     edge_attr : String, optional (default="weight")
         The attribute to which the array values are assigned on each edge. If
         it is None, edge attributes will not be assigned.
+
+    nodelist : sequence of nodes, optional
+        A sequence of objects to use as the nodes in the graph. If provided, the
+        list of nodes must be the same length as the dimensions of `A`. The
+        default is `None`, in which case the nodes are drawn from ``range(n)``.
 
     Notes
     -----
@@ -1139,9 +1153,14 @@ def from_numpy_array(A, parallel_edges=False, create_using=None, edge_attr="weig
         python_type = kind_to_python_type[dt.kind]
     except Exception as err:
         raise TypeError(f"Unknown numpy data type: {dt}") from err
+    if _default_nodes := (nodelist is None):
+        nodelist = range(n)
+    else:
+        if len(nodelist) != n:
+            raise ValueError("nodelist must have the same length as A.shape[0]")
 
     # Make sure we get even the isolated nodes of the graph.
-    G.add_nodes_from(range(n))
+    G.add_nodes_from(nodelist)
     # Get a list of all the entries in the array with nonzero entries. These
     # coordinates become edges in the graph. (convert to int from np.int64)
     edges = ((int(e[0]), int(e[1])) for e in zip(*A.nonzero()))
@@ -1198,5 +1217,9 @@ def from_numpy_array(A, parallel_edges=False, create_using=None, edge_attr="weig
     # when `G.add_edges_from()` is invoked below.
     if G.is_multigraph() and not G.is_directed():
         triples = ((u, v, d) for u, v, d in triples if u <= v)
+    # Remap nodes if user provided custom `nodelist`
+    if not _default_nodes:
+        idx_to_node = dict(enumerate(nodelist))
+        triples = ((idx_to_node[u], idx_to_node[v], d) for u, v, d in triples)
     G.add_edges_from(triples)
     return G

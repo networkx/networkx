@@ -1,4 +1,4 @@
-""" Functions measuring similarity using graph edit distance.
+"""Functions measuring similarity using graph edit distance.
 
 The graph edit distance is the number of edge/node changes needed
 to make two graphs isomorphic.
@@ -319,8 +319,12 @@ def optimal_edit_paths(
     Returns
     -------
     edit_paths : list of tuples (node_edit_path, edge_edit_path)
-        node_edit_path : list of tuples (u, v)
-        edge_edit_path : list of tuples ((u1, v1), (u2, v2))
+       - node_edit_path : list of tuples ``(u, v)`` indicating node transformations
+         between `G1` and `G2`. ``u`` is `None` for insertion, ``v`` is `None`
+         for deletion.
+       - edge_edit_path : list of tuples ``((u1, v1), (u2, v2))`` indicating edge
+         transformations between `G1` and `G2`. ``(None, (u2,v2))`` for insertion
+         and ``((u1,v1), None)`` for deletion.
 
     cost : numeric
         Optimal edit path cost (graph edit distance). When the cost
@@ -702,14 +706,13 @@ def optimize_edit_paths(
         # Fixup dummy assignments:
         # each substitution i<->j should have dummy assignment m+j<->n+i
         # NOTE: fast reduce of Cv relies on it
-        # assert len(lsa_row_ind) == len(lsa_col_ind)
-        indexes = zip(range(len(lsa_row_ind)), lsa_row_ind, lsa_col_ind)
-        subst_ind = [k for k, i, j in indexes if i < m and j < n]
-        indexes = zip(range(len(lsa_row_ind)), lsa_row_ind, lsa_col_ind)
-        dummy_ind = [k for k, i, j in indexes if i >= m and j >= n]
-        # assert len(subst_ind) == len(dummy_ind)
-        lsa_row_ind[dummy_ind] = lsa_col_ind[subst_ind] + m
-        lsa_col_ind[dummy_ind] = lsa_row_ind[subst_ind] + n
+        # Create masks for substitution and dummy indices
+        is_subst = (lsa_row_ind < m) & (lsa_col_ind < n)
+        is_dummy = (lsa_row_ind >= m) & (lsa_col_ind >= n)
+
+        # Map dummy assignments to the correct indices
+        lsa_row_ind[is_dummy] = lsa_col_ind[is_subst] + m
+        lsa_col_ind[is_dummy] = lsa_row_ind[is_subst] + n
 
         return CostMatrix(
             C, lsa_row_ind, lsa_col_ind, C[lsa_row_ind, lsa_col_ind].sum()
@@ -1520,7 +1523,7 @@ def _simrank_similarity_numpy(
         )
 
     if source is not None and target is not None:
-        return newsim[source, target]
+        return float(newsim[source, target])
     if source is not None:
         return newsim[source]
     return newsim

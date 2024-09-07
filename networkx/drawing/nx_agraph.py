@@ -17,6 +17,7 @@ See Also
  - Graphviz:      https://www.graphviz.org
  - DOT Language:  http://www.graphviz.org/doc/info/lang.html
 """
+
 import os
 import tempfile
 
@@ -137,12 +138,6 @@ def to_agraph(N):
     directed = N.is_directed()
     strict = nx.number_of_selfloops(N) == 0 and not N.is_multigraph()
 
-    for node in N:
-        if "pos" in N.nodes[node]:
-            N.nodes[node]["pos"] = "{},{}!".format(
-                N.nodes[node]["pos"][0], N.nodes[node]["pos"][1]
-            )
-
     A = pygraphviz.AGraph(name=N.name, strict=strict, directed=directed)
 
     # default graph attributes
@@ -159,7 +154,11 @@ def to_agraph(N):
         A.add_node(n)
         # Add node data
         a = A.get_node(n)
-        a.attr.update({k: str(v) for k, v in nodedata.items()})
+        for key, val in nodedata.items():
+            if key == "pos":
+                a.attr["pos"] = f"{val[0]},{val[1]}!"
+            else:
+                a.attr[key] = str(val)
 
     # loop over edges
     if N.is_multigraph():

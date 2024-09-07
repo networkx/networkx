@@ -1,4 +1,5 @@
 """Weakly connected components."""
+
 import networkx as nx
 from networkx.utils.decorators import not_implemented_for
 
@@ -36,7 +37,10 @@ def weakly_connected_components(G):
 
     >>> G = nx.path_graph(4, create_using=nx.DiGraph())
     >>> nx.add_path(G, [10, 11, 12])
-    >>> [len(c) for c in sorted(nx.weakly_connected_components(G), key=len, reverse=True)]
+    >>> [
+    ...     len(c)
+    ...     for c in sorted(nx.weakly_connected_components(G), key=len, reverse=True)
+    ... ]
     [4, 3]
 
     If you only want the largest component, it's more efficient to
@@ -55,9 +59,10 @@ def weakly_connected_components(G):
 
     """
     seen = set()
+    n = len(G)  # must be outside the loop to avoid performance hit with graph views
     for v in G:
         if v not in seen:
-            c = set(_plain_bfs(G, v))
+            c = set(_plain_bfs(G, n, v))
             seen.update(c)
             yield c
 
@@ -160,7 +165,7 @@ def is_weakly_connected(G):
     return len(next(weakly_connected_components(G))) == len(G)
 
 
-def _plain_bfs(G, source):
+def _plain_bfs(G, n, source):
     """A fast BFS node generator
 
     The direction of the edge between nodes is ignored.
@@ -168,7 +173,6 @@ def _plain_bfs(G, source):
     For directed graphs only.
 
     """
-    n = len(G)
     Gsucc = G._succ
     Gpred = G._pred
     seen = {source}

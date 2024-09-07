@@ -1,4 +1,5 @@
 """Unit tests for layout functions."""
+
 import pytest
 
 import networkx as nx
@@ -55,6 +56,7 @@ class TestLayout:
         nx.circular_layout(G)
         nx.planar_layout(G)
         nx.spring_layout(G)
+        nx.forceatlas2_layout(G)
         nx.fruchterman_reingold_layout(G)
         nx.fruchterman_reingold_layout(self.bigG)
         nx.spectral_layout(G)
@@ -74,6 +76,7 @@ class TestLayout:
         nx.circular_layout(G)
         nx.planar_layout(G)
         nx.spring_layout(G)
+        nx.forceatlas2_layout(G)
         nx.fruchterman_reingold_layout(G)
         nx.spectral_layout(G)
         nx.shell_layout(G)
@@ -173,6 +176,10 @@ class TestLayout:
         vpos = nx.shell_layout(G, [[0], [1, 2], [3]], rotate=0)
         assert np.linalg.norm(vpos[3]) <= 1  # ensure node 3 fits (#3753)
 
+    def test_smoke_initial_pos_forceatlas2(self):
+        pos = nx.circular_layout(self.Gi)
+        npos = nx.forceatlas2_layout(self.Gi, pos=pos)
+
     def test_smoke_initial_pos_fruchterman_reingold(self):
         pos = nx.circular_layout(self.Gi)
         npos = nx.fruchterman_reingold_layout(self.Gi, pos=pos)
@@ -247,6 +254,8 @@ class TestLayout:
         vpos = nx.multipartite_layout(G, center=(1, 1))
         assert vpos == {}
         vpos = nx.kamada_kawai_layout(G, center=(1, 1))
+        assert vpos == {}
+        vpos = nx.forceatlas2_layout(G)
         assert vpos == {}
         vpos = nx.arf_layout(G)
         assert vpos == {}
@@ -387,6 +396,15 @@ class TestLayout:
         dist = np.linalg.norm(p[1:] - p[:-1], axis=1)
         assert np.allclose(np.diff(dist), 0, atol=1e-3)
 
+    def test_forceatlas2_layout_partial_input_test(self):
+        # check whether partial pos input still returns a full proper position
+        G = self.Gs
+        node = nx.utils.arbitrary_element(G)
+        pos = nx.circular_layout(G)
+        del pos[node]
+        pos = nx.forceatlas2_layout(G, pos=pos)
+        assert len(pos) == len(G)
+
     def test_rescale_layout_dict(self):
         G = nx.empty_graph()
         vpos = nx.random_layout(G, center=(1, 1))
@@ -418,9 +436,7 @@ class TestLayout:
             assert (s_vpos[k] == v).all()
 
     def test_arf_layout_partial_input_test(self):
-        """
-        Checks whether partial pos input still returns a proper position.
-        """
+        # Checks whether partial pos input still returns a proper position.
         G = self.Gs
         node = nx.utils.arbitrary_element(G)
         pos = nx.circular_layout(G)
@@ -434,6 +450,13 @@ class TestLayout:
         """
         G = self.Gs
         pytest.raises(ValueError, nx.arf_layout, G=G, a=-1)
+
+    def test_smoke_seed_input(self):
+        G = self.Gs
+        nx.random_layout(G, seed=42)
+        nx.spring_layout(G, seed=42)
+        nx.arf_layout(G, seed=42)
+        nx.forceatlas2_layout(G, seed=42)
 
 
 def test_multipartite_layout_nonnumeric_partition_labels():

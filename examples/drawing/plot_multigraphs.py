@@ -15,6 +15,7 @@ with different angles and theoretically node labels can remain visible.
 Multi-self-loops can be drawn in 4 directions of the node.
 The subsequent loops will result in overlaps.
 """
+
 import itertools as it
 import numpy as np
 import networkx as nx

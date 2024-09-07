@@ -2,7 +2,7 @@
 
 # A full test of all dispatchable algorithms is performed by
 # modifying the pytest invocation and setting an environment variable
-# NETWORKX_TEST_BACKEND=nx-loopback pytest
+# NETWORKX_TEST_BACKEND=nx_loopback pytest
 # This is comprehensive, but only tests the `test_override_dispatch`
 # function in networkx.classes.backends.
 
@@ -16,23 +16,23 @@ from networkx.classes.reportviews import NodeView
 
 
 class LoopbackGraph(Graph):
-    __networkx_backend__ = "nx-loopback"
+    __networkx_backend__ = "nx_loopback"
 
 
 class LoopbackDiGraph(DiGraph):
-    __networkx_backend__ = "nx-loopback"
+    __networkx_backend__ = "nx_loopback"
 
 
 class LoopbackMultiGraph(MultiGraph):
-    __networkx_backend__ = "nx-loopback"
+    __networkx_backend__ = "nx_loopback"
 
 
 class LoopbackMultiDiGraph(MultiDiGraph):
-    __networkx_backend__ = "nx-loopback"
+    __networkx_backend__ = "nx_loopback"
 
 
 class LoopbackPlanarEmbedding(PlanarEmbedding):
-    __networkx_backend__ = "nx-loopback"
+    __networkx_backend__ = "nx_loopback"
 
 
 def convert(graph):
@@ -49,7 +49,7 @@ def convert(graph):
     raise TypeError(f"Unsupported type of graph: {type(graph)}")
 
 
-class LoopbackDispatcher:
+class LoopbackBackendInterface:
     def __getattr__(self, item):
         try:
             return nx.utils.backends._registered_algorithms[item].orig_func
@@ -69,12 +69,11 @@ class LoopbackDispatcher:
         graph_name=None,
     ):
         if name in {
-            # Raise if input graph changes
+            # Raise if input graph changes. See test_dag.py::test_topological_sort6
             "lexicographical_topological_sort",
             "topological_generations",
             "topological_sort",
-            # Sensitive tests (iteration order matters)
-            "dfs_labeled_edges",
+            # Would be nice to some day avoid these cutoffs of full testing
         }:
             return graph
         if isinstance(graph, NodeView):
@@ -98,9 +97,8 @@ class LoopbackDispatcher:
         elif graph.__class__ in {PlanarEmbedding, LoopbackPlanarEmbedding}:
             G = LoopbackDiGraph()  # or LoopbackPlanarEmbedding
         else:
-            # It would be nice to be able to convert _AntiGraph to a regular Graph
+            # Would be nice to handle these better some day
             # nx.algorithms.approximation.kcomponents._AntiGraph
-            # nx.algorithms.tree.branchings.MultiDiGraph_EdgeKey
             # nx.classes.tests.test_multidigraph.MultiDiGraphSubClass
             # nx.classes.tests.test_multigraph.MultiGraphSubClass
             G = graph.__class__()
@@ -108,71 +106,64 @@ class LoopbackDispatcher:
         if preserve_graph_attrs:
             G.graph.update(graph.graph)
 
+        # add nodes
+        G.add_nodes_from(graph)
         if preserve_node_attrs:
-            G.add_nodes_from(graph.nodes(data=True))
+            for n, dd in G._node.items():
+                dd.update(graph.nodes[n])
         elif node_attrs:
-            G.add_nodes_from(
-                (
-                    node,
-                    {
-                        k: datadict.get(k, default)
-                        for k, default in node_attrs.items()
-                        if default is not None or k in datadict
-                    },
+            for n, dd in G._node.items():
+                dd.update(
+                    (attr, graph._node[n].get(attr, default))
+                    for attr, default in node_attrs.items()
+                    if default is not None or attr in graph._node[n]
                 )
-                for node, datadict in graph.nodes(data=True)
-            )
-        else:
-            G.add_nodes_from(graph)
 
-        if graph.is_multigraph():
-            if preserve_edge_attrs:
-                G.add_edges_from(
-                    (u, v, key, datadict)
-                    for u, nbrs in graph._adj.items()
-                    for v, keydict in nbrs.items()
-                    for key, datadict in keydict.items()
-                )
-            elif edge_attrs:
-                G.add_edges_from(
-                    (
-                        u,
-                        v,
-                        key,
-                        {
-                            k: datadict.get(k, default)
-                            for k, default in edge_attrs.items()
-                            if default is not None or k in datadict
-                        },
-                    )
-                    for u, nbrs in graph._adj.items()
-                    for v, keydict in nbrs.items()
-                    for key, datadict in keydict.items()
-                )
-            else:
-                G.add_edges_from(
-                    (u, v, key, {})
-                    for u, nbrs in graph._adj.items()
-                    for v, keydict in nbrs.items()
-                    for key, datadict in keydict.items()
-                )
-        elif preserve_edge_attrs:
-            G.add_edges_from(graph.edges(data=True))
+        # tools to build datadict and keydict
+        if preserve_edge_attrs:
+
+            def G_new_datadict(old_dd):
+                return G.edge_attr_dict_factory(old_dd)
         elif edge_attrs:
-            G.add_edges_from(
-                (
-                    u,
-                    v,
-                    {
-                        k: datadict.get(k, default)
-                        for k, default in edge_attrs.items()
-                        if default is not None or k in datadict
-                    },
+
+            def G_new_datadict(old_dd):
+                return G.edge_attr_dict_factory(
+                    (attr, old_dd.get(attr, default))
+                    for attr, default in edge_attrs.items()
+                    if default is not None or attr in old_dd
                 )
-                for u, v, datadict in graph.edges(data=True)
-            )
         else:
-            G.add_edges_from(graph.edges)
+
+            def G_new_datadict(old_dd):
+                return G.edge_attr_dict_factory()
+
+        if G.is_multigraph():
+
+            def G_new_inner(keydict):
+                kd = G.adjlist_inner_dict_factory(
+                    (k, G_new_datadict(dd)) for k, dd in keydict.items()
+                )
+                return kd
+        else:
+            G_new_inner = G_new_datadict
+
+        # add edges keeping the same order in _adj and _pred
+        G_adj = G._adj
+        if G.is_directed():
+            for n, nbrs in graph._adj.items():
+                G_adj[n].update((nbr, G_new_inner(dd)) for nbr, dd in nbrs.items())
+            # ensure same datadict for pred and adj; and pred order of graph._pred
+            G_pred = G._pred
+            for n, nbrs in graph._pred.items():
+                G_pred[n].update((nbr, G_adj[nbr][n]) for nbr in nbrs)
+        else:  # undirected
+            for n, nbrs in graph._adj.items():
+                # ensure same datadict for both ways; and adj order of graph._adj
+                G_adj[n].update(
+                    (nbr, G_adj[nbr][n] if n in G_adj[nbr] else G_new_inner(dd))
+                    for nbr, dd in nbrs.items()
+                )
+
         return G
 
     @staticmethod
@@ -191,4 +182,4 @@ class LoopbackDispatcher:
         return hasattr(self, name)
 
 
-dispatcher = LoopbackDispatcher()
+backend_interface = LoopbackBackendInterface()

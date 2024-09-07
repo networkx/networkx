@@ -1,17 +1,9 @@
-from itertools import chain, count
+import warnings
+from itertools import count
 
 import networkx as nx
 
 __all__ = ["node_link_data", "node_link_graph"]
-
-
-_attrs = {
-    "source": "source",
-    "target": "target",
-    "name": "id",
-    "key": "key",
-    "link": "links",
-}
 
 
 def _to_tuple(x):
@@ -38,7 +30,9 @@ def node_link_data(
     target="target",
     name="id",
     key="key",
-    link="links",
+    edges=None,
+    nodes="nodes",
+    link=None,
 ):
     """Returns data in node-link format that is suitable for JSON serialization
     and use in JavaScript documents.
@@ -54,8 +48,17 @@ def node_link_data(
         A string that provides the 'name' attribute name for storing NetworkX-internal graph data.
     key : string
         A string that provides the 'key' attribute name for storing NetworkX-internal graph data.
+    edges : string
+        A string that provides the 'edges' attribute name for storing NetworkX-internal graph data.
+    nodes : string
+        A string that provides the 'nodes' attribute name for storing NetworkX-internal graph data.
     link : string
-        A string that provides the 'link' attribute name for storing NetworkX-internal graph data.
+        .. deprecated:: 3.4
+
+           The `link` argument is deprecated and will be removed in version `3.6`.
+           Use the `edges` keyword instead.
+
+        A string that provides the 'edges' attribute name for storing NetworkX-internal graph data.
 
     Returns
     -------
@@ -69,31 +72,42 @@ def node_link_data(
 
     Examples
     --------
+    >>> from pprint import pprint
     >>> G = nx.Graph([("A", "B")])
     >>> data1 = nx.node_link_data(G)
-    >>> data1
-    {'directed': False, 'multigraph': False, 'graph': {}, 'nodes': [{'id': 'A'}, {'id': 'B'}], 'links': [{'source': 'A', 'target': 'B'}]}
+    >>> pprint(data1)
+    {'directed': False,
+     'edges': [{'source': 'A', 'target': 'B'}],
+     'graph': {},
+     'multigraph': False,
+     'nodes': [{'id': 'A'}, {'id': 'B'}]}
 
     To serialize with JSON
 
     >>> import json
     >>> s1 = json.dumps(data1)
     >>> s1
-    '{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "A"}, {"id": "B"}], "links": [{"source": "A", "target": "B"}]}'
+    '{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "A"}, {"id": "B"}], "edges": [{"source": "A", "target": "B"}]}'
 
     A graph can also be serialized by passing `node_link_data` as an encoder function. The two methods are equivalent.
 
     >>> s1 = json.dumps(G, default=nx.node_link_data)
     >>> s1
-    '{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "A"}, {"id": "B"}], "links": [{"source": "A", "target": "B"}]}'
+    '{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "A"}, {"id": "B"}], "edges": [{"source": "A", "target": "B"}]}'
 
     The attribute names for storing NetworkX-internal graph data can
     be specified as keyword options.
 
     >>> H = nx.gn_graph(2)
-    >>> data2 = nx.node_link_data(H, link="edges", source="from", target="to")
-    >>> data2
-    {'directed': True, 'multigraph': False, 'graph': {}, 'nodes': [{'id': 0}, {'id': 1}], 'edges': [{'from': 1, 'to': 0}]}
+    >>> data2 = nx.node_link_data(
+    ...     H, edges="links", source="from", target="to", nodes="vertices"
+    ... )
+    >>> pprint(data2)
+    {'directed': True,
+     'graph': {},
+     'links': [{'from': 1, 'to': 0}],
+     'multigraph': False,
+     'vertices': [{'id': 0}, {'id': 1}]}
 
     Notes
     -----
@@ -110,6 +124,24 @@ def node_link_data(
     --------
     node_link_graph, adjacency_data, tree_data
     """
+    # TODO: Remove between the lines when `link` deprecation expires
+    # -------------------------------------------------------------
+    if link is not None:
+        warnings.warn(
+            "Keyword argument 'link' is deprecated; use 'edges' instead",
+            DeprecationWarning,
+        )
+        if edges is not None:
+            raise ValueError(
+                "Both 'edges' and 'link' are specified. Use 'edges', 'link' will be remove in a future release"
+            )
+        else:
+            edges = link
+    else:
+        if edges is None:
+            edges = "edges"
+    # ------------------------------------------------------------
+
     multigraph = G.is_multigraph()
 
     # Allow 'key' to be omitted from attrs if the graph is not a multigraph.
@@ -120,15 +152,15 @@ def node_link_data(
         "directed": G.is_directed(),
         "multigraph": multigraph,
         "graph": G.graph,
-        "nodes": [{**G.nodes[n], name: n} for n in G],
+        nodes: [{**G.nodes[n], name: n} for n in G],
     }
     if multigraph:
-        data[link] = [
+        data[edges] = [
             {**d, source: u, target: v, key: k}
             for u, v, k, d in G.edges(keys=True, data=True)
         ]
     else:
-        data[link] = [{**d, source: u, target: v} for u, v, d in G.edges(data=True)]
+        data[edges] = [{**d, source: u, target: v} for u, v, d in G.edges(data=True)]
     return data
 
 
@@ -142,9 +174,12 @@ def node_link_graph(
     target="target",
     name="id",
     key="key",
-    link="links",
+    edges=None,
+    nodes="nodes",
+    link=None,
 ):
     """Returns graph from node-link data format.
+
     Useful for de-serialization from JSON.
 
     Parameters
@@ -166,8 +201,17 @@ def node_link_graph(
         A string that provides the 'name' attribute name for storing NetworkX-internal graph data.
     key : string
         A string that provides the 'key' attribute name for storing NetworkX-internal graph data.
+    edges : string
+        A string that provides the 'edges' attribute name for storing NetworkX-internal graph data.
+    nodes : string
+        A string that provides the 'nodes' attribute name for storing NetworkX-internal graph data.
     link : string
-        A string that provides the 'link' attribute name for storing NetworkX-internal graph data.
+        .. deprecated:: 3.4
+
+           The `link` argument is deprecated and will be removed in version `3.6`.
+           Use the `edges` keyword instead.
+
+        A string that provides the 'edges' attribute name for storing NetworkX-internal graph data.
 
     Returns
     -------
@@ -179,10 +223,15 @@ def node_link_graph(
 
     Create data in node-link format by converting a graph.
 
+    >>> from pprint import pprint
     >>> G = nx.Graph([("A", "B")])
     >>> data = nx.node_link_data(G)
-    >>> data
-    {'directed': False, 'multigraph': False, 'graph': {}, 'nodes': [{'id': 'A'}, {'id': 'B'}], 'links': [{'source': 'A', 'target': 'B'}]}
+    >>> pprint(data)
+    {'directed': False,
+     'edges': [{'source': 'A', 'target': 'B'}],
+     'graph': {},
+     'multigraph': False,
+     'nodes': [{'id': 'A'}, {'id': 'B'}]}
 
     Revert data in node-link format to a graph.
 
@@ -193,8 +242,8 @@ def node_link_graph(
     To serialize and deserialize a graph with JSON,
 
     >>> import json
-    >>> d = json.dumps(node_link_data(G))
-    >>> H = node_link_graph(json.loads(d))
+    >>> d = json.dumps(nx.node_link_data(G))
+    >>> H = nx.node_link_graph(json.loads(d))
     >>> print(G.edges, H.edges)
     [('A', 'B')] [('A', 'B')]
 
@@ -210,6 +259,24 @@ def node_link_graph(
     --------
     node_link_data, adjacency_data, tree_data
     """
+    # TODO: Remove between the lines when `link` deprecation expires
+    # -------------------------------------------------------------
+    if link is not None:
+        warnings.warn(
+            "Keyword argument 'link' is deprecated; use 'edges' instead",
+            DeprecationWarning,
+        )
+        if edges is not None:
+            raise ValueError(
+                "Both 'edges' and 'link' are specified. Use 'edges', 'link' will be remove in a future release"
+            )
+        else:
+            edges = link
+    else:
+        if edges is None:
+            edges = "edges"
+    # -------------------------------------------------------------
+
     multigraph = data.get("multigraph", multigraph)
     directed = data.get("directed", directed)
     if multigraph:
@@ -223,11 +290,11 @@ def node_link_graph(
     key = None if not multigraph else key
     graph.graph = data.get("graph", {})
     c = count()
-    for d in data["nodes"]:
+    for d in data[nodes]:
         node = _to_tuple(d.get(name, next(c)))
         nodedata = {str(k): v for k, v in d.items() if k != name}
         graph.add_node(node, **nodedata)
-    for d in data[link]:
+    for d in data[edges]:
         src = tuple(d[source]) if isinstance(d[source], list) else d[source]
         tgt = tuple(d[target]) if isinstance(d[target], list) else d[target]
         if not multigraph:

@@ -286,7 +286,9 @@ def eccentricity(G, v=None, sp=None, weight=None):
     >>> dict(nx.eccentricity(G))
     {1: 2, 2: 3, 3: 2, 4: 2, 5: 3}
 
-    >>> dict(nx.eccentricity(G, v=[1, 5]))  # This returns the eccentricity of node 1 & 5
+    >>> dict(
+    ...     nx.eccentricity(G, v=[1, 5])
+    ... )  # This returns the eccentricity of node 1 & 5
     {1: 2, 5: 3}
 
     """
@@ -629,6 +631,8 @@ def barycenter(G, weight=None, attr=None, sp=None):
             barycenter_vertices = [v]
         elif barycentricity == smallest:
             barycenter_vertices.append(v)
+    if attr is not None:
+        nx._clear_cache(G)
     return barycenter_vertices
 
 
