@@ -12,6 +12,7 @@ from networkx.utils import py_random_state
 
 from .classic import complete_graph, empty_graph, path_graph, star_graph
 from .degree_seq import degree_sequence_tree
+from .util import assert_directedness_multi
 
 __all__ = [
     "fast_gnp_random_graph",
@@ -34,13 +35,6 @@ __all__ = [
     "random_powerlaw_tree_sequence",
     "random_kernel_graph",
 ]
-
-
-def _assert_directedness(G, directed):
-    if directed and not G.is_directed():
-        raise ValueError("graph must be directed")
-    if not directed and G.is_directed():
-        raise ValueError("graph must not be directed")
 
 
 @py_random_state(2)
@@ -91,7 +85,7 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False, *, create_using=None)
 
     create_using = create_using or (nx.DiGraph if directed else nx.Graph)
     G = empty_graph(n, create_using=create_using)
-    _assert_directedness(G, directed)
+    assert_directedness_multi(G, directed)
 
     lp = math.log(1.0 - p)
 
@@ -172,7 +166,7 @@ def gnp_random_graph(n, p, seed=None, directed=False, *, create_using=None):
     else:
         edges = itertools.combinations(range(n), 2)
         G = (create_using or nx.Graph)()
-    _assert_directedness(G, directed)
+    assert_directedness_multi(G, directed)
     G.add_nodes_from(range(n))
     if p <= 0:
         return G
@@ -288,7 +282,7 @@ def gnm_random_graph(n, m, seed=None, directed=False, *, create_using=None):
     """
     create_using = create_using or (nx.DiGraph if directed else nx.Graph)
     G = create_using()
-    _assert_directedness(G, directed)
+    assert_directedness_multi(G, directed)
     G.add_nodes_from(range(n))
 
     if n == 1:
