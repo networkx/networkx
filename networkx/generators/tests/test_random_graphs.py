@@ -380,13 +380,18 @@ def test_connected_watts_strogatz_zero_tries():
         ),
     ],
 )
-def test_create_using(generator, kwargs):
+@pytest.mark.parametrize("create_using_instance", [False, True])
+def test_create_using(generator, kwargs, create_using_instance):
     class DummyGraph(nx.Graph):
         pass
 
     class DummyDiGraph(nx.DiGraph):
         pass
 
-    create_using = DummyDiGraph if kwargs.get("directed") else DummyGraph
+    create_using_type = DummyDiGraph if kwargs.get("directed") else DummyGraph
+    if generator is nx.random_shell_graph and create_using_instance:
+        pytest.skip()
+
+    create_using = create_using_type() if create_using_instance else create_using_type
     graph = generator(**kwargs, create_using=create_using)
-    assert isinstance(graph, create_using)
+    assert isinstance(graph, create_using_type)

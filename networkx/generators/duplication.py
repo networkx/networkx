@@ -8,8 +8,8 @@ generally inspired by biological networks.
 
 import networkx as nx
 from networkx.exception import NetworkXError
-from networkx.utils.misc import check_create_using
 from networkx.utils import py_random_state
+from networkx.utils.misc import check_create_using
 
 __all__ = ["partial_duplication_graph", "duplication_divergence_graph"]
 

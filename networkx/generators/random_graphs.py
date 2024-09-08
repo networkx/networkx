@@ -10,9 +10,9 @@ from collections import defaultdict
 import networkx as nx
 from networkx.utils import py_random_state
 
+from ..utils.misc import check_create_using
 from .classic import complete_graph, empty_graph, path_graph, star_graph
 from .degree_seq import degree_sequence_tree
-from ..utils.misc import check_create_using
 
 __all__ = [
     "fast_gnp_random_graph",
@@ -84,7 +84,8 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False, *, create_using=None)
             n, p, seed=seed, directed=directed, create_using=create_using
         )
 
-    create_using = create_using or (nx.DiGraph if directed else nx.Graph)
+    if create_using is None:
+        create_using = nx.DiGraph if directed else nx.Graph
     G = empty_graph(n, create_using=create_using)
     check_create_using(G, directed=directed, multigraph=False)
 
@@ -164,10 +165,13 @@ def gnp_random_graph(n, p, seed=None, directed=False, *, create_using=None):
     """
     if directed:
         edges = itertools.permutations(range(n), 2)
-        G = (create_using or nx.DiGraph)()
+        if create_using is None:
+            create_using = nx.DiGraph
     else:
         edges = itertools.combinations(range(n), 2)
-        G = (create_using or nx.Graph)()
+        if create_using is None:
+            create_using = nx.Graph
+    G = nx.empty_graph(n, create_using=create_using)
     check_create_using(G, directed=directed, multigraph=False)
     G.add_nodes_from(range(n))
     if p <= 0:
@@ -284,8 +288,9 @@ def gnm_random_graph(n, m, seed=None, directed=False, *, create_using=None):
     dense_gnm_random_graph
 
     """
-    create_using = create_using or (nx.DiGraph if directed else nx.Graph)
-    G = create_using()
+    if create_using is None:
+        create_using = nx.DiGraph if directed else nx.Graph
+    G = nx.empty_graph(create_using=create_using)
     check_create_using(G, directed=directed, multigraph=False)
     G.add_nodes_from(range(n))
 
@@ -440,7 +445,7 @@ def watts_strogatz_graph(n, k, p, seed=None, *, create_using=None):
         check_create_using(G, directed=False, multigraph=False)
         return G
 
-    G = (create_using or nx.Graph)()
+    G = nx.empty_graph(n, create_using=create_using)
     check_create_using(G, directed=False, multigraph=False)
     nodes = list(range(n))  # nodes are labeled 0 to n-1
     # connect each node to k/2 neighbors
@@ -638,7 +643,7 @@ def random_regular_graph(d, n, seed=None, *, create_using=None):
     while edges is None:
         edges = _try_creation()
 
-    G = (create_using or nx.Graph)()
+    G = nx.empty_graph(n, create_using=create_using)
     check_create_using(G, directed=False, multigraph=False)
     G.add_edges_from(edges)
 
@@ -1181,7 +1186,7 @@ def random_shell_graph(constructor, seed=None, *, create_using=None):
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
     create_using : Graph constructor, optional (default=nx.Graph)
-        Graph type to create. If graph instance, then cleared before populated.
+        Graph type to create. Graph instances are not supported.
         Multigraph and directed types are not supported and raise a ``ValueError``.
 
     Examples
@@ -1192,6 +1197,11 @@ def random_shell_graph(constructor, seed=None, *, create_using=None):
     """
     G = empty_graph(0, create_using)
     check_create_using(G, directed=False, multigraph=False)
+    if create_using is not None and not isinstance(create_using, type):
+        raise TypeError(
+            "random_shell_graph does not support graph instances for `create_using`. "
+            "Please use a graph type."
+        )
 
     glist = []
     intra_edges = []
@@ -1398,7 +1408,7 @@ def random_kernel_graph(
 
             return sp.optimize.brentq(my_function, a, 1)
 
-    graph = (create_using or nx.Graph)()
+    graph = nx.empty_graph(create_using=create_using)
     check_create_using(graph, directed=False, multigraph=False)
     graph.add_nodes_from(range(n))
     (i, j) = (1, 1)
