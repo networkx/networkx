@@ -366,6 +366,7 @@ class TestWeightedPath(WeightedTestBase):
         G.adj[0][2]["weight"] = 10
         G.adj[0][1]["weight"] = 1
         G.adj[1][2]["weight"] = 1
+        nx._clear_cache(G)
 
         # The weight function will take the multiplicative inverse of
         # the weights on the edges. This way, weights that were large
@@ -391,6 +392,7 @@ class TestWeightedPath(WeightedTestBase):
         assert p[0][3] == [0, 1, 2, 3]
 
         cycle[1][2]["weight"] = 10
+        nx._clear_cache(cycle)
         p = dict(nx.all_pairs_dijkstra_path(cycle))
         assert p[0][3] == [0, 6, 5, 4, 3]
 
@@ -400,6 +402,7 @@ class TestWeightedPath(WeightedTestBase):
         assert pl[0] == {0: 0, 1: 1, 2: 2, 3: 3, 4: 3, 5: 2, 6: 1}
 
         cycle[1][2]["weight"] = 10
+        nx._clear_cache(cycle)
         pl = dict(nx.all_pairs_dijkstra_path_length(cycle))
         assert pl[0] == {0: 0, 1: 1, 2: 5, 3: 4, 4: 3, 5: 2, 6: 1}
 
@@ -410,6 +413,7 @@ class TestWeightedPath(WeightedTestBase):
         assert out[0][1][3] == [0, 1, 2, 3]
 
         cycle[1][2]["weight"] = 10
+        nx._clear_cache(cycle)
         out = dict(nx.all_pairs_dijkstra(cycle))
         assert out[0][0] == {0: 0, 1: 1, 2: 5, 3: 4, 4: 3, 5: 2, 6: 1}
         assert out[0][1][3] == [0, 6, 5, 4, 3]
