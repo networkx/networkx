@@ -370,7 +370,7 @@ class GraphMatcher:
         --------
         When creating the `GraphMatcher`, the order of the arguments is important
 
-        >>> G = nx.Graph([(0, 1), (1, 2), (0, 2)])
+        >>> G = nx.Graph([("A", "B"), ("B", "C"), ("A", "C")])
         >>> H = nx.Graph([(0, 1), (1, 2), (0, 2), (1, 3), (0, 4)])
 
         Check whether a subgraph of G is isomorphic to H:
@@ -398,7 +398,7 @@ class GraphMatcher:
         --------
         When creating the `GraphMatcher`, the order of the arguments is important.
 
-        >>> G = nx.Graph([(0, 1), (1, 2)])
+        >>> G = nx.Graph([("A", "B"), ("B", "C")])
         >>> H = nx.Graph([(0, 1), (1, 2), (0, 2)])
 
         Check whether a subgraph of G is monomorphic to H:
@@ -426,7 +426,7 @@ class GraphMatcher:
         --------
         When creating the `GraphMatcher`, the order of the arguments is important
 
-        >>> G = nx.Graph([(0, 1), (1, 2), (0, 2)])
+        >>> G = nx.Graph([("A", "B"), ("B", "C"), ("A", "C")])
         >>> H = nx.Graph([(0, 1), (1, 2), (0, 2), (1, 3), (0, 4)])
 
         Yield isomorphic mappings between ``H`` and subgraphs of ``G``:
@@ -439,7 +439,7 @@ class GraphMatcher:
 
         >>> isomatcher = nx.isomorphism.GraphMatcher(H, G)
         >>> next(isomatcher.subgraph_isomorphisms_iter())
-        {0: 0, 1: 1, 2: 2}
+        {0: 'A', 1: 'B', 2: 'C'}
 
         """
         # Declare that we are looking for graph-subgraph isomorphism.
@@ -454,7 +454,7 @@ class GraphMatcher:
         --------
         When creating the `GraphMatcher`, the order of the arguments is important.
 
-        >>> G = nx.Graph([(0, 1), (1, 2)])
+        >>> G = nx.Graph([("A", "B"), ("B", "C")])
         >>> H = nx.Graph([(0, 1), (1, 2), (0, 2)])
 
         Yield monomorphic mappings between ``H`` and subgraphs of ``G``:
@@ -467,7 +467,7 @@ class GraphMatcher:
 
         >>> isomatcher = nx.isomorphism.GraphMatcher(H, G)
         >>> next(isomatcher.subgraph_monomorphisms_iter())
-        {0: 0, 1: 1, 2: 2}
+        {0: 'A', 1: 'B', 2: 'C'}
         """
         # Declare that we are looking for graph-subgraph monomorphism.
         self.test = "mono"
@@ -930,7 +930,7 @@ class DiGraphMatcher(GraphMatcher):
         --------
         When creating the `DiGraphMatcher`, the order of the arguments is important
 
-        >>> G = nx.DiGraph([(1, 2), (2, 1), (2, 3), (3, 2)])
+        >>> G = nx.DiGraph([("A", "B"), ("B", "A"), ("B", "C"), ("C", "B")])
         >>> H = nx.DiGraph(nx.path_graph(5))
 
         Check whether a subgraph of G is isomorphic to H:
@@ -954,7 +954,7 @@ class DiGraphMatcher(GraphMatcher):
         --------
         When creating the `DiGraphMatcher`, the order of the arguments is important.
 
-        >>> G = nx.DiGraph([(0, 1), (2, 1), (3, 2)])
+        >>> G = nx.DiGraph([("A", "B"), ("C", "B"), ("D", "C")])
         >>> H = nx.DiGraph([(0, 1), (1, 2), (2, 3), (3, 2)])
 
         Check whether a subgraph of G is monomorphic to H:
@@ -978,7 +978,7 @@ class DiGraphMatcher(GraphMatcher):
         --------
         When creating the `DiGraphMatcher`, the order of the arguments is important
 
-        >>> G = nx.DiGraph([(1, 2), (2, 1), (2, 3), (3, 2)])
+        >>> G = nx.DiGraph([("B", "C"), ("C", "B"), ("C", "D"), ("D", "C")])
         >>> H = nx.DiGraph(nx.path_graph(5))
 
         Yield isomorphic mappings between ``H`` and subgraphs of ``G``:
@@ -991,7 +991,7 @@ class DiGraphMatcher(GraphMatcher):
 
         >>> isomatcher = nx.isomorphism.DiGraphMatcher(H, G)
         >>> next(isomatcher.subgraph_isomorphisms_iter())
-        {0: 1, 1: 2, 2: 3}
+        {0: 'B', 1: 'C', 2: 'D'}
         """
         return super().subgraph_isomorphisms_iter()
 
@@ -1002,7 +1002,7 @@ class DiGraphMatcher(GraphMatcher):
         --------
         When creating the `DiGraphMatcher`, the order of the arguments is important.
 
-        >>> G = nx.DiGraph([(0, 1), (2, 1), (3, 2)])
+        >>> G = nx.DiGraph([("A", "B"), ("C", "B"), ("D", "C")])
         >>> H = nx.DiGraph([(0, 1), (1, 2), (2, 3), (3, 2)])
 
         Check whether a subgraph of G is monomorphic to H:
@@ -1015,7 +1015,7 @@ class DiGraphMatcher(GraphMatcher):
 
         >>> isomatcher = nx.isomorphism.DiGraphMatcher(H, G)
         >>> next(isomatcher.subgraph_monomorphisms_iter())
-        {3: 0, 2: 1, 1: 2, 0: 3}
+        {3: 'A', 2: 'B', 1: 'C', 0: 'D'}
         """
         return super().subgraph_monomorphisms_iter()
 
