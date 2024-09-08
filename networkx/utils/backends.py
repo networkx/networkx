@@ -1050,17 +1050,23 @@ class _dispatchable:
         # the dispatch machinery does not necessarily need to perform conversions),
         # but since backend-to-backend matching is not yet supported, the following
         # code is merely a convenient way to implement dispatch behaviors that have
-        # been developed since NetworkX 3.0 and to include falling back to the
-        # default NetworkX implementation.
+        # been carefully developed since NetworkX 3.0 and to include falling back
+        # to the default NetworkX implementation.
         #
-        # The current behavior (ignoring mutations) can be explained simply:
+        # The current behavior for functions that don't mutate input graphs:
         #
         # 1. If backend is specified by `backend=` keyword, use it (done above).
-        # 2. If input is from a backend other than "networkx", try to use it,
-        #    then fall back to default "networkx" implementation.
-        #      - Note: raise if input is from multiple non-networkx backends.
-        # 3. If input is from "networkx" (or no backend), try to use a backend from
-        #    `backend_priority` before using default "networkx" implementation.
+        # 2. If input is from a backend other than "networkx", try to use it.
+        #    - Note: if present, "networkx" graphs will be converted to the backend.
+        # 3. If input is from "networkx" (or no backend), try to use backends from `backend_priority`.
+        # 4. If configured, "fall back" and run with the default "networkx" implementation.
+        #
+        # The current behavior for functions that mutate input graphs (done above):
+        #
+        # 1. If backend is specified by `backend=` keyword, use it.
+        # 2. If inputs are from one backend, try to use it.
+        # 3. If all input graphs are instances of `nx.Graph`, then run with the
+        #    default "networkx" implementation.
         #
         # ################################################
         # # How this is implemented and may work someday #
@@ -1170,9 +1176,31 @@ class _dispatchable:
                     backend_name, graph_backend_names
                 ) and self._can_backend_run(backend_name, args, kwargs):
                     if self._should_backend_run(backend_name, args, kwargs):
-                        return self._convert_and_call(
+                        rv = self._convert_and_call(
                             backend_name, graph_backend_names, args, kwargs
                         )
+                        if (
+                            self._returns_graph
+                            and graph_backend_names
+                            and backend_name not in graph_backend_names
+                        ):
+                            # If the function has graph inputs and graph output, we try
+                            # to make it so the backend of the return type will match the
+                            # backend of the input types. In case this is not possible,
+                            # let's tell the user that the backend of the return graph
+                            # has changed. Perhaps we could try to convert back, but
+                            # "fallback" backends for graph generators should typically
+                            # be compatible with NetworkX graphs.
+                            _logger.debug(
+                                "Call to `%s' is returning a graph from a different "
+                                "backend! It has inputs from %s backends, but ran with "
+                                "'%s' backend and is returning graph from '%s' backend",
+                                self.name,
+                                graph_backend_names,
+                                backend_name,
+                                backend_name,
+                            )
+                        return rv
                     # `should_run` is False, but `can_run` is True, so try again later
                     backends_to_try_again.append(backend_name)
             except NotImplementedError as exc:
@@ -1190,9 +1218,24 @@ class _dispatchable:
                 "Trying backend: '%s' (ignoring `should_run=False`)", backend_name
             )
             try:
-                return self._convert_and_call(
+                rv = self._convert_and_call(
                     backend_name, graph_backend_names, args, kwargs
                 )
+                if (
+                    self._returns_graph
+                    and graph_backend_names
+                    and backend_name not in graph_backend_names
+                ):
+                    _logger.debug(
+                        "Call to `%s' is returning a graph from a different "
+                        "backend! It has inputs from %s backends, but ran with "
+                        "'%s' backend and is returning graph from '%s' backend",
+                        self.name,
+                        graph_backend_names,
+                        backend_name,
+                        backend_name,
+                    )
+                return rv
             except NotImplementedError as exc:
                 _logger.debug(
                     "Backend '%s' raised when calling `%s': %s",
