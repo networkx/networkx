@@ -1,4 +1,4 @@
-def assert_directedness_multi(G, directed=None, multigraph=None):
+def assert_directedness_multi(G, *, directed=None, multigraph=None):
     """
     Assert that a graph has the desired directedness and multi-edge properties.
     """

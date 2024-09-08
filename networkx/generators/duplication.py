@@ -40,9 +40,9 @@ def partial_duplication_graph(N, n, p, q, seed=None, *, create_using=None):
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
 
-    create_using : Graph, optional (default Graph())
-        If provided this graph is cleared of nodes and edges and filled
-        with the new graph. Usually used to set the type of the graph.
+    create_using : Graph constructor, optional (default=nx.Graph)
+        Graph type to create. If graph instance, then cleared before populated.
+        Multigraph and directed types are not supported and raise a ``ValueError``.
 
     Notes
     -----
@@ -112,9 +112,9 @@ def duplication_divergence_graph(n, p, seed=None, *, create_using=None):
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
-    create_using : Graph, optional (default Graph())
-        If provided this graph is cleared of nodes and edges and filled
-        with the new graph. Usually used to set the type of the graph.
+    create_using : Graph constructor, optional (default=nx.Graph)
+        Graph type to create. If graph instance, then cleared before populated.
+        Multigraph and directed types are not supported and raise a ``ValueError``.
 
     Returns
     -------
