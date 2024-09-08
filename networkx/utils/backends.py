@@ -903,8 +903,13 @@ class _dispatchable:
                     return self._call_with_backend(
                         backend_name, args, kwargs, extra_message=extra_message
                     )
+                if self._does_backend_have(backend_name):
+                    extra = " for the given arguments"
+                else:
+                    extra = ""
                 raise NotImplementedError(
-                    f"`{self.name}' is not implemented by '{backend_name}' backend. {blurb}"
+                    f"`{self.name}' is not implemented by '{backend_name}' backend"
+                    f"{extra}. {blurb}"
                 )
             if self._can_convert(backend_name, graph_backend_names):
                 if self._can_backend_run(backend_name, args, kwargs):
@@ -936,8 +941,13 @@ class _dispatchable:
                             # that a graph can be gotten from a cache multiple times.
                             cache.pop(key, None)
                     return rv
+                if self._does_backend_have(backend_name):
+                    extra = " for the given arguments"
+                else:
+                    extra = ""
                 raise NotImplementedError(
-                    f"`{self.name}' is not implemented by '{backend_name}' backend. {blurb}"
+                    f"`{self.name}' is not implemented by '{backend_name}' backend"
+                    f"{extra}. {blurb}"
                 )
             if len(graph_backend_names) == 1:
                 maybe_s = ""
@@ -1004,7 +1014,11 @@ class _dispatchable:
                             fallback_blurb,
                         )
                     else:
-                        raise NotImplementedError(msg_template % "")
+                        if self._does_backend_have(backend_name):
+                            extra = " with these arguments"
+                        else:
+                            extra = ""
+                        raise NotImplementedError(msg_template % extra)
             elif all(isinstance(g, nx.Graph) for g in graphs_resolved.values()):
                 _logger.debug(
                     "`%s' was called with inputs from multiple backends: %s. %s",
@@ -1239,6 +1253,14 @@ class _dispatchable:
                 backend_name,
             )
         return rv
+
+    def _does_backend_have(self, backend_name):
+        """Does the specified backend have this algorithm?"""
+        if backend_name == "networkx":
+            return True
+        # Inspect the backend; don't trust metadata used to create `self.backends`
+        backend = _load_backend(backend_name)
+        return hasattr(backend, self.name)
 
     def _can_backend_run(self, backend_name, args, kwargs):
         """Can the specified backend run this algorithm with these arguments?"""
