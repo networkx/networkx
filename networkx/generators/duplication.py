@@ -8,7 +8,7 @@ generally inspired by biological networks.
 
 import networkx as nx
 from networkx.exception import NetworkXError
-from networkx.generators.util import assert_directedness_multi
+from networkx.utils.misc import check_create_using
 from networkx.utils import py_random_state
 
 __all__ = ["partial_duplication_graph", "duplication_divergence_graph"]
@@ -74,7 +74,7 @@ def partial_duplication_graph(N, n, p, q, seed=None, *, create_using=None):
         raise NetworkXError("partial duplication graph must have n <= N.")
 
     G = nx.complete_graph(n, create_using)
-    assert_directedness_multi(G, directed=False, multigraph=False)
+    check_create_using(G, directed=False, multigraph=False)
     for new_node in range(n, N):
         # Pick a random vertex, u, already in the graph.
         src_node = seed.randint(0, new_node - 1)
@@ -148,7 +148,7 @@ def duplication_divergence_graph(n, p, seed=None, *, create_using=None):
         raise nx.NetworkXError(msg)
 
     G = nx.empty_graph(create_using=create_using)
-    assert_directedness_multi(G, directed=False, multigraph=False)
+    check_create_using(G, directed=False, multigraph=False)
 
     # Initialize the graph with two connected nodes.
     G.add_edge(0, 1)

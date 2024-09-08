@@ -12,7 +12,7 @@ from networkx.utils import py_random_state
 
 from .classic import complete_graph, empty_graph, path_graph, star_graph
 from .degree_seq import degree_sequence_tree
-from .util import assert_directedness_multi
+from ..utils.misc import check_create_using
 
 __all__ = [
     "fast_gnp_random_graph",
@@ -86,7 +86,7 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False, *, create_using=None)
 
     create_using = create_using or (nx.DiGraph if directed else nx.Graph)
     G = empty_graph(n, create_using=create_using)
-    assert_directedness_multi(G, directed=directed, multigraph=False)
+    check_create_using(G, directed=directed, multigraph=False)
 
     lp = math.log(1.0 - p)
 
@@ -168,7 +168,7 @@ def gnp_random_graph(n, p, seed=None, directed=False, *, create_using=None):
     else:
         edges = itertools.combinations(range(n), 2)
         G = (create_using or nx.Graph)()
-    assert_directedness_multi(G, directed=directed, multigraph=False)
+    check_create_using(G, directed=directed, multigraph=False)
     G.add_nodes_from(range(n))
     if p <= 0:
         return G
@@ -230,7 +230,7 @@ def dense_gnm_random_graph(n, m, seed=None, *, create_using=None):
         G = complete_graph(n, create_using)
     else:
         G = empty_graph(n, create_using)
-    assert_directedness_multi(G, directed=False, multigraph=False)
+    check_create_using(G, directed=False, multigraph=False)
 
     if n == 1 or m >= mmax:
         return G
@@ -286,7 +286,7 @@ def gnm_random_graph(n, m, seed=None, directed=False, *, create_using=None):
     """
     create_using = create_using or (nx.DiGraph if directed else nx.Graph)
     G = create_using()
-    assert_directedness_multi(G, directed=directed, multigraph=False)
+    check_create_using(G, directed=directed, multigraph=False)
     G.add_nodes_from(range(n))
 
     if n == 1:
@@ -361,7 +361,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None, *, create_using=None):
         return nx.complete_graph(n, create_using)
 
     G = empty_graph(n, create_using)
-    assert_directedness_multi(G, directed=False, multigraph=False)
+    check_create_using(G, directed=False, multigraph=False)
     nlist = list(G.nodes())
     fromv = nlist
     # connect the k/2 neighbors
@@ -437,11 +437,11 @@ def watts_strogatz_graph(n, k, p, seed=None, *, create_using=None):
     # If k == n, the graph is complete not Watts-Strogatz
     if k == n:
         G = nx.complete_graph(n, create_using)
-        assert_directedness_multi(G, directed=False, multigraph=False)
+        check_create_using(G, directed=False, multigraph=False)
         return G
 
     G = (create_using or nx.Graph)()
-    assert_directedness_multi(G, directed=False, multigraph=False)
+    check_create_using(G, directed=False, multigraph=False)
     nodes = list(range(n))  # nodes are labeled 0 to n-1
     # connect each node to k/2 neighbors
     for j in range(1, k // 2 + 1):
@@ -580,7 +580,7 @@ def random_regular_graph(d, n, seed=None, *, create_using=None):
 
     if d == 0:
         G = empty_graph(n, create_using)
-        assert_directedness_multi(G, directed=False, multigraph=False)
+        check_create_using(G, directed=False, multigraph=False)
         return G
 
     def _suitable(edges, potential_edges):
@@ -639,7 +639,7 @@ def random_regular_graph(d, n, seed=None, *, create_using=None):
         edges = _try_creation()
 
     G = (create_using or nx.Graph)()
-    assert_directedness_multi(G, directed=False, multigraph=False)
+    check_create_using(G, directed=False, multigraph=False)
     G.add_edges_from(edges)
 
     return G
@@ -716,7 +716,7 @@ def barabasi_albert_graph(n, m, seed=None, initial_graph=None, *, create_using=N
                 f"Barabási–Albert initial graph needs between m={m} and n={n} nodes"
             )
         G = initial_graph.copy()
-    assert_directedness_multi(G, directed=False, multigraph=False)
+    check_create_using(G, directed=False, multigraph=False)
 
     # List of existing nodes, with nodes repeated once for each adjacent edge
     repeated_nodes = [n for n, d in G.degree() for _ in range(d)]
@@ -802,11 +802,11 @@ def dual_barabasi_albert_graph(
     # For simplicity, if p == 0 or 1, just return BA
     if p == 1:
         G = barabasi_albert_graph(n, m1, seed, create_using)
-        assert_directedness_multi(G, directed=False, multigraph=False)
+        check_create_using(G, directed=False, multigraph=False)
         return G
     elif p == 0:
         G = barabasi_albert_graph(n, m2, seed, create_using)
-        assert_directedness_multi(G, directed=False, multigraph=False)
+        check_create_using(G, directed=False, multigraph=False)
         return G
 
     if initial_graph is None:
@@ -819,7 +819,7 @@ def dual_barabasi_albert_graph(
                 f"max(m1, m2) = {max(m1, m2)} and n = {n} nodes"
             )
         G = initial_graph.copy()
-    assert_directedness_multi(G, directed=False, multigraph=False)
+    check_create_using(G, directed=False, multigraph=False)
 
     # Target nodes for new edges
     targets = list(G)
@@ -910,7 +910,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None, *, create_using=None):
 
     # Add m initial nodes (m0 in barabasi-speak)
     G = empty_graph(m, create_using)
-    assert_directedness_multi(G, directed=False, multigraph=False)
+    check_create_using(G, directed=False, multigraph=False)
 
     # List of nodes to represent the preferential attachment random selection.
     # At the creation of the graph, all nodes are added to the list
@@ -1072,7 +1072,7 @@ def powerlaw_cluster_graph(n, m, p, seed=None, *, create_using=None):
         raise nx.NetworkXError(f"NetworkXError p must be in [0,1], p={p}")
 
     G = empty_graph(m, create_using)  # add m initial nodes (m0 in barabasi-speak)
-    assert_directedness_multi(G, directed=False, multigraph=False)
+    check_create_using(G, directed=False, multigraph=False)
     repeated_nodes = list(G.nodes())  # list of existing nodes to sample from
     # with nodes repeated once for each adjacent edge
     source = m  # next node is m
@@ -1148,7 +1148,7 @@ def random_lobster(n, p1, p2, seed=None, *, create_using=None):
     # a necessary ingredient in any self-respecting graph library
     llen = int(2 * seed.random() * n + 0.5)
     L = path_graph(llen, create_using)
-    assert_directedness_multi(L, directed=False, multigraph=False)
+    check_create_using(L, directed=False, multigraph=False)
     # build caterpillar: add edges to path graph with probability p1
     current_node = llen - 1
     for n in range(llen):
@@ -1191,7 +1191,7 @@ def random_shell_graph(constructor, seed=None, *, create_using=None):
 
     """
     G = empty_graph(0, create_using)
-    assert_directedness_multi(G, directed=False, multigraph=False)
+    check_create_using(G, directed=False, multigraph=False)
 
     glist = []
     intra_edges = []
@@ -1262,7 +1262,7 @@ def random_powerlaw_tree(n, gamma=3, seed=None, tries=100, *, create_using=None)
     # This call may raise a NetworkXError if the number of tries is succeeded.
     seq = random_powerlaw_tree_sequence(n, gamma=gamma, seed=seed, tries=tries)
     G = degree_sequence_tree(seq, create_using)
-    assert_directedness_multi(G, directed=False, multigraph=False)
+    check_create_using(G, directed=False, multigraph=False)
     return G
 
 
@@ -1399,7 +1399,7 @@ def random_kernel_graph(
             return sp.optimize.brentq(my_function, a, 1)
 
     graph = (create_using or nx.Graph)()
-    assert_directedness_multi(graph, directed=False, multigraph=False)
+    check_create_using(graph, directed=False, multigraph=False)
     graph.add_nodes_from(range(n))
     (i, j) = (1, 1)
     while i < n:
