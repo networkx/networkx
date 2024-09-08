@@ -81,13 +81,13 @@ been working with the NetworkX developers to ensure smooth operation.
 They are the following:
 
 - `graphblas <https://github.com/python-graphblas/graphblas-algorithms>`_:
-    OpenMP-enabled sparse linear algebra backend.
+  OpenMP-enabled sparse linear algebra backend.
 - `cugraph <https://github.com/rapidsai/cugraph/tree/branch-24.04/python/nx-cugraph>`_:
-    GPU-accelerated backend.
+  GPU-accelerated backend.
 - `parallel <https://github.com/networkx/nx-parallel>`_:
-    Parallel backend for NetworkX algorithms.
+  Parallel backend for NetworkX algorithms.
 - `loopback <https://github.com/networkx/networkx/blob/main/pyproject.toml#L53>`_:
-    It's for testing purposes only and is not a real backend.
+  It's for testing purposes only and is not a real backend.
 
 Note that the ``backend_name`` is e.g. ``parallel``, the package installed
 is ``nx-parallel``, and we use ``nx_parallel`` while importing the package.
