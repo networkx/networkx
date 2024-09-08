@@ -559,11 +559,16 @@ def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format=
     >>> A  # doctest: +SKIP
     <Compressed Sparse Row sparse array of dtype 'int64'
         with 6 stored elements and shape (4, 4)>
+
     >>> A.toarray()
     array([[0, 1, 0, 0],
            [1, 0, 1, 0],
            [0, 1, 0, 1],
            [0, 0, 1, 0]])
+
+    .. note:: The `toarray` method is used in these examples to better visualize
+       the adjacancy matrix. For a dense representation of the adjaceny matrix,
+       use `to_numpy_array` instead.
 
     Directed graphs
 
