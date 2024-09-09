@@ -76,10 +76,23 @@ def pytest_configure(config):
                 name = cls.__name__
                 if hasattr(backend_interface, name):
                     backend_cls = getattr(backend_interface, name)
-                    backend_cls.__name__ = name  # To allow tests to pass
+                    # Uncommenting this line may help a couple tests pass, but don't do
+                    # this by default because it may cause confusion.
+                    # backend_cls.__module__ = cls.__module__
+                    backend_cls.__name__ = name
                     rv = object.__new__(backend_cls)
                     if not isinstance(rv, cls):
                         rv.__init__(*args, **kwargs)
+                    # Backends that want to test their networkx-compatible graphs may
+                    # want to experiment with commenting out the line below. The default
+                    # behavior with `--use-backend-class` is to run NetworkX tests
+                    # normally--that is, without exercising the test-specific machinery
+                    # in dispatching--and for backend graphs to be treated as NetworkX
+                    # graphs. To fully exercise this, we set `__networkx_backend__` in
+                    # order to use the default NetworkX implementation of functions.
+                    #
+                    # Note: uncomment this line after PR #7585 or #7496 has been merged.
+                    # rv.__networkx_backend__ = "networkx"
                     return rv
             return object.__new__(cls)
 
@@ -97,9 +110,14 @@ def pytest_configure(config):
             "        Try `pip install -e .`, or change your PYTHONPATH\n"
             "        Make sure python finds the networkx repo you are testing\n\n"
         )
+    config.backend = backend
     if backend:
         networkx.utils.backends.backends["nx_loopback"] = loopback_ep["nx_loopback"]
-        networkx.config["backend_priority"] = [backend]
+        if not use_backend_class:
+            # Once again, backends that want to test their networkx-compatible
+            # graphs may want to experiment with code around here too. We still
+            # call `backend.on_start_tests` below go give backends full control.
+            networkx.config["backend_priority"] = [backend]
         networkx.config.backends = networkx.utils.Config(
             nx_loopback=networkx.utils.Config(),
             **networkx.config.backends,
@@ -113,11 +131,11 @@ def pytest_configure(config):
 def pytest_collection_modifyitems(config, items):
     # Setting this to True here allows tests to be set up before dispatching
     # any function call to a backend.
-    networkx.utils.backends._dispatchable._is_testing = True
-    if backend_priority := networkx.config["backend_priority"]:
+    if config.backend:
         # Allow pluggable backends to add markers to tests (such as skip or xfail)
         # when running in auto-conversion test mode
-        backend = networkx.utils.backends.backends[backend_priority[0]].load()
+        networkx.utils.backends._dispatchable._is_testing = True
+        backend = networkx.utils.backends.backends[config.backend].load()
         if hasattr(backend, "on_start_tests"):
             getattr(backend, "on_start_tests")(items)
 
