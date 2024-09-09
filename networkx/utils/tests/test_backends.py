@@ -160,3 +160,11 @@ def test_bad_backend_name():
         ImportError, match="'this_backend_does_not_exist' backend is not installed"
     ):
         nx.null_graph(backend="this_backend_does_not_exist")
+
+
+def test_fallback_to_nx():
+    with pytest.warns(DeprecationWarning, match="_fallback_to_nx"):
+        # Check as class property
+        assert nx._dispatchable._fallback_to_nx == nx.config.fallback_to_nx
+        # Check as instance property
+        assert nx.pagerank.__wrapped__._fallback_to_nx == nx.config.fallback_to_nx

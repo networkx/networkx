@@ -491,9 +491,21 @@ def _load_backend(backend_name):
 
 class _dispatchable:
     _is_testing = False
-    _fallback_to_nx = (
-        os.environ.get("NETWORKX_FALLBACK_TO_NX", "false").strip().lower() == "true"
-    )
+
+    class _fallback_to_nx:
+        """Class property that returns ``nx.config.fallback_to_nx``."""
+
+        def __get__(self, instance, owner=None):
+            warnings.warn(
+                "`_dispatchable._fallback_to_nx` is deprecated and will be removed "
+                "in NetworkX v3.5. Use `nx.config.fallback_to_nx` instead.",
+                category=DeprecationWarning,
+                stacklevel=2,
+            )
+            return config.fallback_to_nx
+
+    # Note that chaining `@classmethod` and `@property` was removed in Python 3.13
+    _fallback_to_nx = _fallback_to_nx()
 
     def __new__(
         cls,
@@ -881,7 +893,7 @@ class _dispatchable:
                 backend_priority[0],
                 args,
                 kwargs,
-                fallback_to_nx=self._fallback_to_nx,
+                fallback_to_nx=config.fallback_to_nx,
             )
 
         graph_backend_names.discard(None)
@@ -1043,8 +1055,14 @@ class _dispatchable:
             # nx.Graph instances, fall back to networkx without converting.
             return self.orig_func(*args, **kwargs)
 
-        # This may become configurable
-        backend_fallback = ["networkx"]
+        # We may generalize fallback configuration as e.g. `nx.config.backend_fallback`
+        if config.fallback_to_nx or not graph_backend_names:
+            # Use "networkx" by default if there are no inputs from backends.
+            # For example, graph generators should probably return NetworkX graphs
+            # instead of raising NotImplementedError.
+            backend_fallback = ["networkx"]
+        else:
+            backend_fallback = []
 
         # ##########################
         # # How this behaves today #
@@ -1065,7 +1083,8 @@ class _dispatchable:
         # 1. If backend is specified by `backend=` keyword, use it (done above).
         # 2. If input is from a backend other than "networkx", try to use it.
         #    - Note: if present, "networkx" graphs will be converted to the backend.
-        # 3. If input is from "networkx" (or no backend), try to use backends from `backend_priority`.
+        # 3. If input is from "networkx" (or no backend), try to use backends from
+        #    `backend_priority` before running with the default "networkx" implementation.
         # 4. If configured, "fall back" and run with the default "networkx" implementation.
         #
         # ################################################

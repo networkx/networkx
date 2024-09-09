@@ -70,7 +70,7 @@ def pytest_configure(config):
         fallback_to_nx = config.getoption("--fallback-to-nx")
         if not fallback_to_nx:
             fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
-        networkx.utils.backends._dispatchable._fallback_to_nx = bool(fallback_to_nx)
+        networkx.config.fallback_to_nx = bool(fallback_to_nx)
 
 
 def pytest_collection_modifyitems(config, items):
