@@ -492,7 +492,7 @@ def _load_backend(backend_name):
 class _dispatchable:
     _is_testing = False
     _fallback_to_nx = (
-        os.environ.get("NETWORKX_FALLBACK_TO_NX", "").strip().lower() == "true"
+        os.environ.get("NETWORKX_FALLBACK_TO_NX", "false").strip().lower() == "true"
     )
 
     def __new__(
@@ -962,6 +962,13 @@ class _dispatchable:
             )
 
         if self._will_call_mutate_input(args, kwargs):
+            # The current behavior for functions that mutate input graphs:
+            #
+            # 1. If backend is specified by `backend=` keyword, use it (done above).
+            # 2. If inputs are from one backend, try to use it.
+            # 3. If all input graphs are instances of `nx.Graph`, then run with the
+            #    default "networkx" implementation.
+            #
             # Do not automatically convert if a call will mutate inputs, because doing
             # so would change behavior. Hence, we should fail if there are multiple input
             # backends or if the input backend does not implement the function. However,
@@ -1060,13 +1067,6 @@ class _dispatchable:
         #    - Note: if present, "networkx" graphs will be converted to the backend.
         # 3. If input is from "networkx" (or no backend), try to use backends from `backend_priority`.
         # 4. If configured, "fall back" and run with the default "networkx" implementation.
-        #
-        # The current behavior for functions that mutate input graphs (done above):
-        #
-        # 1. If backend is specified by `backend=` keyword, use it.
-        # 2. If inputs are from one backend, try to use it.
-        # 3. If all input graphs are instances of `nx.Graph`, then run with the
-        #    default "networkx" implementation.
         #
         # ################################################
         # # How this is implemented and may work someday #
