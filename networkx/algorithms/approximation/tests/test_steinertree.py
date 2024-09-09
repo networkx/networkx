@@ -1,7 +1,11 @@
 import pytest
 
 import networkx as nx
-from networkx.algorithms.approximation.steinertree import metric_closure, steiner_tree
+from networkx.algorithms.approximation.steinertree import (
+    _remove_nonterminal_leaves,
+    metric_closure,
+    steiner_tree,
+)
 from networkx.utils import edges_equal
 
 
@@ -190,6 +194,12 @@ class TestSteinerTree:
             S = steiner_tree(G, terminal_nodes, method=method)
             assert edges_equal(S.edges(data=True, keys=True), expected_edges)
 
+    def test_remove_nonterminal_leaves(self):
+        G = nx.path_graph(10)
+        _remove_nonterminal_leaves(G, [4, 5, 6])
+
+        assert list(G) == [4, 5, 6]  # only the terminal nodes are left
+
 
 @pytest.mark.parametrize("method", ("kou", "mehlhorn"))
 def test_steiner_tree_weight_attribute(method):
@@ -224,3 +234,32 @@ def test_steiner_tree_method_invalid():
         ValueError, match="invalid_method is not a valid choice for an algorithm."
     ):
         nx.approximation.steiner_tree(G, terminal_nodes=[1, 3], method="invalid_method")
+
+
+def test_steiner_tree_remove_non_terminal_leaves_self_loop_edges():
+    # To verify that the last step of the steiner tree approximation
+    # behaves in the case where a non-terminal leaf has a self loop edge
+    G = nx.path_graph(10)
+
+    # Add self loops to the terminal nodes
+    G.add_edges_from([(2, 2), (3, 3), (4, 4), (7, 7), (8, 8)])
+
+    # Remove non-terminal leaves
+    _remove_nonterminal_leaves(G, [4, 5, 6, 7])
+
+    # The terminal nodes should be left
+    assert list(G) == [4, 5, 6, 7]  # only the terminal nodes are left
+
+
+def test_steiner_tree_non_terminal_leaves_multigraph_self_loop_edges():
+    # To verify that the last step of the steiner tree approximation
+    # behaves in the case where a non-terminal leaf has a self loop edge
+    G = nx.MultiGraph()
+    G.add_edges_from([(i, i + 1) for i in range(10)])
+    G.add_edges_from([(2, 2), (3, 3), (4, 4), (4, 4), (7, 7)])
+
+    # Remove non-terminal leaves
+    _remove_nonterminal_leaves(G, [4, 5, 6, 7])
+
+    # Only the terminal nodes should be left
+    assert list(G) == [4, 5, 6, 7]
