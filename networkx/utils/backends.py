@@ -505,7 +505,7 @@ class _dispatchable:
             return config.fallback_to_nx
 
     # Note that chaining `@classmethod` and `@property` was removed in Python 3.13
-    _fallback_to_nx = _fallback_to_nx()
+    _fallback_to_nx = _fallback_to_nx()  # type: ignore[assignment]
 
     def __new__(
         cls,
