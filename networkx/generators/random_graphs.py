@@ -1197,11 +1197,6 @@ def random_shell_graph(constructor, seed=None, *, create_using=None):
     """
     G = empty_graph(0, create_using)
     check_create_using(G, directed=False, multigraph=False)
-    if create_using is not None and not isinstance(create_using, type):
-        raise TypeError(
-            "random_shell_graph does not support graph instances for `create_using`. "
-            "Please use a graph type."
-        )
 
     glist = []
     intra_edges = []
@@ -1211,7 +1206,7 @@ def random_shell_graph(constructor, seed=None, *, create_using=None):
         inter_edges = int(m * d)
         intra_edges.append(m - inter_edges)
         g = nx.convert_node_labels_to_integers(
-            gnm_random_graph(n, inter_edges, seed=seed, create_using=create_using),
+            gnm_random_graph(n, inter_edges, seed=seed, create_using=G.__class__),
             first_label=nnodes,
         )
         glist.append(g)
