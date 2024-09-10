@@ -142,6 +142,9 @@ def set_warnings():
         category=DeprecationWarning,
         message="store_pos_as will default to 'pos'",
     )
+    warnings.filterwarnings(
+        "ignore", category=DeprecationWarning, message="Keyword argument 'link'"
+    )
 
 
 @pytest.fixture(autouse=True)

@@ -73,3 +73,5 @@ Version 3.6
   - ``bfs_layout``
   - ``arf_layout``
   In ``drawing/layouts.py
+* Remove ``link`` kwarg from ``readwrite/json_graph/node_link.py``;
+  Change ``edges`` default value to ``edges``.
