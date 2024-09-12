@@ -25,7 +25,7 @@ def karate_club_graph():
     This was in turn derived from the 'Club After Fission' column of Table 1 in the same paper.
     Note that the nodes are 0-indexed in NetworkX, but 1-indexed in the paper
     (the 'Individual Number in Matrix C' column of Table 3 starts at 1).
-    This means, for example, that G.nodes[9]["club"] returns 'Officer',
+    This means, for example, that ``G.nodes[9]["club"]`` returns 'Officer',
     which corresponds to row 10 of Table 3 in the paper.
 
     Examples
