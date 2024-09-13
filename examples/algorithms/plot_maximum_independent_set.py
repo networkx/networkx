@@ -35,10 +35,11 @@ G = nx.Graph(
 I = approx.maximum_independent_set(G)
 print(f"Maximum independent set of G: {I}")
 
-pos = nx.spring_layout(G, seed=39299899)
+pos = nx.spring_layout(G, seed=251134665)
 nx.draw(
     G,
     pos=pos,
     with_labels=True,
     node_color=["tab:red" if n in I else "tab:blue" for n in G],
 )
+
