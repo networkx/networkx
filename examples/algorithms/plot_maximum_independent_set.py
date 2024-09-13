@@ -42,4 +42,3 @@ nx.draw(
     with_labels=True,
     node_color=["tab:red" if n in I else "tab:blue" for n in G],
 )
-
