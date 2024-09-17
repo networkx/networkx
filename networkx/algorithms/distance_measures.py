@@ -387,8 +387,11 @@ def diameter(G, e=None, usebounds=False, weight=None):
     return max(e.values())
 
 
-@nx._dispatchable
-def harmonic_diameter(G, sp=None):
+import math
+import networkx as nx
+
+@nx._dispatchable(edge_attrs="weight")
+def harmonic_diameter(G, weight=None, sp=None):
     """Returns the harmonic diameter of the graph G.
 
     The harmonic diameter of a graph is the harmonic mean of the distances
@@ -412,6 +415,10 @@ def harmonic_diameter(G, sp=None):
     G : NetworkX graph
        A graph
 
+    weight : string or None, optional (default=None)
+       The edge attribute that holds the numerical value used as a weight.
+       If None, then each edge has unit weight.
+
     sp : dict of dicts, optional
        All-pairs shortest path lengths as a dictionary of dictionaries
 
@@ -432,7 +439,7 @@ def harmonic_diameter(G, sp=None):
     sum_invd = 0
     for n in G:
         if sp is None:
-            length = nx.single_source_shortest_path_length(G, n)
+            length = nx.single_source_dijkstra_path_length(G, n, weight=weight)
         else:
             try:
                 length = sp[n]
@@ -451,7 +458,6 @@ def harmonic_diameter(G, sp=None):
     if order > 1:
         return math.inf
     return math.nan
-
 
 @nx._dispatchable(edge_attrs="weight")
 def periphery(G, e=None, usebounds=False, weight=None):
