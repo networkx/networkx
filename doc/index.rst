@@ -120,6 +120,7 @@ Bibliography
 
    install
    tutorial
+   backends
    reference/index
    auto_examples/index
    developer/index
