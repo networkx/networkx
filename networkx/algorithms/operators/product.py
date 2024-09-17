@@ -6,6 +6,7 @@ from itertools import product
 
 import networkx as nx
 from networkx.utils import not_implemented_for
+from networkx import NodeNotFound
 
 __all__ = [
     "tensor_product",
@@ -462,7 +463,7 @@ def rooted_product(G, H, root):
     The nodes of G and H are not relabeled.
     """
     if root not in H:
-        raise nx.NetworkXError("root must be a vertex in H")
+        raise NodeNotFound("root must be a vertex in H")
 
     R = nx.Graph()
     R.add_nodes_from(product(G, H))
