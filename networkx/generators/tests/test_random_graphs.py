@@ -392,3 +392,85 @@ def test_create_using(generator, kwargs, create_using_instance):
     create_using = create_using_type() if create_using_instance else create_using_type
     graph = generator(**kwargs, create_using=create_using)
     assert isinstance(graph, create_using_type)
+
+
+@pytest.mark.parametrize("directed", [True, False])
+@pytest.mark.parametrize("fn", (nx.fast_gnp_random_graph, nx.gnp_random_graph))
+def test_gnp_fns_disallow_multigraph(fn, directed):
+    with pytest.raises(ValueError):
+        fn(20, 0.2, create_using=nx.MultiGraph)
+
+
+@pytest.mark.parametrize("fn", (nx.gnm_random_graph, nx.dense_gnm_random_graph))
+@pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+def test_gnm_fns_disallow_directed_and_multigraph(fn, graphtype):
+    with pytest.raises(ValueError):
+        fn(10, 20, create_using=graphtype)
+
+
+@pytest.mark.parametrize(
+    "fn",
+    (
+        nx.newman_watts_strogatz_graph,
+        nx.watts_strogatz_graph,
+        nx.connected_watts_strogatz_graph,
+    ),
+)
+@pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+def test_watts_strogatz_disallow_directed_and_multigraph(fn, graphtype):
+    with pytest.raises(ValueError):
+        fn(10, 2, 0.2, create_using=graphtype)
+
+
+@pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+def test_random_regular_graph_disallow_directed_and_multigraph(graphtype):
+    with pytest.raises(ValueError):
+        nx.random_regular_graph(2, 10, create_using=graphtype)
+
+
+@pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+def test_barabasi_albert_disallow_directed_and_multigraph(graphtype):
+    with pytest.raises(ValueError):
+        nx.barabasi_albert_graph(10, 3, create_using=graphtype)
+
+
+@pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+def test_dual_barabasi_albert_disallow_directed_and_multigraph(graphtype):
+    with pytest.raises(ValueError):
+        nx.dual_barabasi_albert_graph(10, 2, 1, 0.4, create_using=graphtype)
+
+
+@pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+def test_extended_barabasi_albert_disallow_directed_and_multigraph(graphtype):
+    with pytest.raises(ValueError):
+        nx.extended_barabasi_albert_graph(10, 2, 0.2, 0.3, create_using=graphtype)
+
+
+@pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+def test_powerlaw_cluster_disallow_directed_and_multigraph(graphtype):
+    with pytest.raises(ValueError):
+        nx.powerlaw_cluster_graph(10, 5, 0.2, create_using=graphtype)
+
+
+@pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+def test_random_lobster_disallow_directed_and_multigraph(graphtype):
+    with pytest.raises(ValueError):
+        nx.random_lobster(10, 0.1, 0.1, create_using=graphtype)
+
+
+@pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+def test_random_shell_disallow_directed_and_multigraph(graphtype):
+    with pytest.raises(ValueError):
+        nx.random_shell_graph([(10, 20, 2), (10, 20, 5)], create_using=graphtype)
+
+
+@pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+def test_random_powerlaw_tree_disallow_directed_and_multigraph(graphtype):
+    with pytest.raises(ValueError):
+        nx.random_powerlaw_tree(10, create_using=graphtype)
+
+
+@pytest.mark.parametrize("graphtype", (nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph))
+def test_random_kernel_disallow_directed_and_multigraph(graphtype):
+    with pytest.raises(ValueError):
+        nx.random_kernel_graph(10, lambda y, a, b: a + b, create_using=graphtype)
