@@ -50,7 +50,7 @@ def single_source_shortest_path_length(G, source, cutoff=None):
     :func:`~networkx.algorithms.shortest_paths.weighted.single_source_dijkstra_path_length` :
        Shortest weighted path length from source with Dijkstra algorithm.
     :func:`~networkx.algorithms.shortest_paths.weighted.single_source_bellman_ford_path_length` :
-       Shorttest weighted path length from source with Bellman-Ford algorithm.
+       Shortest weighted path length from source with Bellman-Ford algorithm.
     """
     if source not in G:
         raise nx.NodeNotFound(f"Source {source} is not in G")
