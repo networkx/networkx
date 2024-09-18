@@ -987,7 +987,7 @@ class DiGraphMatcher(GraphMatcher):
         >>> list(isomatcher.subgraph_isomorphisms_iter())
         []
 
-        Check whether a subgraph of H is isomorphic to G:
+        Yield isomorphic mappings between ``G`` and subgraphs of ``H``:
 
         >>> isomatcher = nx.isomorphism.DiGraphMatcher(H, G)
         >>> next(isomatcher.subgraph_isomorphisms_iter())
@@ -1005,13 +1005,13 @@ class DiGraphMatcher(GraphMatcher):
         >>> G = nx.DiGraph([("A", "B"), ("C", "B"), ("D", "C")])
         >>> H = nx.DiGraph([(0, 1), (1, 2), (2, 3), (3, 2)])
 
-        Check whether a subgraph of G is monomorphic to H:
+        Yield monomorphic mappings between ``H`` and subgraphs of ``G``:
 
         >>> isomatcher = nx.isomorphism.DiGraphMatcher(G, H)
         >>> list(isomatcher.subgraph_monomorphisms_iter())
         []
 
-        Check whether a subgraph of H is isomorphic to G:
+        Yield monomorphic mappings between ``G`` and subgraphs of ``H``:
 
         >>> isomatcher = nx.isomorphism.DiGraphMatcher(H, G)
         >>> next(isomatcher.subgraph_monomorphisms_iter())
