@@ -387,11 +387,9 @@ def diameter(G, e=None, usebounds=False, weight=None):
     return max(e.values())
 
 
-import math
-import networkx as nx
 
 @nx._dispatchable(edge_attrs="weight")
-def harmonic_diameter(G, weight=None, sp=None):
+def harmonic_diameter(G, *, weight=None, sp=None):
     """Returns the harmonic diameter of the graph G.
 
     The harmonic diameter of a graph is the harmonic mean of the distances
@@ -415,9 +413,25 @@ def harmonic_diameter(G, weight=None, sp=None):
     G : NetworkX graph
        A graph
 
-    weight : string or None, optional (default=None)
-       The edge attribute that holds the numerical value used as a weight.
-       If None, then each edge has unit weight.
+weight : string, function, or None (default=None)
+    If this is a string, then edge weights will be accessed via the
+    edge attribute with this key (that is, the weight of the edge
+    joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+    such edge attribute exists, the weight of the edge is assumed to
+    be one.
+
+    If this is a function, the weight of an edge is the value
+    returned by the function. The function must accept exactly three
+    positional arguments: the two endpoints of an edge and the
+    dictionary of edge attributes for that edge. The function must
+    return a number.
+
+    If this is None, every edge has weight/distance/cost 1.
+
+    Weights stored as floating point values can lead to small round-off
+    errors in distances. Use integer weights to avoid this.
+
+    Weights should be positive, since they are distances.
 
     sp : dict of dicts, optional
        All-pairs shortest path lengths as a dictionary of dictionaries
@@ -458,6 +472,7 @@ def harmonic_diameter(G, weight=None, sp=None):
     if order > 1:
         return math.inf
     return math.nan
+
 
 @nx._dispatchable(edge_attrs="weight")
 def periphery(G, e=None, usebounds=False, weight=None):
