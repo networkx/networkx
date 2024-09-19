@@ -239,8 +239,6 @@ def _extrema_bounding(G, compute="diameter", weight=None):
         return ecc_lower
     return None
 
-
-
 @nx._dispatchable(edge_attrs="weight")
 def eccentricity(G, v=None, sp=None, weight=None):
     """Returns the eccentricity of nodes in G.
