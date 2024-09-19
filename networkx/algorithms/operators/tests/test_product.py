@@ -1,8 +1,8 @@
 import pytest
 
 import networkx as nx
-from networkx.utils import edges_equal
 from networkx import NodeNotFound
+from networkx.utils import edges_equal
 
 
 def test_tensor_product_raises():
