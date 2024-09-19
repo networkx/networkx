@@ -5,8 +5,8 @@ Graph products.
 from itertools import product
 
 import networkx as nx
-from networkx.utils import not_implemented_for
 from networkx import NodeNotFound
+from networkx.utils import not_implemented_for
 
 __all__ = [
     "tensor_product",
