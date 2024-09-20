@@ -3,7 +3,7 @@
 
 import sys
 from pathlib import Path
-from typing import List
+from typing import list
 
 
 try:  # standard module since Python 3.11
