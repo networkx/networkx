@@ -3,6 +3,8 @@
 
 import sys
 from pathlib import Path
+from typing import List
+
 
 try:  # standard module since Python 3.11
     import tomllib as toml
@@ -21,7 +23,7 @@ header = [
 ]
 
 
-def generate_requirement_file(name: str, req_list: list[str]) -> None:
+def generate_requirement_file(name: str, req_list: list) -> None:
     req_fname = repo_dir / "requirements" / f"{name}.txt"
     req_fname.write_text("\n".join(header + req_list) + "\n")
 

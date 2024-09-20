@@ -46,7 +46,6 @@ def create_community_node_colors(graph, communities):
     return node_colors
 
 
-
 # function to plot graph with node colouring based on communities
 def visualize_communities(graph, communities, i):
     node_colors = create_community_node_colors(graph, communities)
