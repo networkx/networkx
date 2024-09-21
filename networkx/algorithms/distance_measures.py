@@ -391,61 +391,61 @@ def diameter(G, e=None, usebounds=False, weight=None):
 def harmonic_diameter(G, *, weight=None, sp=None):
     """Returns the harmonic diameter of the graph G.
 
-       The harmonic diameter of a graph is the harmonic mean of the distances
-       between all pairs of distinct vertices. Graphs that are not strongly
-       connected have infinite diameter and mean distance, making such
-       measures not useful. Restricting the diameter or mean distance to
-       finite distances yields paradoxical values (e.g., a perfect match
-       would have diameter one). The harmonic mean handles gracefully
-       infinite distances (e.g., a perfect match has harmonic diameter equal
-       to the number of vertices minus one), making it possible to assign a
-       meaningful value to all graphs.
+    The harmonic diameter of a graph is the harmonic mean of the distances
+    between all pairs of distinct vertices. Graphs that are not strongly
+    connected have infinite diameter and mean distance, making such
+    measures not useful. Restricting the diameter or mean distance to
+    finite distances yields paradoxical values (e.g., a perfect match
+    would have diameter one). The harmonic mean handles gracefully
+    infinite distances (e.g., a perfect match has harmonic diameter equal
+    to the number of vertices minus one), making it possible to assign a
+    meaningful value to all graphs.
 
-       Note that in [1] the harmonic diameter is called "connectivity length":
-       however, "harmonic diameter" is a more standard name from the
-       theory of metric spaces. The name "harmonic mean distance" is perhaps
-       a more descriptive name, but is not used in the literature, so we use the
-       name "harmonic diameter" here.
+    Note that in [1] the harmonic diameter is called "connectivity length":
+    however, "harmonic diameter" is a more standard name from the
+    theory of metric spaces. The name "harmonic mean distance" is perhaps
+    a more descriptive name, but is not used in the literature, so we use the
+    name "harmonic diameter" here.
 
-       Parameters
-       ----------
-       G : NetworkX graph
-           A graph
+    Parameters
+    ----------
+    G : NetworkX graph
+       A graph
 
     weight : string, function, or None (default=None)
-        If this is a string, then edge weights will be accessed via the
-        edge attribute with this key (that is, the weight of the edge
-        joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
-        such edge attribute exists, the weight of the edge is assumed to
-        be one.
+       If this is a string, then edge weights will be accessed via the
+       edge attribute with this key (that is, the weight of the edge
+       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
+       such edge attribute exists, the weight of the edge is assumed to
+       be one.
 
-        If this is a function, the weight of an edge is the value
-        returned by the function. The function must accept exactly three
-        positional arguments: the two endpoints of an edge and the
-        dictionary of edge attributes for that edge. The function must
-        return a number.
+    If this is a function, the weight of an edge is the value
+    returned by the function. The function must accept exactly three
+    positional arguments: the two endpoints of an edge and the
+    dictionary of edge attributes for that edge. The function must
+    return a number.
 
-        If this is None, every edge has weight/distance/cost 1.
+    If this is None, every edge has weight/distance/cost 1.
 
-        Weights stored as floating point values can lead to small round-off
-        errors in distances. Use integer weights to avoid this.
+    Weights stored as floating point values can lead to small round-off
+    errors in distances. Use integer weights to avoid this.
 
-        Weights should be positive, since they are distances.
+    Weights should be positive, since they are distances.
 
-        sp : dict of dicts, optional
-          All-pairs shortest path lengths as a dictionary of dictionaries
+    sp : dict of dicts, optional
+       All-pairs shortest path lengths as a dictionary of dictionaries
 
-        Returns
-        -------
-        hd : float
-          Harmonic diameter of graph
+    Returns
+    -------
+    hd : float
+       Harmonic diameter of graph
 
-        References
-        ----------
-        .. [1] Massimo Marchiori and Vito Latora, "Harmony in the small-world".
-               *Physica A: Statistical Mechanics and Its Applications*
-               285(3-4), pages 539-546, 2000.
-               <https://doi.org/10.1016/S0378-4371(00)00311-3>
+    References
+    ----------
+    .. [1] Massimo Marchiori and Vito Latora, "Harmony in the small-world".
+           *Physica A: Statistical Mechanics and Its Applications*
+           285(3-4), pages 539-546, 2000.
+           <https://doi.org/10.1016/S0378-4371(00)00311-3>
     """
     order = G.order()
 
