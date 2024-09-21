@@ -413,24 +413,13 @@ def harmonic_diameter(G, *, weight=None, sp=None):
        A graph
 
     weight : string, function, or None (default=None)
-       If this is a string, then edge weights will be accessed via the
-       edge attribute with this key (that is, the weight of the edge
-       joining `u` to `v` will be ``G.edges[u, v][weight]``). If no
-       such edge attribute exists, the weight of the edge is assumed to
-       be one.
-
-    If this is a function, the weight of an edge is the value
-    returned by the function. The function must accept exactly three
-    positional arguments: the two endpoints of an edge and the
-    dictionary of edge attributes for that edge. The function must
-    return a number.
-
-    If this is None, every edge has weight/distance/cost 1.
-
-    Weights stored as floating point values can lead to small round-off
-    errors in distances. Use integer weights to avoid this.
-
-    Weights should be positive, since they are distances.
+        If None, every edge has weight/distance 1.
+        If a string, use this edge attribute as the edge weight.
+        Any edge attribute not present defaults to 1.
+        If a function, the weight of an edge is the value returned by the function.
+        The function must accept exactly three positional arguments:
+        the two endpoints of an edge and the dictionary of edge attributes for
+        that edge. The function must return a number.
 
     sp : dict of dicts, optional
        All-pairs shortest path lengths as a dictionary of dictionaries
