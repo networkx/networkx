@@ -4,7 +4,6 @@
 import sys
 from pathlib import Path
 
-
 try:  # standard module since Python 3.11
     import tomllib as toml
 except ImportError:
