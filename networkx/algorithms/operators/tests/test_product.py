@@ -1,7 +1,6 @@
 import pytest
 
 import networkx as nx
-from networkx import NodeNotFound
 from networkx.utils import edges_equal
 
 
@@ -415,7 +414,7 @@ def test_graph_power_negative():
 
 
 def test_rooted_product_raises():
-    with pytest.raises(NodeNotFound):
+    with pytest.raises(nx.NodeNotFound):
         nx.rooted_product(nx.Graph(), nx.path_graph(2), 10)
 
 
