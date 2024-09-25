@@ -16,7 +16,7 @@ kernelspec:
 ```{currentmodule} networkx
 ```
 
-NetworkX supports third-party backends to improve performance and add functionality.  Through runtime dispatching, NetworkX directs function calls to backends if available, or falls back to the default Python implementation if not. This approach allows users to create graph analysis workflows that are both optimized for a particular environment yet still portable across systems, without requiring code changes.  Common examples of backends include GPU accelerators, graph database adapters, efficient implementations based on linear algebra, and more.
+NetworkX supports third-party backends to improve performance and add functionality.  Through runtime dispatching, NetworkX directs function calls to backends if available, or falls back to the default Python implementation if not.  The vast majority of functions in the NetworkX library are "dispatchable", meaning NetworkX will attempt to dispatch calls to those functions if an enabled backend supports them.  This approach allows users to create graph analysis workflows that are both optimized for a particular environment yet still portable to different systems, without requiring code changes.  Common examples of backends include GPU accelerators, graph database adapters, efficient linear algebra-based implementations, parallel processing implementations, and more.
 
 ## Installing backends
 
@@ -24,16 +24,24 @@ Backends are Python packages installed in the same environment as NetworkX, wher
 
 ## Using backends
 
-Once installed, there are three way in which NetworkX will dispatch a function call to a backend, varying from simply setting an environment variable to
-The most straightforward of which requires users to simply set an environment variable and run their existing, unmodified application, where NetworkX will dispatch function calls to the one or more backends that provide them, or fall back to the default Python implementation automatically if not supported.
+There are three ways users can run with backends in their NetworkX application:
+* Automatic dispatch - adding the backend name to the prioritized list of backends for NetworkX to use whenever a dispatchable function is called
+* Explicit dispatch - explicitly specifying the backend to use for a dispatchable NetworkX function with the `backend=` keyword argument
+* Type-based dispatch - instantiating a backend graph type and passing that to a dispatchable NetworkX function
 
-### Assigning backend priority
-NETWORKX_BACKEND_PRIORITY
-nx.config.backend_priority
+### Automatic dispatch
+
+Possibly the easiest way to incorporate backends into a NetworkX application is through automatic dispatch.  Automatic dispatch does not require users to modify their code when using backends, allowing for "portable" NetworkX applications.  Through automatic dispatch, a user can run NetworkX code with backeds optimized for one particular system, then share the same code with other users that may not have any backends or a different set of backends optimized for a different system.
+
+Automatic dispath is enabled by simply setting an environment variable, or NetworkX configuration, to a list of at least one installed backend.  If more than one backend is to be used, then the list should be ordered based on the desired priority which NetworkX should use in the event multiple backends implement the same function.  If a NetworkX function is called which none of the specified backends implement, NetworkX will automatically fall back to the default python-based implementation.
+
+```{code-cell}
+bash> NETWORKX_BACKEND_PRIORITY=gpu_accelerator python my_nx_app.py
+```
 
 ```{code-cell}
 import networkx as nx
-G = nx.Graph()
+nx.config.backend_priority = ["gpu_accelerator"]
 ```
 
 ```{note}
@@ -41,30 +49,32 @@ NetworkX includes debug logging calls using Python's standard logging mechanism 
 <example of how to enable>
 ```
 
-### backend= kwarg
+### Explicit dispatch
 
 ```{code-cell}
 import networkx as nx
-G = nx.Graph()
+G = nx.karate_club_graph()
+
+pagerank_results = nx.pagerank(G, backend="fast_backend")
 ```
 
-### Type-based dispatching to backends
+### Type-based dispatch
 
 ```{code-cell}
 import networkx as nx
-G = nx.Graph()
+
+# This code requires the db_backend backend to be installed
+import db_backend
+G = db_backend.Graph(graph_name="team_project1", server="dbserver", port="1234")
+
+# The remaining code is standard NetworkX
+pagerank_results = nx.pagerank(G)
 ```
 
 ## Creating NetworkX backends
 
+See the section on "backends" in the Reference docs.
 
-By definition, a {class}`Graph` is a collection of nodes (vertices) along with
-identified pairs of nodes (called edges, links, etc). In NetworkX, nodes can
-be any {py:term}`hashable` object e.g., a text string, an image, an XML object,
-another Graph, a customized node object, etc.
+## Other use cases for backends
 
-```{note}
-Python's `None` object is not allowed to be used as a node. It
-determines whether optional function arguments have been assigned in many
-functions.
-```
+Adding functionality (extra options, etc.) to existing NetworkX functions, adding new functions to NetworkX (requires a NetworkX update), prototype alternate implementations.

@@ -20,6 +20,7 @@ of configuration settings that can also come from environment variables.
 Backends
 --------
 .. automodule:: networkx.utils.backends
+   :private-members: _bu, _bd
 
 .. autosummary::
    :toctree: generated/
