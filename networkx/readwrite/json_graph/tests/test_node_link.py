@@ -116,10 +116,12 @@ class TestNodeLink:
         G.add_node("A")
         G.add_node(q)
         G.add_edge("A", q)
-        data = node_link_data(G)
-        assert data["edges"][0]["source"] == "A"
-        assert data["edges"][0]["target"] == q
-        H = node_link_graph(data)
+        with pytest.warns(FutureWarning, match="\nThe default value will be"):
+            data = node_link_data(G)
+        assert data["links"][0]["source"] == "A"
+        assert data["links"][0]["target"] == q
+        with pytest.warns(FutureWarning, match="\nThe default value will be"):
+            H = node_link_graph(data)
         assert nx.is_isomorphic(G, H)
 
     def test_custom_attrs(self):
