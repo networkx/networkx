@@ -17,7 +17,8 @@ import matplotlib.pyplot as plt
 
 # Load karate graph and find communities using Girvan-Newman
 G = nx.karate_club_graph()
-communities = list(nx.community.girvan_newman(G))
+communities_generator = nx.community.girvan_newman(G)
+communities = [tuple(sorted(c) for c in next(communities_generator)) for _ in range(4)]  # Getting the first 4 iterations
 
 # Modularity -> measures the strength of division of a network into modules
 modularity_df = pd.DataFrame(
@@ -31,7 +32,7 @@ modularity_df = pd.DataFrame(
 
 # function to create node colour list
 def create_community_node_colors(graph, communities):
-    number_of_colors = len(communities[0])
+    number_of_colors = len(communities)  # Changed this line to handle correct number of communities
     colors = ["#D4FCB1", "#CDC5FC", "#FFC2C4", "#F2D140", "#BCC6C8"][:number_of_colors]
     node_colors = []
     for node in graph:
@@ -66,8 +67,8 @@ def visualize_communities(graph, communities, i):
 fig, ax = plt.subplots(3, figsize=(15, 20))
 
 # Plot graph with colouring based on communities
-visualize_communities(G, communities[0], 1)
-visualize_communities(G, communities[3], 2)
+visualize_communities(G, communities[0], 1)  # Communities after 1 iteration
+visualize_communities(G, communities[3], 2)  # Communities after 4 iterations
 
 # Plot change in modularity as the important edges are removed
 modularity_df.plot.bar(

@@ -534,7 +534,7 @@ class TestPlanarEmbeddingClass:
             embedding.add_half_edge(i, 0)
         return embedding
 
-import networkx as nx
+
 
 class PlanarEmbedding(nx.PlanarEmbedding):
     def to_undirected(self, reciprocal=True):
