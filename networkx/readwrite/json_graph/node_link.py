@@ -74,7 +74,7 @@ def node_link_data(
     --------
     >>> from pprint import pprint
     >>> G = nx.Graph([("A", "B")])
-    >>> data1 = nx.node_link_data(G)
+    >>> data1 = nx.node_link_data(G, edges="edges")
     >>> pprint(data1)
     {'directed': False,
      'edges': [{'source': 'A', 'target': 'B'}],
@@ -89,11 +89,11 @@ def node_link_data(
     >>> s1
     '{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "A"}, {"id": "B"}], "edges": [{"source": "A", "target": "B"}]}'
 
-    A graph can also be serialized by passing `node_link_data` as an encoder function. The two methods are equivalent.
+    A graph can also be serialized by passing `node_link_data` as an encoder function.
 
     >>> s1 = json.dumps(G, default=nx.node_link_data)
     >>> s1
-    '{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "A"}, {"id": "B"}], "edges": [{"source": "A", "target": "B"}]}'
+    '{"directed": false, "multigraph": false, "graph": {}, "nodes": [{"id": "A"}, {"id": "B"}], "links": [{"source": "A", "target": "B"}]}'
 
     The attribute names for storing NetworkX-internal graph data can
     be specified as keyword options.
@@ -118,7 +118,6 @@ def node_link_data(
 
     To use `node_link_data` in conjunction with `node_link_graph`,
     the keyword names for the attributes must match.
-
 
     See Also
     --------
@@ -234,7 +233,7 @@ def node_link_graph(
 
     >>> from pprint import pprint
     >>> G = nx.Graph([("A", "B")])
-    >>> data = nx.node_link_data(G)
+    >>> data = nx.node_link_data(G, edges="edges")
     >>> pprint(data)
     {'directed': False,
      'edges': [{'source': 'A', 'target': 'B'}],
@@ -244,15 +243,15 @@ def node_link_graph(
 
     Revert data in node-link format to a graph.
 
-    >>> H = nx.node_link_graph(data)
+    >>> H = nx.node_link_graph(data, edges="edges")
     >>> print(H.edges)
     [('A', 'B')]
 
     To serialize and deserialize a graph with JSON,
 
     >>> import json
-    >>> d = json.dumps(nx.node_link_data(G))
-    >>> H = nx.node_link_graph(json.loads(d))
+    >>> d = json.dumps(nx.node_link_data(G, edges="edges"))
+    >>> H = nx.node_link_graph(json.loads(d), edges="edges")
     >>> print(G.edges, H.edges)
     [('A', 'B')] [('A', 'B')]
 
