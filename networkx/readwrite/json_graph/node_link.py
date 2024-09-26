@@ -139,7 +139,16 @@ def node_link_data(
             edges = link
     else:
         if edges is None:
-            edges = "edges"
+            warnings.warn(
+                (
+                    '\nThe default value will be `edges="edges" in NetworkX 3.6.\n\n'
+                    "To make this warning go away, explicitly set the edges kwarg, e.g.:\n\n"
+                    '  nx.node_link_data(G, edges="links") to preserve current behavior, or\n'
+                    '  nx.node_link_data(G, edges="edges") for forward compatibility.'
+                ),
+                FutureWarning,
+            )
+            edges = "links"
     # ------------------------------------------------------------
 
     multigraph = G.is_multigraph()
@@ -274,7 +283,16 @@ def node_link_graph(
             edges = link
     else:
         if edges is None:
-            edges = "edges"
+            warnings.warn(
+                (
+                    '\nThe default value will be changed to `edges="edges" in NetworkX 3.6.\n\n'
+                    "To make this warning go away, explicitly set the edges kwarg, e.g.:\n\n"
+                    '  nx.node_link_graph(data, edges="links") to preserve current behavior, or\n'
+                    '  nx.node_link_graph(data, edges="edges") for forward compatibility.'
+                ),
+                FutureWarning,
+            )
+            edges = "links"
     # -------------------------------------------------------------
 
     multigraph = data.get("multigraph", multigraph)
