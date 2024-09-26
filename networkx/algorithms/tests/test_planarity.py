@@ -533,3 +533,44 @@ class TestPlanarEmbeddingClass:
             ref = i
             embedding.add_half_edge(i, 0)
         return embedding
+
+class PlanarEmbedding(nx.PlanarEmbedding):
+    def to_undirected(self, reciprocal=True):
+        """Returns the undirected version of the embedding without 'cw' and 'ccw' attributes.
+
+        Parameters
+        ----------
+        reciprocal : bool (optional, default=True)
+            If True, only keep an edge in the undirected graph if both directed
+            edges exist. If False, keep the edge if either directed edge exists.
+
+        Returns
+        -------
+        G : Graph
+            An undirected graph with the same nodes and edges as the directed
+            graph, but without 'cw' and 'ccw' attributes.
+        """
+        # Call the original to_undirected method to get the basic undirected graph
+        undirected_graph = super().to_undirected(reciprocal=reciprocal)
+
+        # Remove 'cw' and 'ccw' attributes from all edges
+        for u, v, attr in undirected_graph.edges(data=True):
+            # Remove 'cw' and 'ccw' attributes if present
+            if 'cw' in attr:
+                del attr['cw']
+            if 'ccw' in attr:
+                del attr['ccw']
+
+        return undirected_graph
+
+# Example usage
+G = nx.Graph(((0, 1), (1, 2), (2, 3), (3, 0), (0, 2)))
+is_planar, P = nx.check_planarity(G)
+print(is_planar)  # Should print: True
+
+# Check edge attributes before conversion to undirected graph
+print(P[0][2], P[2][0])  # Should show 'cw' and 'ccw' attributes
+
+# Convert to undirected
+U = P.to_undirected()
+print(U[0][2])  # Should not contain 'cw' or 'ccw' attributes
