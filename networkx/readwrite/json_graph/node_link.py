@@ -129,6 +129,7 @@ def node_link_data(
         warnings.warn(
             "Keyword argument 'link' is deprecated; use 'edges' instead",
             DeprecationWarning,
+            stacklevel=2,
         )
         if edges is not None:
             raise ValueError(
@@ -273,6 +274,7 @@ def node_link_graph(
         warnings.warn(
             "Keyword argument 'link' is deprecated; use 'edges' instead",
             DeprecationWarning,
+            stacklevel=2,
         )
         if edges is not None:
             raise ValueError(
