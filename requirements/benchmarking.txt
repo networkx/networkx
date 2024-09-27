@@ -1,2 +1,1 @@
-asv @ git+https://github.com/airspeed-velocity/asv@main
-
+asv
