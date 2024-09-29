@@ -140,7 +140,7 @@ jobs:
                       --config-settings="--global-option=build_ext" \
                       --config-settings="--global-option=-I$(brew --prefix graphviz)/include/" \
                       --config-settings="--global-option=-L$(brew --prefix graphviz)/lib/" \
-                      pygraphviz
+                      pygraphviz==1.14rc0
           pip install .[default,test,extra]
           pip list
       - name: Install Pygraphviz packages  (windows)
@@ -151,7 +151,7 @@ jobs:
           python -m pip install --config-settings="--global-option=build_ext" `
               --config-settings="--global-option=-IC:\Program Files\Graphviz\include" `
               --config-settings="--global-option=-LC:\Program Files\Graphviz\lib" `
-              pygraphviz
+              pygraphviz==1.14rc0
       - name: Install packages (windows)
         if: runner.os == 'Windows'
         run: |
