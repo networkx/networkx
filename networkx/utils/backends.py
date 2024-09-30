@@ -68,8 +68,9 @@ loads the backend and calls the corresponding function on the backend along with
 additional backend-specific ``backend_kwargs``. After calling the function the networkx
 logger displays the ``DEBUG`` message, if the logging is enabled
 (see :ref:`Introspection <introspect>` below). If no compatible backend is found
-or the function is not implemented by the backend, it will fall back to run with
-default networkx implementation or raise a ``NetworkXNotImplemented`` exception.
+or the function is not implemented by the backend, it will raise ``NotImplementedError``
+unless ``nx.config.fallback_to_nx`` is set to True (default is False), in which case
+it will fall back to run with the default networkx implementation.
 And, if the function mutates the input graph
 or returns a graph, graph generator or loader then it tries to convert and run the
 function with a backend with automatic conversion. And it only convert and run if
