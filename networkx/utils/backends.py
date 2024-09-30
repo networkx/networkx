@@ -422,13 +422,27 @@ _registered_algorithms = {}
 # We must import from config after defining `backends` above
 from .configs import Config, config
 
+# Initialize default configuration for backends
+config.backends = Config(
+    **{
+        backend: (
+            cfg if isinstance(cfg := info["default_config"], Config) else Config(**cfg)
+        )
+        if "default_config" in info
+        else Config()
+        for backend, info in backend_info.items()
+    }
+)
+backend_info["networkx"] = {}
+type(config.backends).__doc__ = "All installed NetworkX backends and their configs."
+
 
 # Get default configuration from environment variables at import time
 def _comma_sep_to_list(string):
     return [stripped for x in string.strip().split(",") if (stripped := x.strip())]
 
 
-def _finish_init_of_backends_and_config():
+def _set_backend_priority_from_environment():
     """Initialize ``nx.config.backend_priority``.
 
     This gets default values from environment variables (see ``nx.config`` for details).
@@ -457,19 +471,7 @@ def _finish_init_of_backends_and_config():
         backend_priority[key] = _comma_sep_to_list(priorities[key])
 
 
-# Initialize default configuration for backends
-config.backends = Config(
-    **{
-        backend: (
-            cfg if isinstance(cfg := info["default_config"], Config) else Config(**cfg)
-        )
-        if "default_config" in info
-        else Config()
-        for backend, info in backend_info.items()
-    }
-)
-backend_info["networkx"] = {}
-type(config.backends).__doc__ = "All installed NetworkX backends and their configs."
+_set_backend_priority_from_environment()
 
 
 def _always_run(name, args, kwargs):
@@ -2242,7 +2244,7 @@ def _get_from_cache(cache, key, *, backend_name=None, mutations=None):
         # with any edge attribute will suffice. We use the same logic
         # below (but switched) to clear unnecessary items from the cache.
         # Use `list(cache.items())` to be thread-safe.
-        for (ekey, nkey), val in list(cache.items()):
+        for (ekey, nkey), graph in list(cache.items()):
             if edge_key is False or ekey is True:
                 pass  # Cache works for edge data!
             elif edge_key is True or ekey is False or not edge_key.issubset(ekey):
@@ -2255,11 +2257,11 @@ def _get_from_cache(cache, key, *, backend_name=None, mutations=None):
                 # Remove this item from the cache (after all conversions) if
                 # the call to this dispatchable function will mutate an input.
                 mutations.append((cache, (ekey, nkey)))
-            return (ekey, nkey), val
+            return (ekey, nkey), graph
     return None, None
 
 
-def _set_to_cache(cache, key, val, *, backend_name=None):
+def _set_to_cache(cache, key, graph, *, backend_name=None):
     """Set a backend graph to the cache, and remove unnecessary cached items.
 
     Parameters
@@ -2270,7 +2272,7 @@ def _set_to_cache(cache, key, val, *, backend_name=None):
         cache such as ``G.__networkx_cache__["backends"][backend_name]``.
     key : tuple
         Cache key from ``_get_cache_key``.
-    val : graph
+    graph : graph
     backend_name : str, optional
         Name of the backend to control how ``cache`` is interpreted.
 
@@ -2287,7 +2289,7 @@ def _set_to_cache(cache, key, val, *, backend_name=None):
     # Also, don't update the cache here if the call will mutate an input.
     removed = {}
     edge_key, node_key = key
-    cache[key] = val  # Set at beginning to be thread-safe
+    cache[key] = graph  # Set at beginning to be thread-safe
     for cur_key in list(cache):
         if cur_key == key:
             continue
@@ -2301,8 +2303,8 @@ def _set_to_cache(cache, key, val, *, backend_name=None):
         elif nkey is True or node_key is False or not nkey.issubset(node_key):
             continue
         # Use pop instead of del to try to be thread-safe
-        if (val := cache.pop(cur_key, None)) is not None:
-            removed[cur_key] = val
+        if (graph := cache.pop(cur_key, None)) is not None:
+            removed[cur_key] = graph
     return removed
 
 
