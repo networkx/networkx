@@ -307,8 +307,12 @@ class NetworkXConfig(Config):
 
     fallback_to_nx : bool
         If True, then "fall back" and run with the default "networkx" implementation
-        for dispatchable functions not implemented by backends of input graphs.
-        Default is True.
+        for dispatchable functions not implemented by backends of input graphs. When a
+        backend graph is passed to a dispatchable function, the default behavior is to
+        use the implementation from that backend if possible and raise if not. Enabling
+        ``fallback_to_nx`` makes the networkx implementation the fallback to use instead
+        of raising, and will convert the backend graph to a networkx-compatible graph.
+        Default is False.
 
     Notes
     -----
@@ -375,5 +379,5 @@ config = NetworkXConfig(
     cache_converted_graphs=bool(
         os.environ.get("NETWORKX_CACHE_CONVERTED_GRAPHS", True)
     ),
-    fallback_to_nx=bool(os.environ.get("NETWORKX_FALLBACK_TO_NX", True)),
+    fallback_to_nx=bool(os.environ.get("NETWORKX_FALLBACK_TO_NX", False)),
 )

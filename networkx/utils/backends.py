@@ -818,7 +818,9 @@ class _dispatchable:
                 raise ImportError(f"'{backend}' backend is not installed")
             return self.orig_func(*args, **kwargs)
 
-        # Use `backend_name` in this function instead of `backend`
+        # Use `backend_name` in this function instead of `backend`.
+        # This is purely for aesthetics and to make it easier to search for this
+        # variable since "backend" is used in many comments and log/error messages.
         backend_name = backend
         if backend_name is not None and backend_name not in backend_info:
             raise ImportError(f"'{backend_name}' backend is not installed")
@@ -1025,7 +1027,13 @@ class _dispatchable:
                     else:
                         raise
                 else:
-                    if all(isinstance(g, nx.Graph) for g in graphs_resolved.values()):
+                    if config.fallback_to_nx and all(
+                        # Consider dropping the `isinstance` check here to allow
+                        # duck-type graphs, but let's wait for a backend to ask us.
+                        isinstance(g, nx.Graph)
+                        for g in graphs_resolved.values()
+                    ):
+                        # Log that we are falling back to networkx
                         _logger.debug(
                             "Backend '%s' can't run `%s'. %s",
                             backend_name,
@@ -1038,7 +1046,13 @@ class _dispatchable:
                         else:
                             extra = ""
                         raise NotImplementedError(msg_template % extra)
-            elif all(isinstance(g, nx.Graph) for g in graphs_resolved.values()):
+            elif config.fallback_to_nx and all(
+                # Consider dropping the `isinstance` check here to allow
+                # duck-type graphs, but let's wait for a backend to ask us.
+                isinstance(g, nx.Graph)
+                for g in graphs_resolved.values()
+            ):
+                # Log that we are falling back to networkx
                 _logger.debug(
                     "`%s' was called with inputs from multiple backends: %s. %s",
                     self.name,
