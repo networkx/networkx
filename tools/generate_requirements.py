@@ -21,7 +21,7 @@ header = [
 ]
 
 
-def generate_requirement_file(name: str, req_list: list) -> None:
+def generate_requirement_file(name: str, req_list: list[str]) -> None:
     req_fname = repo_dir / "requirements" / f"{name}.txt"
     req_fname.write_text("\n".join(header + req_list) + "\n")
 
