@@ -1,0 +1,385 @@
+"""Function for detecting communities based on Leiden Community Detection
+Algorithm"""
+
+from collections import defaultdict, deque
+
+import networkx as nx
+from networkx.algorithms.community import modularity
+from networkx.utils import py_random_state
+
+__all__ = ["leiden_communities", "leiden_partitions"]
+
+
+@py_random_state("seed")
+def leiden_communities(
+    G, weight="weight", resolution=1, threshold=0.0000001, seed=None
+):
+    r"""Find the best partition of a graph using the Leiden Community Detection
+    Algorithm.
+
+    Leiden Community Detection Algorithm is a method to extract the community
+    structure of a network based on modularity optimization.
+    See :ref:`Louvain Communities<louvain_communities>`.
+
+    Unlike the Louvain algorithm, it guarantees that communities are well connected in addition
+    to being faster and uncovering better partitions. [1]_
+
+    The algorithm works in 3 phases. On the first phase, it adds the nodes to a queue randomly
+    and assigns every node to be in its own community. For each node it tries to find the
+    maximum positive modularity gain by moving each node to all of its neighbor communities.
+    If a node is moved from its community, it adds to the rear of the queue all neighbours of
+    the node that do not belong to the node’s new community and that are not in the queue.
+
+    The first phase continues until the queue is empty.
+
+    The second phase consists in refining the partition $P$ obtained from the first phase. It starts
+    with a singleton partition $P_{refined}$. Then it merges nodes locally in $P_{refined}$ within
+    each community of the partition $P$. Nodes are merged with a community in $P_{refined}$ only if
+    both are sufficiently well connected to their community in $P$. This means that after the
+    refinement phase is concluded, communities in $P$ sometimes will have been split into multiple
+    communities.
+
+    The third phase, consists on aggregating the network by building a new network whose nodes are
+    now the communities found in the second phase. However the non-refined partition is used to create
+    an initial partition for the aggregate network.
+
+    Once this phase is complete it is possible to reapply the first and second phases creating bigger
+    communities with increased modularity.
+
+    The above three phases are executed until no modularity gain is achieved (or is less than
+    the `threshold`).
+
+    Parameters
+    ----------
+    G : NetworkX graph
+    weight : string or None, optional (default="weight")
+        The name of an edge attribute that holds the numerical value
+        used as a weight. If None then each edge has weight 1.
+    resolution : float, optional (default=1)
+        If resolution is less than 1, the algorithm favors larger communities.
+        Greater than 1 favors smaller communities
+    threshold : float, optional (default=0.0000001)
+        Modularity gain threshold for each level. If the gain of modularity
+        between 2 levels of the algorithm is less than the given threshold
+        then the algorithm stops and returns the resulting communities.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
+    Returns
+    -------
+    list
+        A list of sets (partition of `G`). Each set represents one community and contains
+        all the nodes that constitute it.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> import networkx.algorithms.community as nx_comm
+    >>> G = nx.petersen_graph()
+    >>> nx_comm.leiden_communities(G, seed=123)
+    [{0, 4, 5, 7, 9}, {1, 2, 3, 6, 8}]
+
+    Notes
+    -----
+    The order in which the nodes are considered can affect the final output. In the algorithm
+    the ordering happens using a random shuffle.
+
+    References
+    ----------
+    .. [1] Traag, V.A., Waltman, L. & van Eck, N.J. From Leiden to Leiden: guaranteeing
+       well-connected communities. Sci Rep 9, 5233 (2019). https://doi.org/10.1038/s41598-019-41695-z
+
+    See Also
+    --------
+    leiden_partitions
+    """
+
+    d = leiden_partitions(G, weight, resolution, threshold, seed)
+    q = deque(d, maxlen=1)
+    return q.pop()
+
+
+@py_random_state("seed")
+def leiden_partitions(G, weight="weight", resolution=1, threshold=0.0000001, seed=None):
+    """Yields partitions for each level of the Leiden Community Detection Algorithm
+
+    Leiden Community Detection Algorithm is a method to extract the community
+    structure of a network based on modularity optimization.
+
+    The partitions at each level (step of the algorithm) form a dendogram of communities.
+    A dendrogram is a diagram representing a tree and each level represents
+    a partition of the G graph. The top level contains the smallest communities
+    and as you traverse to the bottom of the tree the communities get bigger
+    and the overal modularity increases making the partition better.
+
+    Each level is generated by executing the three phases of the Leiden Community
+    Detection Algorithm.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+    weight : string or None, optional (default="weight")
+     The name of an edge attribute that holds the numerical value
+     used as a weight. If None then each edge has weight 1.
+    resolution : float, optional (default=1)
+        If resolution is less than 1, the algorithm favors larger communities.
+        Greater than 1 favors smaller communities
+    threshold : float, optional (default=0.0000001)
+     Modularity gain threshold for each level. If the gain of modularity
+     between 2 levels of the algorithm is less than the given threshold
+     then the algorithm stops and returns the resulting communities.
+    seed : integer, random_state, or None (default)
+     Indicator of random number generation state.
+     See :ref:`Randomness<randomness>`.
+
+    Yields
+    ------
+    list
+        A list of sets (partition of `G`). Each set represents one community and contains
+        all the nodes that constitute it.
+
+    References
+    ----------
+    .. [1] Blondel, V.D. et al. Fast unfolding of communities in
+       large networks. J. Stat. Mech 10008, 1-12(2008)
+
+    See Also
+    --------
+    leiden_communities
+    """
+
+    partition = [{u} for u in G.nodes()]
+    mod = modularity(G, partition, resolution=resolution, weight=weight)
+    is_directed = G.is_directed()
+    if G.is_multigraph():
+        graph = _convert_multigraph(G, weight, is_directed)
+    else:
+        graph = G.__class__()
+        graph.add_nodes_from(G)
+        graph.add_weighted_edges_from(G.edges(data=weight, default=1))
+
+    m = graph.size(weight="weight")
+    partition, inner_partition, improvement, nbrs = _one_level(
+        graph, m, partition, resolution, is_directed, seed
+    )  ## Added nbrs here in order to have it available in other functions but I'm sure there is a better way to do this.
+    improvement = True
+    while improvement:
+        yield partition
+        new_mod = modularity(
+            graph, inner_partition, resolution=resolution, weight="weight"
+        )
+        if new_mod - mod <= threshold:
+            return
+        mod = new_mod
+        ref_partition = refine_partition(G, partition, inner_partition, nbrs)
+        graph = _gen_graph(graph, ref_partition)  # Not sure this goes like this
+        partition, inner_partition, improvement, nbrs = _one_level(
+            graph, m, partition, resolution, is_directed, seed
+        )
+
+
+def _one_level(G, m, partition, resolution=1, is_directed=False, seed=None):
+    """Calculate one level of the Leiden partitions tree
+
+    Parameters
+    ----------
+    G : NetworkX Graph/DiGraph
+        The graph from which to detect communities
+    m : number
+        The size of the graph `G`.
+    partition : list of sets of nodes
+        A valid partition of the graph `G`
+    resolution : positive number
+        The resolution parameter for computing the modularity of a partition
+    is_directed : bool
+        True if `G` is a directed graph.
+    seed : integer, random_state, or None (default)
+        Indicator of random number generation state.
+        See :ref:`Randomness<randomness>`.
+
+    """
+    node2com = {u: i for i, u in enumerate(G.nodes())}
+    inner_partition = [{u} for u in G.nodes()]
+    if is_directed:
+        in_degrees = dict(G.in_degree(weight="weight"))
+        out_degrees = dict(G.out_degree(weight="weight"))
+        Stot_in = [deg for deg in in_degrees.values()]
+        Stot_out = [deg for deg in out_degrees.values()]
+    else:
+        degrees = dict(G.degree(weight="weight"))
+        Stot = [deg for deg in degrees.values()]
+    nbrs = {u: {v: data["weight"] for v, data in G[u].items() if v != u} for u in G}
+    rand_nodes = list(G.nodes)
+    seed.shuffle(rand_nodes)
+    q_nodes = deque(rand_nodes)
+    improvement = False
+    while q_nodes:
+        u = q_nodes[0]  # Remove the first node from the front of the queue
+        best_mod = 0
+        best_com = node2com[u]
+        weights2com = _neighbor_weights(nbrs[u], node2com)
+        if is_directed:
+            in_degree = in_degrees[u]
+            out_degree = out_degrees[u]
+            Stot_in[best_com] -= in_degree
+            Stot_out[best_com] -= out_degree
+        else:
+            degree = degrees[u]
+            Stot[best_com] -= degree
+        for nbr_com, wt in weights2com.items():
+            if is_directed:
+                gain = (
+                    wt
+                    - resolution
+                    * (out_degree * Stot_in[nbr_com] + in_degree * Stot_out[nbr_com])
+                    / m
+                )
+            else:
+                gain = 2 * wt - resolution * (Stot[nbr_com] * degree) / m
+            if gain > best_mod:
+                best_mod = gain
+                best_com = nbr_com
+        if is_directed:
+            Stot_in[best_com] += in_degree
+            Stot_out[best_com] += out_degree
+        else:
+            Stot[best_com] += degree
+        if best_com != node2com[u]:
+            com = G.nodes[u].get("nodes", {u})
+            neighbors = [
+                node
+                for node, com in node2com.items()
+                if node in G.neighbors(u) and com != best_com
+            ]
+            for node in neighbors:
+                if node not in q_nodes:
+                    q_nodes.append(node)
+            partition[node2com[u]].difference_update(com)
+            inner_partition[node2com[u]].remove(u)
+            partition[best_com].update(com)
+            inner_partition[best_com].add(u)
+            improvement = True
+            node2com[u] = best_com
+        q_nodes.popleft()
+    partition = list(filter(len, partition))
+    inner_partition = list(filter(len, inner_partition))
+    return partition, inner_partition, improvement
+
+
+def _neighbor_weights(nbrs, node2com):
+    """Calculate weights between node and its neighbor communities.
+
+    Parameters
+    ----------
+    nbrs : dictionary
+           Dictionary with nodes' neighbours as keys and their edge weight as value.
+    node2com : dictionary
+           Dictionary with all graph's nodes as keys and their community index as value.
+
+    """
+    weights = defaultdict(float)
+    for nbr, wt in nbrs.items():
+        weights[node2com[nbr]] += wt
+    return weights
+
+
+def _gen_graph(G, partition):
+    """Generate a new graph based on the partitions of a given graph"""
+    H = G.__class__()
+    node2com = {}
+    for i, part in enumerate(partition):
+        nodes = set()
+        for node in part:
+            node2com[node] = i
+            nodes.update(G.nodes[node].get("nodes", {node}))
+        H.add_node(i, nodes=nodes)
+
+    for node1, node2, wt in G.edges(data=True):
+        wt = wt["weight"]
+        com1 = node2com[node1]
+        com2 = node2com[node2]
+        temp = H.get_edge_data(com1, com2, {"weight": 0})["weight"]
+        H.add_edge(com1, com2, **{"weight": wt + temp})
+    return H
+
+
+def _convert_multigraph(G, weight, is_directed):
+    """Convert a Multigraph to normal Graph"""
+    if is_directed:
+        H = nx.DiGraph()
+    else:
+        H = nx.Graph()
+    H.add_nodes_from(G)
+    for u, v, wt in G.edges(data=weight, default=1):
+        if H.has_edge(u, v):
+            H[u][v]["weight"] += wt
+        else:
+            H.add_edge(u, v, weight=wt)
+    return H
+
+
+def refine_partition(G, partition, inner_partition, nbrs):
+    "Refine partition of a graph"
+    # I'm still missing the inner partition part of this
+    ref_partition = [{u} for u in G.nodes()]
+    for com in partition:
+        ref_partition = merge_nodes(G, ref_partition, com, nbrs)
+    return ref_partition
+
+
+def merge_nodes(G, partition, com, nbrs):
+    "Merge nodes in communities to refine the partition of a graph"
+    refined_set = [
+        node
+        for node in com
+        if _is_well_connected_node(G, node, com, 0.14, partition, nbrs)
+    ]
+    node2com = {u: i for i, u in enumerate(G.nodes())}
+    for node in refined_set:
+        if len(partition[node2com[node]]) == 1:
+            T = [
+                com1
+                for com1 in partition
+                if (
+                    com1.issubset(com)
+                    and _is_well_connected_node(G, com1, com, 0.14, partition, nbrs)
+                )
+            ]
+            old_com = G.nodes[node].get("nodes", {node})
+            ## We need to compute the modularity for each graph moving the node to each community
+            ## Then choose a random community with the function on the paper but I'm not sure I know how to do it.
+            ## I'm doing this in the meantime:
+            import random
+
+            random.seed(45)  # This is just for testing purposes
+            idx = random.randint(
+                0, len(T)
+            )  ## This is temporary while I figure out how to write this correctly
+            ## Move the node to the community T[idx]
+            partition[node2com[node]].difference_update(old_com)
+            partition[idx].update(old_com)
+
+            # I'm still missing the lines of code needed to update inner partition but it would probably be something like:
+            # inner_partition[node2com[node]].remove(node)
+            # inner_partition[node2com[node]].add(node)
+    return partition
+
+
+def _is_well_connected_node(G, node, com, resolution, partition, nbrs):
+    # Partition is the internal partition
+    # This doesnt work with inner partitions yet
+    E = 0
+    # E(C, D) = |{(u, v) ∈ E(G) | u ∈ C, v ∈ D}|
+    if isinstance(node, int):
+        norm = resolution * len({node}) * (len(com) - len({node}))
+        for node_neigh in com:
+            if node in nbrs[node_neigh].keys():
+                E = E + nbrs[node_neigh][node]
+    else:
+        norm = resolution * len(node) * (len(com) - len(node))
+        for node_neigh in com:
+            for node_s in node:
+                if node_s in nbrs[node_neigh].keys():
+                    E = E + nbrs[node_neigh][node_s]
+    return E >= norm
