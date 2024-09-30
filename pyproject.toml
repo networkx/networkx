@@ -87,7 +87,7 @@ example = [
 ]
 extra = [
     'lxml>=4.6',
-    'pygraphviz>=1.13',
+    'pygraphviz>=1.14',
     'pydot>=3.0.1',
     'sympy>=1.10',
 ]
