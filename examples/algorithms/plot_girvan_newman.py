@@ -17,7 +17,12 @@ import matplotlib.pyplot as plt
 
 # Load karate graph and find communities using Girvan-Newman
 G = nx.karate_club_graph()
-communities = list(nx.community.girvan_newman(G))
+
+# Generate communities using Girvan-Newman algorithm
+communities_generator = nx.community.girvan_newman(G)
+
+# Extract the first 4 iterations of the Girvan-Newman algorithm
+communities = [tuple(sorted(c) for c in next(communities_generator)) for _ in range(4)]
 
 # Modularity -> measures the strength of division of a network into modules
 modularity_df = pd.DataFrame(
@@ -29,22 +34,18 @@ modularity_df = pd.DataFrame(
 )
 
 
-# function to create node colour list
+# Function to create node color list based on community detection
 def create_community_node_colors(graph, communities):
-    number_of_colors = len(communities[0])
+    number_of_colors = len(communities)
     colors = ["#D4FCB1", "#CDC5FC", "#FFC2C4", "#F2D140", "#BCC6C8"][:number_of_colors]
-    node_colors = []
-    for node in graph:
-        current_community_index = 0
-        for community in communities:
-            if node in community:
-                node_colors.append(colors[current_community_index])
-                break
-            current_community_index += 1
+    node_colors = ["#FFFFFF"] * len(graph)  # Default color for unassigned nodes
+    for idx, community in enumerate(communities):
+        for node in community:
+            node_colors[node] = colors[idx]
     return node_colors
 
 
-# function to plot graph with node colouring based on communities
+# Function to plot graph with node coloring based on communities
 def visualize_communities(graph, communities, i):
     node_colors = create_community_node_colors(graph, communities)
     modularity = round(nx.community.modularity(graph, communities), 6)
@@ -63,17 +64,20 @@ def visualize_communities(graph, communities, i):
     )
 
 
+# Create figure for plots
 fig, ax = plt.subplots(3, figsize=(15, 20))
 
-# Plot graph with colouring based on communities
+# Plot graph with coloring based on communities for iteration 1 and 4
 visualize_communities(G, communities[0], 1)
 visualize_communities(G, communities[3], 2)
 
-# Plot change in modularity as the important edges are removed
+# Plot change in modularity as important edges are removed
 modularity_df.plot.bar(
     x="k",
     ax=ax[2],
     color="#F2D140",
     title="Modularity Trend for Girvan-Newman Community Detection",
 )
+
+# Show the plots
 plt.show()
