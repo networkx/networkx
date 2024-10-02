@@ -32,10 +32,10 @@ class PlanarEmbedding(nx.PlanarEmbedding):
         # Remove 'cw' and 'ccw' attributes from all edges
         for u, v, attr in undirected_graph.edges(data=True):
             # Remove 'cw' and 'ccw' attributes if present
-           if "cw" in attr:
-+                del attr["cw"]
-+          if "ccw" in attr:
-+                del attr["ccw"]
+            if "cw" in attr:
+                del attr['cw']
+            if "ccw" in attr:
+                del attr['ccw']
 
         return undirected_graph
 
