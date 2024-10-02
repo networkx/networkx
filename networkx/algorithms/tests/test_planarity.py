@@ -34,7 +34,7 @@ class PlanarEmbedding(nx.PlanarEmbedding):
             # Remove 'cw' and 'ccw' attributes if present
            if "cw" in attr:
 +                del attr["cw"]
-+            if "ccw" in attr:
++          if "ccw" in attr:
 +                del attr["ccw"]
 
         return undirected_graph
