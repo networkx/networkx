@@ -1,6 +1,6 @@
 import pytest
-import networkx as nx
 
+import networkx as nx
 from networkx.algorithms.planarity import (
     check_planarity_recursive,
     get_counterexample,
