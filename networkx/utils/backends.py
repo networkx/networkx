@@ -24,7 +24,7 @@ backend graph for more than one function call, reducing conversion time.
 For example, you can set an environment variable before starting python to request
 all dispatchable functions automatically dispatch to the given backend::
 
-    bash> NETWORKX_AUTOMATIC_BACKENDS=cugraph python my_networkx_script.py
+    bash> NETWORKX_BACKEND_PRIORITY=cugraph python my_networkx_script.py
 
 or you can specify the backend as a kwarg::
 
@@ -43,6 +43,9 @@ need to pass additional backend-specific arguments, for example::
     nx.betweenness_centrality(G, k=10, backend="parallel", get_chunks=get_chunks)
 
 Here, ``get_chunks`` is not a NetworkX argument, but a nx_parallel-specific argument.
+
+Note that ``"networkx"`` is the backend name for NetworkX. Hence, you may pass
+``backend="networkx"`` to use the default implementation (converting if necessary).
 
 How does this work?
 -------------------
@@ -64,10 +67,12 @@ a backend), it checks if all graphs are from the same backend. If not, it raises
 loads the backend and calls the corresponding function on the backend along with the
 additional backend-specific ``backend_kwargs``. After calling the function the networkx
 logger displays the ``DEBUG`` message, if the logging is enabled
-(see :ref:`Introspection <introspect>` below). If no compatible
-backend is found or the function is not implemented by the backend, it raises a
-``NetworkXNotImplemented`` exception. And, if the function mutates the input graph or
-returns a graph, graph generator or loader then it tries to convert and run the
+(see :ref:`Introspection <introspect>` below). If no compatible backend is found
+or the function is not implemented by the backend, it will raise ``NotImplementedError``
+unless ``nx.config.fallback_to_nx`` is set to True (default is False), in which case
+it will convert the input graphs to NetworkX classes and run the default
+networkx implementation. And, if the function mutates the input graph
+or returns a graph, graph generator or loader then it tries to convert and run the
 function with a backend with automatic conversion. And it only convert and run if
 ``backend.should_run(...)`` returns ``True``. If no backend is used, it falls back to
 running the original function with NetworkX. Refer the ``__call__`` method of the
@@ -81,13 +86,13 @@ been working with the NetworkX developers to ensure smooth operation.
 They are the following:
 
 - `graphblas <https://github.com/python-graphblas/graphblas-algorithms>`_:
-    OpenMP-enabled sparse linear algebra backend.
+  OpenMP-enabled sparse linear algebra backend.
 - `cugraph <https://github.com/rapidsai/cugraph/tree/branch-24.04/python/nx-cugraph>`_:
-    GPU-accelerated backend.
+  GPU-accelerated backend.
 - `parallel <https://github.com/networkx/nx-parallel>`_:
-    Parallel backend for NetworkX algorithms.
+  Parallel backend for NetworkX algorithms.
 - `loopback <https://github.com/networkx/networkx/blob/main/pyproject.toml#L53>`_:
-    It's for testing purposes only and is not a real backend.
+  It's for testing purposes only and is not a real backend.
 
 Note that the ``backend_name`` is e.g. ``parallel``, the package installed
 is ``nx-parallel``, and we use ``nx_parallel`` while importing the package.
@@ -243,7 +248,7 @@ Creating a custom backend
             "Additional backend implementations" section.
         - ``default_config`` : dict
             A dictionary mapping the backend config parameter names to their default values.
-            This is used to automatically initialise the default configs for all the
+            This is used to automatically initialize the default configs for all the
             installed backends at the time of networkx's import.
 
             .. seealso:: `~networkx.utils.configs.Config`
@@ -403,21 +408,21 @@ def _get_backends(group, *, load_and_call=False):
     return rv
 
 
+# Note: "networkx" will be in `backend_info`, but not `backends` or `config.backends`.
+# It is valid to use "networkx"` as backend argument and in `config.backend_priority`.
+# We may make "networkx" a "proper" backend and have it in `backends` and `config.backends`.
 backends = _get_backends("networkx.backends")
 backend_info = _get_backends("networkx.backend_info", load_and_call=True)
+# Ensure all backends are in `backend_info`
+backend_info.update((backend, {}) for backend in backends.keys() - backend_info.keys())
+
+# Load and cache backends on-demand
+_loaded_backends = {}  # type: ignore[var-annotated]
+_registered_algorithms = {}
 
 # We must import from config after defining `backends` above
 from .configs import Config, config
 
-# Get default configuration from environment variables at import time
-config.backend_priority = [
-    x.strip()
-    for x in os.environ.get(
-        "NETWORKX_BACKEND_PRIORITY",
-        os.environ.get("NETWORKX_AUTOMATIC_BACKENDS", ""),
-    ).split(",")
-    if x.strip()
-]
 # Initialize default configuration for backends
 config.backends = Config(
     **{
@@ -429,10 +434,45 @@ config.backends = Config(
         for backend, info in backend_info.items()
     }
 )
+backend_info["networkx"] = {}
 type(config.backends).__doc__ = "All installed NetworkX backends and their configs."
 
-# Load and cache backends on-demand
-_loaded_backends = {}  # type: ignore[var-annotated]
+
+# Get default configuration from environment variables at import time
+def _comma_sep_to_list(string):
+    return [stripped for x in string.strip().split(",") if (stripped := x.strip())]
+
+
+def _set_backend_priority_from_environment():
+    """Initialize ``nx.config.backend_priority``.
+
+    This gets default values from environment variables (see ``nx.config`` for details).
+    This function is run at the very end of importing networkx. It is run at this time
+    for predictability and cleanliness, but it may be fine to run this function whenever.
+    """
+    # NETWORKX_BACKEND_PRIORITY is the same as NETWORKX_BACKEND_PRIORITY_ALGOS
+    priorities = {
+        key[26:].lower(): val
+        for key, val in os.environ.items()
+        if key.startswith("NETWORKX_BACKEND_PRIORITY_")
+    }
+    backend_priority = config.backend_priority
+    backend_priority.algos = (
+        _comma_sep_to_list(priorities.pop("algos"))
+        if "algos" in priorities
+        else _comma_sep_to_list(
+            os.environ.get(
+                "NETWORKX_BACKEND_PRIORITY",
+                os.environ.get("NETWORKX_AUTOMATIC_BACKENDS", ""),
+            )
+        )
+    )
+    backend_priority.generators = _comma_sep_to_list(priorities.pop("generators", ""))
+    for key in sorted(priorities):
+        backend_priority[key] = _comma_sep_to_list(priorities[key])
+
+
+_set_backend_priority_from_environment()
 
 
 def _always_run(name, args, kwargs):
@@ -442,6 +482,8 @@ def _always_run(name, args, kwargs):
 def _load_backend(backend_name):
     if backend_name in _loaded_backends:
         return _loaded_backends[backend_name]
+    if backend_name not in backends:
+        raise ImportError(f"'{backend_name}' backend is not installed")
     rv = _loaded_backends[backend_name] = backends[backend_name].load()
     if not hasattr(rv, "can_run"):
         rv.can_run = _always_run
@@ -450,14 +492,23 @@ def _load_backend(backend_name):
     return rv
 
 
-_registered_algorithms = {}
-
-
 class _dispatchable:
     _is_testing = False
-    _fallback_to_nx = (
-        os.environ.get("NETWORKX_FALLBACK_TO_NX", "true").strip().lower() == "true"
-    )
+
+    class _fallback_to_nx:
+        """Class property that returns ``nx.config.fallback_to_nx``."""
+
+        def __get__(self, instance, owner=None):
+            warnings.warn(
+                "`_dispatchable._fallback_to_nx` is deprecated and will be removed "
+                "in NetworkX v3.5. Use `nx.config.fallback_to_nx` instead.",
+                category=DeprecationWarning,
+                stacklevel=2,
+            )
+            return config.fallback_to_nx
+
+    # Note that chaining `@classmethod` and `@property` was removed in Python 3.13
+    _fallback_to_nx = _fallback_to_nx()  # type: ignore[assignment,misc]
 
     def __new__(
         cls,
@@ -766,13 +817,15 @@ class _dispatchable:
 
         if not backends:
             # Fast path if no backends are installed
-            if backend is not None:
+            if backend is not None and backend != "networkx":
                 raise ImportError(f"'{backend}' backend is not installed")
             return self.orig_func(*args, **kwargs)
 
-        # Use `backend_name` in this function instead of `backend`
+        # Use `backend_name` in this function instead of `backend`.
+        # This is purely for aesthetics and to make it easier to search for this
+        # variable since "backend" is used in many comments and log/error messages.
         backend_name = backend
-        if backend_name is not None and backend_name not in backends:
+        if backend_name is not None and backend_name not in backend_info:
             raise ImportError(f"'{backend_name}' backend is not installed")
 
         graphs_resolved = {}
@@ -780,28 +833,28 @@ class _dispatchable:
             if pos < len(args):
                 if gname in kwargs:
                     raise TypeError(f"{self.name}() got multiple values for {gname!r}")
-                val = args[pos]
+                graph = args[pos]
             elif gname in kwargs:
-                val = kwargs[gname]
+                graph = kwargs[gname]
             elif gname not in self.optional_graphs:
                 raise TypeError(
                     f"{self.name}() missing required graph argument: {gname}"
                 )
             else:
                 continue
-            if val is None:
+            if graph is None:
                 if gname not in self.optional_graphs:
                     raise TypeError(
                         f"{self.name}() required graph argument {gname!r} is None; must be a graph"
                     )
             else:
-                graphs_resolved[gname] = val
+                graphs_resolved[gname] = graph
 
         # Alternative to the above that does not check duplicated args or missing required graphs.
         # graphs_resolved = {
-        #     val
+        #     gname: graph
         #     for gname, pos in self.graphs.items()
-        #     if (val := args[pos] if pos < len(args) else kwargs.get(gname)) is not None
+        #     if (graph := args[pos] if pos < len(args) else kwargs.get(gname)) is not None
         # }
 
         # Check if any graph comes from a backend
@@ -809,41 +862,35 @@ class _dispatchable:
             # Make sure we don't lose values by consuming an iterator
             args = list(args)
             for gname in self.list_graphs & graphs_resolved.keys():
-                val = list(graphs_resolved[gname])
-                graphs_resolved[gname] = val
+                list_of_graphs = list(graphs_resolved[gname])
+                graphs_resolved[gname] = list_of_graphs
                 if gname in kwargs:
-                    kwargs[gname] = val
+                    kwargs[gname] = list_of_graphs
                 else:
-                    args[self.graphs[gname]] = val
+                    args[self.graphs[gname]] = list_of_graphs
 
-            has_backends = any(
-                hasattr(g, "__networkx_backend__")
-                if gname not in self.list_graphs
-                else any(hasattr(g2, "__networkx_backend__") for g2 in g)
+            graph_backend_names = {
+                getattr(g, "__networkx_backend__", None)
                 for gname, g in graphs_resolved.items()
-            )
-            if has_backends:
-                graph_backend_names = {
-                    getattr(g, "__networkx_backend__", "networkx")
-                    for gname, g in graphs_resolved.items()
-                    if gname not in self.list_graphs
-                }
-                for gname in self.list_graphs & graphs_resolved.keys():
-                    graph_backend_names.update(
-                        getattr(g, "__networkx_backend__", "networkx")
-                        for g in graphs_resolved[gname]
-                    )
+                if gname not in self.list_graphs
+            }
+            for gname in self.list_graphs & graphs_resolved.keys():
+                graph_backend_names.update(
+                    getattr(g, "__networkx_backend__", None)
+                    for g in graphs_resolved[gname]
+                )
         else:
-            has_backends = any(
-                hasattr(g, "__networkx_backend__") for g in graphs_resolved.values()
-            )
-            if has_backends:
-                graph_backend_names = {
-                    getattr(g, "__networkx_backend__", "networkx")
-                    for g in graphs_resolved.values()
-                }
+            graph_backend_names = {
+                getattr(g, "__networkx_backend__", None)
+                for g in graphs_resolved.values()
+            }
 
-        backend_priority = config.backend_priority
+        backend_priority = config.backend_priority.get(
+            self.name,
+            config.backend_priority.generators
+            if self._returns_graph
+            else config.backend_priority.algos,
+        )
         if self._is_testing and backend_priority and backend_name is None:
             # Special path if we are running networkx tests with a backend.
             # This even runs for (and handles) functions that mutate input graphs.
@@ -851,129 +898,498 @@ class _dispatchable:
                 backend_priority[0],
                 args,
                 kwargs,
-                fallback_to_nx=self._fallback_to_nx,
+                fallback_to_nx=config.fallback_to_nx,
             )
 
-        if has_backends:
-            # Dispatchable graphs found! Dispatch to backend function.
-            # We don't handle calls with different backend graphs yet,
-            # but we may be able to convert additional networkx graphs.
-            backend_names = graph_backend_names - {"networkx"}
-            if len(backend_names) != 1:
-                # Future work: convert between backends and run if multiple backends found
-                raise TypeError(
-                    f"{self.name}() graphs must all be from the same backend, found {backend_names}"
-                )
-            [graph_backend_name] = backend_names
-            if backend_name is not None and backend_name != graph_backend_name:
-                # Future work: convert between backends to `backend_name` backend
-                raise TypeError(
-                    f"{self.name}() is unable to convert graph from backend {graph_backend_name!r} "
-                    f"to the specified backend {backend_name!r}."
-                )
-            if graph_backend_name not in backends:
-                raise ImportError(f"'{graph_backend_name}' backend is not installed")
-            if (
-                "networkx" in graph_backend_names
-                and graph_backend_name not in backend_priority
-            ):
-                # Not configured to convert networkx graphs to this backend
-                raise TypeError(
-                    f"Unable to convert inputs and run {self.name}. "
-                    f"{self.name}() has networkx and {graph_backend_name} graphs, but NetworkX is not "
-                    f"configured to automatically convert graphs from networkx to {graph_backend_name}."
-                )
-            backend = _load_backend(graph_backend_name)
-            if hasattr(backend, self.name):
-                if "networkx" in graph_backend_names:
-                    # We need to convert networkx graphs to backend graphs.
-                    # There is currently no need to check `self.mutates_input` here.
-                    return self._convert_and_call(
-                        graph_backend_name,
-                        args,
-                        kwargs,
-                        fallback_to_nx=self._fallback_to_nx,
-                    )
-                # All graphs are backend graphs--no need to convert!
-                _logger.debug(
-                    f"using backend '{graph_backend_name}' for call to `{self.name}' "
-                    f"with args: {args}, kwargs: {kwargs}"
-                )
-                return getattr(backend, self.name)(*args, **kwargs)
-            # Future work: try to convert and run with other backends in backend_priority
-            raise nx.NetworkXNotImplemented(
-                f"'{self.name}' not implemented by {graph_backend_name}"
-            )
-
-        # If backend was explicitly given by the user, so we need to use it no matter what
+        graph_backend_names.discard(None)
         if backend_name is not None:
-            return self._convert_and_call(
-                backend_name, args, kwargs, fallback_to_nx=False
+            # Must run with the given backend.
+            # `can_run` only used for better log and error messages.
+            # Check `mutates_input` for logging, not behavior.
+            blurb = (
+                "No other backends will be attempted, because the backend was "
+                f"specified with the `backend='{backend_name}'` keyword argument."
             )
-
-        # Only networkx graphs; try to convert and run with a backend with automatic
-        # conversion, but don't do this by default for graph generators or loaders,
-        # or if the functions mutates an input graph or returns a graph.
-        # Only convert and run if `backend.should_run(...)` returns True.
-        if (
-            not self._returns_graph
-            and (
-                not self.mutates_input
-                or isinstance(self.mutates_input, dict)
-                # If `mutates_input` begins with "not ", then assume the argument is boolean,
-                # otherwise treat it as a node or edge attribute if it's not None.
-                and any(
-                    not (
-                        args[arg_pos]
-                        if len(args) > arg_pos
-                        else kwargs.get(arg_name[4:], True)
+            extra_message = (
+                f"'{backend_name}' backend raised NotImplementedError when calling "
+                f"`{self.name}'. {blurb}"
+            )
+            if not graph_backend_names or graph_backend_names == {backend_name}:
+                # All graphs are backend graphs--no need to convert!
+                if self._can_backend_run(backend_name, args, kwargs):
+                    return self._call_with_backend(
+                        backend_name, args, kwargs, extra_message=extra_message
                     )
-                    if arg_name.startswith("not ")
-                    else (
-                        args[arg_pos] if len(args) > arg_pos else kwargs.get(arg_name)
-                    )
-                    is not None
-                    for arg_name, arg_pos in self.mutates_input.items()
+                if self._does_backend_have(backend_name):
+                    extra = " for the given arguments"
+                else:
+                    extra = ""
+                raise NotImplementedError(
+                    f"`{self.name}' is not implemented by '{backend_name}' backend"
+                    f"{extra}. {blurb}"
                 )
-            )
-        ):
-            # Should we warn or log if we don't convert b/c the input will be mutated?
-            for backend_name in backend_priority:
-                if self._should_backend_run(backend_name, *args, **kwargs):
-                    return self._convert_and_call(
+            if self._can_convert(backend_name, graph_backend_names):
+                if self._can_backend_run(backend_name, args, kwargs):
+                    if self._will_call_mutate_input(args, kwargs):
+                        _logger.debug(
+                            "`%s' will mutate an input graph. This prevents automatic conversion "
+                            "to, and use of, backends listed in `nx.config.backend_priority`. "
+                            "Using backend specified by the "
+                            "`backend='%s'` keyword argument. This may change behavior by not "
+                            "mutating inputs.",
+                            self.name,
+                            backend_name,
+                        )
+                        mutations = []
+                    else:
+                        mutations = None
+                    rv = self._convert_and_call(
                         backend_name,
+                        graph_backend_names,
                         args,
                         kwargs,
-                        fallback_to_nx=self._fallback_to_nx,
+                        extra_message=extra_message,
+                        mutations=mutations,
                     )
-        # Default: run with networkx on networkx inputs
-        return self.orig_func(*args, **kwargs)
+                    if mutations:
+                        for cache, key in mutations:
+                            # If the call mutates inputs, then remove all inputs gotten
+                            # from cache. We do this after all conversions (and call) so
+                            # that a graph can be gotten from a cache multiple times.
+                            cache.pop(key, None)
+                    return rv
+                if self._does_backend_have(backend_name):
+                    extra = " for the given arguments"
+                else:
+                    extra = ""
+                raise NotImplementedError(
+                    f"`{self.name}' is not implemented by '{backend_name}' backend"
+                    f"{extra}. {blurb}"
+                )
+            if len(graph_backend_names) == 1:
+                maybe_s = ""
+                graph_backend_names = f"'{next(iter(graph_backend_names))}'"
+            else:
+                maybe_s = "s"
+            raise TypeError(
+                f"`{self.name}' is unable to convert graph from backend{maybe_s} "
+                f"{graph_backend_names} to '{backend_name}' backend, which was "
+                f"specified with the `backend='{backend_name}'` keyword argument. "
+                f"{blurb}"
+            )
 
-    def _can_backend_run(self, backend_name, /, *args, **kwargs):
+        if self._will_call_mutate_input(args, kwargs):
+            # The current behavior for functions that mutate input graphs:
+            #
+            # 1. If backend is specified by `backend=` keyword, use it (done above).
+            # 2. If inputs are from one backend, try to use it.
+            # 3. If all input graphs are instances of `nx.Graph`, then run with the
+            #    default "networkx" implementation.
+            #
+            # Do not automatically convert if a call will mutate inputs, because doing
+            # so would change behavior. Hence, we should fail if there are multiple input
+            # backends or if the input backend does not implement the function. However,
+            # we offer a way for backends to circumvent this if they do not implement
+            # this function: we will fall back to the default "networkx" implementation
+            # without using conversions if all input graphs are subclasses of `nx.Graph`.
+            blurb = (
+                "conversions between backends (if configured) will not be attempted, "
+                "because this may change behavior. You may specify a backend to use "
+                "by passing e.g. `backend='networkx'` keyword, but this may also "
+                "change behavior by not mutating inputs."
+            )
+            fallback_blurb = (
+                "This call will mutate inputs, so fall back to 'networkx' "
+                "backend (without converting) since all input graphs are "
+                "instances of nx.Graph and are hopefully compatible.",
+            )
+            if len(graph_backend_names) == 1:
+                [backend_name] = graph_backend_names
+                msg_template = (
+                    f"Backend '{backend_name}' does not implement `{self.name}'%s. "
+                    f"This call will mutate an input, so automatic {blurb}"
+                )
+                # `can_run` is only used for better log and error messages
+                try:
+                    if self._can_backend_run(backend_name, args, kwargs):
+                        return self._call_with_backend(
+                            backend_name,
+                            args,
+                            kwargs,
+                            extra_message=msg_template % " with these arguments",
+                        )
+                except NotImplementedError as exc:
+                    if all(isinstance(g, nx.Graph) for g in graphs_resolved.values()):
+                        _logger.debug(
+                            "Backend '%s' raised when calling `%s': %s. %s",
+                            backend_name,
+                            self.name,
+                            exc,
+                            fallback_blurb,
+                        )
+                    else:
+                        raise
+                else:
+                    if config.fallback_to_nx and all(
+                        # Consider dropping the `isinstance` check here to allow
+                        # duck-type graphs, but let's wait for a backend to ask us.
+                        isinstance(g, nx.Graph)
+                        for g in graphs_resolved.values()
+                    ):
+                        # Log that we are falling back to networkx
+                        _logger.debug(
+                            "Backend '%s' can't run `%s'. %s",
+                            backend_name,
+                            self.name,
+                            fallback_blurb,
+                        )
+                    else:
+                        if self._does_backend_have(backend_name):
+                            extra = " with these arguments"
+                        else:
+                            extra = ""
+                        raise NotImplementedError(msg_template % extra)
+            elif config.fallback_to_nx and all(
+                # Consider dropping the `isinstance` check here to allow
+                # duck-type graphs, but let's wait for a backend to ask us.
+                isinstance(g, nx.Graph)
+                for g in graphs_resolved.values()
+            ):
+                # Log that we are falling back to networkx
+                _logger.debug(
+                    "`%s' was called with inputs from multiple backends: %s. %s",
+                    self.name,
+                    graph_backend_names,
+                    fallback_blurb,
+                )
+            else:
+                raise RuntimeError(
+                    f"`{self.name}' will mutate an input, but it was called with inputs "
+                    f"from multiple backends: {graph_backend_names}. Automatic {blurb}"
+                )
+            # At this point, no backends are available to handle the call with
+            # the input graph types, but if the input graphs are compatible
+            # nx.Graph instances, fall back to networkx without converting.
+            return self.orig_func(*args, **kwargs)
+
+        # We may generalize fallback configuration as e.g. `nx.config.backend_fallback`
+        if config.fallback_to_nx or not graph_backend_names:
+            # Use "networkx" by default if there are no inputs from backends.
+            # For example, graph generators should probably return NetworkX graphs
+            # instead of raising NotImplementedError.
+            backend_fallback = ["networkx"]
+        else:
+            backend_fallback = []
+
+        # ##########################
+        # # How this behaves today #
+        # ##########################
+        #
+        # The prose below describes the implementation and a *possible* way to
+        # generalize "networkx" as "just another backend". The code is structured
+        # to perhaps someday support backend-to-backend conversions (including
+        # simply passing objects from one backend directly to another backend;
+        # the dispatch machinery does not necessarily need to perform conversions),
+        # but since backend-to-backend matching is not yet supported, the following
+        # code is merely a convenient way to implement dispatch behaviors that have
+        # been carefully developed since NetworkX 3.0 and to include falling back
+        # to the default NetworkX implementation.
+        #
+        # The current behavior for functions that don't mutate input graphs:
+        #
+        # 1. If backend is specified by `backend=` keyword, use it (done above).
+        # 2. If input is from a backend other than "networkx", try to use it.
+        #    - Note: if present, "networkx" graphs will be converted to the backend.
+        # 3. If input is from "networkx" (or no backend), try to use backends from
+        #    `backend_priority` before running with the default "networkx" implementation.
+        # 4. If configured, "fall back" and run with the default "networkx" implementation.
+        #
+        # ################################################
+        # # How this is implemented and may work someday #
+        # ################################################
+        #
+        # Let's determine the order of backends we should try according
+        # to `backend_priority`, `backend_fallback`, and input backends.
+        # There are two† dimensions of priorities to consider:
+        #   backend_priority > unspecified > backend_fallback
+        # and
+        #   backend of an input > not a backend of an input
+        # These are combined to form five groups of priorities as such:
+        #
+        #                    input   ~input
+        #                  +-------+-------+
+        # backend_priority |   1   |   2   |
+        #      unspecified |   3   |  N/A  | (if only 1)
+        # backend_fallback |   4   |   5   |
+        #                  +-------+-------+
+        #
+        # This matches the behaviors we developed in versions 3.0 to 3.2, it
+        # ought to cover virtually all use cases we expect, and I (@eriknw) don't
+        # think it can be done any simpler (although it can be generalized further
+        # and made to be more complicated to capture 100% of *possible* use cases).
+        # Some observations:
+        #
+        #   1. If an input is in `backend_priority`, it will be used before trying a
+        #      backend that is higher priority in `backend_priority` and not an input.
+        #   2. To prioritize converting from one backend to another even if both implement
+        #      a function, list one in `backend_priority` and one in `backend_fallback`.
+        #   3. To disable conversions, set `backend_priority` and `backend_fallback` to [].
+        #
+        # †: There is actually a third dimension of priorities:
+        #        should_run == True > should_run == False
+        #    Backends with `can_run == True` and `should_run == False` are tried last.
+        #
+        seen = set()
+        group1 = []  # In backend_priority, and an input
+        group2 = []  # In backend_priority, but not an input
+        for name in backend_priority:
+            if name in seen:
+                continue
+            seen.add(name)
+            if name in graph_backend_names:
+                group1.append(name)
+            else:
+                group2.append(name)
+        group4 = []  # In backend_fallback, and an input
+        group5 = []  # In backend_fallback, but not an input
+        for name in backend_fallback:
+            if name in seen:
+                continue
+            seen.add(name)
+            if name in graph_backend_names:
+                group4.append(name)
+            else:
+                group5.append(name)
+        # An input, but not in backend_priority or backend_fallback.
+        group3 = graph_backend_names - seen
+        if len(group3) > 1:
+            # `group3` backends are not configured for automatic conversion or fallback.
+            # There are at least two issues if this group contains multiple backends:
+            #
+            #   1. How should we prioritize them? We have no good way to break ties.
+            #      Although we could arbitrarily choose alphabetical or left-most,
+            #      let's follow the Zen of Python and refuse the temptation to guess.
+            #   2. We probably shouldn't automatically convert to these backends,
+            #      because we are not configured to do so.
+            #
+            # (2) is important to allow disabling all conversions by setting both
+            # `nx.config.backend_priority` and `nx.config.backend_fallback` to [].
+            #
+            # If there is a single backend in `group3`, then giving it priority over
+            # the fallback backends is what is generally expected. For example, this
+            # allows input graphs of `backend_fallback` backends (such as "networkx")
+            # to be converted to, and run with, the unspecified backend.
+            _logger.debug(
+                "Call to `%s' has inputs from multiple backends, %s, that "
+                "have no priority set in `nx.config.backend_priority`, "
+                "so automatic conversions to "
+                "these backends will not be attempted.",
+                self.name,
+                group3,
+            )
+            group3 = ()
+
+        try_order = list(itertools.chain(group1, group2, group3, group4, group5))
+        if len(try_order) > 1:
+            # Should we consider adding an option for more verbose logging?
+            # For example, we could explain the order of `try_order` in detail.
+            _logger.debug(
+                "Call to `%s' has inputs from %s backends, and will try to use "
+                "backends in the following order: %s",
+                self.name,
+                graph_backend_names or "no",
+                try_order,
+            )
+        backends_to_try_again = []
+        for is_not_first, backend_name in enumerate(try_order):
+            if is_not_first:
+                _logger.debug("Trying next backend: '%s'", backend_name)
+            try:
+                if not graph_backend_names or graph_backend_names == {backend_name}:
+                    if self._can_backend_run(backend_name, args, kwargs):
+                        return self._call_with_backend(backend_name, args, kwargs)
+                elif self._can_convert(
+                    backend_name, graph_backend_names
+                ) and self._can_backend_run(backend_name, args, kwargs):
+                    if self._should_backend_run(backend_name, args, kwargs):
+                        rv = self._convert_and_call(
+                            backend_name, graph_backend_names, args, kwargs
+                        )
+                        if (
+                            self._returns_graph
+                            and graph_backend_names
+                            and backend_name not in graph_backend_names
+                        ):
+                            # If the function has graph inputs and graph output, we try
+                            # to make it so the backend of the return type will match the
+                            # backend of the input types. In case this is not possible,
+                            # let's tell the user that the backend of the return graph
+                            # has changed. Perhaps we could try to convert back, but
+                            # "fallback" backends for graph generators should typically
+                            # be compatible with NetworkX graphs.
+                            _logger.debug(
+                                "Call to `%s' is returning a graph from a different "
+                                "backend! It has inputs from %s backends, but ran with "
+                                "'%s' backend and is returning graph from '%s' backend",
+                                self.name,
+                                graph_backend_names,
+                                backend_name,
+                                backend_name,
+                            )
+                        return rv
+                    # `should_run` is False, but `can_run` is True, so try again later
+                    backends_to_try_again.append(backend_name)
+            except NotImplementedError as exc:
+                _logger.debug(
+                    "Backend '%s' raised when calling `%s': %s",
+                    backend_name,
+                    self.name,
+                    exc,
+                )
+
+        # We are about to fail. Let's try backends with can_run=True and should_run=False.
+        # This is unlikely to help today since we try to run with "networkx" before this.
+        for backend_name in backends_to_try_again:
+            _logger.debug(
+                "Trying backend: '%s' (ignoring `should_run=False`)", backend_name
+            )
+            try:
+                rv = self._convert_and_call(
+                    backend_name, graph_backend_names, args, kwargs
+                )
+                if (
+                    self._returns_graph
+                    and graph_backend_names
+                    and backend_name not in graph_backend_names
+                ):
+                    _logger.debug(
+                        "Call to `%s' is returning a graph from a different "
+                        "backend! It has inputs from %s backends, but ran with "
+                        "'%s' backend and is returning graph from '%s' backend",
+                        self.name,
+                        graph_backend_names,
+                        backend_name,
+                        backend_name,
+                    )
+                return rv
+            except NotImplementedError as exc:
+                _logger.debug(
+                    "Backend '%s' raised when calling `%s': %s",
+                    backend_name,
+                    self.name,
+                    exc,
+                )
+        # As a final effort, we could try to convert and run with `group3` backends
+        # that we discarded when `len(group3) > 1`, but let's not consider doing
+        # so until there is a reasonable request for it.
+
+        if len(unspecified_backends := graph_backend_names - seen) > 1:
+            raise TypeError(
+                f"Unable to convert inputs from {graph_backend_names} backends and "
+                f"run `{self.name}'. NetworkX is configured to automatically convert "
+                f"to {try_order} backends. To remedy this, you may enable automatic "
+                f"conversion to {unspecified_backends} backends by adding them to "
+                "`nx.config.backend_priority`, or you "
+                "may specify a backend to use with the `backend=` keyword argument."
+            )
+        raise NotImplementedError(
+            f"`{self.name}' is not implemented by {try_order} backends. To remedy "
+            "this, you may enable automatic conversion to more backends (including "
+            "'networkx') by adding them to `nx.config.backend_priority`, "
+            "or you may specify a backend to use with "
+            "the `backend=` keyword argument."
+        )
+
+    def _will_call_mutate_input(self, args, kwargs):
+        return (mutates_input := self.mutates_input) and (
+            mutates_input is True
+            or any(
+                # If `mutates_input` begins with "not ", then assume the argument is bool,
+                # otherwise treat it as a node or edge attribute if it's not None.
+                not (
+                    args[arg_pos]
+                    if len(args) > arg_pos
+                    # This assumes that e.g. `copy=True` is the default
+                    else kwargs.get(arg_name[4:], True)
+                )
+                if arg_name.startswith("not ")
+                else (args[arg_pos] if len(args) > arg_pos else kwargs.get(arg_name))
+                is not None
+                for arg_name, arg_pos in mutates_input.items()
+            )
+        )
+
+    def _can_convert(self, backend_name, graph_backend_names):
+        # Backend-to-backend conversion not supported yet.
+        # We can only convert to and from networkx.
+        rv = backend_name == "networkx" or graph_backend_names.issubset(
+            {"networkx", backend_name}
+        )
+        if not rv:
+            _logger.debug(
+                "Unable to convert from %s backends to '%s' backend",
+                graph_backend_names,
+                backend_name,
+            )
+        return rv
+
+    def _does_backend_have(self, backend_name):
+        """Does the specified backend have this algorithm?"""
+        if backend_name == "networkx":
+            return True
+        # Inspect the backend; don't trust metadata used to create `self.backends`
+        backend = _load_backend(backend_name)
+        return hasattr(backend, self.name)
+
+    def _can_backend_run(self, backend_name, args, kwargs):
         """Can the specified backend run this algorithm with these arguments?"""
+        if backend_name == "networkx":
+            return True
         backend = _load_backend(backend_name)
         # `backend.can_run` and `backend.should_run` may return strings that describe
-        # why they can't or shouldn't be run. We plan to use the strings in the future.
-        return (
-            hasattr(backend, self.name)
-            and (can_run := backend.can_run(self.name, args, kwargs))
-            and not isinstance(can_run, str)
-        )
+        # why they can't or shouldn't be run.
+        if not hasattr(backend, self.name):
+            _logger.debug(
+                "Backend '%s' does not implement `%s'", backend_name, self.name
+            )
+            return False
+        can_run = backend.can_run(self.name, args, kwargs)
+        if isinstance(can_run, str) or not can_run:
+            reason = f", because: {can_run}" if isinstance(can_run, str) else ""
+            _logger.debug(
+                "Backend '%s' can't run `%s` with arguments: %s%s",
+                backend_name,
+                self.name,
+                _LazyArgsRepr(self, args, kwargs),
+                reason,
+            )
+            return False
+        return True
 
-    def _should_backend_run(self, backend_name, /, *args, **kwargs):
-        """Can/should the specified backend run this algorithm with these arguments?"""
-        backend = _load_backend(backend_name)
+    def _should_backend_run(self, backend_name, args, kwargs):
+        """Should the specified backend run this algorithm with these arguments?
+
+        Note that this does not check ``backend.can_run``.
+        """
         # `backend.can_run` and `backend.should_run` may return strings that describe
-        # why they can't or shouldn't be run. We plan to use the strings in the future.
-        return (
-            hasattr(backend, self.name)
-            and (can_run := backend.can_run(self.name, args, kwargs))
-            and not isinstance(can_run, str)
-            and (should_run := backend.should_run(self.name, args, kwargs))
-            and not isinstance(should_run, str)
-        )
+        # why they can't or shouldn't be run.
+        if backend_name == "networkx":
+            return True
+        backend = _load_backend(backend_name)
+        should_run = backend.should_run(self.name, args, kwargs)
+        if isinstance(should_run, str) or not should_run:
+            reason = f", because: {should_run}" if isinstance(should_run, str) else ""
+            _logger.debug(
+                "Backend '%s' shouldn't run `%s` with arguments: %s%s",
+                backend_name,
+                self.name,
+                _LazyArgsRepr(self, args, kwargs),
+                reason,
+            )
+            return False
+        return True
 
-    def _convert_arguments(self, backend_name, args, kwargs, *, use_cache):
+    def _convert_arguments(self, backend_name, args, kwargs, *, use_cache, mutations):
         """Convert graph arguments to the specified backend.
 
         Returns
@@ -986,10 +1402,17 @@ class _dispatchable:
             bound_kwargs = bound.kwargs
             del bound_kwargs["backend"]
             return bound.args, bound_kwargs
+        if backend_name == "networkx":
+            # `backend_interface.convert_from_nx` preserves everything
+            preserve_edge_attrs = preserve_node_attrs = preserve_graph_attrs = True
+        else:
+            preserve_edge_attrs = self.preserve_edge_attrs
+            preserve_node_attrs = self.preserve_node_attrs
+            preserve_graph_attrs = self.preserve_graph_attrs
+            edge_attrs = self.edge_attrs
+            node_attrs = self.node_attrs
         # Convert graphs into backend graph-like object
         # Include the edge and/or node labels if provided to the algorithm
-        preserve_edge_attrs = self.preserve_edge_attrs
-        edge_attrs = self.edge_attrs
         if preserve_edge_attrs is False:
             # e.g. `preserve_edge_attrs=False`
             pass
@@ -1056,8 +1479,6 @@ class _dispatchable:
                 if (edge_attr := bound.arguments[key]) is not None
             }
 
-        preserve_node_attrs = self.preserve_node_attrs
-        node_attrs = self.node_attrs
         if preserve_node_attrs is False:
             # e.g. `preserve_node_attrs=False`
             pass
@@ -1117,8 +1538,6 @@ class _dispatchable:
                 if (node_attr := bound.arguments[key]) is not None
             }
 
-        preserve_graph_attrs = self.preserve_graph_attrs
-
         # It should be safe to assume that we either have networkx graphs or backend graphs.
         # Future work: allow conversions between backends.
         for gname in self.graphs:
@@ -1134,8 +1553,9 @@ class _dispatchable:
                         preserve_graph_attrs=preserve_graph_attrs,
                         graph_name=gname,
                         use_cache=use_cache,
+                        mutations=mutations,
                     )
-                    if getattr(g, "__networkx_backend__", "networkx") == "networkx"
+                    if getattr(g, "__networkx_backend__", "networkx") != backend_name
                     else g
                     for g in bound.arguments[gname]
                 ]
@@ -1163,7 +1583,7 @@ class _dispatchable:
                     preserve_graph = gname in preserve_graph_attrs
                 else:
                     preserve_graph = preserve_graph_attrs
-                if getattr(graph, "__networkx_backend__", "networkx") == "networkx":
+                if getattr(graph, "__networkx_backend__", "networkx") != backend_name:
                     bound.arguments[gname] = self._convert_graph(
                         backend_name,
                         graph,
@@ -1174,6 +1594,7 @@ class _dispatchable:
                         preserve_graph_attrs=preserve_graph,
                         graph_name=gname,
                         use_cache=use_cache,
+                        mutations=mutations,
                     )
         bound_kwargs = bound.kwargs
         del bound_kwargs["backend"]
@@ -1191,26 +1612,23 @@ class _dispatchable:
         preserve_graph_attrs,
         graph_name,
         use_cache,
+        mutations,
     ):
         if (
             use_cache
             and (nx_cache := getattr(graph, "__networkx_cache__", None)) is not None
         ):
             cache = nx_cache.setdefault("backends", {}).setdefault(backend_name, {})
-            # edge_attrs: dict | None
-            # node_attrs: dict | None
-            # preserve_edge_attrs: bool (False if edge_attrs is not None)
-            # preserve_node_attrs: bool (False if node_attrs is not None)
-            key = edge_key, node_key = (
-                frozenset(edge_attrs.items())
-                if edge_attrs is not None
-                else preserve_edge_attrs,
-                frozenset(node_attrs.items())
-                if node_attrs is not None
-                else preserve_node_attrs,
+            key = _get_cache_key(
+                edge_attrs=edge_attrs,
+                node_attrs=node_attrs,
+                preserve_edge_attrs=preserve_edge_attrs,
+                preserve_node_attrs=preserve_node_attrs,
+                preserve_graph_attrs=preserve_graph_attrs,
             )
-            if cache:
-                warning_message = (
+            compat_key, rv = _get_from_cache(cache, key, mutations=mutations)
+            if rv is not None:
+                warnings.warn(
                     f"Using cached graph for {backend_name!r} backend in "
                     f"call to {self.name}.\n\nFor the cache to be consistent "
                     "(i.e., correct), the input graph must not have been "
@@ -1228,112 +1646,180 @@ class _dispatchable:
                     "to None to disable caching for G. Enable or disable caching "
                     "globally via `nx.config.cache_converted_graphs` config."
                 )
-                # Do a simple search for a cached graph with compatible data.
-                # For example, if we need a single attribute, then it's okay
-                # to use a cached graph that preserved all attributes.
-                # This looks for an exact match first.
-                for compat_key in itertools.product(
-                    (edge_key, True) if edge_key is not True else (True,),
-                    (node_key, True) if node_key is not True else (True,),
-                ):
-                    if (rv := cache.get(compat_key)) is not None:
-                        warnings.warn(warning_message)
-                        return rv
-                if edge_key is not True and node_key is not True:
-                    # Iterate over the items in `cache` to see if any are compatible.
-                    # For example, if no edge attributes are needed, then a graph
-                    # with any edge attribute will suffice. We use the same logic
-                    # below (but switched) to clear unnecessary items from the cache.
-                    # Use `list(cache.items())` to be thread-safe.
-                    for (ekey, nkey), val in list(cache.items()):
-                        if edge_key is False or ekey is True:
-                            pass  # Cache works for edge data!
-                        elif (
-                            edge_key is True
-                            or ekey is False
-                            or not edge_key.issubset(ekey)
-                        ):
-                            continue  # Cache missing required edge data; does not work
-                        if node_key is False or nkey is True:
-                            pass  # Cache works for node data!
-                        elif (
-                            node_key is True
-                            or nkey is False
-                            or not node_key.issubset(nkey)
-                        ):
-                            continue  # Cache missing required node data; does not work
-                        warnings.warn(warning_message)
-                        return val
+                _logger.debug(
+                    "Using cached converted graph (from '%s' to '%s' backend) "
+                    "in call to `%s' for '%s' argument",
+                    getattr(graph, "__networkx_backend__", None),
+                    backend_name,
+                    self.name,
+                    graph_name,
+                )
+                return rv
 
-        backend = _load_backend(backend_name)
-        rv = backend.convert_from_nx(
-            graph,
-            edge_attrs=edge_attrs,
-            node_attrs=node_attrs,
-            preserve_edge_attrs=preserve_edge_attrs,
-            preserve_node_attrs=preserve_node_attrs,
-            # Always preserve graph attrs when we are caching b/c this should be
-            # cheap and may help prevent extra (unnecessary) conversions. Because
-            # we do this, we don't need `preserve_graph_attrs` in the cache key.
-            preserve_graph_attrs=preserve_graph_attrs or use_cache,
-            name=self.name,
-            graph_name=graph_name,
-        )
-        if use_cache and nx_cache is not None:
-            # Remove old cached items that are no longer necessary since they
-            # are dominated/subsumed/outdated by what was just calculated.
-            # This uses the same logic as above, but with keys switched.
-            cache[key] = rv  # Set at beginning to be thread-safe
-            for cur_key in list(cache):
-                if cur_key == key:
-                    continue
-                ekey, nkey = cur_key
-                if ekey is False or edge_key is True:
-                    pass
-                elif ekey is True or edge_key is False or not ekey.issubset(edge_key):
-                    continue
-                if nkey is False or node_key is True:
-                    pass
-                elif nkey is True or node_key is False or not nkey.issubset(node_key):
-                    continue
-                cache.pop(cur_key, None)  # Use pop instead of del to be thread-safe
+        if backend_name == "networkx":
+            # Perhaps we should check that "__networkx_backend__" attribute exists
+            # and return the original object if not.
+            if not hasattr(graph, "__networkx_backend__"):
+                _logger.debug(
+                    "Unable to convert input to 'networkx' backend in call to `%s' for "
+                    "'%s argument, because it is not from a backend (i.e., it does not "
+                    "have `G.__networkx_backend__` attribute). Using the original "
+                    "object: %s",
+                    self.name,
+                    graph_name,
+                    graph,
+                )
+                # This may fail, but let it fail in the networkx function
+                return graph
+            backend = _load_backend(graph.__networkx_backend__)
+            rv = backend.convert_to_nx(graph)
+        else:
+            backend = _load_backend(backend_name)
+            rv = backend.convert_from_nx(
+                graph,
+                edge_attrs=edge_attrs,
+                node_attrs=node_attrs,
+                preserve_edge_attrs=preserve_edge_attrs,
+                preserve_node_attrs=preserve_node_attrs,
+                # Always preserve graph attrs when we are caching b/c this should be
+                # cheap and may help prevent extra (unnecessary) conversions. Because
+                # we do this, we don't need `preserve_graph_attrs` in the cache key.
+                preserve_graph_attrs=preserve_graph_attrs or use_cache,
+                name=self.name,
+                graph_name=graph_name,
+            )
+        if use_cache and nx_cache is not None and mutations is None:
+            _set_to_cache(cache, key, rv)
+            _logger.debug(
+                "Caching converted graph (from '%s' to '%s' backend) "
+                "in call to `%s' for '%s' argument",
+                getattr(graph, "__networkx_backend__", None),
+                backend_name,
+                self.name,
+                graph_name,
+            )
 
         return rv
 
-    def _convert_and_call(self, backend_name, args, kwargs, *, fallback_to_nx=False):
-        """Call this dispatchable function with a backend, converting graphs if necessary."""
+    def _call_with_backend(self, backend_name, args, kwargs, *, extra_message=None):
+        """Call this dispatchable function with a backend without converting inputs."""
+        if backend_name == "networkx":
+            return self.orig_func(*args, **kwargs)
         backend = _load_backend(backend_name)
-        if not self._can_backend_run(backend_name, *args, **kwargs):
-            if fallback_to_nx:
-                return self.orig_func(*args, **kwargs)
-            msg = f"'{self.name}' not implemented by {backend_name}"
-            if hasattr(backend, self.name):
-                msg += " with the given arguments"
-            raise RuntimeError(msg)
-
+        _logger.debug(
+            "Using backend '%s' for call to `%s' with arguments: %s",
+            backend_name,
+            self.name,
+            _LazyArgsRepr(self, args, kwargs),
+        )
         try:
-            converted_args, converted_kwargs = self._convert_arguments(
-                backend_name, args, kwargs, use_cache=config.cache_converted_graphs
-            )
-            _logger.debug(
-                f"using backend '{backend_name}' for call to `{self.name}' "
-                f"with args: {converted_args}, kwargs: {converted_kwargs}"
-            )
-            result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
-        except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
-            if fallback_to_nx:
-                return self.orig_func(*args, **kwargs)
+            return getattr(backend, self.name)(*args, **kwargs)
+        except NotImplementedError as exc:
+            if extra_message is not None:
+                _logger.debug(
+                    "Backend '%s' raised when calling `%s': %s",
+                    backend_name,
+                    self.name,
+                    exc,
+                )
+                raise NotImplementedError(extra_message) from exc
             raise
 
-        return result
+    def _convert_and_call(
+        self,
+        backend_name,
+        input_backend_names,
+        args,
+        kwargs,
+        *,
+        extra_message=None,
+        mutations=None,
+    ):
+        """Call this dispatchable function with a backend after converting inputs.
+
+        Parameters
+        ----------
+        backend_name : str
+        input_backend_names : set[str]
+        args : arguments tuple
+        kwargs : keywords dict
+        extra_message : str, optional
+            Additional message to log if NotImplementedError is raised by backend.
+        mutations : list, optional
+            Used to clear objects gotten from cache if inputs will be mutated.
+        """
+        if backend_name == "networkx":
+            func = self.orig_func
+        else:
+            backend = _load_backend(backend_name)
+            func = getattr(backend, self.name)
+        other_backend_names = input_backend_names - {backend_name}
+        _logger.debug(
+            "Converting input graphs from %s backend%s to '%s' backend for call to `%s'",
+            other_backend_names
+            if len(other_backend_names) > 1
+            else f"'{next(iter(other_backend_names))}'",
+            "s" if len(other_backend_names) > 1 else "",
+            backend_name,
+            self.name,
+        )
+        try:
+            converted_args, converted_kwargs = self._convert_arguments(
+                backend_name,
+                args,
+                kwargs,
+                use_cache=config.cache_converted_graphs,
+                mutations=mutations,
+            )
+        except NotImplementedError as exc:
+            # Only log the exception if we are adding an extra message
+            # because we don't want to lose any information.
+            _logger.debug(
+                "Failed to convert graphs from %s to '%s' backend for call to `%s'"
+                + ("" if extra_message is None else ": %s"),
+                input_backend_names,
+                backend_name,
+                self.name,
+                *(() if extra_message is None else (exc,)),
+            )
+            if extra_message is not None:
+                raise NotImplementedError(extra_message) from exc
+            raise
+        if backend_name != "networkx":
+            _logger.debug(
+                "Using backend '%s' for call to `%s' with arguments: %s",
+                backend_name,
+                self.name,
+                _LazyArgsRepr(self, converted_args, converted_kwargs),
+            )
+        try:
+            return func(*converted_args, **converted_kwargs)
+        except NotImplementedError as exc:
+            if extra_message is not None:
+                _logger.debug(
+                    "Backend '%s' raised when calling `%s': %s",
+                    backend_name,
+                    self.name,
+                    exc,
+                )
+                raise NotImplementedError(extra_message) from exc
+            raise
 
     def _convert_and_call_for_tests(
         self, backend_name, args, kwargs, *, fallback_to_nx=False
     ):
         """Call this dispatchable function with a backend; for use with testing."""
         backend = _load_backend(backend_name)
-        if not self._can_backend_run(backend_name, *args, **kwargs):
+        if not self._can_backend_run(backend_name, args, kwargs):
             if fallback_to_nx or not self.graphs:
+                if fallback_to_nx:
+                    _logger.debug(
+                        "Falling back to use 'networkx' instead of '%s' backend "
+                        "for call to `%s' with arguments: %s",
+                        backend_name,
+                        self.name,
+                        _LazyArgsRepr(self, args, kwargs),
+                    )
                 return self.orig_func(*args, **kwargs)
 
             import pytest
@@ -1393,15 +1879,23 @@ class _dispatchable:
             kwargs2 = dict(kwargs2)
         try:
             converted_args, converted_kwargs = self._convert_arguments(
-                backend_name, args1, kwargs1, use_cache=False
+                backend_name, args1, kwargs1, use_cache=False, mutations=None
             )
             _logger.debug(
-                f"using backend '{backend_name}' for call to `{self.name}' "
-                f"with args: {converted_args}, kwargs: {converted_kwargs}"
+                "Using backend '%s' for call to `%s' with arguments: %s",
+                backend_name,
+                self.name,
+                _LazyArgsRepr(self, converted_args, converted_kwargs),
             )
             result = getattr(backend, self.name)(*converted_args, **converted_kwargs)
-        except (NotImplementedError, nx.NetworkXNotImplemented) as exc:
+        except NotImplementedError as exc:
             if fallback_to_nx:
+                _logger.debug(
+                    "Graph conversion failed; falling back to use 'networkx' instead "
+                    "of '%s' backend for call to `%s'",
+                    backend_name,
+                    self.name,
+                )
                 return self.orig_func(*args2, **kwargs2)
             import pytest
 
@@ -1814,7 +2308,160 @@ class _dispatchable:
 
 
 def _restore_dispatchable(name):
-    return _registered_algorithms[name]
+    return _registered_algorithms[name].__wrapped__
+
+
+def _get_cache_key(
+    *,
+    edge_attrs,
+    node_attrs,
+    preserve_edge_attrs,
+    preserve_node_attrs,
+    preserve_graph_attrs,
+):
+    """Return key used by networkx caching given arguments for ``convert_from_nx``."""
+    # edge_attrs: dict | None
+    # node_attrs: dict | None
+    # preserve_edge_attrs: bool (False if edge_attrs is not None)
+    # preserve_node_attrs: bool (False if node_attrs is not None)
+    return (
+        frozenset(edge_attrs.items())
+        if edge_attrs is not None
+        else preserve_edge_attrs,
+        frozenset(node_attrs.items())
+        if node_attrs is not None
+        else preserve_node_attrs,
+    )
+
+
+def _get_from_cache(cache, key, *, backend_name=None, mutations=None):
+    """Search the networkx cache for a graph that is compatible with ``key``.
+
+    Parameters
+    ----------
+    cache : dict
+        If ``backend_name`` is given, then this is treated as ``G.__networkx_cache__``,
+        but if ``backend_name`` is None, then this is treated as the resolved inner
+        cache such as ``G.__networkx_cache__["backends"][backend_name]``.
+    key : tuple
+        Cache key from ``_get_cache_key``.
+    backend_name : str, optional
+        Name of the backend to control how ``cache`` is interpreted.
+    mutations : list, optional
+        Used internally to clear objects gotten from cache if inputs will be mutated.
+
+    Returns
+    -------
+    tuple or None
+        The key of the compatible graph found in the cache.
+    graph or None
+        A compatible graph or None.
+    """
+    if backend_name is not None:
+        cache = cache.get("backends", {}).get(backend_name, {})
+    if not cache:
+        return None, None
+
+    # Do a simple search for a cached graph with compatible data.
+    # For example, if we need a single attribute, then it's okay
+    # to use a cached graph that preserved all attributes.
+    # This looks for an exact match first.
+    edge_key, node_key = key
+    for compat_key in itertools.product(
+        (edge_key, True) if edge_key is not True else (True,),
+        (node_key, True) if node_key is not True else (True,),
+    ):
+        if (rv := cache.get(compat_key)) is not None:
+            if mutations is not None:
+                # Remove this item from the cache (after all conversions) if
+                # the call to this dispatchable function will mutate an input.
+                mutations.append((cache, compat_key))
+            return compat_key, rv
+    if edge_key is not True and node_key is not True:
+        # Iterate over the items in `cache` to see if any are compatible.
+        # For example, if no edge attributes are needed, then a graph
+        # with any edge attribute will suffice. We use the same logic
+        # below (but switched) to clear unnecessary items from the cache.
+        # Use `list(cache.items())` to be thread-safe.
+        for (ekey, nkey), graph in list(cache.items()):
+            if edge_key is False or ekey is True:
+                pass  # Cache works for edge data!
+            elif edge_key is True or ekey is False or not edge_key.issubset(ekey):
+                continue  # Cache missing required edge data; does not work
+            if node_key is False or nkey is True:
+                pass  # Cache works for node data!
+            elif node_key is True or nkey is False or not node_key.issubset(nkey):
+                continue  # Cache missing required node data; does not work
+            if mutations is not None:
+                # Remove this item from the cache (after all conversions) if
+                # the call to this dispatchable function will mutate an input.
+                mutations.append((cache, (ekey, nkey)))
+            return (ekey, nkey), graph
+    return None, None
+
+
+def _set_to_cache(cache, key, graph, *, backend_name=None):
+    """Set a backend graph to the cache, and remove unnecessary cached items.
+
+    Parameters
+    ----------
+    cache : dict
+        If ``backend_name`` is given, then this is treated as ``G.__networkx_cache__``,
+        but if ``backend_name`` is None, then this is treated as the resolved inner
+        cache such as ``G.__networkx_cache__["backends"][backend_name]``.
+    key : tuple
+        Cache key from ``_get_cache_key``.
+    graph : graph
+    backend_name : str, optional
+        Name of the backend to control how ``cache`` is interpreted.
+
+    Returns
+    -------
+    dict
+        The items that were removed from the cache.
+    """
+    if backend_name is not None:
+        cache = cache.setdefault("backends", {}).setdefault(backend_name, {})
+    # Remove old cached items that are no longer necessary since they
+    # are dominated/subsumed/outdated by what was just calculated.
+    # This uses the same logic as above, but with keys switched.
+    # Also, don't update the cache here if the call will mutate an input.
+    removed = {}
+    edge_key, node_key = key
+    cache[key] = graph  # Set at beginning to be thread-safe
+    for cur_key in list(cache):
+        if cur_key == key:
+            continue
+        ekey, nkey = cur_key
+        if ekey is False or edge_key is True:
+            pass
+        elif ekey is True or edge_key is False or not ekey.issubset(edge_key):
+            continue
+        if nkey is False or node_key is True:
+            pass
+        elif nkey is True or node_key is False or not nkey.issubset(node_key):
+            continue
+        # Use pop instead of del to try to be thread-safe
+        if (graph := cache.pop(cur_key, None)) is not None:
+            removed[cur_key] = graph
+    return removed
+
+
+class _LazyArgsRepr:
+    """Simple wrapper to display arguments of dispatchable functions in logging calls."""
+
+    def __init__(self, func, args, kwargs):
+        self.func = func
+        self.args = args
+        self.kwargs = kwargs
+        self.value = None
+
+    def __repr__(self):
+        if self.value is None:
+            bound = self.func.__signature__.bind_partial(*self.args, **self.kwargs)
+            inner = ", ".join(f"{key}={val!r}" for key, val in bound.arguments.items())
+            self.value = f"({inner})"
+        return self.value
 
 
 if os.environ.get("_NETWORKX_BUILDING_DOCS_"):
