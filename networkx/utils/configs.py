@@ -354,7 +354,7 @@ class NetworkXConfig(Config):
         from .backends import backend_info
 
         if key == "backend":
-            if value is not None and value not in backends:
+            if value is not None and value not in backend_info:
                 raise ValueError(f"Unknown backend when setting {key!r}: {value}")
         elif key == "backend_priority":
             if isinstance(value, list):
