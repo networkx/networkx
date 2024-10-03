@@ -83,9 +83,11 @@ Graph Layout
 .. autosummary::
    :toctree: generated/
 
+   arf_layout
    bipartite_layout
    bfs_layout
    circular_layout
+   forceatlas2_layout
    kamada_kawai_layout
    planar_layout
    random_layout
