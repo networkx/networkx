@@ -818,6 +818,10 @@ class _dispatchable:
         if config.backend_kwargs:
             # Prioritize **kwargs over **config.backend_kwargs
             kwargs = {**config.backend_kwargs, **kwargs}
+            if backend is None:
+                backend = kwargs.pop("backend", None)
+            else:
+                kwargs.pop("backend", None)
         if not backends:
             # Fast path if no backends are installed
             if backend is not None and backend != "networkx":
@@ -827,9 +831,7 @@ class _dispatchable:
         # Use `backend_name` in this function instead of `backend`.
         # This is purely for aesthetics and to make it easier to search for this
         # variable since "backend" is used in many comments and log/error messages.
-        backend_name = (
-            backend if backend is not None else config.backend_kwargs.get("backend")
-        )
+        backend_name = backend
         if backend_name is not None and backend_name not in backend_info:
             raise ImportError(f"'{backend_name}' backend is not installed")
 
