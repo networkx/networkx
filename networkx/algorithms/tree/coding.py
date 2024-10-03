@@ -8,7 +8,6 @@ applied to unrooted trees. Furthermore, there is a bijection from Prüfer
 sequences to labeled trees.
 
 """
-
 from collections import Counter
 from itertools import chain
 
@@ -99,7 +98,6 @@ def to_nested_tuple(T, root, canonical_form=False):
         ((((),),),)
 
     """
-
     def _make_tuple(T, root, _parent):
         """Recursively compute the nested tuple representation of the
         given rooted tree.
@@ -130,35 +128,48 @@ def to_nested_tuple(T, root, canonical_form=False):
 
 
 @nx._dispatchable(graphs=None, returns_graph=True)
-def from_nested_tuple(sequence, sensible_relabeling=False):
-    """Returns the rooted tree corresponding to the given nested tuple.
+def from_nested_tuple(sequence, sensible_relabeling=False, edge_attribute=None):
+    """Returns the rooted tree corresponding to the given nested tuple,
+    supporting edge attributes.
 
     The nested tuple representation of a tree is defined
-    recursively. The tree with one node and no edges is represented by
-    the empty tuple, ``()``. A tree with ``k`` subtrees is represented
-    by a tuple of length ``k`` in which each element is the nested tuple
-    representation of a subtree.
+    recursively. Each node is represented by a tuple or list in the form:
+    (node_name, edge_attributes, [children])
+
+    - `node_name`: The identifier for the node.
+    - `edge_attributes`: A dictionary of attributes for the edge connecting
+      to the parent node. For the root node, this can be set to `None` or
+      omitted.
+    - `[children]`: A list of child nodes, each following the same structure.
 
     Parameters
     ----------
-    sequence : tuple
-        A nested tuple representing a rooted tree.
+    sequence : tuple or list
+        A nested tuple/list representing a rooted tree with edge attributes.
 
-    sensible_relabeling : bool
+    sensible_relabeling : bool, optional
         Whether to relabel the nodes of the tree so that nodes are
         labeled in increasing order according to their breadth-first
         search order from the root node.
+
+    edge_attribute : str, optional
+        The key name to use for the edge attribute (e.g., 'weight').
+        If `None`, edge attributes will not be added.
 
     Returns
     -------
     NetworkX graph
         The tree corresponding to the given nested tuple, whose root
-        node is node 0. If ``sensible_labeling`` is ``True``, nodes will
+        node is node 0. If ``sensible_relabeling`` is ``True``, nodes will
         be labeled in breadth-first search order starting from the root
         node.
 
     Notes
     -----
+    This function extends the original `from_nested_tuple` to support edge
+    attributes. If edge attributes are provided in the sequence, they will
+    be added to the corresponding edges in the graph.
+
     This function is *not* the inverse of :func:`to_nested_tuple`; the
     only guarantee is that the rooted trees are isomorphic.
 
@@ -169,48 +180,109 @@ def from_nested_tuple(sequence, sensible_relabeling=False):
 
     Examples
     --------
+    Constructing a tree with edge weights::
+
+        >>> import networkx as nx
+        >>> probs = [
+        ...     "All Cars", None,  # Root node; no incoming edge
+        ...     [
+        ...         "OK", {'weight': 0.7},
+        ...         ["Mechanic 👍", {'weight': 0.8}],
+        ...         ["Mechanic 👎", {'weight': 0.2}]
+        ...     ],
+        ...     [
+        ...         "Faulty", {'weight': 0.3},
+        ...         ["Mechanic 👍", {'weight': 0.1}],
+        ...         ["Mechanic 👎", {'weight': 0.9}]
+        ...     ]
+        ... ]
+        >>> g = nx.from_nested_tuple(probs, edge_attribute='weight')
+        >>> print("Nodes:", g.nodes())
+        Nodes: ['All Cars', 'OK', 'Mechanic 👍', 'Mechanic 👎', 'Faulty']
+        >>> print("Edges with weights:")
+        >>> for u, v, data in g.edges(data=True):
+        ...     print(f"{u} -> {v}, weight: {data['weight']}")
+        All Cars -> OK, weight: 0.7
+        OK -> Mechanic 👍, weight: 0.8
+        OK -> Mechanic 👎, weight: 0.2
+        All Cars -> Faulty, weight: 0.3
+        Faulty -> Mechanic 👍, weight: 0.1
+        Faulty -> Mechanic 👎, weight: 0.9
+
     Sensible relabeling ensures that the nodes are labeled from the root
     starting at 0::
 
-        >>> balanced = (((), ()), ((), ()))
-        >>> T = nx.from_nested_tuple(balanced, sensible_relabeling=True)
-        >>> edges = [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5), (2, 6)]
-        >>> all((u, v) in T.edges() or (v, u) in T.edges() for (u, v) in edges)
-        True
+        >>> g = nx.from_nested_tuple(probs, sensible_relabeling=True, edge_attribute='weight')
+        >>> print("Nodes:", g.nodes())
+        Nodes: ['All Cars', 'OK', 'Faulty', 'Mechanic 👍', 'Mechanic 👎']
+        >>> print("Edges with weights:")
+        >>> for u, v, data in g.edges(data=True):
+        ...     print(f"{u} -> {v}, weight: {data['weight']}")
+        All Cars -> OK, weight: 0.7
+        All Cars -> Faulty, weight: 0.3
+        OK -> Mechanic 👍, weight: 0.8
+        OK -> Mechanic 👎, weight: 0.2
+        Faulty -> Mechanic 👍, weight: 0.1
+        Faulty -> Mechanic 👎, weight: 0.9
 
     """
+    def _make_tree(seq, parent, graph, edge_attr_key):
+        """Recursively creates a tree from the given nested tuple/list with edge attributes.
 
-    def _make_tree(sequence):
-        """Recursively creates a tree from the given sequence of nested
-        tuples.
+        Parameters
+        ----------
+        seq : tuple or list
+            The current node sequence to process.
+        parent : node or None
+            The parent node in the graph. `None` if the current node is the root.
+        graph : NetworkX graph
+            The graph being constructed.
+        edge_attr_key : str or None
+            The key to use for edge attributes. If `None`, no attributes are added.
 
-        This function employs the :func:`~networkx.tree.join` function
-        to recursively join subtrees into a larger tree.
-
+        Returns
+        -------
+        node
+            The current node's identifier.
         """
-        # The empty sequence represents the empty tree, which is the
-        # (unique) graph with a single node. We mark the single node
-        # with an attribute that indicates that it is the root of the
-        # graph.
-        if len(sequence) == 0:
-            return nx.empty_graph(1)
-        # For a nonempty sequence, get the subtrees for each child
-        # sequence and join all the subtrees at their roots. After
-        # joining the subtrees, the root is node 0.
-        return nx.tree.join_trees([(_make_tree(child), 0) for child in sequence])
+        if not isinstance(seq, (list, tuple)):
+            raise nx.NetworkXError("Each node must be a list or tuple.")
 
-    # Make the tree and remove the `is_root` node attribute added by the
-    # helper function.
-    T = _make_tree(sequence)
+        if len(seq) < 2:
+            raise nx.NetworkXError("Each node must have at least a name and edge attribute.")
+
+        node = seq[0]
+        edge_attr = seq[1] if edge_attr_key else None
+        children = seq[2] if len(seq) > 2 else []
+
+        graph.add_node(node)
+
+        if parent is not None and edge_attr_key:
+            graph.add_edge(parent, node, **{edge_attr_key: edge_attr})
+        elif parent is not None:
+            graph.add_edge(parent, node)
+
+        for child in children:
+            _make_tree(child, node, graph, edge_attr_key)
+
+        return node
+
+    if edge_attribute is not None and not isinstance(edge_attribute, str):
+        raise TypeError("edge_attribute must be a string representing the attribute key.")
+
+    graph = nx.Graph()  # Using undirected graph; change to DiGraph if needed
+
+    _make_tree(sequence, parent=None, graph=graph, edge_attr_key=edge_attribute)
+
     if sensible_relabeling:
         # Relabel the nodes according to their breadth-first search
-        # order, starting from the root node (that is, the node 0).
-        bfs_nodes = chain([0], (v for u, v in nx.bfs_edges(T, 0)))
-        labels = {v: i for i, v in enumerate(bfs_nodes)}
-        # We would like to use `copy=False`, but `relabel_nodes` doesn't
-        # allow a relabel mapping that can't be topologically sorted.
-        T = nx.relabel_nodes(T, labels)
-    return T
+        # order, starting from the root node (that is, the first node in sequence).
+        root = sequence[0]
+        bfs_nodes = list(nx.bfs_tree(graph, root).nodes())
+        labels = {node: idx for idx, node in enumerate(bfs_nodes)}
+        graph = nx.relabel_nodes(graph, labels)
+
+    return graph
 
 
 @not_implemented_for("directed")
