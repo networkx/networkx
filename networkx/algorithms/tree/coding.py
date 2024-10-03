@@ -249,7 +249,9 @@ def from_nested_tuple(sequence, sensible_relabeling=False, edge_attribute=None):
             raise nx.NetworkXError("Each node must be a list or tuple.")
 
         if len(seq) < 2:
-            raise nx.NetworkXError("Each node must have at least a name and edge attribute.")
+            raise nx.NetworkXError(
+                "Each node must have at least a name and edge attribute."
+            )
 
         node = seq[0]
         edge_attr = seq[1] if edge_attr_key else None
@@ -268,7 +270,9 @@ def from_nested_tuple(sequence, sensible_relabeling=False, edge_attribute=None):
         return node
 
     if edge_attribute is not None and not isinstance(edge_attribute, str):
-        raise TypeError("edge_attribute must be a string representing the attribute key.")
+        raise TypeError(
+            "edge_attribute must be a string representing the attribute key."
+        )
 
     graph = nx.Graph()  # Using undirected graph; change to DiGraph if needed
 
