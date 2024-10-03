@@ -8,6 +8,7 @@ applied to unrooted trees. Furthermore, there is a bijection from Prüfer
 sequences to labeled trees.
 
 """
+
 from collections import Counter
 from itertools import chain
 
@@ -98,6 +99,7 @@ def to_nested_tuple(T, root, canonical_form=False):
         ((((),),),)
 
     """
+    
     def _make_tuple(T, root, _parent):
         """Recursively compute the nested tuple representation of the
         given rooted tree.
@@ -226,6 +228,7 @@ def from_nested_tuple(sequence, sensible_relabeling=False, edge_attribute=None):
         Faulty -> Mechanic 👎, weight: 0.9
 
     """
+    
     def _make_tree(seq, parent, graph, edge_attr_key):
         """Recursively creates a tree from the given nested tuple/list with edge attributes.
 
