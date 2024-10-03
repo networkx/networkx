@@ -90,9 +90,7 @@ def pytest_configure(config):
                     # in dispatching--and for backend graphs to be treated as NetworkX
                     # graphs. To fully exercise this, we set `__networkx_backend__` in
                     # order to use the default NetworkX implementation of functions.
-                    #
-                    # Note: uncomment this line after PR #7585 or #7496 has been merged.
-                    # rv.__networkx_backend__ = "networkx"
+                    rv.__networkx_backend__ = "networkx"
                     return rv
             return object.__new__(cls)
 
@@ -112,20 +110,18 @@ def pytest_configure(config):
         )
     config.backend = backend
     if backend:
+        # We will update `networkx.config.backend_priority` below in `*_modify_items`
+        # to allow tests to get set up with normal networkx graphs.
         networkx.utils.backends.backends["nx_loopback"] = loopback_ep["nx_loopback"]
-        if not use_backend_class:
-            # Once again, backends that want to test their networkx-compatible
-            # graphs may want to experiment with code around here too. We still
-            # call `backend.on_start_tests` below go give backends full control.
-            networkx.config["backend_priority"] = [backend]
+        networkx.utils.backends.backend_info["nx_loopback"] = {}
         networkx.config.backends = networkx.utils.Config(
             nx_loopback=networkx.utils.Config(),
             **networkx.config.backends,
         )
         fallback_to_nx = config.getoption("--fallback-to-nx")
-        if fallback_to_nx:
-            # Default is set by NETWORKX_FALLBACK_TO_NX environment variable
-            networkx.utils.backends._dispatchable._fallback_to_nx = True
+        if not fallback_to_nx:
+            fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
+        networkx.config.fallback_to_nx = bool(fallback_to_nx)
 
 
 def pytest_collection_modifyitems(config, items):
@@ -134,10 +130,18 @@ def pytest_collection_modifyitems(config, items):
     if config.backend:
         # Allow pluggable backends to add markers to tests (such as skip or xfail)
         # when running in auto-conversion test mode
-        networkx.utils.backends._dispatchable._is_testing = True
-        backend = networkx.utils.backends.backends[config.backend].load()
-        if hasattr(backend, "on_start_tests"):
-            getattr(backend, "on_start_tests")(items)
+        backend_name = config.backend
+        if backend_name != "networkx":
+            networkx.utils.backends._dispatchable._is_testing = True
+            if not networkx.utils.backends._dispatchable._use_backend_class:
+                # Once again, backends that want to test their networkx-compatible
+                # graphs may want to experiment with code around here too. We still
+                # call `backend.on_start_tests` go give backends full control.
+                networkx.config.backend_priority.algos = [backend_name]
+                networkx.config.backend_priority.generators = [backend_name]
+            backend = networkx.utils.backends.backends[backend_name].load()
+            if hasattr(backend, "on_start_tests"):
+                getattr(backend, "on_start_tests")(items)
 
     if config.getoption("--runslow"):
         # --runslow given in cli: do not skip slow tests

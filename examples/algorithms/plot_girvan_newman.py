@@ -31,7 +31,7 @@ modularity_df = pd.DataFrame(
 
 # function to create node colour list
 def create_community_node_colors(graph, communities):
-    number_of_colors = len(communities[0])
+    number_of_colors = len(communities)
     colors = ["#D4FCB1", "#CDC5FC", "#FFC2C4", "#F2D140", "#BCC6C8"][:number_of_colors]
     node_colors = []
     for node in graph:
