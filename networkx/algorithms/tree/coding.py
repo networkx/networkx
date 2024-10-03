@@ -229,7 +229,7 @@ def from_nested_tuple(sequence, sensible_relabeling=False, edge_attribute=None):
 
     """
     
-    def _make_tree(seq, parent, graph, edge_attr_key):
+    \def _make_tree(seq, parent, graph, edge_attr_key):
         """Recursively creates a tree from the given nested tuple/list with edge attributes.
 
         Parameters
