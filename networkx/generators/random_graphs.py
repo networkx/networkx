@@ -79,15 +79,16 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False, *, create_using=None)
        "Efficient generation of large random networks",
        Phys. Rev. E, 71, 036113, 2005.
     """
+    default = nx.DiGraph if directed else nx.Graph
+    create_using = check_create_using(
+        create_using, directed=directed, multigraph=False, default=default
+    )
     if p <= 0 or p >= 1:
         return nx.gnp_random_graph(
             n, p, seed=seed, directed=directed, create_using=create_using
         )
 
-    if create_using is None:
-        create_using = nx.DiGraph if directed else nx.Graph
     G = empty_graph(n, create_using=create_using)
-    check_create_using(G, directed=directed, multigraph=False)
 
     lp = math.log(1.0 - p)
 
@@ -163,23 +164,19 @@ def gnp_random_graph(n, p, seed=None, directed=False, *, create_using=None):
     .. [1] P. Erdős and A. Rényi, On Random Graphs, Publ. Math. 6, 290 (1959).
     .. [2] E. N. Gilbert, Random Graphs, Ann. Math. Stat., 30, 1141 (1959).
     """
-    if directed:
-        edges = itertools.permutations(range(n), 2)
-        if create_using is None:
-            create_using = nx.DiGraph
-    else:
-        edges = itertools.combinations(range(n), 2)
-        if create_using is None:
-            create_using = nx.Graph
+    default = nx.DiGraph if directed else nx.Graph
+    create_using = check_create_using(
+        create_using, directed=directed, multigraph=False, default=default
+    )
+    if p >= 1:
+        return complete_graph(n, create_using=create_using)
+
     G = nx.empty_graph(n, create_using=create_using)
-    check_create_using(G, directed=directed, multigraph=False)
-    G.add_nodes_from(range(n))
     if p <= 0:
         return G
-    if p >= 1:
-        return complete_graph(n, create_using=G)
 
-    for e in edges:
+    edgetool = itertools.permutations if directed else itertools.combinations
+    for e in edgetool(range(n), 2):
         if seed.random() < p:
             G.add_edge(*e)
     return G
@@ -229,14 +226,13 @@ def dense_gnm_random_graph(n, m, seed=None, *, create_using=None):
     .. [1] Donald E. Knuth, The Art of Computer Programming,
         Volume 2/Seminumerical algorithms, Third Edition, Addison-Wesley, 1997.
     """
+    create_using = check_create_using(create_using, directed=False, multigraph=False)
     mmax = n * (n - 1) // 2
     if m >= mmax:
-        G = complete_graph(n, create_using)
-    else:
-        G = empty_graph(n, create_using)
-    check_create_using(G, directed=False, multigraph=False)
+        return complete_graph(n, create_using)
+    G = empty_graph(n, create_using)
 
-    if n == 1 or m >= mmax:
+    if n == 1:
         return G
 
     u = 0
@@ -288,20 +284,17 @@ def gnm_random_graph(n, m, seed=None, directed=False, *, create_using=None):
     dense_gnm_random_graph
 
     """
-    if create_using is None:
-        create_using = nx.DiGraph if directed else nx.Graph
-    G = nx.empty_graph(create_using=create_using)
-    check_create_using(G, directed=directed, multigraph=False)
-    G.add_nodes_from(range(n))
-
+    default = nx.DiGraph if directed else nx.Graph
+    create_using = check_create_using(
+        create_using, directed=directed, multigraph=False, default=default
+    )
     if n == 1:
-        return G
-    max_edges = n * (n - 1)
-    if not directed:
-        max_edges /= 2.0
+        return nx.empty_graph(n, create_using=create_using)
+    max_edges = n * (n - 1) if directed else n * (n - 1) / 2.0
     if m >= max_edges:
-        return complete_graph(n, create_using=G)
+        return complete_graph(n, create_using=create_using)
 
+    G = nx.empty_graph(n, create_using=create_using)
     nlist = list(G)
     edge_count = 0
     while edge_count < m:
@@ -358,6 +351,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None, *, create_using=None):
        Physics Letters A, 263, 341, 1999.
        https://doi.org/10.1016/S0375-9601(99)00757-4
     """
+    create_using = check_create_using(create_using, directed=False, multigraph=False)
     if k > n:
         raise nx.NetworkXError("k>=n, choose smaller k or larger n")
 
@@ -366,7 +360,6 @@ def newman_watts_strogatz_graph(n, k, p, seed=None, *, create_using=None):
         return nx.complete_graph(n, create_using)
 
     G = empty_graph(n, create_using)
-    check_create_using(G, directed=False, multigraph=False)
     nlist = list(G.nodes())
     fromv = nlist
     # connect the k/2 neighbors
@@ -436,17 +429,16 @@ def watts_strogatz_graph(n, k, p, seed=None, *, create_using=None):
        Collective dynamics of small-world networks,
        Nature, 393, pp. 440--442, 1998.
     """
+    create_using = check_create_using(create_using, directed=False, multigraph=False)
     if k > n:
         raise nx.NetworkXError("k>n, choose smaller k or larger n")
 
     # If k == n, the graph is complete not Watts-Strogatz
     if k == n:
         G = nx.complete_graph(n, create_using)
-        check_create_using(G, directed=False, multigraph=False)
         return G
 
     G = nx.empty_graph(n, create_using=create_using)
-    check_create_using(G, directed=False, multigraph=False)
     nodes = list(range(n))  # nodes are labeled 0 to n-1
     # connect each node to k/2 neighbors
     for j in range(1, k // 2 + 1):
@@ -577,15 +569,16 @@ def random_regular_graph(d, n, seed=None, *, create_using=None):
        San Diego, CA, USA, pp 213--222, 2003.
        http://portal.acm.org/citation.cfm?id=780542.780576
     """
+    create_using = check_create_using(create_using, directed=False, multigraph=False)
     if (n * d) % 2 != 0:
         raise nx.NetworkXError("n * d must be even")
 
     if not 0 <= d < n:
         raise nx.NetworkXError("the 0 <= d < n inequality must be satisfied")
 
+    G = nx.empty_graph(n, create_using=create_using)
+
     if d == 0:
-        G = empty_graph(n, create_using)
-        check_create_using(G, directed=False, multigraph=False)
         return G
 
     def _suitable(edges, potential_edges):
@@ -642,9 +635,6 @@ def random_regular_graph(d, n, seed=None, *, create_using=None):
     edges = _try_creation()
     while edges is None:
         edges = _try_creation()
-
-    G = nx.empty_graph(n, create_using=create_using)
-    check_create_using(G, directed=False, multigraph=False)
     G.add_edges_from(edges)
 
     return G
@@ -706,7 +696,7 @@ def barabasi_albert_graph(n, m, seed=None, initial_graph=None, *, create_using=N
     .. [1] A. L. Barabási and R. Albert "Emergence of scaling in
        random networks", Science 286, pp 509-512, 1999.
     """
-
+    create_using = check_create_using(create_using, directed=False, multigraph=False)
     if m < 1 or m >= n:
         raise nx.NetworkXError(
             f"Barabási–Albert network must have m >= 1 and m < n, m = {m}, n = {n}"
@@ -721,7 +711,6 @@ def barabasi_albert_graph(n, m, seed=None, initial_graph=None, *, create_using=N
                 f"Barabási–Albert initial graph needs between m={m} and n={n} nodes"
             )
         G = initial_graph.copy()
-    check_create_using(G, directed=False, multigraph=False)
 
     # List of existing nodes, with nodes repeated once for each adjacent edge
     repeated_nodes = [n for n, d in G.degree() for _ in range(d)]
@@ -790,7 +779,7 @@ def dual_barabasi_albert_graph(
     ----------
     .. [1] N. Moshiri "The dual-Barabasi-Albert model", arXiv:1810.10538.
     """
-
+    create_using = check_create_using(create_using, directed=False, multigraph=False)
     if m1 < 1 or m1 >= n:
         raise nx.NetworkXError(
             f"Dual Barabási–Albert must have m1 >= 1 and m1 < n, m1 = {m1}, n = {n}"
@@ -806,16 +795,12 @@ def dual_barabasi_albert_graph(
 
     # For simplicity, if p == 0 or 1, just return BA
     if p == 1:
-        G = barabasi_albert_graph(n, m1, seed, create_using)
-        check_create_using(G, directed=False, multigraph=False)
-        return G
+        return barabasi_albert_graph(n, m1, seed, create_using=create_using)
     elif p == 0:
-        G = barabasi_albert_graph(n, m2, seed, create_using)
-        check_create_using(G, directed=False, multigraph=False)
-        return G
+        return barabasi_albert_graph(n, m2, seed, create_using=create_using)
 
     if initial_graph is None:
-        # Default initial graph : empty graph on max(m1, m2) nodes
+        # Default initial graph : star graph on max(m1, m2) nodes
         G = star_graph(max(m1, m2), create_using)
     else:
         if len(initial_graph) < max(m1, m2) or len(initial_graph) > n:
@@ -824,7 +809,6 @@ def dual_barabasi_albert_graph(
                 f"max(m1, m2) = {max(m1, m2)} and n = {n} nodes"
             )
         G = initial_graph.copy()
-    check_create_using(G, directed=False, multigraph=False)
 
     # Target nodes for new edges
     targets = list(G)
@@ -906,6 +890,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None, *, create_using=None):
        Topology of evolving networks: local events and universality
        Physical review letters, 85(24), 5234.
     """
+    create_using = check_create_using(create_using, directed=False, multigraph=False)
     if m < 1 or m >= n:
         msg = f"Extended Barabasi-Albert network needs m>=1 and m<n, m={m}, n={n}"
         raise nx.NetworkXError(msg)
@@ -915,7 +900,6 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None, *, create_using=None):
 
     # Add m initial nodes (m0 in barabasi-speak)
     G = empty_graph(m, create_using)
-    check_create_using(G, directed=False, multigraph=False)
 
     # List of nodes to represent the preferential attachment random selection.
     # At the creation of the graph, all nodes are added to the list
@@ -1069,7 +1053,7 @@ def powerlaw_cluster_graph(n, m, p, seed=None, *, create_using=None):
        "Growing scale-free networks with tunable clustering",
        Phys. Rev. E, 65, 026107, 2002.
     """
-
+    create_using = check_create_using(create_using, directed=False, multigraph=False)
     if m < 1 or n < m:
         raise nx.NetworkXError(f"NetworkXError must have m>1 and m<n, m={m},n={n}")
 
@@ -1077,8 +1061,7 @@ def powerlaw_cluster_graph(n, m, p, seed=None, *, create_using=None):
         raise nx.NetworkXError(f"NetworkXError p must be in [0,1], p={p}")
 
     G = empty_graph(m, create_using)  # add m initial nodes (m0 in barabasi-speak)
-    check_create_using(G, directed=False, multigraph=False)
-    repeated_nodes = list(G.nodes())  # list of existing nodes to sample from
+    repeated_nodes = list(G)  # list of existing nodes to sample from
     # with nodes repeated once for each adjacent edge
     source = m  # next node is m
     while source < n:  # Now add the other n-1 nodes
@@ -1146,6 +1129,7 @@ def random_lobster(n, p1, p2, seed=None, *, create_using=None):
     NetworkXError
         If `p1` or `p2` parameters are >= 1 because the while loops would never finish.
     """
+    create_using = check_create_using(create_using, directed=False, multigraph=False)
     p1, p2 = abs(p1), abs(p2)
     if any(p >= 1 for p in [p1, p2]):
         raise nx.NetworkXError("Probability values for `p1` and `p2` must both be < 1.")
@@ -1153,7 +1137,6 @@ def random_lobster(n, p1, p2, seed=None, *, create_using=None):
     # a necessary ingredient in any self-respecting graph library
     llen = int(2 * seed.random() * n + 0.5)
     L = path_graph(llen, create_using)
-    check_create_using(L, directed=False, multigraph=False)
     # build caterpillar: add edges to path graph with probability p1
     current_node = llen - 1
     for n in range(llen):
@@ -1195,8 +1178,8 @@ def random_shell_graph(constructor, seed=None, *, create_using=None):
     >>> G = nx.random_shell_graph(constructor)
 
     """
+    create_using = check_create_using(create_using, directed=False, multigraph=False)
     G = empty_graph(0, create_using)
-    check_create_using(G, directed=False, multigraph=False)
 
     glist = []
     intra_edges = []
@@ -1264,10 +1247,10 @@ def random_powerlaw_tree(n, gamma=3, seed=None, tries=100, *, create_using=None)
     edges is one smaller than the number of nodes).
 
     """
+    create_using = check_create_using(create_using, directed=False, multigraph=False)
     # This call may raise a NetworkXError if the number of tries is succeeded.
     seq = random_powerlaw_tree_sequence(n, gamma=gamma, seed=seed, tries=tries)
     G = degree_sequence_tree(seq, create_using)
-    check_create_using(G, directed=False, multigraph=False)
     return G
 
 
@@ -1394,6 +1377,7 @@ def random_kernel_graph(
        "Fast Generation of Sparse Random Kernel Graphs".
        PLoS ONE 10(9): e0135177, 2015. doi:10.1371/journal.pone.0135177
     """
+    create_using = check_create_using(create_using, directed=False, multigraph=False)
     if kernel_root is None:
         import scipy as sp
 
@@ -1404,7 +1388,6 @@ def random_kernel_graph(
             return sp.optimize.brentq(my_function, a, 1)
 
     graph = nx.empty_graph(create_using=create_using)
-    check_create_using(graph, directed=False, multigraph=False)
     graph.add_nodes_from(range(n))
     (i, j) = (1, 1)
     while i < n:
