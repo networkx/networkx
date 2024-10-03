@@ -37,6 +37,7 @@ def _neighborhood_aggregate(G, node, node_labels, edge_attr=None):
     return node_labels[node] + "".join(sorted(label_list))
 
 
+@nx.utils.not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs={"edge_attr": None}, node_attrs="node_attr")
 def weisfeiler_lehman_graph_hash(
     G, edge_attr=None, node_attr=None, iterations=3, digest_size=16
@@ -160,6 +161,7 @@ def weisfeiler_lehman_graph_hash(
     return _hash_label(str(tuple(subgraph_hash_counts)), digest_size)
 
 
+@nx.utils.not_implemented_for("multigraph")
 @nx._dispatchable(edge_attrs={"edge_attr": None}, node_attrs="node_attr")
 def weisfeiler_lehman_subgraph_hashes(
     G,

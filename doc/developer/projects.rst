@@ -112,6 +112,11 @@ Centrality Atlas
 Completed Projects
 ==================
 
+- `Revisiting and expanding nx-parallel`_
+    - Program: Google Summer of Code 2024
+    - Contributor: `@Schefflera-Arboricola <https://github.com/Schefflera-Arboricola>`__
+    - Link to Proposal: `GSoC 2024: Revisiting and expanding nx-parallel <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2024-Revisiting-and-expanding-nx-parallel.pdf>`_
+
 - `VF2++ algorithm for graph isomorphism`_
     - Program: Google Summer of Code 2022
     - Contributor: `@kpetridis24 <https://github.com/kpetridis24/>`__
@@ -145,6 +150,7 @@ Completed Projects
     - Contributor: `@MridulS <https://github.com/MridulS/>`__
     - Link to Proposal: `GSoC 2015: NetworkX 2.0 API <https://github.com/networkx/archive/blob/main/proposals-gsoc/GSoC-2015-NetworkX-2.0-api.md>`__
 
+.. _`Revisiting and expanding nx-parallel`: https://github.com/Schefflera-Arboricola/blogs/tree/main/networkx/GSoC24
 .. _`VF2++ algorithm for graph isomorphism`: https://github.com/networkx/networkx/pull/5788
 .. _`Louvain community detection algorithm`: https://github.com/networkx/networkx/pull/4929
 .. _`Asadpour algorithm for directed travelling salesman problem`: https://github.com/networkx/networkx/pull/4740
