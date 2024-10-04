@@ -1,35 +1,27 @@
-"""
-=======================================
-Community Detection using Girvan-Newman
-=======================================
-
-This example shows the detection of communities in the Zachary Karate
-Club dataset using the Girvan-Newman method.
-
-We plot the change in modularity as important edges are removed.
-Graph is coloured and plotted based on community detection when number
-of iterations are 1 and 4 respectively.
-"""
-
 import networkx as nx
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# Load karate graph and find communities using Girvan-Newman
+# Load the karate graph and find communities using Girvan-Newman
 G = nx.karate_club_graph()
-communities = list(nx.community.girvan_newman(G))
+
+# Get the generator from the Girvan-Newman algorithm
+community_generator = nx.community.girvan_newman(G)
+
+# Extract the first four community divisions from the generator
+communities = []
+for i in range(4):
+    communities.append(tuple(sorted(c) for c in next(community_generator)))
 
 # Modularity -> measures the strength of division of a network into modules
-modularity_df = pd.DataFrame(
-    [
-        [k + 1, nx.community.modularity(G, communities[k])]
-        for k in range(len(communities))
-    ],
-    columns=["k", "modularity"],
-)
+modularity_values = [
+    [k + 1, nx.community.modularity(G, communities[k])]
+    for k in range(len(communities))
+]
 
+modularity_df = pd.DataFrame(modularity_values, columns=["k", "modularity"])
 
-# function to create node colour list
+# Function to create node color list based on communities
 def create_community_node_colors(graph, communities):
     number_of_colors = len(communities)
     colors = ["#D4FCB1", "#CDC5FC", "#FFC2C4", "#F2D140", "#BCC6C8"][:number_of_colors]
@@ -43,8 +35,7 @@ def create_community_node_colors(graph, communities):
             current_community_index += 1
     return node_colors
 
-
-# function to plot graph with node colouring based on communities
+# Function to plot graph with node coloring based on communities
 def visualize_communities(graph, communities, i):
     node_colors = create_community_node_colors(graph, communities)
     modularity = round(nx.community.modularity(graph, communities), 6)
@@ -62,10 +53,10 @@ def visualize_communities(graph, communities, i):
         font_color="black",
     )
 
-
+# Plot the graphs and modularity trend
 fig, ax = plt.subplots(3, figsize=(15, 20))
 
-# Plot graph with colouring based on communities
+# Visualize communities at the first and fourth iterations
 visualize_communities(G, communities[0], 1)
 visualize_communities(G, communities[3], 2)
 
