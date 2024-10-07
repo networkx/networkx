@@ -155,6 +155,10 @@ html_theme_options = {
         "version_match": "latest" if "dev" in version else version,
     },
     "show_version_warning_banner": True,
+    "analytics": {
+        "plausible_analytics_domain": "networkx.org",
+        "plausible_analytics_url": ("https://views.scientific-python.org/js/script.js"),
+    },
 }
 html_sidebars = {
     "**": ["sidebar-nav-bs", "sidebar-ethical-ads"],

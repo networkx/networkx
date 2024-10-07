@@ -4,7 +4,7 @@ import pickle
 import pytest
 
 import networkx as nx
-from networkx.utils.configs import Config
+from networkx.utils.configs import BackendPriorities, Config
 
 
 # Define this at module level so we can test pickling
@@ -14,11 +14,12 @@ class ExampleConfig(Config):
     x: int
     y: str
 
-    def _check_config(self, key, value):
+    def _on_setattr(self, key, value):
         if key == "x" and value <= 0:
             raise ValueError("x must be positive")
         if key == "y" and not isinstance(value, str):
             raise TypeError("y must be a str")
+        return value
 
 
 class EmptyConfig(Config):
@@ -116,12 +117,13 @@ def test_config_defaults():
 
 
 def test_nxconfig():
-    assert isinstance(nx.config.backend_priority, list)
+    assert isinstance(nx.config.backend_priority, BackendPriorities)
+    assert isinstance(nx.config.backend_priority.algos, list)
     assert isinstance(nx.config.backends, Config)
     with pytest.raises(TypeError, match="must be a list of backend names"):
-        nx.config.backend_priority = "nx_loopback"
+        nx.config.backend_priority.algos = "nx_loopback"
     with pytest.raises(ValueError, match="Unknown backend when setting"):
-        nx.config.backend_priority = ["this_almost_certainly_is_not_a_backend"]
+        nx.config.backend_priority.algos = ["this_almost_certainly_is_not_a_backend"]
     with pytest.raises(TypeError, match="must be a Config of backend configs"):
         nx.config.backends = {}
     with pytest.raises(TypeError, match="must be a Config of backend configs"):

@@ -27,6 +27,7 @@ classifiers = [
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
     'Programming Language :: Python :: 3 :: Only',
     'Topic :: Software Development :: Libraries :: Python Modules',
     'Topic :: Scientific/Engineering :: Bio-Informatics',
@@ -55,10 +56,10 @@ nx_loopback = 'networkx.classes.tests.dispatch_interface:backend_interface'
 
 [project.optional-dependencies]
 default = [
-    'numpy>=1.23',
-    'scipy>=1.9,!=1.11.0,!=1.11.1',
-    'matplotlib>=3.6',
-    'pandas>=1.4',
+    'numpy>=1.24',
+    'scipy>=1.10,!=1.11.0,!=1.11.1',
+    'matplotlib>=3.7',
+    'pandas>=2.0',
 ]
 developer = [
     'changelist==0.5',
@@ -87,7 +88,7 @@ example = [
 ]
 extra = [
     'lxml>=4.6',
-    'pygraphviz>=1.13',
+    'pygraphviz>=1.14',
     'pydot>=3.0.1',
     'sympy>=1.10',
 ]
