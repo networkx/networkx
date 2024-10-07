@@ -67,6 +67,7 @@ def partial_duplication_graph(N, n, p, q, seed=None, *, create_using=None):
            <https://doi.org/10.1155/2008/190836>
 
     """
+    create_using = check_create_using(create_using, directed=False, multigraph=False)
     if p < 0 or p > 1 or q < 0 or q > 1:
         msg = "partial duplication graph must have 0 <= p, q <= 1."
         raise NetworkXError(msg)
@@ -74,7 +75,6 @@ def partial_duplication_graph(N, n, p, q, seed=None, *, create_using=None):
         raise NetworkXError("partial duplication graph must have n <= N.")
 
     G = nx.complete_graph(n, create_using)
-    check_create_using(G, directed=False, multigraph=False)
     for new_node in range(n, N):
         # Pick a random vertex, u, already in the graph.
         src_node = seed.randint(0, new_node - 1)
@@ -147,8 +147,8 @@ def duplication_divergence_graph(n, p, seed=None, *, create_using=None):
         msg = "n must be greater than or equal to 2"
         raise nx.NetworkXError(msg)
 
+    create_using = check_create_using(create_using, directed=False, multigraph=False)
     G = nx.empty_graph(create_using=create_using)
-    check_create_using(G, directed=False, multigraph=False)
 
     # Initialize the graph with two connected nodes.
     G.add_edge(0, 1)

@@ -641,13 +641,13 @@ def check_create_using(create_using, *, directed=None, multigraph=None, default=
 
     if directed is not None:
         if directed and not G_directed:
-            raise nx.NetworkXError("graph must be directed")
+            raise nx.NetworkXError("create_using must be directed")
         if not directed and G_directed:
-            raise nx.NetworkXError("graph must not be directed")
+            raise nx.NetworkXError("create_using must not be directed")
 
     if multigraph is not None:
         if multigraph and not G_multigraph:
-            raise nx.NetworkXError("graph must be a multi-graph")
+            raise nx.NetworkXError("create_using must be a multi-graph")
         if not multigraph and G_multigraph:
-            raise nx.NetworkXError("graph must not be a multi-graph")
+            raise nx.NetworkXError("create_using must not be a multi-graph")
     return G
