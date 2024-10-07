@@ -584,7 +584,7 @@ runtime environment optimized for a particular system or use case.
 
 Refer to the {doc}`/backends` section to see a list of currently available backends known to work with NetworkX.
 
-NetworkX uses backends by *dispatching* function calls at runtime to
+NetworkX uses backends by _dispatching_ function calls at runtime to
 corresponding functions provided by backends, either automatically via
 configuration variables, or explicitly by hard-coded arguments to functions.
 
@@ -599,15 +599,16 @@ modified.
 The example below configures NetworkX to automatically dispatch to a backend
 named `fast_backend` for all NetworkX functions that `fast_backend` supports.
 
- * If `fast_backend` does not support a NetworkX function used by the
-   application, the default NetworkX implementation will be used.
+- If `fast_backend` does not support a NetworkX function used by the
+  application, the default NetworkX implementation will be used.
 
- * If `fast_backend` is not installed on the system running this code, an
-   exception will be raised.
+- If `fast_backend` is not installed on the system running this code, an
+  exception will be raised.
 
 ```{code-block}
 bash$> NETWORKX_BACKEND_PRIORITY=fast_backend python my_script.py
 ```
+
 ```{code-block}
 # file: my_script.py
 import networkx as nx
@@ -638,6 +639,7 @@ default NetworkX implementation if `other_backend` does not.
 ```{code-block}
 bash$> NETWORKX_BACKEND_PRIORITY="fast_backend,other_backend" python my_script.py
 ```
+
 ```{code-cell}
 :tags: [skip-execution]
 nx.config.backend_priority = ["fast_backend", "other_backend"]
@@ -653,7 +655,7 @@ used.  <example of how to enable>
 
 Backends can also be used explicitly on a per-function call basis by specifying
 a backend using the `backend=` keyword argument. This technique not only
-requires that the backend is installed, but *also* requires that the backend
+requires that the backend is installed, but _also_ requires that the backend
 implement the function, since NetworkX will not fall back to the default NetworkX
 implementation if a backend is specified with `backend=`.
 

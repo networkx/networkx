@@ -14,6 +14,7 @@ kernelspec:
 # Backends
 
 ```{currentmodule} networkx
+
 ```
 
 The following backends are known to work with the current stable release of
