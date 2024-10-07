@@ -569,6 +569,112 @@ sp[3]
 See {doc}`/reference/algorithms/index` for details on graph algorithms
 supported.
 
+## Using NetworkX backends
+
+NetworkX can be configured to use separate thrid-party backends to improve
+performance and add functionality. Backends are optional, installed separately,
+and can be enabled either directly in the user's code or through environment
+variables.
+
+Several backends are available to accelerate NetworkX--often
+significantly--using GPUs, parallel processing, and other optimizations, while
+other backends add additional features such as graph database
+integration. Multiple backends can be used together to compose a NetworkX
+runtime environment optimized for a particular system or use case.
+
+Refer to the {doc}`/backends` section to see a list of currently available backends known to work with NetworkX.
+
+NetworkX uses backends by *dispatching* function calls at runtime to
+corresponding functions provided by backends, either automatically via
+configuration variables, or explicitly by hard-coded arguments to functions.
+
+### Automatic dispatch
+
+Automatic dispatch is possibly the easiest and least intrusive means by which a
+user can use backends with NetworkX code. This technique is useful for users
+that want to write portable code that runs on systems without specific
+backends, or simply want to use backends with existing code that cannnot be
+modified.
+
+The example below configures NetworkX to automatically dispatch to a backend
+named `fast_backend` for all NetworkX functions that `fast_backend` supports.
+
+ * If `fast_backend` does not support a NetworkX function used by the
+   application, the default NetworkX implementation will be used.
+
+ * If `fast_backend` is not installed on the system running this code, an
+   exception will be raised.
+
+```{code-block}
+bash$> NETWORKX_BACKEND_PRIORITY=fast_backend python my_script.py
+```
+```{code-block}
+# file: my_script.py
+import networkx as nx
+G = nx.Graph()
+# populate the graph...
+pr = nx.pagerank(G)  # runs using backend from NETWORKX_BACKEND_PRIORITY, if set
+```
+
+The equivalent configuration can be applied to NetworkX directly to the code
+through the NetworkX `config` global parameters. This will override the
+corresponding environment variable, but results in slightly less code
+portability.
+
+```{code-cell}
+:tags: [skip-execution]
+nx.config.backend_priority = ["fast_backend"]
+pr = nx.pagerank(G)
+```
+
+Automatic dispatch using the `NETWORKX_BACKEND_PRIORITY` environment variable
+or the `nx.config.backend_priority` global config also allows for the
+specification of multiple backends, ordered based on the priority which
+NetworkX should attempt to dispatch to. The following examples both configure
+NetworkX to dispatch functions first to `fast_backend` if it supports the
+function, then `other_backend` if `fast_backend` does not, then finally the
+default NetworkX implementation if `other_backend` does not.
+
+```{code-block}
+bash$> NETWORKX_BACKEND_PRIORITY="fast_backend,other_backend" python my_script.py
+```
+```{code-cell}
+:tags: [skip-execution]
+nx.config.backend_priority = ["fast_backend", "other_backend"]
+```
+
+```{tip}
+NetworkX includes debug logging calls using Python's standard logging mechanism
+that can be enabled to help users understand when and how backends are being
+used.  <example of how to enable>
+```
+
+### Explicit dispatch
+
+Backends can also be used explicitly on a per-function call basis by specifying
+a backend using the `backend=` keyword argument. This technique not only
+requires that the backend is installed, but *also* requires that the backend
+implement the function, since NetworkX will not fall back to the default NetworkX
+implementation if a backend is specified with `backend=`.
+
+This is possibly the least portable option, but has the advantage that NetworkX
+will raise an exception if `fast_backend` cannot be used, which is useful for
+users that require a specific implementation.
+
+```{code-cell}
+:tags: [skip-execution]
+pr = nx.pagerank(G, backend="fast_backend")
+```
+
+### Advanced dispatching options
+
+The NetworkX dispatcher allows users to use backends for NetworkX code in very
+specific ways not covered in this tutorial. Refer to the
+{doc}`/reference/backends` reference section for details on topics such as
+control of how specific function types (algorithms vs. generators) are
+dispatched to specific backends, if backend types have automatic conversions
+cached, dispatching based on graph types, and more.
+
 ## Drawing graphs
 
 NetworkX is not primarily a graph drawing package but basic drawing with
