@@ -42,7 +42,7 @@ def partial_duplication_graph(N, n, p, q, seed=None, *, create_using=None):
 
     create_using : Graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.
-        Multigraph and directed types are not supported and raise a ``ValueError``.
+        Multigraph and directed types are not supported and raise a ``NetworkXError``.
 
     Notes
     -----
@@ -114,7 +114,7 @@ def duplication_divergence_graph(n, p, seed=None, *, create_using=None):
         See :ref:`Randomness<randomness>`.
     create_using : Graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.
-        Multigraph and directed types are not supported and raise a ``ValueError``.
+        Multigraph and directed types are not supported and raise a ``NetworkXError``.
 
     Returns
     -------

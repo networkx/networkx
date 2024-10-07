@@ -56,7 +56,7 @@ def fast_gnp_random_graph(n, p, seed=None, directed=False, *, create_using=None)
         If True, this function returns a directed graph.
     create_using : Graph constructor, optional (default=nx.Graph or nx.DiGraph)
         Graph type to create. If graph instance, then cleared before populated.
-        Multigraph types are not supported and raise a ``ValueError``.
+        Multigraph types are not supported and raise a ``NetworkXError``.
         By default NetworkX Graph or DiGraph are used depending on `directed`.
 
     Notes
@@ -139,7 +139,7 @@ def gnp_random_graph(n, p, seed=None, directed=False, *, create_using=None):
         If True, this function returns a directed graph.
     create_using : Graph constructor, optional (default=nx.Graph or nx.DiGraph)
         Graph type to create. If graph instance, then cleared before populated.
-        Multigraph types are not supported and raise a ``ValueError``.
+        Multigraph types are not supported and raise a ``NetworkXError``.
         By default NetworkX Graph or DiGraph are used depending on `directed`.
 
     See Also
@@ -209,7 +209,7 @@ def dense_gnm_random_graph(n, m, seed=None, *, create_using=None):
         See :ref:`Randomness<randomness>`.
     create_using : Graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.
-        Multigraph and directed types are not supported and raise a ``ValueError``.
+        Multigraph and directed types are not supported and raise a ``NetworkXError``.
 
     See Also
     --------
@@ -276,7 +276,7 @@ def gnm_random_graph(n, m, seed=None, directed=False, *, create_using=None):
         If True return a directed graph
     create_using : Graph constructor, optional (default=nx.Graph or nx.DiGraph)
         Graph type to create. If graph instance, then cleared before populated.
-        Multigraph types are not supported and raise a ``ValueError``.
+        Multigraph types are not supported and raise a ``NetworkXError``.
         By default NetworkX Graph or DiGraph are used depending on `directed`.
 
     See also
@@ -328,7 +328,7 @@ def newman_watts_strogatz_graph(n, k, p, seed=None, *, create_using=None):
         See :ref:`Randomness<randomness>`.
     create_using : Graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.
-        Multigraph and directed types are not supported and raise a ``ValueError``.
+        Multigraph and directed types are not supported and raise a ``NetworkXError``.
 
     Notes
     -----
@@ -403,7 +403,7 @@ def watts_strogatz_graph(n, k, p, seed=None, *, create_using=None):
         See :ref:`Randomness<randomness>`.
     create_using : Graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.
-        Multigraph and directed types are not supported and raise a ``ValueError``.
+        Multigraph and directed types are not supported and raise a ``NetworkXError``.
 
     See Also
     --------
@@ -489,7 +489,7 @@ def connected_watts_strogatz_graph(n, k, p, tries=100, seed=None, *, create_usin
         See :ref:`Randomness<randomness>`.
     create_using : Graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.
-        Multigraph and directed types are not supported and raise a ``ValueError``.
+        Multigraph and directed types are not supported and raise a ``NetworkXError``.
 
     Notes
     -----
@@ -540,7 +540,7 @@ def random_regular_graph(d, n, seed=None, *, create_using=None):
         See :ref:`Randomness<randomness>`.
     create_using : Graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.
-        Multigraph and directed types are not supported and raise a ``ValueError``.
+        Multigraph and directed types are not supported and raise a ``NetworkXError``.
 
     Notes
     -----
@@ -679,7 +679,7 @@ def barabasi_albert_graph(n, m, seed=None, initial_graph=None, *, create_using=N
         If None, starts from a star graph on (m+1) nodes.
     create_using : Graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.
-        Multigraph and directed types are not supported and raise a ``ValueError``.
+        Multigraph and directed types are not supported and raise a ``NetworkXError``.
 
     Returns
     -------
@@ -762,7 +762,7 @@ def dual_barabasi_albert_graph(
         If None, starts from an star graph on max(m1, m2) + 1 nodes.
     create_using : Graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.
-        Multigraph and directed types are not supported and raise a ``ValueError``.
+        Multigraph and directed types are not supported and raise a ``NetworkXError``.
 
     Returns
     -------
@@ -873,7 +873,7 @@ def extended_barabasi_albert_graph(n, m, p, q, seed=None, *, create_using=None):
         See :ref:`Randomness<randomness>`.
     create_using : Graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.
-        Multigraph and directed types are not supported and raise a ``ValueError``.
+        Multigraph and directed types are not supported and raise a ``NetworkXError``.
 
     Returns
     -------
@@ -1021,7 +1021,7 @@ def powerlaw_cluster_graph(n, m, p, seed=None, *, create_using=None):
         See :ref:`Randomness<randomness>`.
     create_using : Graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.
-        Multigraph and directed types are not supported and raise a ``ValueError``.
+        Multigraph and directed types are not supported and raise a ``NetworkXError``.
 
     Notes
     -----
@@ -1122,7 +1122,7 @@ def random_lobster(n, p1, p2, seed=None, *, create_using=None):
         See :ref:`Randomness<randomness>`.
     create_using : Graph constructor, optional (default=nx.Grap)
         Graph type to create. If graph instance, then cleared before populated.
-        Multigraph and directed types are not supported and raise a ``ValueError``.
+        Multigraph and directed types are not supported and raise a ``NetworkXError``.
 
     Raises
     ------
@@ -1170,7 +1170,7 @@ def random_shell_graph(constructor, seed=None, *, create_using=None):
         See :ref:`Randomness<randomness>`.
     create_using : Graph constructor, optional (default=nx.Graph)
         Graph type to create. Graph instances are not supported.
-        Multigraph and directed types are not supported and raise a ``ValueError``.
+        Multigraph and directed types are not supported and raise a ``NetworkXError``.
 
     Examples
     --------
@@ -1231,7 +1231,7 @@ def random_powerlaw_tree(n, gamma=3, seed=None, tries=100, *, create_using=None)
         Number of attempts to adjust the sequence to make it a tree.
     create_using : Graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.
-        Multigraph and directed types are not supported and raise a ``ValueError``.
+        Multigraph and directed types are not supported and raise a ``NetworkXError``.
 
     Raises
     ------
@@ -1339,7 +1339,7 @@ def random_kernel_graph(
         See :ref:`Randomness<randomness>`.
     create_using : Graph constructor, optional (default=nx.Graph)
         Graph type to create. If graph instance, then cleared before populated.
-        Multigraph and directed types are not supported and raise a ``ValueError``.
+        Multigraph and directed types are not supported and raise a ``NetworkXError``.
 
     Notes
     -----
