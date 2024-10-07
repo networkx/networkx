@@ -696,6 +696,7 @@ pr = nx.pagerank(G, backend="fast_backend")
 The NetworkX dispatcher allows users to use backends for NetworkX code in very
 specific ways not covered in this tutorial. Refer to the
 {doc}`/reference/backends` reference section for details on topics such as:
+
 - Control of how specific function types (algorithms vs. generators) are
   dispatched to specific backends
 - Details on automatic conversions to/from backend and NetworkX graphs for
