@@ -46,7 +46,7 @@ class TestDuplicationDivergenceGraph:
 
         G = nx.duplication_divergence_graph(6, 0.3, seed=42, create_using=DummyGraph)
         assert isinstance(G, DummyGraph)
-        with pytest.raises(nx.NetworkXError, match="create_using"):
+        with pytest.raises(nx.NetworkXError, match="create_using must not be directed"):
             nx.duplication_divergence_graph(6, 0.3, seed=42, create_using=DummyDiGraph)
 
 
@@ -99,5 +99,5 @@ class TestPartialDuplicationGraph:
 
         G = nx.partial_duplication_graph(10, 5, 0.5, 0.5, create_using=DummyGraph)
         assert isinstance(G, DummyGraph)
-        with pytest.raises(nx.NetworkXError, match="create_using"):
+        with pytest.raises(nx.NetworkXError, match="create_using must not be directed"):
             nx.partial_duplication_graph(10, 5, 0.5, 0.5, create_using=DummyDiGraph)
