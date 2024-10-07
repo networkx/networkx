@@ -625,6 +625,12 @@ def check_create_using(create_using, *, directed=None, multigraph=None, default=
     -------
     create_using : graph class or instance
         The provided graph class or instance, or if None, the `default` value.
+
+    Raises
+    ------
+    NetworkXError
+        When `create_using` doesn't match the properties specified by `directed`
+        or `multigraph` parameters.
     """
     if default is None:
         default = nx.Graph
