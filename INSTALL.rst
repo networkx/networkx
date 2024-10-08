@@ -87,8 +87,9 @@ backends may be written in other languages and require specialized hardware
 and/or OS support, additional software dependencies, or even separate services.
 
 Installation instructions vary based on the backend, and additional information
-can be found from the individual backend project pages listed in the section on
-`Backends <backends.html>`_.
+can be found from the individual backend project pages listed in the
+:doc:`/backends` section.
+
 
 Extra packages
 --------------
