@@ -403,7 +403,6 @@ How tests are run?
    will cause a ``pytest.xfail``, when the ``NETWORKX_FALLBACK_TO_NX``
    environment variable is set to ``False``, giving some indication that
    not all tests are running, while avoiding causing an explicit failure.
-
 """
 
 import inspect
