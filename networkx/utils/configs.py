@@ -324,7 +324,6 @@ class NetworkXConfig(Config):
 
     and can be used for finer control of ``backend_priority`` such as:
 
-    - ``NETWORKX_BACKEND_PRIORITY_PAGERANK``: set ``backend_priority.pagerank`` from comma-separated names.
     - ``NETWORKX_BACKEND_PRIORITY_ALGOS``: same as ``NETWORKX_BACKEND_PRIORITY`` to set ``backend_priority.algos`.
 
     This is a global configuration. Use with caution when using from multiple threads.
