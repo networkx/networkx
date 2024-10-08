@@ -1,4 +1,5 @@
-"""Docs for backend users
+"""
+Docs for backend users
 ~~~~~~~~~~~~~~~~~~~~~~
 NetworkX utilizes a plugin-dispatch architecture. A valid NetworkX backend
 specifies `entry points
@@ -87,7 +88,7 @@ default NetworkX implementation for all others.
 
 .. code-block:: bash
 
-   bash\$> NETWORKX_BACKEND_PRIORITY=cugraph python my_networkx_script.py
+   bash> NETWORKX_BACKEND_PRIORITY=cugraph python my_networkx_script.py
 
 Explicitly use the ``parallel`` backend for a function call.
 
@@ -117,10 +118,10 @@ passed to NetworkX functions the backend does not support.
 
 .. code-block:: bash
 
-   bash\$> NETWORKX_BACKEND_PRIORITY_ALGOS=cugraph \\
-          NETWORKX_BACKEND_PRIORITY_GENERATORS=cugraph \\
-          NETWORKX_FALLBACK_TO_NX=True \\
-          python my_networkx_script.py
+   bash> NETWORKX_BACKEND_PRIORITY_ALGOS=cugraph \\
+         NETWORKX_BACKEND_PRIORITY_GENERATORS=cugraph \\
+         NETWORKX_FALLBACK_TO_NX=True \\
+         python my_networkx_script.py
 
 How does this work?
 -------------------
