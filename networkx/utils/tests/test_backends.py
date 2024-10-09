@@ -82,9 +82,16 @@ def test_graph_converter_needs_backend():
         # backend="networkx" is default implementation
         assert type(nx.from_scipy_sparse_array(A, backend="networkx")) is nx.Graph
         assert side_effects == [1, 1]
+        # nx.config.backend = "nx_loopback"  # This is like doing `backend="nx_loopback"`
+        # This is like doing `backend="nx_loopback"`
+        nx.config.backend_kwargs["backend"] = "nx_loopback"
+        assert type(nx.from_scipy_sparse_array(A)) is LoopbackGraph
+        assert side_effects == [1, 1, 1]
     finally:
         LoopbackBackendInterface.convert_to_nx = staticmethod(orig_convert_to_nx)
         del LoopbackBackendInterface.from_scipy_sparse_array
+        # nx.config.backend = None
+        nx.config.backend_kwargs.pop("backend", None)
     with pytest.raises(ImportError, match="backend is not installed"):
         nx.from_scipy_sparse_array(A, backend="bad-backend-name")
 
