@@ -65,8 +65,9 @@ supported:
   workflows to complete if the backend does not implement all algorithms used
   by the workflow, but a possible downside is that it may require converting
   the input backend graph to a NetworkX graph, which may be expensive. If a
-  backend graph is duck-type compatible as a NetworkX graph, then it may choose
-  not to convert to a NetworkX graph since it already is one.
+  backend graph is duck-type compatible as a NetworkX graph, then the backend
+  may choose not to convert to a NetworkX graph and use the incoming graph
+  as-is.
 
 * ``nx.config.cache_converted_graphs`` (``NETWORKX_CACHE_CONVERTED_GRAPHS`` env
   var), a boolean (default True), controls whether graph conversions are cached
@@ -76,9 +77,9 @@ supported:
 Backends are encouraged to document how they recommend to be used and whether
 their graph types are duck-type compatible as NetworkX graphs. If backend
 graphs are NetworkX-compatible and you want your workflow to automatically
-"just work" with a backend--performing conversions and caching if
-necessary--then use all of the above configurations. Automatically converting
-graphs is opt-in, and configuration gives the user control.
+"just work" with a backend--converting and caching if necessary--then use all
+of the above configurations. Automatically converting graphs is opt-in, and
+configuration gives the user control.
 
 Examples:
 ---------
