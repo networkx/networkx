@@ -29,9 +29,9 @@ configuration may also be set from an environment variable and are processed at
 the time networkx is imported.  The following configuration variables are
 supported:
 
-* ``nx.config.backend_priority`` (``NETWORKX_BACKEND_PRIORITY`` env
-  var), a list of backends, controls dispatchable functions that don't return
-  graphs such as nx.pagerank. When one of these functions is called with
+* ``nx.config.backend_priority`` (``NETWORKX_BACKEND_PRIORITY`` env var), a
+  list of backends, controls dispatchable functions that don't return graphs
+  such as e.g. ``nx.pagerank``. When one of these functions is called with
   NetworkX graphs as input, the dispatcher iterates over the backends listed in
   this backend_priority config and will use the first backend that implements
   this function. The input NetworkX graphs are converted (and cached by
@@ -95,8 +95,10 @@ configuration gives the user control.
 Examples:
 ---------
 
-Use the ``cugraph`` backend for every function it supports and fall back to the
-default NetworkX implementation for all others.
+Use the ``cugraph`` backend for every algorithm function it supports. This will
+allow for fall back to the default NetworkX implementations for algorithm calls
+not supported by cugraph because graph generator functions are still returning
+NetworkX graphs.
 
 .. code-block:: bash
 
