@@ -146,7 +146,8 @@ function to dispatch to the corresponding backend function if available. When th
 function is called, it first checks for a backend to run the function, and if no appropriate
 backend is specified or available, it runs the NetworkX version of the function.
 
-Backend Keyword Argument:
+Backend Keyword Argument
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 When a decorated function is called with the ``backend`` kwarg provided, it checks
 if the specified backend is installed, and loads it. Next it checks whether to convert
@@ -158,7 +159,8 @@ the ``backend`` kwarg, they are converted to the backend graph type before calli
 Exceptions are raised if any step is not possible, e.g. if the backend does not
 implement this function.
 
-Finding a Backend:
+Finding a Backend
+^^^^^^^^^^^^^^^^^
 
 When a decorated function is called without a ``backend`` kwarg, it tries to find a
 dispatchable backend function.
@@ -175,7 +177,8 @@ via helper methods in the backend's interface. Backend methods ``can_run`` and
 function. If the number of nodes is small, it might be faster to run the NetworkX
 version of the function. This is how backends can provide info about whether to run.
 
-Falling Back to NetworkX:
+Falling Back to NetworkX
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 If none of the backends are appropriate, we "fall back" to the NetworkX function.
 That means we resolve the backends of all input graphs and if all are NetworkX
@@ -183,7 +186,8 @@ graphs we call the NetworkX function. If any are not NetworkX graphs, we raise
 an exception unless the `fallback_to_nx` config is set. If it is, we convert all
 graph types to NetworkX graph types before calling the NetworkX function.
 
-Functions that mutate the graph:
+Functions that mutate the graph
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Any function decorated with the option that indicates it mutates the graph goes through
 a slightly different path to automatically find backends. These functions typically
@@ -196,7 +200,8 @@ And you can use it for functions not supported by the backend if you set the con
 `fallback_to_nx` to allow it to convert the backend graph to a NetworkX graph before
 calling the function.
 
-Optional keyword arguments:
+Optional keyword arguments
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Backends can add optional keyword parameters to NetworkX functions to allow you to
 control aspects of the backend algorithm. Thus the function signatures can be extended
@@ -205,7 +210,8 @@ have a parameter to specify how many CPUs to use. These parameters are collected
 by the dispatchable decorator code at the start of the function call and used when
 calling the backend function.
 
-Existing Backends:
+Existing Backends
+^^^^^^^^^^^^^^^^^
 
 NetworkX does not know all the backends that have been created.  In fact, the
 NetworkX library does not need to know that a backend exists for it to work. As
