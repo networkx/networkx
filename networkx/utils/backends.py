@@ -10,13 +10,13 @@ calls to the backend so the execution flows to the designated backend
 implementation. This design enhances flexibility and integration, making
 NetworkX more adaptable and efficient.
 
-NetworkX can dispatch to backends _explicitly_ (this requires changing code) or
-_automatically_ (this requires setting configuration or environment
+NetworkX can dispatch to backends **explicitly** (this requires changing code)
+or **automatically** (this requires setting configuration or environment
 variables). The best way to use a backend depends on the backend, your use
 case, and whether you want to automatically convert to or from backend
 graphs. Automatic conversions of graphs is always opt-in.
 
-To explicitly dispatch to a backend, use the backend=... keyword argument in a
+To explicitly dispatch to a backend, use the `backend=` keyword argument in a
 dispatchable function. This will convert (and cache by default) input NetworkX
 graphs to backend graphs and call the backend implementation. Another explicit
 way to use a backend is to create a backend graph directly--for example,
@@ -29,7 +29,7 @@ configuration may also be set from an environment variable and are processed at
 the time networkx is imported.  The following configuration variables are
 supported:
 
-* ``nx.config.backend_priority.algos`` (``NETWORKX_BACKEND_PRIORITY_ALGOS`` env
+* ``nx.config.backend_priority`` (``NETWORKX_BACKEND_PRIORITY`` env
   var), a list of backends, controls dispatchable functions that don't return
   graphs such as nx.pagerank. When one of these functions is called with
   NetworkX graphs as input, the dispatcher iterates over the backends listed in
@@ -40,6 +40,11 @@ supported:
   implementations, but possible downsides are that creating NetworkX graphs,
   converting to backend graphs, and caching backend graphs may all be
   expensive.
+
+* ``nx.config.backend_priority.algos`` (``NETWORKX_BACKEND_PRIORITY_ALGOS`` env
+  var), can be used instead of ``nx.config.backend_priority``
+  (``NETWORKX_BACKEND_PRIORITY`` env var) to emphasize that the setting only
+  affects the dispatching of algorithm functions as described above.
 
 * ``nx.config.backend_priority.generators``
   (``NETWORKX_BACKEND_PRIORITY_GENERATORS`` env var), a list of backends,
@@ -73,6 +78,12 @@ supported:
   var), a boolean (default True), controls whether graph conversions are cached
   to G.__networkx_cache__ or not. Caching can improve performance by avoiding
   repeated conversions, but it uses more memory.
+
+.. note:: Backends *should* follow the NetworkX backend naming convention. For
+   example, if a backend is named ``parallel`` and specified using
+   ``backend=parallel`` or ``NETWORKX_BACKEND_PRIORITY=parallel``, the package
+   installed is ``nx-parallel``, and we would use ``import nx_parallel`` if we
+   were to import the backend package directly.
 
 Backends are encouraged to document how they recommend to be used and whether
 their graph types are duck-type compatible as NetworkX graphs. If backend
@@ -194,25 +205,15 @@ calling the backend function.
 
 Existing Backends:
 
-NetworkX does not know all the backends that have been created.
-In fact, the NetworkX library does not need to know that a backend exists
-for it to work. As long as the backend package creates the ``entry_point``, and
-provides the correct interface, it will be called when the user requests
-it using one of the three approaches described above. Some backends have
-been working with the NetworkX developers to ensure smooth operation.
-They are the following:
+NetworkX does not know all the backends that have been created.  In fact, the
+NetworkX library does not need to know that a backend exists for it to work. As
+long as the backend package creates the ``entry_point``, and provides the
+correct interface, it will be called when the user requests it using one of the
+three approaches described above. Some backends have been working with the
+NetworkX developers to ensure smooth operation.
 
-- `graphblas <https://github.com/python-graphblas/graphblas-algorithms>`_:
-  OpenMP-enabled sparse linear algebra backend.
-- `cugraph <https://github.com/rapidsai/cugraph/tree/branch-24.04/python/nx-cugraph>`_:
-  GPU-accelerated backend.
-- `parallel <https://github.com/networkx/nx-parallel>`_:
-  Parallel backend for NetworkX algorithms.
-- `loopback <https://github.com/networkx/networkx/blob/main/pyproject.toml#L53>`_:
-  It's for testing purposes only and is not a real backend.
-
-Note that the ``backend_name`` is e.g. ``parallel``, the package installed
-is ``nx-parallel``, and we use ``nx_parallel`` while importing the package.
+Refer to the :doc:`/backends` section to see a list of available backends known
+to work with the current stable release of NetworkX.
 
 .. _introspect:
 
