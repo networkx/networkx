@@ -207,7 +207,15 @@ print(f"Building cubing_153_digraph({nmax})")
 # Plotting the resulting digraph
 plt.figure(figsize=(12, 12))  # Set up the figure size
 pos = nx.spring_layout(G)  # Use a layout for visual spacing
-nx.draw(G, pos, with_labels=True, node_size=50, font_size=8, node_color="skyblue", edge_color="gray")
+nx.draw(
+    G,
+    pos,
+    with_labels=True,
+    node_size=50,
+    font_size=8,
+    node_color="skyblue",
+    edge_color="gray",
+)
 plt.title("Cubing 153 Digraph for Iterated Dynamical System")
 plt.show()  # Display the plot
 
