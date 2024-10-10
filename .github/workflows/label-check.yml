@@ -10,14 +10,18 @@ on:
       - unlabeled
 
 env:
-  LABELS: ${{ join( github.event.pull_request.labels.*.name, ' ' ) }}
+  LABELS: ${{ join(github.event.pull_request.labels.*.name, ' ') }}
 
 jobs:
   check-type-label:
     name: reviewer label?
     runs-on: ubuntu-latest
     steps:
-      - if: "contains( env.LABELS, 'type: ' ) == false"
+      - name: Check if 'type:' label is present
+      - name: Debug Labels
+        run: echo "Labels: ${{ env.LABELS }}"
+
+        if: "! contains(env.LABELS, 'type:')"
         run: |
-          echo "This PR needs a reviewer to label the PR with a 'type:' label"
+          echo "This PR needs a reviewer to label the PR with a 'type:' label."
           exit 1
