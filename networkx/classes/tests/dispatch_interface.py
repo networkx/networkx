@@ -50,6 +50,12 @@ def convert(graph):
 
 
 class LoopbackBackendInterface:
+    Graph = LoopbackGraph
+    DiGraph = LoopbackDiGraph
+    MultiGraph = LoopbackMultiGraph
+    MultiDiGraph = LoopbackMultiDiGraph
+    PlanarEmbedding = LoopbackPlanarEmbedding
+
     def __getattr__(self, item):
         try:
             return nx.utils.backends._registered_algorithms[item].orig_func
