@@ -314,6 +314,11 @@ class NetworkXConfig(Config):
         of raising, and will convert the backend graph to a networkx-compatible graph.
         Default is False.
 
+    warnings_to_ignore : set of strings
+        Control which warnings from NetworkX are not emitted. Valid elements:
+
+        - `"cache"`: when a cached value is used from ``G.__networkx_cache__``.
+
     Notes
     -----
     Environment variables may be used to control some default configurations:
@@ -321,6 +326,7 @@ class NetworkXConfig(Config):
     - ``NETWORKX_BACKEND_PRIORITY``: set ``backend_priority.algos`` from comma-separated names.
     - ``NETWORKX_CACHE_CONVERTED_GRAPHS``: set ``cache_converted_graphs`` to True if nonempty.
     - ``NETWORKX_FALLBACK_TO_NX``: set ``fallback_to_nx`` to True if nonempty.
+    - ``NETWORKX_WARNINGS_TO_IGNORE``: set `warnings_to_ignore` from comma-separated names.
 
     and can be used for finer control of ``backend_priority`` such as:
 
@@ -333,6 +339,7 @@ class NetworkXConfig(Config):
     backends: Config
     cache_converted_graphs: bool
     fallback_to_nx: bool
+    warnings_to_ignore: set[str]
 
     def _on_setattr(self, key, value):
         from .backends import backend_info
@@ -365,6 +372,18 @@ class NetworkXConfig(Config):
         elif key in {"cache_converted_graphs", "fallback_to_nx"}:
             if not isinstance(value, bool):
                 raise TypeError(f"{key!r} config must be True or False; got {value!r}")
+        elif key == "warnings_to_ignore":
+            if not (isinstance(value, set) and all(isinstance(x, str) for x in value)):
+                raise TypeError(
+                    f"{key!r} config must be a set of warning names; got {value!r}"
+                )
+            known_warnings = {"cache"}
+            if missing := {x for x in value if x not in known_warnings}:
+                missing = ", ".join(map(repr, sorted(missing)))
+                raise ValueError(
+                    f"Unknown warning when setting {key!r}: {missing}. Valid entries: "
+                    + ", ".join(sorted(known_warnings))
+                )
         return value
 
 
@@ -379,4 +398,9 @@ config = NetworkXConfig(
         os.environ.get("NETWORKX_CACHE_CONVERTED_GRAPHS", True)
     ),
     fallback_to_nx=bool(os.environ.get("NETWORKX_FALLBACK_TO_NX", False)),
+    warnings_to_ignore={
+        x.strip()
+        for x in os.environ.get("NETWORKX_WARNINGS_TO_IGNORE", "").split(",")
+        if x.strip()
+    },
 )
