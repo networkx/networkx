@@ -83,7 +83,8 @@ jobs:
           ASV_SKIP_SLOW: 1
         run: |
           set -x
-          python -m pip install asv virtualenv packaging
+          python -m pip install virtualenv packaging
+          python -m pip install -r requirements/benchmarking.txt
           cd benchmarks/
 
           # ID this runner
