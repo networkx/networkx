@@ -83,6 +83,7 @@ keywords: "3n+1", "3x+1", "Collatz problem", "Thwaite's conjecture"
 """
 
 import networkx as nx
+import matplotlib.pyplot as plt
 
 nmax = 10000
 p = 3
@@ -203,6 +204,13 @@ def fixed_points(G):
 
 nmax = 10000
 print(f"Building cubing_153_digraph({nmax})")
+# Plotting the resulting digraph
+plt.figure(figsize=(12, 12))  # Set up the figure size
+pos = nx.spring_layout(G)  # Use a layout for visual spacing
+nx.draw(G, pos, with_labels=True, node_size=50, font_size=8, node_color="skyblue", edge_color="gray")
+plt.title("Cubing 153 Digraph for Iterated Dynamical System")
+plt.show()  # Display the plot
+
 G = cubing_153_digraph(nmax)
 print("Resulting digraph has", len(G), "nodes and", G.size(), " edges")
 print("Shortest path from 177 to 153 is:")
