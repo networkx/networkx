@@ -6,3 +6,4 @@ from networkx.utils.rcm import *
 from networkx.utils.heaps import *
 from networkx.utils.backends import *
 from networkx.utils.configs import *
+from networkx.utils.pll_reachability import *
