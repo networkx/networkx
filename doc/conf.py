@@ -165,6 +165,7 @@ html_sidebars = {
     "index": [],
     "install": [],
     "tutorial": [],
+    "backends": [],
     "auto_examples/index": [],
 }
 html_logo = "_static/networkx_banner.svg"
