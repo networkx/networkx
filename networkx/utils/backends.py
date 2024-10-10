@@ -1,106 +1,232 @@
 """
 Docs for backend users
 ~~~~~~~~~~~~~~~~~~~~~~
-
-NetworkX utilizes a plugin-dispatch architecture, which means we can plug in and
-out of backends with minimal code changes. A valid NetworkX backend specifies
-`entry points <https://packaging.python.org/en/latest/specifications/entry-points>`_,
-named ``networkx.backends`` and an optional ``networkx.backend_info`` when it is
-installed (not imported). This allows NetworkX to dispatch (redirect) function calls
-to the backend so the execution flows to the designated backend
-implementation, similar to how plugging a charger into a socket redirects the
-electricity to your phone. This design enhances flexibility and integration, making
+NetworkX utilizes a plugin-dispatch architecture. A valid NetworkX backend
+specifies `entry points
+<https://packaging.python.org/en/latest/specifications/entry-points>`_, named
+``networkx.backends`` and an optional ``networkx.backend_info`` when it is
+installed (not imported). This allows NetworkX to dispatch (redirect) function
+calls to the backend so the execution flows to the designated backend
+implementation. This design enhances flexibility and integration, making
 NetworkX more adaptable and efficient.
 
-There are three main ways to use a backend after the package is installed.
-You can set environment variables and run the exact same code you run for
-NetworkX. You can use a keyword argument ``backend=...`` with the NetworkX
-function. Or, you can convert the NetworkX Graph to a backend graph type and
-call a NetworkX function supported by that backend. Environment variables
-and backend keywords automatically convert your NetworkX Graph to the
-backend type. Manually converting it yourself allows you to use that same
-backend graph for more than one function call, reducing conversion time.
+NetworkX can dispatch to backends **explicitly** (this requires changing code)
+or **automatically** (this requires setting configuration or environment
+variables). The best way to use a backend depends on the backend, your use
+case, and whether you want to automatically convert to or from backend
+graphs. Automatic conversions of graphs is always opt-in.
 
-For example, you can set an environment variable before starting python to request
-all dispatchable functions automatically dispatch to the given backend::
+To explicitly dispatch to a backend, use the `backend=` keyword argument in a
+dispatchable function. This will convert (and cache by default) input NetworkX
+graphs to backend graphs and call the backend implementation. Another explicit
+way to use a backend is to create a backend graph directly--for example,
+perhaps the backend has its own functions for loading data and creating
+graphs--and pass that graph to a dispatchable function, which will then call
+the backend implementation without converting.
 
-    bash> NETWORKX_BACKEND_PRIORITY=cugraph python my_networkx_script.py
+Using automatic dispatch requires setting configuration options. Every NetworkX
+configuration may also be set from an environment variable and are processed at
+the time networkx is imported.  The following configuration variables are
+supported:
 
-or you can specify the backend as a kwarg::
+* ``nx.config.backend_priority`` (``NETWORKX_BACKEND_PRIORITY`` env var), a
+  list of backends, controls dispatchable functions that don't return graphs
+  such as e.g. ``nx.pagerank``. When one of these functions is called with
+  NetworkX graphs as input, the dispatcher iterates over the backends listed in
+  this backend_priority config and will use the first backend that implements
+  this function. The input NetworkX graphs are converted (and cached by
+  default) to backend graphs. Using this configuration can allow you to use the
+  full flexibility of NetworkX graphs and the performance of backend
+  implementations, but possible downsides are that creating NetworkX graphs,
+  converting to backend graphs, and caching backend graphs may all be
+  expensive.
+
+* ``nx.config.backend_priority.algos`` (``NETWORKX_BACKEND_PRIORITY_ALGOS`` env
+  var), can be used instead of ``nx.config.backend_priority``
+  (``NETWORKX_BACKEND_PRIORITY`` env var) to emphasize that the setting only
+  affects the dispatching of algorithm functions as described above.
+
+* ``nx.config.backend_priority.generators``
+  (``NETWORKX_BACKEND_PRIORITY_GENERATORS`` env var), a list of backends,
+  controls dispatchable functions that return graphs such as
+  nx.from_pandas_edgelist and nx.empty_graph. When one of these functions is
+  called, the first backend listed in this backend_priority config that
+  implements this function will be used and will return a backend graph. When
+  this backend graph is passed to other dispatchable NetworkX functions, it
+  will use the backend implementation if it exists or raise by default unless
+  nx.config.fallback_to_nx is True (default is False). Using this configuration
+  avoids creating NetworkX graphs, which subsequently avoids the need to
+  convert to and cache backend graphs as when using
+  nx.config.backend_priority.algos, but possible downsides are that the backend
+  graph may not behave the same as a NetworkX graph and the backend may not
+  implement all algorithms that you use, which may break your workflow.
+
+* ``nx.config.fallback_to_nx`` (``NETWORKX_FALLBACK_TO_NX`` env var), a boolean
+  (default False), controls what happens when a backend graph is passed to a
+  dispatchable function that is not implemented by that backend. The default
+  behavior when False is to raise. If True, then the backend graph will be
+  converted (and cached by default) to a NetworkX graph and will run with the
+  default NetworkX implementation. Enabling this configuration can allow
+  workflows to complete if the backend does not implement all algorithms used
+  by the workflow, but a possible downside is that it may require converting
+  the input backend graph to a NetworkX graph, which may be expensive. If a
+  backend graph is duck-type compatible as a NetworkX graph, then the backend
+  may choose not to convert to a NetworkX graph and use the incoming graph
+  as-is.
+
+* ``nx.config.cache_converted_graphs`` (``NETWORKX_CACHE_CONVERTED_GRAPHS`` env
+  var), a boolean (default True), controls whether graph conversions are cached
+  to G.__networkx_cache__ or not. Caching can improve performance by avoiding
+  repeated conversions, but it uses more memory.
+
+.. note:: Backends *should* follow the NetworkX backend naming convention. For
+   example, if a backend is named ``parallel`` and specified using
+   ``backend=parallel`` or ``NETWORKX_BACKEND_PRIORITY=parallel``, the package
+   installed is ``nx-parallel``, and we would use ``import nx_parallel`` if we
+   were to import the backend package directly.
+
+Backends are encouraged to document how they recommend to be used and whether
+their graph types are duck-type compatible as NetworkX graphs. If backend
+graphs are NetworkX-compatible and you want your workflow to automatically
+"just work" with a backend--converting and caching if necessary--then use all
+of the above configurations. Automatically converting graphs is opt-in, and
+configuration gives the user control.
+
+Examples:
+---------
+
+Use the ``cugraph`` backend for every algorithm function it supports. This will
+allow for fall back to the default NetworkX implementations for algorithm calls
+not supported by cugraph because graph generator functions are still returning
+NetworkX graphs.
+
+.. code-block:: bash
+
+   bash> NETWORKX_BACKEND_PRIORITY=cugraph python my_networkx_script.py
+
+Explicitly use the ``parallel`` backend for a function call.
+
+.. code-block:: python
 
     nx.betweenness_centrality(G, k=10, backend="parallel")
 
-or you can convert the NetworkX Graph object ``G`` into a Graph-like
-object specific to the backend and then pass that in the NetworkX function::
+Explicitly use the ``parallel`` backend for a function call by passing an
+instance of the backend graph type to the function.
 
-    H = nx_parallel.ParallelGraph(G)
-    nx.betweenness_centrality(H, k=10)
+.. code-block:: python
 
-The first approach is useful when you don't want to change your NetworkX code and just want
-to run your code on different backend(s). The second approach comes in handy when you
-need to pass additional backend-specific arguments, for example::
+   H = nx_parallel.ParallelGraph(G)
+   nx.betweenness_centrality(H, k=10)
 
-    nx.betweenness_centrality(G, k=10, backend="parallel", get_chunks=get_chunks)
+Explicitly use the ``parallel`` backend and pass additional backend-specific
+arguments. Here, ``get_chunks`` is an argument unique to the ``parallel``
+backend.
 
-Here, ``get_chunks`` is not a NetworkX argument, but a nx_parallel-specific argument.
+.. code-block:: python
 
-Note that ``"networkx"`` is the backend name for NetworkX. Hence, you may pass
-``backend="networkx"`` to use the default implementation (converting if necessary).
+   nx.betweenness_centrality(G, k=10, backend="parallel", get_chunks=get_chunks)
+
+Automatically dispatch the ``cugraph`` backend for all NetworkX algorithms and
+generators, and allow the backend graph object returned from generators to be
+passed to NetworkX functions the backend does not support.
+
+.. code-block:: bash
+
+   bash> NETWORKX_BACKEND_PRIORITY_ALGOS=cugraph \\
+         NETWORKX_BACKEND_PRIORITY_GENERATORS=cugraph \\
+         NETWORKX_FALLBACK_TO_NX=True \\
+         python my_networkx_script.py
 
 How does this work?
 -------------------
 
-You might have seen the ``@nx._dispatchable`` decorator on
-many of the NetworkX functions in the codebase. This decorator function works
-by dispatching a NetworkX function to a specified backend if available, or running
-it with NetworkX if no backend is specified or available. It checks if the specified
-backend is valid and installed. If not, it raises an ``ImportError``. It also
-resolves the graph arguments from the provided ``args`` and ``kwargs``, handling cases
-where graphs are passed as positional arguments or keyword arguments. It then checks if
-any of the resolved graphs are from a backend by checking if they have a
-``__networkx_backend__`` attribute. The attribute ``__networkx_backend__`` holds a
-string with the name of the ``entry_point`` (more on them later). If there are graphs
-from a backend, it determines the priority of the backends based on the
-``backend_priority`` configuration. If there are dispatchable graphs (i.e., graphs from
-a backend), it checks if all graphs are from the same backend. If not, it raises a
-``TypeError``. If a backend is specified and it matches the backend of the graphs, it
-loads the backend and calls the corresponding function on the backend along with the
-additional backend-specific ``backend_kwargs``. After calling the function the networkx
-logger displays the ``DEBUG`` message, if the logging is enabled
-(see :ref:`Introspection <introspect>` below). If no compatible backend is found
-or the function is not implemented by the backend, it will raise ``NotImplementedError``
-unless ``nx.config.fallback_to_nx`` is set to True (default is False), in which case
-it will convert the input graphs to NetworkX classes and run the default
-networkx implementation. And, if the function mutates the input graph
-or returns a graph, graph generator or loader then it tries to convert and run the
-function with a backend with automatic conversion. And it only convert and run if
-``backend.should_run(...)`` returns ``True``. If no backend is used, it falls back to
-running the original function with NetworkX. Refer the ``__call__`` method of the
-``_dispatchable`` class for more details.
+If you've looked at functions in the NetworkX codebase, you might have seen the
+``@nx._dispatchable`` decorator on most of the functions. This decorator allows the NetworkX
+function to dispatch to the corresponding backend function if available. When the decorated
+function is called, it first checks for a backend to run the function, and if no appropriate
+backend is specified or available, it runs the NetworkX version of the function.
 
-The NetworkX library does not need to know that a backend exists for it
-to work. As long as the backend package creates the ``entry_point``, and
-provides the correct interface, it will be called when the user requests
-it using one of the three approaches described above. Some backends have
-been working with the NetworkX developers to ensure smooth operation.
-They are the following:
+Backend Keyword Argument
+^^^^^^^^^^^^^^^^^^^^^^^^
 
-- `graphblas <https://github.com/python-graphblas/graphblas-algorithms>`_:
-  OpenMP-enabled sparse linear algebra backend.
-- `cugraph <https://github.com/rapidsai/cugraph/tree/branch-24.04/python/nx-cugraph>`_:
-  GPU-accelerated backend.
-- `parallel <https://github.com/networkx/nx-parallel>`_:
-  Parallel backend for NetworkX algorithms.
-- `loopback <https://github.com/networkx/networkx/blob/main/pyproject.toml#L53>`_:
-  It's for testing purposes only and is not a real backend.
+When a decorated function is called with the ``backend`` kwarg provided, it checks
+if the specified backend is installed, and loads it. Next it checks whether to convert
+input graphs by first resolving the backend of each input graph by looking
+for an attribute named ``__networkx_backend__`` that holds the backend name for that
+graph type. If all input graphs backend matches the ``backend`` kwarg, the backend's
+function is called with the original inputs. If any of the input graphs do not match
+the ``backend`` kwarg, they are converted to the backend graph type before calling.
+Exceptions are raised if any step is not possible, e.g. if the backend does not
+implement this function.
 
-Note that the ``backend_name`` is e.g. ``parallel``, the package installed
-is ``nx-parallel``, and we use ``nx_parallel`` while importing the package.
+Finding a Backend
+^^^^^^^^^^^^^^^^^
+
+When a decorated function is called without a ``backend`` kwarg, it tries to find a
+dispatchable backend function.
+The backend type of each input graph parameter is resolved (using the
+``__networkx_backend__`` attribute) and if they all agree, that backend's function
+is called if possible. Otherwise the backends listed in the config ``backend_priority``
+are considered one at a time in order. If that backend supports the function and
+can convert the input graphs to its backend type, that backend function is called.
+Otherwise the next backend is considered.
+
+During this process, the backends can provide helpful information to the dispatcher
+via helper methods in the backend's interface. Backend methods ``can_run`` and
+``should_run`` are used by the dispatcher to determine whether to use the backend
+function. If the number of nodes is small, it might be faster to run the NetworkX
+version of the function. This is how backends can provide info about whether to run.
+
+Falling Back to NetworkX
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+If none of the backends are appropriate, we "fall back" to the NetworkX function.
+That means we resolve the backends of all input graphs and if all are NetworkX
+graphs we call the NetworkX function. If any are not NetworkX graphs, we raise
+an exception unless the `fallback_to_nx` config is set. If it is, we convert all
+graph types to NetworkX graph types before calling the NetworkX function.
+
+Functions that mutate the graph
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Any function decorated with the option that indicates it mutates the graph goes through
+a slightly different path to automatically find backends. These functions typically
+generate a graph, or add attributes or change the graph structure. The config
+`backend_priority.generators` holds a list of backend names similar to the config
+`backend_priority`. The process is similar for finding a matching backend. Once found,
+the backend function is called and a backend graph is returned (instead of a NetworkX
+graph). You can then use this backend graph in any function supported by the backend.
+And you can use it for functions not supported by the backend if you set the config
+`fallback_to_nx` to allow it to convert the backend graph to a NetworkX graph before
+calling the function.
+
+Optional keyword arguments
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Backends can add optional keyword parameters to NetworkX functions to allow you to
+control aspects of the backend algorithm. Thus the function signatures can be extended
+beyond the NetworkX function signature. For example, the ``parallel`` backend might
+have a parameter to specify how many CPUs to use. These parameters are collected
+by the dispatchable decorator code at the start of the function call and used when
+calling the backend function.
+
+Existing Backends
+^^^^^^^^^^^^^^^^^
+
+NetworkX does not know all the backends that have been created.  In fact, the
+NetworkX library does not need to know that a backend exists for it to work. As
+long as the backend package creates the ``entry_point``, and provides the
+correct interface, it will be called when the user requests it using one of the
+three approaches described above. Some backends have been working with the
+NetworkX developers to ensure smooth operation.
+
+Refer to the :doc:`/backends` section to see a list of available backends known
+to work with the current stable release of NetworkX.
 
 .. _introspect:
 
-Introspection
--------------
+Introspection and Logging
+-------------------------
 Introspection techniques aim to demystify dispatching and backend graph conversion behaviors.
 
 The primary way to see what the dispatch machinery is doing is by enabling logging.
@@ -150,7 +276,7 @@ We plan to make it easier to answer questions such as:
 Transparency is essential to allow for greater understanding, debug-ability,
 and customization. After all, NetworkX dispatching is extremely flexible and can
 support advanced workflows with multiple backends and fine-tuned configuration,
-but introspection is necessary to inform *when* and *how* to evolve your workflow
+but introspection can be helpful by describing *when* and *how* to evolve your workflow
 to meet your needs. If you have suggestions for how to improve introspection, please
 `let us know <https://github.com/networkx/networkx/issues/new>`_!
 
