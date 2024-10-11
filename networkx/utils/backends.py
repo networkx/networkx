@@ -594,6 +594,7 @@ def _set_configs_from_environment():
         },
     )
     backend_info["networkx"] = {}
+    type(config.backends).__doc__ = "All installed NetworkX backends and their configs."
 
     # NETWORKX_BACKEND_PRIORITY is the same as NETWORKX_BACKEND_PRIORITY_ALGOS
     priorities = {
@@ -1772,7 +1773,7 @@ class _dispatchable:
             )
             compat_key, rv = _get_from_cache(cache, key, mutations=mutations)
             if rv is not None:
-                if "cache" not in config.warnings_to_ignore:
+                if "cache" not in nx.config.warnings_to_ignore:
                     warnings.warn(
                         "Note: conversions to backend graphs are saved to cache "
                         "(`G.__networkx_cache__` on the original graph) by default."
