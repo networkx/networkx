@@ -50,5 +50,6 @@ from networkx.drawing import *
 
 
 # load_and_call entry_points, set configs
-config = utils.config = utils.backends._set_configs_from_environment()
+config = utils.backends._set_configs_from_environment()
+utils.config = utils.configs.config = config  # type: ignore[attr-defined]
 type(config.backends).__doc__ = "All installed NetworkX backends and their configs."
