@@ -941,6 +941,13 @@ class _dispatchable:
         """Returns the result of the original function, or the backend function if
         the backend is specified and that backend implements `func`."""
 
+        if config.backend_kwargs:
+            # Prioritize **kwargs over **config.backend_kwargs
+            kwargs = {**config.backend_kwargs, **kwargs}
+            if backend is None:
+                backend = kwargs.pop("backend", None)
+            else:
+                kwargs.pop("backend", None)
         if not backends:
             # Fast path if no backends are installed
             if backend is not None and backend != "networkx":

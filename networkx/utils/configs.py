@@ -282,6 +282,12 @@ class NetworkXConfig(Config):
 
     Parameters
     ----------
+    backend : str or None
+        If not None, the backend to use for all dispatchable functions. This is
+        equivalent to using ``backend=`` keyword argument in all dispatchable
+        functions. Input graphs will be converted to the backend if necessary.
+        Default is None.
+
     backend_priority : list of backend names or dict or BackendPriorities
         Enable automatic conversion of graphs to backend graphs for functions
         implemented by the backend. Priority is given to backends listed earlier.
@@ -332,18 +338,37 @@ class NetworkXConfig(Config):
 
     - ``NETWORKX_BACKEND_PRIORITY_ALGOS``: same as ``NETWORKX_BACKEND_PRIORITY`` to set ``backend_priority.algos`.
 
+    ``backend`` and ``backend_priority`` configurations are similar in that they can
+    both be used to run an algorithm with a backend (converting inputs if necessary),
+    but they have important differences. ``backend_priority`` is "soft" and will only
+    use one of the specified backends if it is able to run the algorithm. This is a
+    safer option that behaves well--it doesn't raise--when backends are incomplete.
+    ``backend`` configuration is "hard" and directs all dispatchable calls to use
+    the specified backend. It will raise if the backend does not implement a function.
+
     This is a global configuration. Use with caution when using from multiple threads.
     """
 
+    # backend: str | None
     backend_priority: BackendPriorities
+    backend_kwargs: dict
     backends: Config
     cache_converted_graphs: bool
     fallback_to_nx: bool
     warnings_to_ignore: set[str]
 
+    def __new__(cls, **kwargs):
+        cfg = super().__new__(cls, **kwargs)
+        cfg.__class__._prev_kwargs = None
+        cfg.__class__._kwargs_stack = []
+        return cfg
+
     def _on_setattr(self, key, value):
         from .backends import backend_info
 
+        # if key == "backend":
+        #     if value is not None and value not in backend_info:
+        #         raise ValueError(f"Unknown backend when setting {key!r}: {value}")
         if key == "backend_priority":
             if isinstance(value, list):
                 getattr(self, key).algos = value
@@ -369,6 +394,13 @@ class NetworkXConfig(Config):
             if missing := {x for x in value if x not in backend_info}:
                 missing = ", ".join(map(repr, sorted(missing)))
                 raise ValueError(f"Unknown backend when setting {key!r}: {missing}")
+        elif key == "backend_kwargs":
+            if not isinstance(value, dict):
+                raise TypeError(f"{key!r} config must be a dict; got {value!r}")
+            if "backend" in value:
+                backend = value["backend"]
+                if backend is not None and backend not in backend_info:
+                    raise ValueError(f"Unknown backend when setting {key!r}: {backend}")
         elif key in {"cache_converted_graphs", "fallback_to_nx"}:
             if not isinstance(value, bool):
                 raise TypeError(f"{key!r} config must be True or False; got {value!r}")
@@ -386,14 +418,40 @@ class NetworkXConfig(Config):
                 )
         return value
 
+    # Let config as context manager collect kwargs to use in dispatchable functions
+    def __call__(self, **kwargs):
+        config_kwargs = {key: val for key, val in kwargs.items() if key in self}
+        extra_kwargs = {key: val for key, val in kwargs.items() if key not in self}
+        if d := config_kwargs.pop("backend_kwargs", None):
+            extra_kwargs.update(d)
+        prev = self.backend_kwargs
+        backend_kwargs = dict(prev, **extra_kwargs)
+        if backend_kwargs:
+            config_kwargs["backend_kwargs"] = backend_kwargs
+        super(self.__class__, self).__call__(**config_kwargs)
+        self.__class__._prev_kwargs = prev
+        return self
+
+    def __enter__(self):
+        super(self.__class__, self).__enter__()
+        self.__class__._kwargs_stack.append(self.__class__._prev_kwargs)
+        self.__class__._prev_kwargs = None
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        super(self.__class__, self).__exit__(exc_type, exc_value, traceback)
+        self.backend_kwargs = self.__class__._kwargs_stack.pop()
+
 
 # Backend configuration will be updated in backends.py
 config = NetworkXConfig(
+    # backend=None,
     backend_priority=BackendPriorities(
         algos=[],
         generators=[],
     ),
     backends=Config(),
+    backend_kwargs={},
     cache_converted_graphs=bool(
         os.environ.get("NETWORKX_CACHE_CONVERTED_GRAPHS", True)
     ),
