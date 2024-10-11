@@ -4,7 +4,7 @@ import typing
 import warnings
 from dataclasses import dataclass
 
-__all__ = ["Config", "config"]
+__all__ = ["Config"]
 
 
 @dataclass(init=False, eq=False, slots=True, kw_only=True, match_args=False)
@@ -385,22 +385,3 @@ class NetworkXConfig(Config):
                     + ", ".join(sorted(known_warnings))
                 )
         return value
-
-
-# Backend configuration will be updated in backends.py
-config = NetworkXConfig(
-    backend_priority=BackendPriorities(
-        algos=[],
-        generators=[],
-    ),
-    backends=Config(),
-    cache_converted_graphs=bool(
-        os.environ.get("NETWORKX_CACHE_CONVERTED_GRAPHS", True)
-    ),
-    fallback_to_nx=bool(os.environ.get("NETWORKX_FALLBACK_TO_NX", False)),
-    warnings_to_ignore={
-        x.strip()
-        for x in os.environ.get("NETWORKX_WARNINGS_TO_IGNORE", "").split(",")
-        if x.strip()
-    },
-)
