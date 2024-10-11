@@ -477,6 +477,7 @@ from importlib.metadata import entry_points
 
 import networkx as nx
 
+from .configs import BackendPriorities, Config, NetworkXConfig
 from .decorators import argmap
 
 __all__ = ["_dispatchable"]
@@ -538,30 +539,11 @@ def _get_backends(group, *, load_and_call=False):
 # It is valid to use "networkx"` as backend argument and in `config.backend_priority`.
 # We may make "networkx" a "proper" backend and have it in `backends` and `config.backends`.
 backends = _get_backends("networkx.backends")
-backend_info = _get_backends("networkx.backend_info", load_and_call=True)
-# Ensure all backends are in `backend_info`
-backend_info.update((backend, {}) for backend in backends.keys() - backend_info.keys())
+backend_info = {}  # fill backend_info after networkx is imported in __init__.py
 
 # Load and cache backends on-demand
 _loaded_backends = {}  # type: ignore[var-annotated]
 _registered_algorithms = {}
-
-# We must import from config after defining `backends` above
-from .configs import Config, config
-
-# Initialize default configuration for backends
-config.backends = Config(
-    **{
-        backend: (
-            cfg if isinstance(cfg := info["default_config"], Config) else Config(**cfg)
-        )
-        if "default_config" in info
-        else Config()
-        for backend, info in backend_info.items()
-    }
-)
-backend_info["networkx"] = {}
-type(config.backends).__doc__ = "All installed NetworkX backends and their configs."
 
 
 # Get default configuration from environment variables at import time
@@ -569,13 +551,50 @@ def _comma_sep_to_list(string):
     return [stripped for x in string.strip().split(",") if (stripped := x.strip())]
 
 
-def _set_backend_priority_from_environment():
-    """Initialize ``nx.config.backend_priority``.
+def _set_configs_from_environment():
+    """Initialize ``config.backend_priority``, load backend_info and config.
 
     This gets default values from environment variables (see ``nx.config`` for details).
     This function is run at the very end of importing networkx. It is run at this time
-    for predictability and cleanliness, but it may be fine to run this function whenever.
+    to avoid loading backend_info before the rest of networkx is imported in case a
+    backend uses networkx for its backend_info (e.g. subclassing the Config class.)
     """
+    # backend_info is defined above as empty dict. Fill it after import finishes.
+    backend_info.update(_get_backends("networkx.backend_info", load_and_call=True))
+    backend_info.update(
+        (backend, {}) for backend in backends.keys() - backend_info.keys()
+    )
+
+    # set up config based on backend_info and environment
+    config = NetworkXConfig(
+        backend_priority=BackendPriorities(
+            algos=[],
+            generators=[],
+        ),
+        backends=Config(
+            **{
+                backend: (
+                    cfg
+                    if isinstance(cfg := info["default_config"], Config)
+                    else Config(**cfg)
+                )
+                if "default_config" in info
+                else Config()
+                for backend, info in backend_info.items()
+            }
+        ),
+        cache_converted_graphs=bool(
+            os.environ.get("NETWORKX_CACHE_CONVERTED_GRAPHS", True)
+        ),
+        fallback_to_nx=bool(os.environ.get("NETWORKX_FALLBACK_TO_NX", False)),
+        warnings_to_ignore={
+            x.strip()
+            for x in os.environ.get("NETWORKX_WARNINGS_TO_IGNORE", "").split(",")
+            if x.strip()
+        },
+    )
+    backend_info["networkx"] = {}
+
     # NETWORKX_BACKEND_PRIORITY is the same as NETWORKX_BACKEND_PRIORITY_ALGOS
     priorities = {
         key[26:].lower(): val
@@ -597,8 +616,7 @@ def _set_backend_priority_from_environment():
     for key in sorted(priorities):
         backend_priority[key] = _comma_sep_to_list(priorities[key])
 
-
-_set_backend_priority_from_environment()
+    return config
 
 
 def _always_run(name, args, kwargs):
@@ -631,7 +649,7 @@ class _dispatchable:
                 category=DeprecationWarning,
                 stacklevel=2,
             )
-            return config.fallback_to_nx
+            return nx.config.fallback_to_nx
 
     # Note that chaining `@classmethod` and `@property` was removed in Python 3.13
     _fallback_to_nx = _fallback_to_nx()  # type: ignore[assignment,misc]
@@ -1011,11 +1029,11 @@ class _dispatchable:
                 for g in graphs_resolved.values()
             }
 
-        backend_priority = config.backend_priority.get(
+        backend_priority = nx.config.backend_priority.get(
             self.name,
-            config.backend_priority.generators
+            nx.config.backend_priority.generators
             if self._returns_graph
-            else config.backend_priority.algos,
+            else nx.config.backend_priority.algos,
         )
         if self._is_testing and backend_priority and backend_name is None:
             # Special path if we are running networkx tests with a backend.
@@ -1024,7 +1042,7 @@ class _dispatchable:
                 backend_priority[0],
                 args,
                 kwargs,
-                fallback_to_nx=config.fallback_to_nx,
+                fallback_to_nx=nx.config.fallback_to_nx,
             )
 
         graph_backend_names.discard(None)
@@ -1156,7 +1174,7 @@ class _dispatchable:
                     else:
                         raise
                 else:
-                    if config.fallback_to_nx and all(
+                    if nx.config.fallback_to_nx and all(
                         # Consider dropping the `isinstance` check here to allow
                         # duck-type graphs, but let's wait for a backend to ask us.
                         isinstance(g, nx.Graph)
@@ -1175,7 +1193,7 @@ class _dispatchable:
                         else:
                             extra = ""
                         raise NotImplementedError(msg_template % extra)
-            elif config.fallback_to_nx and all(
+            elif nx.config.fallback_to_nx and all(
                 # Consider dropping the `isinstance` check here to allow
                 # duck-type graphs, but let's wait for a backend to ask us.
                 isinstance(g, nx.Graph)
@@ -1199,7 +1217,7 @@ class _dispatchable:
             return self.orig_func(*args, **kwargs)
 
         # We may generalize fallback configuration as e.g. `nx.config.backend_fallback`
-        if config.fallback_to_nx or not graph_backend_names:
+        if nx.config.fallback_to_nx or not graph_backend_names:
             # Use "networkx" by default if there are no inputs from backends.
             # For example, graph generators should probably return NetworkX graphs
             # instead of raising NotImplementedError.
@@ -1900,7 +1918,7 @@ class _dispatchable:
                 backend_name,
                 args,
                 kwargs,
-                use_cache=config.cache_converted_graphs,
+                use_cache=nx.config.cache_converted_graphs,
                 mutations=mutations,
             )
         except NotImplementedError as exc:
