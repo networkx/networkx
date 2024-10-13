@@ -93,8 +93,6 @@ def random_layout(G, center=None, dim=2, seed=None, store_pos_as=None):
         an attribute named `attribute` which can be accessed with
         `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
 
-    .. Warning:: In version 3.6, `store_pos_as` will default to `pos`.
-
     Returns
     -------
     pos : dict
@@ -106,16 +104,7 @@ def random_layout(G, center=None, dim=2, seed=None, store_pos_as=None):
     >>> pos = nx.random_layout(G)
 
     """
-    import warnings
-
     import numpy as np
-
-    warnings.warn(
-        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
-        "This behavior can be suppressed with store_pos_as=None.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
 
     G, center = _process_params(G, center, dim)
     pos = seed.rand(len(G), dim) + center
@@ -153,8 +142,6 @@ def circular_layout(G, scale=1, center=None, dim=2, store_pos_as=None):
         an attribute named `attribute` which can be accessed with
         `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
 
-    .. Warning:: In version 3.6, `store_pos_as` will default to `pos`.
-
     Returns
     -------
     pos : dict
@@ -176,16 +163,7 @@ def circular_layout(G, scale=1, center=None, dim=2, store_pos_as=None):
     try to minimize edge crossings.
 
     """
-    import warnings
-
     import numpy as np
-
-    warnings.warn(
-        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
-        "This behavior can be suppressed with store_pos_as=None.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
 
     if dim < 2:
         raise ValueError("cannot handle dimensions < 2")
@@ -247,8 +225,6 @@ def shell_layout(
         an attribute named `attribute` which can be accessed with
         `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
 
-    .. Warning:: In version 3.6, `store_pos_as` will default to `pos`.
-
     Returns
     -------
     pos : dict
@@ -271,16 +247,7 @@ def shell_layout(
     try to minimize edge crossings.
 
     """
-    import warnings
-
     import numpy as np
-
-    warnings.warn(
-        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
-        "This behavior can be suppressed with store_pos_as=None.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
 
     if dim != 2:
         raise ValueError("can only handle 2 dimensions")
@@ -362,8 +329,6 @@ def bipartite_layout(
         an attribute named `attribute` which can be accessed with
         `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
 
-    .. Warning:: In version 3.6, `store_pos_as` will default to `pos`.
-
     Returns
     -------
     pos : dict
@@ -382,16 +347,7 @@ def bipartite_layout(
 
     """
 
-    import warnings
-
     import numpy as np
-
-    warnings.warn(
-        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
-        "This behavior can be suppressed with store_pos_as=None.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
 
     if align not in ("vertical", "horizontal"):
         msg = "align must be either vertical or horizontal."
@@ -518,8 +474,6 @@ def spring_layout(
         an attribute named `attribute` which can be accessed with
         `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
 
-    .. Warning:: In version 3.6, `store_pos_as` will default to `pos`.
-
     Returns
     -------
     pos : dict
@@ -533,16 +487,7 @@ def spring_layout(
     # The same using longer but equivalent function name
     >>> pos = nx.fruchterman_reingold_layout(G)
     """
-    import warnings
-
     import numpy as np
-
-    warnings.warn(
-        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
-        "This behavior can be suppressed with store_pos_as=None.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
 
     G, center = _process_params(G, center, dim)
 
@@ -791,8 +736,6 @@ def kamada_kawai_layout(
         an attribute named `attribute` which can be accessed with
         `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
 
-    .. Warning:: In version 3.6, `store_pos_as` will default to `pos`.
-
     Returns
     -------
     pos : dict
@@ -803,16 +746,7 @@ def kamada_kawai_layout(
     >>> G = nx.path_graph(4)
     >>> pos = nx.kamada_kawai_layout(G)
     """
-    import warnings
-
     import numpy as np
-
-    warnings.warn(
-        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
-        "This behavior can be suppressed with store_pos_as=None.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
 
     G, center = _process_params(G, center, dim)
     nNodes = len(G)
@@ -929,8 +863,6 @@ def spectral_layout(G, weight="weight", scale=1, center=None, dim=2, store_pos_a
         an attribute named `attribute` which can be accessed with
         `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
 
-    .. Warning:: In version 3.6, `store_pos_as` will default to `pos`.
-
     Returns
     -------
     pos : dict
@@ -950,16 +882,7 @@ def spectral_layout(G, weight="weight", scale=1, center=None, dim=2, store_pos_a
     eigenvalue solver (ARPACK).
     """
     # handle some special cases that break the eigensolvers
-    import warnings
-
     import numpy as np
-
-    warnings.warn(
-        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
-        "This behavior can be suppressed with store_pos_as=None.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
 
     G, center = _process_params(G, center, dim)
 
@@ -1068,8 +991,6 @@ def planar_layout(G, scale=1, center=None, dim=2, store_pos_as=None):
         an attribute named `attribute` which can be accessed with
         `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
 
-    .. Warning:: In version 3.6, `store_pos_as` will default to `pos`.
-
     Returns
     -------
     pos : dict
@@ -1085,16 +1006,7 @@ def planar_layout(G, scale=1, center=None, dim=2, store_pos_as=None):
     >>> G = nx.path_graph(4)
     >>> pos = nx.planar_layout(G)
     """
-    import warnings
-
     import numpy as np
-
-    warnings.warn(
-        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
-        "This behavior can be suppressed with store_pos_as=None.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
 
     if dim != 2:
         raise ValueError("can only handle 2 dimensions")
@@ -1162,8 +1074,6 @@ def spiral_layout(
         an attribute named `attribute` which can be accessed with
         `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
 
-    .. Warning:: In verison 3.6, `store_pos_as` will default to `pos`.
-
     Returns
     -------
     pos : dict
@@ -1185,16 +1095,7 @@ def spiral_layout(
     This algorithm currently only works in two dimensions.
 
     """
-    import warnings
-
     import numpy as np
-
-    warnings.warn(
-        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
-        "This behavior can be suppressed with store_pos_as=None.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
 
     if dim != 2:
         raise ValueError("can only handle 2 dimensions")
@@ -1263,8 +1164,6 @@ def multipartite_layout(
         an attribute named `attribute` which can be accessed with
         `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
 
-    .. Warning:: In version 3.6, `store_pos_as` will default to `pos`.
-
     Returns
     -------
     pos : dict
@@ -1290,16 +1189,7 @@ def multipartite_layout(
     have subset_key data, they will be placed in the corresponding layers.
 
     """
-    import warnings
-
     import numpy as np
-
-    warnings.warn(
-        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
-        "This behavior can be suppressed with store_pos_as=None.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
 
     if align not in ("vertical", "horizontal"):
         msg = "align must be either vertical or horizontal."
@@ -1415,8 +1305,6 @@ def arf_layout(
         an attribute named `attribute` which can be accessed with
         `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
 
-    .. Warning:: In version 3.6, `store_pos_as` will default to `pos`.
-
     References
     .. [1] "Self-Organization Applied to Dynamic Network Layout", M. Geipel,
             International Journal of Modern Physics C, 2007, Vol 18, No 10, pp. 1537-1549.
@@ -1434,13 +1322,6 @@ def arf_layout(
 
     """
     import warnings
-
-    warnings.warn(
-        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
-        "This behavior can be suppressed with store_pos_as=None.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
 
     import numpy as np
 
@@ -1570,8 +1451,6 @@ def forceatlas2_layout(
         an attribute named `attribute` which can be accessed with
         `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
 
-    .. Warning:: In version 3.6, `store_pos_as` will default to `pos`.
-
     Examples
     --------
     >>> import networkx as nx
@@ -1586,15 +1465,6 @@ def forceatlas2_layout(
            visualization designed for the Gephi software. PloS one, 9(6), e98679.
            https://doi.org/10.1371/journal.pone.0098679
     """
-    import warnings
-
-    warnings.warn(
-        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
-        "This behavior can be suppressed with store_pos_as=None.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
-
     import numpy as np
 
     if len(G) == 0:
@@ -1808,8 +1678,6 @@ def rescale_layout(pos, scale=1):
         an attribute named `attribute` which can be accessed with
         `G.nodes[...][attribute]`. The function still returns the dictionary.
 
-    .. Warning:: In future releases, `attribute` will default to `pos`.
-
     Returns
     -------
     pos : numpy array
@@ -1887,8 +1755,6 @@ def bfs_layout(G, start, *, align="vertical", scale=1, center=None, store_pos_as
         an attribute named `attribute` which can be accessed with
         `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
 
-    .. Warning:: In version 3.6, `store_pos_as` will default to `pos`.
-
     Returns
     -------
     pos : dict
@@ -1905,15 +1771,6 @@ def bfs_layout(G, start, *, align="vertical", scale=1, center=None, store_pos_as
     try to minimize edge crossings.
 
     """
-    import warnings
-
-    warnings.warn(
-        "In v3.6, store_pos_as will default to 'pos', modifying G in place.\n"
-        "This behavior can be suppressed with store_pos_as=None.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
-
     G, center = _process_params(G, center, 2)
 
     # Compute layers with BFS

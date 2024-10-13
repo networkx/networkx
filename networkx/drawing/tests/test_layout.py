@@ -2,9 +2,6 @@
 
 import pytest
 
-# Ignore the numerous Deprecation warnings in the nx_pylab module right now
-pytestmark = pytest.mark.filterwarnings("ignore", category=DeprecationWarning)
-
 import networkx as nx
 
 np = pytest.importorskip("numpy")
