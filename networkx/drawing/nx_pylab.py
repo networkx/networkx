@@ -34,7 +34,7 @@ from networkx.drawing.layout import (
 )
 
 __all__ = [
-    "new_draw",
+    "display",
     "apply_matplotlib_colors",
     "draw",
     "draw_networkx",
@@ -116,7 +116,7 @@ def apply_matplotlib_colors(
         )
 
 
-def new_draw(
+def display(
     G,
     canvas=None,
     **kwargs,
@@ -386,15 +386,6 @@ def new_draw(
     The input graph. This is potentially useful for dispatching visualization
     functions.
     """
-    import warnings
-
-    warnings.warn(
-        "The new_draw function is temporary. It exposes the new visualization API\n"
-        "and will replace the current nx.draw implementation.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
-
     from collections import Counter
 
     import matplotlib as mpl
@@ -1098,15 +1089,6 @@ def draw(G, pos=None, ax=None, **kwds):
     Also see the NetworkX drawing examples at
     https://networkx.org/documentation/latest/auto_examples/index.html
     """
-    import warnings
-
-    warnings.warn(
-        "The signature of nx.draw will be changed in v3.6.\n"
-        "The new draw function is available as nx.new_draw.\n"
-        "That function will replace this one in v3.6.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
 
     import matplotlib.pyplot as plt
 
@@ -1281,15 +1263,6 @@ def draw_networkx(G, pos=None, arrows=None, with_labels=True, **kwds):
     draw_networkx_labels
     draw_networkx_edge_labels
     """
-    import warnings
-
-    warnings.warn(
-        "draw_networkx is deprecated and will be removed in v3.6.\n"
-        "Use the new visualization API: nx.new_draw or after v3.6, nx.draw.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
-
     from inspect import signature
 
     import matplotlib.pyplot as plt
@@ -1435,15 +1408,6 @@ def draw_networkx_nodes(
     draw_networkx_labels
     draw_networkx_edge_labels
     """
-    import warnings
-
-    warnings.warn(
-        "draw_networkx_nodes is deprecated and will be removed in v3.6.\n"
-        "Use the new visualization API: nx.new_draw or after v3.6, nx.draw.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
-
     from collections.abc import Iterable
 
     import matplotlib as mpl
@@ -1914,13 +1878,6 @@ def draw_networkx_edges(
     """
     import warnings
 
-    warnings.warn(
-        "draw_networkx_edges is deprecated and will be removed in v3.6.\n"
-        "Use the new visualization API: nx.new_draw or after v3.6, nx.draw.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
-
     import matplotlib as mpl
     import matplotlib.collections  # call as mpl.collections
     import matplotlib.colors  # call as mpl.colors
@@ -2198,15 +2155,6 @@ def draw_networkx_labels(
     draw_networkx_edges
     draw_networkx_edge_labels
     """
-    import warnings
-
-    warnings.warn(
-        "draw_networkx_labels is deprecated and will be removed in v3.6.\n"
-        "Use the new visualization API: nx.new_draw or after v3.6, nx.draw.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
-
     import matplotlib.pyplot as plt
 
     if ax is None:
@@ -2382,15 +2330,6 @@ def draw_networkx_edge_labels(
     draw_networkx_edges
     draw_networkx_labels
     """
-    import warnings
-
-    warnings.warn(
-        "draw_networkx_edge_labels is deprecated and will be removed in v3.6.\n"
-        "Use the new visualization API: nx.new_draw or after v3.6, nx.draw.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
-
     import matplotlib as mpl
     import matplotlib.pyplot as plt
     import numpy as np
@@ -2671,15 +2610,6 @@ def draw_circular(G, **kwargs):
     --------
     :func:`~networkx.drawing.layout.circular_layout`
     """
-    import warnings
-
-    warnings.warn(
-        "The interpretation of parameters for draw_circular will change in v3.6.\n"
-        "Please refer to nx.new_draw to see how the function signature is changing.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
-
     draw(G, circular_layout(G), **kwargs)
 
 
@@ -2720,15 +2650,6 @@ def draw_kamada_kawai(G, **kwargs):
     --------
     :func:`~networkx.drawing.layout.kamada_kawai_layout`
     """
-    import warnings
-
-    warnings.warn(
-        "The use of parameters for draw_kamada_kawai will change in v3.6.\n"
-        "Please refer to nx.new_draw to see how the function signature is changing.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
-
     draw(G, kamada_kawai_layout(G), **kwargs)
 
 
@@ -2768,15 +2689,6 @@ def draw_random(G, **kwargs):
     --------
     :func:`~networkx.drawing.layout.random_layout`
     """
-    import warnings
-
-    warnings.warn(
-        "The interpretation of parameters for draw_random will change in v3.6.\n"
-        "Please refer to nx.new_draw to see how the function signature is changing.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
-
     draw(G, random_layout(G), **kwargs)
 
 
@@ -2819,15 +2731,6 @@ def draw_spectral(G, **kwargs):
     --------
     :func:`~networkx.drawing.layout.spectral_layout`
     """
-    import warnings
-
-    warnings.warn(
-        "The interpretation of parameters for draw_spectral will change in v3.6.\n"
-        "Please refer to nx.new_draw to see how the function signature is changing.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
-
     draw(G, spectral_layout(G), **kwargs)
 
 
@@ -2871,15 +2774,6 @@ def draw_spring(G, **kwargs):
     draw
     :func:`~networkx.drawing.layout.spring_layout`
     """
-    import warnings
-
-    warnings.warn(
-        "The interpretation of parameters for draw_spring will change in v3.6.\n"
-        "Please refer to nx.new_draw to see how the function signature is changing.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
-
     draw(G, spring_layout(G), **kwargs)
 
 
@@ -2925,15 +2819,6 @@ def draw_shell(G, nlist=None, **kwargs):
     --------
     :func:`~networkx.drawing.layout.shell_layout`
     """
-    import warnings
-
-    warnings.warn(
-        "The interpretation of parameters for draw_shell will change in v3.6.\n"
-        "Please refer to nx.new_draw to see how the function signature is changing.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
-
     draw(G, shell_layout(G, nlist=nlist), **kwargs)
 
 
@@ -2978,15 +2863,6 @@ def draw_planar(G, **kwargs):
     --------
     :func:`~networkx.drawing.layout.planar_layout`
     """
-    import warnings
-
-    warnings.warn(
-        "The interpretation of parameters for draw_planar will change in v3.6.\n"
-        "Please refer to nx.new_draw to see how the function signature is changing.",
-        category=DeprecationWarning,
-        stacklevel=3,
-    )
-
     draw(G, planar_layout(G), **kwargs)
 
 

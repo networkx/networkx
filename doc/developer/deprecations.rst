@@ -61,10 +61,3 @@ Version 3.6
 * Remove ``compute_v_structures`` from ``algorithms/dag.py``.
 * Remove ``link`` kwarg from ``readwrite/json_graph/node_link.py``;
   Change ``edges`` default value to ``edges``.
-* Remove ``draw_networkx`` from ``drawing/nx_pylab.py``.
-* Remove ``draw_networkx_nodes`` from ``drawing/nx_pylab.py``.
-* Remove ``draw_networkx_edges`` from ``drawing/nx_pylab.py``.
-* Remove ``draw_networkx_labels`` from ``drawing/nx_pylab.py``.
-* Remove ``draw_networkx_edge_labels`` from ``drawing/nx_pylab.py``.
-* Rename ``new_draw`` to ``draw`` and remove the current ``draw`` implementation in ``drawing/nx_pylab.py``. 
-* Update ``draw_<layout>`` to be compatible with new draw API.
