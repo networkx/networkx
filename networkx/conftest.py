@@ -57,9 +57,12 @@ def pytest_configure(config):
             "        Try `pip install -e .`, or change your PYTHONPATH\n"
             "        Make sure python finds the networkx repo you are testing\n\n"
         )
+    config.backend = backend
     if backend:
+        # We will update `networkx.config.backend_priority` below in `*_modify_items`
+        # to allow tests to get set up with normal networkx graphs.
         networkx.utils.backends.backends["nx_loopback"] = loopback_ep["nx_loopback"]
-        networkx.config["backend_priority"] = [backend]
+        networkx.utils.backends.backend_info["nx_loopback"] = {}
         networkx.config.backends = networkx.utils.Config(
             nx_loopback=networkx.utils.Config(),
             **networkx.config.backends,
@@ -67,19 +70,23 @@ def pytest_configure(config):
         fallback_to_nx = config.getoption("--fallback-to-nx")
         if not fallback_to_nx:
             fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
-        networkx.utils.backends._dispatchable._fallback_to_nx = bool(fallback_to_nx)
+        networkx.config.fallback_to_nx = bool(fallback_to_nx)
 
 
 def pytest_collection_modifyitems(config, items):
     # Setting this to True here allows tests to be set up before dispatching
     # any function call to a backend.
-    networkx.utils.backends._dispatchable._is_testing = True
-    if backend_priority := networkx.config["backend_priority"]:
+    if config.backend:
         # Allow pluggable backends to add markers to tests (such as skip or xfail)
         # when running in auto-conversion test mode
-        backend = networkx.utils.backends.backends[backend_priority[0]].load()
-        if hasattr(backend, "on_start_tests"):
-            getattr(backend, "on_start_tests")(items)
+        backend_name = config.backend
+        if backend_name != "networkx":
+            networkx.utils.backends._dispatchable._is_testing = True
+            networkx.config.backend_priority.algos = [backend_name]
+            networkx.config.backend_priority.generators = [backend_name]
+            backend = networkx.utils.backends.backends[backend_name].load()
+            if hasattr(backend, "on_start_tests"):
+                getattr(backend, "on_start_tests")(items)
 
     if config.getoption("--runslow"):
         # --runslow given in cli: do not skip slow tests

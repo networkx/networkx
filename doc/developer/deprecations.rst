@@ -74,4 +74,5 @@ Version 3.6
   - ``arf_layout``
   In ``drawing/layouts.py
 * Remove ``link`` kwarg from ``readwrite/json_graph/node_link.py``;
-  Change ``edges`` default value to ``edges``.
+  Remove the ``FutureWarning`` re: the default value of ``edges`` and change the
+  default value to ``"edges"``.
