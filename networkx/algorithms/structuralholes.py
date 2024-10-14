@@ -177,7 +177,7 @@ def local_constraint(G, u, v, weight=None):
         The constraint of the node ``v`` in the graph ``G``.
 
     See also
-    -------
+    --------
     constraint
 
     References
