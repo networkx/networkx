@@ -30,26 +30,40 @@ def single_source_shortest_path_length(G, source, cutoff=None):
        Starting node for path
 
     cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search. Only target nodes where the shortest path to
+        this node from the source node contains <= `cutoff` edges will be
+        included in the returned results.
 
     Returns
     -------
     lengths : dict
-        Dict keyed by node to shortest path length to source.
+        Dict keyed by target node to shortest path length from source node.
 
     Examples
     --------
-    >>> G = nx.path_graph(5)
-    >>> length = nx.single_source_shortest_path_length(G, 0)
-    >>> length[4]
-    4
-    >>> for node in length:
-    ...     print(f"{node}: {length[node]}")
-    0: 0
-    1: 1
-    2: 2
-    3: 3
-    4: 4
+    Find shortest path lengths::
+
+        >>> G = nx.path_graph(5)
+        >>> length = nx.single_source_shortest_path_length(G, 0)
+        >>> length[4]
+        4
+        >>> for node in length:
+        ...     print(f"{node}: {length[node]}")
+        0: 0
+        1: 1
+        2: 2
+        3: 3
+        4: 4
+
+    Only include paths with length less than or equal to the `cutoff` keyword
+    argument::
+
+        >>> length = nx.single_source_shortest_path_length(G, 0, cutoff=2)
+        >>> for node in length:
+        ...     print(f"{node}: {length[node]}")
+        0: 0
+        1: 1
+        2: 2
 
     See Also
     --------
@@ -108,7 +122,9 @@ def single_target_shortest_path_length(G, target, cutoff=None):
        Target node for path
 
     cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search. Only source nodes where the shortest path
+        from this node to the target node contains <= `cutoff` edges will be
+        included in the returned results.
 
     Returns
     -------
@@ -117,17 +133,29 @@ def single_target_shortest_path_length(G, target, cutoff=None):
 
     Examples
     --------
-    >>> G = nx.path_graph(5, create_using=nx.DiGraph())
-    >>> length = dict(nx.single_target_shortest_path_length(G, 4))
-    >>> length[0]
-    4
-    >>> for node in range(5):
-    ...     print(f"{node}: {length[node]}")
-    0: 4
-    1: 3
-    2: 2
-    3: 1
-    4: 0
+    Find shortest path lengths::
+
+        >>> G = nx.path_graph(5, create_using=nx.DiGraph())
+        >>> length = dict(nx.single_target_shortest_path_length(G, 4))
+        >>> length[0]
+        4
+        >>> for node in sorted(length):
+        ...     print(f"{node}: {length[node]}")
+        0: 4
+        1: 3
+        2: 2
+        3: 1
+        4: 0
+
+    Only include paths with length less than or equal to the `cutoff` keyword
+    argument::
+
+        >>> length = dict(nx.single_target_shortest_path_length(G, 4, cutoff=2))
+        >>> for node in sorted(length):
+        ...     print(f"{node}: {length[node]}")
+        2: 2
+        3: 1
+        4: 0
 
     See Also
     --------
@@ -165,7 +193,7 @@ def all_pairs_shortest_path_length(G, cutoff=None):
 
     cutoff : integer, optional
         Depth at which to stop the search. Only paths of length at most
-        `cutoff` are returned.
+        `cutoff` (i.e. paths containing <= `cutoff` edges) are returned.
 
     Returns
     -------
@@ -179,20 +207,34 @@ def all_pairs_shortest_path_length(G, cutoff=None):
 
     Examples
     --------
-    >>> G = nx.path_graph(5)
-    >>> length = dict(nx.all_pairs_shortest_path_length(G))
-    >>> for node in [0, 1, 2, 3, 4]:
-    ...     print(f"1 - {node}: {length[1][node]}")
-    1 - 0: 1
-    1 - 1: 0
-    1 - 2: 1
-    1 - 3: 2
-    1 - 4: 3
-    >>> length[3][2]
-    1
-    >>> length[2][2]
-    0
+    Find pairwise shortest path lengths::
 
+        >>> G = nx.path_graph(5)
+        >>> length = dict(nx.all_pairs_shortest_path_length(G))
+        >>> for node in [0, 1, 2, 3, 4]:
+        ...     print(f"1 - {node}: {length[1][node]}")
+        1 - 0: 1
+        1 - 1: 0
+        1 - 2: 1
+        1 - 3: 2
+        1 - 4: 3
+        >>> length[3][2]
+        1
+        >>> length[2][2]
+        0
+
+    Only include paths with length less than or equal to the `cutoff` keyword
+    argument::
+
+        >>> length = dict(nx.all_pairs_shortest_path_length(G, cutoff=2))
+        >>> for node in [0, 1, 2, 3, 4]:
+        ...     nlen = length[1][node] if node in length[1] else "N/A"
+        ...     print(f"1 - {node}: {nlen}")
+        1 - 0: 1
+        1 - 1: 0
+        1 - 2: 1
+        1 - 3: 2
+        1 - 4: N/A
     """
     length = single_source_shortest_path_length
     # TODO This can be trivially parallelized.
@@ -331,7 +373,9 @@ def single_source_shortest_path(G, source, cutoff=None):
        Starting node for path
 
     cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search. Only target nodes where the shortest path to
+        this node from the source node contains <= `cutoff` edges will be
+        included in the returned results.
 
     Returns
     -------
@@ -340,10 +384,17 @@ def single_source_shortest_path(G, source, cutoff=None):
 
     Examples
     --------
-    >>> G = nx.path_graph(5)
-    >>> path = nx.single_source_shortest_path(G, 0)
-    >>> path[4]
-    [0, 1, 2, 3, 4]
+    Find shortest paths::
+
+        >>> G = nx.path_graph(5)
+        >>> nx.single_source_shortest_path(G, 0)
+        {0: [0], 1: [0, 1], 2: [0, 1, 2], 3: [0, 1, 2, 3], 4: [0, 1, 2, 3, 4]}
+
+    Only include paths with length less than or equal to the `cutoff` keyword
+    argument::
+
+        >>> nx.single_source_shortest_path(G, 0, cutoff=2)
+        {0: [0], 1: [0, 1], 2: [0, 1, 2]}
 
     Notes
     -----
@@ -414,19 +465,28 @@ def single_target_shortest_path(G, target, cutoff=None):
        Target node for path
 
     cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search. Only source nodes where the shortest path
+        from this node to the target node contains <= `cutoff` edges will be
+        included in the returned results.
 
     Returns
     -------
     paths : dictionary
-        Dictionary, keyed by target, of shortest paths.
+        Dictionary, keyed by source, of shortest paths.
 
     Examples
     --------
-    >>> G = nx.path_graph(5, create_using=nx.DiGraph())
-    >>> path = nx.single_target_shortest_path(G, 4)
-    >>> path[0]
-    [0, 1, 2, 3, 4]
+    Find shortest paths::
+
+        >>> G = nx.path_graph(5, create_using=nx.DiGraph())
+        >>> nx.single_target_shortest_path(G, 4)
+        {4: [4], 3: [3, 4], 2: [2, 3, 4], 1: [1, 2, 3, 4], 0: [0, 1, 2, 3, 4]}
+
+    Only include paths with length less than or equal to the `cutoff` keyword
+    argument::
+
+        >>> nx.single_target_shortest_path(G, 4, cutoff=2)
+        {4: [4], 3: [3, 4], 2: [2, 3, 4]}
 
     Notes
     -----
@@ -463,8 +523,8 @@ def all_pairs_shortest_path(G, cutoff=None):
     G : NetworkX graph
 
     cutoff : integer, optional
-        Depth at which to stop the search. Only paths of length at most
-        `cutoff` are returned.
+        Depth at which to stop the search. Only paths containing at most
+        `cutoff` edges are returned.
 
     Returns
     -------
@@ -473,10 +533,19 @@ def all_pairs_shortest_path(G, cutoff=None):
 
     Examples
     --------
-    >>> G = nx.path_graph(5)
-    >>> path = dict(nx.all_pairs_shortest_path(G))
-    >>> print(path[0][4])
-    [0, 1, 2, 3, 4]
+    Find shortest paths::
+
+        >>> G = nx.path_graph(5)
+        >>> path = dict(nx.all_pairs_shortest_path(G))
+        >>> print(path[0])
+        {0: [0], 1: [0, 1], 2: [0, 1, 2], 3: [0, 1, 2, 3], 4: [0, 1, 2, 3, 4]}
+
+    Only include paths with length less than or equal to the `cutoff` keyword
+    argument::
+
+        >>> path = dict(nx.all_pairs_shortest_path(G, cutoff=2))
+        >>> print(path[0])
+        {0: [0], 1: [0, 1], 2: [0, 1, 2]}
 
     Notes
     -----
@@ -510,7 +579,8 @@ def predecessor(G, source, target=None, cutoff=None, return_seen=None):
        source and target are returned
 
     cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search. Only paths of length <= `cutoff` are
+        returned.
 
     return_seen : bool, optional (default=None)
         Whether to return a dictionary, keyed by node, of the level (number of
