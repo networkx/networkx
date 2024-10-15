@@ -2310,6 +2310,8 @@ class _dispatchable:
 
         lines.pop()  # Remove last empty line
         to_add = "\n    ".join(lines)
+        if not self._orig_doc:
+            return f"The original docstring for {self.name} was empty.\n\n    {to_add}"
         return f"{self._orig_doc.rstrip()}\n\n    {to_add}"
 
     def __reduce__(self):

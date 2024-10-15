@@ -19,6 +19,10 @@ from networkx.exception import *
 from networkx import utils
 from networkx.utils import _clear_cache, _dispatchable
 
+# load_and_call entry_points, set configs
+config = utils.backends._set_configs_from_environment()
+utils.config = utils.configs.config = config  # type: ignore[attr-defined]
+
 from networkx import classes
 from networkx.classes import filters
 from networkx.classes import *
@@ -47,8 +51,3 @@ from networkx.linalg import *
 
 from networkx import drawing
 from networkx.drawing import *
-
-
-# load_and_call entry_points, set configs
-config = utils.backends._set_configs_from_environment()
-utils.config = utils.configs.config = config  # type: ignore[attr-defined]
