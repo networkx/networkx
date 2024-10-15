@@ -19,16 +19,19 @@ Release Process
 
 - Autogenerate release notes:
 
-      changelist ${ORG}/${REPO} networkx-${PREVIOUS} main --version ${VERSION}  --out ${NOTES} --format rst
+      changelist ${ORG}/${REPO} networkx-${PREVIOUS} main --version ${VERSION} --out ${NOTES} --format rst
+      changelist ${ORG}/${REPO} networkx-${PREVIOUS} main --version ${VERSION} --out ${VERSION}.md
 
 - Edit ``doc/_static/version_switcher.json`` in order to add the release, move the
   key value pair `"preferred": true` to the most recent stable version, and commit.
+
+- Update ``doc/release/index.rst``.
 
 - Update ``__version__`` in ``networkx/__init__.py``.
 
 - Commit changes::
 
-   git add networkx/__init__.py ${NOTES} doc/_static/version_switcher.json
+   git add networkx/__init__.py ${NOTES} doc/_static/version_switcher.json doc/release/index.rst
    git commit -m "Designate ${VERSION} release"
 
 - Add the version number as a tag in git::

@@ -22,7 +22,6 @@ __all__ = [
     "np_random_state",
     "py_random_state",
     "argmap",
-    "deprecate_positional_args",
 ]
 
 
@@ -1236,60 +1235,3 @@ class argmap:
         for line in argmap._flatten(lines, set()):
             yield f"{argmap._tabs[:depth]}{line}"
             depth += (line[-1:] == ":") - (line[-1:] == "#")
-
-
-# Vendored in from https://github.com/scikit-learn/scikit-learn/blob/8ed0270b99344cee9bb253cbfa1d986561ea6cd7/sklearn/utils/validation.py#L37C1-L90C44
-def deprecate_positional_args(func=None, *, version):
-    """Decorator for methods that issues warnings for positional arguments.
-
-    Using the keyword-only argument syntax in pep 3102, arguments after the
-    * will issue a warning when passed as a positional argument.
-
-    Parameters
-    ----------
-    func : callable, default=None
-        Function to check arguments on.
-    version : callable, default="1.3"
-        The version when positional arguments will result in error.
-    """
-
-    def _inner_deprecate_positional_args(f):
-        sig = signature(f)
-        kwonly_args = []
-        all_args = []
-
-        for name, param in sig.parameters.items():
-            if param.kind == Parameter.POSITIONAL_OR_KEYWORD:
-                all_args.append(name)
-            elif param.kind == Parameter.KEYWORD_ONLY:
-                kwonly_args.append(name)
-
-        @wraps(f)
-        def inner_f(*args, **kwargs):
-            extra_args = len(args) - len(all_args)
-            if extra_args <= 0:
-                return f(*args, **kwargs)
-
-            # extra_args > 0
-            args_msg = [
-                f"{name}={arg}"
-                for name, arg in zip(kwonly_args[:extra_args], args[-extra_args:])
-            ]
-            args_msg = ", ".join(args_msg)
-            warnings.warn(
-                (
-                    f"Pass {args_msg} as keyword args. From NetworkX version "
-                    f"{version} passing these as positional arguments "
-                    "will result in an error"
-                ),
-                FutureWarning,
-            )
-            kwargs.update(zip(sig.parameters, args))
-            return f(**kwargs)
-
-        return inner_f
-
-    if func is not None:
-        return _inner_deprecate_positional_args(func)
-
-    return _inner_deprecate_positional_args

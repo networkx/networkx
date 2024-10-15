@@ -1,7 +1,17 @@
-networkx 3.4rc0
-===============
+NetworkX 3.4
+============
 
-We're happy to announce the release of networkx 3.4rc0!
+Release date: 10 October 2024
+
+Supports Python 3.10, 3.11, 3.12, and 3.13.
+
+NetworkX is a Python package for the creation, manipulation, and study of the
+structure, dynamics, and functions of complex networks.
+
+For more information, please visit our `website <https://networkx.org/>`_
+and our :ref:`gallery of examples <examples_gallery>`.
+Please send comments and questions to the `networkx-discuss mailing list
+<http://groups.google.com/group/networkx-discuss>`_.
 
 API Changes
 -----------
@@ -40,6 +50,8 @@ Enhancements
 - added nx-parallel gsoc project (`#7620 <https://github.com/networkx/networkx/pull/7620>`_).
 - Harmonic diameter (`#5251 <https://github.com/networkx/networkx/pull/5251>`_).
 - Allow dispatch machinery to fall back to networkx (`#7585 <https://github.com/networkx/networkx/pull/7585>`_).
+- Add ``create_using`` parameter for random graphs (`#5672 <https://github.com/networkx/networkx/pull/5672>`_).
+- Add config option to disable warning when using cached value (`#7497 <https://github.com/networkx/networkx/pull/7497>`_).
 
 Bug Fixes
 ---------
@@ -86,6 +98,9 @@ Documentation
 - Example fix for issue 7633 (`#7634 <https://github.com/networkx/networkx/pull/7634>`_).
 - Fix: Correct community color assignment in Girvan-Newman community detection (`#7644 <https://github.com/networkx/networkx/pull/7644>`_).
 - Updated docstring for generators/karate_club_graph() (`#7626 <https://github.com/networkx/networkx/pull/7626>`_).
+- Updates documentation to include details about using NetworkX with backends (`#7611 <https://github.com/networkx/networkx/pull/7611>`_).
+- Add examples section to ``to_scipy_sparse_array`` (`#7627 <https://github.com/networkx/networkx/pull/7627>`_).
+- Add examples to docstrings of subgraph_(iso/monomorphism) methods (`#7622 <https://github.com/networkx/networkx/pull/7622>`_).
 
 Maintenance
 -----------
@@ -145,6 +160,7 @@ Maintenance
 - Update pygraphviz (1.14) (`#7654 <https://github.com/networkx/networkx/pull/7654>`_).
 - modified product.py to raise NodeNotFound when 'root is not in H' (`#7635 <https://github.com/networkx/networkx/pull/7635>`_).
 - Support Python 3.13 (`#7661 <https://github.com/networkx/networkx/pull/7661>`_).
+- Use official Python 3.13 release (`#7667 <https://github.com/networkx/networkx/pull/7667>`_).
 
 Other
 -----
@@ -154,7 +170,7 @@ Other
 Contributors
 ------------
 
-52 authors added to this release (alphabetically):
+53 authors added to this release (alphabetically):
 
 - `@finaltrip <https://github.com/finaltrip>`_
 - `@goodactive <https://github.com/goodactive>`_
@@ -204,12 +220,13 @@ Contributors
 - Sebastiano Vigna (`@vigna <https://github.com/vigna>`_)
 - STEVEN  ADAMS (`@hugehope <https://github.com/hugehope>`_)
 - Thomas J. Fan (`@thomasjpfan <https://github.com/thomasjpfan>`_)
+- Till Hoffmann (`@tillahoffmann <https://github.com/tillahoffmann>`_)
 - Vanshika Mishra (`@vanshika230 <https://github.com/vanshika230>`_)
 - Woojin Jung (`@WoojinJung-04 <https://github.com/WoojinJung-04>`_)
 - Yury Fedotov (`@yury-fedotov <https://github.com/yury-fedotov>`_)
 - Łukasz (`@lkk7 <https://github.com/lkk7>`_)
 
-27 reviewers added to this release (alphabetically):
+28 reviewers added to this release (alphabetically):
 
 - `@finaltrip <https://github.com/finaltrip>`_
 - `@inbalh1 <https://github.com/inbalh1>`_
@@ -237,7 +254,9 @@ Contributors
 - Ross Barnowski (`@rossbar <https://github.com/rossbar>`_)
 - Sanchit Ram Arvind (`@sanchitram1 <https://github.com/sanchitram1>`_)
 - Sebastiano Vigna (`@vigna <https://github.com/vigna>`_)
+- Till Hoffmann (`@tillahoffmann <https://github.com/tillahoffmann>`_)
 - Woojin Jung (`@WoojinJung-04 <https://github.com/WoojinJung-04>`_)
 
-_These lists are automatically generated, and may not be complete or may contain duplicates._
+_These lists are automatically generated, and may not be complete or may contain
+duplicates._
 

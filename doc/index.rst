@@ -18,6 +18,8 @@ It provides:
    for many applications;
 -  a rapid development environment for collaborative, multidisciplinary
    projects;
+-  support for algorithm acceleration and additional features through
+   third-party backends;
 -  an interface to existing numerical algorithms and code written in C,
    C++, and FORTRAN; and
 -  the ability to painlessly work with large nonstandard data sets.
@@ -118,6 +120,7 @@ Bibliography
 
    install
    tutorial
+   backends
    reference/index
    auto_examples/index
    developer/index

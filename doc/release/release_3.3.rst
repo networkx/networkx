@@ -1,7 +1,5 @@
-networkx 3.3
+NetworkX 3.3
 ============
-
-We're happy to announce the release of networkx 3.3!
 
 Release date: 6 April 2024
 
