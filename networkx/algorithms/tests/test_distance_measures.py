@@ -1,3 +1,4 @@
+import math
 from random import Random
 
 import pytest
@@ -51,6 +52,23 @@ class TestDistance:
 
     def test_diameter(self):
         assert nx.diameter(self.G) == 6
+
+    def test_harmonic_diameter(self):
+        assert abs(nx.harmonic_diameter(self.G) - 2.0477815699658715) < 1e-12
+
+    def test_harmonic_diameter_empty(self):
+        assert math.isnan(nx.harmonic_diameter(nx.empty_graph()))
+
+    def test_harmonic_diameter_single_node(self):
+        assert math.isnan(nx.harmonic_diameter(nx.empty_graph(1)))
+
+    def test_harmonic_diameter_discrete(self):
+        assert math.isinf(nx.harmonic_diameter(nx.empty_graph(3)))
+
+    def test_harmonic_diameter_not_strongly_connected(self):
+        DG = nx.DiGraph()
+        DG.add_edge(0, 1)
+        assert nx.harmonic_diameter(DG) == 2
 
     def test_radius(self):
         assert nx.radius(self.G) == 4
