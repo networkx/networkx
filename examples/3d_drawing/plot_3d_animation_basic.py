@@ -9,6 +9,7 @@ for 3D graph visualization.
 
 This example shows a basic animation incrementing the camera view.
 """
+
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
