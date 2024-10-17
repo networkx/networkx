@@ -374,7 +374,7 @@ def test_return_types():
     nodes = nx.draw_networkx_nodes(G, pos)
     assert isinstance(nodes, PathCollection)
     # edges
-    edges = nx.draw_networkx_edges(dG,dpos, arrows=True)
+    edges = nx.draw_networkx_edges(dG, dpos, arrows=True)
     assert isinstance(edges, list)
     if len(edges) > 0:
         assert isinstance(edges[0], FancyArrowPatch)
