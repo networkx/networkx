@@ -275,10 +275,10 @@ class BackendPriorities(Config, strict=False):
 class NetworkXConfig(Config):
     """Configuration for NetworkX that controls behaviors such as how to use backends.
 
-    Attribute and bracket notation are supported for getting and setting configurations:
+    Attribute and bracket notation are supported for getting and setting configurations::
 
-    >>> nx.config.backend_priority == nx.config["backend_priority"]
-    True
+        >>> nx.config.backend_priority == nx.config["backend_priority"]
+        True
 
     Parameters
     ----------
@@ -330,7 +330,7 @@ class NetworkXConfig(Config):
 
     and can be used for finer control of ``backend_priority`` such as:
 
-    - ``NETWORKX_BACKEND_PRIORITY_ALGOS``: same as ``NETWORKX_BACKEND_PRIORITY`` to set ``backend_priority.algos`.
+    - ``NETWORKX_BACKEND_PRIORITY_ALGOS``: same as ``NETWORKX_BACKEND_PRIORITY`` to set ``backend_priority.algos``.
 
     This is a global configuration. Use with caution when using from multiple threads.
     """

@@ -569,6 +569,8 @@ sp[3]
 See {doc}`/reference/algorithms/index` for details on graph algorithms
 supported.
 
+(using-networkx-backends)=
+
 ## Using NetworkX backends
 
 NetworkX can be configured to use separate thrid-party backends to improve
