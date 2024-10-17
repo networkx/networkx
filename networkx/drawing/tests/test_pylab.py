@@ -368,19 +368,21 @@ def test_return_types():
 
     G = nx.cubical_graph(nx.Graph)
     dG = nx.cubical_graph(nx.DiGraph)
+    pos = nx.spring_layout(G)
+    dpos = nx.spring_layout(dG)
     # nodes
-    nodes = nx.draw_networkx_nodes(G)
+    nodes = nx.draw_networkx_nodes(G, pos)
     assert isinstance(nodes, PathCollection)
     # edges
-    edges = nx.draw_networkx_edges(dG, arrows=True)
+    edges = nx.draw_networkx_edges(dG,dpos, arrows=True)
     assert isinstance(edges, list)
     if len(edges) > 0:
         assert isinstance(edges[0], FancyArrowPatch)
-    edges = nx.draw_networkx_edges(dG, arrows=False)
+    edges = nx.draw_networkx_edges(dG, dpos, arrows=False)
     assert isinstance(edges, LineCollection)
-    edges = nx.draw_networkx_edges(dG, arrows=None)
+    edges = nx.draw_networkx_edges(dG, dpos, arrows=None)
     assert isinstance(edges, LineCollection)
-    edges = nx.draw_networkx_edges(G, arrows=True)
+    edges = nx.draw_networkx_edges(G, pos, arrows=True)
     assert isinstance(edges, list)
     if len(edges) > 0:
         assert isinstance(edges[0], FancyArrowPatch)
