@@ -362,6 +362,32 @@ def test_directed_edges_linestyle_sequence(style_seq):
         assert fap.get_linestyle() == style
 
 
+def test_return_types():
+    from matplotlib.collections import LineCollection, PathCollection
+    from matplotlib.patches import FancyArrowPatch
+
+    G = nx.cubical_graph(nx.Graph)
+    dG = nx.cubical_graph(nx.DiGraph)
+    pos = nx.spring_layout(G)
+    dpos = nx.spring_layout(dG)
+    # nodes
+    nodes = nx.draw_networkx_nodes(G, pos)
+    assert isinstance(nodes, PathCollection)
+    # edges
+    edges = nx.draw_networkx_edges(dG, dpos, arrows=True)
+    assert isinstance(edges, list)
+    if len(edges) > 0:
+        assert isinstance(edges[0], FancyArrowPatch)
+    edges = nx.draw_networkx_edges(dG, dpos, arrows=False)
+    assert isinstance(edges, LineCollection)
+    edges = nx.draw_networkx_edges(G, dpos, arrows=None)
+    assert isinstance(edges, LineCollection)
+    edges = nx.draw_networkx_edges(dG, pos, arrows=None)
+    assert isinstance(edges, list)
+    if len(edges) > 0:
+        assert isinstance(edges[0], FancyArrowPatch)
+
+
 def test_labels_and_colors():
     G = nx.cubical_graph()
     pos = nx.spring_layout(G)  # positions for all nodes
