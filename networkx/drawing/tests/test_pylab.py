@@ -380,9 +380,9 @@ def test_return_types():
         assert isinstance(edges[0], FancyArrowPatch)
     edges = nx.draw_networkx_edges(dG, dpos, arrows=False)
     assert isinstance(edges, LineCollection)
-    edges = nx.draw_networkx_edges(dG, dpos, arrows=None)
+    edges = nx.draw_networkx_edges(G, dpos, arrows=None)
     assert isinstance(edges, LineCollection)
-    edges = nx.draw_networkx_edges(G, pos, arrows=True)
+    edges = nx.draw_networkx_edges(dG, pos, arrows=None)
     assert isinstance(edges, list)
     if len(edges) > 0:
         assert isinstance(edges[0], FancyArrowPatch)
