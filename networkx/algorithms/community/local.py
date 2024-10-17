@@ -6,7 +6,7 @@ sarting from certain source nodes in the network. This differs from Global
 Communty Detection (GCD), which aims to partition an entire network into
 communities.
 
-LCD is often useful when either the complete graph is unknown or the graph
+LCD is often useful when only a portion of the know graph is known or the graph
 is large enough that GCD is infeasable
 
 [1]_ Gives a good introduction and overview of LCD see this review here
@@ -19,8 +19,12 @@ https://doi.org/10.1109/ACCESS.2022.3213980
 
 """
 
+from scipy.signal import savgol_filter
 
-def greedy_source_expansion(G, source, cutoff=None, weight=None):
+__all__ = ["clauset"]
+
+
+def clauset(G, source):
     """Find the local community around a source node using the Greedy Source
     Expansion algorithm.
 
@@ -48,7 +52,7 @@ def greedy_source_expansion(G, source, cutoff=None, weight=None):
     Parameters
     ----------
     G : NetworkX graph
-        The input graph, which can be directed or undirected.
+        The input graph. TODO - test for both undirect and directed graphs
 
     source : node
         The source node from which the community expansion begins.
@@ -56,10 +60,6 @@ def greedy_source_expansion(G, source, cutoff=None, weight=None):
     cutoff : int, optional (default=None)
         The maximum number of nodes to include in the community. If None, the algorithm
         expands until no further modularity gain can be made.
-
-    weight : string or None, optional (default=None)
-        The name of an edge attribute that holds the numerical value used as a weight.
-        If None, each edge is treated as having a weight of 1.
 
     Returns
     ----------
@@ -69,7 +69,7 @@ def greedy_source_expansion(G, source, cutoff=None, weight=None):
     Examples TODO: check example
     ----------
     >>> G = nx.karate_club_graph()
-    >>> nx.community.local.greedy_source_expansion(G, source=0)
+    >>> nx.community.local.clauset(G, source=0)
     {0, 1, 2, 3, 7, 13}
 
     Notes
@@ -86,8 +86,40 @@ def greedy_source_expansion(G, source, cutoff=None, weight=None):
     ----------
     .. [1] Clauset, Aaron. Finding local community structure in networks.
     Physical Review E—Statistical, Nonlinear, and Soft Matter Physics 72, no. 2 (2005): 026132.
-    https://doi.org/10.1103/PhysRevE.72.026132
+    https://arxiv.org/pdf/physics/0503036
 
     """
+    C = {source}
+    U = set(G.neighbors(source)) - C
+    R_value = 0
+    while True:
+        max_R = 0
+        best_node = None
+        for v in U:
+            C_tmp = C | {v}
+            B_tmp = {
+                node
+                for node in C_tmp
+                for neighbor in G.neighbors(node)
+                if neighbor in U - {v}
+            }
+            T_tmp = {
+                frozenset([node, neighbor])
+                for node in B_tmp
+                for neighbor in G.neighbors(node)
+            }
+            I_tmp = {edge for edge in T_tmp if all(node in C_tmp for node in edge)}
+            R_tmp = len(I_tmp) / len(T_tmp) if len(T_tmp) > 0 else 1
 
-    return {}
+            if R_tmp > max_R:
+                max_R = R_tmp
+                best_node = v
+
+        C = C | {best_node}
+        U.update(set(G.neighbors(best_node)) - C - U)
+        U.remove(best_node)
+        if max_R < R_value:
+            break
+        R_value = max_R
+
+    return C

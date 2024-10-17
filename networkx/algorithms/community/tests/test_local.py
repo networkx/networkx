@@ -8,8 +8,8 @@ import networkx as nx
 def test_karate_club():
     G = nx.karate_club_graph()
 
-    expected = {0, 1, 2, 3, 7, 9, 11, 12, 13, 17, 19, 21}
+    community = nx.community.clauset(G, 16)
 
-    # partition = nx.community.lo
+    expected = {0, 4, 5, 6, 10, 11, 16}
 
-    # assert part == partition
+    assert community == expected
