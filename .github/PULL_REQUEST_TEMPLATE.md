@@ -4,4 +4,9 @@ For more details check out step 1 and 4 of
 https://networkx.org/documentation/latest/developer/contribute.html
 -->
 
-If you are using a LLM or any other AI model (ChatGPT, llama, mistral, claude ...), please read through the [Contributor Guide](https://networkx.org/documentation/latest/developer/contribute.html) first. Please remove this comment from the description before opening the Pull Request.
+If you are using a LLM or any other AI model (ChatGPT, llama, mistral, claude ...), 
+please read and follow the guidelines in the [Contributor Guide](https://networkx.org/documentation/latest/developer/contribute.html)
+before submitting your PR. Turn your LLM response into a contribution that
+follows guidelines before submitting it.
+
+Remove these comments from the description before opening the Pull Request.
