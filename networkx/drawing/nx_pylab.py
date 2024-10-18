@@ -485,8 +485,7 @@ def draw_networkx_nodes(
             ax.margins(margins)
 
     node_collection.set_zorder(2)
-    # return node_collection
-    return ax
+    return node_collection
 
 
 class FancyArrowFactory:
