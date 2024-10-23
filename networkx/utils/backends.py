@@ -1460,7 +1460,7 @@ class _dispatchable:
             )
         if self._is_stub:
             extra = (
-                " This function is a stub, which means it is included in NetworkX as "
+                " This function is included in NetworkX as "
                 "an API to dispatch to other backends."
             )
         else:
