@@ -1,13 +1,9 @@
 """
 Local Community Detection Algorithms
 
-Local Community Detection (LCD) aims to detected one or a few communities
-sarting from certain source nodes in the network. This differs from Global
-Communty Detection (GCD), which aims to partition an entire network into
-communities.
+Local Community Detection (LCD) aims to detected one or a few communities sarting from certain source nodes in the network. This differs from Global Communty Detection (GCD), which aims to partition an entire network into communities.
 
-LCD is often useful when only a portion of the know graph is known or the graph
-is large enough that GCD is infeasable
+LCD is often useful when only a portion of the know graph is known or the graph is large enough that GCD is infeasable
 
 [1]_ Gives a good introduction and overview of LCD see this review here
 
@@ -19,35 +15,19 @@ https://doi.org/10.1109/ACCESS.2022.3213980
 
 """
 
-from scipy.signal import savgol_filter
-
 __all__ = ["clauset"]
 
 
-def clauset(G, source):
+def clauset(G, source, cutoff=None):
     """Find the local community around a source node using the Greedy Source
     Expansion algorithm.
 
-    The Greedy Source Expansion algorithm identifies a local community starting
-    from a given source node and expands it based on the local modularity gain
-    at each step. Following Clauset’s method [1]_, the algorithm adds neighboring
-    nodes that maximize local modularity to the community iteratively, stopping
-    when no additional nodes improve the modularity or when a predefined cutoff is
-    reached.
+    Clausets algorithm [1]_ uses freedy source expansion to identify a local community starting from a given source node and expanding it based on the local modularity gain at each step. The algorithm adds neighboring nodes that maximize local modularity to the community iteratively, stopping when no additional nodes improve the modularity or when a predefined cutoff is reached.
 
-    Local modularity measures the density of edges within a community relative
-    to the total graph. By focusing on local modularity, the algorithm efficiently
-    uncovers communities around a specific node without requiring global optimization
-    over the entire graph.
-
-    Local Modularity
-
-    Local modularity measures how tightly connected a subset of nodes is compared to their
-    external connections. For a community C, the local modularity is defined as the difference
-    between the fraction of edges inside the community and the expected fraction of such
-    edges if they were randomly distributed among all nodes in the graph.
+    Local modularity measures the density of edges within a community relative to the total graph. By focusing on local modularity, the algorithm efficiently uncovers communities around a specific node without requiring global optimization over the entire graph.
 
     TODO: add the mathematical functions of local modularity and modularity difference
+    TODO: Can support weighted graphs using a generalisation: https://arxiv.org/abs/cond-mat/0407503
 
     Parameters
     ----------
@@ -58,29 +38,24 @@ def clauset(G, source):
         The source node from which the community expansion begins.
 
     cutoff : int, optional (default=None)
-        The maximum number of nodes to include in the community. If None, the algorithm
-        expands until no further modularity gain can be made.
+        The maximum number of nodes to include in the community. If None, the algorithm expands until no further modularity gain can be made.
 
     Returns
     ----------
     set
         A set of nodes representing the local community around the source node.
 
-    Examples TODO: check example
+    Examples
     ----------
     >>> G = nx.karate_club_graph()
-    >>> nx.community.local.clauset(G, source=0)
-    {0, 1, 2, 3, 7, 13}
+    >>> nx.community.clauset(G, source=16)
+    {0, 4, 5, 6, 10, 11, 16}
 
     Notes
     -----
-    This algorithm is designed for detecting local communities around a specific node,
-    which is useful for large networks where global community detection is computationally
-    expensive. The method follows the local modularity optimization framework introduced by
-    Clauset [1]_.
+    This algorithm is designed for detecting local communities around a specific node, which is useful for large networks where global community detection is computationally expensive. The method follows the local modularity optimization framework introduced by Clauset [1]_.
 
-    The result of the algorithm may vary based on the structure of the graph, the choice
-    of the source node, and the presence of ties between nodes during the greedy expansion process.
+    The result of the algorithm may vary based on the structure of the graph, the choice of the source node, and the presence of ties between nodes during the greedy expansion process.
 
     References
     ----------
@@ -89,10 +64,14 @@ def clauset(G, source):
     https://arxiv.org/pdf/physics/0503036
 
     """
+    if cutoff is None:
+        cutoff = float("inf")
     C = {source}
     U = set(G.neighbors(source)) - C
     R_value = 0
-    while True:
+    while len(C) < cutoff:
+        if len(U) == 0:
+            break
         max_R = 0
         best_node = None
         for v in U:
