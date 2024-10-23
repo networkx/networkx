@@ -20,7 +20,7 @@ class TestResourceAllocationIndex:
     @classmethod
     def setup_class(cls):
         cls.func = staticmethod(nx.resource_allocation_index)
-        cls.test = partial(_test_func, predict_func=cls.func)
+        cls.test = staticmethod(partial(_test_func, predict_func=cls.func))
 
     def test_K5(self):
         G = nx.complete_graph(5)
@@ -64,7 +64,7 @@ class TestJaccardCoefficient:
     @classmethod
     def setup_class(cls):
         cls.func = staticmethod(nx.jaccard_coefficient)
-        cls.test = partial(_test_func, predict_func=cls.func)
+        cls.test = staticmethod(partial(_test_func, predict_func=cls.func))
 
     def test_K5(self):
         G = nx.complete_graph(5)
@@ -105,7 +105,7 @@ class TestAdamicAdarIndex:
     @classmethod
     def setup_class(cls):
         cls.func = staticmethod(nx.adamic_adar_index)
-        cls.test = partial(_test_func, predict_func=cls.func)
+        cls.test = staticmethod(partial(_test_func, predict_func=cls.func))
 
     def test_K5(self):
         G = nx.complete_graph(5)
@@ -151,7 +151,7 @@ class TestCommonNeighborCentrality:
     @classmethod
     def setup_class(cls):
         cls.func = staticmethod(nx.common_neighbor_centrality)
-        cls.test = partial(_test_func, predict_func=cls.func)
+        cls.test = staticmethod(partial(_test_func, predict_func=cls.func))
 
     def test_K5(self):
         G = nx.complete_graph(5)
@@ -207,7 +207,7 @@ class TestPreferentialAttachment:
     @classmethod
     def setup_class(cls):
         cls.func = staticmethod(nx.preferential_attachment)
-        cls.test = partial(_test_func, predict_func=cls.func)
+        cls.test = staticmethod(partial(_test_func, predict_func=cls.func))
 
     def test_K5(self):
         G = nx.complete_graph(5)
@@ -247,7 +247,9 @@ class TestCNSoundarajanHopcroft:
     @classmethod
     def setup_class(cls):
         cls.func = staticmethod(nx.cn_soundarajan_hopcroft)
-        cls.test = partial(_test_func, predict_func=cls.func, community="community")
+        cls.test = staticmethod(
+            partial(_test_func, predict_func=cls.func, community="community")
+        )
 
     def test_K5(self):
         G = nx.complete_graph(5)
@@ -356,7 +358,9 @@ class TestRAIndexSoundarajanHopcroft:
     @classmethod
     def setup_class(cls):
         cls.func = staticmethod(nx.ra_index_soundarajan_hopcroft)
-        cls.test = partial(_test_func, predict_func=cls.func, community="community")
+        cls.test = staticmethod(
+            partial(_test_func, predict_func=cls.func, community="community")
+        )
 
     def test_K5(self):
         G = nx.complete_graph(5)
@@ -466,8 +470,13 @@ class TestWithinInterCluster:
     def setup_class(cls):
         cls.delta = 0.001
         cls.func = staticmethod(nx.within_inter_cluster)
-        cls.test = partial(
-            _test_func, predict_func=cls.func, delta=cls.delta, community="community"
+        cls.test = staticmethod(
+            partial(
+                _test_func,
+                predict_func=cls.func,
+                delta=cls.delta,
+                community="community",
+            )
         )
 
     def test_K5(self):
