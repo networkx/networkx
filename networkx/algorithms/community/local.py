@@ -26,8 +26,14 @@ def clauset(G, source, cutoff=None):
 
     Local modularity measures the density of edges within a community relative to the total graph. By focusing on local modularity, the algorithm efficiently uncovers communities around a specific node without requiring global optimization over the entire graph.
 
-    TODO: add the mathematical functions of local modularity and modularity difference
-    TODO: Can support weighted graphs using a generalisation: https://arxiv.org/abs/cond-mat/0407503
+    The algorithm assumes that the graph $G$ consists of a known community $C$ and an unknown set of nodes $U$, which are adjacent to $C$ . The boundary of the community $B$, consists of nodes in $C$ that have at least one neighbor in $U$.
+
+    Mathematically, the local modularity is expressed as:
+
+    .. math::
+        R = \frac{I}{T}
+
+    where $T$ is the number of edges with on or more endpoitns in $B$, and $I$ is the number of those edges with neither endpoint in $U$.
 
     Parameters
     ----------
