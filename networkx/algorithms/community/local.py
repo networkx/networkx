@@ -38,7 +38,7 @@ def clauset(G, source, cutoff=None):
     Parameters
     ----------
     G : NetworkX graph
-        The input graph. TODO - test for both undirect and directed graphs
+        The input graph.
 
     source : node
         The source node from which the community expansion begins.

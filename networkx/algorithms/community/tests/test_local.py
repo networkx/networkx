@@ -1,8 +1,4 @@
-import pytest
-
 import networkx as nx
-
-# TODO: test different graph types
 
 
 def test_clauset_karate_club():
