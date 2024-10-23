@@ -55,7 +55,7 @@ def clauset(G, source, cutoff=None):
     ----------
     >>> G = nx.karate_club_graph()
     >>> nx.community.clauset(G, source=16)
-    {0, 4, 5, 6, 10, 11, 16}
+    {16, 0, 4, 5, 6, 10, 11}
 
     Notes
     -----
