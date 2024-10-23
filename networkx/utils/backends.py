@@ -819,7 +819,7 @@ class _dispatchable:
         self.mutates_input = mutates_input
         # Keep `returns_graph` private for now, b/c we may extend info on return types
         self._returns_graph = returns_graph
-        self.is_stub = is_stub
+        self._is_stub = is_stub
 
         if edge_attrs is not None and not isinstance(edge_attrs, str | dict):
             raise TypeError(
@@ -854,9 +854,9 @@ class _dispatchable:
                 f"Bad type for returns_graph: {type(self._returns_graph)}."
                 " Expected bool."
             ) from None
-        if not isinstance(self.is_stub, bool):
+        if not isinstance(self._is_stub, bool):
             raise TypeError(
-                f"Bad type for is_stub: {type(self.is_stub)}. Expected bool."
+                f"Bad type for is_stub: {type(self._is_stub)}. Expected bool."
             ) from None
 
         if isinstance(graphs, str):
@@ -1056,7 +1056,7 @@ class _dispatchable:
                 backend_priority[0],
                 args,
                 kwargs,
-                fallback_to_nx=nx.config.fallback_to_nx and not self.is_stub,
+                fallback_to_nx=nx.config.fallback_to_nx and not self._is_stub,
             )
 
         graph_backend_names.discard(None)
@@ -1190,7 +1190,7 @@ class _dispatchable:
                 else:
                     if (
                         nx.config.fallback_to_nx
-                        and not self.is_stub
+                        and not self._is_stub
                         and all(
                             # Consider dropping the `isinstance` check here to allow
                             # duck-type graphs, but let's wait for a backend to ask us.
@@ -1213,7 +1213,7 @@ class _dispatchable:
                         raise NotImplementedError(msg_template % extra)
             elif (
                 nx.config.fallback_to_nx
-                and not self.is_stub
+                and not self._is_stub
                 and all(
                     # Consider dropping the `isinstance` check here to allow
                     # duck-type graphs, but let's wait for a backend to ask us.
@@ -1458,7 +1458,7 @@ class _dispatchable:
                 "`nx.config.backend_priority`, or you "
                 "may specify a backend to use with the `backend=` keyword argument."
             )
-        if self.is_stub:
+        if self._is_stub:
             extra = (
                 " This function is a stub, which means it is included in NetworkX as "
                 "an API to dispatch to other backends."
@@ -1509,7 +1509,7 @@ class _dispatchable:
     def _does_backend_have(self, backend_name):
         """Does the specified backend have this algorithm?"""
         if backend_name == "networkx":
-            return not self.is_stub
+            return not self._is_stub
         # Inspect the backend; don't trust metadata used to create `self.backends`
         backend = _load_backend(backend_name)
         return hasattr(backend, self.name)
