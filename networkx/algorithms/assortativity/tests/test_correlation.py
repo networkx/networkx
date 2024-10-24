@@ -62,6 +62,22 @@ class TestDegreeMixingCorrelation(BaseTestDegreeMixing):
         r = nx.degree_assortativity_coefficient(self.DS)
         np.testing.assert_almost_equal(r, -0.9339, decimal=4)
 
+    def test_degree_pearson_assortativity_empty_graph(self):
+        G = nx.Graph()
+        with pytest.raises(
+            nx.NetworkXError,
+            match="Cannot compute correlation coefficient on an empty graph.",
+        ):
+            nx.degree_pearson_correlation_coefficient(G)
+
+    def test_degree_pearson_assortativity_not_enough_degrees(self):
+        G = nx.Graph([(1, 1)])
+        with pytest.raises(
+            nx.NetworkXError,
+            match="Not enough node degrees to compute correlation coefficient.",
+        ):
+            nx.degree_pearson_correlation_coefficient(G)
+
 
 class TestAttributeMixingCorrelation(BaseTestAttributeMixing):
     def test_attribute_assortativity_undirected(self):
