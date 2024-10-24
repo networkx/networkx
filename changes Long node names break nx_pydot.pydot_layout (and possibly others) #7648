@@ -1,0 +1,57 @@
+import networkx as nx
+from networkx.drawing.nx_pydot import to_pydot
+
+def pydot_layout(G, prog='neato', root=None, **kwargs):
+    """
+    Positions nodes in a NetworkX graph using Pydot and Graphviz layout programs.
+
+    Args:
+        G: The NetworkX graph.
+        prog: The name of the Graphviz layout program to use (e.g., 'neato', 'dot', etc.).
+        root: The root node for tree layouts (optional).
+        kwargs: Additional arguments for Graphviz programs (optional).
+
+    Returns:
+        A dictionary of node positions keyed by node.
+    """
+
+    try:
+        # Convert the NetworkX graph to a Pydot graph.
+        P = to_pydot(G)
+
+        # Run the specified Graphviz program to generate layout.
+        D = P.create(prog=prog)
+
+        # Split the Graphviz output into lines for processing.
+        lines = D.splitlines()
+
+        # Initialize position dictionary.
+        pos = {}
+
+        # Iterate over lines to extract node positions.
+        for line in lines:
+            tokens = line.split()
+
+            # Ensure there are tokens to process.
+            if len(tokens) > 0:
+                node_name = tokens[0].strip('"')
+
+                # Check if the node exists in the graph.
+                if node_name not in G:
+                    raise ValueError(f"Node '{node_name}' not found in the graph.")
+
+                # Extract the positions (assuming they're at indices 1 and 2 for x, y).
+                try:
+                    x = float(tokens[1])
+                    y = float(tokens[2])
+                    pos[node_name] = (x, y)
+                except (IndexError, ValueError) as e:
+                    raise ValueError(f"Error parsing positions for node '{node_name}': {str(e)}")
+
+        # Return the final position dictionary.
+        return pos
+
+    except IndexError as e:
+        raise ValueError(f"An error occurred while processing node names: {str(e)}")
+    except Exception as e:
+        raise ValueError(f"An unexpected error occurred: {str(e)}")
