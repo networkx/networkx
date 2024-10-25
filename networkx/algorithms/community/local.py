@@ -25,7 +25,7 @@ __all__ = ["clauset"]
 
 def clauset(G, source, cutoff=None):
     r"""Find the local community around a source node.
-    
+
     Find the local community around a source node using the Greedy Source
     Expansion algorithm as described by Clauset [1]_. The algorithm identifies a
     local community starting from the source node and expands it based on the
@@ -94,7 +94,7 @@ def clauset(G, source, cutoff=None):
     if cutoff is None:
         cutoff = float("inf")
     C = {source}
-    U = set(G.neighbors(source)) - C
+    U = G[source].keys() - C
     R_value = 0
     while len(C) < cutoff:
         if len(U) == 0:
@@ -103,12 +103,7 @@ def clauset(G, source, cutoff=None):
         best_node = None
         for v in U:
             C_tmp = C | {v}
-            B_tmp = {
-                node
-                for node in C_tmp
-                for neighbor in G.neighbors(node)
-                if neighbor in U - {v}
-            }
+            B_tmp = {node for node in C_tmp if any(nbr in U - {v} for nbr in G[node])}
             T_tmp = {
                 frozenset([node, neighbor])
                 for node in B_tmp
@@ -122,7 +117,7 @@ def clauset(G, source, cutoff=None):
                 best_node = v
 
         C = C | {best_node}
-        U.update(set(G.neighbors(best_node)) - C - U)
+        U.update(G[best_node].keys() - C)
         U.remove(best_node)
         if max_R < R_value:
             break
