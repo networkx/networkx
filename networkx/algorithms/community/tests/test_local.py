@@ -20,19 +20,14 @@ def test_clauset_cutoff():
 
 
 def test_clauset_connected_component():
-    G = nx.Graph()
-    G.add_nodes_from(range(4))
     G_edges = [(0, 2), (0, 1), (1, 0), (2, 1), (2, 0), (3, 4), (4, 3)]
-
-    G.add_edges_from(G_edges)
+    G = nx.Graph(G_edges)
     expected = {0, 1, 2}
     community = nx.community.clauset(G, source=0)
     assert community == expected
 
 
 def test_clauset_directed_graph():
-    G = nx.DiGraph()
-    G.add_nodes_from(range(6))
     G_edges = [
         (0, 2),
         (0, 1),
@@ -46,8 +41,8 @@ def test_clauset_directed_graph():
         (5, 6),
         (0, 6),
     ]
+    G = nx.DiGraph(G_edges)
 
-    G.add_edges_from(G_edges)
     expected = {0, 1, 2, 6}
     community = nx.community.clauset(G, source=0)
     assert community == expected
