@@ -2,11 +2,11 @@
 Local Community Detection Algorithms
 
 Local Community Detection (LCD) aims to detected one or a few communities
-sarting from certain source nodes in the network. This differs from Global
+starting from certain source nodes in the network. This differs from Global
 Communty Detection (GCD), which aims to partition an entire network into
 communities.
 
-LCD is often useful when only a portion of the know graph is known or the
+LCD is often useful when only a portion of the graph is known or the
 graph is large enough that GCD is infeasable
 
 [1]_ Gives a good introduction and overview of LCD
@@ -24,11 +24,11 @@ __all__ = ["clauset"]
 
 
 def clauset(G, source, cutoff=None):
-    r"""Find the local community around a source node using the Greedy Source
-    Expansion algorithm.
-
-    Clausets algorithm [1]_ uses freedy source expansion to identify a local
-    community starting from a given source node and expanding it based on the
+    r"""Find the local community around a source node.
+    
+    Find the local community around a source node using the Greedy Source
+    Expansion algorithm as described by Clauset [1]_. The algorithm identifies a
+    local community starting from the source node and expands it based on the
     local modularity gain at each step. The algorithm adds neighboring nodes
     that maximize local modularity to the community iteratively, stopping when
     no additional nodes improve the modularity or when a predefined cutoff is
@@ -48,7 +48,7 @@ def clauset(G, source, cutoff=None):
     .. math::
         R = \frac{I}{T}
 
-    where $T$ is the number of edges with on or more endpoitns in $B$, and $I$ is the
+    where $T$ is the number of edges with one or more endpoints in $B$, and $I$ is the
     number of those edges with neither endpoint in $U$.
 
     Parameters
