@@ -158,18 +158,20 @@ def from_pydot(P):
             for destination_node in d:
                 N.add_edge(source_node, destination_node, **attr)
 
-    # add default attributes for graph, nodes, edges
-    pattr = P.get_attributes()
-    if pattr:
-        N.graph["graph"] = pattr
-    try:
-        N.graph["node"] = P.get_node_defaults()[0]
-    except (IndexError, TypeError):
-        pass  # N.graph['node']={}
-    try:
-        N.graph["edge"] = P.get_edge_defaults()[0]
-    except (IndexError, TypeError):
-        pass  # N.graph['edge']={}
+    # Get the graph attributes of the graph
+    for i in P.get_graph_defaults():
+        N.graph.update(i)
+
+    for i in P.get_node_defaults():
+        if "node" not in N.graph:
+            N.graph["node"] = {}
+        N.graph["node"].update(i)
+
+    for i in P.get_edge_defaults():
+        if "edge" not in N.graph:
+            N.graph["edge"] = {}
+        N.graph["edge"].update(i)
+
     return N
 
 
@@ -207,6 +209,12 @@ def to_pydot(N):
         P = pydot.Dot(
             f'"{name}"', graph_type=graph_type, strict=strict, **graph_defaults
         )
+
+    try:
+        P.set_graph_defaults(**N.graph)
+    except KeyError:
+        pass
+
     try:
         P.set_node_defaults(**N.graph["node"])
     except KeyError:
