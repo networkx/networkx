@@ -7,6 +7,8 @@ Contributor Guide
    This document assumes some familiarity with contributing to open source
    scientific Python projects using GitHub pull requests. If this does not
    describe you, you may first want to see the :ref:`contributing_faq`.
+   If you are using a LLM or any other AI model, you will still need to
+   follow the process described here.
 
 .. _dev_workflow:
 

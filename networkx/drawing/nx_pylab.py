@@ -24,6 +24,7 @@ from numbers import Number
 import networkx as nx
 from networkx.drawing.layout import (
     circular_layout,
+    forceatlas2_layout,
     kamada_kawai_layout,
     planar_layout,
     random_layout,
@@ -46,6 +47,7 @@ __all__ = [
     "draw_spring",
     "draw_planar",
     "draw_shell",
+    "draw_forceatlas2",
 ]
 
 
@@ -448,20 +450,24 @@ def draw_networkx_nodes(
         node_color = apply_alpha(node_color, alpha, nodelist, cmap, vmin, vmax)
         alpha = None
 
-    node_collection = ax.scatter(
-        xy[:, 0],
-        xy[:, 1],
-        s=node_size,
-        c=node_color,
-        marker=node_shape,
-        cmap=cmap,
-        vmin=vmin,
-        vmax=vmax,
-        alpha=alpha,
-        linewidths=linewidths,
-        edgecolors=edgecolors,
-        label=label,
-    )
+    if not isinstance(node_shape, np.ndarray) and not isinstance(node_shape, list):
+        node_shape = np.array([node_shape for _ in range(len(nodelist))])
+
+    for shape in np.unique(node_shape):
+        node_collection = ax.scatter(
+            xy[node_shape == shape, 0],
+            xy[node_shape == shape, 1],
+            s=node_size,
+            c=node_color,
+            marker=shape,
+            cmap=cmap,
+            vmin=vmin,
+            vmax=vmax,
+            alpha=alpha,
+            linewidths=linewidths,
+            edgecolors=edgecolors,
+            label=label,
+        )
     if hide_ticks:
         ax.tick_params(
             axis="both",
@@ -601,6 +607,24 @@ class FancyArrowFactory:
         (x1, y1), (x2, y2) = self.edge_pos[i]
         shrink_source = 0  # space from source to tail
         shrink_target = 0  # space from  head to target
+        if (
+            self.np.iterable(self.min_source_margin)
+            and not isinstance(self.min_source_margin, str)
+            and not isinstance(self.min_source_margin, tuple)
+        ):
+            min_source_margin = self.min_source_margin[i]
+        else:
+            min_source_margin = self.min_source_margin
+
+        if (
+            self.np.iterable(self.min_target_margin)
+            and not isinstance(self.min_target_margin, str)
+            and not isinstance(self.min_target_margin, tuple)
+        ):
+            min_target_margin = self.min_target_margin[i]
+        else:
+            min_target_margin = self.min_target_margin
+
         if self.np.iterable(self.node_size):  # many node sizes
             source, target = self.edgelist[i][:2]
             source_node_size = self.node_size[self.nodelist.index(source)]
@@ -610,8 +634,8 @@ class FancyArrowFactory:
         else:
             shrink_source = self.to_marker_edge(self.node_size, self.node_shape)
             shrink_target = shrink_source
-        shrink_source = max(shrink_source, self.min_source_margin)
-        shrink_target = max(shrink_target, self.min_target_margin)
+        shrink_source = max(shrink_source, min_source_margin)
+        shrink_target = max(shrink_target, min_target_margin)
 
         # scale factor of arrow head
         if isinstance(self.arrowsize, list):
@@ -652,10 +676,20 @@ class FancyArrowFactory:
             )
         else:
             connectionstyle = self.connectionstyle_factory.curved(self.edge_indices[i])
+
+        if (
+            self.np.iterable(self.arrowstyle)
+            and not isinstance(self.arrowstyle, str)
+            and not isinstance(self.arrowstyle, tuple)
+        ):
+            arrowstyle = self.arrowstyle[i]
+        else:
+            arrowstyle = self.arrowstyle
+
         return self.mpl.patches.FancyArrowPatch(
             (x1, y1),
             (x2, y2),
-            arrowstyle=self.arrowstyle,
+            arrowstyle=arrowstyle,
             shrinkA=shrink_source,
             shrinkB=shrink_target,
             mutation_scale=mutation_scale,
@@ -757,13 +791,13 @@ def draw_networkx_edges(
 
         Note: Arrowheads will be the same color as edges.
 
-    arrowstyle : str (default='-\|>' for directed graphs)
+    arrowstyle : str or list of strs (default='-\|>' for directed graphs)
         For directed graphs and `arrows==True` defaults to '-\|>',
         For undirected graphs default to '-'.
 
         See `matplotlib.patches.ArrowStyle` for more options.
 
-    arrowsize : int (default=10)
+    arrowsize : int or list of ints(default=10)
         For directed graphs, choose the size of the arrow head's length and
         width. See `matplotlib.patches.FancyArrowPatch` for attribute
         `mutation_scale` for more info.
@@ -789,10 +823,10 @@ def draw_networkx_edges(
     label : None or string
         Label for legend
 
-    min_source_margin : int (default=0)
+    min_source_margin : int or list of ints (default=0)
         The minimum margin (gap) at the beginning of the edge at the source.
 
-    min_target_margin : int (default=0)
+    min_target_margin : int or list of ints (default=0)
         The minimum margin (gap) at the end of the edge at the target.
 
     hide_ticks : bool, optional
@@ -1078,30 +1112,32 @@ def draw_networkx_labels(
         Node-keys in labels should appear as keys in `pos`.
         If needed use: `{n:lab for n,lab in labels.items() if n in pos}`
 
-    font_size : int (default=12)
-        Font size for text labels
+    font_size : int or dictionary of nodes to ints (default=12)
+        Font size for text labels.
 
-    font_color : color (default='k' black)
+    font_color : color or dictionary of nodes to colors (default='k' black)
         Font color string. Color can be string or rgb (or rgba) tuple of
         floats from 0-1.
 
-    font_weight : string (default='normal')
-        Font weight
+    font_weight : string or dictionary of nodes to strings (default='normal')
+        Font weight.
 
-    font_family : string (default='sans-serif')
-        Font family
+    font_family : string or dictionary of nodes to strings (default='sans-serif')
+        Font family.
 
-    alpha : float or None (default=None)
-        The text transparency
+    alpha : float or None or dictionary of nodes to floats (default=None)
+        The text transparency.
 
     bbox : Matplotlib bbox, (default is Matplotlib's ax.text default)
         Specify text box properties (e.g. shape, color etc.) for node labels.
 
-    horizontalalignment : string (default='center')
-        Horizontal alignment {'center', 'right', 'left'}
+    horizontalalignment : string or array of strings (default='center')
+        Horizontal alignment {'center', 'right', 'left'}. If an array is
+        specified it must be the same length as `nodelist`.
 
     verticalalignment : string (default='center')
-        Vertical alignment {'center', 'top', 'bottom', 'baseline', 'center_baseline'}
+        Vertical alignment {'center', 'top', 'bottom', 'baseline', 'center_baseline'}.
+        If an array is specified it must be the same length as `nodelist`.
 
     ax : Matplotlib Axes object, optional
         Draw the graph in the specified Matplotlib axes.
@@ -1143,6 +1179,25 @@ def draw_networkx_labels(
     if labels is None:
         labels = {n: n for n in G.nodes()}
 
+    individual_params = set()
+
+    def check_individual_params(p_value, p_name):
+        if isinstance(p_value, dict):
+            if len(p_value) != len(labels):
+                raise ValueError(f"{p_name} must have the same length as labels.")
+            individual_params.add(p_name)
+
+    def get_param_value(node, p_value, p_name):
+        if p_name in individual_params:
+            return p_value[node]
+        return p_value
+
+    check_individual_params(font_size, "font_size")
+    check_individual_params(font_color, "font_color")
+    check_individual_params(font_weight, "font_weight")
+    check_individual_params(font_family, "font_family")
+    check_individual_params(alpha, "alpha")
+
     text_items = {}  # there is no text collection so we'll fake one
     for n, label in labels.items():
         (x, y) = pos[n]
@@ -1152,11 +1207,11 @@ def draw_networkx_labels(
             x,
             y,
             label,
-            size=font_size,
-            color=font_color,
-            family=font_family,
-            weight=font_weight,
-            alpha=alpha,
+            size=get_param_value(n, font_size, "font_size"),
+            color=get_param_value(n, font_color, "font_color"),
+            family=get_param_value(n, font_family, "font_family"),
+            weight=get_param_value(n, font_weight, "font_weight"),
+            alpha=get_param_value(n, alpha, "alpha"),
             horizontalalignment=horizontalalignment,
             verticalalignment=verticalalignment,
             transform=ax.transData,
@@ -1440,6 +1495,30 @@ def draw_networkx_edge_labels(
         ax=ax,
     )
 
+    individual_params = {}
+
+    def check_individual_params(p_value, p_name):
+        # TODO should this be list or array (as in a numpy array)?
+        if isinstance(p_value, list):
+            if len(p_value) != len(edgelist):
+                raise ValueError(f"{p_name} must have the same length as edgelist.")
+            individual_params[p_name] = p_value.iter()
+
+    # Don't need to pass in an edge because these are lists, not dicts
+    def get_param_value(p_value, p_name):
+        if p_name in individual_params:
+            return next(individual_params[p_name])
+        return p_value
+
+    check_individual_params(font_size, "font_size")
+    check_individual_params(font_color, "font_color")
+    check_individual_params(font_weight, "font_weight")
+    check_individual_params(alpha, "alpha")
+    check_individual_params(horizontalalignment, "horizontalalignment")
+    check_individual_params(verticalalignment, "verticalalignment")
+    check_individual_params(rotate, "rotate")
+    check_individual_params(label_pos, "label_pos")
+
     text_items = {}
     for i, (edge, label) in enumerate(zip(edgelist, labels)):
         if not isinstance(label, str):
@@ -1457,13 +1536,17 @@ def draw_networkx_edge_labels(
                 x,
                 y,
                 label,
-                size=font_size,
-                color=font_color,
-                family=font_family,
-                weight=font_weight,
-                alpha=alpha,
-                horizontalalignment=horizontalalignment,
-                verticalalignment=verticalalignment,
+                size=get_param_value(font_size, "font_size"),
+                color=get_param_value(font_color, "font_color"),
+                family=get_param_value(font_family, "font_family"),
+                weight=get_param_value(font_weight, "font_weight"),
+                alpha=get_param_value(alpha, "alpha"),
+                horizontalalignment=get_param_value(
+                    horizontalalignment, "horizontalalignment"
+                ),
+                verticalalignment=get_param_value(
+                    verticalalignment, "verticalalignment"
+                ),
                 rotation=0,
                 transform=ax.transData,
                 bbox=bbox,
@@ -1474,19 +1557,23 @@ def draw_networkx_edge_labels(
             text_items[edge] = CurvedArrowText(
                 arrow,
                 label,
-                size=font_size,
-                color=font_color,
-                family=font_family,
-                weight=font_weight,
-                alpha=alpha,
-                horizontalalignment=horizontalalignment,
-                verticalalignment=verticalalignment,
+                size=get_param_value(font_size, "font_size"),
+                color=get_param_value(font_color, "font_color"),
+                family=get_param_value(font_family, "font_family"),
+                weight=get_param_value(font_weight, "font_weight"),
+                alpha=get_param_value(alpha, "alpha"),
+                horizontalalignment=get_param_value(
+                    horizontalalignment, "horizontalalignment"
+                ),
+                verticalalignment=get_param_value(
+                    verticalalignment, "verticalalignment"
+                ),
                 transform=ax.transData,
                 bbox=bbox,
                 zorder=1,
                 clip_on=clip_on,
-                label_pos=label_pos,
-                labels_horizontal=not rotate,
+                label_pos=get_param_value(label_pos, "label_pos"),
+                labels_horizontal=not get_param_value(rotate, "rotate"),
                 ax=ax,
             )
 
@@ -1793,6 +1880,26 @@ def draw_planar(G, **kwargs):
     :func:`~networkx.drawing.layout.planar_layout`
     """
     draw(G, planar_layout(G), **kwargs)
+
+
+def draw_forceatlas2(G, **kwargs):
+    """Draw a networkx graph with forceatlas2 layout.
+
+    This is a convenience function equivalent to::
+
+       nx.draw(G, pos=nx.forceatlas2_layout(G), **kwargs)
+
+    Parameters
+    ----------
+    G : graph
+       A networkx graph
+
+    kwargs : optional keywords
+       See networkx.draw_networkx() for a description of optional keywords,
+       with the exception of the pos parameter which is not used by this
+       function.
+    """
+    draw(G, forceatlas2_layout(G), **kwargs)
 
 
 def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):

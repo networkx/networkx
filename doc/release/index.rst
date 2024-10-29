@@ -14,6 +14,9 @@ period.
 .. toctree::
    :maxdepth: 2
 
+   release_3.4.2
+   release_3.4.1
+   release_3.4
    release_3.3
    release_3.2.1
    release_3.2
