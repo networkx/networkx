@@ -211,7 +211,7 @@ def to_pydot(N):
         )
 
     try:
-        P.set_graph_defaults(**N.graph)
+        P.set_graph_defaults(**{str(k): str(v) for k, v in N.graph.items()})
     except KeyError:
         pass
 
