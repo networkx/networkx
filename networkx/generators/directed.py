@@ -5,11 +5,12 @@ scale-free graphs.
 """
 
 import numbers
-from collections import Counter
+
+import numpy as np
 
 import networkx as nx
 from networkx.generators.classic import empty_graph
-from networkx.utils import discrete_sequence, py_random_state, weighted_choice
+from networkx.utils import discrete_sequence, np_random_state, py_random_state
 
 __all__ = [
     "gn_graph",
@@ -414,7 +415,7 @@ def random_uniform_k_out_graph(n, k, self_loops=True, with_replacement=True, see
     return G
 
 
-@py_random_state(4)
+@np_random_state(4)
 @nx._dispatchable(graphs=None, returns_graph=True)
 def random_k_out_graph(n, k, alpha, self_loops=True, seed=None):
     """Returns a random `k`-out graph with preferential attachment.
@@ -486,16 +487,30 @@ def random_k_out_graph(n, k, alpha, self_loops=True, seed=None):
     if alpha < 0:
         raise ValueError("alpha must be positive")
     G = nx.empty_graph(n, create_using=nx.MultiDiGraph)
-    weights = Counter({v: alpha for v in G})
+    nodes = np.arange(n)
+    remaining_mask = np.full(n, True)
+    weights = np.full(n, alpha)
+    total_weight = n * alpha
+    out_strengths = np.zeros(n)
+
     for i in range(k * n):
-        u = seed.choice([v for v, d in G.out_degree() if d < k])
-        # If self-loops are not allowed, make the source node `u` have
-        # weight zero.
+        u = seed.choice(nodes[remaining_mask])
+
         if not self_loops:
-            adjustment = Counter({u: weights[u]})
-        else:
-            adjustment = Counter()
-        v = weighted_choice(weights - adjustment, seed=seed)
+            u_weight = weights[u]
+            weights[u] = 0
+            total_weight -= u_weight
+
+        v = seed.choice(nodes, p=weights / total_weight)
+
+        if not self_loops:
+            weights[u] = u_weight
+            total_weight += u_weight
+
         G.add_edge(u, v)
         weights[v] += 1
+        total_weight += 1
+        out_strengths[u] += 1
+        if out_strengths[u] == k:
+            remaining_mask[u] = False
     return G
