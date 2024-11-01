@@ -77,6 +77,7 @@ def _single_shortest_path_length(adj, firstlevel, cutoff):
             level at which we stop the process
     """
     seen = set(firstlevel)
+    seencounter = 0
     nextlevel = firstlevel
     level = 0
     n = len(adj)
@@ -90,9 +91,10 @@ def _single_shortest_path_length(adj, firstlevel, cutoff):
             for w in adj[v]:
                 if w not in seen:
                     seen.add(w)
+                    seencounter += 1
                     nextlevel.append(w)
                     yield (w, level)
-            if len(seen) == n:
+            if seencounter == n:
                 return
 
 
