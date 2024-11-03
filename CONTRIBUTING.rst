@@ -68,7 +68,9 @@ Development Workflow
          # Activate it
          conda activate networkx-dev
          # Install main development and runtime dependencies of networkx
-         conda install -c conda-forge --file requirements/default.txt --file requirements/test.txt --file requirements/developer.txt
+         conda install -c conda-forge --file requirements/default.txt
+	 conda install -c conda-forge --file requirements/test.txt
+	 pip install changelist==0.5
          #
          # (Optional) Install pygraphviz and pydot packages
          # These packages require that you have your system properly configured
@@ -83,6 +85,7 @@ Development Workflow
    * Finally, we recommend you install pre-commit which checks
      that your code matches formatting guidelines::
 
+       pip install pre-commit
        pre-commit install
 
 2. Develop your contribution:
