@@ -23,7 +23,7 @@ References
 __all__ = ["clauset"]
 
 
-def clauset(G, source, cutoff=None):
+def clauset(G, *, source, cutoff=None):
     r"""Find the local community around a source node.
 
     Find the local community around a source node using the Greedy Source
