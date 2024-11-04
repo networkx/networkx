@@ -39,6 +39,6 @@ backend-specific configurations it supports.
    - Parallelized implementations of various NetworkX functions using joblib
 *  - [nx-cugraph](https://rapids.ai/nx-cugraph)
    - GPU acceleration using RAPIDS cuGraph and NVIDIA GPUs
-*  - [nx-arangodb](https://nx-arangodb.readthedocs.io/en/latest/)
+*  - [nx-arangodb](https://github.com/arangodb/nx-arangodb)
    - Seamlessly adds ArangoDB as a persistence layer to NetworkX graphs
 ```

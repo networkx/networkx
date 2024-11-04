@@ -366,8 +366,8 @@ def test_return_types():
     from matplotlib.collections import LineCollection, PathCollection
     from matplotlib.patches import FancyArrowPatch
 
-    G = nx.cubical_graph(nx.Graph)
-    dG = nx.cubical_graph(nx.DiGraph)
+    G = nx.frucht_graph(create_using=nx.Graph)
+    dG = nx.frucht_graph(create_using=nx.DiGraph)
     pos = nx.spring_layout(G)
     dpos = nx.spring_layout(dG)
     # nodes
