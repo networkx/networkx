@@ -669,7 +669,7 @@ class _dispatchable:
         preserve_all_attrs=False,
         mutates_input=False,
         returns_graph=False,
-        is_stub=False,
+        implemented_by_nx=True,
     ):
         """A decorator function that is used to redirect the execution of ``func``
         function to its backend implementation.
@@ -763,9 +763,10 @@ class _dispatchable:
             dispatching doesn't convert input graphs to a different backend for
             functions that return graphs.
 
-        is_stub : bool, default False
-            Whether the function is a "stub", which means it is not implemented by
-            NetworkX, but is included in NetworkX as an API to dispatch to backends.
+        implemented_by_nx : bool, default True
+            Whether the function is implemented by NetworkX. If it is not, then the
+            function is included in NetworkX as an API to dispatch to backends.
+            Default is True.
         """
         if func is None:
             return partial(
@@ -780,7 +781,7 @@ class _dispatchable:
                 preserve_all_attrs=preserve_all_attrs,
                 mutates_input=mutates_input,
                 returns_graph=returns_graph,
-                is_stub=is_stub,
+                implemented_by_nx=implemented_by_nx,
             )
         if isinstance(func, str):
             raise TypeError("'name' and 'graphs' must be passed by keyword") from None
@@ -893,7 +894,7 @@ class _dispatchable:
             for backend, info in backend_info.items()
             if "functions" in info and name in info["functions"]
         }
-        if not is_stub:
+        if implemented_by_nx:
             self.backends.add("networkx")
 
         if name in _registered_algorithms:
@@ -1512,7 +1513,7 @@ class _dispatchable:
     def _can_backend_run(self, backend_name, args, kwargs):
         """Can the specified backend run this algorithm with these arguments?"""
         if backend_name == "networkx":
-            return True
+            return "networkx" in self.backends
         backend = _load_backend(backend_name)
         # `backend.can_run` and `backend.should_run` may return strings that describe
         # why they can't or shouldn't be run.
@@ -1542,7 +1543,7 @@ class _dispatchable:
         # `backend.can_run` and `backend.should_run` may return strings that describe
         # why they can't or shouldn't be run.
         if backend_name == "networkx":
-            return True
+            return "networkx" in self.backends
         backend = _load_backend(backend_name)
         should_run = backend.should_run(self.name, args, kwargs)
         if isinstance(should_run, str) or not should_run:

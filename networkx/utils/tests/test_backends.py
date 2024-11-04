@@ -170,8 +170,8 @@ def test_fallback_to_nx():
         assert nx.pagerank.__wrapped__._fallback_to_nx == nx.config.fallback_to_nx
 
 
-def test_stub():
-    @nx._dispatchable(is_stub=True)
+def test_not_implemented_by_nx():
+    @nx._dispatchable(implemented_by_nx=False)
     def _stub_func(G):
         raise NotImplementedError("_stub_func is a stub")
 
