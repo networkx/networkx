@@ -20,10 +20,10 @@ References
 
 """
 
-__all__ = ["clauset"]
+__all__ = ["clauset_greedy_source_expansion"]
 
 
-def clauset(G, source, cutoff=None):
+def clauset_greedy_source_expansion(G, source, cutoff=None):
     r"""Find the local community around a source node.
 
     Find the local community around a source node using the Greedy Source
@@ -71,7 +71,7 @@ def clauset(G, source, cutoff=None):
     Examples
     ----------
     >>> G = nx.karate_club_graph()
-    >>> nx.community.clauset(G, source=16)
+    >>> nx.community.clauset_greedy_source_expansion(G, source=16)
     {16, 0, 4, 5, 6, 10, 11}
 
     Notes
