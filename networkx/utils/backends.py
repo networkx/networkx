@@ -973,6 +973,12 @@ class _dispatchable:
             # Fast path if no backends are installed
             if backend is not None and backend != "networkx":
                 raise ImportError(f"'{backend}' backend is not installed")
+            if "networkx" not in self.backends:
+                raise NotImplementedError(
+                    f"`{self.name}' is not implemented by 'networkx' backend. "
+                    " This function is included in NetworkX as an API to dispatch to "
+                    "other backends."
+                )
             return self.orig_func(*args, **kwargs)
 
         # Use `backend_name` in this function instead of `backend`.
@@ -1456,8 +1462,8 @@ class _dispatchable:
             )
         if "networkx" not in self.backends:
             extra = (
-                " This function is included in NetworkX as "
-                "an API to dispatch to other backends."
+                " This function is included in NetworkX as an API to dispatch to "
+                "other backends."
             )
         else:
             extra = ""
@@ -1542,8 +1548,9 @@ class _dispatchable:
         """
         # `backend.can_run` and `backend.should_run` may return strings that describe
         # why they can't or shouldn't be run.
+        # `_should_backend_run` may assume that `_can_backend_run` returned True.
         if backend_name == "networkx":
-            return "networkx" in self.backends
+            return True
         backend = _load_backend(backend_name)
         should_run = backend.should_run(self.name, args, kwargs)
         if isinstance(should_run, str) or not should_run:
@@ -1986,7 +1993,7 @@ class _dispatchable:
         """Call this dispatchable function with a backend; for use with testing."""
         backend = _load_backend(backend_name)
         if not self._can_backend_run(backend_name, args, kwargs):
-            if fallback_to_nx or not self.graphs:
+            if fallback_to_nx or not self.graphs and "networkx" in self.backends:
                 if fallback_to_nx:
                     _logger.debug(
                         "Falling back to use 'networkx' instead of '%s' backend "
@@ -2241,29 +2248,34 @@ class _dispatchable:
             return backend.convert_to_nx(result)
 
         converted_result = backend.convert_to_nx(result)
-        if isinstance(converted_result, nx.Graph) and self.name not in {
-            "boykov_kolmogorov",
-            "preflow_push",
-            "quotient_graph",
-            "shortest_augmenting_path",
-            "spectral_graph_forge",
-            # We don't handle tempfile.NamedTemporaryFile arguments
-            "read_gml",
-            "read_graph6",
-            "read_sparse6",
-            # We don't handle io.BufferedReader or io.TextIOWrapper arguments
-            "bipartite_read_edgelist",
-            "read_adjlist",
-            "read_edgelist",
-            "read_graphml",
-            "read_multiline_adjlist",
-            "read_pajek",
-            "from_pydot",
-            "pydot_read_dot",
-            "agraph_read_dot",
-            # graph comparison fails b/c of nan values
-            "read_gexf",
-        }:
+        if (
+            isinstance(converted_result, nx.Graph)
+            and "networkx" in self.backends
+            and self.name
+            not in {
+                "boykov_kolmogorov",
+                "preflow_push",
+                "quotient_graph",
+                "shortest_augmenting_path",
+                "spectral_graph_forge",
+                # We don't handle tempfile.NamedTemporaryFile arguments
+                "read_gml",
+                "read_graph6",
+                "read_sparse6",
+                # We don't handle io.BufferedReader or io.TextIOWrapper arguments
+                "bipartite_read_edgelist",
+                "read_adjlist",
+                "read_edgelist",
+                "read_graphml",
+                "read_multiline_adjlist",
+                "read_pajek",
+                "from_pydot",
+                "pydot_read_dot",
+                "agraph_read_dot",
+                # graph comparison fails b/c of nan values
+                "read_gexf",
+            }
+        ):
             # For graph return types (e.g. generators), we compare that results are
             # the same between the backend and networkx, then return the original
             # networkx result so the iteration order will be consistent in tests.
