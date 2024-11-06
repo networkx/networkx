@@ -342,7 +342,7 @@ def diameter(G, e=None, usebounds=False, weight=None):
     G : NetworkX graph
        A graph
 
-    e : eccentricity dictionary, optional
+    e : eccentricity dictionary, optional (default = None)
       A precomputed dictionary of eccentricities.
 
     usebounds : bool, optional (default = False)
