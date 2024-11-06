@@ -94,31 +94,79 @@ def clauset_greedy_source_expansion(G, *, source, cutoff=None):
     if cutoff is None:
         cutoff = float("inf")
     C = {source}
+    B = {source}
     U = G[source].keys() - C
+    T = {frozenset([node, neighbor]) for node in B for neighbor in G.neighbors(node)}
+    I = {edge for edge in T if all(node in C for node in edge)}
+
     R_value = 0
     while len(C) < cutoff:
         if len(U) == 0:
             break
         max_R = 0
         best_node = None
+        best_node_B = set()
+        best_node_T = set()
+        best_node_I = set()
         for v in U:
             C_tmp = C | {v}
-            B_tmp = {node for node in C_tmp if any(nbr in U - {v} for nbr in G[node])}
-            T_tmp = {
-                frozenset([node, neighbor])
-                for node in B_tmp
-                for neighbor in G.neighbors(node)
-            }
-            I_tmp = {edge for edge in T_tmp if all(node in C_tmp for node in edge)}
+
+            # Calculate change in B
+            # Loop through v neighbours
+            # If v has neighbours not in C_tmp add v to B
+            # If neighbour in B, check if neighbour has neighbours not in C, if not remove from B
+
+            # Calculate change in T
+            # Loop through removed_B_nodes
+            #   removes edges from T that don't go from these nodes to B_tmp
+            # Loop through v sneighbours
+            # If v has neighbours not in C_tmp, v is therefore now in B, add these edges connecting to nodes not in C to T
+
+            B_tmp = B.copy()
+            T_tmp = T.copy()
+            I_tmp = I.copy()
+            removed_B_nodes = set()
+            for neighbour in G[v]:
+                if neighbour not in C_tmp:
+                    B_tmp = B_tmp | {v}
+                    T_tmp = T_tmp | {frozenset([v, neighbour])}
+
+                if neighbour in B:
+                    nbr_nbr_not_in_C = False
+                    for nbr_nbr in G[neighbour]:
+                        if nbr_nbr not in C_tmp:
+                            nbr_nbr_not_in_C = True
+                    if not nbr_nbr_not_in_C:
+                        B_tmp.remove(neighbour)
+                        removed_B_nodes.add(neighbour)
+
+                if (neighbour in C_tmp) and (frozenset([v, neighbour]) not in I_tmp):
+                    I_tmp = I_tmp | {frozenset([v, neighbour])}
+
+            for node in removed_B_nodes:
+                for node_nbr in G[node]:
+                    if (node_nbr not in B_tmp) and (
+                        frozenset([node_nbr, node]) in T_tmp
+                    ):
+                        T_tmp.remove(frozenset([node_nbr, node]))
+                        if frozenset([node_nbr, node]) in I_tmp:
+                            I_tmp.remove(frozenset([node_nbr, node]))
+
             R_tmp = len(I_tmp) / len(T_tmp) if len(T_tmp) > 0 else 1
 
             if R_tmp > max_R:
                 max_R = R_tmp
                 best_node = v
+                best_node_B = B_tmp
+                best_node_T = T_tmp
+                best_node_I = I_tmp
 
         C = C | {best_node}
         U.update(G[best_node].keys() - C)
         U.remove(best_node)
+        B = best_node_B
+        T = best_node_T
+        I = best_node_I
         if max_R < R_value:
             break
         R_value = max_R

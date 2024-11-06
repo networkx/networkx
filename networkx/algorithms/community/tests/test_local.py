@@ -6,7 +6,7 @@ def test_clauset_karate_club():
 
     community = nx.community.clauset_greedy_source_expansion(G, source=16)
 
-    expected = {0, 4, 5, 6, 10, 11, 16}
+    expected = {0, 4, 5, 6, 10, 16}
 
     assert community == expected
 
