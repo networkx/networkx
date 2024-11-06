@@ -101,58 +101,17 @@ def clauset_greedy_source_expansion(G, *, source, cutoff=None):
 
     R_value = 0
     while len(C) < cutoff:
-        if len(U) == 0:
+        if not U:
             break
+
         max_R = 0
         best_node = None
-        best_node_B = set()
-        best_node_T = set()
-        best_node_I = set()
+        best_node_B = best_node_T = best_node_I = set()
+
         for v in U:
-            C_tmp = C | {v}
-
-            # Calculate change in B
-            # Loop through v neighbours
-            # If v has neighbours not in C_tmp add v to B
-            # If neighbour in B, check if neighbour has neighbours not in C, if not remove from B
-
-            # Calculate change in T
-            # Loop through removed_B_nodes
-            #   removes edges from T that don't go from these nodes to B_tmp
-            # Loop through v sneighbours
-            # If v has neighbours not in C_tmp, v is therefore now in B, add these edges connecting to nodes not in C to T
-
-            B_tmp = B.copy()
-            T_tmp = T.copy()
-            I_tmp = I.copy()
-            removed_B_nodes = set()
-            for neighbour in G[v]:
-                if neighbour not in C_tmp:
-                    B_tmp = B_tmp | {v}
-                    T_tmp = T_tmp | {frozenset([v, neighbour])}
-
-                if neighbour in B:
-                    nbr_nbr_not_in_C = False
-                    for nbr_nbr in G[neighbour]:
-                        if nbr_nbr not in C_tmp:
-                            nbr_nbr_not_in_C = True
-                    if not nbr_nbr_not_in_C:
-                        B_tmp.remove(neighbour)
-                        removed_B_nodes.add(neighbour)
-
-                if (neighbour in C_tmp) and (frozenset([v, neighbour]) not in I_tmp):
-                    I_tmp = I_tmp | {frozenset([v, neighbour])}
-
-            for node in removed_B_nodes:
-                for node_nbr in G[node]:
-                    if (node_nbr not in B_tmp) and (
-                        frozenset([node_nbr, node]) in T_tmp
-                    ):
-                        T_tmp.remove(frozenset([node_nbr, node]))
-                        if frozenset([node_nbr, node]) in I_tmp:
-                            I_tmp.remove(frozenset([node_nbr, node]))
-
-            R_tmp = len(I_tmp) / len(T_tmp) if len(T_tmp) > 0 else 1
+            R_tmp, B_tmp, T_tmp, I_tmp = _calculate_local_modularity_for_candidate(
+                G, v, C, B, T, I
+            )
 
             if R_tmp > max_R:
                 max_R = R_tmp
@@ -172,3 +131,74 @@ def clauset_greedy_source_expansion(G, *, source, cutoff=None):
         R_value = max_R
 
     return C
+
+
+def _calculate_local_modularity_for_candidate(G, v, C, B, T, I):
+    """
+    Compute the local modularity R and updated variables when adding node v to the community.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        The input graph.
+    v : node
+        The candidate node to add to the community.
+    C : set
+        The current set of community nodes.
+    B : set
+        The current set of boundary nodes.
+    T : set of frozenset
+        The current set of boundary edges.
+    I : set of frozenset
+        The current set of internal boundary edges.
+
+    Returns
+    -------
+    R_tmp : float
+        The local modularity after adding node v.
+    B_tmp : set
+        The updated set of boundary nodes.
+    T_tmp : set of frozenset
+        The updated set of boundary edges.
+    I_tmp : set of frozenset
+        The updated set of internal boundary edges.
+    """
+    C_tmp = C | {v}
+    B_tmp = B.copy()
+    T_tmp = T.copy()
+    I_tmp = I.copy()
+    removed_B_nodes = set()
+
+    # Update boundary nodes and edges
+    for neighbour in G[v]:
+        if neighbour not in C_tmp:
+            # v has neighbors not in the community, so it remains a boundary node
+            B_tmp.add(v)
+            # Add edge between v and neighbor to boundary edges
+            T_tmp.add(frozenset([v, neighbour]))
+
+        if neighbour in B:
+            # Check if neighbor should be removed from boundary nodes
+            neighour_still_in_B = False
+            # Go through neighbours neighbours to see if it is still a boundary node
+            for neighbours_neighbour in G[neighbour]:
+                if neighbours_neighbour not in C_tmp:
+                    neighour_still_in_B = True
+                    break
+            if not neighour_still_in_B:
+                B_tmp.remove(neighbour)
+                removed_B_nodes.add(neighbour)
+
+        if neighbour in C_tmp:
+            # Add edge between v and neighbor to internal edges
+            I_tmp.add(frozenset([v, neighbour]))
+
+    # Remove edges no longer in the boundary
+    for removed_node in removed_B_nodes:
+        for removed_node_neighbour in G[removed_node]:
+            if removed_node_neighbour not in B_tmp:
+                T_tmp.discard(frozenset([removed_node_neighbour, removed_node]))
+                I_tmp.discard(frozenset([removed_node_neighbour, removed_node]))
+
+    R_tmp = len(I_tmp) / len(T_tmp) if len(T_tmp) > 0 else 1
+    return R_tmp, B_tmp, T_tmp, I_tmp

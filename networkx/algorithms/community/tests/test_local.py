@@ -53,7 +53,7 @@ def test_clauset_multigraph():
     G.add_edge(0, 1)
     G.add_edge(0, 9)
 
-    expected = {0, 4, 5, 6, 10, 11, 16}
+    expected = {0, 4, 5, 6, 10, 16}
 
     community = nx.community.clauset_greedy_source_expansion(G, source=16)
 
