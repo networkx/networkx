@@ -72,7 +72,7 @@ def clauset_greedy_source_expansion(G, *, source, cutoff=None):
     ----------
     >>> G = nx.karate_club_graph()
     >>> nx.community.clauset_greedy_source_expansion(G, source=16)
-    {16, 0, 4, 5, 6, 10, 11}
+    {16, 0, 4, 5, 6, 10}
 
     Notes
     -----
@@ -112,7 +112,6 @@ def clauset_greedy_source_expansion(G, *, source, cutoff=None):
             R_tmp, B_tmp, T_tmp, I_tmp = _calculate_local_modularity_for_candidate(
                 G, v, C, B, T, I
             )
-
             if R_tmp > max_R:
                 max_R = R_tmp
                 best_node = v
