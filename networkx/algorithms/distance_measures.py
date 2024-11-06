@@ -388,7 +388,7 @@ def diameter(G, e=None, usebounds=False, weight=None):
 
 
 @nx._dispatchable(edge_attrs="weight")
-def harmonic_diameter(G, *, weight=None, sp=None):
+def harmonic_diameter(G, sp=None, *, weight=None):
     """Returns the harmonic diameter of the graph G.
 
     The harmonic diameter of a graph is the harmonic mean of the distances
@@ -412,6 +412,9 @@ def harmonic_diameter(G, *, weight=None, sp=None):
     G : NetworkX graph
        A graph
 
+    sp : dict of dicts, optional
+       All-pairs shortest path lengths as a dictionary of dictionaries
+
     weight : string, function, or None (default=None)
         If None, every edge has weight/distance 1.
         If a string, use this edge attribute as the edge weight.
@@ -420,9 +423,6 @@ def harmonic_diameter(G, *, weight=None, sp=None):
         The function must accept exactly three positional arguments:
         the two endpoints of an edge and the dictionary of edge attributes for
         that edge. The function must return a number.
-
-    sp : dict of dicts, optional
-       All-pairs shortest path lengths as a dictionary of dictionaries
 
     Returns
     -------
