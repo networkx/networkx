@@ -62,7 +62,6 @@ default = [
     'pandas>=2.0',
 ]
 developer = [
-    'changelist==0.5',
     'pre-commit>=3.2',
     'mypy>=1.1',
     'rtoml',
