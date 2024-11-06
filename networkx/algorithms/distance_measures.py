@@ -345,7 +345,7 @@ def diameter(G, e=None, usebounds=False, weight=None):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
-    usebounds : bool, optional
+    usebounds : bool, optional (default = False)
         If `True`, use the extrema bounding approach when computing the diameter
         for undirected graphs. Extrema bounding may accelerate the
         distance calculation for some graphs. `usebounds` is ignored if `G` is
