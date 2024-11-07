@@ -64,7 +64,7 @@ Local Community Detection
 .. autosummary::
    :toctree: generated/
 
-   clauset
+   greedy_source_expansion
 
 Louvain Community Detection
 ---------------------------
