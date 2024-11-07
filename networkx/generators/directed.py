@@ -506,12 +506,12 @@ def _random_k_out_graph_numpy(n, k, alpha, self_loops=True, seed=None):
     for i in range(k * n):
         u = seed.choice(nodes[remaining_mask])
 
-        if self_loops:                                                          
-            v = seed.choice(nodes, p=weights / total_weight)                    
-        else:  # Ignore weight of u when selecting v                            
-            u_weight = weights[u]                                               
-            weights[u] = 0                                                      
-            v = seed.choice(nodes, p=weights / (total_weight - u_weight))       
+        if self_loops:
+            v = seed.choice(nodes, p=weights / total_weight)
+        else:  # Ignore weight of u when selecting v
+            u_weight = weights[u]
+            weights[u] = 0
+            v = seed.choice(nodes, p=weights / (total_weight - u_weight))
             weights[u] = u_weight
 
         G.add_edge(u, v)
