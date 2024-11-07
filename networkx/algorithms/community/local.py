@@ -196,7 +196,7 @@ def greedy_source_expansion(G, *, source, cutoff=None, method="clauset"):
     Examples
     ----------
     >>> G = nx.karate_club_graph()
-    >>> nx.community.clauset_greedy_source_expansion(G, source=16)
+    >>> nx.community.greedy_source_expansion(G, source=16)
     {16, 0, 4, 5, 6, 10}
 
     Notes
