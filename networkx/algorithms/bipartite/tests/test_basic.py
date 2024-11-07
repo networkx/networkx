@@ -2,7 +2,7 @@ import pytest
 
 import networkx as nx
 from networkx.algorithms import bipartite
-
+from networkx.algorithms.bipartite import color, is_bipartite, sets
 
 class TestBipartiteBasic:
     def test_is_bipartite(self):
@@ -123,3 +123,24 @@ class TestBipartiteBasic:
         Y = [4, 2, 0]
         M = bipartite.biadjacency_matrix(G, X, Y, weight="weight")
         assert M[1, 2] == 2
+
+    def test_bipartite_connected(self):
+        G = nx.path_graph(4)
+        assert is_bipartite(G)
+        assert is_bipartite(G, relaxed=True)
+        assert color(G) == {0: 1, 1: 0, 2: 1, 3: 0}
+
+    def test_bipartite_disconnected_relaxed(self):
+        G = nx.Graph()
+        G.add_edges_from([(1, 2), (3, 4)])  # Two disconnected components
+        assert not is_bipartite(G)  # Strict mode
+        assert is_bipartite(G, relaxed=True)  # Relaxed mode
+
+    def test_non_bipartite(self):
+        G = nx.cycle_graph(3)  # A triangle (non-bipartite)
+        assert not is_bipartite(G)
+        try:
+            color(G)
+        except nx.NetworkXError:
+            assert True
+        assert color(G, relaxed=True)  # Should not raise an error
