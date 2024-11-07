@@ -105,26 +105,32 @@ class TestRandomKOutGraph:
 
     """
 
-    @pytest.mark.parametrize("use_numpy", [False] + ([True] if has_numpy else []))
-    def test_regularity(self, use_numpy):
+    @pytest.mark.parametrize(
+        "f", (_random_k_out_graph_numpy, _random_k_out_graph_python)
+    )
+    def test_regularity(self, f):
         """Tests that the generated graph is `k`-out-regular."""
-        fun = _random_k_out_graph_numpy if use_numpy else _random_k_out_graph_python
+        if (f == _random_k_out_graph_numpy) and not has_numpy:
+            pytest.skip()
         n = 10
         k = 3
         alpha = 1
-        G = fun(n, k, alpha)
+        G = f(n, k, alpha)
         assert all(d == k for v, d in G.out_degree())
-        G = fun(n, k, alpha, seed=42)
+        G = f(n, k, alpha, seed=42)
         assert all(d == k for v, d in G.out_degree())
 
-    @pytest.mark.parametrize("use_numpy", [False] + ([True] if has_numpy else []))
-    def test_no_self_loops(self, use_numpy):
+    @pytest.mark.parametrize(
+        "f", (_random_k_out_graph_numpy, _random_k_out_graph_python)
+    )
+    def test_no_self_loops(self, f):
         """Tests for forbidding self-loops."""
-        fun = _random_k_out_graph_numpy if use_numpy else _random_k_out_graph_python
+        if (f == _random_k_out_graph_numpy) and not has_numpy:
+            pytest.skip()
         n = 10
         k = 3
         alpha = 1
-        G = fun(n, k, alpha, self_loops=False)
+        G = f(n, k, alpha, self_loops=False)
         assert nx.number_of_selfloops(G) == 0
 
     def test_negative_alpha(self):
