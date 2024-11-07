@@ -16,7 +16,7 @@ def test_clauset_cutoff():
 
     community = nx.community.clauset_greedy_source_expansion(G, source=16, cutoff=3)
 
-    assert len(community) == 3
+    assert community == {5, 6, 16}
 
 
 def test_clauset_connected_component():
