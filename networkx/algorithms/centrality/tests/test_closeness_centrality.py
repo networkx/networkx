@@ -195,22 +195,19 @@ class TestClosenessCentrality:
         for n in sorted(XG):
             assert c[n] == pytest.approx(d[n], abs=1e-3)
 
-    #
-    # Tests for incremental closeness centrality.
-    #
+
+class TestIncrementalClosenessCentrality:
     @staticmethod
-    def pick_add_edge(g):
-        u = nx.utils.arbitrary_element(g)
-        possible_nodes = set(g.nodes())
-        neighbors = list(g.neighbors(u)) + [u]
-        possible_nodes.difference_update(neighbors)
+    def pick_add_edge(G):
+        u = nx.utils.arbitrary_element(G)
+        possible_nodes = set(G) - (set(G.neighbors(u)) | {u})
         v = nx.utils.arbitrary_element(possible_nodes)
         return (u, v)
 
     @staticmethod
-    def pick_remove_edge(g):
-        u = nx.utils.arbitrary_element(g)
-        possible_nodes = list(g.neighbors(u))
+    def pick_remove_edge(G):
+        u = nx.utils.arbitrary_element(G)
+        possible_nodes = list(G.neighbors(u))
         v = nx.utils.arbitrary_element(possible_nodes)
         return (u, v)
 
