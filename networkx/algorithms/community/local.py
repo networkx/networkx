@@ -29,7 +29,7 @@ def _clauset_greedy_source_expansion(G, *, source, cutoff=None):
     C = {source}
     B = {source}
     U = G[source].keys() - C
-    T = {frozenset([node, neighbor]) for node in B for neighbor in G.neighbors(node)}
+    T = {frozenset([node, nbr]) for node in B for nbr in G.neighbors(node)}
     I = {edge for edge in T if all(node in C for node in edge)}
 
     R_value = 0
@@ -102,35 +102,31 @@ def _calculate_local_modularity_for_candidate(G, v, C, B, T, I):
     removed_B_nodes = set()
 
     # Update boundary nodes and edges
-    for neighbour in G[v]:
-        if neighbour not in C_tmp:
-            # v has neighbors not in the community, so it remains a boundary node
+    for nbr in G[v]:
+        if nbr not in C_tmp:
+            # v has nbrs not in the community, so it remains a boundary node
             B_tmp.add(v)
-            # Add edge between v and neighbor to boundary edges
-            T_tmp.add(frozenset([v, neighbour]))
+            # Add edge between v and nbr to boundary edges
+            T_tmp.add(frozenset([v, nbr]))
 
-        if neighbour in B:
-            # Check if neighbor should be removed from boundary nodes
-            neighour_still_in_B = False
-            # Go through neighbours neighbours to see if it is still a boundary node
-            for neighbours_neighbour in G[neighbour]:
-                if neighbours_neighbour not in C_tmp:
-                    neighour_still_in_B = True
-                    break
-            if not neighour_still_in_B:
-                B_tmp.remove(neighbour)
-                removed_B_nodes.add(neighbour)
+        if nbr in B:
+            # Check if nbr should be removed from boundary nodes
+            # Go through nbrs nbrs to see if it is still a boundary node
+            nbr_still_in_B = any(nbr_nbr not in C_tmp for nbr_nbr in G[nbr])
+            if not nbr_still_in_B:
+                B_tmp.remove(nbr)
+                removed_B_nodes.add(nbr)
 
-        if neighbour in C_tmp:
-            # Add edge between v and neighbor to internal edges
-            I_tmp.add(frozenset([v, neighbour]))
+        if nbr in C_tmp:
+            # Add edge between v and nbr to internal edges
+            I_tmp.add(frozenset([v, nbr]))
 
     # Remove edges no longer in the boundary
     for removed_node in removed_B_nodes:
-        for removed_node_neighbour in G[removed_node]:
-            if removed_node_neighbour not in B_tmp:
-                T_tmp.discard(frozenset([removed_node_neighbour, removed_node]))
-                I_tmp.discard(frozenset([removed_node_neighbour, removed_node]))
+        for removed_node_nbr in G[removed_node]:
+            if removed_node_nbr not in B_tmp:
+                T_tmp.discard(frozenset([removed_node_nbr, removed_node]))
+                I_tmp.discard(frozenset([removed_node_nbr, removed_node]))
 
     R_tmp = len(I_tmp) / len(T_tmp) if len(T_tmp) > 0 else 1
     return R_tmp, B_tmp, T_tmp, I_tmp
@@ -152,7 +148,7 @@ def greedy_source_expansion(G, *, source, cutoff=None, method="clauset"):
     The algorithm is specified with the `method` keyword argument.
 
     * `"clauset"` [1]_ uses local modularity gain to determine local communities.
-        The algorithm adds neighboring nodes that maximize local modularity to the
+        The algorithm adds nbring nodes that maximize local modularity to the
         community iteratively, stopping when no additional nodes improve the modularity
         or when a predefined cutoff is reached.
 
@@ -163,7 +159,7 @@ def greedy_source_expansion(G, *, source, cutoff=None, method="clauset"):
 
         The algorithm assumes that the graph $G$ consists of a known community $C$ and
         an unknown set of nodes $U$, which are adjacent to $C$ . The boundary of the
-        community $B$, consists of nodes in $C$ that have at least one neighbor in $U$.
+        community $B$, consists of nodes in $C$ that have at least one nbr in $U$.
 
         Mathematically, the local modularity is expressed as:
 
