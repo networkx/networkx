@@ -31,7 +31,7 @@ class TestClosenessCentrality:
         cr = nx.closeness_centrality(G.reverse())
         d = {0: 0.0, 1: 0.500, 2: 0.667}
         dr = {0: 0.667, 1: 0.500, 2: 0.0}
-        for n in sorted(G):
+        for n in G:
             assert c[n] == pytest.approx(d[n], abs=1e-3)
             assert cr[n] == pytest.approx(dr[n], abs=1e-3)
 
@@ -39,14 +39,14 @@ class TestClosenessCentrality:
         G = nx.complete_graph(5)
         c = nx.closeness_centrality(G)
         d = {0: 1.000, 1: 1.000, 2: 1.000, 3: 1.000, 4: 1.000}
-        for n in sorted(G):
+        for n in G:
             assert c[n] == pytest.approx(d[n], abs=1e-3)
 
     def test_p3_closeness(self):
         G = nx.path_graph(3)
         c = nx.closeness_centrality(G)
         d = {0: 0.667, 1: 1.000, 2: 0.667}
-        for n in sorted(G):
+        for n in G:
             assert c[n] == pytest.approx(d[n], abs=1e-3)
 
     def test_krackhardt_closeness(self):
@@ -64,7 +64,7 @@ class TestClosenessCentrality:
             8: 0.429,
             9: 0.310,
         }
-        for n in sorted(G):
+        for n in G:
             assert c[n] == pytest.approx(d[n], abs=1e-3)
 
     def test_florentine_families_closeness(self):
@@ -87,7 +87,7 @@ class TestClosenessCentrality:
             "Strozzi": 0.4375,
             "Tornabuoni": 0.483,
         }
-        for n in sorted(G):
+        for n in G:
             assert c[n] == pytest.approx(d[n], abs=1e-3)
 
     def test_les_miserables_closeness(self):
@@ -172,7 +172,7 @@ class TestClosenessCentrality:
             "Brujon": 0.380,
             "MmeHucheloup": 0.353,
         }
-        for n in sorted(G):
+        for n in G:
             assert c[n] == pytest.approx(d[n], abs=1e-3)
 
     def test_weighted_closeness(self):
