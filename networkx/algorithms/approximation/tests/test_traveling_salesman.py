@@ -249,7 +249,6 @@ class TestSimulatedAnnealingTSP(TestBase):
             self.DG2, "greedy", source="D", move="1-0", alpha=1, N_inner=1, seed=42
         )
         cost = sum(self.DG2[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        print(cycle, cost)
         assert cost > self.DG2_cost
 
         # Try with an incorrect initial guess
@@ -265,7 +264,6 @@ class TestSimulatedAnnealingTSP(TestBase):
             seed=42,
         )
         cost = sum(self.DG[n][nbr]["weight"] for n, nbr in pairwise(cycle))
-        print(cycle, cost)
         assert cost > self.DG_cost
 
 
@@ -311,7 +309,6 @@ def test_TSP_method():
         method=sa_tsp,
         cycle=False,
     )
-    print(path)
     assert path == [4, 3, 2, 1, 0, 8, 7, 6, 5]
 
 
@@ -389,13 +386,11 @@ def test_TSP_incomplete_graph_short_path():
     G[4][5]["weight"] = 5
 
     cycle = nx_app.traveling_salesman_problem(G)
-    print(cycle)
     assert len(cycle) == 17 and len(set(cycle)) == 12
 
     # make sure that cutting one edge out of complete graph formulation
     # cuts out many edges out of the path of the TSP
     path = nx_app.traveling_salesman_problem(G, cycle=False)
-    print(path)
     assert len(path) == 13 and len(set(path)) == 12
 
 

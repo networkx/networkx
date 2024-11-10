@@ -732,7 +732,6 @@ def test_draw_edges_min_source_target_margins_individual(node_shape):
     )
     padded_extent = [p.get_extents().corners()[::2, 0] for p in padded_patch]
     for d, p in zip(default_extent, padded_extent):
-        print(f"{p=}, {d=}")
         # With padding, the left-most extent of the edge should be further to the
         # right
         assert p[0] > d[0]

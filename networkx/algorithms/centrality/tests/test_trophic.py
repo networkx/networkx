@@ -111,9 +111,6 @@ def test_trophic_levels_more_complex():
     d = nx.trophic_levels(G)
 
     expected_result = [1, 2, 2.5, 3.25]
-    print("Calculated result: ", d)
-    print("Expected Result: ", expected_result)
-
     for ind in range(4):
         assert d[ind] == pytest.approx(expected_result[ind], abs=1e-7)
 
