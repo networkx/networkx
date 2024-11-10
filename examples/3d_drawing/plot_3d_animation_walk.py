@@ -3,8 +3,11 @@
 Animation: Node Walk
 ====================
 
-Another animation example, illustrating a walk along the nodes as the view
-rotates.
+NetworkX supports several 3D layout functions for visualization.
+These layouts can be combined with :external+matplotlib:doc:`api/animation_api`
+for 3D graph visualization.
+
+This animation illustrates a walk along the nodes as the view rotates.
 
 """
 
