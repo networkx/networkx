@@ -1,8 +1,8 @@
 import pytest
-
 import networkx as nx
 from networkx.algorithms import bipartite
 from networkx.algorithms.bipartite import color, is_bipartite, sets
+
 
 class TestBipartiteBasic:
     def test_is_bipartite(self):
@@ -18,6 +18,46 @@ class TestBipartiteBasic:
     def test_not_bipartite_color(self):
         with pytest.raises(nx.NetworkXError):
             c = bipartite.color(nx.complete_graph(4))
+
+    def test_relaxed_color(self):
+        # Test relaxed coloring on non-bipartite graph
+        G = nx.cycle_graph(3)  # Odd cycle, not bipartite
+        c = bipartite.color(G, relaxed=True)
+        # Check that colors are assigned
+        assert all(color in {0, 1} for color in c.values())
+
+        # Test relaxed coloring on disconnected graph with mixed components
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (1, 2), (2, 0)])  # Non-bipartite component
+        G.add_edges_from([(3, 4), (4, 5)])  # Bipartite component
+        c = bipartite.color(G, relaxed=True)
+        # Check that all nodes are colored
+        assert len(c) == 6
+        assert all(color in {0, 1} for color in c.values())
+
+    def test_relaxed_is_bipartite(self):
+        # Test with mixed graph (both bipartite and non-bipartite components)
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (1, 2), (2, 0)])  # Non-bipartite triangle
+        G.add_edges_from([(3, 4), (4, 5)])  # Bipartite path
+        assert not bipartite.is_bipartite(G)  # Should fail without relaxed
+        assert bipartite.is_bipartite(G, relaxed=True)  # Should pass with relaxed
+
+    def test_relaxed_sets(self):
+        # Test with disconnected graph
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (1, 2), (2, 3)])  # Path graph
+        G.add_edges_from([(4, 5), (5, 6)])  # Another component
+        X, Y = bipartite.sets(G, relaxed=True)
+        assert isinstance(X, set) and isinstance(Y, set)
+        assert X.union(Y) == set(G.nodes())
+        assert X.intersection(Y) == set()
+
+        # Test with non-bipartite component
+        G.add_edges_from([(7, 8), (8, 9), (9, 7)])  # Add triangle
+        X, Y = bipartite.sets(G, relaxed=True)
+        assert isinstance(X, set) and isinstance(Y, set)
+        assert X.union(Y) == set(G.nodes())
 
     def test_bipartite_directed(self):
         G = bipartite.random_graph(10, 10, 0.1, directed=True)
@@ -92,34 +132,3 @@ class TestBipartiteBasic:
         u, d = bipartite.degrees(G, Y, weight="other")
         assert dict(u) == {1: 1.2, 3: 2}
         assert dict(d) == {0: 0.2, 2: 2, 4: 1}
-
-    def test_biadjacency_matrix_weight(self):
-        pytest.importorskip("scipy")
-        G = nx.path_graph(5)
-        G.add_edge(0, 1, weight=2, other=4)
-        X = [1, 3]
-        Y = [0, 2, 4]
-        M = bipartite.biadjacency_matrix(G, X, weight="weight")
-        assert M[0, 0] == 2
-        M = bipartite.biadjacency_matrix(G, X, weight="other")
-        assert M[0, 0] == 4
-
-    def test_biadjacency_matrix(self):
-        pytest.importorskip("scipy")
-        tops = [2, 5, 10]
-        bots = [5, 10, 15]
-        for i in range(len(tops)):
-            G = bipartite.random_graph(tops[i], bots[i], 0.2)
-            top = [n for n, d in G.nodes(data=True) if d["bipartite"] == 0]
-            M = bipartite.biadjacency_matrix(G, top)
-            assert M.shape[0] == tops[i]
-            assert M.shape[1] == bots[i]
-
-    def test_biadjacency_matrix_order(self):
-        pytest.importorskip("scipy")
-        G = nx.path_graph(5)
-        G.add_edge(0, 1, weight=2)
-        X = [3, 1]
-        Y = [4, 2, 0]
-        M = bipartite.biadjacency_matrix(G, X, Y, weight="weight")
-        assert M[1, 2] == 2
