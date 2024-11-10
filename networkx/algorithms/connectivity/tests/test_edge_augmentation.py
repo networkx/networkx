@@ -272,9 +272,7 @@ def _assert_solution_properties(G, aug_edges, avail_dict=None):
     ), "aug edges and G.edges should be disjoint"
 
 
-def _augment_and_check(
-    G, k, avail=None, weight=None, verbose=False, orig_k=None, max_aug_k=None
-):
+def _augment_and_check(G, k, avail=None, weight=None, orig_k=None, max_aug_k=None):
     """
     Does one specific augmentation and checks for properties of the result
     """
@@ -385,7 +383,7 @@ def _augment_and_check(
     return aug_edges, info
 
 
-def _check_augmentations(G, avail=None, max_k=None, weight=None, verbose=False):
+def _check_augmentations(G, avail=None, max_k=None, weight=None):
     """Helper to check weighted/unweighted cases with multiple values of k"""
     # Using all available edges, find the maximum edge-connectivity
     try:
@@ -409,48 +407,28 @@ def _check_augmentations(G, avail=None, max_k=None, weight=None, verbose=False):
 
     avail_uniform = {e: 1 for e in complement_edges(G)}
 
-    if verbose:
-        print("\n=== CHECK_AUGMENTATION ===")
-        print(f"G.number_of_nodes = {G.number_of_nodes()!r}")
-        print(f"G.number_of_edges = {G.number_of_edges()!r}")
-        print(f"max_k = {max_k!r}")
-        print(f"max_aug_k = {max_aug_k!r}")
-        print(f"orig_k = {orig_k!r}")
-
     # check augmentation for multiple values of k
     for k in range(1, max_k + 1):
-        if verbose:
-            print("---------------")
-            print(f"Checking k = {k}")
-
         # Check the unweighted version
-        if verbose:
-            print("unweighted case")
-        aug_edges1, info1 = _augment_and_check(G, k=k, verbose=verbose, orig_k=orig_k)
+        aug_edges1, info1 = _augment_and_check(G, k=k, orig_k=orig_k)
 
         # Check that the weighted version with all available edges and uniform
         # weights gives a similar solution to the unweighted case.
-        if verbose:
-            print("weighted uniform case")
         aug_edges2, info2 = _augment_and_check(
             G,
             k=k,
             avail=avail_uniform,
-            verbose=verbose,
             orig_k=orig_k,
             max_aug_k=G.number_of_nodes() - 1,
         )
 
         # Check the weighted version
         if avail is not None:
-            if verbose:
-                print("weighted case")
             aug_edges3, info3 = _augment_and_check(
                 G,
                 k=k,
                 avail=avail,
                 weight=weight,
-                verbose=verbose,
                 max_aug_k=max_aug_k,
                 orig_k=orig_k,
             )
