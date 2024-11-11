@@ -55,9 +55,9 @@ nx_loopback = 'networkx.classes.tests.dispatch_interface:backend_interface'
 
 [project.optional-dependencies]
 default = [
-    'numpy>=1.24',
-    'scipy>=1.10,!=1.11.0,!=1.11.1',
-    'matplotlib>=3.7',
+    'numpy>=1.25',
+    'scipy>=1.11.2',
+    'matplotlib>=3.8',
     'pandas>=2.0',
 ]
 developer = [
