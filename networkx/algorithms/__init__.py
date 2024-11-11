@@ -76,6 +76,7 @@ from networkx.algorithms import community
 from networkx.algorithms import coloring
 from networkx.algorithms import flow
 from networkx.algorithms import isomorphism
+from networkx.algorithms import k_vertex_cover
 from networkx.algorithms import link_analysis
 from networkx.algorithms import lowest_common_ancestors
 from networkx.algorithms import operators
