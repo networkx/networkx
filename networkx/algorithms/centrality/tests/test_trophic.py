@@ -303,7 +303,6 @@ def test_trophic_incoherence_parameter_cannibalism():
 
 
 def test_no_basal_node():
-    edges = [(1, 2), (2, 3), (3, 1)]  # No basal node, should raise an error
-    G = nx.DiGraph(edges)
-    with pytest.raises(nx.exception.NetworkXError):
+    G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])  # No basal node, should raise an error
+    with pytest.raises(nx.NetworkXError):
         nx.trophic_levels(G)
