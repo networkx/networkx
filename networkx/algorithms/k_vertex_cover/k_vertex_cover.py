@@ -3,10 +3,12 @@ Function to get the k-sized vertex cover
 """
 
 import networkx as nx
+from networkx.utils import not_implemented_for
 
-__all__ = []
+__all__ = ["k_vertex_cover", "k_vertex_cover_given_candidate"]
 
 
+@not_implemented_for("directed")
 def max_deg_vertex(G: nx.Graph):
     """
     Returns tuple of (v, max_deg) where max_deg is the maximum degree
@@ -26,6 +28,7 @@ def max_deg_vertex(G: nx.Graph):
     return arg_max_deg, max_deg
 
 
+@not_implemented_for("directed")
 def k_vc_preprocessing(G: nx.Graph, k: int, vertex_cover_candidate: set):
     """
     Preprocessing the graph to reduce the given instance into possibly a smaller instance
@@ -119,7 +122,8 @@ def update_vertex_cover(component: set, G: nx.Graph, vertex_cover_candidate: set
         dfs_update_vc(start_vertex, sub_G, vertex_cover_candidate, False, visited)
 
 
-def k_vc(G: nx.Graph, k: int, vertex_cover_candidate: set):
+@not_implemented_for("directed")
+def k_vertex_cover_given_candidate(G: nx.Graph, k: int, vertex_cover_candidate: set):
     # empty graph / edgeless graph
     if len(G) == 0 or len(G.edges) == 0:
         return True
@@ -186,7 +190,8 @@ def k_vc(G: nx.Graph, k: int, vertex_cover_candidate: set):
     return is_k_vc_cover_exist
 
 
-def k_vc_cover(G: nx.Graph, k: int):
+@not_implemented_for("directed")
+def k_vertex_cover(G: nx.Graph, k: int):
     """
     returns a tuple (is_k_vc_exist, vertex_cover) where
     is_k_vc_exist is a boolean representing if a VC of size atmost kexists
@@ -223,8 +228,8 @@ def k_vc_cover(G: nx.Graph, k: int):
     if len(G_copy.edges) > k**2 or len(G_copy) > k * (k + 1):
         return False, vertex_cover_candidate
 
-    is_k_vc_cover_exist = k_vc(G_copy, k, vertex_cover_candidate)
+    is_k_vc_cover_exist = k_vertex_cover_given_candidate(
+        G_copy, k, vertex_cover_candidate
+    )
     if is_k_vc_cover_exist:
         return True, vertex_cover_candidate
-    else:
-        return False, set()

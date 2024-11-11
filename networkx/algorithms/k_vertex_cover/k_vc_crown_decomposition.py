@@ -1,9 +1,11 @@
 import networkx as nx
 from networkx.algorithms.bipartite import hopcroft_karp_matching
+from networkx.utils import not_implemented_for
 
 __all__ = ["crown_decomposition"]
 
 
+@not_implemented_for("directed")
 def crown_decomposition(G: nx.Graph, k: int) -> bool | list[set]:
     maximal_matching = nx.maximal_matching(G)
     if len(maximal_matching) > k:
@@ -51,6 +53,7 @@ def crown_decomposition(G: nx.Graph, k: int) -> bool | list[set]:
     return [head_vertices, crown, rest]
 
 
+@not_implemented_for("directed")
 def crown_decomposition_vc(
     G: nx.Graph, k: int, vertex_cover_candidate: set
 ) -> tuple[bool, set]:

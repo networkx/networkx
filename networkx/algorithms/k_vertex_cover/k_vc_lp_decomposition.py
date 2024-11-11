@@ -1,9 +1,11 @@
 import networkx as nx
 from networkx.algorithms.bipartite import hopcroft_karp_matching, to_vertex_cover
+from networkx.utils import not_implemented_for
 
 __all__ = ["lp_decomposition"]
 
 
+@not_implemented_for("directed")
 def lp_decomposition(G: nx.Graph, k: int) -> bool | list[set]:
     label = {}
     reverse_label = {}
@@ -62,6 +64,7 @@ def lp_decomposition(G: nx.Graph, k: int) -> bool | list[set]:
     return [greater_than_half, less_than_half, equal_to_half]
 
 
+@not_implemented_for("directed")
 def lp_decomposition_vc(
     G: nx.Graph, k: int, vertex_cover_candidate: set
 ) -> tuple[bool, set]:
