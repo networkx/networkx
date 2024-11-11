@@ -2,7 +2,13 @@
 Function to get the k-sized vertex cover
 """
 
+import math
+
 import networkx as nx
+from networkx.algorithms.bipartite.matching import (
+    hopcroft_karp_matching,
+    to_vertex_cover,
+)
 from networkx.utils import not_implemented_for
 
 __all__ = ["k_vertex_cover", "k_vertex_cover_given_candidate"]
@@ -162,7 +168,9 @@ def k_vertex_cover_given_candidate(G: nx.Graph, k: int, vertex_cover_candidate: 
     G_copy = G.copy()
     G_copy.remove_node(u)
 
-    is_k_vc_cover_exist = k_vc(G_copy, k - 1, vertex_cover_candidate)
+    is_k_vc_cover_exist = k_vertex_cover_given_candidate(
+        G_copy, k - 1, vertex_cover_candidate
+    )
 
     if is_k_vc_cover_exist:
         return True
@@ -185,7 +193,9 @@ def k_vertex_cover_given_candidate(G: nx.Graph, k: int, vertex_cover_candidate: 
         vertex_cover_candidate.add(neighbour)
         G_copy.remove_node(neighbour)
 
-    is_k_vc_cover_exist = k_vc(G_copy, k - num_neighbours, vertex_cover_candidate)
+    is_k_vc_cover_exist = k_vertex_cover_given_candidate(
+        G_copy, k - num_neighbours, vertex_cover_candidate
+    )
 
     return is_k_vc_cover_exist
 

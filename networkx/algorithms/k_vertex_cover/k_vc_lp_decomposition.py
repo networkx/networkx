@@ -32,7 +32,7 @@ def lp_decomposition(G: nx.Graph, k: int) -> bool | list[set]:
         container_1_name = f"1_{label[node]}"
         container_2_name = f"2_{label[node]}"
 
-        weight = 0
+        weight = 0.0
 
         if container_1_name in min_vertex_cover:
             weight += 0.5
