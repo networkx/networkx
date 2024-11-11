@@ -490,14 +490,14 @@ def random_k_out_graph(n, k, alpha, self_loops=True, seed=None):
     If you have a use-case which requires explicit control over which implementation
     is used, call the corresponding function directly::
 
-        >>> # Use numpy if available, else Python
-        >>> nx.random_k_out_graph(1000, 5, alpha=1)
+        # Use numpy if available, else Python
+        nx.random_k_out_graph(1000, 5, alpha=1)
 
-        >>> # Use the numpy-based implementation (raises ImportError if numpy not installed)
-        >>> nx.generators.directed._random_k_out_graph_numpy(1000, 5, alpha=1)
+        # Use the numpy-based implementation (raises ImportError if numpy not installed)
+        nx.generators.directed._random_k_out_graph_numpy(1000, 5, alpha=1)
 
-        >>> # Use the Python-based implementation
-        >>> nx.generators.directed._random_k_out_graph_python(1000, 5, alpha=1)
+        # Use the Python-based implementation
+        nx.generators.directed._random_k_out_graph_python(1000, 5, alpha=1)
 
     References
     ----------
