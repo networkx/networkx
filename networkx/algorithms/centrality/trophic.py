@@ -41,7 +41,7 @@ def trophic_levels(G, weight="weight"):
     .. [1] Stephen Levine (1980) J. theor. Biol. 83, 195-207
     """
 
-    basal_nodes = [n for n in G if G.in_degree(n) == 0]
+    basal_nodes = [n for n, deg in G.in_degree if deg == 0]
     if not basal_nodes:
         raise nx.NetworkXError(
             "Trophic levels are only defined for graphs where every node has a path "
