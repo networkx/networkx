@@ -1,5 +1,6 @@
 import networkx as nx
 from networkx.algorithms.bipartite import hopcroft_karp_matching
+from networkx.algorithms.bipartite.matching import to_vertex_cover
 from networkx.utils import not_implemented_for
 
 __all__ = ["crown_decomposition"]
@@ -36,7 +37,7 @@ def crown_decomposition(G: nx.Graph, k: int) -> bool | list[set]:
     if len(maximum_matching) > k:
         return False
 
-    minimum_vertex_cover = nx.to_vertex_cover(
+    minimum_vertex_cover = to_vertex_cover(
         G, maximum_matching, top_nodes=v_from_maximal_matching
     )
 
