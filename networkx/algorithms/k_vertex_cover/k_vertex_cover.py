@@ -2,8 +2,6 @@
 Function to get the k-sized vertex cover
 """
 
-import math
-
 import networkx as nx
 from networkx.algorithms.bipartite.matching import (
     hopcroft_karp_matching,
@@ -156,7 +154,8 @@ def k_vertex_cover_given_candidate(G: nx.Graph, k: int, vertex_cover_candidate: 
 
         for component in remaining_components:
             # remaining_components is a generator, can only be traversed once
-            min_vertices_to_be_added += math.ceil(len(component) / 2.0)
+            # adding ceil of len(component) / 2
+            min_vertices_to_be_added += (len(component) + 1) / 2
             update_vertex_cover(component, G, vertex_cover_candidate)
 
         if min_vertices_to_be_added > k:
