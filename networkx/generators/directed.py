@@ -489,7 +489,10 @@ def random_k_out_graph(n, k, alpha, self_loops=True, seed=None):
     """
     if alpha < 0:
         raise ValueError("alpha must be positive")
-    return _random_k_out_graph_numpy(n, k, alpha, self_loops, seed)
+    try:  # Use numpy if available, otherwise fall back to pure Python implementation
+        return _random_k_out_graph_numpy(n, k, alpha, self_loops, seed)
+    except ImportError:
+        return _random_k_out_graph_python(n, k, alpha, self_loops, seed)
 
 
 @np_random_state(4)
