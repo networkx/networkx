@@ -44,8 +44,8 @@ def trophic_levels(G, weight="weight"):
     basal_nodes = [n for n, deg in G.in_degree if deg == 0]
     if not basal_nodes:
         raise nx.NetworkXError(
-            "Trophic levels are only defined for graphs where every node has a path "
-            "from a basal node (basal nodes are nodes with no incoming edges)."
+            "This graph has no basal nodes (nodes with no incoming edges)."
+            "Trophic levels are not defined without at least one basal node."
         )
 
     reachable_nodes = {
