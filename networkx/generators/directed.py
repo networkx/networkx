@@ -437,7 +437,7 @@ def random_k_out_graph(n, k, alpha, self_loops=True, seed=None):
     5. If each node has out-degree `k`, halt, otherwise repeat from
        step 2.
 
-    For more information on this model of random graph, see [1].
+    For more information on this model of random graph, see [1]_.
 
     Parameters
     ----------
@@ -480,11 +480,9 @@ def random_k_out_graph(n, k, alpha, self_loops=True, seed=None):
 
     References
     ----------
-    [1]: Peterson, Nicholas R., and Boris Pittel.
-         "Distance between two random `k`-out digraphs, with and without
-         preferential attachment."
-         arXiv preprint arXiv:1311.5961 (2013).
-         <https://arxiv.org/abs/1311.5961>
+    .. [1] Peterson, Nicholas R., and Boris Pittel.
+       "Distance between two random `k`-out digraphs, with and without preferential attachment."
+       arXiv preprint arXiv:1311.5961 (2013) <https://arxiv.org/abs/1311.5961>.
 
     """
     if alpha < 0:
