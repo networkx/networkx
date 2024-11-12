@@ -7,6 +7,8 @@ import networkx as nx
 from networkx.algorithms import approximation as approx
 from networkx.algorithms import threshold
 
+progress = 0
+
 # store the random numbers after setting a global seed
 np.random.seed(42)
 np_rv = np.random.rand()
@@ -16,13 +18,21 @@ py_rv = random.random()
 
 def t(f, *args, **kwds):
     """call one function and check if global RNG changed"""
+    global progress
+    progress += 1
+    print(progress, ",", end="")
+
     f(*args, **kwds)
 
     after_np_rv = np.random.rand()
+    # if np_rv != after_np_rv:
+    #    print(np_rv, after_np_rv, "don't match np!")
     assert np_rv == after_np_rv
     np.random.seed(42)
 
     after_py_rv = random.random()
+    # if py_rv != after_py_rv:
+    #    print(py_rv, after_py_rv, "don't match py!")
     assert py_rv == after_py_rv
     random.seed(42)
 
@@ -42,19 +52,24 @@ def run_all_random_functions(seed):
     deg_sequence = [3, 2, 1, 3, 2, 1, 3, 2, 1, 2, 1, 2, 1]
     in_degree_sequence = w = sequence = aseq = bseq = deg_sequence
 
+    # print("starting...")
     t(nx.maximal_independent_set, G, seed=seed)
     t(nx.rich_club_coefficient, G, seed=seed, normalized=False)
     t(nx.random_reference, G, seed=seed)
     t(nx.lattice_reference, G, seed=seed)
     t(nx.sigma, G, 1, 2, seed=seed)
     t(nx.omega, G, 1, 2, seed=seed)
+    # print("out of smallworld.py")
     t(nx.double_edge_swap, G, seed=seed)
+    # print("starting connected_double_edge_swap")
     t(nx.connected_double_edge_swap, nx.complete_graph(9), seed=seed)
+    # print("ending connected_double_edge_swap")
     t(nx.random_layout, G, seed=seed)
     t(nx.fruchterman_reingold_layout, G, seed=seed)
     t(nx.algebraic_connectivity, G, seed=seed)
     t(nx.fiedler_vector, G, seed=seed)
     t(nx.spectral_ordering, G, seed=seed)
+    # print('starting average_clustering')
     t(approx.average_clustering, G, seed=seed)
     t(approx.simulated_annealing_tsp, H, "greedy", source=1, seed=seed)
     t(approx.threshold_accepting_tsp, H, "greedy", source=1, seed=seed)
@@ -75,9 +90,11 @@ def run_all_random_functions(seed):
     t(nx.betweenness_centrality, G, seed=seed)
     t(nx.edge_betweenness_centrality, G, seed=seed)
     t(nx.approximate_current_flow_betweenness_centrality, G, seed=seed)
+    # print("kernighan")
     t(nx.algorithms.community.kernighan_lin_bisection, G, seed=seed)
     # nx.algorithms.community.asyn_lpa_communities(G, seed=seed)
     t(nx.algorithms.tree.greedy_branching, G, seed=seed)
+    # print('done with graph argument functions')
 
     t(nx.spectral_graph_forge, G, alpha, seed=seed)
     t(nx.algorithms.community.asyn_fluidc, G, k, max_iter=1, seed=seed)
@@ -137,6 +154,7 @@ def run_all_random_functions(seed):
     t(nx.stochastic_block_model, sizes, probs, seed=seed)
     t(nx.random_partition_graph, sizes, p_in, p_out, seed=seed)
 
+    # print("starting generator functions")
     t(threshold.random_threshold_sequence, n, p, seed=seed)
     t(nx.tournament.random_tournament, n, seed=seed)
     t(nx.relaxed_caveman_graph, l, k, p, seed=seed)
@@ -195,6 +213,7 @@ def run_all_random_functions(seed):
         max_community=20,
     )
     t(nx.random_internet_as_graph, n, seed=seed)
+    # print("done")
 
 
 # choose to test an integer seed, or whether a single RNG can be everywhere
@@ -204,15 +223,28 @@ def run_all_random_functions(seed):
 
 
 @pytest.mark.slow
+# print("NetworkX Version:", nx.__version__)
 def test_rng_interface():
+    global progress
+
     # try different kinds of seeds
     for seed in [14, np.random.RandomState(14)]:
         np.random.seed(42)
         random.seed(42)
         run_all_random_functions(seed)
+        progress = 0
 
         # check that both global RNGs are unaffected
         after_np_rv = np.random.rand()
+        #        if np_rv != after_np_rv:
+        #            print(np_rv, after_np_rv, "don't match np!")
         assert np_rv == after_np_rv
         after_py_rv = random.random()
+        #        if py_rv != after_py_rv:
+        #            print(py_rv, after_py_rv, "don't match py!")
         assert py_rv == after_py_rv
+
+
+#        print("\nDone testing seed:", seed)
+
+# test_rng_interface()
