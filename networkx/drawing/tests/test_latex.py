@@ -51,6 +51,11 @@ def test_tikz_attributes():
     \end{tikzpicture}
 \end{figure}"""
 
+    # First, check for consistency line-by-line - if this fails, the mismatched
+    # line will be shown explicitly in the failure summary
+    for expected, actual in zip(expected_tex.split("\n"), output_tex.split("\n")):
+        assert expected == actual
+
     assert output_tex == expected_tex
 
 
@@ -210,6 +215,11 @@ def test_basic_tikz():
         as_document=True,
     )
 
+    # First, check for consistency line-by-line - if this fails, the mismatched
+    # line will be shown explicitly in the failure summary
+    for expected, actual in zip(expected_tex.split("\n"), output_tex.split("\n")):
+        assert expected == actual
+    # Double-check for document-level consistency
     assert output_tex == expected_tex
 
 
