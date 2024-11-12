@@ -47,7 +47,7 @@ class TestReverseView:
         RM = nx.reverse_view(M)
         assert RM.__class__ == MyGraph
         RMC = RM.copy()
-        assert RM.__class__ == MyGraph
+        assert RMC.__class__ == MyGraph
         assert RMC.has_edge(2, 1)
         assert RMC.my_method() == "me"
 
