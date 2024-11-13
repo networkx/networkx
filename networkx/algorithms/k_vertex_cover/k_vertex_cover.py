@@ -3,6 +3,7 @@ Function to get the k-sized vertex cover
 """
 
 from k_vc_crown_decomposition import crown_decomposition
+from k_vc_lp_decomposition import lp_decomposition
 
 import networkx as nx
 from networkx.algorithms.bipartite.matching import (
@@ -54,17 +55,20 @@ def k_vc_preprocessing(G: nx.Graph, k: int, vertex_cover_candidate: set) -> None
             assert isinstance(node_degree, int)
             if node_degree >= k + 1:
                 high_deg_vertex = node
-                vertex_cover_candidate.add(node)
                 k -= 1
-                # G.remove_node(node)
                 break
 
         if high_deg_vertex is not None:
+            # if there is vertex with degree at least k + 1
+            # that should be present in any vertex cover of size
+            # at most k
+            vertex_cover_candidate.add(high_deg_vertex)
             G.remove_node(high_deg_vertex)
             continue
 
         if k <= 0:
             break
+            return k
 
         # degree 1 vertices
         deg_one_vertex = None
@@ -73,28 +77,42 @@ def k_vc_preprocessing(G: nx.Graph, k: int, vertex_cover_candidate: set) -> None
                 deg_one_vertex = node
                 break
 
-        if deg_one_vertex is None:
+        if deg_one_vertex is not None:
+            neighbour = list(G.neighbors(deg_one_vertex))[0]
+
+            # add the neighbour to vertex_cover_candidate and reduce the parameter by 1
+            vertex_cover_candidate.add(neighbour)
+            k -= 1
+
+            G.remove_node(neighbour)
+            G.remove_node(deg_one_vertex)
+            continue
+
+        if k <= 0:
             break
+            return k
 
-        neighbour = list(G.neighbors(deg_one_vertex))[0]
-
-        # add the neighbour to vertex_cover_candidate and reduce the parameter by 1
-        vertex_cover_candidate.add(neighbour)
-        k -= 1
-
-        G.remove_node(neighbour)
-        G.remove_node(deg_one_vertex)
-
+        # apply crown decomposition as long as possible
         init_k_size = len(vertex_cover_candidate)
         vertex_cover_candidate = crown_decomposition(G, k, vertex_cover_candidate)[1]
         k = k - (len(vertex_cover_candidate) - init_k_size)
 
-        # NOT SURE IF THE BELOW IS CORRECT YET
-        # init_k_size = len(vertex_cover_candidate)
-        # vertex_cover_candidate = crown_decomposition(G, k, vertex_cover_candidate)[1]
-        # k = k - (len(vertex_cover_candidate) - init_k_size)
+        if k <= 0:
+            break
+            return k
+
+        # apply LP decomposition as long as possible
+        init_k_size = len(vertex_cover_candidate)
+        vertex_cover_candidate = lp_decomposition(G, k, vertex_cover_candidate)[1]
+        k = k - (len(vertex_cover_candidate) - init_k_size)
+
+        if k <= 0:
+            break
+            return k
 
     # SHOULD THE UPDATED PARAMETER BE RETURNED
+    return
+    return k
 
 
 def dfs_update_vc(
