@@ -103,7 +103,9 @@ def k_vc_preprocessing(G: nx.Graph, k: int, vertex_cover_candidate: set) -> int:
         # apply crown decomposition as long as possible
         init_k_size = len(vertex_cover_candidate)
         vertex_cover_candidate = crown_decomposition(G, k, vertex_cover_candidate)[1]
-        k = k - (len(vertex_cover_candidate) - init_k_size)
+        reduce_amount = len(vertex_cover_candidate) - init_k_size
+        assert reduce_amount <= k, "k should not be negative"
+        k = k - reduce_amount
 
         if k <= 0:
             return k
@@ -111,7 +113,9 @@ def k_vc_preprocessing(G: nx.Graph, k: int, vertex_cover_candidate: set) -> int:
         # apply LP decomposition as long as possible
         init_k_size = len(vertex_cover_candidate)
         vertex_cover_candidate = lp_decomposition(G, k, vertex_cover_candidate)[1]
-        k = k - (len(vertex_cover_candidate) - init_k_size)
+        reduce_amount = len(vertex_cover_candidate) - init_k_size
+        assert reduce_amount <= k, "k should not be negative"
+        k = k - reduce_amount
 
         if k <= 0:
             return k

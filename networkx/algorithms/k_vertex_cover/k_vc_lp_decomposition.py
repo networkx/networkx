@@ -16,6 +16,7 @@ def lp_decomposition(G: nx.Graph, k: int) -> bool | tuple[set, set, set]:
     `equal_to_half` denotes the set of vertices which got weight equal to 0.5
     """
 
+    # it should be ensured in this algorithm that, k does not become negative
     label = {}
     reverse_label = {}
     label_index = 1
@@ -77,7 +78,13 @@ def lp_decomposition(G: nx.Graph, k: int) -> bool | tuple[set, set, set]:
 def lp_decomposition_vc(
     G: nx.Graph, k: int, vertex_cover_candidate: set
 ) -> tuple[bool, set]:
-    """ """
+    """
+    Given a graph `G`, a parameter `k` and a set `vertex_cover_candidate`,
+    returns a tuple `(is_lp_decomposition_possible, vertex_cover_candidate)`,
+    where `is_lp_decomposition_possible` denotes if further lp decomposition is
+    possible and `vertex_cover_candidate` denotes a candidate for vertex cover
+    """
+    # it should be ensured in this algorithm that, k does not become negative
     if G is None or len(G) == 0:
         return True, vertex_cover_candidate
 

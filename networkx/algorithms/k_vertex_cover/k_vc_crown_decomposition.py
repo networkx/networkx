@@ -11,7 +11,11 @@ def crown_decomposition(G: nx.Graph, k: int) -> bool | tuple[set, set, set]:
     """
     Given a graph `G` and a parameter `k`, returns False if matching of size more
     than `k` is found, else returns a crown decomposition (C, H, R) of the graph G
+
     """
+
+    # it should be ensured in this algorithm that, k does not become negative
+
     assert len(G) > 3 * k, f"Graph should have more than 3 * k = {3 * k} vertices"
 
     maximal_matching = nx.maximal_matching(G)
@@ -74,6 +78,8 @@ def crown_decomposition_vc(
     where `is_crown_decomposition_possible` denotes if further crown decomposition is
     possible and `vertex_cover_candidate` denotes a candidate for vertex cover
     """
+
+    # it should be ensured in this algorithm that, k does not become negative
 
     if G is None or len(G) == 0:
         return True, vertex_cover_candidate
