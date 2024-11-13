@@ -6,7 +6,16 @@ __all__ = ["lp_decomposition"]
 
 
 @not_implemented_for("directed")
-def lp_decomposition(G: nx.Graph, k: int) -> bool | list[set]:
+def lp_decomposition(G: nx.Graph, k: int) -> bool | tuple[set, set, set]:
+    """
+    Given a graph `G` and a parameter `k`, returns False if vertex cover of size atmost `k`
+    doesn't exists, else returns a tuple return `(greater_than_half, less_than_half, equal_to_half)`,
+    where, in the solution of Linear Programming formulation of Vertex Cover
+    `greater_than_half` denotes the set of vertices which got weight more than 0.5,
+    `less_than_half` denotes the set of vertices which got weight less than 0.5,
+    `equal_to_half` denotes the set of vertices which got weight equal to 0.5
+    """
+
     label = {}
     reverse_label = {}
     label_index = 1
@@ -61,14 +70,15 @@ def lp_decomposition(G: nx.Graph, k: int) -> bool | list[set]:
     if lp_value > k:
         return False
 
-    return [greater_than_half, less_than_half, equal_to_half]
+    return (greater_than_half, less_than_half, equal_to_half)
 
 
 @not_implemented_for("directed")
 def lp_decomposition_vc(
     G: nx.Graph, k: int, vertex_cover_candidate: set
 ) -> tuple[bool, set]:
-    if G is None:
+    """ """
+    if G is None or len(G) == 0:
         return True, vertex_cover_candidate
 
     is_vc_exist_or_lp_decomposition = lp_decomposition_vc(G, k)

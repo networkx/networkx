@@ -2,6 +2,8 @@
 Function to get the k-sized vertex cover
 """
 
+from k_vc_crown_decomposition import crown_decomposition
+
 import networkx as nx
 from networkx.algorithms.bipartite.matching import (
     hopcroft_karp_matching,
@@ -9,14 +11,14 @@ from networkx.algorithms.bipartite.matching import (
 )
 from networkx.utils import not_implemented_for
 
-__all__ = ["k_vertex_cover", "k_vertex_cover_given_candidate"]
+__all__ = ["k_vertex_cover"]
 
 
 @not_implemented_for("directed")
 def max_deg_vertex(G: nx.Graph):
     """
-    Returns tuple of (v, max_deg) where max_deg is the maximum degree
-    of the graph G and v is the vertex with the degree max_deg
+    Returns tuple of `(v, max_deg)` where max_deg is the maximum degree
+    of the graph `G` and `v` is the vertex with the degree `max_deg`
     """
     if len(G) == 0:
         return 0, None
@@ -25,6 +27,7 @@ def max_deg_vertex(G: nx.Graph):
     arg_max_deg = None
     for node in G:
         current_degree = G.degree(node)
+        assert isinstance(current_degree, int), "current_degree must be of type int"
         if current_degree > max_deg:
             max_deg = current_degree
             arg_max_deg = node
@@ -33,7 +36,7 @@ def max_deg_vertex(G: nx.Graph):
 
 
 @not_implemented_for("directed")
-def k_vc_preprocessing(G: nx.Graph, k: int, vertex_cover_candidate: set):
+def k_vc_preprocessing(G: nx.Graph, k: int, vertex_cover_candidate: set) -> None:
     """
     Preprocessing the graph to reduce the given instance into possibly a smaller instance
     """
@@ -44,10 +47,12 @@ def k_vc_preprocessing(G: nx.Graph, k: int, vertex_cover_candidate: set):
             if G.degree(node) == 0:
                 G.remove_node(node)
 
-        high_deg_vertex = None
         # check if there is a vertex with degree >= k + 1, if so add it to vertex_cover_candidate
+        high_deg_vertex = None
         for node in G:
-            if G.degree(node) >= k + 1:
+            node_degree = G.degree(node)
+            assert isinstance(node_degree, int)
+            if node_degree >= k + 1:
                 high_deg_vertex = node
                 vertex_cover_candidate.add(node)
                 k -= 1
@@ -89,10 +94,15 @@ def k_vc_preprocessing(G: nx.Graph, k: int, vertex_cover_candidate: set):
         # vertex_cover_candidate = crown_decomposition(G, k, vertex_cover_candidate)[1]
         # k = k - (len(vertex_cover_candidate) - init_k_size)
 
+    # SHOULD THE UPDATED PARAMETER BE RETURNED
+
 
 def dfs_update_vc(
     u, G: nx.Graph, vertex_cover_candidate: set, mark: bool, visited: set
-):
+) -> None:
+    """
+    Using DFS to update the vertex cover for paths/cycles
+    """
     if u in visited:
         return
 
@@ -107,7 +117,9 @@ def dfs_update_vc(
         dfs_update_vc(neighbour, G, vertex_cover_candidate, not mark, visited)
 
 
-def update_vertex_cover(component: set, G: nx.Graph, vertex_cover_candidate: set):
+def update_vertex_cover(
+    component: set, G: nx.Graph, vertex_cover_candidate: set
+) -> None:
     assert len(component) > 0, "Empty component"
 
     start_vertex = None
@@ -127,7 +139,14 @@ def update_vertex_cover(component: set, G: nx.Graph, vertex_cover_candidate: set
 
 
 @not_implemented_for("directed")
-def k_vertex_cover_given_candidate(G: nx.Graph, k: int, vertex_cover_candidate: set):
+def k_vertex_cover_given_candidate(
+    G: nx.Graph, k: int, vertex_cover_candidate: set
+) -> bool:
+    """
+    Given a graph `G`, a parameter `k` and a set `vertex_cover_candidate`, return True
+    if k-sized vertex cover exists, else return False
+    """
+
     # empty graph / edgeless graph
     if len(G) == 0 or len(G.edges) == 0:
         return True
@@ -141,9 +160,10 @@ def k_vertex_cover_given_candidate(G: nx.Graph, k: int, vertex_cover_candidate: 
 
     # branching on maximum degree vertex
     u, max_deg = max_deg_vertex(G)
+
     # since graph is not edgeless, one vertex will be returned by the
     # above function
-    assert u is not None
+    assert u is not None, "u should not be None here as the graph is not edgeless"
 
     if max_deg <= 2:
         # odd/even cycle or odd/even length path
@@ -200,15 +220,14 @@ def k_vertex_cover_given_candidate(G: nx.Graph, k: int, vertex_cover_candidate: 
 
 
 @not_implemented_for("directed")
-def k_vertex_cover(G: nx.Graph, k: int):
+def k_vertex_cover(G: nx.Graph, k: int) -> tuple[bool, set]:
     """
-    returns a tuple (is_k_vc_exist, vertex_cover) where
-    is_k_vc_exist is a boolean representing if a VC of size atmost kexists
-    and if it exists vertex_cover is a VC of size atmost k
+    Given a graph `G`, a parameter `k` and a set `vertex_cover_candidate`,
+    returns a tuple `(is_k_vc_exist, vertex_cover)` where
+    `is_k_vc_exist` is a boolean representing if a VC of size atmost `k` exists
+    and if it exists, `vertex_cover` is a VC of size atmost `k`
     """
 
-    # components = nx.connected_components(g)
-    # component_graphs = [g.subgraph(list(component)) for component in components]
     vertex_cover_candidate = set()
 
     if nx.is_bipartite(G):
@@ -221,12 +240,17 @@ def k_vertex_cover(G: nx.Graph, k: int):
         return True, vertex_cover_bipartite
 
     G_copy = G.copy()
+
+    # ******************************
+    # but the k value doesn't change as k is passed as parameter
     k_vc_preprocessing(G_copy, k, vertex_cover_candidate)
 
     # after preprocessing, if G_copy has a vertex cover of size <= k,
     # then the number of edges and vertices will be bounded
     # E(G_copy) <= k^2
     # V(G_copy) <= k^2 + k
+    # after preprocessing using crown decomposition and linear programming
+    # V(G_copy) <= 2 * k
 
     if len(G) == 0 or len(G.edges) == 0:
         return True, vertex_cover_candidate
@@ -242,3 +266,5 @@ def k_vertex_cover(G: nx.Graph, k: int):
     )
     if is_k_vc_cover_exist:
         return True, vertex_cover_candidate
+    else:
+        return False, set()

@@ -8,6 +8,12 @@ __all__ = ["crown_decomposition"]
 
 @not_implemented_for("directed")
 def crown_decomposition(G: nx.Graph, k: int) -> bool | list[set]:
+    """
+    Given a graph `G` and a parameter `k`, returns False if matching of size more
+    than `k` is found, else returns a crown decomposition (C, H, R) of the graph G
+    """
+    assert len(G) > 3 * k, f"Graph should have more than 3 * k = {3 * k} vertices"
+
     maximal_matching = nx.maximal_matching(G)
     if len(maximal_matching) > k:
         return False
@@ -16,18 +22,22 @@ def crown_decomposition(G: nx.Graph, k: int) -> bool | list[set]:
     for a, b in maximal_matching:
         v_from_maximal_matching.add(a)
         v_from_maximal_matching.add(b)
-    # v_from_maximal_matching consists of the nodes in one side of the new auxiliary bi partite graphs
 
+    # v_from_maximal_matching consists of the nodes in one side of the new auxiliary bi partite graphs
     graph_nodes = set(G.nodes)
     indepedent_set = graph_nodes.difference(v_from_maximal_matching)
     for node in v_from_maximal_matching:
         for neighbor in G.neighbors(node):
             if neighbor in v_from_maximal_matching:
-                G.remove_edge(node, neighbor)
                 # the loop takes each vertetx from the set of vertices
                 # in v_from_maximal_matching and deletes the edges present
                 # between this vertex and all vertices
                 # present in v_from_maximal_matching
+
+                """
+                is it valid to remove edges from G, or should we create a graph copy ?
+                """
+                G.remove_edge(node, neighbor)
 
     # now we need to find a maximum matching and a minimum vertex cover of the new graph
 
@@ -58,11 +68,17 @@ def crown_decomposition(G: nx.Graph, k: int) -> bool | list[set]:
 def crown_decomposition_vc(
     G: nx.Graph, k: int, vertex_cover_candidate: set
 ) -> tuple[bool, set]:
-    if G is None:
+    """
+    Given a graph `G`, a parameter `k` and a set `vertex_cover_candidate`,
+    returns a tuple `(is_crown_decomposition_possible, vertex_cover_candidate)`,
+    where `is_crown_decomposition_possible` denotes if further crown decomposition is
+    possible and `vertex_cover_candidate` denotes a candidate for vertex cover
+    """
+
+    if G is None or len(G) == 0:
         return True, vertex_cover_candidate
     if len(G.nodes) < (3 * k + 1):
         return True, vertex_cover_candidate
-    maximal_matching = nx.maximal_matching(G)
 
     is_vc_exist_or_decomposition = crown_decomposition(G, k)
     if is_vc_exist_or_decomposition is False:
@@ -75,7 +91,6 @@ def crown_decomposition_vc(
     G.remove_nodes_from(head_union_crown)
 
     # delete all the vertices in union of head and crown from the graph
-
     vertex_cover_candidate = vertex_cover_candidate.union(head_vertices)
 
     return crown_decomposition_vc(G, k - len(head_vertices), vertex_cover_candidate)
