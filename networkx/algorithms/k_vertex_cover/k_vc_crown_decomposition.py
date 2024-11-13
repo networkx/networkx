@@ -7,7 +7,7 @@ __all__ = ["crown_decomposition"]
 
 
 @not_implemented_for("directed")
-def crown_decomposition(G: nx.Graph, k: int) -> bool | list[set]:
+def crown_decomposition(G: nx.Graph, k: int) -> bool | tuple[set, set, set]:
     """
     Given a graph `G` and a parameter `k`, returns False if matching of size more
     than `k` is found, else returns a crown decomposition (C, H, R) of the graph G
@@ -61,7 +61,7 @@ def crown_decomposition(G: nx.Graph, k: int) -> bool | list[set]:
 
     rest = graph_nodes.difference(head_vertices.union(crown))
 
-    return [head_vertices, crown, rest]
+    return (head_vertices, crown, rest)
 
 
 @not_implemented_for("directed")
@@ -84,13 +84,13 @@ def crown_decomposition_vc(
     if is_vc_exist_or_decomposition is False:
         return False, vertex_cover_candidate
 
-    assert isinstance(is_vc_exist_or_decomposition, list)
-    [head_vertices, crown, rest] = is_vc_exist_or_decomposition
+    assert isinstance(is_vc_exist_or_decomposition, tuple)
+    (head_vertices, crown, rest) = is_vc_exist_or_decomposition
 
+    # delete all the vertices in union of head and crown from the graph
     head_union_crown = head_vertices.union(crown)
     G.remove_nodes_from(head_union_crown)
 
-    # delete all the vertices in union of head and crown from the graph
     vertex_cover_candidate = vertex_cover_candidate.union(head_vertices)
 
     return crown_decomposition_vc(G, k - len(head_vertices), vertex_cover_candidate)

@@ -87,10 +87,15 @@ def lp_decomposition_vc(
         return False, vertex_cover_candidate
 
     assert isinstance(is_vc_exist_or_lp_decomposition, list)
-    [greater_than_half, less_than_half, equal_to_half] = is_vc_exist_or_lp_decomposition
+    (greater_than_half, less_than_half, equal_to_half) = is_vc_exist_or_lp_decomposition
 
     # there exists a min vertex cover including greater_than_half and
     # excluding less_than_half
-    G.remove_nodes_from(less_than_half)
+
+    # delete all the vertices in union of greater_than_half and less_than_half from the graph
+    greater_than_half_union_less_than_half = greater_than_half.union(less_than_half)
+    G.remove_nodes_from(greater_than_half_union_less_than_half)
+
+    vertex_cover_candidate = vertex_cover_candidate.union(greater_than_half)
 
     return lp_decomposition(G, k, vertex_cover_candidate)
