@@ -276,12 +276,15 @@ def k_vertex_cover(G: nx.Graph, k: int) -> tuple[bool, set]:
     if k < 0:
         return False, vertex_cover_candidate
 
+    # here shouldn't k be the updated value ??
     if len(G_copy.edges) > k**2 or len(G_copy) > k * (k + 1):
         return False, vertex_cover_candidate
 
+    # here also shouldn't k be the updated value of k
     is_k_vc_cover_exist = k_vertex_cover_given_candidate(
         G_copy, k, vertex_cover_candidate
     )
+
     if is_k_vc_cover_exist:
         return True, vertex_cover_candidate
     else:
