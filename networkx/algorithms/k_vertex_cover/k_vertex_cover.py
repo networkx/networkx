@@ -102,9 +102,12 @@ def k_vc_preprocessing(G: nx.Graph, k: int, vertex_cover_candidate: set) -> int:
 
         # apply crown decomposition as long as possible
         init_k_size = len(vertex_cover_candidate)
-        vertex_cover_candidate = crown_decomposition_vc(G, k, vertex_cover_candidate)[1]
+        is_k_vc_exist, vertex_cover_candidate = crown_decomposition_vc(
+            G, k, vertex_cover_candidate
+        )
         reduce_amount = len(vertex_cover_candidate) - init_k_size
-        assert reduce_amount <= k, "k should not be negative"
+        if not is_k_vc_exist or reduce_amount > k:
+            return -1
         k = k - reduce_amount
 
         if k <= 0:
@@ -186,6 +189,8 @@ def k_vertex_cover_given_candidate(
 
     # pre-processing
     k = k_vc_preprocessing(G, k, vertex_cover_candidate)
+    if k < 0:
+        return False
 
     # branching on maximum degree vertex
     u, max_deg = max_deg_vertex(G)

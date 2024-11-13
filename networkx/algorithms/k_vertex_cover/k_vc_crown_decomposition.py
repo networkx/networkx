@@ -74,19 +74,22 @@ def crown_decomposition_vc(
 ) -> tuple[bool, set]:
     """
     Given a graph `G`, a parameter `k` and a set `vertex_cover_candidate`,
-    returns a tuple `(is_crown_decomposition_possible, vertex_cover_candidate)`,
-    where `is_crown_decomposition_possible` denotes if further crown decomposition is
+    returns a tuple `(is_k_vc_possible, vertex_cover_candidate)` (using Crown Decomposition),
+    where `is_k_vc_possible` is False if k sized vertex cover is not
     possible and `vertex_cover_candidate` denotes a candidate for vertex cover
     """
 
     # it should be ensured in this algorithm that, k does not become negative
 
-    if G is None or len(G) == 0:
+    if G is None or len(G) == 0 or len(G.edges) == 0:
+        # Further crown decomposition cannot be applied
         return True, vertex_cover_candidate
     if len(G.nodes) < (3 * k + 1):
+        # Further crown decomposition cannot be applied
         return True, vertex_cover_candidate
 
     is_vc_exist_or_decomposition = crown_decomposition(G, k)
+
     if is_vc_exist_or_decomposition is False:
         return False, vertex_cover_candidate
 
@@ -95,8 +98,14 @@ def crown_decomposition_vc(
 
     # delete all the vertices in union of head and crown from the graph
     head_union_crown = head_vertices.union(crown)
-    G.remove_nodes_from(head_union_crown)
+    if len(head_union_crown) > k:
+        # if we need to add more than k vertices to the vertex cover
+        # then it is a no instance
+        # necessary to ensure that k does not become negative
+        return False, vertex_cover_candidate
 
+    # add head_union_crown to vertex cover and remove them from graph
     vertex_cover_candidate = vertex_cover_candidate.union(head_vertices)
+    G.remove_nodes_from(head_union_crown)
 
     return crown_decomposition_vc(G, k - len(head_vertices), vertex_cover_candidate)

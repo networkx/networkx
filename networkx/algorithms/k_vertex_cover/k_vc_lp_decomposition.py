@@ -80,12 +80,13 @@ def lp_decomposition_vc(
 ) -> tuple[bool, set]:
     """
     Given a graph `G`, a parameter `k` and a set `vertex_cover_candidate`,
-    returns a tuple `(is_lp_decomposition_possible, vertex_cover_candidate)`,
-    where `is_lp_decomposition_possible` denotes if further lp decomposition is
+    returns a tuple `(is_k_vc_possible, vertex_cover_candidate)` (using LP decomposition),
+    where `is_k_vc_possible` is False if k sized vertex cover is not
     possible and `vertex_cover_candidate` denotes a candidate for vertex cover
     """
     # it should be ensured in this algorithm that, k does not become negative
-    if G is None or len(G) == 0:
+    if G is None or len(G) == 0 or len(G.edges) == 0:
+        # Further LP decomposition cannot be applied
         return True, vertex_cover_candidate
 
     is_vc_exist_or_lp_decomposition = lp_decomposition_vc(G, k)
@@ -96,13 +97,17 @@ def lp_decomposition_vc(
     assert isinstance(is_vc_exist_or_lp_decomposition, list)
     (greater_than_half, less_than_half, equal_to_half) = is_vc_exist_or_lp_decomposition
 
-    # there exists a min vertex cover including greater_than_half and
-    # excluding less_than_half
-
     # delete all the vertices in union of greater_than_half and less_than_half from the graph
     greater_than_half_union_less_than_half = greater_than_half.union(less_than_half)
-    G.remove_nodes_from(greater_than_half_union_less_than_half)
+    if len(greater_than_half_union_less_than_half) > k:
+        # if we need to add more than k vertices to the vertex cover
+        # then it is a no instance
+        # necessary to ensure that k does not become negative
+        return False, vertex_cover_candidate
 
+    # add greater_than_half_union_less_than_half to vertex cover
+    # and remove them from graph
     vertex_cover_candidate = vertex_cover_candidate.union(greater_than_half)
+    G.remove_nodes_from(greater_than_half_union_less_than_half)
 
     return lp_decomposition(G, k, vertex_cover_candidate)
