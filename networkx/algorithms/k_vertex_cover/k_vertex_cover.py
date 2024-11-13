@@ -168,6 +168,38 @@ def update_vertex_cover(
 
 
 @not_implemented_for("directed")
+def k_vertex_cover_for_max_deg_two(
+    G: nx.Graph, k: int, vertex_cover_candidate: set
+) -> bool:
+    # odd/even cycle or odd/even length path
+    # isolated vertices will not be present since those have been preprocessed
+    remaining_components = nx.connected_components(G)
+
+    min_vertices_to_be_added = 0
+
+    for component in remaining_components:
+        # remaining_components is a generator, can only be traversed once
+        # adding ceil of len(component) / 2
+        component_size = len(component)
+        assert component_size > 0, (
+            "Empty component detected which should not happen as the"
+            + " graph has been preprocessed"
+        )
+        # min_vertices_to_be_added is the ceil of component_size / 2
+        # hence (component_size + 1) / 2
+        min_vertices_to_be_added += (component_size + 1) / 2
+
+        update_vertex_cover(component, G, vertex_cover_candidate)
+
+    if min_vertices_to_be_added > k:
+        # here we are not directly updating the vertex cover
+        # as we need to ensure that k does not become negative
+        return False
+
+    return True
+
+
+@not_implemented_for("directed")
 def k_vertex_cover_given_candidate(
     G: nx.Graph, k: int, vertex_cover_candidate: set
 ) -> bool:
@@ -200,32 +232,8 @@ def k_vertex_cover_given_candidate(
     assert u is not None, "u should not be None here as the graph is not edgeless"
 
     if max_deg <= 2:
-        # odd/even cycle or odd/even length path
-        # isolated vertices will not be present since those have been preprocessed
-        remaining_components = nx.connected_components(G)
-
-        min_vertices_to_be_added = 0
-
-        for component in remaining_components:
-            # remaining_components is a generator, can only be traversed once
-            # adding ceil of len(component) / 2
-            component_size = len(component)
-            assert component_size > 0, (
-                "Empty component detected which should not happen as the"
-                + " graph has been preprocessed"
-            )
-            # min_vertices_to_be_added is the ceil of component_size / 2
-            # hence (component_size + 1) / 2
-            min_vertices_to_be_added += (component_size + 1) / 2
-
-            update_vertex_cover(component, G, vertex_cover_candidate)
-
-        if min_vertices_to_be_added > k:
-            # here we are not directly updating the vertex cover
-            # as we need to ensure that k does not become negative
-            return False
-
-        return True
+        # if the maximum degree is two, then the components are either cycles or paths
+        return k_vertex_cover_for_max_deg_two(G, k, vertex_cover_candidate)
 
     vertex_cover_candidate.add(u)
     G_copy = G.copy()
