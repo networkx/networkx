@@ -149,14 +149,8 @@ def test_trophic_levels_singular_matrix():
     """Should raise an error with graphs with only non-basal nodes"""
     matrix = np.identity(4)
     G = nx.from_numpy_array(matrix, create_using=nx.DiGraph)
-    with pytest.raises(nx.NetworkXError) as e:
+    with pytest.raises(nx.NetworkXError, match="no basal nodes"):
         nx.trophic_levels(G)
-    msg = (
-        "Trophic levels are only defined for graphs where every node "
-        + "has a path from a basal node (basal nodes are nodes with no "
-        + "incoming edges)."
-    )
-    assert msg in str(e.value)
 
 
 def test_trophic_levels_singular_with_basal():
@@ -300,3 +294,12 @@ def test_trophic_incoherence_parameter_cannibalism():
     q = nx.trophic_incoherence_parameter(G, cannibalism=True)
     # Ignore the -link
     assert q == pytest.approx(np.std([1, 1.5, 0.5, 0.75, 1.25]), abs=1e-7)
+
+
+def test_no_basal_node():
+    G = nx.DiGraph([(1, 2), (2, 3), (3, 1)])  # No basal node, should raise an error
+    with pytest.raises(nx.NetworkXError, match="no basal node"):
+        nx.trophic_levels(G)
+    G.add_node(4)  # add basal node, but not connected
+    with pytest.raises(nx.NetworkXError, match="every node .* path from a basal node"):
+        nx.trophic_levels(G)
