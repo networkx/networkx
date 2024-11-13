@@ -2,7 +2,7 @@ import networkx as nx
 from networkx.algorithms.bipartite import hopcroft_karp_matching, to_vertex_cover
 from networkx.utils import not_implemented_for
 
-__all__ = ["lp_decomposition"]
+__all__ = ["lp_decomposition_vc"]
 
 
 @not_implemented_for("directed")

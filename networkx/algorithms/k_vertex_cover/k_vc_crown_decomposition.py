@@ -3,7 +3,7 @@ from networkx.algorithms.bipartite import hopcroft_karp_matching
 from networkx.algorithms.bipartite.matching import to_vertex_cover
 from networkx.utils import not_implemented_for
 
-__all__ = ["crown_decomposition"]
+__all__ = ["crown_decomposition_vc"]
 
 
 @not_implemented_for("directed")

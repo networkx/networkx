@@ -2,8 +2,8 @@
 Function to get the k-sized vertex cover
 """
 
-from k_vc_crown_decomposition import crown_decomposition
-from k_vc_lp_decomposition import lp_decomposition
+from k_vc_crown_decomposition import crown_decomposition_vc
+from k_vc_lp_decomposition import lp_decomposition_vc
 
 import networkx as nx
 from networkx.algorithms.bipartite.matching import (
@@ -102,7 +102,7 @@ def k_vc_preprocessing(G: nx.Graph, k: int, vertex_cover_candidate: set) -> int:
 
         # apply crown decomposition as long as possible
         init_k_size = len(vertex_cover_candidate)
-        vertex_cover_candidate = crown_decomposition(G, k, vertex_cover_candidate)[1]
+        vertex_cover_candidate = crown_decomposition_vc(G, k, vertex_cover_candidate)[1]
         reduce_amount = len(vertex_cover_candidate) - init_k_size
         assert reduce_amount <= k, "k should not be negative"
         k = k - reduce_amount
@@ -112,7 +112,7 @@ def k_vc_preprocessing(G: nx.Graph, k: int, vertex_cover_candidate: set) -> int:
 
         # apply LP decomposition as long as possible
         init_k_size = len(vertex_cover_candidate)
-        vertex_cover_candidate = lp_decomposition(G, k, vertex_cover_candidate)[1]
+        vertex_cover_candidate = lp_decomposition_vc(G, k, vertex_cover_candidate)[1]
         reduce_amount = len(vertex_cover_candidate) - init_k_size
         assert reduce_amount <= k, "k should not be negative"
         k = k - reduce_amount
