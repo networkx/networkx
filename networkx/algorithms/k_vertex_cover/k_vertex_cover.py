@@ -18,7 +18,7 @@ __all__ = ["k_vertex_cover"]
 @not_implemented_for("directed")
 def max_deg_vertex(G: nx.Graph):
     """
-    Returns tuple of `(v, max_deg)` where max_deg is the maximum degree
+    Returns tuple of `(v, max_deg)` where `max_deg` is the maximum degree
     of the graph `G` and `v` is the vertex with the degree `max_deg`
     """
     if len(G) == 0:
@@ -37,9 +37,19 @@ def max_deg_vertex(G: nx.Graph):
 
 
 @not_implemented_for("directed")
-def k_vc_preprocessing(G: nx.Graph, k: int, vertex_cover_candidate: set) -> None:
+def is_vertex_cover(G: nx.Graph, vertex_cover_candidate: set):
     """
-    Preprocessing the graph to reduce the given instance into possibly a smaller instance
+    Given a graph and a set, returns True if the set is a vertex cover
+    """
+    G.remove_nodes_from(vertex_cover_candidate)
+    return len(G) == 0 or len(G.edges) == 0
+
+
+@not_implemented_for("directed")
+def k_vc_preprocessing(G: nx.Graph, k: int, vertex_cover_candidate: set) -> int:
+    """
+    Preprocessing the graph to reduce the given instance into possibly a smaller instance,
+    and returns the updated value of the given parameter `k`
     """
 
     while k > 0:
@@ -67,7 +77,6 @@ def k_vc_preprocessing(G: nx.Graph, k: int, vertex_cover_candidate: set) -> None
             continue
 
         if k <= 0:
-            break
             return k
 
         # degree 1 vertices
@@ -89,7 +98,6 @@ def k_vc_preprocessing(G: nx.Graph, k: int, vertex_cover_candidate: set) -> None
             continue
 
         if k <= 0:
-            break
             return k
 
         # apply crown decomposition as long as possible
@@ -98,7 +106,6 @@ def k_vc_preprocessing(G: nx.Graph, k: int, vertex_cover_candidate: set) -> None
         k = k - (len(vertex_cover_candidate) - init_k_size)
 
         if k <= 0:
-            break
             return k
 
         # apply LP decomposition as long as possible
@@ -107,11 +114,8 @@ def k_vc_preprocessing(G: nx.Graph, k: int, vertex_cover_candidate: set) -> None
         k = k - (len(vertex_cover_candidate) - init_k_size)
 
         if k <= 0:
-            break
             return k
 
-    # SHOULD THE UPDATED PARAMETER BE RETURNED
-    return
     return k
 
 
@@ -163,6 +167,9 @@ def k_vertex_cover_given_candidate(
     """
     Given a graph `G`, a parameter `k` and a set `vertex_cover_candidate`, return True
     if k-sized vertex cover exists, else return False
+
+    This is a branching algorithm, which branches on the maximum degree vertex when
+    needed
     """
 
     # empty graph / edgeless graph
@@ -174,7 +181,7 @@ def k_vertex_cover_given_candidate(
         return False
 
     # pre-processing
-    k_vc_preprocessing(G, k, vertex_cover_candidate)
+    k = k_vc_preprocessing(G, k, vertex_cover_candidate)
 
     # branching on maximum degree vertex
     u, max_deg = max_deg_vertex(G)
@@ -193,10 +200,20 @@ def k_vertex_cover_given_candidate(
         for component in remaining_components:
             # remaining_components is a generator, can only be traversed once
             # adding ceil of len(component) / 2
-            min_vertices_to_be_added += (len(component) + 1) / 2
+            component_size = len(component)
+            assert component_size > 0, (
+                "Empty component detected which should not happen as the"
+                + " graph has been preprocessed"
+            )
+            # min_vertices_to_be_added is the ceil of component_size / 2
+            # hence (component_size + 1) / 2
+            min_vertices_to_be_added += (component_size + 1) / 2
+
             update_vertex_cover(component, G, vertex_cover_candidate)
 
         if min_vertices_to_be_added > k:
+            # here we are not directly updating the vertex cover
+            # as we need to ensure that k does not become negative
             return False
 
         return True
@@ -218,7 +235,7 @@ def k_vertex_cover_given_candidate(
     G_copy = G.copy()
 
     # all neighbours of u must be in VC
-    neighbours = list(G.neighbors(u))
+    neighbours = set(G.neighbors(u))
     num_neighbours = len(neighbours)
 
     if num_neighbours > k:
@@ -226,9 +243,10 @@ def k_vertex_cover_given_candidate(
         # than the number of neighbours
         return False
 
-    for neighbour in neighbours:
-        vertex_cover_candidate.add(neighbour)
-        G_copy.remove_node(neighbour)
+    # add all the neighbours to vertex cover candidate and
+    # remove them from graph
+    vertex_cover_candidate = vertex_cover_candidate.union(neighbours)
+    G_copy.remove_nodes_from(neighbours)
 
     is_k_vc_cover_exist = k_vertex_cover_given_candidate(
         G_copy, k - num_neighbours, vertex_cover_candidate
@@ -247,6 +265,7 @@ def k_vertex_cover(G: nx.Graph, k: int) -> tuple[bool, set]:
     """
 
     vertex_cover_candidate = set()
+    initial_parameter = k
 
     if nx.is_bipartite(G):
         max_matching = hopcroft_karp_matching(G)
@@ -259,9 +278,8 @@ def k_vertex_cover(G: nx.Graph, k: int) -> tuple[bool, set]:
 
     G_copy = G.copy()
 
-    # ******************************
-    # but the k value doesn't change as k is passed as parameter
-    k_vc_preprocessing(G_copy, k, vertex_cover_candidate)
+    # update the value of k, after preprocessing the graph
+    k = k_vc_preprocessing(G_copy, k, vertex_cover_candidate)
 
     # after preprocessing, if G_copy has a vertex cover of size <= k,
     # then the number of edges and vertices will be bounded
@@ -270,17 +288,26 @@ def k_vertex_cover(G: nx.Graph, k: int) -> tuple[bool, set]:
     # after preprocessing using crown decomposition and linear programming
     # V(G_copy) <= 2 * k
 
+    if k < 0:
+        # better that this condition never reaches
+        # need to make sure in subroutines that k does not become negative
+        if len(vertex_cover_candidate) <= initial_parameter and is_vertex_cover(
+            G.copy(), vertex_cover_candidate
+        ):
+            return True, vertex_cover_candidate
+        else:
+            return False, set()
+
     if len(G_copy) == 0 or len(G_copy.edges) == 0:
         return True, vertex_cover_candidate
 
-    if k < 0:
-        return False, vertex_cover_candidate
+    if k == 0:
+        # if graph is not edgeless and k is zero, still, it is a no instance
+        return False, set()
 
-    # here shouldn't k be the updated value ??
     if len(G_copy.edges) > k**2 or len(G_copy) > k * (k + 1):
         return False, vertex_cover_candidate
 
-    # here also shouldn't k be the updated value of k
     is_k_vc_cover_exist = k_vertex_cover_given_candidate(
         G_copy, k, vertex_cover_candidate
     )
