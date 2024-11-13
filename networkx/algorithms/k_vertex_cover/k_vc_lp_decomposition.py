@@ -99,11 +99,16 @@ def lp_decomposition_vc(
 
     # delete all the vertices in union of greater_than_half and less_than_half from the graph
     greater_than_half_union_less_than_half = greater_than_half.union(less_than_half)
+
     if len(greater_than_half_union_less_than_half) > k:
         # if we need to add more than k vertices to the vertex cover
         # then it is a no instance
         # necessary to ensure that k does not become negative
         return False, vertex_cover_candidate
+    elif len(greater_than_half_union_less_than_half) == 0:
+        # once we all vertices are in equal_to_half set, we are not further decomposing
+        # at this stage we can be sure that n <= 2 * k
+        return True, vertex_cover_candidate
 
     # add greater_than_half_union_less_than_half to vertex cover
     # and remove them from graph

@@ -98,11 +98,16 @@ def crown_decomposition_vc(
 
     # delete all the vertices in union of head and crown from the graph
     head_union_crown = head_vertices.union(crown)
+
     if len(head_union_crown) > k:
         # if we need to add more than k vertices to the vertex cover
         # then it is a no instance
         # necessary to ensure that k does not become negative
         return False, vertex_cover_candidate
+    elif len(head_union_crown) == 0:
+        # once we all vertices are in equal_to_half set, we are not further decomposing
+        # at this stage we can be sure that n <= 3 * k
+        return True, vertex_cover_candidate
 
     # add head_union_crown to vertex cover and remove them from graph
     vertex_cover_candidate = vertex_cover_candidate.union(head_vertices)
