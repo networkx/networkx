@@ -270,7 +270,7 @@ def k_vertex_cover(G: nx.Graph, k: int) -> tuple[bool, set]:
     # after preprocessing using crown decomposition and linear programming
     # V(G_copy) <= 2 * k
 
-    if len(G) == 0 or len(G.edges) == 0:
+    if len(G_copy) == 0 or len(G_copy.edges) == 0:
         return True, vertex_cover_candidate
 
     if k < 0:
