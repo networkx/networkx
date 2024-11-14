@@ -85,11 +85,6 @@ class TestChainDecomposition:
         chains = list(nx.chain_decomposition(G, root=1))
         assert len(chains) == len(expected)
 
-    # This chain decomposition isn't unique
-    #        for chain in chains:
-    #            print(chain)
-    #            self.assertContainsChain(chain, expected)
-
     def test_barbell_graph(self):
         # The (3, 0) barbell graph has two triangles joined by a single edge.
         G = nx.barbell_graph(3, 0)
