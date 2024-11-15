@@ -60,6 +60,7 @@ def crown_decomposition(G: nx.Graph, k: int) -> bool | tuple[set, set, set]:
     # this returns a set of minimm vertex cover in this new auxiliary graph
 
     head_vertices = v_from_maximal_matching.intersection(minimum_vertex_cover)
+    # crown is the matching partners of vertices in head_vertices
     crown = set()
     for a in head_vertices:
         crown.add(maximum_matching[a])
