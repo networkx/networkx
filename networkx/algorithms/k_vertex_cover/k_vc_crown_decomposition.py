@@ -15,10 +15,13 @@ def crown_decomposition(G: nx.Graph, k: int) -> bool | tuple[set, set, set]:
     """
 
     # it should be ensured in this algorithm that, k does not become negative
+    aux_bipartite_graph = G.copy()
 
-    assert len(G) > 3 * k, f"Graph should have more than 3 * k = {3 * k} vertices"
+    assert (
+        len(aux_bipartite_graph) > 3 * k
+    ), f"Graph should have more than 3 * k = {3 * k} vertices"
 
-    maximal_matching = nx.maximal_matching(G)
+    maximal_matching = nx.maximal_matching(aux_bipartite_graph)
     if len(maximal_matching) > k:
         return False
 
@@ -28,31 +31,30 @@ def crown_decomposition(G: nx.Graph, k: int) -> bool | tuple[set, set, set]:
         v_from_maximal_matching.add(b)
 
     # v_from_maximal_matching consists of the nodes in one side of the new auxiliary bi partite graphs
-    graph_nodes = set(G.nodes)
-    indepedent_set = graph_nodes.difference(v_from_maximal_matching)
+    graph_nodes = set(aux_bipartite_graph.nodes)
+
     for node in v_from_maximal_matching:
-        for neighbor in G.neighbors(node):
+        for neighbor in aux_bipartite_graph.neighbors(node):
             if neighbor in v_from_maximal_matching:
                 # the loop takes each vertetx from the set of vertices
                 # in v_from_maximal_matching and deletes the edges present
                 # between this vertex and all vertices
                 # present in v_from_maximal_matching
 
-                """
-                is it valid to remove edges from G, or should we create a graph copy ?
-                """
-                G.remove_edge(node, neighbor)
+                aux_bipartite_graph.remove_edge(node, neighbor)
 
     # now we need to find a maximum matching and a minimum vertex cover of the new graph
 
     # applying hopcraft karp algorithm
-    maximum_matching = hopcroft_karp_matching(G, v_from_maximal_matching)
+    maximum_matching = hopcroft_karp_matching(
+        aux_bipartite_graph, v_from_maximal_matching
+    )
 
     if len(maximum_matching) > k:
         return False
 
     minimum_vertex_cover = to_vertex_cover(
-        G, maximum_matching, top_nodes=v_from_maximal_matching
+        aux_bipartite_graph, maximum_matching, top_nodes=v_from_maximal_matching
     )
 
     # this returns a set of minimm vertex cover in this new auxiliary graph
