@@ -23,6 +23,8 @@ def lp_decomposition(G: nx.Graph, k: int) -> bool | tuple[set, set, set]:
     for node in G.nodes():
         label[node] = label_index
         reverse_label[label_index] = node
+        label_index += 1
+
     g_new = nx.Graph()
 
     for node in G.nodes():
