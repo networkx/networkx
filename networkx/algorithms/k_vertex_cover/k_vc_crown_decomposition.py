@@ -47,7 +47,8 @@ def crown_decomposition(G: nx.Graph, k: int) -> bool | tuple[set, set, set]:
 
     # applying hopcraft karp algorithm
     maximum_matching = hopcroft_karp_matching(
-        aux_bipartite_graph, v_from_maximal_matching
+        aux_bipartite_graph,
+        top_nodes=v_from_maximal_matching,
     )
 
     if len(maximum_matching) > k:

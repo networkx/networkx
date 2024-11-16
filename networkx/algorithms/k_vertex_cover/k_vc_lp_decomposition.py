@@ -1,3 +1,5 @@
+from bipartite_get_top_nodes import get_top_nodes
+
 import networkx as nx
 from networkx.algorithms.bipartite import hopcroft_karp_matching, to_vertex_cover
 from networkx.utils import not_implemented_for
@@ -37,7 +39,7 @@ def lp_decomposition(G: nx.Graph, k: int) -> bool | tuple[set, set, set]:
 
     # bipartite graph is created
     weight_dictionary = {}
-    maximum_matching = hopcroft_karp_matching(g_new)
+    maximum_matching = hopcroft_karp_matching(g_new, top_nodes=get_top_nodes(g_new))
     min_vertex_cover = to_vertex_cover(g_new, maximum_matching)
 
     for node in G.nodes:
@@ -59,7 +61,9 @@ def lp_decomposition(G: nx.Graph, k: int) -> bool | tuple[set, set, set]:
 
     lp_value = 0
 
-    for node in min_vertex_cover:
+    # iterate through the original graph vertices and add it
+    # to the corresponding set
+    for node in G.nodes:
         node_weight = weight_dictionary[node]
         lp_value += node_weight
 
@@ -91,12 +95,12 @@ def lp_decomposition_vc(
         # Further LP decomposition cannot be applied
         return True, vertex_cover_candidate
 
-    is_vc_exist_or_lp_decomposition = lp_decomposition_vc(G, k)
+    is_vc_exist_or_lp_decomposition = lp_decomposition(G, k)
 
     if is_vc_exist_or_lp_decomposition is False:
         return False, vertex_cover_candidate
 
-    assert isinstance(is_vc_exist_or_lp_decomposition, list)
+    assert isinstance(is_vc_exist_or_lp_decomposition, tuple)
     (greater_than_half, less_than_half, equal_to_half) = is_vc_exist_or_lp_decomposition
 
     # delete all the vertices in union of greater_than_half and less_than_half from the graph

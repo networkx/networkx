@@ -2,10 +2,12 @@
 Function to get the k-sized vertex cover
 """
 
+from bipartite_get_top_nodes import get_top_nodes
 from k_vc_crown_decomposition import crown_decomposition_vc
 from k_vc_lp_decomposition import lp_decomposition_vc
 
 import networkx as nx
+from networkx.algorithms import bipartite
 from networkx.algorithms.bipartite.matching import (
     hopcroft_karp_matching,
     to_vertex_cover,
@@ -53,6 +55,7 @@ def k_vc_preprocessing(G: nx.Graph, k: int, vertex_cover_candidate: set) -> int:
     """
 
     while k > 0:
+        previous_k = k
         # remove isolated vertices
         for node in list(G):
             if G.degree(node) == 0:
@@ -122,6 +125,10 @@ def k_vc_preprocessing(G: nx.Graph, k: int, vertex_cover_candidate: set) -> int:
 
         if k <= 0:
             return k
+
+        # break if no change in k
+        if k == previous_k:
+            break
 
     return k
 
@@ -230,6 +237,7 @@ def k_vertex_cover_given_candidate(
     # since graph is not edgeless, one vertex will be returned by the
     # above function
     assert u is not None, "u should not be None here as the graph is not edgeless"
+    assert isinstance(max_deg, int)
 
     if max_deg <= 2:
         # if the maximum degree is two, then the components are either cycles or paths
@@ -285,9 +293,14 @@ def k_vertex_cover(G: nx.Graph, k: int) -> tuple[bool, set]:
     initial_parameter = k
 
     if nx.is_bipartite(G):
-        max_matching = hopcroft_karp_matching(G)
+        graph_coloring = bipartite.color(G)
+        # getting top nodes as input graph can ge disconnected
+        # bipartite graph in which case hopcroft_karp_matching
+        # raises an Exception
+        top_nodes = get_top_nodes(G)
+        max_matching = hopcroft_karp_matching(G, top_nodes=top_nodes)
         # the below is the min vertex cover for the bipartite graph
-        vertex_cover_bipartite = to_vertex_cover(G, max_matching)
+        vertex_cover_bipartite = to_vertex_cover(G, max_matching, top_nodes=top_nodes)
         if k < len(vertex_cover_bipartite):
             return False, set()
 
