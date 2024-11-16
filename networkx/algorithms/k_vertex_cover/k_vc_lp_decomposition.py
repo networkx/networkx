@@ -117,4 +117,6 @@ def lp_decomposition_vc(
     vertex_cover_candidate = vertex_cover_candidate.union(greater_than_half)
     G.remove_nodes_from(greater_than_half_union_less_than_half)
 
-    return lp_decomposition(G, k, vertex_cover_candidate)
+    return lp_decomposition(
+        G, k - len(greater_than_half_union_less_than_half), vertex_cover_candidate
+    )
