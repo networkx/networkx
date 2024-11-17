@@ -14,6 +14,7 @@ def get_top_nodes(G: nx.Graph) -> list:
     bipartite graph
     """
     assert nx.is_bipartite(G), "Graph must be bipartite"
+
     top_nodes = []
     graph_coloring = color(G)
     for node in G.nodes:
