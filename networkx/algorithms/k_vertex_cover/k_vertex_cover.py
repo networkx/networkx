@@ -231,6 +231,10 @@ def k_vertex_cover_given_candidate(
     if k < 0:
         return False
 
+    # if graph is edgeless after preprocessing, return True
+    if len(G) == 0 or len(G.edges) == 0:
+        return True
+
     # branching on maximum degree vertex
     u, max_deg = max_deg_vertex(G)
 

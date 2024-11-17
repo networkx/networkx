@@ -39,8 +39,9 @@ def lp_decomposition(G: nx.Graph, k: int) -> bool | tuple[set, set, set]:
 
     # bipartite graph is created
     weight_dictionary = {}
-    maximum_matching = hopcroft_karp_matching(g_new, top_nodes=get_top_nodes(g_new))
-    min_vertex_cover = to_vertex_cover(g_new, maximum_matching)
+    top_nodes = get_top_nodes(g_new)
+    maximum_matching = hopcroft_karp_matching(g_new, top_nodes=top_nodes)
+    min_vertex_cover = to_vertex_cover(g_new, maximum_matching, top_nodes=top_nodes)
 
     for node in G.nodes:
         container_1_name = f"1_{label[node]}"
