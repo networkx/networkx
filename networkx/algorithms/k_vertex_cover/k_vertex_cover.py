@@ -43,8 +43,9 @@ def is_vertex_cover(G: nx.Graph, vertex_cover_candidate: set):
     """
     Given a graph and a set, returns True if the set is a vertex cover
     """
-    G.remove_nodes_from(vertex_cover_candidate)
-    return len(G) == 0 or len(G.edges) == 0
+    g = G.copy()
+    g.remove_nodes_from(vertex_cover_candidate)
+    return len(g) == 0 or len(g.edges) == 0
 
 
 @not_implemented_for("directed")
