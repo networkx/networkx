@@ -60,7 +60,7 @@ def lp_decomposition(G: nx.Graph, k: int) -> bool | tuple[set, set, set]:
     less_than_half = set()
     equal_to_half = set()
 
-    lp_value = 0
+    lp_value = 0.0
 
     # iterate through the original graph vertices and add it
     # to the corresponding set

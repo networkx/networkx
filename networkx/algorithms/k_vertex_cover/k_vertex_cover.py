@@ -195,7 +195,7 @@ def k_vertex_cover_for_max_deg_two(
         )
         # min_vertices_to_be_added is the ceil of component_size / 2
         # hence (component_size + 1) / 2
-        min_vertices_to_be_added += (component_size + 1) / 2
+        min_vertices_to_be_added += (component_size + 1) // 2
 
         update_vertex_cover(component, G, vertex_cover_candidate)
 
