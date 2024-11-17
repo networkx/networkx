@@ -1,8 +1,8 @@
-from bipartite_get_top_nodes import get_top_nodes
-
 import networkx as nx
 from networkx.algorithms.bipartite import hopcroft_karp_matching, to_vertex_cover
 from networkx.utils import not_implemented_for
+
+from .bipartite_get_top_nodes import get_top_nodes
 
 __all__ = ["lp_decomposition_vc"]
 

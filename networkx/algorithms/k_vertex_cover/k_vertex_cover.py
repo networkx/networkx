@@ -2,10 +2,6 @@
 Function to get the k-sized vertex cover
 """
 
-from bipartite_get_top_nodes import get_top_nodes
-from k_vc_crown_decomposition import crown_decomposition_vc
-from k_vc_lp_decomposition import lp_decomposition_vc
-
 import networkx as nx
 from networkx.algorithms import bipartite
 from networkx.algorithms.bipartite.matching import (
@@ -13,6 +9,10 @@ from networkx.algorithms.bipartite.matching import (
     to_vertex_cover,
 )
 from networkx.utils import not_implemented_for
+
+from .bipartite_get_top_nodes import get_top_nodes
+from .k_vc_crown_decomposition import crown_decomposition_vc
+from .k_vc_lp_decomposition import lp_decomposition_vc
 
 __all__ = ["k_vertex_cover"]
 
