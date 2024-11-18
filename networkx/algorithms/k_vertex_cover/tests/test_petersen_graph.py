@@ -1,7 +1,3 @@
-import random as rnd
-
-import pytest
-
 import networkx as nx
 from networkx.algorithms.k_vertex_cover.test_helper_functions import (
     check_vertex_cover,
