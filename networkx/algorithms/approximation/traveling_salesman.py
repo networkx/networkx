@@ -334,7 +334,9 @@ def traveling_salesman_problem(
         for v in nodes:
             if u == v:
                 continue
-            GG.add_edge(u, v, weight=dist[u][v])
+            # Ensure that the weight attribute on GG has the
+            # same name as the input graph
+            GG.add_edge(u, v, **{weight: dist[u][v]})
 
     best_GG = method(GG, weight=weight, **kwargs)
 
