@@ -7,7 +7,7 @@ from networkx.algorithms.k_vertex_cover.k_vertex_cover import (
 )
 
 
-def test_vertex_cover(G: nx.Graph, k: int):
+def check_vertex_cover(G: nx.Graph, k: int):
     # print(f"Graph : {G}")
     # print(f"Parameter : {k}")
 
