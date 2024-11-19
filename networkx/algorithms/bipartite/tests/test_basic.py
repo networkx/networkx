@@ -176,3 +176,31 @@ class TestBipartiteBasic:
         X, Y = bipartite.sets(G, relaxed=True)
         assert X.union(Y) == set(G.nodes())
         assert X.isdisjoint(Y)
+
+    def test_isolated_nodes(self):
+        # Graph with isolated nodes
+        G = nx.Graph()
+        G.add_edges_from([(0, 1), (2, 3)])
+        G.add_node(4)  # Isolated node
+        assert bipartite.is_bipartite(G)
+        c = bipartite.color(G)
+        assert c[4] == 0  # Default color for isolates
+
+    def test_large_bipartite(self):
+        # Large complete bipartite graph
+        G = nx.complete_bipartite_graph(100, 200)
+        assert bipartite.is_bipartite(G)
+        X, Y = bipartite.sets(G)
+        assert len(X) == 100 and len(Y) == 200
+
+    def test_directed_with_loops(self):
+        # Directed graph with self-loops
+        G = nx.DiGraph()
+        G.add_edges_from([(0, 1), (1, 0), (2, 2)])  # Self-loop on node 2
+        assert not bipartite.is_bipartite(G)
+
+    def test_density_computation(self):
+        # Test density for complete bipartite graph
+        G = nx.complete_bipartite_graph(3, 2)
+        X = {0, 1, 2}  # Top set
+        assert bipartite.density(G, X) == 1.0

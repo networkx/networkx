@@ -57,7 +57,12 @@ def color(G, relaxed=False):
     1
     >>> print(G.nodes[1]["bipartite"])
     0
+
+    Notes
+    -----
+    In directed graphs, in-neighbors and out-neighbors are both considered for coloring.
     """
+
     if G.is_directed():
         import itertools
 
@@ -167,6 +172,10 @@ def sets(G, top_nodes=None, relaxed=False):
         bipartite set is provided, unless relaxed=True.
     NetworkXError
         If the graph is not bipartite and relaxed=False.
+
+    Notes
+    -----
+    If the graph is not bipartite and `relaxed=False`, an error is raised even if some components are bipartite.
     """
     if G.is_directed():
         is_connected = nx.is_weakly_connected
@@ -252,6 +261,10 @@ def degrees(B, nodes, weight=None):
     >>> degX, degY = bipartite.degrees(G, Y)
     >>> dict(degX)
     {0: 2, 1: 2, 2: 2}
+
+     Notes
+    -----
+    For multi-graphs, degrees are computed as the sum of weights or counts across parallel edges.
     """
     bottom = set(nodes)
     top = set(B) - bottom
