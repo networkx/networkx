@@ -119,7 +119,10 @@ def lp_decomposition_vc(
 
     # add greater_than_half_union_less_than_half to vertex cover
     # and remove them from graph
-    vertex_cover_candidate = vertex_cover_candidate.union(greater_than_half)
+    # not using union() method of set as we need to modify the set
+    # vertex_cover_candidate in place
+    for vertex in greater_than_half:
+        vertex_cover_candidate.add(vertex)
     G.remove_nodes_from(greater_than_half_union_less_than_half)
 
     return lp_decomposition_vc(

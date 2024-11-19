@@ -275,7 +275,11 @@ def k_vertex_cover_given_candidate(
 
     # add all the neighbours to vertex cover candidate and
     # remove them from graph
-    vertex_cover_candidate = vertex_cover_candidate.union(neighbours)
+    # not using vertex_cover_candidate.union method as we need to modify the
+    # vertex_cover_candidate set in place
+    for vertex in neighbours:
+        vertex_cover_candidate.add(vertex)
+
     G_copy.remove_nodes_from(neighbours)
 
     is_k_vc_cover_exist = k_vertex_cover_given_candidate(

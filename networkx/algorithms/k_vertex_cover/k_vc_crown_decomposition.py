@@ -114,7 +114,9 @@ def crown_decomposition_vc(
         return True, vertex_cover_candidate
 
     # add head_union_crown to vertex cover and remove them from graph
-    vertex_cover_candidate = vertex_cover_candidate.union(head_vertices)
+    # not using union() method of set as we need to modify the set in place
+    for vertex in head_vertices:
+        vertex_cover_candidate.add(vertex)
     G.remove_nodes_from(head_union_crown)
 
     return crown_decomposition_vc(G, k - len(head_vertices), vertex_cover_candidate)
