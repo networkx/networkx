@@ -69,7 +69,6 @@ def k_vc_preprocessing(G: nx.Graph, k: int, vertex_cover_candidate: set) -> int:
             assert isinstance(node_degree, int)
             if node_degree >= k + 1:
                 high_deg_vertex = node
-                k -= 1
                 break
 
         if high_deg_vertex is not None:
@@ -77,6 +76,7 @@ def k_vc_preprocessing(G: nx.Graph, k: int, vertex_cover_candidate: set) -> int:
             # that should be present in any vertex cover of size
             # at most k
             vertex_cover_candidate.add(high_deg_vertex)
+            k -= 1
             G.remove_node(high_deg_vertex)
             continue
 
