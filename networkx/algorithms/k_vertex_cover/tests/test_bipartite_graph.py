@@ -16,6 +16,12 @@ class TestBipartiteGraph:
         G = nx.complete_bipartite_graph(5, 6)
         self.check(G)
 
+        G = nx.complete_bipartite_graph(4, 4)
+        self.check(G)
+
+        G = nx.complete_bipartite_graph(3, 3)
+        self.check(G)
+
         G = bipartite.random_graph(3, 6, 0.2)
         self.check(G)
 
