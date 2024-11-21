@@ -65,7 +65,7 @@ def alpha_beta_core(G, alpha, beta):
     >>> B = nx.Graph()
     >>> B.add_edges_from([(1, "a"), (1, "b"), (2, "b"), (2, "c"), (3, "c")])
     >>> G_ab_core = alpha_beta_core(B, alpha=1, beta=2)
-    >>> list(G_ab_core.edges)
+    >>> {tuple(sorted(map(str, edge))) for edge in G_ab_core.edges}
     [(1, 'b'), (2, 'b'), (2, 'c'), (3, 'c')]
 
     References
