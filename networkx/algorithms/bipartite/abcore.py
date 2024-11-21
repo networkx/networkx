@@ -20,7 +20,8 @@ __all__ = [
 ]
 
 
-@nx._dispatchable
+@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)
+@nx.utils.not_implemented_for("directed")
 def alpha_beta_core(G, alpha, beta):
     """
     Returns the (alpha, beta)-core of a bipartite graph.
