@@ -105,6 +105,8 @@ def greedy_plus_plus(G, iterations):
 
             u, _ = heap.pop()  # Pick vertex with minimum current weighted degree
 
+            loads[u] += G_iter.degree[u]  # Add to load of u
+
             # Subtract one edge from all of u's neighbors, and update their weighted degree
             for v in G_iter.neighbors(u):
                 weighted_degrees[v] -= 1
