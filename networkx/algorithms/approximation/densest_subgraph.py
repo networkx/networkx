@@ -4,7 +4,7 @@ import networkx as nx
 
 __all__ = ["greedy_peeling", "greedy_plus_plus"]
 
-_notes_and_background = """
+_notes_and_background = r"""
     For a subset of the vertices of $G$, $S \subseteq V(G)$, define 
     $E(S) = \{ (u,v) : (u,v)\in E(G), u\in S, v\in S \}$ as the set of
     edges with both endpoints in $S$. The density of $S$ is defined as 
@@ -43,7 +43,7 @@ _notes_and_background = """
     for the densest subgraph, which is based on FISTA algorithm. 
 """
 
-_references = """    
+_references = r"""    
     .. [1] Charikar, Moses. "Greedy approximation algorithms for finding dense components in a graph." 
         In International workshop on approximation algorithms for combinatorial optimization, pp. 84-95. 
         Berlin, Heidelberg: Springer Berlin Heidelberg, 2000.
@@ -146,7 +146,7 @@ greedy_plus_plus.__doc__ = f"""
     >>> from networkx.algorithms import approximation as approx
     >>> G = nx.star_graph(4)
     >>> approx.greedy_plus_plus(G, iterations=1)
-    0.8
+    (0.8, {{0, 1, 2, 3, 4}})
 
     Notes
     -----
@@ -195,7 +195,7 @@ greedy_peeling.__doc__ = f"""
     >>> from networkx.algorithms import approximation as approx
     >>> G = nx.star_graph(4)
     >>> approx.greedy_peeling(G)
-    0.8
+    (0.8, {{0, 1, 2, 3, 4}})
 
     Notes
     -----
