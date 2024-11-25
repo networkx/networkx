@@ -68,9 +68,8 @@ def find_asteroidal_triple(G):
         return None
 
     component_structure = create_component_structure(G)
-    E_complement = set(nx.complement(G).edges)
 
-    for e in E_complement:
+    for e in nx.non_edges(G):
         u = e[0]
         v = e[1]
         u_neighborhood = set(G[u]).union([u])
