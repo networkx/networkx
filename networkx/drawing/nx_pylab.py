@@ -1385,27 +1385,23 @@ def draw_networkx_edge_labels(
                 has not been added yet, and doesn't have transform
             """
             dpi_cor = arrow._dpi_cor
-            # trans_data = arrow.get_transform()
             trans_data = self.ax.transData
-            if arrow._posA_posB is not None:
-                posA = arrow._convert_xy_units(arrow._posA_posB[0])
-                posB = arrow._convert_xy_units(arrow._posA_posB[1])
-                (posA, posB) = trans_data.transform((posA, posB))
-                _path = arrow.get_connectionstyle()(
-                    posA,
-                    posB,
-                    patchA=arrow.patchA,
-                    patchB=arrow.patchB,
-                    shrinkA=arrow.shrinkA * dpi_cor,
-                    shrinkB=arrow.shrinkB * dpi_cor,
-                )
-            else:
-                _path = trans_data.transform_path(arrow._path_original)
-                # networkx should never reach this
+            if arrow._posA_posB is None:
                 raise ValueError(
                     "Can only draw labels for fancy arrows with "
                     "posA and posB inputs, not custom path"
                 )
+            posA = arrow._convert_xy_units(arrow._posA_posB[0])
+            posB = arrow._convert_xy_units(arrow._posA_posB[1])
+            (posA, posB) = trans_data.transform((posA, posB))
+            _path = arrow.get_connectionstyle()(
+                posA,
+                posB,
+                patchA=arrow.patchA,
+                patchB=arrow.patchB,
+                shrinkA=arrow.shrinkA * dpi_cor,
+                shrinkB=arrow.shrinkB * dpi_cor,
+            )
             # Return is in display coordinates
             return _path
 
