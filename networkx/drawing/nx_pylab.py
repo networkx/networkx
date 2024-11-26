@@ -1409,6 +1409,7 @@ def draw_networkx_edge_labels(
             # Text position at a proportion t along the line in display coords
             # default is 0.5 so text appears at the halfway point
             t = self.label_pos
+            tt = 1 - t
             # Horizontal text labels if unchanged later
             angle = 0
             path_disp = self._get_arrow_path_disp(arrow)
@@ -1416,8 +1417,8 @@ def draw_networkx_edge_labels(
             if isinstance(cstyle, mpl.patches.ConnectionStyle.Bar):
                 # Only 2 corners are needed
                 _, (cx1, cy1), (cx2, cy2), _ = path_disp.vertices
-                x = (cx1 + cx2) * t
-                y = (cy1 + cy2) * t
+                x = cx1 * tt + cx2 * t
+                y = cy1 * tt + cy2 * t
                 if not self.labels_horizontal:
                     # Labels parallel to curve
                     change_x = (cx2 - cx1) / 2
@@ -1425,7 +1426,6 @@ def draw_networkx_edge_labels(
                     angle = (np.arctan2(change_y, change_x) / (2 * np.pi)) * 360
             else:
                 (x1, y1), (cx, cy), (x2, y2) = path_disp.vertices
-                tt = 1 - t
                 x = tt**2 * x1 + 2 * t * tt * cx + t**2 * x2
                 y = tt**2 * y1 + 2 * t * tt * cy + t**2 * y2
                 if not self.labels_horizontal:
