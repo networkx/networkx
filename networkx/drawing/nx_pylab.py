@@ -1402,8 +1402,10 @@ def draw_networkx_edge_labels(
             else:
                 _path = trans_data.transform_path(arrow._path_original)
                 # networkx should never reach this
-                raise ValueError('Can only draw labels for fancy arrows with '
-                                 'posA and posB inputs, not custom path')
+                raise ValueError(
+                    "Can only draw labels for fancy arrows with "
+                    "posA and posB inputs, not custom path"
+                )
             # Return is in display coordinates
             return _path
 
@@ -1415,8 +1417,7 @@ def draw_networkx_edge_labels(
             tt = 1 - t
             path_disp = self._get_arrow_path_disp(arrow)
             is_bar_style = isinstance(
-                arrow.get_connectionstyle(),
-                mpl.patches.ConnectionStyle.Bar
+                arrow.get_connectionstyle(), mpl.patches.ConnectionStyle.Bar
             )
             # 1. Calculate x and y
             if is_bar_style:
