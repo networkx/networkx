@@ -1406,27 +1406,38 @@ def draw_networkx_edge_labels(
 
         def _update_text_pos_angle(self, arrow):
             # Fractional label position
-            path_disp = self._get_arrow_path_disp(arrow)
-            (x1, y1), (cx, cy), (x2, y2) = path_disp.vertices
             # Text position at a proportion t along the line in display coords
             # default is 0.5 so text appears at the halfway point
             t = self.label_pos
-            tt = 1 - t
-            x = tt**2 * x1 + 2 * t * tt * cx + t**2 * x2
-            y = tt**2 * y1 + 2 * t * tt * cy + t**2 * y2
-            if self.labels_horizontal:
-                # Horizontal text labels
-                angle = 0
+            # Horizontal text labels if unchanged later
+            angle = 0
+            path_disp = self._get_arrow_path_disp(arrow)
+            cstyle = arrow.get_connectionstyle()
+            if isinstance(cstyle, mpl.patches.ConnectionStyle.Bar):
+                # Only 2 corners are needed
+                _, (cx1, cy1), (cx2, cy2), _ = path_disp.vertices
+                x = (cx1 + cx2) * t
+                y = (cy1 + cy2) * t
+                if not self.labels_horizontal:
+                    # Labels parallel to curve
+                    change_x = (cx2 - cx1) / 2
+                    change_y = (cy2 - cy1) / 2
+                    angle = (np.arctan2(change_y, change_x) / (2 * np.pi)) * 360
             else:
-                # Labels parallel to curve
-                change_x = 2 * tt * (cx - x1) + 2 * t * (x2 - cx)
-                change_y = 2 * tt * (cy - y1) + 2 * t * (y2 - cy)
-                angle = (np.arctan2(change_y, change_x) / (2 * np.pi)) * 360
-                # Text is "right way up"
-                if angle > 90:
-                    angle -= 180
-                if angle < -90:
-                    angle += 180
+                (x1, y1), (cx, cy), (x2, y2) = path_disp.vertices
+                tt = 1 - t
+                x = tt**2 * x1 + 2 * t * tt * cx + t**2 * x2
+                y = tt**2 * y1 + 2 * t * tt * cy + t**2 * y2
+                if not self.labels_horizontal:
+                    # Labels parallel to curve
+                    change_x = 2 * tt * (cx - x1) + 2 * t * (x2 - cx)
+                    change_y = 2 * tt * (cy - y1) + 2 * t * (y2 - cy)
+                    angle = (np.arctan2(change_y, change_x) / (2 * np.pi)) * 360
+            # Text is "right way up"
+            if angle > 90:
+                angle -= 180
+            if angle < -90:
+                angle += 180
             (x, y) = self.ax.transData.inverted().transform((x, y))
             return x, y, angle
 
