@@ -1401,7 +1401,6 @@ def draw_networkx_edge_labels(
                 )
             else:
                 _path = trans_data.transform_path(arrow._path_original)
-                # Impossible to draw labels due to unknown type of vertices
                 # networkx should never reach this
                 raise ValueError('Can only draw labels for fancy arrows with '
                                  'posA and posB inputs, not custom path')
@@ -1442,7 +1441,7 @@ def draw_networkx_edge_labels(
                 else:
                     change_x = 2 * tt * (cx - x1) + 2 * t * (x2 - cx)
                     change_y = 2 * tt * (cy - y1) + 2 * t * (y2 - cy)
-                angle = (np.arctan2(change_y, change_x) / (2 * np.pi)) * 360
+                angle = np.arctan2(change_y, change_x) / (2 * np.pi) * 360
                 # Text is "right way up"
                 if angle > 90:
                     angle -= 180
