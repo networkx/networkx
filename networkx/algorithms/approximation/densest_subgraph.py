@@ -36,7 +36,7 @@ def greedy_plus_plus(G, iterations):
     >>> from networkx.algorithms import approximation as approx
     >>> G = nx.star_graph(4)
     >>> approx.greedy_plus_plus(G, iterations=1)
-    (0.8, {{0, 1, 2, 3, 4}})
+    (0.8, {0, 1, 2, 3, 4})
 
     Notes
     -----
