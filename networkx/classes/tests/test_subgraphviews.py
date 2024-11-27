@@ -360,3 +360,12 @@ class TestEdgeSubGraph:
         pytest.raises(nx.NetworkXError, self.H.remove_node, 0)
         pytest.raises(nx.NetworkXError, self.H.add_edge, 5, 6)
         pytest.raises(nx.NetworkXError, self.H.remove_edge, 0, 1)
+
+    def test_consistent_edges(self):
+        # See gh-7724.
+        """Tests that the subgraph returns consistent filtered edges."""
+        G = nx.MultiDiGraph()
+        G.add_edges_from([("a", "b"), ("a", "c"), ("c", "b")])
+        H = nx.edge_subgraph(G, [("a", "b", 0), ("c", "b", 0)])
+        assert "c" not in H["a"]
+        assert not H.has_edge("a", "c")
