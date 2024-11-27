@@ -27,8 +27,8 @@ ox.settings.use_cache = True
 G = ox.graph.graph_from_point((37.79, -122.41), dist=750, network_type="drive")
 
 # impute edge (driving) speeds and calculate edge travel times
-G = ox.speed.add_edge_speeds(G)
-G = ox.speed.add_edge_travel_times(G)
+G = ox.routing.add_edge_speeds(G)
+G = ox.routing.add_edge_travel_times(G)
 
 # you can convert MultiDiGraph to/from GeoPandas GeoDataFrames
 gdf_nodes, gdf_edges = ox.utils_graph.graph_to_gdfs(G)
