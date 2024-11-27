@@ -35,7 +35,7 @@ def read_leda(path, encoding="UTF-8"):
 
     Examples
     --------
-    G=nx.read_leda('file.leda')
+    >>> G = nx.read_leda("file.leda")  # doctest: +SKIP
 
     References
     ----------
@@ -61,7 +61,7 @@ def parse_leda(lines):
 
     Examples
     --------
-    G=nx.parse_leda(string)
+    >>> G = nx.parse_leda(string)  # doctest: +SKIP
 
     References
     ----------
