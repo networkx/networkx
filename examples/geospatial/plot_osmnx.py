@@ -31,12 +31,12 @@ G = ox.routing.add_edge_speeds(G)
 G = ox.routing.add_edge_travel_times(G)
 
 # you can convert MultiDiGraph to/from GeoPandas GeoDataFrames
-gdf_nodes, gdf_edges = ox.utils_graph.graph_to_gdfs(G)
-G = ox.utils_graph.graph_from_gdfs(gdf_nodes, gdf_edges, graph_attrs=G.graph)
+gdf_nodes, gdf_edges = ox.convert.graph_to_gdfs(G)
+G = ox.convert.graph_from_gdfs(gdf_nodes, gdf_edges, graph_attrs=G.graph)
 
 # convert MultiDiGraph to DiGraph to use nx.betweenness_centrality function
 # choose between parallel edges by minimizing travel_time attribute value
-D = ox.utils_graph.get_digraph(G, weight="travel_time")
+D = ox.convert.get_digraph(G, weight="travel_time")
 
 # calculate node betweenness centrality, weighted by travel time
 bc = nx.betweenness_centrality(D, weight="travel_time", normalized=True)
