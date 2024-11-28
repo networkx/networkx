@@ -71,3 +71,11 @@ def test_greedy_plus_plus_bipartite_and_clique():
     ten_round_density, S_ten = approx.greedy_plus_plus(G, iterations=10)
     assert ten_round_density == pytest.approx(best_density)
     assert S_ten == set(B.nodes)
+
+
+@pytest.mark.parametrize("iterations", (1, 3))
+def test_greedy_plus_plus_edgeless_cornercase(iterations):
+    G = nx.Graph()
+    assert approx.greedy_plus_plus(G, iterations=iterations) == (0, set())
+    G.add_nodes_from(range(4))
+    assert approx.greedy_plus_plus(G, iterations=iterations) == (0, set())
