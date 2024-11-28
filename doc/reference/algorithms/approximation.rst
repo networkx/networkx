@@ -46,6 +46,15 @@ Clustering
    average_clustering
 
 
+Density
+-------
+.. automodule:: networkx.algorithms.approximation.densest_subgraph
+.. autosummary::
+   :toctree: generated/
+
+   greedy_plus_plus
+
+
 Distance Measures
 -----------------
 .. automodule:: networkx.algorithms.approximation.distance_measures
