@@ -117,7 +117,7 @@ def greedy_plus_plus(G, iterations):
         # Initialize the heap for fast minimum degree
         heap = nx.utils.BinaryHeap()
 
-        # Calculate the current weighted degrees (load + degree of vertex) and add it to the heap.
+        # Calculate the current weighted degrees (load + degree of node) and add it to the heap.
         weighted_degrees = {u: loads[u] + G.degree[u] for u in G.nodes}
         for u in G.nodes:
             heap.insert(u, weighted_degrees[u])
@@ -134,7 +134,7 @@ def greedy_plus_plus(G, iterations):
                 best_density = current_density
                 best_subgraph = set(G_iter.nodes)
 
-            u, _ = heap.pop()  # Pick vertex with minimum current weighted degree
+            u, _ = heap.pop()  # Pick node with minimum current weighted degree
 
             loads[u] += G_iter.degree[u]  # Add to load of u
 
