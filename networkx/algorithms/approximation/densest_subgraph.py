@@ -9,7 +9,7 @@ __all__ = ["greedy_plus_plus"]
 @nx.utils.not_implemented_for("multigraph")
 @nx._dispatchable
 def greedy_plus_plus(G, iterations):
-    r"""Returns an approximate densest subgraph for a graph G.
+    r"""Returns an approximate densest subgraph for a graph `G`.
 
     This function runs Boob et al. [2]_ Greedy++ algorithm to find
     the densest subgraph, and returns both the density and the subgraph.
@@ -22,6 +22,8 @@ def greedy_plus_plus(G, iterations):
         Undirected graph
 
     iterations: int
+        Number of iterations to use for the Greedy++ algorithm. ``iterations=1``
+        is equivalent to the greedy "peeling" algorithm in [1]_.
 
     Returns
     -------
@@ -29,18 +31,17 @@ def greedy_plus_plus(G, iterations):
         The density of the approximate subgraph found.
 
     S : set
-        The subset of vertices defining the approximate densest subgraph.
+        The subset of nodes defining the approximate densest subgraph.
 
     Examples
     --------
-    >>> from networkx.algorithms import approximation as approx
     >>> G = nx.star_graph(4)
-    >>> approx.greedy_plus_plus(G, iterations=1)
+    >>> nx.approximation.greedy_plus_plus(G, iterations=1)
     (0.8, {0, 1, 2, 3, 4})
 
     Notes
     -----
-    For a subset of the vertices of $G$, $S \subseteq V(G)$, define
+    For a subset of the nodes of $G$, $S \subseteq V(G)$, define
     $E(S) = \{ (u,v) : (u,v)\in E(G), u\in S, v\in S \}$ as the set of
     edges with both endpoints in $S$. The density of $S$ is defined as
     $E(S)/|S|$, the ratio between the edges in the subgraph $G[S]$ and
@@ -63,9 +64,9 @@ def greedy_plus_plus(G, iterations):
     there are several known approximation algorithms for the problem.
 
     Charikar [1]_ described a very simple 1/2-approximation algorithm for DSG known as
-    the greedy "peeling" algorithm. The algorithm creates an ordering of the vertices as follows.
-    The first vertex $v_1$ is the one with the smallest degree in G (ties broken arbitrarily).
-    It selects $v_2$ to be the smallest degree vertex in $G \setminus v_1$. Letting $G_i$ be the
+    the greedy "peeling" algorithm. The algorithm creates an ordering of the nodes as follows.
+    The first node $v_1$ is the one with the smallest degree in $G$ (ties broken arbitrarily).
+    It selects $v_2$ to be the smallest degree node in $G \setminus v_1$. Letting $G_i$ be the
     graph after removing $v_1, ..., v_i$ (with $G_0=G$), the algorithm returns the graph among
     $G_0, ..., G_n$ with the highest density.
 
