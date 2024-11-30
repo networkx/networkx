@@ -252,6 +252,7 @@ needs_scipy = [
     "drawing/layout.py",
     "drawing/nx_pylab.py",
     "generators/spectral_graph_forge.py",
+    "generators/geometric.py",
     "generators/expanders.py",
     "linalg/algebraicconnectivity.py",
     "linalg/attrmatrix.py",
