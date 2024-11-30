@@ -281,6 +281,11 @@ def soft_random_geometric_graph(
     exponential distribution with rate parameter :math:`\lambda=1` if their
     Euclidean distance is at most 0.2.
 
+    >>> from scipy.stats import expon
+    >>> n = 100
+    >>> p_dist = lambda x: expon.pdf(x, scale=1)
+    >>> G = nx.soft_random_geometric_graph(n, 0.2, p_dist=p_dist)
+
     Notes
     -----
     This uses a *k*-d tree to build the graph.
@@ -308,7 +313,7 @@ def soft_random_geometric_graph(
     .. [1] Penrose, Mathew D. "Connectivity of soft random geometric graphs."
            The Annals of Applied Probability 26.2 (2016): 986-1028.
     .. [2] scipy.stats -
-           https://docs.scipy.org/doc/scipy/reference/tutorial/stats.html
+           https://docs.scipy.org/doc/scipy/reference/stats.html
 
     """
     G = nx.empty_graph(n)
@@ -795,6 +800,11 @@ def thresholded_random_geometric_graph(
     nodes where nodes are joined by an edge if their sum weights drawn from
     a exponential distribution with rate = 5 are >= theta = 0.1 and their
     Euclidean distance is at most 0.2.
+
+    >>> import random
+    >>> n = 50
+    >>> weight = {i: random.expovariate(5) for i in range(n)}
+    >>> G = nx.thresholded_random_geometric_graph(n, 0.2, 0.1, weight=weight)
 
     Notes
     -----
