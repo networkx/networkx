@@ -291,6 +291,27 @@ class TestLRPlanarity:
         P.remove_edges_from(((0, 3), (1, 3)))
         self.check_graph(P, is_planar=True)
 
+    def test_graph_planar_embedding_to_undirected(self):
+        G = nx.Graph(((0, 1), (1, 2), (2, 3), (3, 0), (0, 2)))
+        is_planar, P = nx.check_planarity(G)
+        assert is_planar is True
+        U = P.to_undirected()
+        assert U[0][1] == {}
+        assert U[0][2] == {}
+        assert U[0][3] == {}
+        assert U[2][3] == {}
+        assert U[1][2] == {}
+
+    def test_multigraph_planar_embedding_to_undirected(self):
+        G = nx.MultiGraph([(1, 2), (1, 2), (1, 2), (1, 2), (2, 3), (3, 1)])
+        is_planar, P = nx.check_planarity(G)
+        assert is_planar is True
+
+        U = P.to_undirected()
+        assert U[1][2] == {}
+        assert U[2][3] == {}
+        assert U[3][1] == {}
+
 
 def check_embedding(G, embedding):
     """Raises an exception if the combinatorial embedding is not correct

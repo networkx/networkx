@@ -1317,14 +1317,14 @@ class DiGraph(Graph):
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
         if reciprocal is True:
             G.add_edges_from(
-                (u, v, deepcopy(d))
+                (u, v, {k: deepcopy(v) for k, v in d.items() if k not in {"cw", "ccw"}})
                 for u, nbrs in self._adj.items()
                 for v, d in nbrs.items()
                 if v in self._pred[u]
             )
         else:
             G.add_edges_from(
-                (u, v, deepcopy(d))
+                (u, v, {k: deepcopy(v) for k, v in d.items() if k not in {"cw", "ccw"}})
                 for u, nbrs in self._adj.items()
                 for v, d in nbrs.items()
             )
