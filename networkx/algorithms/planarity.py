@@ -1,4 +1,5 @@
 from collections import defaultdict
+from copy import deepcopy
 
 import networkx as nx
 
@@ -1398,5 +1399,55 @@ class PlanarEmbedding(nx.DiGraph):
             (u, v, datadict.copy())
             for u, nbrs in self._adj.items()
             for v, datadict in nbrs.items()
+        )
+        return G
+
+    def to_undirected(self, as_view=False):
+        """
+        Returns an undirected representation of the planar embedding for directed graphs.
+
+        This method extends the functionality of `DiGraph.to_undirected()` by ensuring that
+        the `"cw"` and `"ccw"` attributes of the half-edges are excluded from the edge data
+        in the resulting undirected graph. This is specific to the requirements of planar embeddings.
+
+        Parameters
+        ----------
+        as_view : bool (optional, default=False)
+            If True, return an undirected view of the original directed graph.
+            This does not create a new graph but provides a view into the original graph.
+
+        Returns
+        -------
+        G : Graph
+            An undirected graph with the same name and nodes as the original directed graph.
+            Edges are included with their data, except for the `"cw"` and `"ccw"` attributes,
+            which are omitted.
+
+        See Also
+        --------
+        DiGraph.to_undirected
+
+        Notes
+        -----
+        - If edges exist in both directions (u, v) and (v, u) in the original graph,
+          attributes for the resulting undirected edge will be combined, excluding `"cw"`
+          and `"ccw"`.
+        - This method creates a "deepcopy" of the node, edge, and graph attributes, ensuring
+          the resulting graph is independent of the original.
+        - Subclass-specific data structures used in the original graph may not transfer
+          to the undirected graph.
+        """
+
+        graph_class = self.to_undirected_class()
+        if as_view is True:
+            return nx.graphviews.generic_graph_view(self, graph_class)
+        # deepcopy when not a view
+        G = graph_class()
+        G.graph.update(deepcopy(self.graph))
+        G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
+        G.add_edges_from(
+            (u, v, {k: deepcopy(v) for k, v in d.items() if k not in {"cw", "ccw"}})
+            for u, neighbors in self._adj.items()
+            for v, d in neighbors.items()
         )
         return G
