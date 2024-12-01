@@ -1774,7 +1774,7 @@ class Graph:
         G.graph.update(deepcopy(self.graph))
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
         G.add_edges_from(
-            (u, v, {k: deepcopy(v) for k, v in d.items() if k not in {"cw", "ccw"}})
+            (u, v, deepcopy(d))
             for u, nbrs in self._adj.items()
             for v, d in nbrs.items()
         )
