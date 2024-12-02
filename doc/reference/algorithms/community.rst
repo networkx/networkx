@@ -58,6 +58,14 @@ Label propagation
    label_propagation_communities
    fast_label_propagation_communities
 
+Local Community Detection
+-------------------------
+.. automodule:: networkx.algorithms.community.local
+.. autosummary::
+   :toctree: generated/
+
+   greedy_source_expansion
+
 Louvain Community Detection
 ---------------------------
 .. automodule:: networkx.algorithms.community.louvain

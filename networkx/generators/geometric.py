@@ -272,7 +272,7 @@ def soft_random_geometric_graph(
     --------
     Default Graph:
 
-    G = nx.soft_random_geometric_graph(50, 0.2)
+    >>> G = nx.soft_random_geometric_graph(50, 0.2)
 
     Custom Graph:
 
@@ -787,7 +787,7 @@ def thresholded_random_geometric_graph(
     --------
     Default Graph:
 
-    G = nx.thresholded_random_geometric_graph(50, 0.2, 0.1)
+    >>> G = nx.thresholded_random_geometric_graph(50, 0.2, 0.1)
 
     Custom Graph:
 
