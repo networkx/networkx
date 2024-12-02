@@ -102,10 +102,10 @@ def greedy_plus_plus(G, iterations):
         In Proceedings of the 2022 Annual ACM-SIAM Symposium on Discrete Algorithms (SODA), pp. 1531-1555.
         Society for Industrial and Applied Mathematics, 2022.
     """
-    if G.number_of_nodes() == 0:
+    if G.number_of_edges() == 0:
         return 0.0, set()
-    if iterations < 1 or not isinstance(iterations, int):
-        raise nx.NetworkXError(
+    if iterations < 1:
+        raise ValueError(
             f"The number of iterations must be an integer at least 1. Provided value is {iterations}"
         )
 
@@ -118,7 +118,7 @@ def greedy_plus_plus(G, iterations):
         heap = nx.utils.BinaryHeap()
 
         # Calculate the current weighted degrees (load + degree of node) and add it to the heap.
-        weighted_degrees = {u: loads[u] + G.degree[u] for u in G.nodes}
+        weighted_degrees = {u: loads[u] + d for u, d in G.degree()}
         for u in G.nodes:
             heap.insert(u, weighted_degrees[u])
 

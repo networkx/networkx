@@ -4,15 +4,17 @@ import networkx as nx
 import networkx.algorithms.approximation as approx
 
 
-def test_greedy_plus_plus_star():
-    G = nx.star_graph(4)
-    # The densest subgraph of a star network is the entire graph: 4/5 (4 edges, 5 nodes in total)
+@pytest.mark.parametrize("iterations", (1, 3))
+@pytest.mark.parametrize("n", range(4, 7))
+def test_greedy_plus_plus_star(n, iterations):
+    G = nx.star_graph(n)
+    # The densest subgraph of a star network is the entire graph:
     # The peeling algorithm would peel all the vertices with degree 1, and so should discover
     # The densest subgraph in one iteration!
-    d, S = approx.greedy_plus_plus(G, iterations=1)
+    d, S = approx.greedy_plus_plus(G, iterations=iterations)
 
-    assert d == pytest.approx(0.8)  # The density, 4/5=0.8.
-    assert S == {0, 1, 2, 3, 4}  # The entire graph!
+    assert d == pytest.approx(G.number_of_edges() / G.number_of_nodes())
+    assert S == set(G)  # The entire graph!
 
 
 def test_greedy_plus_plus_complete_graph():
