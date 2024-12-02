@@ -438,7 +438,7 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
 
     # Check that G is a complete graph
     N = len(G) - 1
-    if N < 2:
+    if N < 1:
         raise nx.NetworkXError("G must have at least two nodes")
     # This check ignores selfloops which is what we want here.
     if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
