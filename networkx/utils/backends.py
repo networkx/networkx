@@ -2295,8 +2295,9 @@ class _dispatchable:
         """Generate the backends section at the end for functions having an alternate
         backend implementation(s) using the `backend_info` entry-point."""
 
-        if self.backends.issubset({"networkx"}):
+        if self.backends == {"networkx"}:
             return self._orig_doc
+        # Add "Backends" section to the bottom of the docstring (if there are backends)
         lines = [
             "Backends",
             "--------",
@@ -2343,12 +2344,50 @@ class _dispatchable:
             if func_url := func_info.get("url"):
                 lines.append(f"[`Source <{func_url}>`_]")
                 lines.append("")
+        # We assume the docstrings are indented by four spaces (true for now)
+        if self.backends:
+            lines.pop()  # Remove last empty line
+            to_add = "\n    ".join(lines)
+            if not self._orig_doc:
+                new_doc = (
+                    f"The original docstring for {self.name} was empty.\n\n    {to_add}"
+                )
+            else:
+                new_doc = f"{self._orig_doc.rstrip()}\n\n    {to_add}"
+        else:
+            new_doc = self._orig_doc
 
-        lines.pop()  # Remove last empty line
-        to_add = "\n    ".join(lines)
-        if not self._orig_doc:
-            return f"The original docstring for {self.name} was empty.\n\n    {to_add}"
-        return f"{self._orig_doc.rstrip()}\n\n    {to_add}"
+        # For backend-only funcs, add "Attention" admonishment after the one line summary
+        if "networkx" not in self.backends:
+            lines = new_doc.split("\n")
+            index = 0
+            while not lines[index].strip():
+                index += 1
+            while lines[index].strip():
+                index += 1
+            backends = sorted(self.backends)
+            if len(backends) == 0:
+                example = ""
+            elif len(backends) == 1:
+                example = f' such as "{backends[0]}"'
+            elif len(backends) == 2:
+                example = f' such as "{backends[0]} or "{backends[1]}"'
+            else:
+                example = (
+                    " such as "
+                    + ", ".join(f'"{x}"' for x in backends[:-1])
+                    + f', or "{backends[-1]}"'  # Oxford comma
+                )
+            to_add = (
+                "\n    .. attention:: This function does not have a default NetworkX implementation.\n"
+                "        It may only be run with an installable :doc:`backend </backends>` that\n"
+                f"        supports it{example}.\n\n"
+                "        Hint: use ``backend=...`` keyword argument to specify a backend or add\n"
+                "        backends to ``nx.config.backend_priority``."
+            )
+            lines.insert(index, to_add)
+            new_doc = "\n".join(lines)
+        return new_doc
 
     def __reduce__(self):
         """Allow this object to be serialized with pickle.
