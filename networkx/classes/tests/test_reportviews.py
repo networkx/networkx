@@ -217,21 +217,18 @@ class TestNodeViewSetOps:
         assert len(nv) == 9
 
     def test_and(self):
-        # print("G & H nodes:", gnv & hnv)
         nv = self.nv
         some_nodes = self.n_its(range(5, 12))
         assert nv & some_nodes == self.n_its(range(5, 9))
         assert some_nodes & nv == self.n_its(range(5, 9))
 
     def test_or(self):
-        # print("G | H nodes:", gnv | hnv)
         nv = self.nv
         some_nodes = self.n_its(range(5, 12))
         assert nv | some_nodes == self.n_its(range(12))
         assert some_nodes | nv == self.n_its(range(12))
 
     def test_xor(self):
-        # print("G ^ H nodes:", gnv ^ hnv)
         nv = self.nv
         some_nodes = self.n_its(range(5, 12))
         nodes = {0, 1, 2, 3, 4, 9, 10, 11}
@@ -239,7 +236,6 @@ class TestNodeViewSetOps:
         assert some_nodes ^ nv == self.n_its(nodes)
 
     def test_sub(self):
-        # print("G - H nodes:", gnv - hnv)
         nv = self.nv
         some_nodes = self.n_its(range(5, 12))
         assert nv - some_nodes == self.n_its(range(5))
@@ -667,7 +663,6 @@ class TestEdgeView:
         assert len(H.edges) == num_ed + 1
 
     def test_and(self):
-        # print("G & H edges:", gnv & hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1), (1, 0), (0, 2)}
         if self.G.is_directed():
@@ -679,7 +674,6 @@ class TestEdgeView:
         return
 
     def test_or(self):
-        # print("G | H edges:", gnv | hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1), (1, 0), (0, 2)}
         result1 = {(n, n + 1) for n in range(8)}
@@ -690,7 +684,6 @@ class TestEdgeView:
         assert (some_edges | ev) in (result1, result2)
 
     def test_xor(self):
-        # print("G ^ H edges:", gnv ^ hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1), (1, 0), (0, 2)}
         if self.G.is_directed():
@@ -704,7 +697,6 @@ class TestEdgeView:
         return
 
     def test_sub(self):
-        # print("G - H edges:", gnv - hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1), (1, 0), (0, 2)}
         result = {(n, n + 1) for n in range(8)}
@@ -844,9 +836,7 @@ class TestMultiEdgeView(TestEdgeView):
         ev = evr(keys=True, data=True)
         for e in ev:
             assert len(e) == 4
-            print("edge:", e)
             if set(e[:2]) == {2, 3}:
-                print(self.G._adj[2][3])
                 assert e[2] == 0
                 assert e[3] == {"foo": "bar"}
                 checked = True
@@ -895,7 +885,6 @@ class TestMultiEdgeView(TestEdgeView):
             assert len(list(ev)) == 4
 
     def test_or(self):
-        # print("G | H edges:", gnv | hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1, 0), (1, 0, 0), (0, 2, 0)}
         result = {(n, n + 1, 0) for n in range(8)}
@@ -905,7 +894,6 @@ class TestMultiEdgeView(TestEdgeView):
         assert some_edges | ev == result
 
     def test_sub(self):
-        # print("G - H edges:", gnv - hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1, 0), (1, 0, 0), (0, 2, 0)}
         result = {(n, n + 1, 0) for n in range(8)}
@@ -915,7 +903,6 @@ class TestMultiEdgeView(TestEdgeView):
         assert some_edges - ev, result
 
     def test_xor(self):
-        # print("G ^ H edges:", gnv ^ hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1, 0), (1, 0, 0), (0, 2, 0)}
         if self.G.is_directed():
@@ -930,7 +917,6 @@ class TestMultiEdgeView(TestEdgeView):
             assert some_edges ^ ev == result
 
     def test_and(self):
-        # print("G & H edges:", gnv & hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1, 0), (1, 0, 0), (0, 2, 0)}
         if self.G.is_directed():

@@ -64,6 +64,7 @@ def subgraph_centrality_exp(G):
     Examples
     --------
     (Example from [1]_)
+
     >>> G = nx.Graph(
     ...     [
     ...         (1, 2),
@@ -145,6 +146,7 @@ def subgraph_centrality(G):
     Examples
     --------
     (Example from [1]_)
+
     >>> G = nx.Graph(
     ...     [
     ...         (1, 2),
