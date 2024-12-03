@@ -2355,7 +2355,7 @@ class _dispatchable:
             else:
                 new_doc = f"{self._orig_doc.rstrip()}\n\n    {to_add}"
         else:
-            new_doc = self._orig_doc
+            new_doc = self._orig_doc or ""
 
         # For backend-only funcs, add "Attention" admonishment after the one line summary
         if "networkx" not in self.backends:
