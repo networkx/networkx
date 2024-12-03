@@ -20,7 +20,7 @@ def leiden_communities(G, weight="weight", resolution=1, max_level=None, seed=No
 
     Leiden Community Detection Algorithm is a method to extract the community
     structure of a network based on modularity optimization.
-    See :ref:`Louvain Communities<louvain_communities>`.
+    See :func:`~networkx.algorithms.community.louvain.louvain_communities`.
 
     Unlike the Louvain algorithm, it guarantees that communities are well connected in addition
     to being faster and uncovering better partitions. [1]_
@@ -93,7 +93,7 @@ def leiden_communities(G, weight="weight", resolution=1, max_level=None, seed=No
     See Also
     --------
     leiden_partitions
-    louvain_communities
+    :func:`~networkx.algorithms.community.louvain.louvain_communities`
     """
     partitions = leiden_partitions(G, weight, resolution, seed)
     if max_level is not None:
@@ -149,7 +149,7 @@ def leiden_partitions(G, weight="weight", resolution=1, seed=None):
     See Also
     --------
     leiden_communities
-    louvain_partitions
+    :func:`~networkx.algorithms.community.louvain.louvain_partitions`
     """
     raise NotImplementedError(
         "'leiden_partitions' is not implemented by networkx. "

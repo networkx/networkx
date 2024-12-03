@@ -118,7 +118,7 @@ def louvain_communities(
     See Also
     --------
     louvain_partitions
-    leiden_communities
+    :func:`~networkx.algorithms.community.leiden.leiden_communities`
     """
 
     partitions = louvain_partitions(G, weight, resolution, threshold, seed)
@@ -188,7 +188,7 @@ def louvain_partitions(
     See Also
     --------
     louvain_communities
-    leiden_partitions
+    :func:`~networkx.algorithms.community.leiden.leiden_partitions`
     """
 
     partition = [{u} for u in G.nodes()]
