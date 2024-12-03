@@ -269,7 +269,7 @@ def shell_layout(G, nlist=None, rotate=None, scale=1, center=None, dim=2):
 
 
 def bipartite_layout(
-    G, nodes, align="vertical", scale=1, center=None, aspect_ratio=4 / 3
+    G, nodes=None, align="vertical", scale=1, center=None, aspect_ratio=4 / 3
 ):
     """Position nodes in two straight lines.
 
@@ -278,9 +278,9 @@ def bipartite_layout(
     G : NetworkX graph or list of nodes
         A position will be assigned to every node in G.
 
-    nodes : list or container
-        Nodes in one node set of the bipartite graph.
-        This set will be placed on left or top.
+    nodes : collection of nodes
+        Nodes in one node set of the bipartite graph. This set will be placed on
+        left or top. If `None` (the default), a node set is chosen arbitrarily.
 
     align : string (default='vertical')
         The alignment of nodes. Vertical or horizontal.
@@ -298,6 +298,11 @@ def bipartite_layout(
     -------
     pos : dict
         A dictionary of positions keyed by node.
+
+    Raises
+    ------
+    NetworkXError
+        If ``nodes=None`` and `G` is not bipartite.
 
     Examples
     --------
@@ -326,9 +331,14 @@ def bipartite_layout(
     width = aspect_ratio * height
     offset = (width / 2, height / 2)
 
-    top = dict.fromkeys(nodes)
-    bottom = [v for v in G if v not in top]
-    nodes = list(top) + bottom
+    if nodes is None:
+        top, bottom = nx.bipartite.sets(G)
+        nodes = list(G)
+    else:
+        top = set(nodes)
+        bottom = set(G) - top
+        # Preserves backward-compatible node ordering in returned pos dict
+        nodes = list(top) + list(bottom)
 
     left_xs = np.repeat(0, len(top))
     right_xs = np.repeat(width, len(bottom))
