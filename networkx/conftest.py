@@ -101,16 +101,6 @@ def pytest_collection_modifyitems(config, items):
 @pytest.fixture(autouse=True)
 def set_warnings():
     warnings.filterwarnings(
-        "ignore",
-        category=FutureWarning,
-        message="\n\nsingle_target_shortest_path_length",
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=FutureWarning,
-        message="\n\nshortest_path",
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nThe `normalized`"
     )
     warnings.filterwarnings(
