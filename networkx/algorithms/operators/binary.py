@@ -1,6 +1,7 @@
 """
 Operations on graphs including union, intersection, difference.
 """
+
 import networkx as nx
 
 __all__ = [
@@ -12,9 +13,11 @@ __all__ = [
     "symmetric_difference",
     "full_join",
 ]
+_G_H = {"G": 0, "H": 1}
 
 
-def union(G, H, rename=(None, None)):
+@nx._dispatchable(graphs=_G_H, preserve_all_attrs=True, returns_graph=True)
+def union(G, H, rename=()):
     """Combine graphs G and H. The names of nodes must be unique.
 
     A name collision between the graphs will raise an exception.
@@ -27,7 +30,7 @@ def union(G, H, rename=(None, None)):
     G, H : graph
        A NetworkX graph
 
-    rename : tuple , default=(None, None)
+    rename : iterable , optional
        Node names of G and H can be changed by specifying the tuple
        rename=('G-','H-') (for example).  Node "u" in G is then renamed
        "G-u" and "v" in H is renamed "H-v".
@@ -69,6 +72,7 @@ def union(G, H, rename=(None, None)):
     return nx.union_all([G, H], rename)
 
 
+@nx._dispatchable(graphs=_G_H, preserve_all_attrs=True, returns_graph=True)
 def disjoint_union(G, H):
     """Combine graphs G and H. The nodes are assumed to be unique (disjoint).
 
@@ -122,6 +126,7 @@ def disjoint_union(G, H):
     return nx.disjoint_union_all([G, H])
 
 
+@nx._dispatchable(graphs=_G_H, returns_graph=True)
 def intersection(G, H):
     """Returns a new graph that contains only the nodes and the edges that exist in
     both G and H.
@@ -166,6 +171,7 @@ def intersection(G, H):
     return nx.intersection_all([G, H])
 
 
+@nx._dispatchable(graphs=_G_H, returns_graph=True)
 def difference(G, H):
     """Returns a new graph that contains the edges that exist in G but not in H.
 
@@ -205,7 +211,7 @@ def difference(G, H):
     # create new graph
     if not G.is_multigraph() == H.is_multigraph():
         raise nx.NetworkXError("G and H must both be graphs or multigraphs.")
-    R = nx.create_empty_copy(G)
+    R = nx.create_empty_copy(G, with_data=False)
 
     if set(G) != set(H):
         raise nx.NetworkXError("Node sets of graphs not equal")
@@ -220,6 +226,7 @@ def difference(G, H):
     return R
 
 
+@nx._dispatchable(graphs=_G_H, returns_graph=True)
 def symmetric_difference(G, H):
     """Returns new graph with edges that exist in either G or H but not both.
 
@@ -252,7 +259,7 @@ def symmetric_difference(G, H):
     # create new graph
     if not G.is_multigraph() == H.is_multigraph():
         raise nx.NetworkXError("G and H must both be graphs or multigraphs.")
-    R = nx.create_empty_copy(G)
+    R = nx.create_empty_copy(G, with_data=False)
 
     if set(G) != set(H):
         raise nx.NetworkXError("Node sets of graphs not equal")
@@ -282,6 +289,7 @@ def symmetric_difference(G, H):
     return R
 
 
+@nx._dispatchable(graphs=_G_H, preserve_all_attrs=True, returns_graph=True)
 def compose(G, H):
     """Compose graph G with H by combining nodes and edges into a single graph.
 
@@ -329,35 +337,41 @@ def compose(G, H):
     By default, the attributes from `H` take precedent over attributes from `G`.
     If you prefer another way of combining attributes, you can update them after the compose operation:
 
-    >>> G = nx.Graph([(0, 1, {'weight': 2.0}), (3, 0, {'weight': 100.0})])
-    >>> H = nx.Graph([(0, 1, {'weight': 10.0}), (1, 2, {'weight': -1.0})])
-    >>> nx.set_node_attributes(G, {0: 'dark', 1: 'light', 3: 'black'}, name='color')
-    >>> nx.set_node_attributes(H, {0: 'green', 1: 'orange', 2: 'yellow'}, name='color')
+    >>> G = nx.Graph([(0, 1, {"weight": 2.0}), (3, 0, {"weight": 100.0})])
+    >>> H = nx.Graph([(0, 1, {"weight": 10.0}), (1, 2, {"weight": -1.0})])
+    >>> nx.set_node_attributes(G, {0: "dark", 1: "light", 3: "black"}, name="color")
+    >>> nx.set_node_attributes(H, {0: "green", 1: "orange", 2: "yellow"}, name="color")
     >>> GcomposeH = nx.compose(G, H)
 
     Normally, color attribute values of nodes of GcomposeH come from H. We can workaround this as follows:
 
-    >>> node_data = {n: G.nodes[n]['color'] + " " + H.nodes[n]['color'] for n in G.nodes & H.nodes}
-    >>> nx.set_node_attributes(GcomposeH, node_data, 'color')
-    >>> print(GcomposeH.nodes[0]['color'])
+    >>> node_data = {
+    ...     n: G.nodes[n]["color"] + " " + H.nodes[n]["color"]
+    ...     for n in G.nodes & H.nodes
+    ... }
+    >>> nx.set_node_attributes(GcomposeH, node_data, "color")
+    >>> print(GcomposeH.nodes[0]["color"])
     dark green
 
-    >>> print(GcomposeH.nodes[3]['color'])
+    >>> print(GcomposeH.nodes[3]["color"])
     black
 
     Similarly, we can update edge attributes after the compose operation in a way we prefer:
 
-    >>> edge_data = {e: G.edges[e]['weight'] * H.edges[e]['weight'] for e in G.edges & H.edges}
-    >>> nx.set_edge_attributes(GcomposeH, edge_data, 'weight')
-    >>> print(GcomposeH.edges[(0, 1)]['weight'])
+    >>> edge_data = {
+    ...     e: G.edges[e]["weight"] * H.edges[e]["weight"] for e in G.edges & H.edges
+    ... }
+    >>> nx.set_edge_attributes(GcomposeH, edge_data, "weight")
+    >>> print(GcomposeH.edges[(0, 1)]["weight"])
     20.0
 
-    >>> print(GcomposeH.edges[(3, 0)]['weight'])
+    >>> print(GcomposeH.edges[(3, 0)]["weight"])
     100.0
     """
     return nx.compose_all([G, H])
 
 
+@nx._dispatchable(graphs=_G_H, preserve_all_attrs=True, returns_graph=True)
 def full_join(G, H, rename=(None, None)):
     """Returns the full join of graphs G and H.
 
@@ -418,11 +432,7 @@ def full_join(G, H, rename=(None, None)):
             return graph
 
         def label(x):
-            if isinstance(x, str):
-                name = prefix + x
-            else:
-                name = prefix + repr(x)
-            return name
+            return f"{prefix}{x}"
 
         return nx.relabel_nodes(graph, label)
 

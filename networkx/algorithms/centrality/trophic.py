@@ -1,4 +1,5 @@
 """Trophic levels"""
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -6,6 +7,7 @@ __all__ = ["trophic_levels", "trophic_differences", "trophic_incoherence_paramet
 
 
 @not_implemented_for("undirected")
+@nx._dispatchable(edge_attrs="weight")
 def trophic_levels(G, weight="weight"):
     r"""Compute the trophic levels of nodes.
 
@@ -39,6 +41,24 @@ def trophic_levels(G, weight="weight"):
     ----------
     .. [1] Stephen Levine (1980) J. theor. Biol. 83, 195-207
     """
+
+    basal_nodes = [n for n, deg in G.in_degree if deg == 0]
+    if not basal_nodes:
+        raise nx.NetworkXError(
+            "This graph has no basal nodes (nodes with no incoming edges)."
+            "Trophic levels are not defined without at least one basal node."
+        )
+
+    reachable_nodes = {
+        node for layer in nx.bfs_layers(G, sources=basal_nodes) for node in layer
+    }
+
+    if len(reachable_nodes) != len(G.nodes):
+        raise nx.NetworkXError(
+            "Trophic levels are only defined for graphs where every node has a path "
+            "from a basal node (basal nodes are nodes with no incoming edges)."
+        )
+
     import numpy as np
 
     # find adjacency matrix
@@ -75,12 +95,13 @@ def trophic_levels(G, weight="weight"):
     # all other nodes have levels as calculated
     nonzero_node_ids = (node_id for node_id, degree in G.in_degree if degree != 0)
     for i, node_id in enumerate(nonzero_node_ids):
-        levels[node_id] = y[i]
+        levels[node_id] = y.item(i)
 
     return levels
 
 
 @not_implemented_for("undirected")
+@nx._dispatchable(edge_attrs="weight")
 def trophic_differences(G, weight="weight"):
     r"""Compute the trophic differences of the edges of a directed graph.
 
@@ -115,6 +136,7 @@ def trophic_differences(G, weight="weight"):
 
 
 @not_implemented_for("undirected")
+@nx._dispatchable(edge_attrs="weight")
 def trophic_incoherence_parameter(G, weight="weight", cannibalism=False):
     r"""Compute the trophic incoherence parameter of a graph.
 
@@ -156,4 +178,4 @@ def trophic_incoherence_parameter(G, weight="weight", cannibalism=False):
             # Avoid copy otherwise
             G_2 = G
         diffs = trophic_differences(G_2, weight=weight)
-    return np.std(list(diffs.values()))
+    return float(np.std(list(diffs.values())))

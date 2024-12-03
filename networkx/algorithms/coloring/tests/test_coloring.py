@@ -1,6 +1,4 @@
-"""Greedy coloring test suite.
-
-"""
+"""Greedy coloring test suite."""
 
 import itertools
 
@@ -438,7 +436,6 @@ class TestColoring:
             full_color_assignment=None,
             nodes_to_add_between_calls=1,
         ):
-
             color_assignments = []
             aux_colored_nodes = colored_nodes.copy()
 
@@ -447,13 +444,13 @@ class TestColoring:
             )
 
             for u in node_iterator:
-                # Set to keep track of colors of neighbours
-                neighbour_colors = {
+                # Set to keep track of colors of neighbors
+                nbr_colors = {
                     aux_colored_nodes[v] for v in G[u] if v in aux_colored_nodes
                 }
                 # Find the first unused color.
                 for color in itertools.count():
-                    if color not in neighbour_colors:
+                    if color not in nbr_colors:
                         break
                 aux_colored_nodes[u] = color
                 color_assignments.append((u, color))
@@ -474,7 +471,6 @@ class TestColoring:
             return color_assignments, aux_colored_nodes
 
         for G, _, _ in SPECIAL_TEST_CASES["saturation_largest_first"]:
-
             G = G()
 
             # Check that function still works when nodes are colored between iterations
@@ -530,7 +526,7 @@ def dict_to_sets(colors):
     k = max(colors.values()) + 1
     sets = [set() for _ in range(k)]
 
-    for (node, color) in colors.items():
+    for node, color in colors.items():
         sets[color].add(node)
 
     return sets
@@ -839,12 +835,12 @@ def check_state(L, N, H, F, C):
     s = len(C[0])
     num_colors = len(C.keys())
 
-    assert all(u in L[v] for u in L.keys() for v in L[u])
-    assert all(F[u] != F[v] for u in L.keys() for v in L[u])
-    assert all(len(L[u]) < num_colors for u in L.keys())
+    assert all(u in L[v] for u in L for v in L[u])
+    assert all(F[u] != F[v] for u in L for v in L[u])
+    assert all(len(L[u]) < num_colors for u in L)
     assert all(len(C[x]) == s for x in C)
-    assert all(H[(c1, c2)] >= 0 for c1 in C.keys() for c2 in C.keys())
-    assert all(N[(u, F[u])] == 0 for u in F.keys())
+    assert all(H[(c1, c2)] >= 0 for c1 in C for c2 in C)
+    assert all(N[(u, F[u])] == 0 for u in F)
 
 
 def max_degree(G):
@@ -856,7 +852,7 @@ def make_params_from_graph(G, F):
     """Returns {N, L, H, C} from the given graph."""
     num_nodes = len(G)
     L = {u: [] for u in range(num_nodes)}
-    for (u, v) in G.edges:
+    for u, v in G.edges:
         L[u].append(v)
         L[v].append(u)
 

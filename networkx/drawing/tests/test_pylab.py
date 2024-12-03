@@ -1,6 +1,8 @@
 """Unit tests for matplotlib drawing functions."""
+
 import itertools
 import os
+import warnings
 
 import pytest
 
@@ -31,7 +33,8 @@ def test_draw():
         for function, option in itertools.product(functions, options):
             function(barbell, **option)
             plt.savefig("test.ps")
-
+    except ModuleNotFoundError:  # draw_kamada_kawai requires scipy
+        pass
     finally:
         try:
             os.unlink("test.ps")
@@ -196,7 +199,7 @@ def test_more_edge_colors_than_num_edges_directed():
         assert mpl.colors.same_color(fap.get_edgecolor(), expected)
 
 
-def test_edge_color_string_with_gloabl_alpha_undirected():
+def test_edge_color_string_with_global_alpha_undirected():
     edge_collection = nx.draw_networkx_edges(
         barbell,
         pos=nx.random_layout(barbell),
@@ -359,6 +362,32 @@ def test_directed_edges_linestyle_sequence(style_seq):
         assert fap.get_linestyle() == style
 
 
+def test_return_types():
+    from matplotlib.collections import LineCollection, PathCollection
+    from matplotlib.patches import FancyArrowPatch
+
+    G = nx.frucht_graph(create_using=nx.Graph)
+    dG = nx.frucht_graph(create_using=nx.DiGraph)
+    pos = nx.spring_layout(G)
+    dpos = nx.spring_layout(dG)
+    # nodes
+    nodes = nx.draw_networkx_nodes(G, pos)
+    assert isinstance(nodes, PathCollection)
+    # edges
+    edges = nx.draw_networkx_edges(dG, dpos, arrows=True)
+    assert isinstance(edges, list)
+    if len(edges) > 0:
+        assert isinstance(edges[0], FancyArrowPatch)
+    edges = nx.draw_networkx_edges(dG, dpos, arrows=False)
+    assert isinstance(edges, LineCollection)
+    edges = nx.draw_networkx_edges(G, dpos, arrows=None)
+    assert isinstance(edges, LineCollection)
+    edges = nx.draw_networkx_edges(dG, pos, arrows=None)
+    assert isinstance(edges, list)
+    if len(edges) > 0:
+        assert isinstance(edges[0], FancyArrowPatch)
+
+
 def test_labels_and_colors():
     G = nx.cubical_graph()
     pos = nx.spring_layout(G)  # positions for all nodes
@@ -396,6 +425,7 @@ def test_labels_and_colors():
         G,
         pos,
         edgelist=[(4, 5), (5, 6), (6, 7), (7, 4)],
+        arrows=True,
         min_source_margin=0.5,
         min_target_margin=0.75,
         width=8,
@@ -411,7 +441,9 @@ def test_labels_and_colors():
     labels[5] = r"$\beta$"
     labels[6] = r"$\gamma$"
     labels[7] = r"$\delta$"
+    colors = {n: "k" if n % 2 == 0 else "r" for n in range(8)}
     nx.draw_networkx_labels(G, pos, labels, font_size=16)
+    nx.draw_networkx_labels(G, pos, labels, font_size=16, font_color=colors)
     nx.draw_networkx_edge_labels(G, pos, edge_labels=None, rotate=False)
     nx.draw_networkx_edge_labels(G, pos, edge_labels={(4, 5): "4-5"})
     # plt.show()
@@ -485,19 +517,72 @@ def test_multigraph_edgelist_tuples():
 
 def test_alpha_iter():
     pos = nx.random_layout(barbell)
+    fig = plt.figure()
     # with fewer alpha elements than nodes
-    plt.subplot(131)
+    fig.add_subplot(131)  # Each test in a new axis object
     nx.draw_networkx_nodes(barbell, pos, alpha=[0.1, 0.2])
     # with equal alpha elements and nodes
     num_nodes = len(barbell.nodes)
     alpha = [x / num_nodes for x in range(num_nodes)]
     colors = range(num_nodes)
-    plt.subplot(132)
+    fig.add_subplot(132)
     nx.draw_networkx_nodes(barbell, pos, node_color=colors, alpha=alpha)
     # with more alpha elements than nodes
     alpha.append(1)
-    plt.subplot(133)
+    fig.add_subplot(133)
     nx.draw_networkx_nodes(barbell, pos, alpha=alpha)
+
+
+def test_multiple_node_shapes():
+    G = nx.path_graph(4)
+    ax = plt.figure().add_subplot(111)
+    nx.draw(G, node_shape=["o", "h", "s", "^"], ax=ax)
+    scatters = [
+        s for s in ax.get_children() if isinstance(s, mpl.collections.PathCollection)
+    ]
+    assert len(scatters) == 4
+
+
+def test_individualized_font_attributes():
+    G = nx.karate_club_graph()
+    ax = plt.figure().add_subplot(111)
+    nx.draw(
+        G,
+        ax=ax,
+        font_color={n: "k" if n % 2 else "r" for n in G.nodes()},
+        font_size={n: int(n / (34 / 15) + 5) for n in G.nodes()},
+    )
+    for n, t in zip(
+        G.nodes(),
+        [
+            t
+            for t in ax.get_children()
+            if isinstance(t, mpl.text.Text) and len(t.get_text()) > 0
+        ],
+    ):
+        expected = "black" if n % 2 else "red"
+
+        assert mpl.colors.same_color(t.get_color(), expected)
+        assert int(n / (34 / 15) + 5) == t.get_size()
+
+
+def test_individualized_edge_attributes():
+    G = nx.karate_club_graph()
+    ax = plt.figure().add_subplot(111)
+    arrowstyles = ["-|>" if (u + v) % 2 == 0 else "-[" for u, v in G.edges()]
+    arrowsizes = [10 * (u % 2 + v % 2) + 10 for u, v in G.edges()]
+    nx.draw(G, ax=ax, arrows=True, arrowstyle=arrowstyles, arrowsize=arrowsizes)
+    arrows = [
+        f for f in ax.get_children() if isinstance(f, mpl.patches.FancyArrowPatch)
+    ]
+    for e, a in zip(G.edges(), arrows):
+        assert a.get_mutation_scale() == 10 * (e[0] % 2 + e[1] % 2) + 10
+        expected = (
+            mpl.patches.ArrowStyle.BracketB
+            if sum(e) % 2
+            else mpl.patches.ArrowStyle.CurveFilledB
+        )
+        assert isinstance(a.get_arrowstyle(), expected)
 
 
 def test_error_invalid_kwds():
@@ -525,6 +610,27 @@ def test_draw_edges_arrowsize(arrowsize):
     for fap, expected in zip(edges, arrowsize):
         assert isinstance(fap, mpl.patches.FancyArrowPatch)
         assert fap.get_mutation_scale() == expected
+
+
+@pytest.mark.parametrize("arrowstyle", ("-|>", ["-|>", "-[", "<|-|>"]))
+def test_draw_edges_arrowstyle(arrowstyle):
+    G = nx.DiGraph([(0, 1), (0, 2), (1, 2)])
+    pos = {0: (0, 0), 1: (0, 1), 2: (1, 0)}
+    edges = nx.draw_networkx_edges(G, pos=pos, arrowstyle=arrowstyle)
+
+    arrowstyle = (
+        itertools.repeat(arrowstyle) if isinstance(arrowstyle, str) else arrowstyle
+    )
+
+    arrow_objects = {
+        "-|>": mpl.patches.ArrowStyle.CurveFilledB,
+        "-[": mpl.patches.ArrowStyle.BracketB,
+        "<|-|>": mpl.patches.ArrowStyle.CurveFilledAB,
+    }
+
+    for fap, expected in zip(edges, arrowstyle):
+        assert isinstance(fap, mpl.patches.FancyArrowPatch)
+        assert isinstance(fap.get_arrowstyle(), arrow_objects[expected])
 
 
 def test_np_edgelist():
@@ -586,6 +692,53 @@ def test_draw_edges_min_source_target_margins(node_shape):
     assert padded_extent[1] < default_extent[1]
 
 
+# NOTE: parametrizing on marker to test both branches of internal
+# nx.draw_networkx_edges.to_marker_edge function
+@pytest.mark.parametrize("node_shape", ("o", "s"))
+def test_draw_edges_min_source_target_margins_individual(node_shape):
+    """Test that there is a wider gap between the node and the start of an
+    incident edge when min_source_margin is specified.
+
+    This test checks that the use of min_{source/target}_margin kwargs result
+    in shorter (more padding) between the edges and source and target nodes.
+    As a crude visual example, let 's' and 't' represent source and target
+    nodes, respectively:
+
+       Default:
+       s-----------------------------t
+
+       With margins:
+       s   -----------------------   t
+
+    """
+    # Create a single axis object to get consistent pixel coords across
+    # multiple draws
+    fig, ax = plt.subplots()
+    G = nx.DiGraph([(0, 1), (1, 2)])
+    pos = {0: (0, 0), 1: (1, 0), 2: (2, 0)}  # horizontal layout
+    # Get leftmost and rightmost points of the FancyArrowPatch object
+    # representing the edge between nodes 0 and 1 (in pixel coordinates)
+    default_patch = nx.draw_networkx_edges(G, pos, ax=ax, node_shape=node_shape)
+    default_extent = [d.get_extents().corners()[::2, 0] for d in default_patch]
+    # Now, do the same but with "padding" for the source and target via the
+    # min_{source/target}_margin kwargs
+    padded_patch = nx.draw_networkx_edges(
+        G,
+        pos,
+        ax=ax,
+        node_shape=node_shape,
+        min_source_margin=[98, 102],
+        min_target_margin=[98, 102],
+    )
+    padded_extent = [p.get_extents().corners()[::2, 0] for p in padded_patch]
+    for d, p in zip(default_extent, padded_extent):
+        # With padding, the left-most extent of the edge should be further to the
+        # right
+        assert p[0] > d[0]
+        # And the rightmost extent of the edge, further to the left
+        assert p[1] < d[1]
+
+
 def test_nonzero_selfloop_with_single_node():
     """Ensure that selfloop extent is non-zero when there is only one node."""
     # Create explicit axis object for test
@@ -601,6 +754,7 @@ def test_nonzero_selfloop_with_single_node():
     assert bbox.width > 0 and bbox.height > 0
     # Cleanup
     plt.delaxes(ax)
+    plt.close()
 
 
 def test_nonzero_selfloop_with_single_edge_in_edgelist():
@@ -620,6 +774,7 @@ def test_nonzero_selfloop_with_single_edge_in_edgelist():
     assert bbox.width > 0 and bbox.height > 0
     # Cleanup
     plt.delaxes(ax)
+    plt.close()
 
 
 def test_apply_alpha():
@@ -677,6 +832,7 @@ def test_draw_networkx_arrows_default_undirected(drawing_func):
     assert any(isinstance(c, mpl.collections.LineCollection) for c in ax.collections)
     assert not ax.patches
     plt.delaxes(ax)
+    plt.close()
 
 
 @pytest.mark.parametrize("drawing_func", (nx.draw, nx.draw_networkx))
@@ -691,6 +847,7 @@ def test_draw_networkx_arrows_default_directed(drawing_func):
     )
     assert ax.patches
     plt.delaxes(ax)
+    plt.close()
 
 
 def test_edgelist_kwarg_not_ignored():
@@ -701,21 +858,66 @@ def test_edgelist_kwarg_not_ignored():
     nx.draw(G, edgelist=[(0, 1), (1, 2)], ax=ax)  # Exclude self-loop from edgelist
     assert not ax.patches
     plt.delaxes(ax)
+    plt.close()
 
 
-def test_draw_networkx_edge_label_multiedge_exception():
-    """
-    draw_networkx_edge_labels should raise an informative error message when
-    the edge label includes keys
-    """
-    exception_msg = "draw_networkx_edge_labels does not support multiedges"
+@pytest.mark.parametrize(
+    ("G", "expected_n_edges"),
+    ([nx.DiGraph(), 2], [nx.MultiGraph(), 4], [nx.MultiDiGraph(), 4]),
+)
+def test_draw_networkx_edges_multiedge_connectionstyle(G, expected_n_edges):
+    """Draws edges correctly for 3 types of graphs and checks for valid length"""
+    for i, (u, v) in enumerate([(0, 1), (0, 1), (0, 1), (0, 2)]):
+        G.add_edge(u, v, weight=round(i / 3, 2))
+    pos = {n: (n, n) for n in G}
+    # Raises on insufficient connectionstyle length
+    for conn_style in [
+        "arc3,rad=0.1",
+        ["arc3,rad=0.1", "arc3,rad=0.1"],
+        ["arc3,rad=0.1", "arc3,rad=0.1", "arc3,rad=0.2"],
+    ]:
+        nx.draw_networkx_edges(G, pos, connectionstyle=conn_style)
+        arrows = nx.draw_networkx_edges(G, pos, connectionstyle=conn_style)
+        assert len(arrows) == expected_n_edges
+
+
+@pytest.mark.parametrize(
+    ("G", "expected_n_edges"),
+    ([nx.DiGraph(), 2], [nx.MultiGraph(), 4], [nx.MultiDiGraph(), 4]),
+)
+def test_draw_networkx_edge_labels_multiedge_connectionstyle(G, expected_n_edges):
+    """Draws labels correctly for 3 types of graphs and checks for valid length and class names"""
+    for i, (u, v) in enumerate([(0, 1), (0, 1), (0, 1), (0, 2)]):
+        G.add_edge(u, v, weight=round(i / 3, 2))
+    pos = {n: (n, n) for n in G}
+    # Raises on insufficient connectionstyle length
+    arrows = nx.draw_networkx_edges(
+        G, pos, connectionstyle=["arc3,rad=0.1", "arc3,rad=0.1", "arc3,rad=0.1"]
+    )
+    for conn_style in [
+        "arc3,rad=0.1",
+        ["arc3,rad=0.1", "arc3,rad=0.2"],
+        ["arc3,rad=0.1", "arc3,rad=0.1", "arc3,rad=0.1"],
+    ]:
+        text_items = nx.draw_networkx_edge_labels(G, pos, connectionstyle=conn_style)
+        assert len(text_items) == expected_n_edges
+        for ti in text_items.values():
+            assert ti.__class__.__name__ == "CurvedArrowText"
+
+
+def test_draw_networkx_edge_label_multiedge():
     G = nx.MultiGraph()
     G.add_edge(0, 1, weight=10)
     G.add_edge(0, 1, weight=20)
     edge_labels = nx.get_edge_attributes(G, "weight")  # Includes edge keys
     pos = {n: (n, n) for n in G}
-    with pytest.raises(nx.NetworkXError, match=exception_msg):
-        nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
+    text_items = nx.draw_networkx_edge_labels(
+        G,
+        pos,
+        edge_labels=edge_labels,
+        connectionstyle=["arc3,rad=0.1", "arc3,rad=0.2"],
+    )
+    assert len(text_items) == 2
 
 
 def test_draw_networkx_edge_label_empty_dict():
@@ -751,3 +953,76 @@ def test_draw_networkx_edges_undirected_selfloop_colors():
     for fap, clr, slp in zip(ax.patches, edge_colors[-3:], sl_points):
         assert fap.get_path().contains_point(slp)
         assert mpl.colors.same_color(fap.get_edgecolor(), clr)
+    plt.delaxes(ax)
+    plt.close()
+
+
+@pytest.mark.parametrize(
+    "fap_only_kwarg",  # Non-default values for kwargs that only apply to FAPs
+    (
+        {"arrowstyle": "-"},
+        {"arrowsize": 20},
+        {"connectionstyle": "arc3,rad=0.2"},
+        {"min_source_margin": 10},
+        {"min_target_margin": 10},
+    ),
+)
+def test_user_warnings_for_unused_edge_drawing_kwargs(fap_only_kwarg):
+    """Users should get a warning when they specify a non-default value for
+    one of the kwargs that applies only to edges drawn with FancyArrowPatches,
+    but FancyArrowPatches aren't being used under the hood."""
+    G = nx.path_graph(3)
+    pos = {n: (n, n) for n in G}
+    fig, ax = plt.subplots()
+    # By default, an undirected graph will use LineCollection to represent
+    # the edges
+    kwarg_name = list(fap_only_kwarg.keys())[0]
+    with pytest.warns(
+        UserWarning, match=f"\n\nThe {kwarg_name} keyword argument is not applicable"
+    ):
+        nx.draw_networkx_edges(G, pos, ax=ax, **fap_only_kwarg)
+    # FancyArrowPatches are always used when `arrows=True` is specified.
+    # Check that warnings are *not* raised in this case
+    with warnings.catch_warnings():
+        # Escalate warnings -> errors so tests fail if warnings are raised
+        warnings.simplefilter("error")
+        nx.draw_networkx_edges(G, pos, ax=ax, arrows=True, **fap_only_kwarg)
+
+    plt.delaxes(ax)
+    plt.close()
+
+
+@pytest.mark.parametrize("draw_fn", (nx.draw, nx.draw_circular))
+def test_no_warning_on_default_draw_arrowstyle(draw_fn):
+    # See gh-7284
+    fig, ax = plt.subplots()
+    G = nx.cycle_graph(5)
+    with warnings.catch_warnings(record=True) as w:
+        draw_fn(G, ax=ax)
+    assert len(w) == 0
+
+    plt.delaxes(ax)
+    plt.close()
+
+
+@pytest.mark.parametrize("hide_ticks", [False, True])
+@pytest.mark.parametrize(
+    "method",
+    [
+        nx.draw_networkx,
+        nx.draw_networkx_edge_labels,
+        nx.draw_networkx_edges,
+        nx.draw_networkx_labels,
+        nx.draw_networkx_nodes,
+    ],
+)
+def test_hide_ticks(method, hide_ticks):
+    G = nx.path_graph(3)
+    pos = {n: (n, n) for n in G.nodes}
+    _, ax = plt.subplots()
+    method(G, pos=pos, ax=ax, hide_ticks=hide_ticks)
+    for axis in [ax.xaxis, ax.yaxis]:
+        assert bool(axis.get_ticklabels()) != hide_ticks
+
+    plt.delaxes(ax)
+    plt.close()

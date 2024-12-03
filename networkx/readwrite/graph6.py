@@ -10,6 +10,7 @@ For more information, see the `graph6`_ homepage.
 .. _graph6: http://users.cecs.anu.edu.au/~bdm/data/formats.html
 
 """
+
 from itertools import islice
 
 import networkx as nx
@@ -43,7 +44,7 @@ def _generate_graph6_bytes(G, nodes, header):
     n = len(G)
     if n >= 2**36:
         raise ValueError(
-            "graph6 is only defined if number of nodes is less " "than 2 ** 36"
+            "graph6 is only defined if number of nodes is less than 2 ** 36"
         )
     if header:
         yield b">>graph6<<"
@@ -60,6 +61,7 @@ def _generate_graph6_bytes(G, nodes, header):
     yield b"\n"
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def from_graph6_bytes(bytes_in):
     """Read a simple undirected graph in graph6 format from bytes.
 
@@ -121,7 +123,7 @@ def from_graph6_bytes(bytes_in):
 
     G = nx.Graph()
     G.add_nodes_from(range(n))
-    for (i, j), b in zip([(i, j) for j in range(1, n) for i in range(j)], bits()):
+    for (i, j), b in zip(((i, j) for j in range(1, n) for i in range(j)), bits()):
         if b:
             G.add_edge(i, j)
 
@@ -183,6 +185,7 @@ def to_graph6_bytes(G, nodes=None, header=True):
 
 
 @open_file(0, mode="rb")
+@nx._dispatchable(graphs=None, returns_graph=True)
 def read_graph6(path):
     """Read simple undirected graphs in graph6 format from path.
 

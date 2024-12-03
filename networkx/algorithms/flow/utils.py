@@ -72,6 +72,7 @@ class GlobalRelabelThreshold:
         self._work = 0
 
 
+@nx._dispatchable(edge_attrs={"capacity": float("inf")}, returns_graph=True)
 def build_residual_network(G, capacity):
     """Build a residual network and initialize a zero flow.
 
@@ -101,6 +102,7 @@ def build_residual_network(G, capacity):
         raise nx.NetworkXError("MultiGraph and MultiDiGraph not supported (yet).")
 
     R = nx.DiGraph()
+    R.__networkx_cache__ = None  # Disable caching
     R.add_nodes_from(G)
 
     inf = float("inf")
@@ -153,6 +155,11 @@ def build_residual_network(G, capacity):
     return R
 
 
+@nx._dispatchable(
+    graphs="R",
+    preserve_edge_attrs={"R": {"capacity": float("inf")}},
+    preserve_graph_attrs=True,
+)
 def detect_unboundedness(R, s, t):
     """Detect an infinite-capacity s-t path in R."""
     q = deque([s])
@@ -170,6 +177,7 @@ def detect_unboundedness(R, s, t):
                 q.append(v)
 
 
+@nx._dispatchable(graphs={"G": 0, "R": 1}, preserve_edge_attrs={"R": {"flow": None}})
 def build_flow_dict(G, R):
     """Build a flow dictionary from a residual network."""
     flow_dict = {}

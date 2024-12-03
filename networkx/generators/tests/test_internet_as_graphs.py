@@ -27,10 +27,7 @@ class TestInternetASTopology:
             elif cls.G.nodes[i]["type"] == "CP":
                 cls.CP.append(i)
             else:
-                raise ValueError(
-                    "Inconsistent data in the graph\
-                        node attributes"
-                )
+                raise ValueError("Inconsistent data in the graph node attributes")
             cls.set_customers(i)
             cls.set_providers(i)
 
@@ -48,8 +45,7 @@ class TestInternetASTopology:
                         cls.customers[i].add(j)
                     elif i != customer:
                         raise ValueError(
-                            "Inconsistent data in the graph\
-                                edge attributes"
+                            "Inconsistent data in the graph edge attributes"
                         )
 
     @classmethod
@@ -66,8 +62,7 @@ class TestInternetASTopology:
                         cls.providers[i].add(j)
                     elif j != customer:
                         raise ValueError(
-                            "Inconsistent data in the graph\
-                                edge attributes"
+                            "Inconsistent data in the graph edge attributes"
                         )
 
     def test_wrong_input(self):
@@ -136,10 +131,7 @@ class TestInternetASTopology:
                 elif j == cust:
                     prov = i
                 else:
-                    raise ValueError(
-                        "Inconsistent data in the graph edge\
-                            attributes"
-                    )
+                    raise ValueError("Inconsistent data in the graph edge attributes")
                 if cust in self.M:
                     d_m += 1
                     if self.G.nodes[prov]["type"] == "T":
@@ -153,10 +145,7 @@ class TestInternetASTopology:
                     if self.G.nodes[prov]["type"] == "T":
                         t_cp += 1
                 else:
-                    raise ValueError(
-                        "Inconsistent data in the graph edge\
-                            attributes"
-                    )
+                    raise ValueError("Inconsistent data in the graph edge attributes")
             elif e["type"] == "peer":
                 if self.G.nodes[i]["type"] == "M" and self.G.nodes[j]["type"] == "M":
                     p_m_m += 1
@@ -170,10 +159,7 @@ class TestInternetASTopology:
                 ):
                     p_cp_m += 1
             else:
-                raise ValueError(
-                    "Unexpected data in the graph edge\
-                        attributes"
-                )
+                raise ValueError("Unexpected data in the graph edge attributes")
 
         assert d_m / len(self.M) == approx((2 + (2.5 * self.n) / 10000), abs=1e-0)
         assert d_cp / len(self.CP) == approx((2 + (1.5 * self.n) / 10000), abs=1e-0)

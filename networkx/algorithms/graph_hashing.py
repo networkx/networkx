@@ -7,6 +7,8 @@ For now, only Weisfeiler-Lehman hashing is implemented.
 from collections import Counter, defaultdict
 from hashlib import blake2b
 
+import networkx as nx
+
 __all__ = ["weisfeiler_lehman_graph_hash", "weisfeiler_lehman_subgraph_hashes"]
 
 
@@ -35,12 +37,14 @@ def _neighborhood_aggregate(G, node, node_labels, edge_attr=None):
     return node_labels[node] + "".join(sorted(label_list))
 
 
+@nx.utils.not_implemented_for("multigraph")
+@nx._dispatchable(edge_attrs={"edge_attr": None}, node_attrs="node_attr")
 def weisfeiler_lehman_graph_hash(
     G, edge_attr=None, node_attr=None, iterations=3, digest_size=16
 ):
     """Return Weisfeiler Lehman (WL) graph hash.
 
-    The function iteratively aggregates and hashes neighbourhoods of each node.
+    The function iteratively aggregates and hashes neighborhoods of each node.
     After each node's neighbors are hashed to obtain updated node labels,
     a hashed histogram of resulting labels is returned as the final hash.
 
@@ -53,19 +57,19 @@ def weisfeiler_lehman_graph_hash(
 
     Parameters
     ----------
-    G: graph
+    G : graph
         The graph to be hashed.
         Can have node and/or edge attributes. Can also have no attributes.
-    edge_attr: string, default=None
+    edge_attr : string, optional (default=None)
         The key in edge attribute dictionary to be used for hashing.
         If None, edge labels are ignored.
-    node_attr: string, default=None
+    node_attr: string, optional (default=None)
         The key in node attribute dictionary to be used for hashing.
         If None, and no edge_attr given, use the degrees of the nodes as labels.
-    iterations: int, default=3
+    iterations: int, optional (default=3)
         Number of neighbor aggregations to perform.
         Should be larger for larger graphs.
-    digest_size: int, default=16
+    digest_size: int, optional (default=16)
         Size (in bits) of blake2b hash digest to use for hashing node labels.
 
     Returns
@@ -157,35 +161,48 @@ def weisfeiler_lehman_graph_hash(
     return _hash_label(str(tuple(subgraph_hash_counts)), digest_size)
 
 
+@nx.utils.not_implemented_for("multigraph")
+@nx._dispatchable(edge_attrs={"edge_attr": None}, node_attrs="node_attr")
 def weisfeiler_lehman_subgraph_hashes(
-    G, edge_attr=None, node_attr=None, iterations=3, digest_size=16
+    G,
+    edge_attr=None,
+    node_attr=None,
+    iterations=3,
+    digest_size=16,
+    include_initial_labels=False,
 ):
     """
     Return a dictionary of subgraph hashes by node.
 
-    The dictionary is keyed by node to a list of hashes in increasingly
-    sized induced subgraphs containing the nodes within 2*k edges
-    of the key node for increasing integer k until all nodes are included.
+    Dictionary keys are nodes in `G`, and values are a list of hashes.
+    Each hash corresponds to a subgraph rooted at a given node u in `G`.
+    Lists of subgraph hashes are sorted in increasing order of depth from
+    their root node, with the hash at index i corresponding to a subgraph
+    of nodes at most i edges distance from u. Thus, each list will contain
+    `iterations` elements - a hash for a subgraph at each depth. If
+    `include_initial_labels` is set to `True`, each list will additionally
+    have contain a hash of the initial node label (or equivalently a
+    subgraph of depth 0) prepended, totalling ``iterations + 1`` elements.
 
-    The function iteratively aggregates and hashes neighbourhoods of each node.
+    The function iteratively aggregates and hashes neighborhoods of each node.
     This is achieved for each step by replacing for each node its label from
     the previous iteration with its hashed 1-hop neighborhood aggregate.
     The new node label is then appended to a list of node labels for each
     node.
 
-    To aggregate neighborhoods at each step for a node $n$, all labels of
-    nodes adjacent to $n$ are concatenated. If the `edge_attr` parameter is set,
+    To aggregate neighborhoods for a node $u$ at each step, all labels of
+    nodes adjacent to $u$ are concatenated. If the `edge_attr` parameter is set,
     labels for each neighboring node are prefixed with the value of this attribute
-    along the connecting edge from this neighbor to node $n$. The resulting string
+    along the connecting edge from this neighbor to node $u$. The resulting string
     is then hashed to compress this information into a fixed digest size.
 
-    Thus, at the $i$th iteration nodes within $2i$ distance influence any given
-    hashed node label. We can therefore say that at depth $i$ for node $n$
-    we have a hash for a subgraph induced by the $2i$-hop neighborhood of $n$.
+    Thus, at the $i$-th iteration, nodes within $i$ hops influence any given
+    hashed node label. We can therefore say that at depth $i$ for node $u$
+    we have a hash for a subgraph induced by the $i$-hop neighborhood of $u$.
 
-    Can be used to to create general Weisfeiler-Lehman graph kernels, or
-    generate features for graphs or nodes, for example to generate 'words' in a
-    graph as seen in the 'graph2vec' algorithm.
+    The output can be used to create general Weisfeiler-Lehman graph kernels,
+    or generate features for graphs or nodes - for example to generate 'words' in
+    a graph as seen in the 'graph2vec' algorithm.
     See [1]_ & [2]_ respectively for details.
 
     Hashes are identical for isomorphic subgraphs and there exist strong
@@ -198,21 +215,25 @@ def weisfeiler_lehman_subgraph_hashes(
 
     Parameters
     ----------
-    G: graph
+    G : graph
         The graph to be hashed.
         Can have node and/or edge attributes. Can also have no attributes.
-    edge_attr: string, default=None
+    edge_attr : string, optional (default=None)
         The key in edge attribute dictionary to be used for hashing.
         If None, edge labels are ignored.
-    node_attr: string, default=None
+    node_attr : string, optional (default=None)
         The key in node attribute dictionary to be used for hashing.
         If None, and no edge_attr given, use the degrees of the nodes as labels.
-    iterations: int, default=3
+        If None, and edge_attr is given, each node starts with an identical label.
+    iterations : int, optional (default=3)
         Number of neighbor aggregations to perform.
         Should be larger for larger graphs.
-    digest_size: int, default=16
+    digest_size : int, optional (default=16)
         Size (in bits) of blake2b hash digest to use for hashing node labels.
-        The default size is 16 bits
+        The default size is 16 bits.
+    include_initial_labels : bool, optional (default=False)
+        If True, include the hashed initial node label as the first subgraph
+        hash for each node.
 
     Returns
     -------
@@ -225,15 +246,15 @@ def weisfeiler_lehman_subgraph_hashes(
     Finding similar nodes in different graphs:
 
     >>> G1 = nx.Graph()
-    >>> G1.add_edges_from([
-    ...     (1, 2), (2, 3), (2, 4), (3, 5), (4, 6), (5, 7), (6, 7)
-    ... ])
+    >>> G1.add_edges_from([(1, 2), (2, 3), (2, 4), (3, 5), (4, 6), (5, 7), (6, 7)])
     >>> G2 = nx.Graph()
-    >>> G2.add_edges_from([
-    ...     (1, 3), (2, 3), (1, 6), (1, 5), (4, 6)
-    ... ])
-    >>> g1_hashes = nx.weisfeiler_lehman_subgraph_hashes(G1, iterations=3, digest_size=8)
-    >>> g2_hashes = nx.weisfeiler_lehman_subgraph_hashes(G2, iterations=3, digest_size=8)
+    >>> G2.add_edges_from([(1, 3), (2, 3), (1, 6), (1, 5), (4, 6)])
+    >>> g1_hashes = nx.weisfeiler_lehman_subgraph_hashes(
+    ...     G1, iterations=3, digest_size=8
+    ... )
+    >>> g2_hashes = nx.weisfeiler_lehman_subgraph_hashes(
+    ...     G2, iterations=3, digest_size=8
+    ... )
 
     Even though G1 and G2 are not isomorphic (they have different numbers of edges),
     the hash sequence of depth 3 for node 1 in G1 and node 5 in G2 are similar:
@@ -244,12 +265,10 @@ def weisfeiler_lehman_subgraph_hashes(
     ['a93b64973cfc8897', 'db1b43ae35a1878f', '1716d2a4012fa4bc']
 
     The first 2 WL subgraph hashes match. From this we can conclude that it's very
-    likely the neighborhood of 4 hops around these nodes are isomorphic: each
-    iteration aggregates 1-hop neighbourhoods meaning hashes at depth $n$ are influenced
-    by every node within $2n$ hops.
+    likely the neighborhood of 2 hops around these nodes are isomorphic.
 
-    However the neighborhood of 6 hops is no longer isomorphic since their 3rd hash does
-    not match.
+    However the 3-hop neighborhoods of ``G1`` and ``G2`` are not isomorphic since the
+    3rd hashes in the lists above are not equal.
 
     These nodes may be candidates to be classified together since their local topology
     is similar.
@@ -294,8 +313,13 @@ def weisfeiler_lehman_subgraph_hashes(
         return new_labels
 
     node_labels = _init_node_labels(G, edge_attr, node_attr)
+    if include_initial_labels:
+        node_subgraph_hashes = {
+            k: [_hash_label(v, digest_size)] for k, v in node_labels.items()
+        }
+    else:
+        node_subgraph_hashes = defaultdict(list)
 
-    node_subgraph_hashes = defaultdict(list)
     for _ in range(iterations):
         node_labels = weisfeiler_lehman_step(
             G, node_labels, node_subgraph_hashes, edge_attr

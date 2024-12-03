@@ -1,7 +1,9 @@
 """Betweenness centrality measures for subsets of nodes."""
-import warnings
 
-from networkx.algorithms.centrality.betweenness import _add_edge_keys
+import networkx as nx
+from networkx.algorithms.centrality.betweenness import (
+    _add_edge_keys,
+)
 from networkx.algorithms.centrality.betweenness import (
     _single_source_dijkstra_path_basic as dijkstra,
 )
@@ -15,6 +17,7 @@ __all__ = [
 ]
 
 
+@nx._dispatchable(edge_attrs="weight")
 def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=None):
     r"""Compute betweenness centrality for a subset of nodes.
 
@@ -112,6 +115,7 @@ def betweenness_centrality_subset(G, sources, targets, normalized=False, weight=
     return b
 
 
+@nx._dispatchable(edge_attrs="weight")
 def edge_betweenness_centrality_subset(
     G, sources, targets, normalized=False, weight=None
 ):

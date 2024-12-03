@@ -65,3 +65,11 @@ Cuthill-Mckee Ordering
 
    cuthill_mckee_ordering
    reverse_cuthill_mckee_ordering
+
+Mapped Queue
+------------
+.. automodule:: networkx.utils.mapped_queue
+.. autosummary::
+   :toctree: generated/
+
+   MappedQueue

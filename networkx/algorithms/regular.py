@@ -1,10 +1,12 @@
 """Functions for computing and verifying regular graphs."""
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 
 __all__ = ["is_regular", "is_k_regular", "k_factor"]
 
 
+@nx._dispatchable
 def is_regular(G):
     """Determines whether the graph ``G`` is a regular graph.
 
@@ -28,6 +30,8 @@ def is_regular(G):
     True
 
     """
+    if len(G) == 0:
+        raise nx.NetworkXPointlessConcept("Graph has no nodes.")
     n1 = nx.utils.arbitrary_element(G)
     if not G.is_directed():
         d1 = G.degree(n1)
@@ -41,6 +45,7 @@ def is_regular(G):
 
 
 @not_implemented_for("directed")
+@nx._dispatchable
 def is_k_regular(G, k):
     """Determines whether the graph ``G`` is a k-regular graph.
 
@@ -67,6 +72,7 @@ def is_k_regular(G, k):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable(preserve_edge_attrs=True, returns_graph=True)
 def k_factor(G, k, matching_weight="weight"):
     """Compute a k-factor of G
 
@@ -120,7 +126,7 @@ def k_factor(G, k, matching_weight="weight"):
             adj_view = self.g[self.original]
             neighbors = list(adj_view.keys())
             edge_attrs = list(adj_view.values())
-            for (outer, neighbor, edge_attrs) in zip(
+            for outer, neighbor, edge_attrs in zip(
                 self.outer_vertices, neighbors, edge_attrs
             ):
                 self.g.add_edge(outer, neighbor, **edge_attrs)
@@ -153,7 +159,7 @@ def k_factor(G, k, matching_weight="weight"):
 
         def replace_node(self):
             adj_view = self.g[self.original]
-            for (outer, inner, (neighbor, edge_attrs)) in zip(
+            for outer, inner, (neighbor, edge_attrs) in zip(
                 self.outer_vertices, self.inner_vertices, list(adj_view.items())
             ):
                 self.g.add_edge(outer, inner)

@@ -60,6 +60,31 @@ class TestDagLongestPath:
         # this will raise NotImplementedError when nodes need to be ordered
         nx.dag_longest_path(G)
 
+    def test_multigraph_unweighted(self):
+        edges = [(1, 2), (2, 3), (2, 3), (3, 4), (4, 5), (1, 3), (1, 5), (3, 5)]
+        G = nx.MultiDiGraph(edges)
+        assert nx.dag_longest_path(G) == [1, 2, 3, 4, 5]
+
+    def test_multigraph_weighted(self):
+        G = nx.MultiDiGraph()
+        edges = [
+            (1, 2, 2),
+            (2, 3, 2),
+            (1, 3, 1),
+            (1, 3, 5),
+            (1, 3, 2),
+        ]
+        G.add_weighted_edges_from(edges)
+        assert nx.dag_longest_path(G) == [1, 3]
+
+    def test_multigraph_weighted_default_weight(self):
+        G = nx.MultiDiGraph([(1, 2), (2, 3)])  # Unweighted edges
+        G.add_weighted_edges_from([(1, 3, 1), (1, 3, 5), (1, 3, 2)])
+
+        # Default value for default weight is 1
+        assert nx.dag_longest_path(G) == [1, 3]
+        assert nx.dag_longest_path(G, default_weight=3) == [1, 2, 3]
+
 
 class TestDagLongestPathLength:
     """Unit tests for computing the length of a longest path in a
@@ -88,6 +113,23 @@ class TestDagLongestPathLength:
     def test_weighted(self):
         edges = [(1, 2, -5), (2, 3, 1), (3, 4, 1), (4, 5, 0), (3, 5, 4), (1, 6, 2)]
         G = nx.DiGraph()
+        G.add_weighted_edges_from(edges)
+        assert nx.dag_longest_path_length(G) == 5
+
+    def test_multigraph_unweighted(self):
+        edges = [(1, 2), (2, 3), (2, 3), (3, 4), (4, 5), (1, 3), (1, 5), (3, 5)]
+        G = nx.MultiDiGraph(edges)
+        assert nx.dag_longest_path_length(G) == 4
+
+    def test_multigraph_weighted(self):
+        G = nx.MultiDiGraph()
+        edges = [
+            (1, 2, 2),
+            (2, 3, 2),
+            (1, 3, 1),
+            (1, 3, 5),
+            (1, 3, 2),
+        ]
         G.add_weighted_edges_from(edges)
         assert nx.dag_longest_path_length(G) == 5
 
@@ -232,13 +274,13 @@ class TestDAG:
             # convert to list to execute generator
             list(nx.all_topological_sorts(G))
 
-        def not_implemted_2():
+        def not_implemented_2():
             G = nx.MultiGraph([(1, 2), (1, 2), (2, 3)])
             list(nx.all_topological_sorts(G))
 
         pytest.raises(nx.NetworkXUnfeasible, unfeasible)
         pytest.raises(nx.NetworkXNotImplemented, not_implemented)
-        pytest.raises(nx.NetworkXNotImplemented, not_implemted_2)
+        pytest.raises(nx.NetworkXNotImplemented, not_implemented_2)
 
     def test_all_topological_sorts_4(self):
         DG = nx.DiGraph()
@@ -576,9 +618,15 @@ def test_is_aperiodic_selfloop():
     assert nx.is_aperiodic(G)
 
 
-def test_is_aperiodic_raise():
+def test_is_aperiodic_undirected_raises():
     G = nx.Graph()
     pytest.raises(nx.NetworkXError, nx.is_aperiodic, G)
+
+
+def test_is_aperiodic_empty_graph():
+    G = nx.empty_graph(create_using=nx.DiGraph)
+    with pytest.raises(nx.NetworkXPointlessConcept, match="Graph has no nodes."):
+        nx.is_aperiodic(G)
 
 
 def test_is_aperiodic_bipartite():
@@ -704,7 +752,7 @@ class TestDagToBranching:
 
 
 def test_ancestors_descendants_undirected():
-    """Regression test to ensure anscestors and descendants work as expected on
+    """Regression test to ensure ancestors and descendants work as expected on
     undirected graphs."""
     G = nx.path_graph(5)
     nx.ancestors(G, 2) == nx.descendants(G, 2) == {0, 1, 3, 4}
@@ -712,7 +760,8 @@ def test_ancestors_descendants_undirected():
 
 def test_compute_v_structures_raise():
     G = nx.Graph()
-    pytest.raises(nx.NetworkXNotImplemented, nx.compute_v_structures, G)
+    with pytest.raises(nx.NetworkXNotImplemented, match="for undirected type"):
+        nx.compute_v_structures(G)
 
 
 def test_compute_v_structures():
@@ -727,3 +776,60 @@ def test_compute_v_structures():
     G = nx.DiGraph(edges)
     v_structs = set(nx.compute_v_structures(G))
     assert len(v_structs) == 2
+
+
+def test_compute_v_structures_deprecated():
+    G = nx.DiGraph()
+    with pytest.deprecated_call():
+        nx.compute_v_structures(G)
+
+
+def test_v_structures_raise():
+    G = nx.Graph()
+    with pytest.raises(nx.NetworkXNotImplemented, match="for undirected type"):
+        nx.dag.v_structures(G)
+
+
+@pytest.mark.parametrize(
+    ("edgelist", "expected"),
+    (
+        (
+            [(0, 1), (0, 2), (3, 2)],
+            {(0, 2, 3)},
+        ),
+        (
+            [("A", "B"), ("C", "B"), ("D", "G"), ("D", "E"), ("G", "E")],
+            {("A", "B", "C")},
+        ),
+        ([(0, 1), (2, 1), (0, 2)], set()),  # adjacent parents case: see gh-7385
+    ),
+)
+def test_v_structures(edgelist, expected):
+    G = nx.DiGraph(edgelist)
+    v_structs = set(nx.dag.v_structures(G))
+    assert v_structs == expected
+
+
+def test_colliders_raise():
+    G = nx.Graph()
+    with pytest.raises(nx.NetworkXNotImplemented, match="for undirected type"):
+        nx.dag.colliders(G)
+
+
+@pytest.mark.parametrize(
+    ("edgelist", "expected"),
+    (
+        (
+            [(0, 1), (0, 2), (3, 2)],
+            {(0, 2, 3)},
+        ),
+        (
+            [("A", "B"), ("C", "B"), ("D", "G"), ("D", "E"), ("G", "E")],
+            {("A", "B", "C"), ("D", "E", "G")},
+        ),
+    ),
+)
+def test_colliders(edgelist, expected):
+    G = nx.DiGraph(edgelist)
+    colliders = set(nx.dag.colliders(G))
+    assert colliders == expected

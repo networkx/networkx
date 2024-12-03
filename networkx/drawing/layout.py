@@ -15,12 +15,14 @@ For the other layout routines, the extent is
 Warning: Most layout routines have only been tested in 2-dimensions.
 
 """
+
 import networkx as nx
 from networkx.utils import np_random_state
 
 __all__ = [
     "bipartite_layout",
     "circular_layout",
+    "forceatlas2_layout",
     "kamada_kawai_layout",
     "random_layout",
     "rescale_layout",
@@ -32,6 +34,7 @@ __all__ = [
     "fruchterman_reingold_layout",
     "spiral_layout",
     "multipartite_layout",
+    "bfs_layout",
     "arf_layout",
 ]
 
@@ -323,9 +326,9 @@ def bipartite_layout(
     width = aspect_ratio * height
     offset = (width / 2, height / 2)
 
-    top = set(nodes)
-    bottom = set(G) - top
-    nodes = list(top) + list(bottom)
+    top = dict.fromkeys(nodes)
+    bottom = [v for v in G if v not in top]
+    nodes = list(top) + bottom
 
     left_xs = np.repeat(0, len(top))
     right_xs = np.repeat(width, len(bottom))
@@ -418,6 +421,7 @@ def spring_layout(
         Dimension of layout.
 
     seed : int, RandomState instance or None  optional (default=None)
+        Used only for the initial positions in the algorithm.
         Set the random state for deterministic node layouts.
         If int, `seed` is the seed used by the random number generator,
         if numpy.random.RandomState instance, `seed` is the random
@@ -571,7 +575,6 @@ def _sparse_fruchterman_reingold(
     # Sparse version
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     try:
         nnodes, _ = A.shape
@@ -704,7 +707,7 @@ def kamada_kawai_layout(
         elif dim == 2:
             pos = circular_layout(G, dim=dim)
         else:
-            pos = {n: pt for n, pt in zip(G, np.linspace(0, 1, len(G)))}
+            pos = dict(zip(G, np.linspace(0, 1, len(G))))
     pos_arr = np.array([pos[n] for n in G])
 
     pos = _kamada_kawai_solve(dist_mtx, pos_arr, dim)
@@ -720,7 +723,6 @@ def _kamada_kawai_solve(dist_mtx, pos_arr, dim):
 
     import numpy as np
     import scipy as sp
-    import scipy.optimize  # call as sp.optimize
 
     meanwt = 1e-3
     costargs = (np, 1 / (dist_mtx + np.eye(dist_mtx.shape[0]) * 1e-3), meanwt, dim)
@@ -867,8 +869,6 @@ def _sparse_spectral(A, dim=2):
     # Could use multilevel methods here, see Koren "On spectral graph drawing"
     import numpy as np
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
-    import scipy.sparse.linalg  # call as sp.sparse.linalg
 
     try:
         nnodes, _ = A.shape
@@ -941,7 +941,7 @@ def planar_layout(G, scale=1, center=None, dim=2):
             raise nx.NetworkXException("G is not planar.")
     pos = nx.combinatorial_embedding_to_pos(embedding)
     node_list = list(embedding)
-    pos = np.row_stack([pos[x] for x in node_list])
+    pos = np.vstack([pos[x] for x in node_list])
     pos = pos.astype(np.float64)
     pos = rescale_layout(pos, scale=scale) + center
     return dict(zip(node_list, pos))
@@ -1034,8 +1034,9 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     G : NetworkX graph or list of nodes
         A position will be assigned to every node in G.
 
-    subset_key : string (default='subset')
-        Key of node data to be used as layer subset.
+    subset_key : string or dict (default='subset')
+        If a string, the key of node data in G that holds the node subset.
+        If a dict, keyed by layer number to the nodes in that layer/subset.
 
     align : string (default='vertical')
         The alignment of nodes. Vertical or horizontal.
@@ -1056,6 +1057,12 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     >>> G = nx.complete_multipartite_graph(28, 16, 10)
     >>> pos = nx.multipartite_layout(G)
 
+    or use a dict to provide the layers of the layout
+
+    >>> G = nx.Graph([(0, 1), (1, 2), (1, 3), (3, 4)])
+    >>> layers = {"a": [0], "b": [1], "c": [2, 3], "d": [4]}
+    >>> pos = nx.multipartite_layout(G, subset_key=layers)
+
     Notes
     -----
     This algorithm currently only works in two dimensions and does not
@@ -1075,25 +1082,31 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     if len(G) == 0:
         return {}
 
-    layers = {}
-    for v, data in G.nodes(data=True):
-        try:
-            layer = data[subset_key]
-        except KeyError:
-            msg = "all nodes must have subset_key (default='subset') as data"
-            raise ValueError(msg)
-        layers[layer] = [v] + layers.get(layer, [])
+    try:
+        # check if subset_key is dict-like
+        if len(G) != sum(len(nodes) for nodes in subset_key.values()):
+            raise nx.NetworkXError(
+                "all nodes must be in one subset of `subset_key` dict"
+            )
+    except AttributeError:
+        # subset_key is not a dict, hence a string
+        node_to_subset = nx.get_node_attributes(G, subset_key)
+        if len(node_to_subset) != len(G):
+            raise nx.NetworkXError(
+                f"all nodes need a subset_key attribute: {subset_key}"
+            )
+        subset_key = nx.utils.groups(node_to_subset)
 
     # Sort by layer, if possible
     try:
-        layers = sorted(layers.items())
+        layers = dict(sorted(subset_key.items()))
     except TypeError:
-        layers = list(layers.items())
+        layers = subset_key
 
     pos = None
     nodes = []
     width = len(layers)
-    for i, (_, layer) in enumerate(layers):
+    for i, layer in enumerate(layers.values()):
         height = len(layer)
         xs = np.repeat(i, height)
         ys = np.arange(0, height, dtype=float)
@@ -1111,6 +1124,7 @@ def multipartite_layout(G, subset_key="subset", align="vertical", scale=1, cente
     return pos
 
 
+@np_random_state("seed")
 def arf_layout(
     G,
     pos=None,
@@ -1119,6 +1133,8 @@ def arf_layout(
     etol=1e-6,
     dt=1e-3,
     max_iter=1000,
+    *,
+    seed=None,
 ):
     """Arf layout for networkx
 
@@ -1128,7 +1144,7 @@ def arf_layout(
     strong forcing between nodes. Second, it utilizes the
     layout space more effectively by preventing large gaps
     that spring layout tends to create. Lastly, the arf
-    layout represents symmmetries in the layout better than
+    layout represents symmetries in the layout better than
     the default spring layout.
 
     Parameters
@@ -1143,15 +1159,22 @@ def arf_layout(
     a : float
         Strength of springs between connected nodes. Should be larger than 1. The greater a, the clearer the separation ofunconnected sub clusters.
     etol : float
-        Graduent sum of spring forces must be larger than `etol` before succesful termination.
+        Gradient sum of spring forces must be larger than `etol` before successful termination.
     dt : float
         Time step for force differential equation simulations.
     max_iter : int
         Max iterations before termination of the algorithm.
+    seed : int, RandomState instance or None  optional (default=None)
+        Set the random state for deterministic node layouts.
+        If int, `seed` is the seed used by the random number generator,
+        if numpy.random.RandomState instance, `seed` is the random
+        number generator,
+        if None, the random number generator is the RandomState instance used
+        by numpy.random.
 
     References
     .. [1] "Self-Organization Applied to Dynamic Network Layout", M. Geipel,
-            International Jounral of Modern Physics C, 2007, Vol 18, No 10, pp. 1537-1549.
+            International Journal of Modern Physics C, 2007, Vol 18, No 10, pp. 1537-1549.
             https://doi.org/10.1142/S0129183107011558 https://arxiv.org/abs/0704.1748
 
     Returns
@@ -1173,7 +1196,7 @@ def arf_layout(
         msg = "The parameter a should be larger than 1"
         raise ValueError(msg)
 
-    pos_tmp = nx.random_layout(G)
+    pos_tmp = nx.random_layout(G, seed=seed)
     if pos is None:
         pos = pos_tmp
     else:
@@ -1220,7 +1243,266 @@ def arf_layout(
         if n_iter > max_iter:
             break
         n_iter += 1
-    return {node: pi for node, pi in zip(G.nodes(), p)}
+    return dict(zip(G.nodes(), p))
+
+
+@np_random_state("seed")
+def forceatlas2_layout(
+    G,
+    pos=None,
+    *,
+    max_iter=100,
+    jitter_tolerance=1.0,
+    scaling_ratio=2.0,
+    gravity=1.0,
+    distributed_action=False,
+    strong_gravity=False,
+    node_mass=None,
+    node_size=None,
+    weight=None,
+    dissuade_hubs=False,
+    linlog=False,
+    seed=None,
+    dim=2,
+):
+    """Position nodes using the ForceAtlas2 force-directed layout algorithm.
+
+    This function applies the ForceAtlas2 layout algorithm [1]_ to a NetworkX graph,
+    positioning the nodes in a way that visually represents the structure of the graph.
+    The algorithm uses physical simulation to minimize the energy of the system,
+    resulting in a more readable layout.
+
+    Parameters
+    ----------
+    G : nx.Graph
+        A NetworkX graph to be laid out.
+    pos : dict or None, optional
+        Initial positions of the nodes. If None, random initial positions are used.
+    max_iter : int (default: 100)
+        Number of iterations for the layout optimization.
+    jitter_tolerance : float (default: 1.0)
+        Controls the tolerance for adjusting the speed of layout generation.
+    scaling_ratio : float (default: 2.0)
+        Determines the scaling of attraction and repulsion forces.
+    distributed_attraction : bool (default: False)
+        Distributes the attraction force evenly among nodes.
+    strong_gravity : bool (default: False)
+        Applies a strong gravitational pull towards the center.
+    node_mass : dict or None, optional
+        Maps nodes to their masses, influencing the attraction to other nodes.
+    node_size : dict or None, optional
+        Maps nodes to their sizes, preventing crowding by creating a halo effect.
+    dissuade_hubs : bool (default: False)
+        Prevents the clustering of hub nodes.
+    linlog : bool (default: False)
+        Uses logarithmic attraction instead of linear.
+    seed : int, RandomState instance or None  optional (default=None)
+        Used only for the initial positions in the algorithm.
+        Set the random state for deterministic node layouts.
+        If int, `seed` is the seed used by the random number generator,
+        if numpy.random.RandomState instance, `seed` is the random
+        number generator,
+        if None, the random number generator is the RandomState instance used
+        by numpy.random.
+    dim : int (default: 2)
+        Sets the dimensions for the layout. Ignored if `pos` is provided.
+
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> G = nx.florentine_families_graph()
+    >>> pos = nx.forceatlas2_layout(G)
+    >>> nx.draw(G, pos=pos)
+
+    References
+    ----------
+    .. [1] Jacomy, M., Venturini, T., Heymann, S., & Bastian, M. (2014).
+           ForceAtlas2, a continuous graph layout algorithm for handy network
+           visualization designed for the Gephi software. PloS one, 9(6), e98679.
+           https://doi.org/10.1371/journal.pone.0098679
+    """
+    import numpy as np
+
+    if len(G) == 0:
+        return {}
+    # parse optional pos positions
+    if pos is None:
+        pos = nx.random_layout(G, dim=dim, seed=seed)
+        pos_arr = np.array(list(pos.values()))
+    else:
+        # set default node interval within the initial pos values
+        pos_init = np.array(list(pos.values()))
+        max_pos = pos_init.max(axis=0)
+        min_pos = pos_init.min(axis=0)
+        dim = max_pos.size
+        pos_arr = min_pos + seed.rand(len(G), dim) * (max_pos - min_pos)
+        for idx, node in enumerate(G):
+            if node in pos:
+                pos_arr[idx] = pos[node].copy()
+
+    mass = np.zeros(len(G))
+    size = np.zeros(len(G))
+
+    # Only adjust for size when the users specifies size other than default (1)
+    adjust_sizes = False
+    if node_size is None:
+        node_size = {}
+    else:
+        adjust_sizes = True
+
+    if node_mass is None:
+        node_mass = {}
+
+    for idx, node in enumerate(G):
+        mass[idx] = node_mass.get(node, G.degree(node) + 1)
+        size[idx] = node_size.get(node, 1)
+
+    n = len(G)
+    gravities = np.zeros((n, dim))
+    attraction = np.zeros((n, dim))
+    repulsion = np.zeros((n, dim))
+    A = nx.to_numpy_array(G, weight=weight)
+
+    def estimate_factor(n, swing, traction, speed, speed_efficiency, jitter_tolerance):
+        """Computes the scaling factor for the force in the ForceAtlas2 layout algorithm.
+
+        This   helper  function   adjusts   the  speed   and
+        efficiency  of the  layout generation  based on  the
+        current state of  the system, such as  the number of
+        nodes, current swing, and traction forces.
+
+        Parameters
+        ----------
+        n : int
+            Number of nodes in the graph.
+        swing : float
+            The current swing, representing the oscillation of the nodes.
+        traction : float
+            The current traction force, representing the attraction between nodes.
+        speed : float
+            The current speed of the layout generation.
+        speed_efficiency : float
+            The efficiency of the current speed, influencing how fast the layout converges.
+        jitter_tolerance : float
+            The tolerance for jitter, affecting how much speed adjustment is allowed.
+
+        Returns
+        -------
+        tuple
+            A tuple containing the updated speed and speed efficiency.
+
+        Notes
+        -----
+        This function is a part of the ForceAtlas2 layout algorithm and is used to dynamically adjust the
+        layout parameters to achieve an optimal and stable visualization.
+
+        """
+        import numpy as np
+
+        # estimate jitter
+        opt_jitter = 0.05 * np.sqrt(n)
+        min_jitter = np.sqrt(opt_jitter)
+        max_jitter = 10
+        min_speed_efficiency = 0.05
+
+        other = min(max_jitter, opt_jitter * traction / n**2)
+        jitter = jitter_tolerance * max(min_jitter, other)
+
+        if swing / traction > 2.0:
+            if speed_efficiency > min_speed_efficiency:
+                speed_efficiency *= 0.5
+            jitter = max(jitter, jitter_tolerance)
+        if swing == 0:
+            target_speed = np.inf
+        else:
+            target_speed = jitter * speed_efficiency * traction / swing
+
+        if swing > jitter * traction:
+            if speed_efficiency > min_speed_efficiency:
+                speed_efficiency *= 0.7
+        elif speed < 1000:
+            speed_efficiency *= 1.3
+
+        max_rise = 0.5
+        speed = speed + min(target_speed - speed, max_rise * speed)
+        return speed, speed_efficiency
+
+    speed = 1
+    speed_efficiency = 1
+    swing = 1
+    traction = 1
+    for _ in range(max_iter):
+        # compute pairwise difference
+        diff = pos_arr[:, None] - pos_arr[None]
+        # compute pairwise distance
+        distance = np.linalg.norm(diff, axis=-1)
+
+        # linear attraction
+        if linlog:
+            attraction = -np.log(1 + distance) / distance
+            np.fill_diagonal(attraction, 0)
+            attraction = np.einsum("ij, ij -> ij", attraction, A)
+            attraction = np.einsum("ijk, ij -> ik", diff, attraction)
+
+        else:
+            attraction = -np.einsum("ijk, ij -> ik", diff, A)
+
+        if distributed_action:
+            attraction /= mass[:, None]
+
+        # repulsion
+        tmp = mass[:, None] @ mass[None]
+        if adjust_sizes:
+            distance += -size[:, None] - size[None]
+
+        d2 = distance**2
+        # remove self-interaction
+        np.fill_diagonal(tmp, 0)
+        np.fill_diagonal(d2, 1)
+        factor = (tmp / d2) * scaling_ratio
+        repulsion = np.einsum("ijk, ij -> ik", diff, factor)
+
+        # gravity
+        gravities = (
+            -gravity
+            * mass[:, None]
+            * pos_arr
+            / np.linalg.norm(pos_arr, axis=-1)[:, None]
+        )
+
+        if strong_gravity:
+            gravities *= np.linalg.norm(pos_arr, axis=-1)[:, None]
+        # total forces
+        update = attraction + repulsion + gravities
+
+        # compute total swing and traction
+        swing += (mass * np.linalg.norm(pos_arr - update, axis=-1)).sum()
+        traction += (0.5 * mass * np.linalg.norm(pos_arr + update, axis=-1)).sum()
+
+        speed, speed_efficiency = estimate_factor(
+            n,
+            swing,
+            traction,
+            speed,
+            speed_efficiency,
+            jitter_tolerance,
+        )
+
+        # update pos
+        if adjust_sizes:
+            swinging = mass * np.linalg.norm(update, axis=-1)
+            factor = 0.1 * speed / (1 + np.sqrt(speed * swinging))
+            df = np.linalg.norm(update, axis=-1)
+            factor = np.minimum(factor * df, 10.0 * np.ones(df.shape)) / df
+        else:
+            swinging = mass * np.linalg.norm(update, axis=-1)
+            factor = speed / (1 + np.sqrt(speed * swinging))
+
+        pos_arr += update * factor[:, None]
+        if abs((update * factor[:, None]).sum()) < 1e-10:
+            break
+
+    return dict(zip(G, pos_arr))
 
 
 def rescale_layout(pos, scale=1):
@@ -1252,15 +1534,14 @@ def rescale_layout(pos, scale=1):
     --------
     rescale_layout_dict
     """
+    import numpy as np
+
     # Find max length over all dimensions
-    lim = 0  # max coordinate for all axes
-    for i in range(pos.shape[1]):
-        pos[:, i] -= pos[:, i].mean()
-        lim = max(abs(pos[:, i]).max(), lim)
+    pos -= pos.mean(axis=0)
+    lim = np.abs(pos).max()  # max coordinate for all axes
     # rescale to (-scale, scale) in all directions, preserves aspect
     if lim > 0:
-        for i in range(pos.shape[1]):
-            pos[:, i] *= scale / lim
+        pos *= scale / lim
     return pos
 
 
@@ -1300,3 +1581,50 @@ def rescale_layout_dict(pos, scale=1):
     pos_v = np.array(list(pos.values()))
     pos_v = rescale_layout(pos_v, scale=scale)
     return dict(zip(pos, pos_v))
+
+
+def bfs_layout(G, start, *, align="vertical", scale=1, center=None):
+    """Position nodes according to breadth-first search algorithm.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        A position will be assigned to every node in G.
+
+    start : node in `G`
+        Starting node for bfs
+
+    center : array-like or None
+        Coordinate pair around which to center the layout.
+
+    Returns
+    -------
+    pos : dict
+        A dictionary of positions keyed by node.
+
+    Examples
+    --------
+    >>> G = nx.path_graph(4)
+    >>> pos = nx.bfs_layout(G, 0)
+
+    Notes
+    -----
+    This algorithm currently only works in two dimensions and does not
+    try to minimize edge crossings.
+
+    """
+    G, center = _process_params(G, center, 2)
+
+    # Compute layers with BFS
+    layers = dict(enumerate(nx.bfs_layers(G, start)))
+
+    if len(G) != sum(len(nodes) for nodes in layers.values()):
+        raise nx.NetworkXError(
+            "bfs_layout didn't include all nodes. Perhaps use input graph:\n"
+            "        G.subgraph(nx.node_connected_component(G, start))"
+        )
+
+    # Compute node positions with multipartite_layout
+    return multipartite_layout(
+        G, subset_key=layers, align=align, scale=scale, center=center
+    )

@@ -7,6 +7,7 @@ Examples of dedensification of a graph.  Dedensification retains the structural
 pattern of the original graph and will only add compressor nodes when doing so
 would result in fewer edges in the compressed graph.
 """
+
 import matplotlib.pyplot as plt
 import networkx as nx
 
@@ -38,7 +39,7 @@ original_graph.add_edges_from(
         ("A", "6"),
     ]
 )
-base_options = dict(with_labels=True, edgecolors="black")
+base_options = {"with_labels": True, "edgecolors": "black"}
 pos = {
     "3": (0, 1),
     "2": (0, 2),
@@ -51,7 +52,7 @@ pos = {
     "5": (2, 1),
 }
 ax1 = plt.subplot(1, 2, 1)
-plt.title("Original (%s edges)" % original_graph.number_of_edges())
+plt.title(f"Original ({original_graph.number_of_edges()} edges)")
 nx.draw_networkx(original_graph, pos=pos, node_color=node_colors, **base_options)
 
 nonexp_graph, compression_nodes = nx.summarization.dedensify(
@@ -64,7 +65,7 @@ for node in compression_nodes:
     nonexp_node_sizes.append(600)
 plt.subplot(1, 2, 2)
 
-plt.title("Dedensified (%s edges)" % nonexp_graph.number_of_edges())
+plt.title(f"Dedensified ({nonexp_graph.number_of_edges()} edges)")
 nonexp_pos = {
     "5": (0, 0),
     "B": (0, 2),
@@ -85,7 +86,7 @@ nx.draw_networkx(
     pos=nonexp_pos,
     node_color=nonexp_node_colors,
     node_size=nonexp_node_sizes,
-    **base_options
+    **base_options,
 )
 
 plt.tight_layout()

@@ -1,34 +1,34 @@
 """
-    Module to simplify the specification of user-defined equality functions for
-    node and edge attributes during isomorphism checks.
+Module to simplify the specification of user-defined equality functions for
+node and edge attributes during isomorphism checks.
 
-    During the construction of an isomorphism, the algorithm considers two
-    candidate nodes n1 in G1 and n2 in G2.  The graphs G1 and G2 are then
-    compared with respect to properties involving n1 and n2, and if the outcome
-    is good, then the candidate nodes are considered isomorphic. NetworkX
-    provides a simple mechanism for users to extend the comparisons to include
-    node and edge attributes.
+During the construction of an isomorphism, the algorithm considers two
+candidate nodes n1 in G1 and n2 in G2.  The graphs G1 and G2 are then
+compared with respect to properties involving n1 and n2, and if the outcome
+is good, then the candidate nodes are considered isomorphic. NetworkX
+provides a simple mechanism for users to extend the comparisons to include
+node and edge attributes.
 
-    Node attributes are handled by the node_match keyword. When considering
-    n1 and n2, the algorithm passes their node attribute dictionaries to
-    node_match, and if it returns False, then n1 and n2 cannot be
-    considered to be isomorphic.
+Node attributes are handled by the node_match keyword. When considering
+n1 and n2, the algorithm passes their node attribute dictionaries to
+node_match, and if it returns False, then n1 and n2 cannot be
+considered to be isomorphic.
 
-    Edge attributes are handled by the edge_match keyword. When considering
-    n1 and n2, the algorithm must verify that outgoing edges from n1 are
-    commensurate with the outgoing edges for n2. If the graph is directed,
-    then a similar check is also performed for incoming edges.
+Edge attributes are handled by the edge_match keyword. When considering
+n1 and n2, the algorithm must verify that outgoing edges from n1 are
+commensurate with the outgoing edges for n2. If the graph is directed,
+then a similar check is also performed for incoming edges.
 
-    Focusing only on outgoing edges, we consider pairs of nodes (n1, v1) from
-    G1 and (n2, v2) from G2. For graphs and digraphs, there is only one edge
-    between (n1, v1) and only one edge between (n2, v2). Those edge attribute
-    dictionaries are passed to edge_match, and if it returns False, then
-    n1 and n2 cannot be considered isomorphic. For multigraphs and
-    multidigraphs, there can be multiple edges between (n1, v1) and also
-    multiple edges between (n2, v2).  Now, there must exist an isomorphism
-    from "all the edges between (n1, v1)" to "all the edges between (n2, v2)".
-    So, all of the edge attribute dictionaries are passed to edge_match, and
-    it must determine if there is an isomorphism between the two sets of edges.
+Focusing only on outgoing edges, we consider pairs of nodes (n1, v1) from
+G1 and (n2, v2) from G2. For graphs and digraphs, there is only one edge
+between (n1, v1) and only one edge between (n2, v2). Those edge attribute
+dictionaries are passed to edge_match, and if it returns False, then
+n1 and n2 cannot be considered isomorphic. For multigraphs and
+multidigraphs, there can be multiple edges between (n1, v1) and also
+multiple edges between (n2, v2).  Now, there must exist an isomorphism
+from "all the edges between (n1, v1)" to "all the edges between (n2, v2)".
+So, all of the edge attribute dictionaries are passed to edge_match, and
+it must determine if there is an isomorphism between the two sets of edges.
 """
 
 from . import isomorphvf2 as vf2
@@ -46,7 +46,6 @@ def _semantic_feasibility(self, G1_node, G2_node):
 
     # Make sure the edges match
     if self.edge_match is not None:
-
         # Cached lookups
         G1nbrs = self.G1_adj[G1_node]
         G2nbrs = self.G2_adj[G2_node]
@@ -188,10 +187,6 @@ class DiGraphMatcher(vf2.DiGraphMatcher):
 class MultiGraphMatcher(GraphMatcher):
     """VF2 isomorphism checker for undirected multigraphs."""
 
-    pass
-
 
 class MultiDiGraphMatcher(DiGraphMatcher):
     """VF2 isomorphism checker for directed multigraphs."""
-
-    pass

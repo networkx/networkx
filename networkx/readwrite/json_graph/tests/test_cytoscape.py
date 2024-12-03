@@ -10,7 +10,7 @@ from networkx.readwrite.json_graph import cytoscape_data, cytoscape_graph
 def test_graph():
     G = nx.path_graph(4)
     H = cytoscape_graph(cytoscape_data(G))
-    nx.is_isomorphic(G, H)
+    assert nx.is_isomorphic(G, H)
 
 
 def test_input_data_is_not_modified_when_building_graph():
@@ -52,7 +52,7 @@ def test_digraph():
     nx.add_path(G, [1, 2, 3])
     H = cytoscape_graph(cytoscape_data(G))
     assert H.is_directed()
-    nx.is_isomorphic(G, H)
+    assert nx.is_isomorphic(G, H)
 
 
 def test_multidigraph():

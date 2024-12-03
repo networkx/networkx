@@ -12,8 +12,8 @@ matrix of a graph. Consider the complete graph ``K_4``:
 >>> import sympy
 >>> x = sympy.Symbol("x")
 >>> G = nx.complete_graph(4)
->>> A = nx.adjacency_matrix(G)
->>> M = sympy.SparseMatrix(A.todense())
+>>> A = nx.to_numpy_array(G, dtype=int)
+>>> M = sympy.SparseMatrix(A)
 >>> M.charpoly(x).as_expr()
 x**4 - 6*x**2 - 8*x - 3
 
@@ -21,6 +21,7 @@ x**4 - 6*x**2 - 8*x - 3
 .. [1] Y. Shi, M. Dehmer, X. Li, I. Gutman,
    "Graph Polynomials"
 """
+
 from collections import deque
 
 import networkx as nx
@@ -30,6 +31,7 @@ __all__ = ["tutte_polynomial", "chromatic_polynomial"]
 
 
 @not_implemented_for("directed")
+@nx._dispatchable
 def tutte_polynomial(G):
     r"""Returns the Tutte polynomial of `G`
 
@@ -179,6 +181,7 @@ def tutte_polynomial(G):
 
 
 @not_implemented_for("directed")
+@nx._dispatchable
 def chromatic_polynomial(G):
     r"""Returns the chromatic polynomial of `G`
 
@@ -248,10 +251,10 @@ def chromatic_polynomial(G):
     cases are listed in [2]_.
 
     The chromatic polynomial is a specialization of the Tutte polynomial; in
-    particular, `X_G(x) = `T_G(x, 0)` [6]_.
+    particular, ``X_G(x) = T_G(x, 0)`` [6]_.
 
     The chromatic polynomial may take negative arguments, though evaluations
-    may not have chromatic interpretations. For instance, `X_G(-1)` enumerates
+    may not have chromatic interpretations. For instance, ``X_G(-1)`` enumerates
     the acyclic orientations of `G` [7]_.
 
     References

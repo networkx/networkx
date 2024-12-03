@@ -43,7 +43,7 @@ def mbox_graph():
         resent_ccs = msg.get_all("resent-cc", [])
         all_recipients = getaddresses(tos + ccs + resent_tos + resent_ccs)
         # now add the edges for this mail message
-        for (target_name, target_addr) in all_recipients:
+        for target_name, target_addr in all_recipients:
             G.add_edge(source_addr, target_addr, message=msg)
 
     return G
@@ -52,7 +52,7 @@ def mbox_graph():
 G = mbox_graph()
 
 # print edges with message subject
-for (u, v, d) in G.edges(data=True):
+for u, v, d in G.edges(data=True):
     print(f"From: {u} To: {v} Subject: {d['message']['Subject']}")
 
 pos = nx.spring_layout(G, iterations=10, seed=227)

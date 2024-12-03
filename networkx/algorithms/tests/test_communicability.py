@@ -26,7 +26,6 @@ class TestCommunicability:
                 assert answer[k1][k2] == pytest.approx(result[k1][k2], abs=1e-7)
 
     def test_communicability2(self):
-
         answer_orig = {
             ("1", "1"): 1.6445956054135658,
             ("1", "Albert"): 0.7430186221096251,

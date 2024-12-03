@@ -3,6 +3,7 @@
 Bipartite Graph Algorithms
 ==========================
 """
+
 import networkx as nx
 from networkx.algorithms.components import connected_components
 from networkx.exception import AmbiguousSolution
@@ -17,6 +18,7 @@ __all__ = [
 ]
 
 
+@nx._dispatchable
 def color(G):
     """Returns a two-coloring of the graph.
 
@@ -44,7 +46,7 @@ def color(G):
     >>> print(c)
     {0: 1, 1: 0, 2: 1, 3: 0}
 
-    You can use this to set a node attribute indicating the biparite set:
+    You can use this to set a node attribute indicating the bipartite set:
 
     >>> nx.set_node_attributes(G, c, "bipartite")
     >>> print(G.nodes[0]["bipartite"])
@@ -82,6 +84,7 @@ def color(G):
     return color
 
 
+@nx._dispatchable
 def is_bipartite(G):
     """Returns True if graph G is bipartite, False if not.
 
@@ -107,6 +110,7 @@ def is_bipartite(G):
         return False
 
 
+@nx._dispatchable
 def is_bipartite_node_set(G, nodes):
     """Returns True if nodes and G/nodes are a bipartition of G.
 
@@ -151,6 +155,7 @@ def is_bipartite_node_set(G, nodes):
     return True
 
 
+@nx._dispatchable
 def sets(G, top_nodes=None):
     """Returns bipartite node sets of graph G.
 
@@ -217,6 +222,7 @@ def sets(G, top_nodes=None):
     return (X, Y)
 
 
+@nx._dispatchable(graphs="B")
 def density(B, nodes):
     """Returns density of bipartite graph B.
 
@@ -269,6 +275,7 @@ def density(B, nodes):
     return d
 
 
+@nx._dispatchable(graphs="B", edge_attrs="weight")
 def degrees(B, nodes, weight=None):
     """Returns the degrees of the two node sets in the bipartite graph B.
 

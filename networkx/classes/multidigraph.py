@@ -1,9 +1,10 @@
 """Base class for MultiDiGraph."""
+
 from copy import deepcopy
 from functools import cached_property
 
 import networkx as nx
-import networkx.convert as convert
+from networkx import convert
 from networkx.classes.coreviews import MultiAdjacencyView
 from networkx.classes.digraph import DiGraph
 from networkx.classes.multigraph import MultiGraph
@@ -269,6 +270,27 @@ class MultiDiGraph(MultiGraph, DiGraph):
     to_undirected_class : callable, (default: Graph or MultiGraph)
         Class to create a new graph structure in the `to_undirected` method.
         If `None`, a NetworkX class (Graph or MultiGraph) is used.
+
+    **Subclassing Example**
+
+    Create a low memory graph class that effectively disallows edge
+    attributes by using a single attribute dict for all edges.
+    This reduces the memory used, but you lose edge attributes.
+
+    >>> class ThinGraph(nx.Graph):
+    ...     all_edge_dict = {"weight": 1}
+    ...
+    ...     def single_edge_dict(self):
+    ...         return self.all_edge_dict
+    ...
+    ...     edge_attr_dict_factory = single_edge_dict
+    >>> G = ThinGraph()
+    >>> G.add_edge(2, 1)
+    >>> G[2][1]
+    {'weight': 1}
+    >>> G.add_edge(2, 2)
+    >>> G[2][1] is G[2][2]
+    True
     """
 
     # node_dict_factory = dict    # already assigned in Graph
@@ -287,7 +309,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
             an empty graph is created.  The data can be an edge list, or any
             NetworkX graph object.  If the corresponding optional Python
             packages are installed the data can also be a 2D NumPy array, a
-            SciPy sparse matrix, or a PyGraphviz graph.
+            SciPy sparse array, or a PyGraphviz graph.
 
         multigraph_input : bool or None (default None)
             Note: Only used when `incoming_graph_data` is a dict.
@@ -487,6 +509,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
             keydict[key] = datadict
             self._succ[u][v] = keydict
             self._pred[v][u] = keydict
+        nx._clear_cache(self)
         return key
 
     def remove_edge(self, u, v, key=None):
@@ -562,6 +585,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
             # remove the key entries if last edge
             del self._succ[u][v]
             del self._pred[v][u]
+        nx._clear_cache(self)
 
     @cached_property
     def edges(self):
@@ -618,7 +642,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
         >>> G = nx.MultiDiGraph()
         >>> nx.add_path(G, [0, 1, 2])
         >>> key = G.add_edge(2, 3, weight=5)
-        >>> key2 = G.add_edge(1, 2) # second edge between these nodes
+        >>> key2 = G.add_edge(1, 2)  # second edge between these nodes
         >>> [e for e in G.edges()]
         [(0, 1), (1, 2), (1, 2), (2, 3)]
         >>> list(G.edges(data=True))  # default data is {} (empty dict)
@@ -653,7 +677,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
     @cached_property
     def in_edges(self):
-        """An InMultiEdgeView of the Graph as G.in_edges or G.in_edges().
+        """A view of the in edges of the graph as G.in_edges or G.in_edges().
 
         in_edges(self, nbunch=None, data=False, keys=False, default=None)
 
@@ -674,7 +698,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
 
         Returns
         -------
-        in_edges : InMultiEdgeView
+        in_edges : InMultiEdgeView or InMultiEdgeDataView
             A view of edge attributes, usually it iterates over (u, v)
             or (u, v, k) or (u, v, k, d) tuples of edges, but can also be
             used for attribute lookup as `edges[u, v, k]['foo']`.
@@ -725,9 +749,9 @@ class MultiDiGraph(MultiGraph, DiGraph):
         1
         >>> list(G.degree([0, 1, 2]))
         [(0, 1), (1, 2), (2, 2)]
-        >>> G.add_edge(0, 1) # parallel edge
+        >>> G.add_edge(0, 1)  # parallel edge
         1
-        >>> list(G.degree([0, 1, 2])) # parallel edges are counted
+        >>> list(G.degree([0, 1, 2]))  # parallel edges are counted
         [(0, 2), (1, 3), (2, 2)]
 
         """
@@ -737,7 +761,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
     def in_degree(self):
         """A DegreeView for (node, in_degree) or in_degree for single node.
 
-        The node in-degree is the number of edges pointing in to the node.
+        The node in-degree is the number of edges pointing into the node.
         The weighted node degree is the sum of the edge weights for
         edges incident to that node.
 
@@ -776,9 +800,9 @@ class MultiDiGraph(MultiGraph, DiGraph):
         0
         >>> list(G.in_degree([0, 1, 2]))
         [(0, 0), (1, 1), (2, 1)]
-        >>> G.add_edge(0, 1) # parallel edge
+        >>> G.add_edge(0, 1)  # parallel edge
         1
-        >>> list(G.in_degree([0, 1, 2])) # parallel edges counted
+        >>> list(G.in_degree([0, 1, 2]))  # parallel edges counted
         [(0, 0), (1, 2), (2, 1)]
 
         """
@@ -826,9 +850,9 @@ class MultiDiGraph(MultiGraph, DiGraph):
         1
         >>> list(G.out_degree([0, 1, 2]))
         [(0, 1), (1, 1), (2, 1)]
-        >>> G.add_edge(0, 1) # parallel edge
+        >>> G.add_edge(0, 1)  # parallel edge
         1
-        >>> list(G.out_degree([0, 1, 2])) # counts parallel edges
+        >>> list(G.out_degree([0, 1, 2]))  # counts parallel edges
         [(0, 2), (1, 1), (2, 1)]
 
         """
@@ -939,4 +963,4 @@ class MultiDiGraph(MultiGraph, DiGraph):
                 for u, v, k, d in self.edges(keys=True, data=True)
             )
             return H
-        return nx.graphviews.reverse_view(self)
+        return nx.reverse_view(self)

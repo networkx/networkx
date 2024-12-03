@@ -10,6 +10,7 @@ an AT-free graph. The class of AT-free graphs is a graph class for which
 many NP-complete problems are solvable in polynomial time. Amongst them,
 independent set and coloring.
 """
+
 import networkx as nx
 from networkx.utils import not_implemented_for
 
@@ -18,6 +19,7 @@ __all__ = ["is_at_free", "find_asteroidal_triple"]
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def find_asteroidal_triple(G):
     r"""Find an asteroidal triple in the given graph.
 
@@ -43,10 +45,6 @@ def find_asteroidal_triple(G):
     list or None
         An asteroidal triple is returned as a list of nodes. If no asteroidal
         triple exists, i.e. the graph is AT-free, then None is returned.
-        The returned value depends on the certificate parameter. The default
-        option is a bool which is True if the graph is AT-free, i.e. the
-        given graph contains no asteroidal triples, and False otherwise, i.e.
-        if the graph contains at least one asteroidal triple.
 
     Notes
     -----
@@ -67,11 +65,8 @@ def find_asteroidal_triple(G):
         return None
 
     component_structure = create_component_structure(G)
-    E_complement = set(nx.complement(G).edges)
 
-    for e in E_complement:
-        u = e[0]
-        v = e[1]
+    for u, v in nx.non_edges(G):
         u_neighborhood = set(G[u]).union([u])
         v_neighborhood = set(G[v]).union([v])
         union_of_neighborhoods = u_neighborhood.union(v_neighborhood)
@@ -90,6 +85,7 @@ def find_asteroidal_triple(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def is_at_free(G):
     """Check if a graph is AT-free.
 
@@ -123,6 +119,7 @@ def is_at_free(G):
 
 @not_implemented_for("directed")
 @not_implemented_for("multigraph")
+@nx._dispatchable
 def create_component_structure(G):
     r"""Create component structure for G.
 

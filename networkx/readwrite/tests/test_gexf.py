@@ -462,7 +462,7 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         G = nx.MultiGraph()
         G.add_node(0, label="1", color="green")
         G.add_node(1, label="2", color="green")
-        G.add_edge(0, 1, id="0", wight=3, type="undirected", start=0, end=1)
+        G.add_edge(0, 1, id="0", weight=3, type="undirected", start=0, end=1)
         G.add_edge(0, 1, id="1", label="foo", start=0, end=1)
         G.add_edge(0, 1)
         fh = io.BytesIO()
@@ -490,6 +490,16 @@ gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
         assert sorted(sorted(e) for e in G.edges()) == sorted(
             sorted(e) for e in H.edges()
         )
+
+        # Test missing alpha value for version >draft1.1 - set default alpha value
+        # to 1.0 instead of `None` when writing for better general compatibility
+        fh = io.BytesIO()
+        # G.nodes[0]["viz"]["color"] does not have an alpha value explicitly defined
+        # so the default is used instead
+        nx.write_gexf(G, fh, version="1.2draft")
+        fh.seek(0)
+        H = nx.read_gexf(fh, node_type=int)
+        assert H.nodes[0]["viz"]["color"]["a"] == 1.0
 
         # Second graph for the other branch
         G = nx.Graph()

@@ -159,7 +159,7 @@ class TestTriangularLatticeGraph:
             G = nx.triangular_lattice_graph(m, n)
             N = (n + 1) // 2
             assert len(G) == (m + 1) * (1 + N) - (n % 2) * ((m + 1) // 2)
-        for (i, j) in G.nodes():
+        for i, j in G.nodes():
             nbrs = G[(i, j)]
             if i < N:
                 assert (i + 1, j) in nbrs

@@ -60,6 +60,14 @@ def generate_adjlist(G, delimiter=" "):
     --------
     write_adjlist, read_adjlist
 
+    Notes
+    -----
+    The default `delimiter=" "` will result in unexpected results if node names contain
+    whitespace characters. To avoid this problem, specify an alternate delimiter when spaces are
+    valid in node names.
+
+    NB: This option is not available for data that isn't user-generated.
+
     """
     directed = G.is_directed()
     seen = set()
@@ -113,6 +121,11 @@ def write_adjlist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
 
     Notes
     -----
+    The default `delimiter=" "` will result in unexpected results if node names contain
+    whitespace characters. To avoid this problem, specify an alternate delimiter when spaces are
+    valid in node names.
+    NB: This option is not available for data that isn't user-generated.
+
     This format does not store graph, node, or edge data.
 
     See Also
@@ -137,6 +150,7 @@ def write_adjlist(G, path, comments="#", delimiter=" ", encoding="utf-8"):
         path.write(line.encode(encoding))
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def parse_adjlist(
     lines, comments="#", delimiter=None, create_using=None, nodetype=None
 ):
@@ -187,7 +201,7 @@ def parse_adjlist(
             line = line[:p]
         if not len(line):
             continue
-        vlist = line.strip().split(delimiter)
+        vlist = line.rstrip("\n").split(delimiter)
         u = vlist.pop(0)
         # convert types
         if nodetype is not None:
@@ -195,7 +209,7 @@ def parse_adjlist(
                 u = nodetype(u)
             except BaseException as err:
                 raise TypeError(
-                    f"Failed to convert node ({u}) to type " f"{nodetype}"
+                    f"Failed to convert node ({u}) to type {nodetype}"
                 ) from err
         G.add_node(u)
         if nodetype is not None:
@@ -210,6 +224,7 @@ def parse_adjlist(
 
 
 @open_file(0, mode="rb")
+@nx._dispatchable(graphs=None, returns_graph=True)
 def read_adjlist(
     path,
     comments="#",

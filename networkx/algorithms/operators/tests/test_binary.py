@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 import networkx as nx
@@ -23,7 +25,7 @@ def test_union_attributes():
         assert gh.nodes[n] == eval(graph).nodes[int(node)]
 
     assert gh.graph["attr"] == "attr"
-    assert gh.graph["name"] == "h"  # h graph attributes take precendent
+    assert gh.graph["name"] == "h"  # h graph attributes take precedent
 
 
 def test_intersection():
@@ -179,6 +181,9 @@ def test_difference_attributes():
     assert set(gh.nodes()) == set(g.nodes())
     assert set(gh.nodes()) == set(h.nodes())
     assert sorted(gh.edges()) == []
+    # node and graph data should not be copied over
+    assert gh.nodes.data() != g.nodes.data()
+    assert gh.graph != g.graph
 
 
 def test_difference_multigraph_attributes():

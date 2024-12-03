@@ -3,6 +3,7 @@
 Biadjacency matrices
 ====================
 """
+
 import itertools
 
 import networkx as nx
@@ -11,6 +12,7 @@ from networkx.convert_matrix import _generate_weighted_edges
 __all__ = ["biadjacency_matrix", "from_biadjacency_matrix"]
 
 
+@nx._dispatchable(edge_attrs="weight")
 def biadjacency_matrix(
     G, row_order, column_order=None, dtype=None, weight="weight", format="csr"
 ):
@@ -50,7 +52,7 @@ def biadjacency_matrix(
 
     Returns
     -------
-    M : SciPy sparse matrix
+    M : SciPy sparse array
         Biadjacency matrix representation of the bipartite graph G.
 
     Notes
@@ -75,7 +77,6 @@ def biadjacency_matrix(
        https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
     import scipy as sp
-    import scipy.sparse  # call as sp.sparse
 
     nlen = len(row_order)
     if nlen == 0:
@@ -103,28 +104,21 @@ def biadjacency_matrix(
                 if u in row_index and v in col_index
             )
         )
-    # TODO: change coo_matrix -> coo_array for NX 3.0
-    A = sp.sparse.coo_matrix((data, (row, col)), shape=(nlen, mlen), dtype=dtype)
+    A = sp.sparse.coo_array((data, (row, col)), shape=(nlen, mlen), dtype=dtype)
     try:
-        import warnings
-
-        warnings.warn(
-            "biadjacency_matrix will return a scipy.sparse array instead of a matrix in NetworkX 3.0",
-            FutureWarning,
-            stacklevel=2,
-        )
         return A.asformat(format)
     except ValueError as err:
         raise nx.NetworkXError(f"Unknown sparse array format: {format}") from err
 
 
+@nx._dispatchable(graphs=None, returns_graph=True)
 def from_biadjacency_matrix(A, create_using=None, edge_attribute="weight"):
     r"""Creates a new bipartite graph from a biadjacency matrix given as a
-    SciPy sparse matrix.
+    SciPy sparse array.
 
     Parameters
     ----------
-    A: scipy sparse matrix
+    A: scipy sparse array
       A biadjacency matrix representation of a graph
 
     create_using: NetworkX graph

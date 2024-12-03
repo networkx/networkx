@@ -42,5 +42,5 @@ pc.set_array(edge_colors)
 
 ax = plt.gca()
 ax.set_axis_off()
-plt.colorbar(pc)
+plt.colorbar(pc, ax=ax)
 plt.show()

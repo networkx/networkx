@@ -1,9 +1,11 @@
 """Unit tests for the :mod:`networkx.algorithms.structuralholes` module."""
+
 import math
 
 import pytest
 
 import networkx as nx
+from networkx.classes.tests import dispatch_interface
 
 
 class TestStructuralHoles:
@@ -18,7 +20,7 @@ class TestStructuralHoles:
 
     """
 
-    def setup(self):
+    def setup_method(self):
         self.D = nx.DiGraph()
         self.D.add_edges_from([(0, 1), (0, 2), (1, 0), (2, 1)])
         self.D_weights = {(0, 1): 2, (0, 2): 2, (1, 0): 1, (2, 1): 1}

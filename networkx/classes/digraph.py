@@ -1,9 +1,10 @@
 """Base class for directed graphs."""
+
 from copy import deepcopy
 from functools import cached_property
 
 import networkx as nx
-import networkx.convert as convert
+from networkx import convert
 from networkx.classes.coreviews import AdjacencyView
 from networkx.classes.graph import Graph
 from networkx.classes.reportviews import (
@@ -25,6 +26,9 @@ class _CachedPropertyResetterAdjAndSucc:
     are set to new objects. In addition, the attributes `_succ` and `_adj`
     are synced so these two names point to the same object.
 
+    Warning: most of the time, when ``G._adj`` is set, ``G._pred`` should also
+    be set to maintain a valid data structure. They share datadicts.
+
     This object sits on a class and ensures that any instance of that
     class clears its cached properties "succ" and "adj" whenever the
     underlying instance attributes "_succ" or "_adj" are set to a new object.
@@ -39,10 +43,18 @@ class _CachedPropertyResetterAdjAndSucc:
         od["_adj"] = value
         od["_succ"] = value
         # reset cached properties
-        if "adj" in od:
-            del od["adj"]
-        if "succ" in od:
-            del od["succ"]
+        props = [
+            "adj",
+            "succ",
+            "edges",
+            "out_edges",
+            "degree",
+            "out_degree",
+            "in_degree",
+        ]
+        for prop in props:
+            if prop in od:
+                del od[prop]
 
 
 class _CachedPropertyResetterPred:
@@ -50,6 +62,9 @@ class _CachedPropertyResetterPred:
 
     This assumes that the ``cached_property`` ``G.pred`` should be reset whenever
     ``G._pred`` is set to a new value.
+
+    Warning: most of the time, when ``G._pred`` is set, ``G._adj`` should also
+    be set to maintain a valid data structure. They share datadicts.
 
     This object sits on a class and ensures that any instance of that
     class clears its cached property "pred" whenever the underlying
@@ -63,8 +78,11 @@ class _CachedPropertyResetterPred:
     def __set__(self, obj, value):
         od = obj.__dict__
         od["_pred"] = value
-        if "pred" in od:
-            del od["pred"]
+        # reset cached properties
+        props = ["pred", "in_edges", "degree", "out_degree", "in_degree"]
+        for prop in props:
+            if prop in od:
+                del od[prop]
 
 
 class DiGraph(Graph):
@@ -309,8 +327,8 @@ class DiGraph(Graph):
     True
     """
 
-    _adj = _CachedPropertyResetterAdjAndSucc()  # type: ignore
-    _succ = _adj  # type: ignore
+    _adj = _CachedPropertyResetterAdjAndSucc()  # type: ignore[assignment]
+    _succ = _adj  # type: ignore[has-type]
     _pred = _CachedPropertyResetterPred()
 
     def __init__(self, incoming_graph_data=None, **attr):
@@ -323,7 +341,7 @@ class DiGraph(Graph):
             graph is created.  The data can be an edge list, or any
             NetworkX graph object.  If the corresponding optional Python
             packages are installed the data can also be a 2D NumPy array, a
-            SciPy sparse matrix, or a PyGraphviz graph.
+            SciPy sparse array, or a PyGraphviz graph.
 
         attr : keyword arguments, optional (default= no attributes)
             Attributes to add to graph as key=value pairs.
@@ -355,6 +373,7 @@ class DiGraph(Graph):
         self._pred = self.adjlist_outer_dict_factory()  # predecessor
         # Note: self._succ = self._adj  # successor
 
+        self.__networkx_cache__ = {}
         # attempt to load graph with data
         if incoming_graph_data is not None:
             convert.to_networkx_graph(incoming_graph_data, create_using=self)
@@ -465,6 +484,7 @@ class DiGraph(Graph):
             attr_dict.update(attr)
         else:  # update attr even if node already exists
             self._node[node_for_adding].update(attr)
+        nx._clear_cache(self)
 
     def add_nodes_from(self, nodes_for_adding, **attr):
         """Add multiple nodes.
@@ -484,6 +504,16 @@ class DiGraph(Graph):
         See Also
         --------
         add_node
+
+        Notes
+        -----
+        When adding nodes from an iterator over the graph you are changing,
+        a `RuntimeError` can be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
+        object, e.g. by using `list(iterator_of_nodes)`, and pass this
+        object to `G.add_nodes_from`.
 
         Examples
         --------
@@ -509,6 +539,13 @@ class DiGraph(Graph):
         >>> H.nodes[1]["size"]
         11
 
+        Evaluate an iterator over a graph if using it to modify the same graph
+
+        >>> G = nx.DiGraph([(0, 1), (1, 2), (3, 4)])
+        >>> # wrong way - will raise RuntimeError
+        >>> # G.add_nodes_from(n + 1 for n in G.nodes)
+        >>> # correct way
+        >>> G.add_nodes_from(list(n + 1 for n in G.nodes))
         """
         for n in nodes_for_adding:
             try:
@@ -526,12 +563,13 @@ class DiGraph(Graph):
                 self._pred[n] = self.adjlist_inner_dict_factory()
                 self._node[n] = self.node_attr_dict_factory()
             self._node[n].update(newdict)
+        nx._clear_cache(self)
 
     def remove_node(self, n):
         """Remove node n.
 
         Removes the node n and all adjacent edges.
-        Attempting to remove a non-existent node will raise an exception.
+        Attempting to remove a nonexistent node will raise an exception.
 
         Parameters
         ----------
@@ -568,6 +606,7 @@ class DiGraph(Graph):
         for u in self._pred[n]:
             del self._succ[u][n]  # remove all edges n-u in digraph
         del self._pred[n]  # remove node from pred
+        nx._clear_cache(self)
 
     def remove_nodes_from(self, nodes):
         """Remove multiple nodes.
@@ -582,6 +621,16 @@ class DiGraph(Graph):
         --------
         remove_node
 
+        Notes
+        -----
+        When removing nodes from an iterator over the graph you are changing,
+        a `RuntimeError` will be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
+        object, e.g. by using `list(iterator_of_nodes)`, and pass this
+        object to `G.remove_nodes_from`.
+
         Examples
         --------
         >>> G = nx.path_graph(3)  # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -592,6 +641,13 @@ class DiGraph(Graph):
         >>> list(G.nodes)
         []
 
+        Evaluate an iterator over a graph if using it to modify the same graph
+
+        >>> G = nx.DiGraph([(0, 1), (1, 2), (3, 4)])
+        >>> # this command will fail, as the graph's dict is modified during iteration
+        >>> # G.remove_nodes_from(n for n in G.nodes if n < 2)
+        >>> # this command will work, since the dictionary underlying graph is not modified
+        >>> G.remove_nodes_from(list(n for n in G.nodes if n < 2))
         """
         for n in nodes:
             try:
@@ -605,6 +661,7 @@ class DiGraph(Graph):
                 del self._pred[n]  # now remove node
             except KeyError:
                 pass  # silent failure on remove
+        nx._clear_cache(self)
 
     def add_edge(self, u_of_edge, v_of_edge, **attr):
         """Add an edge between u and v.
@@ -675,6 +732,7 @@ class DiGraph(Graph):
         datadict.update(attr)
         self._succ[u][v] = datadict
         self._pred[v][u] = datadict
+        nx._clear_cache(self)
 
     def add_edges_from(self, ebunch_to_add, **attr):
         """Add all the edges in ebunch_to_add.
@@ -702,6 +760,14 @@ class DiGraph(Graph):
         Edge attributes specified in an ebunch take precedence over
         attributes specified via keyword arguments.
 
+        When adding edges from an iterator over the graph you are changing,
+        a `RuntimeError` can be raised with message:
+        `RuntimeError: dictionary changed size during iteration`. This
+        happens when the graph's underlying dictionary is modified during
+        iteration. To avoid this error, evaluate the iterator into a separate
+        object, e.g. by using `list(iterator_of_edges)`, and pass this
+        object to `G.add_edges_from`.
+
         Examples
         --------
         >>> G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc
@@ -713,6 +779,15 @@ class DiGraph(Graph):
 
         >>> G.add_edges_from([(1, 2), (2, 3)], weight=3)
         >>> G.add_edges_from([(3, 4), (1, 4)], label="WN2898")
+
+        Evaluate an iterator over a graph if using it to modify the same graph
+
+        >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
+        >>> # Grow graph by one new node, adding edges to all existing nodes.
+        >>> # wrong way - will raise RuntimeError
+        >>> # G.add_edges_from(((5, n) for n in G.nodes))
+        >>> # right way - note that there will be no self-edge for node 5
+        >>> G.add_edges_from(list((5, n) for n in G.nodes))
         """
         for e in ebunch_to_add:
             ne = len(e)
@@ -740,6 +815,7 @@ class DiGraph(Graph):
             datadict.update(dd)
             self._succ[u][v] = datadict
             self._pred[v][u] = datadict
+        nx._clear_cache(self)
 
     def remove_edge(self, u, v):
         """Remove the edge between u and v.
@@ -773,6 +849,7 @@ class DiGraph(Graph):
             del self._pred[v][u]
         except KeyError as err:
             raise NetworkXError(f"The edge {u}-{v} not in graph.") from err
+        nx._clear_cache(self)
 
     def remove_edges_from(self, ebunch):
         """Remove all edges specified in ebunch.
@@ -805,6 +882,7 @@ class DiGraph(Graph):
             if u in self._succ and v in self._succ[u]:
                 del self._succ[u][v]
                 del self._pred[v][u]
+        nx._clear_cache(self)
 
     def has_successor(self, u, v):
         """Returns True if node u has successor v.
@@ -949,7 +1027,7 @@ class DiGraph(Graph):
 
     @cached_property
     def in_edges(self):
-        """An InEdgeView of the Graph as G.in_edges or G.in_edges().
+        """A view of the in edges of the graph as G.in_edges or G.in_edges().
 
         in_edges(self, nbunch=None, data=False, default=None):
 
@@ -967,10 +1045,19 @@ class DiGraph(Graph):
 
         Returns
         -------
-        in_edges : InEdgeView
+        in_edges : InEdgeView or InEdgeDataView
             A view of edge attributes, usually it iterates over (u, v)
             or (u, v, d) tuples of edges, but can also be used for
             attribute lookup as `edges[u, v]['foo']`.
+
+        Examples
+        --------
+        >>> G = nx.DiGraph()
+        >>> G.add_edge(1, 2, color="blue")
+        >>> G.in_edges()
+        InEdgeView([(1, 2)])
+        >>> G.in_edges(nbunch=2)
+        InEdgeDataView([(1, 2)])
 
         See Also
         --------
@@ -1135,6 +1222,7 @@ class DiGraph(Graph):
         self._pred.clear()
         self._node.clear()
         self.graph.clear()
+        nx._clear_cache(self)
 
     def clear_edges(self):
         """Remove all edges from the graph without altering nodes.
@@ -1153,6 +1241,7 @@ class DiGraph(Graph):
             predecessor_dict.clear()
         for successor_dict in self._succ.values():
             successor_dict.clear()
+        nx._clear_cache(self)
 
     def is_multigraph(self):
         """Returns True if graph is a multigraph, False otherwise."""
@@ -1260,4 +1349,4 @@ class DiGraph(Graph):
             H.add_nodes_from((n, deepcopy(d)) for n, d in self.nodes.items())
             H.add_edges_from((v, u, deepcopy(d)) for u, v, d in self.edges(data=True))
             return H
-        return nx.graphviews.reverse_view(self)
+        return nx.reverse_view(self)

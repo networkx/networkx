@@ -58,6 +58,10 @@ class TestIsSimplePath:
         G = nx.path_graph(2)
         assert not nx.is_simple_path(G, [0, 2])
 
+    def test_missing_starting_node(self):
+        G = nx.path_graph(2)
+        assert not nx.is_simple_path(G, [2, 0])
+
     def test_directed_path(self):
         G = nx.DiGraph([(0, 1), (1, 2)])
         assert nx.is_simple_path(G, [0, 1, 2])
@@ -136,8 +140,7 @@ def test_all_simple_paths_with_two_targets_inside_cycle_emits_two_paths():
 
 def test_all_simple_paths_source_target():
     G = nx.path_graph(4)
-    paths = nx.all_simple_paths(G, 1, 1)
-    assert list(paths) == []
+    assert list(nx.all_simple_paths(G, 1, 1)) == [[1]]
 
 
 def test_all_simple_paths_cutoff():
@@ -177,8 +180,7 @@ def test_all_simple_paths_on_non_trivial_graph():
 
 def test_all_simple_paths_multigraph():
     G = nx.MultiGraph([(1, 2), (1, 2)])
-    paths = nx.all_simple_paths(G, 1, 1)
-    assert list(paths) == []
+    assert list(nx.all_simple_paths(G, 1, 1)) == [[1]]
     nx.add_path(G, [3, 1, 10, 2])
     paths = list(nx.all_simple_paths(G, 1, 2))
     assert len(paths) == 3
@@ -190,6 +192,10 @@ def test_all_simple_paths_multigraph_with_cutoff():
     paths = list(nx.all_simple_paths(G, 1, 2, cutoff=1))
     assert len(paths) == 2
     assert {tuple(p) for p in paths} == {(1, 2), (1, 2)}
+
+    # See GitHub issue #6732.
+    G = nx.MultiGraph([(0, 1), (0, 2)])
+    assert list(nx.all_simple_paths(G, 0, {1, 2}, cutoff=1)) == [[0, 1], [0, 2]]
 
 
 def test_all_simple_paths_directed():
@@ -207,9 +213,15 @@ def test_all_simple_paths_empty():
 
 
 def test_all_simple_paths_corner_cases():
-    assert list(nx.all_simple_paths(nx.empty_graph(2), 0, 0)) == []
+    assert list(nx.all_simple_paths(nx.empty_graph(2), 0, 0)) == [[0]]
     assert list(nx.all_simple_paths(nx.empty_graph(2), 0, 1)) == []
     assert list(nx.all_simple_paths(nx.path_graph(9), 0, 8, 0)) == []
+
+
+def test_all_simple_paths_source_in_targets():
+    # See GitHub issue #6690.
+    G = nx.path_graph(3)
+    assert list(nx.all_simple_paths(G, 0, {0, 1, 2})) == [[0], [0, 1], [0, 1, 2]]
 
 
 def hamiltonian_path(G, source):
@@ -234,9 +246,9 @@ def test_hamiltonian_path():
 def test_cutoff_zero():
     G = nx.complete_graph(4)
     paths = nx.all_simple_paths(G, 0, 3, cutoff=0)
-    assert list(list(p) for p in paths) == []
+    assert [list(p) for p in paths] == []
     paths = nx.all_simple_paths(nx.MultiGraph(G), 0, 3, cutoff=0)
-    assert list(list(p) for p in paths) == []
+    assert [list(p) for p in paths] == []
 
 
 def test_source_missing():
@@ -258,6 +270,11 @@ def test_all_simple_edge_paths():
     G = nx.path_graph(4)
     paths = nx.all_simple_edge_paths(G, 0, 3)
     assert {tuple(p) for p in paths} == {((0, 1), (1, 2), (2, 3))}
+
+
+def test_all_simple_edge_paths_empty_path():
+    G = nx.empty_graph(1)
+    assert list(nx.all_simple_edge_paths(G, 0, 0)) == [[]]
 
 
 def test_all_simple_edge_paths_with_two_targets_emits_two_paths():
@@ -323,7 +340,7 @@ def test_all_simple_edge_paths_with_two_targets_inside_cycle_emits_two_paths():
 def test_all_simple_edge_paths_source_target():
     G = nx.path_graph(4)
     paths = nx.all_simple_edge_paths(G, 1, 1)
-    assert list(paths) == []
+    assert list(paths) == [[]]
 
 
 def test_all_simple_edge_paths_cutoff():
@@ -364,7 +381,7 @@ def test_all_simple_edge_paths_on_non_trivial_graph():
 def test_all_simple_edge_paths_multigraph():
     G = nx.MultiGraph([(1, 2), (1, 2)])
     paths = nx.all_simple_edge_paths(G, 1, 1)
-    assert list(paths) == []
+    assert list(paths) == [[]]
     nx.add_path(G, [3, 1, 10, 2])
     paths = list(nx.all_simple_edge_paths(G, 1, 2))
     assert len(paths) == 3
@@ -397,9 +414,14 @@ def test_all_simple_edge_paths_empty():
 
 
 def test_all_simple_edge_paths_corner_cases():
-    assert list(nx.all_simple_edge_paths(nx.empty_graph(2), 0, 0)) == []
+    assert list(nx.all_simple_edge_paths(nx.empty_graph(2), 0, 0)) == [[]]
     assert list(nx.all_simple_edge_paths(nx.empty_graph(2), 0, 1)) == []
     assert list(nx.all_simple_edge_paths(nx.path_graph(9), 0, 8, 0)) == []
+
+
+def test_all_simple_edge_paths_ignores_self_loop():
+    G = nx.Graph([(0, 0), (0, 1), (1, 1), (1, 2)])
+    assert list(nx.all_simple_edge_paths(G, 0, 2)) == [[(0, 1), (1, 2)]]
 
 
 def hamiltonian_edge_path(G, source):
@@ -418,15 +440,15 @@ def test_hamiltonian__edge_path():
     G = nx.complete_graph(4)
     paths = hamiltonian_edge_path(G, 0)
     exact = [list(pairwise([0] + list(p))) for p in permutations([1, 2, 3], 3)]
-    assert sorted(exact) == [p for p in sorted(paths)]
+    assert sorted(exact) == sorted(paths)
 
 
 def test_edge_cutoff_zero():
     G = nx.complete_graph(4)
     paths = nx.all_simple_edge_paths(G, 0, 3, cutoff=0)
-    assert list(list(p) for p in paths) == []
+    assert [list(p) for p in paths] == []
     paths = nx.all_simple_edge_paths(nx.MultiGraph(G), 0, 3, cutoff=0)
-    assert list(list(p) for p in paths) == []
+    assert [list(p) for p in paths] == []
 
 
 def test_edge_source_missing():
@@ -454,13 +476,18 @@ def test_shortest_simple_paths():
     )
 
 
+def test_shortest_simple_paths_singleton_path():
+    G = nx.empty_graph(3)
+    assert list(nx.shortest_simple_paths(G, 0, 0)) == [[0]]
+
+
 def test_shortest_simple_paths_directed():
     G = nx.cycle_graph(7, create_using=nx.DiGraph())
     paths = nx.shortest_simple_paths(G, 0, 3)
-    assert [path for path in paths] == [[0, 1, 2, 3]]
+    assert list(paths) == [[0, 1, 2, 3]]
 
 
-def test_shortest_simple_paths_directed_with_weight_fucntion():
+def test_shortest_simple_paths_directed_with_weight_function():
     def cost(u, v, x):
         return 1
 
@@ -473,13 +500,24 @@ def test_shortest_simple_paths_directed_with_weight_fucntion():
     ] == sorted(len(path) for path in nx.all_simple_paths(G, 1, 12))
 
 
-def test_shortest_simple_paths_with_weight_fucntion():
+def test_shortest_simple_paths_with_weight_function():
     def cost(u, v, x):
         return 1
 
     G = nx.cycle_graph(7, create_using=nx.DiGraph())
     paths = nx.shortest_simple_paths(G, 0, 3, weight=cost)
-    assert [path for path in paths] == [[0, 1, 2, 3]]
+    assert list(paths) == [[0, 1, 2, 3]]
+
+
+def test_shortest_simple_paths_with_none_weight_function():
+    def cost(u, v, x):
+        delta = abs(u - v)
+        # ignore interior edges
+        return 1 if (delta == 1 or delta == 4) else None
+
+    G = nx.complete_graph(5)
+    paths = nx.shortest_simple_paths(G, 0, 2, weight=cost)
+    assert list(paths) == [[0, 1, 2], [0, 4, 3, 2]]
 
 
 def test_Greg_Bernstein():
@@ -687,7 +725,7 @@ def validate_length_path(G, s, t, soln_len, length, path):
     validate_path(G, s, t, length, path)
 
 
-def test_bidirectional_dijksta_restricted():
+def test_bidirectional_dijkstra_restricted():
     XG = nx.DiGraph()
     XG.add_weighted_edges_from(
         [
@@ -717,7 +755,7 @@ def test_bidirectional_dijksta_restricted():
         "s",
         "v",
         11,
-        *_bidirectional_dijkstra(XG, "s", "v", ignore_edges=[("s", "x")])
+        *_bidirectional_dijkstra(XG, "s", "v", ignore_edges=[("s", "x")]),
     )
     pytest.raises(
         nx.NetworkXNoPath,

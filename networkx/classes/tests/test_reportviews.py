@@ -205,7 +205,7 @@ class TestNodeViewSetOps:
         cls.nv = cls.G.nodes
 
     def n_its(self, nodes):
-        return {node for node in nodes}
+        return set(nodes)
 
     def test_len(self):
         G = self.G.copy()
@@ -217,21 +217,18 @@ class TestNodeViewSetOps:
         assert len(nv) == 9
 
     def test_and(self):
-        # print("G & H nodes:", gnv & hnv)
         nv = self.nv
         some_nodes = self.n_its(range(5, 12))
         assert nv & some_nodes == self.n_its(range(5, 9))
         assert some_nodes & nv == self.n_its(range(5, 9))
 
     def test_or(self):
-        # print("G | H nodes:", gnv | hnv)
         nv = self.nv
         some_nodes = self.n_its(range(5, 12))
         assert nv | some_nodes == self.n_its(range(12))
         assert some_nodes | nv == self.n_its(range(12))
 
     def test_xor(self):
-        # print("G ^ H nodes:", gnv ^ hnv)
         nv = self.nv
         some_nodes = self.n_its(range(5, 12))
         nodes = {0, 1, 2, 3, 4, 9, 10, 11}
@@ -239,7 +236,6 @@ class TestNodeViewSetOps:
         assert some_nodes ^ nv == self.n_its(nodes)
 
     def test_sub(self):
-        # print("G - H nodes:", gnv - hnv)
         nv = self.nv
         some_nodes = self.n_its(range(5, 12))
         assert nv - some_nodes == self.n_its(range(5))
@@ -351,26 +347,26 @@ class TestEdgeDataView:
             assert (1, 2) in ev and (2, 1) not in ev
         else:
             assert (1, 2) in ev and (2, 1) in ev
-        assert not (1, 4) in ev
-        assert not (1, 90) in ev
-        assert not (90, 1) in ev
+        assert (1, 4) not in ev
+        assert (1, 90) not in ev
+        assert (90, 1) not in ev
 
     def test_contains_with_nbunch(self):
         evr = self.eview(self.G)
         ev = evr(nbunch=[0, 2])
         if self.G.is_directed():
             assert (0, 1) in ev
-            assert not (1, 2) in ev
+            assert (1, 2) not in ev
             assert (2, 3) in ev
         else:
             assert (0, 1) in ev
             assert (1, 2) in ev
             assert (2, 3) in ev
-        assert not (3, 4) in ev
-        assert not (4, 5) in ev
-        assert not (5, 6) in ev
-        assert not (7, 8) in ev
-        assert not (8, 9) in ev
+        assert (3, 4) not in ev
+        assert (4, 5) not in ev
+        assert (5, 6) not in ev
+        assert (7, 8) not in ev
+        assert (8, 9) not in ev
 
     def test_len(self):
         evr = self.eview(self.G)
@@ -427,13 +423,13 @@ class TestOutEdgeDataView(TestEdgeDataView):
         evr = self.eview(self.G)
         ev = evr(nbunch=[0, 2])
         assert (0, 1) in ev
-        assert not (1, 2) in ev
+        assert (1, 2) not in ev
         assert (2, 3) in ev
-        assert not (3, 4) in ev
-        assert not (4, 5) in ev
-        assert not (5, 6) in ev
-        assert not (7, 8) in ev
-        assert not (8, 9) in ev
+        assert (3, 4) not in ev
+        assert (4, 5) not in ev
+        assert (5, 6) not in ev
+        assert (7, 8) not in ev
+        assert (8, 9) not in ev
 
 
 class TestInEdgeDataView(TestOutEdgeDataView):
@@ -455,14 +451,14 @@ class TestInEdgeDataView(TestOutEdgeDataView):
     def test_contains_with_nbunch(self):
         evr = self.eview(self.G)
         ev = evr(nbunch=[0, 2])
-        assert not (0, 1) in ev
+        assert (0, 1) not in ev
         assert (1, 2) in ev
-        assert not (2, 3) in ev
-        assert not (3, 4) in ev
-        assert not (4, 5) in ev
-        assert not (5, 6) in ev
-        assert not (7, 8) in ev
-        assert not (8, 9) in ev
+        assert (2, 3) not in ev
+        assert (3, 4) not in ev
+        assert (4, 5) not in ev
+        assert (5, 6) not in ev
+        assert (7, 8) not in ev
+        assert (8, 9) not in ev
 
 
 class TestMultiEdgeDataView(TestEdgeDataView):
@@ -490,11 +486,11 @@ class TestMultiEdgeDataView(TestEdgeDataView):
         assert (0, 1) in ev
         assert (1, 2) in ev
         assert (2, 3) in ev
-        assert not (3, 4) in ev
-        assert not (4, 5) in ev
-        assert not (5, 6) in ev
-        assert not (7, 8) in ev
-        assert not (8, 9) in ev
+        assert (3, 4) not in ev
+        assert (4, 5) not in ev
+        assert (5, 6) not in ev
+        assert (7, 8) not in ev
+        assert (8, 9) not in ev
 
 
 class TestOutMultiEdgeDataView(TestOutEdgeDataView):
@@ -520,13 +516,13 @@ class TestOutMultiEdgeDataView(TestOutEdgeDataView):
         evr = self.eview(self.G)
         ev = evr(nbunch=[0, 2])
         assert (0, 1) in ev
-        assert not (1, 2) in ev
+        assert (1, 2) not in ev
         assert (2, 3) in ev
-        assert not (3, 4) in ev
-        assert not (4, 5) in ev
-        assert not (5, 6) in ev
-        assert not (7, 8) in ev
-        assert not (8, 9) in ev
+        assert (3, 4) not in ev
+        assert (4, 5) not in ev
+        assert (5, 6) not in ev
+        assert (7, 8) not in ev
+        assert (8, 9) not in ev
 
 
 class TestInMultiEdgeDataView(TestOutMultiEdgeDataView):
@@ -548,14 +544,14 @@ class TestInMultiEdgeDataView(TestOutMultiEdgeDataView):
     def test_contains_with_nbunch(self):
         evr = self.eview(self.G)
         ev = evr(nbunch=[0, 2])
-        assert not (0, 1) in ev
+        assert (0, 1) not in ev
         assert (1, 2) in ev
-        assert not (2, 3) in ev
-        assert not (3, 4) in ev
-        assert not (4, 5) in ev
-        assert not (5, 6) in ev
-        assert not (7, 8) in ev
-        assert not (8, 9) in ev
+        assert (2, 3) not in ev
+        assert (3, 4) not in ev
+        assert (4, 5) not in ev
+        assert (5, 6) not in ev
+        assert (7, 8) not in ev
+        assert (8, 9) not in ev
 
 
 # Edge Views
@@ -596,8 +592,12 @@ class TestEdgeView:
         assert ev[0, 1] == {"foo": "bar"}
 
         # slicing
-        with pytest.raises(nx.NetworkXError):
+        with pytest.raises(nx.NetworkXError, match=".*does not support slicing"):
             G.edges[0:5]
+
+        # Invalid edge
+        with pytest.raises(KeyError, match=r".*edge.*is not in the graph."):
+            G.edges[0, 9]
 
     def test_call(self):
         ev = self.eview(self.G)
@@ -631,13 +631,13 @@ class TestEdgeView:
         else:
             assert (1, 2) in ev and (2, 1) in ev
             assert (1, 2) in edv and (2, 1) in edv
-        assert not (1, 4) in ev
-        assert not (1, 4) in edv
+        assert (1, 4) not in ev
+        assert (1, 4) not in edv
         # edge not in graph
-        assert not (1, 90) in ev
-        assert not (90, 1) in ev
-        assert not (1, 90) in edv
-        assert not (90, 1) in edv
+        assert (1, 90) not in ev
+        assert (90, 1) not in ev
+        assert (1, 90) not in edv
+        assert (90, 1) not in edv
 
     def test_contains_with_nbunch(self):
         ev = self.eview(self.G)
@@ -645,11 +645,11 @@ class TestEdgeView:
         assert (0, 1) in evn
         assert (1, 2) in evn
         assert (2, 3) in evn
-        assert not (3, 4) in evn
-        assert not (4, 5) in evn
-        assert not (5, 6) in evn
-        assert not (7, 8) in evn
-        assert not (8, 9) in evn
+        assert (3, 4) not in evn
+        assert (4, 5) not in evn
+        assert (5, 6) not in evn
+        assert (7, 8) not in evn
+        assert (8, 9) not in evn
 
     def test_len(self):
         ev = self.eview(self.G)
@@ -663,7 +663,6 @@ class TestEdgeView:
         assert len(H.edges) == num_ed + 1
 
     def test_and(self):
-        # print("G & H edges:", gnv & hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1), (1, 0), (0, 2)}
         if self.G.is_directed():
@@ -675,7 +674,6 @@ class TestEdgeView:
         return
 
     def test_or(self):
-        # print("G | H edges:", gnv | hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1), (1, 0), (0, 2)}
         result1 = {(n, n + 1) for n in range(8)}
@@ -686,7 +684,6 @@ class TestEdgeView:
         assert (some_edges | ev) in (result1, result2)
 
     def test_xor(self):
-        # print("G ^ H edges:", gnv ^ hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1), (1, 0), (0, 2)}
         if self.G.is_directed():
@@ -700,7 +697,6 @@ class TestEdgeView:
         return
 
     def test_sub(self):
-        # print("G - H edges:", gnv - hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1), (1, 0), (0, 2)}
         result = {(n, n + 1) for n in range(8)}
@@ -726,13 +722,13 @@ class TestOutEdgeView(TestEdgeView):
         ev = self.eview(self.G)
         evn = ev(nbunch=[0, 2])
         assert (0, 1) in evn
-        assert not (1, 2) in evn
+        assert (1, 2) not in evn
         assert (2, 3) in evn
-        assert not (3, 4) in evn
-        assert not (4, 5) in evn
-        assert not (5, 6) in evn
-        assert not (7, 8) in evn
-        assert not (8, 9) in evn
+        assert (3, 4) not in evn
+        assert (4, 5) not in evn
+        assert (5, 6) not in evn
+        assert (7, 8) not in evn
+        assert (8, 9) not in evn
 
 
 class TestInEdgeView(TestEdgeView):
@@ -752,14 +748,14 @@ class TestInEdgeView(TestEdgeView):
     def test_contains_with_nbunch(self):
         ev = self.eview(self.G)
         evn = ev(nbunch=[0, 2])
-        assert not (0, 1) in evn
+        assert (0, 1) not in evn
         assert (1, 2) in evn
-        assert not (2, 3) in evn
-        assert not (3, 4) in evn
-        assert not (4, 5) in evn
-        assert not (5, 6) in evn
-        assert not (7, 8) in evn
-        assert not (8, 9) in evn
+        assert (2, 3) not in evn
+        assert (3, 4) not in evn
+        assert (4, 5) not in evn
+        assert (5, 6) not in evn
+        assert (7, 8) not in evn
+        assert (8, 9) not in evn
 
 
 class TestMultiEdgeView(TestEdgeView):
@@ -840,9 +836,7 @@ class TestMultiEdgeView(TestEdgeView):
         ev = evr(keys=True, data=True)
         for e in ev:
             assert len(e) == 4
-            print("edge:", e)
             if set(e[:2]) == {2, 3}:
-                print(self.G._adj[2][3])
                 assert e[2] == 0
                 assert e[3] == {"foo": "bar"}
                 checked = True
@@ -871,9 +865,13 @@ class TestMultiEdgeView(TestEdgeView):
         for e in ev:
             assert len(e) == 3
         elist = sorted([(i, i + 1, 0) for i in range(8)] + [(1, 2, 3)])
-        assert sorted(list(ev)) == elist
-        # test order of arguments:graph, nbunch, data, keys, default
-        ev = evr((1, 2), "foo", True, 1)
+        assert sorted(ev) == elist
+        # test that the keyword arguments are passed correctly
+        ev = evr((1, 2), "foo", keys=True, default=1)
+        with pytest.raises(TypeError):
+            evr((1, 2), "foo", True, 1)
+        with pytest.raises(TypeError):
+            evr((1, 2), "foo", True, default=1)
         for e in ev:
             if set(e[:2]) == {1, 2}:
                 assert e[2] in {0, 3}
@@ -887,7 +885,6 @@ class TestMultiEdgeView(TestEdgeView):
             assert len(list(ev)) == 4
 
     def test_or(self):
-        # print("G | H edges:", gnv | hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1, 0), (1, 0, 0), (0, 2, 0)}
         result = {(n, n + 1, 0) for n in range(8)}
@@ -897,7 +894,6 @@ class TestMultiEdgeView(TestEdgeView):
         assert some_edges | ev == result
 
     def test_sub(self):
-        # print("G - H edges:", gnv - hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1, 0), (1, 0, 0), (0, 2, 0)}
         result = {(n, n + 1, 0) for n in range(8)}
@@ -907,7 +903,6 @@ class TestMultiEdgeView(TestEdgeView):
         assert some_edges - ev, result
 
     def test_xor(self):
-        # print("G ^ H edges:", gnv ^ hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1, 0), (1, 0, 0), (0, 2, 0)}
         if self.G.is_directed():
@@ -922,7 +917,6 @@ class TestMultiEdgeView(TestEdgeView):
             assert some_edges ^ ev == result
 
     def test_and(self):
-        # print("G & H edges:", gnv & hnv)
         ev = self.eview(self.G)
         some_edges = {(0, 1, 0), (1, 0, 0), (0, 2, 0)}
         if self.G.is_directed():
@@ -938,11 +932,11 @@ class TestMultiEdgeView(TestEdgeView):
         assert (0, 1) in evn
         assert (1, 2) in evn
         assert (2, 3) in evn
-        assert not (3, 4) in evn
-        assert not (4, 5) in evn
-        assert not (5, 6) in evn
-        assert not (7, 8) in evn
-        assert not (8, 9) in evn
+        assert (3, 4) not in evn
+        assert (4, 5) not in evn
+        assert (5, 6) not in evn
+        assert (7, 8) not in evn
+        assert (8, 9) not in evn
 
 
 class TestOutMultiEdgeView(TestMultiEdgeView):
@@ -969,13 +963,13 @@ class TestOutMultiEdgeView(TestMultiEdgeView):
         ev = self.eview(self.G)
         evn = ev(nbunch=[0, 2])
         assert (0, 1) in evn
-        assert not (1, 2) in evn
+        assert (1, 2) not in evn
         assert (2, 3) in evn
-        assert not (3, 4) in evn
-        assert not (4, 5) in evn
-        assert not (5, 6) in evn
-        assert not (7, 8) in evn
-        assert not (8, 9) in evn
+        assert (3, 4) not in evn
+        assert (4, 5) not in evn
+        assert (5, 6) not in evn
+        assert (7, 8) not in evn
+        assert (8, 9) not in evn
 
 
 class TestInMultiEdgeView(TestMultiEdgeView):
@@ -1001,14 +995,14 @@ class TestInMultiEdgeView(TestMultiEdgeView):
     def test_contains_with_nbunch(self):
         ev = self.eview(self.G)
         evn = ev(nbunch=[0, 2])
-        assert not (0, 1) in evn
+        assert (0, 1) not in evn
         assert (1, 2) in evn
-        assert not (2, 3) in evn
-        assert not (3, 4) in evn
-        assert not (4, 5) in evn
-        assert not (5, 6) in evn
-        assert not (7, 8) in evn
-        assert not (8, 9) in evn
+        assert (2, 3) not in evn
+        assert (3, 4) not in evn
+        assert (4, 5) not in evn
+        assert (5, 6) not in evn
+        assert (7, 8) not in evn
+        assert (8, 9) not in evn
 
 
 # Degrees
@@ -1417,3 +1411,11 @@ def test_cache_dict_get_set_state(graph):
     # Raises error if the cached properties and views do not work
     pickle.loads(pickle.dumps(G, -1))
     deepcopy(G)
+
+
+def test_edge_views_inherit_from_EdgeViewABC():
+    all_edge_view_classes = (v for v in dir(nx.reportviews) if "Edge" in v)
+    for eview_class in all_edge_view_classes:
+        assert issubclass(
+            getattr(nx.reportviews, eview_class), nx.reportviews.EdgeViewABC
+        )

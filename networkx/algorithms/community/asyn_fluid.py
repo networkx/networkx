@@ -2,6 +2,7 @@
 
 from collections import Counter
 
+import networkx as nx
 from networkx.algorithms.components import is_connected
 from networkx.exception import NetworkXError
 from networkx.utils import groups, not_implemented_for, py_random_state
@@ -9,8 +10,10 @@ from networkx.utils import groups, not_implemented_for, py_random_state
 __all__ = ["asyn_fluidc"]
 
 
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
 @py_random_state(3)
-@not_implemented_for("directed", "multigraph")
+@nx._dispatchable
 def asyn_fluidc(G, k, max_iter=100, seed=None):
     """Returns communities in `G` as detected by Fluid Communities algorithm.
 
@@ -22,7 +25,7 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
     The algorithm proceeds as follows. First each of the initial k communities
     is initialized in a random vertex in the graph. Then the algorithm iterates
     over all vertices in a random order, updating the community of each vertex
-    based on its own community and the communities of its neighbours. This
+    based on its own community and the communities of its neighbors. This
     process is performed several times until convergence.
     At all times, each community has a total density of 1, which is equally
     distributed among the vertices it contains. If a vertex changes of
@@ -36,7 +39,8 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
 
     Parameters
     ----------
-    G : Graph
+    G : NetworkX graph
+        Graph must be simple and undirected.
 
     k : integer
         The number of communities to be found.
@@ -79,7 +83,7 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
     communities = {n: i for i, n in enumerate(vertices[:k])}
     density = {}
     com_to_numvertices = {}
-    for vertex in communities.keys():
+    for vertex in communities:
         com_to_numvertices[communities[vertex]] = 1
         density[communities[vertex]] = max_density
     # Set up control variables and start iterating
@@ -99,7 +103,7 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
                 com_counter.update({communities[vertex]: density[communities[vertex]]})
             except KeyError:
                 pass
-            # Gather neighbour vertex communities
+            # Gather neighbor vertex communities
             for v in G[vertex]:
                 try:
                     com_counter.update({communities[v]: density[communities[v]]})

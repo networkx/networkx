@@ -6,6 +6,7 @@ Breadth First Search on Edges
 Algorithms for a breadth-first traversal of edges in a graph.
 
 """
+
 from collections import deque
 
 import networkx as nx
@@ -16,6 +17,7 @@ REVERSE = "reverse"
 __all__ = ["edge_bfs"]
 
 
+@nx._dispatchable
 def edge_bfs(G, source=None, orientation=None):
     """A directed, breadth-first-search of edges in `G`, beginning at `source`.
 
@@ -157,7 +159,7 @@ def edge_bfs(G, source=None, orientation=None):
     check_reverse = directed and orientation in ("reverse", "ignore")
 
     # start BFS
-    visited_nodes = {n for n in nodes}
+    visited_nodes = set(nodes)
     visited_edges = set()
     queue = deque([(n, edges_from(n)) for n in nodes])
     while queue:
