@@ -669,6 +669,7 @@ class _dispatchable:
         preserve_all_attrs=False,
         mutates_input=False,
         returns_graph=False,
+        implemented_by_nx=True,
     ):
         """A decorator function that is used to redirect the execution of ``func``
         function to its backend implementation.

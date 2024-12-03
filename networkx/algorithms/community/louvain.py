@@ -1,4 +1,4 @@
-"""Function for detecting communities based on Louvain Community Detection
+"""Functions for detecting communities based on Louvain Community Detection
 Algorithm"""
 
 import itertools

@@ -190,7 +190,7 @@ def greedy_source_expansion(G, *, source, cutoff=None, method="clauset"):
         A set of nodes representing the local community around the source node.
 
     Examples
-    ----------
+    --------
     >>> G = nx.karate_club_graph()
     >>> nx.community.greedy_source_expansion(G, source=16)
     {16, 0, 4, 5, 6, 10}
