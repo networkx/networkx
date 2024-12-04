@@ -54,6 +54,18 @@ def test_draw_shell_nlist():
             pass
 
 
+def test_draw_bipartite():
+    try:
+        G = nx.complete_bipartite_graph(2, 5)
+        nx.draw_bipartite(G)
+        plt.savefig("test.ps")
+    finally:
+        try:
+            os.unlink("test.ps")
+        except OSError:
+            pass
+
+
 def test_edge_colormap():
     colors = range(barbell.number_of_edges())
     nx.draw_spring(
