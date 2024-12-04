@@ -446,6 +446,11 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     # Check that the source vertex, if given, is in the graph
     if source is not None and source not in G.nodes:
         raise nx.NetworkXError("Given source node not in G.")
+    # handle 2 node case
+    if N == 1:
+        if source is None:
+            return list(G)
+        return [source, next(n for n in G if n != source)]
 
     opt_hk, z_star = held_karp_ascent(G, weight)
 
