@@ -279,8 +279,9 @@ def bipartite_layout(
         A position will be assigned to every node in G.
 
     nodes : collection of nodes
-        Nodes in one node set of the bipartite graph. This set will be placed on
-        left or top. If `None` (the default), a node set is chosen arbitrarily.
+        Nodes in one node set of the graph. This set will be placed on
+        left or top. If `None` (the default), a node set is chosen arbitrarily
+        if the graph if bipartite.
 
     align : string (default='vertical')
         The alignment of nodes. Vertical or horizontal.
@@ -306,9 +307,20 @@ def bipartite_layout(
 
     Examples
     --------
-    >>> G = nx.bipartite.gnmk_random_graph(3, 5, 10, seed=123)
-    >>> top = nx.bipartite.sets(G)[0]
-    >>> pos = nx.bipartite_layout(G, top)
+    >>> G = nx.complete_bipartite_graph(3, 3)
+    >>> pos = nx.bipartite_layout(G)
+
+    The ordering of the layout (i.e. which nodes appear on the left/top) can
+    be specified with the `nodes` parameter:
+
+    >>> top, bottom = nx.bipartite.sets(G)
+    >>> pos = nx.bipartite_layout(G, nodes=bottom)  # "bottom" set appears on the left
+
+    The ``bipartite_layout`` function can be used with non-bipartite graphs
+    by explicitly specifying how the layout should be partitioned with `nodes`:
+
+    >>> G = nx.complete_graph(5)  # Non-bipartite
+    >>> pos = nx.bipartite_layout(G, nodes={0, 1, 2})
 
     Notes
     -----
