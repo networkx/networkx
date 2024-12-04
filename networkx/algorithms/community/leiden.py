@@ -1,4 +1,4 @@
-"""Function for detecting communities based on Leiden Community Detection
+"""Functions for detecting communities based on Leiden Community Detection
 Algorithm"""
 
 import itertools
@@ -13,14 +13,42 @@ __all__ = ["leiden_communities", "leiden_partitions"]
 
 @not_implemented_for("directed")
 @py_random_state("seed")
-@nx._dispatchable(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight", implemented_by_nx=False)
 def leiden_communities(G, weight="weight", resolution=1, max_level=None, seed=None):
-    """Find the best partition of a graph using the Leiden Community Detection
+    r"""Find the best partition of a graph using the Leiden Community Detection
     Algorithm.
 
-    TODO: more documentation.
-    TODO: admonish that this is a backend-only function.
-    TODO: add Examples section (that calls a backend?)
+    Leiden Community Detection Algorithm is a method to extract the community
+    structure of a network based on modularity optimization.
+    See :func:`~networkx.algorithms.community.louvain.louvain_communities`.
+
+    Unlike the Louvain algorithm, it guarantees that communities are well connected in addition
+    to being faster and uncovering better partitions. [1]_
+
+    The algorithm works in 3 phases. On the first phase, it adds the nodes to a queue randomly
+    and assigns every node to be in its own community. For each node it tries to find the
+    maximum positive modularity gain by moving each node to all of its neighbor communities.
+    If a node is moved from its community, it adds to the rear of the queue all neighbours of
+    the node that do not belong to the node’s new community and that are not in the queue.
+
+    The first phase continues until the queue is empty.
+
+    The second phase consists in refining the partition $P$ obtained from the first phase. It starts
+    with a singleton partition $P_{refined}$. Then it merges nodes locally in $P_{refined}$ within
+    each community of the partition $P$. Nodes are merged with a community in $P_{refined}$ only if
+    both are sufficiently well connected to their community in $P$. This means that after the
+    refinement phase is concluded, communities in $P$ sometimes will have been split into multiple
+    communities.
+
+    The third phase, consists on aggregating the network by building a new network whose nodes are
+    now the communities found in the second phase. However the non-refined partition is used to create
+    an initial partition for the aggregate network.
+
+    Once this phase is complete it is possible to reapply the first and second phases creating bigger
+    communities with increased modularity.
+
+    The above three phases are executed until no modularity gain is achieved or `max_level` number
+    of iterations have been performed.
 
     Parameters
     ----------
@@ -45,6 +73,18 @@ def leiden_communities(G, weight="weight", resolution=1, max_level=None, seed=No
         A list of sets (partition of `G`). Each set represents one community and contains
         all the nodes that constitute it.
 
+    Examples
+    --------
+    >>> import networkx as nx
+    >>> G = nx.petersen_graph()
+    >>> nx.community.leiden_communities(G, backend="example_backend")  # doctest: +SKIP
+    [{2, 3, 5, 7, 8}, {0, 1, 4, 6, 9}]
+
+    Notes
+    -----
+    The order in which the nodes are considered can affect the final output. In the algorithm
+    the ordering happens using a random shuffle.
+
     References
     ----------
     .. [1] Traag, V.A., Waltman, L. & van Eck, N.J. From Leiden to Leiden: guaranteeing
@@ -53,7 +93,7 @@ def leiden_communities(G, weight="weight", resolution=1, max_level=None, seed=No
     See Also
     --------
     leiden_partitions
-    louvain_communities
+    :func:`~networkx.algorithms.community.louvain.louvain_communities`
     """
     partitions = leiden_partitions(G, weight, resolution, seed)
     if max_level is not None:
@@ -66,13 +106,21 @@ def leiden_communities(G, weight="weight", resolution=1, max_level=None, seed=No
 
 @not_implemented_for("directed")
 @py_random_state("seed")
-@nx._dispatchable(edge_attrs="weight")
+@nx._dispatchable(edge_attrs="weight", implemented_by_nx=False)
 def leiden_partitions(G, weight="weight", resolution=1, seed=None):
     """Yields partitions for each level of the Leiden Community Detection Algorithm
 
-    TODO: more documentation.
-    TODO: admonish that this is a backend-only function.
-    TODO: add Examples section (that calls a backend?)
+    Leiden Community Detection Algorithm is a method to extract the community
+    structure of a network based on modularity optimization.
+
+    The partitions at each level (step of the algorithm) form a dendogram of communities.
+    A dendrogram is a diagram representing a tree and each level represents
+    a partition of the G graph. The top level contains the smallest communities
+    and as you traverse to the bottom of the tree the communities get bigger
+    and the overal modularity increases making the partition better.
+
+    Each level is generated by executing the three phases of the Leiden Community
+    Detection Algorithm.
 
     Parameters
     ----------
@@ -101,7 +149,7 @@ def leiden_partitions(G, weight="weight", resolution=1, seed=None):
     See Also
     --------
     leiden_communities
-    louvain_partitions
+    :func:`~networkx.algorithms.community.louvain.louvain_partitions`
     """
     raise NotImplementedError(
         "'leiden_partitions' is not implemented by networkx. "
