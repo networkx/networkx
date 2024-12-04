@@ -2344,18 +2344,15 @@ class _dispatchable:
             if func_url := func_info.get("url"):
                 lines.append(f"[`Source <{func_url}>`_]")
                 lines.append("")
+
         # We assume the docstrings are indented by four spaces (true for now)
+        new_doc = self._orig_doc or ""
+        if not new_doc.rstrip():
+            new_doc = f"The original docstring for {self.name} was empty."
         if self.backends:
             lines.pop()  # Remove last empty line
             to_add = "\n    ".join(lines)
-            if not self._orig_doc:
-                new_doc = (
-                    f"The original docstring for {self.name} was empty.\n\n    {to_add}"
-                )
-            else:
-                new_doc = f"{self._orig_doc.rstrip()}\n\n    {to_add}"
-        else:
-            new_doc = self._orig_doc or ""
+            new_doc = f"{new_doc.rstrip()}\n\n    {to_add}"
 
         # For backend-only funcs, add "Attention" admonishment after the one line summary
         if "networkx" not in self.backends:
@@ -2363,7 +2360,7 @@ class _dispatchable:
             index = 0
             while not lines[index].strip():
                 index += 1
-            while lines[index].strip():
+            while index < len(lines) and lines[index].strip():
                 index += 1
             backends = sorted(self.backends)
             if len(backends) == 0:
