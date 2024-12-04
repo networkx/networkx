@@ -246,10 +246,10 @@ def soft_random_geometric_graph(
         connecting two nodes that are of distance, dist, computed by the
         Minkowski distance metric. The probability density function, `p_dist`,
         must be any function that takes the metric value as input
-        and outputs a single probability value between 0-1. The scipy.stats
+        and outputs a single probability value between 0-1. The `scipy.stats`
         package has many probability distribution functions implemented and
         tools for custom probability distribution definitions [2], and passing
-        the .pdf method of scipy.stats distributions can be used here.  If the
+        the .pdf method of `scipy.stats` distributions can be used here.  If the
         probability function, `p_dist`, is not supplied, the default function
         is an exponential distribution with rate parameter :math:`\lambda=1`.
     seed : integer, random_state, or None (default)
@@ -276,8 +276,6 @@ def soft_random_geometric_graph(
     ----------
     .. [1] Penrose, Mathew D. "Connectivity of soft random geometric graphs."
            The Annals of Applied Probability 26.2 (2016): 986-1028.
-    .. [2] scipy.stats -
-           https://docs.scipy.org/doc/scipy/reference/stats.html
 
     Examples
     --------
@@ -290,8 +288,8 @@ def soft_random_geometric_graph(
     The `pos` keyword argument can be used to specify node positions so you
     can create an arbitrary distribution and domain for positions.
 
-    The scipy.stats package can be used to define the probability distribution
-    with the .pdf method used as `p_dist`.
+    The `scipy.stats` package can be used to define the probability distribution
+    with the ``.pdf`` method used as `p_dist`.
 
     For example, create a soft random geometric graph on 100 nodes using a 2D
     Gaussian distribution of node positions with mean (0, 0) and standard deviation 2,
@@ -401,7 +399,7 @@ def geographical_threshold_graph(
         density functions. The :mod:`scipy.stats` package has many
         probability density functions implemented and tools for custom
         probability density definitions, and passing the ``.pdf`` method of
-        scipy.stats distributions can be used here. If ``p_dist=None``
+        `scipy.stats` distributions can be used here. If ``p_dist=None``
         (the default), the exponential function :math:`r^{-2}` is used.
     seed : integer, random_state, or None (default)
         Indicator of random number generation state.
