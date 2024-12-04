@@ -108,7 +108,8 @@ def all_simple_paths(G, source, target, cutoff=None):
        Single node or iterable of nodes at which to end path
 
     cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search, in terms of edges. Only paths containing
+        <= `cutoff` edges are returned.
 
     Returns
     -------
@@ -274,7 +275,8 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
        Single node or iterable of nodes at which to end path
 
     cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search, in terms of edges. Only paths containing
+        <= `cutoff` edges are returned.
 
     Returns
     -------
@@ -324,6 +326,14 @@ def all_simple_edge_paths(G, source, target, cutoff=None):
         >>> len(paths)
         1
 
+    You can use the ``cutoff`` parameter to only generate paths with length
+    less than or equal to this value:
+
+        >>> g = nx.Graph([(1, 2), (2, 4), (1, 3), (3, 4), (1, 4)])
+        >>> sorted(nx.all_simple_edge_paths(g, 1, 4, cutoff=2))
+        [[(1, 2), (2, 4)], [(1, 3), (3, 4)], [(1, 4)]]
+        >>> sorted(nx.all_simple_edge_paths(g, 1, 4, cutoff=1))
+        [[(1, 4)]]
 
     Notes
     -----
