@@ -6,6 +6,9 @@ import warnings
 
 import pytest
 
+# Ignore the numerous Deprecation warnings in the nx_pylab module right now
+pytestmark = pytest.mark.filterwarnings("ignore", category=DeprecationWarning)
+
 mpl = pytest.importorskip("matplotlib")
 np = pytest.importorskip("numpy")
 mpl.use("PS")
