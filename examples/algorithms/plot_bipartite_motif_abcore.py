@@ -25,7 +25,7 @@ while remove_nodes := [
     n for n, d in G_core.degree() if ((n in U and d < alpha) or (n in V and d < beta))
 ]:
     G_core.remove_nodes_from(remove_nodes)
-print(f"Nodes comprising the α/β-core of G: {set(G_core.nodes)}")
+print(f"Nodes comprising the α({alpha})/β({beta})-core of G: {set(G_core.nodes)}")
 
 # Visualize the graph
 fig, ax = plt.subplots()
