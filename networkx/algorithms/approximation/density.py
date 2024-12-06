@@ -1,17 +1,68 @@
-"""Fast algorithms for densest subgraph problem"""
+"""Fast algorithms for the densest subgraph problem"""
 
 import networkx as nx
 
-__all__ = ["greedy_plus_plus"]
+__all__ = ["densest_subgraph"]
+
+
+def _greedy_plus_plus(G, iterations):
+    if G.number_of_edges() == 0:
+        return 0.0, set()
+    if iterations < 1:
+        raise ValueError(
+            f"The number of iterations must be an integer at least 1. Provided value is {iterations}"
+        )
+
+    loads = {u: 0 for u in G.nodes}  # The load vector for Greedy++.
+    best_density = 0.0  # Best density found so far.
+    best_subgraph = set()  # Best subgraph found so far.
+
+    for _ in range(iterations):
+        # Initialize the heap for fast minimum degree
+        heap = nx.utils.BinaryHeap()
+
+        # Calculate the current weighted degrees (load + degree of node) and add it to the heap.
+        weighted_degrees = {u: loads[u] + d for u, d in G.degree()}
+        for u in G.nodes:
+            heap.insert(u, weighted_degrees[u])
+
+        # Copy the graph structure for this iteration
+        G_iter = G.copy()
+
+        while G_iter.number_of_nodes() >= 1:
+            current_density = (
+                G_iter.number_of_edges() / G_iter.number_of_nodes()
+            )  # Current density of G_iter
+
+            if current_density > best_density:
+                best_density = current_density
+                best_subgraph = set(G_iter.nodes)
+
+            u, _ = heap.pop()  # Pick node with minimum current weighted degree
+
+            loads[u] += G_iter.degree[u]  # Add to load of u
+
+            # Subtract one edge from all of u's neighbors, and update their weighted degree
+            for v in G_iter.neighbors(u):
+                weighted_degrees[v] -= 1
+                heap.insert(v, weighted_degrees[v])
+
+            # Delete u
+            G_iter.remove_node(u)
+
+    return (best_density, best_subgraph)
+
+
+ALGORITHMS = {"greedy++": _greedy_plus_plus}
 
 
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
 @nx._dispatchable
-def greedy_plus_plus(G, iterations):
+def densest_subgraph(G, iterations=1, *, method="greedy++"):
     r"""Returns an approximate densest subgraph for a graph `G`.
 
-    This function runs Boob et al. [2]_ Greedy++ algorithm to find
+    This function runs an iterative algorithm to find
     the densest subgraph, and returns both the density and the subgraph.
     For a discussion on the notion of density used and the different
     algorithms available on networkx, please see the Notes section below.
@@ -19,11 +70,16 @@ def greedy_plus_plus(G, iterations):
     Parameters
     ----------
     G : NetworkX graph
-        Undirected graph
+        Undirected graph.
 
-    iterations: int
-        Number of iterations to use for the Greedy++ algorithm. ``iterations=1``
-        is equivalent to the greedy "peeling" algorithm in [1]_.
+    iterations : int, optional (default=1)
+        Number of iterations to use for the iterative algorithm.
+        Can be specified positionally or as a keyword argument.
+
+    method : string, optional (default='greedy++')
+        The algorithm to use to approximate the densest subgraph.
+        Supported options: 'greedy++'.
+        Must be specified as a keyword argument. Other inputs produce a ValueError.
 
     Returns
     -------
@@ -36,7 +92,7 @@ def greedy_plus_plus(G, iterations):
     Examples
     --------
     >>> G = nx.star_graph(4)
-    >>> nx.approximation.greedy_plus_plus(G, iterations=1)
+    >>> nx.approximation.densest_subgraph(G, iterations=1)
     (0.8, {0, 1, 2, 3, 4})
 
     Notes
@@ -102,48 +158,9 @@ def greedy_plus_plus(G, iterations):
         In Proceedings of the 2022 Annual ACM-SIAM Symposium on Discrete Algorithms (SODA), pp. 1531-1555.
         Society for Industrial and Applied Mathematics, 2022.
     """
-    if G.number_of_edges() == 0:
-        return 0.0, set()
-    if iterations < 1:
-        raise ValueError(
-            f"The number of iterations must be an integer at least 1. Provided value is {iterations}"
-        )
+    try:
+        algo = ALGORITHMS[method]
+    except KeyError as e:
+        raise ValueError(f"{method} is not a valid choice for an algorithm.") from e
 
-    loads = {u: 0 for u in G.nodes}  # The load vector for Greedy++.
-    best_density = 0.0  # Best density found so far.
-    best_subgraph = set()  # Best subgraph found so far.
-
-    for _ in range(iterations):
-        # Initialize the heap for fast minimum degree
-        heap = nx.utils.BinaryHeap()
-
-        # Calculate the current weighted degrees (load + degree of node) and add it to the heap.
-        weighted_degrees = {u: loads[u] + d for u, d in G.degree()}
-        for u in G.nodes:
-            heap.insert(u, weighted_degrees[u])
-
-        # Copy the graph structure for this iteration
-        G_iter = G.copy()
-
-        while G_iter.number_of_nodes() >= 1:
-            current_density = (
-                G_iter.number_of_edges() / G_iter.number_of_nodes()
-            )  # Current density of G_iter
-
-            if current_density > best_density:
-                best_density = current_density
-                best_subgraph = set(G_iter.nodes)
-
-            u, _ = heap.pop()  # Pick node with minimum current weighted degree
-
-            loads[u] += G_iter.degree[u]  # Add to load of u
-
-            # Subtract one edge from all of u's neighbors, and update their weighted degree
-            for v in G_iter.neighbors(u):
-                weighted_degrees[v] -= 1
-                heap.insert(v, weighted_degrees[v])
-
-            # Delete u
-            G_iter.remove_node(u)
-
-    return (best_density, best_subgraph)
+    return algo(G, iterations)

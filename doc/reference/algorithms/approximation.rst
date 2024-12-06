@@ -48,11 +48,11 @@ Clustering
 
 Density
 -------
-.. automodule:: networkx.algorithms.approximation.densest_subgraph
+.. automodule:: networkx.algorithms.approximation.density
 .. autosummary::
    :toctree: generated/
 
-   greedy_plus_plus
+   densest_subgraph
 
 
 Distance Measures

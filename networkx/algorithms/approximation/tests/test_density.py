@@ -11,7 +11,7 @@ def test_greedy_plus_plus_star(n, iterations):
     # The densest subgraph of a star network is the entire graph:
     # The peeling algorithm would peel all the vertices with degree 1, and so should discover
     # The densest subgraph in one iteration!
-    d, S = approx.greedy_plus_plus(G, iterations=iterations)
+    d, S = approx.densest_subgraph(G, iterations=iterations, method="greedy++")
 
     assert d == pytest.approx(G.number_of_edges() / G.number_of_nodes())
     assert S == set(G)  # The entire graph!
@@ -21,7 +21,7 @@ def test_greedy_plus_plus_complete_graph():
     G = nx.complete_graph(4)
     # The density of a complete graph network is the entire graph: C(4, 2)/4 where C(n, 2) is n*(n-1)//2.
     # The peeling algorithm would find the densest subgraph in one iteration!
-    d, S = approx.greedy_plus_plus(G, iterations=1)
+    d, S = approx.densest_subgraph(G, iterations=1, method="greedy++")
 
     assert d == pytest.approx(6 / 4)  # The density, 4/5=0.8.
     assert S == {0, 1, 2, 3}  # The entire graph!
@@ -42,7 +42,7 @@ def test_greedy_plus_plus_close_cliques():
     G = nx.disjoint_union_all([KdD] + [Kh for _ in range(k)])
     best_density = d * D / (d + D)  # of the complete bipartite graph
 
-    greedy_pp, S_pp = approx.greedy_plus_plus(G, iterations=190)
+    greedy_pp, S_pp = approx.densest_subgraph(G, iterations=190, method="greedy++")
 
     assert greedy_pp == pytest.approx(best_density)
     assert S_pp == set(KdD.nodes)
@@ -66,11 +66,15 @@ def test_greedy_plus_plus_bipartite_and_clique():
         2 * d + 2 * D + 2 * k * (d + 2)
     )
 
-    one_round_density, S_one = approx.greedy_plus_plus(G, iterations=1)
+    one_round_density, S_one = approx.densest_subgraph(
+        G, iterations=1, method="greedy++"
+    )
     assert one_round_density == pytest.approx(correct_one_round_density)
     assert S_one == set(G.nodes)
 
-    ten_round_density, S_ten = approx.greedy_plus_plus(G, iterations=10)
+    ten_round_density, S_ten = approx.densest_subgraph(
+        G, iterations=10, method="greedy++"
+    )
     assert ten_round_density == pytest.approx(best_density)
     assert S_ten == set(B.nodes)
 
@@ -78,6 +82,12 @@ def test_greedy_plus_plus_bipartite_and_clique():
 @pytest.mark.parametrize("iterations", (1, 3))
 def test_greedy_plus_plus_edgeless_cornercase(iterations):
     G = nx.Graph()
-    assert approx.greedy_plus_plus(G, iterations=iterations) == (0, set())
+    assert approx.densest_subgraph(G, iterations=iterations, method="greedy++") == (
+        0,
+        set(),
+    )
     G.add_nodes_from(range(4))
-    assert approx.greedy_plus_plus(G, iterations=iterations) == (0, set())
+    assert approx.densest_subgraph(G, iterations=iterations, method="greedy++") == (
+        0,
+        set(),
+    )
