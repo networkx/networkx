@@ -8,6 +8,7 @@ Unit tests for various classic graph generators in generators/classic.py
 
 import itertools
 import typing
+from contextlib import nullcontext as does_not_raise
 
 import pytest
 
@@ -85,57 +86,59 @@ class TestGeneratorClassic:
         t = nx.full_rary_tree(3, 20)
         assert t.order() == 20
 
-    def test_barbell_graph(self):
-        # number of nodes = 2*m1 + m2 (2 m1-complete graphs + m2-path + 2 edges)
-        # number of edges = 2*(nx.number_of_edges(m1-complete graph) + m2 + 1
-        m1 = 3
-        m2 = 5
+    @pytest.mark.parametrize("m1", range(2, 10))
+    @pytest.mark.parametrize("m2", range(10))
+    def test_barbell_graph_n_nodes_edges(self, m1, m2):
+        # number of nodes = 2*m1 + m2 (2 m1-complete graphs + m2-path)
+        # number of edges = 2*(nx.number_of_edges(m1-complete graph)) + m2 + 1
         b = nx.barbell_graph(m1, m2)
         assert nx.number_of_nodes(b) == 2 * m1 + m2
         assert nx.number_of_edges(b) == m1 * (m1 - 1) + m2 + 1
 
-        m1 = 4
-        m2 = 10
-        b = nx.barbell_graph(m1, m2)
-        assert nx.number_of_nodes(b) == 2 * m1 + m2
-        assert nx.number_of_edges(b) == m1 * (m1 - 1) + m2 + 1
+    @pytest.mark.parametrize(
+        "m1,m2,expectation",
+        [
+            (-1, -1, pytest.raises(nx.NetworkXError)),  # m1 < 2
+            (-1, 0, pytest.raises(nx.NetworkXError)),  # m1 < 2
+            (-1, 1, pytest.raises(nx.NetworkXError)),  # m1 < 2
+            (0, -1, pytest.raises(nx.NetworkXError)),  # m1 < 2
+            (0, 0, pytest.raises(nx.NetworkXError)),  # m1 < 2
+            (0, 1, pytest.raises(nx.NetworkXError)),  # m1 < 2
+            (1, -1, pytest.raises(nx.NetworkXError)),  # m1 < 2
+            (1, 0, pytest.raises(nx.NetworkXError)),  # m1 < 2
+            (1, 1, pytest.raises(nx.NetworkXError)),  # m1 < 2
+            (2, -1, pytest.raises(nx.NetworkXError)),  # m2 < 0
+            (2, 0, does_not_raise()),  # ok
+            (2, 1, does_not_raise()),  # ok
+        ],
+    )
+    def test_barbell_graph_m1_m2_exceptions(self, m1, m2, expectation):
+        with expectation:
+            nx.barbell_graph(m1, m2)
 
-        m1 = 3
-        m2 = 20
-        b = nx.barbell_graph(m1, m2)
-        assert nx.number_of_nodes(b) == 2 * m1 + m2
-        assert nx.number_of_edges(b) == m1 * (m1 - 1) + m2 + 1
+    @pytest.mark.parametrize(
+        "create_using,expectation",
+        [
+            (nx.Graph, does_not_raise()),  # ok
+            (nx.DiGraph, pytest.raises(nx.NetworkXError)),  # directed
+            (nx.MultiGraph, does_not_raise()),  # ok
+            (nx.MultiDiGraph, pytest.raises(nx.NetworkXError)),  # directed
+        ],
+    )
+    def test_barbell_graph_create_using_exceptions(self, create_using, expectation):
+        with expectation:
+            nx.barbell_graph(5, 2, create_using=create_using)
 
-        # Raise NetworkXError if m1<2
-        m1 = 1
-        m2 = 20
-        pytest.raises(nx.NetworkXError, nx.barbell_graph, m1, m2)
-
-        # Raise NetworkXError if m2<0
-        m1 = 5
-        m2 = -2
-        pytest.raises(nx.NetworkXError, nx.barbell_graph, m1, m2)
-
-        # nx.barbell_graph(2,m) = nx.path_graph(m+4)
-        m1 = 2
-        m2 = 5
-        b = nx.barbell_graph(m1, m2)
+    @pytest.mark.parametrize("m2", (0, 5))
+    def test_barbell_graph(self, m2):
+        # nx.barbell_graph(2, m) = nx.path_graph(m + 4)
+        b = nx.barbell_graph(2, m2)
         assert is_isomorphic(b, nx.path_graph(m2 + 4))
 
-        m1 = 2
-        m2 = 10
+    @pytest.mark.parametrize("m1", (2, 5))
+    @pytest.mark.parametrize("m2", (0, 5))
+    def test_barbell_graph_multigraph(self, m1, m2):
         b = nx.barbell_graph(m1, m2)
-        assert is_isomorphic(b, nx.path_graph(m2 + 4))
-
-        m1 = 2
-        m2 = 20
-        b = nx.barbell_graph(m1, m2)
-        assert is_isomorphic(b, nx.path_graph(m2 + 4))
-
-        pytest.raises(
-            nx.NetworkXError, nx.barbell_graph, m1, m2, create_using=nx.DiGraph()
-        )
-
         mb = nx.barbell_graph(m1, m2, create_using=nx.MultiGraph())
         assert edges_equal(mb.edges(), b.edges())
 
@@ -360,30 +363,85 @@ class TestGeneratorClassic:
         assert nx.number_of_nodes(G) == len(m) + len(n)
         assert nx.number_of_edges(G) == len(m) * (len(m) - 1) / 2 + len(n)
 
-    def test_lollipop_graph_exceptions(self):
-        # Raise NetworkXError if m<2
-        pytest.raises(nx.NetworkXError, nx.lollipop_graph, -1, 2)
-        pytest.raises(nx.NetworkXError, nx.lollipop_graph, 1, 20)
-        pytest.raises(nx.NetworkXError, nx.lollipop_graph, "", 20)
-        pytest.raises(nx.NetworkXError, nx.lollipop_graph, "a", 20)
+    @pytest.mark.parametrize(
+        ("m", "n", "expectation"),
+        [
+            (-1, -1, pytest.raises(nx.NetworkXError)),  # m < 2
+            (-1, 0, pytest.raises(nx.NetworkXError)),  # m < 2
+            (-1, "", pytest.raises(nx.NetworkXError)),  # m < 2
+            (-1, 1, pytest.raises(nx.NetworkXError)),  # m < 2
+            (-1, "a", pytest.raises(nx.NetworkXError)),  # m < 2
+            (0, -1, pytest.raises(nx.NetworkXError)),  # m < 2
+            (0, 0, pytest.raises(nx.NetworkXError)),  # m < 2
+            (0, "", pytest.raises(nx.NetworkXError)),  # m < 2
+            (0, 1, pytest.raises(nx.NetworkXError)),  # m < 2
+            (0, "a", pytest.raises(nx.NetworkXError)),  # m < 2
+            ("", -1, pytest.raises(nx.NetworkXError)),  # m < 2
+            ("", 0, pytest.raises(nx.NetworkXError)),  # m < 2
+            ("", "", pytest.raises(nx.NetworkXError)),  # m < 2
+            ("", 1, pytest.raises(nx.NetworkXError)),  # m < 2
+            ("", "a", pytest.raises(nx.NetworkXError)),  # m < 2
+            (1, -1, pytest.raises(nx.NetworkXError)),  # m < 2
+            (1, 0, pytest.raises(nx.NetworkXError)),  # m < 2
+            (1, "", pytest.raises(nx.NetworkXError)),  # m < 2
+            (1, 1, pytest.raises(nx.NetworkXError)),  # m < 2
+            (1, "a", pytest.raises(nx.NetworkXError)),  # m < 2
+            ("a", -1, pytest.raises(nx.NetworkXError)),  # m < 2
+            ("a", 0, pytest.raises(nx.NetworkXError)),  # m < 2
+            ("a", "", pytest.raises(nx.NetworkXError)),  # m < 2
+            ("a", 1, pytest.raises(nx.NetworkXError)),  # m < 2
+            ("a", "a", pytest.raises(nx.NetworkXError)),  # m < 2
+            ("a", "b", pytest.raises(nx.NetworkXError)),  # m < 2
+            (2, -1, pytest.raises(nx.NetworkXError)),  # n < 0
+            (2, 0, does_not_raise()),  # ok
+            (2, "", does_not_raise()),  # ok
+            (2, 1, does_not_raise()),  # ok
+            (2, "a", does_not_raise()),  # ok
+            (2, "ab", does_not_raise()),  # ok
+            (2, "aa", pytest.raises(nx.NetworkXError)),  # duplicate node
+            ("ab", -1, pytest.raises(nx.NetworkXError)),  # n < 0
+            ("ab", 0, does_not_raise()),  # ok
+            ("ab", "", does_not_raise()),  # ok
+            ("ab", 1, does_not_raise()),  # ok
+            ("ab", "c", does_not_raise()),  # ok
+            ("ab", "a", pytest.raises(nx.NetworkXError)),  # duplicate node
+            ("aa", "b", pytest.raises(nx.NetworkXError)),  # duplicate node
+            ("aa", "bb", pytest.raises(nx.NetworkXError)),  # duplicate node
+        ],
+    )
+    def test_lollipop_graph_exceptions_m_n(self, m, n, expectation):
+        with expectation:
+            nx.lollipop_graph(m, n)
 
-        # Raise NetworkXError if n<0
-        pytest.raises(nx.NetworkXError, nx.lollipop_graph, 5, -2)
+    @pytest.mark.parametrize(
+        ("create_using", "expectation"),
+        [
+            (nx.Graph, does_not_raise()),  # ok
+            (nx.Graph([(0, 1)]), does_not_raise()),  # ok
+            (nx.DiGraph, pytest.raises(nx.NetworkXError)),  # directed
+            (nx.DiGraph([(0, 1)]), pytest.raises(nx.NetworkXError)),  # directed
+            (nx.MultiGraph, does_not_raise()),  # ok
+            (nx.MultiGraph([(0, 1)]), does_not_raise()),  # ok
+            (nx.MultiDiGraph, pytest.raises(nx.NetworkXError)),  # directed
+            (nx.MultiDiGraph([(0, 1)]), pytest.raises(nx.NetworkXError)),  # directed
+        ],
+    )
+    def test_lollipop_graph_exceptions_create_using(self, create_using, expectation):
+        with expectation:
+            nx.lollipop_graph(2, 20, create_using=create_using)
 
-        # raise NetworkXError if create_using is directed
-        with pytest.raises(nx.NetworkXError):
-            nx.lollipop_graph(2, 20, create_using=nx.DiGraph)
-        with pytest.raises(nx.NetworkXError):
-            nx.lollipop_graph(2, 20, create_using=nx.MultiDiGraph)
-
-    @pytest.mark.parametrize(("m", "n"), [(2, 0), (2, 5), (2, 10), ("ab", 20)])
+    @pytest.mark.parametrize("m", [2, "ab"])
+    @pytest.mark.parametrize("n", range(20))
     def test_lollipop_graph_same_as_path_when_m1_is_2(self, m, n):
         G = nx.lollipop_graph(m, n)
         assert is_isomorphic(G, nx.path_graph(n + 2))
 
-    def test_lollipop_graph_for_multigraph(self):
-        G = nx.lollipop_graph(5, 20)
-        MG = nx.lollipop_graph(5, 20, create_using=nx.MultiGraph)
+    @pytest.mark.parametrize("m", range(2, 6))
+    @pytest.mark.parametrize("n", [0, 5, 10, 20])
+    @pytest.mark.parametrize("create_using", [nx.MultiGraph, nx.MultiGraph([(0, 1)])])
+    def test_lollipop_graph_for_multigraph(self, m, n, create_using):
+        G = nx.lollipop_graph(m, n)
+        MG = nx.lollipop_graph(m, n, create_using=create_using)
         assert edges_equal(MG.edges(), G.edges())
 
     @pytest.mark.parametrize(
@@ -539,11 +597,48 @@ class TestGeneratorClassic:
     def test_trivial_graph(self):
         assert nx.number_of_nodes(nx.trivial_graph()) == 1
 
-    def test_turan_graph(self):
-        assert nx.number_of_edges(nx.turan_graph(13, 4)) == 63
-        assert is_isomorphic(
-            nx.turan_graph(13, 4), nx.complete_multipartite_graph(3, 4, 3, 3)
+    @pytest.mark.parametrize("n", (10, 20))
+    @pytest.mark.parametrize("r", (1, 10))
+    def test_turan_graph(self, n, r):
+        G = nx.turan_graph(n, r)
+        s = n % r
+        assert (
+            nx.number_of_edges(G)
+            == (r - 1) * (n**2 - s**2) // (2 * r) + s * (s - 1) / 2
         )
+        assert is_isomorphic(
+            G,
+            nx.complete_multipartite_graph(
+                *((n % r) * [(n // r) + 1] + (r - (n % r)) * [n // r])
+            ),
+        )
+
+    @pytest.mark.parametrize("r", [2, 3, 4, 5, 6, 10, 12, 15, 20, 30])
+    def test_turan_graph_r_divides_n_strongly_regular(self, r):
+        G = nx.turan_graph(60, r)
+        assert nx.is_strongly_regular(G)
+
+    @pytest.mark.parametrize(
+        ("n", "r", "expectation"),
+        [
+            (-1, 1, pytest.raises(nx.NetworkXError)),  # n < 1
+            (-1, 0, pytest.raises(nx.NetworkXError)),  # n < 1
+            (-1, 1, pytest.raises(nx.NetworkXError)),  # n < 1
+            (0, -1, pytest.raises(nx.NetworkXError)),  # n < 1
+            (0, 0, pytest.raises(nx.NetworkXError)),  # n < 1
+            (0, 1, pytest.raises(nx.NetworkXError)),  # n < 1
+            (1, -1, pytest.raises(nx.NetworkXError)),  # r < 1
+            (1, 0, pytest.raises(nx.NetworkXError)),  # r < 1
+            (1, 1, does_not_raise()),  # ok
+            (1, 2, pytest.raises(nx.NetworkXError)),  # r > n
+            (2, 1, does_not_raise()),  # ok
+            (2, 2, does_not_raise()),  # ok
+            (2, 3, pytest.raises(nx.NetworkXError)),  # r > n
+        ],
+    )
+    def test_turan_graph_exceptions(self, n, r, expectation):
+        with expectation:
+            nx.turan_graph(n, r)
 
     def test_wheel_graph(self):
         for n, G in [
@@ -589,20 +684,32 @@ class TestGeneratorClassic:
         assert nodes_equal(G, H)
         assert edges_equal(G.edges(), H.edges())
 
-    def test_complete_1_partite_graph(self):
+    @pytest.mark.parametrize("n", (0, 3))
+    def test_complete_1_partite_graph(self, n):
         """Tests that the complete 1-partite graph is the empty graph."""
-        G = nx.complete_multipartite_graph(3)
-        H = nx.empty_graph(3)
+        G = nx.complete_multipartite_graph(n)
+        H = nx.empty_graph(n)
         assert nodes_equal(G, H)
         assert edges_equal(G.edges(), H.edges())
 
-    def test_complete_2_partite_graph(self):
+    @pytest.mark.parametrize("m", (0, 5))
+    @pytest.mark.parametrize("n", (0, 5))
+    def test_complete_2_partite_graph(self, m, n):
         """Tests that the complete 2-partite graph is the complete bipartite
         graph.
-
         """
-        G = nx.complete_multipartite_graph(2, 3)
-        H = nx.complete_bipartite_graph(2, 3)
+        G = nx.complete_multipartite_graph(m, n)
+        H = nx.complete_bipartite_graph(m, n)
+        assert nodes_equal(G, H)
+        assert edges_equal(G.edges(), H.edges())
+
+    @pytest.mark.parametrize("n", (0, 1, 5))
+    def test_complete_2_partite_graph_star_graph(self, n):
+        """Tests that the complete 2-partite graph with sizes 1 and n
+        is the star graph on n + 1 nodes.
+        """
+        G = nx.complete_multipartite_graph(1, n)
+        H = nx.star_graph(n)
         assert nodes_equal(G, H)
         assert edges_equal(G.edges(), H.edges())
 
@@ -620,8 +727,30 @@ class TestGeneratorClassic:
             for u, v in itertools.product(block1, block2):
                 assert v in G[u]
                 assert G.nodes[u] != G.nodes[v]
+
+    @pytest.mark.parametrize(
+        "subsets",
+        itertools.chain.from_iterable(
+            itertools.permutations(range(-2, 2), length) for length in range(3, 5)
+        ),
+    )
+    def test_complete_multipartite_graph_negative_nodes(self, subsets):
+        """Test that the complete multipartite graph raises an error when given negative inputs."""
         with pytest.raises(nx.NetworkXError, match="Negative number of nodes"):
-            nx.complete_multipartite_graph(2, -3, 4)
+            nx.complete_multipartite_graph(*subsets)
+
+    @pytest.mark.parametrize(
+        "subsets",
+        itertools.chain.from_iterable(
+            itertools.permutations([0, 1, "", "a"], length) for length in range(3, 5)
+        ),
+    )
+    def test_complete_multipartite_graph_mixing_inputs_exceptions(self, subsets):
+        """Tests that the complete multipartite graph raises an error when mixing inputs."""
+        with pytest.raises(
+            nx.NetworkXError, match="Arguments must be all ints or all iterables"
+        ):
+            nx.complete_multipartite_graph(*subsets)
 
     def test_kneser_graph(self):
         # the petersen graph is a special case of the kneser graph when n=5 and k=2
@@ -638,3 +767,22 @@ class TestGeneratorClassic:
         # in general the number of edges of the kneser graph is equal to
         # (n choose k) times (n-k choose k) divided by 2
         assert nx.number_of_edges(nx.kneser_graph(8, 3)) == 280
+
+    @pytest.mark.parametrize(
+        "n,k,expectation",
+        [
+            (-1, -1, pytest.raises(nx.NetworkXError)),  # n <= 0
+            (-1, 0, pytest.raises(nx.NetworkXError)),  # n <= 0
+            (-1, 1, pytest.raises(nx.NetworkXError)),  # n <= 0
+            (0, -1, pytest.raises(nx.NetworkXError)),  # n <= 0
+            (0, 0, pytest.raises(nx.NetworkXError)),  # n <= 0
+            (0, 1, pytest.raises(nx.NetworkXError)),  # n <= 0
+            (1, -1, pytest.raises(nx.NetworkXError)),  # k <= 0
+            (1, 0, pytest.raises(nx.NetworkXError)),  # k <= 0
+            (1, 1, does_not_raise()),  # ok
+            (1, 2, pytest.raises(nx.NetworkXError)),  # k > n
+        ],
+    )
+    def test_kneser_graph_raises(self, n, k, expectation):
+        with expectation:
+            nx.kneser_graph(n, k)
