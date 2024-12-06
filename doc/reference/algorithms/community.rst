@@ -75,6 +75,15 @@ Louvain Community Detection
     louvain_communities
     louvain_partitions
 
+Leiden Community Detection
+---------------------------
+.. automodule:: networkx.algorithms.community.leiden
+.. autosummary::
+    :toctree: generated/
+
+    leiden_communities
+    leiden_partitions
+
 Fluid Communities
 -----------------
 .. automodule:: networkx.algorithms.community.asyn_fluid
