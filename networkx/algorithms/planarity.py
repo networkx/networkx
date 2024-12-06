@@ -1402,7 +1402,7 @@ class PlanarEmbedding(nx.DiGraph):
         )
         return G
 
-    def to_undirected(self, as_view=False):
+    def to_undirected(self, reciprocal=False, as_view=False):
         """
         Returns an undirected representation of the planar embedding for directed graphs.
 
@@ -1412,6 +1412,8 @@ class PlanarEmbedding(nx.DiGraph):
 
         Parameters
         ----------
+        reciprocal : bool (optional)
+          If True only keep edges that appear in both directions in the original digraph.
         as_view : bool (optional, default=False)
             If True, return an undirected view of the original directed graph.
             This does not create a new graph but provides a view into the original graph.
@@ -1445,9 +1447,17 @@ class PlanarEmbedding(nx.DiGraph):
         G = graph_class()
         G.graph.update(deepcopy(self.graph))
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
-        G.add_edges_from(
-            (u, v, {k: deepcopy(v) for k, v in d.items() if k not in {"cw", "ccw"}})
-            for u, neighbors in self._adj.items()
-            for v, d in neighbors.items()
-        )
+        if reciprocal is True:
+            G.add_edges_from(
+                (u, v, {k: deepcopy(v) for k, v in d.items() if k not in {"cw", "ccw"}})
+                for u, nbrs in self._adj.items()
+                for v, d in nbrs.items()
+                if v in self._pred[u]
+            )
+        else:
+            G.add_edges_from(
+                (u, v, {k: deepcopy(v) for k, v in d.items() if k not in {"cw", "ccw"}})
+                for u, nbrs in self._adj.items()
+                for v, d in nbrs.items()
+            )
         return G
