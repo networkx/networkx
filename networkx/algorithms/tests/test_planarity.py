@@ -300,6 +300,18 @@ class TestLRPlanarity:
         assert isinstance(U, nx.Graph)
         assert all((d == {} for _, _, d in U.edges(data=True)))
 
+    @pytest.mark.parametrize(
+        "reciprocal, as_view", [(True, True), (True, False), (False, True)]
+    )
+    def test_planar_embedding_to_undirected_invalid_parameters(
+        self, reciprocal, as_view
+    ):
+        G = nx.Graph([(0, 1), (1, 2), (2, 3), (3, 0), (0, 2)])
+        is_planar, P = nx.check_planarity(G)
+        assert is_planar
+        with pytest.raises(ValueError, match="is not supported for PlanarEmbedding."):
+            P.to_undirected(reciprocal=reciprocal, as_view=as_view)
+
 
 def check_embedding(G, embedding):
     """Raises an exception if the combinatorial embedding is not correct

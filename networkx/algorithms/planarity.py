@@ -1404,60 +1404,62 @@ class PlanarEmbedding(nx.DiGraph):
 
     def to_undirected(self, reciprocal=False, as_view=False):
         """
-        Returns an undirected representation of the planar embedding for directed graphs.
+         Returns a non-embedding undirected representation of the graph.
 
-        This method extends the functionality of `DiGraph.to_undirected()` by ensuring that
-        the `"cw"` and `"ccw"` attributes of the half-edges are excluded from the edge data
-        in the resulting undirected graph. This is specific to the requirements of planar embeddings.
+         This method strips the planar embedding information and provides
+         a simple undirected graph representation. While creating the undirected graph,
+         all edge attributes are retained except the `"cw"` and `"ccw"` attributes
+         which are removed from the edge data. Those attributes are specific to
+         the requirements of planar embeddings.
 
-        Parameters
-        ----------
-        reciprocal : bool (optional)
-          If True only keep edges that appear in both directions in the original digraph.
-        as_view : bool (optional, default=False)
-            If True, return an undirected view of the original directed graph.
-            This does not create a new graph but provides a view into the original graph.
+         Parameters
+         ----------
+         reciprocal : bool (optional)
+             Not supported for PlanarEmbedding. This parameter raises an exception
+             if used. All valid embeddings include half-edges by definition, making this
+             parameter unnecessary."
+         as_view : bool (optional, default=False)
+             Not supported for PlanarEmbedding. This parameter raises an exception
+             if used.
 
-        Returns
-        -------
-        G : Graph
-            An undirected graph with the same name and nodes as the original directed graph.
-            Edges are included with their data, except for the `"cw"` and `"ccw"` attributes,
-            which are omitted.
+         Returns
+         -------
+         G : Graph
+             An undirected graph with the same name and nodes as the PlanarEmbedding.
+             Edges are included with their data, except for the `"cw"` and `"ccw"` attributes,
+             which are omitted.
 
-        See Also
-        --------
-        DiGraph.to_undirected
 
-        Notes
-        -----
-        - If edges exist in both directions (u, v) and (v, u) in the original graph,
-          attributes for the resulting undirected edge will be combined, excluding `"cw"`
-          and `"ccw"`.
-        - This method creates a "deepcopy" of the node, edge, and graph attributes, ensuring
-          the resulting graph is independent of the original.
-        - Subclass-specific data structures used in the original graph may not transfer
-          to the undirected graph.
+         Notes
+         -----
+        - If edges exist in both directions (u, v) and (v, u) in the PlanarEmbedding,
+             attributes for the resulting undirected edge will be combined, excluding `"cw"`
+             and `"ccw"`.
+         - A "deepcopy" is made of the other edge attributes as well as the
+             node and graph attributes, ensuring independence of the resulting graph.
+         - Subclass-specific data structures used in the original graph may not transfer
+             to the undirected graph. The resulting graph will be of type ``nx.Graph``.
         """
+
+        if reciprocal:
+            raise ValueError(
+                "'reciprocal=True' is not supported for PlanarEmbedding. "
+                "All valid embeddings include half-edges by definition, making this "
+                "parameter unnecessary."
+            )
+
+        if as_view:
+            raise ValueError("'as_view=True' is not supported for PlanarEmbedding.")
 
         graph_class = self.to_undirected_class()
         if as_view is True:
             return nx.graphviews.generic_graph_view(self, graph_class)
-        # deepcopy when not a view
         G = graph_class()
         G.graph.update(deepcopy(self.graph))
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
-        if reciprocal is True:
-            G.add_edges_from(
-                (u, v, {k: deepcopy(v) for k, v in d.items() if k not in {"cw", "ccw"}})
-                for u, nbrs in self._adj.items()
-                for v, d in nbrs.items()
-                if v in self._pred[u]
-            )
-        else:
-            G.add_edges_from(
-                (u, v, {k: deepcopy(v) for k, v in d.items() if k not in {"cw", "ccw"}})
-                for u, nbrs in self._adj.items()
-                for v, d in nbrs.items()
-            )
+        G.add_edges_from(
+            (u, v, {k: deepcopy(v) for k, v in d.items() if k not in {"cw", "ccw"}})
+            for u, nbrs in self._adj.items()
+            for v, d in nbrs.items()
+        )
         return G
