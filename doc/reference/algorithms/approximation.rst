@@ -100,6 +100,9 @@ Traveling Salesman
    christofides
    traveling_salesman_problem
    greedy_tsp
+   greedy_tsp_minimum_insertions
+   nearest_insertion
+   farthest_insertion
    simulated_annealing_tsp
    threshold_accepting_tsp
    asadpour_atsp
