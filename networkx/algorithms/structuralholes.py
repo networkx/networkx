@@ -138,6 +138,46 @@ def effective_size(G, nodes=None, weight=None):
         )
         return 1 - r
 
+    # Check if Numpy is installed
+    try:
+        import numpy as np
+        import scipy  # make sure nx.adjacency_matrix will not raise
+
+        has_numpy = True
+    except:
+        has_numpy = False
+
+    if nodes is None and has_numpy:
+        # In order to compute constraint of all nodes,
+        # algorithms based on sparse matrices can be much faster
+
+        # Obtain the adjacency matrix
+        P = nx.adjacency_matrix(G, weight=weight)
+
+        # Calculate mutual weights
+        mutual_weights1 = P + P.T
+        mutual_weights2 = mutual_weights1.copy()
+
+        with np.errstate(divide="ignore"):
+            # Mutual_weights1 = Normalize mutual weights by row sums
+            mutual_weights1 /= mutual_weights1.sum(axis=1)[:, np.newaxis]
+
+            # Mutual_weights2 = Normalize mutual weights by row max
+            mutual_weights2 /= mutual_weights2.max(axis=1).toarray()
+
+        # Calculate effective sizes
+        r = 1 - (mutual_weights1 @ mutual_weights2.T).toarray()
+        effective_size = ((mutual_weights1 > 0) * r).sum(axis=1)
+
+        # Special treatment: isolated nodes marked with "nan"
+        sum_mutual_weights = mutual_weights1.sum(axis=1)
+        isolated_nodes = sum_mutual_weights == 0
+        effective_size[isolated_nodes] = float("nan")
+        result = dict(zip(G, effective_size.tolist()))
+
+        return result
+
+    # Results for only requested nodes
     effective_size = {}
     if nodes is None:
         nodes = G
@@ -209,9 +249,45 @@ def constraint(G, nodes=None, weight=None):
            American Journal of Sociology (110): 349–399.
 
     """
+
+    # Check if Numpy is installed
+    try:
+        import numpy as np
+        import scipy  # make sure nx.adjacency_matrix will not raise
+
+        has_numpy = True
+    except:
+        has_numpy = False
+
+    if nodes is None and has_numpy:
+        # In order to compute constraint of all nodes,
+        # algorithms based on sparse matrices can be much faster
+
+        # Obtain the adjacency matrix
+        P = nx.adjacency_matrix(G, weight=weight)
+
+        # Calculate mutual weights
+        mutual_weights = P + P.T
+
+        # Normalize mutual weights by row sums
+        sum_mutual_weights = mutual_weights.sum(axis=1)
+        with np.errstate(divide="ignore"):
+            mutual_weights /= sum_mutual_weights[:, np.newaxis]
+
+        # Calculate local constraints and constraints
+        local_constraints = (mutual_weights + mutual_weights @ mutual_weights) ** 2
+        constraints = ((mutual_weights > 0) * local_constraints).sum(axis=1)
+
+        # Special treatment: isolated nodes marked with "nan"
+        isolated_nodes = sum_mutual_weights == 0
+        constraints[isolated_nodes] = float("nan")
+        result = dict(zip(G, constraints.tolist()))
+        return result
+
+    # Result for only requested nodes
+    constraint = {}
     if nodes is None:
         nodes = G
-    constraint = {}
     for v in nodes:
         # Constraint is not defined for isolated nodes
         if len(G[v]) == 0:
