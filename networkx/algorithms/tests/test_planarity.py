@@ -479,6 +479,58 @@ class TestPlanarEmbeddingClass:
             # Invalid structure because other half edge is missing
             embedding.check_structure()
 
+    def test_removal_never_existing_edge(self):
+        with pytest.raises(nx.NetworkXError):
+            embedding = nx.PlanarEmbedding()
+            embedding.add_half_edge_first(1, 2)
+            embedding.add_half_edge_first(2, 1)
+            embedding.remove_half_edge(1, 3)
+
+    def test_removal_previously_existing_edge(self):
+        with pytest.raises(nx.NetworkXError):
+            embedding = nx.PlanarEmbedding()
+            embedding.add_half_edge_first(1, 2)
+            embedding.add_half_edge_first(2, 1)
+            embedding.remove_half_edge(1, 2)
+            embedding.remove_half_edge(1, 2)
+
+    def test_successful_edge_removal(self):
+        embedding = self.get_star_embedding(3)
+        embedding.remove_half_edge(0, 2)
+        embedding.remove_half_edge(2, 0)
+        embedding.check_structure()
+        assert set(embedding.edges) == {(0, 1), (1, 0)}
+        assert set(embedding.nodes) == {0, 1, 2}
+        assert embedding.nodes[2]["first_nbr"] is None
+        assert embedding.nodes[1]["first_nbr"] == 0
+        assert embedding.nodes[0]["first_nbr"] == 1
+        assert embedding.get_edge_data(0, 1) == {"cw": 1, "ccw": 1}
+        assert embedding.get_edge_data(1, 0) == {"cw": 0, "ccw": 0}
+
+    def test_removal_never_existing_node(self):
+        with pytest.raises(nx.NetworkXError):
+            embedding = nx.PlanarEmbedding()
+            embedding.add_half_edge_first(0, 1)
+            embedding.add_half_edge_first(1, 0)
+            embedding.remove_planar_node(2)
+
+    def test_removal_previously_existing_node(self):
+        with pytest.raises(nx.NetworkXError):
+            embedding = nx.PlanarEmbedding()
+            embedding.add_half_edge_first(0, 1)
+            embedding.add_half_edge_first(1, 0)
+            embedding.remove_planar_node(1)
+            embedding.remove_planar_node(1)
+
+    def test_successful_node_remove(self):
+        embedding = self.get_star_embedding(3)
+        embedding.remove_planar_node(0)
+        embedding.check_structure()
+        assert set(embedding.edges) == set([])
+        assert set(embedding.nodes) == {1, 2}
+        assert embedding.nodes[2]["first_nbr"] is None
+        assert embedding.nodes[1]["first_nbr"] is None
+
     def test_not_fulfilling_euler_formula(self):
         embedding = nx.PlanarEmbedding()
         for i in range(5):
