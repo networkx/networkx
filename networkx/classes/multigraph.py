@@ -307,6 +307,11 @@ class MultiGraph(Graph):
         """
         return MultiGraph
 
+    @nx._dispatchable(name="multigraph__new__", graphs=None, returns_graph=True)
+    def __init__(cls, incoming_graph_data=None, multigraph_input=None, **attr):
+        return object.__new__(cls)
+
+    @nx._dispatchable(name="multigraph__init__", graphs="self", mutates_input=True)
     def __init__(self, incoming_graph_data=None, multigraph_input=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
 

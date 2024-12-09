@@ -299,6 +299,11 @@ class MultiDiGraph(MultiGraph, DiGraph):
     edge_key_dict_factory = dict
     # edge_attr_dict_factory = dict
 
+    @nx._dispatchable(name="multidigraph__new__", graphs=None, returns_graph=True)
+    def __init__(cls, incoming_graph_data=None, multigraph_input=None, **attr):
+        return object.__new__(cls)
+
+    @nx._dispatchable(name="multidigraph__init__", graphs="self", mutates_input=True)
     def __init__(self, incoming_graph_data=None, multigraph_input=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
 
