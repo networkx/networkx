@@ -300,7 +300,7 @@ class MultiDiGraph(MultiGraph, DiGraph):
     # edge_attr_dict_factory = dict
 
     @nx._dispatchable(name="multidigraph__new__", graphs=None, returns_graph=True)
-    def __init__(cls, incoming_graph_data=None, multigraph_input=None, **attr):
+    def __new__(cls, incoming_graph_data=None, multigraph_input=None, **attr):
         return object.__new__(cls)
 
     @nx._dispatchable(name="multidigraph__init__", graphs="self", mutates_input=True)
