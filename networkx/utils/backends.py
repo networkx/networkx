@@ -471,6 +471,7 @@ import inspect
 import itertools
 import logging
 import os
+import typing
 import warnings
 from functools import partial
 from importlib.metadata import entry_points
@@ -1143,7 +1144,9 @@ class _dispatchable:
     _fallback_to_nx = _fallback_to_nx()  # type: ignore[assignment,misc]
 
     # Do dispatching (or not) when called depending on whether backends are installed
-    __call__ = _call_backends_installed if backends else _call_no_backends_installed
+    __call__: typing.Callable = (
+        _call_backends_installed if backends else _call_no_backends_installed
+    )
 
     def __new__(
         cls,

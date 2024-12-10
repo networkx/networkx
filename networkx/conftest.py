@@ -71,6 +71,9 @@ def pytest_configure(config):
         if not fallback_to_nx:
             fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
         networkx.config.fallback_to_nx = bool(fallback_to_nx)
+        networkx.utils.backends._dispatchable.__call__ = (
+            networkx.utils.backends._call_backends_installed
+        )
 
 
 def pytest_collection_modifyitems(config, items):
