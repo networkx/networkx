@@ -85,10 +85,23 @@ def _mehlhorn_steiner_tree(G, terminal_nodes, weight):
     return G_4.edges()
 
 
+@nx._dispatchable(edge_attrs="weight", returns_graph=True)
 def _kou_steiner_tree(G, terminal_nodes, weight):
-    # H is the subgraph induced by terminal_nodes in the metric closure M of G.
-    M = metric_closure(G, weight=weight)
-    H = M.subgraph(terminal_nodes)
+    # Check if the graph is connected
+    if not nx.is_connected(G):
+        msg = "G is not a connected graph."
+        raise nx.NetworkXError(msg)
+    # Compute the metric closure only for terminal nodes
+    # Create a complete graph H from the metric edges
+    H = nx.Graph()
+    for u in terminal_nodes:
+        distances, paths = nx.single_source_dijkstra(G, source=u, weight=weight)
+        for v, path in paths.items():
+            if v == u:
+                continue
+            if v not in terminal_nodes:
+                continue
+            H.add_edge(u, v, distance=distances[v], path=path)
 
     # Use the 'distance' attribute of each edge provided by M.
     mst_edges = nx.minimum_spanning_edges(H, weight="distance", data=True)
