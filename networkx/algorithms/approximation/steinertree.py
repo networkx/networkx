@@ -85,7 +85,6 @@ def _mehlhorn_steiner_tree(G, terminal_nodes, weight):
     return G_4.edges()
 
 
-@nx._dispatchable(edge_attrs="weight", returns_graph=True)
 def _kou_steiner_tree(G, terminal_nodes, weight):
     # Check if the graph is connected
     if not nx.is_connected(G):
