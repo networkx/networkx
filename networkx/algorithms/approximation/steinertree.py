@@ -102,7 +102,7 @@ def _kou_steiner_tree(G, terminal_nodes, weight):
                 continue
             H.add_edge(u, v, distance=distances[v], path=path)
 
-    # Use the 'distance' attribute of each edge provided by M.
+    # Use the 'distance' attribute of each edge provided by H.
     mst_edges = nx.minimum_spanning_edges(H, weight="distance", data=True)
 
     # Create an iterator over each edge in each shortest path; repeats are okay
