@@ -483,6 +483,7 @@ from .decorators import argmap
 __all__ = ["_dispatchable"]
 
 _logger = logging.getLogger(__name__)
+FAILED_TO_CONVERT = "FAILED_TO_CONVERT"
 
 
 def _do_nothing():
@@ -1797,6 +1798,16 @@ class _dispatchable:
                         "To disable this warning:\n\n"
                         '    >>> nx.config.warnings_to_ignore.add("cache")\n'
                     )
+                if rv == FAILED_TO_CONVERT:
+                    # NotImplementedError is reasonable to use since the backend doesn't
+                    # implement this conversion. However, this will be different than
+                    # the original exception that the backend raised when it failed.
+                    # Using NotImplementedError allows the next backend to be attempted.
+                    raise NotImplementedError(
+                        "Graph conversion aborted: unable to convert graph to "
+                        f"'{backend_name}' backend in call to `{self.name}', "
+                        "because this conversion has previously failed",
+                    )
                 _logger.debug(
                     "Using cached converted graph (from '%s' to '%s' backend) "
                     "in call to `%s' for '%s' argument",
@@ -1824,21 +1835,29 @@ class _dispatchable:
                 return graph
             backend = _load_backend(graph.__networkx_backend__)
             rv = backend.convert_to_nx(graph)
+            func = backend.convert_to_nx
+            kwargs = {}
         else:
             backend = _load_backend(backend_name)
-            rv = backend.convert_from_nx(
-                graph,
-                edge_attrs=edge_attrs,
-                node_attrs=node_attrs,
-                preserve_edge_attrs=preserve_edge_attrs,
-                preserve_node_attrs=preserve_node_attrs,
+            func = backend.convert_from_nx
+            kwargs = {
+                "edge_attrs": edge_attrs,
+                "node_attrs": node_attrs,
+                "preserve_edge_attrs": preserve_edge_attrs,
+                "preserve_node_attrs": preserve_node_attrs,
                 # Always preserve graph attrs when we are caching b/c this should be
                 # cheap and may help prevent extra (unnecessary) conversions. Because
                 # we do this, we don't need `preserve_graph_attrs` in the cache key.
-                preserve_graph_attrs=preserve_graph_attrs or use_cache,
-                name=self.name,
-                graph_name=graph_name,
-            )
+                "preserve_graph_attrs": preserve_graph_attrs or use_cache,
+                "name": self.name,
+                "graph_name": graph_name,
+            }
+        try:
+            rv = func(graph, **kwargs)
+        except Exception:
+            if use_cache and nx_cache is not None:
+                _set_to_cache(cache, key, FAILED_TO_CONVERT)
+            raise
         if use_cache and nx_cache is not None and mutations is None:
             _set_to_cache(cache, key, rv)
             _logger.debug(
@@ -2369,8 +2388,9 @@ def _get_from_cache(cache, key, *, backend_name=None, mutations=None):
     -------
     tuple or None
         The key of the compatible graph found in the cache.
-    graph or None
-        A compatible graph or None.
+    graph or "FAILED_TO_CONVERT" or None
+        A compatible graph if possible. "FAILED_TO_CONVERT" indicates that a previous
+        conversion attempt failed for this cache key.
     """
     if backend_name is not None:
         cache = cache.get("backends", {}).get(backend_name, {})
@@ -2386,7 +2406,7 @@ def _get_from_cache(cache, key, *, backend_name=None, mutations=None):
         (edge_key, True) if edge_key is not True else (True,),
         (node_key, True) if node_key is not True else (True,),
     ):
-        if (rv := cache.get(compat_key)) is not None:
+        if (rv := cache.get(compat_key)) is not None and rv != FAILED_TO_CONVERT:
             if mutations is not None:
                 # Remove this item from the cache (after all conversions) if
                 # the call to this dispatchable function will mutate an input.
@@ -2399,7 +2419,9 @@ def _get_from_cache(cache, key, *, backend_name=None, mutations=None):
         # below (but switched) to clear unnecessary items from the cache.
         # Use `list(cache.items())` to be thread-safe.
         for (ekey, nkey), graph in list(cache.items()):
-            if edge_key is False or ekey is True:
+            if graph == FAILED_TO_CONVERT:
+                continue
+            elif edge_key is False or ekey is True:
                 pass  # Cache works for edge data!
             elif edge_key is True or ekey is False or not edge_key.issubset(ekey):
                 continue  # Cache missing required edge data; does not work
@@ -2412,6 +2434,12 @@ def _get_from_cache(cache, key, *, backend_name=None, mutations=None):
                 # the call to this dispatchable function will mutate an input.
                 mutations.append((cache, (ekey, nkey)))
             return (ekey, nkey), graph
+    if (rv := cache.get(key)) is not None:
+        # Return FAILED_TO_CONVERT when a conversion previously failed for
+        # this exact cache key. Instead of an exact key match, we could
+        # perhaps return FAILED_TO_CONVERT if any cache key dominated by
+        # the given cache key has previously failed to convert.
+        return key, rv
     return None, None
 
 
@@ -2426,7 +2454,9 @@ def _set_to_cache(cache, key, graph, *, backend_name=None):
         cache such as ``G.__networkx_cache__["backends"][backend_name]``.
     key : tuple
         Cache key from ``_get_cache_key``.
-    graph : graph
+    graph : graph or "FAILED_TO_CONVERT"
+        Setting value to "FAILED_TO_CONVERT" prevents this conversion from being
+        attempted in future calls.
     backend_name : str, optional
         Name of the backend to control how ``cache`` is interpreted.
 
@@ -2444,6 +2474,8 @@ def _set_to_cache(cache, key, graph, *, backend_name=None):
     removed = {}
     edge_key, node_key = key
     cache[key] = graph  # Set at beginning to be thread-safe
+    if graph == FAILED_TO_CONVERT:
+        return removed
     for cur_key in list(cache):
         if cur_key == key:
             continue
