@@ -26,7 +26,7 @@ asv continuous base_commit_hash test_commit_hash
 ```
 
 The `--bench` flag can be used to limit a run to a subset of benchmarks.
-For example, the following will only run the algorith benchmarks for performance
+For example, the following will only run the algorithm benchmarks for performance
 comparison between two commits:
 
 ```
