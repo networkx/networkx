@@ -1452,8 +1452,6 @@ class PlanarEmbedding(nx.DiGraph):
             raise ValueError("'as_view=True' is not supported for PlanarEmbedding.")
 
         graph_class = self.to_undirected_class()
-        if as_view is True:
-            return nx.graphviews.generic_graph_view(self, graph_class)
         G = graph_class()
         G.graph.update(deepcopy(self.graph))
         G.add_nodes_from((n, deepcopy(d)) for n, d in self._node.items())
