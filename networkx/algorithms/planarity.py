@@ -1444,8 +1444,8 @@ class PlanarEmbedding(nx.DiGraph):
         if reciprocal:
             raise ValueError(
                 "'reciprocal=True' is not supported for PlanarEmbedding. "
-                "All valid embeddings include half-edges by definition, making this "
-                "parameter unnecessary."
+                "All valid embeddings include reciprocal half-edges by definition, "
+                "making this parameter unnecessary."
             )
 
         if as_view:
