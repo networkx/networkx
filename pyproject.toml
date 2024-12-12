@@ -75,7 +75,7 @@ doc = [
     'intersphinx_registry',
 ]
 example = [
-    'osmnx>=1.9',
+    'osmnx>=2.0.0',
     'momepy>=0.7.2',
     'contextily>=1.6',
     'seaborn>=0.13',
