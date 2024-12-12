@@ -1416,8 +1416,8 @@ class PlanarEmbedding(nx.DiGraph):
          ----------
          reciprocal : bool (optional)
              Not supported for PlanarEmbedding. This parameter raises an exception
-             if used. All valid embeddings include half-edges by definition, making this
-             parameter unnecessary."
+             if used. All valid embeddings include reciprocal half-edges by definition,
+             making this parameter unnecessary.
          as_view : bool (optional, default=False)
              Not supported for PlanarEmbedding. This parameter raises an exception
              if used.
