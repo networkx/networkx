@@ -22,13 +22,13 @@ def _greedy_plus_plus(G, iterations):
         heap = nx.utils.BinaryHeap()
 
         # Compute initial weighted degrees and add nodes to the heap.
-        for node in G.nodes:
-            heap.insert(node, loads[node] + G.degree[node])
+        for node, degree in G.degree:
+            heap.insert(node, loads[node] + degree)
 
         # Set up tracking for current graph state.
         remaining_nodes = set(G.nodes)
         num_edges = G.number_of_edges()
-        current_degrees = {node: G.degree[node] for node in G.nodes}
+        current_degrees = dict(G.degree)
 
         while remaining_nodes:
             num_nodes = len(remaining_nodes)
