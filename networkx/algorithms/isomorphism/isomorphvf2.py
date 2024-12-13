@@ -50,8 +50,8 @@ GM.mapping stores the isomorphism mapping from G1 to G2.
 Suppose G1 and G2 are isomorphic directed graphs.
 Verification is as follows:
 
->>> G1 = nx.path_graph(4, create_using=nx.DiGraph())
->>> G2 = nx.path_graph(4, create_using=nx.DiGraph())
+>>> G1 = nx.path_graph(4, create_using=nx.DiGraph)
+>>> G2 = nx.path_graph(4, create_using=nx.DiGraph)
 >>> DiGM = isomorphism.DiGraphMatcher(G1, G2)
 >>> DiGM.is_isomorphic()
 True
@@ -68,15 +68,15 @@ Subgraph Isomorphism
 Graph theory literature can be ambiguous about the meaning of the
 above statement, and we seek to clarify it now.
 
-In the VF2 literature, a mapping `M` is said to be a graph-subgraph
-isomorphism iff `M` is an isomorphism between `G2` and a subgraph of `G1`.
-Thus, to say that `G1` and `G2` are graph-subgraph isomorphic is to say
-that a subgraph of `G1` is isomorphic to `G2`.
+In the VF2 literature, a mapping ``M`` is said to be a graph-subgraph
+isomorphism iff ``M`` is an isomorphism between ``G2`` and a subgraph of ``G1``.
+Thus, to say that ``G1`` and ``G2`` are graph-subgraph isomorphic is to say
+that a subgraph of ``G1`` is isomorphic to ``G2``.
 
-Other literature uses the phrase 'subgraph isomorphic' as in '`G1` does
-not have a subgraph isomorphic to `G2`'.  Another use is as an in adverb
-for isomorphic.  Thus, to say that `G1` and `G2` are subgraph isomorphic
-is to say that a subgraph of `G1` is isomorphic to `G2`.
+Other literature uses the phrase 'subgraph isomorphic' as in '``G1`` does
+not have a subgraph isomorphic to ``G2``'.  Another use is as an in adverb
+for isomorphic.  Thus, to say that ``G1`` and ``G2`` are subgraph isomorphic
+is to say that a subgraph of ``G1`` is isomorphic to ``G2``.
 
 Finally, the term 'subgraph' can have multiple meanings. In this
 context, 'subgraph' always means a 'node-induced subgraph'. Edge-induced
@@ -86,26 +86,26 @@ able to perform the check by making use of
 subgraphs which are not induced, the term 'monomorphism' is preferred
 over 'isomorphism'.
 
-Let ``G = (N, E)`` be a graph with a set of nodes `N` and set of edges `E`.
+Let ``G = (N, E)`` be a graph with a set of nodes ``N`` and set of edges ``E``.
 
 If ``G' = (N', E')`` is a subgraph, then:
-    `N'` is a subset of `N` and
-    `E'` is a subset of `E`.
+    ``N'`` is a subset of ``N`` and
+    ``E'`` is a subset of ``E``.
 
 If ``G' = (N', E')`` is a node-induced subgraph, then:
-    `N'` is a subset of `N` and
-    `E'` is the subset of edges in `E` relating nodes in `N'`.
+    ``N'`` is a subset of ``N`` and
+    ``E'`` is the subset of edges in ``E`` relating nodes in ``N'``.
 
-If `G' = (N', E')` is an edge-induced subgraph, then:
-    `N'` is the subset of nodes in `N` related by edges in `E'` and
-    `E'` is a subset of `E`.
+If ``G' = (N', E')`` is an edge-induced subgraph, then:
+    ``N'`` is the subset of nodes in ``N`` related by edges in ``E'`` and
+    ``E'`` is a subset of ``E``.
 
-If `G' = (N', E')` is a monomorphism, then:
-    `N'` is a subset of `N` and
-    `E'` is a subset of the set of edges in `E` relating nodes in `N'`.
+If ``G' = (N', E')`` is a monomorphism, then:
+    ``N'`` is a subset of ``N`` and
+    ``E'`` is a subset of the set of edges in ``E`` relating nodes in ``N'``.
 
-Note that if `G'` is a node-induced subgraph of `G`, then it is always a
-subgraph monomorphism of `G`, but the opposite is not always true, as a
+Note that if ``G'`` is a node-induced subgraph of ``G``, then it is always a
+subgraph monomorphism of ``G``, but the opposite is not always true, as a
 monomorphism can have fewer edges.
 
 References
@@ -364,7 +364,27 @@ class GraphMatcher:
         return True
 
     def subgraph_is_isomorphic(self):
-        """Returns True if a subgraph of G1 is isomorphic to G2."""
+        """Returns `True` if a subgraph of ``G1`` is isomorphic to ``G2``.
+
+        Examples
+        --------
+        When creating the `GraphMatcher`, the order of the arguments is important
+
+        >>> G = nx.Graph([("A", "B"), ("B", "C"), ("A", "C")])
+        >>> H = nx.Graph([(0, 1), (1, 2), (0, 2), (1, 3), (0, 4)])
+
+        Check whether a subgraph of G is isomorphic to H:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(G, H)
+        >>> isomatcher.subgraph_is_isomorphic()
+        False
+
+        Check whether a subgraph of H is isomorphic to G:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(H, G)
+        >>> isomatcher.subgraph_is_isomorphic()
+        True
+        """
         try:
             x = next(self.subgraph_isomorphisms_iter())
             return True
@@ -372,30 +392,87 @@ class GraphMatcher:
             return False
 
     def subgraph_is_monomorphic(self):
-        """Returns True if a subgraph of G1 is monomorphic to G2."""
+        """Returns `True` if a subgraph of ``G1`` is monomorphic to ``G2``.
+
+        Examples
+        --------
+        When creating the `GraphMatcher`, the order of the arguments is important.
+
+        >>> G = nx.Graph([("A", "B"), ("B", "C")])
+        >>> H = nx.Graph([(0, 1), (1, 2), (0, 2)])
+
+        Check whether a subgraph of G is monomorphic to H:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(G, H)
+        >>> isomatcher.subgraph_is_monomorphic()
+        False
+
+        Check whether a subgraph of H is isomorphic to G:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(H, G)
+        >>> isomatcher.subgraph_is_monomorphic()
+        True
+        """
         try:
             x = next(self.subgraph_monomorphisms_iter())
             return True
         except StopIteration:
             return False
 
-    #    subgraph_is_isomorphic.__doc__ += "\n" + subgraph.replace('\n','\n'+indent)
-
     def subgraph_isomorphisms_iter(self):
-        """Generator over isomorphisms between a subgraph of G1 and G2."""
+        """Generator over isomorphisms between a subgraph of ``G1`` and ``G2``.
+
+        Examples
+        --------
+        When creating the `GraphMatcher`, the order of the arguments is important
+
+        >>> G = nx.Graph([("A", "B"), ("B", "C"), ("A", "C")])
+        >>> H = nx.Graph([(0, 1), (1, 2), (0, 2), (1, 3), (0, 4)])
+
+        Yield isomorphic mappings between ``H`` and subgraphs of ``G``:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(G, H)
+        >>> list(isomatcher.subgraph_isomorphisms_iter())
+        []
+
+        Yield isomorphic mappings  between ``G`` and subgraphs of ``H``:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(H, G)
+        >>> next(isomatcher.subgraph_isomorphisms_iter())
+        {0: 'A', 1: 'B', 2: 'C'}
+
+        """
         # Declare that we are looking for graph-subgraph isomorphism.
         self.test = "subgraph"
         self.initialize()
         yield from self.match()
 
     def subgraph_monomorphisms_iter(self):
-        """Generator over monomorphisms between a subgraph of G1 and G2."""
+        """Generator over monomorphisms between a subgraph of ``G1`` and ``G2``.
+
+        Examples
+        --------
+        When creating the `GraphMatcher`, the order of the arguments is important.
+
+        >>> G = nx.Graph([("A", "B"), ("B", "C")])
+        >>> H = nx.Graph([(0, 1), (1, 2), (0, 2)])
+
+        Yield monomorphic mappings between ``H`` and subgraphs of ``G``:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(G, H)
+        >>> list(isomatcher.subgraph_monomorphisms_iter())
+        []
+
+        Yield monomorphic mappings  between ``G`` and subgraphs of ``H``:
+
+        >>> isomatcher = nx.isomorphism.GraphMatcher(H, G)
+        >>> next(isomatcher.subgraph_monomorphisms_iter())
+        {0: 'A', 1: 'B', 2: 'C'}
+        """
         # Declare that we are looking for graph-subgraph monomorphism.
         self.test = "mono"
         self.initialize()
         yield from self.match()
-
-    #    subgraph_isomorphisms_iter.__doc__ += "\n" + subgraph.replace('\n','\n'+indent)
 
     def syntactic_feasibility(self, G1_node, G2_node):
         """Returns True if adding (G1_node, G2_node) is syntactically feasible.
@@ -845,6 +922,102 @@ class DiGraphMatcher(GraphMatcher):
 
         # Otherwise, this node pair is syntactically feasible!
         return True
+
+    def subgraph_is_isomorphic(self):
+        """Returns `True` if a subgraph of ``G1`` is isomorphic to ``G2``.
+
+        Examples
+        --------
+        When creating the `DiGraphMatcher`, the order of the arguments is important
+
+        >>> G = nx.DiGraph([("A", "B"), ("B", "A"), ("B", "C"), ("C", "B")])
+        >>> H = nx.DiGraph(nx.path_graph(5))
+
+        Check whether a subgraph of G is isomorphic to H:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(G, H)
+        >>> isomatcher.subgraph_is_isomorphic()
+        False
+
+        Check whether a subgraph of H is isomorphic to G:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(H, G)
+        >>> isomatcher.subgraph_is_isomorphic()
+        True
+        """
+        return super().subgraph_is_isomorphic()
+
+    def subgraph_is_monomorphic(self):
+        """Returns `True` if a subgraph of ``G1`` is monomorphic to ``G2``.
+
+        Examples
+        --------
+        When creating the `DiGraphMatcher`, the order of the arguments is important.
+
+        >>> G = nx.DiGraph([("A", "B"), ("C", "B"), ("D", "C")])
+        >>> H = nx.DiGraph([(0, 1), (1, 2), (2, 3), (3, 2)])
+
+        Check whether a subgraph of G is monomorphic to H:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(G, H)
+        >>> isomatcher.subgraph_is_monomorphic()
+        False
+
+        Check whether a subgraph of H is isomorphic to G:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(H, G)
+        >>> isomatcher.subgraph_is_monomorphic()
+        True
+        """
+        return super().subgraph_is_monomorphic()
+
+    def subgraph_isomorphisms_iter(self):
+        """Generator over isomorphisms between a subgraph of ``G1`` and ``G2``.
+
+        Examples
+        --------
+        When creating the `DiGraphMatcher`, the order of the arguments is important
+
+        >>> G = nx.DiGraph([("B", "C"), ("C", "B"), ("C", "D"), ("D", "C")])
+        >>> H = nx.DiGraph(nx.path_graph(5))
+
+        Yield isomorphic mappings between ``H`` and subgraphs of ``G``:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(G, H)
+        >>> list(isomatcher.subgraph_isomorphisms_iter())
+        []
+
+        Yield isomorphic mappings between ``G`` and subgraphs of ``H``:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(H, G)
+        >>> next(isomatcher.subgraph_isomorphisms_iter())
+        {0: 'B', 1: 'C', 2: 'D'}
+        """
+        return super().subgraph_isomorphisms_iter()
+
+    def subgraph_monomorphisms_iter(self):
+        """Generator over monomorphisms between a subgraph of ``G1`` and ``G2``.
+
+        Examples
+        --------
+        When creating the `DiGraphMatcher`, the order of the arguments is important.
+
+        >>> G = nx.DiGraph([("A", "B"), ("C", "B"), ("D", "C")])
+        >>> H = nx.DiGraph([(0, 1), (1, 2), (2, 3), (3, 2)])
+
+        Yield monomorphic mappings between ``H`` and subgraphs of ``G``:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(G, H)
+        >>> list(isomatcher.subgraph_monomorphisms_iter())
+        []
+
+        Yield monomorphic mappings between ``G`` and subgraphs of ``H``:
+
+        >>> isomatcher = nx.isomorphism.DiGraphMatcher(H, G)
+        >>> next(isomatcher.subgraph_monomorphisms_iter())
+        {3: 'A', 2: 'B', 1: 'C', 0: 'D'}
+        """
+        return super().subgraph_monomorphisms_iter()
 
 
 class GMState:

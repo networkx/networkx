@@ -462,7 +462,7 @@ def rooted_product(G, H, root):
     The nodes of G and H are not relabeled.
     """
     if root not in H:
-        raise nx.NetworkXError("root must be a vertex in H")
+        raise nx.NodeNotFound("root must be a vertex in H")
 
     R = nx.Graph()
     R.add_nodes_from(product(G, H))

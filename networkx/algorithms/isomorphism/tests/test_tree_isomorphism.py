@@ -62,8 +62,6 @@ def check_isomorphism(t1, t2, isomorphism):
 
 
 def test_hardcoded():
-    print("hardcoded test")
-
     # define a test problem
     edges_1 = [
         ("a", "b"),
@@ -217,22 +215,17 @@ def positive_single_tree(t1):
 # larger values run slow down significantly
 # as the number of trees grows rapidly
 def test_positive(maxk=14):
-    print("positive test")
-
     for k in range(2, maxk + 1):
         start_time = time.time()
         trial = 0
         for t in nx.nonisomorphic_trees(k):
             positive_single_tree(t)
             trial += 1
-        print(k, trial, time.time() - start_time)
 
 
 # test the trivial case of a single node in each tree
 # note that nonisomorphic_trees doesn't work for k = 1
 def test_trivial():
-    print("trivial test")
-
     # back to an undirected graph
     t1 = nx.Graph()
     t1.add_node("a")
@@ -252,8 +245,6 @@ def test_trivial():
 # test another trivial case where the two graphs have
 # different numbers of nodes
 def test_trivial_2():
-    print("trivial test 2")
-
     edges_1 = [("a", "b"), ("a", "c")]
 
     edges_2 = [("v", "y")]
@@ -279,8 +270,6 @@ def test_trivial_2():
 # larger values run slow down significantly
 # as the number of trees grows rapidly
 def test_negative(maxk=11):
-    print("negative test")
-
     for k in range(4, maxk + 1):
         test_trees = list(nx.nonisomorphic_trees(k))
         start_time = time.time()
@@ -289,4 +278,3 @@ def test_negative(maxk=11):
             for j in range(i + 1, len(test_trees)):
                 trial += 1
                 assert tree_isomorphism(test_trees[i], test_trees[j]) == []
-        print(k, trial, time.time() - start_time)

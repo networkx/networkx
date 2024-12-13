@@ -7,6 +7,8 @@ Contributor Guide
    This document assumes some familiarity with contributing to open source
    scientific Python projects using GitHub pull requests. If this does not
    describe you, you may first want to see the :ref:`contributing_faq`.
+   If you are using a LLM or any other AI model, you will still need to
+   follow the process described here.
 
 .. _dev_workflow:
 
@@ -370,6 +372,15 @@ We will help you create the tests and sort out any kind of problem during code r
 
 Image comparison
 ~~~~~~~~~~~~~~~~
+
+.. note::
+   Image comparison tests require the ``pytest-mpl`` extension, which can be
+   installed with::
+
+      pip install pytest-mpl
+
+   If ``pytest-mpl`` is not installed, the test suite may emit warnings related
+   to ``pytest.mark.mpl_image_compare`` - these can be safely ignored.
 
 To run image comparisons::
 

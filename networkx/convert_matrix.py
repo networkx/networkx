@@ -496,23 +496,23 @@ def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format=
     Parameters
     ----------
     G : graph
-        The NetworkX graph used to construct the sparse matrix.
+        The NetworkX graph used to construct the sparse array.
 
     nodelist : list, optional
        The rows and columns are ordered according to the nodes in `nodelist`.
-       If `nodelist` is None, then the ordering is produced by G.nodes().
+       If `nodelist` is None, then the ordering is produced by ``G.nodes()``.
 
     dtype : NumPy data-type, optional
         A valid NumPy dtype used to initialize the array. If None, then the
         NumPy default is used.
 
-    weight : string or None   optional (default='weight')
+    weight : string or None, optional (default='weight')
         The edge attribute that holds the numerical value used for
         the edge weight.  If None then all edge weights are 1.
 
     format : str in {'bsr', 'csr', 'csc', 'coo', 'lil', 'dia', 'dok'}
-        The type of the matrix to be returned (default 'csr').  For
-        some algorithms different implementations of sparse matrices
+        The format of the sparse array to be returned (default 'csr').  For
+        some algorithms different implementations of sparse arrays
         can perform better.  See [1]_ for details.
 
     Returns
@@ -522,10 +522,11 @@ def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format=
 
     Notes
     -----
-    For directed graphs, matrix entry i,j corresponds to an edge from i to j.
+    For directed graphs, matrix entry ``i, j`` corresponds to an edge from
+    ``i`` to ``j``.
 
-    The matrix entries are populated using the edge attribute held in
-    parameter weight. When an edge does not have that attribute, the
+    The values of the adjacency matrix are populated using the edge attribute held in
+    parameter `weight`. When an edge does not have that attribute, the
     value of the entry is 1.
 
     For multiple edges the matrix values are the sums of the edge weights.
@@ -538,36 +539,127 @@ def to_scipy_sparse_array(G, nodelist=None, dtype=None, weight="weight", format=
     diagonal matrix entry value to the weight attribute of the edge
     (or the number 1 if the edge has no weight attribute).  If the
     alternate convention of doubling the edge weight is desired the
-    resulting SciPy sparse array can be modified as follows:
+    resulting array can be modified as follows::
 
-    >>> G = nx.Graph([(1, 1)])
-    >>> A = nx.to_scipy_sparse_array(G)
-    >>> print(A.todense())
-    [[1]]
-    >>> A.setdiag(A.diagonal() * 2)
-    >>> print(A.toarray())
-    [[2]]
+        >>> G = nx.Graph([(1, 1)])
+        >>> A = nx.to_scipy_sparse_array(G)
+        >>> A.toarray()
+        array([[1]])
+        >>> A.setdiag(A.diagonal() * 2)
+        >>> A.toarray()
+        array([[2]])
 
     Examples
     --------
-    >>> G = nx.MultiDiGraph()
-    >>> G.add_edge(0, 1, weight=2)
-    0
-    >>> G.add_edge(1, 0)
-    0
-    >>> G.add_edge(2, 2, weight=3)
-    0
-    >>> G.add_edge(2, 2)
-    1
-    >>> S = nx.to_scipy_sparse_array(G, nodelist=[0, 1, 2])
-    >>> print(S.toarray())
-    [[0 2 0]
-     [1 0 0]
-     [0 0 4]]
+
+    Basic usage:
+
+    >>> G = nx.path_graph(4)
+    >>> A = nx.to_scipy_sparse_array(G)
+    >>> A  # doctest: +SKIP
+    <Compressed Sparse Row sparse array of dtype 'int64'
+        with 6 stored elements and shape (4, 4)>
+
+    >>> A.toarray()
+    array([[0, 1, 0, 0],
+           [1, 0, 1, 0],
+           [0, 1, 0, 1],
+           [0, 0, 1, 0]])
+
+    .. note:: The `toarray` method is used in these examples to better visualize
+       the adjacancy matrix. For a dense representation of the adjaceny matrix,
+       use `to_numpy_array` instead.
+
+    Directed graphs:
+
+    >>> G = nx.DiGraph([(0, 1), (1, 2), (2, 3)])
+    >>> nx.to_scipy_sparse_array(G).toarray()
+    array([[0, 1, 0, 0],
+           [0, 0, 1, 0],
+           [0, 0, 0, 1],
+           [0, 0, 0, 0]])
+
+    >>> H = G.reverse()
+    >>> H.edges
+    OutEdgeView([(1, 0), (2, 1), (3, 2)])
+    >>> nx.to_scipy_sparse_array(H).toarray()
+    array([[0, 0, 0, 0],
+           [1, 0, 0, 0],
+           [0, 1, 0, 0],
+           [0, 0, 1, 0]])
+
+    By default, the order of the rows/columns of the adjacency matrix is determined
+    by the ordering of the nodes in `G`:
+
+    >>> G = nx.Graph()
+    >>> G.add_nodes_from([3, 5, 0, 1])
+    >>> G.add_edges_from([(1, 3), (1, 5)])
+    >>> nx.to_scipy_sparse_array(G).toarray()
+    array([[0, 0, 0, 1],
+           [0, 0, 0, 1],
+           [0, 0, 0, 0],
+           [1, 1, 0, 0]])
+
+    The ordering of the rows can be changed with `nodelist`:
+
+    >>> ordered = [0, 1, 3, 5]
+    >>> nx.to_scipy_sparse_array(G, nodelist=ordered).toarray()
+    array([[0, 0, 0, 0],
+           [0, 0, 1, 1],
+           [0, 1, 0, 0],
+           [0, 1, 0, 0]])
+
+    If `nodelist` contains a subset of the nodes in `G`, the adjacency matrix
+    for the node-induced subgraph is produced:
+
+    >>> nx.to_scipy_sparse_array(G, nodelist=[1, 3, 5]).toarray()
+    array([[0, 1, 1],
+           [1, 0, 0],
+           [1, 0, 0]])
+
+    The values of the adjacency matrix are drawn from the edge attribute
+    specified by the `weight` parameter:
+
+    >>> G = nx.path_graph(4)
+    >>> nx.set_edge_attributes(
+    ...     G, values={(0, 1): 1, (1, 2): 10, (2, 3): 2}, name="weight"
+    ... )
+    >>> nx.set_edge_attributes(
+    ...     G, values={(0, 1): 50, (1, 2): 35, (2, 3): 10}, name="capacity"
+    ... )
+    >>> nx.to_scipy_sparse_array(G).toarray()  # Default weight="weight"
+    array([[ 0,  1,  0,  0],
+           [ 1,  0, 10,  0],
+           [ 0, 10,  0,  2],
+           [ 0,  0,  2,  0]])
+    >>> nx.to_scipy_sparse_array(G, weight="capacity").toarray()
+    array([[ 0, 50,  0,  0],
+           [50,  0, 35,  0],
+           [ 0, 35,  0, 10],
+           [ 0,  0, 10,  0]])
+
+    Any edges that don't have a `weight` attribute default to 1:
+
+    >>> G[1][2].pop("capacity")
+    35
+    >>> nx.to_scipy_sparse_array(G, weight="capacity").toarray()
+    array([[ 0, 50,  0,  0],
+           [50,  0,  1,  0],
+           [ 0,  1,  0, 10],
+           [ 0,  0, 10,  0]])
+
+    When `G` is a multigraph, the values in the adjacency matrix are given by
+    the sum of the `weight` edge attribute over each edge key:
+
+    >>> G = nx.MultiDiGraph([(0, 1), (0, 1), (0, 1), (2, 0)])
+    >>> nx.to_scipy_sparse_array(G).toarray()
+    array([[0, 3, 0],
+           [0, 0, 0],
+           [1, 0, 0]])
 
     References
     ----------
-    .. [1] Scipy Dev. References, "Sparse Matrices",
+    .. [1] Scipy Dev. References, "Sparse Arrays",
        https://docs.scipy.org/doc/scipy/reference/sparse.html
     """
     import scipy as sp

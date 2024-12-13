@@ -485,8 +485,7 @@ def draw_networkx_nodes(
             ax.margins(margins)
 
     node_collection.set_zorder(2)
-    # return node_collection
-    return ax
+    return node_collection
 
 
 class FancyArrowFactory:
@@ -1386,47 +1385,64 @@ def draw_networkx_edge_labels(
                 has not been added yet, and doesn't have transform
             """
             dpi_cor = arrow._dpi_cor
-            # trans_data = arrow.get_transform()
             trans_data = self.ax.transData
-            if arrow._posA_posB is not None:
-                posA = arrow._convert_xy_units(arrow._posA_posB[0])
-                posB = arrow._convert_xy_units(arrow._posA_posB[1])
-                (posA, posB) = trans_data.transform((posA, posB))
-                _path = arrow.get_connectionstyle()(
-                    posA,
-                    posB,
-                    patchA=arrow.patchA,
-                    patchB=arrow.patchB,
-                    shrinkA=arrow.shrinkA * dpi_cor,
-                    shrinkB=arrow.shrinkB * dpi_cor,
+            if arrow._posA_posB is None:
+                raise ValueError(
+                    "Can only draw labels for fancy arrows with "
+                    "posA and posB inputs, not custom path"
                 )
-            else:
-                _path = trans_data.transform_path(arrow._path_original)
+            posA = arrow._convert_xy_units(arrow._posA_posB[0])
+            posB = arrow._convert_xy_units(arrow._posA_posB[1])
+            (posA, posB) = trans_data.transform((posA, posB))
+            _path = arrow.get_connectionstyle()(
+                posA,
+                posB,
+                patchA=arrow.patchA,
+                patchB=arrow.patchB,
+                shrinkA=arrow.shrinkA * dpi_cor,
+                shrinkB=arrow.shrinkB * dpi_cor,
+            )
             # Return is in display coordinates
             return _path
 
         def _update_text_pos_angle(self, arrow):
             # Fractional label position
-            path_disp = self._get_arrow_path_disp(arrow)
-            (x1, y1), (cx, cy), (x2, y2) = path_disp.vertices
             # Text position at a proportion t along the line in display coords
             # default is 0.5 so text appears at the halfway point
             t = self.label_pos
             tt = 1 - t
-            x = tt**2 * x1 + 2 * t * tt * cx + t**2 * x2
-            y = tt**2 * y1 + 2 * t * tt * cy + t**2 * y2
+            path_disp = self._get_arrow_path_disp(arrow)
+            is_bar_style = isinstance(
+                arrow.get_connectionstyle(), mpl.patches.ConnectionStyle.Bar
+            )
+            # 1. Calculate x and y
+            if is_bar_style:
+                # Bar Connection Style - straight line
+                _, (cx1, cy1), (cx2, cy2), _ = path_disp.vertices
+                x = cx1 * tt + cx2 * t
+                y = cy1 * tt + cy2 * t
+            else:
+                # Arc or Angle type Connection Styles - Bezier curve
+                (x1, y1), (cx, cy), (x2, y2) = path_disp.vertices
+                x = tt**2 * x1 + 2 * t * tt * cx + t**2 * x2
+                y = tt**2 * y1 + 2 * t * tt * cy + t**2 * y2
+            # 2. Calculate Angle
             if self.labels_horizontal:
                 # Horizontal text labels
                 angle = 0
             else:
                 # Labels parallel to curve
-                change_x = 2 * tt * (cx - x1) + 2 * t * (x2 - cx)
-                change_y = 2 * tt * (cy - y1) + 2 * t * (y2 - cy)
-                angle = (np.arctan2(change_y, change_x) / (2 * np.pi)) * 360
+                if is_bar_style:
+                    change_x = (cx2 - cx1) / 2
+                    change_y = (cy2 - cy1) / 2
+                else:
+                    change_x = 2 * tt * (cx - x1) + 2 * t * (x2 - cx)
+                    change_y = 2 * tt * (cy - y1) + 2 * t * (y2 - cy)
+                angle = np.arctan2(change_y, change_x) / (2 * np.pi) * 360
                 # Text is "right way up"
                 if angle > 90:
                     angle -= 180
-                if angle < -90:
+                elif angle < -90:
                     angle += 180
             (x, y) = self.ax.transData.inverted().transform((x, y))
             return x, y, angle
