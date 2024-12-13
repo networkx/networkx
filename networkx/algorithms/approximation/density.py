@@ -10,47 +10,56 @@ def _greedy_plus_plus(G, iterations):
         return 0.0, set()
     if iterations < 1:
         raise ValueError(
-            f"The number of iterations must be an integer at least 1. Provided value is {iterations}"
+            f"The number of iterations must be an integer >= 1. Provided: {iterations}"
         )
 
-    loads = {u: 0 for u in G.nodes}  # The load vector for Greedy++.
-    best_density = 0.0  # Best density found so far.
-    best_subgraph = set()  # Best subgraph found so far.
+    loads = {node: 0 for node in G.nodes}  # Load vector for Greedy++.
+    best_density = 0.0  # Highest density encountered.
+    best_subgraph = set()  # Nodes of the best subgraph found.
 
     for _ in range(iterations):
-        # Initialize the heap for fast minimum degree
+        # Initialize heap for fast access to minimum weighted degree.
         heap = nx.utils.BinaryHeap()
 
-        # Calculate the current weighted degrees (load + degree of node) and add it to the heap.
-        weighted_degrees = {u: loads[u] + d for u, d in G.degree()}
-        for u in G.nodes:
-            heap.insert(u, weighted_degrees[u])
+        # Compute initial weighted degrees and add nodes to the heap.
+        for node in G.nodes:
+            heap.insert(node, loads[node] + G.degree[node])
 
-        # Copy the graph structure for this iteration
-        G_iter = G.copy()
+        # Set up tracking for current graph state.
+        remaining_nodes = set(G.nodes)
+        num_edges = G.number_of_edges()
+        current_degrees = {node: G.degree[node] for node in G.nodes}
 
-        while G_iter.number_of_nodes() >= 1:
-            current_density = (
-                G_iter.number_of_edges() / G_iter.number_of_nodes()
-            )  # Current density of G_iter
+        while remaining_nodes:
+            num_nodes = len(remaining_nodes)
 
+            # Current density of the (implicit) graph
+            current_density = num_edges / num_nodes
+
+            # Update the best density.
             if current_density > best_density:
                 best_density = current_density
-                best_subgraph = set(G_iter.nodes)
+                best_subgraph = set(remaining_nodes)
 
-            u, _ = heap.pop()  # Pick node with minimum current weighted degree
+            # Pop the node with the smallest weighted degree.
+            node, _ = heap.pop()
+            if node not in remaining_nodes:
+                continue  # Skip nodes already removed.
 
-            loads[u] += G_iter.degree[u]  # Add to load of u
+            # Update the load of the popped node.
+            loads[node] += current_degrees[node]
 
-            # Subtract one edge from all of u's neighbors, and update their weighted degree
-            for v in G_iter.neighbors(u):
-                weighted_degrees[v] -= 1
-                heap.insert(v, weighted_degrees[v])
+            # Update neighbors' degrees and the heap.
+            for neighbor in G.neighbors(node):
+                if neighbor in remaining_nodes:
+                    current_degrees[neighbor] -= 1
+                    num_edges -= 1
+                    heap.insert(neighbor, loads[neighbor] + current_degrees[neighbor])
 
-            # Delete u
-            G_iter.remove_node(u)
+            # Remove the node from the remaining nodes.
+            remaining_nodes.remove(node)
 
-    return (best_density, best_subgraph)
+    return best_density, best_subgraph
 
 
 ALGORITHMS = {"greedy++": _greedy_plus_plus}
@@ -62,10 +71,10 @@ ALGORITHMS = {"greedy++": _greedy_plus_plus}
 def densest_subgraph(G, iterations=1, *, method="greedy++"):
     r"""Returns an approximate densest subgraph for a graph `G`.
 
-    This function runs an iterative algorithm to find
-    the densest subgraph, and returns both the density and the subgraph.
-    For a discussion on the notion of density used and the different
-    algorithms available on networkx, please see the Notes section below.
+    This function runs an iterative algorithm to find the densest subgraph, and
+    returns both the density and the subgraph. For a discussion on the notion of
+    density used and the different algorithms available on networkx, please see
+    the Notes section below.
 
     Parameters
     ----------
@@ -73,8 +82,8 @@ def densest_subgraph(G, iterations=1, *, method="greedy++"):
         Undirected graph.
 
     iterations : int, optional (default=1)
-        Number of iterations to use for the iterative algorithm.
-        Can be specified positionally or as a keyword argument.
+        Number of iterations to use for the iterative algorithm. Can be specified
+        positionally or as a keyword argument.
 
     method : string, optional (default='greedy++')
         The algorithm to use to approximate the densest subgraph.
@@ -97,66 +106,73 @@ def densest_subgraph(G, iterations=1, *, method="greedy++"):
 
     Notes
     -----
-    For a subset of the nodes of $G$, $S \subseteq V(G)$, define
-    $E(S) = \{ (u,v) : (u,v)\in E(G), u\in S, v\in S \}$ as the set of
-    edges with both endpoints in $S$. The density of $S$ is defined as
-    $E(S)/|S|$, the ratio between the edges in the subgraph $G[S]$ and
-    the number of nodes in that subgraph. The densest subgraph problem
-    asks to find the subgraph $S \subseteq V(G)$ with maximum density.
+    The densest subgraph problem (DSG) asks to find the subgraph $S \subseteq V(G)$
+    with maximum density. For a subset of the nodes of $G$, $S \subseteq V(G)$,
+    define $E(S) = \{ (u,v) : (u,v)\in E(G), u\in S, v\in S \}$ as the set of
+    edges with both endpoints in $S$. The density of $S$ is defined as $|E(S)|/|S|$,
+    the ratio between the edges in the subgraph $G[S]$ and the number of nodes in
+    that subgraph. Note that this is different from the standard graph theoretic
+    definition of density, defined as $\frac{2|E(S)|}{|S|(|S|-1)}$, for historical
+    reasons.
 
-    The densest subgraph problem is polynomial time solvable using
-    maximum flow, commonly refered to as Goldberg's algorithm.
-    However, the algorithm is quite involved. It first
-    binary searches on the optimal density, $d^\ast$. For a guess of
-    the density $d$, it sets up a flow network $G'$ with size O(m). The
-    maximum flow solution either informs the algorithm that no subgraph
-    with density $d$ exists, or it returns (implicitly) a subgraph with density
-    $d$. However, this is inherently bottlenecked by the maximum flow algorithm.
-    For example, authors from [2]_ noted that Goldberg’s algorithm
-    failed on many large graphs even though they used a highly optimized
-    maximum flow library.
+    The densest subgraph problem is polynomial time solvable using maximum flow,
+    commonly refered to as Goldberg's algorithm. However, the algorithm is quite
+    involved. It first binary searches on the optimal density, $d^\ast$. For a
+    guess of the density $d$, it sets up a flow network $G'$ with size O(m). The
+    maximum flow solution either informs the algorithm that no subgraph with
+    density $d$ exists, or it provides a subgraph with density at least $d$.
+    However, this is inherently bottlenecked by the maximum flow algorithm. For
+    example, [2]_ notes that Goldberg’s algorithm was not feasible on many large
+    graphs even though they used a highly optimized maximum flow library.
 
-    Due to the importance of the problem and solving it on large scale graphs,
-    there are several known approximation algorithms for the problem.
+    While exact solution algorithms are quite involved, there are several known
+    approximation algorithms for the densest subgraph problem.
 
-    Charikar [1]_ described a very simple 1/2-approximation algorithm for DSG known as
-    the greedy "peeling" algorithm. The algorithm creates an ordering of the nodes as follows.
-    The first node $v_1$ is the one with the smallest degree in $G$ (ties broken arbitrarily).
-    It selects $v_2$ to be the smallest degree node in $G \setminus v_1$. Letting $G_i$ be the
-    graph after removing $v_1, ..., v_i$ (with $G_0=G$), the algorithm returns the graph among
+    Charikar [1]_ described a very simple 1/2-approximation algorithm for DSG
+    known as the greedy "peeling" algorithm. The algorithm creates an ordering of
+    the nodes as follows. The first node $v_1$ is the one with the smallest degree
+    in $G$ (ties broken arbitrarily). It selects $v_2$ to be the smallest degree
+    node in $G \setminus v_1$. Letting $G_i$ be the graph after removing
+    $v_1, ..., v_i$ (with $G_0=G$), the algorithm returns the graph among
     $G_0, ..., G_n$ with the highest density.
 
-    Boob et al. [2]_ generalized this algorithm into Greedy++, an iterative algorithm that runs
-    several rounds of "peeling". In fact, Greedy++ with 1 iteration is precisely Charikar's algorithm.
-    The algorithm converges to a $(1-\epsilon)$ approximate densest
-    subgraph in $O(\Delta(G)\log n/\epsilon^2)$ iterations, and has other desirable properties as shown by
+    Boob et al. [2]_ generalized this algorithm into Greedy++, an iterative
+    algorithm that runs several rounds of "peeling". In fact, Greedy++ with 1
+    iteration is precisely Charikar's algorithm. The algorithm converges to a
+    $(1-\epsilon)$ approximate densest subgraph in $O(\Delta(G)\log n/\epsilon^2)$
+    iterations, where $\Delta(G)$ is the maximum degree, and $n$ is number of
+    nodes in $G$. The algorithm also has other desirable properties as shown by
     [4]_ and [5]_.
 
-    Harb et al. [3]_ gave a faster and more scalable algorithm using ideas from quadratic programming
-    for the densest subgraph, which is based on FISTA algorithm.
+    Harb et al. [3]_ gave a faster and more scalable algorithm using ideas from
+    quadratic programming for the densest subgraph, which is based on a fast
+    iterative shrinkage-thresholding algorithm (FISTA) algorithm.
 
     References
     ----------
-    .. [1] Charikar, Moses. "Greedy approximation algorithms for finding dense components in a graph."
-        In International workshop on approximation algorithms for combinatorial optimization, pp. 84-95.
-        Berlin, Heidelberg: Springer Berlin Heidelberg, 2000.
+    .. [1] Charikar, Moses. "Greedy approximation algorithms for finding dense
+    components in a graph." In International workshop on approximation
+    algorithms for combinatorial optimization, pp. 84-95. Berlin, Heidelberg:
+    Springer Berlin Heidelberg, 2000.
 
-    .. [2] Boob, Digvijay, Yu Gao, Richard Peng, Saurabh Sawlani, Charalampos Tsourakakis, Di Wang,
-        and Junxing Wang. "Flowless: Extracting densest subgraphs without flow computations."
-        In Proceedings of The Web Conference 2020, pp. 573-583. 2020.
+    .. [2] Boob, Digvijay, Yu Gao, Richard Peng, Saurabh Sawlani, Charalampos
+    Tsourakakis, Di Wang, and Junxing Wang. "Flowless: Extracting densest
+    subgraphs without flow computations." In Proceedings of The Web Conference
+    2020, pp. 573-583. 2020.
 
-    .. [3] Harb, Elfarouk, Kent Quanrud, and Chandra Chekuri.
-        "Faster and scalable algorithms for densest subgraph and decomposition."
-        Advances in Neural Information Processing Systems 35 (2022): 26966-26979.
+    .. [3] Harb, Elfarouk, Kent Quanrud, and Chandra Chekuri. "Faster and scalable
+    algorithms for densest subgraph and decomposition." Advances in Neural
+    Information Processing Systems 35 (2022): 26966-26979.
 
-    .. [4] Harb, Elfarouk, Kent Quanrud, and Chandra Chekuri.
-        "Convergence to lexicographically optimal base in a (contra) polymatroid and applications to
-        densest subgraph and tree packing." arXiv preprint arXiv:2305.02987 (2023).
+    .. [4] Harb, Elfarouk, Kent Quanrud, and Chandra Chekuri. "Convergence to
+    lexicographically optimal base in a (contra) polymatroid and applications
+    to densest subgraph and tree packing." arXiv preprint arXiv:2305.02987
+    (2023).
 
-    .. [5] Chekuri, Chandra, Kent Quanrud, and Manuel R. Torres. "Densest subgraph: Supermodularity,
-        iterative peeling, and flow."
-        In Proceedings of the 2022 Annual ACM-SIAM Symposium on Discrete Algorithms (SODA), pp. 1531-1555.
-        Society for Industrial and Applied Mathematics, 2022.
+    .. [5] Chekuri, Chandra, Kent Quanrud, and Manuel R. Torres. "Densest
+    subgraph: Supermodularity, iterative peeling, and flow." In Proceedings of
+    the 2022 Annual ACM-SIAM Symposium on Discrete Algorithms (SODA), pp.
+    1531-1555. Society for Industrial and Applied Mathematics, 2022.
     """
     try:
         algo = ALGORITHMS[method]

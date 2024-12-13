@@ -8,9 +8,9 @@ import networkx.algorithms.approximation as approx
 @pytest.mark.parametrize("n", range(4, 7))
 def test_greedy_plus_plus_star(n, iterations):
     G = nx.star_graph(n)
-    # The densest subgraph of a star network is the entire graph:
-    # The peeling algorithm would peel all the vertices with degree 1, and so should discover
-    # The densest subgraph in one iteration!
+    # The densest subgraph of a star network is the entire graph.
+    # The peeling algorithm would peel all the vertices with degree 1,
+    # and so should discover the densest subgraph in one iteration!
     d, S = approx.densest_subgraph(G, iterations=iterations, method="greedy++")
 
     assert d == pytest.approx(G.number_of_edges() / G.number_of_nodes())
@@ -19,8 +19,9 @@ def test_greedy_plus_plus_star(n, iterations):
 
 def test_greedy_plus_plus_complete_graph():
     G = nx.complete_graph(4)
-    # The density of a complete graph network is the entire graph: C(4, 2)/4 where C(n, 2) is n*(n-1)//2.
-    # The peeling algorithm would find the densest subgraph in one iteration!
+    # The density of a complete graph network is the entire graph: C(4, 2)/4
+    # where C(n, 2) is n*(n-1)//2. The peeling algorithm would find
+    # the densest subgraph in one iteration!
     d, S = approx.densest_subgraph(G, iterations=1, method="greedy++")
 
     assert d == pytest.approx(6 / 4)  # The density, 4/5=0.8.
@@ -30,8 +31,8 @@ def test_greedy_plus_plus_complete_graph():
 def test_greedy_plus_plus_close_cliques():
     """
     Hard example from Harb, Elfarouk, Kent Quanrud, and Chandra Chekuri.
-        "Faster and scalable algorithms for densest subgraph and decomposition."
-        Advances in Neural Information Processing Systems 35 (2022): 26966-26979.
+    "Faster and scalable algorithms for densest subgraph and decomposition."
+    Advances in Neural Information Processing Systems 35 (2022): 26966-26979.
     """
     d = 12
     D = 300
@@ -50,9 +51,10 @@ def test_greedy_plus_plus_close_cliques():
 
 def test_greedy_plus_plus_bipartite_and_clique():
     """
-    Hard example from: Boob, Digvijay, Yu Gao, Richard Peng, Saurabh Sawlani, Charalampos Tsourakakis, Di Wang,
-        and Junxing Wang. "Flowless: Extracting densest subgraphs without flow computations."
-        In Proceedings of The Web Conference 2020, pp. 573-583. 2020.
+    Hard example from: Boob, Digvijay, Yu Gao, Richard Peng, Saurabh Sawlani,
+    Charalampos Tsourakakis, Di Wang, and Junxing Wang. "Flowless: Extracting
+    densest subgraphs without flow computations." In Proceedings of The Web
+    Conference 2020, pp. 573-583. 2020.
     """
     d = 5
     D = 200
