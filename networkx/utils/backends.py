@@ -540,7 +540,37 @@ def _get_backends(group, *, load_and_call=False):
 # We may make "networkx" a "proper" backend and have it in `backends` and `config.backends`.
 backends = _get_backends("networkx.backends")
 backend_info = {}  # fill backend_info after networkx is imported in __init__.py
-backend_hooks = {}  # Ordered dict of backend name to "dispatch_hook_impl" function
+
+backend_hooks = {}  # Ordered dict of backend name to hooks
+# Values are prioritized list of backend names that implement each hook.
+_dispatch_hooks = dict.fromkeys(
+    [
+        "on_load_backend_begin",
+        "on_load_backend_end",
+        "on_call_begin",
+        "on_call_end",
+        "on_will_call_mutate_input",
+        "on_backends_to_try",
+        "on_can_convert",
+        "on_can_backend_run_begin",
+        "on_can_backend_run_end",
+        "on_should_backend_run_begin",
+        "on_should_backend_run_end",
+        "on_convert_and_call_begin",
+        "on_convert_and_call_end",
+        "on_convert_arguments_begin",
+        "on_convert_arguments_end",
+        "on_convert_graph_begin",
+        "on_convert_graph_end",
+        "on_get_from_cache_begin",
+        "on_get_from_cache_end",
+        "on_set_to_cache_begin",
+        "on_set_to_cache_end",
+        "on_call_with_backend_begin",
+        "on_call_with_backend_end",
+    ]
+)
+
 
 # Load and cache backends on-demand
 _loaded_backends = {}  # type: ignore[var-annotated]
@@ -566,22 +596,19 @@ def _set_configs_from_environment():
         (backend, {}) for backend in backends.keys() - backend_info.keys()
     )
     # backend_hooks is defined above as empty dict. Fill it now. Order is important!
-    # "dispatch_hook_priority" determines order (default 0); backend name is tiebreaker.
+    # `.priority` attribute determines order (default 0); backend name is tiebreaker.
+    hooks = _get_backends("networkx.dispatch_hooks")
     hook_priority = sorted(
-        (
+        hooks,
+        key=lambda backend: (getattr(hooks[backend], "priority", 0), backend),
+    )
+    backend_hooks.update((backend, hooks[backend].load()) for backend in hook_priority)
+    for hook_name in _dispatch_hooks:
+        _dispatch_hooks[hook_name] = [
             backend
-            for backend, info in backend_info.items()
-            if "dispatch_hook_impl" in info
-        ),
-        key=lambda backend: (
-            backend_info[backend].get("dispatch_hook_priority", 0),
-            backend,
-        ),
-    )
-    backend_hooks.update(
-        (backend, backend_info[backend]["dispatch_hook_impl"])
-        for backend in hook_priority
-    )
+            for backend, hook in backend_hooks.items()
+            if hasattr(hook, hook_name)
+        ]
 
     # set up config based on backend_info and environment
     config = NetworkXConfig(
@@ -675,28 +702,36 @@ class HookToken:
     def __init__(self, dispatchable):
         self.id = next(self._counter)
         self.dispatchable = dispatchable
-        self.data = {backend_name: {} for backend_name in backend_hooks}
+        self.data = {}
 
     def __getitem__(self, key):
+        if key not in self.data and key in backend_hooks:
+            self.data[key] = {}
         return self.data[key]
 
     def __hash__(self):
         return self.id
 
     def __eq__(self, other):
-        return self.id == other.id
+        return self.id == (other.id if isinstance(other, HookToken) else other)
 
     def __lt__(self, other):
-        return self.id < other.id
+        return self.id < (other.id if isinstance(other, HookToken) else other)
 
     def __le__(self, other):
-        return self.id <= other.id
+        return self.id <= (other.id if isinstance(other, HookToken) else other)
 
     def __gt__(self, other):
-        return self.id > other.id
+        return self.id > (other.id if isinstance(other, HookToken) else other)
 
     def __ge__(self, other):
-        return self.id >= other.id
+        return self.id >= (other.id if isinstance(other, HookToken) else other)
+
+    def __int__(self):
+        return self.id
+
+    def __index__(self):
+        return self.id
 
     def __repr__(self):
         return f"<networkx.HookToken #{self.id} for call to {self.dispatchable.name}>"
@@ -1480,6 +1515,14 @@ class _dispatchable:
             group3 = ()
 
         try_order = list(itertools.chain(group1, group2, group3, group4, group5))
+        if hook_token is not None:
+            try_order = self._call_hook(
+                "on_backends_to_try",
+                hook_token,
+                value=try_order,
+                backend_fallback=backend_fallback,
+                **hook_kwargs,
+            )
         if len(try_order) > 1:
             # Should we consider adding an option for more verbose logging?
             # For example, we could explain the order of `try_order` in detail.
@@ -1654,7 +1697,7 @@ class _dispatchable:
         )
         if hook_token is not None:
             value = self._call_hook(
-                "on_will_call_mutate_input_end",
+                "on_will_call_mutate_input",
                 hook_token,
                 args=args,
                 kwargs=kwargs,
@@ -1670,7 +1713,7 @@ class _dispatchable:
         )
         if hook_token is not None:
             value = self._call_hook(
-                "on_can_convert_end",
+                "on_can_convert",
                 hook_token,
                 backend_name=backend_name,
                 graph_backend_names=graph_backend_names,
@@ -2809,6 +2852,7 @@ class _dispatchable:
         return value
 
     def _call_hook(self, hook_name, hook_token, **kwargs):
+        # TODO: this logging message is temporary
         _logger.debug(
             "Hook `%s:%s:%s' with kwargs %s",
             hook_token,
@@ -2816,17 +2860,12 @@ class _dispatchable:
             hook_name,
             kwargs,
         )
-        if "value" in kwargs:
-            value = kwargs.pop("value")
-            for backend_name, hook_impl in backend_hooks.items():
-                new_val = hook_impl(
-                    hook_name=hook_name, hook_token=hook_token, value=value, **kwargs
-                )
-                if new_val is not None:
-                    value = new_val
-            return value
-        for backend_name, hook_impl in backend_hooks.items():
-            hook_impl(hook_name=hook_name, hook_token=hook_token, **kwargs)
+        for backend_name in _dispatch_hooks[hook_name]:
+            hook_impl = getattr(backend_hooks[backend_name], hook_name)
+            new_val = hook_impl(hook_token=hook_token, **kwargs)
+            if new_val is not None and "value" in kwargs:
+                kwargs["value"] = new_val
+        return kwargs.get("value")
 
     def __reduce__(self):
         """Allow this object to be serialized with pickle.
