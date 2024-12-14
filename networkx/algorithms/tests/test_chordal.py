@@ -2,7 +2,6 @@ import pytest
 
 import networkx as nx
 
-
 class TestMCS:
     @classmethod
     def setup_class(cls):
@@ -127,3 +126,13 @@ class TestMCS:
                 assert set(a.values()) == {0}
             else:
                 assert len(set(a.values())) == H.number_of_nodes()
+    def test_generate_peo(self):
+        G = nx.Graph()
+        G.add_edges_from([(1, 2), (1, 3), (2, 3)])
+        peo = nx.generate_peo(G)
+        assert set(peo) == {1, 2, 3}
+
+        G = nx.Graph()
+        G.add_edges_from([(1, 2), (2, 3), (3, 4), (4, 5), (5, 1)])
+        peo = nx.generate_peo(G)
+        assert set(peo) == {1, 2, 3, 4, 5}
