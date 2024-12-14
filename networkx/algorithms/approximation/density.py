@@ -2,6 +2,8 @@
 
 import math
 
+import numpy as np
+
 import networkx as nx
 
 __all__ = ["densest_subgraph"]
@@ -71,47 +73,61 @@ def _bidirectional_edges(G):
         yield (v, u)
 
 
-def _fractional_peeling(G, b, x):
+def _fractional_peeling(G, b, x, node_to_idx, idx_to_node, edge_to_idx, idx_to_edge):
     """
-    Takes a fractional value to the quadratic program, (b, x) from _fista
-    and outputs an approximate densest subgraph using fractional peeling.
+    Optimized fractional peeling using NumPy arrays.
+
+    Parameters:
+        G (networkx.Graph): The input graph.
+        b (numpy.ndarray): Induced load vector.
+        x (numpy.ndarray): Fractional edge values.
+        node_to_idx (dict): Mapping from node to index.
+        idx_to_node (dict): Mapping from index to node.
+        edge_to_idx (dict): Mapping from edge to index.
+        idx_to_edge (dict): Mapping from index to edge.
+
+    Returns:
+        best_density (float): The best density found.
+        best_subgraph (set): The subset of nodes defining the densest subgraph.
     """
     heap = nx.utils.BinaryHeap()
-    # Use the b vector as the initial values
-    for node, _ in G.degree:
-        heap.insert(node, b[node])
+    # Initialize heap with b values
+    for idx, node in enumerate(G.nodes()):
+        heap.insert(idx, b[idx])
 
-    # Set up tracking for current graph state.
-    remaining_nodes = set(G.nodes)
+    remaining_nodes = set(range(len(G.nodes())))
     num_edges = G.number_of_edges()
 
-    # Track best set
-    best_density = 0
+    best_density = 0.0
     best_subgraph = set()
 
     while remaining_nodes:
         num_nodes = len(remaining_nodes)
-        # Current density of the (implicit) graph
         current_density = num_edges / num_nodes
 
-        # Update the best density.
         if current_density > best_density:
             best_density = current_density
-            best_subgraph = set(remaining_nodes)
+            best_subgraph = {idx_to_node[idx] for idx in remaining_nodes}
 
-        node, _ = heap.pop()
-        while node not in remaining_nodes:
-            node, _ = heap.pop()  # Cleaning the heap from stale nodes.
+        # Pop the node with the smallest b
+        node_idx, _ = heap.pop()
+        while node_idx not in remaining_nodes:
+            node_idx, _ = heap.pop()  # Clean the heap from stale values
 
-        # Update neighbors' degrees, x[(u,v)] value, and the heap.
-        for neighbor in G.neighbors(node):
-            if neighbor in remaining_nodes:
-                b[neighbor] -= x[(node, neighbor)]
-                num_edges -= 1
-                heap.insert(neighbor, b[neighbor])
+        # Update neighbors
+        for neighbor in G.neighbors(idx_to_node[node_idx]):
+            neighbor_idx = node_to_idx[neighbor]
+            if neighbor_idx in remaining_nodes:
+                # Find edge index
+                edge = (idx_to_node[node_idx], neighbor)
+                edge_idx = edge_to_idx.get(edge)
+                if edge_idx is not None:
+                    b[neighbor_idx] -= x[edge_idx]
+                    num_edges -= 1
+                    heap.insert(neighbor_idx, b[neighbor_idx])
 
-        # Remove the node from the remaining nodes.
-        remaining_nodes.remove(node)
+        remaining_nodes.remove(node_idx)
+
     return best_density, best_subgraph
 
 
@@ -123,47 +139,73 @@ def _fista(G, iterations):
             f"The number of iterations must be an integer >= 1. Provided: {iterations}"
         )
 
-    learning_rate = 0.9 / max(degree for _, degree in G.degree())
-    bidirectional_edges = list(_bidirectional_edges(G))
+    # 1. Node Mapping: Assign a unique index to each node
+    node_list = list(G.nodes)
+    node_to_idx = {node: idx for idx, node in enumerate(node_list)}
+    idx_to_node = {idx: node for node, idx in node_to_idx.items()}
+    num_nodes = len(node_list)
 
-    # Initialize dictionaries from paper
-    x = {e: 0.5 for e in bidirectional_edges}
+    # 2. Edge Mapping: Assign a unique index to each bidirectional edge
+    bidirectional_edges = list(_bidirectional_edges(G))
+    num_edges = len(bidirectional_edges)
+    edge_to_idx = {edge: idx for idx, edge in enumerate(bidirectional_edges)}
+    idx_to_edge = {idx: edge for edge, idx in edge_to_idx.items()}
+
+    # 3. Reverse Edge Mapping: Map each edge to its reverse edge index
+    reverse_edge_idx = np.empty(num_edges, dtype=np.int32)
+    for idx, (u, v) in enumerate(bidirectional_edges):
+        reverse_edge_idx[idx] = edge_to_idx[(v, u)]
+
+    # 4. Initialize Variables as NumPy Arrays
+    x = np.full(num_edges, 0.5, dtype=np.float32)
     last_x = x.copy()
     y = x.copy()
-    z = {e: 0 for e in bidirectional_edges}
-    b = {u: 0 for u in G.nodes}  # Induced load vector
-    tk = 1  # Momentum term
-    nodes = G.nodes
+    z = np.zeros(num_edges, dtype=np.float32)
+    b = np.zeros(num_nodes, dtype=np.float32)  # Induced load vector
+    tk = 1.0  # Momentum term
 
+    # 5. Precompute Edge Source Indices
+    edge_src_indices = np.array(
+        [node_to_idx[u] for u, _ in bidirectional_edges], dtype=np.int32
+    )
+
+    # 6. Compute Learning Rate
+    max_degree = max(dict(G.degree()).values())
+    learning_rate = 0.9 / max_degree
+
+    # 7. Iterative Updates
     for _ in range(iterations):
-        # Update b and z
-        for u in nodes:
-            b_u = 0
-            for v in G.neighbors(u):
-                b_u += y[(u, v)]
-            b[u] = b_u
-            for v in G.neighbors(u):
-                z[(u, v)] = y[(u, v)] - 2.0 * learning_rate * b_u
+        # 7a. Update b: sum y over outgoing edges for each node
+        b[:] = 0.0  # Reset b to zero
+        np.add.at(b, edge_src_indices, y)
 
-        # Update momentum term
-        tknew = (1.0 + math.sqrt(1 + 4 * tk**2)) / 2.0
+        # 7b. Compute z
+        z = y - 2.0 * learning_rate * b[edge_src_indices]
 
-        # Update x, y, and last_x in the same loop
-        for u, v in bidirectional_edges:
-            new_xuv = (z[(u, v)] - z[(v, u)] + 1) / 2.0
-            clamped_x = min(max(new_xuv, 0), 1)  # Clamp values in [0, 1]
-            y[(u, v)] = (
-                clamped_x
-                + (tk - 1) / tknew * (clamped_x - last_x[(u, v)])
-                + tk / tknew * (clamped_x - y[(u, v)])
-            )
-            x[(u, v)] = clamped_x
-            last_x[(u, v)] = clamped_x
+        # 7c. Update Momentum Term
+        tknew = (1.0 + math.sqrt(1 + 4.0 * tk**2)) / 2.0
 
-        # Update tk
+        # 7d. Update x, y, and last_x in a vectorized manner
+        new_xuv = (z - z[reverse_edge_idx] + 1.0) / 2.0
+        clamped_x = np.clip(new_xuv, 0.0, 1.0)
+
+        # Update y using the FISTA update rule
+        y = (
+            clamped_x
+            + ((tk - 1.0) / tknew) * (clamped_x - last_x)
+            + (tk / tknew) * (clamped_x - y)
+        )
+
+        # Update x and last_x
+        last_x = x.copy()
+        x = clamped_x
+
+        # Update tk, the momemntum term
         tk = tknew
 
-    return _fractional_peeling(G, b, x)
+    return _fractional_peeling(
+        G, b, x, node_to_idx, idx_to_node, edge_to_idx, idx_to_edge
+    )
 
 
 ALGORITHMS = {"greedy++": _greedy_plus_plus, "fista": _fista}
