@@ -1,5 +1,7 @@
 """Fast algorithms for the densest subgraph problem"""
 
+import math
+
 import networkx as nx
 
 __all__ = ["densest_subgraph"]
@@ -62,7 +64,109 @@ def _greedy_plus_plus(G, iterations):
     return best_density, best_subgraph
 
 
-ALGORITHMS = {"greedy++": _greedy_plus_plus}
+# Generator for edges in both directions for an undirected graph
+def _bidirectional_edges(G):
+    for u, v in G.edges():
+        yield (u, v)
+        yield (v, u)
+
+
+def _fractional_peeling(G, b, x):
+    """
+    Takes a fractional value to the quadratic program, (b, x) from _fista
+    and outputs an approximate densest subgraph using fractional peeling.
+    """
+    heap = nx.utils.BinaryHeap()
+    # Use the b vector as the initial values
+    for node, _ in G.degree:
+        heap.insert(node, b[node])
+
+    # Set up tracking for current graph state.
+    remaining_nodes = set(G.nodes)
+    num_edges = G.number_of_edges()
+
+    # Track best set
+    best_density = 0
+    best_subgraph = set()
+
+    while remaining_nodes:
+        num_nodes = len(remaining_nodes)
+        # Current density of the (implicit) graph
+        current_density = num_edges / num_nodes
+
+        # Update the best density.
+        if current_density > best_density:
+            best_density = current_density
+            best_subgraph = set(remaining_nodes)
+
+        node, _ = heap.pop()
+        while node not in remaining_nodes:
+            node, _ = heap.pop()  # Cleaning the heap from stale nodes.
+
+        # Update neighbors' degrees, x[(u,v)] value, and the heap.
+        for neighbor in G.neighbors(node):
+            if neighbor in remaining_nodes:
+                b[neighbor] -= x[(node, neighbor)]
+                num_edges -= 1
+                heap.insert(neighbor, b[neighbor])
+
+        # Remove the node from the remaining nodes.
+        remaining_nodes.remove(node)
+    return best_density, best_subgraph
+
+
+def _fista(G, iterations):
+    if G.number_of_edges() == 0:
+        return 0.0, set()
+    if iterations < 1:
+        raise ValueError(
+            f"The number of iterations must be an integer >= 1. Provided: {iterations}"
+        )
+
+    learning_rate = 0.9 / max(degree for _, degree in G.degree())
+    bidirectional_edges = list(_bidirectional_edges(G))
+
+    # Initialize dictionaries from paper
+    x = {e: 0.5 for e in bidirectional_edges}
+    last_x = x.copy()
+    y = x.copy()
+    z = {e: 0 for e in bidirectional_edges}
+    b = {u: 0 for u in G.nodes}  # Induced load vector
+    tk = 1  # Momentum term
+    nodes = G.nodes
+
+    for _ in range(iterations):
+        # Update b and z
+        for u in nodes:
+            b_u = 0
+            for v in G.neighbors(u):
+                b_u += y[(u, v)]
+            b[u] = b_u
+            for v in G.neighbors(u):
+                z[(u, v)] = y[(u, v)] - 2.0 * learning_rate * b_u
+
+        # Update momentum term
+        tknew = (1.0 + math.sqrt(1 + 4 * tk**2)) / 2.0
+
+        # Update x, y, and last_x in the same loop
+        for u, v in bidirectional_edges:
+            new_xuv = (z[(u, v)] - z[(v, u)] + 1) / 2.0
+            clamped_x = min(max(new_xuv, 0), 1)  # Clamp values in [0, 1]
+            y[(u, v)] = (
+                clamped_x
+                + (tk - 1) / tknew * (clamped_x - last_x[(u, v)])
+                + tk / tknew * (clamped_x - y[(u, v)])
+            )
+            x[(u, v)] = clamped_x
+            last_x[(u, v)] = clamped_x
+
+        # Update tk
+        tk = tknew
+
+    return _fractional_peeling(G, b, x)
+
+
+ALGORITHMS = {"greedy++": _greedy_plus_plus, "fista": _fista}
 
 
 @nx.utils.not_implemented_for("directed")
@@ -85,9 +189,9 @@ def densest_subgraph(G, iterations=1, *, method="greedy++"):
         Number of iterations to use for the iterative algorithm. Can be specified
         positionally or as a keyword argument.
 
-    method : string, optional (default='greedy++')
+    method : string, optional (default='fista')
         The algorithm to use to approximate the densest subgraph.
-        Supported options: 'greedy++'.
+        Supported options: 'greedy++' by Boob et al. [2]_ and 'fista' by Harb et al. [3]_.
         Must be specified as a keyword argument. Other inputs produce a ValueError.
 
     Returns
