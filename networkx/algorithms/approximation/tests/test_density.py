@@ -115,6 +115,25 @@ def test_fista_bipartite_and_clique():
     assert S_ten == best_subgraph
 
 
+def test_fista_big_dataset():
+    d = 30
+    D = 2000
+    h = 60
+    k = 20
+    Kh = nx.complete_graph(h)
+    KdD = nx.complete_bipartite_graph(d, D)
+    G = nx.disjoint_union_all([KdD] + [Kh for _ in range(k)])
+    best_density = d * D / (d + D)  # of the complete bipartite graph
+    best_subgraph = set(KdD.nodes)
+
+    fista_density, fista_dense_set = approx.densest_subgraph(
+        G, iterations=25, method="fista"
+    )  # 24 fails to identify densest subgraph.
+
+    assert fista_density == pytest.approx(best_density)
+    assert fista_dense_set == best_subgraph
+
+
 @pytest.mark.parametrize("iterations", (1, 3))
 def test_greedy_plus_plus_edgeless_cornercase(iterations):
     G = nx.Graph()
