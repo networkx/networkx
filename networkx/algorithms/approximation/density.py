@@ -172,7 +172,7 @@ ALGORITHMS = {"greedy++": _greedy_plus_plus, "fista": _fista}
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
 @nx._dispatchable
-def densest_subgraph(G, iterations=1, *, method="greedy++"):
+def densest_subgraph(G, iterations=1, *, method="fista"):
     r"""Returns an approximate densest subgraph for a graph `G`.
 
     This function runs an iterative algorithm to find the densest subgraph, and
