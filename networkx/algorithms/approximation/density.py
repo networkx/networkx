@@ -2,8 +2,6 @@
 
 import math
 
-import numpy as np
-
 import networkx as nx
 
 __all__ = ["densest_subgraph"]
@@ -138,6 +136,7 @@ def _fista(G, iterations):
         raise ValueError(
             f"The number of iterations must be an integer >= 1. Provided: {iterations}"
         )
+    import numpy as np
 
     # 1. Node Mapping: Assign a unique index to each node
     node_list = list(G.nodes)
