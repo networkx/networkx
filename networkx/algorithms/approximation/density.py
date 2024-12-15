@@ -135,7 +135,7 @@ def _fista(G, iterations):
         raise ValueError(
             f"The number of iterations must be an integer >= 1. Provided: {iterations}"
         )
-    np = nx._lazy_import("numpy")  # Avoid importing numpy at function def time
+    import numpy as np
 
     # 1. Node Mapping: Assign a unique index to each node
     node_list = list(G.nodes)

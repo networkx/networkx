@@ -8,6 +8,9 @@ import networkx.algorithms.approximation as approx
 @pytest.mark.parametrize("n", range(4, 7))
 @pytest.mark.parametrize("method", ("greedy++", "fista"))
 def test_star(n, iterations, method):
+    if method == "fista":
+        pytest.importorskip("numpy")
+
     G = nx.star_graph(n)
     # The densest subgraph of a star network is the entire graph.
     # The peeling algorithm would peel all the vertices with degree 1,
@@ -20,6 +23,9 @@ def test_star(n, iterations, method):
 
 @pytest.mark.parametrize("method", ("greedy++", "fista"))
 def test_greedy_plus_plus_complete_graph(method):
+    if method == "fista":
+        pytest.importorskip("numpy")
+
     G = nx.complete_graph(4)
     # The density of a complete graph network is the entire graph: C(4, 2)/4
     # where C(n, 2) is n*(n-1)//2. The peeling algorithm would find
@@ -58,6 +64,7 @@ def test_greedy_plus_plus_close_cliques():
 
 
 def test_fista_close_cliques():
+    pytest.importorskip("numpy")
     G, best_density, best_set = generate_close_cliques()
 
     fista_density, fista_dense_set = approx.densest_subgraph(
@@ -108,6 +115,7 @@ def test_greedy_plus_plus_bipartite_and_clique():
 
 
 def test_fista_bipartite_and_clique():
+    pytest.importorskip("numpy")
     G, best_density, best_subgraph, _ = generate_bipartite_and_clique()
 
     ten_round_density, S_ten = approx.densest_subgraph(G, iterations=10, method="fista")
@@ -116,6 +124,7 @@ def test_fista_bipartite_and_clique():
 
 
 def test_fista_big_dataset():
+    pytest.importorskip("numpy")
     d = 30
     D = 2000
     h = 60
