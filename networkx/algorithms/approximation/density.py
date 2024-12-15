@@ -119,10 +119,9 @@ def _fractional_peeling(G, b, x, node_to_idx, idx_to_node, edge_to_idx, idx_to_e
                 # Find edge index
                 edge = (idx_to_node[node_idx], neighbor)
                 edge_idx = edge_to_idx.get(edge)
-                if edge_idx is not None:
-                    b[neighbor_idx] -= x[edge_idx]
-                    num_edges -= 1
-                    heap.insert(neighbor_idx, b[neighbor_idx])
+                b[neighbor_idx] -= x[edge_idx]  # Take off fractional value
+                num_edges -= 1
+                heap.insert(neighbor_idx, b[neighbor_idx])
 
         remaining_nodes.remove(node_idx)
 
@@ -136,7 +135,7 @@ def _fista(G, iterations):
         raise ValueError(
             f"The number of iterations must be an integer >= 1. Provided: {iterations}"
         )
-    import numpy as np
+    np = nx._lazy_import("numpy")  # Avoid importing numpy at function def time
 
     # 1. Node Mapping: Assign a unique index to each node
     node_list = list(G.nodes)
@@ -196,8 +195,8 @@ def _fista(G, iterations):
         )
 
         # Update x and last_x
-        last_x = x.copy()
         x = clamped_x
+        last_x = x.copy()
 
         # Update tk, the momemntum term
         tk = tknew
