@@ -89,7 +89,7 @@ def _kou_steiner_tree(G, terminal_nodes, weight):
     # Compute the metric closure only for terminal nodes
     # Create a complete graph H from the metric edges
     H = nx.Graph()
-    unvisited_terminals = set(terminal_nodes).copy()
+    unvisited_terminals = set(terminal_nodes)
 
     # check for connected graph while processing first node
     u = unvisited_terminals.pop()
