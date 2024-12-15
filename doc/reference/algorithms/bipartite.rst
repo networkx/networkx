@@ -41,6 +41,9 @@ Matching
    to_vertex_cover
    maximum_matching
    minimum_weight_full_matching
+   envy_free_matching_partition
+   max_size_envy_free_matching
+   min_weight_max_size_envy_free_matching
 
 
 Matrix
