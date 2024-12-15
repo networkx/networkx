@@ -85,3 +85,12 @@ A* Algorithm
    astar_path
    astar_path_length
 
+
+With Turn Restrictions
+---------------------
+
+.. automodule:: networkx.algorithms.shortest_paths.turn_restrictions
+.. autosummary::
+   :toctree: generated/
+
+   shortest_path_with_turn_restrictions
