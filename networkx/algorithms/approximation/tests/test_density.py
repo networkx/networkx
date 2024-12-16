@@ -57,7 +57,7 @@ def test_greedy_plus_plus_close_cliques():
     G, best_density, densest_set = generate_close_cliques()
     greedy_pp, S_pp = approx.densest_subgraph(
         G, iterations=186, method="greedy++"
-    )  # 186 fails to identify densest subgraph.
+    )  # 185 fails to identify densest subgraph.
 
     assert greedy_pp == pytest.approx(best_density)
     assert S_pp == densest_set

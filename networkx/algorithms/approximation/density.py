@@ -156,7 +156,6 @@ def _fista(G, iterations):
 
     # 4. Initialize Variables as NumPy Arrays
     x = np.full(num_edges, 0.5, dtype=np.float32)
-    last_x = x.copy()
     y = x.copy()
     z = np.zeros(num_edges, dtype=np.float32)
     b = np.zeros(num_nodes, dtype=np.float32)  # Induced load vector
@@ -183,20 +182,19 @@ def _fista(G, iterations):
         # 7c. Update Momentum Term
         tknew = (1.0 + math.sqrt(1 + 4.0 * tk**2)) / 2.0
 
-        # 7d. Update x, y, and last_x in a vectorized manner
+        # 7d. Update x, y in a vectorized manner
         new_xuv = (z - z[reverse_edge_idx] + 1.0) / 2.0
         clamped_x = np.clip(new_xuv, 0.0, 1.0)
 
         # Update y using the FISTA update rule
         y = (
             clamped_x
-            + ((tk - 1.0) / tknew) * (clamped_x - last_x)
+            + ((tk - 1.0) / tknew) * (clamped_x - x)
             + (tk / tknew) * (clamped_x - y)
         )
 
-        # Update x and last_x
+        # Update x
         x = clamped_x
-        last_x = x.copy()
 
         # Update tk, the momemntum term
         tk = tknew
