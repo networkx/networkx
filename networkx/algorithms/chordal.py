@@ -19,6 +19,7 @@ __all__ = [
     "chordal_graph_treewidth",
     "NetworkXTreewidthBoundExceeded",
     "complete_to_chordal_graph",
+    "perfect_elimination_ordering",
 ]
 
 
@@ -441,3 +442,76 @@ def complete_to_chordal_graph(G):
             weight[node] += 1
     H.add_edges_from(chords)
     return H, alpha
+
+
+@not_implemented_for("directed")
+@not_implemented_for("multigraph")
+@nx._dispatchable
+def perfect_elimination_ordering(G):
+    """
+    Computes the perfect elimination ordering for a chordal graph.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        Undirected graph
+
+    Returns
+    -------
+    list: A list of nodes in perfect elimination order.
+
+    Raises
+    -------
+    ValueError: If the graph is not chordal or is not an undirected graph.
+
+    Notes
+    -----
+    A perfect elimination ordering in a chordal graph is an ordering of the
+    vertices of the graph such that, for each vertex v, v and the neighbors
+    of v that occur after v in the order form a clique.
+
+    A perfect elimination ordering of a chordal graph can be found efficiently
+    using an algorithm known as lexicographic breadth-first search.
+
+    References
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Chordal_graph
+
+    .. [2] Algorithmic Aspects of Vertex Elimination on Directed Graphs.
+       Donald J. Rose, Robert E. Tar Jan; STAN-CS-75-531, November, 1975.
+       http://i.stanford.edu/pub/cstr/reports/cs/tr/75/531/CS-TR-75-531.pdf
+
+    Examples
+    --------
+    >>> from networkx.algorithms.chordal import perfect_elimination_ordering
+    >>> G = nx.Graph()
+    >>> G.add_edges_from([(1, 2), (1, 3), (2, 3)])
+    >>> peo = nx.perfect_elimination_ordering(G)
+    {1, 2, 3}
+    """
+    if not is_chordal(G):
+        raise nx.NetworkXError("Input graph is not chordal.")
+
+    # Create a copy of the graph
+    graph = G.copy()
+    number_of_nodes = len(graph.nodes())
+    partition = [set(graph.nodes())]
+    peo = []
+    while len(peo) < number_of_nodes:
+        # select the vertex from the leftmost set with the smallest label
+        if not partition[0]:
+            partition.pop(0)
+        current_vertex = min(partition[0])
+        partition[0].remove(current_vertex)
+        peo.append(current_vertex)
+        # splitting into neighbours and non-neighbours
+        new_partition = []
+        for part in partition:
+            neighbours = {v for v in part if graph.has_edge(v, current_vertex)}
+            non_neighbours = part - neighbours
+            if neighbours:
+                new_partition.append(neighbours)
+            if non_neighbours:
+                new_partition.append(non_neighbours)
+        partition = new_partition
+    return peo

@@ -127,3 +127,24 @@ class TestMCS:
                 assert set(a.values()) == {0}
             else:
                 assert len(set(a.values())) == H.number_of_nodes()
+
+    def test_perfect_elimination_ordering(self):
+        G = nx.Graph()
+        G.add_edges_from([(1, 2), (2, 3), (3, 4), (4, 5)])
+        assert nx.perfect_elimination_ordering(G) == [1, 2, 3, 4, 5]
+
+        G = nx.Graph()
+        G.add_edges_from([(1, 2), (1, 3), (2, 3), (2, 4)])
+        assert nx.perfect_elimination_ordering(G) == [1, 2, 3, 4]
+
+        G = nx.Graph()
+        G.add_edges_from([(1, 2), (2, 3), (3, 4), (4, 5), (5, 1)])
+        with pytest.raises(nx.NetworkXError, match="Input graph is not chordal."):
+            perfect_elimination_ordering(G)
+
+        G = nx.Graph()
+        assert nx.perfect_elimination_ordering(G) == []
+
+        G = nx.Graph()
+        G.add_node(1)
+        assert perfect_elimination_ordering(G) == [1]
