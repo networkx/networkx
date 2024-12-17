@@ -140,11 +140,11 @@ class TestMCS:
         G = nx.Graph()
         G.add_edges_from([(1, 2), (2, 3), (3, 4), (4, 5), (5, 1)])
         with pytest.raises(nx.NetworkXError, match="Input graph is not chordal."):
-            perfect_elimination_ordering(G)
+            nx.perfect_elimination_ordering(G)
 
         G = nx.Graph()
         assert nx.perfect_elimination_ordering(G) == []
 
         G = nx.Graph()
         G.add_node(1)
-        assert perfect_elimination_ordering(G) == [1]
+        assert nx.perfect_elimination_ordering(G) == [1]
