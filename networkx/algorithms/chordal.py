@@ -486,7 +486,7 @@ def perfect_elimination_ordering(G):
     >>> from networkx.algorithms.chordal import perfect_elimination_ordering
     >>> G = nx.Graph()
     >>> G.add_edges_from([(1, 2), (1, 3), (2, 3)])
-    >>> peo = nx.perfect_elimination_ordering(G)
+    >>> nx.perfect_elimination_ordering(G)
     {1, 2, 3}
     """
     if not is_chordal(G):
