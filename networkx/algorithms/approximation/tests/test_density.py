@@ -68,8 +68,8 @@ def test_fista_close_cliques():
     G, best_density, best_set = generate_close_cliques()
 
     fista_density, fista_dense_set = approx.densest_subgraph(
-        G, iterations=67, method="fista"
-    )  # 66 fails to identify densest subgraph.
+        G, iterations=13, method="fista"
+    )  # 12 fails to identify densest subgraph.
 
     assert fista_density == pytest.approx(best_density)
     assert fista_dense_set == best_set
@@ -136,8 +136,8 @@ def test_fista_big_dataset():
     best_subgraph = set(KdD.nodes)
 
     fista_density, fista_dense_set = approx.densest_subgraph(
-        G, iterations=25, method="fista"
-    )  # 24 fails to identify densest subgraph.
+        G, iterations=13, method="fista"
+    )  # 12 fails to identify densest subgraph.
 
     assert fista_density == pytest.approx(best_density)
     assert fista_dense_set == best_subgraph

@@ -199,6 +199,9 @@ def _fista(G, iterations):
         # Update tk, the momemntum term
         tk = tknew
 
+    # Rebalance the b values! Otherwise peformance is a bit suboptimal.
+    b[:] = 0.0
+    np.add.at(b, edge_src_indices, x)
     return _fractional_peeling(
         G, b, x, node_to_idx, idx_to_node, edge_to_idx, idx_to_edge
     )
