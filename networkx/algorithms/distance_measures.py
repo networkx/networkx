@@ -345,6 +345,12 @@ def diameter(G, e=None, usebounds=False, weight=None):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
+    usebounds : bool, optional
+        If `True`, use the extrema bounding approach when computing the diameter
+        for undirected graphs. Extrema bounding may accelerate the
+        distance calculation for some graphs. `usebounds` is ignored if `G` is
+        directed or if `e` is not `None`. Default is `False`.
+
     weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
@@ -476,6 +482,12 @@ def periphery(G, e=None, usebounds=False, weight=None):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
+    usebounds : bool, optional
+        If `True`, use the extrema bounding approach when computing the periphery
+        for undirected graphs. Extrema bounding may accelerate the
+        distance calculation for some graphs. `usebounds` is ignored if `G` is
+        directed or if `e` is not `None`. Default is `False`.
+
     weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
@@ -535,6 +547,12 @@ def radius(G, e=None, usebounds=False, weight=None):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
+    usebounds : bool, optional
+        If `True`, use the extrema bounding approach when computing the radius
+        for undirected graphs. Extrema bounding may accelerate the
+        distance calculation for some graphs. `usebounds` is ignored if `G` is
+        directed or if `e` is not `None`. Default is `False`.
+
     weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
@@ -587,6 +605,12 @@ def center(G, e=None, usebounds=False, weight=None):
 
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
+
+    usebounds : bool, optional
+        If `True`, use the extrema bounding approach when computing the center
+        for undirected graphs. Extrema bounding may accelerate the
+        distance calculation for some graphs. `usebounds` is ignored if `G` is
+        directed or if `e` is not `None`. Default is `False`.
 
     weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
