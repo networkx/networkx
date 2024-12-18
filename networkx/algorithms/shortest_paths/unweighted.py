@@ -20,7 +20,7 @@ __all__ = [
 
 @nx._dispatchable
 def single_source_shortest_path_length(G, source, cutoff=None):
-    """Compute the shortest path lengths from source to all reachable nodes.
+    """Compute the shortest path lengths from `source` to all reachable nodes in `G`.
 
     Parameters
     ----------
@@ -30,30 +30,27 @@ def single_source_shortest_path_length(G, source, cutoff=None):
        Starting node for path
 
     cutoff : integer, optional
-        Depth to stop the search. Only paths of length <= cutoff are returned.
+        Depth to stop the search. Only paths of length <= `cutoff` are returned.
 
     Returns
     -------
     lengths : dict
-        Dict keyed by node to shortest path length to source.
+        Dict keyed by node to shortest path length to `source`.
 
     Examples
     --------
     >>> G = nx.path_graph(5)
-    >>> length = nx.single_source_shortest_path_length(G, 0)
-    >>> length[4]
-    4
-    >>> for node in length:
-    ...     print(f"{node}: {length[node]}")
-    0: 0
-    1: 1
-    2: 2
-    3: 3
-    4: 4
+    >>> nx.single_source_shortest_path_length(G, 0)
+    {0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
 
     See Also
     --------
-    shortest_path_length
+    :any:`shortest_path_length` :
+       Shortest path length with specifiable source, target, and weight.
+    :any:`single_source_dijkstra_path_length` :
+       Shortest weighted path length from source with Dijkstra algorithm.
+    :any:`single_source_bellman_ford_path_length` :
+       Shortest weighted path length from source with Bellman-Ford algorithm.
     """
     if source not in G:
         raise nx.NodeNotFound(f"Source {source} is not in G")
