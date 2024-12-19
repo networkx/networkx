@@ -314,6 +314,14 @@ Guidelines
   not recognize or handle numpy scalars properly. If a function returns a numpy scalar,
   it should be converted to a native Python type.
 
+  .. code-block:: python
+
+      def convert_to_python_type():
+          # Perform some computation resulting in a numpy scalar
+          a = np.int64(42)  
+          # Convert to a Python scalar before returning
+          return a.item()
+
 Testing
 -------
 
