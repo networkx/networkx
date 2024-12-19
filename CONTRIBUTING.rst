@@ -309,7 +309,18 @@ Guidelines
       def function_only_for_Graph(G, others):
           # function not for directed graphs *or* for multigraphs
           pass
+* Functions should avoid returning numpy scalars (e.g., `numpy.int64`, `numpy.float64`)
+  to ensure better compatibility and avoid issues with parts of the codebase that may 
+  not recognize or handle numpy scalars properly. If a function returns a numpy scalar,
+  it should be converted to a native Python type.
 
+  .. code-block:: python
+
+      def convert_to_python_type():
+          # Perform some computation resulting in a numpy scalar
+          a = np.int64(42)  
+          # Convert to a Python scalar before returning
+          return a.item()
 
 Testing
 -------
