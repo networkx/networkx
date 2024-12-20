@@ -1,5 +1,7 @@
 """Fast algorithms for the densest subgraph problem"""
 
+import math
+
 import networkx as nx
 
 __all__ = ["densest_subgraph"]
@@ -62,13 +64,156 @@ def _greedy_plus_plus(G, iterations):
     return best_density, best_subgraph
 
 
-ALGORITHMS = {"greedy++": _greedy_plus_plus}
+# Generator for edges in both directions for an undirected graph
+def _bidirectional_edges(G):
+    for u, v in G.edges():
+        yield (u, v)
+        yield (v, u)
+
+
+def _fractional_peeling(G, b, x, node_to_idx, idx_to_node, edge_to_idx, idx_to_edge):
+    """
+    Optimized fractional peeling using NumPy arrays.
+
+    Parameters:
+        G (networkx.Graph): The input graph.
+        b (numpy.ndarray): Induced load vector.
+        x (numpy.ndarray): Fractional edge values.
+        node_to_idx (dict): Mapping from node to index.
+        idx_to_node (dict): Mapping from index to node.
+        edge_to_idx (dict): Mapping from edge to index.
+        idx_to_edge (dict): Mapping from index to edge.
+
+    Returns:
+        best_density (float): The best density found.
+        best_subgraph (set): The subset of nodes defining the densest subgraph.
+    """
+    heap = nx.utils.BinaryHeap()
+    # Initialize heap with b values
+    for idx, node in enumerate(G.nodes()):
+        heap.insert(idx, b[idx])
+
+    remaining_nodes = set(range(len(G.nodes())))
+    num_edges = G.number_of_edges()
+
+    best_density = 0.0
+    best_subgraph = set()
+
+    while remaining_nodes:
+        num_nodes = len(remaining_nodes)
+        current_density = num_edges / num_nodes
+
+        if current_density > best_density:
+            best_density = current_density
+            best_subgraph = {idx_to_node[idx] for idx in remaining_nodes}
+
+        # Pop the node with the smallest b
+        node_idx, _ = heap.pop()
+        while node_idx not in remaining_nodes:
+            node_idx, _ = heap.pop()  # Clean the heap from stale values
+
+        # Update neighbors
+        for neighbor in G.neighbors(idx_to_node[node_idx]):
+            neighbor_idx = node_to_idx[neighbor]
+            if neighbor_idx in remaining_nodes:
+                # Find edge index
+                edge = (idx_to_node[node_idx], neighbor)
+                edge_idx = edge_to_idx.get(edge)
+                b[neighbor_idx] -= x[edge_idx]  # Take off fractional value
+                num_edges -= 1
+                heap.insert(neighbor_idx, b[neighbor_idx])
+
+        remaining_nodes.remove(node_idx)
+
+    return best_density, best_subgraph
+
+
+def _fista(G, iterations):
+    if G.number_of_edges() == 0:
+        return 0.0, set()
+    if iterations < 1:
+        raise ValueError(
+            f"The number of iterations must be an integer >= 1. Provided: {iterations}"
+        )
+    import numpy as np
+
+    # 1. Node Mapping: Assign a unique index to each node
+    node_list = list(G.nodes)
+    node_to_idx = {node: idx for idx, node in enumerate(node_list)}
+    idx_to_node = {idx: node for node, idx in node_to_idx.items()}
+    num_nodes = len(node_list)
+
+    # 2. Edge Mapping: Assign a unique index to each bidirectional edge
+    bidirectional_edges = list(_bidirectional_edges(G))
+    num_edges = len(bidirectional_edges)
+    edge_to_idx = {edge: idx for idx, edge in enumerate(bidirectional_edges)}
+    idx_to_edge = {idx: edge for edge, idx in edge_to_idx.items()}
+
+    # 3. Reverse Edge Mapping: Map each edge to its reverse edge index
+    reverse_edge_idx = np.empty(num_edges, dtype=np.int32)
+    for idx, (u, v) in enumerate(bidirectional_edges):
+        reverse_edge_idx[idx] = edge_to_idx[(v, u)]
+
+    # 4. Initialize Variables as NumPy Arrays
+    x = np.full(num_edges, 0.5, dtype=np.float32)
+    y = x.copy()
+    z = np.zeros(num_edges, dtype=np.float32)
+    b = np.zeros(num_nodes, dtype=np.float32)  # Induced load vector
+    tk = 1.0  # Momentum term
+
+    # 5. Precompute Edge Source Indices
+    edge_src_indices = np.array(
+        [node_to_idx[u] for u, _ in bidirectional_edges], dtype=np.int32
+    )
+
+    # 6. Compute Learning Rate
+    max_degree = max(dict(G.degree()).values())
+    learning_rate = 0.9 / max_degree
+
+    # 7. Iterative Updates
+    for _ in range(iterations):
+        # 7a. Update b: sum y over outgoing edges for each node
+        b[:] = 0.0  # Reset b to zero
+        np.add.at(b, edge_src_indices, y)
+
+        # 7b. Compute z
+        z = y - 2.0 * learning_rate * b[edge_src_indices]
+
+        # 7c. Update Momentum Term
+        tknew = (1.0 + math.sqrt(1 + 4.0 * tk**2)) / 2.0
+
+        # 7d. Update x, y in a vectorized manner
+        new_xuv = (z - z[reverse_edge_idx] + 1.0) / 2.0
+        clamped_x = np.clip(new_xuv, 0.0, 1.0)
+
+        # Update y using the FISTA update rule
+        y = (
+            clamped_x
+            + ((tk - 1.0) / tknew) * (clamped_x - x)
+            + (tk / tknew) * (clamped_x - y)
+        )
+
+        # Update x
+        x = clamped_x
+
+        # Update tk, the momemntum term
+        tk = tknew
+
+    # Rebalance the b values! Otherwise peformance is a bit suboptimal.
+    b[:] = 0.0
+    np.add.at(b, edge_src_indices, x)
+    return _fractional_peeling(
+        G, b, x, node_to_idx, idx_to_node, edge_to_idx, idx_to_edge
+    )
+
+
+ALGORITHMS = {"greedy++": _greedy_plus_plus, "fista": _fista}
 
 
 @nx.utils.not_implemented_for("directed")
 @nx.utils.not_implemented_for("multigraph")
 @nx._dispatchable
-def densest_subgraph(G, iterations=1, *, method="greedy++"):
+def densest_subgraph(G, iterations=1, *, method="fista"):
     r"""Returns an approximate densest subgraph for a graph `G`.
 
     This function runs an iterative algorithm to find the densest subgraph, and
@@ -85,9 +230,9 @@ def densest_subgraph(G, iterations=1, *, method="greedy++"):
         Number of iterations to use for the iterative algorithm. Can be specified
         positionally or as a keyword argument.
 
-    method : string, optional (default='greedy++')
+    method : string, optional (default='fista')
         The algorithm to use to approximate the densest subgraph.
-        Supported options: 'greedy++'.
+        Supported options: 'greedy++' by Boob et al. [2]_ and 'fista' by Harb et al. [3]_.
         Must be specified as a keyword argument. Other inputs produce a ValueError.
 
     Returns
