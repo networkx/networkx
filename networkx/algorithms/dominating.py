@@ -114,7 +114,7 @@ def connected_dominating_set(G):
     *V* such that every node not in *D* is adjacent to at least one
     member of *D* [1]_. A *connected dominating set* is a dominating
     set *C* that induces a connected subgraph of *G* [2]_.
-    
+
     Parameters
     ----------
     G : NewtorkX graph
@@ -127,12 +127,26 @@ def connected_dominating_set(G):
 
     Examples
     ________
-    >>> G = nx.Graph([ \
-        (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), \
-        (2, 7), (3, 8), (4, 9), (5, 10), (6, 11), \
-        (7, 12), (8, 12), (9, 12), (10, 12), (11, 12) \
-    ])
-    >>> nx.guha_khuller_single_scan_connected_dominating_set(G)
+    >>> G = nx.Graph(
+    ...     [
+    ...         (1, 2),
+    ...         (1, 3),
+    ...         (1, 4),
+    ...         (1, 5),
+    ...         (1, 6),
+    ...         (2, 7),
+    ...         (3, 8),
+    ...         (4, 9),
+    ...         (5, 10),
+    ...         (6, 11),
+    ...         (7, 12),
+    ...         (8, 12),
+    ...         (9, 12),
+    ...         (10, 12),
+    ...         (11, 12),
+    ...     ]
+    ... )
+    >>> nx.connected_dominating_set(G)
     {1, 2, 3, 4, 5, 6, 7}
 
     Raises
@@ -153,7 +167,7 @@ def connected_dominating_set(G):
     .. [3] Guha, S. and Khuller, S.
            *Approximation Algorithms for Connected Dominating Sets*,
            Algorithmica, 20, 374-387, 1998.
-    
+
     """
     if len(G) == 0 or nx.is_connected(G) == False:
         return set()
@@ -264,10 +278,16 @@ def interval_graph_min_connected_dominating_set(G):
     Examples
     --------
     >>> intervals = [
-            (30, 37), (52, 53), (24, 26),
-            (64, 66), (7, 31), (38, 40),
-            (9, 18), (37, 64), (15, 21)
-        ]
+    ...     (30, 37),
+    ...     (52, 53),
+    ...     (24, 26),
+    ...     (64, 66),
+    ...     (7, 31),
+    ...     (38, 40),
+    ...     (9, 18),
+    ...     (37, 64),
+    ...     (15, 21),
+    ... ]
     >>> G = nx.interval_graph(intervals)
     >>> nx.interval_graph_min_connected_dominating_set(G)
     {(7, 31), (30, 37), (37, 64)}
