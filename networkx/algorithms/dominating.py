@@ -7,12 +7,14 @@ from itertools import chain
 import networkx as nx
 from networkx.utils import arbitrary_element
 
+from ..utils import not_implemented_for
+
 __all__ = [
     "dominating_set",
     "is_dominating_set",
     "connected_dominating_set",
     "is_connected_dominating_set",
-    "interval_graph_minimum_connected_dominating_set",
+    "interval_graph_min_connected_dominating_set",
 ]
 
 
@@ -153,8 +155,11 @@ def connected_dominating_set(G):
            Algorithmica, 20, 374-387, 1998.
     
     """
-    if len(G) == 0:
+    if len(G) == 0 or nx.is_connected(G) == False:
         return set()
+
+    if len(G) == 1:
+        return set(G)
 
     G_succ = G._adj  # For speed-up
 
@@ -230,8 +235,8 @@ def is_connected_dominating_set(G, nbunch):
 
 
 @not_implemented_for("directed")
-@nx._dispachable
-def interval_graph_minimum_connected_dominating_set(G):
+@nx._dispatchable
+def interval_graph_min_connected_dominating_set(G):
     r"""Returns a minimum connected dominating set of an interval graph `G`.
 
     A *dominating set* for a graph *G* with node set *V* is a subset *D* of
@@ -251,7 +256,6 @@ def interval_graph_minimum_connected_dominating_set(G):
     G : NetworkX graph
         Undirected interval graph as specified in [4]_.
 
-
     Returns
     -------
     min_dom_set: set
@@ -265,7 +269,7 @@ def interval_graph_minimum_connected_dominating_set(G):
             (9, 18), (37, 64), (15, 21)
         ]
     >>> G = nx.interval_graph(intervals)
-    >>> nx.interval_graph_minimum_connected_dominating_set(G)
+    >>> nx.interval_graph_min_connected_dominating_set(G)
     {(7, 31), (30, 37), (37, 64)}
 
     Raises
@@ -290,7 +294,6 @@ def interval_graph_minimum_connected_dominating_set(G):
            Pages 271-274.
 
     """
-
     # Convert the interval graph to a numbered graph
     intervals = list(G.nodes)
     intervals = sorted(intervals, key=lambda pair: pair[1])
@@ -303,6 +306,10 @@ def interval_graph_minimum_connected_dominating_set(G):
         H.add_edge(ints_to_nums[e[0]], ints_to_nums[e[1]])
 
     n = H.number_of_nodes()
+
+    # True if G is the null graph, G has a single node or G is disconnected
+    if n == 0:
+        return {}
 
     # The lowest numbered node in each node's neighborhood
     low = {i: min(i, min(H.adj[i])) for i in H.nodes}
