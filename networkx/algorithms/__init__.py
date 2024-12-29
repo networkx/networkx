@@ -120,6 +120,7 @@ from networkx.algorithms.isomorphism import fast_could_be_isomorphic
 from networkx.algorithms.isomorphism import faster_could_be_isomorphic
 from networkx.algorithms.isomorphism import is_isomorphic
 from networkx.algorithms.isomorphism.vf2pp import *
+from networkx.algorithms.k_vertex_cover import *
 from networkx.algorithms.tree.branchings import maximum_branching
 from networkx.algorithms.tree.branchings import maximum_spanning_arborescence
 from networkx.algorithms.tree.branchings import minimum_branching
