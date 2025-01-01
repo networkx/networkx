@@ -1,63 +1,61 @@
-
-import networkx as nx
 import heapq
 
+import networkx as nx
 
 
-def multiple_paths(graph, source, target, k: int, method='bhandari') -> list:
+def multiple_paths(graph, source, target, k: int, method="bhandari") -> list:
     """
-        Returns a list of minimum edge-disjoint paths, each path is a list of edges, between source and target
-        using bhandari or suurballe's algorithm
+    Returns a list of minimum edge-disjoint paths, each path is a list of edges, between source and target
+    using bhandari or suurballe's algorithm
 
-        There may be less than k edge disjoint minimum sum paths. This returns all of them
+    There may be less than k edge disjoint minimum sum paths. This returns all of them
 
-        Parameters
-        ----------
-        graph : NetworkX graph (MultiDiGraph, MultiGraph, DiGraph, Graph)
+    Parameters
+    ----------
+    graph : NetworkX graph (MultiDiGraph, MultiGraph, DiGraph, Graph)
 
-        source : node
-           Starting node for path
+    source : node
+       Starting node for path
 
-        target : node
-           Ending node for path
+    target : node
+       Ending node for path
 
-        k : int
-           Number of minimum sum edge disjoint paths
+    k : int
+       Number of minimum sum edge disjoint paths
 
-        method: string
-            Name of method used, options are ('suurballe', 'bhandari')
+    method: string
+        Name of method used, options are ('suurballe', 'bhandari')
 
-        Raises
-        ------
-        NetworkXNoPath
-            If no path exists between source and target
-        NodeNotFound
-            If source or target nodes are not in graph
+    Raises
+    ------
+    NetworkXNoPath
+        If no path exists between source and target
+    NodeNotFound
+        If source or target nodes are not in graph
 
-        Examples
-        --------
-        >>> G = nx.DiGraph()
-        >>> edges = [ ('A', 'B', 4), ('A', 'C', 2), ('B', 'C', -3), ('B', 'D', 2),
-        >>>          ('C', 'D', 2), ('D', 'E', 1), ('C', 'E', 4)
-        >>> ]
-        >>> G.add_weighted_edges_from(edges)
-        >>>  path_2 = multiple_paths.multiple_paths(test_graph, 'A', 'E', 2) # [['A', 'B', 'C', 'D', 'E'], ['A', 'C', 'E']]
-        # graph connectivity to find out number of edge disjoint path between source and dest, similar to min-cut max-flow
-        # a theory in graph theory
+    Examples
+    --------
+    >>> G = nx.DiGraph()
+    >>> edges = [ ('A', 'B', 4), ('A', 'C', 2), ('B', 'C', -3), ('B', 'D', 2),
+    >>>          ('C', 'D', 2), ('D', 'E', 1), ('C', 'E', 4)
+    >>> ]
+    >>> G.add_weighted_edges_from(edges)
+    >>>  path_2 = multiple_paths.multiple_paths(test_graph, 'A', 'E', 2) # [['A', 'B', 'C', 'D', 'E'], ['A', 'C', 'E']]
+    # graph connectivity to find out number of edge disjoint path between source and dest, similar to min-cut max-flow
+    # a theory in graph theory
 
-        # compare runtime between bhandari and suurballe on big graphs to check effectiveness of dijkstra
+    # compare runtime between bhandari and suurballe on big graphs to check effectiveness of dijkstra
 
-        Notes
-        -----
-        Edge weight attributes must be numerical.
-        Distances are calculated as sums of weighted edges traversed.
+    Notes
+    -----
+    Edge weight attributes must be numerical.
+    Distances are calculated as sums of weighted edges traversed.
 
-        See Also
-        --------
-        shortest_path, dijkstra_path
+    See Also
+    --------
+    shortest_path, dijkstra_path
 
-        """
-
+    """
 
     def calculate_shortest_path(graph: nx.MultiDiGraph, method: str) -> dict:
         """
@@ -113,21 +111,21 @@ def multiple_paths(graph, source, target, k: int, method='bhandari') -> list:
             """
 
             # Initialize distances and predecessors
-            distances = {node: float('inf') for node in graph.nodes}
+            distances = {node: float("inf") for node in graph.nodes}
             predecessors = {node: None for node in graph.nodes}
             distances[source] = 0
 
             # Relax edges |V| - 1 times
             for _ in range(len(graph.nodes) - 1):
                 for u, v, key in graph.edges(keys=True):
-                    weight = graph[u][v][key]['weight']
+                    weight = graph[u][v][key]["weight"]
                     if distances[u] + weight < distances[v]:
                         distances[v] = distances[u] + weight
                         predecessors[v] = u
 
             # Check for negative-weight cycles
             for u, v, key in graph.edges(keys=True):
-                weight = graph[u][v][key]['weight']
+                weight = graph[u][v][key]["weight"]
                 if distances[u] + weight < distances[v]:
                     raise ValueError("Graph contains a negative-weight cycle")
 
@@ -139,7 +137,7 @@ def multiple_paths(graph, source, target, k: int, method='bhandari') -> list:
                 node = predecessors[node]
 
             if path[0] != source:
-                raise nx.NetworkXNoPath(f'{target} is not reachable from {source}')
+                raise nx.NetworkXNoPath(f"{target} is not reachable from {source}")
 
             return path
 
@@ -173,7 +171,7 @@ def multiple_paths(graph, source, target, k: int, method='bhandari') -> list:
             heapq.heappush(priority_queue, (0, source))
 
             # Distances and predecessors
-            distances = {node: float('inf') for node in graph.nodes}
+            distances = {node: float("inf") for node in graph.nodes}
             predecessors = {node: None for node in graph.nodes}
             distances[source] = 0
 
@@ -191,7 +189,7 @@ def multiple_paths(graph, source, target, k: int, method='bhandari') -> list:
 
                 # Relax edges
                 for u, v, key in graph.out_edges(current_node, keys=True):
-                    weight = graph[u][v][key]['weight']
+                    weight = graph[u][v][key]["weight"]
                     distance = current_distance + weight
 
                     if distance < distances[v]:
@@ -206,22 +204,24 @@ def multiple_paths(graph, source, target, k: int, method='bhandari') -> list:
                 node = predecessors[node]
 
             if path[0] != source:
-                raise nx.NetworkXNoPath(f'{target} is not reachable from {source}')
+                raise nx.NetworkXNoPath(f"{target} is not reachable from {source}")
 
             return distances, path
 
         path = None
         d_len = None
         try:
-            if method == 'bhandari':
+            if method == "bhandari":
                 path = bellman_ford(graph, source, target)
-            elif method == 'suurballe':
+            elif method == "suurballe":
                 d_len, path = dijkstra(graph, source, target)
         except nx.NetworkXNoPath:
-            return {'path': None}
+            return {"path": None}
 
         if path is None:
-            raise ValueError("Unknown exception occurred in method 'calculate_shortest_path'")
+            raise ValueError(
+                "Unknown exception occurred in method 'calculate_shortest_path'"
+            )
 
         # Convert into path of edges
         path = zip(path, path[1:])
@@ -230,14 +230,18 @@ def multiple_paths(graph, source, target, k: int, method='bhandari') -> list:
         path_with_keys = []
         for u, v in path:
             edge_keys = graph[u][v]  # Get all ways for edge (u, v)
-            min_key = min(edge_keys, key=lambda k: graph[u][v][k]['weight'])  # Find the key with the minimum weight
+            min_key = min(
+                edge_keys, key=lambda k: graph[u][v][k]["weight"]
+            )  # Find the key with the minimum weight
             path_with_keys.append((u, v, min_key))  # Save the edge with its key
 
-        d_out = {'path': path_with_keys}
-        if method == 'suurballe':
+        d_out = {"path": path_with_keys}
+        if method == "suurballe":
             if d_len is None:
-                raise ValueError("Unknown exception occurred in method 'calculate_shortest_path'")
-            d_out['distance'] = d_len
+                raise ValueError(
+                    "Unknown exception occurred in method 'calculate_shortest_path'"
+                )
+            d_out["distance"] = d_len
 
         return d_out
 
@@ -257,28 +261,28 @@ def multiple_paths(graph, source, target, k: int, method='bhandari') -> list:
         method: str, name of method, 'suurballe' or 'bhandari'
         """
         nonlocal source
-        path = d_path['path']
+        path = d_path["path"]
 
-        if method == 'bhandari':
+        if method == "bhandari":
             for u, v, key in path:
                 weight = graph[u][v][key]["weight"]
                 graph.remove_edge(u, v, key)
                 graph.add_edge(v, u, key=key, weight=-weight)
 
-        elif method == 'suurballe':
+        elif method == "suurballe":
             # STEP1: find distances
 
             edges_lst = list(graph.edges)
-            d_len = d_path['distance']
+            d_len = d_path["distance"]
 
             # STEP2: transform edges
             for u, v, key in edges_lst:
-                new_w = graph[u][v][key]['weight'] + d_len[u] - d_len[v]
+                new_w = graph[u][v][key]["weight"] + d_len[u] - d_len[v]
                 if (u, v, key) in path:
                     graph.remove_edge(u, v, key)
                     graph.add_edge(v, u, key=key, weight=new_w)
                 else:
-                    graph[u][v][key]['weight'] = new_w
+                    graph[u][v][key]["weight"] = new_w
 
     def copy_with_unique_keys(graph: nx.MultiDiGraph):
         """
@@ -295,8 +299,10 @@ def multiple_paths(graph, source, target, k: int, method='bhandari') -> list:
         """
         new_graph = nx.MultiDiGraph()
         counter = 0
-        for u, v, data in graph.edges(data=True,):
-            new_graph.add_edge(u, v, key = counter, **data)
+        for u, v, data in graph.edges(
+            data=True,
+        ):
+            new_graph.add_edge(u, v, key=counter, **data)
             counter += 1
         return new_graph
 
@@ -309,7 +315,7 @@ def multiple_paths(graph, source, target, k: int, method='bhandari') -> list:
         raise nx.NodeNotFound(f"Source {source} is not in G")
     if target not in graph:
         raise nx.NodeNotFound(f"Target {target} is not in G")
-    if method not in ('suurballe', 'bhandari'):
+    if method not in ("suurballe", "bhandari"):
         raise ValueError(f"method not supported: {method}")
 
     # copy original graph and transform to multidigraph
@@ -324,28 +330,28 @@ def multiple_paths(graph, source, target, k: int, method='bhandari') -> list:
     else:
         raise ValueError("graph type not supported")
 
-    if method == 'suurballe':
+    if method == "suurballe":
         for u, v, key in working_graph.edges(keys=True):
-            if working_graph[u][v][key]['weight'] < 0:
+            if working_graph[u][v][key]["weight"] < 0:
                 raise ValueError("suurballe can't run with negative weights")
-
 
     original_graph = working_graph.copy()
 
     path_list = []
 
-
     d_path = calculate_shortest_path(working_graph, method)
-    current_path = d_path['path']
+    current_path = d_path["path"]
     # check target is reachable from source
     if current_path is None:
         raise nx.NetworkXNoPath(f"Node {target} not reachable from {source}")
 
     path_list.append(current_path)
     for _ in range(k - 1):
-        transform_graph(working_graph, d_path, method)  # transform working graph on last path
+        transform_graph(
+            working_graph, d_path, method
+        )  # transform working graph on last path
         d_path = calculate_shortest_path(working_graph, method)
-        current_path = d_path['path']
+        current_path = d_path["path"]
         if current_path is None:
             break
         path_list.append(current_path)
@@ -353,7 +359,7 @@ def multiple_paths(graph, source, target, k: int, method='bhandari') -> list:
     # Delete overlapping edges
     d_valid_edges = {}
     for path in path_list:
-        for (u, v, key) in path:
+        for u, v, key in path:
             edge_set = frozenset([u, v, key])
             if edge_set in d_valid_edges:
                 del d_valid_edges[edge_set]
@@ -363,7 +369,7 @@ def multiple_paths(graph, source, target, k: int, method='bhandari') -> list:
 
     # build edge-disjoint paths from set of edges that are not overlapping
     d_src_to_edges = {}  # u -> [edges in the form (u, v, key)]
-    for (u, v, key) in valid_edges:
+    for u, v, key in valid_edges:
         if u not in d_src_to_edges:
             d_src_to_edges[u] = []
         d_src_to_edges[u].append((u, v, key))
@@ -380,9 +386,11 @@ def multiple_paths(graph, source, target, k: int, method='bhandari') -> list:
             path.append(current)
         paths.append(path)
 
-
     # sort paths by weight
-    sorted_paths = sorted(paths, key=lambda path: (sum(original_graph[u][v][k]["weight"] for u, v, k in path)))
+    sorted_paths = sorted(
+        paths,
+        key=lambda path: (sum(original_graph[u][v][k]["weight"] for u, v, k in path)),
+    )
 
     # convert paths from list of edges to list of nodes
     nodes_sorted_path = []
