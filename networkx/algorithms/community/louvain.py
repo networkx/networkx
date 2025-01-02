@@ -1,4 +1,4 @@
-"""Function for detecting communities based on Louvain Community Detection
+"""Functions for detecting communities based on Louvain Community Detection
 Algorithm"""
 
 import itertools
@@ -118,6 +118,7 @@ def louvain_communities(
     See Also
     --------
     louvain_partitions
+    :any:`leiden_communities`
     """
 
     partitions = louvain_partitions(G, weight, resolution, threshold, seed)
@@ -187,6 +188,7 @@ def louvain_partitions(
     See Also
     --------
     louvain_communities
+    :any:`leiden_partitions`
     """
 
     partition = [{u} for u in G.nodes()]
