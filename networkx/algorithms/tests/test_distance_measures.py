@@ -192,7 +192,7 @@ class TestWeightedDistance:
         assert (
             nx.diameter(self.G, weight="weight")
             == nx.diameter(self.G, weight="cost")
-            == 1.6
+            == pytest.approx(1.6)
             != nx.diameter(self.G, weight="high_cost")
         )
 
@@ -285,7 +285,7 @@ class TestWeightedDistance:
             nx.diameter(self.G, usebounds=True, weight="high_cost")
             != nx.diameter(self.G, usebounds=True, weight="weight")
             == nx.diameter(self.G, usebounds=True, weight="cost")
-            == 1.6
+            == pytest.approx(1.6)
             != nx.diameter(self.G, usebounds=True, weight="high_cost")
         )
         assert nx.diameter(self.G, usebounds=True, weight="high_cost") == nx.diameter(

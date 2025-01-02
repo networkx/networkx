@@ -30,14 +30,25 @@ def pytest_addoption(parser):
         "--backend",
         action="store",
         default=None,
-        help="Run tests with a backend by auto-converting nx graphs to backend graphs",
+        help="Run tests with a backend by auto-converting nx graphs to backend graphs. "
+        "This is also controllable with the NETWORKX_TEST_BACKEND environment variable.",
     )
     parser.addoption(
         "--fallback-to-nx",
         action="store_true",
         default=False,
         help="Run nx function if a backend doesn't implement a dispatchable function"
-        " (use with --backend)",
+        " (use with --backend). This is also controllable with the "
+        "NETWORKX_FALLBACK_TO_NX environment variable.",
+    )
+    parser.addoption(
+        "--use-backend-class",
+        action="store_true",
+        default=False,
+        help="Test backend graph classes; e.g., this makes `nx.Graph()` create a "
+        "backend graph (use with --backend). The backend graph classes are obtained "
+        "from the backend interface, such as `backend_interface.Graph`. This is also "
+        "controllable with the NETWORKX_USE_BACKEND_CLASS environment variable.",
     )
 
 
@@ -46,6 +57,46 @@ def pytest_configure(config):
     backend = config.getoption("--backend")
     if backend is None:
         backend = os.environ.get("NETWORKX_TEST_BACKEND")
+    use_backend_class = config.getoption("--use-backend-class")
+    if not use_backend_class:
+        # Get it from NETWORKX_USE_BACKEND_CLASS environment variable
+        use_backend_class = networkx.utils.backends._dispatchable._use_backend_class
+    if use_backend_class:
+
+        def _new_backend_graph(cls, /, *args, **kwargs):
+            """Make e.g. ``nx.Graph()`` create a backend graph."""
+            if cls in {
+                networkx.Graph,
+                networkx.DiGraph,
+                networkx.MultiGraph,
+                networkx.MultiDiGraph,
+                networkx.PlanarEmbedding,
+            }:
+                backend_interface = networkx.utils.backends._load_backend(backend)
+                name = cls.__name__
+                if hasattr(backend_interface, name):
+                    backend_cls = getattr(backend_interface, name)
+                    # Uncommenting this line may help a couple tests pass, but don't do
+                    # this by default because it may cause confusion.
+                    # backend_cls.__module__ = cls.__module__
+                    backend_cls.__name__ = name
+                    rv = object.__new__(backend_cls)
+                    if not isinstance(rv, cls):
+                        rv.__init__(*args, **kwargs)
+                    # Backends that want to test their networkx-compatible graphs may
+                    # want to experiment with commenting out the line below. The default
+                    # behavior with `--use-backend-class` is to run NetworkX tests
+                    # normally--that is, without exercising the test-specific machinery
+                    # in dispatching--and for backend graphs to be treated as NetworkX
+                    # graphs. To fully exercise this, we set `__networkx_backend__` in
+                    # order to use the default NetworkX implementation of functions.
+                    rv.__networkx_backend__ = "networkx"
+                    return rv
+            return object.__new__(cls)
+
+        networkx.Graph.__new__ = _new_backend_graph
+        networkx.utils.backends._dispatchable._use_backend_class = True
+
     # nx_loopback backend is only available when testing with a backend
     loopback_ep = entry_points(name="nx_loopback", group="networkx.backends")
     if not loopback_ep:
@@ -82,8 +133,12 @@ def pytest_collection_modifyitems(config, items):
         backend_name = config.backend
         if backend_name != "networkx":
             networkx.utils.backends._dispatchable._is_testing = True
-            networkx.config.backend_priority.algos = [backend_name]
-            networkx.config.backend_priority.generators = [backend_name]
+            if not networkx.utils.backends._dispatchable._use_backend_class:
+                # Once again, backends that want to test their networkx-compatible
+                # graphs may want to experiment with code around here too. We still
+                # call `backend.on_start_tests` go give backends full control.
+                networkx.config.backend_priority.algos = [backend_name]
+                networkx.config.backend_priority.generators = [backend_name]
             backend = networkx.utils.backends.backends[backend_name].load()
             if hasattr(backend, "on_start_tests"):
                 getattr(backend, "on_start_tests")(items)
