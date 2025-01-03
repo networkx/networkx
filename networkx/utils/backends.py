@@ -471,6 +471,7 @@ import inspect
 import itertools
 import logging
 import os
+import typing
 import warnings
 from functools import partial
 from importlib.metadata import entry_points
@@ -956,15 +957,17 @@ class _dispatchable:
             self._sig = sig
         return self._sig
 
-    def __call__(self, /, *args, backend=None, **kwargs):
+    # Fast, simple path if no backends are installed
+    def _call_no_backends_installed(self, /, *args, backend=None, **kwargs):
+        """Returns the result of the original function (no backends installed)."""
+        if backend is not None and backend != "networkx":
+            raise ImportError(f"'{backend}' backend is not installed")
+        return self.orig_func(*args, **kwargs)
+
+    # Dispatch to backends based on inputs, `backend=` arg, or configuration
+    def _call_backends_installed(self, /, *args, backend=None, **kwargs):
         """Returns the result of the original function, or the backend function if
         the backend is specified and that backend implements `func`."""
-
-        if not backends:
-            # Fast path if no backends are installed
-            if backend is not None and backend != "networkx":
-                raise ImportError(f"'{backend}' backend is not installed")
-            return self.orig_func(*args, **kwargs)
 
         # Use `backend_name` in this function instead of `backend`.
         # This is purely for aesthetics and to make it easier to search for this
@@ -1444,6 +1447,11 @@ class _dispatchable:
             "or you may specify a backend to use with "
             "the `backend=` keyword argument."
         )
+
+    # Do dispatching (or not) when called depending on whether backends are installed
+    __call__: typing.Callable = (
+        _call_backends_installed if backends else _call_no_backends_installed
+    )
 
     def _will_call_mutate_input(self, args, kwargs):
         return (mutates_input := self.mutates_input) and (
