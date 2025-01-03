@@ -479,6 +479,7 @@ def test_axes():
     fig, ax = plt.subplots()
     nx.draw(barbell, ax=ax)
     nx.draw_networkx_edge_labels(barbell, nx.circular_layout(barbell), ax=ax)
+    plt.close(fig)
 
 
 def test_empty_graph():
@@ -1026,3 +1027,29 @@ def test_hide_ticks(method, hide_ticks):
 
     plt.delaxes(ax)
     plt.close()
+
+
+def test_edge_label_bar_connectionstyle():
+    """Check that FancyArrowPatches with `bar` connectionstyle are also supported
+    in edge label rendering. See gh-7735."""
+    fig = plt.figure()
+    edge = (0, 1)
+    G = nx.DiGraph([edge])
+    pos = {n: (n, 0) for n in G}  # Edge is horizontal line between (0, 0) and (1, 0)
+
+    style_arc = "arc3,rad=0.0"
+    style_bar = "bar,fraction=0.1"
+
+    arc_lbl = nx.draw_networkx_edge_labels(
+        G, pos, edge_labels={edge: "edge"}, connectionstyle=style_arc
+    )
+    # This would fail prior to gh-7739
+    bar_lbl = nx.draw_networkx_edge_labels(
+        G, pos, edge_labels={edge: "edge"}, connectionstyle=style_bar
+    )
+
+    # For the "arc" style, the label should be at roughly the midpoint
+    assert arc_lbl[edge].x, arc_lbl[edge].y == pytest.approx((0.5, 0))
+    # The label should be below the x-axis for the "bar" style
+    assert bar_lbl[edge].y < arc_lbl[edge].y
+    plt.close(fig)
