@@ -1051,6 +1051,7 @@ class _dispatchable:
             if self._returns_graph
             else nx.config.backend_priority.algos,
         )
+        fallback_to_nx = nx.config.fallback_to_nx and "networkx" in self.backends
         if self._is_testing and backend_priority and backend_name is None:
             # Special path if we are running networkx tests with a backend.
             # This even runs for (and handles) functions that mutate input graphs.
@@ -1058,7 +1059,7 @@ class _dispatchable:
                 backend_priority[0],
                 args,
                 kwargs,
-                fallback_to_nx=nx.config.fallback_to_nx and "networkx" in self.backends,
+                fallback_to_nx=fallback_to_nx,
             )
 
         graph_backend_names.discard(None)
@@ -1190,15 +1191,11 @@ class _dispatchable:
                     else:
                         raise
                 else:
-                    if (
-                        nx.config.fallback_to_nx
-                        and "networkx" in self.backends
-                        and all(
-                            # Consider dropping the `isinstance` check here to allow
-                            # duck-type graphs, but let's wait for a backend to ask us.
-                            isinstance(g, nx.Graph)
-                            for g in graphs_resolved.values()
-                        )
+                    if fallback_to_nx and all(
+                        # Consider dropping the `isinstance` check here to allow
+                        # duck-type graphs, but let's wait for a backend to ask us.
+                        isinstance(g, nx.Graph)
+                        for g in graphs_resolved.values()
                     ):
                         # Log that we are falling back to networkx
                         _logger.debug(
@@ -1213,15 +1210,11 @@ class _dispatchable:
                         else:
                             extra = ""
                         raise NotImplementedError(msg_template % extra)
-            elif (
-                nx.config.fallback_to_nx
-                and "networkx" in self.backends
-                and all(
-                    # Consider dropping the `isinstance` check here to allow
-                    # duck-type graphs, but let's wait for a backend to ask us.
-                    isinstance(g, nx.Graph)
-                    for g in graphs_resolved.values()
-                )
+            elif fallback_to_nx and all(
+                # Consider dropping the `isinstance` check here to allow
+                # duck-type graphs, but let's wait for a backend to ask us.
+                isinstance(g, nx.Graph)
+                for g in graphs_resolved.values()
             ):
                 # Log that we are falling back to networkx
                 _logger.debug(
@@ -1241,7 +1234,7 @@ class _dispatchable:
             return self.orig_func(*args, **kwargs)
 
         # We may generalize fallback configuration as e.g. `nx.config.backend_fallback`
-        if nx.config.fallback_to_nx or not graph_backend_names:
+        if fallback_to_nx or not graph_backend_names:
             # Use "networkx" by default if there are no inputs from backends.
             # For example, graph generators should probably return NetworkX graphs
             # instead of raising NotImplementedError.
@@ -1993,7 +1986,7 @@ class _dispatchable:
         """Call this dispatchable function with a backend; for use with testing."""
         backend = _load_backend(backend_name)
         if not self._can_backend_run(backend_name, args, kwargs):
-            if fallback_to_nx or not self.graphs and "networkx" in self.backends:
+            if fallback_to_nx or not self.graphs:
                 if fallback_to_nx:
                     _logger.debug(
                         "Falling back to use 'networkx' instead of '%s' backend "
