@@ -314,6 +314,7 @@ def multiple_paths(graph, source, target, k: int, method="bhandari") -> list:
     if method not in ("suurballe", "bhandari"):
         raise ValueError(f"method not supported: {method}")
 
+    graph_nodes = list(graph.nodes)
     # copy original graph and transform to multidigraph
     if isinstance(graph, nx.MultiDiGraph):
         working_graph = copy_with_unique_keys(graph)
@@ -325,6 +326,10 @@ def multiple_paths(graph, source, target, k: int, method="bhandari") -> list:
         working_graph = copy_with_unique_keys(nx.MultiDiGraph(nx.DiGraph(graph)))
     else:
         raise ValueError("graph type not supported")
+
+    for v in graph_nodes:
+        if v not in working_graph.nodes:
+            working_graph.add_node(v)
 
     if method == "suurballe":
         for u, v, key in working_graph.edges(keys=True):
