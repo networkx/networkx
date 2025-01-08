@@ -1,6 +1,10 @@
+"""K minimum sum edge-disjoint paths using bhandari and suurballe algorithms."""
+
 import heapq
 
 import networkx as nx
+
+__all__ = ["multiple_paths"]
 
 
 def multiple_paths(graph, source, target, k: int, method="bhandari") -> list:
@@ -41,19 +45,11 @@ def multiple_paths(graph, source, target, k: int, method="bhandari") -> list:
     >>> ]
     >>> G.add_weighted_edges_from(edges)
     >>>  path_2 = multiple_paths.multiple_paths(test_graph, 'A', 'E', 2) # [['A', 'B', 'C', 'D', 'E'], ['A', 'C', 'E']]
-    # graph connectivity to find out number of edge disjoint path between source and dest, similar to min-cut max-flow
-    # a theory in graph theory
-
-    # compare runtime between bhandari and suurballe on big graphs to check effectiveness of dijkstra
 
     Notes
     -----
     Edge weight attributes must be numerical.
     Distances are calculated as sums of weighted edges traversed.
-
-    See Also
-    --------
-    shortest_path, dijkstra_path
 
     """
 
