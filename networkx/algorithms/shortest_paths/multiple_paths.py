@@ -125,7 +125,7 @@ def multiple_paths(graph, source, target, k: int, method="bhandari") -> list:
                     raise ValueError("Graph contains a negative-weight cycle")
 
             # build path between source and target
-            path = []
+            path: list[Any] = []
             node = target
             while node is not None:
                 path.insert(0, node)
@@ -162,7 +162,7 @@ def multiple_paths(graph, source, target, k: int, method="bhandari") -> list:
             """
 
             # Priority queue (min-heap)
-            priority_queue = []
+            priority_queue: list[Any] = []
             heapq.heappush(priority_queue, (0, source))
 
             # Distances and predecessors
@@ -357,7 +357,7 @@ def multiple_paths(graph, source, target, k: int, method="bhandari") -> list:
         path_list.append(current_path)
 
     # Delete overlapping edges
-    d_valid_edges = {}
+    d_valid_edges: dict[frozenset[Any], tuple[Any, Any, Any]] = {}
     for path in path_list:
         for u, v, key in path:
             edge_set = frozenset([u, v, key])
@@ -368,7 +368,9 @@ def multiple_paths(graph, source, target, k: int, method="bhandari") -> list:
     valid_edges = set(d_valid_edges.values())
 
     # build edge-disjoint paths from set of edges that are not overlapping
-    d_src_to_edges = {}  # u -> [edges in the form (u, v, key)]
+    d_src_to_edges: dict[
+        frozenset[Any], tuple[Any, Any, Any]
+    ] = {}  # u -> [edges in the form (u, v, key)]
     for u, v, key in valid_edges:
         if u not in d_src_to_edges:
             d_src_to_edges[u] = []
