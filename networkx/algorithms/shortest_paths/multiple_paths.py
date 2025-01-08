@@ -41,8 +41,7 @@ def multiple_paths(graph, source, target, k: int, method="bhandari") -> list:
     --------
     >>> G = nx.DiGraph()
     >>> edges = [ ('A', 'B', 4), ('A', 'C', 2), ('B', 'C', -3), ('B', 'D', 2),
-    >>>          ('C', 'D', 2), ('D', 'E', 1), ('C', 'E', 4)
-    >>> ]
+    >>>          ('C', 'D', 2), ('D', 'E', 1), ('C', 'E', 4) ]
     >>> G.add_weighted_edges_from(edges)
     >>>  path_2 = multiple_paths.multiple_paths(test_graph, 'A', 'E', 2) # [['A', 'B', 'C', 'D', 'E'], ['A', 'C', 'E']]
 
