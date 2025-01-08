@@ -40,6 +40,7 @@ def multiple_paths(graph, source, target, k: int, method="bhandari") -> list:
 
     Examples
     --------
+    >>> from networkx.algorithms.shortest_paths import multiple_paths
     >>> G = nx.DiGraph()
     >>> G.add_edge("A", "B", weight=4)
     >>> G.add_edge("A", "C", weight=2)
@@ -48,7 +49,7 @@ def multiple_paths(graph, source, target, k: int, method="bhandari") -> list:
     >>> G.add_edge("C", "D", weight=2)
     >>> G.add_edge("D", "E", weight=1)
     >>> G.add_edge("C", "E", weight=4)
-    >>> path_2 = multiple_paths.multiple_paths(test_graph, "A", "E", 2)
+    >>> path_2 = multiple_paths(test_graph, "A", "E", 2)
 
     Notes
     -----
