@@ -1,7 +1,7 @@
 """K minimum sum edge-disjoint paths using bhandari and suurballe algorithms."""
 
 import heapq
-import typing
+from typing import Any
 
 import networkx as nx
 
@@ -137,7 +137,9 @@ def multiple_paths(graph, source, target, k: int, method="bhandari") -> list:
 
             return path
 
-        def dijkstra(graph: nx.MultiDiGraph, source, target) -> (dict, list):
+        def dijkstra(
+            graph: nx.MultiDiGraph, source, target
+        ) -> tuple[dict[Any, Any], list[Any]]:
             """
             Compute distances from source to all other nodes, and minimum path from source to target in a multidigraph.
 
@@ -193,7 +195,7 @@ def multiple_paths(graph, source, target, k: int, method="bhandari") -> list:
                         predecessors[v] = current_node
                         heapq.heappush(priority_queue, (distance, v))
             # build path
-            path = []
+            path: list[Any] = []
             node = target
             while node is not None:
                 path.insert(0, node)
@@ -220,18 +222,18 @@ def multiple_paths(graph, source, target, k: int, method="bhandari") -> list:
             )
 
         # Convert into path of edges
-        path = zip(path, path[1:])
+        path2: list[tuple[Any, Any]] = list(zip(path, path[1:]))
 
         # Add key to edges, since it is the shortest path, the key with minimum weight
         path_with_keys = []
-        for u, v in path:
+        for u, v in path2:
             edge_keys = graph[u][v]  # Get all ways for edge (u, v)
             min_key = min(
                 edge_keys, key=lambda k: graph[u][v][k]["weight"]
             )  # Find the key with the minimum weight
             path_with_keys.append((u, v, min_key))  # Save the edge with its key
 
-        d_out = {"path": path_with_keys}
+        d_out: dict[str, Any] = {"path": path_with_keys}
         if method == "suurballe":
             if d_len is None:
                 raise ValueError(
@@ -369,9 +371,7 @@ def multiple_paths(graph, source, target, k: int, method="bhandari") -> list:
     valid_edges = set(d_valid_edges.values())
 
     # build edge-disjoint paths from set of edges that are not overlapping
-    d_src_to_edges: dict[
-        frozenset[Any], tuple[Any, Any, Any]
-    ] = {}  # u -> [edges in the form (u, v, key)]
+    d_src_to_edges: dict[Any, Any] = {}  # u -> [edges in the form (u, v, key)]
     for u, v, key in valid_edges:
         if u not in d_src_to_edges:
             d_src_to_edges[u] = []
