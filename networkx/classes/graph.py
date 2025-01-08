@@ -2011,6 +2011,7 @@ class Graph:
         ------
         NetworkXError
             If nbunch is not a node or sequence of nodes.
+            If nbunch is not a valid node in the graph.
             If a node in nbunch is not hashable.
 
         See Also
@@ -2046,6 +2047,10 @@ class Graph:
                     if "iter" in message:
                         exc = NetworkXError(
                             "nbunch is not a node or a sequence of nodes."
+                        )
+                    if "int" in message:
+                        exc = NetworkXError(
+                            f"Node {nbunch} is not a valid node in the graph."
                         )
                     # capture error for unhashable node.
                     if "hashable" in message:
