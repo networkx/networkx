@@ -1993,7 +1993,7 @@ class Graph:
         """Returns an iterator over nodes contained in nbunch that are
         also in the graph.
 
-        The nodes in nbunch are checked for membership in the graph
+        The nodes in iterable nbunch are checked for membership in the graph
         and if not are silently ignored.
 
         Parameters
@@ -2045,13 +2045,7 @@ class Graph:
                     exc, message = err, err.args[0]
                     # capture error for non-sequence/iterator nbunch.
                     if "iter" in message:
-                        exc = NetworkXError(
-                            "nbunch is not a node or a sequence of nodes."
-                        )
-                    if "int" in message:
-                        exc = NetworkXError(
-                            f"Node {nbunch} is not a valid node in the graph."
-                        )
+                        exc = NetworkXError(f"Node {nbunch} is not in the graph.")
                     # capture error for unhashable node.
                     if "hashable" in message:
                         exc = NetworkXError(
