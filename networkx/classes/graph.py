@@ -1993,7 +1993,7 @@ class Graph:
         """Returns an iterator over nodes contained in nbunch that are
         also in the graph.
 
-        The nodes in iterable nbunch are checked for membership in the graph
+        The nodes in an iterable nbunch are checked for membership in the graph
         and if not are silently ignored.
 
         Parameters
