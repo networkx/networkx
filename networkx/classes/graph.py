@@ -2049,7 +2049,9 @@ class Graph:
                         )
                     # capture single nodes that are not in the graph.
                     if "object is not iterable" in message:
-                        exc = NetworkXError(f"Node {nbunch} is not in the graph.")
+                        exc = NetworkXError(
+                            f"Node {nbunch} is not in the graph."
+                        )
                     # capture error for unhashable node.
                     if "hashable" in message:
                         exc = NetworkXError(
