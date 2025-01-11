@@ -1463,13 +1463,13 @@ def forceatlas2_layout(
         repulsion = np.einsum("ijk, ij -> ik", diff, factor)
 
         # gravity
-        epsilon = 1e-10  # avoid division by zero
         gravities = (
             -gravity
             * mass[:, None]
             * pos_arr
-            / (np.linalg.norm(pos_arr, axis=-1)[:, None] + epsilon)
+            / (np.linalg.norm(pos_arr, axis=-1)[:, None])
         )
+        gravities = np.nan_to_num(gravities, nan=0)  # Handle gravity at the origin
 
         if strong_gravity:
             gravities *= np.linalg.norm(pos_arr, axis=-1)[:, None]
