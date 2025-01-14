@@ -458,6 +458,17 @@ class TestLayout:
         nx.arf_layout(G, seed=42)
         nx.forceatlas2_layout(G, seed=42)
 
+    def test_node_at_center(self):
+        # see gh-7791 avoid divide by zero
+        G = nx.path_graph(3)
+        orig_pos = {i: [i - 1, 0.0] for i in range(3)}
+        new_pos = nx.forceatlas2_layout(G, pos=orig_pos)
+
+    def test_initial_only_some_pos(self):
+        G = nx.path_graph(3)
+        orig_pos = {i: [i - 1, 0.0] for i in range(2)}
+        new_pos = nx.forceatlas2_layout(G, pos=orig_pos, seed=42)
+
 
 def test_multipartite_layout_nonnumeric_partition_labels():
     """See gh-5123."""
