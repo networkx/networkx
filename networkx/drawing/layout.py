@@ -1329,8 +1329,10 @@ def forceatlas2_layout(
     if pos is None:
         pos = nx.random_layout(G, dim=dim, seed=seed)
         pos_arr = np.array(list(pos.values()))
+    elif len(pos) == len(G):
+        pos_arr = np.array([pos[node].copy() for node in G])
     else:
-        # set default node interval within the initial pos values
+        # set random node pos within the initial pos values
         pos_init = np.array(list(pos.values()))
         max_pos = pos_init.max(axis=0)
         min_pos = pos_init.min(axis=0)
@@ -1463,15 +1465,16 @@ def forceatlas2_layout(
         repulsion = np.einsum("ijk, ij -> ik", diff, factor)
 
         # gravity
-        gravities = (
-            -gravity
-            * mass[:, None]
-            * pos_arr
-            / np.linalg.norm(pos_arr, axis=-1)[:, None]
-        )
-
+        pos_centered = pos_arr - np.mean(pos_arr, axis=0)
         if strong_gravity:
-            gravities *= np.linalg.norm(pos_arr, axis=-1)[:, None]
+            gravities = -gravity * mass[:, None] * pos_centered
+        else:
+            # hide warnings for divide by zero. Then change nan to 0
+            with np.errstate(divide="ignore", invalid="ignore"):
+                unit_vec = pos_centered / np.linalg.norm(pos_centered, axis=-1)[:, None]
+            unit_vec = np.nan_to_num(unit_vec, nan=0)
+            gravities = -gravity * mass[:, None] * unit_vec
+
         # total forces
         update = attraction + repulsion + gravities
 
@@ -1490,16 +1493,17 @@ def forceatlas2_layout(
 
         # update pos
         if adjust_sizes:
-            swinging = mass * np.linalg.norm(update, axis=-1)
-            factor = 0.1 * speed / (1 + np.sqrt(speed * swinging))
             df = np.linalg.norm(update, axis=-1)
+            swinging = mass * df
+            factor = 0.1 * speed / (1 + np.sqrt(speed * swinging))
             factor = np.minimum(factor * df, 10.0 * np.ones(df.shape)) / df
         else:
             swinging = mass * np.linalg.norm(update, axis=-1)
             factor = speed / (1 + np.sqrt(speed * swinging))
 
-        pos_arr += update * factor[:, None]
-        if abs((update * factor[:, None]).sum()) < 1e-10:
+        factored_update = update * factor[:, None]
+        pos_arr += factored_update
+        if abs(factored_update).sum() < 1e-10:
             break
 
     return dict(zip(G, pos_arr))
