@@ -1146,7 +1146,7 @@ class argmap:
             def_sig.append(name)
 
         fname = cls._name(f)
-        def_sig = f'def {fname}({", ".join(def_sig)}):'
+        def_sig = f"def {fname}({', '.join(def_sig)}):"
 
         call_sig = f"return {{}}({', '.join(call_sig)})"
 

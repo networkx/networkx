@@ -407,7 +407,7 @@ class GraphMatcher:
         >>> isomatcher.subgraph_is_monomorphic()
         False
 
-        Check whether a subgraph of H is isomorphic to G:
+        Check whether a subgraph of H is monomorphic to G:
 
         >>> isomatcher = nx.isomorphism.GraphMatcher(H, G)
         >>> isomatcher.subgraph_is_monomorphic()

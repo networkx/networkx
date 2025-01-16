@@ -101,6 +101,11 @@ def pytest_collection_modifyitems(config, items):
 @pytest.fixture(autouse=True)
 def set_warnings():
     warnings.filterwarnings(
+        "ignore",
+        category=UserWarning,
+        message=r"Exited (at iteration \d+|postprocessing) with accuracies.*",
+    )
+    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nThe `normalized`"
     )
     warnings.filterwarnings(
