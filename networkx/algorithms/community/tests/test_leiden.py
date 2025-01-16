@@ -3,20 +3,18 @@ import pytest
 import networkx as nx
 from networkx.algorithms.community import leiden_communities, leiden_partitions
 
-# Leiden is not implemented by networkx, so only run tests in this file for
+# Leiden is not yet implemented by networkx, so only run tests in this file for
 # backends that implement Leiden.
-backend_has_leiden_communities = (
-    "not nx.config.backend_priority.algos "
-    "or nx.config.backend_priority.algos[0] not in leiden_communities.backends"
+no_backends_for_leiden_communities = (
+    "not set(nx.config.backend_priority.algos) & leiden_communities.backends"
 )
 
-backend_has_leiden_partitions = (
-    "not nx.config.backend_priority.algos "
-    "or nx.config.backend_priority.algos[0] not in leiden_partitions.backends"
+no_backends_for_leiden_partitions = (
+    "not set(nx.config.backend_priority.algos) & leiden_partitions.backends"
 )
 
 
-@pytest.mark.skipif(backend_has_leiden_communities)
+@pytest.mark.skipif(no_backends_for_leiden_communities)
 def test_modularity_increase():
     G = nx.LFR_benchmark_graph(
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
@@ -28,7 +26,7 @@ def test_modularity_increase():
     assert nx.community.modularity(G, partition) > mod
 
 
-@pytest.mark.skipif(backend_has_leiden_communities)
+@pytest.mark.skipif(no_backends_for_leiden_communities)
 def test_valid_partition():
     G = nx.LFR_benchmark_graph(
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
@@ -38,7 +36,7 @@ def test_valid_partition():
     assert nx.community.is_partition(G, partition)
 
 
-@pytest.mark.skipif(backend_has_leiden_partitions)
+@pytest.mark.skipif(no_backends_for_leiden_partitions)
 def test_partition_iterator():
     G = nx.path_graph(15)
     parts_iter = nx.community.leiden_partitions(G, seed=42)
@@ -51,7 +49,7 @@ def test_partition_iterator():
     assert first_copy[0] == first_part[0]
 
 
-@pytest.mark.skipif(backend_has_leiden_communities)
+@pytest.mark.skipif(no_backends_for_leiden_communities)
 def test_none_weight_param():
     G = nx.karate_club_graph()
     nx.set_edge_attributes(
@@ -66,7 +64,7 @@ def test_none_weight_param():
     assert partition2 != partition3
 
 
-@pytest.mark.skipif(backend_has_leiden_communities)
+@pytest.mark.skipif(no_backends_for_leiden_communities)
 def test_quality():
     G = nx.LFR_benchmark_graph(
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
@@ -83,7 +81,7 @@ def test_quality():
     assert quality2 >= 0.65
 
 
-@pytest.mark.skipif(backend_has_leiden_communities)
+@pytest.mark.skipif(no_backends_for_leiden_communities)
 def test_resolution():
     G = nx.LFR_benchmark_graph(
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
@@ -97,7 +95,7 @@ def test_resolution():
     assert len(partition2) <= len(partition3)
 
 
-@pytest.mark.skipif(backend_has_leiden_communities)
+@pytest.mark.skipif(no_backends_for_leiden_communities)
 def test_empty_graph():
     G = nx.Graph()
     G.add_nodes_from(range(5))
@@ -105,15 +103,15 @@ def test_empty_graph():
     assert nx.community.leiden_communities(G) == expected
 
 
-@pytest.mark.skipif(backend_has_leiden_communities)
+@pytest.mark.skipif(no_backends_for_leiden_communities)
 def test_directed_not_implemented():
     G = nx.cycle_graph(4, create_using=nx.DiGraph)
     with pytest.raises(nx.NetworkXNotImplemented):
         nx.community.leiden_communities(G)
 
 
-@pytest.mark.skipif(backend_has_leiden_partitions)
-@pytest.mark.skipif(backend_has_leiden_communities)
+@pytest.mark.skipif(no_backends_for_leiden_partitions)
+@pytest.mark.skipif(no_backends_for_leiden_communities)
 def test_max_level():
     G = nx.LFR_benchmark_graph(
         250, 3, 1.5, 0.009, average_degree=5, min_community=20, seed=10
