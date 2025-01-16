@@ -1247,6 +1247,7 @@ def arf_layout(
 
 
 @np_random_state("seed")
+@nx._dispatchable
 def forceatlas2_layout(
     G,
     pos=None,
