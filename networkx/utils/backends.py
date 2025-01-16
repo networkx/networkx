@@ -709,6 +709,9 @@ class HookToken:
             self.data[key] = {}
         return self.data[key]
 
+    def __setitem__(self, key, val):
+        self.data[key] = val
+
     def __hash__(self):
         return self.id
 
@@ -1146,7 +1149,7 @@ class _dispatchable:
                 "args": args,
                 "kwargs": kwargs,
                 "graphs_resolved": graphs_resolved,
-                "graph_backend_names": graph_backend_names,
+                "input_backend_names": graph_backend_names,
                 "backend_priority": backend_priority,
             }
             self._call_hook(
@@ -1740,6 +1743,11 @@ class _dispatchable:
         # `backend.can_run` and `backend.should_run` may return strings that describe
         # why they can't or shouldn't be run.
         if hook_token is not None:
+            if backend_name != "networkx":
+                # Load backend (and run "on_load_backend" hook) before
+                # calling "on_can_backend_run_begin" hooks. During normal
+                # usage, this is the only place backends get loaded.
+                self._load_backend(backend_name, hook_token=hook_token)
             self._call_hook(
                 "on_can_backend_run_begin",
                 hook_token,
@@ -2120,7 +2128,12 @@ class _dispatchable:
                 preserve_graph_attrs=preserve_graph_attrs,
             )
             compat_key, value = self._get_from_cache(
-                cache, key, mutations=mutations, hook_token=hook_token
+                cache,
+                key,
+                mutations=mutations,
+                hook_token=hook_token,
+                backend_name=backend_name,
+                graph_name=graph_name,
             )
             if value is not None:
                 if "cache" not in nx.config.warnings_to_ignore:
@@ -2208,7 +2221,14 @@ class _dispatchable:
                 graph_name=graph_name,
             )
         if use_cache and nx_cache is not None and mutations is None:
-            self._set_to_cache(cache, key, value, hook_token=hook_token)
+            self._set_to_cache(
+                cache,
+                key,
+                value,
+                hook_token=hook_token,
+                backend_name=backend_name,
+                graph_name=graph_name,
+            )
             _logger.debug(
                 "Caching converted graph (from '%s' to '%s' backend) "
                 "in call to `%s' for '%s' argument",
@@ -2403,7 +2423,7 @@ class _dispatchable:
                     converted_args=converted_args,
                     converted_kwargs=converted_kwargs,
                     value=value,
-                    exc=exc,
+                    exc=None,  # Use only for conversion errors
                     **hook_kwargs,
                 )
                 if value is not None:
@@ -2802,7 +2822,14 @@ class _dispatchable:
         return f"{self._orig_doc.rstrip()}\n\n    {to_add}"
 
     def _get_from_cache(
-        self, cache, key, *, backend_name=None, mutations=None, hook_token
+        self,
+        cache,
+        key,
+        *,
+        mutations=None,
+        hook_token,
+        backend_name,
+        graph_name,
     ):
         if hook_token is not None:
             self._call_hook(
@@ -2811,11 +2838,10 @@ class _dispatchable:
                 cache=cache,
                 key=key,
                 backend_name=backend_name,
+                graph_name=graph_name,
                 mutations=mutations,
             )
-        compat_key, value = _get_from_cache(
-            cache, key, backend_name=backend_name, mutations=mutations
-        )
+        compat_key, value = _get_from_cache(cache, key, mutations=mutations)
         if hook_token is not None:
             compat_key, value = self._call_hook(
                 "on_get_from_cache_end",
@@ -2823,12 +2849,13 @@ class _dispatchable:
                 cache=cache,
                 key=key,
                 backend_name=backend_name,
+                graph_name=graph_name,
                 mutations=mutations,
                 value=(compat_key, value),
             )
         return compat_key, value
 
-    def _set_to_cache(self, cache, key, graph, *, backend_name=None, hook_token):
+    def _set_to_cache(self, cache, key, graph, *, hook_token, backend_name, graph_name):
         if hook_token is not None:
             self._call_hook(
                 "on_set_to_cache_begin",
@@ -2837,8 +2864,9 @@ class _dispatchable:
                 key=key,
                 graph=graph,
                 backend_name=backend_name,
+                graph_name=graph_name,
             )
-        value = _set_to_cache(cache, key, graph, backend_name=backend_name)
+        value = _set_to_cache(cache, key, graph)
         if hook_token is not None:
             value = self._call_hook(
                 "on_set_to_cache_end",
@@ -2847,6 +2875,7 @@ class _dispatchable:
                 key=key,
                 graph=graph,
                 backend_name=backend_name,
+                graph_name=graph_name,
                 value=value,
             )
         return value
