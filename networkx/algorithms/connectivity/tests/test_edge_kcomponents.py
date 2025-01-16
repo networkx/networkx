@@ -95,9 +95,9 @@ def _check_edge_connectivity(G):
         _assert_subgraph_edge_connectivity(G, ccs_subgraph, k)
 
         if k == 1 or k == 2 and not G.is_directed():
-            assert (
-                ccs_local == ccs_subgraph
-            ), "Subgraphs and components should be the same when k == 1 or (k == 2 and not G.directed())"
+            assert ccs_local == ccs_subgraph, (
+                "Subgraphs and components should be the same when k == 1 or (k == 2 and not G.directed())"
+            )
 
         if G.is_directed():
             # Test special case methods are the same as the aux graph
