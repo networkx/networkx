@@ -91,7 +91,7 @@ def random_layout(G, center=None, dim=2, seed=None, store_pos_as=None):
     store_pos_as : str, default None
         If non-None, the position of each node will be stored on the graph as
         an attribute with this string as its name, which can be accessed with
-        `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
+        ``G.nodes[...][store_pos_as]``. The function still returns the dictionary.
 
     Returns
     -------
@@ -143,7 +143,7 @@ def circular_layout(G, scale=1, center=None, dim=2, store_pos_as=None):
     store_pos_as : str, default None
         If non-None, the position of each node will be stored on the graph as
         an attribute with this string as its name, which can be accessed with
-        `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
+        ``G.nodes[...][store_pos_as]``. The function still returns the dictionary.
 
     Returns
     -------
@@ -230,7 +230,7 @@ def shell_layout(
     store_pos_as : str, default None
         If non-None, the position of each node will be stored on the graph as
         an attribute with this string as its name, which can be accessed with
-        `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
+        ``G.nodes[...][store_pos_as]``. The function still returns the dictionary.
 
     Returns
     -------
@@ -338,7 +338,7 @@ def bipartite_layout(
     store_pos_as : str, default None
         If non-None, the position of each node will be stored on the graph as
         an attribute with this string as its name, which can be accessed with
-        `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
+        ``G.nodes[...][store_pos_as]``. The function still returns the dictionary.
 
     Returns
     -------
@@ -487,7 +487,7 @@ def spring_layout(
     store_pos_as : str, default None
         If non-None, the position of each node will be stored on the graph as
         an attribute with this string as its name, which can be accessed with
-        `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
+        ``G.nodes[...][store_pos_as]``. The function still returns the dictionary.
 
     Returns
     -------
@@ -753,7 +753,7 @@ def kamada_kawai_layout(
     store_pos_as : str, default None
         If non-None, the position of each node will be stored on the graph as
         an attribute with this string as its name, which can be accessed with
-        `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
+        ``G.nodes[...][store_pos_as]``. The function still returns the dictionary.
 
     Returns
     -------
@@ -884,7 +884,7 @@ def spectral_layout(G, weight="weight", scale=1, center=None, dim=2, store_pos_a
     store_pos_as : str, default None
         If non-None, the position of each node will be stored on the graph as
         an attribute with this string as its name, which can be accessed with
-        `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
+        ``G.nodes[...][store_pos_as]``. The function still returns the dictionary.
 
     Returns
     -------
@@ -1016,7 +1016,7 @@ def planar_layout(G, scale=1, center=None, dim=2, store_pos_as=None):
     store_pos_as : str, default None
         If non-None, the position of each node will be stored on the graph as
         an attribute with this string as its name, which can be accessed with
-        `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
+        ``G.nodes[...][store_pos_as]``. The function still returns the dictionary.
 
     Returns
     -------
@@ -1103,7 +1103,7 @@ def spiral_layout(
     store_pos_as : str, default None
         If non-None, the position of each node will be stored on the graph as
         an attribute with this string as its name, which can be accessed with
-        `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
+        ``G.nodes[...][store_pos_as]``. The function still returns the dictionary.
 
     Returns
     -------
@@ -1197,7 +1197,7 @@ def multipartite_layout(
     store_pos_as : str, default None
         If non-None, the position of each node will be stored on the graph as
         an attribute with this string as its name, which can be accessed with
-        `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
+        ``G.nodes[...][store_pos_as]``. The function still returns the dictionary.
 
     Returns
     -------
@@ -1341,7 +1341,7 @@ def arf_layout(
     store_pos_as : str, default None
         If non-None, the position of each node will be stored on the graph as
         an attribute with this string as its name, which can be accessed with
-        `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
+        ``G.nodes[...][store_pos_as]``. The function still returns the dictionary.
 
     References
     .. [1] "Self-Organization Applied to Dynamic Network Layout", M. Geipel,
@@ -1489,7 +1489,7 @@ def forceatlas2_layout(
     store_pos_as : str, default None
         If non-None, the position of each node will be stored on the graph as
         an attribute with this string as its name, which can be accessed with
-        `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
+        ``G.nodes[...][store_pos_as]``. The function still returns the dictionary.
 
     Examples
     --------
@@ -1796,7 +1796,7 @@ def bfs_layout(G, start, *, align="vertical", scale=1, center=None, store_pos_as
     store_pos_as : str, default None
         If non-None, the position of each node will be stored on the graph as
         an attribute with this string as its name, which can be accessed with
-        `G.nodes[...][store_pos_as]`. The function still returns the dictionary.
+        ``G.nodes[...][store_pos_as]``. The function still returns the dictionary.
 
     Returns
     -------
