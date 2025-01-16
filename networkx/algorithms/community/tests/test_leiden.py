@@ -45,7 +45,7 @@ def test_partition_iterator():
     first_part = next(parts_iter)
     first_copy = [s.copy() for s in first_part]
 
-    # gh-5901 reports sets changing after next partition is yielded
+    # check 1st part stays fixed even after 2nd iteration (like gh-5901 in louvain)
     assert first_copy[0] == first_part[0]
     second_part = next(parts_iter)
     assert first_copy[0] == first_part[0]
