@@ -48,10 +48,6 @@ Version 3.5
 * Remove ``d_separated`` from ``algorithms/d_separation.py``.
 * Remove ``minimal_d_separator`` from ``algorithms/d_separation.py``.
 * Add `not_implemented_for("multigraph”)` decorator to ``k_core``, ``k_shell``, ``k_crust`` and ``k_corona`` functions.
-* Change ``single_target_shortest_path_length`` in ``algorithms/shortest_path/unweighted.py``
-  to return a dict. See #6527
-* Change ``shortest_path`` in ``algorithms/shortest_path/generic.py``
-  to return a iterator. See #6527
 * Remove ``total_spanning_tree_weight`` from ``linalg/laplacianmatrix.py``
 * Remove ``create`` keyword argument from ``nonisomorphic_trees`` in 
   ``generators/nonisomorphic_trees``.

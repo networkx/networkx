@@ -753,7 +753,7 @@ def generate_gml(G, stringizer=None):
                     yield from stringize(key, value, (), next_indent)
                 yield indent + "]"
             elif isinstance(value, tuple) and key == "label":
-                yield indent + key + f" \"({','.join(repr(v) for v in value)})\""
+                yield indent + key + f' "({",".join(repr(v) for v in value)})"'
             elif isinstance(value, list | tuple) and key != "label" and not in_list:
                 if len(value) == 0:
                     yield indent + key + " " + f'"{value!r}"'
