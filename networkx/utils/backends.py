@@ -1450,7 +1450,7 @@ class _dispatchable:
 
     # Dispatch only if there exist any installed backend(s)
     __call__: typing.Callable = (
-        _call_backends_installed if backends else _call_no_backends_installed
+        _call_if_any_backends_installed if backends else _call_if_no_backends_installed
     )
 
     def _will_call_mutate_input(self, args, kwargs):
