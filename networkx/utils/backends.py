@@ -958,14 +958,14 @@ class _dispatchable:
         return self._sig
 
     # Fast, simple path if no backends are installed
-    def _call_no_backends_installed(self, /, *args, backend=None, **kwargs):
+    def _call_if_no_backends_installed(self, /, *args, backend=None, **kwargs):
         """Returns the result of the original function (no backends installed)."""
         if backend is not None and backend != "networkx":
             raise ImportError(f"'{backend}' backend is not installed")
         return self.orig_func(*args, **kwargs)
 
     # Dispatch to backends based on inputs, `backend=` arg, or configuration
-    def _call_backends_installed(self, /, *args, backend=None, **kwargs):
+    def _call_if_any_backends_installed(self, /, *args, backend=None, **kwargs):
         """Returns the result of the original function, or the backend function if
         the backend is specified and that backend implements `func`."""
 
