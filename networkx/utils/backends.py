@@ -1448,7 +1448,7 @@ class _dispatchable:
             "the `backend=` keyword argument."
         )
 
-    # Do dispatching (or not) when called depending on whether backends are installed
+    # Dispatch only if there exist any installed backend(s)
     __call__: typing.Callable = (
         _call_backends_installed if backends else _call_no_backends_installed
     )
