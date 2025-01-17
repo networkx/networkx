@@ -319,9 +319,9 @@ def check_embedding(G, embedding):
 
     # Check that graphs are equivalent
 
-    assert set(G.nodes) == set(
-        embedding.nodes
-    ), "Bad embedding. Nodes don't match the original graph."
+    assert set(G.nodes) == set(embedding.nodes), (
+        "Bad embedding. Nodes don't match the original graph."
+    )
 
     # Check that the edges are equal
     g_edges = set()
@@ -329,9 +329,9 @@ def check_embedding(G, embedding):
         if edge[0] != edge[1]:
             g_edges.add((edge[0], edge[1]))
             g_edges.add((edge[1], edge[0]))
-    assert g_edges == set(
-        embedding.edges
-    ), "Bad embedding. Edges don't match the original graph."
+    assert g_edges == set(embedding.edges), (
+        "Bad embedding. Edges don't match the original graph."
+    )
 
 
 def check_counterexample(G, sub_graph):
