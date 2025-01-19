@@ -211,6 +211,7 @@ class TestRelabel:
                 G[1][4][0]["value"] = "b"
                 G[4][2][0]["value"] = "c"
                 G[4][3][0]["value"] = "d"
+                nx._clear_cache(G)
                 G.add_edge(0, 4, key="x", value="e")
                 G.add_edge(4, 3, key="x", value="f")
                 mapping = {0: 9, 1: 9, 2: 9, 3: 9}
@@ -230,6 +231,7 @@ class TestRelabel:
         G[0][1][0]["value"] = "a"
         G[0][2][0]["value"] = "b"
         G[0][3][0]["value"] = "c"
+        nx._clear_cache(G)
         mapping = {1: 4, 2: 4, 3: 4}
         nx.relabel_nodes(G, mapping, copy=False)
         # No ordering on keys enforced

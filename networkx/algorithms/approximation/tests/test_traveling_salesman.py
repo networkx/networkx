@@ -298,6 +298,7 @@ class TestThresholdAcceptingTSP(TestSimulatedAnnealingTSP):
 def test_TSP_method():
     G = nx.cycle_graph(9)
     G[4][5]["weight"] = 10
+    nx._clear_cache(G)
 
     # Test using the old currying method
     sa_tsp = lambda G, weight: nx_app.simulated_annealing_tsp(
@@ -332,6 +333,7 @@ def test_TSP_weighted():
     G[6][7]["weight"] = 2
     G[7][8]["weight"] = 2
     G[8][0]["weight"] = 2
+    nx._clear_cache(G)
     tsp = nx_app.traveling_salesman_problem
 
     # path between 3 and 6

@@ -100,6 +100,7 @@ jobs:
       - name: Test Dispatching
         run: |
           NETWORKX_TEST_BACKEND=nx_loopback pytest --doctest-modules --durations=10 --pyargs networkx
+          pytest --backend=nx_loopback --use-backend-class networkx/classes/
 
   extra:
     runs-on: ${{ matrix.os }}
