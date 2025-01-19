@@ -1,3 +1,4 @@
+import itertools
 from collections import defaultdict
 
 import networkx as nx
@@ -1268,6 +1269,74 @@ class PlanarEmbedding(nx.DiGraph):
             # (u, v) is in the graph, then so is half_edge (v, u)
             if u in self._succ and v in self._succ[u]:
                 self.remove_edge(u, v)
+
+    def remove_half_edge(self, start_node, end_node):
+        """Removes a half-edge from start_node to end_node.
+
+        Referencing half edges are updated i.e. the 'ccw' and 'cw' of the edges clockwise and counter-clockwise to
+        (start_node,end_node) are updated.
+
+        Parameters
+        ----------
+        start_node : node
+            Start node of removed edge.
+        end_node : node
+            End node of removed edge.
+
+        Raises
+        ------
+        NetworkXException
+            If the edge to be removed does not exist.
+
+        See Also
+        --------
+        add_half_edge_ccw
+        add_half_edge_cw
+        add_half_edge_first
+        """
+        if not self.has_edge(start_node, end_node):
+            raise nx.NetworkXError(f"The edge {start_node}-{end_node} not in graph.")
+        if self.out_degree(start_node) == 1:
+            self.remove_edge(start_node, end_node)
+            self.nodes[start_node]["first_nbr"] = None
+        else:
+            cw_node = self[start_node][end_node]["cw"]
+            ccw_node = self[start_node][end_node]["ccw"]
+            # Remove the edge
+            self.remove_edge(start_node, end_node)
+            # and update the clockwise and counter-clockwise edges to remove references to the edge.
+            self[start_node][cw_node]["ccw"] = ccw_node
+            self[start_node][ccw_node]["cw"] = cw_node
+            # If we removed the edge to the first neighbour, update first_nbr to a new adjacent vertex
+            if end_node == self.nodes[start_node]["first_nbr"]:
+                self.nodes[start_node]["first_nbr"] = cw_node
+
+    def remove_planar_node(self, n):
+        """Remove node n, preserving the embedding structure.
+
+        Removes the node n and all adjacent edges.
+        Attempting to remove a non-existent node will raise an exception.
+
+        Parameters
+        ----------
+        n : node
+           A node in the graph
+
+        Raises
+        ------
+        NetworkXError
+           If n is not in the graph.
+
+        See Also
+        --------
+        remove_node
+        """
+        if not self.has_node(n):
+            raise nx.NetworkXError(f"The node {n} not in graph.")
+        adj_edges = list(itertools.chain(self.out_edges(n), self.in_edges(n)))
+        for (u, v) in adj_edges:
+            self.remove_half_edge(u, v)
+        self.remove_node(n)
 
     def connect_components(self, v, w):
         """Adds half-edges for (v, w) and (w, v) at some position.
