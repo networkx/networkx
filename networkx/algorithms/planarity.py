@@ -1408,7 +1408,7 @@ class PlanarEmbedding(nx.DiGraph):
 
         This method strips the planar embedding information and provides
         a simple undirected graph representation. While creating the undirected graph,
-        all edge attributes are retained except the `"cw"` and `"ccw"` attributes
+        all edge attributes are retained except the ``"cw"`` and ``"ccw"`` attributes
         which are removed from the edge data. Those attributes are specific to
         the requirements of planar embeddings.
 
@@ -1426,16 +1426,16 @@ class PlanarEmbedding(nx.DiGraph):
         -------
         G : Graph
             An undirected graph with the same name and nodes as the PlanarEmbedding.
-            Edges are included with their data, except for the `"cw"` and `"ccw"` attributes,
-            which are omitted.
+            Edges are included with their data, except for the ``"cw"`` and ``"ccw"``
+            attributes, which are omitted.
 
 
         Notes
         -----
-        - If edges exist in both directions (u, v) and (v, u) in the PlanarEmbedding,
-          attributes for the resulting undirected edge will be combined, excluding `"cw"`
-          and `"ccw"`.
-        - A "deepcopy" is made of the other edge attributes as well as the
+        - If edges exist in both directions ``(u, v)`` and ``(v, u)`` in the PlanarEmbedding,
+          attributes for the resulting undirected edge will be combined, excluding ``"cw"``
+          and ``"ccw"``.
+        - A deep copy is made of the other edge attributes as well as the
           node and graph attributes, ensuring independence of the resulting graph.
         - Subclass-specific data structures used in the original graph may not transfer
           to the undirected graph. The resulting graph will be of type ``nx.Graph``.
