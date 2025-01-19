@@ -137,6 +137,17 @@ passed to NetworkX functions the backend does not support.
          NETWORKX_FALLBACK_TO_NX=True \\
          python my_networkx_script.py
 
+It is possible to provide backend-specific arguments via ``<backend>_kwargs`` keyword
+arguments that will only be used for those specific backends and ignored otherwise.
+Keyword arguments may be given for multiple backends at the same time such as
+``foo_kwargs={...}, bar_kwargs={...}`` for backends ``foo`` and ``bar``. The backends
+used in this way do not need to be installed; extra ``*_kwargs=`` keywords will be ignored.
+This makes it easier to write more flexible and compatible code that is backend-aware--we
+may customize usage of a backend--but agnostic about what is actually installed and used.
+Here is the previous example updated to use ``get_chunks`` only when using nx-parallel::
+
+    nx.betweenness_centrality(G, k=10, parallel_kwargs={"get_chunks": get_chunks})
+
 How does this work?
 -------------------
 
@@ -531,6 +542,7 @@ def _get_backends(group, *, load_and_call=False):
                 )
         else:
             rv[ep.name] = ep
+    # nx_loopback backend is only available when testing (added in conftest.py)
     rv.pop("nx_loopback", None)
     return rv
 
@@ -959,11 +971,34 @@ class _dispatchable:
     def __call__(self, /, *args, backend=None, **kwargs):
         """Returns the result of the original function, or the backend function if
         the backend is specified and that backend implements `func`."""
+        if kwargs:
+            # Separate `<backend>_kwargs=...` keywords
+            new_kwargs = {}
+            backends_kwargs = {}
+            for k, v in kwargs.items():
+                if k.endswith("_kwargs"):
+                    backend_name = k[:-7]  # len("_kwargs") == 7
+                    backends_kwargs[backend_name] = v
+                    if backend_name not in backends:
+                        _logger.debug(
+                            "`%s_kwargs=` keyword argument passed to `%s', but '%s' "
+                            "backend is not installed. Ignoring.",
+                            backend_name,
+                            self.name,
+                            backend_name,
+                        )
+                else:
+                    new_kwargs[k] = v
+            kwargs = new_kwargs
+        else:
+            backends_kwargs = kwargs
 
         if not backends:
             # Fast path if no backends are installed
             if backend is not None and backend != "networkx":
                 raise ImportError(f"'{backend}' backend is not installed")
+            if "networkx" in backends_kwargs:
+                kwargs.update(backends_kwargs["networkx"])
             return self.orig_func(*args, **kwargs)
 
         # Use `backend_name` in this function instead of `backend`.
@@ -1043,6 +1078,7 @@ class _dispatchable:
                 backend_priority[0],
                 args,
                 kwargs,
+                backends_kwargs,
                 fallback_to_nx=nx.config.fallback_to_nx,
             )
 
@@ -1059,11 +1095,16 @@ class _dispatchable:
                 f"'{backend_name}' backend raised NotImplementedError when calling "
                 f"`{self.name}'. {blurb}"
             )
+            cur_kwargs = (
+                kwargs
+                if backend_name not in backends_kwargs
+                else {**kwargs, **backends_kwargs[backend_name]}
+            )
             if not graph_backend_names or graph_backend_names == {backend_name}:
                 # All graphs are backend graphs--no need to convert!
-                if self._can_backend_run(backend_name, args, kwargs):
+                if self._can_backend_run(backend_name, args, cur_kwargs):
                     return self._call_with_backend(
-                        backend_name, args, kwargs, extra_message=extra_message
+                        backend_name, args, cur_kwargs, extra_message=extra_message
                     )
                 if self._does_backend_have(backend_name):
                     extra = " for the given arguments"
@@ -1074,7 +1115,7 @@ class _dispatchable:
                     f"{extra}. {blurb}"
                 )
             if self._can_convert(backend_name, graph_backend_names):
-                if self._can_backend_run(backend_name, args, kwargs):
+                if self._can_backend_run(backend_name, args, cur_kwargs):
                     if self._will_call_mutate_input(args, kwargs):
                         _logger.debug(
                             "`%s' will mutate an input graph. This prevents automatic conversion "
@@ -1092,7 +1133,7 @@ class _dispatchable:
                         backend_name,
                         graph_backend_names,
                         args,
-                        kwargs,
+                        cur_kwargs,
                         extra_message=extra_message,
                         mutations=mutations,
                     )
@@ -1154,13 +1195,18 @@ class _dispatchable:
                     f"Backend '{backend_name}' does not implement `{self.name}'%s. "
                     f"This call will mutate an input, so automatic {blurb}"
                 )
+                cur_kwargs = (
+                    kwargs
+                    if backend_name not in backends_kwargs
+                    else {**kwargs, **backends_kwargs[backend_name]}
+                )
                 # `can_run` is only used for better log and error messages
                 try:
-                    if self._can_backend_run(backend_name, args, kwargs):
+                    if self._can_backend_run(backend_name, args, cur_kwargs):
                         return self._call_with_backend(
                             backend_name,
                             args,
-                            kwargs,
+                            cur_kwargs,
                             extra_message=msg_template % " with these arguments",
                         )
                 except NotImplementedError as exc:
@@ -1215,6 +1261,8 @@ class _dispatchable:
             # At this point, no backends are available to handle the call with
             # the input graph types, but if the input graphs are compatible
             # nx.Graph instances, fall back to networkx without converting.
+            if "networkx" in backends_kwargs:
+                kwargs.update(backends_kwargs["networkx"])
             return self.orig_func(*args, **kwargs)
 
         # We may generalize fallback configuration as e.g. `nx.config.backend_fallback`
@@ -1349,16 +1397,21 @@ class _dispatchable:
         for is_not_first, backend_name in enumerate(try_order):
             if is_not_first:
                 _logger.debug("Trying next backend: '%s'", backend_name)
+            cur_kwargs = (
+                kwargs
+                if backend_name not in backends_kwargs
+                else {**kwargs, **backends_kwargs[backend_name]}
+            )
             try:
                 if not graph_backend_names or graph_backend_names == {backend_name}:
-                    if self._can_backend_run(backend_name, args, kwargs):
-                        return self._call_with_backend(backend_name, args, kwargs)
+                    if self._can_backend_run(backend_name, args, cur_kwargs):
+                        return self._call_with_backend(backend_name, args, cur_kwargs)
                 elif self._can_convert(
                     backend_name, graph_backend_names
-                ) and self._can_backend_run(backend_name, args, kwargs):
-                    if self._should_backend_run(backend_name, args, kwargs):
+                ) and self._can_backend_run(backend_name, args, cur_kwargs):
+                    if self._should_backend_run(backend_name, args, cur_kwargs):
                         rv = self._convert_and_call(
-                            backend_name, graph_backend_names, args, kwargs
+                            backend_name, graph_backend_names, args, cur_kwargs
                         )
                         if (
                             self._returns_graph
@@ -1400,7 +1453,12 @@ class _dispatchable:
             )
             try:
                 rv = self._convert_and_call(
-                    backend_name, graph_backend_names, args, kwargs
+                    backend_name,
+                    graph_backend_names,
+                    args,
+                    kwargs
+                    if backend_name not in backends_kwargs
+                    else {**kwargs, **backends_kwargs[backend_name]},
                 )
                 if (
                     self._returns_graph
@@ -1957,11 +2015,17 @@ class _dispatchable:
             raise
 
     def _convert_and_call_for_tests(
-        self, backend_name, args, kwargs, *, fallback_to_nx=False
+        self, backend_name, args, kwargs, backends_kwargs, *, fallback_to_nx=False
     ):
         """Call this dispatchable function with a backend; for use with testing."""
         backend = _load_backend(backend_name)
-        if not self._can_backend_run(backend_name, args, kwargs):
+        if not self._can_backend_run(
+            backend_name,
+            args,
+            kwargs
+            if backend_name not in backends_kwargs
+            else {**kwargs, **backends_kwargs[backend_name]},
+        ):
             if fallback_to_nx or not self.graphs:
                 if fallback_to_nx:
                     _logger.debug(
@@ -2031,6 +2095,8 @@ class _dispatchable:
             converted_args, converted_kwargs = self._convert_arguments(
                 backend_name, args1, kwargs1, use_cache=False, mutations=None
             )
+            if backend_name in backends_kwargs:
+                converted_kwargs.update(backends_kwargs[backend_name])
             _logger.debug(
                 "Using backend '%s' for call to `%s' with arguments: %s",
                 backend_name,
