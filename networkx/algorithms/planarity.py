@@ -1404,41 +1404,41 @@ class PlanarEmbedding(nx.DiGraph):
 
     def to_undirected(self, reciprocal=False, as_view=False):
         """
-         Returns a non-embedding undirected representation of the graph.
+        Returns a non-embedding undirected representation of the graph.
 
-         This method strips the planar embedding information and provides
-         a simple undirected graph representation. While creating the undirected graph,
-         all edge attributes are retained except the `"cw"` and `"ccw"` attributes
-         which are removed from the edge data. Those attributes are specific to
-         the requirements of planar embeddings.
+        This method strips the planar embedding information and provides
+        a simple undirected graph representation. While creating the undirected graph,
+        all edge attributes are retained except the `"cw"` and `"ccw"` attributes
+        which are removed from the edge data. Those attributes are specific to
+        the requirements of planar embeddings.
 
-         Parameters
-         ----------
-         reciprocal : bool (optional)
-             Not supported for PlanarEmbedding. This parameter raises an exception
-             if used. All valid embeddings include reciprocal half-edges by definition,
-             making this parameter unnecessary.
-         as_view : bool (optional, default=False)
-             Not supported for PlanarEmbedding. This parameter raises an exception
-             if used.
+        Parameters
+        ----------
+        reciprocal : bool (optional)
+            Not supported for PlanarEmbedding. This parameter raises an exception
+            if used. All valid embeddings include reciprocal half-edges by definition,
+            making this parameter unnecessary.
+        as_view : bool (optional, default=False)
+            Not supported for PlanarEmbedding. This parameter raises an exception
+            if used.
 
-         Returns
-         -------
-         G : Graph
-             An undirected graph with the same name and nodes as the PlanarEmbedding.
-             Edges are included with their data, except for the `"cw"` and `"ccw"` attributes,
-             which are omitted.
+        Returns
+        -------
+        G : Graph
+            An undirected graph with the same name and nodes as the PlanarEmbedding.
+            Edges are included with their data, except for the `"cw"` and `"ccw"` attributes,
+            which are omitted.
 
 
-         Notes
-         -----
+        Notes
+        -----
         - If edges exist in both directions (u, v) and (v, u) in the PlanarEmbedding,
-             attributes for the resulting undirected edge will be combined, excluding `"cw"`
-             and `"ccw"`.
-         - A "deepcopy" is made of the other edge attributes as well as the
-             node and graph attributes, ensuring independence of the resulting graph.
-         - Subclass-specific data structures used in the original graph may not transfer
-             to the undirected graph. The resulting graph will be of type ``nx.Graph``.
+          attributes for the resulting undirected edge will be combined, excluding `"cw"`
+          and `"ccw"`.
+        - A "deepcopy" is made of the other edge attributes as well as the
+          node and graph attributes, ensuring independence of the resulting graph.
+        - Subclass-specific data structures used in the original graph may not transfer
+          to the undirected graph. The resulting graph will be of type ``nx.Graph``.
         """
 
         if reciprocal:
