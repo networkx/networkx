@@ -458,10 +458,10 @@ def test_labels_and_colors():
 
 
 @pytest.mark.mpl_image_compare
-def test_house_with_colors(subplots):
+def test_house_with_colors():
     G = nx.house_graph()
     # explicitly set positions
-    fig, ax = subplots
+    fig, ax = plt.subplots()
     pos = {0: (0, 0), 1: (1, 0), 2: (0, 1), 3: (1, 1), 4: (0.5, 2.0)}
 
     # Plot nodes with different properties for the "wall" and "roof" nodes
