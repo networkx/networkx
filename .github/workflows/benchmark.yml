@@ -76,7 +76,7 @@ jobs:
           pip list
 
       - name: Run benchmarks
-        shell: bash -l {0}
+        shell: bash -le {0}
         id: benchmark
         env:
           ASV_FACTOR: 1.5
