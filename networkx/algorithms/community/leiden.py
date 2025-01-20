@@ -21,7 +21,7 @@ __all__ = ["leiden_communities", "leiden_partitions"]
 @nx._dispatchable(edge_attrs="weight", implemented_by_nx=False)
 def leiden_communities(G, weight="weight", resolution=1, max_level=None, seed=None):
     r"""Find the best partition of a graph using the Leiden Community Detection
-    algorithm.
+    algorithm (no default implementation).
 
     Leiden Community Detection algorithm is a method to extract the community structure
     of a network based on modularity optimization. See :any:`louvain_communities`.
@@ -113,6 +113,7 @@ def leiden_communities(G, weight="weight", resolution=1, max_level=None, seed=No
 @nx._dispatchable(edge_attrs="weight", implemented_by_nx=False)
 def leiden_partitions(G, weight="weight", resolution=1, seed=None):
     """Yields partitions for each level of the Leiden Community Detection algorithm
+    (no default implementation).
 
     Leiden Community Detection algorithm is a method to extract the community
     structure of a network based on modularity optimization.
