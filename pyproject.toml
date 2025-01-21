@@ -55,10 +55,10 @@ nx_loopback = 'networkx.classes.tests.dispatch_interface:backend_interface'
 
 [project.optional-dependencies]
 default = [
-    'numpy>=1.23',
-    'scipy>=1.9,!=1.11.0,!=1.11.1',
-    'matplotlib>=3.6',
-    'pandas>=1.4',
+    'numpy>=1.24',
+    'scipy>=1.10,!=1.11.0,!=1.11.1',
+    'matplotlib>=3.7',
+    'pandas>=2.0',
 ]
 developer = [
     'changelist==0.5',
@@ -76,9 +76,18 @@ doc = [
     'myst-nb>=1.1',
     'intersphinx_registry',
 ]
+example = [
+    'osmnx>=1.9',
+    'momepy>=0.7.2',
+    'contextily>=1.6',
+    'seaborn>=0.13',
+    'cairocffi>=1.7',
+    'igraph>=0.11',
+    'scikit-learn>=1.5',
+]
 extra = [
     'lxml>=4.6',
-    'pygraphviz>=1.13',
+    'pygraphviz>=1.14',
     'pydot>=3.0.1',
     'sympy>=1.10',
 ]
