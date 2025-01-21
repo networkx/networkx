@@ -2131,7 +2131,6 @@ class _dispatchable:
                 "optimize_graph_edit_distance",
                 "shortest_simple_paths",
                 "single_source_all_shortest_paths",
-                "single_target_shortest_path_length",
                 "strongly_connected_components",
                 "strongly_connected_components_recursive",
                 "tree_all_pairs_lowest_common_ancestor",
