@@ -73,8 +73,6 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install .[default]
-          conda config --add channels conda-forge
-          conda install libmambapy
           pip list
 
       - name: Run benchmarks
@@ -86,6 +84,8 @@ jobs:
         run: |
           set -x
           python -m pip install -r requirements/benchmarking.txt
+          conda config --add channels conda-forge
+          conda install -c conda-forge libmambapy
           cd benchmarks/
 
           # ID this runner
