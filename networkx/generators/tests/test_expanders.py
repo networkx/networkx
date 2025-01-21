@@ -80,7 +80,7 @@ def test_is_regular_expander(n):
     assert nx.is_regular_expander(G) == True, "Should be a regular expander"
 
 
-@pytest.mark.parametrize("d, n", [(2, 7), (4, 10), (4, 16)])
+@pytest.mark.parametrize("d, n", [(2, 7), (4, 10), (4, 16), (4, 2000), (6, 2000)])
 def test_random_regular_expander(d, n):
     pytest.importorskip("numpy")
     pytest.importorskip("scipy")
