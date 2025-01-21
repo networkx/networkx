@@ -397,7 +397,11 @@ class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
                 yield n
 
     def __getitem__(self, nbr):
-        if nbr in self._atlas and self.NODE_OK(nbr):
+        if (
+            nbr in self._atlas
+            and self.NODE_OK(nbr)
+            and any(self.EDGE_OK(nbr, key) for key in self._atlas[nbr])
+        ):
 
             def new_node_ok(key):
                 return self.EDGE_OK(nbr, key)

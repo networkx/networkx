@@ -38,6 +38,8 @@ of complex networks.
 - **Report a security vulnerability:** https://tidelift.com/security
 - **Tutorial:** https://networkx.org/documentation/latest/tutorial.html
 - **GitHub Discussions:** https://github.com/networkx/networkx/discussions
+- **Discord (Scientific Python) invite link:** https://discord.com/invite/vur45CbwMz
+- **NetworkX meetings calendar (open to all):** https://scientific-python.org/calendars/networkx.ics
 
 Simple example
 --------------
