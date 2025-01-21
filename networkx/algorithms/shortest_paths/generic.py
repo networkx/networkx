@@ -403,8 +403,7 @@ def average_shortest_path_length(G, weight=None, method=None):
     # there are no paths in the null graph.
     if n == 0:
         msg = (
-            "the null graph has no paths, thus there is no average "
-            "shortest path length"
+            "the null graph has no paths, thus there is no average shortest path length"
         )
         raise nx.NetworkXPointlessConcept(msg)
     # For the special case of the trivial graph, return zero immediately.
@@ -559,7 +558,7 @@ def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
     >>> G = nx.Graph()
     >>> nx.add_path(G, [0, 1, 2, 3, 0])
     >>> dict(nx.single_source_all_shortest_paths(G, source=0))
-    {0: [[0]], 1: [[0, 1]], 2: [[0, 1, 2], [0, 3, 2]], 3: [[0, 3]]}
+    {0: [[0]], 1: [[0, 1]], 3: [[0, 3]], 2: [[0, 1, 2], [0, 3, 2]]}
 
     Notes
     -----
@@ -585,11 +584,8 @@ def single_source_all_shortest_paths(G, source, weight=None, method="dijkstra"):
         pred, dist = nx.bellman_ford_predecessor_and_distance(G, source, weight=weight)
     else:
         raise ValueError(f"method not supported: {method}")
-    for n in G:
-        try:
-            yield n, list(_build_paths_from_predecessors({source}, n, pred))
-        except nx.NetworkXNoPath:
-            pass
+    for n in pred:
+        yield n, list(_build_paths_from_predecessors({source}, n, pred))
 
 
 @nx._dispatchable(edge_attrs="weight")

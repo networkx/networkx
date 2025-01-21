@@ -71,6 +71,9 @@ def pytest_configure(config):
         if not fallback_to_nx:
             fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
         networkx.config.fallback_to_nx = bool(fallback_to_nx)
+        networkx.utils.backends._dispatchable.__call__ = (
+            networkx.utils.backends._dispatchable._call_if_any_backends_installed
+        )
 
 
 def pytest_collection_modifyitems(config, items):
@@ -100,6 +103,11 @@ def pytest_collection_modifyitems(config, items):
 # TODO: The warnings below need to be dealt with, but for now we silence them.
 @pytest.fixture(autouse=True)
 def set_warnings():
+    warnings.filterwarnings(
+        "ignore",
+        category=UserWarning,
+        message=r"Exited (at iteration \d+|postprocessing) with accuracies.*",
+    )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nThe `normalized`"
     )
