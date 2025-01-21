@@ -71,6 +71,9 @@ def pytest_configure(config):
         if not fallback_to_nx:
             fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
         networkx.config.fallback_to_nx = bool(fallback_to_nx)
+        networkx.utils.backends._dispatchable.__call__ = (
+            networkx.utils.backends._dispatchable._call_if_any_backends_installed
+        )
 
 
 def pytest_collection_modifyitems(config, items):
@@ -102,13 +105,8 @@ def pytest_collection_modifyitems(config, items):
 def set_warnings():
     warnings.filterwarnings(
         "ignore",
-        category=FutureWarning,
-        message="\n\nsingle_target_shortest_path_length",
-    )
-    warnings.filterwarnings(
-        "ignore",
-        category=FutureWarning,
-        message="\n\nshortest_path",
+        category=UserWarning,
+        message=r"Exited (at iteration \d+|postprocessing) with accuracies.*",
     )
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nThe `normalized`"
@@ -252,6 +250,7 @@ needs_scipy = [
     "drawing/layout.py",
     "drawing/nx_pylab.py",
     "generators/spectral_graph_forge.py",
+    "generators/geometric.py",
     "generators/expanders.py",
     "linalg/algebraicconnectivity.py",
     "linalg/attrmatrix.py",
