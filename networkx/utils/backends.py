@@ -471,6 +471,7 @@ import inspect
 import itertools
 import logging
 import os
+import typing
 import warnings
 from functools import partial
 from importlib.metadata import entry_points
@@ -772,6 +773,7 @@ class _dispatchable:
         preserve_all_attrs=False,
         mutates_input=False,
         returns_graph=False,
+        implemented_by_nx=True,
     ):
         """A decorator function that is used to redirect the execution of ``func``
         function to its backend implementation.
@@ -864,6 +866,11 @@ class _dispatchable:
             Whether the function can return or yield a graph object. By default,
             dispatching doesn't convert input graphs to a different backend for
             functions that return graphs.
+
+        implemented_by_nx : bool, default True
+            Whether the function is implemented by NetworkX. If it is not, then the
+            function is included in NetworkX as an API to dispatch to backends.
+            Default is True.
         """
         if func is None:
             return partial(
@@ -878,6 +885,7 @@ class _dispatchable:
                 preserve_all_attrs=preserve_all_attrs,
                 mutates_input=mutates_input,
                 returns_graph=returns_graph,
+                implemented_by_nx=implemented_by_nx,
             )
         if isinstance(func, str):
             raise TypeError("'name' and 'graphs' must be passed by keyword") from None
@@ -990,6 +998,8 @@ class _dispatchable:
             for backend, info in backend_info.items()
             if "functions" in info and name in info["functions"]
         }
+        if implemented_by_nx:
+            self.backends.add("networkx")
 
         if name in _registered_algorithms:
             raise KeyError(
@@ -1058,7 +1068,15 @@ class _dispatchable:
             self._sig = sig
         return self._sig
 
-    def __call__(self, /, *args, backend=None, **kwargs):
+    # Fast, simple path if no backends are installed
+    def _call_if_no_backends_installed(self, /, *args, backend=None, **kwargs):
+        """Returns the result of the original function (no backends installed)."""
+        if backend is not None and backend != "networkx":
+            raise ImportError(f"'{backend}' backend is not installed")
+        return self.orig_func(*args, **kwargs)
+
+    # Dispatch to backends based on inputs, `backend=` arg, or configuration
+    def _call_if_any_backends_installed(self, /, *args, backend=None, **kwargs):
         """Returns the result of the original function, or the backend function if
         the backend is specified and that backend implements `func`."""
 
@@ -1066,6 +1084,12 @@ class _dispatchable:
             # Fast path if no backends are installed
             if backend is not None and backend != "networkx":
                 raise ImportError(f"'{backend}' backend is not installed")
+            if "networkx" not in self.backends:
+                raise NotImplementedError(
+                    f"`{self.name}' is not implemented by 'networkx' backend. "
+                    " This function is included in NetworkX as an API to dispatch to "
+                    "other backends."
+                )
             return self.orig_func(*args, **kwargs)
 
         # Use `backend_name` in this function instead of `backend`.
@@ -1140,9 +1164,8 @@ class _dispatchable:
         )
         graph_backend_names.discard(None)
         if backend_hooks:
-            # hook_token = next(self._counter)
             hook_token = HookToken(self)
-            # Allow hooks to modify safely
+            # Allow hooks to modify args safely
             args = list(args)
             backend_priority = list(backend_priority)
             hook_kwargs = {
@@ -1157,6 +1180,7 @@ class _dispatchable:
             )
         else:
             hook_token = None
+        fallback_to_nx = nx.config.fallback_to_nx and "networkx" in self.backends
         if self._is_testing and backend_priority and backend_name is None:
             # Special path if we are running networkx tests with a backend.
             # This even runs for (and handles) functions that mutate input graphs.
@@ -1164,7 +1188,7 @@ class _dispatchable:
                 backend_priority[0],
                 args,
                 kwargs,
-                fallback_to_nx=nx.config.fallback_to_nx,
+                fallback_to_nx=fallback_to_nx,
                 hook_token=hook_token,
             )
             if hook_token is not None:
@@ -1347,7 +1371,7 @@ class _dispatchable:
                     else:
                         raise
                 else:
-                    if nx.config.fallback_to_nx and all(
+                    if fallback_to_nx and all(
                         # Consider dropping the `isinstance` check here to allow
                         # duck-type graphs, but let's wait for a backend to ask us.
                         isinstance(g, nx.Graph)
@@ -1366,7 +1390,7 @@ class _dispatchable:
                         else:
                             extra = ""
                         raise NotImplementedError(msg_template % extra)
-            elif nx.config.fallback_to_nx and all(
+            elif fallback_to_nx and all(
                 # Consider dropping the `isinstance` check here to allow
                 # duck-type graphs, but let's wait for a backend to ask us.
                 isinstance(g, nx.Graph)
@@ -1401,7 +1425,7 @@ class _dispatchable:
             return value
 
         # We may generalize fallback configuration as e.g. `nx.config.backend_fallback`
-        if nx.config.fallback_to_nx or not graph_backend_names:
+        if fallback_to_nx or not graph_backend_names:
             # Use "networkx" by default if there are no inputs from backends.
             # For example, graph generators should probably return NetworkX graphs
             # instead of raising NotImplementedError.
@@ -1669,13 +1693,25 @@ class _dispatchable:
                 "`nx.config.backend_priority`, or you "
                 "may specify a backend to use with the `backend=` keyword argument."
             )
+        if "networkx" not in self.backends:
+            extra = (
+                " This function is included in NetworkX as an API to dispatch to "
+                "other backends."
+            )
+        else:
+            extra = ""
         raise NotImplementedError(
             f"`{self.name}' is not implemented by {try_order} backends. To remedy "
             "this, you may enable automatic conversion to more backends (including "
             "'networkx') by adding them to `nx.config.backend_priority`, "
             "or you may specify a backend to use with "
-            "the `backend=` keyword argument."
+            f"the `backend=` keyword argument.{extra}"
         )
+
+    # Dispatch only if there exist any installed backend(s)
+    __call__: typing.Callable = (
+        _call_if_any_backends_installed if backends else _call_if_no_backends_installed
+    )
 
     def _load_backend(self, backend_name, *, hook_token):
         return _load_backend(backend_name, hook_token=hook_token, dispatchable=self)
@@ -1733,7 +1769,7 @@ class _dispatchable:
     def _does_backend_have(self, backend_name, *, hook_token):
         """Does the specified backend have this algorithm?"""
         if backend_name == "networkx":
-            return True
+            return "networkx" in self.backends
         # Inspect the backend; don't trust metadata used to create `self.backends`
         backend = self._load_backend(backend_name, hook_token=hook_token)
         return hasattr(backend, self.name)
@@ -1757,7 +1793,7 @@ class _dispatchable:
             )
             can_run = None
         if backend_name == "networkx":
-            value = True
+            value = "networkx" in self.backends
         else:
             backend = self._load_backend(backend_name, hook_token=hook_token)
             if not hasattr(backend, self.name):
@@ -1798,6 +1834,7 @@ class _dispatchable:
         """
         # `backend.can_run` and `backend.should_run` may return strings that describe
         # why they can't or shouldn't be run.
+        # `_should_backend_run` may assume that `_can_backend_run` returned True.
         if hook_token is not None:
             self._call_hook(
                 "on_should_backend_run_begin",
@@ -2724,29 +2761,34 @@ class _dispatchable:
             return backend.convert_to_nx(result)
 
         converted_result = backend.convert_to_nx(result)
-        if isinstance(converted_result, nx.Graph) and self.name not in {
-            "boykov_kolmogorov",
-            "preflow_push",
-            "quotient_graph",
-            "shortest_augmenting_path",
-            "spectral_graph_forge",
-            # We don't handle tempfile.NamedTemporaryFile arguments
-            "read_gml",
-            "read_graph6",
-            "read_sparse6",
-            # We don't handle io.BufferedReader or io.TextIOWrapper arguments
-            "bipartite_read_edgelist",
-            "read_adjlist",
-            "read_edgelist",
-            "read_graphml",
-            "read_multiline_adjlist",
-            "read_pajek",
-            "from_pydot",
-            "pydot_read_dot",
-            "agraph_read_dot",
-            # graph comparison fails b/c of nan values
-            "read_gexf",
-        }:
+        if (
+            isinstance(converted_result, nx.Graph)
+            and "networkx" in self.backends
+            and self.name
+            not in {
+                "boykov_kolmogorov",
+                "preflow_push",
+                "quotient_graph",
+                "shortest_augmenting_path",
+                "spectral_graph_forge",
+                # We don't handle tempfile.NamedTemporaryFile arguments
+                "read_gml",
+                "read_graph6",
+                "read_sparse6",
+                # We don't handle io.BufferedReader or io.TextIOWrapper arguments
+                "bipartite_read_edgelist",
+                "read_adjlist",
+                "read_edgelist",
+                "read_graphml",
+                "read_multiline_adjlist",
+                "read_pajek",
+                "from_pydot",
+                "pydot_read_dot",
+                "agraph_read_dot",
+                # graph comparison fails b/c of nan values
+                "read_gexf",
+            }
+        ):
             # For graph return types (e.g. generators), we compare that results are
             # the same between the backend and networkx, then return the original
             # networkx result so the iteration order will be consistent in tests.
@@ -2766,13 +2808,14 @@ class _dispatchable:
         """Generate the backends section at the end for functions having an alternate
         backend implementation(s) using the `backend_info` entry-point."""
 
-        if not self.backends:
+        if self.backends == {"networkx"}:
             return self._orig_doc
+        # Add "Backends" section to the bottom of the docstring (if there are backends)
         lines = [
             "Backends",
             "--------",
         ]
-        for backend in sorted(self.backends):
+        for backend in sorted(self.backends - {"networkx"}):
             info = backend_info[backend]
             if "short_summary" in info:
                 lines.append(f"{backend} : {info['short_summary']}")
@@ -2815,11 +2858,46 @@ class _dispatchable:
                 lines.append(f"[`Source <{func_url}>`_]")
                 lines.append("")
 
-        lines.pop()  # Remove last empty line
-        to_add = "\n    ".join(lines)
-        if not self._orig_doc:
-            return f"The original docstring for {self.name} was empty.\n\n    {to_add}"
-        return f"{self._orig_doc.rstrip()}\n\n    {to_add}"
+        # We assume the docstrings are indented by four spaces (true for now)
+        new_doc = self._orig_doc or ""
+        if not new_doc.rstrip():
+            new_doc = f"The original docstring for {self.name} was empty."
+        if self.backends:
+            lines.pop()  # Remove last empty line
+            to_add = "\n    ".join(lines)
+            new_doc = f"{new_doc.rstrip()}\n\n    {to_add}"
+
+        # For backend-only funcs, add "Attention" admonishment after the one line summary
+        if "networkx" not in self.backends:
+            lines = new_doc.split("\n")
+            index = 0
+            while not lines[index].strip():
+                index += 1
+            while index < len(lines) and lines[index].strip():
+                index += 1
+            backends = sorted(self.backends)
+            if len(backends) == 0:
+                example = ""
+            elif len(backends) == 1:
+                example = f' such as "{backends[0]}"'
+            elif len(backends) == 2:
+                example = f' such as "{backends[0]} or "{backends[1]}"'
+            else:
+                example = (
+                    " such as "
+                    + ", ".join(f'"{x}"' for x in backends[:-1])
+                    + f', or "{backends[-1]}"'  # Oxford comma
+                )
+            to_add = (
+                "\n    .. attention:: This function does not have a default NetworkX implementation.\n"
+                "        It may only be run with an installable :doc:`backend </backends>` that\n"
+                f"        supports it{example}.\n\n"
+                "        Hint: use ``backend=...`` keyword argument to specify a backend or add\n"
+                "        backends to ``nx.config.backend_priority``."
+            )
+            lines.insert(index, to_add)
+            new_doc = "\n".join(lines)
+        return new_doc
 
     def _get_from_cache(
         self,

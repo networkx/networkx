@@ -396,7 +396,7 @@ def is_regular_expander(G, *, epsilon=0):
     lambda2 = min(lams)
 
     # Use bool() to convert numpy scalar to Python Boolean
-    return bool(abs(lambda2) < 2 ** np.sqrt(d - 1) + epsilon)
+    return bool(abs(lambda2) < 2 * np.sqrt(d - 1) + epsilon)
 
 
 @nx.utils.decorators.np_random_state("seed")
