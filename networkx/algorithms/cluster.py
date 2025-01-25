@@ -526,17 +526,43 @@ def square_clustering(G, nodes=None):
         node_iter = G.nbunch_iter(nodes)
     clustering = {}
     for v in node_iter:
-        clustering[v] = 0
-        potential = 0
-        for u, w in combinations(G[v], 2):
-            squares = len((set(G[u]) & set(G[w])) - {v})
-            clustering[v] += squares
-            degm = squares + 1
-            if w in G[u]:
-                degm += 1
-            potential += (len(G[u]) - degm) + (len(G[w]) - degm) + squares
+        v_neighbors = set(G.neighbors(v))
+        v_neighbors.discard(v)  # Ignore self-loops
+        v_degrees_m1 = len(v_neighbors) - 1  # degrees[v] - 1 (used below)
+        if v_degrees_m1 <= 0:
+            clustering[v] = 0
+            continue
+        # Terms of the denominator: potential = uw_degrees - uw_count - triangles - squares
+        # uw_degrees: degrees[u] + degrees[w] for each u-w combo
+        uw_degrees = 0
+        # uw_count: 1 for each u and 1 for each w for all combos (degrees * (degrees - 1))
+        uw_count = len(v_neighbors) * v_degrees_m1
+        # triangles: 1 for each edge where u-w or w-u are connected (i.e. triangles)
+        triangles = 0
+        # squares: the number of squares (also the numerator)
+        squares = 0
+        # Iterate over all neighbors and neighbors of neighbors
+        inner_node_iter = v_neighbors.union(*(G.neighbors(u) for u in v_neighbors))
+        inner_node_iter.discard(v)
+        for u in inner_node_iter:
+            u_neighbors = set(G.neighbors(u))
+            u_neighbors.discard(u)  # Ignore self-loops
+            if not u_neighbors:
+                continue
+            # P2 from https://arxiv.org/abs/2007.11111
+            p2 = len(u_neighbors & v_neighbors)
+            # squares is sigma_12, C_4 from https://arxiv.org/abs/2007.11111
+            squares += p2 * (p2 - 1)  # Will divide by 2 later
+            if u in v_neighbors:
+                # triangles is sigma_4, C_3 from https://arxiv.org/abs/2007.11111
+                triangles += p2
+                uw_degrees += len(u_neighbors) * v_degrees_m1
+        squares //= 2
+        potential = uw_degrees - uw_count - triangles - squares
         if potential > 0:
-            clustering[v] /= potential
+            clustering[v] = squares / potential
+        else:
+            clustering[v] = 0
     if nodes in G:
         # Return the value of the sole entry in the dictionary.
         return clustering[nodes]
