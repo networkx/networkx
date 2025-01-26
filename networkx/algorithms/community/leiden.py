@@ -7,10 +7,9 @@ that support them.
 """
 
 import itertools
-from collections import defaultdict, deque
+from collections import deque
 
 import networkx as nx
-from networkx.algorithms.community import modularity
 from networkx.utils import not_implemented_for, py_random_state
 
 __all__ = ["leiden_communities", "leiden_partitions"]
