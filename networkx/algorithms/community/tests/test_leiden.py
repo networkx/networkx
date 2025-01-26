@@ -14,6 +14,12 @@ no_backends_for_leiden_partitions = (
 )
 
 
+def test_leiden_with_nx_backend():
+    G = nx.karate_club_graph()
+    with pytest.raises(NotImplementedError):
+        nx.community.leiden_partitions(G, backend="networkx")
+ 
+ 
 @pytest.mark.skipif(no_backends_for_leiden_communities)
 def test_modularity_increase():
     G = nx.LFR_benchmark_graph(
