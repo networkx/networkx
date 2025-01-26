@@ -534,6 +534,7 @@ def square_clustering(G, nodes=None):
         if v_degrees_m1 <= 0:
             clustering[v] = 0
             continue
+
         # Terms of the denominator: potential = uw_degrees - uw_count - triangles - squares
         # uw_degrees: degrees[u] + degrees[w] for each u-w combo
         uw_degrees = 0
@@ -543,22 +544,29 @@ def square_clustering(G, nodes=None):
         triangles = 0
         # squares: the number of squares (also the numerator)
         squares = 0
-        # Iterate over all neighbors and neighbors of neighbors
-        inner_node_iter = v_neighbors.union(*(G.neighbors(u) for u in v_neighbors))
-        inner_node_iter.discard(v)
-        for u in inner_node_iter:
+
+        # Iterate over all neighbors
+        for u in v_neighbors:
             u_neighbors = set(G.neighbors(u))
             u_neighbors.discard(u)  # Ignore self-loops
-            if not u_neighbors:
-                continue
             # P2 from https://arxiv.org/abs/2007.11111
             p2 = len(u_neighbors & v_neighbors)
             # squares is sigma_12, C_4 from https://arxiv.org/abs/2007.11111
             squares += p2 * (p2 - 1)  # Will divide by 2 later
-            if u in v_neighbors:
-                # triangles is sigma_4, C_3 from https://arxiv.org/abs/2007.11111
-                triangles += p2
-                uw_degrees += len(u_neighbors) * v_degrees_m1
+            # triangles is sigma_4, C_3 from https://arxiv.org/abs/2007.11111
+            triangles += p2
+            uw_degrees += len(u_neighbors) * v_degrees_m1
+
+        # And iterate over all neighbors of neighbors
+        two_hop_neighbors = set().union(*(G.neighbors(u) for u in v_neighbors))
+        two_hop_neighbors -= v_neighbors
+        two_hop_neighbors.discard(v)
+        for u in two_hop_neighbors:
+            u_neighbors = set(G.neighbors(u))
+            u_neighbors.discard(u)  # Ignore self-loops
+            p2 = len(u_neighbors & v_neighbors)
+            squares += p2 * (p2 - 1)  # Will divide by 2 later
+
         squares //= 2
         potential = uw_degrees - uw_count - triangles - squares
         if potential > 0:
