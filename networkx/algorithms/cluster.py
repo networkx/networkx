@@ -549,17 +549,17 @@ def square_clustering(G, nodes=None):
         for u in v_neighbors:
             u_neighbors = set(G.neighbors(u))
             u_neighbors.discard(u)  # Ignore self-loops
+            uw_degrees += len(u_neighbors) * v_degrees_m1
             # P2 from https://arxiv.org/abs/2007.11111
             p2 = len(u_neighbors & v_neighbors)
-            # squares is sigma_12, C_4 from https://arxiv.org/abs/2007.11111
-            squares += p2 * (p2 - 1)  # Will divide by 2 later
-            # triangles is sigma_4, C_3 from https://arxiv.org/abs/2007.11111
+            # triangles is C_3, sigma_4 from https://arxiv.org/abs/2007.11111
             triangles += p2
-            uw_degrees += len(u_neighbors) * v_degrees_m1
+            # squares is C_4, sigma_12 from https://arxiv.org/abs/2007.11111
+            squares += p2 * (p2 - 1)  # Will divide by 2 later
 
         # And iterate over all neighbors of neighbors
         two_hop_neighbors = set().union(*(G.neighbors(u) for u in v_neighbors))
-        two_hop_neighbors -= v_neighbors
+        two_hop_neighbors -= v_neighbors  # Neighbors already counted above
         two_hop_neighbors.discard(v)
         for u in two_hop_neighbors:
             u_neighbors = set(G.neighbors(u))
