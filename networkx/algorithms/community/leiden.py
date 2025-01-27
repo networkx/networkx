@@ -111,7 +111,7 @@ def leiden_communities(G, weight="weight", resolution=1, max_level=None, seed=No
 @py_random_state("seed")
 @nx._dispatchable(edge_attrs="weight", implemented_by_nx=False)
 def leiden_partitions(G, weight="weight", resolution=1, seed=None):
-    """Yields partitions for each level of the Leiden Community Detection algorithm
+    """Yield partitions for each level of the Leiden Community Detection algorithm
     (no default implementation).
 
     Leiden Community Detection algorithm is a method to extract the community
