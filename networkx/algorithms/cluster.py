@@ -535,6 +535,7 @@ def square_clustering(G, nodes=None):
             clustering[v] = 0
             continue
 
+        # Count squares with nodes u-v-w-x from the current node v.
         # Terms of the denominator: potential = uw_degrees - uw_count - triangles - squares
         # uw_degrees: degrees[u] + degrees[w] for each u-w combo
         uw_degrees = 0
@@ -553,18 +554,21 @@ def square_clustering(G, nodes=None):
             # P2 from https://arxiv.org/abs/2007.11111
             p2 = len(u_neighbors & v_neighbors)
             # triangles is C_3, sigma_4 from https://arxiv.org/abs/2007.11111
+            # This double-counts triangles compared to `triangles` function
             triangles += p2
             # squares is C_4, sigma_12 from https://arxiv.org/abs/2007.11111
+            # Include this term, b/c a neighbor u can also be a neighbor of neighbor x
             squares += p2 * (p2 - 1)  # Will divide by 2 later
 
-        # And iterate over all neighbors of neighbors
+        # And iterate over all neighbors of neighbors.
+        # These nodes x may be the corners opposite v in squares u-v-w-x.
         two_hop_neighbors = set().union(*(G.neighbors(u) for u in v_neighbors))
         two_hop_neighbors -= v_neighbors  # Neighbors already counted above
         two_hop_neighbors.discard(v)
-        for u in two_hop_neighbors:
-            u_neighbors = set(G.neighbors(u))
-            u_neighbors.discard(u)  # Ignore self-loops
-            p2 = len(u_neighbors & v_neighbors)
+        for x in two_hop_neighbors:
+            x_neighbors = set(G.neighbors(x))
+            x_neighbors.discard(x)  # Ignore self-loops
+            p2 = len(v_neighbors & x_neighbors)
             squares += p2 * (p2 - 1)  # Will divide by 2 later
 
         squares //= 2
