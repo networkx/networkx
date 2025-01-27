@@ -454,8 +454,11 @@ class TestSquareClustering:
 
     def test_peng_square_clustering(self):
         """Test eq2 for figure 1 Peng et al (2008)"""
+        # Example graph from figure 1b
         G = nx.Graph([(1, 2), (1, 3), (2, 4), (3, 4), (3, 5), (3, 6)])
-        assert nx.square_clustering(G, [1])[1] == 1 / 3
+        # From table 1, row 2
+        expected = {1: 1 / 3, 2: 1, 3: 0.2, 4: 1 / 3, 5: 0, 6: 0}
+        assert nx.square_clustering(G) == expected
 
     def test_self_loops_square_clustering(self):
         G = nx.path_graph(5)
