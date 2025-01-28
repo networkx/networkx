@@ -22,8 +22,9 @@ def leiden_communities(G, weight="weight", resolution=1, max_level=None, seed=No
     r"""Find the best partition of a graph using the Leiden Community Detection
     algorithm (no default implementation).
 
-    Leiden Community Detection algorithm is a method to extract the community structure
-    of a network based on modularity optimization. See :any:`louvain_communities`.
+    Leiden Community Detection is an algorithm to extract the community structure
+    of a network based on modularity optimization. It is an improvement upon the
+    Louvain Community Detection algorithm. See :any:`louvain_communities`.
 
     Unlike the Louvain algorithm, it guarantees that communities are well connected in addition
     to being faster and uncovering better partitions. [1]_
