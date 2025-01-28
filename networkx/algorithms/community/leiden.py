@@ -142,8 +142,9 @@ def leiden_partitions(G, weight="weight", resolution=1, seed=None):
     Yields
     ------
     list
-        A list of sets (partition of `G`). Each set represents one community and contains
-        all the nodes that constitute it.
+        A list of disjoint sets (partition of `G`). Each set represents one community.
+        All communities together contain all the nodes in `G`. The yielded partitions
+        increase modularity with each iteration.
 
     References
     ----------
