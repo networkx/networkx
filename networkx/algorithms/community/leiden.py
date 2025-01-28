@@ -1,9 +1,9 @@
 """Functions for detecting communities based on Leiden Community Detection
 algorithm.
 
-These function do not have default NetworkX implementations.
+These functions do not have NetworkX implementations.
 They may only be run with an installable :doc:`backend </backends>`
-that support them.
+that supports them.
 """
 
 import itertools
