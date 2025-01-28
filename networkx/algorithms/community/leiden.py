@@ -19,8 +19,7 @@ __all__ = ["leiden_communities", "leiden_partitions"]
 @py_random_state("seed")
 @nx._dispatchable(edge_attrs="weight", implemented_by_nx=False)
 def leiden_communities(G, weight="weight", resolution=1, max_level=None, seed=None):
-    r"""Find the best partition of a graph using the Leiden Community Detection
-    algorithm (no default implementation).
+    r"""Find a best partition of `G` using Leiden Community Detection (backend required)
 
     Leiden Community Detection is an algorithm to extract the community structure
     of a network based on modularity optimization. It is an improvement upon the
