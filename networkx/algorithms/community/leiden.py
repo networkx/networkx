@@ -73,7 +73,7 @@ def leiden_communities(G, weight="weight", resolution=1, max_level=None, seed=No
     Returns
     -------
     list
-        A list of disjoint sets (partition of `G`). Each set represents one community. 
+        A list of disjoint sets (partition of `G`). Each set represents one community.
         All communities together contain all the nodes in `G`.
 
     Examples
