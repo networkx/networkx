@@ -108,8 +108,8 @@ def full_rary_tree(r, n, create_using=None):
 def kneser_graph(n, k):
     """Returns the Kneser Graph with parameters `n` and `k`.
 
-    The Kneser Graph has nodes that are k-tuples (subsets) of the integers
-    between 0 and ``n-1``. Nodes are adjacent if their corresponding sets are disjoint.
+    The Kneser Graph has nodes that are `k`-tuples (subsets) of the integers
+    between ``0`` and ``n-1``. Nodes are adjacent if their corresponding sets are disjoint.
 
     Parameters
     ----------
@@ -122,6 +122,14 @@ def kneser_graph(n, k):
     Returns
     -------
     G : NetworkX Graph
+        The Kneser graph ``K(n, k)``.
+
+    Raises
+    ------
+    NetworkXError
+        If `n` is less than or equal to ``0``.
+
+        If `k` is less than or equal to ``0`` or greater than `n`.
 
     Examples
     --------
@@ -136,7 +144,9 @@ def kneser_graph(n, k):
     if n <= 0:
         raise NetworkXError("n should be greater than zero")
     if k <= 0 or k > n:
-        raise NetworkXError("k should be greater than zero and smaller than n")
+        raise NetworkXError(
+            "k should be greater than zero and smaller than or equal to n"
+        )
 
     G = nx.Graph()
     # Create all k-subsets of [0, 1, ..., n-1]
@@ -203,7 +213,7 @@ def balanced_tree(r, h, create_using=None):
 
 @nx._dispatchable(graphs=None, returns_graph=True)
 def barbell_graph(m1, m2, create_using=None):
-    """Returns the Barbell Graph: two complete graphs connected by a path.
+    """Returns the barbell graph: two complete graphs connected by a path.
 
     .. plot::
 
@@ -212,39 +222,49 @@ def barbell_graph(m1, m2, create_using=None):
     Parameters
     ----------
     m1 : int
-        Size of the left and right barbells, must be greater than 2.
+        Size of the left and right barbells.
 
     m2 : int
         Length of the path connecting the barbells.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
-       Graph type to create. If graph instance, then cleared before populated.
-       Only undirected Graphs are supported.
+        Graph type to create. If graph instance, then cleared before populated.
 
     Returns
     -------
     G : NetworkX graph
         A barbell graph.
 
+    Raises
+    ------
+    NetworkXError
+        If `m1` is less than ``2``.
+
+        If `m2` is less than ``0``.
+
+        If `create_using` is a directed graph.
+
     Notes
     -----
-
-
     Two identical complete graphs $K_{m1}$ form the left and right bells,
     and are connected by a path $P_{m2}$.
 
-    The `2*m1+m2`  nodes are numbered
-        `0, ..., m1-1` for the left barbell,
-        `m1, ..., m1+m2-1` for the path,
-        and `m1+m2, ..., 2*m1+m2-1` for the right barbell.
+    The ``2*m1+m2`` nodes are numbered
+    ``0, ..., m1-1`` for the left barbell,
+    ``m1, ..., m1+m2-1`` for the path,
+    and ``m1+m2, ..., 2*m1+m2-1`` for the right barbell.
 
-    The 3 subgraphs are joined via the edges `(m1-1, m1)` and
-    `(m1+m2-1, m1+m2)`. If `m2=0`, this is merely two complete
+    The three subgraphs are joined via the edges ``(m1-1, m1)`` and
+    ``(m1+m2-1, m1+m2)``. If ``m2=0``, this is merely two complete
     graphs joined together.
 
-    This graph is an extremal example in David Aldous
-    and Jim Fill's e-text on Random Walks on Graphs.
+    The barbell graph is an extremal example in [1]_.
 
+    References
+    ----------
+    .. [1] Aldous, D., & Fill, J. A. (2002).
+        "Reversible Markov Chains and Random Walks on Graphs."
+        Retrieved from https://www.stat.berkeley.edu/users/aldous/RWG/book.pdf.
     """
     if m1 < 2:
         raise NetworkXError("Invalid graph description, m1 should be >=2")
@@ -254,7 +274,7 @@ def barbell_graph(m1, m2, create_using=None):
     # left barbell
     G = complete_graph(m1, create_using)
     if G.is_directed():
-        raise NetworkXError("Directed Graph not supported")
+        raise NetworkXError("Directed graph not supported")
 
     # connecting path
     G.add_nodes_from(range(m1, m1 + m2 - 1))
@@ -688,9 +708,9 @@ def ladder_graph(n, create_using=None):
 @nx._dispatchable(graphs=None, returns_graph=True)
 @nodes_or_number([0, 1])
 def lollipop_graph(m, n, create_using=None):
-    """Returns the Lollipop Graph; ``K_m`` connected to ``P_n``.
+    """Returns the lollipop graph; $K_m$ connected to $P_n$.
 
-    This is the Barbell Graph without the right barbell.
+    This is the barbell graph without the right barbell.
 
     .. plot::
 
@@ -705,23 +725,42 @@ def lollipop_graph(m, n, create_using=None):
         resulting graph may not be as desired. Make sure you have no duplicates.
 
         The nodes for `m` appear in the complete graph $K_m$ and the nodes
-        for `n` appear in the path $P_n$
+        for `n` appear in the path $P_n$.
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
-       Graph type to create. If graph instance, then cleared before populated.
+        Graph type to create. If graph instance, then cleared before populated.
 
     Returns
     -------
     Networkx graph
        A complete graph with `m` nodes connected to a path of length `n`.
 
+    Raises
+    ------
+    NetworkXError
+        If ``m < 2``.
+
+        If ``n < 0``.
+
+        If `m` and/or `n` contain duplicate nodes.
+
+        If `create_using` is a directed graph.
+
+    See Also
+    --------
+    barbell_graph
+
     Notes
     -----
     The 2 subgraphs are joined via an edge ``(m-1, m)``.
     If ``n=0``, this is merely a complete graph.
 
-    (This graph is an extremal example in David Aldous and Jim
-    Fill's etext on Random Walks on Graphs.)
+    The lollipop graph is an extremal example in [1]_.
 
+    References
+    ----------
+    .. [1] Aldous, D., & Fill, J. A. (2002).
+        "Reversible Markov Chains and Random Walks on Graphs."
+        Retrieved from https://www.stat.berkeley.edu/users/aldous/RWG/book.pdf.
     """
     m, m_nodes = m
     M = len(m_nodes)
@@ -736,7 +775,7 @@ def lollipop_graph(m, n, create_using=None):
     # the ball
     G = complete_graph(m_nodes, create_using)
     if G.is_directed():
-        raise NetworkXError("Directed Graph not supported")
+        raise NetworkXError("Directed graphs not supported")
 
     # the stick
     G.add_nodes_from(n_nodes)
@@ -905,15 +944,15 @@ def trivial_graph(create_using=None):
 
 @nx._dispatchable(graphs=None, returns_graph=True)
 def turan_graph(n, r):
-    r"""Return the Turan Graph
+    r"""Return the Turán graph.
 
-    The Turan Graph is a complete multipartite graph on $n$ nodes
+    The Turán graph is a complete multipartite graph on $n$ nodes
     with $r$ disjoint subsets. That is, edges connect each node to
     every node not in its subset.
 
     Given $n$ and $r$, we create a complete multipartite graph with
-    $r-(n \mod r)$ partitions of size $n/r$, rounded down, and
-    $n \mod r$ partitions of size $n/r+1$, rounded down.
+    $r-(n \mod r)$ partitions of size $\lfloor n/r \rfloor$, and
+    $n \mod r$ partitions of size $\lfloor n/r \rfloor + 1$.
 
     .. plot::
 
@@ -925,14 +964,33 @@ def turan_graph(n, r):
         The number of nodes.
     r : int
         The number of partitions.
-        Must be less than or equal to n.
+
+    Returns
+    -------
+    T : NetworkX Graph
+        The Turán Graph $T(n, r)$.
+
+    Raises
+    ------
+    NetworkXError
+        If ``1 <= r <= n`` is not satisfied.
+
+    See Also
+    --------
+    complete_multipartite_graph
 
     Notes
     -----
-    Must satisfy $1 <= r <= n$.
-    The graph has $(r-1)(n^2)/(2r)$ edges, rounded down.
-    """
+    The Turán graph $T(n, r)$ has $\frac{(r-1)(n^2 - s^2)}{2r} + \binom{s}{2}$ edges,
+    where $s = n \mod r$ [1]_.
 
+    References
+    ----------
+    .. [1] Aigner, Martin; Ziegler, Günter M. (2018),
+        "Chapter 41: Turán's graph theorem,"
+        Proofs from THE BOOK (6th ed.), Springer-Verlag, pp. 285--289,
+        doi:10.1007/978-3-662-57265-8_41, ISBN 978-3-662-57265-8
+    """
     if not 1 <= r <= n:
         raise NetworkXError("Must satisfy 1 <= r <= n")
 
@@ -979,7 +1037,7 @@ def wheel_graph(n, create_using=None):
 
 @nx._dispatchable(graphs=None, returns_graph=True)
 def complete_multipartite_graph(*subset_sizes):
-    """Returns the complete multipartite graph with the specified subset sizes.
+    r"""Returns the complete multipartite graph with the specified subset sizes.
 
     .. plot::
 
@@ -987,20 +1045,26 @@ def complete_multipartite_graph(*subset_sizes):
 
     Parameters
     ----------
-    subset_sizes : tuple of integers or tuple of node iterables
-       The arguments can either all be integer number of nodes or they
-       can all be iterables of nodes. If integers, they represent the
-       number of nodes in each subset of the multipartite graph.
-       If iterables, each is used to create the nodes for that subset.
-       The length of subset_sizes is the number of subsets.
+    subset_sizes : iterable of integers or iterable of node iterables
+        The arguments must either all be integers or all be node iterables.
+        If integers, they represent the number of nodes in each subset of the multipartite graph.
+        If iterables, each is used to create the nodes for that subset.
+        The length of `subset_sizes` is the number of subsets.
 
     Returns
     -------
     G : NetworkX Graph
-       Returns the complete multipartite graph with the specified subsets.
+        Returns the complete multipartite graph with the specified subsets.
 
-       For each node, the node attribute 'subset' is an integer
-       indicating which subset contains the node.
+        For each node, the node attribute ``'subset'`` is an integer
+        indicating which subset contains the node.
+
+    Raises
+    ------
+    NetworkXError
+        If any of the subset sizes are strictly negative.
+
+        If the subset sizes are not all integers or all node iterables.
 
     Examples
     --------
@@ -1026,16 +1090,19 @@ def complete_multipartite_graph(*subset_sizes):
     This function generalizes several other graph builder functions.
 
     - If no subset sizes are given, this returns the null graph.
-    - If a single subset size `n` is given, this returns the empty graph on
-      `n` nodes.
-    - If two subset sizes `m` and `n` are given, this returns the complete
-      bipartite graph on `m + n` nodes.
-    - If subset sizes `1` and `n` are given, this returns the star graph on
-      `n + 1` nodes.
+    - If a single subset size ``n`` is given, this returns the empty graph on
+      ``n`` nodes.
+    - If two subset sizes ``m`` and ``n`` are given, this returns the complete
+      bipartite graph on ``m + n`` nodes.
+    - If subset sizes ``1`` and ``n`` are given, this returns the star graph on
+      ``n + 1`` nodes.
+    - If $r-(n \mod r)$ subset sizes $\lfloor n/r \rfloor$
+      and $n \mod r$ subset sizes $\lfloor n/r \rfloor + 1$ are given,
+      this returns the Turán graph $T(n, r)$.
 
     See also
     --------
-    complete_bipartite_graph
+    null_graph, empty_graph, complete_bipartite_graph, star_graph, turan_graph
     """
     # The complete multipartite graph is an undirected simple graph.
     G = Graph()
