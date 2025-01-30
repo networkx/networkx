@@ -266,6 +266,9 @@ def _four_cycles(G):
     for v in G:
         seen.add(v)
         v_neighbors = set(G.neighbors(v))
+        if len(v_neighbors) < 2:
+            # Can't form a square without at least two neighbors
+            continue
         two_hop_neighbors = set().union(*(G.neighbors(u) for u in v_neighbors))
         two_hop_neighbors -= seen
         for x in two_hop_neighbors:

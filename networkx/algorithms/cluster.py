@@ -532,6 +532,7 @@ def square_clustering(G, nodes=None):
         v_neighbors.discard(v)  # Ignore self-loops
         v_degrees_m1 = len(v_neighbors) - 1  # degrees[v] - 1 (used below)
         if v_degrees_m1 <= 0:
+            # Can't form a square without at least two neighbors
             clustering[v] = 0
             continue
 
