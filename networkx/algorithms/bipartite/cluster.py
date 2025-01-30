@@ -260,6 +260,7 @@ def robins_alexander_clustering(G):
 
 
 def _four_cycles(G):
+    # Also see `square_clustering` which counts squares in a similar way
     cycles = 0
     seen = set()
     for v in G:
@@ -268,7 +269,7 @@ def _four_cycles(G):
         two_hop_neighbors = set().union(*(G.neighbors(u) for u in v_neighbors))
         two_hop_neighbors -= seen
         for x in two_hop_neighbors:
-            p2 = len(v_neighbors & set(G.neighbors(x)))
+            p2 = len(v_neighbors.intersection(G.neighbors(x)))
             cycles += p2 * (p2 - 1)
     return cycles / 4
 
