@@ -6,6 +6,7 @@ import pickle
 import pytest
 
 import networkx as nx
+from networkx import NetworkXUnbounded
 
 
 @pytest.fixture
@@ -387,178 +388,79 @@ def test_graphs_type_exceptions():
     pytest.raises(nx.NetworkXError, nx.network_simplex, G)
 
 
-def test_case1_issue7562():
-    def create_graph(with_capacity):
-        G = nx.DiGraph()
+def create_graph(
+    has_large_capacity: bool = False,
+    has_large_weight: bool = False,
+    has_large_demand: bool = False,
+):
+    large_value = 1000000000
+    G = nx.DiGraph()
 
-        # Add nodes with demands
-        G.add_node("s0", demand=-89)
-        G.add_node("s1", demand=-197)
-        G.add_node("s2", demand=89)
-        G.add_node("s3", demand=212)
-        G.add_node("s4", demand=32)
-        G.add_node("s5", demand=83)
-        G.add_node("s6", demand=-159)
-        G.add_node("s7", demand=-68)
-        G.add_node("s8", demand=116)
-        G.add_node("s9", demand=120)
-        G.add_node("s10", demand=-65)
-        G.add_node("s11", demand=-74)
-
-        # Add edges
-        if with_capacity:
-            G.add_edge("s0", "s0", weight=1, capacity=10000)
-            G.add_edge("s0", "s1", weight=1, capacity=10000)
-        else:
-            G.add_edge("s0", "s0", weight=1)
-            G.add_edge("s0", "s1", weight=1)
-
-        G.add_edge("s1", "s0", weight=1)
-        G.add_edge("s1", "s2", weight=1)
-        G.add_edge("s1", "s3", weight=1)
-        G.add_edge("s1", "s4", weight=1)
-        G.add_edge("s10", "s0", weight=1)
-        G.add_edge("s10", "s10", weight=1)
-        G.add_edge("s10", "s7", weight=1)
-        G.add_edge("s11", "s0", weight=1)
-        G.add_edge("s11", "s11", weight=1)
-        G.add_edge("s11", "s5", weight=1)
-        G.add_edge("s11", "s7", weight=1)
-        G.add_edge("s11", "s9", weight=1)
-        G.add_edge("s2", "s0", weight=1)
-        G.add_edge("s2", "s1", weight=1)
-        G.add_edge("s2", "s2", weight=1)
-        G.add_edge("s2", "s5", weight=1)
-        G.add_edge("s3", "s0", weight=1)
-        G.add_edge("s3", "s1", weight=1)
-        G.add_edge("s3", "s2", weight=1)
-        G.add_edge("s3", "s3", weight=1)
-        G.add_edge("s4", "s0", weight=1)
-        G.add_edge("s4", "s6", weight=1)
-        G.add_edge("s4", "s7", weight=1)
-        G.add_edge("s5", "s0", weight=1)
-        G.add_edge("s5", "s10", weight=1)
-        G.add_edge("s5", "s11", weight=1)
-        G.add_edge("s5", "s8", weight=1)
-        G.add_edge("s5", "s9", weight=1)
-        G.add_edge("s6", "s0", weight=1)
-        G.add_edge("s6", "s10", weight=1)
-        G.add_edge("s6", "s4", weight=1)
-        G.add_edge("s6", "s6", weight=1)
-        G.add_edge("s7", "s0", weight=1)
-        G.add_edge("s7", "s10", weight=1)
-        G.add_edge("s7", "s4", weight=1)
-        G.add_edge("s7", "s6", weight=1)
-        G.add_edge("s8", "s0", weight=1)
-        G.add_edge("s8", "s11", weight=1)
-        G.add_edge("s8", "s8", weight=1)
-        G.add_edge("s8", "s9", weight=1)
-        G.add_edge("s9", "s0", weight=1)
-        G.add_edge("s9", "s11", weight=1)
-        G.add_edge("s9", "s5", weight=1)
-        G.add_edge("s9", "s7", weight=1)
-        G.add_edge("s9", "s8", weight=1)
-
-        return G
-
-    try:
-        G1 = create_graph(False)
-        flow_value, flow_dict = nx.network_simplex(G1)
-    except Exception as e:
-        pytest.fail(f"network_simplex(G1) failed with error: {e}")
-
-    try:
-        G2 = create_graph(True)
-        flow_value, flow_dict = nx.network_simplex(G2)
-    except Exception as e:
-        pytest.fail(f"network_simplex(G2) failed with error: {e}")
-
-
-def test_case2_issue7562():
-    cap = 1000000000
-
-    def create_graph(with_capacity):
-        G = nx.DiGraph()
-
-        c = {"capacity": cap} if with_capacity else {}
-
-        # Add nodes with demands
-        G.add_node("s0", demand=-89)
-        G.add_node("s1", demand=-197)
-        G.add_node("s2", demand=89)
-        G.add_node("s3", demand=212)
-        G.add_node("s4", demand=32)
-        G.add_node("s5", demand=83)
-        G.add_node("s6", demand=-159)
-        G.add_node("s7", demand=-68)
-        G.add_node("s8", demand=116)
-        G.add_node("s9", demand=120)
-        G.add_node("s10", demand=-65)
-        G.add_node("s11", demand=-74)
-
-        # Add edges
-        G.add_edge("s0", "s1", weight=1, **c)
-        G.add_edge("s1", "s2", weight=1)
-        G.add_edge("s1", "s3", weight=1)
-        G.add_edge("s1", "s4", weight=1)
-        G.add_edge("s10", "s0", weight=1)
-        G.add_edge("s11", "s9", weight=1)
-        G.add_edge("s2", "s5", weight=1)
-        G.add_edge("s5", "s11", weight=1)
-        G.add_edge("s5", "s8", weight=1)
-        G.add_edge("s6", "s10", weight=1)
-        G.add_edge("s7", "s0", weight=1)
-
-        return G
-
-    # Calculate min-cost flow
-    try:
-        G1 = create_graph(False)
-        flow_value, flow_dict = nx.network_simplex(G1)  # fails
-    except Exception as e:
-        pytest.fail(f"network_simplex(G1) failed with error: {e}")
-
-    try:
-        G2 = create_graph(True)
-        flow_value, flow_dict = nx.network_simplex(G2)
-    except Exception as e:
-        pytest.fail(f"network_simplex(G2) failed with error: {e}")
-
-
-def test_case3_issue7562():
-    cap = 1000000000
-
-    def create_graph(with_capacity):
-        G = nx.DiGraph()
-
-        c = {"capacity": cap} if with_capacity else {}
-
-        # Add nodes with demands
+    # Add nodes with demands
+    if has_large_demand:
+        G.add_node("s0", demand=-large_value)
+        G.add_node("c1", demand=large_value)
+    else:
         G.add_node("s0", demand=-4)
-        G.add_node("s1", demand=-4)
-        G.add_node("ns", demand=0)
-        G.add_node("nc", demand=0)
-        G.add_node("c0", demand=4)
         G.add_node("c1", demand=4)
 
-        # Add edges
-        G.add_edge("s0", "ns", weight=1, **c)
+    G.add_node("s1", demand=-4)
+    G.add_node("ns", demand=0)
+    G.add_node("nc", demand=0)
+    G.add_node("c0", demand=4)
+
+    # Add edges
+    if has_large_capacity:
+        G.add_edge("s0", "ns", weight=1, capacity=large_value)
+    else:
+        G.add_edge("s0", "ns")
+
+    if has_large_weight:
+        G.add_edge("s1", "ns", weight=large_value)
+    else:
         G.add_edge("s1", "ns", weight=1)
-        G.add_edge("ns", "nc", weight=1)
-        G.add_edge("nc", "c0", weight=1)
-        G.add_edge("nc", "c1", weight=1)
 
-        return G
+    G.add_edge("ns", "nc", weight=1)
+    G.add_edge("nc", "c0", weight=1)
+    G.add_edge("nc", "c1", weight=1)
 
-    # Calculate min-cost flow
-    try:
-        G1 = create_graph(False)
-        flow_value, flow_dict = nx.network_simplex(G1)  # fails
-    except Exception as e:
-        pytest.fail(f"network_simplex(G1) failed with error: {e}")
+    return G
 
-    try:
-        G2 = create_graph(True)
-        flow_value, flow_dict = nx.network_simplex(G2)
-    except Exception as e:
-        pytest.fail(f"network_simplex(G2) failed with error: {e}")
+
+@pytest.mark.parametrize(
+    "has_large_capacity, has_large_weight, has_large_demand",
+    [
+        (True, True, True),
+        (True, True, False),
+        (True, False, True),
+        (True, False, False),
+        (False, True, True),
+        (False, True, False),
+        (False, False, True),
+        (False, False, False),
+    ],
+)
+def test_network_simplex_large_capacities(
+    has_large_capacity: bool, has_large_weight: bool, has_large_demand: bool
+):
+    """Address issues raised in ticket #7562."""
+    graph = create_graph(has_large_capacity, has_large_weight, has_large_demand)
+    flow_value, flow_dict = nx.network_simplex(graph)
+
+
+def test_network_simplex_exceeding_faux_infinity():
+    G = nx.DiGraph()
+    # Add nodes
+    G.add_node("A")
+    G.add_node("B")
+    G.add_node("C")
+
+    # Add edges forming a negative cycle
+    G.add_edge("A", "B", weight=-5)
+    G.add_edge("B", "C", weight=-5)
+    G.add_edge("C", "A", weight=-5)
+
+    with pytest.raises(
+        NetworkXUnbounded, match="negative cycle with infinite capacity found"
+    ):
+        nx.network_simplex(G)
