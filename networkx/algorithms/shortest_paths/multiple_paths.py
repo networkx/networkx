@@ -84,140 +84,20 @@ def multiple_paths(graph, source, target, k: int, method="bhandari") -> list:
             from source node
         """
 
-        nonlocal source
-        nonlocal target
-
-        def bellman_ford(graph: nx.MultiDiGraph, source, target) -> list:
-            """
-            Compute minimum path from a source node to target node in a multidigraph
-
-            Parameters
-            ----------
-            graph : networkx.MultiDiGraph
-
-            source: node
-               Starting node for path
-
-            target: node
-               Ending node for path
-
-            Raises
-            ------
-            NetworkXNoPath
-                If no path exists between source and target
-
-            Returns
-            -------
-            path: list of nodes in the shortest path from source to target
-            """
-
-            # Initialize distances and predecessors
-            distances = {node: float("inf") for node in graph.nodes}
-            predecessors = {node: None for node in graph.nodes}
-            distances[source] = 0
-
-            # Relax edges |V| - 1 times
-            for _ in range(len(graph.nodes) - 1):
-                for u, v, key in graph.edges(keys=True):
-                    weight = graph[u][v][key]["weight"]
-                    if distances[u] + weight < distances[v]:
-                        distances[v] = distances[u] + weight
-                        predecessors[v] = u
-
-            # Check for negative-weight cycles
-            for u, v, key in graph.edges(keys=True):
-                weight = graph[u][v][key]["weight"]
-                if distances[u] + weight < distances[v]:
-                    raise ValueError("Graph contains a negative-weight cycle")
-
-            # build path between source and target
-            path: list[Any] = []
-            node = target
-            while node is not None:
-                path.insert(0, node)
-                node = predecessors[node]
-
-            if path[0] != source:
-                raise nx.NetworkXNoPath(f"{target} is not reachable from {source}")
-
-            return path
-
-        def dijkstra(
-            graph: nx.MultiDiGraph, source, target
-        ) -> tuple[dict[Any, Any], list[Any]]:
-            """
-            Compute distances from source to all other nodes, and minimum path from source to target in a multidigraph.
-
-            Parameters
-            ----------
-            graph : networkx.MultiDiGraph
-
-            source: node
-               Starting node for path
-
-            target: node
-               Ending node for path
-
-            Raises
-            ------
-            NetworkXNoPath
-                If no path exists between source and target
-
-            Returns
-            --------
-            distances: dict of shortest distances from the source to each node
-            path: list of nodes in the shortest path between source and target
-            """
-
-            # Priority queue (min-heap)
-            priority_queue: list[Any] = []
-            heapq.heappush(priority_queue, (0, source))
-
-            # Distances and predecessors
-            distances = {node: float("inf") for node in graph.nodes}
-            predecessors = {node: None for node in graph.nodes}
-            distances[source] = 0
-
-            # Visited nodes
-            visited = set()
-
-            while priority_queue:
-                # Get node with the smallest distance
-                current_distance, current_node = heapq.heappop(priority_queue)
-
-                # Skip if already visited
-                if current_node in visited:
-                    continue
-                visited.add(current_node)
-
-                # Relax edges
-                for u, v, key in graph.out_edges(current_node, keys=True):
-                    weight = graph[u][v][key]["weight"]
-                    distance = current_distance + weight
-
-                    if distance < distances[v]:
-                        distances[v] = distance
-                        predecessors[v] = current_node
-                        heapq.heappush(priority_queue, (distance, v))
-            # build path
-            path: list[Any] = []
-            node = target
-            while node is not None:
-                path.insert(0, node)
-                node = predecessors[node]
-
-            if path[0] != source:
-                raise nx.NetworkXNoPath(f"{target} is not reachable from {source}")
-
-            return distances, path
-
         path = None
         d_len = None
         try:
             if method == "bhandari":
-                path = bellman_ford(graph, source, target)
+                _, path = nx.single_source_bellman_ford(
+                    graph, source, target, weight="weight"
+                )
             elif method == "suurballe":
-                d_len, path = dijkstra(graph, source, target)
+                d_len = nx.shortest_path_length(
+                    graph, source, weight="weight", method="dijkstra"
+                )
+                _, path = nx.single_source_dijkstra(
+                    graph, source, target, weight="weight"
+                )
         except nx.NetworkXNoPath:
             return {"path": None}
 
