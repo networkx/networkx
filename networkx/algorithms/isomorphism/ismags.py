@@ -440,7 +440,7 @@ class ISMAGS:
         return comparer
 
     def find_isomorphisms(self, symmetry=True):
-        """Find all subgraph isomorphisms between subgraph and graph
+        """Yield all subgraph isomorphisms between subgraph and graph.
 
         Finds isomorphisms where :attr:`subgraph` <= :attr:`graph`.
 
@@ -538,7 +538,7 @@ class ISMAGS:
 
     def largest_common_subgraph(self, symmetry=True):
         """
-        Find the largest common induced subgraphs between :attr:`subgraph` and
+        Yield the largest common induced subgraphs between :attr:`subgraph` and
         :attr:`graph`.
 
         Parameters

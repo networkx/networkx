@@ -11,7 +11,7 @@ __all__ = ["bridges", "has_bridges", "local_bridges"]
 @not_implemented_for("directed")
 @nx._dispatchable
 def bridges(G, root=None):
-    """Generate all bridges in a graph.
+    """Yield all bridges in a graph.
 
     A *bridge* in a graph is an edge whose removal causes the number of
     connected components of the graph to increase.  Equivalently, a bridge is an
@@ -28,7 +28,7 @@ def bridges(G, root=None):
 
     Yields
     ------
-    e : edge
+    edge : 2-tuple
        An edge in the graph whose removal disconnects the graph (or
        causes the number of connected components to increase).
 
@@ -144,7 +144,7 @@ def has_bridges(G, root=None):
 @not_implemented_for("directed")
 @nx._dispatchable(edge_attrs="weight")
 def local_bridges(G, with_span=True, weight=None):
-    """Iterate over local bridges of `G` optionally computing the span
+    """Yield local bridges of `G` optionally computing the span.
 
     A *local bridge* is an edge whose endpoints have no common neighbors.
     That is, the edge is not part of a triangle in the graph.
@@ -166,7 +166,7 @@ def local_bridges(G, with_span=True, weight=None):
 
     Yields
     ------
-    e : edge
+    edge : tuple
         The local bridges as an edge 2-tuple of nodes `(u, v)` or
         as a 3-tuple `(u, v, span)` when `with_span is True`.
 

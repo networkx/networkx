@@ -79,7 +79,7 @@ def generate_network_text(
     ascii_only=False,
     vertical_chains=False,
 ):
-    """Generate lines in the "network text" format
+    """Yield lines in the "network text" format.
 
     This works via a depth-first traversal of the graph and writing a line for
     each unique node encountered. Non-tree edges are written to the right of

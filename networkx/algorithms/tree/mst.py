@@ -146,8 +146,7 @@ def boruvka_mst_edges(
 def kruskal_mst_edges(
     G, minimum, weight="weight", keys=True, data=True, ignore_nan=False, partition=None
 ):
-    """
-    Iterate over edge of a Kruskal's algorithm min/max spanning tree.
+    """Yield edges of a Kruskal's algorithm min/max spanning tree.
 
     Parameters
     ----------
@@ -181,7 +180,7 @@ def kruskal_mst_edges(
 
     Yields
     ------
-    edge tuple
+    edge : tuple
         The edges as discovered by Kruskal's method. Each edge can
         take the following forms: `(u, v)`, `(u, v, d)` or `(u, v, k, d)`
         depending on the `key` and `data` parameters
@@ -373,8 +372,7 @@ ALGORITHMS = {
 def minimum_spanning_edges(
     G, algorithm="kruskal", weight="weight", keys=True, data=True, ignore_nan=False
 ):
-    """Generate edges in a minimum spanning forest of an undirected
-    weighted graph.
+    """Yield edges in a minimum spanning forest of an undirected weighted graph.
 
     A minimum spanning tree is a subgraph of the graph (a tree)
     with the minimum sum of edge weights.  A spanning forest is a
@@ -404,10 +402,10 @@ def minimum_spanning_edges(
         If a NaN is found as an edge weight normally an exception is raised.
         If `ignore_nan is True` then that edge is ignored instead.
 
-    Returns
-    -------
-    edges : iterator
-       An iterator over edges in a maximum spanning tree of `G`.
+    Yields
+    ------
+    edge : tuple
+       Edge in a maximum spanning tree of `G`.
        Edges connecting nodes `u` and `v` are represented as tuples:
        `(u, v, k, d)` or `(u, v, k)` or `(u, v, d)` or `(u, v)`
 
@@ -468,8 +466,7 @@ def minimum_spanning_edges(
 def maximum_spanning_edges(
     G, algorithm="kruskal", weight="weight", keys=True, data=True, ignore_nan=False
 ):
-    """Generate edges in a maximum spanning forest of an undirected
-    weighted graph.
+    """Yield edges in a maximum spanning forest of an undirected weighted graph.
 
     A maximum spanning tree is a subgraph of the graph (a tree)
     with the maximum possible sum of edge weights.  A spanning forest is a
@@ -499,10 +496,10 @@ def maximum_spanning_edges(
         If a NaN is found as an edge weight normally an exception is raised.
         If `ignore_nan is True` then that edge is ignored instead.
 
-    Returns
-    -------
-    edges : iterator
-       An iterator over edges in a maximum spanning tree of `G`.
+    Yields
+    ------
+    edge : tuple
+       Edge in a maximum spanning tree of `G`.
        Edges connecting nodes `u` and `v` are represented as tuples:
        `(u, v, k, d)` or `(u, v, k)` or `(u, v, d)` or `(u, v)`
 

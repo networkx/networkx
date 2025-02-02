@@ -984,7 +984,7 @@ class PlanarEmbedding(nx.DiGraph):
             # silently skip non-existing nodes
 
     def neighbors_cw_order(self, v):
-        """Generator for the neighbors of v in clockwise order.
+        """Yield the neighbors of v in clockwise order.
 
         Parameters
         ----------

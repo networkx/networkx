@@ -16,17 +16,17 @@ __all__ = [
 @not_implemented_for("directed")
 @nx._dispatchable
 def connected_components(G):
-    """Generate connected components.
+    """Yield connected components.
 
     Parameters
     ----------
     G : NetworkX graph
        An undirected graph
 
-    Returns
-    -------
-    comp : generator of sets
-       A generator of sets of nodes, one for each component of G.
+    Yields
+    ------
+    comp : set
+       Set of nodes of a connected component of G.
 
     Raises
     ------

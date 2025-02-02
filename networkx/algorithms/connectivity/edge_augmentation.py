@@ -27,7 +27,7 @@ __all__ = ["k_edge_augmentation", "is_k_edge_connected", "is_locally_k_edge_conn
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def is_k_edge_connected(G, k):
-    """Tests to see if a graph is k-edge-connected.
+    """Test to see if a graph is k-edge-connected.
 
     Is it impossible to disconnect the graph by removing fewer than k edges?
     If so, then G is k-edge-connected.
@@ -136,7 +136,7 @@ def is_locally_k_edge_connected(G, s, t, k):
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
-    """Finds set of edges to k-edge-connect G.
+    """Yield set of edges to k-edge-connect G.
 
     Adding edges from the augmentation to G make it impossible to disconnect G
     unless k or more edges are removed. This function uses the most efficient
@@ -287,7 +287,7 @@ def k_edge_augmentation(G, k, avail=None, weight=None, partial=False):
 
 @nx._dispatchable
 def partial_k_edge_augmentation(G, k, avail, weight=None):
-    """Finds augmentation that k-edge-connects as much of the graph as possible.
+    """Find augmentation that k-edge-connects as much of the graph as possible.
 
     When a k-edge-augmentation is not possible, we can still try to find a
     small set of edges that partially k-edge-connects as much of the graph as
@@ -390,7 +390,7 @@ def partial_k_edge_augmentation(G, k, avail, weight=None):
 @not_implemented_for("directed")
 @nx._dispatchable
 def one_edge_augmentation(G, avail=None, weight=None, partial=False):
-    """Finds minimum weight set of edges to connect G.
+    """Find minimum weight set of edges to connect G.
 
     Equivalent to :func:`k_edge_augmentation` when k=1. Adding the resulting
     edges to G will make it 1-edge-connected. The solution is optimal for both
@@ -445,7 +445,7 @@ def one_edge_augmentation(G, avail=None, weight=None, partial=False):
 @not_implemented_for("directed")
 @nx._dispatchable
 def bridge_augmentation(G, avail=None, weight=None):
-    """Finds the a set of edges that bridge connects G.
+    """Find the a set of edges that bridge connects G.
 
     Equivalent to :func:`k_edge_augmentation` when k=2, and partial=False.
     Adding the resulting edges to G will make it 2-edge-connected.  If no
@@ -581,7 +581,7 @@ def _lightest_meta_edges(mapping, avail_uv, avail_w):
 
 @nx._dispatchable
 def unconstrained_one_edge_augmentation(G):
-    """Finds the smallest set of edges to connect G.
+    """Find the smallest set of edges to connect G.
 
     This is a variant of the unweighted MST problem.
     If G is not empty, a feasible solution always exists.
@@ -624,7 +624,7 @@ def unconstrained_one_edge_augmentation(G):
 
 @nx._dispatchable
 def weighted_one_edge_augmentation(G, avail, weight=None, partial=False):
-    """Finds the minimum weight set of edges to connect G if one exists.
+    """Find the minimum weight set of edges to connect G if one exists.
 
     This is a variant of the weighted MST problem.
 
@@ -693,7 +693,7 @@ def weighted_one_edge_augmentation(G, avail, weight=None, partial=False):
 
 @nx._dispatchable
 def unconstrained_bridge_augmentation(G):
-    """Finds an optimal 2-edge-augmentation of G using the fewest edges.
+    """Find an optimal 2-edge-augmentation of G using the fewest edges.
 
     This is an implementation of the algorithm detailed in [1]_.
     The basic idea is to construct a meta-graph of bridge-ccs, connect leaf
@@ -848,7 +848,7 @@ def unconstrained_bridge_augmentation(G):
 
 @nx._dispatchable
 def weighted_bridge_augmentation(G, avail, weight=None):
-    """Finds an approximate min-weight 2-edge-augmentation of G.
+    """Find an approximate min-weight 2-edge-augmentation of G.
 
     This is an implementation of the approximation algorithm detailed in [1]_.
     It chooses a set of edges from avail to add to G that renders it
@@ -1115,7 +1115,7 @@ def collapse(G, grouped_nodes):
 
 @nx._dispatchable
 def complement_edges(G):
-    """Returns only the edges in the complement of G
+    """Yield only the edges in the complement of G
 
     Parameters
     ----------

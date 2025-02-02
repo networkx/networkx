@@ -401,7 +401,7 @@ def optimize_graph_edit_distance(
     edge_ins_cost=None,
     upper_bound=None,
 ):
-    """Returns consecutive approximations of GED (graph edit distance)
+    """Yield consecutive approximations of GED (graph edit distance)
     between graphs G1 and G2.
 
     Graph edit distance is a graph similarity measure analogous to
@@ -494,9 +494,10 @@ def optimize_graph_edit_distance(
     upper_bound : numeric
         Maximum edit distance to consider.
 
-    Returns
-    -------
-    Generator of consecutive approximations of graph edit distance.
+    Yields
+    ------
+    dist : float
+        Consecutive approximations of graph edit distance.
 
     Examples
     --------
@@ -665,9 +666,9 @@ def optimize_edit_paths(
         Maximum number of seconds to execute.
         After timeout is met, the current best GED is returned.
 
-    Returns
-    -------
-    Generator of tuples (node_edit_path, edge_edit_path, cost)
+    Yields
+    ------
+    (node_edit_path, edge_edit_path, cost) : 3-tuple
         node_edit_path : list of tuples (u, v)
         edge_edit_path : list of tuples ((u1, v1), (u2, v2))
         cost : numeric
@@ -1694,10 +1695,10 @@ def generate_random_paths(
         Indicator of random number generation state.
         See :ref:`Randomness<randomness>`.
 
-    Returns
-    -------
-    paths : generator of lists
-        Generator of `sample_size` paths each with length `path_length`.
+    Yields
+    ------
+    path : list
+        Path with length `path_length`. There are `sample_size` paths in total.
 
     Examples
     --------

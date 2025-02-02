@@ -49,7 +49,7 @@ def _apply_prediction(G, func, ebunch=None):
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def resource_allocation_index(G, ebunch=None):
-    r"""Compute the resource allocation index of all node pairs in ebunch.
+    r"""Yield the resource allocation index of all node pairs in ebunch.
 
     Resource allocation index of `u` and `v` is defined as
 
@@ -71,11 +71,11 @@ def resource_allocation_index(G, ebunch=None):
         is None then all nonexistent edges in the graph will be used.
         Default value: None.
 
-    Returns
-    -------
-    piter : iterator
-        An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
-        pair of nodes and p is their resource allocation index.
+    Yields
+    ------
+    (u, v, p) : 3-tuple
+        3-tuple in the form (u, v, p) where (u, v) is a pair of nodes
+        and p is their resource allocation index.
 
     Raises
     ------
@@ -112,7 +112,7 @@ def resource_allocation_index(G, ebunch=None):
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def jaccard_coefficient(G, ebunch=None):
-    r"""Compute the Jaccard coefficient of all node pairs in ebunch.
+    r"""Yield the Jaccard coefficient of all node pairs in ebunch.
 
     Jaccard coefficient of nodes `u` and `v` is defined as
 
@@ -134,11 +134,11 @@ def jaccard_coefficient(G, ebunch=None):
         then all nonexistent edges in the graph will be used.
         Default value: None.
 
-    Returns
-    -------
-    piter : iterator
-        An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
-        pair of nodes and p is their Jaccard coefficient.
+    Yields
+    ------
+    (u, v, p) : 3-tuple
+        3-tuple in the form (u, v, p) where (u, v) is a pair of nodes
+        and p is their Jaccard coefficient.
 
     Raises
     ------
@@ -177,7 +177,7 @@ def jaccard_coefficient(G, ebunch=None):
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def adamic_adar_index(G, ebunch=None):
-    r"""Compute the Adamic-Adar index of all node pairs in ebunch.
+    r"""Yield the Adamic-Adar index of all node pairs in ebunch.
 
     Adamic-Adar index of `u` and `v` is defined as
 
@@ -201,11 +201,11 @@ def adamic_adar_index(G, ebunch=None):
         nonexistent edges in the graph will be used.
         Default value: None.
 
-    Returns
-    -------
-    piter : iterator
-        An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
-        pair of nodes and p is their Adamic-Adar index.
+    Yields
+    ------
+    (u, v, p) : 3-tuple
+        3-tuple in the form (u, v, p) where (u, v) is a pair of nodes
+        and p is their Adamic-Adar index.
 
     Raises
     ------
@@ -241,7 +241,7 @@ def adamic_adar_index(G, ebunch=None):
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
-    r"""Return the CCPA score for each pair of nodes.
+    r"""Yield the CCPA score for each pair of nodes.
 
     Compute the Common Neighbor and Centrality based Parameterized Algorithm(CCPA)
     score of all node pairs in ebunch.
@@ -285,12 +285,11 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
             dataset.
             Default value: 0.8
 
-
-    Returns
-    -------
-    piter : iterator
-        An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
-        pair of nodes and p is their Common Neighbor and Centrality based
+    Yields
+    ------
+    (u, v, p) : 3-tuple
+        3-tuple in the form (u, v, p) where (u, v) is a pair of nodes
+        and p is their Common Neighbor and Centrality based
         Parameterized Algorithm(CCPA) score.
 
     Raises
@@ -349,7 +348,7 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def preferential_attachment(G, ebunch=None):
-    r"""Compute the preferential attachment score of all node pairs in ebunch.
+    r"""Yield the preferential attachment score of all node pairs in ebunch.
 
     Preferential attachment score of `u` and `v` is defined as
 
@@ -371,11 +370,11 @@ def preferential_attachment(G, ebunch=None):
         is None then all nonexistent edges in the graph will be used.
         Default value: None.
 
-    Returns
-    -------
-    piter : iterator
-        An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
-        pair of nodes and p is their preferential attachment score.
+    Yields
+    ------
+    (u, v, p) : 3-tuple
+        3-tuple in the form (u, v, p) where (u, v) is a pair of nodes
+        and p is their preferential attachment score.
 
     Raises
     ------
@@ -443,11 +442,11 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
         G[u][community] identifies which community u belongs to. Each
         node belongs to at most one community. Default value: 'community'.
 
-    Returns
-    -------
-    piter : iterator
-        An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
-        pair of nodes and p is their score.
+    Yields
+    ------
+    (u, v, p) : 3-tuple
+        3-tuple in the form (u, v, p) where (u, v) is a pair of nodes
+        and p is their score.
 
     Raises
     ------
@@ -529,11 +528,11 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
         G[u][community] identifies which community u belongs to. Each
         node belongs to at most one community. Default value: 'community'.
 
-    Returns
-    -------
-    piter : iterator
-        An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
-        pair of nodes and p is their score.
+    Yields
+    ------
+    (u, v, p) : 3-tuple
+        3-tuple in the form (u, v, p) where (u, v) is a pair of nodes
+        and p is their score.
 
     Raises
     ------
@@ -616,11 +615,11 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
         G[u][community] identifies which community u belongs to. Each
         node belongs to at most one community. Default value: 'community'.
 
-    Returns
-    -------
-    piter : iterator
-        An iterator of 3-tuples in the form (u, v, p) where (u, v) is a
-        pair of nodes and p is their WIC measure.
+    Yields
+    ------
+    (u, v, p) : 3-tuple
+        3-tuple in the form (u, v, p) where (u, v) is a pair of nodes
+        and p is their WIC measure.
 
     Raises
     ------

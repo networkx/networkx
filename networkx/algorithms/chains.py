@@ -10,7 +10,7 @@ __all__ = ["chain_decomposition"]
 @not_implemented_for("multigraph")
 @nx._dispatchable
 def chain_decomposition(G, root=None):
-    """Returns the chain decomposition of a graph.
+    """Yield the chain decomposition of a graph.
 
     The *chain decomposition* of a graph with respect a depth-first
     search tree is a set of cycles or paths derived from the set of
@@ -34,10 +34,10 @@ def chain_decomposition(G, root=None):
 
     Yields
     ------
-    chain : list
-       A list of edges representing a chain. There is no guarantee on
-       the orientation of the edges in each chain (for example, if a
-       chain includes the edge joining nodes 1 and 2, the chain may
+    edge : 2-tuple
+       A sequence of edges representing a chain. There is no guarantee
+       on the orientation of the edges in each chain (for example, if
+       a chain includes the edge joining nodes 1 and 2, the chain may
        include either (1, 2) or (2, 1)).
 
     Raises
