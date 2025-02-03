@@ -96,9 +96,9 @@ import networkx as nx
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = networkx.__version__
+version = nx.__version__
 # The full version, including dev info
-release = networkx.__version__.replace("_", "")
+release = nx.__version__.replace("_", "")
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -291,7 +291,7 @@ def new_setitem(self, key, val):
         if line and not line.startswith(" "):
             # This line must identify a backend; let's try to add a link
             backend, *rest = line.split(" ")
-            url = networkx.utils.backends.backend_info.get(backend, {}).get("url")
+            url = nx.utils.backends.backend_info.get(backend, {}).get("url")
             if url:
                 line = f"`{backend} <{url}>`_ " + " ".join(rest)
         newval.append(f"   {line}")
