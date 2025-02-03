@@ -90,7 +90,7 @@ copyright = f"2004-{date.today().year}, NetworkX Developers"
 # Used in networkx.utils.backends for cleaner rendering of functions.
 # We need to set this before we import networkx.
 os.environ["_NETWORKX_BUILDING_DOCS_"] = "True"
-import networkx
+import networkx as nx
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.

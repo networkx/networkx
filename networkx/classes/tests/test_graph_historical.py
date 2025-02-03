@@ -1,6 +1,5 @@
 """Original NetworkX graph tests"""
 
-import networkx
 import networkx as nx
 
 from .historical_tests import HistoricalTests

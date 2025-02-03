@@ -23,3 +23,11 @@ repos:
         language: system
         entry: python tools/generate_requirements.py
         files: "pyproject.toml|requirements/.*\\.txt|tools/generate_requirements.py"
+
+  - repo: local
+    hooks:
+      - id: check-import-conventions
+        name: Check import conventions; see CONTRIBUTING.rst or https://networkx.org/documentation/stable/developer/contribute.html#guidelines
+        language: pygrep
+        entry: "import (networkx|numpy|scipy|pandas|matplotlib)(,|$)"
+        exclude: ^networkx/tests/test_import.py|^doc/release/old_release_log.rst

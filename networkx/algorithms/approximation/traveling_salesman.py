@@ -563,7 +563,7 @@ def held_karp_ascent(G, weight="weight"):
            pp.1138-1162
     """
     import numpy as np
-    from scipy import optimize
+    import scipy as sp
 
     def k_pi():
         """
@@ -707,7 +707,7 @@ def held_karp_ascent(G, weight="weight"):
                     a_eq[n_count][arb_count] = deg - 2
                     n_count -= 1
                 a_eq[len(G)][arb_count] = 1
-            program_result = optimize.linprog(
+            program_result = sp.optimize.linprog(
                 c, A_eq=a_eq, b_eq=b_eq, method="highs-ipm"
             )
             # If the constants exist, then the direction of ascent doesn't
