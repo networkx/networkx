@@ -27,7 +27,14 @@ repos:
   - repo: local
     hooks:
       - id: check-import-conventions
-        name: Check import conventions; see CONTRIBUTING.rst or https://networkx.org/documentation/stable/developer/contribute.html#guidelines
+        name: Check import conventions; see CONTRIBUTING.rst#guidelines
         language: pygrep
-        entry: "import (networkx|numpy|scipy|pandas|matplotlib)(,|$)"
-        exclude: ^networkx/tests/test_import.py|^doc/release/old_release_log.rst
+        entry: "import (networkx(,|$| (?!as nx))|numpy(?! as np)|scipy(?! as sp)|pandas(?! as pd)|matplotlib(,|$)|matplotlib.pyplot(?! as plt)|matplotlib (?!as mpl))"
+        exclude: |
+          (?x)^(
+            CONTRIBUTING.rst
+            |doc/release/api_0.99.rst
+            |doc/release/old_release_log.rst
+            |networkx/lazy_imports.py
+            |networkx/tests/test_import.py
+          )$
