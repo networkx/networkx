@@ -1649,6 +1649,7 @@ def draw_bipartite(G, **kwargs):
     --------
     :func:`~networkx.drawing.layout.bipartite_layout`
     """
+    draw(G, pos=nx.bipartite_layout(G), **kwargs)
 
 
 def draw_circular(G, **kwargs):
