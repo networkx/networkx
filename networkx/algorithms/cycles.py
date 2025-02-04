@@ -202,29 +202,29 @@ def simple_cycles(G, length_bound=None):
             raise ValueError("length bound must be non-negative")
 
     directed = G.is_directed()
-    yield from ([v] for v, Gv in G.adj.items() if v in Gv)
+    yield from ([v] for v, Gv in G._adj.items() if v in Gv)
 
     if length_bound is not None and length_bound == 1:
         return
 
     if G.is_multigraph() and not directed:
         visited = set()
-        for u, Gu in G.adj.items():
+        for u, Gu in G._adj.items():
             multiplicity = ((v, len(Guv)) for v, Guv in Gu.items() if v in visited)
             yield from ([u, v] for v, m in multiplicity if m > 1)
             visited.add(u)
 
     # explicitly filter out loops; implicitly filter out parallel edges
     if directed:
-        G = nx.DiGraph((u, v) for u, Gu in G.adj.items() for v in Gu if v != u)
+        G = nx.DiGraph((u, v) for u, Gu in G._adj.items() for v in Gu if v != u)
     else:
-        G = nx.Graph((u, v) for u, Gu in G.adj.items() for v in Gu if v != u)
+        G = nx.Graph((u, v) for u, Gu in G._adj.items() for v in Gu if v != u)
 
     # this case is not strictly necessary but improves performance
     if length_bound is not None and length_bound == 2:
         if directed:
             visited = set()
-            for u, Gu in G.adj.items():
+            for u, Gu in G._adj.items():
                 yield from (
                     [v, u] for v in visited.intersection(Gu) if G.has_edge(v, u)
                 )
@@ -575,9 +575,9 @@ def chordless_cycles(G, length_bound=None):
     multigraph = G.is_multigraph()
 
     if multigraph:
-        yield from ([v] for v, Gv in G.adj.items() if len(Gv.get(v, ())) == 1)
+        yield from ([v] for v, Gv in G._adj.items() if len(Gv.get(v, ())) == 1)
     else:
-        yield from ([v] for v, Gv in G.adj.items() if v in Gv)
+        yield from ([v] for v, Gv in G._adj.items() if v in Gv)
 
     if length_bound is not None and length_bound == 1:
         return
@@ -586,10 +586,10 @@ def chordless_cycles(G, length_bound=None):
     # also, we implicitly reduce the multiplicity of edges down to 1 in the case
     # of multiedges.
     if directed:
-        F = nx.DiGraph((u, v) for u, Gu in G.adj.items() if u not in Gu for v in Gu)
+        F = nx.DiGraph((u, v) for u, Gu in G._adj.items() if u not in Gu for v in Gu)
         B = F.to_undirected(as_view=False)
     else:
-        F = nx.Graph((u, v) for u, Gu in G.adj.items() if u not in Gu for v in Gu)
+        F = nx.Graph((u, v) for u, Gu in G._adj.items() if u not in Gu for v in Gu)
         B = None
 
     # If we're given a multigraph, we have a few cases to consider with parallel
@@ -613,7 +613,7 @@ def chordless_cycles(G, length_bound=None):
         if not directed:
             B = F.copy()
             visited = set()
-        for u, Gu in G.adj.items():
+        for u, Gu in G._adj.items():
             if directed:
                 multiplicity = ((v, len(Guv)) for v, Guv in Gu.items())
                 for v, m in multiplicity:

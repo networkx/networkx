@@ -131,13 +131,13 @@ def average_neighbor_degree(G, source="out", target="out", nodes=None, weight=No
     if G.is_directed():
         # "in" or "in+out" cases: G_P contains predecessors
         if "in" in source:
-            G_P = G.pred
+            G_P = G._pred
         # "out" or "in+out" cases: G_S contains successors
         if "out" in source:
-            G_S = G.succ
+            G_S = G._succ
     else:
         # undirected leave G_P empty but G_S is the adjacency
-        G_S = G.adj
+        G_S = G._adj
 
     # Main loop: Compute average degree of neighbors
     avg = {}

@@ -296,7 +296,7 @@ def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan
         frontier = []
         visited = {u}
         if is_multigraph:
-            for v, keydict in G.adj[u].items():
+            for v, keydict in G._adj[u].items():
                 for k, d in keydict.items():
                     wt = d.get(weight, 1) * sign
                     if isnan(wt):
@@ -306,7 +306,7 @@ def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan
                         raise ValueError(msg)
                     push(frontier, (wt, next(c), u, v, k, d))
         else:
-            for v, d in G.adj[u].items():
+            for v, d in G._adj[u].items():
                 wt = d.get(weight, 1) * sign
                 if isnan(wt):
                     if ignore_nan:
@@ -336,7 +336,7 @@ def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan
             visited.add(v)
             nodes.discard(v)
             if is_multigraph:
-                for w, keydict in G.adj[v].items():
+                for w, keydict in G._adj[v].items():
                     if w in visited:
                         continue
                     for k2, d2 in keydict.items():
@@ -348,7 +348,7 @@ def prim_mst_edges(G, minimum, weight="weight", keys=True, data=True, ignore_nan
                             raise ValueError(msg)
                         push(frontier, (new_weight, next(c), v, w, k2, d2))
             else:
-                for w, d2 in G.adj[v].items():
+                for w, d2 in G._adj[v].items():
                     if w in visited:
                         continue
                     new_weight = d2.get(weight, 1) * sign

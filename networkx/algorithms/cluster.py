@@ -70,7 +70,7 @@ def triangles(G, nodes=None):
     later_nbrs = {}
 
     # iterate over the nodes in a graph
-    for node, neighbors in G.adjacency():
+    for node, neighbors in G._adj.items():
         later_nbrs[node] = {n for n in neighbors if n not in later_nbrs and n != node}
 
     # instantiate Counter for each node to include isolated nodes
@@ -97,7 +97,7 @@ def _triangles_and_degree_iter(G, nodes=None):
 
     """
     if nodes is None:
-        nodes_nbrs = G.adj.items()
+        nodes_nbrs = G._adj.items()
     else:
         nodes_nbrs = ((n, G[n]) for n in G.nbunch_iter(nodes))
 
@@ -125,7 +125,7 @@ def _weighted_triangles_and_degree_iter(G, nodes=None, weight="weight"):
     else:
         max_weight = max(d.get(weight, 1) for u, v, d in G.edges(data=True))
     if nodes is None:
-        nodes_nbrs = G.adj.items()
+        nodes_nbrs = G._adj.items()
     else:
         nodes_nbrs = ((n, G[n]) for n in G.nbunch_iter(nodes))
 
