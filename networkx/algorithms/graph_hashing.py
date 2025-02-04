@@ -150,6 +150,10 @@ def weisfeiler_lehman_graph_hash(
     # set initial node labels
     node_labels = _init_node_labels(G, edge_attr, node_attr)
 
+    # If the graph has no attributes, initial labels are the nodes' degrees. This is equivalent to doing the first iterations of WL.
+    if not edge_attr and not node_attr:
+        iterations -= 1
+
     subgraph_hash_counts = []
     for _ in range(iterations):
         node_labels = weisfeiler_lehman_step(G, node_labels, edge_attr=edge_attr)
@@ -313,12 +317,20 @@ def weisfeiler_lehman_subgraph_hashes(
         return new_labels
 
     node_labels = _init_node_labels(G, edge_attr, node_attr)
+
     if include_initial_labels:
         node_subgraph_hashes = {
             k: [_hash_label(v, digest_size)] for k, v in node_labels.items()
         }
     else:
         node_subgraph_hashes = defaultdict(list)
+
+    # If the graph has no attributes, initial labels are the nodes' degrees. This is equivalent to doing the first iterations of WL.
+    if not edge_attr and not node_attr:
+        iterations -= 1
+        for node in G.nodes():
+            hashed_label = _hash_label(node_labels[node], digest_size)
+            node_subgraph_hashes[node].append(hashed_label)
 
     for _ in range(iterations):
         node_labels = weisfeiler_lehman_step(
