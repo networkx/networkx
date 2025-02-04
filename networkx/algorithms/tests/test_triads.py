@@ -9,12 +9,6 @@ import pytest
 import networkx as nx
 
 
-def test_all_triplets_deprecated():
-    G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
-    with pytest.deprecated_call():
-        nx.all_triplets(G)
-
-
 def test_random_triad_deprecated():
     G = nx.path_graph(3, create_using=nx.DiGraph)
     with pytest.deprecated_call():
@@ -57,23 +51,8 @@ def test_is_triad():
         assert nx.is_triad(G2)
 
 
-def test_all_triplets():
-    """Tests the all_triplets function."""
-    G = nx.DiGraph()
-    G.add_edges_from(["01", "02", "03", "04", "05", "12", "16", "51", "56", "65"])
-    expected = [
-        f"{i},{j},{k}"
-        for i in range(7)
-        for j in range(i + 1, 7)
-        for k in range(j + 1, 7)
-    ]
-    expected = [set(x.split(",")) for x in expected]
-    actual = [set(x) for x in nx.all_triplets(G)]
-    assert all(any(s1 == s2 for s1 in expected) for s2 in actual)
-
-
 def test_all_triads():
-    """Tests the all_triplets function."""
+    """Tests the all_triads function."""
     G = nx.DiGraph()
     G.add_edges_from(["01", "02", "03", "04", "05", "12", "16", "51", "56", "65"])
     expected = [
@@ -131,7 +110,6 @@ def test_triad_type():
 
 
 def test_triads_by_type():
-    """Tests the all_triplets function."""
     G = nx.DiGraph()
     G.add_edges_from(["01", "02", "03", "04", "05", "12", "16", "51", "56", "65"])
     all_triads = nx.all_triads(G)
