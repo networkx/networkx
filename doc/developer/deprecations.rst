@@ -44,7 +44,6 @@ Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 Version 3.5
 ~~~~~~~~~~~
 * Remove ``all_triplets`` from ``algorithms/triads.py``
-* Remove ``random_triad`` from ``algorithms/triad.py``.
 * Remove ``d_separated`` from ``algorithms/d_separation.py``.
 * Remove ``minimal_d_separator`` from ``algorithms/d_separation.py``.
 * Add `not_implemented_for("multigraph”)` decorator to ``k_core``, ``k_shell``, ``k_crust`` and ``k_corona`` functions.

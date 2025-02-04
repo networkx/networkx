@@ -115,9 +115,6 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="\n\nall_triplets"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nrandom_triad"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="minimal_d_separator"
     )
     warnings.filterwarnings(
