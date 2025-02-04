@@ -379,7 +379,7 @@ def is_regular_expander(G, *, epsilon=0):
     """
 
     import numpy as np
-    from scipy.sparse.linalg import eigsh
+    import scipy as sp
 
     if epsilon < 0:
         raise nx.NetworkXError("epsilon must be non negative")
@@ -390,7 +390,7 @@ def is_regular_expander(G, *, epsilon=0):
     _, d = nx.utils.arbitrary_element(G.degree)
 
     A = nx.adjacency_matrix(G, dtype=float)
-    lams = eigsh(A, which="LM", k=2, return_eigenvectors=False)
+    lams = sp.sparse.linalg.eigsh(A, which="LM", k=2, return_eigenvectors=False)
 
     # lambda2 is the second biggest eigenvalue
     lambda2 = min(lams)
