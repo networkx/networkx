@@ -171,7 +171,7 @@ of the earlier versions of NetworkX can be found
 Support
 -------
 
-NetworkX acknowledges support from the following research groups:
+NetworkX acknowledges support from the following organizations:
 
 - `Center for Nonlinear Studies <http://cnls.lanl.gov>`_, Los Alamos National
   Laboratory, PI: Aric Hagberg
@@ -185,6 +185,12 @@ NetworkX acknowledges support from the following research groups:
 - `Center for Complexity and Collective Computation <http://c4.discovery.wisc.edu>`_,
   Wisconsin Institute for Discovery, University of Wisconsin-Madison,
   PIs: Jessica C. Flack and David C. Krakauer
+
+- `Colgate University <https://www.colgate.edu/>`_
+
+- `California Institute of Technology <https://www.caltech.edu/>`_
+
+- `Berkeley Institute for Data Science <https://bids.berkeley.edu/>`_
 
 NetworkX acknowledges the following financial support:
 
