@@ -8,6 +8,7 @@ from networkx.utils import not_implemented_for, pairwise
 
 __all__ = [
     "all_simple_paths",
+    "all_bounded_simple_paths",
     "is_simple_path",
     "shortest_simple_paths",
     "all_simple_edge_paths",
