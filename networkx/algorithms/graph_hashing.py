@@ -22,7 +22,10 @@ def _init_node_labels(G, edge_attr, node_attr):
     elif edge_attr:
         return {u: "" for u in G}
     else:
-        return {u: str(deg) for u, deg in G.degree()}
+        if nx.is_directed(G):
+            return {u: str(G.in_degree(u)) + str(G.out_degree(u)) for u in G}
+        else:
+            return {u: str(deg) for u, deg in G.degree()}
 
 
 def _neighborhood_aggregate(G, node, node_labels, edge_attr=None):
