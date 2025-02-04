@@ -1,5 +1,6 @@
 from heapq import heappop, heappush
 from itertools import count
+from typing import Optional, Union
 
 import networkx as nx
 from networkx.algorithms.shortest_paths.weighted import _weight_function
@@ -948,3 +949,101 @@ def _bidirectional_dijkstra(
                         revpath.reverse()
                         finalpath = paths[0][w] + revpath[1:]
     raise nx.NetworkXNoPath(f"No path between {source} and {target}.")
+
+
+@nx._dispatchable
+def all_bounded_simple_paths(G, sources=None, length=None, exact_length=False):
+    """Generate all simple paths in the graph G with a length constraint. If
+    sources are specified, paths start from these nodes. If a length constraint
+    is specified, only paths respecting this constraint are returned;
+    otherwise, paths of any length are considered.
+
+    A simple path is a path with no repeated nodes. This function allows limiting
+    the length of paths returned, either as a maximum length or as an
+    exact length constraint.
+
+    Parameters
+    ----------
+    G : NetworkX graph
+        The graph in which to search for paths.
+
+    sources : int or list of ints, optional
+        Node(s) from which to start searching for paths. If None, paths
+        are generated from all nodes in the graph.
+
+    length : int, optional
+        The maximum number of edges in the paths returned. If None, paths
+        of any length are considered.
+
+    exact_length : bool, optional (default: False)
+        If True, only paths of exactly `length` edges are returned. If False,
+        paths of up to `length` edges are returned.
+
+    Returns
+    -------
+    paths : list of lists
+        A list of simple paths, where each path is represented as a list of nodes.
+
+    Examples
+    --------
+    Finding all simple paths with a maximum length of 2:
+
+        >>> G = nx.path_graph(4)
+        >>> nx.all_bounded_simple_paths(G, sources=0, length=2)
+        [[0, 1], [0, 1, 2]]
+
+    Finding all simple paths of exactly length 2:
+
+        >>> nx.all_bounded_simple_paths(G, sources=0, length=2, exact_length=True)
+        [[0, 1, 2]]
+
+    Finding paths from multiple source nodes:
+
+        >>> nx.all_bounded_simple_paths(G, sources=[0, 2], length=2)
+        [[0, 1], [0, 1, 2], [2, 1], [2, 3]]
+        # Note: [2, 1, 0] is not returned because G is undirected and
+        # duplicate paths in reverse order are removed.
+
+    Notes
+    -----
+    For undirected graphs, duplicate paths appearing in reverse order are removed.
+
+    This function performs a depth-first search to explore all valid paths.
+    The number of paths can grow exponentially with the graph size, so use
+    caution on large graphs.
+
+    See Also
+    --------
+    all_simple_paths, all_simple_edge_paths, is_simple_path, shortest_simple_paths
+    """
+
+    def find_paths_rec(G, node, length, exact_length, path, paths):
+        if (not exact_length and len(path) > 1) or (
+            exact_length and len(path) - 1 == length
+        ):
+            paths.append(path)
+        if length is None or len(path) - 1 < length:
+            for neighbour in G[node]:
+                if neighbour not in path:
+                    find_paths_rec(
+                        G, neighbour, length, exact_length, path + [neighbour], paths
+                    )
+
+    if sources is None:
+        nodes = G.nodes
+    elif isinstance(sources, int):
+        nodes = [sources]
+    else:
+        nodes = sources
+
+    all_paths = []
+    for node in nodes:
+        find_paths_rec(G, node, length, exact_length, [node], all_paths)
+
+    if not G.is_directed():
+        for path in all_paths:
+            inverted_path = path[::-1]
+            if inverted_path in all_paths:
+                all_paths.remove(inverted_path)
+
+    return all_paths
