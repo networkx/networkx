@@ -201,3 +201,10 @@ NetworkX acknowledges the following financial support:
 
 - U.S. Army Research Laboratory and the U.S. Army Research Office under
   contract number W911NF-13-1-0340
+
+- Google Summer of Code via NumFOCUS
+
+- Chan Zuckerberg Initiative Essential Open Source Software for Science
+  EOSS2-0000000066 and EOSS4-0000000138
+  
+- Wellcome Trust via Chan Zuckerberg Initiative EOSS (EOSS6-XXXXXXXXX)
