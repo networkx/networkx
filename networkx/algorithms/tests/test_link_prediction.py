@@ -316,7 +316,8 @@ class TestCNSoundarajanHopcroft:
 
     def test_no_community_information(self):
         G = nx.complete_graph(5)
-        assert pytest.raises(nx.NetworkXAlgorithmError, list, self.func(G, [(0, 1)]))
+        with pytest.raises(nx.NetworkXAlgorithmError):
+            list(self.func(G, [(0, 1)]))
 
     def test_insufficient_community_information(self):
         G = nx.Graph()
@@ -324,7 +325,8 @@ class TestCNSoundarajanHopcroft:
         G.nodes[0]["community"] = 0
         G.nodes[1]["community"] = 0
         G.nodes[3]["community"] = 0
-        assert pytest.raises(nx.NetworkXAlgorithmError, list, self.func(G, [(0, 3)]))
+        with pytest.raises(nx.NetworkXAlgorithmError):
+            list(self.func(G, [(0, 3)]))
 
     def test_sufficient_community_information(self):
         G = nx.Graph()
@@ -427,7 +429,8 @@ class TestRAIndexSoundarajanHopcroft:
 
     def test_no_community_information(self):
         G = nx.complete_graph(5)
-        assert pytest.raises(nx.NetworkXAlgorithmError, list, self.func(G, [(0, 1)]))
+        with pytest.raises(nx.NetworkXAlgorithmError):
+            list(self.func(G, [(0, 1)]))
 
     def test_insufficient_community_information(self):
         G = nx.Graph()
@@ -435,7 +438,8 @@ class TestRAIndexSoundarajanHopcroft:
         G.nodes[0]["community"] = 0
         G.nodes[1]["community"] = 0
         G.nodes[3]["community"] = 0
-        assert pytest.raises(nx.NetworkXAlgorithmError, list, self.func(G, [(0, 3)]))
+        with pytest.raises(nx.NetworkXAlgorithmError):
+            list(self.func(G, [(0, 3)]))
 
     def test_sufficient_community_information(self):
         G = nx.Graph()
@@ -552,7 +556,8 @@ class TestWithinInterCluster:
 
     def test_no_community_information(self):
         G = nx.complete_graph(5)
-        assert pytest.raises(nx.NetworkXAlgorithmError, list, self.func(G, [(0, 1)]))
+        with pytest.raises(nx.NetworkXAlgorithmError):
+            list(self.func(G, [(0, 1)]))
 
     def test_insufficient_community_information(self):
         G = nx.Graph()
@@ -560,7 +565,8 @@ class TestWithinInterCluster:
         G.nodes[0]["community"] = 0
         G.nodes[1]["community"] = 0
         G.nodes[3]["community"] = 0
-        assert pytest.raises(nx.NetworkXAlgorithmError, list, self.func(G, [(0, 3)]))
+        with pytest.raises(nx.NetworkXAlgorithmError):
+            list(self.func(G, [(0, 3)]))
 
     def test_sufficient_community_information(self):
         G = nx.Graph()

@@ -205,13 +205,15 @@ class TestDAG:
         validate(list(nx.topological_sort(DG)))
 
         DG.add_edge(14, 1)
-        pytest.raises(nx.NetworkXUnfeasible, _consume, nx.topological_sort(DG))
+        with pytest.raises(nx.NetworkXUnfeasible):
+            _consume(nx.topological_sort(DG))
 
     def test_topological_sort4(self):
         G = nx.Graph()
         G.add_edge(1, 2)
         # Only directed graphs can be topologically sorted.
-        pytest.raises(nx.NetworkXError, _consume, nx.topological_sort(G))
+        with pytest.raises(nx.NetworkXError):
+            _consume(nx.topological_sort(G))
 
     def test_topological_sort5(self):
         G = nx.DiGraph()

@@ -142,10 +142,12 @@ def test_zero_k_exception():
 
     # actual generators only error when you get the first item
     aux_graph = EdgeComponentAuxGraph.construct(G)
-    pytest.raises(ValueError, list, aux_graph.k_edge_components(k=0))
-    pytest.raises(ValueError, list, aux_graph.k_edge_subgraphs(k=0))
-
-    pytest.raises(ValueError, list, general_k_edge_subgraphs(G, k=0))
+    with pytest.raises(ValueError):
+        list(aux_graph.k_edge_components(k=0))
+    with pytest.raises(ValueError):
+        list(aux_graph.k_edge_subgraphs(k=0))
+    with pytest.raises(ValueError):
+        list(general_k_edge_subgraphs(G, k=0))
 
 
 def test_empty_input():
