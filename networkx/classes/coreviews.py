@@ -138,7 +138,7 @@ class UnionAtlas(Mapping):
         return len(self._succ.keys() | self._pred.keys())
 
     def __iter__(self):
-        return iter(set(self._succ.keys()) | set(self._pred.keys()))
+        return iter(set(self._succ) | set(self._pred))
 
     def __getitem__(self, key):
         try:
@@ -291,12 +291,12 @@ class FilterAtlas(Mapping):  # nodedict, nbrdict, keydict
         return sum(1 for n in self._atlas if self.NODE_OK(n))
 
     def __iter__(self):
-        try:  # check that NODE_OK has attr 'nodes'
-            node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
+        try:
+            nodes = self.NODE_OK.nodes
+            if 2 * len(nodes) < len(self._atlas):
+                return (n for n in nodes if n in self._atlas)
         except AttributeError:
-            node_ok_shorter = False
-        if node_ok_shorter:
-            return (n for n in self.NODE_OK.nodes if n in self._atlas)
+            pass
         return (n for n in self._atlas if self.NODE_OK(n))
 
     def __getitem__(self, key):
@@ -340,12 +340,12 @@ class FilterAdjacency(Mapping):  # edgedict
         return sum(1 for n in self._atlas if self.NODE_OK(n))
 
     def __iter__(self):
-        try:  # check that NODE_OK has attr 'nodes'
-            node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
+        try:
+            nodes = self.NODE_OK.nodes
+            if 2 * len(nodes) < len(self._atlas):
+                return (n for n in nodes if n in self._atlas)
         except AttributeError:
-            node_ok_shorter = False
-        if node_ok_shorter:
-            return (n for n in self.NODE_OK.nodes if n in self._atlas)
+            pass
         return (n for n in self._atlas if self.NODE_OK(n))
 
     def __getitem__(self, node):
@@ -379,21 +379,17 @@ class FilterMultiInner(FilterAdjacency):  # muliedge_seconddict
     """
 
     def __iter__(self):
+        my_nodes = None
         try:  # check that NODE_OK has attr 'nodes'
-            node_ok_shorter = 2 * len(self.NODE_OK.nodes) < len(self._atlas)
+            nodes = self.NODE_OK.nodes
+            if 2 * len(nodes) < len(self._atlas):
+                my_nodes = (n for n in nodes if n in self._atlas)
         except AttributeError:
-            node_ok_shorter = False
-        if node_ok_shorter:
-            my_nodes = (n for n in self.NODE_OK.nodes if n in self._atlas)
-        else:
+            pass
+        if my_nodes is None:
             my_nodes = (n for n in self._atlas if self.NODE_OK(n))
         for n in my_nodes:
-            some_keys_ok = False
-            for key in self._atlas[n]:
-                if self.EDGE_OK(n, key):
-                    some_keys_ok = True
-                    break
-            if some_keys_ok is True:
+            if any(self.EDGE_OK(n, key) for key in self._atlas[n]):
                 yield n
 
     def __getitem__(self, nbr):
