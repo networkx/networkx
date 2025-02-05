@@ -7,7 +7,6 @@ import pytest
 
 import networkx as nx
 import networkx.algorithms.threshold as nxt
-from networkx.algorithms.isomorphism.isomorph import graph_could_be_isomorphic
 
 cnlti = nx.convert_node_labels_to_integers
 
@@ -50,9 +49,9 @@ class TestGeneratorThreshold:
         H2 = nxt.threshold_graph(cs2)
         assert cs2 == [2, 1, 1]
         assert "".join(nxt.uncompact(cs2)) == "ddid"
-        assert graph_could_be_isomorphic(H0, G)
-        assert graph_could_be_isomorphic(H0, H1)
-        assert graph_could_be_isomorphic(H0, H2)
+        assert nx.could_be_isomorphic(H0, G)
+        assert nx.could_be_isomorphic(H0, H1)
+        assert nx.could_be_isomorphic(H0, H2)
 
     def test_make_compact(self):
         assert nxt.make_compact(["d", "d", "d", "i", "d", "d"]) == [3, 1, 2]

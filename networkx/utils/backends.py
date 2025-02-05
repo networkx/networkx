@@ -971,25 +971,18 @@ class _dispatchable:
         """Returns the result of the original function (no backends installed)."""
         if backend is not None and backend != "networkx":
             raise ImportError(f"'{backend}' backend is not installed")
+        if "networkx" not in self.backends:
+            raise NotImplementedError(
+                f"`{self.name}' is not implemented by 'networkx' backend. "
+                "This function is included in NetworkX as an API to dispatch to "
+                "other backends."
+            )
         return self.orig_func(*args, **kwargs)
 
     # Dispatch to backends based on inputs, `backend=` arg, or configuration
     def _call_if_any_backends_installed(self, /, *args, backend=None, **kwargs):
         """Returns the result of the original function, or the backend function if
         the backend is specified and that backend implements `func`."""
-
-        if not backends:
-            # Fast path if no backends are installed
-            if backend is not None and backend != "networkx":
-                raise ImportError(f"'{backend}' backend is not installed")
-            if "networkx" not in self.backends:
-                raise NotImplementedError(
-                    f"`{self.name}' is not implemented by 'networkx' backend. "
-                    " This function is included in NetworkX as an API to dispatch to "
-                    "other backends."
-                )
-            return self.orig_func(*args, **kwargs)
-
         # Use `backend_name` in this function instead of `backend`.
         # This is purely for aesthetics and to make it easier to search for this
         # variable since "backend" is used in many comments and log/error messages.
