@@ -194,7 +194,8 @@ NetworkX acknowledges support from the following organizations:
 
 NetworkX acknowledges the following financial support:
 
-- Google Summer of Code via Python Software Foundation
+- Google Summer of Code via Python Software Foundation (2013, 2015),
+  NumFOCUS (2021-2024)
 
 - U.S. Army Research Office grant W911NF-12-1-0288
 
@@ -207,8 +208,6 @@ NetworkX acknowledges the following financial support:
 
 - U.S. Army Research Laboratory and the U.S. Army Research Office under
   contract number W911NF-13-1-0340
-
-- Google Summer of Code via NumFOCUS
 
 - Chan Zuckerberg Initiative Essential Open Source Software for Science
   EOSS2-0000000066 and EOSS4-0000000138
