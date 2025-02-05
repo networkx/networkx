@@ -4,6 +4,11 @@ from functools import partial
 from itertools import chain
 
 import networkx as nx
+from networkx.algorithms.vertex_covering.lp_decomposition import find_lp_decomposition
+from networkx.algorithms.vertex_covering.vertex_cover import (
+    max_degree_branching,
+    vc_above_lp_branching,
+)
 from networkx.utils import arbitrary_element, not_implemented_for
 
 __all__ = ["min_edge_cover", "is_edge_cover"]
@@ -140,6 +145,25 @@ def is_edge_cover(G, cover):
     the graph is incident to at least one edge of the set.
     """
     return set(G) <= set(chain.from_iterable(cover))
+
+
+@not_implemented_for("directed")
+@nx._dispatchable
+def vertex_cover(G, k):
+    # find lp-opt value
+    # compare 1.4656^k and 2.618^(k - lpOpt)
+    lp_opt_value, *_ = find_lp_decomposition(G, k)
+
+    if lp_opt_value > k:
+        return False, set()
+
+    vc_above_lp_opt_algo_check = 2.618 ** (k - lp_opt_value)
+    max_deg_algo_check = 1.4656**k
+
+    if vc_above_lp_opt_algo_check < max_deg_algo_check:
+        return vc_above_lp_branching(G, k)
+    else:
+        return max_degree_branching(G, k)
 
 
 @not_implemented_for("directed")

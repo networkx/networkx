@@ -71,8 +71,8 @@ def partial_weighted_lp_decomposition(G, partial_weights):
 @not_implemented_for("directed")
 def find_lp_decomposition(G: nx.Graph):
     """
-    Given a graph `G` and a parameter `k`, returns False if vertex cover of size atmost `k`
-    doesn't exists, else returns a tuple return `lp_value, greater_than_half, less_than_half, equal_to_half`,
+    Given a graph `G` and a parameter `k`,
+    returns a tuple return `lp_value, greater_than_half, less_than_half, equal_to_half`,
     where, in the solution of Linear Programming formulation of Vertex Cover
     `lp_value` is the value of the optimum solution
     `greater_than_half` denotes the set of vertices which got weight more than 0.5,
