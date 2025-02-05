@@ -213,4 +213,4 @@ NetworkX acknowledges the following financial support:
 - Chan Zuckerberg Initiative Essential Open Source Software for Science
   EOSS2-0000000066 and EOSS4-0000000138
   
-- Wellcome Trust via Chan Zuckerberg Initiative EOSS (EOSS6-XXXXXXXXX)
+- Wellcome Trust via CZI, Wellcome and Kavli EOSS Cycle 6 (EOSS6-000000368)
