@@ -9,12 +9,6 @@ import pytest
 import networkx as nx
 
 
-def test_random_triad_deprecated():
-    G = nx.path_graph(3, create_using=nx.DiGraph)
-    with pytest.deprecated_call():
-        nx.random_triad(G)
-
-
 def test_triadic_census():
     """Tests the triadic_census function."""
     G = nx.DiGraph()
@@ -123,19 +117,6 @@ def test_triads_by_type():
         expected_Gs = expected[tri_type]
         for a in actual_Gs:
             assert any(nx.is_isomorphic(a, e) for e in expected_Gs)
-
-
-def test_random_triad():
-    """Tests the random_triad function"""
-    G = nx.karate_club_graph()
-    G = G.to_directed()
-    for i in range(100):
-        assert nx.is_triad(nx.random_triad(G))
-
-    G = nx.DiGraph()
-    msg = "at least 3 nodes to form a triad"
-    with pytest.raises(nx.NetworkXError, match=msg):
-        nx.random_triad(G)
 
 
 def test_triadic_census_short_path_nodelist():
