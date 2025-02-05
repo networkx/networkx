@@ -18,7 +18,7 @@ from networkx.generators.directed import (
 )
 
 try:
-    import numpy
+    import numpy as np
 
     has_numpy = True
 except ImportError:

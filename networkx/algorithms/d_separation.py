@@ -223,8 +223,6 @@ __all__ = [
     "is_d_separator",
     "is_minimal_d_separator",
     "find_minimal_d_separator",
-    "d_separated",
-    "minimal_d_separator",
 ]
 
 
@@ -677,46 +675,3 @@ def _reachable(G, x, a, z):
                 processed.append((f, n))
 
     return {w for (_, w) in processed}
-
-
-# Deprecated functions:
-def d_separated(G, x, y, z):
-    """Return whether nodes sets ``x`` and ``y`` are d-separated by ``z``.
-
-    .. deprecated:: 3.3
-
-        This function is deprecated and will be removed in NetworkX v3.5.
-        Please use `is_d_separator(G, x, y, z)`.
-
-    """
-    import warnings
-
-    warnings.warn(
-        "d_separated is deprecated and will be removed in NetworkX v3.5."
-        "Please use `is_d_separator(G, x, y, z)`.",
-        category=DeprecationWarning,
-        stacklevel=2,
-    )
-    return nx.is_d_separator(G, x, y, z)
-
-
-def minimal_d_separator(G, u, v):
-    """Returns a minimal_d-separating set between `x` and `y` if possible
-
-    .. deprecated:: 3.3
-
-        minimal_d_separator is deprecated and will be removed in NetworkX v3.5.
-        Please use `find_minimal_d_separator(G, x, y)`.
-
-    """
-    import warnings
-
-    warnings.warn(
-        (
-            "This function is deprecated and will be removed in NetworkX v3.5."
-            "Please use `is_d_separator(G, x, y)`."
-        ),
-        category=DeprecationWarning,
-        stacklevel=2,
-    )
-    return nx.find_minimal_d_separator(G, u, v)
