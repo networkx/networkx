@@ -45,8 +45,6 @@ Version 3.5
 ~~~~~~~~~~~
 * Remove ``all_triplets`` from ``algorithms/triads.py``
 * Remove ``random_triad`` from ``algorithms/triad.py``.
-* Remove ``d_separated`` from ``algorithms/d_separation.py``.
-* Remove ``minimal_d_separator`` from ``algorithms/d_separation.py``.
 * Remove ``total_spanning_tree_weight`` from ``linalg/laplacianmatrix.py``
 * Remove ``create`` keyword argument from ``nonisomorphic_trees`` in 
   ``generators/nonisomorphic_trees``.
