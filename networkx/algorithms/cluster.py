@@ -528,7 +528,7 @@ def square_clustering(G, nodes=None):
         node_iter = G.nbunch_iter(nodes)
     clustering = {}
     for v in node_iter:
-        v_neighbors = set(G.neighbors(v))
+        v_neighbors = set(G._adj[v])
         v_neighbors.discard(v)  # Ignore self-loops
         v_degrees_m1 = len(v_neighbors) - 1  # degrees[v] - 1 (used below)
         if v_degrees_m1 <= 0:
@@ -549,7 +549,7 @@ def square_clustering(G, nodes=None):
 
         # Iterate over all neighbors
         for u in v_neighbors:
-            u_neighbors = set(G.neighbors(u))
+            u_neighbors = set(G._adj[u])
             u_neighbors.discard(u)  # Ignore self-loops
             uw_degrees += len(u_neighbors) * v_degrees_m1
             # P2 from https://arxiv.org/abs/2007.11111
@@ -563,11 +563,11 @@ def square_clustering(G, nodes=None):
 
         # And iterate over all neighbors of neighbors.
         # These nodes x may be the corners opposite v in squares u-v-w-x.
-        two_hop_neighbors = set().union(*(G.neighbors(u) for u in v_neighbors))
+        two_hop_neighbors = set().union(*(G._adj[u] for u in v_neighbors))
         two_hop_neighbors -= v_neighbors  # Neighbors already counted above
         two_hop_neighbors.discard(v)
         for x in two_hop_neighbors:
-            x_neighbors = set(G.neighbors(x))
+            x_neighbors = set(G._adj[x])
             x_neighbors.discard(x)  # Ignore self-loops
             p2 = len(v_neighbors & x_neighbors)
             squares += p2 * (p2 - 1)  # Will divide by 2 later
