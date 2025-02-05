@@ -801,3 +801,92 @@ def test_bidirectional_dijkstra_ignore():
     pytest.raises(
         nx.NetworkXNoPath, _bidirectional_dijkstra, G, 1, 2, ignore_nodes=[1, 2]
     )
+
+
+# Tests for all_bounded_simple_paths
+def test_all_bounded_simple_paths_no_sources():
+    G = nx.path_graph(4)
+    result = nx.all_bounded_simple_paths(G, length=2)
+    expected = {(0, 1), (1, 2), (2, 3), (0, 1, 2), (1, 2, 3)}
+    assert {tuple(p) for p in result} == expected
+
+
+def test_all_bounded_simple_paths_with_exact_length():
+    G = nx.path_graph(4)
+    result = nx.all_bounded_simple_paths(G, length=2, exact_length=True)
+    expected = {(0, 1, 2), (1, 2, 3)}
+    assert {tuple(p) for p in result} == expected
+
+
+def test_all_bounded_simple_paths_with_sources():
+    G = nx.path_graph(4)
+    result = nx.all_bounded_simple_paths(G, sources=0, length=2)
+    expected = {(0, 1), (0, 1, 2)}
+    assert {tuple(p) for p in result} == expected
+
+
+def test_all_bounded_simple_paths_multiple_sources():
+    G = nx.path_graph(4)
+    result = nx.all_bounded_simple_paths(G, sources=[0, 2], length=2)
+    expected = {(0, 1), (0, 1, 2), (2, 1), (2, 3)}
+    assert {tuple(p) for p in result} == expected
+
+
+def test_all_bounded_simple_paths_no_length():
+    G = nx.path_graph(4)
+    result = nx.all_bounded_simple_paths(G, sources=0)
+    expected = {(0, 1), (0, 1, 2), (0, 1, 2, 3)}
+    assert {tuple(p) for p in result} == expected
+
+
+def test_all_bounded_simple_paths_star_graph_no_sources():
+    G = nx.star_graph(3)
+    result = nx.all_bounded_simple_paths(G, length=1)
+    expected = {(0, 1), (0, 2), (0, 3)}
+    assert {tuple(p) for p in result} == expected
+
+
+def test_all_bounded_simple_paths_star_graph_no_sources_no_length():
+    G = nx.star_graph(3)
+    result = nx.all_bounded_simple_paths(G)
+    expected = {(0, 1), (0, 2), (0, 3), (1, 0, 2), (1, 0, 3), (2, 0, 3)}
+    assert {tuple(p) for p in result} == expected
+
+
+def test_all_bounded_simple_paths_star_graph_with_sources():
+    G = nx.star_graph(3)
+    result = nx.all_bounded_simple_paths(G, sources=1)
+    expected = {(1, 0), (1, 0, 2), (1, 0, 3)}
+    assert {tuple(p) for p in result} == expected
+
+
+def test_all_bounded_simple_paths_star_graph_multiple_sources():
+    G = nx.star_graph(3)
+    result = nx.all_bounded_simple_paths(G, sources=[0, 3], length=2)
+    # (3, 0) is not included because it is a reverse of (0, 3)
+    expected = {(0, 1), (0, 2), (0, 3), (3, 0, 1), (3, 0, 2)}
+    assert {tuple(p) for p in result} == expected
+
+
+def test_all_bounded_simple_paths_directed_star_graph_multiple_sources():
+    G = nx.star_graph(3)
+    G = G.to_directed()
+    result = nx.all_bounded_simple_paths(G, sources=[0, 3], length=2)
+    expected = {(0, 1), (0, 2), (0, 3), (3, 0), (3, 0, 1), (3, 0, 2)}
+    assert {tuple(p) for p in result} == expected
+
+
+def test_all_bounded_simple_paths_undirected_graph():
+    G = nx.Graph()
+    G.add_edges_from([(0, 1), (1, 2), (2, 3)])
+    result = nx.all_bounded_simple_paths(G, sources=0, length=2)
+    expected = {(0, 1), (0, 1, 2)}
+    assert {tuple(p) for p in result} == expected
+
+
+def test_all_bounded_simple_paths_with_reverse_duplicate():
+    G = nx.Graph()
+    G.add_edges_from([(0, 1), (1, 2), (2, 3)])
+    result = nx.all_bounded_simple_paths(G, sources=[0, 3], length=2)
+    expected = {(0, 1), (0, 1, 2), (3, 2), (3, 2, 1)}
+    assert {tuple(p) for p in result} == expected
