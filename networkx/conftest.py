@@ -112,12 +112,6 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="\n\nThe `normalized`"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nall_triplets"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nrandom_triad"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\ntotal_spanning_tree_weight"
     )
     warnings.filterwarnings(
