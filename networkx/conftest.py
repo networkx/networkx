@@ -112,28 +112,6 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="\n\nThe `normalized`"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nall_triplets"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nrandom_triad"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="minimal_d_separator"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="d_separated"
-    )
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="\n\nk_core")
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nk_shell"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nk_crust"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nk_corona"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\ntotal_spanning_tree_weight"
     )
     warnings.filterwarnings(
