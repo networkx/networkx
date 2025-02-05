@@ -286,7 +286,8 @@ class TestDAGLCA:
         self.assert_lca_dicts_same(testing, gold, G)
 
     def test_all_pairs_lca_nonexisting_pairs_exception(self):
-        pytest.raises(nx.NodeNotFound, all_pairs_lca, self.DG, [(-1, -1)])
+        with pytest.raises(nx.NodeNotFound):
+            list(all_pairs_lca(self.DG, [(-1, -1)]))
 
     def test_all_pairs_lca_pairs_without_lca(self):
         G = self.DG.copy()
@@ -295,10 +296,12 @@ class TestDAGLCA:
         assert dict(gen) == {(-1, -1): -1}
 
     def test_all_pairs_lca_null_graph(self):
-        pytest.raises(nx.NetworkXPointlessConcept, all_pairs_lca, nx.DiGraph())
+        with pytest.raises(nx.NetworkXPointlessConcept):
+            list(all_pairs_lca(nx.DiGraph()))
 
     def test_all_pairs_lca_non_dags(self):
-        pytest.raises(nx.NetworkXError, all_pairs_lca, nx.DiGraph([(3, 4), (4, 3)]))
+        with pytest.raises(nx.NetworkXError):
+            list(all_pairs_lca(nx.DiGraph([(3, 4), (4, 3)])))
 
     def test_all_pairs_lca_nonempty_graph_without_lca(self):
         G = nx.DiGraph()

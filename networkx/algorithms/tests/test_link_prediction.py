@@ -43,7 +43,8 @@ class TestResourceAllocationIndex:
     def test_node_not_found(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (2, 3)])
-        assert pytest.raises(nx.NodeNotFound, self.func, G, [(0, 4)])
+        with pytest.raises(nx.NodeNotFound):
+            list(self.func(G, [(0, 4)]))
 
     def test_no_common_neighbor(self):
         G = nx.Graph()
@@ -83,7 +84,8 @@ class TestJaccardCoefficient:
     def test_node_not_found(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (2, 3)])
-        assert pytest.raises(nx.NodeNotFound, self.func, G, [(0, 4)])
+        with pytest.raises(nx.NodeNotFound):
+            list(self.func(G, [(0, 4)]))
 
     def test_no_common_neighbor(self):
         G = nx.Graph()
@@ -128,7 +130,8 @@ class TestAdamicAdarIndex:
     def test_node_not_found(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (2, 3)])
-        assert pytest.raises(nx.NodeNotFound, self.func, G, [(0, 4)])
+        with pytest.raises(nx.NodeNotFound):
+            list(self.func(G, [(0, 4)]))
 
     def test_no_common_neighbor(self):
         G = nx.Graph()
@@ -175,12 +178,14 @@ class TestCommonNeighborCentrality:
     def test_node_u_not_found(self):
         G = nx.Graph()
         G.add_edges_from([(1, 3), (2, 3)])
-        assert pytest.raises(nx.NodeNotFound, self.func, G, [(0, 1)])
+        with pytest.raises(nx.NodeNotFound):
+            list(self.func(G, [(0, 1)]))
 
     def test_node_v_not_found(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (2, 3)])
-        assert pytest.raises(nx.NodeNotFound, self.func, G, [(0, 4)])
+        with pytest.raises(nx.NodeNotFound):
+            list(self.func(G, [(0, 4)]))
 
     def test_no_common_neighbor(self):
         G = nx.Graph()
@@ -230,7 +235,8 @@ class TestPreferentialAttachment:
     def test_node_not_found(self):
         G = nx.Graph()
         G.add_edges_from([(0, 1), (0, 2), (2, 3)])
-        assert pytest.raises(nx.NodeNotFound, self.func, G, [(0, 4)])
+        with pytest.raises(nx.NodeNotFound):
+            list(self.func(G, [(0, 4)]))
 
     def test_zero_degrees(self):
         G = nx.Graph()
@@ -289,7 +295,8 @@ class TestCNSoundarajanHopcroft:
         G.nodes[1]["community"] = 1
         G.nodes[2]["community"] = 0
         G.nodes[3]["community"] = 0
-        assert pytest.raises(nx.NodeNotFound, self.func, G, [(0, 4)])
+        with pytest.raises(nx.NodeNotFound):
+            list(self.func(G, [(0, 4)]))
 
     def test_no_common_neighbor(self):
         G = nx.Graph()
@@ -402,7 +409,8 @@ class TestRAIndexSoundarajanHopcroft:
         G.nodes[1]["community"] = 1
         G.nodes[2]["community"] = 0
         G.nodes[3]["community"] = 0
-        assert pytest.raises(nx.NodeNotFound, self.func, G, [(0, 4)])
+        with pytest.raises(nx.NodeNotFound):
+            list(self.func(G, [(0, 4)]))
 
     def test_no_common_neighbor(self):
         G = nx.Graph()
@@ -521,7 +529,8 @@ class TestWithinInterCluster:
         G.nodes[1]["community"] = 1
         G.nodes[2]["community"] = 0
         G.nodes[3]["community"] = 0
-        assert pytest.raises(nx.NodeNotFound, self.func, G, [(0, 4)])
+        with pytest.raises(nx.NodeNotFound):
+            list(self.func(G, [(0, 4)]))
 
     def test_no_common_neighbor(self):
         G = nx.Graph()
@@ -580,8 +589,10 @@ class TestWithinInterCluster:
     def test_invalid_delta(self):
         G = nx.complete_graph(3)
         G.add_nodes_from([0, 1, 2], community=0)
-        assert pytest.raises(nx.NetworkXAlgorithmError, self.func, G, [(0, 1)], 0)
-        assert pytest.raises(nx.NetworkXAlgorithmError, self.func, G, [(0, 1)], -0.5)
+        with pytest.raises(nx.NetworkXAlgorithmError):
+            list(self.func(G, [(0, 1)], 0))
+        with pytest.raises(nx.NetworkXAlgorithmError):
+            list(self.func(G, [(0, 1)], -0.5))
 
     def test_custom_community_attribute_name(self):
         G = nx.complete_graph(4)

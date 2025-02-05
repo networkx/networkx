@@ -8,11 +8,11 @@ from networkx.utils import edges_equal, nodes_equal
 
 def test_unknown_algorithm():
     with pytest.raises(ValueError):
-        nx.minimum_spanning_tree(nx.Graph(), algorithm="random")
+        list(nx.minimum_spanning_tree(nx.Graph(), algorithm="random"))
     with pytest.raises(
         ValueError, match="random is not a valid choice for an algorithm."
     ):
-        nx.maximum_spanning_edges(nx.Graph(), algorithm="random")
+        list(nx.maximum_spanning_edges(nx.Graph(), algorithm="random"))
 
 
 class MinimumSpanningTreeTestBase:
@@ -99,8 +99,10 @@ class MinimumSpanningTreeTestBase:
         assert edges_equal(actual, expected)
         # Now test for raising exception
         with pytest.raises(ValueError):
-            edges = nx.minimum_spanning_edges(
-                G, algorithm=self.algo, data=False, ignore_nan=False
+            list(
+                nx.minimum_spanning_edges(
+                    G, algorithm=self.algo, data=False, ignore_nan=False
+                )
             )
         # test default for ignore_nan as False
         with pytest.raises(ValueError):

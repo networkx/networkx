@@ -137,8 +137,10 @@ def _check_edge_connectivity(G):
 def test_zero_k_exception():
     G = nx.Graph()
     # functions that return generators error immediately
-    pytest.raises(ValueError, nx.k_edge_components, G, k=0)
-    pytest.raises(ValueError, nx.k_edge_subgraphs, G, k=0)
+    with pytest.raises(ValueError):
+        list(nx.k_edge_components(G, k=0))
+    with pytest.raises(ValueError):
+        list(nx.k_edge_subgraphs(G, k=0))
 
     # actual generators only error when you get the first item
     aux_graph = EdgeComponentAuxGraph.construct(G)

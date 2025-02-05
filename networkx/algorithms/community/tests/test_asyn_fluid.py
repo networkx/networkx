@@ -15,11 +15,15 @@ def test_raises_on_directed_and_multigraphs(graph_constructor):
 def test_exceptions():
     test = Graph()
     test.add_node("a")
-    pytest.raises(NetworkXError, asyn_fluidc, test, "hi")
-    pytest.raises(NetworkXError, asyn_fluidc, test, -1)
-    pytest.raises(NetworkXError, asyn_fluidc, test, 3)
+    with pytest.raises(NetworkXError):
+        list(asyn_fluidc(test, "hi"))
+    with pytest.raises(NetworkXError):
+        list(asyn_fluidc(test, -1))
+    with pytest.raises(NetworkXError):
+        list(asyn_fluidc(test, 3))
     test.add_node("b")
-    pytest.raises(NetworkXError, asyn_fluidc, test, 1)
+    with pytest.raises(NetworkXError):
+        list(asyn_fluidc(test, 1))
 
 
 def test_single_node():
