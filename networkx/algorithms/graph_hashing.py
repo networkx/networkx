@@ -123,9 +123,9 @@ def weisfeiler_lehman_graph_hash(
     Omitting the `edge_attr` option, results in identical hashes.
 
     >>> nx.weisfeiler_lehman_graph_hash(G1)
-    '7bc4dde9a09d0b94c5097b219891d81a'
+    'c045439172215f49e0bef8c3d26c6b61'
     >>> nx.weisfeiler_lehman_graph_hash(G2)
-    '7bc4dde9a09d0b94c5097b219891d81a'
+    'c045439172215f49e0bef8c3d26c6b61'
 
     With edge labels, the graphs are no longer assigned
     the same hash digest.
@@ -201,7 +201,7 @@ def weisfeiler_lehman_subgraph_hashes(
     Each hash corresponds to a subgraph rooted at a given node u in `G`.
     Lists of subgraph hashes are sorted in increasing order of depth from
     their root node, with the hash at index i corresponding to a subgraph
-    of nodes at most i edges distance from u. Thus, each list will contain
+    of nodes at most i-hops distance from u. Thus, each list will contain
     `iterations` elements - a hash for a subgraph at each depth. If
     `include_initial_labels` is set to `True`, each list will additionally
     have contain a hash of the initial node label (or equivalently a
@@ -273,25 +273,25 @@ def weisfeiler_lehman_subgraph_hashes(
     >>> G2 = nx.Graph()
     >>> G2.add_edges_from([(1, 3), (2, 3), (1, 6), (1, 5), (4, 6)])
     >>> g1_hashes = nx.weisfeiler_lehman_subgraph_hashes(
-    ...     G1, iterations=3, digest_size=8
+    ...     G1, iterations=4, digest_size=8
     ... )
     >>> g2_hashes = nx.weisfeiler_lehman_subgraph_hashes(
-    ...     G2, iterations=3, digest_size=8
+    ...     G2, iterations=4, digest_size=8
     ... )
 
     Even though G1 and G2 are not isomorphic (they have different numbers of edges),
     the hash sequence of depth 3 for node 1 in G1 and node 5 in G2 are similar:
 
     >>> g1_hashes[1]
-    ['a93b64973cfc8897', 'db1b43ae35a1878f', '57872a7d2059c1c0']
+    ['f6fc42039fba3776', 'a93b64973cfc8897', 'db1b43ae35a1878f', '57872a7d2059c1c0']
     >>> g2_hashes[5]
-    ['a93b64973cfc8897', 'db1b43ae35a1878f', '1716d2a4012fa4bc']
+    ['f6fc42039fba3776', 'a93b64973cfc8897', 'db1b43ae35a1878f', '1716d2a4012fa4bc']
 
-    The first 2 WL subgraph hashes match. From this we can conclude that it's very
-    likely the neighborhood of 2 hops around these nodes are isomorphic.
+    The first 3 WL subgraph hashes match. From this we can conclude that it's very
+    likely the neighborhood of 3 hops around these nodes are isomorphic.
 
-    However the 3-hop neighborhoods of ``G1`` and ``G2`` are not isomorphic since the
-    3rd hashes in the lists above are not equal.
+    However the 4-hop neighborhoods of ``G1`` and ``G2`` are not isomorphic since the
+    4th hashes in the lists above are not equal.
 
     These nodes may be candidates to be classified together since their local topology
     is similar.
