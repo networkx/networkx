@@ -138,7 +138,7 @@ class UnionAtlas(Mapping):
         return len(self._succ.keys() | self._pred.keys())
 
     def __iter__(self):
-        return iter(set(self._succ) | set(self._pred))
+        return iter(self._succ.keys() | self._pred.keys())
 
     def __getitem__(self, key):
         try:
