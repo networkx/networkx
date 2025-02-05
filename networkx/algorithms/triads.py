@@ -13,7 +13,6 @@ from networkx.utils import not_implemented_for, py_random_state
 __all__ = [
     "triadic_census",
     "is_triad",
-    "all_triplets",
     "all_triads",
     "triads_by_type",
     "triad_type",
@@ -307,49 +306,6 @@ def is_triad(G):
             if not any((n, n) in G.edges() for n in G.nodes()):
                 return True
     return False
-
-
-@not_implemented_for("undirected")
-@nx._dispatchable
-def all_triplets(G):
-    """Returns a generator of all possible sets of 3 nodes in a DiGraph.
-
-    .. deprecated:: 3.3
-
-       all_triplets is deprecated and will be removed in NetworkX version 3.5.
-       Use `itertools.combinations` instead::
-
-          all_triplets = itertools.combinations(G, 3)
-
-    Parameters
-    ----------
-    G : digraph
-       A NetworkX DiGraph
-
-    Returns
-    -------
-    triplets : generator of 3-tuples
-       Generator of tuples of 3 nodes
-
-    Examples
-    --------
-    >>> G = nx.DiGraph([(1, 2), (2, 3), (3, 4)])
-    >>> list(nx.all_triplets(G))
-    [(1, 2, 3), (1, 2, 4), (1, 3, 4), (2, 3, 4)]
-
-    """
-    import warnings
-
-    warnings.warn(
-        (
-            "\n\nall_triplets is deprecated and will be removed in v3.5.\n"
-            "Use `itertools.combinations(G, 3)` instead."
-        ),
-        category=DeprecationWarning,
-        stacklevel=4,
-    )
-    triplets = combinations(G.nodes(), 3)
-    return triplets
 
 
 @not_implemented_for("undirected")

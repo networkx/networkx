@@ -111,9 +111,6 @@ def set_warnings():
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nThe `normalized`"
     )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nall_triplets"
-    )
     warnings.filterwarnings("ignore", category=DeprecationWarning, message="\n\nk_core")
     warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\nk_shell"

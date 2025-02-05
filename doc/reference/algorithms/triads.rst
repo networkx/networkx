@@ -11,4 +11,3 @@ Triads
    triad_type
    is_triad
    all_triads
-   all_triplets
