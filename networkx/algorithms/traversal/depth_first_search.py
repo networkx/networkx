@@ -348,7 +348,7 @@ def dfs_postorder_nodes(G, source=None, depth_limit=None, *, sort_neighbors=None
     edges = nx.dfs_labeled_edges(
         G, source=source, depth_limit=depth_limit, sort_neighbors=sort_neighbors
     )
-    return (v for u, v, d in edges if d == "reverse")
+    yield from (v for u, v, d in edges if d == "reverse")
 
 
 @nx._dispatchable
@@ -407,7 +407,7 @@ def dfs_preorder_nodes(G, source=None, depth_limit=None, *, sort_neighbors=None)
     edges = nx.dfs_labeled_edges(
         G, source=source, depth_limit=depth_limit, sort_neighbors=sort_neighbors
     )
-    return (v for u, v, d in edges if d == "forward")
+    yield from (v for u, v, d in edges if d == "forward")
 
 
 @nx._dispatchable

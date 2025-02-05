@@ -434,9 +434,9 @@ def one_edge_augmentation(G, avail=None, weight=None, partial=False):
     :func:`k_edge_augmentation`
     """
     if avail is None:
-        return unconstrained_one_edge_augmentation(G)
+        yield from unconstrained_one_edge_augmentation(G)
     else:
-        return weighted_one_edge_augmentation(
+        yield from weighted_one_edge_augmentation(
             G, avail=avail, weight=weight, partial=partial
         )
 
@@ -488,9 +488,9 @@ def bridge_augmentation(G, avail=None, weight=None):
     if G.number_of_nodes() < 3:
         raise nx.NetworkXUnfeasible("impossible to bridge connect less than 3 nodes")
     if avail is None:
-        return unconstrained_bridge_augmentation(G)
+        yield from unconstrained_bridge_augmentation(G)
     else:
-        return weighted_bridge_augmentation(G, avail, weight=weight)
+        yield from weighted_bridge_augmentation(G, avail, weight=weight)
 
 
 # --- Algorithms and Helpers ---

@@ -512,7 +512,7 @@ def all_shortest_paths(G, source, target, weight=None, method="dijkstra"):
     else:
         raise ValueError(f"method not supported: {method}")
 
-    return _build_paths_from_predecessors({source}, target, pred)
+    yield from _build_paths_from_predecessors({source}, target, pred)
 
 
 @nx._dispatchable(edge_attrs="weight")

@@ -92,19 +92,19 @@ def k_edge_components(G, k):
         raise ValueError("k cannot be less than 1")
     if G.is_directed():
         if k == 1:
-            return nx.strongly_connected_components(G)
+            yield from nx.strongly_connected_components(G)
         else:
             # TODO: investigate https://arxiv.org/abs/1412.6466 for k=2
             aux_graph = EdgeComponentAuxGraph.construct(G)
-            return aux_graph.k_edge_components(k)
+            yield from aux_graph.k_edge_components(k)
     else:
         if k == 1:
-            return nx.connected_components(G)
+            yield from nx.connected_components(G)
         elif k == 2:
-            return bridge_components(G)
+            yield from bridge_components(G)
         else:
             aux_graph = EdgeComponentAuxGraph.construct(G)
-            return aux_graph.k_edge_components(k)
+            yield from aux_graph.k_edge_components(k)
 
 
 @not_implemented_for("multigraph")
@@ -174,16 +174,16 @@ def k_edge_subgraphs(G, k):
         if k <= 1:
             # For directed graphs ,
             # When k == 1, k-edge-ccs and k-edge-subgraphs are the same
-            return k_edge_components(G, k)
+            yield from k_edge_components(G, k)
         else:
-            return _k_edge_subgraphs_nodes(G, k)
+            yield from _k_edge_subgraphs_nodes(G, k)
     else:
         if k <= 2:
             # For undirected graphs,
             # when k <= 2, k-edge-ccs and k-edge-subgraphs are the same
-            return k_edge_components(G, k)
+            yield from k_edge_components(G, k)
         else:
-            return _k_edge_subgraphs_nodes(G, k)
+            yield from _k_edge_subgraphs_nodes(G, k)
 
 
 def _k_edge_subgraphs_nodes(G, k):
