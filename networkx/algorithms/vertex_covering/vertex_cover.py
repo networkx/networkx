@@ -41,25 +41,6 @@ def vertex_cover_preprocessing(G, k, vc, rules=None):
     return G, k, vc, is_k_vc_possible
 
 
-# @not_implemented_for("directed")
-# def max_deg_branch_preprocessing(G, k, vc):
-#     # not in the right order
-#     # isolated vertices check
-#     # high degree check
-#     # and other things
-#     return vertex_cover_preprocessing(
-#         G, k, vc, rules=max_deg_branch_preprocessing_rules
-#     )
-#
-#
-# @not_implemented_for("directed")
-# def vc_above_lp_branch_preprocessing(G, k, vc):
-#     # isolated vertices check ??
-#     return vertex_cover_preprocessing(
-#         G, k, vc, rules=vc_above_lp_branch_preprocessing_rules
-#     )
-
-
 @not_implemented_for("directed")
 def vertex_cover_branch_preprocessing(G, k, vc, rules):
     return vertex_cover_preprocessing(G, k, vc, rules=rules)
@@ -69,7 +50,7 @@ def vertex_cover_branch_preprocessing(G, k, vc, rules):
 def vertex_cover_branching(G, k, rules):
     # rules denotes which algo to use
     # if 1.4656^k, rules will be max_deg_branch_preprocessing_rules
-    # if 2.?^(k - lpOpt) rules will be vc_above_lp_branch_preprocessing_rules
+    # if 2.618^(k - lpOpt) rules will be vc_above_lp_branch_preprocessing_rules
     vc = set()
     G, k, vc = vertex_cover_branch_preprocessing(G, k, vc, rules=rules)
     # there should not be any isolated vertices
