@@ -241,7 +241,8 @@ def read_graphml(path, node_type=str, edge_key_type=int, force_multigraph=False)
     Parameters
     ----------
     path : file or string
-       Filename or file handle to read.                                                                                     Filenames ending in .gz or .bz2 will be decompressed.
+       Filename or file handle to read.
+       Filenames ending in .gz or .bz2 will be decompressed.
 
     node_type: Python type (default: str)
        Convert node ids to this type

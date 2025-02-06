@@ -120,7 +120,8 @@ def read_gml(path, label="label", destringizer=None):
     Parameters
     ----------
     path : file or string
-        Filename or file handle to read.                                                                                     Filenames ending in .gz or .bz2 will be decompressed.
+        Filename or file handle to read.
+        Filenames ending in .gz or .bz2 will be decompressed.
 
     label : string, optional
         If not None, the parsed nodes will be renamed according to node
