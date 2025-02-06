@@ -433,11 +433,166 @@ def _star_based_treelets(
         for star_nodes in star_treelets:
             # G_{6, 8, 13}
             if return_star:
-                if unlabeled:
-                    star_code = index
-                else:
-                    star_keys = []
-                    for i in range(1, len(star_nodes)):
+                _update_pure_star_patterns(
+                    codes, G, index, star_nodes, unlabeled, node_attrs, edge_attrs
+                )
+
+            # G_{7, 9, 10, 11, 12}
+            if return_star_path:
+                _update_star_path_patterns(
+                    codes, G, n_leaves, star_nodes, unlabeled, node_attrs, edge_attrs
+                )
+
+    # G_12 are counted twice
+    if return_star_path:
+        for key in codes:
+            if (unlabeled and key == "G_12") or (not unlabeled and key[0] == "G_12"):
+                codes[key] //= 2
+
+    return codes
+
+
+def _update_pure_star_patterns(
+    codes, G, index, star_nodes, unlabeled, node_attrs, edge_attrs
+):
+    """Updates the treelet counts for pure star patterns (G_6, G_8, G_13)."""
+    if unlabeled:
+        star_code = index
+    else:
+        star_keys = []
+        for i in range(1, len(star_nodes)):
+            star_keys.append(
+                (
+                    tuple(
+                        G[star_nodes[0]][star_nodes[i]].get(edge_attr, None)
+                        for edge_attr in edge_attrs
+                    ),
+                    tuple(
+                        G.nodes[star_nodes[i]].get(node_attr, None)
+                        for node_attr in node_attrs
+                    ),
+                )
+            )
+        star_keys.sort()
+        star_code = tuple(
+            [index]
+            + [
+                tuple(
+                    G.nodes[star_nodes[0]].get(node_attr, None)
+                    for node_attr in node_attrs
+                )
+            ]
+            + list(chain.from_iterable(star_keys))
+        )
+    if star_code in codes:
+        codes[star_code] += 1
+    else:
+        codes[star_code] = 1
+
+
+def _update_star_path_patterns(
+    codes, G, n_leaves, star_nodes, unlabeled, node_attrs, edge_attrs
+):
+    """Updates the treelet counts for star-path patterns (G_7, G_9, G_10, G_11, G_12)."""
+    if n_leaves in [3, 4]:
+        for leaf in star_nodes[1:]:
+            for node in G[leaf]:
+                if node not in star_nodes:
+                    # G_{7, 11}
+                    _update_g_7_11_patterns(
+                        codes,
+                        G,
+                        n_leaves,
+                        star_nodes,
+                        leaf,
+                        node,
+                        unlabeled,
+                        node_attrs,
+                        edge_attrs,
+                    )
+
+                    # G_10
+                    if n_leaves == 3:
+                        _update_g_10_pattern(
+                            codes,
+                            G,
+                            star_nodes,
+                            leaf,
+                            node,
+                            unlabeled,
+                            node_attrs,
+                            edge_attrs,
+                        )
+
+            # G_12
+            if n_leaves == 3:
+                _update_g_12_pattern(
+                    codes, G, star_nodes, leaf, unlabeled, node_attrs, edge_attrs
+                )
+
+    # G_9
+    if n_leaves == 3:
+        _update_g_9_pattern(codes, G, star_nodes, unlabeled, node_attrs, edge_attrs)
+
+
+def _update_g_7_11_patterns(
+    codes, G, n_leaves, star_nodes, leaf, node, unlabeled, node_attrs, edge_attrs
+):
+    """Handles the counting of G_7 and G_11 treelets."""
+    if unlabeled:
+        g_7_11_code = EXT_1_STAR[n_leaves]
+    else:
+        g_7_11_keys = []
+        for i in range(1, len(star_nodes)):
+            if star_nodes[i] != leaf:
+                g_7_11_keys.append(
+                    (
+                        tuple(
+                            G[star_nodes[0]][star_nodes[i]].get(edge_attr, None)
+                            for edge_attr in edge_attrs
+                        ),
+                        tuple(
+                            G.nodes[star_nodes[i]].get(node_attr, None)
+                            for node_attr in node_attrs
+                        ),
+                    )
+                )
+        g_7_11_keys.sort()
+        g_7_11_code = tuple(
+            [EXT_1_STAR[n_leaves]]
+            + [
+                tuple(
+                    G.nodes[star_nodes[0]].get(node_attr, None)
+                    for node_attr in node_attrs
+                ),
+                tuple(
+                    G[star_nodes[0]][leaf].get(edge_attr, None)
+                    for edge_attr in edge_attrs
+                ),
+                tuple(G.nodes[leaf].get(node_attr, None) for node_attr in node_attrs),
+                tuple(G[leaf][node].get(edge_attr, None) for edge_attr in edge_attrs),
+                tuple(G.nodes[node].get(node_attr, None) for node_attr in node_attrs),
+            ]
+            + list(chain.from_iterable(g_7_11_keys))
+        )
+    if g_7_11_code in codes:
+        codes[g_7_11_code] += 1
+    else:
+        codes[g_7_11_code] = 1
+
+
+def _update_g_10_pattern(
+    codes, G, star_nodes, leaf, node, unlabeled, node_attrs, edge_attrs
+):
+    """Handles the counting of G_10 treelets."""
+    for node_ext in G[node]:
+        if node_ext not in star_nodes:
+            if unlabeled:
+                g_10_code = "G_10"
+            else:
+                star_keys = []
+                for i in range(1, len(star_nodes)):
+                    if star_nodes[i] != leaf:
                         star_keys.append(
                             (
                                 tuple(
@@ -450,414 +605,219 @@ def _star_based_treelets(
                                 ),
                             )
                         )
-                    star_keys.sort()
-                    star_code = tuple(
-                        [index]
+                star_keys.sort()
+                g_10_code = tuple(
+                    ["G_10"]
+                    + [
+                        tuple(
+                            G.nodes[leaf].get(node_attr, None)
+                            for node_attr in node_attrs
+                        ),
+                        tuple(
+                            G[leaf][star_nodes[0]].get(edge_attr, None)
+                            for edge_attr in edge_attrs
+                        ),
+                        tuple(
+                            G.nodes[star_nodes[0]].get(node_attr, None)
+                            for node_attr in node_attrs
+                        ),
+                        *chain.from_iterable(star_keys),
+                        tuple(
+                            G[leaf][node].get(edge_attr, None)
+                            for edge_attr in edge_attrs
+                        ),
+                        tuple(
+                            G.nodes[node].get(node_attr, None)
+                            for node_attr in node_attrs
+                        ),
+                        tuple(
+                            G[node][node_ext].get(edge_attr, None)
+                            for edge_attr in edge_attrs
+                        ),
+                        tuple(
+                            G.nodes[node_ext].get(node_attr, None)
+                            for node_attr in node_attrs
+                        ),
+                    ]
+                )
+            if g_10_code in codes:
+                codes[g_10_code] += 1
+            else:
+                codes[g_10_code] = 1
+
+
+def _update_g_12_pattern(codes, G, star_nodes, leaf, unlabeled, node_attrs, edge_attrs):
+    """Handles the counting of G_12 treelets."""
+    for star_leaves in combinations(G[leaf], 2):
+        if all(n not in star_nodes for n in star_leaves):
+            if unlabeled:
+                g_12_code = "G_12"
+            else:
+                leaves = [n for n in star_nodes[1:] if n != leaf]
+                g_12_codes = []
+                for (
+                    first_node,
+                    first_leaves,
+                    second_node,
+                    second_leaves,
+                ) in (
+                    (star_nodes[0], leaves, leaf, star_leaves),
+                    (leaf, star_leaves, star_nodes[0], leaves),
+                ):
+                    first_star_keys = [
+                        (
+                            tuple(
+                                G[first_node][first_leaves[0]].get(edge_attr, None)
+                                for edge_attr in edge_attrs
+                            ),
+                            tuple(
+                                G.nodes[first_leaves[0]].get(node_attr, None)
+                                for node_attr in node_attrs
+                            ),
+                        ),
+                        (
+                            tuple(
+                                G[first_node][first_leaves[1]].get(edge_attr, None)
+                                for edge_attr in edge_attrs
+                            ),
+                            tuple(
+                                G.nodes[first_leaves[1]].get(node_attr, None)
+                                for node_attr in node_attrs
+                            ),
+                        ),
+                    ]
+                    first_star_keys.sort()
+                    second_star_keys = [
+                        (
+                            tuple(
+                                G[second_node][second_leaves[0]].get(edge_attr, None)
+                                for edge_attr in edge_attrs
+                            ),
+                            tuple(
+                                G.nodes[second_leaves[0]].get(node_attr, None)
+                                for node_attr in node_attrs
+                            ),
+                        ),
+                        (
+                            tuple(
+                                G[second_node][second_leaves[1]].get(edge_attr, None)
+                                for edge_attr in edge_attrs
+                            ),
+                            tuple(
+                                G.nodes[second_leaves[1]].get(node_attr, None)
+                                for node_attr in node_attrs
+                            ),
+                        ),
+                    ]
+                    second_star_keys.sort()
+                    g_12_keys = [
+                        tuple(
+                            G[first_node][second_node].get(edge_attr, None)
+                            for edge_attr in edge_attrs
+                        ),
+                        tuple(
+                            G.nodes[second_node].get(node_attr, None)
+                            for node_attr in node_attrs
+                        ),
+                        *chain.from_iterable(second_star_keys),
+                        *chain.from_iterable(first_star_keys),
+                    ]
+                    g_12_keys.sort()
+                    g_12_codes.append(
+                        tuple(
+                            ["G_12"]
+                            + [
+                                tuple(
+                                    G.nodes[first_node].get(node_attr, None)
+                                    for node_attr in node_attrs
+                                ),
+                                tuple(
+                                    G[first_node][second_node].get(edge_attr, None)
+                                    for edge_attr in edge_attrs
+                                ),
+                                tuple(
+                                    G.nodes[second_node].get(node_attr, None)
+                                    for node_attr in node_attrs
+                                ),
+                                *chain.from_iterable(second_star_keys),
+                                *chain.from_iterable(first_star_keys),
+                            ]
+                        )
+                    )
+                g_12_code = min(g_12_codes)
+            if g_12_code in codes:
+                codes[g_12_code] += 1
+            else:
+                codes[g_12_code] = 1
+
+
+def _update_g_9_pattern(codes, G, star_nodes, unlabeled, node_attrs, edge_attrs):
+    """Handles the counting of G_9 treelets."""
+    for star_leaves in combinations(star_nodes[1:], 2):
+        missing_leaf = next(n for n in star_nodes[1:] if n not in star_leaves)
+        for leaves in product(G[star_leaves[0]], G[star_leaves[1]]):
+            if all(leaf not in star_nodes for leaf in leaves):
+                if unlabeled:
+                    g_9_code = "G_9"
+                else:
+                    g_9_keys = [
+                        (
+                            tuple(
+                                G[star_nodes[0]][star_leaves[0]].get(edge_attr, None)
+                                for edge_attr in edge_attrs
+                            ),
+                            tuple(
+                                G.nodes[star_leaves[0]].get(node_attr, None)
+                                for node_attr in node_attrs
+                            ),
+                            tuple(
+                                G[star_leaves[0]][leaves[0]].get(edge_attr, None)
+                                for edge_attr in edge_attrs
+                            ),
+                            tuple(
+                                G.nodes[leaves[0]].get(node_attr, None)
+                                for node_attr in node_attrs
+                            ),
+                        ),
+                        (
+                            tuple(
+                                G[star_nodes[0]][star_leaves[1]].get(edge_attr, None)
+                                for edge_attr in edge_attrs
+                            ),
+                            tuple(
+                                G.nodes[star_leaves[1]].get(node_attr, None)
+                                for node_attr in node_attrs
+                            ),
+                            tuple(
+                                G[star_leaves[1]][leaves[1]].get(edge_attr, None)
+                                for edge_attr in edge_attrs
+                            ),
+                            tuple(
+                                G.nodes[leaves[1]].get(node_attr, None)
+                                for node_attr in node_attrs
+                            ),
+                        ),
+                    ]
+                    g_9_keys.sort()
+                    g_9_code = tuple(
+                        ["G_9"]
                         + [
                             tuple(
                                 G.nodes[star_nodes[0]].get(node_attr, None)
                                 for node_attr in node_attrs
-                            )
+                            ),
+                            *chain.from_iterable(g_9_keys),
+                            tuple(
+                                G[star_nodes[0]][missing_leaf].get(edge_attr, None)
+                                for edge_attr in edge_attrs
+                            ),
+                            tuple(
+                                G.nodes[missing_leaf].get(node_attr, None)
+                                for node_attr in node_attrs
+                            ),
                         ]
-                        + list(chain.from_iterable(star_keys))
                     )
-                if star_code in codes:
-                    codes[star_code] += 1
+                if g_9_code in codes:
+                    codes[g_9_code] += 1
                 else:
-                    codes[star_code] = 1
-
-            # G_{7, 9, 10, 11, 12}
-            if return_star_path:
-                if n_leaves in [3, 4]:
-                    for leaf in star_nodes[1:]:
-                        for node in G[leaf]:
-                            if node not in star_nodes:
-                                # G_{7, 11}
-                                if unlabeled:
-                                    g_7_11_code = EXT_1_STAR[n_leaves]
-                                else:
-                                    g_7_11_keys = []
-                                    for i in range(1, len(star_nodes)):
-                                        if star_nodes[i] == leaf:
-                                            g_7_11_keys.append(
-                                                (
-                                                    tuple(
-                                                        G[star_nodes[0]][leaf].get(
-                                                            edge_attr, None
-                                                        )
-                                                        for edge_attr in edge_attrs
-                                                    ),
-                                                    tuple(
-                                                        G.nodes[leaf].get(
-                                                            node_attr, None
-                                                        )
-                                                        for node_attr in node_attrs
-                                                    ),
-                                                    tuple(
-                                                        G[leaf][node].get(
-                                                            edge_attr, None
-                                                        )
-                                                        for edge_attr in edge_attrs
-                                                    ),
-                                                    tuple(
-                                                        G.nodes[node].get(
-                                                            node_attr, None
-                                                        )
-                                                        for node_attr in node_attrs
-                                                    ),
-                                                )
-                                            )
-                                        else:
-                                            g_7_11_keys.append(
-                                                (
-                                                    tuple(
-                                                        G[star_nodes[0]][
-                                                            star_nodes[i]
-                                                        ].get(edge_attr, None)
-                                                        for edge_attr in edge_attrs
-                                                    ),
-                                                    tuple(
-                                                        G.nodes[star_nodes[i]].get(
-                                                            node_attr, None
-                                                        )
-                                                        for node_attr in node_attrs
-                                                    ),
-                                                )
-                                            )
-                                    g_7_11_keys.sort()
-                                    g_7_11_code = tuple(
-                                        [EXT_1_STAR[n_leaves]]
-                                        + [
-                                            tuple(
-                                                G.nodes[star_nodes[0]].get(
-                                                    node_attr, None
-                                                )
-                                                for node_attr in node_attrs
-                                            )
-                                        ]
-                                        + list(chain.from_iterable(g_7_11_keys))
-                                    )
-                                if g_7_11_code in codes:
-                                    codes[g_7_11_code] += 1
-                                else:
-                                    codes[g_7_11_code] = 1
-
-                                # G_10
-                                if n_leaves == 3:
-                                    for node_ext in G[node]:
-                                        if node_ext not in star_nodes:
-                                            if unlabeled:
-                                                g_10_code = "G_10"
-                                            else:
-                                                g_10_keys = [
-                                                    (
-                                                        tuple(
-                                                            G[leaf][node].get(
-                                                                edge_attr, None
-                                                            )
-                                                            for edge_attr in edge_attrs
-                                                        ),
-                                                        tuple(
-                                                            G.nodes[node].get(
-                                                                node_attr, None
-                                                            )
-                                                            for node_attr in node_attrs
-                                                        ),
-                                                        tuple(
-                                                            G[node][node_ext].get(
-                                                                edge_attr, None
-                                                            )
-                                                            for edge_attr in edge_attrs
-                                                        ),
-                                                        tuple(
-                                                            G.nodes[node_ext].get(
-                                                                node_attr, None
-                                                            )
-                                                            for node_attr in node_attrs
-                                                        ),
-                                                    )
-                                                ]
-                                                star_keys = []
-                                                for i in range(1, len(star_nodes)):
-                                                    if star_nodes[i] != leaf:
-                                                        star_keys.append(
-                                                            (
-                                                                tuple(
-                                                                    G[star_nodes[0]][
-                                                                        star_nodes[i]
-                                                                    ].get(
-                                                                        edge_attr, None
-                                                                    )
-                                                                    for edge_attr in edge_attrs
-                                                                ),
-                                                                tuple(
-                                                                    G.nodes[
-                                                                        star_nodes[i]
-                                                                    ].get(
-                                                                        node_attr, None
-                                                                    )
-                                                                    for node_attr in node_attrs
-                                                                ),
-                                                            )
-                                                        )
-                                                star_keys.sort()
-                                                g_10_keys.append(
-                                                    (
-                                                        tuple(
-                                                            G[leaf][star_nodes[0]].get(
-                                                                edge_attr, None
-                                                            )
-                                                            for edge_attr in edge_attrs
-                                                        ),
-                                                        tuple(
-                                                            G.nodes[star_nodes[0]].get(
-                                                                node_attr, None
-                                                            )
-                                                            for node_attr in node_attrs
-                                                        ),
-                                                        *chain.from_iterable(star_keys),
-                                                    )
-                                                )
-                                                g_10_keys.sort()
-                                                g_10_code = tuple(
-                                                    ["G_10"]
-                                                    + [
-                                                        tuple(
-                                                            G.nodes[leaf].get(
-                                                                node_attr, None
-                                                            )
-                                                            for node_attr in node_attrs
-                                                        )
-                                                    ]
-                                                    + list(
-                                                        chain.from_iterable(g_10_keys)
-                                                    )
-                                                )
-                                            if g_10_code in codes:
-                                                codes[g_10_code] += 1
-                                            else:
-                                                codes[g_10_code] = 1
-
-                        # G_12
-                        if n_leaves == 3:
-                            for star_leaves in combinations(G[leaf], 2):
-                                if all(n not in star_nodes for n in star_leaves):
-                                    if unlabeled:
-                                        g_12_code = "G_12"
-                                    else:
-                                        leaves = [
-                                            n for n in star_nodes[1:] if n != leaf
-                                        ]
-                                        g_12_codes = []
-                                        for (
-                                            first_node,
-                                            first_leaves,
-                                            second_node,
-                                            second_leaves,
-                                        ) in (
-                                            (star_nodes[0], leaves, leaf, star_leaves),
-                                            (leaf, star_leaves, star_nodes[0], leaves),
-                                        ):
-                                            g_12_keys = [
-                                                (
-                                                    tuple(
-                                                        G[first_node][
-                                                            first_leaves[0]
-                                                        ].get(edge_attr, None)
-                                                        for edge_attr in edge_attrs
-                                                    ),
-                                                    tuple(
-                                                        G.nodes[first_leaves[0]].get(
-                                                            node_attr, None
-                                                        )
-                                                        for node_attr in node_attrs
-                                                    ),
-                                                ),
-                                                (
-                                                    tuple(
-                                                        G[first_node][
-                                                            first_leaves[1]
-                                                        ].get(edge_attr, None)
-                                                        for edge_attr in edge_attrs
-                                                    ),
-                                                    tuple(
-                                                        G.nodes[first_leaves[1]].get(
-                                                            node_attr, None
-                                                        )
-                                                        for node_attr in node_attrs
-                                                    ),
-                                                ),
-                                            ]
-                                            other_star_keys = [
-                                                (
-                                                    tuple(
-                                                        G[second_node][
-                                                            second_leaves[0]
-                                                        ].get(edge_attr, None)
-                                                        for edge_attr in edge_attrs
-                                                    ),
-                                                    tuple(
-                                                        G.nodes[second_leaves[0]].get(
-                                                            node_attr, None
-                                                        )
-                                                        for node_attr in node_attrs
-                                                    ),
-                                                ),
-                                                (
-                                                    tuple(
-                                                        G[second_node][
-                                                            second_leaves[1]
-                                                        ].get(edge_attr, None)
-                                                        for edge_attr in edge_attrs
-                                                    ),
-                                                    tuple(
-                                                        G.nodes[second_leaves[1]].get(
-                                                            node_attr, None
-                                                        )
-                                                        for node_attr in node_attrs
-                                                    ),
-                                                ),
-                                            ]
-                                            other_star_keys.sort()
-                                            g_12_keys.append(
-                                                (
-                                                    tuple(
-                                                        G[first_node][second_node].get(
-                                                            edge_attr, None
-                                                        )
-                                                        for edge_attr in edge_attrs
-                                                    ),
-                                                    tuple(
-                                                        G.nodes[second_node].get(
-                                                            node_attr, None
-                                                        )
-                                                        for node_attr in node_attrs
-                                                    ),
-                                                    *chain.from_iterable(
-                                                        other_star_keys
-                                                    ),
-                                                )
-                                            )
-                                            g_12_keys.sort()
-                                            g_12_codes.append(
-                                                tuple(
-                                                    ["G_12"]
-                                                    + [
-                                                        tuple(
-                                                            G.nodes[first_node].get(
-                                                                node_attr, None
-                                                            )
-                                                            for node_attr in node_attrs
-                                                        )
-                                                    ]
-                                                    + list(
-                                                        chain.from_iterable(g_12_keys)
-                                                    )
-                                                )
-                                            )
-                                        g_12_code = min(g_12_codes)
-                                    if g_12_code in codes:
-                                        codes[g_12_code] += 1
-                                    else:
-                                        codes[g_12_code] = 1
-
-                # G_9
-                if n_leaves == 3:
-                    for star_leaves in combinations(star_nodes[1:], 2):
-                        missing_leaf = next(
-                            n for n in star_nodes[1:] if n not in star_leaves
-                        )
-                        for leaves in product(G[star_leaves[0]], G[star_leaves[1]]):
-                            if all(leaf not in star_nodes for leaf in leaves):
-                                if unlabeled:
-                                    g_9_code = "G_9"
-                                else:
-                                    g_9_keys = [
-                                        (
-                                            tuple(
-                                                G[star_nodes[0]][missing_leaf].get(
-                                                    edge_attr, None
-                                                )
-                                                for edge_attr in edge_attrs
-                                            ),
-                                            tuple(
-                                                G.nodes[missing_leaf].get(
-                                                    node_attr, None
-                                                )
-                                                for node_attr in node_attrs
-                                            ),
-                                        ),
-                                        (
-                                            tuple(
-                                                G[star_nodes[0]][star_leaves[0]].get(
-                                                    edge_attr, None
-                                                )
-                                                for edge_attr in edge_attrs
-                                            ),
-                                            tuple(
-                                                G.nodes[star_leaves[0]].get(
-                                                    node_attr, None
-                                                )
-                                                for node_attr in node_attrs
-                                            ),
-                                            tuple(
-                                                G[star_leaves[0]][leaves[0]].get(
-                                                    edge_attr, None
-                                                )
-                                                for edge_attr in edge_attrs
-                                            ),
-                                            tuple(
-                                                G.nodes[leaves[0]].get(node_attr, None)
-                                                for node_attr in node_attrs
-                                            ),
-                                        ),
-                                        (
-                                            tuple(
-                                                G[star_nodes[0]][star_leaves[1]].get(
-                                                    edge_attr, None
-                                                )
-                                                for edge_attr in edge_attrs
-                                            ),
-                                            tuple(
-                                                G.nodes[star_leaves[1]].get(
-                                                    node_attr, None
-                                                )
-                                                for node_attr in node_attrs
-                                            ),
-                                            tuple(
-                                                G[star_leaves[1]][leaves[1]].get(
-                                                    edge_attr, None
-                                                )
-                                                for edge_attr in edge_attrs
-                                            ),
-                                            tuple(
-                                                G.nodes[leaves[1]].get(node_attr, None)
-                                                for node_attr in node_attrs
-                                            ),
-                                        ),
-                                    ]
-                                    g_9_keys.sort()
-                                    g_9_code = tuple(
-                                        ["G_9"]
-                                        + [
-                                            tuple(
-                                                G.nodes[star_nodes[0]].get(
-                                                    node_attr, None
-                                                )
-                                                for node_attr in node_attrs
-                                            )
-                                        ]
-                                        + list(chain.from_iterable(g_9_keys))
-                                    )
-                                if g_9_code in codes:
-                                    codes[g_9_code] += 1
-                                else:
-                                    codes[g_9_code] = 1
-
-    # G_12 are counted twice
-    if return_star_path:
-        for key in codes:
-            if (unlabeled and key == "G_12") or (not unlabeled and key[0] == "G_12"):
-                codes[key] //= 2
-
-    return codes
+                    codes[g_9_code] = 1
