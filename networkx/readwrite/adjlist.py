@@ -239,7 +239,7 @@ def read_adjlist(
     ----------
     path : string or file
        Filename or file handle to read.
-       Filenames ending in .gz or .bz2 will be uncompressed.
+       Filenames ending in .gz or .bz2 will be decompressed.
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
