@@ -22,16 +22,6 @@ import itertools
 from numbers import Number
 
 import networkx as nx
-from networkx.drawing.layout import (
-    circular_layout,
-    forceatlas2_layout,
-    kamada_kawai_layout,
-    planar_layout,
-    random_layout,
-    shell_layout,
-    spectral_layout,
-    spring_layout,
-)
 
 __all__ = [
     "draw",
@@ -40,6 +30,7 @@ __all__ = [
     "draw_networkx_edges",
     "draw_networkx_labels",
     "draw_networkx_edge_labels",
+    "draw_bipartite",
     "draw_circular",
     "draw_kamada_kawai",
     "draw_random",
@@ -1607,6 +1598,50 @@ def draw_networkx_edge_labels(
     return text_items
 
 
+def draw_bipartite(G, **kwargs):
+    """Draw the graph `G` with a bipartite layout.
+
+    This is a convenience function equivalent to::
+
+        nx.draw(G, pos=nx.bipartite_layout(G), **kwargs)
+
+    Parameters
+    ----------
+    G : graph
+        A networkx graph
+
+    kwargs : optional keywords
+        See `draw_networkx` for a description of optional keywords.
+
+    Raises
+    ------
+    NetworkXError :
+        If `G` is not bipartite.
+
+    Notes
+    -----
+    The layout is computed each time this function is called. For
+    repeated drawing it is much more efficient to call
+    `~networkx.drawing.layout.bipartite_layout` directly and reuse the result::
+
+        >>> G = nx.complete_bipartite_graph(3, 3)
+        >>> pos = nx.bipartite_layout(G)
+        >>> nx.draw(G, pos=pos)  # Draw the original graph
+        >>> # Draw a subgraph, reusing the same node positions
+        >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
+
+    Examples
+    --------
+    >>> G = nx.complete_bipartite_graph(2, 5)
+    >>> nx.draw_bipartite(G)
+
+    See Also
+    --------
+    :func:`~networkx.drawing.layout.bipartite_layout`
+    """
+    draw(G, pos=nx.bipartite_layout(G), **kwargs)
+
+
 def draw_circular(G, **kwargs):
     """Draw the graph `G` with a circular layout.
 
@@ -1643,7 +1678,7 @@ def draw_circular(G, **kwargs):
     --------
     :func:`~networkx.drawing.layout.circular_layout`
     """
-    draw(G, circular_layout(G), **kwargs)
+    draw(G, pos=nx.circular_layout(G), **kwargs)
 
 
 def draw_kamada_kawai(G, **kwargs):
@@ -1683,7 +1718,7 @@ def draw_kamada_kawai(G, **kwargs):
     --------
     :func:`~networkx.drawing.layout.kamada_kawai_layout`
     """
-    draw(G, kamada_kawai_layout(G), **kwargs)
+    draw(G, pos=nx.kamada_kawai_layout(G), **kwargs)
 
 
 def draw_random(G, **kwargs):
@@ -1722,7 +1757,7 @@ def draw_random(G, **kwargs):
     --------
     :func:`~networkx.drawing.layout.random_layout`
     """
-    draw(G, random_layout(G), **kwargs)
+    draw(G, pos=nx.random_layout(G), **kwargs)
 
 
 def draw_spectral(G, **kwargs):
@@ -1764,7 +1799,7 @@ def draw_spectral(G, **kwargs):
     --------
     :func:`~networkx.drawing.layout.spectral_layout`
     """
-    draw(G, spectral_layout(G), **kwargs)
+    draw(G, pos=nx.spectral_layout(G), **kwargs)
 
 
 def draw_spring(G, **kwargs):
@@ -1807,7 +1842,7 @@ def draw_spring(G, **kwargs):
     draw
     :func:`~networkx.drawing.layout.spring_layout`
     """
-    draw(G, spring_layout(G), **kwargs)
+    draw(G, pos=nx.spring_layout(G), **kwargs)
 
 
 def draw_shell(G, nlist=None, **kwargs):
@@ -1852,7 +1887,7 @@ def draw_shell(G, nlist=None, **kwargs):
     --------
     :func:`~networkx.drawing.layout.shell_layout`
     """
-    draw(G, shell_layout(G, nlist=nlist), **kwargs)
+    draw(G, pos=nx.shell_layout(G, nlist=nlist), **kwargs)
 
 
 def draw_planar(G, **kwargs):
@@ -1896,7 +1931,7 @@ def draw_planar(G, **kwargs):
     --------
     :func:`~networkx.drawing.layout.planar_layout`
     """
-    draw(G, planar_layout(G), **kwargs)
+    draw(G, pos=nx.planar_layout(G), **kwargs)
 
 
 def draw_forceatlas2(G, **kwargs):
@@ -1916,7 +1951,7 @@ def draw_forceatlas2(G, **kwargs):
        with the exception of the pos parameter which is not used by this
        function.
     """
-    draw(G, forceatlas2_layout(G), **kwargs)
+    draw(G, pos=nx.forceatlas2_layout(G), **kwargs)
 
 
 def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):

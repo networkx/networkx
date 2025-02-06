@@ -1993,7 +1993,7 @@ class Graph:
         """Returns an iterator over nodes contained in nbunch that are
         also in the graph.
 
-        The nodes in nbunch are checked for membership in the graph
+        The nodes in an iterable nbunch are checked for membership in the graph
         and if not are silently ignored.
 
         Parameters
@@ -2047,6 +2047,9 @@ class Graph:
                         exc = NetworkXError(
                             "nbunch is not a node or a sequence of nodes."
                         )
+                    # capture single nodes that are not in the graph.
+                    if "object is not iterable" in message:
+                        exc = NetworkXError(f"Node {nbunch} is not in the graph.")
                     # capture error for unhashable node.
                     if "hashable" in message:
                         exc = NetworkXError(
