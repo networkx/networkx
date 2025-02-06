@@ -456,7 +456,7 @@ def minimum_spanning_edges(
         msg = f"{algorithm} is not a valid choice for an algorithm."
         raise ValueError(msg) from err
 
-    yield from algo(
+    return algo(
         G, minimum=True, weight=weight, keys=keys, data=data, ignore_nan=ignore_nan
     )
 
@@ -549,7 +549,7 @@ def maximum_spanning_edges(
         msg = f"{algorithm} is not a valid choice for an algorithm."
         raise ValueError(msg) from err
 
-    yield from algo(
+    return algo(
         G, minimum=False, weight=weight, keys=keys, data=data, ignore_nan=ignore_nan
     )
 

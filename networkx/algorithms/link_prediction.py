@@ -105,7 +105,7 @@ def resource_allocation_index(G, ebunch=None):
     def predict(u, v):
         return sum(1 / G.degree(w) for w in nx.common_neighbors(G, u, v))
 
-    yield from _apply_prediction(G, predict, ebunch)
+    return _apply_prediction(G, predict, ebunch)
 
 
 @not_implemented_for("directed")
@@ -170,7 +170,7 @@ def jaccard_coefficient(G, ebunch=None):
             return 0
         return len(nx.common_neighbors(G, u, v)) / union_size
 
-    yield from _apply_prediction(G, predict, ebunch)
+    return _apply_prediction(G, predict, ebunch)
 
 
 @not_implemented_for("directed")
@@ -234,7 +234,7 @@ def adamic_adar_index(G, ebunch=None):
     def predict(u, v):
         return sum(1 / log(G.degree(w)) for w in nx.common_neighbors(G, u, v))
 
-    yield from _apply_prediction(G, predict, ebunch)
+    return _apply_prediction(G, predict, ebunch)
 
 
 @not_implemented_for("directed")
@@ -341,7 +341,7 @@ def common_neighbor_centrality(G, ebunch=None, alpha=0.8):
             n_nbrs = len(nx.common_neighbors(G, u, v))
             return alpha * n_nbrs + (1 - alpha) * len(G) / path_len
 
-    yield from _apply_prediction(G, predict, ebunch)
+    return _apply_prediction(G, predict, ebunch)
 
 
 @not_implemented_for("directed")
@@ -403,7 +403,7 @@ def preferential_attachment(G, ebunch=None):
     def predict(u, v):
         return G.degree(u) * G.degree(v)
 
-    yield from _apply_prediction(G, predict, ebunch)
+    return _apply_prediction(G, predict, ebunch)
 
 
 @not_implemented_for("directed")
@@ -489,7 +489,7 @@ def cn_soundarajan_hopcroft(G, ebunch=None, community="community"):
         )
         return len(cnbors) + neighbors
 
-    yield from _apply_prediction(G, predict, ebunch)
+    return _apply_prediction(G, predict, ebunch)
 
 
 @not_implemented_for("directed")
@@ -576,7 +576,7 @@ def ra_index_soundarajan_hopcroft(G, ebunch=None, community="community"):
         cnbors = nx.common_neighbors(G, u, v)
         return sum(1 / G.degree(w) for w in cnbors if _community(G, w, community) == Cu)
 
-    yield from _apply_prediction(G, predict, ebunch)
+    return _apply_prediction(G, predict, ebunch)
 
 
 @not_implemented_for("directed")
@@ -672,7 +672,7 @@ def within_inter_cluster(G, ebunch=None, delta=0.001, community="community"):
         inter = cnbors - within
         return len(within) / (len(inter) + delta)
 
-    yield from _apply_prediction(G, predict, ebunch)
+    return _apply_prediction(G, predict, ebunch)
 
 
 def _community(G, u, community):

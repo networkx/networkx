@@ -376,7 +376,7 @@ def find_cliques_recursive(G, nodes=None):
 
     """
     if len(G) == 0:
-        return
+        return iter([])
 
     adj = {u: {v for v in G[u] if v != u} for u in G}
 
@@ -389,8 +389,7 @@ def find_cliques_recursive(G, nodes=None):
         cand_init &= adj[node]
 
     if not cand_init:
-        yield Q
-        return
+        return iter([Q])
 
     subg_init = cand_init.copy()
 
@@ -409,7 +408,7 @@ def find_cliques_recursive(G, nodes=None):
                     yield from expand(subg_q, cand_q)
             Q.pop()
 
-    yield from expand(subg_init, cand_init)
+    return expand(subg_init, cand_init)
 
 
 @nx._dispatchable(returns_graph=True)

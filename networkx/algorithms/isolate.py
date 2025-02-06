@@ -83,7 +83,7 @@ def isolates(G):
         [3]
 
     """
-    yield from (n for n, d in G.degree() if d == 0)
+    return (n for n, d in G.degree() if d == 0)
 
 
 @nx._dispatchable

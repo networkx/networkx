@@ -148,4 +148,4 @@ def asyn_fluidc(G, k, max_iter=100, seed=None):
         if iter_count > max_iter:
             break
     # Yield results by grouping communities as list of vertices
-    yield from groups(communities).values()
+    return iter(groups(communities).values())

@@ -109,7 +109,7 @@ def all_pairs_lowest_common_ancestor(G, pairs=None):
                     common_ancestor = successor
                 yield ((v, w), common_ancestor)
 
-    yield from generate_lca_from_pairs(G, pairs)
+    return generate_lca_from_pairs(G, pairs)
 
 
 @not_implemented_for("undirected")

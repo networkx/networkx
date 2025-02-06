@@ -476,7 +476,7 @@ import warnings
 from collections.abc import Iterator
 from functools import partial
 from importlib.metadata import entry_points
-from inspect import isgeneratorfunction
+from types import GeneratorType
 
 import networkx as nx
 
@@ -822,21 +822,11 @@ class _dispatchable:
         def fake_orig_func(*args, **kwargs):
             """Experiment with generator functions and functions that return iterators."""
             rv = func(*args, **kwargs)
-            if isinstance(rv, Iterator):
-                if isgeneratorfunction(func):
-                    if False:  # Toggle whether to force it to evaluate
-                        try:
-                            rv = peek(rv)
-                        except StopIteration:
-                            rv = iter([])
-                elif name not in {
-                    "shortest_path",  # returns value or iterator
-                    "shortest_path_length",  # returns value or iterator
-                    "compute_v_structures",  # deprecated
-                }:
-                    # Check to see if we changed all functions that
-                    # return iterators into generator functions.
-                    raise ZeroDivisionError(self.name)
+            if isinstance(rv, GeneratorType):
+                try:
+                    rv = peek(rv)
+                except StopIteration:
+                    rv = iter([])
             return rv
 
         self._orig_func = func
