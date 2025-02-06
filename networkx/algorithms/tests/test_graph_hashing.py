@@ -253,7 +253,7 @@ def test_digest_size():
 
 def test_directed_bugs():
     """
-    These were bugs for directed graphs as discussed in issue 7806
+    These were bugs for directed graphs as discussed in issue #7806
     """
     Ga = nx.DiGraph()
     Gb = nx.DiGraph()
@@ -289,9 +289,9 @@ def test_directed_bugs():
     assert Tree1_hash != Tree2_hash
 
 
-def test_trivial_labels():
+def test_trivial_labels_isomorphism():
     """
-    Test that trivial labelling of the graph should change isomorphism verdicts.
+    Test that trivial labelling of the graph should not change isomorphism verdicts.
     """
     n, r = 100, 10
     p = 1.0 / r
@@ -321,7 +321,57 @@ def test_trivial_labels():
         assert equal_edge == equal_both
 
 
-def test_trivial_labels():
+def test_trivial_labels_isomorphism_directed():
+    """
+    Test that trivial labelling of the graph should not change isomorphism verdicts on directed graphs.
+    """
+    n, r = 100, 10
+    p = 1.0 / r
+    for i in range(1, r + 1):
+        G1 = nx.erdos_renyi_graph(n, p * i, directed=True, seed=500 + i)
+        G2 = nx.erdos_renyi_graph(n, p * i, directed=True, seed=42 + i)
+        equal = nx.weisfeiler_lehman_graph_hash(G1) == nx.weisfeiler_lehman_graph_hash(
+            G2
+        )
+        nx.set_node_attributes(G1, values=1, name="weight")
+        nx.set_node_attributes(G2, values=1, name="weight")
+        equal_node = nx.weisfeiler_lehman_graph_hash(
+            G1, node_attr="weight"
+        ) == nx.weisfeiler_lehman_graph_hash(G2, node_attr="weight")
+        nx.set_edge_attributes(G1, values="a", name="e_weight")
+        nx.set_edge_attributes(G2, values="a", name="e_weight")
+        equal_edge = nx.weisfeiler_lehman_graph_hash(
+            G1, edge_attr="e_weight"
+        ) == nx.weisfeiler_lehman_graph_hash(G2, edge_attr="e_weight")
+        equal_both = nx.weisfeiler_lehman_graph_hash(
+            G1, edge_attr="e_weight", node_attr="weight"
+        ) == nx.weisfeiler_lehman_graph_hash(
+            G2, edge_attr="e_weight", node_attr="weight"
+        )
+        assert equal == equal_node
+        assert equal_node == equal_edge
+        assert equal_edge == equal_both
+
+    # Specific case that was found to be a bug in issue #7806
+    # Without weights worked
+    Ga = nx.DiGraph()
+    Ga.add_nodes_from([1, 2, 3, 4])
+    Gb = copy.deepcopy(Ga)
+    Ga.add_edges_from([(1, 2), (3, 2)])
+    Gb.add_edges_from([(1, 2), (3, 4)])
+    Ga_hash = nx.weisfeiler_lehman_graph_hash(Ga)
+    Gb_hash = nx.weisfeiler_lehman_graph_hash(Gb)
+    assert Ga_hash != Gb_hash
+
+    # Now with trivial weights
+    nx.set_node_attributes(Ga, values=1, name="weight")
+    nx.set_node_attributes(Gb, values=1, name="weight")
+    Ga_hash = nx.weisfeiler_lehman_graph_hash(Ga, node_attr="weight")
+    Gb_hash = nx.weisfeiler_lehman_graph_hash(Gb, node_attr="weight")
+    assert Ga_hash != Gb_hash
+
+
+def test_trivial_labels_hashes():
     """
     Test that 'empty' labelling of nodes or edges shouldn't have a different impact on the calculated hash.
     Note that we cannot assume it trivial weights have no impact at all. Without (trivial) weights,
