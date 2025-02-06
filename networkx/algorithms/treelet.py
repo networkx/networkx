@@ -79,48 +79,44 @@ def treelets(G, nodes=None, patterns=None):
 
     Examples
     --------
-    Treelet extraction from an undirected 5-path graph (:math:`G_4` pattern):
+    Treelet extraction from an undirected 5-path graph:
 
         >>> G = nx.path_graph(5)
         >>> nx.treelets(G)
         {'G_0': 5, 'G_1': 4, 'G_2': 3, 'G_3': 2, 'G_4': 1}
 
-    Treelet extraction from an directed 5-path graph (:math:`G_4` pattern):
+    Treelet extraction from an directed 5-path graph:
 
         >>> G = nx.path_graph(5).to_directed()
         >>> nx.treelets(G)
         {'G_0': 5, 'G_1': 8, 'G_2': 6, 'G_3': 4, 'G_4': 2}
 
-    Treelet extraction centered on node 1 from an directed 5-path graph
-    (:math:`G_4` pattern):
+    Treelet extraction centered on node 1 from an directed 5-path graph:
 
         >>> G = nx.path_graph(5)
         >>> nx.treelets(G, 1)
         {'G_0': 1, 'G_1': 2, 'G_2': 1, 'G_3': 1}
 
-    Treelet extraction centered on nodes 1 and 3 from an directed 5-path graph
-    (:math:`G_4` pattern):
+    Treelet extraction centered on nodes 1 and 3 from an directed 5-path graph:
 
         >>> G = nx.path_graph(5)
         >>> nx.treelets(G, [1, 3])
         {'G_0': 2, 'G_1': 4, 'G_2': 1, 'G_3': 2}
 
-    Treelet extraction from a 5-star graph (:math:`G_{13}` pattern):
+    Treelet extraction from a 5-star graph:
 
         >>> G = nx.star_graph(5)
         >>> nx.treelets(G)
         {'G_0': 6, 'G_1': 5, 'G_2': 10, 'G_6': 10, 'G_8': 5, 'G_13': 1}
 
-    Treelet extraction from a two connected 3-stars graph
-    (:math:`G_{12}` pattern):
+    Treelet extraction from a two connected 3-stars graph:
 
         >>> G = nx.star_graph(3)
         >>> G.add_edges_from([(3, 4), (3, 5)])
         >>> nx.treelets(G)
         {'G_0': 6, 'G_1': 5, 'G_2': 6, 'G_3': 4, 'G_6': 2, 'G_7': 4, 'G_12': 1}
 
-    Treelet extraction from a two connected 3-stars graph with pattern filters
-    (:math:`G_{12}` pattern):
+    Treelet extraction from a two connected 3-stars graph with pattern filters:
 
         >>> G = nx.star_graph(3)
         >>> G.add_edges_from([(3, 4), (3, 5)])
