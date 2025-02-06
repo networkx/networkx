@@ -2,11 +2,30 @@
 Function to find vertex cover of size atmost k
 """
 
+from networkx.algorithms.vertex_covering.vertex_cover_preprocessing import *
 from networkx.utils.decorators import not_implemented_for
 
-preprocessing_rules = []
+preprocessing_rules = [
+    remove_isolated_vertices,
+    remove_self_loops,
+    deg_one_preprocessing,
+    deg_two_preprocessing,
+    high_degree_vertex_preprocessing,
+    check_bipartite_graph,
+    crown_decomposition_based_preprocessing,
+    lp_decomposition_based_preprocessing,
+]
 max_deg_branch_preprocessing_rules = []
 vc_above_lp_branch_preprocessing_rules = []
+
+
+__all__ = [
+    "vertex_cover_preprocessing",
+    "vertex_cover_branch_preprocessing",
+    "vertex_cover_branching",
+    "max_degree_branching",
+    "vc_above_lp_branching",
+]
 
 
 @not_implemented_for("directed")
@@ -52,8 +71,13 @@ def vertex_cover_branching(G, k, rules):
     # if 1.4656^k, rules will be max_deg_branch_preprocessing_rules
     # if 2.618^(k - lpOpt) rules will be vc_above_lp_branch_preprocessing_rules
     vc = set()
-    G, k, vc = vertex_cover_branch_preprocessing(G, k, vc, rules=rules)
+    G, k, vc, is_k_vc_possible = vertex_cover_branch_preprocessing(
+        G, k, vc, rules=rules
+    )
     # there should not be any isolated vertices
+
+    if not is_k_vc_possible:
+        return False, set()
 
     # base case
     if k <= 0:
@@ -83,7 +107,7 @@ def vertex_cover_branching(G, k, rules):
     is_k_vc_possible, vc_sub = vertex_cover_branching(g_new, k - 1, rules)
     if is_k_vc_possible:
         vc.update(vc_sub)
-        vc.union(max_deg_vertex)
+        vc.update({max_deg_vertex})
         return True, vc
 
     del g_new

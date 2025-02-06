@@ -2,6 +2,7 @@
 Functions for preprocessing the graph before vertex cover
 """
 
+import networkx
 from networkx.algorithms.isolate import isolates, number_of_isolates
 from networkx.algorithms.vertex_covering.lp_decomposition import (
     lp_decomposition_vc,
@@ -11,6 +12,7 @@ from networkx.utils.decorators import not_implemented_for
 
 __all__ = [
     "remove_isolated_vertices",
+    "remove_self_loops",
     "deg_one_preprocessing",
     "deg_two_preprocessing",
     "high_degree_vertex_preprocessing",
@@ -40,12 +42,45 @@ def remove_isolated_vertices(G, k, vc):
             is_k_vc_possible,
         )
 
-    isolated_vertices = list(isolates(G))
+    isolated_vertices = isolates(G)
 
-    if isolated_vertices:
-        # remove all isolated vertices from the graph
-        g_new.remove_nodes_from(isolated_vertices)
-        k_new = k
+    for node in isolated_vertices:
+        g_new.remove_node(node)
+        applied = True
+        # k_new = k
+
+    if applied:
+        print("removed isolated vertex")
+
+    return (
+        applied,
+        g_new,
+        k_new,
+        to_remove_from_vertex_cover,
+        to_add_to_vertex_cover,
+        is_k_vc_possible,
+    )
+
+
+@not_implemented_for("directed")
+def remove_self_loops(G, k, vc):
+    applied = False
+    k_new = k
+    g_new = G
+    to_remove_from_vertex_cover = set()
+    to_add_to_vertex_cover = set()
+    is_k_vc_possible = True
+    self_loop_node = None
+
+    for node, neighbour_dictionary in g_new.adjacency():
+        if node in neighbour_dictionary:
+            self_loop_node = node
+            break
+
+    if self_loop_node is not None:
+        g_new.remove_node(self_loop_node)
+        k_new = k - 1
+        to_add_to_vertex_cover = {self_loop_node}
         applied = True
 
     return (

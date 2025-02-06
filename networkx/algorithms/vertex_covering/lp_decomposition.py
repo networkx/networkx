@@ -80,6 +80,9 @@ def find_lp_decomposition(G: nx.Graph):
     `equal_to_half` denotes the set of vertices which got weight equal to 0.5,
     """
 
+    if len(G) == 0:
+        return 0, set(), set(), set()
+
     # it should be ensured in this algorithm that, k does not become negative
     label = {}
     reverse_label = {}

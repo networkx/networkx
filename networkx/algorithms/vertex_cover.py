@@ -16,6 +16,8 @@ from networkx.utils.decorators import not_implemented_for
 def vertex_cover(G, k):
     # find lp-opt value
     # compare 1.4656^k and 2.618^(k - lpOpt)
+    if len(G) == 0:
+        return True, set()
 
     g_new = G.copy()
 
@@ -25,7 +27,7 @@ def vertex_cover(G, k):
     if not is_k_vc_possible:
         return False, set()
 
-    lp_opt_value, *_ = find_lp_decomposition(g_new, k)
+    lp_opt_value, *_ = find_lp_decomposition(g_new)
 
     if lp_opt_value > k:
         return False, set()
@@ -33,10 +35,16 @@ def vertex_cover(G, k):
     vc_above_lp_opt_algo_check = 2.618 ** (k - lp_opt_value)
     max_deg_algo_check = 1.4656**k
 
+    is_k_vc_exists, vc_sub = False, set()
+
     if vc_above_lp_opt_algo_check < max_deg_algo_check:
-        return vc_above_lp_branching(g_new, k)
+        is_k_vc_exists, vc_sub = vc_above_lp_branching(g_new, k)
     else:
-        return max_degree_branching(g_new, k)
+        is_k_vc_exists, vc_sub = max_degree_branching(g_new, k)
+
+    vc.update(vc_sub)
+
+    return is_k_vc_exists, vc
 
 
 @not_implemented_for("directed")
