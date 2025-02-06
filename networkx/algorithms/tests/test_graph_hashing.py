@@ -289,6 +289,59 @@ def test_directed_bugs():
     assert Tree1_hash != Tree2_hash
 
 
+def test_trivial_labels():
+    """
+    Test that trivial labelling of the graph should change isomorphism verdicts.
+    """
+    n, r = 100, 10
+    p = 1.0 / r
+    for i in range(1, r + 1):
+        G1 = nx.erdos_renyi_graph(n, p * i, seed=500 + i)
+        G2 = nx.erdos_renyi_graph(n, p * i, seed=42 + i)
+        equal = nx.weisfeiler_lehman_graph_hash(G1) == nx.weisfeiler_lehman_graph_hash(
+            G2
+        )
+        nx.set_node_attributes(G1, values=1, name="weight")
+        nx.set_node_attributes(G2, values=1, name="weight")
+        equal_node = nx.weisfeiler_lehman_graph_hash(
+            G1, node_attr="weight"
+        ) == nx.weisfeiler_lehman_graph_hash(G2, node_attr="weight")
+        nx.set_edge_attributes(G1, values="a", name="e_weight")
+        nx.set_edge_attributes(G2, values="a", name="e_weight")
+        equal_edge = nx.weisfeiler_lehman_graph_hash(
+            G1, edge_attr="e_weight"
+        ) == nx.weisfeiler_lehman_graph_hash(G2, edge_attr="e_weight")
+        equal_both = nx.weisfeiler_lehman_graph_hash(
+            G1, edge_attr="e_weight", node_attr="weight"
+        ) == nx.weisfeiler_lehman_graph_hash(
+            G2, edge_attr="e_weight", node_attr="weight"
+        )
+        assert equal == equal_node
+        assert equal_node == equal_edge
+        assert equal_edge == equal_both
+
+
+def test_trivial_labels():
+    """
+    Test that 'empty' labelling of nodes or edges shouldn't have a different impact on the calculated hash.
+    Note that we cannot assume it trivial weights have no impact at all. Without (trivial) weights,
+     a node will start with hashing its degree. This step isomitted when there áre weights.
+    """
+    n, r = 100, 10
+    p = 1.0 / r
+    for i in range(1, r + 1):
+        G1 = nx.erdos_renyi_graph(n, p * i, seed=500 + i)
+        nx.set_node_attributes(G1, values="", name="weight")
+        first = nx.weisfeiler_lehman_graph_hash(G1, node_attr="weight")
+        nx.set_edge_attributes(G1, values="", name="e_weight")
+        second = nx.weisfeiler_lehman_graph_hash(G1, edge_attr="e_weight")
+        assert first == second
+        third = nx.weisfeiler_lehman_graph_hash(
+            G1, edge_attr="e_weight", node_attr="weight"
+        )
+        assert second == third
+
+
 # Unit tests for the :func:`~networkx.weisfeiler_lehman_subgraph_hashes` function
 
 
