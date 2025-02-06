@@ -81,42 +81,45 @@ def treelets(G, nodes=None, patterns=None):
     --------
     Treelet extraction from an undirected 5-path graph (:math:`G_4` pattern):
         >>> G = nx.path_graph(5)
-        >>> t = nx.treelets(G)
-        >>> print(t)
+        >>> nx.treelets(G)
         {'G_0': 5, 'G_1': 4, 'G_2': 3, 'G_3': 2, 'G_4': 1}
 
     Treelet extraction from an directed 5-path graph (:math:`G_4` pattern):
         >>> G = nx.path_graph(5).to_directed()
-        >>> t = nx.treelets(G)
-        >>> print(t)
+        >>> nx.treelets(G)
         {'G_0': 5, 'G_1': 8, 'G_2': 6, 'G_3': 4, 'G_4': 2}
 
     Treelet extraction centered on node 1 from an directed 5-path graph
     (:math:`G_4` pattern):
         >>> G = nx.path_graph(5)
-        >>> t = nx.treelets(G, 1)
-        >>> print(t)
+        >>> nx.treelets(G, 1)
         {'G_0': 1, 'G_1': 2, 'G_2': 1, 'G_3': 1}
 
     Treelet extraction centered on nodes 1 and 3 from an directed 5-path graph
     (:math:`G_4` pattern):
         >>> G = nx.path_graph(5)
-        >>> t = nx.treelets(G, [1, 3])
-        >>> print(t)
+        >>> nx.treelets(G, [1, 3])
         {'G_0': 2, 'G_1': 4, 'G_2': 1, 'G_3': 2}
 
     Treelet extraction from a 5-star graph (:math:`G_{13}` pattern):
         >>> G = nx.star_graph(5)
-        >>> t = nx.treelets(G)
-        >>> print(t)
+        >>> nx.treelets(G)
         {'G_0': 6, 'G_1': 5, 'G_2': 10, 'G_6': 10, 'G_8': 5, 'G_13': 1}
 
-    Treelet extraction for two connected 3-star graphs (:math:`G_{12}` pattern):
+    Treelet extraction from a two connected 3-stars graph (:math:`G_{12}` pattern):
         >>> G = nx.star_graph(3)
         >>> G.add_edges_from([(3, 4), (3, 5)])
-        >>> t = nx.treelets(G)
-        >>> print(t)
+        >>> nx.treelets(G)
         {'G_0': 6, 'G_1': 5, 'G_2': 6, 'G_3': 4, 'G_6': 2, 'G_7': 4, 'G_12': 1}
+
+    Treelet extraction from a two connected 3-stars graph with pattern filters
+    (:math:`G_{12}` pattern):
+        >>> G = nx.star_graph(3)
+        >>> G.add_edges_from([(3, 4), (3, 5)])
+        >>> nx.treelets(G, patterns="star-path")
+        {'G_7': 4, 'G_12': 1}
+        >>> nx.treelets(G, patterns=["path", "star-path"])
+        {'G_0': 6, 'G_1': 5, 'G_2': 6, 'G_3': 4, 'G_6': 2}
 
     See also
     --------
@@ -234,6 +237,41 @@ def labeled_treelets(G, nodes=None, patterns=None, node_attrs=None, edge_attrs=N
          ('G_1', ('C',), ('2',), ('O',)): 1,
          ('G_6', ('C',), ('1',), ('H',), ('1',), ('H',), ('2',), ('O',)): 1}
 
+    Labeled treelet extraction centered on node 0 (*C*) from a simple molecule :math:`(CH_2O)`:
+        >>> G = nx.Graph()
+        >>> atoms = ["C", "H", "H", "O"]
+        >>> for i, atom in enumerate(atoms):
+        ...     G.add_node(i, atom_symbol=atom)
+        >>> bond_types = ["1", "1", "2"]
+        >>> edges = [(0, 1), (0, 2), (0, 3)]
+        >>> for (u, v), bond in zip(edges, bond_types):
+        ...     G.add_edge(u, v, bond_type=bond)
+        >>> nx.labeled_treelets(G, 0)
+        {('G_0', ('C',)): 1,
+         ('G_1', ('C',), ('1',), ('H',)): 2,
+         ('G_1', ('C',), ('2',), ('O',)): 1,
+         ('G_6', ('C',), ('1',), ('H',), ('1',), ('H',), ('2',), ('O',)): 1}
+
+    Labeled treelet extraction with pattern filters from a simple molecule :math:`(CH_2O)`:
+        >>> G = nx.Graph()
+        >>> atoms = ["C", "H", "H", "O"]
+        >>> for i, atom in enumerate(atoms):
+        ...     G.add_node(i, atom_symbol=atom)
+        >>> bond_types = ["1", "1", "2"]
+        >>> edges = [(0, 1), (0, 2), (0, 3)]
+        >>> for (u, v), bond in zip(edges, bond_types):
+        ...     G.add_edge(u, v, bond_type=bond)
+        >>> nx.labeled_treelets(G, patterns="star")
+        {('G_6', ('C',), ('1',), ('H',), ('1',), ('H',), ('2',), ('O',)): 1}
+        >>> nx.labeled_treelets(G, patterns=["path"])
+        {('G_0', ('C',)): 1,
+         ('G_0', ('H',)): 2,
+         ('G_0', ('O',)): 1,
+         ('G_1', ('C',), ('1',), ('H',)): 2,
+         ('G_1', ('C',), ('2',), ('O',)): 1,
+         ('G_2', ('H',), ('1',), ('C',), ('1',), ('H',)): 1,
+         ('G_2', ('H',), ('1',), ('C',), ('2',), ('O',)): 2}
+
     See also
     --------
     treelets
@@ -252,6 +290,12 @@ def labeled_treelets(G, nodes=None, patterns=None, node_attrs=None, edge_attrs=N
 
 
 def _treelets(G, nodes, labeled, node_attrs, edge_attrs, patts):
+    """Extracts treelets from the graph based on predefined patterns.
+
+    If `labeled` is True, node and edge attributes are considered to generate
+    canonical representations. Supports path, star, and star-path
+    treelets. The function processes a subset of nodes if `nodes` is specified.
+    """
     unlabeled = not labeled
     patterns = [patts] if isinstance(patts, str) else patts
     all_patterns = False
@@ -293,6 +337,12 @@ def _treelets(G, nodes, labeled, node_attrs, edge_attrs, patts):
 
 
 def _linear_treelets(G, nodes, unlabeled, node_attrs, edge_attrs):
+    """Extracts path-based treelets (G_0 to G_5) from the graph.
+
+    These treelets represent linear substructures up to 6 nodes. If `unlabeled`
+    is False, node and edge attributes are used to generate labeled treelets.
+    If `nodes` is specified, only treelets centered on those nodes are extracted.
+    """
     # --- Manual implementation for better performance ---
     codes = {}
 
@@ -347,6 +397,14 @@ def _linear_treelets(G, nodes, unlabeled, node_attrs, edge_attrs):
 def _star_based_treelets(
     G, nodes, unlabeled, node_attrs, edge_attrs, return_star, return_star_path
 ):
+    """Extracts star-based treelets (G_6 to G_13) from the graph.
+
+    Supports both pure star patterns and star-path extensions. If `unlabeled`
+    is False, the function incorporates node and edge attributes into the
+    canonical representation. The `return_star` and `return_star_path` parameters
+    control whether only star-shaped treelets or both star and star-path treelets
+    are extracted.
+    """
     # --- Manual implementation for better performance ---
     codes = {}
 
