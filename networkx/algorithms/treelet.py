@@ -122,7 +122,7 @@ def treelets(G, nodes=None, patterns=None):
         >>> G.add_edges_from([(3, 4), (3, 5)])
         >>> nx.treelets(G, patterns="star-path")
         {'G_7': 4, 'G_12': 1}
-        >>> nx.treelets(G, patterns=["path", "star-path"])
+        >>> nx.treelets(G, patterns=["path", "star"])
         {'G_0': 6, 'G_1': 5, 'G_2': 6, 'G_3': 4, 'G_6': 2}
 
     See also
