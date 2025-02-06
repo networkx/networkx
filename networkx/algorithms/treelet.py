@@ -26,6 +26,7 @@ EXT_1_STAR = {
 }
 
 
+@nx._dispatchable
 def treelets(G, nodes=None, patterns=None):
     """
     Compute treelets of a graph.
@@ -138,6 +139,7 @@ def treelets(G, nodes=None, patterns=None):
     return _treelets(G, nodes, False, None, None, patterns)
 
 
+@nx._dispatchable
 def labeled_treelets(G, nodes=None, patterns=None, node_attrs=None, edge_attrs=None):
     """
     Compute labeled treelets of a graph.
