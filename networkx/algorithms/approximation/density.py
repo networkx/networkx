@@ -26,7 +26,6 @@ def _greedy_plus_plus(G, iterations):
         # Compute initial weighted degrees and add nodes to the heap.
         for node, degree in G.degree:
             heap.insert(node, loads[node] + degree)
-
         # Set up tracking for current graph state.
         remaining_nodes = set(G.nodes)
         num_edges = G.number_of_edges()
@@ -64,14 +63,7 @@ def _greedy_plus_plus(G, iterations):
     return best_density, best_subgraph
 
 
-# Generator for edges in both directions for an undirected graph
-def _bidirectional_edges(G):
-    for u, v in G.edges():
-        yield (u, v)
-        yield (v, u)
-
-
-def _fractional_peeling(G, b, x, node_to_idx, idx_to_node, edge_to_idx, idx_to_edge):
+def _fractional_peeling(G, b, x, node_to_idx, idx_to_node, edge_to_idx):
     """
     Optimized fractional peeling using NumPy arrays.
 
@@ -82,18 +74,19 @@ def _fractional_peeling(G, b, x, node_to_idx, idx_to_node, edge_to_idx, idx_to_e
         node_to_idx (dict): Mapping from node to index.
         idx_to_node (dict): Mapping from index to node.
         edge_to_idx (dict): Mapping from edge to index.
-        idx_to_edge (dict): Mapping from index to edge.
 
     Returns:
         best_density (float): The best density found.
         best_subgraph (set): The subset of nodes defining the densest subgraph.
     """
     heap = nx.utils.BinaryHeap()
+
+    remaining_nodes = set(range(len(G.nodes)))
+
     # Initialize heap with b values
-    for idx, node in enumerate(G.nodes()):
+    for idx in remaining_nodes:
         heap.insert(idx, b[idx])
 
-    remaining_nodes = set(range(len(G.nodes())))
     num_edges = G.number_of_edges()
 
     best_density = 0.0
@@ -112,7 +105,7 @@ def _fractional_peeling(G, b, x, node_to_idx, idx_to_node, edge_to_idx, idx_to_e
         while node_idx not in remaining_nodes:
             node_idx, _ = heap.pop()  # Clean the heap from stale values
 
-        # Update neighbors
+        # Update neighbors b values by subtracting fractional x value
         for neighbor in G.neighbors(idx_to_node[node_idx]):
             neighbor_idx = node_to_idx[neighbor]
             if neighbor_idx in remaining_nodes:
@@ -123,12 +116,62 @@ def _fractional_peeling(G, b, x, node_to_idx, idx_to_node, edge_to_idx, idx_to_e
                 num_edges -= 1
                 heap.insert(neighbor_idx, b[neighbor_idx])
 
-        remaining_nodes.remove(node_idx)
+        remaining_nodes.remove(node_idx)  # peel off node_idx
 
     return best_density, best_subgraph
 
 
 def _fista(G, iterations):
+    """
+    Harb et al. [3]_ showed that computing the densest subgraph can be formulated as the following
+    convex optimization problem:
+
+    Minimize sum_{u in V(G)} b_u^2
+    Subject to:
+    b_u = sum_{v: (u,v) in E(G)} x_{uv} for all u in V(G)
+    x_{uv} + x_{vu} = 1.0 for all {u,v} in E(G)
+    x_{uv} >= 0, x_{vu} >= 0 for all {u,v} in E(G)
+
+    Here, x_{uv} represents the fraction of edge {u,v} assigned to u, and x_{vu} to v.
+
+    Intuitively, the objective function minimizes the sum of squared "induced" loads
+    that x_{uv} imposes on each node u.
+
+    Optimization Approach:
+
+    The FISTA algorithm efficiently solves this convex program using gradient descent with projections:
+
+    1. **Initialization**: Set x^{(0)}_uv = x^{(0)}_vu = 0.5 for all edges as a feasible solution.
+    2. **Gradient Update**:
+    x^{(k+1)}_{uv} = x^{(k)}_{uv} - 2 * learning_rate * sum_{v: (u,v) in E(G)} x^{(k)}_{uv}
+    However, x^{(k+1)}_{uv} might be infeasible! To ensure feasibility, we project x^{(k+1)}_{uv}.
+    3. **Projection to the Feasible Set**:
+    - Compute b^{(k+1)}_u = sum_{v: (u,v) in E(G)} x^{(k)}_{uv}
+    - Define z^{(k+1)}_{uv} = x^{(k+1)}_{uv} - 2 * learning_rate * b^{(k+1)}_u
+        (In practice, a momentum term is used to speed up convergence, but the approach remains the same.)
+    - Update:
+        x^{(k+1)}_{uv} = CLAMP((z^{(k+1)}_{uv} - z^{(k+1)}_{vu} + 1.0) / 2.0),
+        where CLAMP(x) = max(0, min(1, x)) ensures values stay in [0,1].
+
+    With a learning rate of 1/Delta(G), where Delta(G) is the maximum degree, the algorithm converges to
+    the optimum solution of the convex program.
+
+    Extracting the Densest Subgraph:
+
+    To obtain a **discrete** subgraph, we use fractional peeling, an adaptation of the standard peeling algorithm
+    which peels the minimum degree vertex in each iteration, and returns the denses subgraph found along the way.
+    Here, we instead peel the vertex with the smallest induced load b_u:
+    1. Compute b_u and x_{uv}.
+    2. Iteratively remove the vertex with the smallest b_u, updating its neighbors' load by **x_{uv}**.
+
+    Fractional peeling transforms the approximately optimal fractional values b_u, x_{uv} into a discrete subgraph.
+    Unlike traditional peeling, which removes the lowest-degree node, this method accounts for fractional edge
+    contributions from the convex program.
+
+    This approach is both scalable and theoretically sound, ensuring a quick approximation of the densest
+    subgraph while leveraging fractional load balancing.
+    """
+
     if G.number_of_edges() == 0:
         return 0.0, set()
     if iterations < 1:
@@ -144,10 +187,11 @@ def _fista(G, iterations):
     num_nodes = len(node_list)
 
     # 2. Edge Mapping: Assign a unique index to each bidirectional edge
-    bidirectional_edges = list(_bidirectional_edges(G))
+    bidirectional_edges = [
+        (node, neighbor) for node, neighbors in G.adj.items() for neighbor in neighbors
+    ]
     num_edges = len(bidirectional_edges)
     edge_to_idx = {edge: idx for idx, edge in enumerate(bidirectional_edges)}
-    idx_to_edge = {idx: edge for edge, idx in edge_to_idx.items()}
 
     # 3. Reverse Edge Mapping: Map each edge to its reverse edge index
     reverse_edge_idx = np.empty(num_edges, dtype=np.int32)
@@ -167,26 +211,32 @@ def _fista(G, iterations):
     )
 
     # 6. Compute Learning Rate
-    max_degree = max(dict(G.degree()).values())
-    learning_rate = 0.9 / max_degree
+    max_degree = max(deg for _, deg in G.degree)
+    learning_rate = (
+        0.9 / max_degree
+    )  # 0.9 for floating point errs when max_degree is very large
 
     # 7. Iterative Updates
     for _ in range(iterations):
         # 7a. Update b: sum y over outgoing edges for each node
         b[:] = 0.0  # Reset b to zero
-        np.add.at(b, edge_src_indices, y)
+        np.add.at(b, edge_src_indices, y)  # b_u = \sum_{v : (u,v) \in E(G)} y_{uv}
 
         # 7b. Compute z
-        z = y - 2.0 * learning_rate * b[edge_src_indices]
+        z = (
+            y - 2.0 * learning_rate * b[edge_src_indices]
+        )  # z_{uv} = y_{uv} - 2 * learning_rate * b_u
 
         # 7c. Update Momentum Term
         tknew = (1.0 + math.sqrt(1 + 4.0 * tk**2)) / 2.0
 
         # 7d. Update x, y in a vectorized manner
-        new_xuv = (z - z[reverse_edge_idx] + 1.0) / 2.0
-        clamped_x = np.clip(new_xuv, 0.0, 1.0)
+        new_xuv = (
+            z - z[reverse_edge_idx] + 1.0
+        ) / 2.0  # x_{uv} = (z_{uv} - z_{vu} + 1.0) / 2.0
+        clamped_x = np.clip(new_xuv, 0.0, 1.0)  # Clamp x_{uv} between 0 and 1
 
-        # Update y using the FISTA update rule
+        # Update y using the FISTA update formula (similar to gradient descent)
         y = (
             clamped_x
             + ((tk - 1.0) / tknew) * (clamped_x - x)
@@ -201,10 +251,10 @@ def _fista(G, iterations):
 
     # Rebalance the b values! Otherwise peformance is a bit suboptimal.
     b[:] = 0.0
-    np.add.at(b, edge_src_indices, x)
+    np.add.at(b, edge_src_indices, x)  # b_u = \sum_{v : (u,v) \in E(G)} x_{uv}
     return _fractional_peeling(
-        G, b, x, node_to_idx, idx_to_node, edge_to_idx, idx_to_edge
-    )
+        G, b, x, node_to_idx, idx_to_node, edge_to_idx
+    )  # Extract the actual (approximate) dense subgraph.
 
 
 ALGORITHMS = {"greedy++": _greedy_plus_plus, "fista": _fista}
