@@ -220,7 +220,7 @@ plt.show()
 # Unlabeled Treelets
 # ------------------
 #
-# Extract unlabeled treelets from the sulfuric acid graph using `nx.treelets()`.
+# Extract unlabeled treelets from the sulfuric acid graph using `treelets`.
 # For each treelet, the script displays its index (key) and occurrence count.
 
 G_treelets = nx.treelets(G)
@@ -237,7 +237,7 @@ for i, items in enumerate(sorted(G_treelets.items())):
 # ----------------
 #
 # Extract labeled treelets (considering node and edge labels) from
-# the sulfuric acid graph using `nx.labeled_treelets()`.
+# the sulfuric acid graph using `labeled_treelets`.
 # For each treelet, a unique canonical key is generated (see `Gaüzère et al.
 # (2012) <https://hal.science/hal-00773283/document>`_ for the algorithms),
 # and the number of occurrences is displayed.

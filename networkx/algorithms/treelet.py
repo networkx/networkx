@@ -80,33 +80,40 @@ def treelets(G, nodes=None, patterns=None):
     Examples
     --------
     Treelet extraction from an undirected 5-path graph (:math:`G_4` pattern):
+
         >>> G = nx.path_graph(5)
         >>> nx.treelets(G)
         {'G_0': 5, 'G_1': 4, 'G_2': 3, 'G_3': 2, 'G_4': 1}
 
     Treelet extraction from an directed 5-path graph (:math:`G_4` pattern):
+
         >>> G = nx.path_graph(5).to_directed()
         >>> nx.treelets(G)
         {'G_0': 5, 'G_1': 8, 'G_2': 6, 'G_3': 4, 'G_4': 2}
 
     Treelet extraction centered on node 1 from an directed 5-path graph
     (:math:`G_4` pattern):
+
         >>> G = nx.path_graph(5)
         >>> nx.treelets(G, 1)
         {'G_0': 1, 'G_1': 2, 'G_2': 1, 'G_3': 1}
 
     Treelet extraction centered on nodes 1 and 3 from an directed 5-path graph
     (:math:`G_4` pattern):
+
         >>> G = nx.path_graph(5)
         >>> nx.treelets(G, [1, 3])
         {'G_0': 2, 'G_1': 4, 'G_2': 1, 'G_3': 2}
 
     Treelet extraction from a 5-star graph (:math:`G_{13}` pattern):
+
         >>> G = nx.star_graph(5)
         >>> nx.treelets(G)
         {'G_0': 6, 'G_1': 5, 'G_2': 10, 'G_6': 10, 'G_8': 5, 'G_13': 1}
 
-    Treelet extraction from a two connected 3-stars graph (:math:`G_{12}` pattern):
+    Treelet extraction from a two connected 3-stars graph
+    (:math:`G_{12}` pattern):
+
         >>> G = nx.star_graph(3)
         >>> G.add_edges_from([(3, 4), (3, 5)])
         >>> nx.treelets(G)
@@ -114,6 +121,7 @@ def treelets(G, nodes=None, patterns=None):
 
     Treelet extraction from a two connected 3-stars graph with pattern filters
     (:math:`G_{12}` pattern):
+
         >>> G = nx.star_graph(3)
         >>> G.add_edges_from([(3, 4), (3, 5)])
         >>> nx.treelets(G, patterns="star-path")
@@ -202,6 +210,7 @@ def labeled_treelets(G, nodes=None, patterns=None, node_attrs=None, edge_attrs=N
     Examples
     --------
     Labeled treelet extraction from a simple molecule :math:`(CH_2O)`:
+
         >>> G = nx.Graph()
         >>> atoms = ["C", "H", "H", "O"]
         >>> for i, atom in enumerate(atoms):
@@ -220,7 +229,9 @@ def labeled_treelets(G, nodes=None, patterns=None, node_attrs=None, edge_attrs=N
          ('G_2', ('H',), ('1',), ('C',), ('2',), ('O',)): 2,
          ('G_6', ('C',), ('1',), ('H',), ('1',), ('H',), ('2',), ('O',)): 1}
 
-    Labeled treelet extraction from a directed version of a simple molecule :math:`(CH_2O)`:
+    Labeled treelet extraction from a directed version of a simple molecule
+    :math:`(CH_2O)`:
+
         >>> G = nx.DiGraph()
         >>> atoms = ["C", "H", "H", "O"]
         >>> for i, atom in enumerate(atoms):
@@ -237,7 +248,9 @@ def labeled_treelets(G, nodes=None, patterns=None, node_attrs=None, edge_attrs=N
          ('G_1', ('C',), ('2',), ('O',)): 1,
          ('G_6', ('C',), ('1',), ('H',), ('1',), ('H',), ('2',), ('O',)): 1}
 
-    Labeled treelet extraction centered on node 0 (*C*) from a simple molecule :math:`(CH_2O)`:
+    Labeled treelet extraction centered on node 0 (Carbon) from a simple molecule
+    :math:`(CH_2O)`:
+
         >>> G = nx.Graph()
         >>> atoms = ["C", "H", "H", "O"]
         >>> for i, atom in enumerate(atoms):
@@ -252,7 +265,9 @@ def labeled_treelets(G, nodes=None, patterns=None, node_attrs=None, edge_attrs=N
          ('G_1', ('C',), ('2',), ('O',)): 1,
          ('G_6', ('C',), ('1',), ('H',), ('1',), ('H',), ('2',), ('O',)): 1}
 
-    Labeled treelet extraction with pattern filters from a simple molecule :math:`(CH_2O)`:
+    Labeled treelet extraction with pattern filters from a simple molecule
+    :math:`(CH_2O)`:
+
         >>> G = nx.Graph()
         >>> atoms = ["C", "H", "H", "O"]
         >>> for i, atom in enumerate(atoms):
