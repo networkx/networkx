@@ -173,15 +173,12 @@ def weisfeiler_lehman_graph_hash(
     if not edge_attr and not node_attr:
         iterations -= 1
 
-    subgraph_hash_counts = []
     for _ in range(iterations):
         node_labels = weisfeiler_lehman_step(G, node_labels, edge_attr=edge_attr)
-        counter = Counter(node_labels.values())
-        # sort the counter, extend total counts
-        subgraph_hash_counts.extend(sorted(counter.items(), key=lambda x: x[0]))
 
-    # hash the final counter
-    return _hash_label(str(tuple(subgraph_hash_counts)), digest_size)
+    # hash the final labelling
+    counter = Counter(node_labels.values())
+    return _hash_label(str(sorted(counter.items(), key=lambda x: x[0])), digest_size)
 
 
 @nx.utils.not_implemented_for("multigraph")
