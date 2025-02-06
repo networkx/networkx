@@ -8,6 +8,7 @@ from networkx.algorithms.vertex_covering.lp_decomposition import find_lp_decompo
 from networkx.algorithms.vertex_covering.vertex_cover import (
     max_degree_branching,
     vc_above_lp_branching,
+    vertex_cover_preprocessing,
 )
 from networkx.utils import arbitrary_element, not_implemented_for
 
@@ -152,6 +153,13 @@ def is_edge_cover(G, cover):
 def vertex_cover(G, k):
     # find lp-opt value
     # compare 1.4656^k and 2.618^(k - lpOpt)
+
+    vc = set()
+    G, k, vc, is_k_vc_possible = vertex_cover_preprocessing(G, k, vc)
+
+    if not is_k_vc_possible:
+        return False, set()
+
     lp_opt_value, *_ = find_lp_decomposition(G, k)
 
     if lp_opt_value > k:

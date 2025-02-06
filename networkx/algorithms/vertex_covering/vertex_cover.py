@@ -11,6 +11,8 @@ vc_above_lp_branch_preprocessing_rules = []
 
 @not_implemented_for("directed")
 def vertex_cover_preprocessing(G, k, vc, rules=None):
+    is_k_vc_possible = True
+
     if rules is None:
         rules = preprocessing_rules
 
@@ -24,8 +26,8 @@ def vertex_cover_preprocessing(G, k, vc, rules=None):
                 )
 
                 if not is_k_vc_possible:
-                    # vc of size atmost k not possible
-                    return False
+                    is_k_vc_possible = False
+                    return G, k, vc, is_k_vc_possible
 
                 if to_remove_from_vc:
                     assert isinstance(vc, set)
@@ -36,7 +38,7 @@ def vertex_cover_preprocessing(G, k, vc, rules=None):
         if not applied:
             break
 
-    return G, k, vc
+    return G, k, vc, is_k_vc_possible
 
 
 # @not_implemented_for("directed")
