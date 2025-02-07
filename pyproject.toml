@@ -61,8 +61,8 @@ default = [
     'pandas>=2.0',
 ]
 developer = [
-    'pre-commit>=3.2',
-    'mypy>=1.1',
+    'pre-commit>=4.1',
+    'mypy>=1.15',
 ]
 doc = [
     'sphinx>=8.0',
