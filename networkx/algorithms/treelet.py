@@ -219,8 +219,17 @@ def labeled_treelets(G, nodes=None, patterns=None, node_attrs=None, edge_attrs=N
         >>> edges = [(0, 1), (0, 2), (0, 3)]
         >>> for (u, v), bond in zip(edges, bond_types):
         ...     G.add_edge(u, v, bond_type=bond)
-        >>> nx.labeled_treelets(G)
-        {('G_0', ('C',)): 1, ('G_0', ('H',)): 2, ('G_0', ('O',)): 1, ('G_1', ('C',), ('1',), ('H',)): 2, ('G_2', ('H',), ('1',), ('C',), ('2',), ('O',)): 2, ('G_1', ('C',), ('2',), ('O',)): 1, ('G_2', ('H',), ('1',), ('C',), ('1',), ('H',)): 1, ('G_6', ('C',), ('1',), ('H',), ('1',), ('H',), ('2',), ('O',)): 1}
+        >>> t = nx.labeled_treelets(G)
+        >>> for k, v in t.items():
+        ...     print(k, ":", v)
+        ('G_0', ('C',)) : 1
+        ('G_0', ('H',)) : 2
+        ('G_0', ('O',)) : 1
+        ('G_1', ('C',), ('1',), ('H',)) : 2
+        ('G_2', ('H',), ('1',), ('C',), ('2',), ('O',)) : 2
+        ('G_1', ('C',), ('2',), ('O',)) : 1
+        ('G_2', ('H',), ('1',), ('C',), ('1',), ('H',)) : 1
+        ('G_6', ('C',), ('1',), ('H',), ('1',), ('H',), ('2',), ('O',)) : 1
 
     Labeled treelet extraction from a directed version of a simple molecule
     :math:`(CH_2O)`:
@@ -233,8 +242,17 @@ def labeled_treelets(G, nodes=None, patterns=None, node_attrs=None, edge_attrs=N
         >>> edges = [(0, 1), (0, 2), (0, 3)]
         >>> for (u, v), bond in zip(edges, bond_types):
         ...     G.add_edge(u, v, bond_type=bond)
-        >>> nx.labeled_treelets(G, node_attrs=["atom_symbol"], edge_attrs=["bond_type"])
-        {('G_0', ('C',)): 1, ('G_0', ('H',)): 2, ('G_0', ('O',)): 1, ('G_1', ('C',), ('1',), ('H',)): 2, ('G_1', ('C',), ('2',), ('O',)): 1, ('G_6', ('C',), ('1',), ('H',), ('1',), ('H',), ('2',), ('O',)): 1}
+        >>> t = nx.labeled_treelets(
+        ...     G, node_attrs=["atom_symbol"], edge_attrs=["bond_type"]
+        ... )
+        >>> for k, v in t.items():
+        ...     print(k, ":", v)
+        ('G_0', ('C',)) : 1
+        ('G_0', ('H',)) : 2
+        ('G_0', ('O',)) : 1
+        ('G_1', ('C',), ('1',), ('H',)) : 2
+        ('G_1', ('C',), ('2',), ('O',)) : 1
+        ('G_6', ('C',), ('1',), ('H',), ('1',), ('H',), ('2',), ('O',)) : 1
 
     Labeled treelet extraction centered on node 0 (Carbon) from a simple molecule
     :math:`(CH_2O)`:
@@ -247,8 +265,13 @@ def labeled_treelets(G, nodes=None, patterns=None, node_attrs=None, edge_attrs=N
         >>> edges = [(0, 1), (0, 2), (0, 3)]
         >>> for (u, v), bond in zip(edges, bond_types):
         ...     G.add_edge(u, v, bond_type=bond)
-        >>> nx.labeled_treelets(G, 0)
-        {('G_0', ('C',)): 1, ('G_1', ('C',), ('1',), ('H',)): 2, ('G_1', ('C',), ('2',), ('O',)): 1, ('G_6', ('C',), ('1',), ('H',), ('1',), ('H',), ('2',), ('O',)): 1}
+        >>> t = nx.labeled_treelets(G, 0)
+        >>> for k, v in t.items():
+        ...     print(k, ":", v)
+        ('G_0', ('C',)) : 1
+        ('G_1', ('C',), ('1',), ('H',)) : 2
+        ('G_1', ('C',), ('2',), ('O',)) : 1
+        ('G_6', ('C',), ('1',), ('H',), ('1',), ('H',), ('2',), ('O',)) : 1
 
     Labeled treelet extraction with pattern filters from a simple molecule
     :math:`(CH_2O)`:
@@ -263,8 +286,16 @@ def labeled_treelets(G, nodes=None, patterns=None, node_attrs=None, edge_attrs=N
         ...     G.add_edge(u, v, bond_type=bond)
         >>> nx.labeled_treelets(G, patterns="star")
         {('G_6', ('C',), ('1',), ('H',), ('1',), ('H',), ('2',), ('O',)): 1}
-        >>> nx.labeled_treelets(G, patterns=["path"])
-        {('G_0', ('C',)): 1, ('G_0', ('H',)): 2, ('G_0', ('O',)): 1, ('G_1', ('C',), ('1',), ('H',)): 2, ('G_2', ('H',), ('1',), ('C',), ('2',), ('O',)): 2, ('G_1', ('C',), ('2',), ('O',)): 1, ('G_2', ('H',), ('1',), ('C',), ('1',), ('H',)): 1}
+        >>> t = nx.labeled_treelets(G, patterns=["path"])
+        >>> for k, v in t.items():
+        ...     print(k, ":", v)
+        ('G_0', ('C',)) : 1
+        ('G_0', ('H',)) : 2
+        ('G_0', ('O',)) : 1
+        ('G_1', ('C',), ('1',), ('H',)) : 2
+        ('G_2', ('H',), ('1',), ('C',), ('2',), ('O',)) : 2
+        ('G_1', ('C',), ('2',), ('O',)) : 1
+        ('G_2', ('H',), ('1',), ('C',), ('1',), ('H',)) : 1
 
     See also
     --------
