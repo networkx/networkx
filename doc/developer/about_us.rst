@@ -156,6 +156,7 @@ to add your name to the bottom of the list.
 - Mohamed Rezk, Github: `mohamedrezk122 <https://github.com/mohamedrezk122>`_
 - Orion Sehn, GitHub: `OrionSehn <https://github.com/OrionSehn>`_ 
 - Berlin Cho, GitHub: `berlincho <https://github.com/berlincho>`_ 
+- Thomas Bauer, Github: `thomasbauer76 <https://github.com/thomasbauer76>`
 
 A supplementary (but still incomplete) list of contributors is given by the
 list of names that have commits in ``networkx``'s
