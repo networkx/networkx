@@ -1003,8 +1003,9 @@ def all_bounded_simple_paths(G, sources=None, length=None, exact_length=False):
         >>> G = nx.path_graph(4)
         >>> nx.all_bounded_simple_paths(G, sources=[0, 2], length=2)
         [(0, 1), (1, 2), (2, 3), (0, 1, 2)]
-        # Note: [2, 1, 0] is not returned because G is undirected and
-        # duplicate paths in reverse order are removed.
+        >>> # Note: [2, 1, 0] is not returned because G is undirected and
+        >>> # duplicate paths in reverse order are removed.
+
 
     Notes
     -----
