@@ -1042,9 +1042,7 @@ def all_bounded_simple_paths(G, sources=None, length=None, exact_length=False):
         find_paths_rec(G, node, length, exact_length, [node], all_paths)
 
     if not G.is_directed():
-        for path in all_paths:
-            inverted_path = path[::-1]
-            if inverted_path in all_paths:
-                all_paths.remove(inverted_path)
+        unique_paths = {tuple(min(path, path[::-1])) for path in all_paths}
+        all_paths = list(unique_paths)
 
     return all_paths

@@ -828,7 +828,7 @@ def test_all_bounded_simple_paths_with_sources():
 def test_all_bounded_simple_paths_multiple_sources():
     G = nx.path_graph(4)
     result = nx.all_bounded_simple_paths(G, sources=[0, 2], length=2)
-    expected = {(0, 1), (0, 1, 2), (2, 1), (2, 3)}
+    expected = {(0, 1), (0, 1, 2), (1, 2), (2, 3)}
     assert {tuple(p) for p in result} == expected
 
 
@@ -856,7 +856,7 @@ def test_all_bounded_simple_paths_star_graph_no_sources_no_length():
 def test_all_bounded_simple_paths_star_graph_with_sources():
     G = nx.star_graph(3)
     result = nx.all_bounded_simple_paths(G, sources=1)
-    expected = {(1, 0), (1, 0, 2), (1, 0, 3)}
+    expected = {(0, 1), (1, 0, 2), (1, 0, 3)}
     assert {tuple(p) for p in result} == expected
 
 
@@ -864,7 +864,7 @@ def test_all_bounded_simple_paths_star_graph_multiple_sources():
     G = nx.star_graph(3)
     result = nx.all_bounded_simple_paths(G, sources=[0, 3], length=2)
     # (3, 0) is not included because it is a reverse of (0, 3)
-    expected = {(0, 1), (0, 2), (0, 3), (3, 0, 1), (3, 0, 2)}
+    expected = {(0, 1), (0, 2), (0, 3), (2, 0, 3), (1, 0, 3)}
     assert {tuple(p) for p in result} == expected
 
 
@@ -888,5 +888,5 @@ def test_all_bounded_simple_paths_with_reverse_duplicate():
     G = nx.Graph()
     G.add_edges_from([(0, 1), (1, 2), (2, 3)])
     result = nx.all_bounded_simple_paths(G, sources=[0, 3], length=2)
-    expected = {(0, 1), (0, 1, 2), (3, 2), (3, 2, 1)}
+    expected = {(0, 1), (0, 1, 2), (2, 3), (1, 2, 3)}
     assert {tuple(p) for p in result} == expected
