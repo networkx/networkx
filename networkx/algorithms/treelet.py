@@ -33,10 +33,12 @@ def treelets(G, nodes=None, patterns=None):
     """
     Compute treelets of a graph.
 
-    A treelet is a small, connected, acyclic subgraph (tree-like structure)
-    of a graph, typically limited to 6 nodes. Treelets capture local structural
-    patterns and are useful in applications such as graph kernels and pattern
-    recognition.
+    A labeled treelet is a small, connected, acyclic subgraph (tree-like structure)
+    of a graph. In this implementation, we limit treelets to a maximum of 6 nodes
+    (5 edges) based on experimental observations from [2]_, which found that
+    increasing motif size beyond this point does not significantly improve
+    predictive performance. Treelets capture local structural patterns and are
+    useful in applications such as graph kernels and pattern recognition.
 
     This function extracts treelets from a NetworkX graph. It returns the
     treelet indices (see *Notes*) and their occurrences. The extraction follows
@@ -137,6 +139,9 @@ def treelets(G, nodes=None, patterns=None):
     .. [1] B. Gaüzère, L. Brun, D. Villemin, "Two New Graphs Kernels in
         Chemoinformatics", Pattern Recognition Letters, 2012, 33 (15),
         2038-2047.
+    .. [2] N. Wale, I. Watson, G. Karypis, "Comparison of descriptor spaces for
+        chemical compound retrieval and classification." Knowledge and Information
+        Systems, 14(3):347-375, 2008.
     """
     return _treelets(G, nodes, False, None, None, patterns)
 
@@ -147,9 +152,12 @@ def labeled_treelets(G, nodes=None, patterns=None, node_attrs=None, edge_attrs=N
     Compute labeled treelets of a graph.
 
     A labeled treelet is a small, connected, acyclic subgraph (tree-like structure)
-    of a graph, typically limited to 6 nodes, where node and edge attributes are also
-    considered. Treelets capture local structural patterns and are useful in
-    applications such as graph kernels and pattern recognition.
+    of a graph, where node and edge attributes are also considered. In this
+    implementation, we limit treelets to a maximum of 6 nodes (5 edges) based on
+    experimental observations from [2]_, which found that increasing motif size
+    beyond this point does not significantly improve predictive performance.
+    Treelets capture local structural patterns and are useful in applications such
+    as graph kernels and pattern recognition.
 
     This function extracts labeled treelets from a NetworkX graph. It returns the
     treelet codes (see *Notes*) and their occurrences. The extraction follows
@@ -306,6 +314,9 @@ def labeled_treelets(G, nodes=None, patterns=None, node_attrs=None, edge_attrs=N
     .. [1] B. Gaüzère, L. Brun, D. Villemin, "Two New Graphs Kernels in
         Chemoinformatics", Pattern Recognition Letters, 2012, 33 (15),
         2038-2047.
+    .. [2] N. Wale, I. Watson, G. Karypis, "Comparison of descriptor spaces for
+        chemical compound retrieval and classification." Knowledge and Information
+        Systems, 14(3):347-375, 2008.
     """
     if node_attrs is None:
         node_attrs = list({key for _, attrs in G.nodes(data=True) for key in attrs})
