@@ -14,6 +14,8 @@ from itertools import chain, combinations, product
 
 import networkx as nx
 
+__all__ = ["treelets", "labeled_treelets"]
+
 STAR_INDEX_LEAVES = {
     "G_6": 3,
     "G_8": 4,
