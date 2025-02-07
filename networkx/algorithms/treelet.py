@@ -397,9 +397,9 @@ def _linear_treelets(G, nodes, unlabeled, node_attrs, edge_attrs):
                             for edge_attr in edge_attrs
                         )
                     )
-            path_code = tuple(
-                ["G_" + str(len(path) - 1)]
-                + (path_keys if G.is_directed() else min(path_keys, path_keys[::-1]))
+            path_code = (
+                "G_" + str(len(path) - 1),
+                *(path_keys if G.is_directed() else min(path_keys, path_keys[::-1])),
             )
         if path_code in codes:
             codes[path_code] += 1
@@ -476,15 +476,12 @@ def _update_pure_star_patterns(
                 )
             )
         star_keys.sort()
-        star_code = tuple(
-            [index]
-            + [
-                tuple(
-                    G.nodes[star_nodes[0]].get(node_attr, None)
-                    for node_attr in node_attrs
-                )
-            ]
-            + list(chain.from_iterable(star_keys))
+        star_code = (
+            index,
+            tuple(
+                G.nodes[star_nodes[0]].get(node_attr, None) for node_attr in node_attrs
+            ),
+            *chain.from_iterable(star_keys),
         )
     if star_code in codes:
         codes[star_code] += 1
@@ -560,22 +557,18 @@ def _update_g_7_11_patterns(
                     )
                 )
         g_7_11_keys.sort()
-        g_7_11_code = tuple(
-            [EXT_1_STAR[n_leaves]]
-            + [
-                tuple(
-                    G.nodes[star_nodes[0]].get(node_attr, None)
-                    for node_attr in node_attrs
-                ),
-                tuple(
-                    G[star_nodes[0]][leaf].get(edge_attr, None)
-                    for edge_attr in edge_attrs
-                ),
-                tuple(G.nodes[leaf].get(node_attr, None) for node_attr in node_attrs),
-                tuple(G[leaf][node].get(edge_attr, None) for edge_attr in edge_attrs),
-                tuple(G.nodes[node].get(node_attr, None) for node_attr in node_attrs),
-            ]
-            + list(chain.from_iterable(g_7_11_keys))
+        g_7_11_code = (
+            EXT_1_STAR[n_leaves],
+            tuple(
+                G.nodes[star_nodes[0]].get(node_attr, None) for node_attr in node_attrs
+            ),
+            tuple(
+                G[star_nodes[0]][leaf].get(edge_attr, None) for edge_attr in edge_attrs
+            ),
+            tuple(G.nodes[leaf].get(node_attr, None) for node_attr in node_attrs),
+            tuple(G[leaf][node].get(edge_attr, None) for edge_attr in edge_attrs),
+            tuple(G.nodes[node].get(node_attr, None) for node_attr in node_attrs),
+            *chain.from_iterable(g_7_11_keys),
         )
     if g_7_11_code in codes:
         codes[g_7_11_code] += 1
@@ -608,39 +601,34 @@ def _update_g_10_pattern(
                             )
                         )
                 star_keys.sort()
-                g_10_code = tuple(
-                    ["G_10"]
-                    + [
-                        tuple(
-                            G.nodes[leaf].get(node_attr, None)
-                            for node_attr in node_attrs
-                        ),
-                        tuple(
-                            G[leaf][star_nodes[0]].get(edge_attr, None)
-                            for edge_attr in edge_attrs
-                        ),
-                        tuple(
-                            G.nodes[star_nodes[0]].get(node_attr, None)
-                            for node_attr in node_attrs
-                        ),
-                        *chain.from_iterable(star_keys),
-                        tuple(
-                            G[leaf][node].get(edge_attr, None)
-                            for edge_attr in edge_attrs
-                        ),
-                        tuple(
-                            G.nodes[node].get(node_attr, None)
-                            for node_attr in node_attrs
-                        ),
-                        tuple(
-                            G[node][node_ext].get(edge_attr, None)
-                            for edge_attr in edge_attrs
-                        ),
-                        tuple(
-                            G.nodes[node_ext].get(node_attr, None)
-                            for node_attr in node_attrs
-                        ),
-                    ]
+                g_10_code = (
+                    "G_10",
+                    tuple(
+                        G.nodes[leaf].get(node_attr, None) for node_attr in node_attrs
+                    ),
+                    tuple(
+                        G[leaf][star_nodes[0]].get(edge_attr, None)
+                        for edge_attr in edge_attrs
+                    ),
+                    tuple(
+                        G.nodes[star_nodes[0]].get(node_attr, None)
+                        for node_attr in node_attrs
+                    ),
+                    *chain.from_iterable(star_keys),
+                    tuple(
+                        G[leaf][node].get(edge_attr, None) for edge_attr in edge_attrs
+                    ),
+                    tuple(
+                        G.nodes[node].get(node_attr, None) for node_attr in node_attrs
+                    ),
+                    tuple(
+                        G[node][node_ext].get(edge_attr, None)
+                        for edge_attr in edge_attrs
+                    ),
+                    tuple(
+                        G.nodes[node_ext].get(node_attr, None)
+                        for node_attr in node_attrs
+                    ),
                 )
             if g_10_code in codes:
                 codes[g_10_code] += 1
@@ -712,38 +700,23 @@ def _update_g_12_pattern(codes, G, star_nodes, leaf, unlabeled, node_attrs, edge
                         ),
                     ]
                     second_star_keys.sort()
-                    g_12_keys = [
-                        tuple(
-                            G[first_node][second_node].get(edge_attr, None)
-                            for edge_attr in edge_attrs
-                        ),
-                        tuple(
-                            G.nodes[second_node].get(node_attr, None)
-                            for node_attr in node_attrs
-                        ),
-                        *chain.from_iterable(second_star_keys),
-                        *chain.from_iterable(first_star_keys),
-                    ]
-                    g_12_keys.sort()
                     g_12_codes.append(
-                        tuple(
-                            ["G_12"]
-                            + [
-                                tuple(
-                                    G.nodes[first_node].get(node_attr, None)
-                                    for node_attr in node_attrs
-                                ),
-                                tuple(
-                                    G[first_node][second_node].get(edge_attr, None)
-                                    for edge_attr in edge_attrs
-                                ),
-                                tuple(
-                                    G.nodes[second_node].get(node_attr, None)
-                                    for node_attr in node_attrs
-                                ),
-                                *chain.from_iterable(second_star_keys),
-                                *chain.from_iterable(first_star_keys),
-                            ]
+                        (
+                            "G_12",
+                            tuple(
+                                G.nodes[first_node].get(node_attr, None)
+                                for node_attr in node_attrs
+                            ),
+                            tuple(
+                                G[first_node][second_node].get(edge_attr, None)
+                                for edge_attr in edge_attrs
+                            ),
+                            tuple(
+                                G.nodes[second_node].get(node_attr, None)
+                                for node_attr in node_attrs
+                            ),
+                            *chain.from_iterable(second_star_keys),
+                            *chain.from_iterable(first_star_keys),
                         )
                     )
                 g_12_code = min(g_12_codes)
@@ -801,23 +774,21 @@ def _update_g_9_pattern(codes, G, star_nodes, unlabeled, node_attrs, edge_attrs)
                         ),
                     ]
                     g_9_keys.sort()
-                    g_9_code = tuple(
-                        ["G_9"]
-                        + [
-                            tuple(
-                                G.nodes[star_nodes[0]].get(node_attr, None)
-                                for node_attr in node_attrs
-                            ),
-                            *chain.from_iterable(g_9_keys),
-                            tuple(
-                                G[star_nodes[0]][missing_leaf].get(edge_attr, None)
-                                for edge_attr in edge_attrs
-                            ),
-                            tuple(
-                                G.nodes[missing_leaf].get(node_attr, None)
-                                for node_attr in node_attrs
-                            ),
-                        ]
+                    g_9_code = (
+                        "G_9",
+                        tuple(
+                            G.nodes[star_nodes[0]].get(node_attr, None)
+                            for node_attr in node_attrs
+                        ),
+                        *chain.from_iterable(g_9_keys),
+                        tuple(
+                            G[star_nodes[0]][missing_leaf].get(edge_attr, None)
+                            for edge_attr in edge_attrs
+                        ),
+                        tuple(
+                            G.nodes[missing_leaf].get(node_attr, None)
+                            for node_attr in node_attrs
+                        ),
                     )
                 if g_9_code in codes:
                     codes[g_9_code] += 1
