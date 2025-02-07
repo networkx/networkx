@@ -982,8 +982,8 @@ def all_bounded_simple_paths(G, sources=None, length=None, exact_length=False):
 
     Returns
     -------
-    paths : list of lists
-        A list of simple paths, where each path is represented as a list of nodes.
+    paths : list of tuples
+        A list of simple paths, where each path is represented as a tuple of nodes.
 
     Examples
     --------
@@ -991,17 +991,19 @@ def all_bounded_simple_paths(G, sources=None, length=None, exact_length=False):
 
         >>> G = nx.path_graph(4)
         >>> nx.all_bounded_simple_paths(G, sources=0, length=2)
-        [[0, 1], [0, 1, 2]]
+        [(0, 1), (0, 1, 2)]
 
     Finding all simple paths of exactly length 2:
 
+        >>> G = nx.path_graph(4)
         >>> nx.all_bounded_simple_paths(G, sources=0, length=2, exact_length=True)
-        [[0, 1, 2]]
+        [(0, 1, 2)]
 
     Finding paths from multiple source nodes:
 
+        >>> G = nx.path_graph(4)
         >>> nx.all_bounded_simple_paths(G, sources=[0, 2], length=2)
-        [[0, 1], [0, 1, 2], [2, 1], [2, 3]]
+        [(0, 1), (1, 2), (2, 3), (0, 1, 2)]
         # Note: [2, 1, 0] is not returned because G is undirected and
         # duplicate paths in reverse order are removed.
 
@@ -1022,7 +1024,7 @@ def all_bounded_simple_paths(G, sources=None, length=None, exact_length=False):
         if (not exact_length and len(path) > 1) or (
             exact_length and len(path) - 1 == length
         ):
-            paths.append(path)
+            paths.append(tuple(path))
         if length is None or len(path) - 1 < length:
             for neighbour in G[node]:
                 if neighbour not in path:
@@ -1042,7 +1044,7 @@ def all_bounded_simple_paths(G, sources=None, length=None, exact_length=False):
         find_paths_rec(G, node, length, exact_length, [node], all_paths)
 
     if not G.is_directed():
-        unique_paths = {tuple(min(path, path[::-1])) for path in all_paths}
+        unique_paths = {min(path, path[::-1]) for path in all_paths}
         all_paths = list(unique_paths)
 
     return all_paths
