@@ -49,15 +49,25 @@ def get_flowcost_from_flowdict(G, flowDict):
 def test_infinite_demand_raise(simple_flow_graph):
     G = simple_flow_graph
     inf = float("inf")
-    nx.set_node_attributes(G, {"a": {"demand": inf}})
-    pytest.raises(nx.NetworkXError, nx.network_simplex, G)
+    node_name = "a"
+    nx.set_node_attributes(G, {node_name: {"demand": inf}})
+    with pytest.raises(
+        nx.NetworkXError,
+        match=f"Invalid input: Node '{node_name}' has an infinite absolute demand, which is not allowed.",
+    ):
+        nx.network_simplex(G)
 
 
 def test_neg_infinite_demand_raise(simple_flow_graph):
     G = simple_flow_graph
     inf = float("inf")
-    nx.set_node_attributes(G, {"a": {"demand": -inf}})
-    pytest.raises(nx.NetworkXError, nx.network_simplex, G)
+    node_name = "a"
+    nx.set_node_attributes(G, {node_name: {"demand": -inf}})
+    with pytest.raises(
+        nx.NetworkXError,
+        match=f"Invalid input: Node '{node_name}' has an infinite absolute demand, which is not allowed.",
+    ):
+        nx.network_simplex(G)
 
 
 def test_infinite_weight_raise(simple_flow_graph):
@@ -66,30 +76,50 @@ def test_infinite_weight_raise(simple_flow_graph):
     nx.set_edge_attributes(
         G, {("a", "b"): {"weight": inf}, ("b", "d"): {"weight": inf}}
     )
-    pytest.raises(nx.NetworkXError, nx.network_simplex, G)
+    with pytest.raises(
+        nx.NetworkXError,
+        match=r"Invalid input: Edge .* has an infinite absolute weight, making the cost computation undefined.",
+    ):
+        nx.network_simplex(G)
 
 
 def test_nonzero_net_demand_raise(simple_flow_graph):
     G = simple_flow_graph
     nx.set_node_attributes(G, {"b": {"demand": -4}})
-    pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+    with pytest.raises(
+        nx.NetworkXUnfeasible,
+        match="Flow infeasible: The total supply does not match the total demand.",
+    ):
+        nx.network_simplex(G)
 
 
 def test_negative_capacity_raise(simple_flow_graph):
     G = simple_flow_graph
     nx.set_edge_attributes(G, {("a", "b"): {"weight": 1}, ("b", "d"): {"capacity": -9}})
-    pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+    with pytest.raises(
+        nx.NetworkXUnfeasible,
+        match=r"Invalid input: Edge .* has a negative capacity, which is not allowed.",
+    ):
+        nx.network_simplex(G)
 
 
 def test_no_flow_satisfying_demands(simple_no_flow_graph):
     G = simple_no_flow_graph
-    pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+    with pytest.raises(
+        nx.NetworkXUnfeasible,
+        match="Flow infeasible: The network cannot satisfy all node demands due to capacity constraints.",
+    ):
+        nx.network_simplex(G)
 
 
 def test_sum_demands_not_zero(simple_no_flow_graph):
     G = simple_no_flow_graph
     nx.set_node_attributes(G, {"t": {"demand": 4}})
-    pytest.raises(nx.NetworkXUnfeasible, nx.network_simplex, G)
+    with pytest.raises(
+        nx.NetworkXUnfeasible,
+        match="Flow infeasible: The total supply does not match the total demand.",
+    ):
+        nx.network_simplex(G)
 
 
 def test_google_or_tools_example():
@@ -448,7 +478,7 @@ def test_network_simplex_large_capacities(
     flow_value, flow_dict = nx.network_simplex(graph)
 
 
-def test_network_simplex_exceeding_faux_infinity():
+def test_network_simplex_unbounded_flow():
     G = nx.DiGraph()
     # Add nodes
     G.add_node("A")
@@ -461,6 +491,7 @@ def test_network_simplex_exceeding_faux_infinity():
     G.add_edge("C", "A", weight=-5)
 
     with pytest.raises(
-        NetworkXUnbounded, match="negative cycle with infinite capacity found"
+        NetworkXUnbounded,
+        match="Unbounded flow detected: A negative-weight cycle with infinite capacity allows indefinite cost reduction.",
     ):
         nx.network_simplex(G)
