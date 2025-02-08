@@ -72,7 +72,7 @@ doc = [
     'pillow>=10',
     'texext>=0.6.7',
     'myst-nb>=1.1',
-    'intersphinx_registry',
+    'intersphinx-registry',
 ]
 example = [
     'osmnx>=2.0.0',
