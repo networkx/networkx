@@ -1713,16 +1713,18 @@ def generate_random_paths(
     By passing a dictionary into `index_map`, it will build an
     inverted index mapping of nodes to the paths in which that node is present:
 
-    >>> G = nx.star_graph(3)
+    >>> G = nx.wheel_graph(10)
     >>> index_map = {}
     >>> random_paths = list(
-    ...     nx.generate_random_paths(G, 3, index_map=index_map, seed=42)
+    ...     nx.generate_random_paths(G, sample_size=3, index_map=index_map, seed=2771)
     ... )
+    >>> random_paths
+    [[3, 2, 1, 9, 8, 7], [4, 0, 5, 6, 7, 8], [3, 0, 5, 0, 9, 8]]
     >>> paths_containing_node_0 = [
     ...     random_paths[path_idx] for path_idx in index_map.get(0, [])
     ... ]
     >>> paths_containing_node_0
-    [[2, 0, 1, 0, 2, 0], [2, 0, 3, 0, 3, 0], [1, 0, 3, 0, 3, 0]]
+    [[4, 0, 5, 6, 7, 8], [3, 0, 5, 0, 9, 8]]
 
     References
     ----------
