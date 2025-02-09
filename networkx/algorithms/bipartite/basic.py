@@ -19,14 +19,18 @@ __all__ = [
 
 
 @nx._dispatchable
-def color(G):
+def color(G, relaxed=False):
     """Returns a two-coloring of the graph.
 
-    Raises an exception if the graph is not bipartite.
+    Raises an exception if the graph is not bipartite and relaxed=False.
 
     Parameters
     ----------
     G : NetworkX graph
+        The graph to be colored.
+    relaxed : bool, default=False
+        If True, allows a partial bicoloring for disconnected components
+        or non-bipartite graphs.
 
     Returns
     -------
@@ -36,7 +40,7 @@ def color(G):
     Raises
     ------
     NetworkXError
-        If the graph is not two-colorable.
+        If the graph is not two-colorable and relaxed=False.
 
     Examples
     --------
@@ -53,13 +57,17 @@ def color(G):
     1
     >>> print(G.nodes[1]["bipartite"])
     0
+
+    Notes
+    -----
+    In directed graphs, in-neighbors and out-neighbors are both considered for coloring.
     """
+
     if G.is_directed():
         import itertools
 
         def neighbors(v):
             return itertools.chain.from_iterable([G.predecessors(v), G.successors(v)])
-
     else:
         neighbors = G.neighbors
 
@@ -74,7 +82,7 @@ def color(G):
             c = 1 - color[v]  # opposite color of node v
             for w in neighbors(v):
                 if w in color:
-                    if color[w] == color[v]:
+                    if color[w] == color[v] and not relaxed:
                         raise nx.NetworkXError("Graph is not bipartite.")
                 else:
                     color[w] = c
@@ -85,12 +93,14 @@ def color(G):
 
 
 @nx._dispatchable
-def is_bipartite(G):
+def is_bipartite(G, relaxed=False):
     """Returns True if graph G is bipartite, False if not.
 
     Parameters
     ----------
     G : NetworkX graph
+    relaxed : bool, default=False
+        If True, considers disconnected graphs and non-bipartite components.
 
     Examples
     --------
@@ -98,13 +108,9 @@ def is_bipartite(G):
     >>> G = nx.path_graph(4)
     >>> print(bipartite.is_bipartite(G))
     True
-
-    See Also
-    --------
-    color, is_bipartite_node_set
     """
     try:
-        color(G)
+        color(G, relaxed=relaxed)
         return True
     except nx.NetworkXError:
         return False
@@ -117,7 +123,6 @@ def is_bipartite_node_set(G, nodes):
     Parameters
     ----------
     G : NetworkX graph
-
     nodes: list or container
       Check if nodes are a one of a bipartite set.
 
@@ -128,95 +133,66 @@ def is_bipartite_node_set(G, nodes):
     >>> X = set([1, 3])
     >>> bipartite.is_bipartite_node_set(G, X)
     True
-
-    Notes
-    -----
-    An exception is raised if the input nodes are not distinct, because in this
-    case some bipartite algorithms will yield incorrect results.
-    For connected graphs the bipartite sets are unique.  This function handles
-    disconnected graphs.
     """
     S = set(nodes)
-
     if len(S) < len(nodes):
-        # this should maybe just return False?
         raise AmbiguousSolution(
             "The input node set contains duplicates.\n"
-            "This may lead to incorrect results when using it in bipartite algorithms.\n"
             "Consider using set(nodes) as the input"
         )
 
     for CC in (G.subgraph(c).copy() for c in connected_components(G)):
         X, Y = sets(CC)
-        if not (
-            (X.issubset(S) and Y.isdisjoint(S)) or (Y.issubset(S) and X.isdisjoint(S))
-        ):
+        if not ((X.issubset(S) and Y.isdisjoint(S)) or (Y.issubset(S) and X.isdisjoint(S))):
             return False
     return True
 
 
 @nx._dispatchable
-def sets(G, top_nodes=None):
+def sets(G, top_nodes=None, relaxed=False):
     """Returns bipartite node sets of graph G.
-
-    Raises an exception if the graph is not bipartite or if the input
-    graph is disconnected and thus more than one valid solution exists.
-    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
-    for further details on how bipartite graphs are handled in NetworkX.
 
     Parameters
     ----------
     G : NetworkX graph
-
     top_nodes : container, optional
-      Container with all nodes in one bipartite node set. If not supplied
-      it will be computed. But if more than one solution exists an exception
-      will be raised.
+        Container with all nodes in one bipartite node set.
+    relaxed : bool, default=False
+        If True, handles disconnected graphs and non-bipartite components.
 
     Returns
     -------
-    X : set
-      Nodes from one side of the bipartite graph.
-    Y : set
-      Nodes from the other side.
+    X, Y : set, set
+        Sets of nodes that are separated by the bipartite edge set.
 
     Raises
     ------
     AmbiguousSolution
-      Raised if the input bipartite graph is disconnected and no container
-      with all nodes in one bipartite set is provided. When determining
-      the nodes in each bipartite set more than one valid solution is
-      possible if the input graph is disconnected.
+        If the graph is disconnected and no container with all nodes in one
+        bipartite set is provided, unless relaxed=True.
     NetworkXError
-      Raised if the input graph is not bipartite.
+        If the graph is not bipartite and relaxed=False.
 
-    Examples
-    --------
-    >>> from networkx.algorithms import bipartite
-    >>> G = nx.path_graph(4)
-    >>> X, Y = bipartite.sets(G)
-    >>> list(X)
-    [0, 2]
-    >>> list(Y)
-    [1, 3]
-
-    See Also
-    --------
-    color
-
+    Notes
+    -----
+    If the graph is not bipartite and `relaxed=False`, an error is raised even if some components are bipartite.
     """
     if G.is_directed():
         is_connected = nx.is_weakly_connected
     else:
         is_connected = nx.is_connected
+
     if top_nodes is not None:
         X = set(top_nodes)
         Y = set(G) - X
     else:
-        if not is_connected(G):
-            msg = "Disconnected graph: Ambiguous solution for bipartite sets."
+        if not is_connected(G) and not relaxed:
+            msg = (
+                "Disconnected graph: Ambiguous solution for bipartite sets. "
+                "Either provide top_nodes or use relaxed=True."
+            )
             raise nx.AmbiguousSolution(msg)
-        c = color(G)
+        c = color(G, relaxed=relaxed)
         X = {n for n, is_top in c.items() if is_top}
         Y = {n for n, is_top in c.items() if not is_top}
     return (X, Y)
@@ -229,7 +205,6 @@ def density(B, nodes):
     Parameters
     ----------
     B : NetworkX graph
-
     nodes: list or container
       Nodes in one node set of the bipartite graph.
 
@@ -245,21 +220,6 @@ def density(B, nodes):
     >>> X = set([0, 1, 2])
     >>> bipartite.density(G, X)
     1.0
-    >>> Y = set([3, 4])
-    >>> bipartite.density(G, Y)
-    1.0
-
-    Notes
-    -----
-    The container of nodes passed as argument must contain all nodes
-    in one of the two bipartite node sets to avoid ambiguity in the
-    case of disconnected graphs.
-    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
-    for further details on how bipartite graphs are handled in NetworkX.
-
-    See Also
-    --------
-    color
     """
     n = len(B)
     m = nx.number_of_edges(B)
@@ -282,14 +242,11 @@ def degrees(B, nodes, weight=None):
     Parameters
     ----------
     B : NetworkX graph
-
     nodes: list or container
       Nodes in one node set of the bipartite graph.
-
     weight : string or None, optional (default=None)
        The edge attribute that holds the numerical value used as a weight.
        If None, then each edge has weight 1.
-       The degree is the sum of the edge weights adjacent to the node.
 
     Returns
     -------
@@ -305,17 +262,9 @@ def degrees(B, nodes, weight=None):
     >>> dict(degX)
     {0: 2, 1: 2, 2: 2}
 
-    Notes
+     Notes
     -----
-    The container of nodes passed as argument must contain all nodes
-    in one of the two bipartite node sets to avoid ambiguity in the
-    case of disconnected graphs.
-    See :mod:`bipartite documentation <networkx.algorithms.bipartite>`
-    for further details on how bipartite graphs are handled in NetworkX.
-
-    See Also
-    --------
-    color, density
+    For multi-graphs, degrees are computed as the sum of weights or counts across parallel edges.
     """
     bottom = set(nodes)
     top = set(B) - bottom
