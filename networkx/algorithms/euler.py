@@ -20,7 +20,7 @@ __all__ = [
 
 @nx._dispatchable
 def is_eulerian(G):
-    """Returns True if and only if `G` is Eulerian.
+    """Return True if and only if `G` is Eulerian.
 
     A graph is *Eulerian* if it has an Eulerian circuit. An *Eulerian
     circuit* is a closed walk that includes each edge of a graph exactly
@@ -157,7 +157,7 @@ def _multigraph_eulerian_circuit(G, source):
 
 @nx._dispatchable
 def eulerian_circuit(G, source=None, keys=False):
-    """Returns an iterator over the edges of an Eulerian circuit in `G`.
+    """Yield edges of an Eulerian circuit in `G`.
 
     An *Eulerian circuit* is a closed walk that includes each edge of a
     graph exactly once.
@@ -175,10 +175,10 @@ def eulerian_circuit(G, source=None, keys=False):
        ``(u, v)``. Otherwise, edges will be of the form ``(u, v, k)``.
        This option is ignored unless `G` is a multigraph.
 
-    Returns
-    -------
-    edges : iterator
-       An iterator over edges in the Eulerian circuit.
+    Yields
+    ------
+    edge : tuple
+       Each edge in the Eulerian circuit.
 
     Raises
     ------
@@ -333,7 +333,7 @@ def has_eulerian_path(G, source=None):
 
 @nx._dispatchable
 def eulerian_path(G, source=None, keys=False):
-    """Return an iterator over the edges of an Eulerian path in `G`.
+    """Yield edges of an Eulerian path in `G`.
 
     Parameters
     ----------
@@ -348,7 +348,8 @@ def eulerian_path(G, source=None, keys=False):
 
     Yields
     ------
-    Edge tuples along the eulerian path.
+    edge : tuple
+        Each edge along the Eulerian path.
 
     Warning: If `source` provided is not the start node of an Euler path
     will raise error even if an Euler Path exists.

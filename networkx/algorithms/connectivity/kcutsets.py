@@ -24,7 +24,7 @@ __all__ = ["all_node_cuts"]
 
 @nx._dispatchable
 def all_node_cuts(G, k=None, flow_func=None):
-    r"""Returns all minimum k cutsets of an undirected graph G.
+    r"""Yield all minimum k cutsets of an undirected graph G.
 
     This implementation is based on Kanevsky's algorithm [1]_ for finding all
     minimum-size node cut-sets of an undirected graph G; ie the set (or sets)
@@ -48,10 +48,10 @@ def all_node_cuts(G, k=None, flow_func=None):
         perform better in denser graphs.
 
 
-    Returns
-    -------
-    cuts : a generator of node cutsets
-        Each node cutset has cardinality equal to the node connectivity of
+    Yields
+    ------
+    cuts : set of nodes
+        Each node cutset with cardinality equal to the node connectivity of
         the input graph.
 
     Examples

@@ -13,18 +13,17 @@ __all__ = [
 @not_implemented_for("undirected")
 @nx._dispatchable
 def weakly_connected_components(G):
-    """Generate weakly connected components of G.
+    """Yield nodes of weakly connected components of G.
 
     Parameters
     ----------
     G : NetworkX graph
         A directed graph
 
-    Returns
-    -------
-    comp : generator of sets
-        A generator of sets of nodes, one for each weakly connected
-        component of G.
+    Yields
+    ------
+    comp : set
+       Set of nodes of a weakly connected component of G.
 
     Raises
     ------

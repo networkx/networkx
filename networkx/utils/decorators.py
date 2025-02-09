@@ -1168,7 +1168,7 @@ class argmap:
 
     @staticmethod
     def _flatten(nestlist, visited):
-        """flattens a recursive list of lists that doesn't have cyclic references
+        """Flatten a recursive list of lists that doesn't have cyclic references.
 
         Parameters
         ----------

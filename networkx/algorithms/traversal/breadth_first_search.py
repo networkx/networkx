@@ -18,7 +18,7 @@ __all__ = [
 
 @nx._dispatchable
 def generic_bfs_edges(G, source, neighbors=None, depth_limit=None):
-    """Iterate over edges in a breadth-first search.
+    """Yield edges in a breadth-first search.
 
     The breadth-first search begins at `source` and enqueues the
     neighbors of newly visited nodes specified by the `neighbors`
@@ -47,7 +47,7 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None):
     Yields
     ------
     edge
-        Edges in the breadth-first search starting from `source`.
+        Edge in the breadth-first search starting from `source`.
 
     Examples
     --------
@@ -107,7 +107,7 @@ def generic_bfs_edges(G, source, neighbors=None, depth_limit=None):
 
 @nx._dispatchable
 def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
-    """Iterate over edges in a breadth-first-search starting at source.
+    """Yield edges in a breadth-first-search starting at source.
 
     Parameters
     ----------
@@ -131,8 +131,8 @@ def bfs_edges(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
 
     Yields
     ------
-    edge: 2-tuple of nodes
-       Yields edges resulting from the breadth-first search.
+    edge : 2-tuple of nodes
+       Each edge resulting from the breadth-first search.
 
     Examples
     --------
@@ -264,7 +264,7 @@ def bfs_tree(G, source, reverse=False, depth_limit=None, sort_neighbors=None):
 
 @nx._dispatchable
 def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
-    """Returns an iterator of predecessors in breadth-first-search from source.
+    """Yield predecessors in breadth-first-search from source.
 
     Parameters
     ----------
@@ -281,11 +281,11 @@ def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
         returns an iterable of the same nodes with a custom ordering.
         For example, `sorted` will sort the nodes in increasing order.
 
-    Returns
-    -------
-    pred: iterator
-        (node, predecessor) iterator where `predecessor` is the predecessor of
-        `node` in a breadth first search starting from `source`.
+    Yields
+    ------
+    (node, predecessor) : tuple
+        `predecessor` is the predecessor of `node` in a breadth first search
+        starting from `source`.
 
     Examples
     --------
@@ -330,7 +330,7 @@ def bfs_predecessors(G, source, depth_limit=None, sort_neighbors=None):
 
 @nx._dispatchable
 def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
-    """Returns an iterator of successors in breadth-first-search from source.
+    """Yield successors in breadth-first-search from source.
 
     Parameters
     ----------
@@ -347,12 +347,11 @@ def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
         returns an iterable of the same nodes with a custom ordering.
         For example, `sorted` will sort the nodes in increasing order.
 
-    Returns
-    -------
-    succ: iterator
-       (node, successors) iterator where `successors` is the non-empty list of
-       successors of `node` in a breadth first search from `source`.
-       To appear in the iterator, `node` must have successors.
+    Yields
+    ------
+    (node, successors) : tuple
+       `successors` is the non-empty list of successors of `node` in a breadth first
+        search from `source`. To appear in the iterator, `node` must have successors.
 
     Examples
     --------
@@ -404,7 +403,7 @@ def bfs_successors(G, source, depth_limit=None, sort_neighbors=None):
 
 @nx._dispatchable
 def bfs_layers(G, sources):
-    """Returns an iterator of all the layers in breadth-first search traversal.
+    """Yield all the layers in breadth-first search traversal.
 
     Parameters
     ----------
@@ -416,8 +415,8 @@ def bfs_layers(G, sources):
 
     Yields
     ------
-    layer: list of nodes
-        Yields list of nodes at the same distance from sources
+    layer : list of nodes
+        List of nodes at the same distance from sources
 
     Examples
     --------
@@ -462,7 +461,7 @@ LEVEL_EDGE = "level"
 
 @nx._dispatchable
 def bfs_labeled_edges(G, sources):
-    """Iterate over edges in a breadth-first search (BFS) labeled by type.
+    """Yield edges in a breadth-first search (BFS) labeled by type.
 
     We generate triple of the form (*u*, *v*, *d*), where (*u*, *v*) is the
     edge being explored in the breadth-first search and *d* is one of the
@@ -486,8 +485,8 @@ def bfs_labeled_edges(G, sources):
 
     Yields
     ------
-    edges: generator
-       A generator of triples (*u*, *v*, *d*) where (*u*, *v*) is the edge being
+    edge : tuple
+       Edge as a triple (*u*, *v*, *d*) where (*u*, *v*) is the edge being
        explored and *d* is described above.
 
     Examples
