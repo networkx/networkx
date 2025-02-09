@@ -28,8 +28,6 @@ def remove_isolated_vertices(G, k, vc):
     k_new = k
     g_new = G
 
-    to_remove_from_vertex_cover = set()
-    to_add_to_vertex_cover = set()
     is_k_vc_possible = True
 
     if k <= 0:
@@ -37,9 +35,8 @@ def remove_isolated_vertices(G, k, vc):
             applied,
             g_new,
             k_new,
-            to_remove_from_vertex_cover,
-            to_add_to_vertex_cover,
             is_k_vc_possible,
+            None,
         )
 
     isolated_vertices = isolates(G)
@@ -49,16 +46,18 @@ def remove_isolated_vertices(G, k, vc):
         applied = True
         # k_new = k
 
-    if applied:
-        print("removed isolated vertex")
+    def function_to_be_applied(is_k_vc_exists, vc):
+        if not is_k_vc_exists:
+            return
+        # no need to add isolated vertices
+        return
 
     return (
         applied,
         g_new,
         k_new,
-        to_remove_from_vertex_cover,
-        to_add_to_vertex_cover,
         is_k_vc_possible,
+        None,
     )
 
 
@@ -67,8 +66,6 @@ def remove_self_loops(G, k, vc):
     applied = False
     k_new = k
     g_new = G
-    to_remove_from_vertex_cover = set()
-    to_add_to_vertex_cover = set()
     is_k_vc_possible = True
     self_loop_node = None
 
@@ -80,16 +77,19 @@ def remove_self_loops(G, k, vc):
     if self_loop_node is not None:
         g_new.remove_node(self_loop_node)
         k_new = k - 1
-        to_add_to_vertex_cover = {self_loop_node}
         applied = True
+
+    def function_to_be_applied(is_k_vc_exists, vc):
+        if not is_k_vc_exists:
+            return
+        vc.update([self_loop_node])
 
     return (
         applied,
         g_new,
         k_new,
-        to_remove_from_vertex_cover,
-        to_add_to_vertex_cover,
         is_k_vc_possible,
+        function_to_be_applied,
     )
 
 
@@ -98,8 +98,6 @@ def deg_one_preprocessing(G, k, vc):
     applied = False
     k_new = k
     g_new = G
-    to_remove_from_vertex_cover = set()
-    to_add_to_vertex_cover = set()
     is_k_vc_possible = True
 
     if k <= 0:
@@ -107,9 +105,8 @@ def deg_one_preprocessing(G, k, vc):
             applied,
             g_new,
             k_new,
-            to_remove_from_vertex_cover,
-            to_add_to_vertex_cover,
             is_k_vc_possible,
+            None,
         )
 
     node = None
@@ -118,31 +115,56 @@ def deg_one_preprocessing(G, k, vc):
             node = u
             break
 
-    if node is not None:
-        # if there is a degree one vertex, add its neigbour to vertex cover
-        # and remove the neighbour from the graph
-        # thereby reducing the size of the graph
-        neighbour = list(g_new.neighbors(node))[0]
+    if node is None:
+        return (
+            applied,
+            g_new,
+            k_new,
+            is_k_vc_possible,
+            None,
+        )
 
-        to_add_to_vertex_cover.add(neighbour)
-        g_new.remove_node(neighbour)
-        k_new = k - 1
+    # if there is a degree one vertex, add its neigbour to vertex cover
+    # and remove the neighbour from the graph
+    # thereby reducing the size of the graph
+    neighbour = list(g_new.neighbors(node))[0]
 
-        applied = True
+    g_new.remove_node(neighbour)
+    k_new = k - 1
+
+    applied = True
+
+    def function_to_be_applied(is_k_vc_exists, vc):
+        nonlocal neighbour, node
+        if not is_k_vc_exists:
+            return
+
+        vc.update([neighbour])
+        vc.difference_update([node])
 
     return (
         applied,
         g_new,
         k_new,
-        to_remove_from_vertex_cover,
-        to_add_to_vertex_cover,
         is_k_vc_possible,
+        function_to_be_applied,
     )
 
 
 @not_implemented_for("directed")
 def deg_two_preprocessing(G, k, vc):
-    pass
+    applied = False
+    g_new = G
+    k_new = k
+    is_k_vc_possible = True
+
+    return (
+        applied,
+        g_new,
+        k_new,
+        is_k_vc_possible,
+        None,
+    )
 
 
 @not_implemented_for("directed")
@@ -150,8 +172,6 @@ def high_degree_vertex_preprocessing(G, k, vc):
     applied = False
     g_new = G
     k_new = k
-    to_remove_from_vertex_cover = set()
-    to_add_to_vertex_cover = set()
     is_k_vc_possible = True
 
     if k <= 0:
@@ -159,9 +179,8 @@ def high_degree_vertex_preprocessing(G, k, vc):
             applied,
             g_new,
             k_new,
-            to_remove_from_vertex_cover,
-            to_add_to_vertex_cover,
             is_k_vc_possible,
+            None,
         )
 
     node = None
@@ -170,25 +189,47 @@ def high_degree_vertex_preprocessing(G, k, vc):
             # any vertex cover of size atmost k must contain u
             node = u
 
-    if node is not None:
-        to_add_to_vertex_cover.add(node)
-        g_new.remove_node(node)
-        k_new = k - 1
-        applied = True
+    if node is None:
+        return (
+            applied,
+            g_new,
+            k_new,
+            is_k_vc_possible,
+            None,
+        )
+
+    g_new.remove_node(node)
+    k_new = k - 1
+    applied = True
+
+    def function_to_be_applied(is_k_vc_exists, vc):
+        if not is_k_vc_exists:
+            return
+        vc.update([node])
 
     return (
         applied,
         g_new,
         k_new,
-        to_remove_from_vertex_cover,
-        to_add_to_vertex_cover,
         is_k_vc_possible,
+        function_to_be_applied,
     )
 
 
 @not_implemented_for("directed")
 def check_bipartite_graph(G, k, vc):
-    pass
+    applied = False
+    g_new = G
+    k_new = k
+    is_k_vc_possible = True
+
+    return (
+        applied,
+        g_new,
+        k_new,
+        is_k_vc_possible,
+        None,
+    )
 
 
 @not_implemented_for("directed")
@@ -196,8 +237,6 @@ def crown_decomposition_based_preprocessing(G, k, vc):
     applied = False
     g_new = G
     k_new = k
-    to_remove_from_vertex_cover = set()
-    to_add_to_vertex_cover = set()
     is_k_vc_possible = True
 
     if k <= 0 or len(G) <= 3 * k:
@@ -205,9 +244,8 @@ def crown_decomposition_based_preprocessing(G, k, vc):
             applied,
             g_new,
             k_new,
-            to_remove_from_vertex_cover,
-            to_add_to_vertex_cover,
             is_k_vc_possible,
+            None,
         )
 
 
@@ -216,8 +254,6 @@ def lp_decomposition_based_preprocessing(G, k, vc):
     applied = False
     g_new = G
     k_new = k
-    to_remove_from_vertex_cover = set()
-    to_add_to_vertex_cover = set()
     is_k_vc_possible = True
 
     if k <= 0 or len(G) <= 2 * k:
@@ -225,9 +261,8 @@ def lp_decomposition_based_preprocessing(G, k, vc):
             applied,
             g_new,
             k_new,
-            to_remove_from_vertex_cover,
-            to_add_to_vertex_cover,
             is_k_vc_possible,
+            None,
         )
 
     lp_value, greater_than_half, less_than_half, equal_to_half = lp_decomposition_vc(
@@ -241,9 +276,8 @@ def lp_decomposition_based_preprocessing(G, k, vc):
             applied,
             g_new,
             k_new,
-            to_remove_from_vertex_cover,
-            to_add_to_vertex_cover,
             is_k_vc_possible,
+            None,
         )
 
     if len(equal_to_half) == len(G):
@@ -253,7 +287,6 @@ def lp_decomposition_based_preprocessing(G, k, vc):
     else:
         # we can add greater_than_half set to the vertex cover
         # and remove union of greater_than_half and less_than_half from the graph
-        to_add_to_vertex_cover = greater_than_half
         g_new.remove_nodes_from(greater_than_half.union(less_than_half))
         if len(greater_than_half) > k:
             # then k vc is not possible
@@ -262,9 +295,8 @@ def lp_decomposition_based_preprocessing(G, k, vc):
                 applied,
                 g_new,
                 k_new,
-                to_remove_from_vertex_cover,
-                to_add_to_vertex_cover,
                 is_k_vc_possible,
+                None,
             )
 
         k_new = k - len(greater_than_half)
@@ -273,9 +305,8 @@ def lp_decomposition_based_preprocessing(G, k, vc):
             applied,
             g_new,
             k_new,
-            to_remove_from_vertex_cover,
-            to_add_to_vertex_cover,
             is_k_vc_possible,
+            None,
         )
 
 
@@ -284,8 +315,6 @@ def surplus_one_neighbours_not_independent(G, k, vc):
     applied = False
     g_new = G
     k_new = k
-    to_remove_from_vertex_cover = set()
-    to_add_to_vertex_cover = set()
     is_k_vc_possible = True
 
     # if there is an edge (u, v) such that solving LPVC(G) with x(u) = x(v) = 1
@@ -316,32 +345,28 @@ def surplus_one_neighbours_not_independent(G, k, vc):
                     applied,
                     g_new,
                     k_new,
-                    to_remove_from_vertex_cover,
-                    to_add_to_vertex_cover,
                     is_k_vc_possible,
+                    None,
                 )
 
             g_new.remove_nodes_from(Z.union(N_Z))
             k_new = k - len(N_Z)
             applied = True
-            to_add_to_vertex_cover = N_Z
 
             return (
                 applied,
                 g_new,
                 k_new,
-                to_remove_from_vertex_cover,
-                to_add_to_vertex_cover,
                 is_k_vc_possible,
+                None,
             )
 
     return (
         applied,
         g_new,
         k_new,
-        to_remove_from_vertex_cover,
-        to_add_to_vertex_cover,
         is_k_vc_possible,
+        None,
     )
 
 
@@ -350,8 +375,6 @@ def surplus_one_neighbours_independent(G, k, vc):
     applied = False
     g_new = G
     k_new = k
-    to_remove_from_vertex_cover = set()
-    to_add_to_vertex_cover = set()
     is_k_vc_possible = True
 
     # if there is a vertex such that solving LPVC(G) with x(u) = 0 results in a solution with value
