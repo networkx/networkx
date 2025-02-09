@@ -1711,10 +1711,14 @@ def generate_random_paths(
 
     >>> G = nx.star_graph(3)
     >>> index_map = {}
-    >>> random_paths = list(nx.generate_random_paths(G, 3, index_map=index_map))
+    >>> random_paths = list(
+    ...     nx.generate_random_paths(G, 3, index_map=index_map, seed=42)
+    ... )
     >>> paths_containing_node_0 = [
     ...     random_paths[path_idx] for path_idx in index_map.get(0, [])
     ... ]
+    >>> paths_containing_node_0
+    [[2, 0, 1, 0, 2, 0], [2, 0, 3, 0, 3, 0], [1, 0, 3, 0, 3, 0]]
 
     References
     ----------
