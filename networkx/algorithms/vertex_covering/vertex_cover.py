@@ -13,8 +13,10 @@ preprocessing_rules = [
     deg_two_preprocessing,
     high_degree_vertex_preprocessing,
     check_bipartite_graph,
-    # crown_decomposition_based_preprocessing,
-    # lp_decomposition_based_preprocessing,
+    crown_decomposition_based_preprocessing,
+    lp_decomposition_based_preprocessing,
+    surplus_one_neighbours_not_independent,
+    surplus_one_neighbours_independent,
 ]
 max_deg_branch_preprocessing_rules = []
 vc_above_lp_branch_preprocessing_rules = []

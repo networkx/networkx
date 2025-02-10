@@ -5,6 +5,7 @@ Functions for preprocessing the graph before vertex cover
 import networkx as nx
 from networkx.algorithms.bipartite import hopcroft_karp_matching, to_vertex_cover
 from networkx.algorithms.isolate import isolates, number_of_isolates
+from networkx.algorithms.vertex_covering.crown_decomposition import crown_decomposition
 from networkx.algorithms.vertex_covering.lp_decomposition import (
     lp_decomposition_vc,
     partial_weighted_lp_decomposition,
@@ -20,6 +21,8 @@ __all__ = [
     "check_bipartite_graph",
     "crown_decomposition_based_preprocessing",
     "lp_decomposition_based_preprocessing",
+    "surplus_one_neighbours_not_independent",
+    "surplus_one_neighbours_independent",
 ]
 
 
@@ -371,6 +374,7 @@ def crown_decomposition_based_preprocessing(G, k, vc):
     is_k_vc_possible = True
 
     if k <= 0 or len(G) <= 3 * k:
+        print("GRAPH SIZE ATMOST 3 * k")
         return (
             applied,
             g_new,
@@ -378,6 +382,58 @@ def crown_decomposition_based_preprocessing(G, k, vc):
             is_k_vc_possible,
             None,
         )
+
+    head_vertices, crown, rest, is_k_vc_possible = crown_decomposition(g_new, k_new)
+    if not is_k_vc_possible:
+        print("VC NOT POSSIBLE")
+        is_k_vc_possible = False
+        return (
+            applied,
+            g_new,
+            k_new,
+            is_k_vc_possible,
+            None,
+        )
+
+    head_union_crown = head_vertices.union(crown)
+    if k < len(head_vertices):
+        print("VC NOT POSSIBLE, size of head union crown exceeding k")
+        is_k_vc_possible = False
+        return (
+            applied,
+            g_new,
+            k_new,
+            is_k_vc_possible,
+            None,
+        )
+    if len(head_union_crown) == 0:
+        # is this check necessary ?
+        return (
+            applied,
+            g_new,
+            k_new,
+            is_k_vc_possible,
+            None,
+        )
+
+    g_new: nx.Graph
+    g_new.remove_nodes_from(head_union_crown)
+    k_new = k - len(head_vertices)
+    applied = True
+
+    def function_to_be_applied_after_crown_decomposition(is_k_vc_exists, vc: set):
+        if not is_k_vc_exists:
+            return
+
+        vc.update(head_vertices)
+
+    return (
+        applied,
+        g_new,
+        k_new,
+        is_k_vc_possible,
+        function_to_be_applied_after_crown_decomposition,
+    )
 
 
 @not_implemented_for("directed")
@@ -413,12 +469,18 @@ def lp_decomposition_based_preprocessing(G, k, vc):
 
     if len(equal_to_half) == len(G):
         # then all halfs is the unique optimum
-        pass
+        # then set applied as False and return from this preprocessing rule
+        return (
+            applied,
+            g_new,
+            k_new,
+            is_k_vc_possible,
+            None,
+        )
 
     else:
         # we can add greater_than_half set to the vertex cover
         # and remove union of greater_than_half and less_than_half from the graph
-        g_new.remove_nodes_from(greater_than_half.union(less_than_half))
         if len(greater_than_half) > k:
             # then k vc is not possible
             is_k_vc_possible = False
@@ -430,14 +492,23 @@ def lp_decomposition_based_preprocessing(G, k, vc):
                 None,
             )
 
+        g_new.remove_nodes_from(greater_than_half.union(less_than_half))
         k_new = k - len(greater_than_half)
         applied = True
+
+        def function_to_be_applied_after_lp_all_half_not_unique_optimum(
+            is_k_vc_exists, vc: set
+        ):
+            if not is_k_vc_exists:
+                return
+            vc.update(greater_than_half)
+
         return (
             applied,
             g_new,
             k_new,
             is_k_vc_possible,
-            None,
+            function_to_be_applied_after_lp_all_half_not_unique_optimum,
         )
 
 
@@ -470,7 +541,7 @@ def surplus_one_neighbours_not_independent(G, k, vc):
 
             # we can add N_Z to the vertex cover
             # delete Z union N_Z from the graph and decrease k by |N_Z|
-            if len(N_Z) > k:
+            if k < len(N_Z):
                 is_k_vc_possible = False
                 return (
                     applied,
@@ -484,12 +555,19 @@ def surplus_one_neighbours_not_independent(G, k, vc):
             k_new = k - len(N_Z)
             applied = True
 
+            def function_to_be_applied_after_surplus_one_neighbours_not_independent_set(
+                is_k_vc_exists, vc: set
+            ):
+                if not is_k_vc_exists:
+                    return
+                vc.update(N_Z)
+
             return (
                 applied,
                 g_new,
                 k_new,
                 is_k_vc_possible,
-                None,
+                function_to_be_applied_after_surplus_one_neighbours_not_independent_set,
             )
 
     return (
@@ -530,3 +608,47 @@ def surplus_one_neighbours_independent(G, k, vc):
                 N_Z.update(G.neighbors(u))
 
             N_Z.difference_update(Z)
+
+            if k < len(Z):
+                is_k_vc_possible = False
+                return (
+                    applied,
+                    g_new,
+                    k_new,
+                    is_k_vc_possible,
+                    None,
+                )
+
+            # remove Z and N_Z from graph and identify N_Z by single vertex
+            N_Z_list = list(N_Z)
+            g_new.remove_nodes_from(Z)
+
+            # N_Z is independent, hence contracting N_Z doesn't produce self loops
+            node = N_Z_list[0]
+            for i in range(1, len(N_Z_list)):
+                g_new = nx.identified_nodes(g_new, node, N_Z_list[i], copy=False)
+
+            k_new = k - len(Z)
+            applied = True
+
+            # `node` is the identified vertex
+            def function_to_be_applied_after_surplus_one_neighbours_independent_set(
+                is_k_vc_exists, vc: set
+            ):
+                if not is_k_vc_exists:
+                    return
+
+                if node in vc:
+                    vc.update(N_Z)
+                else:
+                    vc.update(Z)
+
+            return (
+                applied,
+                g_new,
+                k_new,
+                is_k_vc_possible,
+                function_to_be_applied_after_surplus_one_neighbours_independent_set,
+            )
+
+    return (applied, g_new, k_new, is_k_vc_possible, None)

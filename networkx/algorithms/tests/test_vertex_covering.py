@@ -80,3 +80,13 @@ class TestParameterizedVertexCover:
         is_k_vc_exists, vc = nx.vertex_cover(G, 3)
         assert is_k_vc_exists
         assert vc == {3, 4, 5}
+
+    def test_crown_decomposition(self):
+        """
+        NOT YET COMPLETE
+        """
+        G = nx.random_regular_graph(3, 10)
+
+        is_k_vc_exists, vc = nx.vertex_cover(G, 3)
+        assert not is_k_vc_exists
+        assert vc == set()

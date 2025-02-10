@@ -3,11 +3,11 @@ from networkx.algorithms.bipartite import hopcroft_karp_matching
 from networkx.algorithms.bipartite.matching import to_vertex_cover
 from networkx.utils import not_implemented_for
 
-__all__ = ["crown_decomposition_vc"]
+__all__ = ["crown_decomposition"]
 
 
 @not_implemented_for("directed")
-def crown_decomposition(G: nx.Graph, k: int) -> bool | tuple[set, set, set]:
+def crown_decomposition(G: nx.Graph, k: int) -> tuple[set, set, set, bool]:
     """
     Given a graph `G` and a parameter `k`, returns False if matching of size more
     than `k` is found, else returns a crown decomposition (C, H, R) of the graph G
@@ -16,10 +16,15 @@ def crown_decomposition(G: nx.Graph, k: int) -> bool | tuple[set, set, set]:
 
     # it should be ensured in this algorithm that, k does not become negative
     aux_bipartite_graph = G.copy()
+    is_k_vc_possible = True
+    head_vertices = set()
+    crown = set()
+    rest = set()
 
     maximal_matching = nx.maximal_matching(aux_bipartite_graph)
     if len(maximal_matching) > k:
-        return False
+        is_k_vc_possible = False
+        return head_vertices, crown, rest, is_k_vc_possible
 
     v_from_maximal_matching = set()
     for a, b in maximal_matching:
@@ -48,7 +53,8 @@ def crown_decomposition(G: nx.Graph, k: int) -> bool | tuple[set, set, set]:
     )
 
     if len(maximum_matching) > k:
-        return False
+        is_k_vc_possible = False
+        return head_vertices, crown, rest, is_k_vc_possible
 
     minimum_vertex_cover = to_vertex_cover(
         aux_bipartite_graph, maximum_matching, top_nodes=v_from_maximal_matching
@@ -58,14 +64,14 @@ def crown_decomposition(G: nx.Graph, k: int) -> bool | tuple[set, set, set]:
 
     head_vertices = v_from_maximal_matching.intersection(minimum_vertex_cover)
     # crown is the matching partners of vertices in head_vertices
-    crown = set()
     for a in head_vertices:
         crown.add(maximum_matching[a])
+
     assert len(crown) != 0, "Crown Size is zero"
 
     rest = graph_nodes.difference(head_vertices.union(crown))
 
-    return (head_vertices, crown, rest)
+    return head_vertices, crown, rest, is_k_vc_possible
 
 
 @not_implemented_for("directed")
