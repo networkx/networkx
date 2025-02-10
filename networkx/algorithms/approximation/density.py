@@ -137,8 +137,7 @@ def _fista(G, iterations):
     import numpy as np
 
     # 1. Node Mapping: Assign a unique index to each node and edge
-    node_list = list(G.nodes)
-    node_to_idx = {node: idx for idx, node in enumerate(node_list)}
+    node_to_idx = {node: idx for idx, node in enumerate(G)}
     num_nodes = G.number_of_nodes()
     num_undirected_edges = G.number_of_edges()
 
