@@ -657,7 +657,7 @@ def test_isomorphic_edge_attr_and_node_attr_subgraph_hash():
 def test_iteration_depth():
     """
     All nodes should have the correct number of subgraph hashes in the output when
-    using degree as initial node labels
+    using degree as initial node labels.
     Subsequent iteration depths for the same graph should be additive for each node
     """
     n, r = 100, 10
