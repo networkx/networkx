@@ -112,9 +112,6 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="\n\nThe `normalized`"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\ntotal_spanning_tree_weight"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message=r"\n\nThe 'create=matrix'"
     )
     warnings.filterwarnings(
