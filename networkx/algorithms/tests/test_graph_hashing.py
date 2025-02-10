@@ -4,6 +4,33 @@ import pytest
 
 import networkx as nx
 
+# Unit tests relevant for both functions in this module.
+
+
+def test_positive_iters():
+    G1 = nx.empty_graph()
+    with pytest.raises(
+        ValueError,
+        match="The WL algorithm is only meaningful when run for a positve number of iterations.",
+    ):
+        nx.weisfeiler_lehman_graph_hash(G1, iterations=-3)
+    with pytest.raises(
+        ValueError,
+        match="The WL algorithm is only meaningful when run for a positve number of iterations.",
+    ):
+        nx.weisfeiler_lehman_subgraph_hashes(G1, iterations=-3)
+    with pytest.raises(
+        ValueError,
+        match="The WL algorithm is only meaningful when run for a positve number of iterations.",
+    ):
+        nx.weisfeiler_lehman_graph_hash(G1, iterations=0)
+    with pytest.raises(
+        ValueError,
+        match="The WL algorithm is only meaningful when run for a positve number of iterations.",
+    ):
+        nx.weisfeiler_lehman_subgraph_hashes(G1, iterations=0)
+
+
 # Unit tests for the :func:`~networkx.weisfeiler_lehman_graph_hash` function
 
 

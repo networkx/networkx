@@ -96,6 +96,11 @@ def weisfeiler_lehman_graph_hash(
     h : string
         Hexadecimal string corresponding to hash of the input graph.
 
+    Raises
+    ------
+    ValueError
+        If `iterations` is not a positve number.
+
     Examples
     --------
     Two graphs with edge attributes that are isomorphic, except for
@@ -165,6 +170,11 @@ def weisfeiler_lehman_graph_hash(
             label = _neighborhood_aggregate(G, node, labels, edge_attr=edge_attr)
             new_labels[node] = _hash_label(label, digest_size)
         return new_labels
+
+    if iterations <= 0:
+        raise ValueError(
+            "The WL algorithm is only meaningful when run for a positve number of iterations."
+        )
 
     # set initial node labels
     node_labels = _init_node_labels(G, edge_attr, node_attr)
@@ -262,6 +272,12 @@ def weisfeiler_lehman_subgraph_hashes(
         A dictionary with each key given by a node in G, and each value given
         by the subgraph hashes in order of depth from the key node.
 
+
+    Raises
+    ------
+    ValueError
+        If `iterations` is not a positve number.
+
     Examples
     --------
     Finding similar nodes in different graphs:
@@ -332,6 +348,11 @@ def weisfeiler_lehman_subgraph_hashes(
             new_labels[node] = hashed_label
             node_subgraph_hashes[node].append(hashed_label)
         return new_labels
+
+    if iterations <= 0:
+        raise ValueError(
+            "The WL algorithm is only meaningful when run for a positve number of iterations."
+        )
 
     node_labels = _init_node_labels(G, edge_attr, node_attr)
 
