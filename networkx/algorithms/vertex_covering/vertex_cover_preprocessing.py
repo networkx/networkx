@@ -2,7 +2,7 @@
 Functions for preprocessing the graph before vertex cover
 """
 
-import networkx
+import networkx as nx
 from networkx.algorithms.isolate import isolates, number_of_isolates
 from networkx.algorithms.vertex_covering.lp_decomposition import (
     lp_decomposition_vc,
@@ -46,7 +46,7 @@ def remove_isolated_vertices(G, k, vc):
         applied = True
         # k_new = k
 
-    def function_to_be_applied(is_k_vc_exists, vc):
+    def function_to_be_applied_after_isolated_vertices(is_k_vc_exists, vc):
         if not is_k_vc_exists:
             return
         # no need to add isolated vertices
@@ -57,7 +57,7 @@ def remove_isolated_vertices(G, k, vc):
         g_new,
         k_new,
         is_k_vc_possible,
-        None,
+        function_to_be_applied_after_isolated_vertices,
     )
 
 
@@ -69,17 +69,28 @@ def remove_self_loops(G, k, vc):
     is_k_vc_possible = True
     self_loop_node = None
 
+    if k <= 0:
+        return (
+            applied,
+            g_new,
+            k_new,
+            is_k_vc_possible,
+            None,
+        )
+
     for node, neighbour_dictionary in g_new.adjacency():
         if node in neighbour_dictionary:
             self_loop_node = node
             break
 
-    if self_loop_node is not None:
-        g_new.remove_node(self_loop_node)
-        k_new = k - 1
-        applied = True
+    if self_loop_node is None:
+        return (applied, g_new, k_new, is_k_vc_possible, None)
 
-    def function_to_be_applied(is_k_vc_exists, vc):
+    g_new.remove_node(self_loop_node)
+    k_new = k - 1
+    applied = True
+
+    def function_to_be_applied_after_self_loops(is_k_vc_exists, vc):
         if not is_k_vc_exists:
             return
         vc.update([self_loop_node])
@@ -89,7 +100,7 @@ def remove_self_loops(G, k, vc):
         g_new,
         k_new,
         is_k_vc_possible,
-        function_to_be_applied,
+        function_to_be_applied_after_self_loops,
     )
 
 
@@ -129,25 +140,23 @@ def deg_one_preprocessing(G, k, vc):
     # thereby reducing the size of the graph
     neighbour = list(g_new.neighbors(node))[0]
 
-    g_new.remove_node(neighbour)
+    g_new.remove_nodes_from([node, neighbour])
     k_new = k - 1
 
     applied = True
 
-    def function_to_be_applied(is_k_vc_exists, vc):
-        nonlocal neighbour, node
+    def function_to_be_applied_after_deg_one(is_k_vc_exists, vc):
         if not is_k_vc_exists:
             return
 
         vc.update([neighbour])
-        vc.difference_update([node])
 
     return (
         applied,
         g_new,
         k_new,
         is_k_vc_possible,
-        function_to_be_applied,
+        function_to_be_applied_after_deg_one,
     )
 
 
@@ -157,14 +166,85 @@ def deg_two_preprocessing(G, k, vc):
     g_new = G
     k_new = k
     is_k_vc_possible = True
+    node = None
 
-    return (
-        applied,
-        g_new,
-        k_new,
-        is_k_vc_possible,
-        None,
-    )
+    if k <= 0:
+        return (
+            applied,
+            g_new,
+            k_new,
+            is_k_vc_possible,
+            None,
+        )
+
+    for u in g_new:
+        if g_new.degree(u) == 2:
+            node = u
+            break
+
+    if node is None:
+        return (
+            applied,
+            g_new,
+            k_new,
+            is_k_vc_possible,
+            None,
+        )
+
+    # neighbours of degree 2 vertices
+    # x and y will not be the same since, already preprocessing self loop nodes
+    x, y = tuple(g_new.neighbors(node))
+
+    if g_new.has_edge(x, y):
+        # add x and y to the solution reduce the graph instance
+        g_new.remove_nodes_from([x, y, node])
+        k_new = k - 2
+        applied = True
+
+        def function_to_be_applied_deg_two_first_case(is_k_vc_exists, vc: set):
+            if not is_k_vc_exists:
+                return
+
+            vc.update([x, y])
+
+        return (
+            applied,
+            g_new,
+            k_new,
+            is_k_vc_possible,
+            function_to_be_applied_deg_two_first_case,
+        )
+
+    else:
+        # x, y are not adjacent
+        # del node, x, y and add new vertex z adjacent to N(x) union N(y) - node
+        # recurse on G', k - 1
+
+        g_new.remove_node(node)
+        # identify x and y
+        # identified node is generally the first argument
+        g_new = nx.identified_nodes(g_new, x, y, copy=False)
+        k_new = k - 1
+        applied = True
+
+        def function_to_be_applied_deg_two_second_case(is_k_vc_exists, vc: set):
+            if not is_k_vc_exists:
+                return
+
+            if x in vc:
+                # remove identified vertex and add the original 2 vertex
+                vc.update([x, y])
+
+            else:
+                vc.update([node])
+
+        return (
+            applied,
+            g_new,
+            k_new,
+            is_k_vc_possible,
+            function_to_be_applied_deg_two_second_case,
+        )
 
 
 @not_implemented_for("directed")

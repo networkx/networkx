@@ -11,10 +11,10 @@ preprocessing_rules = [
     remove_self_loops,
     deg_one_preprocessing,
     deg_two_preprocessing,
-    high_degree_vertex_preprocessing,
-    check_bipartite_graph,
-    crown_decomposition_based_preprocessing,
-    lp_decomposition_based_preprocessing,
+    # high_degree_vertex_preprocessing,
+    # check_bipartite_graph,
+    # crown_decomposition_based_preprocessing,
+    # lp_decomposition_based_preprocessing,
 ]
 max_deg_branch_preprocessing_rules = []
 vc_above_lp_branch_preprocessing_rules = []
@@ -41,7 +41,6 @@ def vertex_cover_preprocessing(G, k, vc, rules=None):
 
     for rule in rules:
         if not applied:
-            print(rule.__name__)
             (
                 applied,
                 G,
@@ -61,11 +60,12 @@ def vertex_cover_preprocessing(G, k, vc, rules=None):
             #     vc.update(to_add_to_vc)
 
             if applied and function_to_be_applied is not None:
-                is_k_vc_exists, vc = vertex_cover(G, k)
+                is_k_vc_exists, vc_sub = vertex_cover(G, k)
+                vc.update(vc_sub)
                 function_to_be_applied(is_k_vc_exists, vc)
 
-    if applied:
-        return vertex_cover_preprocessing(G, k, vc)
+        if applied:
+            return vertex_cover_preprocessing(G, k, vc)
 
     return G, k, vc, is_k_vc_possible
     #

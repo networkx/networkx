@@ -51,3 +51,10 @@ class TestParameterizedVertexCover:
         is_k_vc_exists, vc = nx.vertex_cover(G, 0)
         assert is_k_vc_exists
         assert vc == set()
+
+    def test_cycle_graph(self):
+        G = nx.cycle_graph(4)
+
+        is_k_vc_exists, vc = nx.vertex_cover(G, 2)
+        assert is_k_vc_exists
+        assert vc == {0, 2}
