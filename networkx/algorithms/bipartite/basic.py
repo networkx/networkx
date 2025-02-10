@@ -156,7 +156,7 @@ def is_bipartite_node_set(G, nodes):
 
 
 @nx._dispatchable
-def sets(G, top_nodes=None, raise_error_if_ambiguous=True):
+def sets(G, top_nodes=None):
     """Returns bipartite node sets of graph G.
 
     Raises an exception if the graph is not bipartite or if the input
@@ -213,7 +213,7 @@ def sets(G, top_nodes=None, raise_error_if_ambiguous=True):
         X = set(top_nodes)
         Y = set(G) - X
     else:
-        if not is_connected(G) and raise_error_if_ambiguous:
+        if not is_connected(G):
             msg = "Disconnected graph: Ambiguous solution for bipartite sets."
             raise nx.AmbiguousSolution(msg)
         c = color(G)

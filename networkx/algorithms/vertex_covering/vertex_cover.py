@@ -16,9 +16,16 @@ preprocessing_rules = [
     crown_decomposition_based_preprocessing,
     lp_decomposition_based_preprocessing,
     surplus_one_neighbours_not_independent,
-    surplus_one_neighbours_independent,
+    # surplus_one_neighbours_independent,
 ]
-max_deg_branch_preprocessing_rules = []
+
+max_deg_branch_preprocessing_rules = [
+    remove_isolated_vertices,
+    remove_self_loops,
+    deg_one_preprocessing,
+    deg_two_preprocessing,
+]
+
 vc_above_lp_branch_preprocessing_rules = []
 
 
@@ -177,6 +184,9 @@ def vertex_cover_branching(G, k, rules):
     g_new.remove_nodes_from(neighbours)
     # length of neighbours will be atmost k since the graph is preprocessed and
     # high_degree_rule is already present in the preprocessing
+
+    if k < len(neighbours):
+        return False, set()
 
     is_k_vc_possible, vc_sub = vertex_cover_branching(g_new, k - len(neighbours), rules)
     if is_k_vc_possible:

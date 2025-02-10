@@ -73,15 +73,6 @@ def remove_self_loops(G, k, vc):
     is_k_vc_possible = True
     self_loop_node = None
 
-    if k <= 0:
-        return (
-            applied,
-            g_new,
-            k_new,
-            is_k_vc_possible,
-            None,
-        )
-
     for node, neighbour_dictionary in g_new.adjacency():
         if node in neighbour_dictionary:
             self_loop_node = node
@@ -90,6 +81,15 @@ def remove_self_loops(G, k, vc):
     if self_loop_node is None:
         return (applied, g_new, k_new, is_k_vc_possible, None)
 
+    if k <= 0:
+        is_k_vc_possible = False
+        return (
+            applied,
+            g_new,
+            k_new,
+            is_k_vc_possible,
+            None,
+        )
     g_new.remove_node(self_loop_node)
     k_new = k - 1
     applied = True
@@ -115,7 +115,13 @@ def deg_one_preprocessing(G, k, vc):
     g_new = G
     is_k_vc_possible = True
 
-    if k <= 0:
+    node = None
+    for u in G:
+        if G.degree(u) == 1:
+            node = u
+            break
+
+    if node is None:
         return (
             applied,
             g_new,
@@ -124,13 +130,8 @@ def deg_one_preprocessing(G, k, vc):
             None,
         )
 
-    node = None
-    for u in G:
-        if G.degree(u) == 1:
-            node = u
-            break
-
-    if node is None:
+    if k <= 0:
+        is_k_vc_possible = False
         return (
             applied,
             g_new,
@@ -172,7 +173,12 @@ def deg_two_preprocessing(G, k, vc):
     is_k_vc_possible = True
     node = None
 
-    if k <= 0:
+    for u in g_new:
+        if g_new.degree(u) == 2:
+            node = u
+            break
+
+    if node is None:
         return (
             applied,
             g_new,
@@ -181,12 +187,8 @@ def deg_two_preprocessing(G, k, vc):
             None,
         )
 
-    for u in g_new:
-        if g_new.degree(u) == 2:
-            node = u
-            break
-
-    if node is None:
+    if k <= 0:
+        is_k_vc_possible = False
         return (
             applied,
             g_new,
@@ -269,15 +271,6 @@ def high_degree_vertex_preprocessing(G, k, vc):
     k_new = k
     is_k_vc_possible = True
 
-    if k <= 0:
-        return (
-            applied,
-            g_new,
-            k_new,
-            is_k_vc_possible,
-            None,
-        )
-
     node = None
     for u in G:
         if G.degree(u) >= k + 1:
@@ -286,6 +279,16 @@ def high_degree_vertex_preprocessing(G, k, vc):
             break
 
     if node is None:
+        return (
+            applied,
+            g_new,
+            k_new,
+            is_k_vc_possible,
+            None,
+        )
+
+    if k <= 0:
+        is_k_vc_possible = False
         return (
             applied,
             g_new,
@@ -373,6 +376,7 @@ def crown_decomposition_based_preprocessing(G, k, vc):
     k_new = k
     is_k_vc_possible = True
 
+    # need to check if this is ok
     if k <= 0 or len(G) <= 3 * k:
         print("GRAPH SIZE ATMOST 3 * k")
         return (
@@ -443,6 +447,7 @@ def lp_decomposition_based_preprocessing(G, k, vc):
     k_new = k
     is_k_vc_possible = True
 
+    # need to check if this is ok
     if k <= 0 or len(G) <= 2 * k:
         return (
             applied,
@@ -519,6 +524,17 @@ def surplus_one_neighbours_not_independent(G, k, vc):
     k_new = k
     is_k_vc_possible = True
 
+    print(G.edges(), k, vc)
+
+    if len(G) == 0:
+        return (
+            applied,
+            g_new,
+            k_new,
+            is_k_vc_possible,
+            None,
+        )
+
     # if there is an edge (u, v) such that solving LPVC(G) with x(u) = x(v) = 1
     # results in a solution with value exactly half greater than the value of the original LPVC(G)
 
@@ -585,6 +601,15 @@ def surplus_one_neighbours_independent(G, k, vc):
     g_new = G
     k_new = k
     is_k_vc_possible = True
+
+    if len(G) == 0:
+        return (
+            applied,
+            g_new,
+            k_new,
+            is_k_vc_possible,
+            None,
+        )
 
     # if there is a vertex such that solving LPVC(G) with x(u) = 0 results in a solution with value
     # exactly 0.5 greater than the value of original LPVC(G)

@@ -49,12 +49,6 @@ class TestBipartiteBasic:
             G.add_edges_from([(5, 6), (6, 7)])
             X, Y = bipartite.sets(G)
 
-        G = nx.path_graph(4)
-        G.add_edges_from([(5, 6), (6, 7)])
-        X, Y = bipartite.sets(G, raise_error_if_ambiguous=False)
-        assert X == {0, 2, 5, 7}
-        assert Y == {1, 3, 6}
-
     def test_is_bipartite_node_set(self):
         G = nx.path_graph(4)
 

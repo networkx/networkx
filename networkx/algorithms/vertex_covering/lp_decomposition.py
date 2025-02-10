@@ -104,7 +104,8 @@ def find_lp_decomposition(G: nx.Graph):
 
     # bipartite graph is created
     weight_dictionary = {}
-    top_nodes, _ = sets(g_new, raise_error_if_ambiguous=False)
+    coloring = nx.bipartite.color(g_new)
+    top_nodes = [key for key, val in coloring.items() if val == 0]
     maximum_matching = hopcroft_karp_matching(g_new, top_nodes=top_nodes)
     min_vertex_cover = to_vertex_cover(g_new, maximum_matching, top_nodes=top_nodes)
 
