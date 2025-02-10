@@ -58,3 +58,14 @@ class TestParameterizedVertexCover:
         is_k_vc_exists, vc = nx.vertex_cover(G, 2)
         assert is_k_vc_exists
         assert vc == {0, 2}
+
+    def test_complete_graph(self):
+        G = nx.complete_graph(4)
+
+        is_k_vc_exists, vc = nx.vertex_cover(G, 2)
+        assert not is_k_vc_exists
+        assert vc == set()
+
+        is_k_vc_exists, vc = nx.vertex_cover(G, 3)
+        assert is_k_vc_exists
+        assert vc == {0, 1, 2}

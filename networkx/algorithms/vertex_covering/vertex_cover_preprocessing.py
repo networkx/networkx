@@ -196,6 +196,17 @@ def deg_two_preprocessing(G, k, vc):
     x, y = tuple(g_new.neighbors(node))
 
     if g_new.has_edge(x, y):
+        # k has to be atleast 2
+        if k <= 1:
+            is_k_vc_possible = False
+            return (
+                applied,
+                g_new,
+                k_new,
+                is_k_vc_possible,
+                None,
+            )
+
         # add x and y to the solution reduce the graph instance
         g_new.remove_nodes_from([x, y, node])
         k_new = k - 2
@@ -268,6 +279,7 @@ def high_degree_vertex_preprocessing(G, k, vc):
         if G.degree(u) >= k + 1:
             # any vertex cover of size atmost k must contain u
             node = u
+            break
 
     if node is None:
         return (
@@ -282,7 +294,7 @@ def high_degree_vertex_preprocessing(G, k, vc):
     k_new = k - 1
     applied = True
 
-    def function_to_be_applied(is_k_vc_exists, vc):
+    def function_to_be_applied_after_high_degree(is_k_vc_exists, vc):
         if not is_k_vc_exists:
             return
         vc.update([node])
@@ -292,7 +304,7 @@ def high_degree_vertex_preprocessing(G, k, vc):
         g_new,
         k_new,
         is_k_vc_possible,
-        function_to_be_applied,
+        function_to_be_applied_after_high_degree,
     )
 
 

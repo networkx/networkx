@@ -11,7 +11,7 @@ preprocessing_rules = [
     remove_self_loops,
     deg_one_preprocessing,
     deg_two_preprocessing,
-    # high_degree_vertex_preprocessing,
+    high_degree_vertex_preprocessing,
     # check_bipartite_graph,
     # crown_decomposition_based_preprocessing,
     # lp_decomposition_based_preprocessing,
@@ -49,7 +49,10 @@ def vertex_cover_preprocessing(G, k, vc, rules=None):
                 function_to_be_applied,
             ) = rule(G, k, vc)
 
+            print(applied, rule.__name__, G.edges(), k, vc, is_k_vc_possible)
+
             if not is_k_vc_possible:
+                print("EARLY PREPROCESSING OVER")
                 is_k_vc_possible = False
                 return G, k, vc, is_k_vc_possible
 
@@ -60,13 +63,20 @@ def vertex_cover_preprocessing(G, k, vc, rules=None):
             #     vc.update(to_add_to_vc)
 
             if applied and function_to_be_applied is not None:
+                print(function_to_be_applied.__name__)
                 is_k_vc_exists, vc_sub = vertex_cover(G, k)
+
+                if not is_k_vc_exists:
+                    is_k_vc_possible = False
+                    return G, k, vc, is_k_vc_possible
+
                 vc.update(vc_sub)
                 function_to_be_applied(is_k_vc_exists, vc)
 
         if applied:
             return vertex_cover_preprocessing(G, k, vc)
 
+    print("PREPROCESSING OVER")
     return G, k, vc, is_k_vc_possible
     #
     # while k > 0:
@@ -188,6 +198,7 @@ def vc_above_lp_branching(G, k):
 
 
 def vertex_cover(G, k):
+    print("ENTRY")
     # find lp-opt value
     # compare 1.4656^k and 2.618^(k - lpOpt)
     if len(G) == 0:
@@ -199,6 +210,7 @@ def vertex_cover(G, k):
     g_new, k, vc, is_k_vc_possible = vertex_cover_preprocessing(g_new, k, vc)
 
     if not is_k_vc_possible:
+        print("EARLY RETURN")
         return False, set()
 
     lp_opt_value, *_ = find_lp_decomposition(g_new)
