@@ -49,8 +49,8 @@ def test_directed():
 def test_reversed():
     """
     A directed graph with no bi-directional edges should yield different a graph hash
-    to the same graph taken with edge directions reversed if there are no hash collisions.
-    Here we test a cycle graph which is the minimal counterexample
+    to the same graph taken with edge directions reversed if there are no hash
+    collisions. Here we test a cycle graph which is the minimal counterexample
     """
     G = nx.cycle_graph(5, create_using=nx.DiGraph)
     nx.set_node_attributes(G, {n: str(n) for n in G.nodes()}, name="label")
@@ -291,7 +291,7 @@ def test_directed_bugs():
 
 def test_trivial_labels_isomorphism():
     """
-    Test that trivial labelling of the graph should not change isomorphism verdicts.
+    Trivial labelling of the graph should not change isomorphism verdicts.
     """
     n, r = 100, 10
     p = 1.0 / r
@@ -323,7 +323,7 @@ def test_trivial_labels_isomorphism():
 
 def test_trivial_labels_isomorphism_directed():
     """
-    Test that trivial labelling of the graph should not change isomorphism verdicts on directed graphs.
+    Trivial labelling of the graph should not change isomorphism verdicts on digraphs.
     """
     n, r = 100, 10
     p = 1.0 / r
@@ -373,9 +373,10 @@ def test_trivial_labels_isomorphism_directed():
 
 def test_trivial_labels_hashes():
     """
-    Test that 'empty' labelling of nodes or edges shouldn't have a different impact on the calculated hash.
-    Note that we cannot assume it trivial weights have no impact at all. Without (trivial) weights,
-     a node will start with hashing its degree. This step isomitted when there áre weights.
+    Test that 'empty' labelling of nodes or edges shouldn't have a different impact
+    on the calculated hash. Note that we cannot assume it trivial weights have no
+    impact at all. Without (trivial) weights, a node will start with hashing its
+    degree. This step isomitted when there áre weights.
     """
     n, r = 100, 10
     p = 1.0 / r
@@ -405,9 +406,10 @@ def is_subiteration(a, b):
 
 def hexdigest_sizes_correct(a, digest_size):
     """
-    returns True if all hex digest sizes are the expected length in a node:subgraph-hashes
-    dictionary. Hex digest string length == 2 * bytes digest length since each pair of hex
-    digits encodes 1 byte (https://docs.python.org/3/library/hashlib.html)
+    returns True if all hex digest sizes are the expected length in a
+    node:subgraph-hashes dictionary. Hex digest string length == 2 * bytes digest
+    length since each pair of hex digits encodes 1 byte
+    (https://docs.python.org/3/library/hashlib.html)
     """
     hexdigest_size = digest_size * 2
     list_digest_sizes_correct = lambda l: all(len(x) == hexdigest_size for x in l)
@@ -435,8 +437,8 @@ def test_empty_graph_subgraph_hash():
 
 def test_directed_subgraph_hash():
     """
-    A directed graph with no bi-directional edges should yield different subgraph hashes
-    to the same graph taken as undirected, if all hashes don't collide.
+    A directed graph with no bi-directional edges should yield different subgraph
+    hashes to the same graph taken as undirected, if all hashes don't collide.
     """
     r = 10
     for i in range(r):
@@ -451,9 +453,9 @@ def test_directed_subgraph_hash():
 
 def test_reversed_subgraph_hash():
     """
-    A directed graph with no bi-directional edges should yield different subgraph hashes
-    to the same graph taken with edge directions reversed if there are no hash collisions.
-    Here we test a cycle graph which is the minimal counterexample
+    A directed graph with no bi-directional edges should yield different subgraph
+    hashes to the same graph taken with edge directions reversed if there are no
+    hash collisions. Here we test a cycle graph which is the minimal counterexample
     """
     G = nx.cycle_graph(5, create_using=nx.DiGraph)
     nx.set_node_attributes(G, {n: str(n) for n in G.nodes()}, name="label")
@@ -468,8 +470,8 @@ def test_reversed_subgraph_hash():
 
 def test_isomorphic_subgraph_hash():
     """
-    the subgraph hashes should be invariant to node-relabeling when the output is reindexed
-    by the same mapping and all hashes don't collide.
+    the subgraph hashes should be invariant to node-relabeling when the output is
+    reindexed by the same mapping and all hashes don't collide.
     """
     n, r = 100, 10
     p = 1.0 / r
