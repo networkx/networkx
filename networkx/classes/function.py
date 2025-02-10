@@ -566,6 +566,7 @@ def create_empty_copy(G, with_data=True):
     return H
 
 
+@nx._dispatchable(preserve_node_attrs=True, mutates_input=True)
 def set_node_attributes(G, values, name=None):
     """Sets node attributes from a given value or dictionary of values.
 
@@ -667,6 +668,7 @@ def set_node_attributes(G, values, name=None):
     nx._clear_cache(G)
 
 
+@nx._dispatchable(node_attrs={"name": "default"})
 def get_node_attributes(G, name, default=None):
     """Get node attributes from graph
 
@@ -703,6 +705,7 @@ def get_node_attributes(G, name, default=None):
     return {n: d[name] for n, d in G.nodes.items() if name in d}
 
 
+@nx._dispatchable(preserve_node_attrs=True, mutates_input=True)
 def remove_node_attributes(G, *attr_names, nbunch=None):
     """Remove node attributes from all nodes in the graph.
 
@@ -739,6 +742,7 @@ def remove_node_attributes(G, *attr_names, nbunch=None):
                     pass
 
 
+@nx._dispatchable(preserve_edge_attrs=True, mutates_input=True)
 def set_edge_attributes(G, values, name=None):
     """Sets edge attributes from a given value or dictionary of values.
 
@@ -877,6 +881,7 @@ def set_edge_attributes(G, values, name=None):
     nx._clear_cache(G)
 
 
+@nx._dispatchable(edge_attrs={"name": "default"})
 def get_edge_attributes(G, name, default=None):
     """Get edge attributes from graph
 
@@ -919,6 +924,7 @@ def get_edge_attributes(G, name, default=None):
     return {x[:-1]: x[-1][name] for x in edges if name in x[-1]}
 
 
+@nx._dispatchable(preserve_edge_attrs=True, mutates_input=True)
 def remove_edge_attributes(G, *attr_names, ebunch=None):
     """Remove edge attributes from all edges in the graph.
 
@@ -1059,6 +1065,7 @@ def common_neighbors(G, u, v):
     return G._adj[u].keys() & G._adj[v].keys() - {u, v}
 
 
+@nx._dispatchable(preserve_edge_attrs=True)
 def is_weighted(G, edge=None, weight="weight"):
     """Returns True if `G` has weighted edges.
 
@@ -1166,6 +1173,7 @@ def is_negatively_weighted(G, edge=None, weight="weight"):
     return any(weight in data and data[weight] < 0 for u, v, data in G.edges(data=True))
 
 
+@nx._dispatchable
 def is_empty(G):
     """Returns True if `G` has no edges.
 
@@ -1318,6 +1326,7 @@ def selfloop_edges(G, data=False, keys=False, default=None):
             return ((n, n) for n, nbrs in G._adj.items() if n in nbrs)
 
 
+@nx._dispatchable
 def number_of_selfloops(G):
     """Returns the number of selfloop edges.
 
