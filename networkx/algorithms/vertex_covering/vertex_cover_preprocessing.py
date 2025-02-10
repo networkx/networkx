@@ -524,9 +524,9 @@ def surplus_one_neighbours_not_independent(G, k, vc):
     k_new = k
     is_k_vc_possible = True
 
-    print(G.edges(), k, vc)
+    # print(G.edges(), k, vc)
 
-    if len(G) == 0:
+    if k <= 0 or len(G) == 0:
         return (
             applied,
             g_new,
@@ -576,6 +576,7 @@ def surplus_one_neighbours_not_independent(G, k, vc):
             ):
                 if not is_k_vc_exists:
                     return
+                print(f"Neighbourign set is {N_Z}")
                 vc.update(N_Z)
 
             return (
@@ -602,7 +603,7 @@ def surplus_one_neighbours_independent(G, k, vc):
     k_new = k
     is_k_vc_possible = True
 
-    if len(G) == 0:
+    if k <= 0 or len(G) == 0:
         return (
             applied,
             g_new,
