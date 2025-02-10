@@ -61,18 +61,18 @@ default = [
     'pandas>=2.0',
 ]
 developer = [
-    'pre-commit>=3.2',
-    'mypy>=1.1',
+    'pre-commit>=4.1',
+    'mypy>=1.15',
 ]
 doc = [
-    'sphinx>=7.3',
-    'pydata-sphinx-theme>=0.15',
-    'sphinx-gallery>=0.16',
+    'sphinx>=8.0',
+    'pydata-sphinx-theme>=0.16',
+    'sphinx-gallery>=0.18',
     'numpydoc>=1.8.0',
-    'pillow>=9.4',
+    'pillow>=10',
     'texext>=0.6.7',
     'myst-nb>=1.1',
-    'intersphinx_registry',
+    'intersphinx-registry',
 ]
 example = [
     'osmnx>=2.0.0',
