@@ -69,23 +69,23 @@ def _fractional_peeling(G, b, x, node_to_idx, edge_to_idx):
 
     Parameters
     ----------
-        G : networkx.Graph
-            The input graph.
-        b : numpy.ndarray
-            Induced load vector.
-        x : numpy.ndarray
-            Fractional edge values.
-        node_to_idx : dict
-            Mapping from node to index.
-        edge_to_idx : dict
-            Mapping from edge to index.
+    G : networkx.Graph
+        The input graph.
+    b : numpy.ndarray
+        Induced load vector.
+    x : numpy.ndarray
+        Fractional edge values.
+    node_to_idx : dict
+        Mapping from node to index.
+    edge_to_idx : dict
+        Mapping from edge to index.
 
     Returns
     -------
-        best_density : float
-            The best density found.
-        best_subgraph : set
-            The subset of nodes defining the densest subgraph.
+    best_density : float
+        The best density found.
+    best_subgraph : set
+        The subset of nodes defining the densest subgraph.
     """
     heap = nx.utils.BinaryHeap()
 
