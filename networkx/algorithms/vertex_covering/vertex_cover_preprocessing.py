@@ -3,6 +3,7 @@ Functions for preprocessing the graph before vertex cover
 """
 
 import networkx as nx
+from networkx.algorithms.bipartite import hopcroft_karp_matching, to_vertex_cover
 from networkx.algorithms.isolate import isolates, number_of_isolates
 from networkx.algorithms.vertex_covering.lp_decomposition import (
     lp_decomposition_vc,
@@ -315,12 +316,50 @@ def check_bipartite_graph(G, k, vc):
     k_new = k
     is_k_vc_possible = True
 
+    if not nx.is_bipartite(g_new) or len(g_new) == 0:
+        # empty graph is also recognised as bipartite, for which we don't want to apply preprocessing rule
+        return (
+            applied,
+            g_new,
+            k_new,
+            is_k_vc_possible,
+            None,
+        )
+
+    coloring = nx.bipartite.color(g_new)
+    top_nodes = [key for key, val in coloring.items() if val == 0]
+
+    maximum_matching = hopcroft_karp_matching(g_new, top_nodes=top_nodes)
+    min_vertex_cover = to_vertex_cover(g_new, maximum_matching, top_nodes=top_nodes)
+
+    if k < len(min_vertex_cover):
+        is_k_vc_possible = False
+        return (
+            applied,
+            g_new,
+            k_new,
+            is_k_vc_possible,
+            None,
+        )
+
+    # if graph is bipartite, then find min vertex cover in poly time
+    # and clear the graph
+    g_new.clear()
+    k_new = k - len(min_vertex_cover)
+    applied = True
+
+    def function_to_be_applied_after_bipartite(is_k_vc_exists, vc: set):
+        if not is_k_vc_exists:
+            return
+
+        vc.update(min_vertex_cover)
+
     return (
         applied,
         g_new,
         k_new,
         is_k_vc_possible,
-        None,
+        function_to_be_applied_after_bipartite,
     )
 
 

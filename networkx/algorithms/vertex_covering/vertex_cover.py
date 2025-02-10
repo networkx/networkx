@@ -12,7 +12,7 @@ preprocessing_rules = [
     deg_one_preprocessing,
     deg_two_preprocessing,
     high_degree_vertex_preprocessing,
-    # check_bipartite_graph,
+    check_bipartite_graph,
     # crown_decomposition_based_preprocessing,
     # lp_decomposition_based_preprocessing,
 ]
