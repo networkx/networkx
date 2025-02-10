@@ -28,32 +28,37 @@ def _init_node_labels(G, edge_attr, node_attr):
             return {u: str(deg) for u, deg in G.degree()}
 
 
-def _neighborhood_aggregate(G, node, node_labels, edge_attr=None):
+def _neighborhood_aggregate_undirected(G, node, node_labels, edge_attr=None):
     """
-    Compute new labels for given node by aggregating
+    Compute new labels for given node in an undirected graph by aggregating
     the labels of each node's neighbors.
     """
-    if nx.is_directed(G):
-        successor_labels = []
-        for nbr in G.successors(node):
-            prefix = "s_" + "" if edge_attr is None else str(G[node][nbr][edge_attr])
-            successor_labels.append(prefix + node_labels[nbr])
+    label_list = []
+    for nbr in G.neighbors(node):
+        prefix = "" if edge_attr is None else str(G[node][nbr][edge_attr])
+        label_list.append(prefix + node_labels[nbr])
+    return node_labels[node] + "".join(sorted(label_list))
 
-        predecessor_labels = []
-        for nbr in G.predecessors(node):
-            prefix = "p_" + "" if edge_attr is None else str(G[nbr][node][edge_attr])
-            predecessor_labels.append(prefix + node_labels[nbr])
-        return (
-            node_labels[node]
-            + "".join(sorted(successor_labels))
-            + "".join(sorted(predecessor_labels))
-        )
-    else:
-        label_list = []
-        for nbr in G.neighbors(node):
-            prefix = "" if edge_attr is None else str(G[node][nbr][edge_attr])
-            label_list.append(prefix + node_labels[nbr])
-        return node_labels[node] + "".join(sorted(label_list))
+
+def _neighborhood_aggregate_directed(G, node, node_labels, edge_attr=None):
+    """
+    Compute new labels for given node in a directed graph by aggregating
+    the labels of each node's neighbors.
+    """
+    successor_labels = []
+    for nbr in G.successors(node):
+        prefix = "s_" + "" if edge_attr is None else str(G[node][nbr][edge_attr])
+        successor_labels.append(prefix + node_labels[nbr])
+
+    predecessor_labels = []
+    for nbr in G.predecessors(node):
+        prefix = "p_" + "" if edge_attr is None else str(G[nbr][node][edge_attr])
+        predecessor_labels.append(prefix + node_labels[nbr])
+    return (
+        node_labels[node]
+        + "".join(sorted(successor_labels))
+        + "".join(sorted(predecessor_labels))
+    )
 
 
 @nx.utils.not_implemented_for("multigraph")
@@ -158,6 +163,11 @@ def weisfeiler_lehman_graph_hash(
     --------
     weisfeiler_lehman_subgraph_hashes
     """
+
+    if G.is_directed():
+        _neighborhood_aggregate = _neighborhood_aggregate_directed
+    else:
+        _neighborhood_aggregate = _neighborhood_aggregate_undirected
 
     def weisfeiler_lehman_step(G, labels, edge_attr=None):
         """
@@ -332,6 +342,11 @@ def weisfeiler_lehman_subgraph_hashes(
     --------
     weisfeiler_lehman_graph_hash
     """
+
+    if G.is_directed():
+        _neighborhood_aggregate = _neighborhood_aggregate_directed
+    else:
+        _neighborhood_aggregate = _neighborhood_aggregate_undirected
 
     def weisfeiler_lehman_step(G, labels, node_subgraph_hashes, edge_attr=None):
         """
