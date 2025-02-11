@@ -62,10 +62,10 @@ def _vertex_cover_preprocessing(G, k, vc, rules=None):
                 function_to_be_applied,
             ) = rule(G, k, vc)
 
-            print(applied, rule.__name__, G.edges(), k, vc, is_k_vc_possible)
+            # print(applied, rule.__name__, G.edges(), k, vc, is_k_vc_possible)
 
             if not is_k_vc_possible:
-                print("EARLY PREPROCESSING OVER")
+                # print("EARLY PREPROCESSING OVER")
                 is_k_vc_possible = False
                 return G, k, vc, is_k_vc_possible
 
@@ -76,8 +76,8 @@ def _vertex_cover_preprocessing(G, k, vc, rules=None):
             #     vc.update(to_add_to_vc)
 
             if applied and function_to_be_applied is not None:
-                print(function_to_be_applied.__name__)
-                print(f"Findining sub vertex cover for preprocessing : {G.edges()}")
+                # print(function_to_be_applied.__name__)
+                # print(f"Findining sub vertex cover for preprocessing : {G.edges()}")
                 is_k_vc_exists, vc_sub = vertex_cover(G, k)
 
                 if not is_k_vc_exists:
@@ -86,12 +86,12 @@ def _vertex_cover_preprocessing(G, k, vc, rules=None):
 
                 vc.update(vc_sub)
                 function_to_be_applied(is_k_vc_exists, vc)
-                print(vc)
+                # print(vc)
 
         if applied:
             return _vertex_cover_preprocessing(G, k, vc)
 
-    print(f"PREPROCESSING OVER, with ", G.edges(), k, vc, is_k_vc_possible)
+    # print(f"PREPROCESSING OVER, with ", G.edges(), k, vc, is_k_vc_possible)
     return G, k, vc, is_k_vc_possible
 
 
@@ -109,7 +109,7 @@ def _vertex_cover_branching(G, k, rules):
     G, k, vc, is_k_vc_possible = _vertex_cover_branch_preprocessing(
         G, k, vc, rules=rules
     )
-    print(f"AFTER PREPROCESSING vc = {vc}")
+    # print(f"AFTER PREPROCESSING vc = {vc}")
     # there should not be any isolated vertices
 
     if not is_k_vc_possible:
@@ -139,9 +139,9 @@ def _vertex_cover_branching(G, k, rules):
     # either max_deg_vertex is in the vertex cover or its neighbours is in the vertex cover
     g_new.remove_node(max_deg_vertex)
 
-    print(f"SUB CASE graph = {g_new.edges()}, k = {k - 1}")
+    # print(f"SUB CASE graph = {g_new.edges()}, k = {k - 1}")
     is_k_vc_exists, vc_sub = _vertex_cover_branching(g_new, k - 1, rules)
-    print(f"SUB CASE is_k_vc_exists : {is_k_vc_exists}, vc_sub : {vc_sub}")
+    # print(f"SUB CASE is_k_vc_exists : {is_k_vc_exists}, vc_sub : {vc_sub}")
     if is_k_vc_exists:
         vc.update(vc_sub)
         vc.update({max_deg_vertex})
@@ -183,11 +183,11 @@ def _vc_above_lp_branching(G, k):
 
 
 def vertex_cover(G, k):
-    print("ENTRY")
+    # print("ENTRY")
     # find lp-opt value
     # compare 1.4656^k and 2.618^(k - lpOpt)
     if len(G) == 0:
-        print("EMPTY GRAPH, RETURNING TRIVIAL VERTEX COVER")
+        # print("EMPTY GRAPH, RETURNING TRIVIAL VERTEX COVER")
         return True, set()
 
     g_new = G.copy()
@@ -196,7 +196,7 @@ def vertex_cover(G, k):
     g_new, k, vc, is_k_vc_possible = _vertex_cover_preprocessing(g_new, k, vc)
 
     if not is_k_vc_possible:
-        print("EARLY RETURN")
+        # print("EARLY RETURN")
         return False, set()
 
     lp_opt_value, *_ = _find_lp_decomposition(g_new)
@@ -210,10 +210,10 @@ def vertex_cover(G, k):
     is_k_vc_exists, vc_sub = False, set()
 
     if vc_above_lp_opt_algo_check < max_deg_algo_check:
-        print("VC ABOVE LP BRANCHING")
+        # print("VC ABOVE LP BRANCHING")
         is_k_vc_exists, vc_sub = _vc_above_lp_branching(g_new, k)
     else:
-        print("MAX DEG BRANCHING")
+        # print("MAX DEG BRANCHING")
         is_k_vc_exists, vc_sub = _max_degree_branching(g_new, k)
 
     vc.update(vc_sub)

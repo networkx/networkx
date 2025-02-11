@@ -376,7 +376,7 @@ def _crown_decomposition_based_preprocessing(G, k, vc):
 
     # need to check if this is ok
     if k <= 0 or len(G) <= 3 * k:
-        print("GRAPH SIZE ATMOST 3 * k")
+        # print("GRAPH SIZE ATMOST 3 * k")
         return (
             applied,
             g_new,
@@ -387,7 +387,7 @@ def _crown_decomposition_based_preprocessing(G, k, vc):
 
     head_vertices, crown, rest, is_k_vc_possible = _crown_decomposition(g_new, k_new)
     if not is_k_vc_possible:
-        print("VC NOT POSSIBLE")
+        # print("VC NOT POSSIBLE")
         is_k_vc_possible = False
         return (
             applied,
@@ -399,7 +399,7 @@ def _crown_decomposition_based_preprocessing(G, k, vc):
 
     head_union_crown = head_vertices.union(crown)
     if k < len(head_vertices):
-        print("VC NOT POSSIBLE, size of head union crown exceeding k")
+        # print("VC NOT POSSIBLE, size of head union crown exceeding k")
         is_k_vc_possible = False
         return (
             applied,
@@ -574,7 +574,7 @@ def _surplus_one_neighbours_not_independent(G, k, vc):
             ):
                 if not is_k_vc_exists:
                     return
-                print(f"Neighbourign set is {N_Z}")
+                # print(f"Neighbourign set is {N_Z}")
                 vc.update(N_Z)
 
             return (
