@@ -219,7 +219,7 @@ def weisfeiler_lehman_subgraph_hashes(
     Each hash corresponds to a subgraph rooted at a given node u in `G`.
     Lists of subgraph hashes are sorted in increasing order of depth from
     their root node, with the hash at index i corresponding to a subgraph
-    of nodes at most i-hops distance from u. Thus, each list will contain
+    of nodes at most i-hops (i edges) distance from u. Thus, each list will contain
     `iterations` elements - a hash for a subgraph at each depth. If
     `include_initial_labels` is set to `True`, each list will additionally
     have contain a hash of the initial node label (or equivalently a
@@ -237,9 +237,9 @@ def weisfeiler_lehman_subgraph_hashes(
     along the connecting edge from this neighbor to node $u$. The resulting string
     is then hashed to compress this information into a fixed digest size.
 
-    Thus, at the $i$-th iteration, nodes within $i$ hops influence any given
+    Thus, at the i-th iteration, nodes within i hops influence any given
     hashed node label. We can therefore say that at depth $i$ for node $u$
-    we have a hash for a subgraph induced by the $i$-hop neighborhood of $u$.
+    we have a hash for a subgraph induced by the i-hop neighborhood of $u$.
 
     The output can be used to create general Weisfeiler-Lehman graph kernels,
     or generate features for graphs or nodes - for example to generate 'words' in
