@@ -5,29 +5,29 @@ Functions for preprocessing the graph before vertex cover
 import networkx as nx
 from networkx.algorithms.bipartite import hopcroft_karp_matching, to_vertex_cover
 from networkx.algorithms.isolate import isolates, number_of_isolates
-from networkx.algorithms.vertex_covering.crown_decomposition import crown_decomposition
+from networkx.algorithms.vertex_covering.crown_decomposition import _crown_decomposition
 from networkx.algorithms.vertex_covering.lp_decomposition import (
-    lp_decomposition_vc,
-    partial_weighted_lp_decomposition,
+    _lp_decomposition_vc,
+    _partial_weighted_lp_decomposition,
 )
 from networkx.utils.decorators import not_implemented_for
 
 __all__ = [
-    "remove_isolated_vertices",
-    "remove_self_loops",
-    "deg_one_preprocessing",
-    "deg_two_preprocessing",
-    "high_degree_vertex_preprocessing",
-    "check_bipartite_graph",
-    "crown_decomposition_based_preprocessing",
-    "lp_decomposition_based_preprocessing",
-    "surplus_one_neighbours_not_independent",
-    "surplus_one_neighbours_independent",
+    "_remove_isolated_vertices",
+    "_remove_self_loops",
+    "_deg_one_preprocessing",
+    "_deg_two_preprocessing",
+    "_high_degree_vertex_preprocessing",
+    "_check_bipartite_graph",
+    "_crown_decomposition_based_preprocessing",
+    "_lp_decomposition_based_preprocessing",
+    "_surplus_one_neighbours_not_independent",
+    "_surplus_one_neighbours_independent",
 ]
 
 
 @not_implemented_for("directed")
-def remove_isolated_vertices(G, k, vc):
+def _remove_isolated_vertices(G, k, vc):
     applied = False
     k_new = k
     g_new = G
@@ -43,12 +43,10 @@ def remove_isolated_vertices(G, k, vc):
             None,
         )
 
-    isolated_vertices = isolates(G)
-
-    for node in isolated_vertices:
-        g_new.remove_node(node)
+    isolated_vertices = list(isolates(G))
+    if isolated_vertices:
+        g_new.remove_nodes_from(isolated_vertices)
         applied = True
-        # k_new = k
 
     def function_to_be_applied_after_isolated_vertices(is_k_vc_exists, vc):
         if not is_k_vc_exists:
@@ -66,7 +64,7 @@ def remove_isolated_vertices(G, k, vc):
 
 
 @not_implemented_for("directed")
-def remove_self_loops(G, k, vc):
+def _remove_self_loops(G, k, vc):
     applied = False
     k_new = k
     g_new = G
@@ -109,7 +107,7 @@ def remove_self_loops(G, k, vc):
 
 
 @not_implemented_for("directed")
-def deg_one_preprocessing(G, k, vc):
+def _deg_one_preprocessing(G, k, vc):
     applied = False
     k_new = k
     g_new = G
@@ -166,7 +164,7 @@ def deg_one_preprocessing(G, k, vc):
 
 
 @not_implemented_for("directed")
-def deg_two_preprocessing(G, k, vc):
+def _deg_two_preprocessing(G, k, vc):
     applied = False
     g_new = G
     k_new = k
@@ -265,7 +263,7 @@ def deg_two_preprocessing(G, k, vc):
 
 
 @not_implemented_for("directed")
-def high_degree_vertex_preprocessing(G, k, vc):
+def _high_degree_vertex_preprocessing(G, k, vc):
     applied = False
     g_new = G
     k_new = k
@@ -316,7 +314,7 @@ def high_degree_vertex_preprocessing(G, k, vc):
 
 
 @not_implemented_for("directed")
-def check_bipartite_graph(G, k, vc):
+def _check_bipartite_graph(G, k, vc):
     applied = False
     g_new = G
     k_new = k
@@ -370,7 +368,7 @@ def check_bipartite_graph(G, k, vc):
 
 
 @not_implemented_for("directed")
-def crown_decomposition_based_preprocessing(G, k, vc):
+def _crown_decomposition_based_preprocessing(G, k, vc):
     applied = False
     g_new = G
     k_new = k
@@ -387,7 +385,7 @@ def crown_decomposition_based_preprocessing(G, k, vc):
             None,
         )
 
-    head_vertices, crown, rest, is_k_vc_possible = crown_decomposition(g_new, k_new)
+    head_vertices, crown, rest, is_k_vc_possible = _crown_decomposition(g_new, k_new)
     if not is_k_vc_possible:
         print("VC NOT POSSIBLE")
         is_k_vc_possible = False
@@ -441,7 +439,7 @@ def crown_decomposition_based_preprocessing(G, k, vc):
 
 
 @not_implemented_for("directed")
-def lp_decomposition_based_preprocessing(G, k, vc):
+def _lp_decomposition_based_preprocessing(G, k, vc):
     applied = False
     g_new = G
     k_new = k
@@ -457,7 +455,7 @@ def lp_decomposition_based_preprocessing(G, k, vc):
             None,
         )
 
-    lp_value, greater_than_half, less_than_half, equal_to_half = lp_decomposition_vc(
+    lp_value, greater_than_half, less_than_half, equal_to_half = _lp_decomposition_vc(
         G, k
     )
 
@@ -518,7 +516,7 @@ def lp_decomposition_based_preprocessing(G, k, vc):
 
 
 @not_implemented_for("directed")
-def surplus_one_neighbours_not_independent(G, k, vc):
+def _surplus_one_neighbours_not_independent(G, k, vc):
     applied = False
     g_new = G
     k_new = k
@@ -542,7 +540,7 @@ def surplus_one_neighbours_not_independent(G, k, vc):
     original_lp_value = len(G) / 2
 
     for u, v in G.edges:
-        lp_value_new, g_half, l_half, e_half = partial_weighted_lp_decomposition(
+        lp_value_new, g_half, l_half, e_half = _partial_weighted_lp_decomposition(
             G, {u: 1, v: 1}
         )
         if lp_value_new == original_lp_value + 0.5:
@@ -597,7 +595,7 @@ def surplus_one_neighbours_not_independent(G, k, vc):
 
 
 @not_implemented_for("directed")
-def surplus_one_neighbours_independent(G, k, vc):
+def _surplus_one_neighbours_independent(G, k, vc):
     applied = False
     g_new = G
     k_new = k
@@ -619,7 +617,7 @@ def surplus_one_neighbours_independent(G, k, vc):
     original_lp_value = len(G) / 2
 
     for u in G:
-        lp_value_new, g_half, l_half, e_half = partial_weighted_lp_decomposition(
+        lp_value_new, g_half, l_half, e_half = _partial_weighted_lp_decomposition(
             G, {u: 0}
         )
         if lp_value_new == original_lp_value + 0.5:
