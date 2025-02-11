@@ -110,7 +110,7 @@ Without any knowledge about the system (candidate d-separating set is empty)
 a causal graph ``u -> v -> w`` allows all three nodes to be dependent. But
 if we know the outcome of ``v``, the conditional probabilities of outcomes for
 ``u`` and ``w`` are independent of each other. That is, once we know the outcome
-for ```v`, the probabilities for ``w`` do not depend on the outcome for ``u``.
+for ``v``, the probabilities for ``w`` do not depend on the outcome for ``u``.
 This is the idea behind ``v`` blocking the path if it is "known" (in the candidate
 d-separating set).
 
@@ -121,7 +121,7 @@ make the conditional probabilities independent.
 
 The direction of the causal edges does impact dependence precisely in the
 case of a collider e.g. ``u -> v <- w``. In that situation, both ``u`` and ``w``
-influence ``v```. But they do not directly influence each other. So without any
+influence ``v``. But they do not directly influence each other. So without any
 knowledge of any outcomes, ``u`` and ``w`` are independent. That is the idea behind
 colliders blocking the path. But, if ``v`` is known, the conditional probabilities
 of ``u`` and ``w`` can be dependent. This is the heart of Berkson's Paradox [6]_.
