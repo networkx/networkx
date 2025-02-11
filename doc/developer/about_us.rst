@@ -192,6 +192,8 @@ NetworkX acknowledges support from the following organizations:
 
 - `Berkeley Institute for Data Science <https://bids.berkeley.edu/>`_
 
+- `NVIDIA Corporation <https://www.nvidia.com/>`_
+
 NetworkX acknowledges the following financial support:
 
 - Google Summer of Code via Python Software Foundation (2013, 2015),
@@ -213,3 +215,4 @@ NetworkX acknowledges the following financial support:
   EOSS2-0000000066 and EOSS4-0000000138
   
 - Wellcome Trust via CZI, Wellcome and Kavli EOSS Cycle 6 (EOSS6-000000368)
+
