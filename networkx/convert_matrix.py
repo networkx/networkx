@@ -357,6 +357,8 @@ def from_pandas_edgelist(
         this column are used for the edge keys when adding edges if create_using
         is a multigraph.
 
+    Notes
+    -----
     If you have node attributes stored in a separate dataframe `df_nodes`,
     you can load those attributes to the graph `G` using the following code::
 
