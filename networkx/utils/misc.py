@@ -4,10 +4,10 @@ Miscellaneous Helpers for NetworkX.
 These are not imported into the base networkx namespace but
 can be accessed, for example, as
 
->>> import networkx
->>> networkx.utils.make_list_of_ints({1, 2, 3})
+>>> import networkx as nx
+>>> nx.utils.make_list_of_ints({1, 2, 3})
 [1, 2, 3]
->>> networkx.utils.arbitrary_element({5, 1, 7})  # doctest: +SKIP
+>>> nx.utils.arbitrary_element({5, 1, 7})  # doctest: +SKIP
 1
 """
 

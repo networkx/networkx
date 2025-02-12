@@ -19,7 +19,7 @@ from importlib.metadata import entry_points
 
 import pytest
 
-import networkx
+import networkx as nx
 
 
 def pytest_addoption(parser):
@@ -61,18 +61,18 @@ def pytest_configure(config):
     if backend:
         # We will update `networkx.config.backend_priority` below in `*_modify_items`
         # to allow tests to get set up with normal networkx graphs.
-        networkx.utils.backends.backends["nx_loopback"] = loopback_ep["nx_loopback"]
-        networkx.utils.backends.backend_info["nx_loopback"] = {}
-        networkx.config.backends = networkx.utils.Config(
-            nx_loopback=networkx.utils.Config(),
-            **networkx.config.backends,
+        nx.utils.backends.backends["nx_loopback"] = loopback_ep["nx_loopback"]
+        nx.utils.backends.backend_info["nx_loopback"] = {}
+        nx.config.backends = nx.utils.Config(
+            nx_loopback=nx.utils.Config(),
+            **nx.config.backends,
         )
         fallback_to_nx = config.getoption("--fallback-to-nx")
         if not fallback_to_nx:
             fallback_to_nx = os.environ.get("NETWORKX_FALLBACK_TO_NX")
-        networkx.config.fallback_to_nx = bool(fallback_to_nx)
-        networkx.utils.backends._dispatchable.__call__ = (
-            networkx.utils.backends._dispatchable._call_if_any_backends_installed
+        nx.config.fallback_to_nx = bool(fallback_to_nx)
+        nx.utils.backends._dispatchable.__call__ = (
+            nx.utils.backends._dispatchable._call_if_any_backends_installed
         )
 
 
@@ -84,10 +84,10 @@ def pytest_collection_modifyitems(config, items):
         # when running in auto-conversion test mode
         backend_name = config.backend
         if backend_name != "networkx":
-            networkx.utils.backends._dispatchable._is_testing = True
-            networkx.config.backend_priority.algos = [backend_name]
-            networkx.config.backend_priority.generators = [backend_name]
-            backend = networkx.utils.backends.backends[backend_name].load()
+            nx.utils.backends._dispatchable._is_testing = True
+            nx.config.backend_priority.algos = [backend_name]
+            nx.config.backend_priority.generators = [backend_name]
+            backend = nx.utils.backends.backends[backend_name].load()
             if hasattr(backend, "on_start_tests"):
                 getattr(backend, "on_start_tests")(items)
 
@@ -112,34 +112,6 @@ def set_warnings():
         "ignore", category=DeprecationWarning, message="\n\nThe `normalized`"
     )
     warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nall_triplets"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nrandom_triad"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="minimal_d_separator"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="d_separated"
-    )
-    warnings.filterwarnings("ignore", category=DeprecationWarning, message="\n\nk_core")
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nk_shell"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nk_crust"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\nk_corona"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message="\n\ntotal_spanning_tree_weight"
-    )
-    warnings.filterwarnings(
-        "ignore", category=DeprecationWarning, message=r"\n\nThe 'create=matrix'"
-    )
-    warnings.filterwarnings(
         "ignore", category=DeprecationWarning, message="\n\n`compute_v_structures"
     )
     warnings.filterwarnings(
@@ -149,34 +121,34 @@ def set_warnings():
 
 @pytest.fixture(autouse=True)
 def add_nx(doctest_namespace):
-    doctest_namespace["nx"] = networkx
+    doctest_namespace["nx"] = nx
 
 
 # What dependencies are installed?
 
 try:
-    import numpy
+    import numpy as np
 
     has_numpy = True
 except ImportError:
     has_numpy = False
 
 try:
-    import scipy
+    import scipy as sp
 
     has_scipy = True
 except ImportError:
     has_scipy = False
 
 try:
-    import matplotlib
+    import matplotlib as mpl
 
     has_matplotlib = True
 except ImportError:
     has_matplotlib = False
 
 try:
-    import pandas
+    import pandas as pd
 
     has_pandas = True
 except ImportError:

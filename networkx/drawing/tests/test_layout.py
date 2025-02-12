@@ -549,3 +549,20 @@ def test_bfs_layout_disconnected():
     G.add_edges_from([(10, 11), (11, 12)])
     with pytest.raises(nx.NetworkXError, match="bfs_layout didn't include all nodes"):
         nx.bfs_layout(G, start=0)
+
+
+def test_bipartite_layout_default_nodes_raises_non_bipartite_input():
+    G = nx.complete_graph(5)
+    with pytest.raises(nx.NetworkXError, match="Graph is not bipartite"):
+        nx.bipartite_layout(G)
+    # No exception if nodes are explicitly specified
+    pos = nx.bipartite_layout(G, nodes=[2, 3])
+
+
+def test_bipartite_layout_default_nodes():
+    G = nx.complete_bipartite_graph(3, 3)
+    pos = nx.bipartite_layout(G)  # no nodes specified
+    # X coords of nodes should be the same within the bipartite sets
+    for nodeset in nx.bipartite.sets(G):
+        xs = [pos[k][0] for k in nodeset]
+        assert all(x == pytest.approx(xs[0]) for x in xs)

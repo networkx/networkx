@@ -343,6 +343,7 @@ def view_pygraphviz(
     path : str, None
         The filename used to save the image.  If None, save to a temporary
         file.  File formats are the same as those from pygraphviz.agraph.draw.
+        Filenames ending in .gz or .bz2 will be compressed.
     show : bool, default = True
         Whether to display the graph with :mod:`PIL.Image.show`,
         default is `True`. If `False`, the rendered graph is still available
