@@ -6,7 +6,7 @@ requires = ['setuptools>=61.2']
 name = 'networkx'
 description = 'Python package for creating and manipulating graphs and networks'
 readme = 'README.rst'
-requires-python = '>=3.10'
+requires-python = '>=3.11'
 dynamic = ['version']
 keywords = [
     'Networks',
@@ -24,9 +24,9 @@ classifiers = [
     'License :: OSI Approved :: BSD License',
     'Operating System :: OS Independent',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: 3.13',
     'Programming Language :: Python :: 3 :: Only',
     'Topic :: Software Development :: Libraries :: Python Modules',
     'Topic :: Scientific/Engineering :: Bio-Informatics',
@@ -55,29 +55,27 @@ nx_loopback = 'networkx.classes.tests.dispatch_interface:backend_interface'
 
 [project.optional-dependencies]
 default = [
-    'numpy>=1.24',
-    'scipy>=1.10,!=1.11.0,!=1.11.1',
-    'matplotlib>=3.7',
+    'numpy>=1.25',
+    'scipy>=1.11.2',
+    'matplotlib>=3.8',
     'pandas>=2.0',
 ]
 developer = [
-    'changelist==0.5',
-    'pre-commit>=3.2',
-    'mypy>=1.1',
-    'rtoml',
+    'pre-commit>=4.1',
+    'mypy>=1.15',
 ]
 doc = [
-    'sphinx>=7.3',
-    'pydata-sphinx-theme>=0.15',
-    'sphinx-gallery>=0.16',
+    'sphinx>=8.0',
+    'pydata-sphinx-theme>=0.16',
+    'sphinx-gallery>=0.18',
     'numpydoc>=1.8.0',
-    'pillow>=9.4',
+    'pillow>=10',
     'texext>=0.6.7',
     'myst-nb>=1.1',
-    'intersphinx_registry',
+    'intersphinx-registry',
 ]
 example = [
-    'osmnx>=1.9',
+    'osmnx>=2.0.0',
     'momepy>=0.7.2',
     'contextily>=1.6',
     'seaborn>=0.13',

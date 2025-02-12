@@ -22,16 +22,6 @@ import itertools
 from numbers import Number
 
 import networkx as nx
-from networkx.drawing.layout import (
-    circular_layout,
-    forceatlas2_layout,
-    kamada_kawai_layout,
-    planar_layout,
-    random_layout,
-    shell_layout,
-    spectral_layout,
-    spring_layout,
-)
 
 __all__ = [
     "draw",
@@ -40,6 +30,7 @@ __all__ = [
     "draw_networkx_edges",
     "draw_networkx_labels",
     "draw_networkx_edge_labels",
+    "draw_bipartite",
     "draw_circular",
     "draw_kamada_kawai",
     "draw_random",
@@ -485,8 +476,7 @@ def draw_networkx_nodes(
             ax.margins(margins)
 
     node_collection.set_zorder(2)
-    # return node_collection
-    return ax
+    return node_collection
 
 
 class FancyArrowFactory:
@@ -1386,47 +1376,64 @@ def draw_networkx_edge_labels(
                 has not been added yet, and doesn't have transform
             """
             dpi_cor = arrow._dpi_cor
-            # trans_data = arrow.get_transform()
             trans_data = self.ax.transData
-            if arrow._posA_posB is not None:
-                posA = arrow._convert_xy_units(arrow._posA_posB[0])
-                posB = arrow._convert_xy_units(arrow._posA_posB[1])
-                (posA, posB) = trans_data.transform((posA, posB))
-                _path = arrow.get_connectionstyle()(
-                    posA,
-                    posB,
-                    patchA=arrow.patchA,
-                    patchB=arrow.patchB,
-                    shrinkA=arrow.shrinkA * dpi_cor,
-                    shrinkB=arrow.shrinkB * dpi_cor,
+            if arrow._posA_posB is None:
+                raise ValueError(
+                    "Can only draw labels for fancy arrows with "
+                    "posA and posB inputs, not custom path"
                 )
-            else:
-                _path = trans_data.transform_path(arrow._path_original)
+            posA = arrow._convert_xy_units(arrow._posA_posB[0])
+            posB = arrow._convert_xy_units(arrow._posA_posB[1])
+            (posA, posB) = trans_data.transform((posA, posB))
+            _path = arrow.get_connectionstyle()(
+                posA,
+                posB,
+                patchA=arrow.patchA,
+                patchB=arrow.patchB,
+                shrinkA=arrow.shrinkA * dpi_cor,
+                shrinkB=arrow.shrinkB * dpi_cor,
+            )
             # Return is in display coordinates
             return _path
 
         def _update_text_pos_angle(self, arrow):
             # Fractional label position
-            path_disp = self._get_arrow_path_disp(arrow)
-            (x1, y1), (cx, cy), (x2, y2) = path_disp.vertices
             # Text position at a proportion t along the line in display coords
             # default is 0.5 so text appears at the halfway point
             t = self.label_pos
             tt = 1 - t
-            x = tt**2 * x1 + 2 * t * tt * cx + t**2 * x2
-            y = tt**2 * y1 + 2 * t * tt * cy + t**2 * y2
+            path_disp = self._get_arrow_path_disp(arrow)
+            is_bar_style = isinstance(
+                arrow.get_connectionstyle(), mpl.patches.ConnectionStyle.Bar
+            )
+            # 1. Calculate x and y
+            if is_bar_style:
+                # Bar Connection Style - straight line
+                _, (cx1, cy1), (cx2, cy2), _ = path_disp.vertices
+                x = cx1 * tt + cx2 * t
+                y = cy1 * tt + cy2 * t
+            else:
+                # Arc or Angle type Connection Styles - Bezier curve
+                (x1, y1), (cx, cy), (x2, y2) = path_disp.vertices
+                x = tt**2 * x1 + 2 * t * tt * cx + t**2 * x2
+                y = tt**2 * y1 + 2 * t * tt * cy + t**2 * y2
+            # 2. Calculate Angle
             if self.labels_horizontal:
                 # Horizontal text labels
                 angle = 0
             else:
                 # Labels parallel to curve
-                change_x = 2 * tt * (cx - x1) + 2 * t * (x2 - cx)
-                change_y = 2 * tt * (cy - y1) + 2 * t * (y2 - cy)
-                angle = (np.arctan2(change_y, change_x) / (2 * np.pi)) * 360
+                if is_bar_style:
+                    change_x = (cx2 - cx1) / 2
+                    change_y = (cy2 - cy1) / 2
+                else:
+                    change_x = 2 * tt * (cx - x1) + 2 * t * (x2 - cx)
+                    change_y = 2 * tt * (cy - y1) + 2 * t * (y2 - cy)
+                angle = np.arctan2(change_y, change_x) / (2 * np.pi) * 360
                 # Text is "right way up"
                 if angle > 90:
                     angle -= 180
-                if angle < -90:
+                elif angle < -90:
                     angle += 180
             (x, y) = self.ax.transData.inverted().transform((x, y))
             return x, y, angle
@@ -1591,6 +1598,50 @@ def draw_networkx_edge_labels(
     return text_items
 
 
+def draw_bipartite(G, **kwargs):
+    """Draw the graph `G` with a bipartite layout.
+
+    This is a convenience function equivalent to::
+
+        nx.draw(G, pos=nx.bipartite_layout(G), **kwargs)
+
+    Parameters
+    ----------
+    G : graph
+        A networkx graph
+
+    kwargs : optional keywords
+        See `draw_networkx` for a description of optional keywords.
+
+    Raises
+    ------
+    NetworkXError :
+        If `G` is not bipartite.
+
+    Notes
+    -----
+    The layout is computed each time this function is called. For
+    repeated drawing it is much more efficient to call
+    `~networkx.drawing.layout.bipartite_layout` directly and reuse the result::
+
+        >>> G = nx.complete_bipartite_graph(3, 3)
+        >>> pos = nx.bipartite_layout(G)
+        >>> nx.draw(G, pos=pos)  # Draw the original graph
+        >>> # Draw a subgraph, reusing the same node positions
+        >>> nx.draw(G.subgraph([0, 1, 2]), pos=pos, node_color="red")
+
+    Examples
+    --------
+    >>> G = nx.complete_bipartite_graph(2, 5)
+    >>> nx.draw_bipartite(G)
+
+    See Also
+    --------
+    :func:`~networkx.drawing.layout.bipartite_layout`
+    """
+    draw(G, pos=nx.bipartite_layout(G), **kwargs)
+
+
 def draw_circular(G, **kwargs):
     """Draw the graph `G` with a circular layout.
 
@@ -1627,7 +1678,7 @@ def draw_circular(G, **kwargs):
     --------
     :func:`~networkx.drawing.layout.circular_layout`
     """
-    draw(G, circular_layout(G), **kwargs)
+    draw(G, pos=nx.circular_layout(G), **kwargs)
 
 
 def draw_kamada_kawai(G, **kwargs):
@@ -1667,7 +1718,7 @@ def draw_kamada_kawai(G, **kwargs):
     --------
     :func:`~networkx.drawing.layout.kamada_kawai_layout`
     """
-    draw(G, kamada_kawai_layout(G), **kwargs)
+    draw(G, pos=nx.kamada_kawai_layout(G), **kwargs)
 
 
 def draw_random(G, **kwargs):
@@ -1706,7 +1757,7 @@ def draw_random(G, **kwargs):
     --------
     :func:`~networkx.drawing.layout.random_layout`
     """
-    draw(G, random_layout(G), **kwargs)
+    draw(G, pos=nx.random_layout(G), **kwargs)
 
 
 def draw_spectral(G, **kwargs):
@@ -1748,7 +1799,7 @@ def draw_spectral(G, **kwargs):
     --------
     :func:`~networkx.drawing.layout.spectral_layout`
     """
-    draw(G, spectral_layout(G), **kwargs)
+    draw(G, pos=nx.spectral_layout(G), **kwargs)
 
 
 def draw_spring(G, **kwargs):
@@ -1791,7 +1842,7 @@ def draw_spring(G, **kwargs):
     draw
     :func:`~networkx.drawing.layout.spring_layout`
     """
-    draw(G, spring_layout(G), **kwargs)
+    draw(G, pos=nx.spring_layout(G), **kwargs)
 
 
 def draw_shell(G, nlist=None, **kwargs):
@@ -1836,7 +1887,7 @@ def draw_shell(G, nlist=None, **kwargs):
     --------
     :func:`~networkx.drawing.layout.shell_layout`
     """
-    draw(G, shell_layout(G, nlist=nlist), **kwargs)
+    draw(G, pos=nx.shell_layout(G, nlist=nlist), **kwargs)
 
 
 def draw_planar(G, **kwargs):
@@ -1880,7 +1931,7 @@ def draw_planar(G, **kwargs):
     --------
     :func:`~networkx.drawing.layout.planar_layout`
     """
-    draw(G, planar_layout(G), **kwargs)
+    draw(G, pos=nx.planar_layout(G), **kwargs)
 
 
 def draw_forceatlas2(G, **kwargs):
@@ -1900,7 +1951,7 @@ def draw_forceatlas2(G, **kwargs):
        with the exception of the pos parameter which is not used by this
        function.
     """
-    draw(G, forceatlas2_layout(G), **kwargs)
+    draw(G, pos=nx.forceatlas2_layout(G), **kwargs)
 
 
 def apply_alpha(colors, alpha, elem_list, cmap=None, vmin=None, vmax=None):

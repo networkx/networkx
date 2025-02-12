@@ -132,6 +132,34 @@ def test_nxconfig():
         nx.config.backends = Config(this_almost_certainly_is_not_a_backend=Config())
     with pytest.raises(TypeError, match="must be True or False"):
         nx.config.cache_converted_graphs = "bad value"
+    with pytest.raises(TypeError, match="must be a set of "):
+        nx.config.warnings_to_ignore = 7
+    with pytest.raises(ValueError, match="Unknown warning "):
+        nx.config.warnings_to_ignore = {"bad value"}
+
+
+def test_nxconfig_context():
+    # We do some special handling so that `nx.config.backend_priority = val`
+    # actually does `nx.config.backend_priority.algos = val`.
+    orig = nx.config.backend_priority.algos
+    val = [] if orig else ["networkx"]
+    assert orig != val
+    assert nx.config.backend_priority.algos != val
+    with nx.config(backend_priority=val):
+        assert nx.config.backend_priority.algos == val
+    assert nx.config.backend_priority.algos == orig
+    with nx.config.backend_priority(algos=val):
+        assert nx.config.backend_priority.algos == val
+    assert nx.config.backend_priority.algos == orig
+    bad = ["bad-backend"]
+    with pytest.raises(ValueError, match="Unknown backend"):
+        nx.config.backend_priority = bad
+    with pytest.raises(ValueError, match="Unknown backend"):
+        with nx.config(backend_priority=bad):
+            pass
+    with pytest.raises(ValueError, match="Unknown backend"):
+        with nx.config.backend_priority(algos=bad):
+            pass
 
 
 def test_not_strict():

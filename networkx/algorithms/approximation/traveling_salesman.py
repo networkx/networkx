@@ -334,7 +334,9 @@ def traveling_salesman_problem(
         for v in nodes:
             if u == v:
                 continue
-            GG.add_edge(u, v, weight=dist[u][v])
+            # Ensure that the weight attribute on GG has the
+            # same name as the input graph
+            GG.add_edge(u, v, **{weight: dist[u][v]})
 
     best_GG = method(GG, weight=weight, **kwargs)
 
@@ -436,7 +438,7 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
 
     # Check that G is a complete graph
     N = len(G) - 1
-    if N < 2:
+    if N < 1:
         raise nx.NetworkXError("G must have at least two nodes")
     # This check ignores selfloops which is what we want here.
     if any(len(nbrdict) - (n in nbrdict) != N for n, nbrdict in G.adj.items()):
@@ -444,6 +446,11 @@ def asadpour_atsp(G, weight="weight", seed=None, source=None):
     # Check that the source vertex, if given, is in the graph
     if source is not None and source not in G.nodes:
         raise nx.NetworkXError("Given source node not in G.")
+    # handle 2 node case
+    if N == 1:
+        if source is None:
+            return list(G)
+        return [source, next(n for n in G if n != source)]
 
     opt_hk, z_star = held_karp_ascent(G, weight)
 
@@ -556,7 +563,7 @@ def held_karp_ascent(G, weight="weight"):
            pp.1138-1162
     """
     import numpy as np
-    from scipy import optimize
+    import scipy as sp
 
     def k_pi():
         """
@@ -700,7 +707,7 @@ def held_karp_ascent(G, weight="weight"):
                     a_eq[n_count][arb_count] = deg - 2
                     n_count -= 1
                 a_eq[len(G)][arb_count] = 1
-            program_result = optimize.linprog(
+            program_result = sp.optimize.linprog(
                 c, A_eq=a_eq, b_eq=b_eq, method="highs-ipm"
             )
             # If the constants exist, then the direction of ascent doesn't
@@ -878,9 +885,9 @@ def spanning_tree_distribution(G, z):
         # Create the laplacian matrices
         for u, v, d in G.edges(data=True):
             d[lambda_key] = exp(gamma[(u, v)])
-        G_Kirchhoff = nx.total_spanning_tree_weight(G, lambda_key)
+        G_Kirchhoff = nx.number_of_spanning_trees(G, weight=lambda_key)
         G_e = nx.contracted_edge(G, e, self_loops=False)
-        G_e_Kirchhoff = nx.total_spanning_tree_weight(G_e, lambda_key)
+        G_e_Kirchhoff = nx.number_of_spanning_trees(G_e, weight=lambda_key)
 
         # Multiply by the weight of the contracted edge since it is not included
         # in the total weight of the contracted graph.

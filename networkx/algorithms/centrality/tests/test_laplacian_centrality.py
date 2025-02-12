@@ -64,7 +64,6 @@ def test_laplacian_centrality_E():
 
     # Check unweighted not-normalized version
     duw_nn = nx.laplacian_centrality(E, normalized=False, weight=None)
-    print(duw_nn)
     exact_uw_nn = {
         0: 18,
         1: 34,

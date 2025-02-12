@@ -90,15 +90,15 @@ copyright = f"2004-{date.today().year}, NetworkX Developers"
 # Used in networkx.utils.backends for cleaner rendering of functions.
 # We need to set this before we import networkx.
 os.environ["_NETWORKX_BUILDING_DOCS_"] = "True"
-import networkx
+import networkx as nx
 
 # The default replacements for |version| and |release|, also used in various
 # other places throughout the built documents.
 #
 # The short X.Y version.
-version = networkx.__version__
+version = nx.__version__
 # The full version, including dev info
-release = networkx.__version__.replace("_", "")
+release = nx.__version__.replace("_", "")
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -165,6 +165,7 @@ html_sidebars = {
     "index": [],
     "install": [],
     "tutorial": [],
+    "backends": [],
     "auto_examples/index": [],
 }
 html_logo = "_static/networkx_banner.svg"
@@ -290,7 +291,7 @@ def new_setitem(self, key, val):
         if line and not line.startswith(" "):
             # This line must identify a backend; let's try to add a link
             backend, *rest = line.split(" ")
-            url = networkx.utils.backends.backend_info.get(backend, {}).get("url")
+            url = nx.utils.backends.backend_info.get(backend, {}).get("url")
             if url:
                 line = f"`{backend} <{url}>`_ " + " ".join(rest)
         newval.append(f"   {line}")
