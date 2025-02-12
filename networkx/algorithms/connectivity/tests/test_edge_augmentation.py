@@ -258,9 +258,9 @@ def test_gnp_augmentation():
 def _assert_solution_properties(G, aug_edges, avail_dict=None):
     """Checks that aug_edges are consistently formatted"""
     if avail_dict is not None:
-        assert all(
-            e in avail_dict for e in aug_edges
-        ), "when avail is specified aug-edges should be in avail"
+        assert all(e in avail_dict for e in aug_edges), (
+            "when avail is specified aug-edges should be in avail"
+        )
 
     unique_aug = set(map(tuple, map(sorted, aug_edges)))
     unique_aug = list(map(tuple, map(sorted, aug_edges)))
@@ -268,9 +268,9 @@ def _assert_solution_properties(G, aug_edges, avail_dict=None):
 
     assert not any(u == v for u, v in unique_aug), "should be no self-edges"
 
-    assert not any(
-        G.has_edge(u, v) for u, v in unique_aug
-    ), "aug edges and G.edges should be disjoint"
+    assert not any(G.has_edge(u, v) for u, v in unique_aug), (
+        "aug edges and G.edges should be disjoint"
+    )
 
 
 def _augment_and_check(
@@ -331,9 +331,9 @@ def _augment_and_check(
             info["n_partial_edges"] = len(partial_edges)
 
             if avail_dict is None:
-                assert set(partial_edges) == set(
-                    complement_edges(G)
-                ), "unweighted partial solutions should be the complement"
+                assert set(partial_edges) == set(complement_edges(G)), (
+                    "unweighted partial solutions should be the complement"
+                )
             elif len(avail_dict) > 0:
                 H = G.copy()
 
@@ -346,9 +346,9 @@ def _augment_and_check(
 
                 # Full connectivity should be no better than our partial
                 # solution.
-                assert (
-                    partial_conn == full_conn
-                ), "adding more edges should not increase k-conn"
+                assert partial_conn == full_conn, (
+                    "adding more edges should not increase k-conn"
+                )
 
             # Find the new edge-connectivity after adding the augmenting edges
             aug_edges = partial_edges
@@ -497,6 +497,6 @@ def _check_unconstrained_bridge_property(G, info1):
     if p + q > 1:
         size_target = math.ceil(p / 2) + q
         size_aug = info1["num_edges"]
-        assert (
-            size_aug == size_target
-        ), "augmentation size is different from what theory predicts"
+        assert size_aug == size_target, (
+            "augmentation size is different from what theory predicts"
+        )

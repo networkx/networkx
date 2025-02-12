@@ -50,19 +50,3 @@ class TestGeneratorNonIsomorphicTrees:
         assert edges_equal(f(3)[0].edges(), [(0, 1), (0, 2)])
         assert edges_equal(f(4)[0].edges(), [(0, 1), (0, 3), (1, 2)])
         assert edges_equal(f(4)[1].edges(), [(0, 1), (0, 2), (0, 3)])
-
-    def test_nonisomorphic_trees_matrix(self):
-        trees_2 = [[[0, 1], [1, 0]]]
-        with pytest.deprecated_call():
-            assert list(nx.nonisomorphic_trees(2, create="matrix")) == trees_2
-
-        trees_3 = [[[0, 1, 1], [1, 0, 0], [1, 0, 0]]]
-        with pytest.deprecated_call():
-            assert list(nx.nonisomorphic_trees(3, create="matrix")) == trees_3
-
-        trees_4 = [
-            [[0, 1, 0, 1], [1, 0, 1, 0], [0, 1, 0, 0], [1, 0, 0, 0]],
-            [[0, 1, 1, 1], [1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0]],
-        ]
-        with pytest.deprecated_call():
-            assert list(nx.nonisomorphic_trees(4, create="matrix")) == trees_4
