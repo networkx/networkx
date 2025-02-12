@@ -57,8 +57,7 @@ def could_be_isomorphic(G1, G2, mode=None):
         return True
 
     # Then check triangle sequence
-    t1 = sorted(t for _, t in nx.triangles(G1))
-    t2 = sorted(t for _, t in nx.triangles(G2))
+    t1, t2 = sorted(nx.triangles(G1).values()), sorted(nx.triangles(G2).values())
     if t1 != t2:
         return False
     if mode == "fast":
