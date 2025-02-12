@@ -25,7 +25,6 @@ Laplacian Matrix
    normalized_laplacian_matrix
    directed_laplacian_matrix
    directed_combinatorial_laplacian_matrix
-   total_spanning_tree_weight
 
 Bethe Hessian Matrix
 --------------------

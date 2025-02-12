@@ -41,12 +41,6 @@ Todo
 
 Make sure to review ``networkx/conftest.py`` after removing deprecated code.
 
-Version 3.5
-~~~~~~~~~~~
-* Remove ``total_spanning_tree_weight`` from ``linalg/laplacianmatrix.py``
-* Remove ``create`` keyword argument from ``nonisomorphic_trees`` in 
-  ``generators/nonisomorphic_trees``.
-
 Version 3.6
 ~~~~~~~~~~~
 * Remove ``compute_v_structures`` from ``algorithms/dag.py``.
