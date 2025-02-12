@@ -14,47 +14,65 @@ __all__ = [
 
 
 @nx._dispatchable(graphs={"G1": 0, "G2": 1})
-def could_be_isomorphic(G1, G2):
+def could_be_isomorphic(G1, G2, mode=None):
     """Returns False if graphs are definitely not isomorphic.
     True does NOT guarantee isomorphism.
 
     Parameters
     ----------
     G1, G2 : graphs
-       The two graphs G1 and G2 must be the same type.
+       The two graphs `G1` and `G2` must be the same type.
+
+    mode : {None, "fast", "faster"}
+       Determines which properties of the graph are checked as follows:
+
+       - `None` (the default) checks for matching degree, triangle, and
+         number-of-cliques sequences.
+       - ``"fast"`` checks for matching degree and triangle sequences
+       - ``"faster"`` checks for matching degree sequences
+
+    Returns
+    -------
+    bool
+       A Boolean value representing whether `G1` could be isomorphic with `G2`
+       according to the criteria specified by the given `mode`.
 
     Notes
     -----
-    Checks for matching degree, triangle, and number of cliques sequences.
     The triangle sequence contains the number of triangles each node is part of.
     The clique sequence contains for each node the number of maximal cliques
     involving that node.
-
     """
 
     # Check global properties
     if G1.order() != G2.order():
         return False
 
-    # Check local properties
-    d1 = G1.degree()
-    t1 = nx.triangles(G1)
-    clqs_1 = list(nx.find_cliques(G1))
-    c1 = {n: sum(1 for c in clqs_1 if n in c) for n in G1}  # number of cliques
-    props1 = [[d, t1[v], c1[v]] for v, d in d1]
-    props1.sort()
+    # Check degree sequence first
+    d1 = sorted(d for _, d in G1.degree())
+    d2 = sorted(d for _, d in G2.degree())
+    if d1 != d2:
+        return False
+    if mode == "faster":
+        return True
 
-    d2 = G2.degree()
-    t2 = nx.triangles(G2)
-    clqs_2 = list(nx.find_cliques(G2))
-    c2 = {n: sum(1 for c in clqs_2 if n in c) for n in G2}  # number of cliques
-    props2 = [[d, t2[v], c2[v]] for v, d in d2]
-    props2.sort()
+    # Then check triangle sequence
+    t1, t2 = sorted(nx.triangles(G1).values()), sorted(nx.triangles(G2).values())
+    if t1 != t2:
+        return False
+    if mode == "fast":
+        return True
 
-    if props1 != props2:
+    # Finally, check the clique sequence
+    clqs_1, clqs_2 = list(nx.find_cliques(G1)), list(nx.find_cliques(G2))
+    # TODO: this can probably be implemented more efficiently by looping over
+    # all cliques rather than all nodes
+    c1 = sorted(sum(1 for c in clqs_1 if n in c) for n in G1)
+    c2 = sorted(sum(1 for c in clqs_2 if n in c) for n in G2)
+    if t1 != t2:
         return False
 
-    # OK...
+    # All checked conditions passed
     return True
 
 
