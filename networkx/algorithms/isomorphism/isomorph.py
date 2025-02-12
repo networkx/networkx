@@ -3,7 +3,7 @@ Graph isomorphism functions.
 """
 
 from collections import Counter
-from itertools import chain
+import itertools
 
 import networkx as nx
 from networkx.exception import NetworkXError
@@ -17,47 +17,68 @@ __all__ = [
 
 
 @nx._dispatchable(graphs={"G1": 0, "G2": 1})
-def could_be_isomorphic(G1, G2):
+def could_be_isomorphic(G1, G2, *, properties="dtc"):
     """Returns False if graphs are definitely not isomorphic.
     True does NOT guarantee isomorphism.
 
     Parameters
     ----------
     G1, G2 : graphs
-       The two graphs G1 and G2 must be the same type.
+       The two graphs `G1` and `G2` must be the same type.
+
+    properties : str, default="dct"
+       Determines which properties of the graph are checked. Each character
+       indicates a particular property as follows:
+
+       - if ``"d"`` in `properties`: degree of each node
+       - if ``"t"`` in `properties`: number of triangles for each node
+       - if ``"c"`` in `properties`: number of maximal cliques for each node
+
+       Unrecognized characters are ignored. The default is ``"dtc"``, which
+       compares the sequence of ``(degree, num_triangles, num_cliques)`` properties
+       between `G1` and `G2`.
+
+    Returns
+    -------
+    bool
+       A Boolean value representing whether `G1` could be isomorphic with `G2`
+       according to the specified `properties`.
 
     Notes
     -----
-    Checks for matching degree, triangle, and number of cliques sequences.
     The triangle sequence contains the number of triangles each node is part of.
     The clique sequence contains for each node the number of maximal cliques
     involving that node.
-
     """
 
     # Check global properties
     if G1.order() != G2.order():
         return False
 
-    # Check local properties
-    d1 = G1.degree()
-    t1 = nx.triangles(G1)
-    clqs_1 = list(nx.find_cliques(G1))
-    c1 = Counter(chain.from_iterable(nx.find_cliques(G1)))  # number of cliques
-    props1 = [[d, t1[v], c1[v]] for v, d in d1]
-    props1.sort()
+    properties_to_check = set(properties)
+    G1_props, G2_props = [], []
 
-    d2 = G2.degree()
-    t2 = nx.triangles(G2)
-    clqs_2 = list(nx.find_cliques(G2))
-    c2 = Counter(chain.from_iterable(nx.find_cliques(G2)))  # number of cliques
-    props2 = [[d, t2[v], c2[v]] for v, d in d2]
-    props2.sort()
+    # Degree sequence
+    if "d" in properties_to_check:
+        G1_props.append(G1.degree())
+        G2_props.append(G2.degree())
+    # Sequence of triangles per node
+    if "t" in properties_to_check:
+        G1_props.append(nx.triangles(G1))
+        G2_props.append(nx.triangles(G2))
+    # Sequence of maximal cliques per node
+    if "c" in properties_to_check:
+        G1_props.append(Counter(itertools.chain.from_iterable(nx.find_cliques(G1))))
+        G2_props.append(Counter(itertools.chain.from_iterable(nx.find_cliques(G2))))
 
-    if props1 != props2:
+    # Ravel the properties into a table with # nodes rows and # properties columns
+    G1_ptable = [tuple(p[n] for p in G1_props) for n in G1]
+    G2_ptable = [tuple(p[n] for p in G2_props) for n in G2]
+
+    if sorted(G1_ptable) != sorted(G2_ptable):
         return False
 
-    # OK...
+    # All checked conditions passed
     return True
 
 
