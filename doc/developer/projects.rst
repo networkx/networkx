@@ -12,17 +12,16 @@ your university allows contribution to open source for credit).
 
 If you are a professor interested in having your class develop tools
 and contribute the results to NetworkX, we welcome your submissions!
-We recommend that you consider the rewriting/improvement of existing
-functions as a potential source of projects. Working off of and
+We encourage you to consider rewriting/improving existing functions
+as a potential source of projects. Working off of and
 improving existing tools involves reading, evaluating and writing code,
-rather than just writing new code. Also, we suggest that you create a way
-for them to work on the projects and make PRs & reviews to a fork of
-the repo where you can mentor them. Perhaps make a fork for your class
-and have them fork, make PRs and review each other on that fork.
-Once it is merged to the fork, their branch can also be made into a
-PR to NetworkX. That way the PR discussions stay managable/readable as
-the in-class discussion are separate from the move-to-networkx discussion.
-Feel free to reach out to us as you plan this kind of activity.
+rather than just writing new code. We also encourage them to review each
+other's PRs. You can have students submit their PRs to your personal fork,
+discuss, review, etc in an environment conducive to mentoring and learning.
+Once their branch is ready to merge, it can be submitted to the main NetworkX
+repository. This will help keep in-class discussions separate from the
+broader NetworkX review process, making both more manageable and readable.
+Feel free to reach out to use as you plan these activities.
 
 Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
 ------------------------------------------------------------------------
