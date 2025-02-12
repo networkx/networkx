@@ -891,7 +891,7 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
             spanning trees in the graph.
         """
         if multiplicative:
-            return nx.total_spanning_tree_weight(G, weight)
+            return number_of_spanning_trees(G, weight=weight)
         else:
             # There are two cases for the total spanning tree additive weight.
             # 1. There is one edge in the graph. Then the only spanning tree is
@@ -906,13 +906,14 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
             #    can be accomplished by contracting the edge and finding the
             #    multiplicative total spanning tree weight if the weight of each edge
             #    is assumed to be 1, which is conveniently built into networkx already,
-            #    by calling total_spanning_tree_weight with weight=None.
+            #    by calling number_of_spanning_trees with weight=None.
             #    Note that with no edges the returned value is just zero.
             else:
                 total = 0
                 for u, v, w in G.edges(data=weight):
-                    total += w * nx.total_spanning_tree_weight(
-                        nx.contracted_edge(G, edge=(u, v), self_loops=False), None
+                    total += w * nx.number_of_spanning_trees(
+                        nx.contracted_edge(G, edge=(u, v), self_loops=False),
+                        weight=None,
                     )
                 return total
 
@@ -946,11 +947,11 @@ def random_spanning_tree(G, weight=None, *, multiplicative=True, seed=None):
             if multiplicative:
                 threshold = e_weight * G_e_total_tree_weight / G_total_tree_weight
             else:
-                numerator = (
-                    st_cached_value + e_weight
-                ) * nx.total_spanning_tree_weight(prepared_G_e) + G_e_total_tree_weight
+                numerator = (st_cached_value + e_weight) * nx.number_of_spanning_trees(
+                    prepared_G_e
+                ) + G_e_total_tree_weight
                 denominator = (
-                    st_cached_value * nx.total_spanning_tree_weight(prepared_G)
+                    st_cached_value * nx.number_of_spanning_trees(prepared_G)
                     + G_total_tree_weight
                 )
                 threshold = numerator / denominator
