@@ -10,6 +10,18 @@ These ideas can be used as projects for Google Summer of Code, Outreachy,
 NumFOCUS Small Development Grants and university course/project credits (if
 your university allows contribution to open source for credit).
 
+If you are a professor interested in having your class develop tools
+and contribute the results to NetworkX, we welcome your submissions!
+We encourage you to consider rewriting/improving existing functions
+as a potential source of projects. Working off of and
+improving existing tools involves reading, evaluating and writing code,
+rather than just writing new code. We also encourage them to review each
+other's PRs. You can have students submit their PRs to your personal fork,
+discuss, review, etc in an environment conducive to mentoring and learning.
+Once their branch is ready to merge, it can be submitted to the main NetworkX
+repository. This will help keep in-class discussions separate from the
+broader NetworkX review process, making both more manageable and readable.
+Feel free to reach out to use as you plan these activities.
 
 Pedagogical Interactive Notebooks for Algorithms Implemented in NetworkX
 ------------------------------------------------------------------------
