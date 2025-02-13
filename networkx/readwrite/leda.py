@@ -26,8 +26,8 @@ def read_leda(path, encoding="UTF-8"):
     Parameters
     ----------
     path : file or string
-       File or filename to read.  Filenames ending in .gz or .bz2  will be
-       uncompressed.
+       Filename or file handle to read.
+       Filenames ending in .gz or .bz2 will be decompressed.
 
     Returns
     -------
@@ -35,7 +35,7 @@ def read_leda(path, encoding="UTF-8"):
 
     Examples
     --------
-    G=nx.read_leda('file.leda')
+    >>> G = nx.read_leda("file.leda")  # doctest: +SKIP
 
     References
     ----------
@@ -61,7 +61,7 @@ def parse_leda(lines):
 
     Examples
     --------
-    G=nx.parse_leda(string)
+    >>> G = nx.parse_leda(string)  # doctest: +SKIP
 
     References
     ----------
@@ -102,7 +102,7 @@ def parse_leda(lines):
         try:
             s, t, reversal, label = next(lines).split()
         except BaseException as err:
-            raise NetworkXError(f"Too few fields in LEDA.GRAPH edge {i+1}") from err
+            raise NetworkXError(f"Too few fields in LEDA.GRAPH edge {i + 1}") from err
         # BEWARE: no handling of reversal edges
         G.add_edge(node[int(s)], node[int(t)], label=label[2:-2])
     return G

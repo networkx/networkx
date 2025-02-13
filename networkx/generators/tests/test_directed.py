@@ -7,6 +7,8 @@ import pytest
 import networkx as nx
 from networkx.classes import Graph, MultiDiGraph
 from networkx.generators.directed import (
+    _random_k_out_graph_numpy,
+    _random_k_out_graph_python,
     gn_graph,
     gnc_graph,
     gnr_graph,
@@ -14,6 +16,13 @@ from networkx.generators.directed import (
     random_uniform_k_out_graph,
     scale_free_graph,
 )
+
+try:
+    import numpy as np
+
+    has_numpy = True
+except ImportError:
+    has_numpy = False
 
 
 class TestGeneratorsDirected:
@@ -96,22 +105,32 @@ class TestRandomKOutGraph:
 
     """
 
-    def test_regularity(self):
+    @pytest.mark.parametrize(
+        "f", (_random_k_out_graph_numpy, _random_k_out_graph_python)
+    )
+    def test_regularity(self, f):
         """Tests that the generated graph is `k`-out-regular."""
+        if (f == _random_k_out_graph_numpy) and not has_numpy:
+            pytest.skip()
         n = 10
         k = 3
         alpha = 1
-        G = random_k_out_graph(n, k, alpha)
+        G = f(n, k, alpha)
         assert all(d == k for v, d in G.out_degree())
-        G = random_k_out_graph(n, k, alpha, seed=42)
+        G = f(n, k, alpha, seed=42)
         assert all(d == k for v, d in G.out_degree())
 
-    def test_no_self_loops(self):
+    @pytest.mark.parametrize(
+        "f", (_random_k_out_graph_numpy, _random_k_out_graph_python)
+    )
+    def test_no_self_loops(self, f):
         """Tests for forbidding self-loops."""
+        if (f == _random_k_out_graph_numpy) and not has_numpy:
+            pytest.skip()
         n = 10
         k = 3
         alpha = 1
-        G = random_k_out_graph(n, k, alpha, self_loops=False)
+        G = f(n, k, alpha, self_loops=False)
         assert nx.number_of_selfloops(G) == 0
 
     def test_negative_alpha(self):

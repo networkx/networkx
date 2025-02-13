@@ -144,8 +144,8 @@ def read_gexf(path, node_type=None, relabel=False, version="1.2draft"):
     Parameters
     ----------
     path : file or string
-       File or file name to read.
-       File names ending in .gz or .bz2 will be decompressed.
+       Filename or file handle to read.
+       Filenames ending in .gz or .bz2 will be decompressed.
     node_type: Python type (default: None)
        Convert node ids to this type if not None.
     relabel : bool (default: False)
@@ -1048,9 +1048,7 @@ def relabel_gexf_graph(G):
     x, y = zip(*mapping)
     if len(set(y)) != len(G):
         raise nx.NetworkXError(
-            "Failed to relabel nodes: "
-            "duplicate node labels found. "
-            "Use relabel=False."
+            "Failed to relabel nodes: duplicate node labels found. Use relabel=False."
         )
     mapping = dict(mapping)
     H = nx.relabel_nodes(G, mapping)
