@@ -372,6 +372,15 @@ detailing the test coverage::
   networkx/algorithms/approximation/clique.py         42      1     18      1    97%
   ...
 
+There are additional pytest plugins that provide enhanced features for running
+the test suite. These can be installed with
+``pip install -r requirements/test-extras.txt``.
+For example, with these plugins installed it is possible to run the tests 
+(including doctests) with multiple cores in randomized order with::
+
+   pytest -n auto --doctest-modules --pyargs networkx
+
+
 Adding tests
 ~~~~~~~~~~~~
 
