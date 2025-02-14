@@ -303,7 +303,6 @@ class MultiDiGraph(MultiGraph, DiGraph):
     def __new__(cls, incoming_graph_data=None, multigraph_input=None, **attr):
         return object.__new__(cls)
 
-    @nx._dispatchable(name="multidigraph__init__", graphs="self", mutates_input=True)
     def __init__(self, incoming_graph_data=None, multigraph_input=None, **attr):
         """Initialize a graph with edges, name, or graph attributes.
 

@@ -583,7 +583,7 @@ class _dispatchable:
         backend_priority = nx.config.backend_priority.get(
             self.name,
             nx.config.backend_priority.classes
-            if self.name.endswith("__new__") or self.name.endswith("__init__")
+            if self.name.endswith("__new__")
             else nx.config.backend_priority.generators
             if self._returns_graph
             else nx.config.backend_priority.algos,
