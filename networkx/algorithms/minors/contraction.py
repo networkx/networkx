@@ -435,6 +435,8 @@ def contracted_nodes(
 
     Node contraction identifies the two nodes as a single node incident to any
     edge that was incident to the original two nodes.
+    Information about the contracted nodes and any modified edges are stored on
+    the output graph in a ``"contraction"`` attribute - see Examples for details.
 
     Parameters
     ----------
