@@ -1,0 +1,27 @@
+# Mailmap file for cleaner output of `git shortlog -sne`.
+# See https://git-scm.com/docs/gitmailmap for format details.
+
+Aric Hagberg <aric.hagberg@gmail.com> aric <none@none>
+Aric Hagberg <aric.hagberg@gmail.com> <aric.hagberg+github@gmail.com>
+Aric Hagberg <aric.hagberg@gmail.com> aric <aric.hagberg@gmail.com>
+Aric Hagberg <aric.hagberg@gmail.com> Aric Hagberg <aric@antpitta.lanl.gov>
+Dan Schult <dschult@colgate.edu> dschult <none@none>
+Dan Schult <dschult@colgate.edu> dschult <dschult@colgate.edu>
+Dima Pasechnik <dima@pasechnik.info> Dima Pasechnik <dimpase@gmail.com>
+Elias Kuthe <elias.kuthe@tu-dortmund.de> Elias Kuthe <elias.kuthe@web.de>
+Erwan Le Merrer <elemerrer@acm.org> Erwan Le Merrer <erwan.lemerrer@technicolor.com>
+Jeffrey Finkelstein <jeffrey.finkelstein@gmail.com> jfinkels <jfinkels@users.noreply.github.com>
+Jeffrey Finkelstein <jeffrey.finkelstein@gmail.com> Jeffrey Finkelstein <jeffrey.finkelstein@gamalon.com>
+Jose Pinilla <joseppinilla@outlook.com> Jose Pinilla <jpinilla@ece.ubc.ca>
+Joshua Harlow <harlowja@gmail.com> Joshua Harlow <harlowja@yahoo-inc.com>
+Juan Nunez-Iglesias <jni@janelia.hhmi.org> Juan Nunez-Iglesias <juan.n@unimelb.edu.au>
+Loïc Séguin-C. <loicseguin@gmail.com> loicseguin <none@none>
+Loïc Séguin-C. <loicseguin@gmail.com> Loïc Séguin-C <loicseguin@gmail.com>
+Loïc Séguin-C. <loicseguin@gmail.com> loicseguin <loicseguin@gmail.com>
+Matthias Bussonnier <bussonniermatthias@gmail.com> M Bussonnier <bussonniermatthias@gmail.com>
+Michael Recachinas <mgr3yp@virginia.edu> Michael Recachinas <mike@recachinas.dev>
+Mridul Seth <seth.mridul@gmail.com> Mridul Seth <git@mriduls.com>
+Omkaar <79257339+Infiniticity@users.noreply.github.com> Omkaar <79257339+Pysics@users.noreply.github.com>
+Ross Barnowski <rossbar@caltech.edu> <rossbar@berkeley.edu>
+Thanasis Mattas <atmattas@physics.auth.gr> Thanasis Mattas <thanasismatt@gmail.com>
+Tom Boothby <tomas.boothby@gmail.com> boothby <tomas.boothby@gmail.com>
