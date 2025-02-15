@@ -4,6 +4,19 @@ import networkx as nx
 import networkx.algorithms.approximation as approx
 
 
+def close_cliques_example(d=12, D=300, h=24, k=2):
+    """
+    Hard example from Harb, Elfarouk, Kent Quanrud, and Chandra Chekuri.
+    "Faster and scalable algorithms for densest subgraph and decomposition."
+    Advances in Neural Information Processing Systems 35 (2022): 26966-26979.
+    """
+    Kh = nx.complete_graph(h)
+    KdD = nx.complete_bipartite_graph(d, D)
+    G = nx.disjoint_union_all([KdD] + [Kh for _ in range(k)])
+    best_density = d * D / (d + D)  # of the complete bipartite graph
+    return G, best_density, set(KdD.nodes)
+
+
 @pytest.mark.parametrize("iterations", (1, 3))
 @pytest.mark.parametrize("n", range(4, 7))
 @pytest.mark.parametrize("method", ("greedy++", "fista"))
@@ -36,28 +49,10 @@ def test_greedy_plus_plus_complete_graph(method):
     assert S == {0, 1, 2, 3}  # The entire graph!
 
 
-def generate_close_cliques():
-    """
-    Hard example from Harb, Elfarouk, Kent Quanrud, and Chandra Chekuri.
-    "Faster and scalable algorithms for densest subgraph and decomposition."
-    Advances in Neural Information Processing Systems 35 (2022): 26966-26979.
-    """
-    d = 12
-    D = 300
-    h = 24
-    k = 2
-    Kh = nx.complete_graph(h)
-    KdD = nx.complete_bipartite_graph(d, D)
-    G = nx.disjoint_union_all([KdD] + [Kh for _ in range(k)])
-    best_density = d * D / (d + D)  # of the complete bipartite graph
-    return G, best_density, set(KdD.nodes)
-
-
 def test_greedy_plus_plus_close_cliques():
-    G, best_density, densest_set = generate_close_cliques()
-    greedy_pp, S_pp = approx.densest_subgraph(
-        G, iterations=186, method="greedy++"
-    )  # 185 fails to identify densest subgraph.
+    G, best_density, densest_set = close_cliques_example()
+    # NOTE: iterations=185 fails to ID the densest subgraph
+    greedy_pp, S_pp = approx.densest_subgraph(G, iterations=186, method="greedy++")
 
     assert greedy_pp == pytest.approx(best_density)
     assert S_pp == densest_set
@@ -65,26 +60,21 @@ def test_greedy_plus_plus_close_cliques():
 
 def test_fista_close_cliques():
     pytest.importorskip("numpy")
-    G, best_density, best_set = generate_close_cliques()
+    G, best_density, best_set = close_cliques_example()
+    # NOTE: iterations=12 fails to ID the densest subgraph
+    density, dense_set = approx.densest_subgraph(G, iterations=13, method="fista")
 
-    fista_density, fista_dense_set = approx.densest_subgraph(
-        G, iterations=13, method="fista"
-    )  # 12 fails to identify densest subgraph.
-
-    assert fista_density == pytest.approx(best_density)
-    assert fista_dense_set == best_set
+    assert density == pytest.approx(best_density)
+    assert dense_set == best_set
 
 
-def generate_bipartite_and_clique():
+def bipartite_and_clique_example(d=5, D=200, k=2):
     """
     Hard example from: Boob, Digvijay, Yu Gao, Richard Peng, Saurabh Sawlani,
     Charalampos Tsourakakis, Di Wang, and Junxing Wang. "Flowless: Extracting
     densest subgraphs without flow computations." In Proceedings of The Web
     Conference 2020, pp. 573-583. 2020.
     """
-    d = 5
-    D = 200
-    k = 2
     B = nx.complete_bipartite_graph(d, D)
     H = [nx.complete_graph(d + 2) for _ in range(k)]
     G = nx.disjoint_union_all([B] + H)
@@ -99,7 +89,7 @@ def generate_bipartite_and_clique():
 
 def test_greedy_plus_plus_bipartite_and_clique():
     G, best_density, best_subgraph, correct_one_iter_density = (
-        generate_bipartite_and_clique()
+        bipartite_and_clique_example()
     )
     one_round_density, S_one = approx.densest_subgraph(
         G, iterations=1, method="greedy++"
@@ -116,7 +106,7 @@ def test_greedy_plus_plus_bipartite_and_clique():
 
 def test_fista_bipartite_and_clique():
     pytest.importorskip("numpy")
-    G, best_density, best_subgraph, _ = generate_bipartite_and_clique()
+    G, best_density, best_subgraph, _ = bipartite_and_clique_example()
 
     ten_round_density, S_ten = approx.densest_subgraph(G, iterations=10, method="fista")
     assert ten_round_density == pytest.approx(best_density)
@@ -125,22 +115,13 @@ def test_fista_bipartite_and_clique():
 
 def test_fista_big_dataset():
     pytest.importorskip("numpy")
-    d = 30
-    D = 2000
-    h = 60
-    k = 20
-    Kh = nx.complete_graph(h)
-    KdD = nx.complete_bipartite_graph(d, D)
-    G = nx.disjoint_union_all([KdD] + [Kh for _ in range(k)])
-    best_density = d * D / (d + D)  # of the complete bipartite graph
-    best_subgraph = set(KdD.nodes)
+    G, best_density, best_subgraph = close_cliques_example(d=30, D=2000, h=60, k=20)
 
-    fista_density, fista_dense_set = approx.densest_subgraph(
-        G, iterations=13, method="fista"
-    )  # 12 fails to identify densest subgraph.
+    # Note: iterations=12 fails to identify densest subgraph
+    density, dense_set = approx.densest_subgraph(G, iterations=13, method="fista")
 
-    assert fista_density == pytest.approx(best_density)
-    assert fista_dense_set == best_subgraph
+    assert density == pytest.approx(best_density)
+    assert dense_set == best_subgraph
 
 
 @pytest.mark.parametrize("iterations", (1, 3))
