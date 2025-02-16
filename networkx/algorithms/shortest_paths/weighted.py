@@ -959,7 +959,7 @@ def dijkstra_predecessor_and_distance(G, source, cutoff=None, weight="weight"):
 
 @nx._dispatchable(edge_attrs="weight")
 def all_pairs_dijkstra(G, cutoff=None, weight="weight"):
-    """Find shortest weighted paths and lengths between all nodes.
+    """Yield shortest weighted paths and lengths between all nodes.
 
     Parameters
     ----------
@@ -1028,7 +1028,7 @@ def all_pairs_dijkstra(G, cutoff=None, weight="weight"):
 
 @nx._dispatchable(edge_attrs="weight")
 def all_pairs_dijkstra_path_length(G, cutoff=None, weight="weight"):
-    """Compute shortest path lengths between all nodes in a weighted graph.
+    """Yield shortest path lengths between all nodes in a weighted graph.
 
     Parameters
     ----------
@@ -1051,10 +1051,10 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight="weight"):
         dictionary of edge attributes for that edge. The function must
         return a number or None to indicate a hidden edge.
 
-    Returns
-    -------
-    distance : iterator
-        (source, dictionary) iterator with dictionary keyed by target and
+    Yields
+    ------
+    (source, length_dict) : 2-tuple
+        (source, length_dict) tuple with dictionary keyed by target and
         shortest path length as the key value.
 
     Examples
@@ -1087,7 +1087,7 @@ def all_pairs_dijkstra_path_length(G, cutoff=None, weight="weight"):
 
 @nx._dispatchable(edge_attrs="weight")
 def all_pairs_dijkstra_path(G, cutoff=None, weight="weight"):
-    """Compute shortest paths between all nodes in a weighted graph.
+    """Yield shortest paths between all nodes in a weighted graph.
 
     Parameters
     ----------
@@ -1110,10 +1110,10 @@ def all_pairs_dijkstra_path(G, cutoff=None, weight="weight"):
         dictionary of edge attributes for that edge. The function must
         return a number or None to indicate a hidden edge.
 
-    Returns
-    -------
-    paths : iterator
-        (source, dictionary) iterator with dictionary keyed by target and
+    Yields
+    ------
+    (source, paths_dict) : 2-tuple
+        (source, paths_dict) tuple with dictionary keyed by target and
         shortest path as the key value.
 
     Examples
@@ -1832,7 +1832,7 @@ def single_source_bellman_ford(G, source, target=None, weight="weight"):
 
 @nx._dispatchable(edge_attrs="weight")
 def all_pairs_bellman_ford_path_length(G, weight="weight"):
-    """Compute shortest path lengths between all nodes in a weighted graph.
+    """Yield shortest path lengths between all nodes in a weighted graph.
 
     Parameters
     ----------
@@ -1851,10 +1851,10 @@ def all_pairs_bellman_ford_path_length(G, weight="weight"):
         dictionary of edge attributes for that edge. The function must
         return a number.
 
-    Returns
-    -------
-    distance : iterator
-        (source, dictionary) iterator with dictionary keyed by target and
+    Yields
+    ------
+    (source, length_dict) : 2-tuple
+        (source, length_dict) tuple with dictionary keyed by target and
         shortest path length as the key value.
 
     Examples
@@ -1887,7 +1887,7 @@ def all_pairs_bellman_ford_path_length(G, weight="weight"):
 
 @nx._dispatchable(edge_attrs="weight")
 def all_pairs_bellman_ford_path(G, weight="weight"):
-    """Compute shortest paths between all nodes in a weighted graph.
+    """Yield shortest paths between all nodes in a weighted graph.
 
     Parameters
     ----------
@@ -1906,10 +1906,10 @@ def all_pairs_bellman_ford_path(G, weight="weight"):
         dictionary of edge attributes for that edge. The function must
         return a number.
 
-    Returns
-    -------
-    paths : iterator
-        (source, dictionary) iterator with dictionary keyed by target and
+    Yields
+    ------
+    (source, paths_dict) : 2-tuple
+        (source, paths_dict) tuple with dictionary keyed by target and
         shortest path as the key value.
 
     Examples

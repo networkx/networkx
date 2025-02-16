@@ -29,7 +29,7 @@ __all__ = [
 @not_implemented_for("directed")
 @nx._dispatchable
 def enumerate_all_cliques(G):
-    """Returns all cliques in an undirected graph.
+    """Yield all cliques in an undirected graph.
 
     This function returns an iterator over cliques, each of which is a
     list of nodes. The iteration is ordered by cardinality of the
@@ -41,11 +41,11 @@ def enumerate_all_cliques(G):
     G : NetworkX graph
         An undirected graph.
 
-    Returns
-    -------
-    iterator
-        An iterator over cliques, each of which is a list of nodes in
-        `G`. The cliques are ordered according to size.
+    Yields
+    ------
+    clique : list
+        List of nodes in a clique of `G`. The cliques are ordered by size,
+        smallest to largest.
 
     Notes
     -----
@@ -101,7 +101,7 @@ def enumerate_all_cliques(G):
 @not_implemented_for("directed")
 @nx._dispatchable
 def find_cliques(G, nodes=None):
-    """Returns all maximal cliques in an undirected graph.
+    """Yield all maximal cliques in an undirected graph.
 
     For each node *n*, a *maximal clique for n* is a largest complete
     subgraph containing *n*. The largest maximal clique is sometimes
@@ -124,13 +124,12 @@ def find_cliques(G, nodes=None):
         If provided, only yield *maximal cliques* containing all nodes in `nodes`.
         If `nodes` isn't a clique itself, a ValueError is raised.
 
-    Returns
-    -------
-    iterator
-        An iterator over maximal cliques, each of which is a list of
-        nodes in `G`. If `nodes` is provided, only the maximal cliques
-        containing all the nodes in `nodes` are returned. The order of
-        cliques is arbitrary.
+    Yields
+    ------
+    clique : list
+        List of nodes of a maximal clique of `G`. If `nodes` is provided,
+        only the maximal cliques containing all the nodes in `nodes` are
+        returned. The order of cliques is arbitrary.
 
     Raises
     ------
@@ -300,7 +299,7 @@ def find_cliques(G, nodes=None):
 # TODO Should this also be not implemented for directed graphs?
 @nx._dispatchable
 def find_cliques_recursive(G, nodes=None):
-    """Returns all maximal cliques in a graph.
+    """Yield all maximal cliques in a graph.
 
     For each node *v*, a *maximal clique for v* is a largest complete
     subgraph containing *v*. The largest maximal clique is sometimes
@@ -323,13 +322,12 @@ def find_cliques_recursive(G, nodes=None):
         If provided, only yield *maximal cliques* containing all nodes in `nodes`.
         If `nodes` isn't a clique itself, a ValueError is raised.
 
-    Returns
-    -------
-    iterator
-        An iterator over maximal cliques, each of which is a list of
-        nodes in `G`. If `nodes` is provided, only the maximal cliques
-        containing all the nodes in `nodes` are yielded. The order of
-        cliques is arbitrary.
+    Yields
+    ------
+    clique : list
+        List of nodes of a maximal clique of `G`. If `nodes` is provided,
+        only the maximal cliques containing all the nodes in `nodes` are
+        returned. The order of cliques is arbitrary.
 
     Raises
     ------

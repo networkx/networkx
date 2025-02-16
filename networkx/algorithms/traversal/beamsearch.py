@@ -7,7 +7,7 @@ __all__ = ["bfs_beam_edges"]
 
 @nx._dispatchable
 def bfs_beam_edges(G, source, value, width=None):
-    """Iterates over edges in a beam search.
+    """Yield edges in a beam search.
 
     The beam search is a generalized breadth-first search in which only
     the "best" *w* neighbors of the current node are enqueued, where *w*
@@ -46,7 +46,7 @@ def bfs_beam_edges(G, source, value, width=None):
 
     Yields
     ------
-    edge
+    edge : 2-tuple
         Edges in the beam search starting from `source`, given as a pair
         of nodes.
 
