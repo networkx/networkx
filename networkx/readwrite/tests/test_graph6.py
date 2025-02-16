@@ -117,6 +117,16 @@ class TestWriteGraph6:
         f.seek(0)
         assert f.read() == b">>graph6<<A_\n"
 
+    def test_ordering_nodes(self):
+        G = nx.Graph()
+        G.add_nodes_from(range(4))
+        G.add_edges_from([(1, 2), (1, 3)])
+        nodes = [1, 2, 3, 0]
+        f = BytesIO()
+        nx.write_graph6(G, f, nodes=nodes, header=False)
+        f.seek(0)
+        assert f.read() == b"Co\n"
+
 
 class TestToGraph6Bytes:
     def test_null_graph(self):
@@ -166,3 +176,10 @@ class TestToGraph6Bytes:
     def test_relabeling(self, edge):
         G = nx.Graph([edge])
         assert g6.to_graph6_bytes(G) == b">>graph6<<A_\n"
+
+    def test_ordering_nodes(self):
+        G = nx.Graph()
+        G.add_nodes_from(range(4))
+        G.add_edges_from([(1, 2), (1, 3)])
+        nodes = [1, 2, 3, 0]
+        assert g6.to_graph6_bytes(G, nodes=nodes, header=False) == b"Co\n"
