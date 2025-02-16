@@ -73,6 +73,37 @@ def _get_backends(group, *, load_and_call=False):
 backends = _get_backends("networkx.backends")
 backend_info = {}  # fill backend_info after networkx is imported in __init__.py
 
+backend_hooks = {}  # Ordered dict of backend name to hooks
+# Values are prioritized list of backend names that implement each hook.
+_dispatch_hooks = dict.fromkeys(
+    [
+        "on_load_backend_begin",
+        "on_load_backend_end",
+        "on_call_begin",
+        "on_call_end",
+        "on_will_call_mutate_input",
+        "on_backends_to_try",
+        "on_can_convert",
+        "on_can_backend_run_begin",
+        "on_can_backend_run_end",
+        "on_should_backend_run_begin",
+        "on_should_backend_run_end",
+        "on_convert_and_call_begin",
+        "on_convert_and_call_end",
+        "on_convert_arguments_begin",
+        "on_convert_arguments_end",
+        "on_convert_graph_begin",
+        "on_convert_graph_end",
+        "on_get_from_cache_begin",
+        "on_get_from_cache_end",
+        "on_set_to_cache_begin",
+        "on_set_to_cache_end",
+        "on_call_with_backend_begin",
+        "on_call_with_backend_end",
+    ]
+)
+
+
 # Load and cache backends on-demand
 _loaded_backends = {}  # type: ignore[var-annotated]
 _registered_algorithms = {}
@@ -96,6 +127,20 @@ def _set_configs_from_environment():
     backend_info.update(
         (backend, {}) for backend in backends.keys() - backend_info.keys()
     )
+    # backend_hooks is defined above as empty dict. Fill it now. Order is important!
+    # `.priority` attribute determines order (default 0); backend name is tiebreaker.
+    hooks = _get_backends("networkx.dispatch_hooks")
+    hook_priority = sorted(
+        hooks,
+        key=lambda backend: (getattr(hooks[backend], "priority", 0), backend),
+    )
+    backend_hooks.update((backend, hooks[backend].load()) for backend in hook_priority)
+    for hook_name in _dispatch_hooks:
+        _dispatch_hooks[hook_name] = [
+            backend
+            for backend, hook in backend_hooks.items()
+            if hasattr(hook, hook_name)
+        ]
 
     # set up config based on backend_info and environment
     config = NetworkXConfig(
@@ -156,17 +201,75 @@ def _always_run(name, args, kwargs):
     return True
 
 
-def _load_backend(backend_name):
+def _load_backend(backend_name, *, hook_token=None, dispatchable=None):
     if backend_name in _loaded_backends:
         return _loaded_backends[backend_name]
     if backend_name not in backends:
         raise ImportError(f"'{backend_name}' backend is not installed")
-    rv = _loaded_backends[backend_name] = backends[backend_name].load()
-    if not hasattr(rv, "can_run"):
-        rv.can_run = _always_run
-    if not hasattr(rv, "should_run"):
-        rv.should_run = _always_run
-    return rv
+    if hook_token is not None:
+        dispatchable._call_hook(
+            "on_load_backend_begin",
+            hook_token,
+            backend_name=backend_name,
+        )
+    value = backends[backend_name].load()
+    if not hasattr(value, "can_run"):
+        value.can_run = _always_run
+    if not hasattr(value, "should_run"):
+        value.should_run = _always_run
+    if hook_token is not None:
+        value = dispatchable._call_hook(
+            "on_load_backend_end",
+            hook_token,
+            backend_name=backend_name,
+            value=value,
+        )
+    _loaded_backends[backend_name] = value
+    return value
+
+
+class HookToken:
+    _counter = itertools.count()
+
+    def __init__(self, dispatchable):
+        self.id = next(self._counter)
+        self.dispatchable = dispatchable
+        self.data = {}
+
+    def __getitem__(self, key):
+        if key not in self.data and key in backend_hooks:
+            self.data[key] = {}
+        return self.data[key]
+
+    def __setitem__(self, key, val):
+        self.data[key] = val
+
+    def __hash__(self):
+        return self.id
+
+    def __eq__(self, other):
+        return self.id == (other.id if isinstance(other, HookToken) else other)
+
+    def __lt__(self, other):
+        return self.id < (other.id if isinstance(other, HookToken) else other)
+
+    def __le__(self, other):
+        return self.id <= (other.id if isinstance(other, HookToken) else other)
+
+    def __gt__(self, other):
+        return self.id > (other.id if isinstance(other, HookToken) else other)
+
+    def __ge__(self, other):
+        return self.id >= (other.id if isinstance(other, HookToken) else other)
+
+    def __int__(self):
+        return self.id
+
+    def __index__(self):
+        return self.id
+
+    def __repr__(self):
+        return f"<networkx.HookToken #{self.id} for call to {self.dispatchable.name}>"
 
 
 class _dispatchable:
@@ -447,10 +550,9 @@ class _dispatchable:
         Otherwise, the documentation is generated using _make_doc() method,
         cached, and then returned."""
 
-        if (rv := self._cached_doc) is not None:
-            return rv
-        rv = self._cached_doc = self._make_doc()
-        return rv
+        if self._cached_doc is None:
+            self._cached_doc = self._make_doc()
+        return self._cached_doc
 
     @__doc__.setter
     def __doc__(self, val):
@@ -584,18 +686,45 @@ class _dispatchable:
             if self._returns_graph
             else nx.config.backend_priority.algos,
         )
+        graph_backend_names.discard(None)
+        if backend_hooks:
+            hook_token = HookToken(self)
+            # Allow hooks to modify args safely
+            args = list(args)
+            backend_priority = list(backend_priority)
+            hook_kwargs = {
+                "args": args,
+                "kwargs": kwargs,
+                "graphs_resolved": graphs_resolved,
+                "input_backend_names": graph_backend_names,
+                "backend_priority": backend_priority,
+            }
+            self._call_hook(
+                "on_call_begin", hook_token, backend_name=backend_name, **hook_kwargs
+            )
+        else:
+            hook_token = None
         fallback_to_nx = nx.config.fallback_to_nx and "networkx" in self.backends
         if self._is_testing and backend_priority and backend_name is None:
             # Special path if we are running networkx tests with a backend.
             # This even runs for (and handles) functions that mutate input graphs.
-            return self._convert_and_call_for_tests(
+            value = self._convert_and_call_for_tests(
                 backend_priority[0],
                 args,
                 kwargs,
                 fallback_to_nx=fallback_to_nx,
+                hook_token=hook_token,
             )
+            if hook_token is not None:
+                value = self._call_hook(
+                    "on_call_end",
+                    hook_token,
+                    value=value,
+                    backend_name=backend_priority[0],
+                    **hook_kwargs,
+                )
+            return value
 
-        graph_backend_names.discard(None)
         if backend_name is not None:
             # Must run with the given backend.
             # `can_run` only used for better log and error messages.
@@ -610,11 +739,26 @@ class _dispatchable:
             )
             if not graph_backend_names or graph_backend_names == {backend_name}:
                 # All graphs are backend graphs--no need to convert!
-                if self._can_backend_run(backend_name, args, kwargs):
-                    return self._call_with_backend(
-                        backend_name, args, kwargs, extra_message=extra_message
+                if self._can_backend_run(
+                    backend_name, args, kwargs, hook_token=hook_token
+                ):
+                    value = self._call_with_backend(
+                        backend_name,
+                        args,
+                        kwargs,
+                        extra_message=extra_message,
+                        hook_token=hook_token,
                     )
-                if self._does_backend_have(backend_name):
+                    if hook_token is not None:
+                        value = self._call_hook(
+                            "on_call_end",
+                            hook_token,
+                            value=value,
+                            backend_name=backend_name,
+                            **hook_kwargs,
+                        )
+                    return value
+                if self._does_backend_have(backend_name, hook_token=hook_token):
                     extra = " for the given arguments"
                 else:
                     extra = ""
@@ -622,9 +766,15 @@ class _dispatchable:
                     f"`{self.name}' is not implemented by '{backend_name}' backend"
                     f"{extra}. {blurb}"
                 )
-            if self._can_convert(backend_name, graph_backend_names):
-                if self._can_backend_run(backend_name, args, kwargs):
-                    if self._will_call_mutate_input(args, kwargs):
+            if self._can_convert(
+                backend_name, graph_backend_names, hook_token=hook_token
+            ):
+                if self._can_backend_run(
+                    backend_name, args, kwargs, hook_token=hook_token
+                ):
+                    if self._will_call_mutate_input(
+                        args, kwargs, hook_token=hook_token
+                    ):
                         _logger.debug(
                             "`%s' will mutate an input graph. This prevents automatic conversion "
                             "to, and use of, backends listed in `nx.config.backend_priority`. "
@@ -637,13 +787,14 @@ class _dispatchable:
                         mutations = []
                     else:
                         mutations = None
-                    rv = self._convert_and_call(
+                    value = self._convert_and_call(
                         backend_name,
                         graph_backend_names,
                         args,
                         kwargs,
                         extra_message=extra_message,
                         mutations=mutations,
+                        hook_token=hook_token,
                     )
                     if mutations:
                         for cache, key in mutations:
@@ -651,8 +802,16 @@ class _dispatchable:
                             # from cache. We do this after all conversions (and call) so
                             # that a graph can be gotten from a cache multiple times.
                             cache.pop(key, None)
-                    return rv
-                if self._does_backend_have(backend_name):
+                    if hook_token is not None:
+                        value = self._call_hook(
+                            "on_call_end",
+                            hook_token,
+                            value=value,
+                            backend_name=backend_name,
+                            **hook_kwargs,
+                        )
+                    return value
+                if self._does_backend_have(backend_name, hook_token=hook_token):
                     extra = " for the given arguments"
                 else:
                     extra = ""
@@ -672,7 +831,7 @@ class _dispatchable:
                 f"{blurb}"
             )
 
-        if self._will_call_mutate_input(args, kwargs):
+        if self._will_call_mutate_input(args, kwargs, hook_token=hook_token):
             # The current behavior for functions that mutate input graphs:
             #
             # 1. If backend is specified by `backend=` keyword, use it (done above).
@@ -705,13 +864,25 @@ class _dispatchable:
                 )
                 # `can_run` is only used for better log and error messages
                 try:
-                    if self._can_backend_run(backend_name, args, kwargs):
-                        return self._call_with_backend(
+                    if self._can_backend_run(
+                        backend_name, args, kwargs, hook_token=hook_token
+                    ):
+                        value = self._call_with_backend(
                             backend_name,
                             args,
                             kwargs,
                             extra_message=msg_template % " with these arguments",
+                            hook_token=hook_token,
                         )
+                        if hook_token is not None:
+                            value = self._call_hook(
+                                "on_call_end",
+                                hook_token,
+                                value=value,
+                                backend_name=backend_name,
+                                **hook_kwargs,
+                            )
+                        return value
                 except NotImplementedError as exc:
                     if all(isinstance(g, nx.Graph) for g in graphs_resolved.values()):
                         _logger.debug(
@@ -738,7 +909,7 @@ class _dispatchable:
                             fallback_blurb,
                         )
                     else:
-                        if self._does_backend_have(backend_name):
+                        if self._does_backend_have(backend_name, hook_token=hook_token):
                             extra = " with these arguments"
                         else:
                             extra = ""
@@ -764,7 +935,18 @@ class _dispatchable:
             # At this point, no backends are available to handle the call with
             # the input graph types, but if the input graphs are compatible
             # nx.Graph instances, fall back to networkx without converting.
-            return self.orig_func(*args, **kwargs)
+            value = self._call_with_backend(
+                "networkx", args, kwargs, hook_token=hook_token
+            )
+            if hook_token is not None:
+                value = self._call_hook(
+                    "on_call_end",
+                    hook_token,
+                    value=value,
+                    backend_name="networkx",
+                    **hook_kwargs,
+                )
+            return value
 
         # We may generalize fallback configuration as e.g. `nx.config.backend_fallback`
         if fallback_to_nx or not graph_backend_names:
@@ -884,6 +1066,14 @@ class _dispatchable:
             group3 = ()
 
         try_order = list(itertools.chain(group1, group2, group3, group4, group5))
+        if hook_token is not None:
+            try_order = self._call_hook(
+                "on_backends_to_try",
+                hook_token,
+                value=try_order,
+                backend_fallback=backend_fallback,
+                **hook_kwargs,
+            )
         if len(try_order) > 1:
             # Should we consider adding an option for more verbose logging?
             # For example, we could explain the order of `try_order` in detail.
@@ -900,14 +1090,35 @@ class _dispatchable:
                 _logger.debug("Trying next backend: '%s'", backend_name)
             try:
                 if not graph_backend_names or graph_backend_names == {backend_name}:
-                    if self._can_backend_run(backend_name, args, kwargs):
-                        return self._call_with_backend(backend_name, args, kwargs)
+                    if self._can_backend_run(
+                        backend_name, args, kwargs, hook_token=hook_token
+                    ):
+                        value = self._call_with_backend(
+                            backend_name, args, kwargs, hook_token=hook_token
+                        )
+                        if hook_token is not None:
+                            value = self._call_hook(
+                                "on_call_end",
+                                hook_token,
+                                value=value,
+                                backend_name=backend_name,
+                                **hook_kwargs,
+                            )
+                        return value
                 elif self._can_convert(
-                    backend_name, graph_backend_names
-                ) and self._can_backend_run(backend_name, args, kwargs):
-                    if self._should_backend_run(backend_name, args, kwargs):
-                        rv = self._convert_and_call(
-                            backend_name, graph_backend_names, args, kwargs
+                    backend_name, graph_backend_names, hook_token=hook_token
+                ) and self._can_backend_run(
+                    backend_name, args, kwargs, hook_token=hook_token
+                ):
+                    if self._should_backend_run(
+                        backend_name, args, kwargs, hook_token=hook_token
+                    ):
+                        value = self._convert_and_call(
+                            backend_name,
+                            graph_backend_names,
+                            args,
+                            kwargs,
+                            hook_token=hook_token,
                         )
                         if (
                             self._returns_graph
@@ -930,7 +1141,15 @@ class _dispatchable:
                                 backend_name,
                                 backend_name,
                             )
-                        return rv
+                        if hook_token is not None:
+                            value = self._call_hook(
+                                "on_call_end",
+                                hook_token,
+                                value=value,
+                                backend_name=backend_name,
+                                **hook_kwargs,
+                            )
+                        return value
                     # `should_run` is False, but `can_run` is True, so try again later
                     backends_to_try_again.append(backend_name)
             except NotImplementedError as exc:
@@ -948,8 +1167,12 @@ class _dispatchable:
                 "Trying backend: '%s' (ignoring `should_run=False`)", backend_name
             )
             try:
-                rv = self._convert_and_call(
-                    backend_name, graph_backend_names, args, kwargs
+                value = self._convert_and_call(
+                    backend_name,
+                    graph_backend_names,
+                    args,
+                    kwargs,
+                    hook_token=hook_token,
                 )
                 if (
                     self._returns_graph
@@ -965,7 +1188,15 @@ class _dispatchable:
                         backend_name,
                         backend_name,
                     )
-                return rv
+                if hook_token is not None:
+                    value = self._call_hook(
+                        "on_call_end",
+                        hook_token,
+                        value=value,
+                        backend_name=backend_name,
+                        **hook_kwargs,
+                    )
+                return value
             except NotImplementedError as exc:
                 _logger.debug(
                     "Backend '%s' raised when calling `%s': %s",
@@ -1006,8 +1237,11 @@ class _dispatchable:
         _call_if_any_backends_installed if backends else _call_if_no_backends_installed
     )
 
-    def _will_call_mutate_input(self, args, kwargs):
-        return (mutates_input := self.mutates_input) and (
+    def _load_backend(self, backend_name, *, hook_token):
+        return _load_backend(backend_name, hook_token=hook_token, dispatchable=self)
+
+    def _will_call_mutate_input(self, args, kwargs, *, hook_token):
+        value = (mutates_input := self.mutates_input) and (
             mutates_input is True
             or any(
                 # If `mutates_input` begins with "not ", then assume the argument is bool,
@@ -1024,55 +1258,100 @@ class _dispatchable:
                 for arg_name, arg_pos in mutates_input.items()
             )
         )
+        if hook_token is not None:
+            value = self._call_hook(
+                "on_will_call_mutate_input",
+                hook_token,
+                args=args,
+                kwargs=kwargs,
+                value=value,
+            )
+        return value
 
-    def _can_convert(self, backend_name, graph_backend_names):
+    def _can_convert(self, backend_name, graph_backend_names, *, hook_token):
         # Backend-to-backend conversion not supported yet.
         # We can only convert to and from networkx.
-        rv = backend_name == "networkx" or graph_backend_names.issubset(
+        value = backend_name == "networkx" or graph_backend_names.issubset(
             {"networkx", backend_name}
         )
-        if not rv:
+        if hook_token is not None:
+            value = self._call_hook(
+                "on_can_convert",
+                hook_token,
+                backend_name=backend_name,
+                graph_backend_names=graph_backend_names,
+                value=value,
+            )
+        if not value:
             _logger.debug(
                 "Unable to convert from %s backends to '%s' backend",
                 graph_backend_names,
                 backend_name,
             )
-        return rv
+        return value
 
-    def _does_backend_have(self, backend_name):
+    def _does_backend_have(self, backend_name, *, hook_token):
         """Does the specified backend have this algorithm?"""
         if backend_name == "networkx":
             return "networkx" in self.backends
         # Inspect the backend; don't trust metadata used to create `self.backends`
-        backend = _load_backend(backend_name)
+        backend = self._load_backend(backend_name, hook_token=hook_token)
         return hasattr(backend, self.name)
 
-    def _can_backend_run(self, backend_name, args, kwargs):
+    def _can_backend_run(self, backend_name, args, kwargs, *, hook_token):
         """Can the specified backend run this algorithm with these arguments?"""
-        if backend_name == "networkx":
-            return "networkx" in self.backends
-        backend = _load_backend(backend_name)
         # `backend.can_run` and `backend.should_run` may return strings that describe
         # why they can't or shouldn't be run.
-        if not hasattr(backend, self.name):
-            _logger.debug(
-                "Backend '%s' does not implement `%s'", backend_name, self.name
+        if hook_token is not None:
+            if backend_name != "networkx":
+                # Load backend (and run "on_load_backend" hook) before
+                # calling "on_can_backend_run_begin" hooks. During normal
+                # usage, this is the only place backends get loaded.
+                self._load_backend(backend_name, hook_token=hook_token)
+            self._call_hook(
+                "on_can_backend_run_begin",
+                hook_token,
+                backend_name=backend_name,
+                args=args,
+                kwargs=kwargs,
             )
-            return False
-        can_run = backend.can_run(self.name, args, kwargs)
-        if isinstance(can_run, str) or not can_run:
-            reason = f", because: {can_run}" if isinstance(can_run, str) else ""
-            _logger.debug(
-                "Backend '%s' can't run `%s` with arguments: %s%s",
-                backend_name,
-                self.name,
-                _LazyArgsRepr(self, args, kwargs),
-                reason,
+            can_run = None
+        if backend_name == "networkx":
+            value = "networkx" in self.backends
+        else:
+            backend = self._load_backend(backend_name, hook_token=hook_token)
+            if not hasattr(backend, self.name):
+                _logger.debug(
+                    "Backend '%s' does not implement `%s'", backend_name, self.name
+                )
+                value = False
+            else:
+                can_run = backend.can_run(self.name, args, kwargs)
+                if isinstance(can_run, str) or not can_run:
+                    reason = f", because: {can_run}" if isinstance(can_run, str) else ""
+                    _logger.debug(
+                        "Backend '%s' can't run `%s` with arguments: %s%s",
+                        backend_name,
+                        self.name,
+                        _LazyArgsRepr(self, args, kwargs),
+                        reason,
+                    )
+                    value = False
+                else:
+                    value = True
+        if hook_token is not None:
+            value = self._call_hook(
+                "on_can_backend_run_end",
+                hook_token,
+                backend_name=backend_name,
+                args=args,
+                kwargs=kwargs,
+                value=value,
+                reason=can_run if isinstance(can_run, str) else None,
             )
-            return False
-        return True
+        return value
 
-    def _should_backend_run(self, backend_name, args, kwargs):
+    def _should_backend_run(self, backend_name, args, kwargs, *, hook_token):
         """Should the specified backend run this algorithm with these arguments?
 
         Note that this does not check ``backend.can_run``.
@@ -1080,35 +1359,82 @@ class _dispatchable:
         # `backend.can_run` and `backend.should_run` may return strings that describe
         # why they can't or shouldn't be run.
         # `_should_backend_run` may assume that `_can_backend_run` returned True.
-        if backend_name == "networkx":
-            return True
-        backend = _load_backend(backend_name)
-        should_run = backend.should_run(self.name, args, kwargs)
-        if isinstance(should_run, str) or not should_run:
-            reason = f", because: {should_run}" if isinstance(should_run, str) else ""
-            _logger.debug(
-                "Backend '%s' shouldn't run `%s` with arguments: %s%s",
-                backend_name,
-                self.name,
-                _LazyArgsRepr(self, args, kwargs),
-                reason,
+        if hook_token is not None:
+            self._call_hook(
+                "on_should_backend_run_begin",
+                hook_token,
+                backend_name=backend_name,
+                args=args,
+                kwargs=kwargs,
             )
-            return False
-        return True
+            can_run = None
+        if backend_name == "networkx":
+            value = True
+        else:
+            backend = self._load_backend(backend_name, hook_token=hook_token)
+            should_run = backend.should_run(self.name, args, kwargs)
+            if isinstance(should_run, str) or not should_run:
+                reason = (
+                    f", because: {should_run}" if isinstance(should_run, str) else ""
+                )
+                _logger.debug(
+                    "Backend '%s' shouldn't run `%s` with arguments: %s%s",
+                    backend_name,
+                    self.name,
+                    _LazyArgsRepr(self, args, kwargs),
+                    reason,
+                )
+                value = False
+            else:
+                value = True
+        if hook_token is not None:
+            value = self._call_hook(
+                "on_should_backend_run_end",
+                hook_token,
+                backend_name=backend_name,
+                args=args,
+                kwargs=kwargs,
+                value=value,
+                reason=should_run if isinstance(should_run, str) else None,
+            )
+        return value
 
-    def _convert_arguments(self, backend_name, args, kwargs, *, use_cache, mutations):
+    def _convert_arguments(
+        self, backend_name, args, kwargs, *, use_cache, mutations, hook_token
+    ):
         """Convert graph arguments to the specified backend.
 
         Returns
         -------
         args tuple and kwargs dict
         """
+        if hook_token is not None:
+            hook_kwargs = {
+                "backend_name": backend_name,
+                "args": args,
+                "kwargs": kwargs,
+                "use_cache": use_cache,
+                "mutations": mutations,
+            }
+            self._call_hook(
+                "on_convert_arguments_begin",
+                hook_token,
+                **hook_kwargs,
+            )
         bound = self.__signature__.bind(*args, **kwargs)
         bound.apply_defaults()
         if not self.graphs:
             bound_kwargs = bound.kwargs
             del bound_kwargs["backend"]
-            return bound.args, bound_kwargs
+            bound_args = bound.args
+            if hook_token is not None:
+                bound_args, bound_kwargs = self._call_hook(
+                    "on_convert_arguments_end",
+                    hook_token,
+                    value=(list(bound_args), bound_kwargs),
+                    **hook_kwargs,
+                )
+            return bound_args, bound_kwargs
         if backend_name == "networkx":
             # `backend_interface.convert_from_nx` preserves everything
             preserve_edge_attrs = preserve_node_attrs = preserve_graph_attrs = True
@@ -1261,6 +1587,7 @@ class _dispatchable:
                         graph_name=gname,
                         use_cache=use_cache,
                         mutations=mutations,
+                        hook_token=hook_token,
                     )
                     if getattr(g, "__networkx_backend__", "networkx") != backend_name
                     else g
@@ -1302,10 +1629,19 @@ class _dispatchable:
                         graph_name=gname,
                         use_cache=use_cache,
                         mutations=mutations,
+                        hook_token=hook_token,
                     )
         bound_kwargs = bound.kwargs
         del bound_kwargs["backend"]
-        return bound.args, bound_kwargs
+        bound_args = bound.args
+        if hook_token is not None:
+            bound_args, bound_kwargs = self._call_hook(
+                "on_convert_arguments_end",
+                hook_token,
+                value=(list(bound_args), bound_kwargs),
+                **hook_kwargs,
+            )
+        return bound_args, bound_kwargs
 
     def _convert_graph(
         self,
@@ -1320,7 +1656,26 @@ class _dispatchable:
         graph_name,
         use_cache,
         mutations,
+        hook_token,
     ):
+        if hook_token is not None:
+            hook_kwargs = {
+                "backend_name": backend_name,
+                "graph": graph,
+                "edge_attrs": edge_attrs,
+                "node_attrs": node_attrs,
+                "preserve_edge_attrs": preserve_edge_attrs,
+                "preserve_node_attrs": preserve_node_attrs,
+                "preserve_graph_attrs": preserve_graph_attrs,
+                "graph_name": graph_name,
+                "use_cache": use_cache,
+                "mutations": mutations,
+            }
+            self._call_hook(
+                "on_convert_graph_begin",
+                hook_token,
+                **hook_kwargs,
+            )
         if (
             use_cache
             and (nx_cache := getattr(graph, "__networkx_cache__", None)) is not None
@@ -1333,8 +1688,15 @@ class _dispatchable:
                 preserve_node_attrs=preserve_node_attrs,
                 preserve_graph_attrs=preserve_graph_attrs,
             )
-            compat_key, rv = _get_from_cache(cache, key, mutations=mutations)
-            if rv is not None:
+            compat_key, value = self._get_from_cache(
+                cache,
+                key,
+                mutations=mutations,
+                hook_token=hook_token,
+                backend_name=backend_name,
+                graph_name=graph_name,
+            )
+            if value is not None:
                 if "cache" not in nx.config.warnings_to_ignore:
                     warnings.warn(
                         "Note: conversions to backend graphs are saved to cache "
@@ -1367,7 +1729,15 @@ class _dispatchable:
                     self.name,
                     graph_name,
                 )
-                return rv
+                if hook_token is not None:
+                    value = self._call_hook(
+                        "on_convert_graph_end",
+                        hook_token,
+                        value=value,
+                        from_cache=True,
+                        **hook_kwargs,
+                    )
+                return value
 
         if backend_name == "networkx":
             # Perhaps we should check that "__networkx_backend__" attribute exists
@@ -1382,13 +1752,23 @@ class _dispatchable:
                     graph_name,
                     graph,
                 )
+                if hook_token is not None:
+                    graph = self._call_hook(
+                        "on_convert_graph_end",
+                        hook_token,
+                        value=graph,
+                        from_cache=False,
+                        **hook_kwargs,
+                    )
                 # This may fail, but let it fail in the networkx function
                 return graph
-            backend = _load_backend(graph.__networkx_backend__)
-            rv = backend.convert_to_nx(graph)
+            backend = self._load_backend(
+                graph.__networkx_backend__, hook_token=hook_token
+            )
+            value = backend.convert_to_nx(graph)
         else:
-            backend = _load_backend(backend_name)
-            rv = backend.convert_from_nx(
+            backend = self._load_backend(backend_name, hook_token=hook_token)
+            value = backend.convert_from_nx(
                 graph,
                 edge_attrs=edge_attrs,
                 node_attrs=node_attrs,
@@ -1402,7 +1782,14 @@ class _dispatchable:
                 graph_name=graph_name,
             )
         if use_cache and nx_cache is not None and mutations is None:
-            _set_to_cache(cache, key, rv)
+            self._set_to_cache(
+                cache,
+                key,
+                value,
+                hook_token=hook_token,
+                backend_name=backend_name,
+                graph_name=graph_name,
+            )
             _logger.debug(
                 "Caching converted graph (from '%s' to '%s' backend) "
                 "in call to `%s' for '%s' argument",
@@ -1411,23 +1798,54 @@ class _dispatchable:
                 self.name,
                 graph_name,
             )
+        if hook_token is not None:
+            value = self._call_hook(
+                "on_convert_graph_end",
+                hook_token,
+                value=value,
+                from_cache=False,
+                **hook_kwargs,
+            )
+        return value
 
-        return rv
-
-    def _call_with_backend(self, backend_name, args, kwargs, *, extra_message=None):
+    def _call_with_backend(
+        self, backend_name, args, kwargs, *, extra_message=None, hook_token
+    ):
         """Call this dispatchable function with a backend without converting inputs."""
+        if hook_token is not None:
+            self._call_hook(
+                "on_call_with_backend_begin",
+                hook_token,
+                backend_name=backend_name,
+                args=args,
+                kwargs=kwargs,
+            )
         if backend_name == "networkx":
-            return self.orig_func(*args, **kwargs)
-        backend = _load_backend(backend_name)
-        _logger.debug(
-            "Using backend '%s' for call to `%s' with arguments: %s",
-            backend_name,
-            self.name,
-            _LazyArgsRepr(self, args, kwargs),
-        )
+            func = self.orig_func
+        else:
+            backend = self._load_backend(backend_name, hook_token=hook_token)
+            func = getattr(backend, self.name)
+            _logger.debug(
+                "Using backend '%s' for call to `%s' with arguments: %s",
+                backend_name,
+                self.name,
+                _LazyArgsRepr(self, args, kwargs),
+            )
         try:
-            return getattr(backend, self.name)(*args, **kwargs)
+            value = func(*args, **kwargs)
         except NotImplementedError as exc:
+            if hook_token is not None:
+                value = self._call_hook(
+                    "on_call_with_backend_end",
+                    hook_token,
+                    backend_name=backend_name,
+                    args=args,
+                    kwargs=kwargs,
+                    value=None,
+                    exc=exc,
+                )
+                if value is not None:
+                    return value
             if extra_message is not None:
                 _logger.debug(
                     "Backend '%s' raised when calling `%s': %s",
@@ -1437,6 +1855,17 @@ class _dispatchable:
                 )
                 raise NotImplementedError(extra_message) from exc
             raise
+        if hook_token is not None:
+            value = self._call_hook(
+                "on_call_with_backend_end",
+                hook_token,
+                backend_name=backend_name,
+                args=args,
+                kwargs=kwargs,
+                value=value,
+                exc=None,
+            )
+        return value
 
     def _convert_and_call(
         self,
@@ -1447,6 +1876,7 @@ class _dispatchable:
         *,
         extra_message=None,
         mutations=None,
+        hook_token,
     ):
         """Call this dispatchable function with a backend after converting inputs.
 
@@ -1461,10 +1891,19 @@ class _dispatchable:
         mutations : list, optional
             Used to clear objects gotten from cache if inputs will be mutated.
         """
+        if hook_token is not None:
+            hook_kwargs = {
+                "backend_name": backend_name,
+                "input_backend_names": input_backend_names,
+                "args": args,
+                "kwargs": kwargs,
+                "mutations": mutations,
+            }
+            self._call_hook("on_convert_and_call_begin", hook_token, **hook_kwargs)
         if backend_name == "networkx":
             func = self.orig_func
         else:
-            backend = _load_backend(backend_name)
+            backend = self._load_backend(backend_name, hook_token=hook_token)
             func = getattr(backend, self.name)
         other_backend_names = input_backend_names - {backend_name}
         _logger.debug(
@@ -1483,10 +1922,23 @@ class _dispatchable:
                 kwargs,
                 use_cache=nx.config.cache_converted_graphs,
                 mutations=mutations,
+                hook_token=hook_token,
             )
         except NotImplementedError as exc:
             # Only log the exception if we are adding an extra message
             # because we don't want to lose any information.
+            if hook_token is not None:
+                value = self._call_hook(
+                    "on_convert_and_call_end",
+                    hook_token,
+                    converted_args=None,
+                    converted_kwargs=None,
+                    value=None,
+                    exc=exc,
+                    **hook_kwargs,
+                )
+                if value is not None:
+                    return value
             _logger.debug(
                 "Failed to convert graphs from %s to '%s' backend for call to `%s'"
                 + ("" if extra_message is None else ": %s"),
@@ -1505,9 +1957,38 @@ class _dispatchable:
                 self.name,
                 _LazyArgsRepr(self, converted_args, converted_kwargs),
             )
+        if hook_token is not None:
+            self._call_hook(
+                "on_call_with_backend_begin",
+                hook_token,
+                backend_name=backend_name,
+                args=converted_args,
+                kwargs=converted_kwargs,
+            )
         try:
-            return func(*converted_args, **converted_kwargs)
+            value = func(*converted_args, **converted_kwargs)
         except NotImplementedError as exc:
+            if hook_token is not None:
+                value = self._call_hook(
+                    "on_call_with_backend_end",
+                    hook_token,
+                    backend_name=backend_name,
+                    args=converted_args,
+                    kwargs=converted_kwargs,
+                    value=None,
+                    exc=exc,
+                )
+                value = self._call_hook(
+                    "on_convert_and_call_end",
+                    hook_token,
+                    converted_args=converted_args,
+                    converted_kwargs=converted_kwargs,
+                    value=value,
+                    exc=None,  # Use only for conversion errors
+                    **hook_kwargs,
+                )
+                if value is not None:
+                    return value
             if extra_message is not None:
                 _logger.debug(
                     "Backend '%s' raised when calling `%s': %s",
@@ -1517,13 +1998,33 @@ class _dispatchable:
                 )
                 raise NotImplementedError(extra_message) from exc
             raise
+        if hook_token is not None:
+            value = self._call_hook(
+                "on_call_with_backend_end",
+                hook_token,
+                backend_name=backend_name,
+                args=converted_args,
+                kwargs=converted_kwargs,
+                value=value,
+                exc=None,
+            )
+            value = self._call_hook(
+                "on_convert_and_call_end",
+                hook_token,
+                converted_args=converted_args,
+                converted_kwargs=converted_kwargs,
+                value=value,
+                exc=None,
+                **hook_kwargs,
+            )
+        return value
 
     def _convert_and_call_for_tests(
-        self, backend_name, args, kwargs, *, fallback_to_nx=False
+        self, backend_name, args, kwargs, *, fallback_to_nx=False, hook_token
     ):
         """Call this dispatchable function with a backend; for use with testing."""
-        backend = _load_backend(backend_name)
-        if not self._can_backend_run(backend_name, args, kwargs):
+        backend = self._load_backend(backend_name, hook_token=hook_token)
+        if not self._can_backend_run(backend_name, args, kwargs, hook_token=hook_token):
             if fallback_to_nx or not self.graphs:
                 if fallback_to_nx:
                     _logger.debug(
@@ -1591,7 +2092,12 @@ class _dispatchable:
             kwargs2 = dict(kwargs2)
         try:
             converted_args, converted_kwargs = self._convert_arguments(
-                backend_name, args1, kwargs1, use_cache=False, mutations=None
+                backend_name,
+                args1,
+                kwargs1,
+                use_cache=False,
+                mutations=None,
+                hook_token=hook_token,
             )
             _logger.debug(
                 "Using backend '%s' for call to `%s' with arguments: %s",
@@ -1931,6 +2437,81 @@ class _dispatchable:
             new_doc = "\n".join(lines)
         return new_doc
 
+    def _get_from_cache(
+        self,
+        cache,
+        key,
+        *,
+        mutations=None,
+        hook_token,
+        backend_name,
+        graph_name,
+    ):
+        if hook_token is not None:
+            self._call_hook(
+                "on_get_from_cache_begin",
+                hook_token,
+                cache=cache,
+                key=key,
+                backend_name=backend_name,
+                graph_name=graph_name,
+                mutations=mutations,
+            )
+        compat_key, value = _get_from_cache(cache, key, mutations=mutations)
+        if hook_token is not None:
+            compat_key, value = self._call_hook(
+                "on_get_from_cache_end",
+                hook_token,
+                cache=cache,
+                key=key,
+                backend_name=backend_name,
+                graph_name=graph_name,
+                mutations=mutations,
+                value=(compat_key, value),
+            )
+        return compat_key, value
+
+    def _set_to_cache(self, cache, key, graph, *, hook_token, backend_name, graph_name):
+        if hook_token is not None:
+            self._call_hook(
+                "on_set_to_cache_begin",
+                hook_token,
+                cache=cache,
+                key=key,
+                graph=graph,
+                backend_name=backend_name,
+                graph_name=graph_name,
+            )
+        value = _set_to_cache(cache, key, graph)
+        if hook_token is not None:
+            value = self._call_hook(
+                "on_set_to_cache_end",
+                hook_token,
+                cache=cache,
+                key=key,
+                graph=graph,
+                backend_name=backend_name,
+                graph_name=graph_name,
+                value=value,
+            )
+        return value
+
+    def _call_hook(self, hook_name, hook_token, **kwargs):
+        # TODO: this logging message is temporary
+        _logger.debug(
+            "Hook `%s:%s:%s' with kwargs %s",
+            hook_token,
+            self.name,
+            hook_name,
+            kwargs,
+        )
+        for backend_name in _dispatch_hooks[hook_name]:
+            hook_impl = getattr(backend_hooks[backend_name], hook_name)
+            new_val = hook_impl(hook_token=hook_token, **kwargs)
+            if new_val is not None and "value" in kwargs:
+                kwargs["value"] = new_val
+        return kwargs.get("value")
+
     def __reduce__(self):
         """Allow this object to be serialized with pickle.
 
@@ -2003,12 +2584,12 @@ def _get_from_cache(cache, key, *, backend_name=None, mutations=None):
         (edge_key, True) if edge_key is not True else (True,),
         (node_key, True) if node_key is not True else (True,),
     ):
-        if (rv := cache.get(compat_key)) is not None:
+        if (graph := cache.get(compat_key)) is not None:
             if mutations is not None:
                 # Remove this item from the cache (after all conversions) if
                 # the call to this dispatchable function will mutate an input.
                 mutations.append((cache, compat_key))
-            return compat_key, rv
+            return compat_key, graph
     if edge_key is not True and node_key is not True:
         # Iterate over the items in `cache` to see if any are compatible.
         # For example, if no edge attributes are needed, then a graph
