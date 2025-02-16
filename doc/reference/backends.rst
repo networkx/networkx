@@ -151,6 +151,17 @@ passed to NetworkX functions the backend does not support.
          NETWORKX_FALLBACK_TO_NX=True \\
          python my_networkx_script.py
 
+It is possible to provide backend-specific arguments via ``<backend>_kwargs`` keyword
+arguments that will only be used for those specific backends and ignored otherwise.
+Keyword arguments may be given for multiple backends at the same time such as
+``foo_kwargs={...}, bar_kwargs={...}`` for backends ``foo`` and ``bar``. The backends
+used in this way do not need to be installed; extra ``*_kwargs=`` keywords will be ignored.
+This makes it easier to write more flexible and compatible code that is backend-aware--we
+may customize usage of a backend--but agnostic about what is actually installed and used.
+Here is the previous example updated to use ``get_chunks`` only when using nx-parallel::
+
+    nx.betweenness_centrality(G, k=10, parallel_kwargs={"get_chunks": get_chunks})
+
 How does this work?
 -------------------
 
