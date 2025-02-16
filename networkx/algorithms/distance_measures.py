@@ -345,6 +345,12 @@ def diameter(G, e=None, usebounds=False, weight=None):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
+    usebounds : bool, optional
+        If `True`, use extrema bounding (see Notes) when computing the diameter
+        for undirected graphs. Extrema bounding may accelerate the
+        distance calculation for some graphs. `usebounds` is ignored if `G` is
+        directed or if `e` is not `None`. Default is `False`.
+
     weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
@@ -369,6 +375,13 @@ def diameter(G, e=None, usebounds=False, weight=None):
     -------
     d : integer
        Diameter of graph
+
+    Notes
+    -----
+    When ``usebounds=True``, the computation makes use of smart lower
+    and upper bounds and is often linear in the number of nodes, rather than
+    quadratic (except for some border cases such as complete graphs or circle
+    shaped-graphs).
 
     Examples
     --------
@@ -476,6 +489,12 @@ def periphery(G, e=None, usebounds=False, weight=None):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
+    usebounds : bool, optional
+        If `True`, use extrema bounding (see Notes) when computing the periphery
+        for undirected graphs. Extrema bounding may accelerate the
+        distance calculation for some graphs. `usebounds` is ignored if `G` is
+        directed or if `e` is not `None`. Default is `False`.
+
     weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
@@ -500,6 +519,13 @@ def periphery(G, e=None, usebounds=False, weight=None):
     -------
     p : list
        List of nodes in periphery
+
+    Notes
+    -----
+    When ``usebounds=True``, the computation makes use of smart lower
+    and upper bounds and is often linear in the number of nodes, rather than
+    quadratic (except for some border cases such as complete graphs or circle
+    shaped-graphs).
 
     Examples
     --------
@@ -535,6 +561,12 @@ def radius(G, e=None, usebounds=False, weight=None):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
+    usebounds : bool, optional
+        If `True`, use extrema bounding (see Notes) when computing the radius
+        for undirected graphs. Extrema bounding may accelerate the
+        distance calculation for some graphs. `usebounds` is ignored if `G` is
+        directed or if `e` is not `None`. Default is `False`.
+
     weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
@@ -559,6 +591,13 @@ def radius(G, e=None, usebounds=False, weight=None):
     -------
     r : integer
        Radius of graph
+
+    Notes
+    -----
+    When ``usebounds=True``, the computation makes use of smart lower
+    and upper bounds and is often linear in the number of nodes, rather than
+    quadratic (except for some border cases such as complete graphs or circle
+    shaped-graphs).
 
     Examples
     --------
@@ -588,6 +627,12 @@ def center(G, e=None, usebounds=False, weight=None):
     e : eccentricity dictionary, optional
       A precomputed dictionary of eccentricities.
 
+    usebounds : bool, optional
+        If `True`, use extrema bounding (see Notes) when computing the center
+        for undirected graphs. Extrema bounding may accelerate the
+        distance calculation for some graphs. `usebounds` is ignored if `G` is
+        directed or if `e` is not `None`. Default is `False`.
+
     weight : string, function, or None
         If this is a string, then edge weights will be accessed via the
         edge attribute with this key (that is, the weight of the edge
@@ -612,6 +657,13 @@ def center(G, e=None, usebounds=False, weight=None):
     -------
     c : list
        List of nodes in center
+
+    Notes
+    -----
+    When ``usebounds=True``, the computation makes use of smart lower
+    and upper bounds and is often linear in the number of nodes, rather than
+    quadratic (except for some border cases such as complete graphs or circle
+    shaped-graphs).
 
     Examples
     --------
