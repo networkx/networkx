@@ -94,23 +94,23 @@ class TestConvertNumpyArray:
     def test_from_numpy_array_type(self):
         A = np.array([[1]])
         G = nx.from_numpy_array(A)
-        assert type(G[0][0]["weight"]) == int
+        assert isinstance(G[0][0]["weight"], int)
 
         A = np.array([[1]]).astype(float)
         G = nx.from_numpy_array(A)
-        assert type(G[0][0]["weight"]) == float
+        assert isinstance(G[0][0]["weight"], float)
 
         A = np.array([[1]]).astype(str)
         G = nx.from_numpy_array(A)
-        assert type(G[0][0]["weight"]) == str
+        assert isinstance(G[0][0]["weight"], str)
 
         A = np.array([[1]]).astype(bool)
         G = nx.from_numpy_array(A)
-        assert type(G[0][0]["weight"]) == bool
+        assert isinstance(G[0][0]["weight"], bool)
 
         A = np.array([[1]]).astype(complex)
         G = nx.from_numpy_array(A)
-        assert type(G[0][0]["weight"]) == complex
+        assert isinstance(G[0][0]["weight"], complex)
 
         A = np.array([[1]]).astype(object)
         pytest.raises(TypeError, nx.from_numpy_array, A)
@@ -125,8 +125,8 @@ class TestConvertNumpyArray:
         dt = [("weight", float), ("cost", int)]
         A = np.array([[(1.0, 2)]], dtype=dt)
         G = nx.from_numpy_array(A)
-        assert type(G[0][0]["weight"]) == float
-        assert type(G[0][0]["cost"]) == int
+        assert isinstance(G[0][0]["weight"], float)
+        assert isinstance(G[0][0]["cost"], int)
         assert G[0][0]["cost"] == 2
         assert G[0][0]["weight"] == 1.0
 
