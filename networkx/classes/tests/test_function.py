@@ -270,13 +270,13 @@ class TestFunction:
         G = nx.freeze(nx.path_graph(3))
         node = G.nodes[0]
         node["node_attribute"] = True
-        assert node["node_attribute"] == True
+        assert node["node_attribute"] is True
 
     def test_edge_attributes_are_still_mutable_on_frozen_graph(self):
         G = nx.freeze(nx.path_graph(3))
         edge = G.edges[(0, 1)]
         edge["edge_attribute"] = True
-        assert edge["edge_attribute"] == True
+        assert edge["edge_attribute"] is True
 
     def test_neighbors_complete_graph(self):
         graph = nx.complete_graph(100)
